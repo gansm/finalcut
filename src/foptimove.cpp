@@ -402,7 +402,6 @@ int FOptiMove::relative_move ( char*& move,
             pos = tab_pos;
           }
           num = to_x - pos;
-          from_x = pos;
         }
 
         htime_r += repeated_append (F_cursor_right, num, str);
@@ -460,7 +459,10 @@ int FOptiMove::relative_move ( char*& move,
     if ( htime >= LONG_DURATION )
       return LONG_DURATION;
 
-    strcat (move, hmove);
+    if ( move )
+      strcat (move, hmove);
+    else
+      move = hmove;
   }
 
   return (vtime + htime);

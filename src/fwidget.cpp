@@ -145,9 +145,15 @@ void FWidget::finish()
   delete accelerator_list;
 
   if ( close_widget )
+  {
     delete close_widget;
+    close_widget = 0;
+  }
   if ( window_list )
+  {
     delete window_list;
+    window_list = 0;
+  }
 }
 
 //----------------------------------------------------------------------

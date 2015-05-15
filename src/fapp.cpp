@@ -1158,10 +1158,9 @@ void FApplication::print_cmd_Options ()
 void FApplication::setMainWidget (FWidget* widget)
 {
   main_widget = widget;
-  if ( ! getFocusWidget() )
-  {
+
+  if ( widget && ! getFocusWidget() )
     rootObj->focusFirstChild();
-  }
 }
 
 //----------------------------------------------------------------------

@@ -5,8 +5,9 @@
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
 AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
 
-bin_PROGRAMS = ui fstring timer
+bin_PROGRAMS = hello ui fstring timer
 
+hello_SOURCES = hello.cpp
 ui_SOURCES = ui.cpp
 fstring_SOURCES = fstring.cpp
 timer_SOURCES = timer.cpp

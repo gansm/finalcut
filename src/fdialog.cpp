@@ -32,12 +32,14 @@ FDialog::~FDialog()  // destructor
   activatePrevWindow();
   delWindow(this);
 
-  const FRect& geometry = getGeometryGlobalShadow();
-  restoreVTerm (geometry);
-
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
   if ( ! fapp->quit_now )
+  {
+    const FRect& geometry = getGeometryGlobalShadow();
+    restoreVTerm (geometry);
+
     parentWidget()->redraw();
+  }
 
   if ( window_list && ! window_list->empty() )
   {
@@ -634,6 +636,9 @@ void FDialog::show()
   {
     FApplication* fapp = static_cast<FApplication*>(getRootWidget());
     fapp->enter_loop();
+
+    if ( this == getMainWidget() )
+      fapp->quit();
   }
 }
 

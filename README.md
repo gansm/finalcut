@@ -12,7 +12,7 @@ The C++ class design is inspired by the Qt framework. It offers common user inte
 
 newfont
 -------
-A new text font for x11 and the linux console.
+A new text font for X11 and the Linux console.
 ![](https://github.com/gansm/finalcut/blob/master/doc/newfont1.png)  
 
 ![](https://github.com/gansm/finalcut/blob/master/doc/newfont2.png)
@@ -20,9 +20,9 @@ A new text font for x11 and the linux console.
 
 Virtual terminal
 ----------------
-It uses a virtual terminal to print the character via a update method on the screen.  
+It uses a virtual terminal to print the character via an update method on the screen.  
 The virtual windows are an overlying layer to realizing window movements.  
-Only the changes are transmitted to the virtual terminal or the screen.
+The update method transmits only the changes to the virtual terminal or the screen.
 
 <pre style="line-height: 1 !important;">
  print(...)

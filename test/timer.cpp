@@ -23,7 +23,7 @@ timer::timer (FWidget* parent) : FWidget(parent)
   int id = addTimer (50);  // 50-millisecond timer
   addTimer (1000);         // 1-second timer
   delTimer (id);
-  id = addTimer (250);     // 250-millisecond timer
+  addTimer (250);          // 250-millisecond timer
 
   setColor(fc::LightGray, fc::Black);
   clrscr();

@@ -41,7 +41,10 @@ FObject::~FObject()  // destructor
   delAllTimer();  // delete all timers of this object
 
   if ( ! has_parent && timer_list )
+  {
     delete timer_list;
+    timer_list = 0;
+  }
 
   // delete children objects
   FObject::object_list children = this->children();
@@ -127,8 +130,11 @@ int FObject::addTimer (int interval)
 
   modify_timer = true;
 
+  if ( ! timer_list )
+    timer_list = new TimerList;
+
   // find an unused timer id
-  if ( timer_list && ! timer_list->empty() )
+  if ( ! timer_list->empty() )
   {
     iter = timer_list->begin();
     end  = timer_list->end();

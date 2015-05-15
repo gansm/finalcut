@@ -13,7 +13,8 @@ LDFLAGS = -L../src -lfinal
 INCLUDES = -I../src
 RM = rm -f
 PROGS = ui fstring timer
-OBJS = ui.o
+OBJS0 = hello.o
+OBJS1 = ui.o
 OBJS2 = fstring.o
 OBJS3 = timer.o
 
@@ -30,10 +31,13 @@ endif
 .cpp.o:
 	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -o $@ $<
 
-all: dep ui fstring timer
+all: dep hello ui fstring timer
 
-ui: $(OBJS)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS)
+hello: $(OBJS0)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o hello $(OBJS0)
+
+ui: $(OBJS1)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS1)
 
 fstring: $(OBJS2)
 	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS2)
@@ -49,7 +53,7 @@ profile:
 
 .PHONY: clean dep
 clean:
-	$(RM) $(PROGS) $(OBJS) $(OBJS2) $(OBJS3) .depend *~
+	$(RM) $(PROGS) $(OBJS0) $(OBJS1) $(OBJS2) $(OBJS3) .depend *~
 
 dep:
 	$(CXX) -MM $(INCLUDES) *.cpp >.depend

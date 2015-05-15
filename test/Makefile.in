@@ -82,7 +82,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = ui$(EXEEXT) fstring$(EXEEXT) timer$(EXEEXT)
+bin_PROGRAMS = hello$(EXEEXT) ui$(EXEEXT) fstring$(EXEEXT) \
+	timer$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -105,6 +106,9 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_hello_OBJECTS = hello.$(OBJEXT)
+hello_OBJECTS = $(am_hello_OBJECTS)
+hello_LDADD = $(LDADD)
 am_timer_OBJECTS = timer.$(OBJEXT)
 timer_OBJECTS = $(am_timer_OBJECTS)
 timer_LDADD = $(LDADD)
@@ -145,8 +149,10 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(fstring_SOURCES) $(timer_SOURCES) $(ui_SOURCES)
-DIST_SOURCES = $(fstring_SOURCES) $(timer_SOURCES) $(ui_SOURCES)
+SOURCES = $(fstring_SOURCES) $(hello_SOURCES) $(timer_SOURCES) \
+	$(ui_SOURCES)
+DIST_SOURCES = $(fstring_SOURCES) $(hello_SOURCES) $(timer_SOURCES) \
+	$(ui_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -295,6 +301,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
 AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
+hello_SOURCES = hello.cpp
 ui_SOURCES = ui.cpp
 fstring_SOURCES = fstring.cpp
 timer_SOURCES = timer.cpp
@@ -311,9 +318,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu test/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign test/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu test/Makefile
+	  $(AUTOMAKE) --foreign test/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -386,6 +393,10 @@ fstring$(EXEEXT): $(fstring_OBJECTS) $(fstring_DEPENDENCIES) $(EXTRA_fstring_DEP
 	@rm -f fstring$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fstring_OBJECTS) $(fstring_LDADD) $(LIBS)
 
+hello$(EXEEXT): $(hello_OBJECTS) $(hello_DEPENDENCIES) $(EXTRA_hello_DEPENDENCIES) 
+	@rm -f hello$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(hello_OBJECTS) $(hello_LDADD) $(LIBS)
+
 timer$(EXEEXT): $(timer_OBJECTS) $(timer_DEPENDENCIES) $(EXTRA_timer_DEPENDENCIES) 
 	@rm -f timer$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(timer_OBJECTS) $(timer_LDADD) $(LIBS)
@@ -401,6 +412,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 
