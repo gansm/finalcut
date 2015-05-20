@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  the Final Cut library
+# Makefile.am  -  The Final Cut terminal programming library
 #----------------------------------------------------------------------
 
 AUTOMAKE_OPTIONS = foreign

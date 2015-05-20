@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #----------------------------------------------------------------------
-# Makefile.am  -  the Final Cut library
+# Makefile.am  -  The Final Cut terminal programming library
 #----------------------------------------------------------------------
 
 VPATH = @srcdir@

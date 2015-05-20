@@ -1,15 +1,20 @@
 #----------------------------------------------------------------------
-# Makefile.am  -  the Final Cut library
+# Makefile.am  -  The Final Cut example programs
 #----------------------------------------------------------------------
 
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
 AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
 
-bin_PROGRAMS = hello ui fstring timer
+noinst_PROGRAMS = \
+	hello \
+	dialog \
+	fstring \
+	timer \
+	ui 
 
 hello_SOURCES = hello.cpp
-ui_SOURCES = ui.cpp
+dialog_SOURCES = dialog.cpp
 fstring_SOURCES = fstring.cpp
 timer_SOURCES = timer.cpp
-
+ui_SOURCES = ui.cpp
 

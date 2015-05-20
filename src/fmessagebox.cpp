@@ -227,6 +227,7 @@ void FMessageBox::resizeButtons()
     max_size = len[0];
   else
   {
+    assert ( numButtons > 1 );
     max_size = std::max(len[0], len[1]);
     if ( numButtons == 3 )
       max_size = std::max(max_size, len[2]);
