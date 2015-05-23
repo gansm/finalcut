@@ -1,0 +1,9 @@
+/autom4te.cache
+*.o
+*.so
+*.lo
+*.lai
+*.la
+*.a
+*.lib
+
