@@ -1,0 +1,24 @@
+Unicode Box Drawing graphics
+   β”β”€β”¬β”€β”  β•­β”€β”¬β”€β•®
+   β”β”€β”Όβ”€β”¤  β”β”€β”Όβ”€β”¤
+   β”‚ β”‚ β”‚  β”‚ β”‚ β”‚  β”‚β”‚β”‚
+   β””β”€β”΄β”€β”  β•°β”€β”΄β”€β•―  β•β”†β”
+   β”β”β”³β”β”“  β•”β•β•¦β•β•—
+   β”£β”β•‹β”β”«  β• β•β•¬β•β•£
+   β”ƒ β”ƒ β”ƒ  β•‘ β•‘ β•‘  β”ƒβ”ƒβ”ƒ  β•‘
+   β”—β”β”»β”β”›  β•β•β•©β•β•  β•β”‡β”‹  β—†
+
+VT100 line drawing graphics
+(used by xterm, rxvt, ...)
+codes	`abcdefghijklmnopqrstuvwxyz{|}~
+with G1	)0`abcdefghijklmnopqrstuvwxyz{|}~
+with G0	(0`abcdefghijklmnopqrstuvwxyz{|}~(B
+
+VGA graphics, switching to "active codepage"
+(used by cygwin console, Linux console)
+[11m
+8x	€‚ƒ„…†‡‰‹	9x	‘’“”•–—™›
+Ax	 ΅Ά£¤¥¦§¨©ª«¬­®―	Bx	°±²³΄µ¶·ΈΉΊ»Ό½ΎΏ
+Cx	ΐΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟ	Dx	ΠΡÒΣΤΥΦΧΨΩΪΫάέήί
+Ex	ΰαβγδεζηθικλμνξο	Fx	πρςστυφχψωϊϋόύώÿ
+[10m

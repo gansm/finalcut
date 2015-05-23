@@ -1,0 +1,44 @@
+#----------------------------------------------------------------------
+# Makefile.am  -  the Final Cut library
+#----------------------------------------------------------------------
+
+EXTRA_DIST = \
+	calendar-draft.png \
+	class-diagram.txt \
+	console_codes-manual.sh \
+	console_ioctl-manual.sh \
+	fileopen-dialog.png \
+	menu-draft.png \
+	ncurses.supp \
+	newfont1.png \
+	newfont2.png \
+	progress-bar.png \
+	readme.txt \
+	terminfo-capabilities.sh \
+	terminfo-manual.sh \
+	textview.png \
+	TODO \
+	vt100_line_drawing_graphics.png \
+	VTerm.txt \
+	xgraphics
+
+doc_DATA = \
+	calendar-draft.png \
+	class-diagram.txt \
+	console_codes-manual.sh \
+	console_ioctl-manual.sh \
+	fileopen-dialog.png \
+	menu-draft.png \
+	ncurses.supp \
+	newfont1.png \
+	newfont2.png \
+	progress-bar.png \
+	readme.txt \
+	terminfo-capabilities.sh \
+	terminfo-manual.sh \
+	textview.png \
+	TODO \
+	vt100_line_drawing_graphics.png \
+	VTerm.txt \
+	xgraphics
+

@@ -1,0 +1,130 @@
+// fmessagebox.h
+// class FMessageBox
+
+#ifndef _FMESSAGEBOX_H
+#define _FMESSAGEBOX_H
+
+#include <cstring>
+
+#include "fbutton.h"
+#include "fdialog.h"
+#include "fterm.h"
+
+
+//----------------------------------------------------------------------
+// class FMessageBox
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FMessageBox : public FDialog
+{
+ public:
+   enum
+   {
+     Reject = 0,
+     Ok     = 1,
+     Cancel = 2,
+     Yes    = 3,
+     No     = 4,
+     Abort  = 5,
+     Retry  = 6,
+     Ignore = 7
+   };
+
+ private:
+   FString headline_text;
+   FString text;
+   FString* text_components;
+   std::vector<FString> text_split;
+   uInt  maxLineWidth;
+   bool  center_text;
+   uChar emphasis_color;
+   uInt  numButtons;
+   uInt  text_num_lines;
+   int*  button_digit[3];
+   FButton* button[3];
+
+ protected:
+   void adjustSize();
+
+ private:
+   void init(int, int, int);
+   void msg_dimension();
+   virtual void draw();
+   void resizeButtons();
+   void adjustButtons();
+   void cb_processClick (FWidget*, void*);
+
+ public:
+   FMessageBox (FWidget* parent=0);
+   FMessageBox (const FString&, const FString&,
+                int, int, int,
+                FWidget* parent=0);
+  ~FMessageBox();
+   const char* getClassName() const;
+
+   const FString getHeadline() const;
+   void  setHeadline (const FString&);
+   void  setHeadline (const std::string&);
+   void  setHeadline (const char*);
+
+   const FString getText() const;
+   void  setText (const FString&);
+   void  setText (const std::string&);
+   void  setText (const char*);
+
+   bool setCenterText(bool);
+   bool setCenterText();
+   bool unsetCenterText();
+
+   static int info ( FWidget*,
+                     const FString&,
+                     const FString&,
+                     int button0 = FMessageBox::Ok,
+                     int button1=0,
+                     int button2=0 );
+
+   static int info ( FWidget*,
+                     const FString&,
+                     int,
+                     int button0 = FMessageBox::Ok,
+                     int button1=0,
+                     int button2=0 );
+
+   static int error ( FWidget*,
+                      const FString&,
+                      int button0 = FMessageBox::Ok,
+                      int button1=0,
+                      int button2=0 );
+};
+#pragma pack(pop)
+
+
+// FMessageBox inline functions
+//----------------------------------------------------------------------
+inline const char* FMessageBox::getClassName() const
+{ return "FMessageBox"; }
+
+//----------------------------------------------------------------------
+inline const FString FMessageBox::getHeadline() const
+{ return headline_text; }
+
+//----------------------------------------------------------------------
+inline const FString FMessageBox::getText() const
+{ return text; }
+
+//----------------------------------------------------------------------
+inline bool FMessageBox::setCenterText(bool on)
+{ return this->center_text = on; }
+
+//----------------------------------------------------------------------
+inline bool FMessageBox::setCenterText()
+{ return setCenterText(true); }
+
+//----------------------------------------------------------------------
+inline bool FMessageBox::unsetCenterText()
+{ return setCenterText(false); }
+
+#endif  // _FMESSAGEBOX_H

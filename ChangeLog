@@ -1,0 +1,6 @@
+2015-15-05  Markus Gans  <guru.mail@muenster.de>
+        * Remove never read value from code
+	* Add the possibility to use exec() from FMessageBox
+	  to enter and leave the main event loop correctly
+        * Add a "hello world" example
+
