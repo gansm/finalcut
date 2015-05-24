@@ -201,8 +201,8 @@ void FWidget::setColorTheme()
   wc.label_ellipsis_fg             = fc::DarkGray;
   wc.inputfield_active_focus_fg    = fc::White;
   wc.inputfield_active_focus_bg    = fc::Cyan;
-  wc.inputfield_active_fg          = fc::LightGray;
-  wc.inputfield_active_bg          = fc::Cyan;
+  wc.inputfield_active_fg          = fc::Black;
+  wc.inputfield_active_bg          = fc::LightGray;
   wc.inputfield_inactive_fg        = fc::DarkGray;
   wc.inputfield_inactive_bg        = fc::LightGray;
   wc.toggle_button_active_focus_fg = fc::White;

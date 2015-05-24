@@ -1,3 +1,6 @@
+2015-24-05  Markus Gans  <guru.mail@muenster.de>
+	* Bug fix in FLineEdit (ypos from the label)
+
 2015-15-05  Markus Gans  <guru.mail@muenster.de>
         * Remove never read value from code
 	* Add the possibility to use exec() from FMessageBox

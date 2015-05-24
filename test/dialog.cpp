@@ -5,6 +5,9 @@
 #include "fdialog.h"
 #include "flabel.h"
 
+// function prototype
+void cb_quit (FWidget*, void* data_ptr);
+
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------

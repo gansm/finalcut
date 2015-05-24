@@ -225,7 +225,7 @@ void FLineEdit::adjustLabel()
       label->setGeometry(xpos, ypos-1, label_length, 1);
       break;
     case label_left:
-      label->setGeometry(xpos-label_length, ypos-1, label_length, 1);
+      label->setGeometry(xpos-label_length, ypos, label_length, 1);
       break;
   }
 }

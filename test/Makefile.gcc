@@ -12,11 +12,13 @@ MAKEFILE = -f Makefile.gcc
 LDFLAGS = -L../src -lfinal
 INCLUDES = -I../src
 RM = rm -f
-PROGS = ui fstring timer
-OBJS0 = hello.o
-OBJS1 = ui.o
-OBJS2 = fstring.o
-OBJS3 = timer.o
+PROGS = hello dialog input-dialog fstring timer ui 
+OBJS1 = hello.o
+OBJS2 = dialog.o
+OBJS3 = input-dialog.o
+OBJS4 = fstring.o
+OBJS5 = timer.o
+OBJS6 = ui.o
 
 ifdef DEBUG
   OPTIMIZE = -O0
@@ -31,19 +33,25 @@ endif
 .cpp.o:
 	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -o $@ $<
 
-all: dep hello ui fstring timer
+all: dep $(PROGS)
 
-hello: $(OBJS0)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o hello $(OBJS0)
+hello: $(OBJS1)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o hello $(OBJS1)
 
-ui: $(OBJS1)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS1)
+dialog: $(OBJS2)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o dialog $(OBJS2)
 
-fstring: $(OBJS2)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS2)
+input-dialog: $(OBJS3)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o input-dialog $(OBJS3)
 
-timer: $(OBJS3)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o timer $(OBJS3)
+fstring: $(OBJS4)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS4)
+
+timer: $(OBJS5)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o timer $(OBJS5)
+
+ui: $(OBJS6)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS6)
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -W -Wall -pedantic"
@@ -53,7 +61,7 @@ profile:
 
 .PHONY: clean dep
 clean:
-	$(RM) $(PROGS) $(OBJS0) $(OBJS1) $(OBJS2) $(OBJS3) .depend *~
+	$(RM) $(PROGS) $(OBJS1) $(OBJS2) $(OBJS3) $(OBJS4) $(OBJS5) $(OBJS6) .depend *~
 
 dep:
 	$(CXX) -MM $(INCLUDES) *.cpp >.depend
