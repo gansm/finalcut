@@ -408,11 +408,11 @@ MyDialog::~MyDialog()
 //----------------------------------------------------------------------
 void MyDialog::onClose (FCloseEvent* event)
 {
-  int ret = FMessageBox::info (this, "Quit",
-                               "Do you really want\n"
-                               "to quit the program ?",
-                               FMessageBox::Yes,
-                               FMessageBox::No);
+  int ret = FMessageBox::info ( this, "Quit",
+                                "Do you really want\n"
+                                "to quit the program ?",
+                                FMessageBox::Yes,
+                                FMessageBox::No );
   if ( ret == FMessageBox::Yes )
     event->accept();
   else

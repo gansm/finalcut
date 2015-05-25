@@ -552,7 +552,8 @@ void FDialog::onWindowActive (FEvent*)
     {
       focus_widget->setFocus();
       focus_widget->redraw();
-      statusBar()->drawMessage();
+      if ( statusBar() )
+        statusBar()->drawMessage();
     }
     else
       focusFirstChild();

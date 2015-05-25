@@ -83,7 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	fstring$(EXEEXT) timer$(EXEEXT) ui$(EXEEXT)
+	mandelbrot$(EXEEXT) fstring$(EXEEXT) timer$(EXEEXT) \
+	ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -114,6 +115,9 @@ hello_LDADD = $(LDADD)
 am_input_dialog_OBJECTS = input-dialog.$(OBJEXT)
 input_dialog_OBJECTS = $(am_input_dialog_OBJECTS)
 input_dialog_LDADD = $(LDADD)
+am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
+mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
+mandelbrot_LDADD = $(LDADD)
 am_timer_OBJECTS = timer.$(OBJEXT)
 timer_OBJECTS = $(am_timer_OBJECTS)
 timer_LDADD = $(LDADD)
@@ -155,9 +159,11 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(dialog_SOURCES) $(fstring_SOURCES) $(hello_SOURCES) \
-	$(input_dialog_SOURCES) $(timer_SOURCES) $(ui_SOURCES)
+	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) $(timer_SOURCES) \
+	$(ui_SOURCES)
 DIST_SOURCES = $(dialog_SOURCES) $(fstring_SOURCES) $(hello_SOURCES) \
-	$(input_dialog_SOURCES) $(timer_SOURCES) $(ui_SOURCES)
+	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) $(timer_SOURCES) \
+	$(ui_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -309,6 +315,7 @@ AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+mandelbrot_SOURCES = mandelbrot.cpp
 fstring_SOURCES = fstring.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
@@ -372,6 +379,10 @@ input-dialog$(EXEEXT): $(input_dialog_OBJECTS) $(input_dialog_DEPENDENCIES) $(EX
 	@rm -f input-dialog$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(input_dialog_OBJECTS) $(input_dialog_LDADD) $(LIBS)
 
+mandelbrot$(EXEEXT): $(mandelbrot_OBJECTS) $(mandelbrot_DEPENDENCIES) $(EXTRA_mandelbrot_DEPENDENCIES) 
+	@rm -f mandelbrot$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(mandelbrot_OBJECTS) $(mandelbrot_LDADD) $(LIBS)
+
 timer$(EXEEXT): $(timer_OBJECTS) $(timer_DEPENDENCIES) $(EXTRA_timer_DEPENDENCIES) 
 	@rm -f timer$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(timer_OBJECTS) $(timer_LDADD) $(LIBS)
@@ -390,6 +401,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-dialog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 
