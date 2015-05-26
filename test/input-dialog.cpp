@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   FDialog dgl(&app);
   dgl.setText ("Data input");
-  dgl.setGeometry (4, 3, 37, 22);
+  dgl.setGeometry (4, 2, 37, 22);
   dgl.setShadow();
 
   // Create input fields
