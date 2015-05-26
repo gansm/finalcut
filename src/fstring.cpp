@@ -40,7 +40,7 @@ FString::FString (int len, wchar_t c)
   length  = 0;
   bufsize = 0;
   c_string = 0;
-  
+
   if ( len >= 0 )
     _replace ( FString(uInt(len), c).string );
   else
@@ -68,7 +68,7 @@ FString::FString (int len, char c)
   length  = 0;
   bufsize = 0;
   c_string = 0;
-  
+
   if ( len >= 0 )
     _replace ( FString(uInt(len), c).string );
   else

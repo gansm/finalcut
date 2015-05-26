@@ -148,7 +148,7 @@ void FLabel::draw()
     to_char = int(length);
   else
     to_char = width - 2;
-    
+
   if ( hasReverseMode() )
     setReverse(true);
 
@@ -181,7 +181,7 @@ void FLabel::draw()
   }
   if ( hasReverseMode() )
     setReverse(false);
-        
+
   setUpdateVTerm(true);
   delete[] LabelText;
 }

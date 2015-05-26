@@ -232,13 +232,13 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   MyButton4->setStatusbarMessage("Progressbar testing dialog");
   MyButton4->setShadow();
   MyButton4->setDisable();
-  
+
   FButton* MyButton5 = new FButton(this);
   MyButton5->setGeometry(19, 11, 12, 1);
   MyButton5->setText(L"Environs");
   MyButton5->setStatusbarMessage("Show environment settings");
   MyButton5->setShadow();
-  
+
   FButton* MyButton6 = new FButton(this);
   MyButton6->setGeometry(19, 14, 12, 1);
   MyButton6->setText(L"&Get input");
