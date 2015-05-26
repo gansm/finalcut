@@ -52,7 +52,7 @@ void Mandelbrot::draw()
     unsetVT100altChar();
 
   x_min = -2.20;
-  x_max =  1.0;
+  x_max =  1.00;
   y_min = -1.05;
   y_max =  1.05;
   max_iter = 99;
