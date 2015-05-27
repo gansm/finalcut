@@ -38,7 +38,7 @@ class FButtonGroup : public FWidget
    void  drawLabel();
 
  public:
-   FButtonGroup (FWidget* parent=0);  // constructor
+   explicit FButtonGroup (FWidget* parent=0);  // constructor
    FButtonGroup (const FString&, FWidget* parent=0);  // constructor
    virtual ~FButtonGroup();  // destructor
    const char* getClassName() const;

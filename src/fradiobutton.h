@@ -22,7 +22,7 @@ class FRadioButton : public FToggleButton
    void drawRadioButton();
 
  public:
-   FRadioButton (FWidget* parent=0);  // constructor
+   explicit FRadioButton (FWidget* parent=0);  // constructor
    FRadioButton (const FString&, FWidget* parent=0);  // constructor
    virtual ~FRadioButton();  // destructor
    const char* getClassName() const;

@@ -39,7 +39,7 @@ class FLabel : public FWidget
    void  draw();
 
  public:
-   FLabel (FWidget* parent=0);  // constructor
+   explicit FLabel (FWidget* parent=0);  // constructor
    FLabel (const FString&, FWidget* parent=0);  // constructor
    virtual ~FLabel();  // destructor
    const char* getClassName() const;

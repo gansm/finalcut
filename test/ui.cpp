@@ -21,7 +21,7 @@ class ProgressDialog : public FDialog
    FProgressbar* progressBar;
 
  public:
-   ProgressDialog (FWidget* parent=0);  // constructor
+   explicit ProgressDialog (FWidget* parent=0);  // constructor
   ~ProgressDialog();  // destructor
 
    void onShow (FShowEvent*);
@@ -149,7 +149,7 @@ class MyDialog : public FDialog
  private:
    FListBox* myList;
  public:
-   MyDialog (FWidget* parent=0);  // constructor
+   explicit MyDialog (FWidget* parent=0);  // constructor
   ~MyDialog();  // destructor
    void onClose (FCloseEvent*);
    void cb_noFunctionMsg (FWidget*, void*);

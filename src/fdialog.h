@@ -46,7 +46,7 @@ class FDialog : public FWindow
    virtual void onClose (FCloseEvent*);
 
  public:
-   FDialog (FWidget* parent=0);  // constructor
+   explicit FDialog (FWidget* parent=0);  // constructor
    FDialog (const FString&, FWidget* parent=0);  // constructor
    virtual ~FDialog();  // destructor
    virtual const char* getClassName() const;

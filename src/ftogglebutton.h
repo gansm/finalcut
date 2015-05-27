@@ -45,7 +45,7 @@ class FToggleButton : public FWidget
    virtual void onKeyPress (FKeyEvent*);
 
  public:
-   FToggleButton (FWidget* parent=0);  // constructor
+   explicit FToggleButton (FWidget* parent=0);  // constructor
    FToggleButton (const FString&, FWidget* parent=0);  // constructor
    virtual ~FToggleButton();  // destructor
    virtual const char* getClassName() const;

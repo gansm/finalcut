@@ -220,7 +220,7 @@ class FWidget : public FObject, public FTerm
    virtual bool focusPrevChild (void);
 
  public:
-   FWidget (FWidget* parent=0);  // constructor
+   explicit FWidget (FWidget* parent=0);  // constructor
   ~FWidget();  // destructor
 
    const char*      getClassName() const;

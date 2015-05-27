@@ -753,7 +753,7 @@ const FString operator + (const std::string& s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const char* s1, const FString& s2)
 {
-  FString tmp = s1;
+  FString tmp(s1);
   tmp._insert ( tmp.getLength(),
                 uInt(wcslen(s2.wc_str())),
                 s2.wc_str() );
@@ -763,7 +763,7 @@ const FString operator + (const char* s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const wchar_t c, const FString& s)
 {
-  FString tmp = c;
+  FString tmp(c);
   tmp._insert (1, uInt(wcslen(s.wc_str())), s.wc_str());
   return (tmp);
 }
@@ -771,7 +771,7 @@ const FString operator + (const wchar_t c, const FString& s)
 //----------------------------------------------------------------------
 const FString operator + (const char c, const FString& s)
 {
-  FString tmp = c;
+  FString tmp(c);
   tmp._insert (1, uInt(wcslen(s.wc_str())), s.wc_str());
   return (tmp);
 }
@@ -1832,7 +1832,7 @@ FString FString::expandTabs (uInt tabstop) const
 {
   uLong end;
   FString instr(this->string);
-  FString outstr = "";
+  FString outstr("");
 
   std::vector<FString> tab_split = instr.split("\t");
   end = tab_split.size();

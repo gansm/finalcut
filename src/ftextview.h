@@ -45,7 +45,7 @@ class FTextView : public FWidget
    void adjustSize();
 
  public:
-   FTextView (FWidget* parent=0);  // constructor
+   explicit FTextView (FWidget* parent=0);  // constructor
   ~FTextView();  // destructor
    const char* getClassName() const;
 

@@ -29,7 +29,7 @@ class FProgressbar : public FWidget
    virtual void draw();
 
  public:
-   FProgressbar(FWidget* parent=0);  // constructor
+   explicit FProgressbar(FWidget* parent=0);  // constructor
    virtual ~FProgressbar();
    const char* getClassName() const;
 

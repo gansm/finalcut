@@ -83,7 +83,7 @@ class FFileDialog : public FDialog
    void adjustSize();
 
  public:
-   FFileDialog (FWidget* parent=0);
+   explicit FFileDialog (FWidget* parent=0);
    FFileDialog (const FString&,
                 const FString&,
                 DialogType type = FFileDialog::Open,

@@ -25,9 +25,9 @@ class FListBoxItem
    bool selected;
  public:
    FListBoxItem ();
-   FListBoxItem (FString&);
-   FListBoxItem (const std::string&);
-   FListBoxItem (const char*);
+   explicit FListBoxItem (FString&);
+   explicit FListBoxItem (const std::string&);
+   explicit FListBoxItem (const char*);
    virtual ~FListBoxItem();
    virtual FString getText() const;
  protected:
@@ -111,7 +111,7 @@ class FListBox : public FWidget
    void adjustSize();
 
  public:
-   FListBox (FWidget* parent=0);  // constructor
+   explicit FListBox (FWidget* parent=0);  // constructor
   ~FListBox();  // destructor
    const char* getClassName() const;
 

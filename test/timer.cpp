@@ -9,7 +9,7 @@
 class timer : public FWidget
 {
  public:
-   timer (FWidget* parent = 0);
+   explicit timer (FWidget* parent = 0);
  protected:
    virtual void draw();
    void onTimer (FTimerEvent*);

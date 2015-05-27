@@ -58,7 +58,7 @@ class FMessageBox : public FDialog
    void cb_processClick (FWidget*, void*);
 
  public:
-   FMessageBox (FWidget* parent=0);
+   explicit FMessageBox (FWidget* parent=0);
    FMessageBox (const FString&, const FString&,
                 int, int, int,
                 FWidget* parent=0);

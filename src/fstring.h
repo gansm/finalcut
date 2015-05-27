@@ -71,8 +71,8 @@ class FString
 
  public:
    FString ();                    // constructor
-   FString (int);                 // constructor
-   FString (uInt);                // constructor
+   explicit FString (int);        // constructor
+   explicit FString (uInt);       // constructor
    FString (int, wchar_t);        // constructor
    FString (uInt, wchar_t);       // constructor
    FString (int, char);           // constructor
@@ -83,7 +83,7 @@ class FString
    FString (const std::string&);  // constructor
    FString (const char*);         // constructor
    FString (const wchar_t);       // constructor
-   FString (const char);          // constructor
+   explicit FString (const char);          // constructor
    virtual ~FString ();  // destructor
 
    bool isNull() const;

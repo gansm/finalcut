@@ -78,7 +78,7 @@ class FOptiMove
    bool isWideMove (int, int, int, int);
 
  public:
-   FOptiMove(int baud=0);  // constructor
+   explicit FOptiMove(int baud=0);  // constructor
   ~FOptiMove();            // destructor
 
    void setBaudRate (int);

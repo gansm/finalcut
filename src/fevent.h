@@ -40,7 +40,7 @@
 class FEvent // event base class
 {
  public:
-   FEvent(int);
+   explicit FEvent(int);
   ~FEvent();
    int type() const;
 
@@ -190,7 +190,7 @@ enum FocusTypes
 class FFocusEvent : public FEvent        // focus event
 {
  public:
-   FFocusEvent (int);
+   explicit FFocusEvent (int);
    bool gotFocus()  const;
    bool lostFocus() const;
    FocusTypes getFocusType() const;
@@ -239,7 +239,7 @@ class FAccelEvent : public FEvent    // focus event
 class FResizeEvent : public FEvent    // resize event
 {
  public:
-   FResizeEvent (int);
+   explicit FResizeEvent (int);
    bool isAccepted() const;
    void accept();
    void ignore();
@@ -258,7 +258,7 @@ class FResizeEvent : public FEvent    // resize event
 class FShowEvent : public FEvent    // show event
 {
  public:
-   FShowEvent (int);
+   explicit FShowEvent (int);
 };
 
 #define F_SHOW_EVENT(x)  ((FShowEvent*)x)
@@ -271,7 +271,7 @@ class FShowEvent : public FEvent    // show event
 class FHideEvent : public FEvent    // hide event
 {
  public:
-   FHideEvent (int);
+   explicit FHideEvent (int);
 };
 
 #define F_HIDE_EVENT(x)  ((FHideEvent*)x)
@@ -284,7 +284,7 @@ class FHideEvent : public FEvent    // hide event
 class FCloseEvent : public FEvent   // close event
 {
  public:
-   FCloseEvent(int);
+   explicit FCloseEvent(int);
    bool isAccepted() const;
    void accept();
    void ignore();

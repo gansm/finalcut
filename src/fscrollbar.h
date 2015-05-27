@@ -59,7 +59,7 @@ class FScrollbar : public FWidget
    void processScroll();
 
  public:
-   FScrollbar(FWidget* parent=0);  // constructor
+   explicit FScrollbar(FWidget* parent=0);  // constructor
    FScrollbar(int o=fc::vertical, FWidget* parent=0);  // constructor
    virtual ~FScrollbar();
    const char* getClassName() const;

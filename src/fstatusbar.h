@@ -33,7 +33,7 @@ class FStatusKey : public FWidget
    void setStatusbar (FStatusBar*);
 
  public:
-   FStatusKey (FWidget* parent=0);
+   explicit FStatusKey (FWidget* parent=0);
    FStatusKey (int, FString&, FWidget* parent=0);
    FStatusKey (int, const std::string&, FWidget* parent=0);
    FStatusKey (int, const char*, FWidget* parent=0);
@@ -133,7 +133,7 @@ class FStatusBar : public FWindow
    void adjustSize();
 
  public:
-   FStatusBar (FWidget* parent=0);  // constructor
+   explicit FStatusBar (FWidget* parent=0);  // constructor
    virtual ~FStatusBar();  // destructor
    virtual const char* getClassName() const;
 
