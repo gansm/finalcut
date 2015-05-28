@@ -77,14 +77,14 @@ class FString
    FString (uInt, wchar_t);       // constructor
    FString (int, char);           // constructor
    FString (uInt, char);          // constructor
-   FString (const FString&);      // constructor
-   FString (const std::wstring&); // constructor
-   FString (const wchar_t*);      // constructor
-   FString (const std::string&);  // constructor
-   FString (const char*);         // constructor
-   FString (const wchar_t);       // constructor
-   FString (const char);          // constructor
-   virtual ~FString ();  // destructor
+   FString (const FString&);      // implicit conversion constructor
+   FString (const std::wstring&); // implicit conversion constructor
+   FString (const wchar_t*);      // implicit conversion constructor
+   FString (const std::string&);  // implicit conversion constructor
+   FString (const char*);         // implicit conversion constructor
+   FString (const wchar_t);       // implicit conversion constructor
+   FString (const char);          // implicit conversion constructor
+   virtual ~FString ();           // destructor
 
    bool isNull() const;
    bool isEmpty() const;
