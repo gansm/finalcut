@@ -646,7 +646,7 @@ const FString& FString::operator += (const char c)
 //----------------------------------------------------------------------
 const FString FString::operator + (const FString& s)
 {
-  FString tmp = string;
+  FString tmp(string);
   tmp._insert (length, s.length, s.string);
   return (tmp);
 }
@@ -654,7 +654,7 @@ const FString FString::operator + (const FString& s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const std::wstring& s)
 {
-  FString tmp = string;
+  FString tmp(string);
   tmp._insert (length, uInt(s.length()), s.c_str());
   return (tmp);
 }
@@ -662,7 +662,7 @@ const FString FString::operator + (const std::wstring& s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const wchar_t* s)
 {
-  FString tmp = string;
+  FString tmp(string);
   tmp._insert (length, uInt(wcslen(s)), s);
   return (tmp);
 }
@@ -670,7 +670,7 @@ const FString FString::operator + (const wchar_t* s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const std::string& s)
 {
-  FString tmp = string;
+  FString tmp(string);
   wchar_t* wc_str = c_to_wc_str(s.c_str());
   if ( ! wc_str )
     return (tmp);
@@ -683,7 +683,7 @@ const FString FString::operator + (const std::string& s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const char* s)
 {
-  FString tmp = string;
+  FString tmp(string);
   wchar_t* wc_str = c_to_wc_str(s);
   if ( ! wc_str )
     return (tmp);
@@ -696,7 +696,7 @@ const FString FString::operator + (const char* s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const wchar_t c)
 {
-  FString tmp = string;
+  FString tmp(string);
   tmp._insert (length, 1, &c);
   return(tmp);
 }
@@ -705,7 +705,7 @@ const FString FString::operator + (const wchar_t c)
 const FString FString::operator + (const char c)
 {
   const wchar_t wc = static_cast<wchar_t>(c);
-  FString tmp = string;
+  FString tmp(string);
   tmp._insert (length, 1, &wc);
   return(tmp);
 }
@@ -713,7 +713,7 @@ const FString FString::operator + (const char c)
 //----------------------------------------------------------------------
 const FString operator + (const FString& s1, const FString& s2)
 {
-  FString tmp = s1;
+  FString tmp(s1);
   tmp._insert ( uInt(wcslen(s1.wc_str())),
                 uInt(wcslen(s2.wc_str())),
                 s2.wc_str() );
@@ -723,7 +723,7 @@ const FString operator + (const FString& s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const std::wstring& s1, const FString& s2)
 {
-  FString tmp = s1;
+  FString tmp(s1);
   tmp._insert ( uInt(wcslen(s1.c_str())),
                 uInt(wcslen(s2.wc_str())),
                 s2.wc_str() );
@@ -733,7 +733,7 @@ const FString operator + (const std::wstring& s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const wchar_t* s1, const FString& s2)
 {
-  FString tmp = s1;
+  FString tmp(s1);
   tmp._insert ( uInt(wcslen(s1)),
                 uInt(wcslen(s2.wc_str())),
                 s2.wc_str() );
@@ -743,7 +743,7 @@ const FString operator + (const wchar_t* s1, const FString& s2)
 //----------------------------------------------------------------------
 const FString operator + (const std::string& s1, const FString& s2)
 {
-  FString tmp = s1;
+  FString tmp(s1);
   tmp._insert ( tmp.getLength(),
                 uInt(wcslen(s2.wc_str())),
                 s2.wc_str() );
@@ -789,7 +789,7 @@ wchar_t& FString::operator [] (uInt pos)
 const FString FString::operator () (uInt pos, uInt len)
 {
   assert ( (pos < length) && ((pos+len) <= length) );
-  FString tmp = L"";
+  FString tmp(L"");
   tmp._insert (0, len, string + pos);
   return (tmp);
 }
@@ -1135,8 +1135,8 @@ std::vector<FString> FString::split (const FString& delimiter)
 
   while ( token )
   {
-    stringList.push_back(token);
-    token = extractToken(&rest, 0, delimiter.wc_str());
+    stringList.push_back (FString(token));
+    token = extractToken (&rest, 0, delimiter.wc_str());
   }
   return stringList;
 }
@@ -1377,6 +1377,18 @@ const FString& FString::insert (const wchar_t* s, uInt pos)
 const FString& FString::insert (const char* s, uInt pos)
 {
   return (insert(FString(s), pos));
+}
+
+//----------------------------------------------------------------------
+const FString& FString::insert (const wchar_t c, uInt pos)
+{
+  return (insert(FString(c), pos));
+}
+
+//----------------------------------------------------------------------
+const FString& FString::insert (const char c, uInt pos)
+{
+  return (insert(FString(c), pos));
 }
 
 //----------------------------------------------------------------------
@@ -1982,4 +1994,22 @@ bool FString::includes (const char* s)
   if ( *wc_str )
     delete[] wc_str;
   return (ret);
+}
+
+//----------------------------------------------------------------------
+bool FString::includes (const wchar_t c)
+{
+  wchar_t s[2];
+  s[0] = c;
+  s[1] = L'\0';
+  return (wcsstr(string, s) != 0);
+}
+
+//----------------------------------------------------------------------
+bool FString::includes (const char c)
+{
+  wchar_t s[2];
+  s[0] = wchar_t(c & 0xff);
+  s[1] = L'\0';
+  return (wcsstr(string, s) != 0);
 }

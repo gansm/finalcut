@@ -83,7 +83,7 @@ class FString
    FString (const std::string&);  // constructor
    FString (const char*);         // constructor
    FString (const wchar_t);       // constructor
-   explicit FString (const char);          // constructor
+   FString (const char);          // constructor
    virtual ~FString ();  // destructor
 
    bool isNull() const;
@@ -128,7 +128,13 @@ class FString
    FString  right(uInt) const;
    FString  mid(uInt, uInt) const;
 
-   std::vector<FString> split(const FString&);
+   std::vector<FString> split (const FString&);
+   std::vector<FString> split (std::wstring&);
+   std::vector<FString> split (const wchar_t*);
+   std::vector<FString> split (const std::string&);
+   std::vector<FString> split (const char*);
+   std::vector<FString> split (const wchar_t);
+   std::vector<FString> split (const char);
 
    FString& setString (const wchar_t*);
    FString& setString (const char*);
@@ -199,6 +205,8 @@ class FString
    const FString& insert (const FString&, uInt);
    const FString& insert (const wchar_t*, uInt);
    const FString& insert (const char*, uInt);
+   const FString& insert (const wchar_t, uInt);
+   const FString& insert (const char, uInt);
 
    FString replace (const FString&, const FString&);
    FString replace (const FString&, const std::wstring&);
@@ -263,6 +271,8 @@ class FString
    bool includes (const FString&);
    bool includes (const wchar_t*);
    bool includes (const char*);
+   bool includes (const wchar_t);
+   bool includes (const char);
 };
 
 
@@ -316,6 +326,30 @@ inline int FString::toInt() const
 //----------------------------------------------------------------------
 inline uInt FString::toUInt() const
 { return uInt( toULong() ); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (std::wstring& s)
+{ return split(FString(s)); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (const wchar_t* s)
+{ return split(FString(s)); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (const std::string& s)
+{ return split(FString(s)); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (const char* s)
+{ return split(FString(s)); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (const wchar_t c)
+{ return split(FString(c)); }
+
+//----------------------------------------------------------------------
+inline std::vector<FString> FString::split (const char c)
+{ return split(FString(c)); }
 
 //----------------------------------------------------------------------
 inline FString& FString::setNumber (sInt16 num)
