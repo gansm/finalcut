@@ -90,7 +90,7 @@ all: dep $(OBJS)
 $(LIB): all
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -W -Wall -pedantic"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

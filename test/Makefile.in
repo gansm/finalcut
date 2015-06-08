@@ -83,8 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	mandelbrot$(EXEEXT) fstring$(EXEEXT) timer$(EXEEXT) \
-	ui$(EXEEXT)
+	mandelbrot$(EXEEXT) calculator$(EXEEXT) fstring$(EXEEXT) \
+	timer$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -99,13 +99,16 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_dialog_OBJECTS = dialog.$(OBJEXT)
-dialog_OBJECTS = $(am_dialog_OBJECTS)
-dialog_LDADD = $(LDADD)
+am_calculator_OBJECTS = calculator.$(OBJEXT)
+calculator_OBJECTS = $(am_calculator_OBJECTS)
+calculator_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_dialog_OBJECTS = dialog.$(OBJEXT)
+dialog_OBJECTS = $(am_dialog_OBJECTS)
+dialog_LDADD = $(LDADD)
 am_fstring_OBJECTS = fstring.$(OBJEXT)
 fstring_OBJECTS = $(am_fstring_OBJECTS)
 fstring_LDADD = $(LDADD)
@@ -158,12 +161,12 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(dialog_SOURCES) $(fstring_SOURCES) $(hello_SOURCES) \
-	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) $(timer_SOURCES) \
-	$(ui_SOURCES)
-DIST_SOURCES = $(dialog_SOURCES) $(fstring_SOURCES) $(hello_SOURCES) \
-	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) $(timer_SOURCES) \
-	$(ui_SOURCES)
+SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(fstring_SOURCES) \
+	$(hello_SOURCES) $(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
+	$(timer_SOURCES) $(ui_SOURCES)
+DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
+	$(fstring_SOURCES) $(hello_SOURCES) $(input_dialog_SOURCES) \
+	$(mandelbrot_SOURCES) $(timer_SOURCES) $(ui_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -316,6 +319,7 @@ hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
+calculator_SOURCES = calculator.cpp
 fstring_SOURCES = fstring.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
@@ -363,6 +367,10 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+calculator$(EXEEXT): $(calculator_OBJECTS) $(calculator_DEPENDENCIES) $(EXTRA_calculator_DEPENDENCIES) 
+	@rm -f calculator$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(calculator_OBJECTS) $(calculator_LDADD) $(LIBS)
+
 dialog$(EXEEXT): $(dialog_OBJECTS) $(dialog_DEPENDENCIES) $(EXTRA_dialog_DEPENDENCIES) 
 	@rm -f dialog$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dialog_OBJECTS) $(dialog_LDADD) $(LIBS)
@@ -397,6 +405,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calculator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@

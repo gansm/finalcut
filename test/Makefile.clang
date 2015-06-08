@@ -12,14 +12,15 @@ MAKEFILE = -f Makefile.clang
 LDFLAGS = -L../src -lfinal
 INCLUDES = -I../src
 RM = rm -f
-PROGS = hello dialog input-dialog mandelbrot fstring timer ui 
+PROGS = hello dialog input-dialog mandelbrot calculator fstring timer ui 
 OBJS1 = hello.o
 OBJS2 = dialog.o
 OBJS3 = input-dialog.o
 OBJS4 = mandelbrot.o
-OBJS5 = fstring.o
-OBJS6 = timer.o
-OBJS7 = ui.o
+OBJS5 = calculator.o
+OBJS6 = fstring.o
+OBJS7 = timer.o
+OBJS8 = ui.o
 
 ifdef DEBUG
   OPTIMIZE = -O0
@@ -48,14 +49,17 @@ input-dialog: $(OBJS3)
 mandelbrot: $(OBJS4)
 	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o mandelbrot $(OBJS4)
 
-fstring: $(OBJS5)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS5)
+calculator: $(OBJS5)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o calculator $(OBJS5)
 
-timer: $(OBJS6)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o timer $(OBJS6)
+fstring: $(OBJS6)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS6)
 
-ui: $(OBJS7)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS7)
+timer: $(OBJS7)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o timer $(OBJS7)
+
+ui: $(OBJS8)
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS8)
 
 debug:
 	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -W -Wall  -Weverything -Wpadded -pedantic"
@@ -65,7 +69,7 @@ profile:
 
 .PHONY: clean dep
 clean:
-	$(RM) $(PROGS) $(OBJS1) $(OBJS2) $(OBJS3) $(OBJS4) $(OBJS5) $(OBJS6) $(OBJS7) .depend  *.gch *.plist *~
+	$(RM) $(PROGS) $(OBJS1) $(OBJS2) $(OBJS3) $(OBJS4) $(OBJS5) $(OBJS6) $(OBJS7) $(OBJS8) .depend  *.gch *.plist *~
 
 dep:
 	$(CXX) -MM $(INCLUDES) *.cpp >.depend
