@@ -619,11 +619,11 @@ void MyDialog::adjustSize()
 {
   int h = parentWidget()->getHeight() - 3;
   setHeight (h, false);
-  int X = int((parentWidget()->getWidth() - width) / 2);
+  int X = int((parentWidget()->getWidth() - getWidth()) / 2);
   if ( X < 1 )
     X = 1;
   setX (X, false);
-  myList->setHeight (height-3, false);
+  myList->setHeight (getHeight() - 3, false);
   FDialog::adjustSize();
 }
 
