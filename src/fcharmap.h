@@ -27,7 +27,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x00b1, 'g', 0xf1, '#'},  // ±  -  PlusMinus
   {0x00f7, '/', 0xf6, '/'},  // ÷  -  Division sign
   {0x00d7, '*',  '*', '*'},  // ×  -  Multiplication sign
-  {0x02e3, '~', 0xf6, '~'},  // ˣ  -  Modifier letter small x
+  {0x02e3, '~', 0xfc, '~'},  // ˣ  -  Modifier letter small x
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
   {0x00b7, '`', 0xf9, '*'},  // ·  -  small Bullet
