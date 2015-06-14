@@ -9,6 +9,8 @@ The C++ class design is inspired by the Qt framework. It offers common user inte
 
 ![](https://github.com/gansm/finalcut/blob/master/doc/textview.png)  
 
+![](https://github.com/gansm/finalcut/blob/master/doc/Mandelbrot.png)  
+
 
 newfont
 -------
