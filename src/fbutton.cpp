@@ -37,6 +37,7 @@ void FButton::init()
 {
   flags = 0;
   button_down = false;
+  click_animation = true;
   this->text = "";
 
   if ( hasFocus() )
@@ -492,9 +493,12 @@ void FButton::onKeyPress (FKeyEvent* event)
     case fc::Fkey_return:
     case fc::Fkey_enter:
     case fc::Fkey_space:
-      setDown();
-      usleep(150000);
-      setUp();
+      if ( click_animation )
+      {
+        setDown();
+        usleep(150000);
+        setUp();
+      }
       processClick();
       event->accept();
       break;
@@ -566,14 +570,20 @@ void FButton::onAccel (FAccelEvent* event)
       setFocus();
       if ( focused_widget )
         focused_widget->redraw();
-      setDown();
+      if ( click_animation )
+        setDown();
+      else
+        redraw();
       if ( statusBar() )
         statusBar()->drawMessage();
     }
-    else
+    else if ( click_animation )
       setDown();
-    usleep(150000);
-    setUp();
+    if ( click_animation )
+    {
+      usleep(150000);
+      setUp();
+    }
     processClick();
     event->accept();
   }

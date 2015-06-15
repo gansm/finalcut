@@ -19,6 +19,7 @@ class FButton : public FWidget
  private:
    FString text;
    bool button_down;
+   bool click_animation;
 
  private:
    FButton (const FButton&);
@@ -70,6 +71,10 @@ class FButton : public FWidget
    bool        setDown();
    bool        setUp();
    bool        isDown() const;
+   bool        setClickAnimation(bool);
+   bool        setClickAnimation();
+   bool        unsetClickAnimation();
+   bool        hasClickAnimation();
 
    void        setText (const FString&);
    FString&    getText();
@@ -145,6 +150,22 @@ inline bool FButton::setUp()
 //----------------------------------------------------------------------
 inline bool FButton::isDown() const
 { return button_down; }
+
+//----------------------------------------------------------------------
+inline bool FButton::setClickAnimation(bool on)
+{ return click_animation = on; }
+
+//----------------------------------------------------------------------
+inline bool FButton::setClickAnimation()
+{ return setClickAnimation(true); }
+
+//----------------------------------------------------------------------
+inline bool FButton::unsetClickAnimation()
+{ return setClickAnimation(false); }
+
+//----------------------------------------------------------------------
+inline bool FButton::hasClickAnimation()
+{ return click_animation; }
 
 //----------------------------------------------------------------------
 inline FString& FButton::getText()
