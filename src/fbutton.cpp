@@ -40,29 +40,21 @@ void FButton::init()
   click_animation = true;
   this->text = "";
 
+  setForegroundColor (wc.button_active_fg);
+  setBackgroundColor (wc.button_active_bg);
+  setHotkeyForegroundColor (wc.button_hotkey_fg);
+  setFocusForegroundColor (wc.button_active_focus_fg);
+  setFocusBackgroundColor (wc.button_active_focus_bg);
+  setInactiveForegroundColor (wc.button_inactive_fg);
+  setInactiveBackgroundColor (wc.button_inactive_bg);
+
   if ( hasFocus() )
     this->flags = FOCUS;
 
   if ( isEnabled() )
-  {
     this->flags |= ACTIVE;
 
-    if ( hasFocus() )
-    {
-      foregroundColor = wc.button_active_focus_fg;
-      backgroundColor = wc.button_active_focus_bg;
-    }
-    else
-    {
-      foregroundColor = wc.button_active_fg;
-      backgroundColor = wc.button_active_bg;
-    }
-  }
-  else  // inactive
-  {
-    foregroundColor = wc.button_inactive_fg;
-    backgroundColor = wc.button_inactive_bg;
-  }
+  updateButtonColor();
 }
 
 //----------------------------------------------------------------------
@@ -110,7 +102,6 @@ void FButton::draw()
   FString txt;
   int d, i, j, x, mono_offset, margin;
   int length, hotkeypos, hotkey_offset, space;
-  int button_fg, button_bg;
   bool isActiveFocus, isActive, isFocus, isFlat;
   bool isNonFlatShadow, isNoUnderline;
 
@@ -189,9 +180,6 @@ void FButton::draw()
     margin = 1;
   else
     margin = 0;
-
-  button_fg = foregroundColor;
-  button_bg = backgroundColor;
 
   if ( isMonochron() && (isActive || isFocus) )
     setReverse(true);
@@ -272,11 +260,12 @@ void FButton::draw()
 
   if ( isMonochron() && isActiveFocus )
     setBold();
+
   for (int z=0; x < i+length && z < width; z++,x++)
   {
     if ( (z == hotkeypos) && isActive )
     {
-      setColor (wc.button_hotkey_fg, button_bg);
+      setColor (button_hotkey_fg, button_bg);
       if ( ! isNoUnderline )
         setUnderline();
       print ( ButtonText[z] );
@@ -289,8 +278,10 @@ void FButton::draw()
       print ( ButtonText[z] );
     }
   }
+
   if ( isMonochron() && isActiveFocus )
     unsetBold();
+
   for (x=i+length; x < width-1; x++)
     print (space); // █
 
@@ -337,6 +328,29 @@ void FButton::draw()
 }
 
 //----------------------------------------------------------------------
+void FButton::updateButtonColor()
+{
+  if ( isEnabled() )
+  {
+    if ( hasFocus() )
+    {
+      button_fg = button_focus_fg;
+      button_bg = button_focus_bg;
+    }
+    else
+    {
+      button_fg = foregroundColor;
+      button_bg = backgroundColor;
+    }
+  }
+  else  // inactive
+  {
+    button_fg = button_inactive_fg;
+    button_bg = button_inactive_bg;
+  }
+}
+
+//----------------------------------------------------------------------
 void FButton::processClick()
 {
   emitCallback("clicked");
@@ -344,6 +358,58 @@ void FButton::processClick()
 
 
 // public methods of FButton
+//----------------------------------------------------------------------
+void FButton::setForegroundColor (int color)
+{
+  FWidget::setForegroundColor(color);
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setBackgroundColor (int color)
+{
+  FWidget::setBackgroundColor(color);
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setHotkeyForegroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    button_hotkey_fg = color;
+}
+
+void FButton::setFocusForegroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    button_focus_fg = color;
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setFocusBackgroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    button_focus_bg = color;
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setInactiveForegroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    button_inactive_fg = color;
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setInactiveBackgroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    button_inactive_bg = color;
+  updateButtonColor();
+}
+
 //----------------------------------------------------------------------
 void FButton::hide()
 {
@@ -389,24 +455,13 @@ bool FButton::setEnable(bool on)
   {
     this->flags |= ACTIVE;
     setHotkeyAccelerator();
-    if ( hasFocus() )
-    {
-      foregroundColor = wc.button_active_focus_fg;
-      backgroundColor = wc.button_active_focus_bg;
-    }
-    else
-    {
-      foregroundColor = wc.button_active_fg;
-      backgroundColor = wc.button_active_bg;
-    }
   }
   else
   {
     this->flags &= ~ACTIVE;
     delAccelerator (this);
-    foregroundColor = wc.button_inactive_fg;
-    backgroundColor = wc.button_inactive_bg;
   }
+  updateButtonColor();
   return on;
 }
 
@@ -421,8 +476,6 @@ bool FButton::setFocus(bool on)
 
     if ( isEnabled() )
     {
-      foregroundColor = wc.button_active_focus_fg;
-      backgroundColor = wc.button_active_focus_bg;
       if ( statusBar() )
       {
         FString msg = getStatusbarMessage();
@@ -436,14 +489,10 @@ bool FButton::setFocus(bool on)
   {
     this->flags &= ~FOCUS;
 
-    if ( isEnabled() )
-    {
-      foregroundColor = wc.button_active_fg;
-      backgroundColor = wc.button_active_bg;
-      if ( statusBar() )
-        statusBar()->clearMessage();
-    }
+    if ( isEnabled() && statusBar() )
+      statusBar()->clearMessage();
   }
+  updateButtonColor();
   return on;
 }
 

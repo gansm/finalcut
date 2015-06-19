@@ -20,15 +20,23 @@ class FButton : public FWidget
    FString text;
    bool button_down;
    bool click_animation;
+   int  button_fg;
+   int  button_bg;
+   int  button_hotkey_fg;
+   int  button_focus_fg;
+   int  button_focus_bg;
+   int  button_inactive_fg;
+   int  button_inactive_bg;
 
  private:
    FButton (const FButton&);
    FButton& operator = (const FButton&);
-   void init();
-   uChar getHotkey();
-   void setHotkeyAccelerator();
-   void draw();
-   void processClick();
+   void         init();
+   uChar        getHotkey();
+   void         setHotkeyAccelerator();
+   void         draw();
+   void         updateButtonColor();
+   void         processClick();
    friend class FDialog;
 
  public:
@@ -36,48 +44,54 @@ class FButton : public FWidget
    FButton (const FString&, FWidget* parent=0);  // constructor
    virtual ~FButton();  // destructor
 
-   const char* getClassName() const;
+   const char*  getClassName() const;
+   void         setForegroundColor (int);
+   void         setBackgroundColor (int);
+   void         setHotkeyForegroundColor (int);
+   void         setFocusForegroundColor (int);
+   void         setFocusBackgroundColor (int);
+   void         setInactiveForegroundColor (int);
+   void         setInactiveBackgroundColor (int);
+   void         hide();
 
-   void        hide();
+   void         onKeyPress (FKeyEvent*);
+   void         onMouseDown (FMouseEvent*);
+   void         onMouseUp (FMouseEvent*);
+   void         onMouseMove (FMouseEvent*);
+   void         onAccel (FAccelEvent*);
+   void         onFocusIn (FFocusEvent*);
+   void         onFocusOut (FFocusEvent*);
 
-   void        onKeyPress (FKeyEvent*);
-   void        onMouseDown (FMouseEvent*);
-   void        onMouseUp (FMouseEvent*);
-   void        onMouseMove (FMouseEvent*);
-   void        onAccel (FAccelEvent*);
-   void        onFocusIn (FFocusEvent*);
-   void        onFocusOut (FFocusEvent*);
+   bool         setNoUnderline(bool);
+   bool         setNoUnderline();
+   bool         unsetNoUnderline();
 
-   bool        setNoUnderline(bool);
-   bool        setNoUnderline();
-   bool        unsetNoUnderline();
+   bool         setEnable(bool);
+   bool         setEnable();
+   bool         unsetEnable();
+   bool         setDisable();
+   bool         setFocus(bool);
+   bool         setFocus();
+   bool         unsetFocus();
+   bool         setFlat(bool);
+   bool         setFlat();
+   bool         unsetFlat();
+   bool         isFlat() const;
+   bool         setShadow(bool);
+   bool         setShadow();
+   bool         unsetShadow();
+   bool         hasShadow() const;
+   bool         setDown(bool);
+   bool         setDown();
+   bool         setUp();
+   bool         isDown() const;
+   bool         setClickAnimation(bool);
+   bool         setClickAnimation();
+   bool         unsetClickAnimation();
+   bool         hasClickAnimation();
 
-   bool        setEnable(bool);
-   bool        setEnable();
-   bool        unsetEnable();
-   bool        setDisable();
-   bool        setFocus(bool);
-   bool        setFocus();
-   bool        unsetFocus();
-   bool        setFlat(bool);
-   bool        setFlat();
-   bool        unsetFlat();
-   bool        isFlat() const;
-   bool        setShadow(bool);
-   bool        setShadow();
-   bool        unsetShadow();
-   bool        hasShadow() const;
-   bool        setDown(bool);
-   bool        setDown();
-   bool        setUp();
-   bool        isDown() const;
-   bool        setClickAnimation(bool);
-   bool        setClickAnimation();
-   bool        unsetClickAnimation();
-   bool        hasClickAnimation();
-
-   void        setText (const FString&);
-   FString&    getText();
+   void         setText (const FString&);
+   FString&     getText();
 };
 #pragma pack(pop)
 
