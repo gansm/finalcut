@@ -188,7 +188,7 @@ void FButton::draw()
   {
     if ( margin == 1 )
     {
-      setColor (wc.button_active_fg, button_bg);
+      setColor (foregroundColor, button_bg);
       for (int y=0; y <= height-1; y++)
       {
         gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
