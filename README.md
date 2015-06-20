@@ -19,6 +19,8 @@ A new text font for X11 and the Linux console.
 
 ![](https://github.com/gansm/finalcut/blob/master/doc/newfont2.png)
 
+![](https://github.com/gansm/finalcut/blob/master/doc/calculator.png)
+
 
 Virtual terminal
 ----------------
