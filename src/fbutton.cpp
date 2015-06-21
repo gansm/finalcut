@@ -130,7 +130,7 @@ void FButton::draw()
   isNoUnderline = ((flags & NO_UNDERLINE) != 0);
 
   setUpdateVTerm(false);
-  if ( button_down )
+  if ( button_down && click_animation )
   {
     // noshadow + indent one character to the right
     if ( isFlat )
@@ -590,7 +590,7 @@ void FButton::onMouseUp (FMouseEvent* event)
     setUp();
     if ( getGeometryGlobal().contains(event->getGlobalPos()) )
       processClick();
-  }
+  }  
 }
 
 //----------------------------------------------------------------------
@@ -600,10 +600,13 @@ void FButton::onMouseMove (FMouseEvent* event)
     return;
 
   FPoint gPos = event->getGlobalPos();
-  if ( getGeometryGlobal().contains(gPos) )
-    setDown();
-  else
-    setUp();
+  if ( click_animation )
+  {
+    if ( getGeometryGlobal().contains(gPos) )
+      setDown();
+    else
+      setUp();
+  }
 }
 
 //----------------------------------------------------------------------
