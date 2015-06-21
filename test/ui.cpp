@@ -177,6 +177,7 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   MyButton1->setStatusbarMessage("Sine function");
   MyButton1->setNoUnderline();
   MyButton1->setFlat();
+  MyButton1->setDoubleFlatLine(fc::bottom);
 
   FButton* MyButton2 = new FButton(this);
   MyButton2->setGeometry(3, 5, 5, 1);
@@ -184,6 +185,7 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   MyButton2->setStatusbarMessage("Cosine function");
   MyButton2->setNoUnderline();
   MyButton2->setFlat();
+  MyButton2->setDoubleFlatLine(fc::top);
 
   FButton* MyButton3 = new FButton(this);
   MyButton3->setGeometry(10, 3, 5, 3);

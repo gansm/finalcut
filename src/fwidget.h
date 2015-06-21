@@ -141,6 +141,14 @@ class FWidget : public FObject, public FTerm
    } wc;
    // widget_colors wc;
 
+  struct dbl_line_mask
+  {
+    std::vector<bool> top;
+    std::vector<bool> right;
+    std::vector<bool> bottom;
+    std::vector<bool> left;
+  } double_flatline_mask;
+
  protected:
    int    xpos;
    int    ypos;
@@ -355,6 +363,9 @@ class FWidget : public FObject, public FTerm
    void           clearShadow();
    void           drawFlatBorder();
    void           clearFlatBorder();
+   void           setDoubleFlatLine(int, bool bit=true);
+   void           unsetDoubleFlatLine(int);
+   std::vector<bool>& doubleFlatLine_ref(int);
    virtual void   drawBorder();
 
    static void    quit();
@@ -589,6 +600,10 @@ inline bool FWidget::unsetUnderline()
 //----------------------------------------------------------------------
 inline bool FWidget::isUnderline()
 { return underline; }
+
+//----------------------------------------------------------------------
+inline void FWidget::unsetDoubleFlatLine(int side)
+{ setDoubleFlatLine(side, false); }
 
 
 // NewFont elements

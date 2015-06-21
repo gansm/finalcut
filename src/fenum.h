@@ -125,7 +125,7 @@ class fc
      NF_border_line_left                 = 0x1abc,  // ⎸
      NF_rev_up_arrow2                    = 0x1abd,  //⎹◣
      NF_rev_down_arrow2                  = 0x1abe,  //⎹◤
-     NF_border_corner_middle_lower_left  = 0x1ac0,  //  └
+     NF_border_corner_middle_lower_left  = 0x1ac0,  // └
      NF_rev_up_arrow1                    = 0x1ac1,  // ◢⎸
      NF_rev_down_arrow1                  = 0x1ac2,  // ◥⎸
      NF_border_line_vertical_right       = 0x1ac3,  // ├
@@ -136,7 +136,7 @@ class fc
      NF_rev_right_arrow1                 = 0x1ac9,  // ⊏
      NF_rev_menu_button1                 = 0x1aca,  // [
      NF_rev_menu_button2                 = 0x1acb,  // -
-     NF_border_corner_middle_upper_left  = 0x1acc,  //  ┌
+     NF_border_corner_middle_upper_left  = 0x1acc,  // ┌
      NF_shadow_box_cd                    = 0x1acd,  // ニ
      NF_shadow_box_left                  = 0x1ace,  // [
      NF_border_corner_middle_lower_right = 0x1acf,  //  ┘
@@ -823,6 +823,14 @@ class fc
    {
      vertical   = 0,
      horizontal = 1
+   };
+
+   enum sides
+   {
+     top    = 0,
+     right  = 1,
+     bottom = 2,
+     left   = 3
    };
 
    enum brackets_type

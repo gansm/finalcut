@@ -72,6 +72,10 @@ FWidget::FWidget (FWidget* parent) : FObject(parent)
     this->ymin = parent->client_ymin;
     this->xmax = parent->client_xmax;
     this->ymax = parent->client_ymax;
+    double_flatline_mask.top.resize (width, false);
+    double_flatline_mask.right.resize (height, false);
+    double_flatline_mask.bottom.resize (width, false);
+    double_flatline_mask.left.resize (height, false);
   }
 }
 
@@ -127,6 +131,11 @@ void FWidget::init()
                                    ypos + ymin - 1,
                                    width, height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal;
+
+  double_flatline_mask.top.resize (width, false);
+  double_flatline_mask.right.resize (height, false);
+  double_flatline_mask.bottom.resize (width, false);
+  double_flatline_mask.left.resize (height, false);
 
   // default widget colors
   setColorTheme();
@@ -1167,6 +1176,10 @@ void FWidget::resize()
   }
   else
     adjustSize();
+  double_flatline_mask.top.resize (width, false);
+  double_flatline_mask.right.resize (height, false);
+  double_flatline_mask.bottom.resize (width, false);
+  double_flatline_mask.left.resize (height, false);
 }
 
 //----------------------------------------------------------------------
@@ -1431,6 +1444,9 @@ void FWidget::setWidth (int w, bool adjust)
 
   if ( adjust )
     adjustSize();
+
+  double_flatline_mask.top.resize (width, false);
+  double_flatline_mask.bottom.resize (width, false);
 }
 
 //----------------------------------------------------------------------
@@ -1449,6 +1465,9 @@ void FWidget::setHeight (int h, bool adjust)
 
   if ( adjust )
     adjustSize();
+
+  double_flatline_mask.right.resize (height, false);
+  double_flatline_mask.left.resize (height, false);
 }
 
 //----------------------------------------------------------------------
@@ -1572,6 +1591,11 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( adjust )
     adjustSize();
+
+  double_flatline_mask.top.resize (width, false);
+  double_flatline_mask.right.resize (height, false);
+  double_flatline_mask.bottom.resize (width, false);
+  double_flatline_mask.left.resize (height, false);
 }
 
 //----------------------------------------------------------------------
@@ -1866,26 +1890,42 @@ void FWidget::drawFlatBorder()
   y2 = ypos+ymin-1+height;
 
   setColor (wc.dialog_fg, wc.dialog_bg);
-  for (int y=0; y <= height-1; y++)
+  for (int y=0; y < height; y++)
   {
     gotoxy (x1-1, y1+y+1);
-    print (fc::NF_rev_border_line_right); // right line (on left side)
+    if ( double_flatline_mask.left[y] )
+      print (fc::NF_rev_border_line_right); // || is not yet defined
+    else
+      print (fc::NF_rev_border_line_right); // right line (on left side)
   }
 
   gotoxy (x2, y1+1);
-  for (int y=1; y <= height; y++)
+  for (int y=0; y < height; y++)
   {
-    print (fc::NF_border_line_left); // left line (on right side)
-    gotoxy (x2, y1+y+1);
+    if ( double_flatline_mask.right[y] )
+      print (fc::NF_border_line_left); // || is not yet defined
+    else
+      print (fc::NF_border_line_left); // left line (on right side)
+    gotoxy (x2, y1+y+2);
   }
 
   gotoxy (x1, y1);
   for (int x=0; x < width; x++)
-    print (fc::NF_border_line_bottom); // top line (at bottom)
+  {
+    if ( double_flatline_mask.top[x] )
+      print (fc::NF_border_line_up_and_down); // top+bottom line (at top)
+    else
+      print (fc::NF_border_line_bottom); // bottom line (at top)
+  }
 
   gotoxy (x1, y2);
   for (int x=0; x < width; x++)
-    print (fc::NF_border_line_upper); // bottom line (at top)
+  {
+    if ( double_flatline_mask.bottom[x] )
+      print (fc::NF_border_line_up_and_down); // top+bottom line (at bottom)
+    else
+      print (fc::NF_border_line_upper); // top line (at bottom)
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1922,6 +1962,64 @@ void FWidget::clearFlatBorder()
   gotoxy (x1, y2);
   for (register int x=0; x < width; x++)
     print (' '); // clear at top
+}
+
+//----------------------------------------------------------------------
+void FWidget::setDoubleFlatLine(int side, bool bit)
+{
+  int size;
+
+  assert (  side == fc::top
+         || side == fc::right
+         || side == fc::bottom
+         || side == fc::left );
+
+  switch ( side )
+  {
+    case fc::top:
+      size = double_flatline_mask.top.size();
+      double_flatline_mask.top.assign(size, bit);
+      break;
+
+    case fc::right:
+      size = double_flatline_mask.right.size();
+      double_flatline_mask.right.assign(size, bit);
+      break;
+
+    case fc::bottom:
+      size = double_flatline_mask.bottom.size();
+      double_flatline_mask.bottom.assign(size, bit);
+      break;
+
+    case fc::left:
+      size = double_flatline_mask.left.size();
+      double_flatline_mask.left.assign(size, bit);
+      break;
+  }
+}
+//----------------------------------------------------------------------
+std::vector<bool>& FWidget::doubleFlatLine_ref(int side)
+{
+  assert (  side == fc::top
+         || side == fc::right
+         || side == fc::bottom
+         || side == fc::left );
+
+  switch ( side )
+  {
+    case fc::top:
+      return double_flatline_mask.top;
+
+    case fc::right:
+      return double_flatline_mask.right;
+
+    case fc::bottom:
+      return double_flatline_mask.bottom;
+
+    case fc::left:
+    default:
+      return double_flatline_mask.left;
+  }
 }
 
 //----------------------------------------------------------------------
