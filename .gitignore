@@ -1,4 +1,3 @@
-/autom4te.cache
 *.o
 *.so
 *.lo
@@ -6,4 +5,20 @@
 *.la
 *.a
 *.lib
+config.*
+Makefile
+libtool
+/autom4te.cache
+src/.deps/
+src/.libs/
+test/.deps/
+test/.libs/
+test/calculator
+test/dialog
+test/fstring
+test/hello
+test/input-dialog
+test/mandelbrot
+test/timer
+test/ui
 
