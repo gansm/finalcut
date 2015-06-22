@@ -565,6 +565,8 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = asin(*x) * 180.0L/PI;
+        else if ( fmod(*x,180.0L) == 0.0L )
+          *x = 0.0L;
         else
           *x = sin(*x * PI/180.0L);
       }
@@ -595,6 +597,8 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = acos(*x) * 180.0L/PI;
+        else if ( fmod(*x - 90.0L,180.0L) == 0.0L )
+          *x = 0.0L;
         else
           *x = cos(*x * PI/180.0L);
       }
