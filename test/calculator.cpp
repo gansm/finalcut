@@ -488,6 +488,7 @@ void Calc::onKeyPress (FKeyEvent* event)
 
   switch ( key )
   {
+    case fc::Fkey_erase:
     case fc::Fkey_backspace:
       if ( len > 0 )
       {
