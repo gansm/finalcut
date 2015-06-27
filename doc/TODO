@@ -21,7 +21,6 @@ Missing Features
 ---------------------------------------
 
 - Multiple lines support for FLabel
-- long double to FString + FString to long double
 - Add a window switcher on the right side of the status bar
 - Add a scrolling area with on-demand scroll bars for FButtonGroup
 

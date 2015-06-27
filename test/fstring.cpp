@@ -1,5 +1,7 @@
 // fstring.cpp
 
+#include <iomanip>
+
 #include <langinfo.h>
 #include <term.h>
 #include <unistd.h>
@@ -116,21 +118,37 @@ int main (int, char**)
             << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
 
-  FString ulong_str = "123456789";
-  uLong ulong_num = ulong_str.toULong();
+  uLong ulong_num = FString("123456789").toULong();
   std::cout << "   toULong:  " << ulong_num << std::endl;
 
-  FString long_str = "-9876543210";
-  long long_num = long_str.toLong();
+  long long_num = FString("-9876543210").toLong();
   std::cout << "    toLong: " << long_num << std::endl;
 
-  FString num1, num2;
+  setlocale(LC_NUMERIC, "C");
+  try
+  {
+    double double_num = FString("2.7182818284590452353").toDouble();
+    std::cout << "  toDouble:  " << std::setprecision(11)
+                                 << double_num << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::out_of_range& ex)
+  {
+    std::cerr << "Out of range: " << ex.what() << std::endl;
+  }
+  FString num1, num2, num3;
   num1.setNumber(137);
   num2.setNumber(-512);
+  num3.setNumber(3.141592653589793238L, 12);
   std::cout << " setNumber:  "
-            << num1 << " (unsigned)" << std::endl;
+            << num1 << " (unsigned)"    << std::endl;
   std::cout << " setNumber: "
-            << num2 << " (signed)"   << std::endl;
+            << num2 << " (signed)"      << std::endl;
+  std::cout << " setNumber:  "
+            << num3 << " (long double)" << std::endl;
 
   FString fnum1, fnum2;
   fnum1.setFormatedNumber(0xffffffffffffffff, '\'');

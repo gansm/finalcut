@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cerrno>  // for read errno
 #include <climits>
+#include <cmath>
 #include <cstdarg> // need for va_list, va_start and va_end
 #include <cstdio>  // need for vsprintf
 #include <cstring>
@@ -43,6 +44,8 @@ typedef signed char  sInt8;
 typedef signed short sInt16;
 typedef signed int   sInt32;
 typedef int64_t      sInt64;
+
+typedef long double  lDouble;
 
 
 //----------------------------------------------------------------------
@@ -110,15 +113,17 @@ class FString
    const char* c_str() const;
    const std::string toString() const;
 
-   FString  toLower()  const;
-   FString  toUpper()  const;
+   FString  toLower()   const;
+   FString  toUpper()   const;
 
-   sInt16   toShort()  const;
-   uInt16   toUShort() const;
-   int      toInt()    const;
-   uInt     toUInt()   const;
-   long     toLong()   const;
-   uLong    toULong()  const;
+   sInt16   toShort()   const;
+   uInt16   toUShort()  const;
+   int      toInt()     const;
+   uInt     toUInt()    const;
+   long     toLong()    const;
+   uLong    toULong()   const;
+   float    toFloat()   const;
+   double   toDouble()  const;
 
    FString  ltrim() const;
    FString  rtrim() const;
@@ -145,6 +150,9 @@ class FString
    FString& setNumber (uInt);
    FString& setNumber (long);
    FString& setNumber (uLong);
+   FString& setNumber (float, int precision=8);
+   FString& setNumber (double, int precision=11);
+   FString& setNumber (lDouble, int precision=11);
 
    FString& setFormatedNumber (sInt16, char separator='.');
    FString& setFormatedNumber (uInt16, char separator='.');
@@ -328,6 +336,10 @@ inline uInt FString::toUInt() const
 { return uInt( toULong() ); }
 
 //----------------------------------------------------------------------
+inline float FString::toFloat() const
+{ return float( toDouble() ); }
+
+//----------------------------------------------------------------------
 inline std::vector<FString> FString::split (std::wstring& s)
 { return split(FString(s)); }
 
@@ -366,6 +378,14 @@ inline FString& FString::setNumber (int num)
 //----------------------------------------------------------------------
 inline FString& FString::setNumber (uInt num)
 { return setNumber (uLong(num)); }
+
+//----------------------------------------------------------------------
+inline FString& FString::setNumber (float num, int precision)
+{ return setNumber (lDouble(num), precision); }
+
+//----------------------------------------------------------------------
+inline FString& FString::setNumber (double num, int precision)
+{ return setNumber (lDouble(num), precision); }
 
 //----------------------------------------------------------------------
 inline FString& FString::setFormatedNumber (sInt16 num, char separator)

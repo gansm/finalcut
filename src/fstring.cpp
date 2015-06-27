@@ -1018,6 +1018,30 @@ uLong FString::toULong() const
 }
 
 //----------------------------------------------------------------------
+double FString::toDouble() const
+{
+  wchar_t* p;
+  register double ret;
+
+  if ( ! this->string || ! *this->string )
+    throw std::invalid_argument ("null value");
+
+  ret = wcstod(this->string, &p);
+
+  if ( p != 0 && *p != '\0' )
+    throw std::invalid_argument ("no valid floating point value");
+
+  if ( errno == ERANGE )
+  {
+    if ( ret >= HUGE_VAL || ret <= -HUGE_VAL )
+      throw std::out_of_range ("overflow");
+    if ( ret == 0.0l )
+      throw std::out_of_range ("underflow");
+  }
+  return ret;
+}
+
+//----------------------------------------------------------------------
 FString FString::ltrim() const
 {
   register wchar_t* p;
@@ -1210,6 +1234,34 @@ FString& FString::setNumber (uLong num)
   _replace (s);
 
   return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::setNumber (lDouble num, int precision)
+{
+  register wchar_t *s;
+  wchar_t format[20];  // = "%.<precision>Lg"
+
+  s = &format[0];
+  *s++ = L'%';
+  *s++ = L'.';
+
+  if ( precision > 99 )
+    precision = 99;
+
+  if ( precision >= 10 )
+  {
+    *s++ = precision / 10 + L'0';
+    *s++ = precision % 10 + L'0';
+  }
+  else
+    *s++ = precision + L'0';
+
+  *s++ = L'L';
+  *s++ = L'g';
+  *s   = L'\0';
+
+  return sprintf(format, num);
 }
 
 //----------------------------------------------------------------------

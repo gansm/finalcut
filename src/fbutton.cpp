@@ -590,7 +590,7 @@ void FButton::onMouseUp (FMouseEvent* event)
     setUp();
     if ( getGeometryGlobal().contains(event->getGlobalPos()) )
       processClick();
-  }  
+  }
 }
 
 //----------------------------------------------------------------------

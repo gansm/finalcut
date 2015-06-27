@@ -27,6 +27,7 @@ typedef signed short sInt16;
 typedef signed int   sInt32;
 typedef int64_t      sInt64;
 
+typedef long double  lDouble;
 
 //----------------------------------------------------------------------
 // class FObject

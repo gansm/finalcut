@@ -14,7 +14,7 @@
 #include "fdialog.h"
 #include "fmessagebox.h"
 
-const long double PI = 3.141592653589793238L;
+const lDouble PI = 3.141592653589793238L;
 
 //----------------------------------------------------------------------
 // class Button
@@ -37,7 +37,7 @@ private:
 //----------------------------------------------------------------------
 Button::Button (FWidget* parent) : FButton(parent)
 {
-  checked = false;  
+  checked = false;
 }
 
 //----------------------------------------------------------------------
@@ -129,17 +129,17 @@ class Calc : public FDialog
      NUM_OF_BUTTONS
    };
 
-   long double a, b;
-   uInt        max_char;
-   int         last_key;
-   char        infix_operator;
-   char        last_infix_operator;
-   FString     input;
-   int         button_no[Calc::NUM_OF_BUTTONS];
+   lDouble a, b;
+   uInt    max_char;
+   int     last_key;
+   char    infix_operator;
+   char    last_infix_operator;
+   FString input;
+   int     button_no[Calc::NUM_OF_BUTTONS];
 
    struct stack_data
    {
-     long double term;
+     lDouble term;
      char infix_operator;
    };
 
@@ -151,7 +151,7 @@ class Calc : public FDialog
    virtual void draw();
    bool isDataEntryKey(int);
    bool isOperatorKey(int);
-   void setDisplay (long double);
+   void setDisplay (lDouble);
    void setInfixOperator(char);
    void clearInfixOperator();
    void calcInfixOperator();
@@ -273,7 +273,7 @@ Calc::Calc (FWidget* parent) : FDialog(parent)
   calculator_buttons[Change_sign]->addAccelerator('#');
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_return);
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_enter);
-  
+
 }
 
 //----------------------------------------------------------------------
@@ -392,7 +392,7 @@ bool Calc::isOperatorKey(int key)
   };
 
   int* iter = std::find (operators, operators+6, key);
-  
+
   if ( iter != operators+6 )
     return true;
   else
@@ -400,7 +400,7 @@ bool Calc::isOperatorKey(int key)
 }
 
 //----------------------------------------------------------------------
-void Calc::setDisplay (long double d)
+void Calc::setDisplay (lDouble d)
 {
   char buffer[32];
   snprintf (buffer, sizeof(buffer), "%31.11Lg", d);
@@ -502,7 +502,7 @@ void Calc::onKeyPress (FKeyEvent* event)
       }
       event->accept();
       break;
-      
+
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
       FAccelEvent a_ev(Accelerator_Event, getFocusWidget());
@@ -535,7 +535,7 @@ void Calc::onClose (FCloseEvent* event)
 void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
 {
   int key;
-  long double* x;
+  lDouble* x;
 
   using namespace std;
 
@@ -907,7 +907,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
   if ( ! input.isEmpty() )
   {
     if ( isDataEntryKey(key) )
-      *x = atof(input.c_str());
+      *x = input.toDouble();
     else
     {
       // remove trailing zeros
