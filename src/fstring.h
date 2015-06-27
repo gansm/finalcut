@@ -113,25 +113,25 @@ class FString
    const char* c_str() const;
    const std::string toString() const;
 
-   FString  toLower()   const;
-   FString  toUpper()   const;
+   FString toLower()  const;
+   FString toUpper()  const;
 
-   sInt16   toShort()   const;
-   uInt16   toUShort()  const;
-   int      toInt()     const;
-   uInt     toUInt()    const;
-   long     toLong()    const;
-   uLong    toULong()   const;
-   float    toFloat()   const;
-   double   toDouble()  const;
+   sInt16  toShort()  const;
+   uInt16  toUShort() const;
+   int     toInt()    const;
+   uInt    toUInt()   const;
+   long    toLong()   const;
+   uLong   toULong()  const;
+   float   toFloat()  const;
+   double  toDouble() const;
 
-   FString  ltrim() const;
-   FString  rtrim() const;
-   FString  trim()  const;
+   FString ltrim() const;
+   FString rtrim() const;
+   FString trim()  const;
 
-   FString  left(uInt) const;
-   FString  right(uInt) const;
-   FString  mid(uInt, uInt) const;
+   FString left(uInt) const;
+   FString right(uInt) const;
+   FString mid(uInt, uInt) const;
 
    std::vector<FString> split (const FString&);
    std::vector<FString> split (std::wstring&);
