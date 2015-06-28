@@ -14,7 +14,7 @@ int main (int, char**)
   printf ("----------------[ terminal ]-------------------\n");
 
   // init current locale
-  printf ("    Locale: %s\n", setlocale(LC_ALL, "") );
+  printf ("    Locale: %s\n", setlocale(LC_CTYPE, "") );
   if ( isatty(1) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
   {
     // locale C -> switch from 7bit ascii -> latin1
