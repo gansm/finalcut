@@ -942,38 +942,38 @@ long FString::toLong() const
   s = this->trim();
   p = s.string;
 
-  if ( p )
+  if ( ! p )
+    throw std::invalid_argument ("null value");
+
+  if ( ! *p )
+    throw std::invalid_argument ("empty value");
+
+  if ( *p == L'-' )
   {
-    register bool neg = false;
-    register bool overflow = false;
-    if ( *p == '-' )
-    {
-      p++;
-      neg = true;
-      tenth_limit = -(LONG_MIN / 10);
-      tenth_limit_digit += 1;
-    }
-    else if ( *p == '+' )
-    {
-      p++;
-    }
-    while ( isdigit(*p) )
-    {
-      register uChar d = uChar((*p) - '0');
-      if (  num > tenth_limit
-         || (num == tenth_limit && d > tenth_limit_digit) )
-      {
-        overflow = true;
-        break;
-      }
-      num = (num<<3)+(num<<1) + d;  // (10 * num) + d
-      p++;
-    }
-    if ( overflow )
-      num = neg ? LONG_MIN : LONG_MAX;
-    else if ( neg )
-      num = (~num) + 1;
+    p++;
+    tenth_limit = -(LONG_MIN / 10);
+    tenth_limit_digit += 1;
   }
+  else if ( *p == L'+' )
+  {
+    p++;
+  }
+
+  while ( isdigit(*p) )
+  {
+    register uChar d = uChar((*p) - L'0');
+    if (  num > tenth_limit
+       || (num == tenth_limit && d > tenth_limit_digit) )
+    {
+      throw std::out_of_range ("overflow");
+    }
+    num = (num<<3)+(num<<1) + d;  // (10 * num) + d
+    p++;
+  }
+
+  if ( *p != L'\0' && ! isdigit(*p) )
+    throw std::invalid_argument ("no valid number");
+
   return num;
 }
 
@@ -992,28 +992,32 @@ uLong FString::toULong() const
   s = this->trim();
   p = s.string;
 
-  if ( p )
+  if ( ! p )
+    throw std::invalid_argument ("null value");
+
+  if ( ! *p )
+    throw std::invalid_argument ("empty value");
+
+  if ( *p == L'+' )
   {
-    register bool overflow = false;
-    if ( *p == '+' )
-    {
-      p++;
-    }
-    while ( isdigit(*p) )
-    {
-      register uChar d = uChar((*p) - '0');
-      if (  num > tenth_limit
-         || (num == tenth_limit && d > tenth_limit_digit) )
-      {
-        overflow = true;
-        break;
-      }
-      num = (num<<3)+(num<<1) + d;  // (10 * num) + d
-      p++;
-    }
-    if ( overflow )
-      num = ULONG_MAX;
+    p++;
   }
+
+  while ( isdigit(*p) )
+  {
+    register uChar d = uChar((*p) - L'0');
+    if (  num > tenth_limit
+       || (num == tenth_limit && d > tenth_limit_digit) )
+    {
+      throw std::out_of_range ("overflow");
+    }
+    num = (num<<3)+(num<<1) + d;  // (10 * num) + d
+    p++;
+  }
+
+  if ( *p != L'\0' && ! isdigit(*p) )
+    throw std::invalid_argument ("no valid number");
+
   return num;
 }
 
@@ -1023,8 +1027,11 @@ double FString::toDouble() const
   wchar_t* p;
   register double ret;
 
-  if ( ! this->string || ! *this->string )
+  if ( ! this->string )
     throw std::invalid_argument ("null value");
+
+  if ( ! *this->string )
+    throw std::invalid_argument ("empty value");
 
   ret = wcstod(this->string, &p);
 

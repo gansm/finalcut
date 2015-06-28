@@ -117,12 +117,33 @@ int main (int, char**)
   std::cout << " formatted: "
             << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
+  try
+  {
+    uLong ulong_num = FString("123456789").toULong();
+    std::cout << "   toULong:  " << ulong_num << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::out_of_range& ex)
+  {
+    std::cerr << "Out of range: " << ex.what() << std::endl;
+  }
 
-  uLong ulong_num = FString("123456789").toULong();
-  std::cout << "   toULong:  " << ulong_num << std::endl;
-
-  long long_num = FString("-9876543210").toLong();
-  std::cout << "    toLong: " << long_num << std::endl;
+  try
+  {
+    long long_num = FString("-9876543210").toLong();
+    std::cout << "    toLong: " << long_num << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::out_of_range& ex)
+  {
+    std::cerr << "Out of range: " << ex.what() << std::endl;
+  }
 
   setlocale(LC_NUMERIC, "C");
   try
