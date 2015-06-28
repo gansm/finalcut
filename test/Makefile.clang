@@ -7,20 +7,13 @@ BINDIR = /usr/local/bin
 
 # compiler parameter
 CXX = clang++
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = -L../src -lfinal
 INCLUDES = -I../src
 RM = rm -f
-PROGS = hello dialog input-dialog mandelbrot calculator fstring timer ui 
-OBJS1 = hello.o
-OBJS2 = dialog.o
-OBJS3 = input-dialog.o
-OBJS4 = mandelbrot.o
-OBJS5 = calculator.o
-OBJS6 = fstring.o
-OBJS7 = timer.o
-OBJS8 = ui.o
 
 ifdef DEBUG
   OPTIMIZE = -O0
@@ -28,54 +21,20 @@ else
   OPTIMIZE = -O2
 endif
 
-.SUFFIXES: .cpp
-
 # $@ = name of the targets
-# $< = the first dependency
-.cpp.o:
-	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -o $@ $<
+# $^ = all dependency (without double entries)
+.cpp:
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^
 
-all: dep $(PROGS)
-
-hello: $(OBJS1)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o hello $(OBJS1)
-
-dialog: $(OBJS2)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o dialog $(OBJS2)
-
-input-dialog: $(OBJS3)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o input-dialog $(OBJS3)
-
-mandelbrot: $(OBJS4)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o mandelbrot $(OBJS4)
-
-calculator: $(OBJS5)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o calculator $(OBJS5)
-
-fstring: $(OBJS6)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o fstring $(OBJS6)
-
-timer: $(OBJS7)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o timer $(OBJS7)
-
-ui: $(OBJS8)
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o ui $(OBJS8)
+all: $(OBJS)
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -W -Wall  -Weverything -Wpadded -pedantic"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wpadded"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"
 
-.PHONY: clean dep
+.PHONY: clean
 clean:
-	$(RM) $(PROGS) $(OBJS1) $(OBJS2) $(OBJS3) $(OBJS4) $(OBJS5) $(OBJS6) $(OBJS7) $(OBJS8) .depend  *.gch *.plist *~
+	$(RM) $(SRCS:%.cpp=%) *.gch *.plist *~
 
-dep:
-	$(CXX) -MM $(INCLUDES) *.cpp >.depend
-
-#
-# include .depend if it exists
-#
-
--include .depend
