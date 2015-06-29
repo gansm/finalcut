@@ -1027,7 +1027,7 @@ float FString::toFloat() const
   double d;
   d = this->toDouble();
 
-  if ( d > FLT_MAX  || d < FLT_MIN )
+  if ( d > FLT_MAX || d < FLT_MIN )
     throw std::overflow_error ("overflow");
 
   return float(d);

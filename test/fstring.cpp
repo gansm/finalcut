@@ -126,9 +126,9 @@ int main (int, char**)
   {
     std::cerr << "Invalid argument: " << ex.what() << std::endl;
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::exception& ex)
   {
-    std::cerr << "Out of range: " << ex.what() << std::endl;
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
 
   try
