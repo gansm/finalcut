@@ -965,7 +965,7 @@ long FString::toLong() const
     if (  num > tenth_limit
        || (num == tenth_limit && d > tenth_limit_digit) )
     {
-      throw std::out_of_range ("overflow");
+      throw std::overflow_error ("overflow");
     }
     num = (num<<3)+(num<<1) + d;  // (10 * num) + d
     p++;
@@ -1009,7 +1009,7 @@ uLong FString::toULong() const
     if (  num > tenth_limit
        || (num == tenth_limit && d > tenth_limit_digit) )
     {
-      throw std::out_of_range ("overflow");
+      throw std::overflow_error ("overflow");
     }
     num = (num<<3)+(num<<1) + d;  // (10 * num) + d
     p++;
@@ -1019,6 +1019,18 @@ uLong FString::toULong() const
     throw std::invalid_argument ("no valid number");
 
   return num;
+}
+
+//----------------------------------------------------------------------
+float FString::toFloat() const
+{
+  double d;
+  d = this->toDouble();
+
+  if ( d > FLT_MAX  || d < FLT_MIN )
+    throw std::overflow_error ("overflow");
+
+  return float(d);
 }
 
 //----------------------------------------------------------------------
@@ -1041,9 +1053,9 @@ double FString::toDouble() const
   if ( errno == ERANGE )
   {
     if ( ret >= HUGE_VAL || ret <= -HUGE_VAL )
-      throw std::out_of_range ("overflow");
+      throw std::overflow_error ("overflow");
     if ( ret == 0.0l )
-      throw std::out_of_range ("underflow");
+      throw std::underflow_error ("underflow");
   }
   return ret;
 }

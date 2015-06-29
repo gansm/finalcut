@@ -140,9 +140,9 @@ int main (int, char**)
   {
     std::cerr << "Invalid argument: " << ex.what() << std::endl;
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::exception& ex)
   {
-    std::cerr << "Out of range: " << ex.what() << std::endl;
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
 
   setlocale(LC_NUMERIC, "C");
@@ -156,10 +156,11 @@ int main (int, char**)
   {
     std::cerr << "Invalid argument: " << ex.what() << std::endl;
   }
-  catch (const std::out_of_range& ex)
+  catch (const std::exception& ex)
   {
-    std::cerr << "Out of range: " << ex.what() << std::endl;
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
+
   FString num1, num2, num3;
   num1.setNumber(137);
   num2.setNumber(-512);

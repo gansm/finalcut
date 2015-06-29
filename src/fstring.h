@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cerrno>  // for read errno
+#include <cfloat>
 #include <climits>
 #include <cmath>
 #include <cstdarg> // need for va_list, va_start and va_end
@@ -334,10 +335,6 @@ inline int FString::toInt() const
 //----------------------------------------------------------------------
 inline uInt FString::toUInt() const
 { return uInt( toULong() ); }
-
-//----------------------------------------------------------------------
-inline float FString::toFloat() const
-{ return float( toDouble() ); }
 
 //----------------------------------------------------------------------
 inline std::vector<FString> FString::split (std::wstring& s)
