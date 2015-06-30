@@ -134,7 +134,7 @@ int main (int, char**)
   try
   {
     long long_num = FString("-9876543210").toLong();
-    std::cout << "    toLong: " << long_num << std::endl;
+    std::cout << "    toLong:  " << long_num << std::endl;
   }
   catch (const std::invalid_argument& ex)
   {

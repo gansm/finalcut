@@ -321,22 +321,6 @@ inline wchar_t FString::back() const
 }
 
 //----------------------------------------------------------------------
-inline sInt16 FString::toShort() const
-{ return sInt16( toLong() ); }
-
-//----------------------------------------------------------------------
-inline uInt16 FString::toUShort() const
-{ return uInt16( toULong() ); }
-
-//----------------------------------------------------------------------
-inline int FString::toInt() const
-{ return int( toLong() ); }
-
-//----------------------------------------------------------------------
-inline uInt FString::toUInt() const
-{ return uInt( toULong() ); }
-
-//----------------------------------------------------------------------
 inline std::vector<FString> FString::split (std::wstring& s)
 { return split(FString(s)); }
 

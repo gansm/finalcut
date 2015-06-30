@@ -928,6 +928,54 @@ FString FString::toUpper() const
 }
 
 //----------------------------------------------------------------------
+sInt16 FString::toShort() const
+{
+  register long num;
+  num = this->toLong();
+
+  if ( num > SHRT_MAX || num < SHRT_MIN )
+    throw std::overflow_error ("overflow");
+
+  return sInt16(num);
+}
+
+//----------------------------------------------------------------------
+uInt16 FString::toUShort() const
+{
+  register uLong num;
+  num = this->toLong();
+
+  if ( num > USHRT_MAX )
+    throw std::overflow_error ("overflow");
+
+  return uInt16(num);
+}
+
+//----------------------------------------------------------------------
+int FString::toInt() const
+{
+  register long num;
+  num = this->toLong();
+
+  if ( num > INT_MAX || num < INT_MIN )
+    throw std::overflow_error ("overflow");
+
+  return int(num);
+}
+
+//----------------------------------------------------------------------
+uInt FString::toUInt() const
+{
+  register uLong num;
+  num = this->toLong();
+
+  if ( num > UINT_MAX )
+    throw std::overflow_error ("overflow");
+
+  return uInt(num);
+}
+
+//----------------------------------------------------------------------
 long FString::toLong() const
 {
   register long num;
@@ -1024,13 +1072,13 @@ uLong FString::toULong() const
 //----------------------------------------------------------------------
 float FString::toFloat() const
 {
-  double d;
-  d = this->toDouble();
+  register double num;
+  num = this->toDouble();
 
-  if ( d > FLT_MAX || d < FLT_MIN )
+  if ( num > FLT_MAX || num < FLT_MIN )
     throw std::overflow_error ("overflow");
 
-  return float(d);
+  return float(num);
 }
 
 //----------------------------------------------------------------------
