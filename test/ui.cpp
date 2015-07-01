@@ -25,6 +25,7 @@ class ProgressDialog : public FDialog
   ~ProgressDialog();  // destructor
 
    void onShow (FShowEvent*);
+   void onTimer (FTimerEvent*);
    void cb_reset_bar (FWidget*, void*);
    void cb_more_bar (FWidget*, void*);
    void cb_exit_bar (FWidget*, void*);
@@ -91,6 +92,7 @@ ProgressDialog::ProgressDialog (FWidget* parent) : FDialog(parent)
 //----------------------------------------------------------------------
 ProgressDialog::~ProgressDialog()
 {
+  delAllTimer();
   delCallback(quit);
   delCallback(more);
   delCallback(reset);
@@ -103,18 +105,29 @@ ProgressDialog::~ProgressDialog()
 //----------------------------------------------------------------------
 void ProgressDialog::onShow (FShowEvent*)
 {
-  for (int i=0; i <= 100; i++)
+  addTimer(15);
+}
+
+//----------------------------------------------------------------------
+void ProgressDialog::onTimer (FTimerEvent*)
+{
+  int p = progressBar->getPercentage();
+
+  if ( p < 100 )
   {
-    progressBar->setPercentage(i);
+    progressBar->setPercentage(++p);
     flush_out();
-    usleep(12500);  // wait 12,5 ms
   }
-  reset->setEnable();
-  reset->redraw();
-  more->setEnable();
-  more->redraw();
-  quit->setEnable();
-  quit->redraw();
+  else
+  {
+    delAllTimer();
+    reset->setEnable();
+    reset->redraw();
+    more->setEnable();
+    more->redraw();
+    quit->setEnable();
+    quit->redraw();
+  }
 }
 
 //----------------------------------------------------------------------
