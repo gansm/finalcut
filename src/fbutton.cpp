@@ -613,7 +613,6 @@ void FButton::onMouseMove (FMouseEvent* event)
 //----------------------------------------------------------------------
 void FButton::onTimer (FTimerEvent* ev)
 {
-  //delAllTimer();
   delTimer(ev->timerId());
   setUp();
 }
