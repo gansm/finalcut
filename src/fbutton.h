@@ -20,6 +20,7 @@ class FButton : public FWidget
    FString text;
    bool button_down;
    bool click_animation;
+   int  click_time;
    int  button_fg;
    int  button_bg;
    int  button_hotkey_fg;
@@ -58,6 +59,7 @@ class FButton : public FWidget
    void         onMouseDown (FMouseEvent*);
    void         onMouseUp (FMouseEvent*);
    void         onMouseMove (FMouseEvent*);
+   void         onTimer (FTimerEvent*);
    void         onAccel (FAccelEvent*);
    void         onFocusIn (FFocusEvent*);
    void         onFocusOut (FFocusEvent*);

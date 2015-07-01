@@ -244,9 +244,10 @@ Calc::Calc (FWidget* parent) : FDialog(parent)
     }
     btn->setFlat();
     btn->setNoUnderline();
-    btn->unsetClickAnimation();
     btn->setText(button_text[key]);
     btn->setDoubleFlatLine(fc::top);
+    if ( isNewFont() )
+      btn->unsetClickAnimation();
     if ( key <= Three )
       btn->setDoubleFlatLine(fc::bottom);
 
@@ -273,7 +274,6 @@ Calc::Calc (FWidget* parent) : FDialog(parent)
   calculator_buttons[Change_sign]->addAccelerator('#');
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_return);
   calculator_buttons[Equals]->addAccelerator(fc::Fkey_enter);
-
 }
 
 //----------------------------------------------------------------------

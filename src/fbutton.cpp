@@ -28,6 +28,7 @@ FButton::FButton (const FString& txt, FWidget* parent) : FWidget(parent)
 FButton::~FButton()  // destructor
 {
   delAccelerator (this);
+  delAllTimer();
 }
 
 
@@ -38,6 +39,7 @@ void FButton::init()
   flags = 0;
   button_down = false;
   click_animation = true;
+  click_time = 150;
   this->text = "";
 
   setForegroundColor (wc.button_active_fg);
@@ -545,8 +547,7 @@ void FButton::onKeyPress (FKeyEvent* event)
       if ( click_animation )
       {
         setDown();
-        usleep(150000);
-        setUp();
+        addTimer(click_time);
       }
       processClick();
       event->accept();
@@ -610,6 +611,14 @@ void FButton::onMouseMove (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
+void FButton::onTimer (FTimerEvent* ev)
+{
+  //delAllTimer();
+  delTimer(ev->timerId());
+  setUp();
+}
+
+//----------------------------------------------------------------------
 void FButton::onAccel (FAccelEvent* event)
 {
   if ( isEnabled() )
@@ -632,10 +641,8 @@ void FButton::onAccel (FAccelEvent* event)
     else if ( click_animation )
       setDown();
     if ( click_animation )
-    {
-      usleep(150000);
-      setUp();
-    }
+      addTimer(click_time);
+
     processClick();
     event->accept();
   }
