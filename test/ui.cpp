@@ -44,7 +44,7 @@ ProgressDialog::ProgressDialog (FWidget* parent) : FDialog(parent)
   reset->setText("&Reset");
   reset->setGeometry(2, 6, 8, 1, false);
   reset->setShadow();
-  reset->setFocus();
+  //reset->setFocus();
   reset->setDisable();
 
   more = new FButton(this);
@@ -112,21 +112,19 @@ void ProgressDialog::onShow (FShowEvent*)
 void ProgressDialog::onTimer (FTimerEvent*)
 {
   int p = progressBar->getPercentage();
+  progressBar->setPercentage(++p);
+  flush_out();
 
-  if ( p < 100 )
-  {
-    progressBar->setPercentage(++p);
-    flush_out();
-  }
-  else
+  if ( p == 100 )
   {
     delAllTimer();
+    activateWindow();
+    raiseWindow();
     reset->setEnable();
-    reset->redraw();
+    reset->setFocus();
     more->setEnable();
-    more->redraw();
     quit->setEnable();
-    quit->redraw();
+    redraw();
   }
 }
 
