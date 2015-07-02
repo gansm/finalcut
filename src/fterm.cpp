@@ -3749,6 +3749,7 @@ inline void FTerm::appendAttributes (char_data*& screen_attr)
       case fc::NF_rev_up_pointing_triangle2:
       case fc::NF_rev_down_pointing_triangle2:
       case fc::NF_rev_menu_button3:
+      case fc::NF_rev_border_line_right_and_left:
         setTermColor (screen_attr->bg_color, screen_attr->fg_color);
     }
   }

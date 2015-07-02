@@ -1894,7 +1894,7 @@ void FWidget::drawFlatBorder()
   {
     gotoxy (x1-1, y1+y+1);
     if ( double_flatline_mask.left[uLong(y)] )
-      print (fc::NF_rev_border_line_right); // || is not yet defined
+      print (fc::NF_rev_border_line_right_and_left); // left+right line (on left side)
     else
       print (fc::NF_rev_border_line_right); // right line (on left side)
   }
@@ -1903,7 +1903,7 @@ void FWidget::drawFlatBorder()
   for (int y=0; y < height; y++)
   {
     if ( double_flatline_mask.right[uLong(y)] )
-      print (fc::NF_border_line_left); // || is not yet defined
+      print (fc::NF_rev_border_line_right_and_left); // left+right line (on right side)
     else
       print (fc::NF_border_line_left); // left line (on right side)
     gotoxy (x2, y1+y+2);

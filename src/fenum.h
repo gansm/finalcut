@@ -152,6 +152,7 @@ class fc
      NF_radio_button1                    = 0x1ad9,  // (
      NF_border_corner_upper_left         = 0x1ada,  // ⎡
      NF_shadow_box_checked               = 0x1adc,  // ✓
+     NF_rev_border_line_right_and_left   = 0x1ae7,  // ||
      NF_rev_up_pointing_triangle2        = 0x1ae8,  // ◣
      NF_rev_down_pointing_triangle2      = 0x1ae9,  // ◤
      NF_rev_menu_button3                 = 0x1af4,  // ]
