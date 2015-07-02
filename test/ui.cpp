@@ -44,7 +44,6 @@ ProgressDialog::ProgressDialog (FWidget* parent) : FDialog(parent)
   reset->setText("&Reset");
   reset->setGeometry(2, 6, 8, 1, false);
   reset->setShadow();
-  //reset->setFocus();
   reset->setDisable();
 
   more = new FButton(this);
