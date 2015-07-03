@@ -69,7 +69,7 @@ void Button::onKeyPress (FKeyEvent* event)
   int key = event->key();
 
   // catch the enter key
-  if ( key == fc::Fkey_return || key == fc::Fkey_return )
+  if ( key == fc::Fkey_return || key == fc::Fkey_enter )
     return;
 
   FButton::onKeyPress(event);
