@@ -448,7 +448,7 @@ void MyDialog::cb_about (FWidget* widget, void*)
   FString line(2, wchar_t(fc::BoxDrawingsHorizontal));
 
   FMessageBox info ( "About", line + L" The Final Cut " + line + "\n\n"
-                     L"Version 0.1.0\n\n"
+                     L"Version 0.1.1\n\n"
                      L"(c) 2015 by Markus Gans",
                      FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
@@ -656,14 +656,14 @@ int main (int argc, char* argv[])
   }
 
   FApplication app(argc, argv);
-  app.setXTermTitle ("The FINAL CUT 0.1.0 (C) 2015 by Markus Gans");
+  app.setXTermTitle ("The FINAL CUT 0.1.1 (C) 2015 by Markus Gans");
 
   //app.setEncoding("VT100");
   //app.setTermGeometry(94,30);
   //app.setNewFont();
 
   MyDialog d(&app);
-  d.setText ("The FINAL CUT 0.1.0 (C) 2015 by Markus Gans");
+  d.setText ("The FINAL CUT 0.1.1 (C) 2015 by Markus Gans");
   d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-3);
   d.setShadow();
 

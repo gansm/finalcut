@@ -83,8 +83,8 @@ endif
 	$(CXX) -c $(CCXFLAGS) -fpic -o $@ $<
 
 all: dep $(OBJS) 
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).0 -o $(LIB).0.1.0 $(OBJS)
-	ln -s -f $(LIB).0.1.0 libfinal.so.0
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).0 -o $(LIB).0.1.1 $(OBJS)
+	ln -s -f $(LIB).0.1.1 libfinal.so.0
 	ln -s -f $(LIB).0 libfinal.so
 
 $(LIB): all
@@ -97,8 +97,8 @@ profile:
 
 install: $(LIB)
 	mkdir -p $(LIBDIR)
-	install -c $(LIB).0.1.0 $(LIBDIR)/$(LIB).0.1.0
-	ln -s -f $(LIB).0.1.0 $(LIBDIR)/libfinal.so.0
+	install -c $(LIB).0.1.1 $(LIBDIR)/$(LIB).0.1.1
+	ln -s -f $(LIB).0.1.1 $(LIBDIR)/libfinal.so.0
 	ln -s -f $(LIB).0 $(LIBDIR)/libfinal.so
 	ldconfig
 	mkdir -p $(INCLUDEDIR)
@@ -108,7 +108,7 @@ install: $(LIB)
 	done
 
 uninstall: $(INCLUDE_HEADERS)
-	$(RM) $(LIBDIR)/$(LIB).0.1.0 $(LIBDIR)/libfinal.so.0 $(LIBDIR)/libfinal.so
+	$(RM) $(LIBDIR)/$(LIB).0.1.1 $(LIBDIR)/libfinal.so.0 $(LIBDIR)/libfinal.so
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
 	  $(RM) $(INCLUDEDIR)/$$h; \

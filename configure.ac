@@ -4,7 +4,7 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.1.0b])
+AC_INIT([finalcut], [0.1.1])
 AC_CONFIG_SRCDIR([src/fobject.cpp])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
