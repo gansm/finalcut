@@ -14,6 +14,7 @@
 #include "fbutton.h"
 #include "fradiobutton.h"
 #include "fcheckbox.h"
+#include "fswitch.h"
 #include "fbuttongroup.h"
 #include "flistbox.h"
 #include "ftextview.h"

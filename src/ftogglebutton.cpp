@@ -55,13 +55,15 @@ FToggleButton::~FToggleButton()  // destructor
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
   flags = 0;
   checked = false;
   focus_inside_group = true;
+  label_offset_pos = 0;
   button_group = 0;
+  button_width = 0;
   this->text = "";
 
+  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
   setVisibleCursor();
 
   if ( hasFocus() )
@@ -202,7 +204,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != -1 )
     length--;
 
-  gotoxy (xpos+xmin+3, ypos+ymin-1);
+  gotoxy (xpos+xmin-1+label_offset_pos, ypos+ymin-1);
 
   if ( isEnabled() )
     setColor(wc.label_fg, wc.label_bg);
@@ -332,7 +334,7 @@ void FToggleButton::hide()
 //----------------------------------------------------------------------
 void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 {
-  int min_width = 4 + int(text.getLength());
+  int min_width = button_width + int(text.getLength());
   if ( w < min_width )
     w = min_width;
   FWidget::setGeometry(x, y, w, h, adjust);
@@ -586,7 +588,7 @@ bool FToggleButton::setChecked(bool on)
 void FToggleButton::setText (FString txt)
 {
   this->text = txt;
-  setWidth(4+int(text.getLength()));
+  setWidth(button_width + int(text.getLength()));
   if ( isEnabled() )
   {
     delAccelerator (this);

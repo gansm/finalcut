@@ -13,12 +13,14 @@
 //----------------------------------------------------------------------
 FRadioButton::FRadioButton(FWidget* parent) : FToggleButton(parent)
 {
+  init();
 }
 
 //----------------------------------------------------------------------
 FRadioButton::FRadioButton ( const FString& txt,
                              FWidget* parent ) : FToggleButton(txt, parent)
 {
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -28,6 +30,13 @@ FRadioButton::~FRadioButton()  // destructor
 
 
 // private methods of FRadioButton
+//----------------------------------------------------------------------
+void FRadioButton::init()
+{
+  label_offset_pos = 4;
+  button_width = 4;
+}
+
 //----------------------------------------------------------------------
 void FRadioButton::draw()
 {

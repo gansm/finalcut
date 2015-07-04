@@ -18,6 +18,7 @@ class FRadioButton : public FToggleButton
  private:
    FRadioButton (const FRadioButton&);
    FRadioButton& operator = (const FRadioButton&);
+   void init();
    void draw();
    void drawRadioButton();
 

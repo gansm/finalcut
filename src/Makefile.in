@@ -129,8 +129,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libfinal_la_LIBADD =
 am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fprogressbar.lo flineedit.lo fbutton.lo fbuttongroup.lo \
-	ftogglebutton.lo fradiobutton.lo fcheckbox.lo flabel.lo \
-	flistbox.lo fdialog.lo fwindow.lo fmessagebox.lo \
+	ftogglebutton.lo fradiobutton.lo fcheckbox.lo fswitch.lo \
+	flabel.lo flistbox.lo fdialog.lo fwindow.lo fmessagebox.lo \
 	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fevent.lo \
 	foptimove.lo fapp.lo fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
@@ -381,6 +381,7 @@ libfinal_la_SOURCES = \
 	ftogglebutton.cpp \
 	fradiobutton.cpp \
 	fcheckbox.cpp \
+	fswitch.cpp \
 	flabel.cpp \
 	flistbox.cpp \
 	fdialog.cpp \
@@ -404,6 +405,7 @@ finalcutinclude_HEADERS = \
 	fbuttongroup.h \
 	fcharmap.h \
 	fcheckbox.h \
+	fswitch.h \
 	fdialog.h \
 	fenum.h \
 	fevent.h \
@@ -529,6 +531,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fscrollbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstatusbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fswitch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fterm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftextview.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftogglebutton.Plo@am__quote@

@@ -20,6 +20,7 @@ libfinal_la_SOURCES = \
 	ftogglebutton.cpp \
 	fradiobutton.cpp \
 	fcheckbox.cpp \
+	fswitch.cpp \
 	flabel.cpp \
 	flistbox.cpp \
 	fdialog.cpp \
@@ -45,6 +46,7 @@ finalcutinclude_HEADERS = \
 	fbuttongroup.h \
 	fcharmap.h \
 	fcheckbox.h \
+	fswitch.h \
 	fdialog.h \
 	fenum.h \
 	fevent.h \

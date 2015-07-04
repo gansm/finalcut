@@ -19,11 +19,13 @@ class FButtonGroup;
 class FToggleButton : public FWidget
 {
  private:
-  bool focus_inside_group;
+   bool focus_inside_group;
 
  protected:
    FString text;
    bool checked;
+   int  label_offset_pos;
+   int  button_width;  // plus margin spaces
    FButtonGroup* button_group;
 
  private:
@@ -76,7 +78,7 @@ class FToggleButton : public FWidget
    bool unsetChecked();
    bool isChecked();
 
-   void setText (const FString);
+   virtual void setText (const FString);
    FString& getText();
 };
 #pragma pack(pop)

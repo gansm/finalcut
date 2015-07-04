@@ -12,12 +12,14 @@
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox(FWidget* parent) : FToggleButton(parent)
 {
+  init();
 }
 
 //----------------------------------------------------------------------
 FCheckBox::FCheckBox ( const FString& txt,
                        FWidget* parent ) : FToggleButton(txt, parent)
 {
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -27,6 +29,13 @@ FCheckBox::~FCheckBox()  // destructor
 
 
 // private methods of FCheckBox
+//----------------------------------------------------------------------
+void FCheckBox::init()
+{
+  label_offset_pos = 4;
+  button_width = 4;
+}
+
 //----------------------------------------------------------------------
 void FCheckBox::draw()
 {

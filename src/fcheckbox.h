@@ -19,6 +19,7 @@ class FCheckBox : public FToggleButton
  private:
    FCheckBox (const FCheckBox&);
    FCheckBox& operator = (const FCheckBox&);
+   void init();
    void draw();
    void drawCheckButton();
 
