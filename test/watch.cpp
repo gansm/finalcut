@@ -48,7 +48,7 @@ watch::watch (FWidget* parent) : FDialog(parent)
   setText ("Watch");
   setShadow();
   int pw = parentWidget()->getWidth();
-  setGeometry (1+(pw-22)/2, 3, 22, 12);
+  setGeometry (1+(pw-22)/2, 3, 22, 13);
 
   // Create labels
   time_label = new FLabel(L"Time", this);
@@ -67,7 +67,7 @@ watch::watch (FWidget* parent) : FDialog(parent)
 
   // Create button
   FButton* quit = new FButton(L"&Quit", this);
-  quit->setGeometry(6, 8, 9, 1);
+  quit->setGeometry(6, 9, 9, 1);
   quit->setShadow();
   quit->setFocus();
 

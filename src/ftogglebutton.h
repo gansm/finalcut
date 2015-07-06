@@ -44,6 +44,7 @@ class FToggleButton : public FWidget
    void  processToggle();
    FButtonGroup* group() const;
    bool  isRadioButton() const;
+   bool  isCheckboxButton() const;
    virtual void onKeyPress (FKeyEvent*);
 
  public:

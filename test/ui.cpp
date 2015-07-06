@@ -286,7 +286,7 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   tagged_count->setGeometry(28, 4, 5, 1);
   tagged_count->setNumber(0);
 
-  FLabel* sum = new FLabel(L"Sum:", this);
+  FLabel* sum = new FLabel(L"Sum:\n123\n456", this);
   sum->setGeometry(20, 5, 7, 1);
   sum->setAlignment(fc::alignRight);
 

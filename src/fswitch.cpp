@@ -34,11 +34,13 @@ FSwitch::~FSwitch()  // destructor
 void FSwitch::draw()
 {
   setUpdateVTerm(false);
-  drawCheckButton();
   drawLabel();
+  drawCheckButton();
   setUpdateVTerm(true);
 
   FToggleButton::draw();
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------
@@ -47,7 +49,7 @@ void FSwitch::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  gotoxy (xpos+xmin-1+switch_offset_pos, ypos+ymin-1);
+ gotoxy (xpos+xmin-1+switch_offset_pos, ypos+ymin-1);
 
   if ( checked )
   {
@@ -58,6 +60,7 @@ void FSwitch::drawCheckButton()
     print ("  On ");
     setColor (wc.button_inactive_fg, wc.button_inactive_bg);
     print (" Off ");
+    gotoxy (xpos+xmin+2+switch_offset_pos, ypos+ymin-1);
   }
   else
   {
@@ -68,6 +71,7 @@ void FSwitch::drawCheckButton()
     else
       setColor (wc.button_hotkey_fg, wc.button_active_bg);
     print (" Off ");
+    gotoxy (xpos+xmin+6+switch_offset_pos, ypos+ymin-1);
   }
 }
 
@@ -98,10 +102,7 @@ void FSwitch::onKeyPress (FKeyEvent* event)
   }
 
   if ( event->isAccepted() )
-  {
     draw();
-    updateTerminal();
-  }
   else
     FToggleButton::onKeyPress(event);
 }

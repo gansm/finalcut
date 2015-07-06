@@ -151,16 +151,19 @@ void FToggleButton::draw()
     }
   }
 
-  // set the cursor to the button
-  setCursorPos (xpos+xmin, ypos+ymin-1);
+  if ( isRadioButton() || isCheckboxButton() )
+  { 
+    // set the cursor to the button
+    setCursorPos (xpos+xmin, ypos+ymin-1);
 
-  if ( isCursorInside() && hasFocus() )
-  {
-    if ( isHiddenCursor() )
-      showCursor();
+    if ( isCursorInside() && hasFocus() )
+    {
+      if ( isHiddenCursor() )
+        showCursor();
+    }
+    else if ( ! isHiddenCursor() )
+      hideCursor();
   }
-  else if ( ! isHiddenCursor() )
-    hideCursor();
 }
 
 //----------------------------------------------------------------------
@@ -252,6 +255,13 @@ bool FToggleButton::isRadioButton() const
 {
   return ( strcmp (getClassName(),
                    const_cast<char*>("FRadioButton") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::isCheckboxButton() const
+{
+  return ( strcmp (getClassName(),
+                   const_cast<char*>("FCheckBox") ) == 0 );
 }
 
 //----------------------------------------------------------------------
