@@ -943,7 +943,7 @@ sInt16 FString::toShort() const
 uInt16 FString::toUShort() const
 {
   register uLong num;
-  num = this->toLong();
+  num = uLong(this->toLong());
 
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
@@ -967,7 +967,7 @@ int FString::toInt() const
 uInt FString::toUInt() const
 {
   register uLong num;
-  num = this->toLong();
+  num = uLong(this->toLong());
 
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
