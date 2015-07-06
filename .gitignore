@@ -7,7 +7,6 @@
 *.lib
 config.*
 Makefile
-Makefile.in
 libtool
 /autom4te.cache
 src/.deps/
