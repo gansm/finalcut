@@ -17,11 +17,13 @@
 class FSwitch : public FToggleButton
 {
  private:
-   int switch_offset_pos;
+   int  switch_offset_pos;
+   bool button_pressed;
 
  private:
    FSwitch (const FSwitch&);
    FSwitch& operator = (const FSwitch&);
+   void init();
    void draw();
    void drawCheckButton();
 
@@ -31,6 +33,8 @@ class FSwitch : public FToggleButton
    virtual ~FSwitch();  // destructor
    const char* getClassName() const;
    void onKeyPress (FKeyEvent*);
+   void onMouseDown (FMouseEvent*);
+   void onMouseUp (FMouseEvent*);
    void setText (FString);
 };
 #pragma pack(pop)
