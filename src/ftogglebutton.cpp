@@ -64,7 +64,9 @@ void FToggleButton::init()
   this->text = "";
 
   setGeometry (1, 1, 4, 1, false);  // initialize geometry values
-  setVisibleCursor();
+
+  if ( isRadioButton() || isCheckboxButton() )
+    setVisibleCursor();
 
   if ( hasFocus() )
     this->flags = FOCUS;
@@ -151,11 +153,11 @@ void FToggleButton::draw()
     }
   }
 
+  // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
-  { 
-    // set the cursor to the button
+  {
     setCursorPos (xpos+xmin, ypos+ymin-1);
-
+    
     if ( isCursorInside() && hasFocus() )
     {
       if ( isHiddenCursor() )
@@ -407,7 +409,7 @@ bool FToggleButton::setFocus(bool on)
       foregroundColor = wc.toggle_button_active_focus_fg;
       backgroundColor = wc.toggle_button_active_focus_bg;
 
-      if ( isCursorInside() )
+      if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
         showCursor();
 
       if ( statusBar() )
@@ -536,7 +538,7 @@ void FToggleButton::onHide (FHideEvent*)
 //----------------------------------------------------------------------
 void FToggleButton::onFocusIn (FFocusEvent*)
 {
-  if ( isCursorInside() )
+  if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
     showCursor();
 
   if ( statusBar() )
