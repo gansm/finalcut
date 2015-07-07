@@ -31,7 +31,6 @@ class watch : public FDialog
   ~watch();  // destructor
    void printTime();
    void onTimer (FTimerEvent*);
-   void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
    void cb_clock (FWidget*, void*);
    void cb_seconds (FWidget*, void*);
@@ -128,13 +127,6 @@ void watch::printTime()
 void watch::onTimer (FTimerEvent*)
 {
   printTime();
-}
-
-//----------------------------------------------------------------------
-void watch::onAccel (FAccelEvent* ev)
-{
-  close();
-  ev->accept();
 }
 
 //----------------------------------------------------------------------
