@@ -9,6 +9,7 @@ INCLUDE_HEADERS = fapp.h \
                   fbuttongroup.h \
                   fbutton.h \
                   fcheckbox.h \
+                  fswitch.h \
                   fdialog.h \
                   fevent.h \
                   ffiledialog.h \
@@ -44,6 +45,7 @@ LIB = libfinal.so
 OBJS = fstring.o \
        fpoint.o \
        frect.o \
+       fswitch.o \
        fscrollbar.o \
        fprogressbar.o \
        flineedit.o \

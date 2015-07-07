@@ -9,6 +9,7 @@ INCLUDE_HEADERS = fapp.h \
                   fbuttongroup.h \
                   fbutton.h \
                   fcheckbox.h \
+                  fswitch.h \
                   fdialog.h \
                   fevent.h \
                   ffiledialog.h \
@@ -52,6 +53,7 @@ OBJS = fstring.o \
        ftogglebutton.o \
        fradiobutton.o \
        fcheckbox.o \
+       fswitch.o \
        flabel.o \
        flistbox.o \
        fdialog.o \
