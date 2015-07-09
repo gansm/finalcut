@@ -302,7 +302,7 @@ void FWidget::setColorTheme()
     wc.button_active_focus_bg        = fc::Blue;
     wc.button_active_fg              = fc::Black;
     wc.button_active_bg              = fc::Cyan;
-    wc.button_inactive_fg            = fc::Black;
+    wc.button_inactive_fg            = fc::Cyan;
     wc.button_inactive_bg            = fc::LightGray;
     wc.button_hotkey_fg              = fc::Red;
     wc.titlebar_active_fg            = fc::LightGray;
