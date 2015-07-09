@@ -33,6 +33,8 @@ AC_CHECK_HEADERS( \
 
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [termcap tinfo curses ncurses])
+# Checks for 'tparm'
+AC_SEARCH_LIBS([tparm], [termcap tinfo curses ncurses])
 
 # Checks for libtool
 AM_ENABLE_SHARED

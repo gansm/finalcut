@@ -15,6 +15,9 @@ libtoolize --copy
 # Generate Makefile.in from Makefile.am
 automake --add-missing --copy
 
+# Update generated configuration files
+#autoreconf -v --install --force
+
 echo
 echo 'run "./configure ; make"'
 echo

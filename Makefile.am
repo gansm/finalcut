@@ -8,4 +8,5 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src doc test
 
+docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = AUTHORS COPYING ChangeLog

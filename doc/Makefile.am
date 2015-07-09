@@ -2,6 +2,8 @@
 # Makefile.am  -  the Final Cut library
 #----------------------------------------------------------------------
 
+docdir = ${datadir}/doc/${PACKAGE}
+
 EXTRA_DIST = \
 	calendar-draft.png \
 	class-diagram.txt \
