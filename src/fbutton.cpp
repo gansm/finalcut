@@ -150,10 +150,10 @@ void FButton::draw()
   else
     d = 0;
 
-  if ( ! isActive && (isMonochron() || getMaxColor() < 16) )
+  if ( ! isActive && isMonochron() )
     space = fc::MediumShade;  // ▒
 
-  if ( isMonochron() && isActiveFocus )
+  if ( (isMonochron() || getMaxColor() < 16) && isActiveFocus )
   {
     txt = "<" + txt + ">";
     length = int(txt.getLength());
@@ -202,10 +202,7 @@ void FButton::draw()
   }
   else if ( ! isMonochron() )
   {
-    if ( ! isActive && getMaxColor() < 16 )
-      setColor (button_fg, button_bg);
-    else
-      setColor (button_bg, parentWidget()->getBackgroundColor());
+    setColor (button_bg, parentWidget()->getBackgroundColor());
     gotoxy (xpos+xmin-1+d, ypos+ymin-1);
     for (int y=1; y <= height; y++)
     {

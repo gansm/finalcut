@@ -258,7 +258,7 @@ void FWidget::setColorTheme()
   if ( max_color < 16 )  // for 8 color mode
   {
     wc.term_fg                       = fc::Black;
-    wc.term_bg                       = fc::Cyan;
+    wc.term_bg                       = fc::Blue;
     wc.list_fg                       = fc::Black;
     wc.list_bg                       = fc::LightGray;
     wc.selected_list_fg              = fc::Blue;
@@ -266,9 +266,9 @@ void FWidget::setColorTheme()
     wc.dialog_fg                     = fc::Black;
     wc.dialog_emphasis_fg            = fc::Blue;
     wc.dialog_bg                     = fc::LightGray;
-    wc.error_box_fg                  = fc::LightGray;
-    wc.error_box_emphasis_fg         = fc::Brown;
-    wc.error_box_bg                  = fc::Red;
+    wc.error_box_fg                  = fc::Black;
+    wc.error_box_emphasis_fg         = fc::Red;
+    wc.error_box_bg                  = fc::LightGray;
     wc.shadow_fg                     = fc::Black;
     wc.shadow_bg                     = fc::LightGray; // only for transparent shadow
     wc.current_element_focus_fg      = fc::LightGray;
@@ -300,13 +300,13 @@ void FWidget::setColorTheme()
     wc.toggle_button_inactive_bg     = fc::LightGray;
     wc.button_active_focus_fg        = fc::LightGray;
     wc.button_active_focus_bg        = fc::Blue;
-    wc.button_active_fg              = fc::Black;
-    wc.button_active_bg              = fc::Cyan;
-    wc.button_inactive_fg            = fc::Cyan;
-    wc.button_inactive_bg            = fc::LightGray;
+    wc.button_active_fg              = fc::LightGray;
+    wc.button_active_bg              = fc::Blue;
+    wc.button_inactive_fg            = fc::LightGray;
+    wc.button_inactive_bg            = fc::Cyan;
     wc.button_hotkey_fg              = fc::Red;
     wc.titlebar_active_fg            = fc::LightGray;
-    wc.titlebar_active_bg            = fc::Blue;
+    wc.titlebar_active_bg            = fc::Red;
     wc.titlebar_inactive_fg          = fc::Black;
     wc.titlebar_inactive_bg          = fc::LightGray;
     wc.titlebar_button_fg            = fc::Black;
@@ -320,11 +320,11 @@ void FWidget::setColorTheme()
     wc.statusbar_active_bg           = fc::LightGray;
     wc.statusbar_active_hotkey_fg    = fc::Red;
     wc.statusbar_active_hotkey_bg    = fc::LightGray;
-    wc.scrollbar_fg                  = fc::Blue;
+    wc.scrollbar_fg                  = fc::Black;
     wc.scrollbar_bg                  = fc::LightGray;
-    wc.scrollbar_button_fg           = fc::LightGray;
-    wc.scrollbar_button_bg           = fc::Black;
-    wc.progressbar_fg                = fc::Blue;
+    wc.scrollbar_button_fg           = fc::Black;
+    wc.scrollbar_button_bg           = fc::LightGray;
+    wc.progressbar_fg                = fc::Black;
     wc.progressbar_bg                = fc::LightGray;
   }
 }

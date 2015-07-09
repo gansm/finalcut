@@ -242,6 +242,7 @@ void FListBox::drawList()
     bool serach_mark = false;
     bool lineHasBrackets = hasBrackets(int(y)+yoffset+1);
     bool isLineSelected = isSelected(int(y)+yoffset+1);
+    bool isCurrentLine = bool(uInt(y)+uInt(yoffset)+1 == uInt(current));
 
     if ( isLineSelected )
     {
@@ -258,7 +259,7 @@ void FListBox::drawList()
         setColor (wc.list_fg, wc.list_bg);
     }
 
-    if ( uInt(y)+uInt(yoffset)+1 == uInt(current) )
+    if ( isCurrentLine )
     {
       if ( isLineSelected )
       {
@@ -298,7 +299,10 @@ void FListBox::drawList()
       setReverse(false);
 
     // print the entry
-    print (' ');
+    if ( isMonochron() && isCurrentLine )
+      print ('>');
+    else
+      print (' ');
     if ( lineHasBrackets )
     {
       const wchar_t* element_str;
@@ -373,6 +377,11 @@ void FListBox::drawList()
         }
         i++;
       }
+      if ( isMonochron() && isCurrentLine )
+      {
+        print ('<');
+        i++;
+      }
       for (; b+i < uInt(width-nf_offset-3); i++)
         print (' ');
     }
@@ -396,6 +405,11 @@ void FListBox::drawList()
                      wc.current_element_focus_bg );
 
         print (element_str[i]);
+      }
+      if ( isMonochron() && isCurrentLine )
+      {
+        print ('<');
+        i++;
       }
       for (; i < uInt(width-nf_offset-3); i++)
         print (' ');

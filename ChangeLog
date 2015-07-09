@@ -1,3 +1,6 @@
+2015-06-09  Markus Gans  <guru.mail@muenster.de>
+	* Better contrast on 8 color terminals
+
 2015-06-07  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix disable cursor on focus FSwitch
 	* Hold down the mouse button displays FSwitch in a different color.

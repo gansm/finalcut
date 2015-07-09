@@ -313,7 +313,7 @@ void Calc::drawDispay()
   print(display);
   print(L' ');
 
-  setColor(fc::Black, fc::White);
+  setColor(wc.dialog_fg, wc.dialog_bg);
   if ( isNewFont() )
   {
     FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));
