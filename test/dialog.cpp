@@ -56,7 +56,6 @@ int main (int argc, char* argv[])
   FButton btn("&Quit", &dgl);
   btn.setGeometry (16, 7, 9, 1);
   btn.setShadow();
-  btn.setFocus();
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback
