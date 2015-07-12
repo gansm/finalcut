@@ -3,6 +3,8 @@
 #-----------------------------------------------------------------------------
 
 # This is where make install will install the library
+VERSION = "0.1.1"
+MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib64
 INCLUDEDIR = /usr/local/include/final
 INCLUDE_HEADERS = fapp.h \
@@ -85,9 +87,9 @@ endif
 	$(CXX) -c $(CCXFLAGS) -fpic -o $@ $<
 
 all: dep $(OBJS) 
-	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).0 -o $(LIB).0.1.1 $(OBJS)
-	ln -s -f $(LIB).0.1.1 libfinal.so.0
-	ln -s -f $(LIB).0 libfinal.so
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR) -o $(LIB).$(VERSION) $(OBJS)
+	ln -s -f $(LIB).$(VERSION) libfinal.so.$(MAJOR)
+	ln -s -f $(LIB).$(MAJOR) libfinal.so
 
 $(LIB): all
 
@@ -99,9 +101,9 @@ profile:
 
 install: $(LIB)
 	mkdir -p $(LIBDIR)
-	install -c $(LIB).0.1.1 $(LIBDIR)/$(LIB).0.1.1
-	ln -s -f $(LIB).0.1.1 $(LIBDIR)/libfinal.so.0
-	ln -s -f $(LIB).0 $(LIBDIR)/libfinal.so
+	install -c $(LIB).$(VERSION) $(LIBDIR)/$(LIB).$(VERSION)
+	ln -s -f $(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR)
+	ln -s -f $(LIB).$(MAJOR) $(LIBDIR)/libfinal.so
 	ldconfig
 	mkdir -p $(INCLUDEDIR)
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
@@ -110,7 +112,7 @@ install: $(LIB)
 	done
 
 uninstall: $(INCLUDE_HEADERS)
-	$(RM) $(LIBDIR)/$(LIB).0.1.1 $(LIBDIR)/libfinal.so.0 $(LIBDIR)/libfinal.so
+	$(RM) $(LIBDIR)/$(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR) $(LIBDIR)/libfinal.so
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
 	  $(RM) $(INCLUDEDIR)/$$h; \
