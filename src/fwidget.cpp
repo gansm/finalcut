@@ -1283,7 +1283,10 @@ bool FWidget::focusFirstChild (void)
       if ( widget->numOfChildren() >= 1 )
       {
         if ( ! widget->focusFirstChild() )
+        {
+          ++iter;
           continue;
+        }
       }
       else
         widget->setFocus();
