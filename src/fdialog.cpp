@@ -110,9 +110,11 @@ void FDialog::init()
     this->flags |= ACTIVE;
 
   FWidget* old_focus = FWidget::getFocusWidget();
-  setFocus();
   if ( old_focus )
+  {
+    setFocus();
     old_focus->redraw();
+  }
   accelerator_list = new Accelerators;
 }
 

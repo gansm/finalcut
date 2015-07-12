@@ -79,8 +79,6 @@ int main (int argc, char* argv[])
   st_field->setShadow();
   c_field->setShadow();
 
-  name_field->setFocus();
-
   // Create the button group
   FButtonGroup* radioButtonGroup = new FButtonGroup("Sex", &dgl);
   radioButtonGroup->setGeometry(2, 13, 13, 4);

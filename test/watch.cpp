@@ -61,7 +61,6 @@ watch::watch (FWidget* parent) : FDialog(parent)
   seconds_sw = new FSwitch(L"Seconds", this);
   clock_sw->setGeometry(4, 4, 9, 1);
   seconds_sw->setGeometry(2, 6, 11, 1);
-  clock_sw->setFocus();
   sec = seconds_sw->setChecked();
 
   // Create button

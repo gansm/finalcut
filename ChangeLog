@@ -1,3 +1,6 @@
+2015-06-12  Markus Gans  <guru.mail@muenster.de>
+	* Improve focusFirstChild() and focusLastChild()
+
 2015-06-09  Markus Gans  <guru.mail@muenster.de>
 	* Better contrast on 8 color terminals
 
