@@ -1280,16 +1280,15 @@ bool FWidget::focusFirstChild (void)
     FWidget* widget = static_cast<FWidget*>(*iter);
     if ( widget->isEnabled() && widget->acceptFocus() )
     {
+      widget->setFocus();
       if ( widget->numOfChildren() >= 1 )
       {
-        if ( ! widget->focusFirstChild() )
+        if ( ! widget->focusFirstChild() && widget->isWindow() )
         {
           ++iter;
           continue;
         }
       }
-      else
-        widget->setFocus();
       return true;
     }
     // prefix increment (++) is faster
@@ -1318,13 +1317,12 @@ bool FWidget::focusLastChild (void)
     FWidget* widget = static_cast<FWidget*>(*iter);
     if ( widget->isEnabled() && widget->acceptFocus() )
     {
+      widget->setFocus();
       if ( widget->numOfChildren() >= 1 )
       {
-        if ( ! widget->focusLastChild() )
+        if ( ! widget->focusLastChild() && widget->isWindow() )
           continue;
       }
-      else
-        widget->setFocus();
       return true;
     }
   }
