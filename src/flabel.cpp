@@ -37,8 +37,8 @@ void FLabel::init()
 {
   flags = 0;
   emphasis = 0;
-  xoffset = 0;
   alignment = fc::alignLeft;
+  multiline = false;
   this->text = "";
   accel_widget = 0;
 
@@ -71,6 +71,27 @@ uChar FLabel::getHotkey()
 }
 
 //----------------------------------------------------------------------
+int FLabel::getHotkeyPos(wchar_t*& src, wchar_t*& dest, uInt length)
+{
+  // find hotkey position in string
+  // + generate a new string without the '&'-sign
+  int hotkeypos = -1;
+  wchar_t* txt = src;
+
+  for (uInt i=0; i < length; i++)
+  {
+    if ( (i < length) && (txt[i] == L'&') && (hotkeypos == -1) )
+    {
+      hotkeypos = int(i);
+      i++;
+      src++;
+    }
+    *dest++ = *src++;
+  }
+  return hotkeypos;
+}
+
+//----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
   int hotkey = getHotkey();
@@ -91,55 +112,39 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-void FLabel::draw()
+int FLabel::getXOffset(int length)
 {
-  register wchar_t* src;
-  register wchar_t* dest;
-  wchar_t* LabelText;
-  FString txt;
-  uInt length;
-  int hotkeypos, to_char;
+  switch ( alignment )
+  {
+    case fc::alignLeft:
+      return 0;
+
+    case fc::alignCenter:
+      if ( length < width )
+        return int((width - length) / 2);
+      else
+        return 0;
+
+    case fc::alignRight:
+      if ( length < width )
+        return width - length;
+      else
+        return 0;
+  }
+  return 0;
+}
+
+//----------------------------------------------------------------------
+void FLabel::printLine ( wchar_t*& line,
+                         uInt length,
+                         int  hotkeypos,
+                         int  xoffset)
+{
+  int to_char;
   bool isActive, isNoUnderline;
-
-  if ( text.isNull() || text.isEmpty() )
-    return;
-
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
-  setUpdateVTerm(false);
-  if ( hasEmphasis() )
-    setColor (emphasis_color, backgroundColor);
-  else
-    setColor (foregroundColor, backgroundColor);
-
-  length = text.getLength();
-  hotkeypos = -1;
-  LabelText = new wchar_t[length+1];
-  txt  = this->text;
-  src  = const_cast<wchar_t*>(txt.wc_str());
-  dest = const_cast<wchar_t*>(LabelText);
 
   isActive = ((flags & ACTIVE) != 0);
   isNoUnderline = ((flags & NO_UNDERLINE) != 0);
-
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  for (uInt i=0; i < length; i++)
-  {
-    if ( (i < length) && (txt[i] == '&') && (hotkeypos == -1) )
-    {
-      hotkeypos = int(i);
-      i++;
-      src++;
-    }
-    *dest++ = *src++;
-  }
-
-  if ( hotkeypos != -1 )
-    length--;
-
-  gotoxy (xpos+xmin-1, ypos+ymin-1);
 
   for (int x=0; x < xoffset; x++)
     print (' ');
@@ -154,12 +159,14 @@ void FLabel::draw()
 
   for (int z=0; z < to_char; z++)
   {
+    if ( ! iswprint(wint_t(line[z])) )
+      line[z] = L' ';
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
       if ( ! isNoUnderline )
         setUnderline();
-      print ( LabelText[z] );
+      print ( line[z] );
       if ( ! isNoUnderline )
         unsetUnderline();
       if ( hasEmphasis() )
@@ -168,22 +175,105 @@ void FLabel::draw()
         setColor (foregroundColor, backgroundColor);
     }
     else
-      print ( LabelText[z] );
+      print ( line[z] );
   }
-
-  for (int x=to_char+2; x < width; x++)
-    print (' ');
 
   if ( length > uInt(width) )
   {
     setColor (ellipsis_color, backgroundColor);
     print ("..");
+    setColor (foregroundColor, backgroundColor);
   }
+  else
+  {
+    for (int x=xoffset+to_char; x < width; x++)
+      print (' ');
+  }
+
   if ( hasReverseMode() )
     setReverse(false);
+}
 
+//----------------------------------------------------------------------
+void FLabel::draw()
+{
+  wchar_t* src;
+  wchar_t* dest;
+  wchar_t* LabelText;
+  uInt length;
+  int hotkeypos, xoffset;
+
+  if ( text.isNull() || text.isEmpty() )
+    return;
+
+  if ( Encoding == fc::VT100 )
+    unsetVT100altChar();
+
+  setUpdateVTerm(false);
+
+  if ( hasEmphasis() )
+    setColor (emphasis_color, backgroundColor);
+  else
+    setColor (foregroundColor, backgroundColor);
+
+  hotkeypos = -1;
+
+  if ( multiline && height > 1 )
+  {
+    uInt y = 0;
+    uInt text_lines = uInt(multiline_text.size());
+    bool hotkey_printed = false;
+
+    while ( y < text_lines && y < uInt(height) )
+    {
+      length = multiline_text[y].getLength();
+      LabelText = new wchar_t[length+1];
+
+      if ( ! hotkey_printed )
+      {
+        src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
+        dest = const_cast<wchar_t*>(LabelText);
+        hotkeypos = getHotkeyPos(src, dest, length);
+      }
+      else
+        LabelText = const_cast<wchar_t*>(multiline_text[y].wc_str());
+
+      gotoxy (xpos+xmin-1, ypos+ymin-1+int(y));
+
+      if ( hotkeypos != -1 )
+      {
+        xoffset = getXOffset (int(length-1));
+        printLine (LabelText, length-1, hotkeypos, xoffset);
+        hotkey_printed = true;
+        hotkeypos = -1;
+      }
+      else
+      {
+        xoffset = getXOffset (int(length));
+        printLine (LabelText, length, -1, xoffset);
+      }
+      y++;
+      delete[] LabelText;
+    }
+  }
+  else
+  {
+    length = text.getLength();
+    LabelText = new wchar_t[length+1];
+    src  = const_cast<wchar_t*>(text.wc_str());
+    dest = const_cast<wchar_t*>(LabelText);
+
+    hotkeypos = getHotkeyPos (src, dest, length);
+
+    if ( hotkeypos != -1 )
+      length--;
+
+    gotoxy (xpos+xmin-1, ypos+ymin-1);
+    xoffset = getXOffset (int(length));
+    printLine (LabelText, length, hotkeypos, xoffset);
+    delete[] LabelText;
+  }
   setUpdateVTerm(true);
-  delete[] LabelText;
 }
 
 
@@ -284,35 +374,12 @@ void FLabel::setAccelWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FLabel::setAlignment (uInt align)
 {
-  int text_length;
-
   if (  align != fc::alignLeft
      && align != fc::alignCenter
      && align != fc::alignRight )
     alignment = fc::alignLeft;
   else
     alignment = align;
-
-  text_length = int(text.getLength());
-
-  if ( getHotkey() )
-    text_length--;
-
-  if ( text_length > width )
-   text_length = width;
-
-  switch ( alignment )
-  {                                    // convert type to msg string
-    case fc::alignLeft:
-      xoffset = 0;
-      break;
-    case fc::alignCenter:
-      xoffset = int((width - text_length) / 2);
-      break;
-    case fc::alignRight:
-      xoffset = width - text_length;
-      break;
-  }
 }
 
 //----------------------------------------------------------------------
@@ -361,6 +428,12 @@ void FLabel::setNumber (long num)
 void FLabel::setText (const FString& txt)
 {
   this->text = txt;
+  this->multiline_text = text.split("\r\n");
+  if ( int(multiline_text.size()) > 1 )
+    multiline = true;
+  else
+    multiline = false;
+
   if ( isEnabled() )
   {
     delAccelerator (this);

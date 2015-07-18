@@ -20,7 +20,6 @@ Missing Features
      └──► tmp
 ---------------------------------------
 
-- Multiple lines support for FLabel
 - Add a window switcher on the right side of the status bar
 - Add a scrolling area with on-demand scroll bars for FButtonGroup
 

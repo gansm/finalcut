@@ -33,24 +33,19 @@ int main (int argc, char* argv[])
 
   // Create text labels
   FLabel label_1(&dgl),
-         label_2(&dgl),
-         label_3(&dgl),
-         label_4(&dgl),
-         label_5(&dgl);
+         label_2(&dgl);
 
-  label_1.setText (wchar_t(fc::BlackUpPointingTriangle));
-  label_2.setText (wchar_t(fc::BoxDrawingsUpAndRight)
+  label_1.setText ( wchar_t(fc::BlackUpPointingTriangle)
+                  + std::wstring(L"\n")
+                  + wchar_t(fc::BoxDrawingsUpAndRight)
                   + FString(2, wchar_t(fc::BoxDrawingsHorizontal))
-                  + FString(" Double click the title bar button,") );
-  label_3.setText ("press Q on the keyboard,");
-  label_4.setText ("or push the button below to exit");
-  label_5.setText ("the program.");
+                  + " Double click the title bar button," );
+  label_2.setText ( "press Q on the keyboard,\n"
+                    "or push the button below to exit\n"
+                    "the program." );
 
-  label_1.setGeometry (1, 1, 1, 1);
-  label_2.setGeometry (1, 2, 38, 1);
-  label_3.setGeometry (5, 3, 24, 1);
-  label_4.setGeometry (5, 4, 32, 1);
-  label_5.setGeometry (5, 5, 12, 1);
+  label_1.setGeometry (1, 1, 38, 2);
+  label_2.setGeometry (5, 3, 34, 3);
 
   // Create the quit button
   FButton btn("&Quit", &dgl);

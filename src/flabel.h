@@ -20,9 +20,10 @@
 class FLabel : public FWidget
 {
  private:
+   std::vector<FString> multiline_text;
+   bool     multiline;
    FString  text;
    int      emphasis;
-   int      xoffset;
    uInt     alignment;
    uChar    emphasis_color;
    uChar    ellipsis_color;
@@ -35,7 +36,10 @@ class FLabel : public FWidget
 
    void  init();
    uChar getHotkey();
+   int   getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void  setHotkeyAccelerator();
+   int   getXOffset(int);
+   void  printLine (wchar_t*&, uInt, int, int xoffset=0);
    void  draw();
 
  public:

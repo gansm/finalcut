@@ -1,3 +1,6 @@
+2015-06-18  Markus Gans  <guru.mail@muenster.de>
+	* Add multiple lines support for FLabel
+
 2015-06-12  Markus Gans  <guru.mail@muenster.de>
 	* Improve focusFirstChild() and focusLastChild()
 

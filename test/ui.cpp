@@ -286,12 +286,12 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   tagged_count->setGeometry(28, 4, 5, 1);
   tagged_count->setNumber(0);
 
-  FLabel* sum = new FLabel(L"Sum:\n123\n456", this);
-  sum->setGeometry(20, 5, 7, 1);
+  FLabel* sum = new FLabel(L"Sum:", this);
+  sum->setGeometry(20, 5, 7, 3);
   sum->setAlignment(fc::alignRight);
 
   FLabel* sum_count = new FLabel(this);
-  sum_count->setGeometry(28, 5, 5, 1);
+  sum_count->setGeometry(28, 5, 5, 3);
   sum_count->setNumber(myList->count());
 
   FStatusBar* statusbar = new FStatusBar(this);
