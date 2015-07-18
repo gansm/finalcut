@@ -192,12 +192,14 @@ class FString
    const FString operator + (const char);
 
    friend const FString operator + (const FString&, const FString&);
+   friend const FString operator + (const FString&, const wchar_t);
    friend const FString operator + (const std::wstring&, const FString&);
    friend const FString operator + (const wchar_t*, const FString&);
    friend const FString operator + (const std::string&, const FString&);
    friend const FString operator + (const char*, const FString&);
    friend const FString operator + (const wchar_t, const FString&);
    friend const FString operator + (const char, const FString&);
+   friend const FString operator + (const wchar_t, const std::wstring&);
 
    wchar_t& operator [] (uInt);
    const FString  operator () (uInt, uInt);

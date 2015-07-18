@@ -721,6 +721,14 @@ const FString operator + (const FString& s1, const FString& s2)
 }
 
 //----------------------------------------------------------------------
+const FString operator + (const FString& s, const wchar_t c)
+{
+  FString tmp(s);
+  tmp._insert ( uInt(wcslen(s.wc_str())), 1, &c);
+  return (tmp);
+}
+
+//----------------------------------------------------------------------
 const FString operator + (const std::wstring& s1, const FString& s2)
 {
   FString tmp(s1);
@@ -773,6 +781,14 @@ const FString operator + (const char c, const FString& s)
 {
   FString tmp(c);
   tmp._insert (1, uInt(wcslen(s.wc_str())), s.wc_str());
+  return (tmp);
+}
+
+//----------------------------------------------------------------------
+const FString operator + (const wchar_t c, const std::wstring& s)
+{
+  FString tmp(c);
+  tmp._insert (1, uInt(s.length()), s.c_str());
   return (tmp);
 }
 
