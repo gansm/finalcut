@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------
 FSwitch::FSwitch(FWidget* parent) : FToggleButton(parent)
 {
+  switch_offset_pos = 0;
   init();
 }
 
