@@ -71,7 +71,7 @@ uChar FLabel::getHotkey()
 }
 
 //----------------------------------------------------------------------
-int FLabel::getHotkeyPos(wchar_t*& src, wchar_t*& dest, uInt length)
+int FLabel::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -138,7 +138,7 @@ int FLabel::getXOffset(int length)
 void FLabel::printLine ( wchar_t*& line,
                          uInt length,
                          int  hotkeypos,
-                         int  xoffset)
+                         int  xoffset )
 {
   int to_char;
   bool isActive, isNoUnderline;

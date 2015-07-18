@@ -38,7 +38,7 @@ class FLabel : public FWidget
    uChar getHotkey();
    int   getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void  setHotkeyAccelerator();
-   int   getXOffset(int);
+   int   getXOffset (int);
    void  printLine (wchar_t*&, uInt, int, int xoffset=0);
    void  draw();
 
