@@ -12,16 +12,7 @@
 //----------------------------------------------------------------------
 FStatusKey::FStatusKey(FWidget* parent) : FWidget(parent)
 {
-  this->active = false;
-  this->mouse_focus = false;
-  setGeometry (1,1,1,1);
-
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FStatusBar") ) == 0 )
-  {
-    setStatusbar( static_cast<FStatusBar*>(parent) );
-    statusbar()->insert(this);
-  }
+  init (parent);
 }
 
 //----------------------------------------------------------------------
@@ -29,18 +20,9 @@ FStatusKey::FStatusKey ( int k,
                          FString& txt,
                          FWidget* parent ) : FWidget(parent)
 {
-  this->active = false;
-  this->mouse_focus = false;
   setKey(k);
   setText(txt);
-  setGeometry (1,1,1,1);
-
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FStatusBar") ) == 0 )
-  {
-    setStatusbar( static_cast<FStatusBar*>(parent) );
-    statusbar()->insert(this);
-  }
+  init (parent);
 }
 
 //----------------------------------------------------------------------
@@ -48,18 +30,9 @@ FStatusKey::FStatusKey ( int k,
                          const std::string& txt,
                          FWidget* parent) : FWidget(parent)
 {
-  this->active = false;
-  this->mouse_focus = false;
   setKey(k);
   setText(txt);
-  setGeometry (1,1,1,1);
-
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FStatusBar") ) == 0 )
-  {
-    setStatusbar( static_cast<FStatusBar*>(parent) );
-    statusbar()->insert(this);
-  }
+  init (parent);
 }
 
 //----------------------------------------------------------------------
@@ -67,18 +40,9 @@ FStatusKey::FStatusKey ( int k,
                          const char* txt,
                          FWidget* parent ) : FWidget(parent)
 {
-  this->active = false;
-  this->mouse_focus = false;
   setKey(k);
   setText(txt);
-
-  setGeometry (1,1,1,1);
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FStatusBar") ) == 0 )
-  {
-    setStatusbar( static_cast<FStatusBar*>(parent) );
-    statusbar()->insert(this);
-  }
+  init (parent);
 }
 
 //----------------------------------------------------------------------
@@ -91,6 +55,21 @@ FStatusKey::~FStatusKey()  // destructor
 
 
 // private methods of FStatusKey
+//----------------------------------------------------------------------
+void FStatusKey::init (FWidget* parent)
+{
+  this->active = false;
+  this->mouse_focus = false;
+  setGeometry (1,1,1,1);
+
+  if ( parent && strcmp ( parent->getClassName(),
+                          const_cast<char*>("FStatusBar") ) == 0 )
+  {
+    setStatusbar( static_cast<FStatusBar*>(parent) );
+    statusbar()->insert(this);
+  }
+}
+
 //----------------------------------------------------------------------
 void FStatusKey::processActivate()
 {
@@ -662,12 +641,12 @@ void FStatusBar::remove (FStatusKey* skey)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::remove (int skey)
+void FStatusBar::remove (int pos)
 {
-  if ( int(count()) < skey )
+  if ( int(count()) < pos )
     return;
 
-  keylist.erase (keylist.begin()+skey-1);
+  keylist.erase (keylist.begin()+pos-1);
 }
 
 //----------------------------------------------------------------------

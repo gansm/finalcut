@@ -1,27 +1,31 @@
-2015-06-18  Markus Gans  <guru.mail@muenster.de>
+2015-07-26  Markus Gans  <guru.mail@muenster.de>
+	* init() method for the FStatusKey constructor
+	  to avoid code duplication
+
+2015-07-18  Markus Gans  <guru.mail@muenster.de>
 	* Add multiple lines support for FLabel
 
-2015-06-12  Markus Gans  <guru.mail@muenster.de>
+2015-07-12  Markus Gans  <guru.mail@muenster.de>
 	* Improve focusFirstChild() and focusLastChild()
 
-2015-06-09  Markus Gans  <guru.mail@muenster.de>
+2015-07-09  Markus Gans  <guru.mail@muenster.de>
 	* Better contrast on 8 color terminals
 
-2015-06-07  Markus Gans  <guru.mail@muenster.de>
+2015-07-06  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix disable cursor on focus FSwitch
 	* Hold down the mouse button displays FSwitch in a different color.
 
-2015-04-07  Markus Gans  <guru.mail@muenster.de>
+2015-07-04  Markus Gans  <guru.mail@muenster.de>
 	* New class FSwitch
 	* Add the watch example to demonstrate FSwitch
 	* Version 0.1.1
 
-2015-02-07  Markus Gans  <guru.mail@muenster.de>
+2015-07-02  Markus Gans  <guru.mail@muenster.de>
 	* Add a joined right-left-line character to the newfont
 	* Use the object timer for the progress bar animation 
 	  in the ui example program
 
-2015-01-07  Markus Gans  <guru.mail@muenster.de>
+2015-07-01  Markus Gans  <guru.mail@muenster.de>
 	* Use the object timer for the click animation in FButton
 
 2015-28-06  Markus Gans  <guru.mail@muenster.de>

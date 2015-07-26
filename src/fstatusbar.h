@@ -28,6 +28,7 @@ class FStatusKey : public FWidget
  private:
    FStatusKey (const FStatusKey&);
    FStatusKey& operator = (const FStatusKey&);
+   void init (FWidget*);
    void processActivate();
    FStatusBar* statusbar() const;
    void setStatusbar (FStatusBar*);
