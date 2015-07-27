@@ -28,47 +28,47 @@
 2015-07-01  Markus Gans  <guru.mail@muenster.de>
 	* Use the object timer for the click animation in FButton
 
-2015-28-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-28  Markus Gans  <guru.mail@muenster.de>
 	* Add exception handling for toLong() and toULong()  
 	  in FString
 
-2015-27-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-27  Markus Gans  <guru.mail@muenster.de>
 	* Add toFloat(), toDouble() and setNumber(...) for 
 	  floating point values to FString
 
-2015-22-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-22  Markus Gans  <guru.mail@muenster.de>
 	* Add a simple calculator with trigonometric functions
 
-2015-21-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-21  Markus Gans  <guru.mail@muenster.de>
 	* Add the possibility to draw double lines on overlapped 
 	  flat lines for the 8x16graph font
 	* Bug fix in FButton (mouse click with unsetClickAnimation())
 
-2015-20-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-20  Markus Gans  <guru.mail@muenster.de>
 	* Add the possibility to change the colors from FButton
 
-2015-15-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-15  Markus Gans  <guru.mail@muenster.de>
 	* Add the possibility to turn off click animation 
 	  on FButton
 
-2015-14-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-14  Markus Gans  <guru.mail@muenster.de>
 	* correction for the modifier letter small x 
 	  in the character map
 
-2015-12-06  Markus Gans  <guru.mail@muenster.de>
+2015-06-12  Markus Gans  <guru.mail@muenster.de>
 	* Add Some mathematical signs to the character map
 
-2015-28-05  Markus Gans  <guru.mail@muenster.de>
+2015-05-28  Markus Gans  <guru.mail@muenster.de>
 	* Add keyword 'explicit' to some constructors
 
-2015-25-05  Markus Gans  <guru.mail@muenster.de>
+2015-05-25  Markus Gans  <guru.mail@muenster.de>
 	* Add a Mandelbrot set program
 
-2015-24-05  Markus Gans  <guru.mail@muenster.de>
+2015-05-24  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FLineEdit (ypos from the label)
 	* Bug fix in FDialog onWindowActive (status bar check)
 
-2015-15-05  Markus Gans  <guru.mail@muenster.de>
+2015-05-15  Markus Gans  <guru.mail@muenster.de>
 	* Remove never read value from code
 	* Add the possibility to use exec() from FMessageBox 
 	  to enter and leave the main event loop correctly
