@@ -1,3 +1,8 @@
+2015-08-08  Markus Gans  <guru.mail@muenster.de>
+	* Bug fix in FDialog (use GlobalPos to move)
+	* Don't check mouse click position on titlebar again
+	  while FDialog is in move
+
 2015-07-26  Markus Gans  <guru.mail@muenster.de>
 	* init() method for the FStatusKey constructor
 	  to avoid code duplication

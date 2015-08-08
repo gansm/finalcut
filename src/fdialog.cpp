@@ -504,15 +504,9 @@ void FDialog::onMouseUp (FMouseEvent* event)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* event)
 {
-  int titlebar_x = TitleBarClickPos.getX();
-  int titlebar_y = TitleBarClickPos.getY();
-
   if ( event->getButton() == LeftButton )
   {
-    if (  ! TitleBarClickPos.isNull()
-       && titlebar_x >= xpos+xmin+3
-       && titlebar_x <= xpos+xmin-1+width
-       && titlebar_y == ypos+ymin-1 )
+    if ( ! TitleBarClickPos.isNull() )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
       FPoint deltaPos = event->getGlobalPos() - TitleBarClickPos;
@@ -693,7 +687,7 @@ void FDialog::move (int x, int y)
   xpos = x;
   ypos = y;
 
-  putArea (x, y, vwin);
+  putArea (getGlobalPos(), vwin);
 
   if ( getGeometry().overlap(oldGeometry) )
   {
