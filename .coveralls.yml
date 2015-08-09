@@ -1,2 +1,4 @@
-repo_token: 3lokeXJ5PKEGYwNm7uxGFtpm7cMp11lig
+[run]
+source = oauth2_provider
+omit = */migrations/*
 
