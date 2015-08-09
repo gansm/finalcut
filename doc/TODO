@@ -6,7 +6,8 @@ Missing Features
 ~~~~~~~~~~~~~~~~
 - application menu
      - FMenuBar()
-     - FPopupMenu()
+     - FMenu()
+     - FMenuItem()
 
 - list/tree view with Columns
      - FListView()

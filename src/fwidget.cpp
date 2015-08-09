@@ -3,6 +3,7 @@
 
 #include "fapp.h"
 #include "fstatusbar.h"
+#include "fmenubar.h"
 #include "fwidget.h"
 #include "fwindow.h"
 
@@ -13,6 +14,7 @@ static FWidget* rootObject = 0;
 uInt     FWidget::modal_dialogs;
 
 FStatusBar*            FWidget::statusbar          = 0;
+FMenuBar*              FWidget::menubar            = 0;
 FWidget*               FWidget::show_root_widget   = 0;
 FWidget*               FWidget::redraw_root_widget = 0;
 FWidget::widgetList*   FWidget::window_list        = 0;
@@ -233,6 +235,14 @@ void FWidget::setColorTheme()
   wc.titlebar_inactive_bg          = fc::DarkGray;
   wc.titlebar_button_fg            = fc::Black;
   wc.titlebar_button_bg            = fc::LightGray;
+  wc.menu_active_focus_fg          = fc::White;
+  wc.menu_active_focus_bg          = fc::Blue;
+  wc.menu_active_fg                = fc::Black;
+  wc.menu_active_bg                = fc::White;
+  wc.menu_inactive_fg              = fc::LightGray;
+  wc.menu_inactive_bg              = fc::White;
+  wc.menu_hotkey_fg                = fc::Red;
+  wc.menu_hotkey_bg                = fc::White;
   wc.statusbar_fg                  = fc::White;
   wc.statusbar_bg                  = fc::Blue;
   wc.statusbar_hotkey_fg           = fc::LightRed;
@@ -311,6 +321,14 @@ void FWidget::setColorTheme()
     wc.titlebar_inactive_bg          = fc::LightGray;
     wc.titlebar_button_fg            = fc::Black;
     wc.titlebar_button_bg            = fc::LightGray;
+    wc.menu_active_focus_fg          = fc::LightGray;
+    wc.menu_active_focus_bg          = fc::Blue;
+    wc.menu_active_fg                = fc::Black;
+    wc.menu_active_bg                = fc::LightGray;
+    wc.menu_inactive_fg              = fc::DarkGray;
+    wc.menu_inactive_bg              = fc::LightGray;
+    wc.menu_hotkey_fg                = fc::Red;
+    wc.menu_hotkey_bg                = fc::LightGray;
     wc.statusbar_fg                  = fc::LightGray;
     wc.statusbar_bg                  = fc::Blue;
     wc.statusbar_hotkey_fg           = fc::Red;
@@ -433,6 +451,17 @@ void FWidget::setStatusBar (FStatusBar* sbar)
     delete statusbar;
 
   statusbar = sbar;
+}
+
+//----------------------------------------------------------------------
+void FWidget::setMenuBar (FMenuBar* mbar)
+{
+  if ( ! mbar || menubar == mbar )
+    return;
+  if ( menubar )
+    delete menubar;
+
+  menubar = mbar;
 }
 
 //----------------------------------------------------------------------
@@ -901,6 +930,15 @@ FStatusBar* FWidget::statusBar()
 }
 
 //----------------------------------------------------------------------
+FMenuBar* FWidget::menuBar()
+{
+  if ( menubar )
+    return menubar;
+  else
+    return 0;
+}
+
+//----------------------------------------------------------------------
 void FWidget::addCallback ( FString cb_signal,
                             FWidget::FCallback cb_handler,
                             data_ptr data )
@@ -1104,6 +1142,13 @@ void FWidget::redraw()
         ++iter;
       }
     }
+    if ( menubar && vmenubar )
+    {
+      int w = vmenubar->width;
+      int h = vmenubar->height;
+      std::fill_n (vmenubar->text, w * h, default_char);
+      menubar->redraw();
+    }
     if ( statusbar && vstatusbar )
     {
       int w = vstatusbar->width;
@@ -1154,6 +1199,12 @@ void FWidget::resize()
     closeConsole();
     resizeVTerm();
     resizeArea (vdesktop);
+    if ( menubar )
+    {
+      menubar->setGeometry(1, 1, width, 1, false);
+      if ( vmenubar )
+        resizeArea(vmenubar);
+    }
     if ( statusbar )
     {
       statusbar->setGeometry(1, height, width, 1, false);
@@ -1530,8 +1581,8 @@ void FWidget::getTermGeometry()
   rootObject->ymin = 1;
   rootObject->xmax = rootObject->width;
   rootObject->ymax = rootObject->height;
-  rootObject->client_xmin = 1;
-  rootObject->client_ymin = 1;
+  rootObject->client_xmin = 1 + rootObject->left_padding;
+  rootObject->client_ymin = 1 + rootObject->top_padding;
   rootObject->client_xmax = rootObject->width;
   rootObject->client_ymax = rootObject->height;
 }

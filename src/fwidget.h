@@ -18,6 +18,7 @@
 #define NO_UNDERLINE  0x00000100
 
 class FStatusBar;
+class FMenuBar;
 
 //----------------------------------------------------------------------
 // class FWidget
@@ -123,6 +124,14 @@ class FWidget : public FObject, public FTerm
      uChar titlebar_inactive_bg;
      uChar titlebar_button_fg;
      uChar titlebar_button_bg;
+     uChar menu_active_focus_fg;
+     uChar menu_active_focus_bg;
+     uChar menu_active_fg;
+     uChar menu_active_bg;
+     uChar menu_inactive_fg;
+     uChar menu_inactive_bg;
+     uChar menu_hotkey_fg;
+     uChar menu_hotkey_bg;
      uChar statusbar_fg;
      uChar statusbar_bg;
      uChar statusbar_hotkey_fg;
@@ -190,6 +199,7 @@ class FWidget : public FObject, public FTerm
    FString statusbar_message;
 
    static FStatusBar* statusbar;
+   static FMenuBar* menubar;
    static FWidget* show_root_widget;
    static FWidget* redraw_root_widget;
    friend class FApplication;
@@ -207,6 +217,7 @@ class FWidget : public FObject, public FTerm
  protected:
    virtual void adjustSize();
    virtual void setStatusBar (FStatusBar*);
+   virtual void setMenuBar (FMenuBar*);
  // Event handlers
    bool         event (FEvent*);
    virtual void onKeyPress (FKeyEvent*);
@@ -248,6 +259,7 @@ class FWidget : public FObject, public FTerm
    virtual bool     close();
 
    static FStatusBar* statusBar();
+   static FMenuBar* menuBar();
    void           setStatusbarMessage (FString);
    void           clearStatusbarMessage();
    FString        getStatusbarMessage();

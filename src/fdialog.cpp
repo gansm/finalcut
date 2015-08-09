@@ -677,8 +677,8 @@ void FDialog::move (int x, int y)
 
   dx = xpos - x;
   dy = ypos - y;
-  old_x = xpos;
-  old_y = ypos;
+  old_x = getGlobalX();
+  old_y = getGlobalY();
   short& rsw = shadow.x_ref();  // right shadow width;
   short& bsh = shadow.y_ref();  // bottom shadow height
   oldGeometry = getGeometryShadow();

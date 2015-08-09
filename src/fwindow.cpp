@@ -2,6 +2,7 @@
 // class FWindow
 
 #include "fapp.h"
+#include "fmenubar.h"
 #include "fstatusbar.h"
 #include "fwindow.h"
 
@@ -81,6 +82,9 @@ FWindow* FWindow::windowWidgetAt(int x, int y)
 {
   if ( statusBar() && statusBar()->getGeometryGlobal().contains(x,y) )
     return statusBar();
+
+  if ( menuBar() && menuBar()->getGeometryGlobal().contains(x,y) )
+    return menuBar();
 
   if ( window_list && ! window_list->empty() )
   {
