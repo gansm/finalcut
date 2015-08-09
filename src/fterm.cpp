@@ -3390,8 +3390,8 @@ FString FTerm::getAnswerbackMsg()
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answerback message
-    read(fileno(stdin), &temp, sizeof(temp)-1);
-    answerback = temp;
+    if ( read(fileno(stdin), &temp, sizeof(temp)-1) > 0 )
+      answerback = temp;   
   }
   return answerback;
 }
@@ -3412,8 +3412,8 @@ FString FTerm::getSecDA()
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
-    read(fileno(stdin), &temp, sizeof(temp)-1);
-    sec_da = temp;
+    if ( read(fileno(stdin), &temp, sizeof(temp)-1) > 0 )
+      sec_da = temp;
   }
   return sec_da;
 }
