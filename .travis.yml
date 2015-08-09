@@ -12,5 +12,5 @@ install:
     - sudo make install
     - cd ..
     - rm -rf finalcut
-script: ./configure && make && make check
+script: autoreconf -v --install --force && ./configure --prefix=/usr && make && make check
 
