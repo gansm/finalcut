@@ -1,0 +1,84 @@
+// fmenulist.h
+// class FMenuList
+
+#ifndef _FMENULIST_H
+#define _FMENULIST_H
+
+#include "fwidget.h"
+#include "fmenuitem.h"
+
+/*
+    ┌─────────┐       ┌──────────┐
+    │ FWindow │◄───┬──┤ FMenuBar │
+    └─────────┘    │  └──────────┘
+  ┌───────────┐◄───┘  ┌───────────┐ 
+  │ FMenuList ├-------┤ FMenuItem │
+  └───────────┘◄───┐  └───────────┘
+    ┌─────────┐    │  ┌────────────┐
+    │ FWidget │◄───┴──┤ FPopupMenu │
+    └─────────┘       └────────────┘
+*/
+
+//----------------------------------------------------------------------
+// class FMenuList
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FMenuList
+{
+ protected:
+   std::vector<FMenuItem*> itemlist;
+
+ private:
+   FMenuList (const FMenuList&);
+   FMenuList& operator = (const FMenuList&);
+
+ public:
+   explicit FMenuList();
+   virtual ~FMenuList();
+   virtual const char* getClassName() const;
+
+   uInt count() const;
+   FMenuItem* item (int) const;
+   void activateItem (int);
+   void deactivateItem (int);
+   bool isSelected (int) const;
+   bool hasSelectedItem();
+
+   void insert (FMenuItem*);
+   void remove (FMenuItem*);
+   void remove (int);
+   void clear();
+};
+#pragma pack(pop)
+
+
+// FMenuList inline functions
+//----------------------------------------------------------------------
+inline const char* FMenuList::getClassName() const
+{ return "FMenuList"; }
+
+//----------------------------------------------------------------------
+inline uInt FMenuList::count() const
+{ return uInt(itemlist.size()); }
+
+//----------------------------------------------------------------------
+inline FMenuItem* FMenuList::item(int index) const
+{ return itemlist[uInt(index-1)]; }
+
+//----------------------------------------------------------------------
+inline void FMenuList::activateItem (int index)
+{ itemlist[uInt(index-1)]->setActive(); }
+
+//----------------------------------------------------------------------
+inline void FMenuList::deactivateItem (int index)
+{ itemlist[uInt(index-1)]->unsetActive(); }
+
+//----------------------------------------------------------------------
+inline bool FMenuList::isSelected(int index) const
+{ return itemlist[uInt(index-1)]->isSelected(); }
+
+
+#endif  // _FMENULIST_H

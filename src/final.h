@@ -19,6 +19,8 @@
 #include "flistbox.h"
 #include "ftextview.h"
 #include "flineedit.h"
+#include "fmenubar.h"
+#include "fmenuitem.h"
 #include "fstatusbar.h"
 #include "fscrollbar.h"
 #include "fprogressbar.h"

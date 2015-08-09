@@ -23,6 +23,9 @@ libfinal_la_SOURCES = \
 	fswitch.cpp \
 	flabel.cpp \
 	flistbox.cpp \
+	fmenubar.cpp \
+	fmenuitem.cpp \
+	fmenulist.cpp \
 	fdialog.cpp \
 	fwindow.cpp \
 	fmessagebox.cpp \
@@ -56,6 +59,9 @@ finalcutinclude_HEADERS = \
 	flabel.h \
 	flineedit.h \
 	flistbox.h \
+	fmenubar.h \
+	fmenuitem.h \
+	fmenulist.h \
 	fmessagebox.h \
 	fobject.h \
 	foptimove.h \
