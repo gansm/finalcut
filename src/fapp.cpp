@@ -1064,9 +1064,11 @@ void FApplication::processMouseEvent()
     }
   }
   flush_out();
-
+  
+#ifdef HAVE_LIBGPM
   if ( gpm_mouse_enabled && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
+#endif
 }
 
 //----------------------------------------------------------------------
