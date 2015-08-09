@@ -11,6 +11,7 @@
 #include <linux/fb.h> // Linux framebuffer console
 
 #include <sys/io.h>
+#include <sys/ioctl.h>
 #include <sys/kd.h>
 #include <sys/stat.h> // <asm/io.h> is deprecated, use <sys/io.h> instead
 
@@ -188,6 +189,7 @@ class FTerm
 
    static term_area* vterm;      // virtual terminal
    static term_area* vdesktop;   // virtual desktop
+   static term_area* vmenubar;   // virtual menubar
    static term_area* vstatusbar; // virtual statusbar
    static term_area* last_area;  // last used area
    term_area* vwin;              // virtual window

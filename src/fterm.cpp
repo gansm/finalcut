@@ -101,6 +101,7 @@ const FString*         FTerm::Sec_DA             = 0;
 FOptiMove*             FTerm::opti               = 0;
 FTerm::term_area*      FTerm::vterm              = 0;
 FTerm::term_area*      FTerm::vdesktop           = 0;
+FTerm::term_area*      FTerm::vmenubar           = 0;
 FTerm::term_area*      FTerm::vstatusbar         = 0;
 FTerm::term_area*      FTerm::last_area          = 0;
 std::queue<int>*       FTerm::output_buffer      = 0;
@@ -130,6 +131,7 @@ FTerm::FTerm()
     fd_tty = -1;
     vterm = 0;
     vdesktop = 0;
+    vmenubar = 0;
     vstatusbar = 0;
     last_area = 0;
     fg_color = -1;
@@ -1378,7 +1380,7 @@ void FTerm::init()
     resetColorMap();
     saveColorMap();
 
-    setPalette (fc::Blue, 0x18, 0x18, 0xb2);
+    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
     setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
     setPalette (fc::Red, 0xb2, 0x18, 0x18);
     setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
@@ -1678,10 +1680,6 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
   if ( w < 0 || h < 0 )
     return;
 
-  widget = static_cast<FWidget*>(this);
-  x = x + widget->getGlobalX() - widget->getX();
-  y = y + widget->getGlobalY() - widget->getY();
-
   if ( x+w > vterm->width )
     w = vterm->width - x;
   if ( w < 0 )
@@ -1690,6 +1688,8 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
     h = vterm->height - y;
   if ( h < 0 )
     return;
+
+  widget = static_cast<FWidget*>(this);
 
   for (register int ty=0; ty < h; ty++)
   {
@@ -1718,6 +1718,20 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
           ++iter;
         }
       }
+
+      // menubar is always on top
+      FWidget* menubar;
+      menubar = reinterpret_cast<FWidget*>(FWidget::menuBar());
+
+      if (  vmenubar && menubar
+         && menubar->getGeometryGlobal().contains(x+tx+1, y+ty+1) )
+      {
+        int bar_x = menubar->getGlobalX() - 1;
+        int bar_y = menubar->getGlobalY() - 1;
+        sc = &vmenubar->text[(y+ty-bar_y) * vmenubar->width + (x+tx-bar_x)];
+      }
+
+      // statusbar is always on top
       FWidget* statusbar;
       statusbar = reinterpret_cast<FWidget*>(FWidget::statusBar());
 
@@ -1728,6 +1742,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
         int bar_y = statusbar->getGlobalY() - 1;
         sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
       }
+
       memcpy (tc, sc, sizeof(FTerm::char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
@@ -1784,6 +1799,19 @@ bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
         found = true;
       ++iter;
     }
+  }
+
+  // menubar is always on top
+  FWidget* menubar;
+  if ( vmenubar )
+    menubar = reinterpret_cast<FWidget*>(vmenubar->widget);
+  else
+    menubar = 0;
+
+  if (  area != vmenubar && menubar
+     && menubar->getGeometryGlobal().contains(x,y) )
+  {
+    covered = true;
   }
 
   // statusbar is always on top
@@ -1860,7 +1888,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
           continue;
         line_len = aw + rsh;
 
-        ac = &area->text[y * line_len  + x];
+        ac = &area->text[y * line_len + x];
         tc = &vterm->text[gy * vterm->width + gx - ol];
 
         if ( ! isCovered(gx-ol, gy, area) )
@@ -2008,7 +2036,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
   ah   = area->height;
   rsh  = area->right_shadow;
   bsh  = area->bottom_shadow;
-  ol   = 0;    // outside left
+  ol   = 0;  // outside left
   sbar = 0;  // statusbar distance
 
   if ( ax < 0 )
@@ -2017,9 +2045,10 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     ax = 0;
   }
 
-  if ( vstatusbar && vstatusbar->widget && area != vstatusbar)
+  if ( vstatusbar && vstatusbar->widget && area != vstatusbar )
     sbar = 1;
-  if ( ah + bsh + ay + sbar > vterm->height )
+
+  if ( ay + ah + bsh + sbar > vterm->height )
     y_end = vterm->height - ay - sbar;
   else
     y_end = ah + bsh;
@@ -2057,22 +2086,26 @@ FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
 //----------------------------------------------------------------------
 FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 {
+  int xx,yy;
   FTerm::char_data* cc; // covered character
   FWidget* w;
 
   x--;
   y--;
+  xx = x;
+  yy = y;
 
-  if ( x < 0 )
-    x = 0;
-  if ( y < 0 )
-    y = 0;
-  if ( x >= vterm->width )
-    x = vterm->width - 1;
-  if ( y >= vterm->height )
-    y = vterm->height - 1;
+  if ( xx < 0 )
+    xx = 0;
+  if ( yy < 0 )
+    yy = 0;
 
-  cc = &vdesktop->text[y * vdesktop->width + x];
+  if ( xx >= vterm->width )
+    xx = vterm->width - 1;
+  if ( yy >= vterm->height )
+    yy = vterm->height - 1;
+
+  cc = &vdesktop->text[yy * vdesktop->width + xx];
   w = static_cast<FWidget*>(obj);
 
   if ( w->window_list && ! w->window_list->empty() )
