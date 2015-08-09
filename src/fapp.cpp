@@ -879,11 +879,22 @@ void FApplication::processMouseEvent()
 {
   bool event = false;
 
+#ifdef HAVE_LIBGPM
   if (  ! gpmMouseEvent
      && x11_mouse[0] == '\0'
      && sgr_mouse[0] == '\0'
      && urxvt_mouse[0] == '\0' )
+  {
     return;
+  }
+#else
+  if (  x11_mouse[0] == '\0'
+     && sgr_mouse[0] == '\0'
+     && urxvt_mouse[0] == '\0' )
+  {
+    return;
+  }
+#endif
 
 #ifdef HAVE_LIBGPM
   if ( gpmMouseEvent )
