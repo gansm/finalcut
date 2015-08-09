@@ -1,0 +1,16 @@
+language: c++
+install:
+    - lsb_release -a
+    - uname -a
+    - sudo apt-get update
+    - sudo apt-get -y install libncursesw5-dev libglib2.0-dev
+    - git clone git://github.com/gansm/finalcut.git
+    - cd finalcut
+    - autoreconf -v --install --force
+    - ./configure --prefix=/usr
+    - make
+    - sudo make install
+    - cd ..
+    - rm -rf finalcut
+script: ./configure && make && make check
+
