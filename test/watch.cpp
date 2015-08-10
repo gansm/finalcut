@@ -67,7 +67,7 @@ watch::watch (FWidget* parent) : FDialog(parent)
   FButton* quit = new FButton(L"&Quit", this);
   quit->setGeometry(6, 9, 9, 1);
   quit->setShadow();
-  
+
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw->addCallback
@@ -109,7 +109,7 @@ void watch::printTime()
   FString str;
   struct tm* now;
   time_t t;
-  
+
   t = time(0);  // get current time
   now = localtime(&t);
 

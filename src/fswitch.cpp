@@ -65,7 +65,7 @@ void FSwitch::drawCheckButton()
   {
     if ( hasFocus() && ! button_pressed )
     {
-      
+
       if ( isMonochron() || getMaxColor() < 16 )
       {
         wcsncpy ( on, L" <On>", 6);

@@ -3391,7 +3391,7 @@ FString FTerm::getAnswerbackMsg()
     usleep(150000);  // wait 150 ms
     // read the answerback message
     if ( read(fileno(stdin), &temp, sizeof(temp)-1) > 0 )
-      answerback = temp;   
+      answerback = temp;
   }
   return answerback;
 }

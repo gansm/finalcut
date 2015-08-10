@@ -65,9 +65,6 @@ void FToggleButton::init()
 
   setGeometry (1, 1, 4, 1, false);  // initialize geometry values
 
-  if ( isRadioButton() || isCheckboxButton() )
-    setVisibleCursor();
-
   if ( hasFocus() )
     this->flags = FOCUS;
 
@@ -157,7 +154,7 @@ void FToggleButton::draw()
   if ( isRadioButton() || isCheckboxButton() )
   {
     setCursorPos (xpos+xmin, ypos+ymin-1);
-    
+
     if ( isCursorInside() && hasFocus() )
     {
       if ( isHiddenCursor() )

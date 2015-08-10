@@ -35,6 +35,7 @@ void FRadioButton::init()
 {
   label_offset_pos = 4;
   button_width = 4;
+  setVisibleCursor();
 }
 
 //----------------------------------------------------------------------
