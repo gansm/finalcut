@@ -1,8 +1,6 @@
 language: c++
 compiler:
   - gcc
-before_install:
-  - sudo pip install cpp-coveralls
 install:
   - lsb_release -a
   - uname -a
@@ -17,7 +15,5 @@ install:
   - cd ..
   - rm -rf finalcut
 script:
-  - autoreconf -v --install --force && ./build.sh gcov && make && make check
-after_success:
-  - coveralls --gcov-options '\-lp'
+  - autoreconf -v --install --force && ./configure --prefix=/usr && make && make check
 
