@@ -5,6 +5,9 @@
 *.la
 *.a
 *.lib
+*.gcov
+*.gcno
+*.gcda
 config.*
 Makefile
 libtool

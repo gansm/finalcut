@@ -1,16 +1,23 @@
 language: c++
+compiler:
+  - gcc
+before_install:
+  - sudo pip install cpp-coveralls
 install:
-    - lsb_release -a
-    - uname -a
-    - sudo apt-get update
-    - sudo apt-get -y install libncursesw5-dev libglib2.0-dev
-    - git clone git://github.com/gansm/finalcut.git
-    - cd finalcut
-    - autoreconf -v --install --force
-    - ./configure --prefix=/usr
-    - make
-    - sudo make install
-    - cd ..
-    - rm -rf finalcut
-script: autoreconf -v --install --force && ./configure --prefix=/usr && make && make check
+  - lsb_release -a
+  - uname -a
+  - sudo apt-get update
+  - sudo apt-get -y install libglib2.0-dev libncursesw5-dev libgpm-dev
+  - git clone git://github.com/gansm/finalcut.git
+  - cd finalcut
+  - autoreconf -v --install --force
+  - ./configure --prefix=/usr
+  - make
+  - sudo make install
+  - cd ..
+  - rm -rf finalcut
+script:
+  - autoreconf -v --install --force && ./build.sh gcov && make && make check
+after_success:
+  - coveralls --gcov-options '\-lp'
 
