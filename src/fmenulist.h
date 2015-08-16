@@ -4,8 +4,8 @@
 #ifndef _FMENULIST_H
 #define _FMENULIST_H
 
-#include "fwidget.h"
 #include "fmenuitem.h"
+#include "fwidget.h"
 
 /*
     ┌─────────┐       ┌──────────┐
@@ -13,11 +13,12 @@
     └─────────┘    │  └──────────┘
   ┌───────────┐◄───┘  ┌───────────┐
   │ FMenuList ├-------┤ FMenuItem │
-  └───────────┘◄───┐  └───────────┘
-    ┌─────────┐    │  ┌────────────┐
-    │ FWidget │◄───┴──┤ FPopupMenu │
-    └─────────┘       └────────────┘
+  └───────────┘◄───┐  └───┬───────┘
+    ┌─────────┐    │  ┌───┴───┐
+    │ FWidget │◄───┴──┤ FMenu │
+    └─────────┘       └───────┘
 */
+
 
 //----------------------------------------------------------------------
 // class FMenuList
@@ -40,17 +41,17 @@ class FMenuList
    virtual ~FMenuList();
    virtual const char* getClassName() const;
 
-   uInt count() const;
+   uInt       count() const;
    FMenuItem* item (int) const;
-   void activateItem (int);
-   void deactivateItem (int);
-   bool isSelected (int) const;
-   bool hasSelectedItem();
+   void       activateItem (int);
+   void       deactivateItem (int);
+   bool       isSelected (int) const;
+   bool       hasSelectedItem();
 
-   void insert (FMenuItem*);
-   void remove (FMenuItem*);
-   void remove (int);
-   void clear();
+   void       insert (FMenuItem*);
+   void       remove (FMenuItem*);
+   void       remove (int);
+   void       clear();
 };
 #pragma pack(pop)
 

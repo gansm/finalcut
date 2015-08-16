@@ -19,6 +19,7 @@
 #include "flistbox.h"
 #include "ftextview.h"
 #include "flineedit.h"
+#include "fmenu.h"
 #include "fmenubar.h"
 #include "fmenuitem.h"
 #include "fstatusbar.h"

@@ -6,6 +6,7 @@
 
 #include "fwidget.h"
 
+class FMenu;
 class FMenuList;
 
 //----------------------------------------------------------------------
@@ -23,23 +24,23 @@ class FMenuItem : public FWidget
    bool    selected;
    bool    separator;
    bool    checked;
+   int     hotkey;
  //int     accel_key;
- //FPopupMenu* menu;
+   FMenu*  menu;
    FMenuList*  super_menu;
 
  private:
    FMenuItem (const FMenuItem&);
    FMenuItem& operator = (const FMenuItem&);
    void       init (FWidget*);
+   uChar      getHotkey();
    bool       isMenuBar (FWidget*) const;
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
-
- protected:
-   virtual void processActivate();
+   void       processActivate();
 
  public:
-   explicit FMenuItem(FWidget* parent=0);
+   explicit FMenuItem (FWidget* parent=0);
    FMenuItem (FString&, FWidget* parent=0);
    FMenuItem (const std::string&, FWidget* parent=0);
    FMenuItem (const char*, FWidget* parent=0);
@@ -59,12 +60,12 @@ class FMenuItem : public FWidget
    void    setChecked();
    void    unsetChecked();
    bool    isChecked() const;
+   bool    hasHotkey() const;
+   void    setMenu(FMenu*);
    bool    hasMenu() const;
-
- protected:
-   void setText (FString&);
-   void setText (const std::string&);
-   void setText (const char*);
+   void    setText (FString&);
+   void    setText (const std::string&);
+   void    setText (const char*);
 
  private:
    friend class FMenuList;
@@ -78,16 +79,16 @@ inline FString FMenuItem::getText() const
 { return this->text; }
 
 //----------------------------------------------------------------------
+inline void FMenuItem::setActive()
+{ this->active = true; }
+
+//----------------------------------------------------------------------
 inline void FMenuItem::unsetActive()
 { this->active = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isActivated() const
 { return active; }
-
-//----------------------------------------------------------------------
-inline void FMenuItem::setSelected()
-{ this->selected = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetSelected()
@@ -122,20 +123,16 @@ inline bool FMenuItem::isChecked() const
 { return checked; }
 
 //----------------------------------------------------------------------
-//inline bool FMenuItem::hasMenu() const;
-//{ return bool(menu != 0); }
+inline bool FMenuItem::hasHotkey() const
+{ return bool(hotkey != 0); }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setText (FString& txt)
-{ this->text = txt; }
+inline void FMenuItem::setMenu(FMenu* m)
+{ menu = m; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setText (const std::string& txt)
-{ this->text = txt; }
-
-//----------------------------------------------------------------------
-inline void FMenuItem::setText (const char* txt)
-{ this->text = txt; }
+inline bool FMenuItem::hasMenu() const
+{ return bool(menu != 0); }
 
 
 #endif  // _FMENUITEM_H

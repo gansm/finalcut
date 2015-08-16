@@ -23,6 +23,7 @@ libfinal_la_SOURCES = \
 	fswitch.cpp \
 	flabel.cpp \
 	flistbox.cpp \
+	fmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
 	fmenulist.cpp \
@@ -59,6 +60,7 @@ finalcutinclude_HEADERS = \
 	flabel.h \
 	flineedit.h \
 	flistbox.h \
+	fmenu.h \
 	fmenubar.h \
 	fmenuitem.h \
 	fmenulist.h \

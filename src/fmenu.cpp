@@ -1,63 +1,76 @@
-// fmenubar.cpp
-// class FMenuBar
+// fmenu.cpp
+// class FMenu
 
-#include "fmenubar.h"
+#include "fmenu.h"
 
 //----------------------------------------------------------------------
-// class FMenuBar
+// class FMenu
 //----------------------------------------------------------------------
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FMenuBar::FMenuBar(FWidget* parent) : FWindow(parent)
+FMenu::FMenu(FWidget* parent) : FWindow(parent)
 {
+  item = 0;
   this->init();
 }
 
 //----------------------------------------------------------------------
-FMenuBar::~FMenuBar()
+FMenu::FMenu (FString& txt, FWidget* parent) : FWindow(parent)
 {
-  if ( vmenubar != 0 )
-  {
-    if ( vmenubar->changes != 0 )
-      delete[] vmenubar->changes;
-    if ( vmenubar->text != 0 )
-      delete[] vmenubar->text;
-    delete vmenubar;
-  }
-  vmenubar = 0;
-}
-
-
-// private methods of FMenuBar
-//----------------------------------------------------------------------
-void FMenuBar::init()
-{
-  xmin = ymin = 1;
-  xpos = 1;
-  ypos = 1;
-  createArea (vmenubar);
-  // initialize geometry values
-  setGeometry (1, 1, getColumnNumber(), 1, false);
-  getRootWidget()->setTopPadding(1, true);
-  x = -1;
-  setMenuBar(this);
-  foregroundColor = wc.statusbar_fg;
-  backgroundColor = wc.statusbar_bg;
-  window_object  = true;
-  mouse_down = false;
-  ignore_padding = true;
-  unsetFocusable();
+  item = new FMenuItem(txt, parent);
+  this->init();
 }
 
 //----------------------------------------------------------------------
-bool FMenuBar::isMenu (FMenuItem* mi) const
+FMenu::FMenu (const std::string& txt, FWidget* parent) : FWindow(parent)
 {
-  return mi->hasMenu();
+  item = new FMenuItem(txt, parent);
+  this->init();
 }
 
 //----------------------------------------------------------------------
-int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
+FMenu::FMenu (const char* txt, FWidget* parent) : FWindow(parent)
+{
+  item = new FMenuItem(txt, parent);
+  this->init();
+}
+
+//----------------------------------------------------------------------
+FMenu::~FMenu()
+{
+}
+
+
+// private methods of FMenu
+//----------------------------------------------------------------------
+void FMenu::init()
+{
+  item->setMenu(this);
+  setGeometry (1,1,1,1);
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isMenuBar (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName(),
+                         const_cast<char*>("FMenuBar") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+FMenuList* FMenu::superMenu() const
+{
+  return super_menu;
+}
+
+//----------------------------------------------------------------------
+void FMenu::setSuperMenu (FMenuList* smenu)
+{
+  super_menu = smenu;
+}
+
+//----------------------------------------------------------------------
+int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -78,33 +91,21 @@ int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::draw()
+void FMenu::draw()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
   drawItems();
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::drawItems()
+void FMenu::drawItems()
 {
-  bool isActive;
-  bool isSelected;
-  bool isNoUnderline;
   std::vector<FMenuItem*>::const_iterator iter, end;
-  int screenWidth;
-
-  x = 1;
-  screenWidth = getColumnNumber();
-  width = screenWidth;
-  ypos = 1;
+  int y = 1;
 
   if ( itemlist.empty() )
     return;
 
   setUpdateVTerm(false);
-  gotoxy (1,1);
 
   iter = itemlist.begin();
   end = itemlist.end();
@@ -117,10 +118,9 @@ void FMenuBar::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
-
-    isActive = (*iter)->isActivated();
-    isSelected = (*iter)->isSelected();
-    isNoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    bool isActive = (*iter)->isActivated();
+    bool isSelected = (*iter)->isSelected();
+    bool isNoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
 
     if ( isActive )
     {
@@ -142,8 +142,8 @@ void FMenuBar::drawItems()
       foregroundColor = wc.menu_inactive_fg;
       backgroundColor = wc.menu_inactive_bg;
     }
+    gotoxy (xpos+xmin+1, ypos+ymin+y);
     setColor (foregroundColor, backgroundColor);
-    x++;
     print (vmenubar, ' ');
 
     txt = (*iter)->getText();
@@ -151,12 +151,7 @@ void FMenuBar::drawItems()
     item_text = new wchar_t[txt_length+1];
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
-
-    if ( x-1 <= screenWidth )
-      to_char = int(txt_length);
-    else
-      to_char = txt_length - (screenWidth-x-1);
-
+    to_char = int(txt_length);
     hotkeypos = getHotkeyPos (src, dest, txt_length);
 
     if ( hotkeypos != -1 )
@@ -164,7 +159,6 @@ void FMenuBar::drawItems()
       txt_length--;
       to_char--;
     }
-    x += txt_length;
 
     for (int z=0; z < to_char; z++)
     {
@@ -184,50 +178,25 @@ void FMenuBar::drawItems()
         print (vmenubar, item_text[z]);
     }
 
-    if ( x > screenWidth )
-    {
-      print ( vmenubar,
-              txt.left(uInt(txt_length+screenWidth-x-1)) );
-      print ( vmenubar, ".." );
-    }
-    else
-    {
-      x++;
-      print (vmenubar, ' ');
-    }
-
     if ( isActive && isSelected )
       setReverse(false);
     delete[] item_text;
 
     ++iter;
+    y++;
   }
-  for (; x <= screenWidth; x++)
-    print (vmenubar, ' ');
-
   setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::adjustSize()
-{
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
-  width = getColumnNumber();
-  ypos = 1;
-  FWidget::adjustSize();
-}
-
-//----------------------------------------------------------------------
-void FMenuBar::processActivate()
+void FMenu::processActivate()
 {
   emitCallback("activate");
 }
 
-// public methods of FMenuBar
+// public methods of FMenu
 //----------------------------------------------------------------------
-void FMenuBar::onMouseDown (FMouseEvent* event)
+void FMenu::onMouseDown (FMouseEvent* event)
 {
   if ( event->getButton() != LeftButton )
   {
@@ -265,9 +234,7 @@ void FMenuBar::onMouseDown (FMouseEvent* event)
 
       x1 = X;
       txt_length = int((*iter)->getText().getLength());
-      if ( (*iter)->hasHotkey() )
-        txt_length--;
-      x2 = x1 + txt_length;
+      x2 = x1 + txt_length + 1;
       mouse_x = event->getX();
       mouse_y = event->getY();
 
@@ -279,19 +246,14 @@ void FMenuBar::onMouseDown (FMouseEvent* event)
         (*iter)->setSelected();
         this->redraw();
       }
-      else
-      {
-        (*iter)->unsetSelected();
-        this->redraw();
-      }
-      X = x2 + 1;
+      X = x2 + 2;
       ++iter;
     }
   }
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::onMouseUp (FMouseEvent* event)
+void FMenu::onMouseUp (FMouseEvent* event)
 {
   if ( event->getButton() != LeftButton )
     return;
@@ -311,9 +273,7 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
       {
         int x1 = X;
         int txt_length = int((*iter)->getText().getLength());
-        if ( (*iter)->hasHotkey() )
-          txt_length--;
-        int x2 = x1 + txt_length;
+        int x2 = x1 + txt_length + 1;
 
         if ( (*iter)->isSelected() )
         {
@@ -323,7 +283,7 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
             (*iter)->unsetSelected();
           this->redraw();
         }
-        X = x2 + 1;
+        X = x2 + 2;
         ++iter;
       }
     }
@@ -331,7 +291,7 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::onMouseMove (FMouseEvent* event)
+void FMenu::onMouseMove (FMouseEvent* event)
 {
   if ( event->getButton() != LeftButton )
     return;
@@ -349,9 +309,7 @@ void FMenuBar::onMouseMove (FMouseEvent* event)
     {
       int x1 = X;
       int txt_length = int((*iter)->getText().getLength());
-      if ( (*iter)->hasHotkey() )
-        txt_length--;
-      int x2 = x1 + txt_length;
+      int x2 = x1 + txt_length + 1;
 
       int mouse_x = event->getX();
       int mouse_y = event->getY();
@@ -373,7 +331,7 @@ void FMenuBar::onMouseMove (FMouseEvent* event)
           focus_changed = true;
         }
       }
-      X = x2 + 1;
+      X = x2 + 2;
       ++iter;
     }
     if ( focus_changed )
@@ -382,29 +340,12 @@ void FMenuBar::onMouseMove (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::hide()
+void FMenu::hide()
 {
-  int fg, bg, screenWidth;
-  char* blank;
-
-  FWidget::hide();
-
-  fg = wc.term_fg;
-  bg = wc.term_bg;
-  setColor (fg, bg);
-
-  screenWidth = getColumnNumber();
-  blank = new char[screenWidth+1];
-  memset(blank, ' ', uLong(screenWidth));
-  blank[screenWidth] = '\0';
-
-  gotoxy (1, 1);
-  print (vmenubar, blank);
-  delete[] blank;
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
+void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 {
   int old_width = width;
   int old_height = height;
@@ -414,7 +355,7 @@ void FMenuBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_item_activated (FWidget* widget, void*)
+void FMenu::cb_menuitem_activated (FWidget* widget, void*)
 {
   FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
 

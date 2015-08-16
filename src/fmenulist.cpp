@@ -58,28 +58,17 @@ bool FMenuList::hasSelectedItem()
 }
 
 //----------------------------------------------------------------------
-void FMenuList::insert (FMenuItem* obj)
+void FMenuList::insert (FMenuItem* item)
 {
-  itemlist.push_back(obj);
-
-  //addAccelerator (obj->getKey(), obj);
-/*
-  obj->addCallback
-  (
-    "activate",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FMenuBar::cb_statuskey_activated),
-    null
-  );
-*/
+  itemlist.push_back(item);
 }
 
 //----------------------------------------------------------------------
-void FMenuList::remove (FMenuItem* obj)
+void FMenuList::remove (FMenuItem* item)
 {
   std::vector<FMenuItem*>::iterator iter;
 
-  //delAccelerator (obj);
+  //delAccelerator (item);
 
   if ( itemlist.empty() )
     return;
@@ -87,10 +76,10 @@ void FMenuList::remove (FMenuItem* obj)
   iter = itemlist.begin();
   while ( iter != itemlist.end() )
   {
-    if ( (*iter) == obj )
+    if ( (*iter) == item )
     {
       iter = itemlist.erase(iter);
-      obj->setSuperMenu(0);
+      item->setSuperMenu(0);
       break;
     }
     else
@@ -112,3 +101,10 @@ void FMenuList::clear()
 {
   itemlist.clear();
 }
+
+
+// protected methods of FMenuList
+//----------------------------------------------------------------------
+/*void FMenuList::cb_item_activated (FWidget*, void*)
+{
+}*/

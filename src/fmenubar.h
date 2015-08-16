@@ -24,7 +24,8 @@ class FMenuBar : public FWindow, public FMenuList
    FMenuBar (const FMenuBar&);
    FMenuBar& operator = (const FMenuBar&);
    void init();
-   int getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+   bool isMenu (FMenuItem*) const;
+   int  getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void draw();
    void drawItems();
    void adjustSize();
@@ -40,8 +41,7 @@ class FMenuBar : public FWindow, public FMenuList
    void onMouseMove (FMouseEvent*);
    void hide();
    void setGeometry (int, int, int, int, bool adjust=true);
-
-   //void cb_menuitem_activated (FWidget*, void*);
+   void cb_item_activated (FWidget*, void*);
 };
 #pragma pack(pop)
 

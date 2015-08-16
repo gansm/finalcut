@@ -130,10 +130,10 @@ libfinal_la_LIBADD =
 am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fprogressbar.lo flineedit.lo fbutton.lo fbuttongroup.lo \
 	ftogglebutton.lo fradiobutton.lo fcheckbox.lo fswitch.lo \
-	flabel.lo flistbox.lo fmenubar.lo fmenuitem.lo fmenulist.lo \
-	fdialog.lo fwindow.lo fmessagebox.lo ffiledialog.lo \
-	ftextview.lo fstatusbar.lo fterm.lo fevent.lo foptimove.lo \
-	fapp.lo fwidget.lo fobject.lo
+	flabel.lo flistbox.lo fmenu.lo fmenubar.lo fmenuitem.lo \
+	fmenulist.lo fdialog.lo fwindow.lo fmessagebox.lo \
+	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fevent.lo \
+	foptimove.lo fapp.lo fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -385,6 +385,7 @@ libfinal_la_SOURCES = \
 	fswitch.cpp \
 	flabel.cpp \
 	flistbox.cpp \
+	fmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
 	fmenulist.cpp \
@@ -419,6 +420,7 @@ finalcutinclude_HEADERS = \
 	flabel.h \
 	flineedit.h \
 	flistbox.h \
+	fmenu.h \
 	fmenubar.h \
 	fmenuitem.h \
 	fmenulist.h \
@@ -528,6 +530,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flabel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flineedit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flistbox.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmenu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmenubar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmenuitem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmenulist.Plo@am__quote@
