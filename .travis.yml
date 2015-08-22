@@ -5,7 +5,7 @@ install:
   - lsb_release -a
   - uname -a
   - sudo apt-get update
-  - sudo apt-get -y install libglib2.0-dev libncursesw5-dev libgpm-dev
+  - sudo apt-get -y install libglib2.0-dev libncursesw5-dev libgpm-dev autoconf-archive
   - git clone git://github.com/gansm/finalcut.git
   - cd finalcut
   - autoreconf -v --install --force
