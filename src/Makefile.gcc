@@ -37,11 +37,12 @@ INCLUDE_HEADERS = fapp.h \
 
 # compiler parameter
 CXX = g++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(GPM) -march=x86-64 -frtti -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -I./
-GPM = -D HAVE_LIBGPM
+GPM = -D F_HAVE_LIBGPM
+VER = -D F_VERSION=$(VERSION)
 RM = rm -f
 LIB = libfinal.so
 OBJS = fstring.o \
@@ -86,7 +87,7 @@ endif
 .cpp.o:
 	$(CXX) -c $(CCXFLAGS) -fpic -o $@ $<
 
-all: dep $(OBJS) 
+all: dep $(OBJS)
 	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR) -o $(LIB).$(VERSION) $(OBJS)
 	ln -s -f $(LIB).$(VERSION) libfinal.so.$(MAJOR)
 	ln -s -f $(LIB).$(MAJOR) libfinal.so

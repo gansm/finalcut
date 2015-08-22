@@ -29,7 +29,6 @@ class FMenuBar : public FWindow, public FMenuList
    void draw();
    void drawItems();
    void adjustSize();
-   void processActivate();
 
  public:
    explicit FMenuBar (FWidget* parent=0);  // constructor

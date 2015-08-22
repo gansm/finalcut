@@ -1,6 +1,6 @@
 #!/bin/sh
 
-$PREFIX="/usr"
+PREFIX="/usr"
 
 case "$1" in
   "--help"|"help")

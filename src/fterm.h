@@ -4,7 +4,9 @@
 #ifndef _FTERM_H
 #define _FTERM_H
 
-#ifdef HAVE_LIBGPM
+#include <fconfig.h>
+
+#ifdef F_HAVE_LIBGPM
   #include <gpm.h>
 #endif
 
@@ -34,7 +36,7 @@
 #include "fstring.h"
 
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   #undef buttons  // from term.h
 #endif
 
@@ -298,11 +300,11 @@ class FTerm
    static void    enableXTermMouse();
    static void    disableXTermMouse();
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
    static bool    gpmMouse (bool);
    static bool    enableGpmMouse();
    static bool    disableGpmMouse();
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
    static void    setTermXY (register int, register int);
    static void    setBeep(int, int);
@@ -466,7 +468,7 @@ inline void FTerm::disableXTermMouse()
 { xtermMouse(false); }
 
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
 //----------------------------------------------------------------------
 inline bool FTerm::enableGpmMouse()
 { return gpmMouse(true); }
@@ -475,7 +477,7 @@ inline bool FTerm::enableGpmMouse()
 inline bool FTerm::disableGpmMouse()
 { return gpmMouse(false); }
 
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 inline bool FTerm::hideCursor()

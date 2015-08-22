@@ -40,7 +40,7 @@ class FApplication : public FWidget
    char            sgr_mouse[13];
    char            urxvt_mouse[13];
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
    Gpm_Event gpm_ev;
    bool gpmMouseEvent;
    enum gpmEventType
@@ -99,7 +99,7 @@ class FApplication : public FWidget
    bool    parseSGRMouse();
    bool    parseUrxvtMouse();
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
    int     gpmEvent();
    bool    processGpmEvent();
 #endif

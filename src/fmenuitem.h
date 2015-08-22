@@ -38,6 +38,7 @@ class FMenuItem : public FWidget
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
    void       processActivate();
+   void       processClicked();
 
  public:
    explicit FMenuItem (FWidget* parent=0);
@@ -69,6 +70,7 @@ class FMenuItem : public FWidget
 
  private:
    friend class FMenuList;
+   friend class FMenuBar;
 };
 #pragma pack(pop)
 

@@ -50,6 +50,7 @@ finalcutinclude_HEADERS = \
 	fbuttongroup.h \
 	fcharmap.h \
 	fcheckbox.h \
+	fconfig.h \
 	fswitch.h \
 	fdialog.h \
 	fenum.h \

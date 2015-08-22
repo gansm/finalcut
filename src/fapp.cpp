@@ -74,7 +74,7 @@ void FApplication::init (int argc, char* argv[])
   fifo_in_use = false;
   fifo_buf_size = sizeof(fifo_buf);
   x11_button_state = 0x23;
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   gpmMouseEvent = false;
   gpm_ev.x = -1;
 #endif
@@ -133,7 +133,7 @@ void FApplication::cmd_options ()
 }
 
 //----------------------------------------------------------------------
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
 inline int FApplication::gpmEvent(void)
 {
   register int result;
@@ -159,7 +159,7 @@ inline int FApplication::gpmEvent(void)
   else
     return no_event;
 }
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 inline bool FApplication::KeyPressed()
@@ -212,7 +212,7 @@ void FApplication::processKeyboardEvent()
     fifo_in_use = false;
   }
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   if ( gpm_mouse_enabled )
   {
     gpmMouseEvent = false;
@@ -230,7 +230,7 @@ void FApplication::processKeyboardEvent()
     isKeyPressed = KeyPressed();
 #else  // without gpm
   isKeyPressed = KeyPressed();
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
   if ( isKeyPressed )
   {
@@ -812,7 +812,7 @@ bool FApplication::parseUrxvtMouse()
 }
 
 //----------------------------------------------------------------------
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
 bool FApplication::processGpmEvent()
 {
   memset(&b_state, 0x00, sizeof(b_state));
@@ -872,14 +872,14 @@ bool FApplication::processGpmEvent()
   }
   return false;
 }
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent()
 {
   bool event = false;
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   if (  ! gpmMouseEvent
      && x11_mouse[0] == '\0'
      && sgr_mouse[0] == '\0'
@@ -896,7 +896,7 @@ void FApplication::processMouseEvent()
   }
 #endif
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   if ( gpmMouseEvent )
     event = processGpmEvent();
 #endif
@@ -1065,7 +1065,7 @@ void FApplication::processMouseEvent()
   }
   flush_out();
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   if ( gpm_mouse_enabled && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
 #endif

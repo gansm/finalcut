@@ -5,6 +5,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([finalcut], [0.1.1])
+AC_CONFIG_HEADER([config.h])
+AX_PREFIX_CONFIG_H([src/fconfig.h], [F])
 AC_CONFIG_SRCDIR([src/fobject.cpp])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
@@ -63,7 +65,8 @@ if test "x$with_gpm" != "xno"
 then
   AC_CHECK_LIB([gpm],
                [main],
-               [AC_DEFINE(HAVE_LIBGPM) LIBS="$LIBS -lgpm"])
+               [LIBS="$LIBS -lgpm"])
+  AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
 fi
 
 AC_OUTPUT

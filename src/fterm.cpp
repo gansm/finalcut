@@ -1299,7 +1299,7 @@ void FTerm::init()
     Fputchar = &FTerm::putchar_VT100;  // function pointer
   }
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   // Enable the linux general purpose mouse (gpm) server
   gpm_mouse_enabled = enableGpmMouse();
 #endif
@@ -1475,7 +1475,7 @@ void FTerm::finish()
   if ( mouse_support )
     disableXTermMouse();
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
   if ( gpm_mouse_enabled )
     disableGpmMouse();  // Disable gpm server
 #endif
@@ -2921,7 +2921,7 @@ void FTerm::xtermMouse (bool on)
 }
 
 
-#ifdef HAVE_LIBGPM
+#ifdef F_HAVE_LIBGPM
 //----------------------------------------------------------------------
 bool FTerm::gpmMouse (bool on)
 {
@@ -2959,7 +2959,7 @@ bool FTerm::gpmMouse (bool on)
   }
   return on;
 }
-#endif  // HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 void FTerm::setTermXY (register int x, register int y)

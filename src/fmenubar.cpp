@@ -219,12 +219,6 @@ void FMenuBar::adjustSize()
   FWidget::adjustSize();
 }
 
-//----------------------------------------------------------------------
-void FMenuBar::processActivate()
-{
-  emitCallback("activate");
-}
-
 // public methods of FMenuBar
 //----------------------------------------------------------------------
 void FMenuBar::onMouseDown (FMouseEvent* event)
@@ -321,6 +315,10 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
           int mouse_y = event->getY();
           if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
             (*iter)->unsetSelected();
+          else
+          {
+            (*iter)->processClicked();
+          }
           this->redraw();
         }
         X = x2 + 1;

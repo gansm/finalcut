@@ -8,6 +8,7 @@
 *.gcov
 *.gcno
 *.gcda
+_configs.sed
 config.*
 Makefile
 libtool

@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-
 #define FWDBUFFER 15
 #define INPBUFFER 200
 #define CHAR_SIZE (sizeof(wchar_t))  // bytes per character

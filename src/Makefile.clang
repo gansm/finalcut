@@ -37,11 +37,12 @@ INCLUDE_HEADERS = fapp.h \
 
 # compiler parameter
 CXX = clang++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(GPM) -march=x86-64 -frtti -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -I./
-GPM = -D HAVE_LIBGPM
+GPM = -D F_HAVE_LIBGPM
+VER = -D F_VERSION=$(VERSION)
 RM = rm -f
 LIB = libfinal.so
 OBJS = fstring.o \

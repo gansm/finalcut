@@ -15,7 +15,6 @@
 #include <cstdlib>
 #include <cstring>
 
-
 // value for a long capability waiting time
 #define LONG_DURATION 9999999
 

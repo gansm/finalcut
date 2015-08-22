@@ -107,12 +107,16 @@ void FMenuItem::setSuperMenu (FMenuList* smenu)
   super_menu = smenu;
 }
 
-
-// protected methods of FMenuItem
 //----------------------------------------------------------------------
 void FMenuItem::processActivate()
 {
   emitCallback("activate");
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::processClicked()
+{
+  emitCallback("clicked");
 }
 
 // public methods of FMenuItem
@@ -132,8 +136,11 @@ void FMenuItem::onAccel (FAccelEvent* event)
 //----------------------------------------------------------------------
 void FMenuItem::setSelected()
 {
-  this->selected = true;
-  processActivate();
+  if ( isActivated() )
+  {
+    this->selected = true;
+    processActivate();
+  }
 }
 
 //----------------------------------------------------------------------
