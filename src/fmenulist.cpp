@@ -102,9 +102,3 @@ void FMenuList::clear()
   itemlist.clear();
 }
 
-
-// protected methods of FMenuList
-//----------------------------------------------------------------------
-/*void FMenuList::cb_item_activated (FWidget*, void*)
-{
-}*/

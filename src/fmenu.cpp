@@ -39,6 +39,21 @@ FMenu::FMenu (const char* txt, FWidget* parent) : FWindow(parent)
 //----------------------------------------------------------------------
 FMenu::~FMenu()
 {
+  activatePrevWindow();
+  delWindow(this);
+
+  const FRect& geometry = getGeometryGlobalShadow();
+  restoreVTerm (geometry);
+  parentWidget()->redraw(); // ????
+ 
+  if ( vwin != 0 )
+  {
+    if ( vwin->changes != 0 )
+      delete[] vwin->changes;
+    if ( vwin->text != 0 )
+      delete[] vwin->text;
+    delete vwin;
+  }
 }
 
 
@@ -46,8 +61,35 @@ FMenu::~FMenu()
 //----------------------------------------------------------------------
 void FMenu::init()
 {
+  width  = 10;
+  height = 2;
+  xmin = 1;
+  ymin = 1;
+  xmax = width;
+  ymax = height;
+  client_xmin = 1;
+  client_ymin = 1;
+  client_xmax = width;
+  client_ymax = height;
+  top_padding    = 1;
+  left_padding   = 1;
+  bottom_padding = 1;
+  right_padding  = 1;
+  createArea (vwin);
+  setGeometry (1, 1, 10, 2, false);  // initialize geometry values
+  ignore_padding = true;
+  window_object  = true;
+  addWindow(this);
+  setActiveWindow(this);
+ 
+  FWidget* old_focus = FWidget::getFocusWidget();
+  if ( old_focus )
+  {
+    setFocus();
+    old_focus->redraw();
+  }
+  
   item->setMenu(this);
-  setGeometry (1,1,1,1);
 }
 
 //----------------------------------------------------------------------
@@ -93,7 +135,18 @@ int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 //----------------------------------------------------------------------
 void FMenu::draw()
 {
+  if ( itemlist.empty() )
+    return;
+
+  // fill the background
+  setColor (foregroundColor, backgroundColor);
+  setUpdateVTerm(false);
+  clrscr();
+  drawBorder();
+  
   drawItems();
+  
+  setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -101,11 +154,6 @@ void FMenu::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
   int y = 1;
-
-  if ( itemlist.empty() )
-    return;
-
-  setUpdateVTerm(false);
 
   iter = itemlist.begin();
   end = itemlist.end();
@@ -144,7 +192,7 @@ void FMenu::drawItems()
     }
     gotoxy (xpos+xmin+1, ypos+ymin+y);
     setColor (foregroundColor, backgroundColor);
-    print (vmenubar, ' ');
+    print (' ');
 
     txt = (*iter)->getText();
     txt_length = int(txt.getLength());
@@ -169,13 +217,13 @@ void FMenu::drawItems()
         setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
         if ( ! isNoUnderline )
           setUnderline();
-        print (vmenubar, item_text[z]);
+        print (item_text[z]);
         if ( ! isNoUnderline )
           unsetUnderline();
         setColor (foregroundColor, backgroundColor);
       }
       else
-        print (vmenubar, item_text[z]);
+        print (item_text[z]);
     }
 
     if ( isActive && isSelected )
@@ -185,7 +233,6 @@ void FMenu::drawItems()
     ++iter;
     y++;
   }
-  setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -350,8 +397,8 @@ void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
   int old_width = width;
   int old_height = height;
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
-  if ( vmenubar && (width != old_width || height != old_height) )
-    resizeArea (vmenubar);
+  if ( vwin && (width != old_width || height != old_height) )
+    resizeArea (vwin);
 }
 
 //----------------------------------------------------------------------
