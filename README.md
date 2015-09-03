@@ -3,23 +3,23 @@ The Final Cut [![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=m
 The Final Cut is a class library and widget toolkit with full mouse support for creating a text-based user interface. The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple windows on the screen.  
 The C++ class design was inspired by the Qt framework. It provides common controls like dialog windows, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 
-![](https://github.com/gansm/finalcut/blob/master/doc/fileopen-dialog.png)  
+![](doc/fileopen-dialog.png)  
 
-![](https://github.com/gansm/finalcut/blob/master/doc/progress-bar.png)  
+![](doc/progress-bar.png)  
 
-![](https://github.com/gansm/finalcut/blob/master/doc/textview.png)  
+![](doc/textview.png)  
 
-![](https://github.com/gansm/finalcut/blob/master/doc/Mandelbrot.png)  
+![](doc/Mandelbrot.png)  
 
 
 newfont
 -------
 A new text font for X11 and the Linux console.
-![](https://github.com/gansm/finalcut/blob/master/doc/newfont1.png)  
+![](doc/newfont1.png)  
 
-![](https://github.com/gansm/finalcut/blob/master/doc/newfont2.png)
+![](doc/newfont2.png)
 
-![](https://github.com/gansm/finalcut/blob/master/doc/calculator.png)
+![](doc/calculator.png)
 
 
 Virtual terminal
