@@ -9,7 +9,12 @@
 *.gcno
 *.gcda
 _configs.sed
-config.*
+config.guess
+config.h
+config.log
+config.lt
+config.status
+config.sub
 Makefile
 libtool
 /autom4te.cache

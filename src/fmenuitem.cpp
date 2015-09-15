@@ -1,6 +1,7 @@
 // fmenuitem.cpp
 // class FMenuItem
 
+#include "fmenu.h"
 #include "fmenubar.h"
 #include "fmenuitem.h"
 #include "fmenulist.h"
@@ -55,20 +56,38 @@ void FMenuItem::init (FWidget* parent)
   menu = 0;
   setGeometry (1,1,1,1);
 
-  if ( parent && isMenuBar(parent) )
+  if ( parent )
   {
-    setSuperMenu( dynamic_cast<FMenuList*>(parent) );
-    superMenu()->insert(this);
-
-    //addAccelerator (item->getKey(), item);
-
-    this->addCallback
-    (
-      "activate",
-      (FWidget*)superMenu(),
-      reinterpret_cast<FWidget::FMemberCallback>(&FMenuBar::cb_item_activated),
-      null
-    );
+    if ( isMenuBar(parent) ) // Parent is menubar
+    {
+      setSuperMenu( dynamic_cast<FMenuList*>(parent) );
+      superMenu()->insert(this);
+  
+      //addAccelerator (item->getKey(), item);
+  
+      this->addCallback
+      (
+        "activate",
+        (FWidget*)superMenu(),
+        reinterpret_cast<FWidget::FMemberCallback>(&FMenuBar::cb_item_activated),
+        null
+      );
+    }
+    else if ( isMenu(parent) ) // Parent is menu
+    {
+      setSuperMenu( dynamic_cast<FMenuList*>(parent) );
+      superMenu()->insert(this);
+  
+      //addAccelerator (item->getKey(), item);
+  
+      this->addCallback
+      (
+        "activate",
+        (FWidget*)superMenu(),
+        reinterpret_cast<FWidget::FMemberCallback>(&FMenu::cb_menuitem_activated),
+        null
+      );
+    }
   }
 }
 
@@ -93,6 +112,13 @@ bool FMenuItem::isMenuBar (FWidget* w) const
 {
   return bool ( strcmp ( w->getClassName(),
                          const_cast<char*>("FMenuBar") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenuItem::isMenu (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName(),
+                         const_cast<char*>("FMenu") ) == 0 );
 }
 
 //----------------------------------------------------------------------

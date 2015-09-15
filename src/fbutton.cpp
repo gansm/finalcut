@@ -436,7 +436,7 @@ void FButton::hide()
 }
 
 //----------------------------------------------------------------------
-bool FButton::setNoUnderline(bool on)
+bool FButton::setNoUnderline (bool on)
 {
   if ( on )
     this->flags |= NO_UNDERLINE;
@@ -446,7 +446,7 @@ bool FButton::setNoUnderline(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setEnable(bool on)
+bool FButton::setEnable (bool on)
 {
   FWidget::setEnable(on);
 
@@ -465,7 +465,7 @@ bool FButton::setEnable(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFocus(bool on)
+bool FButton::setFocus (bool on)
 {
   FWidget::setFocus(on);
 
@@ -496,7 +496,7 @@ bool FButton::setFocus(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setFlat(bool on)
+bool FButton::setFlat (bool on)
 {
   if ( on )
     this->flags |= FLAT;
@@ -506,7 +506,7 @@ bool FButton::setFlat(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setShadow(bool on)
+bool FButton::setShadow (bool on)
 {
   if ( on && Encoding != fc::VT100 && Encoding != fc::ASCII )
     this->flags |= SHADOW;
@@ -516,7 +516,7 @@ bool FButton::setShadow(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FButton::setDown(bool on)
+bool FButton::setDown (bool on)
 {
   if ( button_down != on )
   {

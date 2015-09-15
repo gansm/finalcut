@@ -42,8 +42,8 @@ void FMenuBar::init()
   getRootWidget()->setTopPadding(1, true);
   x = -1;
   setMenuBar(this);
-  foregroundColor = wc.statusbar_fg;
-  backgroundColor = wc.statusbar_bg;
+  foregroundColor = wc.menu_active_fg;
+  backgroundColor = wc.menu_active_bg;
   window_object  = true;
   mouse_down = false;
   ignore_padding = true;

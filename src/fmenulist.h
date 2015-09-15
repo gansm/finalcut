@@ -41,17 +41,17 @@ class FMenuList
    virtual ~FMenuList();
    virtual const char* getClassName() const;
 
-   uInt       count() const;
-   FMenuItem* item (int) const;
-   void       activateItem (int);
-   void       deactivateItem (int);
-   bool       isSelected (int) const;
-   bool       hasSelectedItem();
+   uInt         count() const;
+   FMenuItem*   item (int) const;
+   void         activateItem (int);
+   void         deactivateItem (int);
+   bool         isSelected (int) const;
+   bool         hasSelectedItem();
 
-   void       insert (FMenuItem*);
-   void       remove (FMenuItem*);
-   void       remove (int);
-   void       clear();
+   virtual void insert (FMenuItem*);
+   virtual void remove (FMenuItem*);
+   void         remove (int);
+   void         clear();
 };
 #pragma pack(pop)
 

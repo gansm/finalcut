@@ -19,15 +19,15 @@ class FMenuList;
 class FMenuItem : public FWidget
 {
  private:
-   FString text;
-   bool    active;
-   bool    selected;
-   bool    separator;
-   bool    checked;
-   int     hotkey;
- //int     accel_key;
-   FMenu*  menu;
-   FMenuList*  super_menu;
+   FString    text;
+   bool       active;
+   bool       selected;
+   bool       separator;
+   bool       checked;
+   int        hotkey;
+ //int        accel_key;
+   FMenu*     menu;
+   FMenuList* super_menu;
 
  private:
    FMenuItem (const FMenuItem&);
@@ -35,6 +35,7 @@ class FMenuItem : public FWidget
    void       init (FWidget*);
    uChar      getHotkey();
    bool       isMenuBar (FWidget*) const;
+   bool       isMenu (FWidget*) const;
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
    void       processActivate();
@@ -47,26 +48,26 @@ class FMenuItem : public FWidget
    FMenuItem (const char*, FWidget* parent=0);
    virtual ~FMenuItem();
 
-   void    onAccel (FAccelEvent*);
-   FString getText() const;
-   void    setActive();
-   void    unsetActive();
-   bool    isActivated() const;
-   void    setSelected();
-   void    unsetSelected();
-   bool    isSelected() const;
-   void    setSeparator();
-   void    unsetSeparator();
-   bool    isSeparator() const;
-   void    setChecked();
-   void    unsetChecked();
-   bool    isChecked() const;
-   bool    hasHotkey() const;
-   void    setMenu(FMenu*);
-   bool    hasMenu() const;
-   void    setText (FString&);
-   void    setText (const std::string&);
-   void    setText (const char*);
+   void       onAccel (FAccelEvent*);
+   FString    getText() const;
+   void       setActive();
+   void       unsetActive();
+   bool       isActivated() const;
+   void       setSelected();
+   void       unsetSelected();
+   bool       isSelected() const;
+   void       setSeparator();
+   void       unsetSeparator();
+   bool       isSeparator() const;
+   void       setChecked();
+   void       unsetChecked();
+   bool       isChecked() const;
+   bool       hasHotkey() const;
+   void       setMenu(FMenu*);
+   bool       hasMenu() const;
+   void       setText (FString&);
+   void       setText (const std::string&);
+   void       setText (const char*);
 
  private:
    friend class FMenuList;

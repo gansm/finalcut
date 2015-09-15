@@ -44,8 +44,7 @@ FMenu::~FMenu()
 
   const FRect& geometry = getGeometryGlobalShadow();
   restoreVTerm (geometry);
-  parentWidget()->redraw(); // ????
- 
+
   if ( vwin != 0 )
   {
     if ( vwin->changes != 0 )
@@ -61,6 +60,7 @@ FMenu::~FMenu()
 //----------------------------------------------------------------------
 void FMenu::init()
 {
+  current = 0;
   width  = 10;
   height = 2;
   xmin = 1;
@@ -76,20 +76,46 @@ void FMenu::init()
   bottom_padding = 1;
   right_padding  = 1;
   createArea (vwin);
-  setGeometry (1, 1, 10, 2, false);  // initialize geometry values
-  ignore_padding = true;
+  setGeometry (1, 1 , 10, 2, false);  // initialize geometry values
   window_object  = true;
   addWindow(this);
-  setActiveWindow(this);
- 
+
+  foregroundColor = wc.menu_active_fg;
+  backgroundColor = wc.menu_active_bg;
+
   FWidget* old_focus = FWidget::getFocusWidget();
   if ( old_focus )
   {
     setFocus();
     old_focus->redraw();
   }
-  
+
   item->setMenu(this);
+}
+
+//----------------------------------------------------------------------
+void FMenu::menu_dimension()
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+  maxItemWidth = 0;
+
+  // find the max item width
+  while ( iter != end )
+  {
+    FString item_text = (*iter)->getText();
+    uInt len = item_text.getLength();
+
+   if ( item_text.includes(L'&') )  // item has a hotkey '&'
+     len--;
+    
+    if ( len > maxItemWidth )
+      maxItemWidth = len;
+    ++iter;
+  }
+
+  setGeometry (xpos, ypos, maxItemWidth + 4, count() + 2);
 }
 
 //----------------------------------------------------------------------
@@ -138,22 +164,92 @@ void FMenu::draw()
   if ( itemlist.empty() )
     return;
 
+  if ( current < 1 )
+  {
+    current = 1;
+    itemlist[0]->setSelected();
+  }
+
+  menu_dimension();
+
   // fill the background
   setColor (foregroundColor, backgroundColor);
   setUpdateVTerm(false);
   clrscr();
   drawBorder();
-  
+
   drawItems();
   
   setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------
+void FMenu::drawBorder()
+{
+  int x1, x2, y1, y2;
+  x1 = xpos+xmin-1;
+  x2 = xpos+xmin-2+width;
+  y1 = ypos+ymin-1;
+  y2 = ypos+ymin-2+height;
+
+  if ( isNewFont() )
+  {
+    gotoxy (x1, y1);
+    print (fc::NF_border_corner_upper_left); // ⎡
+    for (int x=x1+1; x < x2; x++)
+      print (fc::NF_border_line_upper); // ¯
+    print (fc::NF_rev_border_corner_upper_right); // ⎤
+
+    for (int y=y1+1; y <= y2; y++)
+    {
+      gotoxy (x1, y);
+      // border left ⎸
+      print (fc::NF_border_line_left);
+      gotoxy (x2, y);
+      // border right⎹
+      print (fc::NF_rev_border_line_right);
+    }
+    if ( (flags & SHADOW) == 0 )
+    {
+      gotoxy (x1, y2);
+      // lower left corner border ⎣
+      print (fc::NF_border_corner_lower_left);
+      for (int x=1; x < width-1; x++) // low line _
+        print (fc::NF_border_line_bottom);
+      gotoxy (x2, y2);
+      // lower right corner border ⎦
+      print (fc::NF_rev_border_corner_lower_right);
+    }
+  }
+  else
+  {
+    gotoxy (x1, y1);
+    print (fc::BoxDrawingsDownAndRight); // ┌
+    for (int x=x1+1; x < x2; x++)
+      print (fc::BoxDrawingsHorizontal); // ─
+    print (fc::BoxDrawingsDownAndLeft);  // ┐
+
+    gotoxy (x1, y2);
+    print (fc::BoxDrawingsUpAndRight);   // └
+    for (int x=x1+1; x < x2; x++)
+      print (fc::BoxDrawingsHorizontal); // ─
+    print (fc::BoxDrawingsUpAndLeft);    // ┘
+
+    for (int y=y1+1; y < y2; y++)
+    {
+      gotoxy (x1, y);
+      print (fc::BoxDrawingsVertical);   // │
+      gotoxy (x2, y);
+      print (fc::BoxDrawingsVertical);   // │
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenu::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
-  int y = 1;
+  int y = 0;
 
   iter = itemlist.begin();
   end = itemlist.end();
@@ -190,7 +286,7 @@ void FMenu::drawItems()
       foregroundColor = wc.menu_inactive_fg;
       backgroundColor = wc.menu_inactive_bg;
     }
-    gotoxy (xpos+xmin+1, ypos+ymin+y);
+    gotoxy (xpos+xmin, ypos+ymin+y);
     setColor (foregroundColor, backgroundColor);
     print (' ');
 
@@ -224,6 +320,12 @@ void FMenu::drawItems()
       }
       else
         print (item_text[z]);
+    }
+
+    if ( isSelected )
+    {
+      for (uInt i=to_char; i <= maxItemWidth; i++)
+        print (' ');
     }
 
     if ( isActive && isSelected )
@@ -399,6 +501,18 @@ void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
   if ( vwin && (width != old_width || height != old_height) )
     resizeArea (vwin);
+}
+
+//----------------------------------------------------------------------
+void FMenu::insert (FMenuItem* item)
+{
+  FMenuList::insert(item);
+}
+
+//----------------------------------------------------------------------
+void FMenu::remove (FMenuItem* item)
+{
+  FMenuList::remove(item);
 }
 
 //----------------------------------------------------------------------

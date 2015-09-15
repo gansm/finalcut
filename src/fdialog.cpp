@@ -567,6 +567,10 @@ void FDialog::onWindowInactive (FEvent*)
 void FDialog::onWindowRaised (FEvent*)
 {
   widgetList::const_iterator iter, end;
+
+  if ( ! isVisible() || ! isShown() )
+    return;
+
   putArea (getGlobalPos(), vwin);
 
   if ( ! window_list )

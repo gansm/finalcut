@@ -20,17 +20,22 @@ class FMenu : public FWindow, public FMenuList
  private:
    FMenuItem* item;
    FMenuList* super_menu;
-   bool mouse_down;
+   uInt       maxItemWidth;
+   int        current;
+   bool       mouse_down;
 
  private:
    FMenu (const FMenu&);
    FMenu& operator = (const FMenu&);
    void       init();
+   void       menu_dimension();
    bool       isMenuBar (FWidget*) const;
+
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
+   void       drawBorder();
    void       drawItems();
    void       processActivate();
 
@@ -63,6 +68,8 @@ class FMenu : public FWindow, public FMenuList
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
+   void       insert (FMenuItem*);
+   void       remove (FMenuItem*);
    void       cb_menuitem_activated (FWidget*, void*);
 };
 #pragma pack(pop)
