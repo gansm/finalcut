@@ -1406,7 +1406,7 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --enable-shared[=PKGS]  build shared libraries [default=yes]
-  --enable-static[=PKGS]  build static libraries [default=no]
+  --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
@@ -4869,7 +4869,7 @@ if test "${enable_static+set}" = set; then :
       ;;
     esac
 else
-  enable_static=no
+  enable_static=yes
 fi
 
 
@@ -16845,7 +16845,7 @@ $lt_cl_success || as_fn_exit 1
 
 ### This defines the version number of the installed .so files
 ### using libtool's versioning system.
-SO_VERSION="0:0:0"
+SO_VERSION="0:1:0"
 
 
 

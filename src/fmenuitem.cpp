@@ -62,9 +62,9 @@ void FMenuItem::init (FWidget* parent)
     {
       setSuperMenu( dynamic_cast<FMenuList*>(parent) );
       superMenu()->insert(this);
-  
+
       //addAccelerator (item->getKey(), item);
-  
+
       this->addCallback
       (
         "activate",
@@ -77,9 +77,9 @@ void FMenuItem::init (FWidget* parent)
     {
       setSuperMenu( dynamic_cast<FMenuList*>(parent) );
       superMenu()->insert(this);
-  
+
       //addAccelerator (item->getKey(), item);
-  
+
       this->addCallback
       (
         "activate",

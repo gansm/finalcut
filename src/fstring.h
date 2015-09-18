@@ -200,8 +200,9 @@ class FString
    friend const FString operator + (const char, const FString&);
    friend const FString operator + (const wchar_t, const std::wstring&);
 
+   wchar_t& operator [] (int);
    wchar_t& operator [] (uInt);
-   const FString  operator () (uInt, uInt);
+   const FString operator () (uInt, uInt);
 
    bool operator <  (const FString&) const;
    bool operator <= (const FString&) const;

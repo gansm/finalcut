@@ -1,3 +1,6 @@
+2015-09-18  Markus Gans  <guru.mail@muenster.de>
+	* fixed compile error on 32-bit architectures
+
 2015-08-08  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FDialog (use GlobalPos to move)
 	* Don't check mouse click position on titlebar again

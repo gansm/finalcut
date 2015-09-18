@@ -10,6 +10,7 @@
 *.gcda
 _configs.sed
 config.guess
+config.h.in~
 config.h
 config.log
 config.lt

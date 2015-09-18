@@ -173,8 +173,15 @@ int main (int, char**)
             << num3 << " (long double)" << std::endl;
 
   FString fnum1, fnum2;
+#if defined(__LP64__) || defined(_LP64)
+  // 64-bit architecture
   fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
   fnum2.setFormatedNumber(-9223372036854775807);
+#else
+  // 32-bit architecture
+  fnum1.setFormatedNumber(0xffffffff, '\'');
+  fnum2.setFormatedNumber(-2147483647);
+#endif
   std::cout << "setFormatedNumber: "
             << fnum1 << " (unsigned)" << std::endl;
   std::cout << "setFormatedNumber: "

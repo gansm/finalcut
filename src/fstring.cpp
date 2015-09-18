@@ -793,12 +793,20 @@ const FString operator + (const wchar_t c, const std::wstring& s)
 }
 
 //----------------------------------------------------------------------
+wchar_t& FString::operator [] (int pos)
+{
+  FString& s = *this;
+  assert ( (pos >= 0) && "Invalid index position!" );
+  return s[uInt(pos)];
+}
+
+//----------------------------------------------------------------------
 wchar_t& FString::operator [] (uInt pos)
 {
   assert ( (pos < length) && "Invalid index position!" );
   if (pos >= length)
     throw std::out_of_range("");
-  return (string[pos]);
+  return string[pos];
 }
 
 //----------------------------------------------------------------------

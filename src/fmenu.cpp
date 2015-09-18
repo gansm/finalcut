@@ -109,7 +109,7 @@ void FMenu::menu_dimension()
 
    if ( item_text.includes(L'&') )  // item has a hotkey '&'
      len--;
-    
+
     if ( len > maxItemWidth )
       maxItemWidth = len;
     ++iter;
@@ -179,7 +179,7 @@ void FMenu::draw()
   drawBorder();
 
   drawItems();
-  
+
   setUpdateVTerm(true);
 }
 

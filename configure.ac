@@ -39,15 +39,15 @@ AC_SEARCH_LIBS([tgetent], [termcap tinfo curses ncurses])
 AC_SEARCH_LIBS([tparm], [termcap tinfo curses ncurses])
 
 # Checks for libtool
-AM_ENABLE_SHARED
-AM_DISABLE_STATIC
+AC_ENABLE_SHARED
+AC_ENABLE_STATIC
 LT_INIT([dlopen])
 LT_LANG([C++])
 LT_OUTPUT
 
 ### This defines the version number of the installed .so files
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["0:0:0"])
+AC_SUBST(SO_VERSION, ["0:1:0"])
 
 AC_SUBST([LIBTOOL_DEPS])
 
