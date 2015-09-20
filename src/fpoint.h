@@ -48,14 +48,15 @@ class FPoint
 // FPoint inline functions
 //----------------------------------------------------------------------
 inline FPoint::FPoint()
-{ xpos = ypos = 0; }
+  : xpos(0)
+  , ypos(0)
+{ }
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)
-{
-  xpos = short(x);
-  ypos = short(y);
-}
+  : xpos(short(x))
+  , ypos(short(y))
+{ }
 
 //----------------------------------------------------------------------
 inline const char* FPoint::getClassName()

@@ -152,6 +152,7 @@ class FWidget : public FObject, public FTerm
 
   struct dbl_line_mask
   {
+    ~dbl_line_mask() {}
     std::vector<bool> top;
     std::vector<bool> right;
     std::vector<bool> bottom;
@@ -391,7 +392,7 @@ inline const char* FWidget::getClassName() const
 
 //----------------------------------------------------------------------
 inline FWidget* FWidget::parentWidget() const
-{ return static_cast<FWidget*>(parent()); }
+{ return static_cast<FWidget*>(getParent()); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isRootWidget() const

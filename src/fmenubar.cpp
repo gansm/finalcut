@@ -89,9 +89,9 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  bool isActive;
-  bool isSelected;
-  bool isNoUnderline;
+  bool is_Active;
+  bool is_Selected;
+  bool is_NoUnderline;
   std::vector<FMenuItem*>::const_iterator iter, end;
   int screenWidth;
 
@@ -118,13 +118,13 @@ void FMenuBar::drawItems()
     uInt txt_length;
     int  hotkeypos, to_char;
 
-    isActive = (*iter)->isActivated();
-    isSelected = (*iter)->isSelected();
-    isNoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    is_Active = (*iter)->isActivated();
+    is_Selected = (*iter)->isSelected();
+    is_NoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
 
-    if ( isActive )
+    if ( is_Active )
     {
-      if ( isSelected )
+      if ( is_Selected )
       {
         foregroundColor = wc.menu_active_focus_fg;
         backgroundColor = wc.menu_active_focus_bg;
@@ -147,7 +147,7 @@ void FMenuBar::drawItems()
     print (vmenubar, ' ');
 
     txt = (*iter)->getText();
-    txt_length = int(txt.getLength());
+    txt_length = uInt(txt.getLength());
     item_text = new wchar_t[txt_length+1];
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
@@ -155,7 +155,7 @@ void FMenuBar::drawItems()
     if ( x-1 <= screenWidth )
       to_char = int(txt_length);
     else
-      to_char = txt_length - (screenWidth-x-1);
+      to_char = int(txt_length) - (screenWidth-x-1);
 
     hotkeypos = getHotkeyPos (src, dest, txt_length);
 
@@ -164,19 +164,19 @@ void FMenuBar::drawItems()
       txt_length--;
       to_char--;
     }
-    x += txt_length;
+    x += int(txt_length);
 
     for (int z=0; z < to_char; z++)
     {
       if ( ! iswprint(wint_t(item_text[z])) )
         item_text[z] = L' ';
-      if ( (z == hotkeypos) && isActive && ! isSelected )
+      if ( (z == hotkeypos) && is_Active && ! is_Selected )
       {
         setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
-        if ( ! isNoUnderline )
+        if ( ! is_NoUnderline )
           setUnderline();
         print (vmenubar, item_text[z]);
-        if ( ! isNoUnderline )
+        if ( ! is_NoUnderline )
           unsetUnderline();
         setColor (foregroundColor, backgroundColor);
       }
@@ -187,7 +187,7 @@ void FMenuBar::drawItems()
     if ( x > screenWidth )
     {
       print ( vmenubar,
-              txt.left(uInt(txt_length+screenWidth-x-1)) );
+              txt.left(uInt(int(txt_length)+screenWidth-x-1)) );
       print ( vmenubar, ".." );
     }
     else
@@ -196,7 +196,7 @@ void FMenuBar::drawItems()
       print (vmenubar, ' ');
     }
 
-    if ( isActive && isSelected )
+    if ( is_Active && is_Selected )
       setReverse(false);
     delete[] item_text;
 
@@ -221,9 +221,9 @@ void FMenuBar::adjustSize()
 
 // public methods of FMenuBar
 //----------------------------------------------------------------------
-void FMenuBar::onMouseDown (FMouseEvent* event)
+void FMenuBar::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
   {
     mouse_down = false;
     if ( ! itemlist.empty() )
@@ -262,8 +262,8 @@ void FMenuBar::onMouseDown (FMouseEvent* event)
       if ( (*iter)->hasHotkey() )
         txt_length--;
       x2 = x1 + txt_length;
-      mouse_x = event->getX();
-      mouse_y = event->getY();
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
@@ -285,9 +285,9 @@ void FMenuBar::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::onMouseUp (FMouseEvent* event)
+void FMenuBar::onMouseUp (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down )
@@ -311,8 +311,8 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
 
         if ( (*iter)->isSelected() )
         {
-          int mouse_x = event->getX();
-          int mouse_y = event->getY();
+          int mouse_x = ev->getX();
+          int mouse_y = ev->getY();
           if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
             (*iter)->unsetSelected();
           else
@@ -329,9 +329,9 @@ void FMenuBar::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::onMouseMove (FMouseEvent* event)
+void FMenuBar::onMouseMove (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down && ! itemlist.empty() )
@@ -351,8 +351,8 @@ void FMenuBar::onMouseMove (FMouseEvent* event)
         txt_length--;
       int x2 = x1 + txt_length;
 
-      int mouse_x = event->getX();
-      int mouse_y = event->getY();
+      int mouse_x = ev->getX();
+      int mouse_y = ev->getY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )

@@ -49,15 +49,15 @@ FPoint& FPoint::operator = (const FPoint& p)
 //----------------------------------------------------------------------
 FPoint& FPoint::operator += (const FPoint& p)
 {
-  xpos += p.xpos;
-  ypos += p.ypos;
+  xpos = short(xpos + p.xpos);
+  ypos = short(ypos + p.ypos);
   return *this;
 }
 
 //----------------------------------------------------------------------
 FPoint& FPoint::operator -= (const FPoint& p)
 {
-  xpos -= p.xpos;
-  ypos -= p.ypos;
+  xpos = short(xpos - p.xpos);
+  ypos = short(ypos - p.ypos);
   return *this;
 }

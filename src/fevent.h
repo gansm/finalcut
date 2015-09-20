@@ -41,7 +41,7 @@ class FEvent // event base class
 {
  public:
    explicit FEvent(int);
-  ~FEvent();
+   ~FEvent();
    int type() const;
 
  protected:
@@ -53,12 +53,13 @@ class FEvent // event base class
 
 // FEvent inline functions
 //----------------------------------------------------------------------
-inline FEvent::FEvent(int type)  // constructor
-{ t = type; }
+inline FEvent::FEvent(int ev_type)  // constructor
+  : t(ev_type)
+{ }
 
 //----------------------------------------------------------------------
 inline FEvent::~FEvent()  // destructor
-{}
+{ }
 
 //----------------------------------------------------------------------
 inline int FEvent::type() const
@@ -76,6 +77,8 @@ class FKeyEvent : public FEvent        // keyboard event
 {
  public:
    FKeyEvent (int, int);
+  ~FKeyEvent();
+
    int  key() const;
    bool isAccepted() const;
    void accept();
@@ -115,6 +118,7 @@ class FMouseEvent : public FEvent   // mouse event
  public:
    FMouseEvent (int, const FPoint&, int);
    FMouseEvent (int, const FPoint&, const FPoint&, int);
+  ~FMouseEvent();
 
    const FPoint& getPos() const;
    const FPoint& getGlobalPos() const;
@@ -149,11 +153,12 @@ enum WheelState                    // wheel state values
 #pragma pack(push)
 #pragma pack(1)
 
-class FWheelEvent : public FEvent   // mouse event
+class FWheelEvent : public FEvent   // wheel event
 {
  public:
    FWheelEvent (int, const FPoint&, int);
    FWheelEvent (int, const FPoint&, const FPoint&, int);
+  ~FWheelEvent();
 
    const FPoint& getPos() const;
    const FPoint& getGlobalPos() const;
@@ -191,6 +196,8 @@ class FFocusEvent : public FEvent        // focus event
 {
  public:
    explicit FFocusEvent (int);
+  ~FFocusEvent();
+
    bool gotFocus()  const;
    bool lostFocus() const;
    FocusTypes getFocusType() const;
@@ -218,14 +225,16 @@ class FAccelEvent : public FEvent    // focus event
 {
  public:
    FAccelEvent (int, void*);
+  ~FAccelEvent();
+
    void* focusedWidget() const;
    bool  isAccepted() const;
    void  accept();
    void  ignore();
 
  protected:
+   bool  accpt;
    void* focus_widget;
-   bool accpt;
 };
 
 #define F_ACCEL_EVENT(x)  ((FAccelEvent*)x)
@@ -240,6 +249,8 @@ class FResizeEvent : public FEvent    // resize event
 {
  public:
    explicit FResizeEvent (int);
+  ~FResizeEvent();
+
    bool isAccepted() const;
    void accept();
    void ignore();
@@ -259,6 +270,7 @@ class FShowEvent : public FEvent    // show event
 {
  public:
    explicit FShowEvent (int);
+  ~FShowEvent();
 };
 
 #define F_SHOW_EVENT(x)  ((FShowEvent*)x)
@@ -272,6 +284,7 @@ class FHideEvent : public FEvent    // hide event
 {
  public:
    explicit FHideEvent (int);
+  ~FHideEvent();
 };
 
 #define F_HIDE_EVENT(x)  ((FHideEvent*)x)
@@ -285,6 +298,8 @@ class FCloseEvent : public FEvent   // close event
 {
  public:
    explicit FCloseEvent(int);
+  ~FCloseEvent();
+
    bool isAccepted() const;
    void accept();
    void ignore();
@@ -307,6 +322,8 @@ class FTimerEvent : public FEvent   // timer event
 {
  public:
    FTimerEvent(int, int);
+  ~FTimerEvent();
+
    int timerId() const;
 
  protected:

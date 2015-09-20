@@ -115,7 +115,7 @@ void FMenu::menu_dimension()
     ++iter;
   }
 
-  setGeometry (xpos, ypos, maxItemWidth + 4, count() + 2);
+  setGeometry (xpos, ypos, int(maxItemWidth + 4), int(count() + 2));
 }
 
 //----------------------------------------------------------------------
@@ -262,13 +262,13 @@ void FMenu::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
-    bool isActive = (*iter)->isActivated();
-    bool isSelected = (*iter)->isSelected();
-    bool isNoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    bool is_Active = (*iter)->isActivated();
+    bool is_Selected = (*iter)->isSelected();
+    bool is_NoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
 
-    if ( isActive )
+    if ( is_Active )
     {
-      if ( isSelected )
+      if ( is_Selected )
       {
         foregroundColor = wc.menu_active_focus_fg;
         backgroundColor = wc.menu_active_focus_bg;
@@ -291,7 +291,7 @@ void FMenu::drawItems()
     print (' ');
 
     txt = (*iter)->getText();
-    txt_length = int(txt.getLength());
+    txt_length = uInt(txt.getLength());
     item_text = new wchar_t[txt_length+1];
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
@@ -308,13 +308,13 @@ void FMenu::drawItems()
     {
       if ( ! iswprint(wint_t(item_text[z])) )
         item_text[z] = L' ';
-      if ( (z == hotkeypos) && isActive && ! isSelected )
+      if ( (z == hotkeypos) && is_Active && ! is_Selected )
       {
         setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
-        if ( ! isNoUnderline )
+        if ( ! is_NoUnderline )
           setUnderline();
         print (item_text[z]);
-        if ( ! isNoUnderline )
+        if ( ! is_NoUnderline )
           unsetUnderline();
         setColor (foregroundColor, backgroundColor);
       }
@@ -322,13 +322,13 @@ void FMenu::drawItems()
         print (item_text[z]);
     }
 
-    if ( isSelected )
+    if ( is_Selected )
     {
-      for (uInt i=to_char; i <= maxItemWidth; i++)
+      for (uInt i=uInt(to_char); i <= maxItemWidth; i++)
         print (' ');
     }
 
-    if ( isActive && isSelected )
+    if ( is_Active && is_Selected )
       setReverse(false);
     delete[] item_text;
 
@@ -345,9 +345,9 @@ void FMenu::processActivate()
 
 // public methods of FMenu
 //----------------------------------------------------------------------
-void FMenu::onMouseDown (FMouseEvent* event)
+void FMenu::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
   {
     mouse_down = false;
     if ( ! itemlist.empty() )
@@ -384,8 +384,8 @@ void FMenu::onMouseDown (FMouseEvent* event)
       x1 = X;
       txt_length = int((*iter)->getText().getLength());
       x2 = x1 + txt_length + 1;
-      mouse_x = event->getX();
-      mouse_y = event->getY();
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
@@ -402,9 +402,9 @@ void FMenu::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenu::onMouseUp (FMouseEvent* event)
+void FMenu::onMouseUp (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down )
@@ -426,8 +426,8 @@ void FMenu::onMouseUp (FMouseEvent* event)
 
         if ( (*iter)->isSelected() )
         {
-          int mouse_x = event->getX();
-          int mouse_y = event->getY();
+          int mouse_x = ev->getX();
+          int mouse_y = ev->getY();
           if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
             (*iter)->unsetSelected();
           this->redraw();
@@ -440,9 +440,9 @@ void FMenu::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FMenu::onMouseMove (FMouseEvent* event)
+void FMenu::onMouseMove (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down && ! itemlist.empty() )
@@ -460,8 +460,8 @@ void FMenu::onMouseMove (FMouseEvent* event)
       int txt_length = int((*iter)->getText().getLength());
       int x2 = x1 + txt_length + 1;
 
-      int mouse_x = event->getX();
-      int mouse_y = event->getY();
+      int mouse_x = ev->getX();
+      int mouse_y = ev->getY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )
@@ -504,15 +504,15 @@ void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FMenu::insert (FMenuItem* item)
+void FMenu::insert (FMenuItem* i)
 {
-  FMenuList::insert(item);
+  FMenuList::insert(i);
 }
 
 //----------------------------------------------------------------------
-void FMenu::remove (FMenuItem* item)
+void FMenu::remove (FMenuItem* i)
 {
-  FMenuList::remove(item);
+  FMenuList::remove(i);
 }
 
 //----------------------------------------------------------------------

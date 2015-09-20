@@ -64,9 +64,9 @@ watch::watch (FWidget* parent) : FDialog(parent)
   sec = seconds_sw->setChecked();
 
   // Create button
-  FButton* quit = new FButton(L"&Quit", this);
-  quit->setGeometry(6, 9, 9, 1);
-  quit->setShadow();
+  FButton* quit_btn = new FButton(L"&Quit", this);
+  quit_btn->setGeometry(6, 9, 9, 1);
+  quit_btn->setShadow();
 
 
   // Connect switch signal "toggled" with a callback member function
@@ -88,7 +88,7 @@ watch::watch (FWidget* parent) : FDialog(parent)
   );
 
   // Connect button signal "clicked" with a callback member function
-  quit->addCallback
+  quit_btn->addCallback
   (
     "clicked",
     this,
@@ -129,7 +129,7 @@ void watch::onTimer (FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void watch::onClose (FCloseEvent* event)
+void watch::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit",
                                 "Do you really want\n"
@@ -137,9 +137,9 @@ void watch::onClose (FCloseEvent* event)
                                 FMessageBox::Yes,
                                 FMessageBox::No );
   if ( ret == FMessageBox::Yes )
-    event->accept();
+    ev->accept();
   else
-    event->ignore();
+    ev->ignore();
 }
 
 //----------------------------------------------------------------------

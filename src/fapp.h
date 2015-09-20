@@ -24,7 +24,7 @@ class FApplication : public FWidget
 {
  public:
    typedef std::pair<FObject*,FEvent*> eventPair;
-   static std::deque<eventPair>* event_queue;
+   static  std::deque<eventPair>* event_queue;
 
  private:
    int             app_argc;
@@ -90,7 +90,7 @@ class FApplication : public FWidget
    FApplication (const FApplication&);             // Disabled copy constructor
    FApplication& operator = (const FApplication&); // and operator '='
 
-   void    init (int argc, char* argv[]);
+   void    init (int _argc, char* _argv[]);
    void    cmd_options();
    bool    KeyPressed();
    ssize_t readKey();

@@ -264,14 +264,14 @@ bool FToggleButton::isCheckboxButton() const
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onKeyPress (FKeyEvent* event)
+void FToggleButton::onKeyPress (FKeyEvent* ev)
 {
   int key;
 
   if ( ! isEnabled() )
     return;
 
-  key = event->key();
+  key = ev->key();
 
   switch ( key )
   {
@@ -292,25 +292,28 @@ void FToggleButton::onKeyPress (FKeyEvent* event)
         processToggle();
       }
       processClick();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_down:
     case fc::Fkey_right:
       focus_inside_group = true;
       focusNextChild();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_up:
     case fc::Fkey_left:
       focus_inside_group = true;
       focusPrevChild();
-      event->accept();
+      ev->accept();
+      break;
+
+    default:
       break;
   }
 
-  if ( event->isAccepted() )
+  if ( ev->isAccepted() )
   {
     draw();
     updateTerminal();
@@ -436,9 +439,9 @@ bool FToggleButton::setFocus(bool on)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onMouseDown (FMouseEvent* event)
+void FToggleButton::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( ! hasFocus() )
@@ -460,12 +463,12 @@ void FToggleButton::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onMouseUp (FMouseEvent* event)
+void FToggleButton::onMouseUp (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
-  if ( getGeometryGlobal().contains(event->getGlobalPos()) )
+  if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
   {
     if ( isRadioButton() )
     {
@@ -486,13 +489,13 @@ void FToggleButton::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onAccel (FAccelEvent* event)
+void FToggleButton::onAccel (FAccelEvent* ev)
 {
   if ( isEnabled() )
   {
     if ( ! hasFocus() )
     {
-      FWidget* focused_widget = static_cast<FWidget*>(event->focusedWidget());
+      FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
       FFocusEvent out (FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
@@ -521,7 +524,7 @@ void FToggleButton::onAccel (FAccelEvent* event)
       flush_out();
     }
     processClick();
-    event->accept();
+    ev->accept();
   }
 }
 

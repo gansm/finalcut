@@ -85,7 +85,7 @@ endif
 # $@ = name of the targets
 # $< = the first dependency
 .cpp.o:
-	$(CXX) -c $(CCXFLAGS) -fpic -o $@ $<
+	$(CXX) -c $(CCXFLAGS) $(INCLUDES) -fpic -o $@ $<
 
 all: dep $(OBJS)
 	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -shared -Wl,-soname,$(LIB).$(MAJOR) -o $(LIB).$(VERSION) $(OBJS)
@@ -125,7 +125,7 @@ clean:
 	$(RM) $(LIB)* $(OBJS) .depend *.prof *~
 
 dep:
-	$(CXX) -MM *.cpp >.depend
+	$(CXX) $(INCLUDES) -MM *.cpp >.depend
 
 #
 # include .depend if it exists

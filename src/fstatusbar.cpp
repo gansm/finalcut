@@ -77,13 +77,13 @@ void FStatusKey::processActivate()
 }
 
 //----------------------------------------------------------------------
-void FStatusKey::onAccel (FAccelEvent* event)
+void FStatusKey::onAccel (FAccelEvent* ev)
 {
   if ( ! isActivated() )
   {
     setActive();
     statusbar()->redraw();
-    event->accept();
+    ev->accept();
   }
 }
 
@@ -329,11 +329,11 @@ void FStatusBar::adjustSize()
 
 // public methods of FStatusBar
 //----------------------------------------------------------------------
-void FStatusBar::onMouseDown (FMouseEvent* event)
+void FStatusBar::onMouseDown (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
   {
     mouse_down = false;
     if ( ! keylist.empty() )
@@ -371,8 +371,8 @@ void FStatusBar::onMouseDown (FMouseEvent* event)
       kname_len = int(getKeyName((*iter)->getKey()).getLength());
       txt_length = int((*iter)->getText().getLength());
       x2 = x1 + kname_len + txt_length + 1;
-      mouse_x = event->getX();
-      mouse_y = event->getY();
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
@@ -389,11 +389,11 @@ void FStatusBar::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::onMouseUp (FMouseEvent* event)
+void FStatusBar::onMouseUp (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down )
@@ -417,8 +417,8 @@ void FStatusBar::onMouseUp (FMouseEvent* event)
         if ( (*iter)->hasMouseFocus() )
         {
           (*iter)->unsetMouseFocus();
-          int mouse_x = event->getX();
-          int mouse_y = event->getY();
+          int mouse_x = ev->getX();
+          int mouse_y = ev->getY();
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();
           this->redraw();
@@ -431,11 +431,11 @@ void FStatusBar::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FStatusBar::onMouseMove (FMouseEvent* event)
+void FStatusBar::onMouseMove (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( mouse_down && ! keylist.empty() )
@@ -454,8 +454,8 @@ void FStatusBar::onMouseMove (FMouseEvent* event)
       int txt_length = int((*iter)->getText().getLength());
       int x2 = x1 + kname_len + txt_length + 1;
 
-      int mouse_x = event->getX();
-      int mouse_y = event->getY();
+      int mouse_x = ev->getX();
+      int mouse_y = ev->getY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )

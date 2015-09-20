@@ -1,5 +1,8 @@
+2015-09-20  Markus Gans  <guru.mail@muenster.de>
+	* Some code optimizations
+
 2015-09-18  Markus Gans  <guru.mail@muenster.de>
-	* fixed compile error on 32-bit architectures
+	* Fixed compile error on 32-bit architectures
 
 2015-08-08  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FDialog (use GlobalPos to move)

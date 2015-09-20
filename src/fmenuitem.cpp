@@ -147,7 +147,7 @@ void FMenuItem::processClicked()
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-void FMenuItem::onAccel (FAccelEvent* event)
+void FMenuItem::onAccel (FAccelEvent* ev)
 {
   if ( isSelected() )
   {
@@ -155,7 +155,7 @@ void FMenuItem::onAccel (FAccelEvent* event)
     FWidget* w = reinterpret_cast<FWidget*>(superMenu());
     if ( isMenuBar(w) )
       w->redraw();
-    event->accept();
+    ev->accept();
   }
 }
 

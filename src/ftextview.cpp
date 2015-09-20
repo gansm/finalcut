@@ -188,42 +188,42 @@ void FTextView::hide()
 }
 
 //----------------------------------------------------------------------
-void FTextView::onKeyPress (FKeyEvent* event)
+void FTextView::onKeyPress (FKeyEvent* ev)
 {
   int last_line = int(getRows());
-  int key = event->key();
+  int key = ev->key();
 
   switch ( key )
   {
     case fc::Fkey_up:
       if ( yoffset > 0 )
         yoffset--;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_down:
       if ( yoffset+height+nf_offset-2 < last_line )
         yoffset++;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_right:
       if ( xoffset+width-nf_offset-2 < int(maxLineWidth) )
         xoffset++;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_left:
       if ( xoffset > 0 )
         xoffset--;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_ppage:
       yoffset -= height-2;
       if ( yoffset < 0 )
         yoffset = 0;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_npage:
@@ -233,22 +233,25 @@ void FTextView::onKeyPress (FKeyEvent* event)
         yoffset = last_line - height - nf_offset + 2;
       if ( yoffset < 0 )
         yoffset = 0;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_home:
       yoffset = 0;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_end:
       if ( last_line >= height )
         yoffset = last_line - height - nf_offset + 2;
-      event->accept();
+      ev->accept();
+      break;
+
+    default:
       break;
   }
 
-  if ( event->isAccepted() )
+  if ( ev->isAccepted() )
   {
     if ( isVisible() )
       drawText();
@@ -264,9 +267,9 @@ void FTextView::onKeyPress (FKeyEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FTextView::onMouseDown (FMouseEvent* event)
+void FTextView::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( ! hasFocus() )
@@ -283,10 +286,10 @@ void FTextView::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FTextView::onWheel (FWheelEvent* event)
+void FTextView::onWheel (FWheelEvent* ev)
 {
   int last_line = int(getRows());
-  int wheel = event->getWheel();
+  int wheel = ev->getWheel();
 
   switch ( wheel )
   {
@@ -299,14 +302,19 @@ void FTextView::onWheel (FWheelEvent* event)
       break;
 
     case WheelDown:
-      int yoffset_end = last_line - height - nf_offset + 2;
-      if ( yoffset_end < 0 )
-        yoffset_end = 0;
-      if ( yoffset == yoffset_end )
-        break;
-      yoffset += 4;
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
+      {
+        int yoffset_end = last_line - height - nf_offset + 2;
+        if ( yoffset_end < 0 )
+          yoffset_end = 0;
+        if ( yoffset == yoffset_end )
+          break;
+        yoffset += 4;
+        if ( yoffset > yoffset_end )
+          yoffset = yoffset_end;
+      }
+      break;
+
+    default:
       break;
   }
 
@@ -391,6 +399,9 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       onWheel(&wheel_ev);
       break;
     }
+
+    default:
+      break;
   }
 
   if ( isVisible() )
@@ -464,6 +475,9 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       xoffset += 4;
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
+      break;
+
+    default:
       break;
   }
 

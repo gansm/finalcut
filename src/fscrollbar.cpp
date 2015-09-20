@@ -143,7 +143,7 @@ void FScrollbar::processMiddleButton (int x, int y)
     {
       if ( y >1 && y < height )
       {
-        new_val = int( round ( float(max-min) * (y-2-(SliderLength/2))
+        new_val = int( round ( float(max-min) * (y-2.0-(SliderLength/2))
                              / float(BarLength-SliderLength) ) );
       }
       else
@@ -154,7 +154,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       int nf = isNewFont() ? 1 : 0;
       if ( x > 1+nf && x < width-nf )
       {
-        new_val = int( round ( float(max-min) * (x-2-nf-(SliderLength/2))
+        new_val = int( round ( float(max-min) * (x-2.0-nf-(SliderLength/2))
                              / float(BarLength-SliderLength) ) );
       }
       else
@@ -180,21 +180,21 @@ void FScrollbar::processScroll()
 
 // public methods of FScrollbar
 //----------------------------------------------------------------------
-void FScrollbar::onMouseDown (FMouseEvent* event)
+void FScrollbar::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if (  event->getButton() != LeftButton
-     && event->getButton() != MiddleButton )
+  if (  ev->getButton() != LeftButton
+     && ev->getButton() != MiddleButton )
     return;
 
   if ( min == max )
     return;
 
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
-  if ( event->getButton() == MiddleButton )
+  if ( ev->getButton() == MiddleButton )
   {
     processMiddleButton (mouse_x, mouse_y);
     return;
@@ -249,10 +249,10 @@ void FScrollbar::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onMouseUp (FMouseEvent* event)
+void FScrollbar::onMouseUp (FMouseEvent* ev)
 {
-  if (  event->getButton() != LeftButton
-     && event->getButton() != MiddleButton )
+  if (  ev->getButton() != LeftButton
+     && ev->getButton() != MiddleButton )
     return;
 
   SliderClickPos = -1;
@@ -265,18 +265,18 @@ void FScrollbar::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onMouseMove (FMouseEvent* event)
+void FScrollbar::onMouseMove (FMouseEvent* ev)
 {
   int mouse_x, mouse_y, newScrollType;
 
-  if (  event->getButton() != LeftButton
-     && event->getButton() != MiddleButton )
+  if (  ev->getButton() != LeftButton
+     && ev->getButton() != MiddleButton )
     return;
 
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
-  if ( event->getButton() == MiddleButton )
+  if ( ev->getButton() == MiddleButton )
   {
     processMiddleButton (mouse_x, mouse_y);
     return;
@@ -293,7 +293,7 @@ void FScrollbar::onMouseMove (FMouseEvent* event)
       int dy = mouse_y - SliderClickPos;
       SliderClickPos = mouse_y;
 
-      new_val = int( round ( float(max-min) * (SliderPos + dy)
+      new_val = int( round ( float((max-min) * (SliderPos + dy))
                            / float(BarLength-SliderLength) ) );
     }
     else  // horizontal
@@ -301,7 +301,7 @@ void FScrollbar::onMouseMove (FMouseEvent* event)
       int dx = mouse_x - SliderClickPos;
       SliderClickPos = mouse_x;
 
-      new_val = int( round ( float(max-min) * (SliderPos + dx)
+      new_val = int( round ( float((max-min) * (SliderPos + dx))
                            / float(BarLength-SliderLength) ) );
     }
     if ( new_val != val )
@@ -330,9 +330,9 @@ void FScrollbar::onMouseMove (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::onWheel (FWheelEvent* event)
+void FScrollbar::onWheel (FWheelEvent* ev)
 {
-  int wheel = event->getWheel();
+  int wheel = ev->getWheel();
 
   if ( scrollType != FScrollbar::noScroll )
   {
@@ -425,7 +425,7 @@ void FScrollbar::setSteps (float st)
   else
     steps = st;
   if ( pageSize == 0 )
-    pageSize = int(max/steps);
+    pageSize = int(float(max)/steps);
 }
 
 //----------------------------------------------------------------------
@@ -450,7 +450,7 @@ void FScrollbar::calculateSliderValues()
     BarLength = length - 4;
   else
     BarLength = length - 2;
-  SliderLength = int(float(BarLength / steps));
+  SliderLength = int(float(BarLength) / steps);
 
   if ( SliderLength < 1 )
     SliderLength = 1;

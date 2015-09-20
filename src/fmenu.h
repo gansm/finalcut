@@ -81,8 +81,8 @@ inline const char* FMenu::getClassName() const
 { return "FMenu"; }
 
 //----------------------------------------------------------------------
-inline void FMenu::onAccel (FAccelEvent* event)
-{ item->onAccel(event); }
+inline void FMenu::onAccel (FAccelEvent* ev)
+{ item->onAccel(ev); }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenu::getItem() const

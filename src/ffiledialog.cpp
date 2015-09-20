@@ -263,10 +263,12 @@ int FFileDialog::changeDir (const FString& dirname)
     case -1:
       setPath(lastdir);
       return -1;
+
     case -2:
       setPath(lastdir);
       readDir();
       return -2;
+
     case 0:
       if ( newdir == FString("..") )
       {
@@ -305,20 +307,22 @@ int FFileDialog::changeDir (const FString& dirname)
       printPath(directory);
       filename->redraw();
       filebrowser->redraw();
+
+    default:
+      return 0;
   }
-  return 0;
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::printPath (const FString& txt)
 {
-  FString text = txt;
+  FString path = txt;
   uInt max_width = uInt(filebrowser->getWidth()) - 4;
 
-  if ( text.getLength() > max_width )
-    filebrowser->setText(".." + text.right(max_width-2));
+  if ( path.getLength() > max_width )
+    filebrowser->setText(".." + path.right(max_width-2));
   else
-    filebrowser->setText(text);
+    filebrowser->setText(path);
 }
 
 //----------------------------------------------------------------------
@@ -442,23 +446,26 @@ void FFileDialog::adjustSize()
 
 // public methods of FFileDialog
 //----------------------------------------------------------------------
-void FFileDialog::onKeyPress (FKeyEvent* event)
+void FFileDialog::onKeyPress (FKeyEvent* ev)
 {
   if ( ! isEnabled() )
     return;
 
-  FDialog::onKeyPress (event);
+  FDialog::onKeyPress (ev);
 
   if ( ! filebrowser->hasFocus() )
     return;
 
-  int key = event->key();
+  int key = ev->key();
   switch ( key )
   {
     case fc::Fkey_erase:
     case fc::Fkey_backspace:
       changeDir("..");
-      event->accept();
+      ev->accept();
+      break;
+
+    default:
       break;
   }
 

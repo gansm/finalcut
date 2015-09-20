@@ -47,7 +47,7 @@ FObject::~FObject()  // destructor
   }
 
   // delete children objects
-  FObject::object_list children = this->children();
+  FObject::object_list children = this->getChildren();
   if ( ! children.empty() )
   {
     FObject::object_list::const_iterator iter;

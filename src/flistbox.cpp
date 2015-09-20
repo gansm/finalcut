@@ -636,13 +636,13 @@ bool FListBox::setShadow (bool on)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onKeyPress (FKeyEvent* event)
+void FListBox::onKeyPress (FKeyEvent* ev)
 {
   int element_count = int(count());
   int current_before = current;
   int xoffset_before = xoffset;
   int yoffset_before = yoffset;
-  int key = event->key();
+  int key = ev->key();
 
   switch ( key )
   {
@@ -650,7 +650,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
     case fc::Fkey_enter:
       processClick();
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_up:
@@ -660,7 +660,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( current <= yoffset )
         yoffset--;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_down:
@@ -670,7 +670,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( current-yoffset > height - 2 )
         yoffset++;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_left:
@@ -678,7 +678,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( xoffset < 0 )
         xoffset = 0;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_right:
@@ -688,7 +688,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( xoffset < 0 )
         xoffset = 0;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_ppage:
@@ -702,7 +702,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
           yoffset=0;
       }
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_npage:
@@ -716,14 +716,14 @@ void FListBox::onKeyPress (FKeyEvent* event)
           yoffset = element_count - height + 2;
       }
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_home:
       current = 1;
       yoffset = 0;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_end:
@@ -731,7 +731,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( current > height - 2 )
         yoffset = element_count - height + 2;
       inc_search.clear();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_ic:  // insert key
@@ -747,7 +747,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
           current = element_count;
         if ( current-yoffset > height - 2 )
           yoffset++;
-        event->accept();
+        ev->accept();
       }
       inc_search.clear();
       break;
@@ -774,10 +774,10 @@ void FListBox::onKeyPress (FKeyEvent* event)
           if ( ! inc_found )
           {
             inc_search.remove(inc_len, 1);
-            event->ignore();
+            ev->ignore();
           }
           else
-            event->accept();
+            ev->accept();
         }
         else if ( isMultiSelection() )
         {
@@ -787,7 +787,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
             selectItem(current);
           processSelect();
           inc_search.clear();
-          event->accept();
+          ev->accept();
         }
       }
       break;
@@ -813,10 +813,10 @@ void FListBox::onKeyPress (FKeyEvent* event)
               }
             }
           }
-          event->accept();
+          ev->accept();
         }
         else
-          event->ignore();
+          ev->ignore();
       }
       break;
 
@@ -825,7 +825,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       if ( inc_search.getLength() > 0 )
       {
         inc_search.clear();
-        event->accept();
+        ev->accept();
       }
       break;
 
@@ -855,15 +855,15 @@ void FListBox::onKeyPress (FKeyEvent* event)
         {
           inc_search.remove(inc_len-1, 1);
           if ( inc_len == 1 )
-            event->ignore();
+            ev->ignore();
           else
-            event->accept();
+            ev->accept();
         }
         else
-          event->accept();
+          ev->accept();
       }
       else
-        event->ignore();
+        ev->ignore();
   }
 
   if ( current_before != current )
@@ -873,7 +873,7 @@ void FListBox::onKeyPress (FKeyEvent* event)
       processSelect();
   }
 
-  if ( event->isAccepted() )
+  if ( ev->isAccepted() )
   {
     if ( isVisible() )
       drawList();
@@ -890,16 +890,16 @@ void FListBox::onKeyPress (FKeyEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onMouseDown (FMouseEvent* event)
+void FListBox::onMouseDown (FMouseEvent* ev)
 {
   int yoffset_before, mouse_x, mouse_y;
 
-  if (  event->getButton() != LeftButton
-     && event->getButton() != RightButton )
+  if (  ev->getButton() != LeftButton
+     && ev->getButton() != RightButton )
   {
     return;
   }
-  if ( event->getButton() == RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == RightButton && ! isMultiSelection() )
     return;
 
   if ( ! hasFocus() )
@@ -915,8 +915,8 @@ void FListBox::onMouseDown (FMouseEvent* event)
   }
 
   yoffset_before = yoffset;
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
   if (  mouse_x >= 2 && mouse_x <= width-1
      && mouse_y >= 2 && mouse_y <= height-1 )
   {
@@ -924,7 +924,7 @@ void FListBox::onMouseDown (FMouseEvent* event)
     if ( current > int(count()) )
       current = int(count());
     inc_search.clear();
-    if ( event->getButton() == RightButton )
+    if ( ev->getButton() == RightButton )
     {
       if ( isMultiSelection() )
       {
@@ -954,7 +954,7 @@ void FListBox::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onMouseUp (FMouseEvent* event)
+void FListBox::onMouseUp (FMouseEvent* ev)
 {
   if ( dragScroll != FListBox::noScroll )
   {
@@ -964,10 +964,10 @@ void FListBox::onMouseUp (FMouseEvent* event)
     scrollTimer = false;
   }
 
-  if ( event->getButton() == LeftButton )
+  if ( ev->getButton() == LeftButton )
   {
-    int mouse_x = event->getX();
-    int mouse_y = event->getY();
+    int mouse_x = ev->getX();
+    int mouse_y = ev->getY();
     if (  mouse_x >= 2 && mouse_x <= width-1
        && mouse_y >= 2 && mouse_y <= height-1 )
     {
@@ -979,22 +979,22 @@ void FListBox::onMouseUp (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onMouseMove (FMouseEvent* event)
+void FListBox::onMouseMove (FMouseEvent* ev)
 {
   int current_before, yoffset_before, mouse_x, mouse_y;
 
-  if (  event->getButton() != LeftButton
-     && event->getButton() != RightButton )
+  if (  ev->getButton() != LeftButton
+     && ev->getButton() != RightButton )
   {
     return;
   }
-  if ( event->getButton() == RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == RightButton && ! isMultiSelection() )
     return;
 
   current_before = current;
   yoffset_before = yoffset;
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
   if (  mouse_x >= 2 && mouse_x <= width-1
      && mouse_y >= 2 && mouse_y <= height-1 )
@@ -1005,7 +1005,7 @@ void FListBox::onMouseMove (FMouseEvent* event)
     inc_search.clear();
 
     // handle multiple selections
-    if (  event->getButton() == RightButton
+    if (  ev->getButton() == RightButton
        && isMultiSelection()
        && current_before != current )
     {
@@ -1056,7 +1056,7 @@ void FListBox::onMouseMove (FMouseEvent* event)
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
-      if ( event->getButton() == RightButton )
+      if ( ev->getButton() == RightButton )
         dragScroll = FListBox::scrollUpSelect;
       else
         dragScroll = FListBox::scrollUp;
@@ -1076,7 +1076,7 @@ void FListBox::onMouseMove (FMouseEvent* event)
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
-      if ( event->getButton() == RightButton )
+      if ( ev->getButton() == RightButton )
         dragScroll = FListBox::scrollDownSelect;
       else
         dragScroll = FListBox::scrollDown;
@@ -1098,15 +1098,15 @@ void FListBox::onMouseMove (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onMouseDoubleClick (FMouseEvent* event)
+void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
   if (  mouse_x >= 2 && mouse_x <= width-1
      && mouse_y >= 2 && mouse_y <= height-1 )
@@ -1159,6 +1159,9 @@ void FListBox::onTimer (FTimerEvent*)
         yoffset += scrollDistance;
       if ( yoffset > element_count - height + 2 )
         yoffset = element_count - height + 2;
+
+    default:
+      break;
   }
 
   // handle multiple selections
@@ -1206,7 +1209,7 @@ void FListBox::onTimer (FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void FListBox::onWheel (FWheelEvent* event)
+void FListBox::onWheel (FWheelEvent* ev)
 {
   int element_count, current_before, yoffset_before, yoffset_end, wheel;
 
@@ -1218,7 +1221,7 @@ void FListBox::onWheel (FWheelEvent* event)
   if ( yoffset_end < 0 )
     yoffset_end = 0;
 
-  wheel = event->getWheel();
+  wheel = ev->getWheel();
 
   if ( dragScroll != FListBox::noScroll )
   {
@@ -1260,6 +1263,9 @@ void FListBox::onWheel (FWheelEvent* event)
       if ( current > element_count )
         current = element_count;
       inc_search.clear();
+      break;
+
+    default:
       break;
   }
 
@@ -1357,15 +1363,18 @@ void FListBox::cb_VBarChange (FWidget*, void*)
     {
       FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelUp);
       onWheel(&wheel_ev);
-      break;
     }
+    break;
 
     case FScrollbar::scrollWheelDown:
     {
       FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelDown);
       onWheel(&wheel_ev);
-      break;
     }
+    break;
+
+    default:
+      break;
   }
 
   if ( isVisible() )
@@ -1437,6 +1446,9 @@ void FListBox::cb_HBarChange (FWidget*, void*)
       xoffset += 4;
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
+      break;
+
+    default:
       break;
   }
 

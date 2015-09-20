@@ -10,12 +10,11 @@
 // constructor and destructor
 //----------------------------------------------------------------------
 FRect::FRect (const FPoint& p1, const FPoint& p2)
-{
-  X1 = short(p1.getX());
-  Y1 = short(p1.getY());
-  X2 = short(p2.getX());
-  Y2 = short(p2.getY());
-}
+  : X1(short(p1.getX()))
+  , Y1(short(p1.getY()))
+  , X2(short(p2.getX()))
+  , Y2(short(p2.getY()))
+{ }
 
 //----------------------------------------------------------------------
 FRect::~FRect()  // destructor
@@ -56,7 +55,7 @@ void FRect::setY2 (int n)
 //----------------------------------------------------------------------
 void FRect::setX (int n)
 {
-  short dX = X2 - X1;
+  short dX = short(X2 - X1);
   X1 = short(n);
   X2 = short(X1 + dX);
 }
@@ -64,7 +63,7 @@ void FRect::setX (int n)
 //----------------------------------------------------------------------
 void FRect::setY (int n)
 {
-  short dY = Y2 - Y1;
+  short dY = short(Y2 - Y1);
   Y1 = short(n);
   Y2 = short(Y1 + dY);
 }
@@ -99,19 +98,19 @@ void FRect::setRect (int x, int y, int width, int height)
 //----------------------------------------------------------------------
 void FRect::move (int dx, int dy)
 {
-  X1 += short(dx);
-  Y1 += short(dy);
-  X2 += short(dx);
-  Y2 += short(dy);
+  X1 = short(X1 + dx);
+  Y1 = short(Y1 + dy);
+  X2 = short(X2 + dx);
+  Y2 = short(Y2 + dy);
 }
 
 //----------------------------------------------------------------------
 void FRect::move  (const FPoint& d)
 {
-  X1 += short(d.getX());
-  Y1 += short(d.getY());
-  X2 += short(d.getX());
-  Y2 += short(d.getY());
+  X1 = short(X1 + d.getX());
+  Y1 = short(Y1 + d.getY());
+  X2 = short(X2 + d.getX());
+  Y2 = short(Y2 + d.getY());
 }
 
 //----------------------------------------------------------------------

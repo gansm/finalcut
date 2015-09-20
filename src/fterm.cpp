@@ -171,7 +171,7 @@ void FTerm::outb_Attribute_Controller (int index, int data)
   outb (index & 0x1F, AttrC_Index);
   outb (uChar(data), AttrC_DataW);
   inb (AttrC_DataSwitch);
-  outb ((index & 0x1F) | 0x20, AttrC_Index);
+  outb (uChar((index & 0x1F) | 0x20), AttrC_Index);
   outb (uChar(data), AttrC_DataW);
 }
 
@@ -183,7 +183,7 @@ int FTerm::inb_Attribute_Controller (int index)
   outb (index & 0x1F, AttrC_Index);
   res = inb (AttrC_DataR);
   inb (AttrC_DataSwitch);
-  outb ((index & 0x1F) | 0x20, AttrC_Index);
+  outb (uChar((index & 0x1F) | 0x20), AttrC_Index);
   inb (AttrC_DataR);
   return res;
 }
@@ -912,6 +912,7 @@ void FTerm::signal_handler (int signum)
       // initialize a resize event to the root element
       resize_term = true;
       break;
+
     case SIGTERM:
     case SIGQUIT:
     case SIGINT:
@@ -1166,6 +1167,9 @@ void FTerm::init()
           else
             termtype = const_cast<char*>("rxvt");
         }
+        break;
+
+      default:
         break;
     }
   }
@@ -1949,8 +1953,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
   {
     ac = &area->text[y * area->width];
     tc = &vterm->text[(ay+y) * vterm->width + ax];
-
-    memcpy (ac, tc, sizeof(FTerm::char_data) * uLong(length));
+    memcpy (ac, tc, sizeof(FTerm::char_data) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
@@ -2003,7 +2006,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
     tc = &vterm->text[(y+_y-1) * vterm->width + x-1];
     ac = &area->text[(dy+_y) * line_len + dx];
 
-    memcpy (ac, tc, sizeof(FTerm::char_data) * uLong(length));
+    memcpy (ac, tc, sizeof(FTerm::char_data) * unsigned(length));
 
     if ( short(area->changes[dy+_y].xmin) > dx )
       area->changes[dy+_y].xmin = uInt(dx);
@@ -2068,7 +2071,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     tc = &vterm->text[(ay+y) * vterm->width + ax];
     ac = &area->text[y * line_len + ol];
 
-    memcpy (tc, ac, sizeof(FTerm::char_data) * uLong(length));
+    memcpy (tc, ac, sizeof(FTerm::char_data) * unsigned(length));
 
     if ( ax < short(vterm->changes[ay+y].xmin) )
       vterm->changes[ay+y].xmin = uInt(ax);
@@ -2177,7 +2180,8 @@ bool FTerm::setVGAFont()
           VGAFont = false;
         // unicode character mapping
         struct unimapdesc unimap;
-        unimap.entry_ct = sizeof(unicode_cp437_pairs) / sizeof(unipair);
+        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs) /
+                                  sizeof(unipair) );
         unimap.entries = &unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
@@ -2231,7 +2235,8 @@ bool FTerm::setNewFont()
         if ( ret != 0 )
           NewFont = false;
         // unicode character mapping
-        unimap.entry_ct = sizeof(unicode_cp437_pairs) / sizeof(unipair);
+        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs) /
+                                   sizeof(unipair) );
         unimap.entries = &unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
@@ -2789,8 +2794,12 @@ void FTerm::setPalette (int index, int r, int g, int b)
       case 0:
         ::printf ("\033]11;#%2.2x%2.2x%2.2x\033\\", r, g, b);
         break;
+
       case 7:
         ::printf ("\033]10;#%2.2x%2.2x%2.2x\033\\", r, g, b);
+
+    default:
+      break;
     }
   }
   else
@@ -2948,9 +2957,13 @@ bool FTerm::gpmMouse (bool on)
     {
       case -1:
         return false;
+
       case -2:
         Gpm_Close();
         return false;
+
+      default:
+        break;
     }
   }
   else
@@ -3575,7 +3588,11 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           break;
 
         case '\t':
-          cursor->x_ref() += tabstop - uInt(cursor->x_ref()) + 1 % tabstop;
+          cursor->x_ref() = short ( uInt(cursor->x_ref())
+                                    + tabstop
+                                    - uInt(cursor->x_ref())
+                                    + 1
+                                    % tabstop );
           break;
 
         case '\b':
@@ -3784,6 +3801,10 @@ inline void FTerm::appendAttributes (char_data*& screen_attr)
       case fc::NF_rev_menu_button3:
       case fc::NF_rev_border_line_right_and_left:
         setTermColor (screen_attr->bg_color, screen_attr->fg_color);
+        break;
+
+      default:
+        break;
     }
   }
 }

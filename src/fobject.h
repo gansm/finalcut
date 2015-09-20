@@ -64,10 +64,10 @@ class FObject
    virtual ~FObject();
    virtual const char* getClassName() const;
 
-   FObject*     parent() const;
+   FObject*     getParent() const;
    bool         hasParent() const;
    void         removeParent();
-   object_list  children() const;
+   object_list  getChildren() const;
    bool         hasChildren() const;
    void         addChild (FObject*);
    void         delChild (FObject*);
@@ -93,7 +93,7 @@ inline const char* FObject::getClassName() const
 { return "FObject"; }
 
 //----------------------------------------------------------------------
-inline FObject* FObject::parent() const
+inline FObject* FObject::getParent() const
 { return parentObj; }
 
 //----------------------------------------------------------------------
@@ -105,7 +105,7 @@ inline void FObject::removeParent()
 { parentObj = 0; }
 
 //----------------------------------------------------------------------
-inline FObject::object_list FObject::children() const
+inline FObject::object_list FObject::getChildren() const
 { return children_list; }
 
 //----------------------------------------------------------------------

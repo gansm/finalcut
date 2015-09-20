@@ -428,7 +428,7 @@ void FWidget::adjustSize()
     FObject::object_list children;
     FObject::object_list::const_iterator iter, end;
 
-    children = this->children();
+    children = this->getChildren();
     iter = children.begin();
     end  = children.end();
 
@@ -633,7 +633,7 @@ void FWidget::onAccel (FAccelEvent*)
 }
 
 //----------------------------------------------------------------------
-void FWidget::onResize (FResizeEvent* event)
+void FWidget::onResize (FResizeEvent* ev)
 {
   if ( openConsole() == 0 )
   {
@@ -642,7 +642,7 @@ void FWidget::onResize (FResizeEvent* event)
   }
   rootObject->resize();
   rootObject->redraw();
-  event->accept();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------
@@ -656,9 +656,9 @@ void FWidget::onHide (FHideEvent*)
 }
 
 //----------------------------------------------------------------------
-void FWidget::onClose (FCloseEvent* event)
+void FWidget::onClose (FCloseEvent* ev)
 {
-  event->accept();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------
@@ -666,12 +666,12 @@ bool FWidget::focusNextChild(void)
 {
   if ( hasParent() )
   {
-    if ( parent()->hasChildren() )
+    if ( getParent()->hasChildren() )
     {
       FObject::object_list children;
       FObject::object_list::iterator iter, end;
 
-      children = parent()->children();
+      children = getParent()->getChildren();
       iter = children.begin();
       end  = children.end();
 
@@ -727,12 +727,12 @@ bool FWidget::focusPrevChild(void)
 {
   if ( hasParent() )
   {
-    if ( parent()->hasChildren() )
+    if ( getParent()->hasChildren() )
     {
       FObject::object_list children;
       FObject::object_list::iterator iter, begin;
 
-      children = parent()->children();
+      children = getParent()->getChildren();
       iter  = children.end();
       begin = children.begin();
       do
@@ -826,7 +826,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
     FObject::object_list children;
     FObject::object_list::const_iterator iter, end;
 
-    children = p->children();
+    children = p->getChildren();
     iter = children.begin();
     end  = children.end();
 
@@ -884,7 +884,7 @@ int FWidget::numOfFocusableChildren()
 
   int num = 0;
 
-  children = this->children();
+  children = this->getChildren();
   iter = children.begin();
   end  = children.end();
 
@@ -901,10 +901,10 @@ int FWidget::numOfFocusableChildren()
 //----------------------------------------------------------------------
 bool FWidget::close()
 {
-  FCloseEvent event(Close_Event);
-  FApplication::sendEvent(this, &event);
+  FCloseEvent ev(Close_Event);
+  FApplication::sendEvent(this, &ev);
 
-  if ( event.isAccepted() )
+  if ( ev.isAccepted() )
   {
     if ( this == getMainWidget() )
       quit();
@@ -1165,7 +1165,7 @@ void FWidget::redraw()
       FObject::object_list children;
       FObject::object_list::const_iterator iter, end;
 
-      children = this->children();
+      children = this->getChildren();
       iter = children.begin();
       end  = children.end();
 
@@ -1256,7 +1256,7 @@ void FWidget::show()
     FObject::object_list children;
     FObject::object_list::const_iterator iter, end;
 
-    children = this->children();
+    children = this->getChildren();
     iter = children.begin();
     end  = children.end();
 
@@ -1276,8 +1276,8 @@ void FWidget::show()
     show_root_widget = 0;
   }
 
-  FShowEvent show (Show_Event);
-  FApplication::sendEvent( this, &show );
+  FShowEvent show_ev (Show_Event);
+  FApplication::sendEvent(this, &show_ev);
 }
 
 //----------------------------------------------------------------------
@@ -1296,8 +1296,8 @@ void FWidget::hide()
         FWidget::setFocusWidget(parentWidget());
       }
     }
-    FHideEvent hide (Hide_Event);
-    FApplication::sendEvent( this, &hide );
+    FHideEvent hide_ev (Hide_Event);
+    FApplication::sendEvent(this, &hide_ev);
   }
 }
 
@@ -1322,7 +1322,7 @@ bool FWidget::focusFirstChild (void)
   if ( ! this->hasChildren() )
     return false;
 
-  children = this->children();
+  children = this->getChildren();
   iter = children.begin();
   end  = children.end();
 
@@ -1358,7 +1358,7 @@ bool FWidget::focusLastChild (void)
   if ( ! this->hasChildren() )
     return false;
 
-  children = this->children();
+  children = this->getChildren();
   iter  = children.end();
   begin = children.begin();
 
@@ -2050,6 +2050,9 @@ void FWidget::setDoubleFlatLine(int side, bool bit)
     case fc::left:
       size = double_flatline_mask.left.size();
       double_flatline_mask.left.assign(size, bit);
+      break;
+
+    default:
       break;
   }
 }

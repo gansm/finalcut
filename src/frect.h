@@ -71,19 +71,19 @@ class FRect
 // FRect inline functions
 //----------------------------------------------------------------------
 inline FRect::FRect()
-{
-  X1 = Y1 = 0;
-  X2 = Y2 = -1;
-}
+  : X1(0)
+  , Y1(0)
+  , X2(-1)
+  , Y2(-1)
+{ }
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, int width, int height)
-{
-  X1 = short(x);
-  Y1 = short(y);
-  X2 = short(x+width-1);
-  Y2 = short(y+height-1);
-}
+  : X1(short(x))
+  , Y1(short(y))
+  , X2(short(x+width-1))
+  , Y2(short(y+height-1))
+{ }
 
 //----------------------------------------------------------------------
 inline const char* FRect::getClassName()

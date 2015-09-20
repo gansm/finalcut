@@ -93,7 +93,7 @@ int FOptiMove::cap_duration (char*& cap, int affcnt)
         ms += num * 10;
       }
       else
-        ms += char_duration;
+        ms += float(char_duration);
     }
     return int(ms);
   }
@@ -610,6 +610,9 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         strcat (move_ptr, F_cursor_left.cap);
         move_ptr += strlen(move_buf);
         relative_move (move_ptr, screen_width-1, yold-1, xnew, ynew);
+        break;
+
+      default:
         break;
     }
   }

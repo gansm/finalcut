@@ -430,9 +430,9 @@ bool FButtonGroup::hasCheckedButton()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::onMouseDown (FMouseEvent* event)
+void FButtonGroup::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
   directFocus();
 }

@@ -35,10 +35,10 @@ private:
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Button::Button (FWidget* parent) : FButton(parent)
-{
-  checked = false;
-}
+Button::Button (FWidget* parent)
+  : FButton(parent)
+  , checked(false)
+{ }
 
 //----------------------------------------------------------------------
 void Button::setChecked(bool on)
@@ -64,15 +64,15 @@ void Button::setChecked(bool on)
 }
 
 //----------------------------------------------------------------------
-void Button::onKeyPress (FKeyEvent* event)
+void Button::onKeyPress (FKeyEvent* ev)
 {
-  int key = event->key();
+  int key = ev->key();
 
   // catch the enter key
   if ( key == fc::Fkey_return || key == fc::Fkey_enter )
     return;
 
-  FButton::onKeyPress(event);
+  FButton::onKeyPress(ev);
 }
 
 
@@ -170,17 +170,22 @@ class Calc : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Calc::Calc (FWidget* parent) : FDialog(parent)
+Calc::Calc (FWidget* parent)
+  : FDialog(parent)
+  , error(false)
+  , arcus_mode(false)
+  , hyperbolic_mode(false)
+  , a(0.0L)
+  , b(0.0L)
+  , max_char(32)
+  , last_key(-1)
+  , infix_operator('\0')
+  , last_infix_operator('\0')
+  , input("")
+  , bracket_stack()
+  , calculator_buttons()
 {
-  error = false;
-  arcus_mode = false;
-  hyperbolic_mode = false;
-  input = "";
   clearInfixOperator();
-  last_infix_operator = '\0';
-  max_char = 32;
-  last_key = -1;
-  a = b = 0.0L;
 
   const wchar_t* button_text[Calc::NUM_OF_BUTTONS] =
   {
@@ -428,7 +433,7 @@ void Calc::calcInfixOperator()
   switch ( infix_operator )
   {
     case '*':
-      if ( a != 0.0L )
+      if ( fabs(a) > LDBL_EPSILON )  // a != 0.0L
       {
         // ln(a * b) = ln(a) + ln(b)
         if ( log(abs(a)) + log(abs(b)) <= log(LDBL_MAX) )
@@ -441,14 +446,14 @@ void Calc::calcInfixOperator()
       break;
 
     case '/':
-      if ( b != 0.0L )
+      if ( fabs(b) > LDBL_EPSILON )  // b != 0.0L
         a /= b;
       else
         error = true;
       break;
 
     case '+':
-      if ( a != 0.0L )
+      if ( fabs(a) > LDBL_EPSILON )  // a != 0.0L
       {
         if ( log(abs(a)) + log(abs(1 + b/a)) <= log(LDBL_MAX) )
           a += b;
@@ -460,7 +465,7 @@ void Calc::calcInfixOperator()
       break;
 
     case '-':
-      if ( a != 0.0L )
+      if ( fabs(b) > LDBL_EPSILON )  // b != 0.0L
       {
         if ( log(abs(a)) + log(abs(1 - b/a)) <= log(LDBL_MAX) )
           a -= b;
@@ -476,15 +481,18 @@ void Calc::calcInfixOperator()
       if ( errno == EDOM || errno == ERANGE )
         error = true;
       break;
+
+    default:
+      break;
   }
   clearInfixOperator();
 }
 
 //----------------------------------------------------------------------
-void Calc::onKeyPress (FKeyEvent* event)
+void Calc::onKeyPress (FKeyEvent* ev)
 {
   int len = int(input.getLength());
-  int key = event->key();
+  int key = ev->key();
 
   switch ( key )
   {
@@ -500,14 +508,19 @@ void Calc::onKeyPress (FKeyEvent* event)
         drawDispay();
         updateTerminal();
       }
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      FAccelEvent a_ev(Accelerator_Event, getFocusWidget());
-      calculator_buttons[On]->onAccel(&a_ev);
-      event->accept();
+      {
+        FAccelEvent a_ev(Accelerator_Event, getFocusWidget());
+        calculator_buttons[On]->onAccel(&a_ev);
+      }
+      ev->accept();
+      break;
+
+    default:
       break;
   }
 }
@@ -520,7 +533,7 @@ void Calc::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::onClose (FCloseEvent* event)
+void Calc::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit",
                                 "Do you really want\n"
@@ -528,7 +541,7 @@ void Calc::onClose (FCloseEvent* event)
                                 FMessageBox::Yes,
                                 FMessageBox::No );
 
-  (ret == FMessageBox::Yes) ? event->accept() : event->ignore();
+  (ret == FMessageBox::Yes) ? ev->accept() : ev->ignore();
 }
 
 //----------------------------------------------------------------------
@@ -566,7 +579,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = asin(*x) * 180.0L/PI;
-        else if ( fmod(*x,180.0L) == 0.0L )
+        else if ( fmod(*x,180.0L) < LDBL_EPSILON )  // x/180 = 0
           *x = 0.0L;
         else
           *x = sin(*x * PI/180.0L);
@@ -598,7 +611,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = acos(*x) * 180.0L/PI;
-        else if ( fmod(*x - 90.0L,180.0L) == 0.0L )
+        else if ( fmod(*x - 90.0L,180.0L) < LDBL_EPSILON )  // (x - 90)/180 == 0
           *x = 0.0L;
         else
           *x = cos(*x * PI/180.0L);
@@ -632,9 +645,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         if ( arcus_mode )
           *x = atan(*x) * 180.0L/PI;
         else
-          if ( fmod(*x,180.0L) != 0.0L && fmod(*x,90.0L) == 0.0L )
+          // Test if (x/180) != 0 and x/90 == 0
+          if ( fmod(*x,180.0L) > LDBL_EPSILON && fmod(*x,90.0L) < LDBL_EPSILON )
             error = true;
-          else if ( fmod(*x,180.0L) == 0.0L )
+          else if ( fmod(*x,180.0L) < LDBL_EPSILON )  // x/180 == 0
             *x = 0.0L;
           else
             *x = tan(*x * PI/180.0L);
@@ -649,7 +663,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Reciprocal:  // 1/x
-      if ( *x == 0.0L )
+      if ( fabs(*x) < LDBL_EPSILON )  // x == 0
         error = true;
       else
       {
@@ -901,6 +915,9 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       infix_operator = last_infix_operator;
       calcInfixOperator();
       setDisplay(a);
+      break;
+
+    default:
       break;
   } // end of switch
 

@@ -24,7 +24,7 @@ class FDialog : public FWindow
    };
 
  private:
-   FString text;
+   FString tb_text;
    int  result_code;
    bool maximized;
    FPoint TitleBarClickPos;
@@ -181,10 +181,10 @@ inline bool FDialog::hasShadow()
 
 //----------------------------------------------------------------------
 inline void FDialog::setText (FString txt)
-{ this->text = txt; }
+{ this->tb_text = txt; }
 
 //----------------------------------------------------------------------
 inline FString FDialog::getText() const
-{ return this->text; }
+{ return this->tb_text; }
 
 #endif  // _FDIALOG_H

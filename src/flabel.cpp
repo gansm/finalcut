@@ -130,8 +130,10 @@ int FLabel::getXOffset(int length)
         return width - length;
       else
         return 0;
+
+    default:
+      return 0;
   }
-  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -298,9 +300,9 @@ void FLabel::hide()
 }
 
 //----------------------------------------------------------------------
-void FLabel::onMouseDown (FMouseEvent* event)
+void FLabel::onMouseDown (FMouseEvent* ev)
 {
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( ! isEnabled() || ! accel_widget  )
@@ -325,14 +327,14 @@ void FLabel::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FLabel::onAccel (FAccelEvent* event)
+void FLabel::onAccel (FAccelEvent* ev)
 {
   if ( ! isEnabled() || ! accel_widget  )
     return;
 
   if ( ! accel_widget->hasFocus() )
   {
-    FWidget* focused_widget = static_cast<FWidget*>(event->focusedWidget());
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
     FFocusEvent out (FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
@@ -346,7 +348,7 @@ void FLabel::onAccel (FAccelEvent* event)
       flush_out();
     }
   }
-  event->accept();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------

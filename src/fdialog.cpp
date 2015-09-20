@@ -94,7 +94,7 @@ void FDialog::init()
   createArea (vwin);
   setGeometry (1, 1, 10, 10, false);  // initialize geometry values
   focus_widget = 0;
-  this->text = "";
+  this->tb_text = "";
   maximized = false;
   ignore_padding = true;
   window_object  = true;
@@ -185,7 +185,7 @@ void FDialog::drawBorder()
 void FDialog::drawTitleBar()
 {
   int i,x;
-  uInt length = text.getLength();
+  uInt length = tb_text.getLength();
 
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
@@ -215,7 +215,7 @@ void FDialog::drawTitleBar()
     print (' ');
 
   // the title bar text
-  print (text);
+  print (tb_text);
 
   // fill the rest of the bar
   for (; x+1+int(length) <= width-2; x++)
@@ -369,23 +369,23 @@ void FDialog::onHide (FHideEvent*)
 }
 
 //----------------------------------------------------------------------
-void FDialog::onClose (FCloseEvent* event)
+void FDialog::onClose (FCloseEvent* ev)
 {
-  event->accept();
+  ev->accept();
   result_code = FDialog::Reject;
 }
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::onKeyPress (FKeyEvent* event)
+void FDialog::onKeyPress (FKeyEvent* ev)
 {
   if ( ! isEnabled() || this == getMainWidget() )
     return;
 
-  if (  event->key() == fc::Fkey_escape
-     || event->key() == fc::Fkey_escape_mintty )
+  if (  ev->key() == fc::Fkey_escape
+     || ev->key() == fc::Fkey_escape_mintty )
   {
-    event->accept();
+    ev->accept();
     if ( isModal() )
       done (FDialog::Reject);
     else
@@ -394,16 +394,16 @@ void FDialog::onKeyPress (FKeyEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FDialog::onMouseDown (FMouseEvent* event)
+void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  int mouse_x = event->getX();
-  int mouse_y = event->getY();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
-  if ( event->getButton() == LeftButton )
+  if ( ev->getButton() == LeftButton )
   {
     // click on titlebar or window: raise + activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
-      TitleBarClickPos.setPoint (event->getGlobalX(), event->getGlobalY());
+      TitleBarClickPos.setPoint (ev->getGlobalX(), ev->getGlobalY());
     else
       TitleBarClickPos.setPoint (0,0);
 
@@ -428,7 +428,7 @@ void FDialog::onMouseDown (FMouseEvent* event)
       redraw();
   }
 
-  if ( event->getButton() == RightButton )
+  if ( ev->getButton() == RightButton )
   {
     // click on titlebar: just activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
@@ -451,7 +451,7 @@ void FDialog::onMouseDown (FMouseEvent* event)
     }
   }
 
-  if ( event->getButton() == MiddleButton )
+  if ( ev->getButton() == MiddleButton )
   {
     // click on titlebar: lower + activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
@@ -481,12 +481,12 @@ void FDialog::onMouseDown (FMouseEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FDialog::onMouseUp (FMouseEvent* event)
+void FDialog::onMouseUp (FMouseEvent* ev)
 {
   int titlebar_x = TitleBarClickPos.getX();
   int titlebar_y = TitleBarClickPos.getY();
 
-  if ( event->getButton() == LeftButton )
+  if ( ev->getButton() == LeftButton )
   {
     if (  ! TitleBarClickPos.isNull()
        && titlebar_x >= xpos+xmin+3
@@ -494,41 +494,41 @@ void FDialog::onMouseUp (FMouseEvent* event)
        && titlebar_y == ypos+ymin-1 )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
-      FPoint deltaPos = event->getGlobalPos() - TitleBarClickPos;
+      FPoint deltaPos = ev->getGlobalPos() - TitleBarClickPos;
       move (currentPos + deltaPos);
-      TitleBarClickPos = event->getGlobalPos();
+      TitleBarClickPos = ev->getGlobalPos();
     }
   }
 }
 
 //----------------------------------------------------------------------
-void FDialog::onMouseMove (FMouseEvent* event)
+void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  if ( event->getButton() == LeftButton )
+  if ( ev->getButton() == LeftButton )
   {
     if ( ! TitleBarClickPos.isNull() )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
-      FPoint deltaPos = event->getGlobalPos() - TitleBarClickPos;
+      FPoint deltaPos = ev->getGlobalPos() - TitleBarClickPos;
       move (currentPos + deltaPos);
-      TitleBarClickPos = event->getGlobalPos();
+      TitleBarClickPos = ev->getGlobalPos();
     }
   }
 }
 
 //----------------------------------------------------------------------
-void FDialog::onMouseDoubleClick (FMouseEvent* event)
+void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
   int x, y;
 
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   x = xpos + xmin - 1;
   y = ypos + ymin - 1;
   FRect title_button(x, y, 3, 1);
 
-  FPoint gPos = event->getGlobalPos();
+  FPoint gPos = ev->getGlobalPos();
   if ( title_button.contains(gPos) )
   {
     setClickedWidget(0);

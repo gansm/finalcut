@@ -103,7 +103,7 @@ void Mandelbrot::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Mandelbrot::onClose (FCloseEvent* event)
+void Mandelbrot::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit",
                                 "Do you really want\n"
@@ -111,9 +111,9 @@ void Mandelbrot::onClose (FCloseEvent* event)
                                 FMessageBox::Yes,
                                 FMessageBox::No );
   if ( ret == FMessageBox::Yes )
-    event->accept();
+    ev->accept();
   else
-    event->ignore();
+    ev->ignore();
 }
 
 //----------------------------------------------------------------------

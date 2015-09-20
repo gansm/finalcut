@@ -10,11 +10,15 @@
 // class FKeyEvent
 //----------------------------------------------------------------------
 
-FKeyEvent::FKeyEvent(int type, int key) : FEvent(type)  // constructor
-{
-  k = key;
-  accpt = false;
-}
+FKeyEvent::FKeyEvent(int ev_type, int key_num)  // constructor
+  : FEvent(ev_type)
+  , k(key_num)
+  , accpt(false)
+{ }
+
+//----------------------------------------------------------------------
+FKeyEvent::~FKeyEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 int FKeyEvent::key() const
@@ -37,24 +41,28 @@ void FKeyEvent::ignore()
 // class FMouseEvent
 //----------------------------------------------------------------------
 
-FMouseEvent::FMouseEvent (int type,           // constructor
-                          const FPoint& pos,
-                          int button) : FEvent(type),
-                                        p(pos),
-                                        b(button)
-{
-}
+FMouseEvent::FMouseEvent ( int ev_type,        // constructor
+                           const FPoint& pos,
+                           int button )
+  : FEvent(ev_type)
+  , p(pos)
+  , b(button)
+{ }
 
 //----------------------------------------------------------------------
-FMouseEvent::FMouseEvent (int type,           // constructor
-                          const FPoint& pos,
-                          const FPoint& globalPos,
-                          int button) : FEvent(type),
-                                        p(pos),
-                                        g(globalPos),
-                                        b(button)
-{
-}
+FMouseEvent::FMouseEvent ( int ev_type,        // constructor
+                           const FPoint& pos,
+                           const FPoint& globalPos,
+                           int button )
+  : FEvent(ev_type)
+  , p(pos)
+  , g(globalPos)
+  , b(button)
+{ }
+
+//----------------------------------------------------------------------
+FMouseEvent::~FMouseEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 const FPoint& FMouseEvent::getPos() const
@@ -89,24 +97,28 @@ int FMouseEvent::getButton() const
 // class FWheelEvent
 //----------------------------------------------------------------------
 
-FWheelEvent::FWheelEvent (int type,           // constructor
-                          const FPoint& pos,
-                          int wheel) : FEvent(type),
-                                        p(pos),
-                                        w(wheel)
-{
-}
+FWheelEvent::FWheelEvent ( int ev_type,        // constructor
+                           const FPoint& pos,
+                           int wheel )
+  : FEvent(ev_type)
+  , p(pos)
+  , w(wheel)
+{ }
 
 //----------------------------------------------------------------------
-FWheelEvent::FWheelEvent (int type,           // constructor
+FWheelEvent::FWheelEvent (int ev_type,        // constructor
                           const FPoint& pos,
                           const FPoint& globalPos,
-                          int wheel) : FEvent(type),
-                                        p(pos),
-                                        g(globalPos),
-                                        w(wheel)
-{
-}
+                          int wheel)
+  : FEvent(ev_type)
+  , p(pos)
+  , g(globalPos)
+  , w(wheel)
+{ }
+
+//----------------------------------------------------------------------
+FWheelEvent::~FWheelEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 const FPoint& FWheelEvent::getPos() const
@@ -141,11 +153,15 @@ int FWheelEvent::getWheel() const
 // class FFocusEvent
 //----------------------------------------------------------------------
 
-FFocusEvent::FFocusEvent (int type) : FEvent(type)  // constructor
-{
-  accpt = true;
-  focus_type = FocusDefiniteWidget;
-}
+FFocusEvent::FFocusEvent (int ev_type)  // constructor
+  : FEvent(ev_type)
+  , accpt(true)
+  , focus_type(FocusDefiniteWidget)
+{ }
+
+//----------------------------------------------------------------------
+FFocusEvent::~FFocusEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 bool FFocusEvent::gotFocus() const
@@ -184,11 +200,15 @@ void FFocusEvent::ignore()
 // class FAccelEvent
 //----------------------------------------------------------------------
 
-FAccelEvent::FAccelEvent(int type, void* focused) : FEvent(type)  // constructor
-{
-  focus_widget = focused;
-  accpt = false;
-}
+FAccelEvent::FAccelEvent(int ev_type, void* focused)  // constructor
+  : FEvent(ev_type)
+  , accpt(false)
+  , focus_widget(focused)
+{ }
+
+//----------------------------------------------------------------------
+FAccelEvent::~FAccelEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 void* FAccelEvent::focusedWidget() const
@@ -211,8 +231,14 @@ void FAccelEvent::ignore()
 // class FResizeEvent
 //----------------------------------------------------------------------
 
-FResizeEvent::FResizeEvent(int type) : FEvent(type)  // constructor
-{ accpt = false; }
+FResizeEvent::FResizeEvent(int ev_type)  // constructor
+  : FEvent(ev_type)
+  , accpt(false)
+{ }
+
+//----------------------------------------------------------------------
+FResizeEvent::~FResizeEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 bool FResizeEvent::isAccepted() const
@@ -231,24 +257,38 @@ void FResizeEvent::ignore()
 // class FShowEvent
 //----------------------------------------------------------------------
 
-FShowEvent::FShowEvent(int type) : FEvent(type)  // constructor
-{
-}
+FShowEvent::FShowEvent(int ev_type)  // constructor
+  : FEvent(ev_type)
+{ }
+
+//----------------------------------------------------------------------
+FShowEvent::~FShowEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 // class FHideEvent
 //----------------------------------------------------------------------
 
-FHideEvent::FHideEvent(int type) : FEvent(type)  // constructor
-{
-}
+FHideEvent::FHideEvent(int ev_type)  // constructor
+  : FEvent(ev_type)
+{ }
+
+//----------------------------------------------------------------------
+FHideEvent::~FHideEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 // class FCloseEvent
 //----------------------------------------------------------------------
 
-FCloseEvent::FCloseEvent(int type) : FEvent(type)  // constructor
-{ accpt = false; }
+FCloseEvent::FCloseEvent(int ev_type)  // constructor
+  : FEvent(ev_type)
+  , accpt(false)
+{ }
+
+//----------------------------------------------------------------------
+FCloseEvent::~FCloseEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 bool FCloseEvent::isAccepted() const
@@ -267,8 +307,14 @@ void FCloseEvent::ignore()
 // class FTimerEvent
 //----------------------------------------------------------------------
 
-FTimerEvent::FTimerEvent(int type, int timer_id) : FEvent(type)  // constructor
-{ id = timer_id; }
+FTimerEvent::FTimerEvent(int ev_type, int timer_id)  // constructor
+  : FEvent(ev_type)
+  , id(timer_id)
+{ }
+
+//----------------------------------------------------------------------
+FTimerEvent::~FTimerEvent()  // destructor
+{ }
 
 //----------------------------------------------------------------------
 int FTimerEvent::timerId() const

@@ -58,17 +58,17 @@ bool FMenuList::hasSelectedItem()
 }
 
 //----------------------------------------------------------------------
-void FMenuList::insert (FMenuItem* item)
+void FMenuList::insert (FMenuItem* i)
 {
-  itemlist.push_back(item);
+  itemlist.push_back(i);
 }
 
 //----------------------------------------------------------------------
-void FMenuList::remove (FMenuItem* item)
+void FMenuList::remove (FMenuItem* i)
 {
   std::vector<FMenuItem*>::iterator iter;
 
-  //delAccelerator (item);
+  //delAccelerator (i);
 
   if ( itemlist.empty() )
     return;
@@ -76,10 +76,10 @@ void FMenuList::remove (FMenuItem* item)
   iter = itemlist.begin();
   while ( iter != itemlist.end() )
   {
-    if ( (*iter) == item )
+    if ( (*iter) == i )
     {
       iter = itemlist.erase(iter);
-      item->setSuperMenu(0);
+      i->setSuperMenu(0);
       break;
     }
     else

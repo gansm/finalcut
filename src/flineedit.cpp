@@ -224,6 +224,7 @@ void FLineEdit::adjustLabel()
     case label_above:
       label->setGeometry(xpos, ypos-1, label_length, 1);
       break;
+
     case label_left:
       label->setGeometry(xpos-label_length, ypos, label_length, 1);
       break;
@@ -275,6 +276,7 @@ void FLineEdit::hide()
       case label_above:
         gotoxy (xpos+xmin-1, ypos+ymin-2);
         break;
+
       case label_left:
         gotoxy (xpos+xmin-int(lable_Length)-1, ypos+ymin-1);
         break;
@@ -364,10 +366,10 @@ bool FLineEdit::setShadow (bool on)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onKeyPress (FKeyEvent* event)
+void FLineEdit::onKeyPress (FKeyEvent* ev)
 {
   int len = int(text.getLength());
-  int key = event->key();
+  int key = ev->key();
 
   switch ( key )
   {
@@ -377,7 +379,7 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         cursor_pos=0;
       if ( cursor_pos < offset )
         offset--;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_right:
@@ -386,20 +388,20 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         cursor_pos=len;
       if ( cursor_pos-offset >= width-2 && offset < len-width+2 )
         offset++;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_home:
       cursor_pos=0;
       offset=0;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_end:
       cursor_pos=len;
       if ( cursor_pos > width-2 )
         offset=len-width+2;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_dc: // del key
@@ -414,7 +416,7 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         cursor_pos=0;
       if ( offset > 0 && len-offset <= width-2 )
         offset--;
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_erase:
@@ -427,7 +429,7 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         if ( offset > 0 )
           offset--;
       }
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_ic: // insert key
@@ -448,17 +450,17 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         if ( isUrxvtTerminal() )
           setXTermCursor("rgb:0000/0000/0000");
       }
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_return:
     case fc::Fkey_enter:
       processActivate();
-      event->accept();
+      ev->accept();
       break;
 
     case fc::Fkey_tab:
-      event->ignore();
+      ev->ignore();
       break;
 
     default:
@@ -485,14 +487,14 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
         cursor_pos++;
         if ( cursor_pos > width-2 )
           offset++;
-        event->accept();
+        ev->accept();
       }
       else
-        event->ignore();
+        ev->ignore();
   }
   // end of switch
 
-  if (  event->isAccepted()
+  if (  ev->isAccepted()
      && key != fc::Fkey_return
      && key != fc::Fkey_enter )
   {
@@ -502,11 +504,11 @@ void FLineEdit::onKeyPress (FKeyEvent* event)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onMouseDown (FMouseEvent* event)
+void FLineEdit::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   if ( ! hasFocus() )
@@ -522,8 +524,8 @@ void FLineEdit::onMouseDown (FMouseEvent* event)
       statusBar()->drawMessage();
   }
 
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
   if ( mouse_x >= 2 && mouse_x <= width && mouse_y == 1 )
   {
@@ -548,16 +550,16 @@ void FLineEdit::onMouseUp (FMouseEvent*)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onMouseMove (FMouseEvent* event)
+void FLineEdit::onMouseMove (FMouseEvent* ev)
 {
   int len, mouse_x, mouse_y;
 
-  if ( event->getButton() != LeftButton )
+  if ( ev->getButton() != LeftButton )
     return;
 
   len = int(text.getLength());
-  mouse_x = event->getX();
-  mouse_y = event->getY();
+  mouse_x = ev->getX();
+  mouse_y = ev->getY();
 
   if ( mouse_x >= 2 && mouse_x <= width && mouse_y == 1 )
   {
@@ -646,6 +648,9 @@ void FLineEdit::onTimer (FTimerEvent*)
       cursor_pos++;
       if ( cursor_pos > len )
         cursor_pos = len;
+
+    default:
+      break;
   }
 
   drawInputField();
@@ -653,13 +658,13 @@ void FLineEdit::onTimer (FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::onAccel (FAccelEvent* event)
+void FLineEdit::onAccel (FAccelEvent* ev)
 {
   if ( isEnabled() )
   {
     if ( ! hasFocus() )
     {
-      FWidget* focused_widget = static_cast<FWidget*>(event->focusedWidget());
+      FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
       FFocusEvent out (FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       this->setFocus();
@@ -673,7 +678,7 @@ void FLineEdit::onAccel (FAccelEvent* event)
         flush_out();
       }
     }
-    event->accept();
+    ev->accept();
   }
 }
 

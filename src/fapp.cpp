@@ -27,7 +27,7 @@ std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication (int &argc, char* argv[])
+FApplication::FApplication (int &_argc, char* _argv[])
 {
   assert ( ! rootObj
          && "FApplication: There should be only one application object" );
@@ -35,13 +35,13 @@ FApplication::FApplication (int &argc, char* argv[])
   rootObj = this;
   static char* empty = const_cast<char*>("");
 
-  if ( argc == 0 || argv == 0 )
+  if ( _argc == 0 || _argv == 0 )
   {
-    argc = 0;
-    argv = &empty;
+    _argc = 0;
+    _argv = &empty;
   }
 
-  init(argc, argv);
+  init(_argc, _argv);
 }
 
 //----------------------------------------------------------------------
@@ -57,10 +57,10 @@ FApplication::~FApplication() // destructor
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (int argc, char* argv[])
+void FApplication::init (int _argc, char* _argv[])
 {
-  app_argc = argc;
-  app_argv = argv;
+  app_argc = _argc;
+  app_argv = _argv;
 
   // init keyboard values
   key = 0;
@@ -222,8 +222,12 @@ void FApplication::processKeyboardEvent()
       case mouse_event:
         gpmMouseEvent = true;
         break;
+
       case keyboard_event:
         isKeyPressed = true;
+
+      default:
+        break;
     }
   }
   else
@@ -386,8 +390,8 @@ bool FApplication::parseX11Mouse()
     button_down          = 0x61
   };
 
-  x = uChar(x11_mouse[1]) - 0x20;
-  y = uChar(x11_mouse[2]) - 0x20;
+  x = uChar(x11_mouse[1] - 0x20);
+  y = uChar(x11_mouse[2] - 0x20);
   newMousePosition.setPoint(x,y);
   memset(&b_state, 0x00, sizeof(b_state));
 
@@ -455,6 +459,9 @@ bool FApplication::parseX11Mouse()
         case button3_pressed_move:
           b_state.right_button = Released;
           break;
+
+        default:
+          break;
       }
       break;
 
@@ -469,6 +476,9 @@ bool FApplication::parseX11Mouse()
       time_mousepressed.tv_usec = 0;
       b_state.wheel_down = Pressed;
       break;
+
+      default:
+        break;
   }
   if (  uChar(x11_mouse[1]) == mouse->getX() + 0x20
      && uChar(x11_mouse[2]) == mouse->getY() + 0x20
@@ -601,6 +611,9 @@ bool FApplication::parseSGRMouse()
         time_mousepressed.tv_usec = 0;
         b_state.wheel_down = Pressed;
         break;
+
+      default:
+        break;
     }
   }
   else  // *p == released
@@ -620,6 +633,9 @@ bool FApplication::parseSGRMouse()
       case button3:
       case button3_move:
         b_state.right_button = Released;
+        break;
+
+      default:
         break;
     }
   }
@@ -783,6 +799,9 @@ bool FApplication::parseUrxvtMouse()
         case button3_pressed_move:
           b_state.right_button = Released;
           break;
+
+        default:
+          break;
       }
       break;
 
@@ -797,6 +816,9 @@ bool FApplication::parseUrxvtMouse()
       time_mousepressed.tv_usec = 0;
       b_state.wheel_down = Pressed;
       break;
+
+      default:
+        break;
   }
   if (  *mouse == newMousePosition
       && b_state.wheel_up != Pressed
@@ -864,6 +886,9 @@ bool FApplication::processGpmEvent()
           b_state.middle_button = Released;
         if ( gpm_ev.buttons & GPM_B_RIGHT )
           b_state.right_button = Released;
+
+      default:
+        break;
     }
     mouse->setPoint(gpm_ev.x, gpm_ev.y);
     flush_out();
@@ -877,7 +902,7 @@ bool FApplication::processGpmEvent()
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent()
 {
-  bool event = false;
+  bool Event = false;
 
 #ifdef F_HAVE_LIBGPM
   if (  ! gpmMouseEvent
@@ -898,19 +923,19 @@ void FApplication::processMouseEvent()
 
 #ifdef F_HAVE_LIBGPM
   if ( gpmMouseEvent )
-    event = processGpmEvent();
+    Event = processGpmEvent();
 #endif
 
   if ( x11_mouse[0] )
-    event = parseX11Mouse();
+    Event = parseX11Mouse();
 
   if ( sgr_mouse[0] )
-    event = parseSGRMouse();
+    Event = parseSGRMouse();
 
   if ( urxvt_mouse[0] )
-    event = parseUrxvtMouse();
+    Event = parseUrxvtMouse();
 
-  if ( ! event )
+  if ( ! Event )
     return;
 
   if (  ! clicked_widget
@@ -1283,6 +1308,9 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
         case FocusOut_Event:
         case Accelerator_Event:
           return false;
+
+        default:
+          break;
       }
     }
   }
