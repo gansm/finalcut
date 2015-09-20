@@ -1,0 +1,143 @@
+#
+# spec file for package finalcut
+#
+# Copyright (c) 2015 by Markus Gans
+#
+
+Name:		finalcut
+%define         libname libfinal
+%define         libsoname %{libname}0
+
+Version:	0.1.1
+Release:	%{buildno}
+License:	GPL-3.0
+Summary:	The Final Cut 
+Url:		https://github.com/gansm/finalcut/
+Group:		System/Libraries
+Source:		finalcut-%{version}.tar.gz
+BuildRequires:	automake
+BuildRequires:	autoconf-archive
+BuildRequires:	libtool
+BuildRequires:	gcc-c++
+BuildRequires:  glib2-devel
+BuildRequires:  ncurses-devel
+
+%if 0%{?suse_version}
+%if 0%{?suse_version} > 1130
+BuildRequires:  gpm-devel
+%else
+BuildRequires:  gpm
+%endif
+%endif
+
+%if %{defined fedora}
+BuildRequires:  gpm-devel
+%endif
+
+# Additionally required for tool operations
+Requires:	xxd
+Requires:	sed
+Requires:	tr
+Requires:	grep
+Requires:	gzip
+Requires:	bdftopcf
+Requires:	gcc-c++
+
+Prefix:		%_prefix
+BuildRoot:	%{_tmppath}/finalcut-%{version}-build
+
+%description
+The Final Cut is a class library and widget toolkit with full mouse
+support for creating a text-based user interface. The library supports
+the programmer to develop an application for the text console. It allows
+the simultaneous handling of multiple windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides
+common controls like dialog windows, push buttons, check boxes,
+radio buttons, input lines, list boxes, status bars and so on.
+
+%package devel
+Group:          Development/Libraries/C and C++
+Summary:        Development files for the final cut library
+Requires:	%{libname} = %{version}
+Requires:	%{name} = %{version}
+
+%description devel
+The Final Cut is a class library and widget toolkit with full mouse
+support for creating a text-based user interface. The library supports
+the programmer to develop an application for the text console. It allows
+the simultaneous handling of multiple windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides
+common controls like dialog windows, push buttons, check boxes,
+radio buttons, input lines, list boxes, status bars and so on.
+
+%package -n %{libsoname}
+Group:		System/Libraries
+Summary:	Console widget toolkit
+Provides:	%{libname} = %{version}
+Provides:	%{name} = %{version}
+
+%description -n %{libsoname}
+The Final Cut is a class library and widget toolkit with full mouse
+support for creating a text-based user interface. The library supports
+the programmer to develop an application for the text console. It allows
+the simultaneous handling of multiple windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides
+common controls like dialog windows, push buttons, check boxes,
+radio buttons, input lines, list boxes, status bars and so on.
+
+%package static
+Group:		System/Libraries
+Summary:	Console widget toolkit
+
+%description static
+The Final Cut is a class library and widget toolkit with full mouse
+support for creating a text-based user interface. The library supports
+the programmer to develop an application for the text console. It allows
+the simultaneous handling of multiple windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides
+common controls like dialog windows, push buttons, check boxes,
+radio buttons, input lines, list boxes, status bars and so on.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+autoreconf -v --install --force
+%define warn_flags -Wall -Wextra -Wpedantic
+export CPPFLAGS="$RPM_OPT_FLAGS %{warn_flags}"
+%configure
+make %{?_smp_mflags} V=1
+
+%install
+make install libdir=${RPM_BUILD_ROOT}%{_libdir}/ \
+	     includedir=${RPM_BUILD_ROOT}%{_includedir} \
+	     bindir=${RPM_BUILD_ROOT}%{_bindir} \
+	     docdir=${RPM_BUILD_ROOT}/%{_docdir}/finalcut/ 
+rm -f ${RPM_BUILD_ROOT}%{_libdir}/libfinal.la
+
+%post -n %{libsoname} -p /sbin/ldconfig
+
+%postun -n %{libsoname} -p /sbin/ldconfig
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files devel
+%defattr(-,root,root)
+%dir %{_docdir}/finalcut
+%{_docdir}/finalcut/*
+%{_libdir}/%{libname}.so
+%{_includedir}/*
+
+%files -n %{libsoname}
+%defattr(-,root,root)
+%_libdir/%{libname}.so.*
+
+%files static
+%defattr (-,root,root)
+%{_libdir}/%{libname}.a
+
+%changelog
+* Mon Sep 18 2015 Markus Gans <guru.mail@muenster.de> - 0.1.1-1
+- Initial Release (version 0.1.1)
+
