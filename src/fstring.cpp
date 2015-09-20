@@ -282,9 +282,9 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
     if ( (length + len + 1) <= bufsize )
     {
       // output string <= bufsize
-      for (x = length; x > pos-1; x--)
+      for (x = length; x > pos-1; x--)  // shifting right side  + '\0'
         string[x+len] = string[x];
-      for (x=0; x < len; x++)
+      for (x=0; x < len; x++)           // insert string
         string[x+pos] = s[x];
       length += len;
     }
@@ -296,7 +296,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
 
       try
       {
-        sptr = new wchar_t[bufsize];
+        sptr = new wchar_t[bufsize];    // generate new string
       }
       catch (const std::bad_alloc& ex)
       {
@@ -304,14 +304,14 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
         return;
       }
       uInt y = 0;
-      for (x=0; x < pos; x++)
+      for (x=0; x < pos; x++)           // left side
         sptr[y++] = string[x];
-      for (x=0; x < len; x++)
+      for (x=0; x < len; x++)           // insert string
         sptr[y++] = s[x];
-      for (x=pos; x < length+1; x++)
+      for (x=pos; x < length+1; x++)    // right side  + '\0'
         sptr[y++] = string[x];
       length += len;
-      delete[](string);
+      delete[](string);                 // delete old string
       string = sptr;
     }
   }
@@ -322,6 +322,7 @@ inline void FString::_remove (uInt pos, uInt len)
 {
   if ( (bufsize - length - 1 + len) <= FWDBUFFER )
   {
+    // shifting left side to pos
     for (uInt i=pos; (i+len) < length+1; i++)
       string[i] = string[i+len];
     length -= len;
@@ -333,7 +334,7 @@ inline void FString::_remove (uInt pos, uInt len)
 
     try
     {
-      sptr = new wchar_t[bufsize];
+      sptr = new wchar_t[bufsize];      // generate new string
     }
     catch (const std::bad_alloc& ex)
     {
@@ -341,11 +342,11 @@ inline void FString::_remove (uInt pos, uInt len)
       return;
     }
     uInt x, y = 0;
-    for (x=0; x < pos; x++)
+    for (x=0; x < pos; x++)             // left side
       sptr[y++] = string[x];
-    for (x=pos+len; x < length+1; x++)
+    for (x=pos+len; x < length+1; x++)  // right side  + '\0'
       sptr[y++] = string[x];
-    delete[](string);
+    delete[](string);                   // delete old string
     string = sptr;
     length -= len;
   }
