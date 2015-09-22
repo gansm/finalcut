@@ -83,8 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	mandelbrot$(EXEEXT) calculator$(EXEEXT) string$(EXEEXT) \
-	watch$(EXEEXT) timer$(EXEEXT) ui$(EXEEXT)
+	mandelbrot$(EXEEXT) calculator$(EXEEXT) watch$(EXEEXT) \
+	timer$(EXEEXT) ui$(EXEEXT) string$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -326,10 +326,10 @@ dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
-string_SOURCES = string.cpp
 watch_SOURCES = watch.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
+string_SOURCES = string.cpp
 all: all-am
 
 .SUFFIXES:
