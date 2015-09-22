@@ -977,6 +977,7 @@ void FTerm::init()
   createVTerm();
   // create virtual desktop area
   createArea (vdesktop);
+  vdesktop->visible = true;
 
   // make stdin non-blocking
   setNonBlockingInput();
@@ -1593,6 +1594,7 @@ void FTerm::createArea (term_area*& area)
   area->bottom_shadow = 0;
   area->changes       = 0;
   area->text          = 0;
+  area->visible       = false;
   area->widget        = static_cast<FWidget*>(this);
 
   resizeArea (area);
@@ -1719,7 +1721,8 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
             int win_y = (*iter)->getGlobalY() - 1;
             term_area* win = (*iter)->getVWin();
             int line_len = win->width + win->right_shadow;
-            sc = &win->text[(y+ty-win_y) * line_len + (x+tx-win_x)];
+            if ( win->visible )
+              sc = &win->text[(y+ty-win_y) * line_len + (x+tx-win_x)];
           }
           ++iter;
         }
@@ -1734,7 +1737,8 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
       {
         int bar_x = menubar->getGlobalX() - 1;
         int bar_y = menubar->getGlobalY() - 1;
-        sc = &vmenubar->text[(y+ty-bar_y) * vmenubar->width + (x+tx-bar_x)];
+        if ( vmenubar->visible )
+          sc = &vmenubar->text[(y+ty-bar_y) * vmenubar->width + (x+tx-bar_x)];
       }
 
       // statusbar is always on top
@@ -1746,7 +1750,8 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
       {
         int bar_x = statusbar->getGlobalX() - 1;
         int bar_y = statusbar->getGlobalY() - 1;
-        sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
+        if ( vstatusbar->visible )
+          sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
       }
 
       memcpy (tc, sc, sizeof(FTerm::char_data));
@@ -1850,6 +1855,9 @@ void FTerm::updateVTerm (FTerm::term_area* area)
   }
 
   if ( area == 0 )
+    return;
+
+  if ( ! area->visible )
     return;
 
   ax  = area->widget->getGlobalX() - 1;
@@ -2022,6 +2030,8 @@ void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 {
   if ( area == 0 )
     return;
+  if ( ! area->visible )
+    return;
   putArea (pos.getX(), pos.getY(), area);
 }
 
@@ -2033,6 +2043,8 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
   FTerm::char_data* ac; // area character
 
   if ( area == 0 )
+    return;
+  if ( ! area->visible )
     return;
 
   ax--;
@@ -2132,7 +2144,8 @@ FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
           int win_y = (*iter)->getGlobalY() - 1;
           term_area* win = (*iter)->getVWin();
           int line_len = win->width + win->right_shadow;
-          cc = &win->text[(y-win_y) * line_len + (x-win_x)];
+          if ( win->visible )
+            cc = &win->text[(y-win_y) * line_len + (x-win_x)];
         }
       }
       else
@@ -2373,6 +2386,7 @@ void FTerm::createVTerm()
   vterm->bottom_shadow = 0;
   vterm->changes       = 0;
   vterm->text          = 0;
+  vterm->visible       = true;
   vterm->widget        = static_cast<FWidget*>(this);
 
   resizeVTerm();

@@ -35,6 +35,8 @@ class FWindow : public FWidget
   ~FWindow ();  // destructor
 
    const char*     getClassName() const;
+   virtual void    show();
+   virtual void    hide();
    static FWindow* windowWidgetAt (const FPoint&);
    static FWindow* windowWidgetAt (int, int);
    static void     addWindow (FWidget*);

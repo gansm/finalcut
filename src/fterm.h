@@ -187,6 +187,7 @@ class FTerm
      FWidget* widget;
      line_changes* changes;
      char_data* text;
+     bool visible;
    } term_area;
 
    static term_area* vterm;      // virtual terminal

@@ -21,6 +21,7 @@ FWindow::FWindow(FWidget* parent)
 FWindow::~FWindow()  // destructor
 { }
 
+
 // protected methods of FWindow
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
@@ -65,7 +66,26 @@ void FWindow::onWindowRaised (FEvent*)
 void FWindow::onWindowLowered (FEvent*)
 { }
 
+
 // public methods of FWindow
+//----------------------------------------------------------------------
+void FWindow::show()
+{
+  term_area* area = getVWin();
+  if ( area )
+    area->visible = true;
+  FWidget::show();
+}
+
+//----------------------------------------------------------------------
+void FWindow::hide()
+{
+  term_area* area = getVWin();
+  if ( area )
+    area->visible = false;
+  FWidget::hide();
+}
+
 //----------------------------------------------------------------------
 FWindow* FWindow::windowWidgetAt(const FPoint& pos)
 {

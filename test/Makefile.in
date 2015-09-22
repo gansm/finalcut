@@ -83,7 +83,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	mandelbrot$(EXEEXT) calculator$(EXEEXT) fstring$(EXEEXT) \
+	mandelbrot$(EXEEXT) calculator$(EXEEXT) string$(EXEEXT) \
 	watch$(EXEEXT) timer$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -110,9 +110,6 @@ am__v_lt_1 =
 am_dialog_OBJECTS = dialog.$(OBJEXT)
 dialog_OBJECTS = $(am_dialog_OBJECTS)
 dialog_LDADD = $(LDADD)
-am_fstring_OBJECTS = fstring.$(OBJEXT)
-fstring_OBJECTS = $(am_fstring_OBJECTS)
-fstring_LDADD = $(LDADD)
 am_hello_OBJECTS = hello.$(OBJEXT)
 hello_OBJECTS = $(am_hello_OBJECTS)
 hello_LDADD = $(LDADD)
@@ -122,6 +119,9 @@ input_dialog_LDADD = $(LDADD)
 am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
+am_string_OBJECTS = string.$(OBJEXT)
+string_OBJECTS = $(am_string_OBJECTS)
+string_LDADD = $(LDADD)
 am_timer_OBJECTS = timer.$(OBJEXT)
 timer_OBJECTS = $(am_timer_OBJECTS)
 timer_LDADD = $(LDADD)
@@ -165,12 +165,13 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(fstring_SOURCES) \
-	$(hello_SOURCES) $(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
-	$(timer_SOURCES) $(ui_SOURCES) $(watch_SOURCES)
+SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(hello_SOURCES) \
+	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
+	$(string_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(watch_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
-	$(fstring_SOURCES) $(hello_SOURCES) $(input_dialog_SOURCES) \
-	$(mandelbrot_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(hello_SOURCES) $(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
+	$(string_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
 	$(watch_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -325,7 +326,7 @@ dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
-fstring_SOURCES = fstring.cpp
+string_SOURCES = string.cpp
 watch_SOURCES = watch.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
@@ -381,10 +382,6 @@ dialog$(EXEEXT): $(dialog_OBJECTS) $(dialog_DEPENDENCIES) $(EXTRA_dialog_DEPENDE
 	@rm -f dialog$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dialog_OBJECTS) $(dialog_LDADD) $(LIBS)
 
-fstring$(EXEEXT): $(fstring_OBJECTS) $(fstring_DEPENDENCIES) $(EXTRA_fstring_DEPENDENCIES) 
-	@rm -f fstring$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(fstring_OBJECTS) $(fstring_LDADD) $(LIBS)
-
 hello$(EXEEXT): $(hello_OBJECTS) $(hello_DEPENDENCIES) $(EXTRA_hello_DEPENDENCIES) 
 	@rm -f hello$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(hello_OBJECTS) $(hello_LDADD) $(LIBS)
@@ -396,6 +393,10 @@ input-dialog$(EXEEXT): $(input_dialog_OBJECTS) $(input_dialog_DEPENDENCIES) $(EX
 mandelbrot$(EXEEXT): $(mandelbrot_OBJECTS) $(mandelbrot_DEPENDENCIES) $(EXTRA_mandelbrot_DEPENDENCIES) 
 	@rm -f mandelbrot$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mandelbrot_OBJECTS) $(mandelbrot_LDADD) $(LIBS)
+
+string$(EXEEXT): $(string_OBJECTS) $(string_DEPENDENCIES) $(EXTRA_string_DEPENDENCIES) 
+	@rm -f string$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(string_OBJECTS) $(string_LDADD) $(LIBS)
 
 timer$(EXEEXT): $(timer_OBJECTS) $(timer_DEPENDENCIES) $(EXTRA_timer_DEPENDENCIES) 
 	@rm -f timer$(EXEEXT)
@@ -417,10 +418,10 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calculator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/watch.Po@am__quote@

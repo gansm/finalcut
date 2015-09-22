@@ -181,6 +181,8 @@ void FStatusBar::init()
   xpos = 1;
   ypos = getLineNumber();
   createArea (vstatusbar);
+  vstatusbar->visible = true;
+
   // initialize geometry values
   setGeometry (1, ypos, getColumnNumber(), 1, false);
   getRootWidget()->setBottomPadding(1, true);
@@ -502,7 +504,7 @@ void FStatusBar::hide()
   int fg, bg, lastLine, screenWidth;
   char* blank;
 
-  FWidget::hide();
+  FWindow::hide();
 
   fg = wc.term_fg;
   bg = wc.term_bg;

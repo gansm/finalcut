@@ -40,6 +40,7 @@ void FMenuBar::init()
   xpos = 1;
   ypos = 1;
   createArea (vmenubar);
+  vmenubar->visible = true;
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);
   getRootWidget()->setTopPadding(1, true);
@@ -386,7 +387,7 @@ void FMenuBar::hide()
   int fg, bg, screenWidth;
   char* blank;
 
-  FWidget::hide();
+  FWindow::hide();
 
   fg = wc.term_fg;
   bg = wc.term_bg;

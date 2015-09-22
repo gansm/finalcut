@@ -407,7 +407,6 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
   if ( ! *s )  // handle empty string
     return const_cast<wchar_t*>(L"");
 
-
   size = int(strlen(s)) + 1;
   dest_size = size * int(CHAR_SIZE);
   src = s;
@@ -1999,10 +1998,11 @@ FString FString::replaceControlCodes() const
 FString FString::expandTabs (uInt tabstop) const
 {
   uLong last;
+  std::vector<FString> tab_split;
   FString instr(string);
   FString outstr("");
 
-  std::vector<FString> tab_split = instr.split("\t");
+  tab_split = instr.split("\t");
   last = tab_split.size();
   for (uInt i=0; i < last; i++)
   {

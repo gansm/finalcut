@@ -1,4 +1,5 @@
 2015-09-22  Markus Gans  <guru.mail@muenster.de>
+	* Add the possibility to hide a virtual window
 	* Some code optimizations
 
 2015-09-18  Markus Gans  <guru.mail@muenster.de>
@@ -6,11 +7,11 @@
 
 2015-08-08  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FDialog (use GlobalPos to move)
-	* Don't check mouse click position on titlebar again
+	* Don't check mouse click position on titlebar again 
 	  while FDialog is in move
 
 2015-07-26  Markus Gans  <guru.mail@muenster.de>
-	* init() method for the FStatusKey constructor
+	* init() method for the FStatusKey constructor 
 	  to avoid code duplication
 
 2015-07-18  Markus Gans  <guru.mail@muenster.de>
@@ -40,7 +41,7 @@
 	* Use the object timer for the click animation in FButton
 
 2015-06-28  Markus Gans  <guru.mail@muenster.de>
-	* Add exception handling for toLong() and toULong()  
+	* Add exception handling for toLong() and toULong() 
 	  in FString
 
 2015-06-27  Markus Gans  <guru.mail@muenster.de>

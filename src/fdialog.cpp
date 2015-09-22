@@ -626,7 +626,7 @@ void FDialog::show()
   if ( ! isVisible() )
     return;
 
-  FWidget::show();
+  FWindow::show();
 
   // set the cursor to the focus widget
   if (  FWidget::getFocusWidget()
@@ -652,7 +652,7 @@ void FDialog::show()
 //----------------------------------------------------------------------
 void FDialog::hide()
 {
-  FWidget::hide();
+  FWindow::hide();
 
   if ( isModal() )
   {
