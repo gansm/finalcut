@@ -12,16 +12,29 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FDialog::FDialog(FWidget* parent) : FWindow(parent)
+FDialog::FDialog(FWidget* parent)
+  : FWindow(parent)
+  , tb_text()
+  , result_code(FDialog::Reject)
+  , maximized(false)
+  , TitleBarClickPos()
+  , oldGeometry()
+  , focus_widget(0)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FDialog::FDialog (const FString& txt, FWidget* parent) : FWindow(parent)
+FDialog::FDialog (const FString& txt, FWidget* parent)
+  : FWindow(parent)
+  , tb_text(txt)
+  , result_code(FDialog::Reject)
+  , maximized(false)
+  , TitleBarClickPos()
+  , oldGeometry()
+  , focus_widget(0)
 {
-  this->init();
-  setText(txt);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -75,8 +88,6 @@ FDialog::~FDialog()  // destructor
 //----------------------------------------------------------------------
 void FDialog::init()
 {
-  flags = 0;
-  result_code = FDialog::Reject;
   width  = 10;
   height = 10;
   xmin = 1;
@@ -93,9 +104,6 @@ void FDialog::init()
   right_padding  = 1;
   createArea (vwin);
   setGeometry (1, 1, 10, 10, false);  // initialize geometry values
-  focus_widget = 0;
-  this->tb_text = "";
-  maximized = false;
   ignore_padding = true;
   window_object  = true;
   addWindow(this);
@@ -105,9 +113,9 @@ void FDialog::init()
   backgroundColor = wc.dialog_bg;
 
   if ( hasFocus() )
-    this->flags |= FOCUS;
+    flags |= FOCUS;
   if ( isEnabled() )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
 
   FWidget* old_focus = FWidget::getFocusWidget();
   if ( old_focus )
@@ -360,13 +368,11 @@ void FDialog::draw()
 
 //----------------------------------------------------------------------
 void FDialog::onShow (FShowEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FDialog::onHide (FHideEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FDialog::onClose (FCloseEvent* ev)
@@ -812,9 +818,9 @@ bool FDialog::setFocus (bool on)
   FWidget::setFocus(on);
 
   if ( on )
-    this->flags |= FOCUS;
+    flags |= FOCUS;
   else
-    this->flags &= ~FOCUS;
+    flags &= ~FOCUS;
   return on;
 }
 
@@ -826,12 +832,12 @@ bool FDialog::setModal (bool on)
 
   if ( on )
   {
-    this->flags |= MODAL;
+    flags |= MODAL;
     modal_dialogs++;
   }
   else
   {
-    this->flags &= ~MODAL;
+    flags &= ~MODAL;
     modal_dialogs--;
   }
   return on;
@@ -842,16 +848,16 @@ bool FDialog::setTransparentShadow (bool on)
 {
   if ( on )
   {
-    this->flags |= SHADOW;
-    this->flags |= TRANS_SHADOW;
+    flags |= SHADOW;
+    flags |= TRANS_SHADOW;
     shadow.setPoint(2,1);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
   else
   {
-    this->flags &= ~SHADOW;
-    this->flags &= ~TRANS_SHADOW;
+    flags &= ~SHADOW;
+    flags &= ~TRANS_SHADOW;
     shadow.setPoint(0,0);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
@@ -865,16 +871,16 @@ bool FDialog::setShadow (bool on)
 {
   if ( on )
   {
-    this->flags |= SHADOW;
-    this->flags &= ~TRANS_SHADOW;
+    flags |= SHADOW;
+    flags &= ~TRANS_SHADOW;
     shadow.setPoint(1,1);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
   else
   {
-    this->flags &= ~SHADOW;
-    this->flags &= ~TRANS_SHADOW;
+    flags &= ~SHADOW;
+    flags &= ~TRANS_SHADOW;
     shadow.setPoint(0,0);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
@@ -887,9 +893,9 @@ bool FDialog::setShadow (bool on)
 bool FDialog::setScrollable (bool on)
 {
   if ( on )
-    this->flags |= SCROLLABLE;
+    flags |= SCROLLABLE;
   else
-    this->flags &= ~SCROLLABLE;
+    flags &= ~SCROLLABLE;
   return on;
 }
 
@@ -897,9 +903,9 @@ bool FDialog::setScrollable (bool on)
 bool FDialog::setResizeable (bool on)
 {
   if ( on )
-    this->flags |= RESIZEABLE;
+    flags |= RESIZEABLE;
   else
-    this->flags &= ~RESIZEABLE;
+    flags &= ~RESIZEABLE;
   return on;
 }
 

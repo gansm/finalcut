@@ -152,7 +152,10 @@ class FWidget : public FObject, public FTerm
 
   struct dbl_line_mask
   {
-    ~dbl_line_mask() {}
+    dbl_line_mask() : top(), right(), bottom(), left()
+    { }
+   ~dbl_line_mask()
+    { }
     std::vector<bool> top;
     std::vector<bool> right;
     std::vector<bool> bottom;

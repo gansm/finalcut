@@ -9,9 +9,12 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FMenuBar::FMenuBar(FWidget* parent) : FWindow(parent)
+FMenuBar::FMenuBar(FWidget* parent)
+  : FWindow(parent)
+  , mouse_down(false)
+  , x(-1)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -40,12 +43,10 @@ void FMenuBar::init()
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);
   getRootWidget()->setTopPadding(1, true);
-  x = -1;
   setMenuBar(this);
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
   window_object  = true;
-  mouse_down = false;
   ignore_padding = true;
   unsetFocusable();
 }
@@ -238,7 +239,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
         ++iter;
       }
     }
-    this->redraw();
+    redraw();
     return;
   }
   if ( mouse_down )
@@ -271,12 +272,12 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
          && ! (*iter)->isSelected() )
       {
         (*iter)->setSelected();
-        this->redraw();
+        redraw();
       }
       else
       {
         (*iter)->unsetSelected();
-        this->redraw();
+        redraw();
       }
       X = x2 + 1;
       ++iter;
@@ -319,7 +320,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
           {
             (*iter)->processClicked();
           }
-          this->redraw();
+          redraw();
         }
         X = x2 + 1;
         ++iter;
@@ -375,7 +376,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       ++iter;
     }
     if ( focus_changed )
-      this->redraw();
+      redraw();
   }
 }
 

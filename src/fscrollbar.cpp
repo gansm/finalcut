@@ -9,16 +9,57 @@
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(FWidget* parent) : FWidget(parent)
+FScrollbar::FScrollbar(FWidget* parent)
+  : FWidget(parent)
+  , scrollType(FScrollbar::noScroll)
+  , thresholdReached(false)
+  , thresholdTime(500)
+  , repeatTime(10)
+  , SliderClickPos(-1)
+  , SliderClickStopPos(-1)
+  , currentSliderPos(-1)
+  , SliderPos(0)
+  , SliderLength(18) // = BarLength
+  , BarLength(18)    // = length - 2
+  , val(0)
+  , min(0)
+  , max(99)
+  , steps(1)
+  , pageSize(0)
+  , length(20)
+  , bar_orientation(fc::vertical)
+  , max_color(getMaxColor())
 {
-  this->init();
+  // The default scrollbar orientation is vertical
+  width = 1;
+  height = length;
+  init();
 }
 
 //----------------------------------------------------------------------
-FScrollbar::FScrollbar(int o, FWidget* parent) : FWidget(parent)
+FScrollbar::FScrollbar(int o, FWidget* parent)
+  : FWidget(parent)
+  , scrollType(FScrollbar::noScroll)
+  , thresholdReached(false)
+  , thresholdTime(500)
+  , repeatTime(10)
+  , SliderClickPos(-1)
+  , SliderClickStopPos(-1)
+  , currentSliderPos(-1)
+  , SliderPos(0)
+  , SliderLength(18) // = BarLength
+  , BarLength(18)    // = length - 2
+  , val(0)
+  , min(0)
+  , max(99)
+  , steps(1)
+  , pageSize(0)
+  , length(20)
+  , bar_orientation(fc::vertical)
+  , max_color(getMaxColor())
 {
-  this->init();
   setOrientation (o);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -31,23 +72,7 @@ FScrollbar::~FScrollbar()
 //----------------------------------------------------------------------
 void FScrollbar::init()
 {
-  SliderPos = 0;
-  SliderClickPos = -1;
-  currentSliderPos = -1;
-  min = val = 0;
-  max = 99;
-  steps = 1;
-  pageSize = 0;
-  bar_orientation = fc::vertical;
-  width = 1;
-  length = height = 20;
-  BarLength = length - 2;
-  SliderLength = BarLength = 20-2;
-  setGeometry(1, 1, 1, 20);
-  scrollType = FScrollbar::noScroll;
-  thresholdTime = 500;
-  repeatTime = 10;
-  max_color = getMaxColor();
+  setGeometry(1, 1, width, height);
   ignore_padding = true;
   unsetFocusable();
 }
@@ -391,29 +416,29 @@ void FScrollbar::redraw()
 //----------------------------------------------------------------------
 void FScrollbar::setMinimum (int minimum)
 {
-  this->min = minimum;
+  min = minimum;
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::setMaximum (int maximum)
 {
-  this->max = maximum;
+  max = maximum;
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::setRange(int minimum, int maximum)
 {
-  this->min = minimum;
-  this->max = maximum;
+  min = minimum;
+  max = maximum;
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::setValue (int value)
 {
-  this->val = value;
+  val = value;
   calculateSliderValues();
 }
 
@@ -434,12 +459,12 @@ void FScrollbar::setPageSize (int document_size, int page_size)
   if ( page_size == 0 )
   {
     pageSize = document_size;
-    this->steps = 1.0;
+    steps = 1.0;
   }
   else
   {
     pageSize = page_size;
-    this->steps = float(float(document_size) / float(page_size));
+    steps = float(float(document_size) / float(page_size));
   }
 }
 

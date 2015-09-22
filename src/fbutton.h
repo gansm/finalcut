@@ -35,6 +35,7 @@ class FButton : public FWidget
    void         init();
    uChar        getHotkey();
    void         setHotkeyAccelerator();
+   void         detectHotkey();
    void         draw();
    void         updateButtonColor();
    void         processClick();
@@ -185,6 +186,6 @@ inline bool FButton::hasClickAnimation()
 
 //----------------------------------------------------------------------
 inline FString& FButton::getText()
-{ return this->text; }
+{ return text; }
 
 #endif  // _FBUTTON_H

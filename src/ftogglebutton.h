@@ -10,7 +10,7 @@
 class FButtonGroup;
 
 //----------------------------------------------------------------------
-// class FToggleButton - abstract class for FToggleButton + FCheckBox
+// class FToggleButton - abstract class for FRadioButton, FCheckBox, ...
 //----------------------------------------------------------------------
 
 #pragma pack(push)
@@ -54,6 +54,8 @@ class FToggleButton : public FWidget
    virtual const char* getClassName() const;
 
    void hide();
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool adjust=true);
 
    void onMouseDown (FMouseEvent*);
@@ -132,6 +134,6 @@ inline bool FToggleButton::isChecked()
 
 //----------------------------------------------------------------------
 inline FString& FToggleButton::getText()
-{ return this->text; }
+{ return text; }
 
 #endif  // _FTOGGLEBUTTON_H

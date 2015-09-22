@@ -10,40 +10,38 @@
 // constructors and destructor
 //----------------------------------------------------------------------
 FOptiMove::FOptiMove (int baud)
+  : F_cursor_home()
+  , F_carriage_return()
+  , F_cursor_to_ll()
+  , F_tab()
+  , F_back_tab()
+  , F_cursor_up()
+  , F_cursor_down()
+  , F_cursor_left()
+  , F_cursor_right()
+  , F_cursor_address()
+  , F_column_address()
+  , F_row_address()
+  , F_parm_up_cursor()
+  , F_parm_down_cursor()
+  , F_parm_left_cursor()
+  , F_parm_right_cursor()
+  , automatic_left_margin(false)
+  , eat_nl_glitch(false)
+  , char_duration(1)
+  , baudrate(baud)
+  , tabstop(0)
+  , screen_width(80)
+  , screen_height(24)
 {
   assert ( baud >= 0 );
-
-  baudrate = baud;
-  tabstop = 0;
   move_buf[0] = '\0';
-
-  // init structs with 0
-  memset(&F_cursor_home,       0x00, sizeof(capability));
-  memset(&F_carriage_return,   0x00, sizeof(capability));
-  memset(&F_cursor_to_ll,      0x00, sizeof(capability));
-  memset(&F_tab,               0x00, sizeof(capability));
-  memset(&F_back_tab,          0x00, sizeof(capability));
-  memset(&F_cursor_up,         0x00, sizeof(capability));
-  memset(&F_cursor_down,       0x00, sizeof(capability));
-  memset(&F_cursor_left,       0x00, sizeof(capability));
-  memset(&F_cursor_right,      0x00, sizeof(capability));
-  memset(&F_cursor_address,    0x00, sizeof(capability));
-  memset(&F_column_address,    0x00, sizeof(capability));
-  memset(&F_row_address,       0x00, sizeof(capability));
-  memset(&F_parm_up_cursor,    0x00, sizeof(capability));
-  memset(&F_parm_down_cursor,  0x00, sizeof(capability));
-  memset(&F_parm_left_cursor,  0x00, sizeof(capability));
-  memset(&F_parm_right_cursor, 0x00, sizeof(capability));
-  automatic_left_margin = false;
-  eat_nl_glitch = false;
-
   calculateCharDuration();
 }
 
 //----------------------------------------------------------------------
 FOptiMove::~FOptiMove() // destructor
-{
-}
+{ }
 
 
 // private methods of FApplication
@@ -294,9 +292,9 @@ int FOptiMove::repeated_append (capability& o, int count, char* dst)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::relative_move ( char*& move,
-                               int from_x, int from_y,
-                               int to_x, int to_y )
+int FOptiMove::relative_move ( char*& move
+                             , int from_x, int from_y
+                             , int to_x, int to_y )
 {
   int num;
   int vtime = 0;
@@ -469,8 +467,8 @@ int FOptiMove::relative_move ( char*& move,
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isTwoDirectionMove ( int xold, int yold,
-                                            int xnew, int ynew )
+inline bool FOptiMove::isTwoDirectionMove ( int xold, int yold
+                                          , int xnew, int ynew )
 {
   return bool (  (xold != xnew || ! F_row_address.cap)
               && (yold != ynew || ! F_column_address.cap) );

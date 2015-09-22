@@ -12,48 +12,79 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (FWidget* parent) : FWidget(parent)
+FMenuItem::FMenuItem (FWidget* parent)
+  : FWidget(parent)
+  , text()
+  , active(true)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , hotkey(0)
+//, accel_key(0)
+  , menu(0)
+  , super_menu(0)
 {
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (FString& txt, FWidget* parent) : FWidget(parent)
+FMenuItem::FMenuItem (FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , active(true)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , hotkey(0)
+//, accel_key(0)
+  , menu(0)
+  , super_menu(0)
 {
-  setText(txt);
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (const std::string& txt, FWidget* parent) : FWidget(parent)
+FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , active(true)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , hotkey(0)
+//, accel_key(0)
+  , menu(0)
+  , super_menu(0)
 {
-  setText(txt);
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (const char* txt, FWidget* parent) : FWidget(parent)
+FMenuItem::FMenuItem (const char* txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , active(true)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , hotkey(0)
+//, accel_key(0)
+  , menu(0)
+  , super_menu(0)
 {
-  setText(txt);
   init (parent);
 }
 
 //----------------------------------------------------------------------
 FMenuItem::~FMenuItem()  // destructor
-{
-}
+{ }
 
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
 void FMenuItem::init (FWidget* parent)
 {
-  active    = true;
-  selected  = false;
-  separator = false;
-  checked   = false;
-  hotkey = 0;
-  menu = 0;
+  hotkey = getHotkey();
   setGeometry (1,1,1,1);
 
   if ( parent )
@@ -110,15 +141,15 @@ uChar FMenuItem::getHotkey()
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName(),
-                         const_cast<char*>("FMenuBar") ) == 0 );
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenu (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName(),
-                         const_cast<char*>("FMenu") ) == 0 );
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenu") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -164,7 +195,7 @@ void FMenuItem::setSelected()
 {
   if ( isActivated() )
   {
-    this->selected = true;
+    selected = true;
     processActivate();
   }
 }
@@ -172,20 +203,20 @@ void FMenuItem::setSelected()
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (FString& txt)
 {
-  this->text = txt;
-  this->hotkey = getHotkey();
+  text = txt;
+  hotkey = getHotkey();
 }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const std::string& txt)
 {
-  this->text = txt;
-  this->hotkey = getHotkey();
+  text = txt;
+  hotkey = getHotkey();
 }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const char* txt)
 {
-  this->text = txt;
-  this->hotkey = getHotkey();
+  text = txt;
+  hotkey = getHotkey();
 }

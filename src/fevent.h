@@ -41,7 +41,7 @@ class FEvent // event base class
 {
  public:
    explicit FEvent(int);
-   ~FEvent();
+   virtual ~FEvent();
    int type() const;
 
  protected:
@@ -49,21 +49,6 @@ class FEvent // event base class
 };
 
 #pragma pack(pop)
-
-
-// FEvent inline functions
-//----------------------------------------------------------------------
-inline FEvent::FEvent(int ev_type)  // constructor
-  : t(ev_type)
-{ }
-
-//----------------------------------------------------------------------
-inline FEvent::~FEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
-inline int FEvent::type() const
-{ return t; }
 
 
 //----------------------------------------------------------------------
@@ -89,7 +74,6 @@ class FKeyEvent : public FEvent        // keyboard event
    bool accpt;
 };
 
-#define F_KEY_EVENT(x)  ((FKeyEvent*)x)
 #pragma pack(pop)
 
 
@@ -134,10 +118,9 @@ class FMouseEvent : public FEvent   // mouse event
    int b;
 };
 
-#define F_MOUSE_EVENT(x)  ((FMouseEvent*)x)
 #pragma pack(pop)
 
-
+	
 //----------------------------------------------------------------------
 // class FWheelEvent
 //----------------------------------------------------------------------
@@ -174,7 +157,6 @@ class FWheelEvent : public FEvent   // wheel event
    int w;
 };
 
-#define F_WHEEL_EVENT(x)  ((FWheelEvent*)x)
 #pragma pack(pop)
 
 
@@ -210,7 +192,6 @@ class FFocusEvent : public FEvent        // focus event
    FocusTypes focus_type;
 };
 
-#define F_FOCUS_EVENT(x)  ((FFocusEvent*)x)
 #pragma pack(pop)
 
 
@@ -223,6 +204,10 @@ class FFocusEvent : public FEvent        // focus event
 
 class FAccelEvent : public FEvent    // focus event
 {
+ private:
+   FAccelEvent (const FAccelEvent&);             // Disabled copy constructor
+   FAccelEvent& operator = (const FAccelEvent&); // and operator '='
+
  public:
    FAccelEvent (int, void*);
   ~FAccelEvent();
@@ -237,7 +222,6 @@ class FAccelEvent : public FEvent    // focus event
    void* focus_widget;
 };
 
-#define F_ACCEL_EVENT(x)  ((FAccelEvent*)x)
 #pragma pack(pop)
 
 
@@ -259,7 +243,6 @@ class FResizeEvent : public FEvent    // resize event
    bool accpt;
 };
 
-#define F_RESIZE_EVENT(x)  ((FResizeEvent*)x)
 
 
 //----------------------------------------------------------------------
@@ -273,7 +256,6 @@ class FShowEvent : public FEvent    // show event
   ~FShowEvent();
 };
 
-#define F_SHOW_EVENT(x)  ((FShowEvent*)x)
 
 
 //----------------------------------------------------------------------
@@ -287,7 +269,6 @@ class FHideEvent : public FEvent    // hide event
   ~FHideEvent();
 };
 
-#define F_HIDE_EVENT(x)  ((FHideEvent*)x)
 
 
 //----------------------------------------------------------------------
@@ -308,7 +289,6 @@ class FCloseEvent : public FEvent   // close event
    bool accpt;
 };
 
-#define F_CLOSE_EVENT(x)  ((FCloseEvent*)x)
 
 
 //----------------------------------------------------------------------
@@ -330,7 +310,6 @@ class FTimerEvent : public FEvent   // timer event
    int id;
 };
 
-#define F_TIMER_EVENT(x)  ((FTimerEvent*)x)
 #pragma pack(pop)
 
 #endif  // _FEVENT_H

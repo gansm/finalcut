@@ -210,9 +210,9 @@ int main (int, char**)
   FString index(5); // a string with five characters
   index = "index";
   index[0] = L'I'; // write a wide character at position 0
-  printf ( "    index: [0] = %c ; [4] = %c\n",
-           char(index[0]),
-           char(index[4]) );
+  printf ( "    index: [0] = %c ; [4] = %c\n"
+         , char(index[0])
+         , char(index[4]) );
 
   FString stringIterator = "iterator";
   FString::iterator iter;

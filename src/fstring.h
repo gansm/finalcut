@@ -290,11 +290,11 @@ class FString
 // FString inline functions
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
-{ return ( ! this->string ); }
+{ return ( ! string ); }
 
 //----------------------------------------------------------------------
 inline bool FString::isEmpty() const
-{ return (! this->string ) || (! *this->string); }
+{ return (! string ) || (! *string); }
 
 //----------------------------------------------------------------------
 inline uInt FString::getLength() const

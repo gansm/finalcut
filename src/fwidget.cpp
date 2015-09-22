@@ -27,20 +27,49 @@ FWidget::widget_colors FWidget::wc;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWidget::FWidget (FWidget* parent) : FObject(parent)
+FWidget::FWidget (FWidget* parent)
+  : FObject(parent)
+  , callbackObjects()
+  , memberCallbackObjects()
+  , accelerator_list()
+  , double_flatline_mask()
+  , xpos(1)
+  , ypos(1)
+  , width(1)
+  , height(1)
+  , xmin(1)
+  , ymin(1)
+  , xmax(1)
+  , ymax(1)
+  , top_padding(0)
+  , left_padding(0)
+  , bottom_padding(0)
+  , right_padding(0)
+  , client_xmin(0)
+  , client_ymin(0)
+  , client_xmax(0)
+  , client_ymax(0)
+  , shadow()
+  , adjustWidgetSizeShadow()
+  , adjustWidgetSizeGlobalShadow()
+  , ignore_padding(false)
+  , window_object(false)
+  , flags(0)
+  , foregroundColor()
+  , backgroundColor()
+  , enable(true)
+  , visible(true)
+  , shown(false)
+  , focus(false)
+  , focusable(true)
+  , visibleCursor(false)
+  , widgetCursorPosition(-1,-1)
+  , widgetSize(1,1,1,1)
+  , adjustWidgetSize(1,1,1,1)
+  , adjustWidgetSizeGlobal(1,1,1,1)
+  , statusbar_message()
 {
-  vwin = 0;
-  widgetCursorPosition.setPoint(-1,-1);
-
-  resize_term      = false;
-  enable           = true;
-  visible          = true;
-  shown            = false;
-  focus            = false;
-  focusable        = true;
-  ignore_padding   = false;
-  visibleCursor    = false;
-  window_object    = false;
+  resize_term = false;
 
   if ( parent == 0 )
   {
@@ -56,24 +85,10 @@ FWidget::FWidget (FWidget* parent) : FObject(parent)
   }
   else
   {
-    accelerator_list = 0;
-    flags            = 0;
-    xpos             = 1;
-    ypos             = 1;
-    width            = 1;
-    height           = 1;
-    top_padding      = 0;
-    left_padding     = 0;
-    bottom_padding   = 0;
-    right_padding    = 0;
-    client_xmin      = 0;
-    client_ymin      = 0;
-    client_xmax      = 0;
-    client_ymax      = 0;
-    this->xmin = parent->client_xmin;
-    this->ymin = parent->client_ymin;
-    this->xmax = parent->client_xmax;
-    this->ymax = parent->client_ymax;
+    xmin = parent->client_xmin;
+    ymin = parent->client_ymin;
+    xmax = parent->client_xmax;
+    ymax = parent->client_ymax;
     double_flatline_mask.top.resize (uLong(width), false);
     double_flatline_mask.right.resize (uLong(height), false);
     double_flatline_mask.bottom.resize (uLong(width), false);
@@ -111,27 +126,25 @@ void FWidget::init()
   window_list    = new widgetList;
   close_widget   = new widgetList;
 
-  getTermGeometry();
-
-  xpos           = xmin;
-  ypos           = ymin;
-  width          = xmax;
+  getTermGeometry(); // <-----.
+                     //       |
+  xpos           = xmin;  // xmin, ymin, xmax and ymax
+  ypos           = ymin;  // were determined with
+  width          = xmax;  // getTermGeometry()
   height         = ymax;
-  top_padding    = 0;
-  left_padding   = 0;
-  bottom_padding = 0;
-  right_padding  = 0;
   client_xmin    = xmin;
   client_ymin    = ymin;
   client_xmax    = xmax;
   client_ymax    = ymax;
 
+  // xpos and ypos are initialized with the value 1
+  // width and height were determined with getTermGeometry()
   widgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize;
-  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1,
-                                   ypos + ymin - 1,
-                                   width, height );
+  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
+                                 , ypos + ymin - 1
+                                 , width, height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal;
 
   double_flatline_mask.top.resize (uLong(width), false);
@@ -175,8 +188,7 @@ void FWidget::processDestroy()
 
 //----------------------------------------------------------------------
 void FWidget::draw()
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::setColorTheme()
@@ -413,9 +425,9 @@ void FWidget::adjustSize()
   adjustWidgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
 
-  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1,
-                                   ypos + ymin - 1,
-                                   width, height );
+  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
+                                 , ypos + ymin - 1
+                                 , width, height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 
   client_xmin = xpos + xmin - 1 + left_padding;
@@ -579,58 +591,47 @@ bool FWidget::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onKeyPress (FKeyEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onKeyUp (FKeyEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onKeyDown (FKeyEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDown (FMouseEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onMouseUp (FMouseEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onMouseDoubleClick (FMouseEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onWheel (FWheelEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onMouseMove (FMouseEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onFocusIn (FFocusEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onFocusOut (FFocusEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onAccel (FAccelEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onResize (FResizeEvent* ev)
@@ -647,13 +648,11 @@ void FWidget::onResize (FResizeEvent* ev)
 
 //----------------------------------------------------------------------
 void FWidget::onShow (FShowEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onHide (FHideEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWidget::onClose (FCloseEvent* ev)
@@ -939,24 +938,24 @@ FMenuBar* FWidget::menuBar()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( FString cb_signal,
-                            FWidget::FCallback cb_handler,
-                            data_ptr data )
+void FWidget::addCallback ( FString cb_signal
+                          , FWidget::FCallback cb_handler
+                          , data_ptr data )
 {
   // add a (normal) function pointer as callback
   callback_data obj = { cb_signal, cb_handler, data };
-  this->callbackObjects.push_back(obj);
+  callbackObjects.push_back(obj);
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( FString cb_signal,
-                            FWidget* cb_instance,
-                            FWidget::FMemberCallback cb_handler,
-                            data_ptr data )
+void FWidget::addCallback ( FString cb_signal
+                          , FWidget* cb_instance
+                          , FWidget::FMemberCallback cb_handler
+                          , data_ptr data )
 {
   // add a member function pointer as callback
   member_callback_data obj = { cb_signal, cb_instance, cb_handler, data };
-  this->memberCallbackObjects.push_back(obj);
+  memberCallbackObjects.push_back(obj);
 }
 
 //----------------------------------------------------------------------
@@ -973,7 +972,7 @@ void FWidget::delCallback (FWidget::FCallback cb_handler)
   while ( iter != callbackObjects.end() )
   {
     if ( iter->cb_handler == cb_handler )
-      iter = this->callbackObjects.erase(iter);
+      iter = callbackObjects.erase(iter);
     else
       ++iter;
   }
@@ -1420,8 +1419,8 @@ bool FWidget::setFocus(bool on)
 //----------------------------------------------------------------------
 FPoint FWidget::globalToLocalPos (const FPoint& gPos)
 {
-  return FPoint ( gPos.getX() - xpos - xmin + 2,
-                  gPos.getY() - ypos - ymin + 2 );
+  return FPoint ( gPos.getX() - xpos - xmin + 2
+                , gPos.getY() - ypos - ymin + 2 );
 }
 
 //----------------------------------------------------------------------
@@ -1606,11 +1605,11 @@ void FWidget::setTermGeometry (int w, int h)
 //----------------------------------------------------------------------
 void FWidget::setGeometry (const FRect& box, bool adjust)
 {
-  setGeometry ( box.getX(),
-                box.getY(),
-                box.getWidth(),
-                box.getHeight(),
-                adjust );
+  setGeometry ( box.getX()
+              , box.getY()
+              , box.getWidth()
+              , box.getHeight()
+              , adjust );
 }
 
 //----------------------------------------------------------------------
@@ -1640,8 +1639,8 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
   widgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
-  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1,
-                                   ypos + ymin - 1,
+  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
+                                 , ypos + ymin - 1,
                                    width, height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 

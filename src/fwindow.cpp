@@ -12,15 +12,14 @@
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWindow::FWindow(FWidget* parent) : FWidget(parent)
-{
-  window_active = false;
-}
+FWindow::FWindow(FWidget* parent)
+  : FWidget(parent)
+  , window_active(false)
+{ }
 
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
-{
-}
+{ }
 
 // protected methods of FWindow
 //----------------------------------------------------------------------
@@ -52,23 +51,19 @@ bool FWindow::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FWindow::onWindowActive (FEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWindow::onWindowInactive (FEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWindow::onWindowRaised (FEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FWindow::onWindowLowered (FEvent*)
-{
-}
+{ }
 
 // public methods of FWindow
 //----------------------------------------------------------------------

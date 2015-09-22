@@ -9,31 +9,54 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FMenu::FMenu(FWidget* parent) : FWindow(parent)
+FMenu::FMenu(FWidget* parent)
+  : FWindow(parent)
+  , item(0)
+  , super_menu(0)
+  , maxItemWidth(0)
+  , current(0)
+  , mouse_down(false)
 {
-  item = 0;
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FMenu::FMenu (FString& txt, FWidget* parent) : FWindow(parent)
+FMenu::FMenu (FString& txt, FWidget* parent)
+  : FWindow(parent)
+  , item(0)
+  , super_menu(0)
+  , maxItemWidth(0)
+  , current(0)
+  , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FMenu::FMenu (const std::string& txt, FWidget* parent) : FWindow(parent)
+FMenu::FMenu (const std::string& txt, FWidget* parent)
+  : FWindow(parent)
+  , item(0)
+  , super_menu(0)
+  , maxItemWidth(0)
+  , current(0)
+  , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FMenu::FMenu (const char* txt, FWidget* parent) : FWindow(parent)
+FMenu::FMenu (const char* txt, FWidget* parent)
+  : FWindow(parent)
+  , item(0)
+  , super_menu(0)
+  , maxItemWidth(0)
+  , current(0)
+  , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -60,7 +83,6 @@ FMenu::~FMenu()
 //----------------------------------------------------------------------
 void FMenu::init()
 {
-  current = 0;
   width  = 10;
   height = 2;
   xmin = 1;
@@ -121,8 +143,8 @@ void FMenu::menu_dimension()
 //----------------------------------------------------------------------
 bool FMenu::isMenuBar (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName(),
-                         const_cast<char*>("FMenuBar") ) == 0 );
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -362,7 +384,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         ++iter;
       }
     }
-    this->redraw();
+    redraw();
     return;
   }
   if ( mouse_down )
@@ -393,7 +415,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
          && ! (*iter)->isSelected() )
       {
         (*iter)->setSelected();
-        this->redraw();
+        redraw();
       }
       X = x2 + 2;
       ++iter;
@@ -430,7 +452,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
           int mouse_y = ev->getY();
           if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
             (*iter)->unsetSelected();
-          this->redraw();
+          redraw();
         }
         X = x2 + 2;
         ++iter;
@@ -484,14 +506,13 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       ++iter;
     }
     if ( focus_changed )
-      this->redraw();
+      redraw();
   }
 }
 
 //----------------------------------------------------------------------
 void FMenu::hide()
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)

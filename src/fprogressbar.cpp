@@ -9,31 +9,24 @@
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FProgressbar::FProgressbar(FWidget* parent) : FWidget(parent)
+FProgressbar::FProgressbar(FWidget* parent)
+  : FWidget(parent)
+  , percentage(-1)
+  , BarLength(width)
 {
-  this->init();
-}
-
-//----------------------------------------------------------------------
-FProgressbar::~FProgressbar()
-{
-}
-
-// private methods of FProgressbar
-//----------------------------------------------------------------------
-void FProgressbar::init()
-{
-  percentage = -1;
-  flags = 0;
-  BarLength = width;
   unsetFocusable();
 }
 
 //----------------------------------------------------------------------
+FProgressbar::~FProgressbar()
+{ }
+
+// private methods of FProgressbar
+//----------------------------------------------------------------------
 void FProgressbar::drawPercentage()
 {
-  setColor ( parentWidget()->getForegroundColor(),
-             parentWidget()->getBackgroundColor() );
+  setColor ( parentWidget()->getForegroundColor()
+           , parentWidget()->getBackgroundColor() );
   gotoxy (xpos+xmin+width-5, ypos+ymin-2);
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
@@ -79,7 +72,7 @@ void FProgressbar::drawBar()
   if ( ! isMonochron() &&  getMaxColor() >= 16 )
   {
     // Cygwin terminal use IBM Codepage 850
-    if ( this->isCygwinTerminal() )
+    if ( isCygwinTerminal() )
       print (fc::FullBlock); // █
     else
       print (fc::RightHalfBlock); // ▐
@@ -97,7 +90,7 @@ void FProgressbar::drawBar()
   if ( trunc(length) >= 1 && trunc(length) < BarLength )
   {
     if (  round(length) > trunc(length)
-       || this->isCygwinTerminal()
+       || isCygwinTerminal()
        || getMaxColor() < 16 )
     {
       if ( isMonochron() )
@@ -228,9 +221,9 @@ bool FProgressbar::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
   else
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
   return on;
 }
 
@@ -238,8 +231,8 @@ bool FProgressbar::setEnable (bool on)
 bool FProgressbar::setShadow (bool on)
 {
   if ( on )
-    this->flags |= SHADOW;
+    flags |= SHADOW;
   else
-    this->flags &= ~SHADOW;
+    flags &= ~SHADOW;
   return on;
 }

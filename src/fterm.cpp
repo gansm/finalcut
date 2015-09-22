@@ -120,6 +120,8 @@ fc::console_cursor_style  FTerm::consoleCursorStyle;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTerm::FTerm()
+  : map()
+  , vwin(0)
 {
   terminal_updates = false;
   vterm_updates    = true;
@@ -683,7 +685,7 @@ void FTerm::init_termcaps()
               << "Check the TERM environment variable\n"
               << "Also make sure that the terminal"
               << "is defined in the terminfo database.\n";
-    exit(EXIT_FAILURE);
+    std::abort();
   }
 
   // duration precalculation of the cursor movement strings
@@ -730,9 +732,9 @@ bool FTerm::isKeyTimeout (timeval* time, register long timeout)
 }
 
 //----------------------------------------------------------------------
-int FTerm::parseKeyString ( char* buffer,
-                            int buf_size,
-                            timeval* time_keypressed )
+int FTerm::parseKeyString ( char* buffer
+                          , int buf_size
+                          , timeval* time_keypressed )
 {
   register uChar firstchar = uChar(buffer[0]);
   register size_t buf_len = strlen(buffer);
@@ -864,9 +866,9 @@ void FTerm::init_vt100altChar()
     uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
     uInt utf8char = uInt(vt100_key_to_utf8[n][utf8_char]);
 
-    uInt* p = std::find ( character[0],
-                          character[lastCharItem] + fc::NUM_OF_ENCODINGS,
-                          utf8char );
+    uInt* p = std::find ( character[0]
+                        , character[lastCharItem] + fc::NUM_OF_ENCODINGS
+                        , utf8char );
     if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found in character
     {
       int item = int(std::distance(character[0], p) / fc::NUM_OF_ENCODINGS);
@@ -921,11 +923,11 @@ void FTerm::signal_handler (int signum)
     case SIGSEGV:
       term_object->finish();
       fflush (stderr); fflush (stdout);
-      fprintf ( stderr,
-                "\nProgram stopped: signal %d (%s)\n",
-                signum,
-                strsignal(signum) );
-      exit (EXIT_FAILURE);
+      fprintf ( stderr
+              , "\nProgram stopped: signal %d (%s)\n"
+              , signum
+              , strsignal(signum) );
+      std::terminate();
   }
 }
 
@@ -947,7 +949,7 @@ void FTerm::init()
   stdout_no = fileno(stdout);
   stdin_status_flags = fcntl(stdin_no, F_GETFL);
 
-  this->term_name = ttyname(stdout_no);
+  term_name = ttyname(stdout_no);
   // look into /etc/ttytype for the type
 
   fd_tty = -1;
@@ -968,7 +970,7 @@ void FTerm::init()
   else
   {
     std::cerr << "can not open the console.\n";
-    exit(EXIT_FAILURE);
+    std::abort();
   }
 
   // create virtual terminal
@@ -1349,8 +1351,8 @@ void FTerm::init()
     setXTermHighlightBackground("rgb:b1b1/b1b1/b1b1");
   }
 
-  this->setRawMode();
-  this->hideCursor();
+  setRawMode();
+  hideCursor();
 
   if ( (xterm || urxvt_terminal) && ! rxvt_terminal )
   {
@@ -1421,8 +1423,8 @@ void FTerm::finish()
   if ( xterm && ! rxvt_terminal )
     setXTermTitle (*xterm_title);
 
-  this->showCursor();
-  this->setCookedMode(); // leave raw mode
+  showCursor();
+  setCookedMode(); // leave raw mode
 
   if ( tcap[t_exit_attribute_mode].string )
   {
@@ -1550,9 +1552,9 @@ void FTerm::finish()
 uInt FTerm::charEncode (uInt c)
 {
   register uInt* p;
-  p = std::find ( character[0],
-                  character[lastCharItem] + fc::NUM_OF_ENCODINGS,
-                  c );
+  p = std::find ( character[0]
+                , character[lastCharItem] + fc::NUM_OF_ENCODINGS
+                , c );
   if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found
   {
     register uInt item = uInt( std::distance(character[0], p)
@@ -1662,10 +1664,10 @@ void FTerm::resizeArea (term_area* area)
 //----------------------------------------------------------------------
 void FTerm::restoreVTerm (const FRect& box)
 {
-  restoreVTerm ( box.getX(),
-                 box.getY(),
-                 box.getWidth(),
-                 box.getHeight() );
+  restoreVTerm ( box.getX()
+               , box.getY()
+               , box.getWidth()
+               , box.getHeight() );
 }
 
 //----------------------------------------------------------------------
@@ -1965,11 +1967,11 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::getArea (const FRect& box, FTerm::term_area* area)
 {
-  getArea ( box.getX(),
-            box.getY(),
-            box.getWidth(),
-            box.getHeight(),
-            area );
+  getArea ( box.getX()
+          , box.getY()
+          , box.getWidth()
+          , box.getHeight()
+          , area );
 }
 
 //----------------------------------------------------------------------
@@ -2180,8 +2182,8 @@ bool FTerm::setVGAFont()
           VGAFont = false;
         // unicode character mapping
         struct unimapdesc unimap;
-        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs) /
-                                  sizeof(unipair) );
+        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs)
+                                / sizeof(unipair) );
         unimap.entries = &unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
@@ -2235,8 +2237,8 @@ bool FTerm::setNewFont()
         if ( ret != 0 )
           NewFont = false;
         // unicode character mapping
-        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs) /
-                                   sizeof(unipair) );
+        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs)
+                                 / sizeof(unipair) );
         unimap.entries = &unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
@@ -3589,10 +3591,10 @@ int FTerm::print (FTerm::term_area* area, FString& s)
 
         case '\t':
           cursor->x_ref() = short ( uInt(cursor->x_ref())
-                                    + tabstop
-                                    - uInt(cursor->x_ref())
-                                    + 1
-                                    % tabstop );
+                                  + tabstop
+                                  - uInt(cursor->x_ref())
+                                  + 1
+                                  % tabstop );
           break;
 
         case '\b':

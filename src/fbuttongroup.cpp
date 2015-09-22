@@ -13,17 +13,23 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FButtonGroup::FButtonGroup(FWidget* parent) : FWidget(parent)
+FButtonGroup::FButtonGroup(FWidget* parent)
+  : FWidget(parent)
+  , text()
+  , border(true)
+  , buttonlist()
 {
-  this->init();
-  text = "";
+  init();
 }
 
 //----------------------------------------------------------------------
-FButtonGroup::FButtonGroup ( const FString& txt,
-                             FWidget* parent ) : FWidget(parent)
+FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , border(true)
+  , buttonlist()
 {
-  this->init();
+  init();
   setText(txt);
 }
 
@@ -48,15 +54,13 @@ FButtonGroup::~FButtonGroup()  // destructor
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  flags = 0;
-  border = true;
   top_padding    = 1;
   left_padding   = 1;
   bottom_padding = 1;
   right_padding  = 1;
 
   if ( isEnabled() )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
 
   foregroundColor = wc.label_fg;
   backgroundColor = wc.label_bg;
@@ -188,7 +192,7 @@ void FButtonGroup::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  txt = " " + this->text + " ";
+  txt = " " + text + " ";
   length = txt.getLength();
   hotkeypos = -1;
   LabelText = new wchar_t[length+1];
@@ -498,8 +502,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
 //----------------------------------------------------------------------
 void FButtonGroup::onFocusOut (FFocusEvent*)
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 bool FButtonGroup::setEnable (bool on)
@@ -508,12 +511,12 @@ bool FButtonGroup::setEnable (bool on)
 
   if ( on )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
     setHotkeyAccelerator();
   }
   else
   {
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
     delAccelerator (this);
   }
   return on;
@@ -532,7 +535,7 @@ bool FButtonGroup::setBorder(bool on)
 //----------------------------------------------------------------------
 void FButtonGroup::setText (const FString& txt)
 {
-  this->text = txt;
+  text = txt;
   if ( isEnabled() )
   {
     delAccelerator (this);

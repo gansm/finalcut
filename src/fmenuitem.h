@@ -79,15 +79,15 @@ class FMenuItem : public FWidget
 // FMenuItem inline functions
 //----------------------------------------------------------------------
 inline FString FMenuItem::getText() const
-{ return this->text; }
+{ return text; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setActive()
-{ this->active = true; }
+{ active = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetActive()
-{ this->active = false; }
+{ active = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isActivated() const
@@ -95,7 +95,7 @@ inline bool FMenuItem::isActivated() const
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetSelected()
-{ this->selected = false; }
+{ selected = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isSelected() const
@@ -103,11 +103,11 @@ inline bool FMenuItem::isSelected() const
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setSeparator()
-{ this->separator = true; }
+{ separator = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetSeparator()
-{ this->separator = false; }
+{ separator = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isSeparator() const
@@ -115,11 +115,11 @@ inline bool FMenuItem::isSeparator() const
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setChecked()
-{ this->checked = true; }
+{ checked = true; }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetChecked()
-{ this->checked = false; }
+{ checked = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isChecked() const

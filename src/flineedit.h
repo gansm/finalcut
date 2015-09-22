@@ -133,7 +133,7 @@ inline bool FLineEdit::hasShadow()
 
 //----------------------------------------------------------------------
 inline FString FLineEdit::getText() const
-{ return this->text; }
+{ return text; }
 
 //----------------------------------------------------------------------
 inline int FLineEdit::getLabelOrientation()

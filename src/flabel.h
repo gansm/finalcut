@@ -64,6 +64,7 @@ class FLabel : public FWidget
    bool setReverseMode();
    bool unsetReverseMode();
    bool hasReverseMode();
+   using FWidget::setEnable;
    bool setEnable (bool);
    void setNumber(long);
    void setText (const FString&);
@@ -111,6 +112,6 @@ inline bool FLabel::hasReverseMode()
 
 //----------------------------------------------------------------------
 inline FString& FLabel::getText()
-{ return this->text; }
+{ return text; }
 
 #endif  // _FLABEL_H

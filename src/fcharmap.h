@@ -154,8 +154,8 @@ static int vt100_key_to_utf8[][2] =
   {fc::vt100_key_diamond  , fc::Bullet}                        // ◆
 };
 
-const int lastKeyItem = int ( sizeof(vt100_key_to_utf8) /
-                              sizeof(vt100_key_to_utf8[0]) ) - 1;
+const int lastKeyItem = int ( sizeof(vt100_key_to_utf8)
+                            / sizeof(vt100_key_to_utf8[0]) ) - 1;
 
 
 static uInt cp437_to_ucs[][2] =
@@ -290,8 +290,8 @@ static uInt cp437_to_ucs[][2] =
   {0xff, 0x00a0}   // no-break space
 };
 
-const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs) /
-                                  sizeof(cp437_to_ucs[0]) ) - 1;
+const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
+                                / sizeof(cp437_to_ucs[0]) ) - 1;
 
 
 #endif  // _FCHARMAP_H

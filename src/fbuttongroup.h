@@ -99,6 +99,6 @@ inline bool FButtonGroup::unsetBorder()
 
 //----------------------------------------------------------------------
 inline FString& FButtonGroup::getText()
-{ return this->text; }
+{ return text; }
 
 #endif  // _FBUTTONGROUP_H

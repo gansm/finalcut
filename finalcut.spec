@@ -16,7 +16,6 @@ Url:		https://github.com/gansm/finalcut/
 Group:		System/Libraries
 Source:		finalcut-%{version}.tar.gz
 BuildRequires:	automake
-BuildRequires:	autoconf-archive
 BuildRequires:	libtool
 BuildRequires:	gcc-c++
 BuildRequires:  glib2-devel
@@ -28,9 +27,7 @@ BuildRequires:  gpm-devel
 %else
 BuildRequires:  gpm
 %endif
-%endif
-
-%if %{defined fedora}
+%else
 BuildRequires:  gpm-devel
 %endif
 
@@ -41,6 +38,7 @@ Requires:	tr
 Requires:	grep
 Requires:	gzip
 Requires:	bdftopcf
+Requires:	autoconf-archive
 Requires:	gcc-c++
 
 Prefix:		%_prefix
@@ -107,6 +105,7 @@ autoreconf -v --install --force
 export CPPFLAGS="$RPM_OPT_FLAGS %{warn_flags}"
 %configure
 make %{?_smp_mflags} V=1
+
 
 %install
 make install libdir=${RPM_BUILD_ROOT}%{_libdir}/ \

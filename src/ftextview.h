@@ -56,7 +56,8 @@ class FTextView : public FWidget
    void        onWheel (FWheelEvent*);
    void        onFocusIn (FFocusEvent*);
    void        onFocusOut (FFocusEvent*);
-
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void        setGeometry (int, int, int, int, bool adjust=true);
    uInt        getColumns() const;
    uInt        getRows() const;

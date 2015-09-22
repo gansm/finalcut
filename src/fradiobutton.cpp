@@ -17,16 +17,15 @@ FRadioButton::FRadioButton(FWidget* parent) : FToggleButton(parent)
 }
 
 //----------------------------------------------------------------------
-FRadioButton::FRadioButton ( const FString& txt,
-                             FWidget* parent ) : FToggleButton(txt, parent)
+FRadioButton::FRadioButton ( const FString& txt, FWidget* parent )
+  : FToggleButton(txt, parent)
 {
   init();
 }
 
 //----------------------------------------------------------------------
 FRadioButton::~FRadioButton()  // destructor
-{
-}
+{ }
 
 
 // private methods of FRadioButton

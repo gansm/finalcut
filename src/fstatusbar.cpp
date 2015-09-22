@@ -10,38 +10,50 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey(FWidget* parent) : FWidget(parent)
+FStatusKey::FStatusKey(FWidget* parent)
+  : FWidget(parent)
+  , key(0)
+  , text()
+  , active(false)
+  , mouse_focus(false)
+  , bar(0)
 {
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey ( int k,
-                         FString& txt,
-                         FWidget* parent ) : FWidget(parent)
+FStatusKey::FStatusKey (int k, FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , key(k)
+  , text(txt)
+  , active(false)
+  , mouse_focus(false)
+  , bar(0)
 {
-  setKey(k);
-  setText(txt);
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey ( int k,
-                         const std::string& txt,
-                         FWidget* parent) : FWidget(parent)
+FStatusKey::FStatusKey (int k, const std::string& txt, FWidget* parent)
+  : FWidget(parent)
+  , key(k)
+  , text(txt)
+  , active(false)
+  , mouse_focus(false)
+  , bar(0)
 {
-  setKey(k);
-  setText(txt);
   init (parent);
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey ( int k,
-                         const char* txt,
-                         FWidget* parent ) : FWidget(parent)
+FStatusKey::FStatusKey (int k, const char* txt, FWidget* parent)
+  : FWidget(parent)
+  , key(k)
+  , text(txt)
+  , active(false)
+  , mouse_focus(false)
+  , bar(0)
 {
-  setKey(k);
-  setText(txt);
   init (parent);
 }
 
@@ -58,12 +70,10 @@ FStatusKey::~FStatusKey()  // destructor
 //----------------------------------------------------------------------
 void FStatusKey::init (FWidget* parent)
 {
-  this->active = false;
-  this->mouse_focus = false;
   setGeometry (1,1,1,1);
 
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FStatusBar") ) == 0 )
+  if ( parent && strcmp ( parent->getClassName()
+                        , const_cast<char*>("FStatusBar") ) == 0 )
   {
     setStatusbar( static_cast<FStatusBar*>(parent) );
     statusbar()->insert(this);
@@ -103,7 +113,7 @@ void FStatusKey::setStatusbar (FStatusBar* sb)
 //----------------------------------------------------------------------
 inline void FStatusKey::setActive()
 {
-  this->active = true;
+  active = true;
   processActivate();
 }
 
@@ -123,9 +133,15 @@ bool FStatusKey::setMouseFocus(bool on)
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FStatusBar::FStatusBar(FWidget* parent) : FWindow(parent)
+FStatusBar::FStatusBar(FWidget* parent)
+  : FWindow(parent)
+  , keylist()
+  , text("")
+  , mouse_down()
+  , x(-1)
+  , x_msg(-1)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -168,8 +184,6 @@ void FStatusBar::init()
   // initialize geometry values
   setGeometry (1, ypos, getColumnNumber(), 1, false);
   getRootWidget()->setBottomPadding(1, true);
-  text = "";
-  x = x_msg = -1;
   setStatusBar(this);
   foregroundColor = wc.statusbar_fg;
   backgroundColor = wc.statusbar_bg;
@@ -221,8 +235,8 @@ void FStatusBar::drawKeys()
       {
         if ( isMonochron() )
           setReverse(false);
-        setColor ( wc.statusbar_active_hotkey_fg,
-                   wc.statusbar_active_hotkey_bg );
+        setColor ( wc.statusbar_active_hotkey_fg
+                 , wc.statusbar_active_hotkey_bg );
         x++;
         print (vstatusbar, ' ');
         x += kname_len;
@@ -272,8 +286,8 @@ void FStatusBar::drawKeys()
           print (vstatusbar, (*iter)->getText());
         else
         {
-          print ( vstatusbar,
-                  (*iter)->getText()
+          print ( vstatusbar
+                , (*iter)->getText()
                           .left(uInt(txt_length+screenWidth-x-1)) );
           print ( vstatusbar, ".." );
         }
@@ -348,7 +362,7 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
         ++iter;
       }
     }
-    this->redraw();
+    redraw();
     return;
   }
   if ( mouse_down )
@@ -380,7 +394,7 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
          && ! (*iter)->hasMouseFocus() )
       {
         (*iter)->setMouseFocus();
-        this->redraw();
+        redraw();
       }
       X = x2 + 2;
       ++iter;
@@ -421,7 +435,7 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
           int mouse_y = ev->getY();
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();
-          this->redraw();
+          redraw();
         }
         X = x2 + 2;
         ++iter;
@@ -478,7 +492,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
       ++iter;
     }
     if ( focus_changed )
-      this->redraw();
+      redraw();
   }
 }
 
@@ -569,7 +583,7 @@ void FStatusBar::drawMessage()
     setReverse(true);
   if ( x+space_offset+3 < termWidth )
   {
-    if ( this->text )
+    if ( text )
     {
       x += 2;
       if ( ! isLastActiveFocus )

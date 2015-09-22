@@ -59,11 +59,16 @@ class FMessageBox : public FDialog
 
  public:
    explicit FMessageBox (FWidget* parent=0);
-   FMessageBox (const FString&, const FString&,
-                int, int, int,
-                FWidget* parent=0);
+   FMessageBox (const FMessageBox&);       // copy constructor
+   FMessageBox ( const FString&, const FString&
+               , int, int, int
+               , FWidget* parent=0 );
   ~FMessageBox();
+   FMessageBox& operator = (const FMessageBox&); // assignment
    const char* getClassName() const;
+
+   const FString getTitlebarText() const;
+   void  setTitlebarText (const FString&);
 
    const FString getHeadline() const;
    void  setHeadline (const FString&);
@@ -79,25 +84,25 @@ class FMessageBox : public FDialog
    bool setCenterText();
    bool unsetCenterText();
 
-   static int info ( FWidget*,
-                     const FString&,
-                     const FString&,
-                     int button0 = FMessageBox::Ok,
-                     int button1=0,
-                     int button2=0 );
+   static int info ( FWidget*
+                   , const FString&
+                   , const FString&
+                   , int button0 = FMessageBox::Ok
+                   , int button1=0
+                   , int button2=0 );
 
-   static int info ( FWidget*,
-                     const FString&,
-                     int,
-                     int button0 = FMessageBox::Ok,
-                     int button1=0,
-                     int button2=0 );
+   static int info ( FWidget*
+                   , const FString&
+                   , int
+                   , int button0 = FMessageBox::Ok
+                   , int button1=0
+                   , int button2=0 );
 
-   static int error ( FWidget*,
-                      const FString&,
-                      int button0 = FMessageBox::Ok,
-                      int button1=0,
-                      int button2=0 );
+   static int error ( FWidget*
+                    , const FString&
+                    , int button0 = FMessageBox::Ok
+                    , int button1=0
+                    , int button2=0 );
 };
 #pragma pack(pop)
 
@@ -106,6 +111,14 @@ class FMessageBox : public FDialog
 //----------------------------------------------------------------------
 inline const char* FMessageBox::getClassName() const
 { return "FMessageBox"; }
+
+//----------------------------------------------------------------------
+inline const FString FMessageBox::getTitlebarText() const
+{ return FDialog::getText(); }
+
+//----------------------------------------------------------------------
+inline void FMessageBox::setTitlebarText (const FString& txt)
+{ return FDialog::setText(txt); }
 
 //----------------------------------------------------------------------
 inline const FString FMessageBox::getHeadline() const
@@ -117,7 +130,7 @@ inline const FString FMessageBox::getText() const
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText(bool on)
-{ return this->center_text = on; }
+{ return center_text = on; }
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText()

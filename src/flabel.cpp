@@ -12,15 +12,35 @@
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FLabel::FLabel(FWidget* parent) : FWidget(parent)
+FLabel::FLabel(FWidget* parent)
+  : FWidget(parent)
+  , multiline_text()
+  , multiline(false)
+  , text()
+  , emphasis(0)
+  , alignment(fc::alignLeft)
+  , emphasis_color(wc.label_emphasis_fg)
+  , ellipsis_color(wc.label_ellipsis_fg)
+  , reverse_mode(false)
+  , accel_widget(0)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FLabel::FLabel (const FString& txt, FWidget* parent) : FWidget(parent)
+FLabel::FLabel (const FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , multiline_text()
+  , multiline(false)
+  , text(txt)
+  , emphasis(0)
+  , alignment(fc::alignLeft)
+  , emphasis_color(wc.label_emphasis_fg)
+  , ellipsis_color(wc.label_ellipsis_fg)
+  , reverse_mode(false)
+  , accel_widget(0)
 {
-  this->init();
+  init();
   setText(txt);
 }
 
@@ -35,23 +55,13 @@ FLabel::~FLabel() // destructor
 //----------------------------------------------------------------------
 void FLabel::init()
 {
-  flags = 0;
-  emphasis = 0;
-  alignment = fc::alignLeft;
-  multiline = false;
-  this->text = "";
-  accel_widget = 0;
-
   if ( isEnabled() )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
 
   unsetFocusable();
 
   foregroundColor = parentWidget()->getForegroundColor();
   backgroundColor = parentWidget()->getBackgroundColor();
-  emphasis_color = wc.label_emphasis_fg;
-  ellipsis_color = wc.label_ellipsis_fg;
-  reverse_mode = false;
 }
 
 //----------------------------------------------------------------------
@@ -137,10 +147,10 @@ int FLabel::getXOffset(int length)
 }
 
 //----------------------------------------------------------------------
-void FLabel::printLine ( wchar_t*& line,
-                         uInt length,
-                         int  hotkeypos,
-                         int  xoffset )
+void FLabel::printLine ( wchar_t*& line
+                       , uInt length
+                       , int  hotkeypos
+                       , int  xoffset )
 {
   int to_char;
   bool isActive, isNoUnderline;
@@ -388,9 +398,9 @@ void FLabel::setAlignment (uInt align)
 bool FLabel::setEmphasis (bool on)
 {
   if ( on )
-    this->emphasis |= EMPHASIS;
+    emphasis |= EMPHASIS;
   else
-    this->emphasis &= ~EMPHASIS;
+    emphasis &= ~EMPHASIS;
   return on;
 }
 
@@ -409,12 +419,12 @@ bool FLabel::setEnable (bool on)
 
   if ( on )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
     setHotkeyAccelerator();
   }
   else
   {
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
     delAccelerator (this);
   }
   return on;
@@ -429,8 +439,8 @@ void FLabel::setNumber (long num)
 //----------------------------------------------------------------------
 void FLabel::setText (const FString& txt)
 {
-  this->text = txt;
-  this->multiline_text = text.split("\r\n");
+  text = txt;
+  multiline_text = text.split("\r\n");
   if ( int(multiline_text.size()) > 1 )
     multiline = true;
   else

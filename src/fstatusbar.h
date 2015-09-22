@@ -19,10 +19,10 @@ class FStatusBar;
 class FStatusKey : public FWidget
 {
  private:
-   int     key;
-   FString text;
-   bool    active;
-   bool    mouse_focus;
+   int         key;
+   FString     text;
+   bool        active;
+   bool        mouse_focus;
    FStatusBar* bar;
 
  private:
@@ -66,7 +66,7 @@ class FStatusKey : public FWidget
 // FStatusKey inline functions
 //----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()
-{ this->active = false; }
+{ active = false; }
 
 //----------------------------------------------------------------------
 inline bool FStatusKey::isActivated() const
@@ -86,27 +86,27 @@ inline bool FStatusKey::hasMouseFocus() const
 
 //----------------------------------------------------------------------
 inline int FStatusKey::getKey() const
-{ return this->key; }
+{ return key; }
 
 //----------------------------------------------------------------------
 inline FString FStatusKey::getText() const
-{ return this->text; }
+{ return text; }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setKey (int k)
-{ this->key = k; }
+{ key = k; }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setText (FString& txt)
-{ this->text = txt; }
+{ text = txt; }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setText (const std::string& txt)
-{ this->text = txt; }
+{ text = txt; }
 
 //----------------------------------------------------------------------
 inline void FStatusKey::setText (const char* txt)
-{ this->text = txt; }
+{ text = txt; }
 
 
 //----------------------------------------------------------------------
@@ -121,9 +121,9 @@ class FStatusBar : public FWindow
  private:
    std::vector<FStatusKey*> keylist;
    FString text;
-   bool mouse_down;
-   int x;
-   int x_msg;
+   bool    mouse_down;
+   int     x;
+   int     x_msg;
 
  private:
    FStatusBar (const FStatusBar&);
@@ -142,6 +142,8 @@ class FStatusBar : public FWindow
    void onMouseUp (FMouseEvent*);
    void onMouseMove (FMouseEvent*);
    void hide();
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool adjust=true);
 
    uInt count() const;

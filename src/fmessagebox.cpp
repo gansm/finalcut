@@ -24,23 +24,67 @@ static const char* button_text[] =
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FMessageBox::FMessageBox(FWidget* parent) : FDialog(parent)
+FMessageBox::FMessageBox(FWidget* parent)
+  : FDialog(parent)
+  , headline_text()
+  , text()
+  , text_components(0)
+  , text_split()
+  , maxLineWidth(0)
+  , center_text(false)
+  , emphasis_color(wc.dialog_emphasis_fg)
+  , numButtons(0)
+  , text_num_lines(0)
+  , button_digit()
+  , button()
 {
-  FDialog::setText ("Message for you");
-  this->init(FMessageBox::Ok, 0, 0);
+  setTitlebarText("Message for you");
+  init(FMessageBox::Ok, 0, 0);
 }
 
 //----------------------------------------------------------------------
-FMessageBox::FMessageBox(const FString& caption,
-                         const FString& message,
-                         int button0,
-                         int button1,
-                         int button2,
-                         FWidget* parent) : FDialog(parent)
+FMessageBox::FMessageBox (const FMessageBox& mbox)
+  : FDialog(mbox.parentWidget())
+  , headline_text(mbox.headline_text)
+  , text(mbox.text)
+  , text_components(mbox.text_components)
+  , text_split(mbox.text_split)
+  , maxLineWidth(mbox.maxLineWidth)
+  , center_text(mbox.center_text)
+  , emphasis_color(mbox.emphasis_color)
+  , numButtons(mbox.numButtons)
+  , text_num_lines(mbox.text_num_lines)
+  , button_digit()
+  , button()
 {
-  FDialog::setText(caption);
-  this->text = message;
-  this->init(button0, button1, button2);
+  setTitlebarText (mbox.getTitlebarText());
+  init ( *mbox.button_digit[0]
+       , *mbox.button_digit[1]
+       , *mbox.button_digit[2] );
+}
+
+//----------------------------------------------------------------------
+FMessageBox::FMessageBox ( const FString& caption
+                         , const FString& message
+                         , int button0
+                         , int button1
+                         , int button2
+                         , FWidget* parent )
+  : FDialog(parent)
+  , headline_text()
+  , text(message)
+  , text_components(0)
+  , text_split()
+  , maxLineWidth(0)
+  , center_text(false)
+  , emphasis_color(wc.dialog_emphasis_fg)
+  , numButtons(0)
+  , text_num_lines(0)
+  , button_digit()
+  , button()
+{
+  setTitlebarText(caption);
+  init(button0, button1, button2);
 }
 
 //----------------------------------------------------------------------
@@ -59,8 +103,6 @@ FMessageBox::~FMessageBox()  // destructor
 //----------------------------------------------------------------------
 void FMessageBox::init(int button0, int button1, int button2)
 {
-  emphasis_color = wc.dialog_emphasis_fg;
-
   msg_dimension();
 
   if ( (button2 && ! button1) || (button1 && ! button0) )
@@ -155,7 +197,6 @@ void FMessageBox::msg_dimension()
   text_num_lines = uInt(text_split.size());
   text_components = &text_split[0];
   maxLineWidth = 0;
-  center_text = false;
 
   if ( ! headline_text.isNull() )
     headline_height = 2;
@@ -280,6 +321,7 @@ void FMessageBox::cb_processClick (FWidget*, void* data_ptr)
   done (*reply);
 }
 
+
 // protected methods of FMessageBox
 //----------------------------------------------------------------------
 void FMessageBox::adjustSize()
@@ -294,12 +336,48 @@ void FMessageBox::adjustSize()
   FDialog::adjustSize();
 }
 
+
 // public methods of FMessageBox
+//----------------------------------------------------------------------
+FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
+{
+  if ( &mbox == this )
+    return *this;
+  else
+  {
+    for (uInt n=0; n < numButtons; n++)
+      delete button[n];
+
+    delete button_digit[2];
+    delete button_digit[1];
+    delete button_digit[0];
+
+    mbox.parentWidget()->addChild (this);
+
+    headline_text   = mbox.headline_text;
+    text            = mbox.text;
+    text_components = mbox.text_components;
+    text_split      = mbox.text_split;
+    maxLineWidth    = mbox.maxLineWidth;
+    center_text     = mbox.center_text;
+    emphasis_color  = mbox.emphasis_color;
+    numButtons      = mbox.numButtons;
+    text_num_lines  = mbox.text_num_lines;
+
+    setTitlebarText (mbox.getTitlebarText());
+    init ( *mbox.button_digit[0]
+         , *mbox.button_digit[1]
+         , *mbox.button_digit[2] );
+
+    return *this;
+  }
+}
+
 //----------------------------------------------------------------------
 void FMessageBox::setHeadline (const FString& headline)
 {
   int old_height = height;
-  this->headline_text = headline;
+  headline_text = headline;
   setHeight(height + 2, true);
   for (uInt n=0; n < numButtons; n++)
     button[n]->setY(height-4, false);
@@ -327,7 +405,7 @@ void FMessageBox::setHeadline (const char* headline)
 //----------------------------------------------------------------------
 void FMessageBox::setText (const FString& txt)
 {
-  this->text = txt;
+  text = txt;
   msg_dimension();
   button[0]->setY(height-4, false);
   if ( *button_digit[1] != 0 )
@@ -352,52 +430,52 @@ void FMessageBox::setText (const char* txt)
 }
 
 //----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent,
-                        const FString& caption,
-                        const FString& message,
-                        int button0,
-                        int button1,
-                        int button2 )
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , const FString& message
+                      , int button0
+                      , int button1
+                      , int button2 )
 {
   int reply;
-  FMessageBox* mbox = new FMessageBox ( caption, message,
-                                        button0, button1, button2,
-                                        parent );
+  FMessageBox* mbox = new FMessageBox ( caption, message
+                                      , button0, button1, button2
+                                      , parent );
   reply = mbox->exec();
   delete mbox;
   return reply;
 }
 
 //----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent,
-                        const FString& caption,
-                        int num,
-                        int button0,
-                        int button1,
-                        int button2 )
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , int num
+                      , int button0
+                      , int button1
+                      , int button2 )
 {
   int reply;
-  FMessageBox* mbox = new FMessageBox ( caption,
-                                        FString().setNumber(num),
-                                        button0, button1, button2,
-                                        parent );
+  FMessageBox* mbox = new FMessageBox ( caption
+                                      , FString().setNumber(num)
+                                      , button0, button1, button2
+                                      , parent );
   reply = mbox->exec();
   delete mbox;
   return reply;
 }
 
 //----------------------------------------------------------------------
-int FMessageBox::error ( FWidget* parent,
-                         const FString& message,
-                         int button0,
-                         int button1,
-                         int button2 )
+int FMessageBox::error ( FWidget* parent
+                       , const FString& message
+                       , int button0
+                       , int button1
+                       , int button2 )
 {
   int reply;
   const FString caption = "Error message";
-  FMessageBox* mbox = new FMessageBox ( caption, message,
-                                        button0, button1, button2,
-                                        parent );
+  FMessageBox* mbox = new FMessageBox ( caption, message
+                                      , button0, button1, button2
+                                      , parent );
   mbox->beep();
   mbox->setHeadline("Warning:");
   mbox->setCenterText();

@@ -27,23 +27,63 @@ static bool sortDirFirst (const dir_entry &lhs, const dir_entry &rhs)
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FFileDialog::FFileDialog(FWidget* parent) : FDialog(parent)
+FFileDialog::FFileDialog(FWidget* parent)
+  : FDialog(parent)
+  , directory_stream(0)
+  , dir_entries()
+  , directory()
+  , filter_pattern()
+  , filebrowser()
+  , filename()
+  , hidden()
+  , cancel()
+  , open()
+  , dlg_type(FFileDialog::Open)
+  , show_hidden(false)
 {
-  dlg_type = FFileDialog::Open;
   init();
 }
 
 //----------------------------------------------------------------------
-FFileDialog::FFileDialog ( const FString& dirname,
-                           const FString& filter,
-                           DialogType type,
-                           FWidget* parent ) : FDialog(parent)
+FFileDialog::FFileDialog (const FFileDialog& fdlg)
+  : FDialog(fdlg.parentWidget())
+  , directory_stream(0)
+  , dir_entries()
+  , directory(fdlg.directory)
+  , filter_pattern(fdlg.filter_pattern)
+  , filebrowser()
+  , filename()
+  , hidden()
+  , cancel()
+  , open()
+  , dlg_type(fdlg.dlg_type)
+  , show_hidden(fdlg.show_hidden)
+{
+  if ( directory )
+    setPath(directory);
+  init();
+}
+
+//----------------------------------------------------------------------
+FFileDialog::FFileDialog ( const FString& dirname
+                         , const FString& filter
+                         , DialogType type
+                         , FWidget* parent )
+  : FDialog(parent)
+  , directory_stream(0)
+  , dir_entries()
+  , directory()
+  , filter_pattern(filter)
+  , filebrowser()
+  , filename()
+  , hidden()
+  , cancel()
+  , open()
+  , dlg_type(type)
+  , show_hidden(false)
 {
   if ( dirname )
     setPath(dirname);
-  if ( filter )
-    setFilter(filter);
-  dlg_type = type;
   init();
 }
 
@@ -64,7 +104,6 @@ FFileDialog::~FFileDialog()  // destructor
 void FFileDialog::init()
 {
   int x, y;
-  show_hidden = false;
   height = 15;
   width = 42;
   if ( width < 15 )
@@ -184,8 +223,8 @@ void FFileDialog::draw()
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::pattern_match ( const char* pattern,
-                                         const char* fname )
+inline bool FFileDialog::pattern_match ( const char* pattern
+                                       , const char* fname )
 {
   char search[128];
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
@@ -446,6 +485,35 @@ void FFileDialog::adjustSize()
 
 // public methods of FFileDialog
 //----------------------------------------------------------------------
+FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
+{
+  if ( &fdlg == this )
+    return *this;
+  else
+  {
+    delete open;
+    delete cancel;
+    delete hidden;
+    delete filebrowser;
+    delete filename;
+    clear();
+
+    fdlg.parentWidget()->addChild (this);
+
+    directory = fdlg.directory;
+    filter_pattern = fdlg.filter_pattern;
+    dlg_type = fdlg.dlg_type;
+    show_hidden = fdlg.show_hidden;
+
+    if ( directory )
+      setPath(directory);
+    init();
+
+    return *this;
+  }
+}
+
+//----------------------------------------------------------------------
 void FFileDialog::onKeyPress (FKeyEvent* ev)
 {
   if ( ! isEnabled() )
@@ -639,9 +707,9 @@ bool FFileDialog::setShowHiddenFiles (bool on)
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileOpenChooser ( FWidget* parent,
-                                       const FString& dirname,
-                                       const FString& filter )
+FString FFileDialog::fileOpenChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   FString ret;
   FString path = dirname;
@@ -650,22 +718,23 @@ FString FFileDialog::fileOpenChooser ( FWidget* parent,
     path = getHomeDir();
   if ( file_filter.isNull() )
     file_filter = FString("*");
-  FFileDialog* fileopen = new FFileDialog ( path,
-                                            file_filter,
-                                            FFileDialog::Open,
-                                            parent );
+  FFileDialog* fileopen = new FFileDialog ( path
+                                          , file_filter
+                                          , FFileDialog::Open
+                                          , parent );
   if ( fileopen->exec() == FDialog::Accept )
     ret = fileopen->getPath() + fileopen->getSelectedFile();
   else
     ret = FString();
+
   delete fileopen;
   return ret;
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileSaveChooser ( FWidget* parent,
-                                       const FString& dirname,
-                                       const FString& filter )
+FString FFileDialog::fileSaveChooser ( FWidget* parent
+                                     , const FString& dirname
+                                     , const FString& filter )
 {
   FString ret;
   FString path = dirname;
@@ -674,10 +743,10 @@ FString FFileDialog::fileSaveChooser ( FWidget* parent,
     path = getHomeDir();
   if ( file_filter.isNull() )
     file_filter = FString("*");
-  FFileDialog* fileopen = new FFileDialog ( path,
-                                            file_filter,
-                                            FFileDialog::Save,
-                                            parent );
+  FFileDialog* fileopen = new FFileDialog ( path
+                                          , file_filter
+                                          , FFileDialog::Save
+                                          , parent );
   if ( fileopen->exec() == FDialog::Accept )
     ret = fileopen->getPath() + fileopen->getSelectedFile();
   else

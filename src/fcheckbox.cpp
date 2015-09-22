@@ -24,8 +24,7 @@ FCheckBox::FCheckBox ( const FString& txt,
 
 //----------------------------------------------------------------------
 FCheckBox::~FCheckBox()  // destructor
-{
-}
+{ }
 
 
 // private methods of FCheckBox

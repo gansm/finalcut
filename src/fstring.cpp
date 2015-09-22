@@ -402,7 +402,7 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
   const char* src;
   wchar_t* dest;
 
-  if ( ! s )  // handle NULL string
+  if ( ! s )   // handle NULL string
     return 0;
   if ( ! *s )  // handle empty string
     return const_cast<wchar_t*>(L"");
@@ -450,9 +450,9 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
 }
 
 //----------------------------------------------------------------------
-inline wchar_t* FString::extractToken ( wchar_t** rest,
-                                        const wchar_t* s,
-                                        const wchar_t* delim )
+inline wchar_t* FString::extractToken ( wchar_t** rest
+                                      , const wchar_t* s
+                                      , const wchar_t* delim )
 {
   register wchar_t* token;
   token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
@@ -745,9 +745,9 @@ const FString operator + (const FString& s, const wchar_t c)
 const FString operator + (const std::wstring& s1, const FString& s2)
 {
   FString tmp(s1);
-  tmp._insert ( uInt(wcslen(s1.c_str())),
-                uInt(wcslen(s2.wc_str())),
-                s2.wc_str() );
+  tmp._insert ( uInt(wcslen(s1.c_str()))
+              , uInt(wcslen(s2.wc_str()))
+              , s2.wc_str() );
   return (tmp);
 }
 
@@ -755,9 +755,9 @@ const FString operator + (const std::wstring& s1, const FString& s2)
 const FString operator + (const wchar_t* s1, const FString& s2)
 {
   FString tmp(s1);
-  tmp._insert ( uInt(wcslen(s1)),
-                uInt(wcslen(s2.wc_str())),
-                s2.wc_str() );
+  tmp._insert ( uInt(wcslen(s1))
+              , uInt(wcslen(s2.wc_str()))
+              , s2.wc_str() );
   return (tmp);
 }
 
@@ -765,9 +765,9 @@ const FString operator + (const wchar_t* s1, const FString& s2)
 const FString operator + (const std::string& s1, const FString& s2)
 {
   FString tmp(s1);
-  tmp._insert ( tmp.getLength(),
-                uInt(wcslen(s2.wc_str())),
-                s2.wc_str() );
+  tmp._insert ( tmp.getLength()
+              , uInt(wcslen(s2.wc_str()))
+              , s2.wc_str() );
   return (tmp);
 }
 
@@ -775,9 +775,9 @@ const FString operator + (const std::string& s1, const FString& s2)
 const FString operator + (const char* s1, const FString& s2)
 {
   FString tmp(s1);
-  tmp._insert ( tmp.getLength(),
-                uInt(wcslen(s2.wc_str())),
-                s2.wc_str() );
+  tmp._insert ( tmp.getLength()
+              , uInt(wcslen(s2.wc_str()))
+              , s2.wc_str() );
   return (tmp);
 }
 
@@ -859,7 +859,7 @@ FString& FString::sprintf (const wchar_t* format, ...)
   vswprintf (buffer, buf_size, format, args);
   va_end (args);
 
-  this->_replace (buffer);
+  _replace (buffer);
   return (*this);
 }
 
@@ -888,7 +888,7 @@ FString& FString::sprintf (const char* format, ...)
   wc_string = c_to_wc_str(buffer);
   if ( wc_string )
   {
-    this->_replace(wc_string);
+    _replace(wc_string);
     if ( *wc_string )
       delete[] wc_string;
   }
@@ -925,14 +925,14 @@ const char* FString::c_str() const
 //----------------------------------------------------------------------
 const std::string FString::toString() const
 {
-  return std::string(this->c_str(), length+1);
+  return std::string(c_str(), length+1);
 }
 
 //----------------------------------------------------------------------
 FString FString::toLower() const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
   p = s.string;
 
   if ( p )
@@ -950,7 +950,7 @@ FString FString::toLower() const
 FString FString::toUpper() const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
   p = s.string;
 
   if ( p )
@@ -968,7 +968,7 @@ FString FString::toUpper() const
 sInt16 FString::toShort() const
 {
   register long num;
-  num = this->toLong();
+  num = toLong();
 
   if ( num > SHRT_MAX || num < SHRT_MIN )
     throw std::overflow_error ("overflow");
@@ -980,7 +980,7 @@ sInt16 FString::toShort() const
 uInt16 FString::toUShort() const
 {
   register uLong num;
-  num = uLong(this->toLong());
+  num = uLong(toLong());
 
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
@@ -992,7 +992,7 @@ uInt16 FString::toUShort() const
 int FString::toInt() const
 {
   register long num;
-  num = this->toLong();
+  num = toLong();
 
   if ( num > INT_MAX || num < INT_MIN )
     throw std::overflow_error ("overflow");
@@ -1004,7 +1004,7 @@ int FString::toInt() const
 uInt FString::toUInt() const
 {
   register uLong num;
-  num = uLong(this->toLong());
+  num = uLong(toLong());
 
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
@@ -1024,7 +1024,7 @@ long FString::toLong() const
   num = 0;
   tenth_limit = LONG_MAX / 10;
   tenth_limit_digit = LONG_MAX % 10;
-  s = this->trim();
+  s = trim();
   p = s.string;
 
   if ( ! p )
@@ -1074,7 +1074,7 @@ uLong FString::toULong() const
   num = 0;
   tenth_limit = ULONG_MAX / 10;
   tenth_limit_digit = ULONG_MAX % 10;
-  s = this->trim();
+  s = trim();
   p = s.string;
 
   if ( ! p )
@@ -1110,7 +1110,7 @@ uLong FString::toULong() const
 float FString::toFloat() const
 {
   register double num;
-  num = this->toDouble();
+  num = toDouble();
 
   if ( num > FLT_MAX || num < FLT_MIN )
     throw std::overflow_error ("overflow");
@@ -1124,13 +1124,13 @@ double FString::toDouble() const
   wchar_t* p;
   register double ret;
 
-  if ( ! this->string )
+  if ( ! string )
     throw std::invalid_argument ("null value");
 
-  if ( ! *this->string )
+  if ( ! *string )
     throw std::invalid_argument ("empty value");
 
-  ret = wcstod(this->string, &p);
+  ret = wcstod(string, &p);
 
   if ( p != 0 && *p != '\0' )
     throw std::invalid_argument ("no valid floating point value");
@@ -1149,10 +1149,10 @@ double FString::toDouble() const
 FString FString::ltrim() const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   p = s.string;
   while ( iswspace(uInt(*p)) )
@@ -1165,10 +1165,10 @@ FString FString::rtrim() const
 {
   register wchar_t* p;
   register wchar_t* last;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   p = s.string;
   last = p + length;
@@ -1185,9 +1185,9 @@ FString FString::rtrim() const
 FString FString::trim() const
 {
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return (*this);
-  FString s(this->ltrim());
+  FString s(ltrim());
   return s.rtrim();
 }
 
@@ -1195,10 +1195,10 @@ FString FString::trim() const
 FString FString::left(uInt len) const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   if ( len > length )
     return s;
@@ -1211,10 +1211,10 @@ FString FString::left(uInt len) const
 FString FString::right(uInt len) const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   if ( len > length )
     return s;
@@ -1228,10 +1228,10 @@ FString FString::mid(uInt pos, uInt len) const
 {
   register wchar_t* p;
   register wchar_t* first;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   if ( pos == 0 )
     pos = 1;
@@ -1251,11 +1251,11 @@ std::vector<FString> FString::split (const FString& delimiter)
 {
   wchar_t* rest;
   wchar_t* token;
-  FString s(this->string);
+  FString s(string);
   std::vector<FString> stringList;
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return stringList;
 
   rest = 0;
@@ -1552,10 +1552,10 @@ FString FString::replace (const FString& from, const FString& to)
 {
   register wchar_t* p;
   uInt from_length, to_length, pos;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   if ( from.isNull() || to.isNull() )
     return s;
@@ -1833,10 +1833,10 @@ FString FString::replace (const char* from, const char to)
 FString FString::replace (const wchar_t from, const FString& to)
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
   if ( to.isNull() )
     return s;
@@ -1947,10 +1947,10 @@ FString FString::replace (const char from, const wchar_t to)
 FString FString::replace (const char from, const char to)
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   // handle NULL and empty string
-  if ( ! this->string || ! *this->string )
+  if ( ! string || ! *string )
     return s;
 
   p = s.string;
@@ -1967,7 +1967,7 @@ FString FString::replace (const char from, const char to)
 FString FString::replaceControlCodes() const
 {
   register wchar_t* p;
-  FString s(this->string);
+  FString s(string);
 
   p = s.string;
 
@@ -1999,7 +1999,7 @@ FString FString::replaceControlCodes() const
 FString FString::expandTabs (uInt tabstop) const
 {
   uLong last;
-  FString instr(this->string);
+  FString instr(string);
   FString outstr("");
 
   std::vector<FString> tab_split = instr.split("\t");
@@ -2017,7 +2017,7 @@ FString FString::removeDel() const
 {
   register wchar_t* p;
 
-  FString s(this->string);
+  FString s(string);
   p = s.string;
 
   if ( p )
@@ -2053,7 +2053,7 @@ FString FString::removeBackspaces() const
 {
   register wchar_t* p;
 
-  FString s(this->string);
+  FString s(string);
   p = s.string;
 
   if ( p )

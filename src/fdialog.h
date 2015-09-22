@@ -24,11 +24,11 @@ class FDialog : public FWindow
    };
 
  private:
-   FString tb_text;
+   FString tb_text;         // title bar text
    int  result_code;
    bool maximized;
    FPoint TitleBarClickPos;
-   FRect  oldGeometry;  // required by move()
+   FRect  oldGeometry;      // required by move()
    FWidget* focus_widget;
 
  private:
@@ -69,6 +69,8 @@ class FDialog : public FWindow
    void     move (int, int);
    void     setWidth (int, bool adjust=true);
    void     setHeight (int, bool adjust=true);
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void     setGeometry (int, int, int, int, bool adjust=true);
    FWidget* getFocusWidget() const;
    void     setFocusWidget (FWidget*);
@@ -97,8 +99,8 @@ class FDialog : public FWindow
    bool     setShadow();
    bool     unsetShadow();
    bool     hasShadow();
-   void     setText (const FString);
    FString  getText() const;
+   void     setText (const FString&);
 };
 #pragma pack(pop)
 
@@ -180,11 +182,12 @@ inline bool FDialog::hasShadow()
 { return ((flags & SHADOW) != 0); }
 
 //----------------------------------------------------------------------
-inline void FDialog::setText (FString txt)
-{ this->tb_text = txt; }
+inline FString FDialog::getText() const
+{ return tb_text; }
 
 //----------------------------------------------------------------------
-inline FString FDialog::getText() const
-{ return this->tb_text; }
+inline void FDialog::setText (const FString& txt)
+{ tb_text = txt; }
+
 
 #endif  // _FDIALOG_H

@@ -42,19 +42,19 @@ class FListBoxItem
 // FListBoxItem inline functions
 //----------------------------------------------------------------------
 inline FString FListBoxItem::getText() const
-{ return this->text; }
+{ return text; }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (FString& txt)
-{ this->text = txt; }
+{ text = txt; }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const std::string& txt)
-{ this->text = txt; }
+{ text = txt; }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const char* txt)
-{ this->text = txt; }
+{ text = txt; }
 
 
 //----------------------------------------------------------------------
@@ -67,13 +67,6 @@ inline void FListBoxItem::setText (const char* txt)
 class FListBox : public FWidget
 {
  private:
-   std::vector<FListBoxItem> data;
-   FScrollbar* VBar;
-   FScrollbar* HBar;
-   FString text;
-   FString inc_search;
-   bool multiSelect;
-   bool mouseSelect;
    enum drag_scroll
    {
      noScroll         = 0,
@@ -82,18 +75,25 @@ class FListBox : public FWidget
      scrollUpSelect   = 3,
      scrollDownSelect = 4
    };
-   int  dragScroll;
-   bool scrollTimer;
-   int  scrollRepeat;
-   int  scrollDistance;
-   int  current;
-   int  last_current;
-   int  secect_from_item;
-   int  xoffset;
-   int  yoffset;
-   int  last_yoffset;
-   int  nf_offset;
-   int  maxLineWidth;
+   std::vector<FListBoxItem> data;
+   FScrollbar* VBar;
+   FScrollbar* HBar;
+   FString     text;
+   FString     inc_search;
+   bool        multiSelect;
+   bool        mouseSelect;
+   int         dragScroll;
+   bool        scrollTimer;
+   int         scrollRepeat;
+   int         scrollDistance;
+   int         current;
+   int         last_current;
+   int         secect_from_item;
+   int         xoffset;
+   int         yoffset;
+   int         last_yoffset;
+   int         nf_offset;
+   int         maxLineWidth;
 
  private:
    FListBox (const FListBox&);
@@ -139,6 +139,8 @@ class FListBox : public FWidget
    void showInsideBrackets(int, fc::brackets_type);
    void showNoBrackets(int);
    bool hasBrackets(int) const;
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool adjust=true);
 
    void setMultiSelection (bool);
@@ -157,12 +159,12 @@ class FListBox : public FWidget
    bool unsetShadow();
    bool hasShadow();
 
-   void insert ( FString,
-                 fc::brackets_type b = fc::NoBrackets,
-                 bool s = false );
-   void insert ( long,
-                 fc::brackets_type b = fc::NoBrackets,
-                 bool s = false );
+   void insert ( FString
+               , fc::brackets_type b = fc::NoBrackets
+               , bool s = false );
+   void insert ( long
+               , fc::brackets_type b = fc::NoBrackets
+               , bool s = false );
    void remove ( int);
    void clear();
 
@@ -211,7 +213,7 @@ inline bool FListBox::hasBrackets(int index) const
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool on)
-{ this->multiSelect = on; }
+{ multiSelect = on; }
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection()
@@ -259,6 +261,6 @@ inline bool FListBox::hasShadow()
 
 //----------------------------------------------------------------------
 inline FString& FListBox::getText()
-{ return this->text; }
+{ return text; }
 
 #endif  // _FLISTBOX_H

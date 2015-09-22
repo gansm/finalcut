@@ -51,6 +51,8 @@ class FMenu : public FWindow, public FMenuList
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
    void       hide();
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool adjust=true);
    FMenuItem* getItem() const;
 

@@ -7,10 +7,27 @@
 
 
 //----------------------------------------------------------------------
+// class FEvent
+//----------------------------------------------------------------------
+
+FEvent::FEvent(int ev_type)  // constructor
+  : t(ev_type)
+{ }
+
+//----------------------------------------------------------------------
+FEvent::~FEvent()  // destructor
+{ }
+
+//----------------------------------------------------------------------
+int FEvent::type() const
+{ return t; }
+
+
+//----------------------------------------------------------------------
 // class FKeyEvent
 //----------------------------------------------------------------------
 
-FKeyEvent::FKeyEvent(int ev_type, int key_num)  // constructor
+FKeyEvent::FKeyEvent (int ev_type, int key_num)  // constructor
   : FEvent(ev_type)
   , k(key_num)
   , accpt(false)
@@ -41,19 +58,20 @@ void FKeyEvent::ignore()
 // class FMouseEvent
 //----------------------------------------------------------------------
 
-FMouseEvent::FMouseEvent ( int ev_type,        // constructor
-                           const FPoint& pos,
-                           int button )
+FMouseEvent::FMouseEvent ( int ev_type         // constructor
+                         , const FPoint& pos
+                         , int button )
   : FEvent(ev_type)
   , p(pos)
+  , g()
   , b(button)
 { }
 
 //----------------------------------------------------------------------
-FMouseEvent::FMouseEvent ( int ev_type,        // constructor
-                           const FPoint& pos,
-                           const FPoint& globalPos,
-                           int button )
+FMouseEvent::FMouseEvent ( int ev_type         // constructor
+                         , const FPoint& pos
+                         , const FPoint& globalPos
+                         , int button )
   : FEvent(ev_type)
   , p(pos)
   , g(globalPos)
@@ -97,19 +115,20 @@ int FMouseEvent::getButton() const
 // class FWheelEvent
 //----------------------------------------------------------------------
 
-FWheelEvent::FWheelEvent ( int ev_type,        // constructor
-                           const FPoint& pos,
-                           int wheel )
+FWheelEvent::FWheelEvent ( int ev_type         // constructor
+                         , const FPoint& pos
+                         , int wheel )
   : FEvent(ev_type)
   , p(pos)
+  , g()
   , w(wheel)
 { }
 
 //----------------------------------------------------------------------
-FWheelEvent::FWheelEvent (int ev_type,        // constructor
-                          const FPoint& pos,
-                          const FPoint& globalPos,
-                          int wheel)
+FWheelEvent::FWheelEvent ( int ev_type         // constructor
+                         , const FPoint& pos
+                         , const FPoint& globalPos
+                         , int wheel )
   : FEvent(ev_type)
   , p(pos)
   , g(globalPos)

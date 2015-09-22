@@ -12,15 +12,37 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FLineEdit::FLineEdit(FWidget* parent) : FWidget(parent)
+FLineEdit::FLineEdit(FWidget* parent)
+  : FWidget(parent)
+  , text("")
+  , label_text("")
+  , label(new FLabel("", parent))
+  , dragScroll(FLineEdit::noScroll)
+  , scrollTimer(false)
+  , scrollRepeat(100)
+  , insert_mode(true)
+  , cursor_pos(0)
+  , offset(0)
+  , label_orientation(FLineEdit::label_left)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FLineEdit::FLineEdit (const FString& txt, FWidget* parent) : FWidget(parent)
+FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , label_text("")
+  , label(new FLabel("", parent))
+  , dragScroll(FLineEdit::noScroll)
+  , scrollTimer(false)
+  , scrollRepeat(100)
+  , insert_mode(true)
+  , cursor_pos(0)
+  , offset(0)
+  , label_orientation(FLineEdit::label_left)
 {
-  this->init();
+  init();
   setText(txt);
 }
 
@@ -43,26 +65,15 @@ FLineEdit::~FLineEdit()  // destructor
 //----------------------------------------------------------------------
 void FLineEdit::init()
 {
-  flags = 0;
-  scrollTimer = false;
-  scrollRepeat = 100;
-  dragScroll = FLineEdit::noScroll;
-  insert_mode = true;
-  cursor_pos = 0;
-  offset = 0;
-  this->text = "";
-  this->label_text = "";
-  this->label = new FLabel(label_text, parentWidget());
   label->setAccelWidget(this);
-  label_orientation = FLineEdit::label_left;
   setVisibleCursor();
 
   if ( hasFocus() )
-    this->flags |= FOCUS;
+    flags |= FOCUS;
 
   if ( isEnabled() )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
 
     if ( hasFocus() )
     {
@@ -133,7 +144,7 @@ void FLineEdit::drawInputField()
   else if ( isActiveFocus )
   {
     setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
-    if ( this->isCygwinTerminal() )  // IBM Codepage 850
+    if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else
       print (fc::RightHalfBlock); // ▐
@@ -141,7 +152,7 @@ void FLineEdit::drawInputField()
   else if ( isActive )
   {
     setColor (wc.inputfield_active_bg, wc.dialog_bg);
-    if ( this->isCygwinTerminal() )  // IBM Codepage 850
+    if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else
       print (fc::RightHalfBlock); // ▐
@@ -149,7 +160,7 @@ void FLineEdit::drawInputField()
   else // isInactive
   {
     setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
-    if ( this->isCygwinTerminal() )  // IBM Codepage 850
+    if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else
       print (fc::RightHalfBlock); // ▐
@@ -296,7 +307,7 @@ bool FLineEdit::setEnable (bool on)
 
   if ( on )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
     if ( hasFocus() )
     {
       foregroundColor = wc.inputfield_active_focus_fg;
@@ -310,7 +321,7 @@ bool FLineEdit::setEnable (bool on)
   }
   else
   {
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
     foregroundColor = wc.inputfield_inactive_fg;
     backgroundColor = wc.inputfield_inactive_bg;
   }
@@ -324,7 +335,7 @@ bool FLineEdit::setFocus (bool on)
 
   if ( on )
   {
-    this->flags |= FOCUS;
+    flags |= FOCUS;
 
     if ( isEnabled() )
     {
@@ -342,7 +353,7 @@ bool FLineEdit::setFocus (bool on)
   }
   else
   {
-    this->flags &= ~FOCUS;
+    flags &= ~FOCUS;
 
     if ( isEnabled() )
     {
@@ -359,9 +370,9 @@ bool FLineEdit::setFocus (bool on)
 bool FLineEdit::setShadow (bool on)
 {
   if ( on )
-    this->flags |= SHADOW;
+    flags |= SHADOW;
   else
-    this->flags &= ~SHADOW;
+    flags &= ~SHADOW;
   return on;
 }
 
@@ -516,10 +527,10 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
     FWidget* focused_widget = getFocusWidget();
     FFocusEvent out (FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
-    this->setFocus();
+    setFocus();
     if ( focused_widget )
       focused_widget->redraw();
-    this->redraw();
+    redraw();
     if ( statusBar() )
       statusBar()->drawMessage();
   }
@@ -667,10 +678,10 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
       FFocusEvent out (FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
-      this->setFocus();
+      setFocus();
       if ( focused_widget )
         focused_widget->redraw();
-      this->redraw();
+      redraw();
       if ( statusBar() )
       {
         statusBar()->drawMessage();
@@ -753,7 +764,7 @@ void FLineEdit::setText (FString txt)
 {
   offset = 0;
   cursor_pos = 0;
-  this->text = txt;
+  text = txt;
 }
 
 //----------------------------------------------------------------------

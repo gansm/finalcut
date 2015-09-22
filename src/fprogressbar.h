@@ -21,7 +21,6 @@ class FProgressbar : public FWidget
    int  BarLength;
 
  private:
-   void init();
    void drawPercentage();
    void drawBar();
 
@@ -38,6 +37,8 @@ class FProgressbar : public FWidget
    int  getPercentage();
    void setPercentage (int);
    void reset();
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool adjust=true);
    bool setEnable (bool);
    bool setEnable();

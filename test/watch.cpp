@@ -26,6 +26,10 @@ class watch : public FDialog
    FSwitch* clock_sw;
    FSwitch* seconds_sw;
 
+ private:
+   watch (const watch&);             // Disabled copy constructor
+   watch& operator = (const watch&); // and operator '='
+
  public:
    explicit watch (FWidget* parent=0);  // constructor
   ~watch();  // destructor
@@ -42,7 +46,13 @@ class watch : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-watch::watch (FWidget* parent) : FDialog(parent)
+watch::watch (FWidget* parent)
+  : FDialog(parent)
+  , sec(true)
+  , time_label(0)
+  , time_str(0)
+  , clock_sw(0)
+  , seconds_sw(0)
 {
   setText ("Watch");
   setShadow();
@@ -131,11 +141,11 @@ void watch::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void watch::onClose (FCloseEvent* ev)
 {
-  int ret = FMessageBox::info ( this, "Quit",
-                                "Do you really want\n"
-                                "to quit the program ?",
-                                FMessageBox::Yes,
-                                FMessageBox::No );
+  int ret = FMessageBox::info ( this, "Quit"
+                              , "Do you really want\n"
+                                "to quit the program ?"
+                              , FMessageBox::Yes
+                              , FMessageBox::No );
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else

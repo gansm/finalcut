@@ -23,7 +23,6 @@ class FSwitch : public FToggleButton
  private:
    FSwitch (const FSwitch&);
    FSwitch& operator = (const FSwitch&);
-   void init();
    void draw();
    void drawCheckButton();
 

@@ -11,9 +11,17 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FTextView::FTextView(FWidget* parent) : FWidget(parent)
+FTextView::FTextView(FWidget* parent)
+  : FWidget(parent)
+  , data()
+  , VBar(0)
+  , HBar(0)
+  , xoffset(0)
+  , yoffset(0)
+  , nf_offset(0)
+  , maxLineWidth(0)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -27,9 +35,6 @@ FTextView::~FTextView()  // destructor
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  xoffset = 0;
-  yoffset = 0;
-  maxLineWidth = 0;
   nf_offset = isNewFont() ? 1 : 0;
 
   foregroundColor = wc.dialog_fg;
@@ -107,8 +112,8 @@ void FTextView::drawText()
   {
     gotoxy (xpos+xmin, ypos+ymin-nf_offset+int(y));
     uInt i;
-    FString line = data[y+uInt(yoffset)].mid ( uInt(1+xoffset),
-                                               uInt(width-nf_offset-2) );
+    FString line = data[y+uInt(yoffset)].mid ( uInt(1+xoffset)
+                                             , uInt(width-nf_offset-2) );
     const wchar_t* line_str = line.wc_str();
     uInt len = line.getLength();
 
@@ -277,7 +282,7 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     FWidget* focused_widget = getFocusWidget();
     FFocusEvent out (FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
-    this->setFocus();
+    setFocus();
     if ( focused_widget )
       focused_widget->redraw();
     if ( statusBar() )

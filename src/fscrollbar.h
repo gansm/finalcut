@@ -81,6 +81,8 @@ class FScrollbar : public FWidget
    void setPageSize (int, int);
    void calculateSliderValues();
    void setOrientation (int);
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool adjust=true);
    void drawButtons();
    void drawBar();

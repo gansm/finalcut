@@ -13,12 +13,19 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FToggleButton::FToggleButton(FWidget* parent) : FWidget(parent)
+FToggleButton::FToggleButton(FWidget* parent)
+  : FWidget(parent)
+  , focus_inside_group(true)
+  , text()
+  , checked(false)
+  , label_offset_pos(0)
+  , button_width(0)
+  , button_group(0)
 {
-  this->init();
+  init();
 
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && strcmp ( parent->getClassName()
+                        , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
     group()->insert(this);  // insert into button group
@@ -26,14 +33,20 @@ FToggleButton::FToggleButton(FWidget* parent) : FWidget(parent)
 }
 
 //----------------------------------------------------------------------
-FToggleButton::FToggleButton ( const FString& txt,
-                               FWidget* parent ) : FWidget(parent)
+FToggleButton::FToggleButton ( const FString& txt, FWidget* parent )
+  : FWidget(parent)
+  , focus_inside_group(true)
+  , text()
+  , checked(false)
+  , label_offset_pos(0)
+  , button_width(0)
+  , button_group(0)
 {
-  this->init();
+  init();
   setText(txt);
 
-  if ( parent && strcmp ( parent->getClassName(),
-                          const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && strcmp ( parent->getClassName()
+                        , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
     group()->insert( this );  // insert into button group
@@ -55,22 +68,14 @@ FToggleButton::~FToggleButton()  // destructor
 //----------------------------------------------------------------------
 void FToggleButton::init()
 {
-  flags = 0;
-  checked = false;
-  focus_inside_group = true;
-  label_offset_pos = 0;
-  button_group = 0;
-  button_width = 0;
-  this->text = "";
-
   setGeometry (1, 1, 4, 1, false);  // initialize geometry values
 
   if ( hasFocus() )
-    this->flags = FOCUS;
+    flags = FOCUS;
 
   if ( isEnabled() )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
 
     if ( hasFocus() )
     {
@@ -185,7 +190,7 @@ void FToggleButton::drawLabel()
   hotkeypos = -1;
 
   LabelText = new wchar_t[length+1];
-  txt = this->text;
+  txt = text;
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);
   isActive = ((flags & ACTIVE) != 0);
@@ -252,15 +257,15 @@ FButtonGroup* FToggleButton::group() const
 //----------------------------------------------------------------------
 bool FToggleButton::isRadioButton() const
 {
-  return ( strcmp (getClassName(),
-                   const_cast<char*>("FRadioButton") ) == 0 );
+  return ( strcmp ( getClassName()
+                  , const_cast<char*>("FRadioButton") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FToggleButton::isCheckboxButton() const
 {
-  return ( strcmp (getClassName(),
-                   const_cast<char*>("FCheckBox") ) == 0 );
+  return ( strcmp ( getClassName()
+                  , const_cast<char*>("FCheckBox") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -356,9 +361,9 @@ void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 bool FToggleButton::setNoUnderline(bool on)
 {
   if ( on )
-    this->flags |= NO_UNDERLINE;
+    flags |= NO_UNDERLINE;
   else
-    this->flags &= ~NO_UNDERLINE;
+    flags &= ~NO_UNDERLINE;
   return on;
 }
 
@@ -369,7 +374,7 @@ bool FToggleButton::setEnable(bool on)
 
   if ( on )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
     setHotkeyAccelerator();
     if ( hasFocus() )
     {
@@ -384,7 +389,7 @@ bool FToggleButton::setEnable(bool on)
   }
   else
   {
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
     delAccelerator (this);
     foregroundColor = wc.toggle_button_inactive_fg;
     backgroundColor = wc.toggle_button_inactive_bg;
@@ -399,7 +404,7 @@ bool FToggleButton::setFocus(bool on)
 
   if ( on )
   {
-    this->flags |= FOCUS;
+    flags |= FOCUS;
 
     if ( isEnabled() )
     {
@@ -423,7 +428,7 @@ bool FToggleButton::setFocus(bool on)
   }
   else
   {
-    this->flags &= ~FOCUS;
+    flags &= ~FOCUS;
 
     if ( isEnabled() )
     {
@@ -483,7 +488,7 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
       checked = not checked;
       processToggle();
     }
-    this->redraw();
+    redraw();
     processClick();
   }
 }
@@ -516,7 +521,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
       checked = not checked;
       processToggle();
     }
-    this->redraw();
+    redraw();
     if ( statusBar() )
     {
       statusBar()->drawMessage();
@@ -599,7 +604,7 @@ bool FToggleButton::setChecked(bool on)
 //----------------------------------------------------------------------
 void FToggleButton::setText (FString txt)
 {
-  this->text = txt;
+  text = txt;
   setWidth(button_width + int(text.getLength()));
   if ( isEnabled() )
   {

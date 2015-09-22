@@ -10,34 +10,30 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FSwitch::FSwitch(FWidget* parent) : FToggleButton(parent)
+FSwitch::FSwitch(FWidget* parent)
+  : FToggleButton(parent)
+  , switch_offset_pos(0)
+  , button_pressed(false)
 {
-  switch_offset_pos = 0;
-  init();
+  button_width = 11;
 }
 
 //----------------------------------------------------------------------
-FSwitch::FSwitch ( const FString& txt,
-                         FWidget* parent ) : FToggleButton(txt, parent)
+FSwitch::FSwitch ( const FString& txt, FWidget* parent )
+  : FToggleButton(txt, parent)
+  , switch_offset_pos(0)
+  , button_pressed(false)
 {
   switch_offset_pos = int(txt.getLength()) + 1;
-  init();
+  button_width = 11;
 }
 
 //----------------------------------------------------------------------
 FSwitch::~FSwitch()  // destructor
-{
-}
+{ }
 
 
 // private methods of FSwitch
-//----------------------------------------------------------------------
-void FSwitch::init()
-{
-  button_width = 11;
-  button_pressed = false;
-}
-
 //----------------------------------------------------------------------
 void FSwitch::draw()
 {

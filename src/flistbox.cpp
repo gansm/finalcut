@@ -15,39 +15,35 @@
 // constructor and destructor
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem()
-{
-  this->selected = false;
-  this->brackets = fc::NoBrackets;
-}
+  : text()
+  , brackets(fc::NoBrackets)
+  , selected(false)
+{ }
 
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (FString& txt)
-{
-  this->selected = false;
-  this->brackets = fc::NoBrackets;
-  setText(txt);
-}
+  : text(txt)
+  , brackets(fc::NoBrackets)
+  , selected(false)
+{ }
 
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const std::string& txt)
-{
-  this->selected = false;
-  this->brackets = fc::NoBrackets;
-  setText(txt);
-}
+  : text(txt)
+  , brackets(fc::NoBrackets)
+  , selected(false)
+{ }
 
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (const char* txt)
-{
-  this->selected = false;
-  this->brackets = fc::NoBrackets;
-  setText(txt);
-}
+  : text(txt)
+  , brackets(fc::NoBrackets)
+  , selected(false)
+{ }
 
 //----------------------------------------------------------------------
 FListBoxItem::~FListBoxItem()
-{
-}
+{ }
 
 
 //----------------------------------------------------------------------
@@ -56,9 +52,29 @@ FListBoxItem::~FListBoxItem()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListBox::FListBox(FWidget* parent) : FWidget(parent)
+FListBox::FListBox(FWidget* parent)
+  : FWidget(parent)
+  , data()
+  , VBar(0)
+  , HBar(0)
+  , text()
+  , inc_search()
+  , multiSelect(false)
+  , mouseSelect(false)
+  , dragScroll(FListBox::noScroll)
+  , scrollTimer(false)
+  , scrollRepeat(100)
+  , scrollDistance(1)
+  , current(0)
+  , last_current(-1)
+  , secect_from_item(-1)
+  , xoffset(0)
+  , yoffset(0)
+  , last_yoffset(-1)
+  , nf_offset(0)
+  , maxLineWidth(0)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -74,26 +90,12 @@ FListBox::~FListBox()  // destructor
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  multiSelect = false;
-  mouseSelect = false;
-  dragScroll = FListBox::noScroll;
-  scrollDistance = 1;
-  scrollTimer = false;
-  scrollRepeat = 100;
-  flags = 0;
-  current = 0;
-  last_current = -1;
-  xoffset = 0;
-  yoffset = 0;
-  last_yoffset = -1;
-  maxLineWidth = 0;
-  text = "";
-  nf_offset = isNewFont() ? 1 : 0;
-
   if ( hasFocus() )
-    this->flags = FOCUS;
+    flags = FOCUS;
   if ( isEnabled() )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
+
+  nf_offset = isNewFont() ? 1 : 0;
 
   foregroundColor = wc.dialog_fg;
   backgroundColor = wc.dialog_bg;
@@ -188,7 +190,7 @@ void FListBox::drawLabel()
   if ( Encoding == fc::VT100 )
     unsetVT100altChar();
 
-  txt = " " + this->text + " ";
+  txt = " " + text + " ";
   length = txt.getLength();
   gotoxy (xpos+xmin, ypos+ymin-1);
 
@@ -266,8 +268,8 @@ void FListBox::drawList()
         if ( isMonochron() )
           setBold();
         else
-          setColor ( wc.selected_current_element_fg,
-                     wc.selected_current_element_bg );
+          setColor ( wc.selected_current_element_fg
+                   , wc.selected_current_element_bg );
       }
       else
       {
@@ -275,22 +277,22 @@ void FListBox::drawList()
           unsetBold();
         else if ( isFocus )
         {
-          setColor ( wc.current_element_focus_fg,
-                     wc.current_element_focus_bg );
+          setColor ( wc.current_element_focus_fg
+                   , wc.current_element_focus_bg );
           if ( inc_len > 0 )
           {
             serach_mark = true;
             int b = ( lineHasBrackets ) ? 1: 0;
-            setCursorPos ( xpos+xmin+int(inc_len)+b,
-                           ypos+ymin+int(y) ); // last found character
+            setCursorPos ( xpos+xmin+int(inc_len)+b
+                         , ypos+ymin+int(y) ); // last found character
           }
           else
-            setCursorPos ( xpos+xmin+1,
-                           ypos+ymin+int(y) ); // first character
+            setCursorPos ( xpos+xmin+1
+                         , ypos+ymin+int(y) ); // first character
         }
         else
-          setColor ( wc.current_element_fg,
-                     wc.current_element_bg );
+          setColor ( wc.current_element_fg
+                   , wc.current_element_bg );
       }
       if ( isMonochron() )
         setReverse(true);
@@ -332,32 +334,32 @@ void FListBox::drawList()
             break;
         }
         element = data[y+uInt(yoffset)].getText()
-                                       .mid ( uInt(1+xoffset),
-                                              uInt(width-nf_offset-5) );
+                                       .mid ( uInt(1+xoffset)
+                                            , uInt(width-nf_offset-5) );
       }
       else
         element = data[y+uInt(yoffset)].getText()
-                                       .mid( uInt(xoffset),
-                                             uInt(width-nf_offset-4) );
+                                       .mid ( uInt(xoffset)
+                                            ,  uInt(width-nf_offset-4) );
       element_str = element.wc_str();
       len = element.getLength();
 
       for (; i < len; i++)
       {
         if ( serach_mark && i == 0 )
-          setColor ( wc.current_inc_search_element_fg,
-                     wc.current_element_focus_bg );
+          setColor ( wc.current_inc_search_element_fg
+                   , wc.current_element_focus_bg );
         if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg,
-                     wc.current_element_focus_bg );
+          setColor ( wc.current_element_focus_fg
+                   , wc.current_element_focus_bg );
         print (element_str[i]);
       }
       full_length = int(data[y+uInt(yoffset)].getText().getLength());
       if ( b+i < uInt(width-nf_offset-4) && xoffset <= full_length+1 )
       {
         if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg,
-                     wc.current_element_focus_bg );
+          setColor ( wc.current_element_focus_fg
+                   , wc.current_element_focus_bg );
         switch ( data[y+uInt(yoffset)].brackets )
         {
           case fc::NoBrackets:
@@ -396,13 +398,13 @@ void FListBox::drawList()
       len = element.getLength();
 
       if ( serach_mark )
-        setColor ( wc.current_inc_search_element_fg,
-                   wc.current_element_focus_bg );
+        setColor ( wc.current_inc_search_element_fg
+                 , wc.current_element_focus_bg );
       for (i=0; i < len; i++)
       {
         if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg,
-                     wc.current_element_focus_bg );
+          setColor ( wc.current_element_focus_fg
+                   , wc.current_element_focus_bg );
 
         print (element_str[i]);
       }
@@ -546,8 +548,8 @@ void FListBox::hide()
 }
 
 //----------------------------------------------------------------------
-void FListBox::showInsideBrackets ( int index,
-                                    fc::brackets_type b )
+void FListBox::showInsideBrackets ( int index
+                                  , fc::brackets_type b )
 {
   data[uInt(index-1)].brackets = b;
 
@@ -592,9 +594,9 @@ bool FListBox::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
   else
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
   return on;
 }
 
@@ -605,7 +607,7 @@ bool FListBox::setFocus (bool on)
 
   if ( on )
   {
-    this->flags |= FOCUS;
+    flags |= FOCUS;
 
     if ( statusBar() )
     {
@@ -617,7 +619,7 @@ bool FListBox::setFocus (bool on)
   }
   else
   {
-    this->flags &= ~FOCUS;
+    flags &= ~FOCUS;
 
     if ( statusBar() )
       statusBar()->clearMessage();
@@ -629,9 +631,9 @@ bool FListBox::setFocus (bool on)
 bool FListBox::setShadow (bool on)
 {
   if ( on )
-    this->flags |= SHADOW;
+    flags |= SHADOW;
   else
-    this->flags &= ~SHADOW;
+    flags &= ~SHADOW;
   return on;
 }
 
@@ -907,7 +909,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     FWidget* focused_widget = getFocusWidget();
     FFocusEvent out (FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
-    this->setFocus();
+    setFocus();
     if ( focused_widget )
       focused_widget->redraw();
     if ( statusBar() )
@@ -1471,9 +1473,9 @@ void FListBox::cb_HBarChange (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert ( FString item,
-                        fc::brackets_type b,
-                        bool s )
+void FListBox::insert ( FString item
+                      , fc::brackets_type b
+                      , bool s )
 {
   int len, element_count;
 
@@ -1507,9 +1509,9 @@ void FListBox::insert ( FString item,
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert ( long item,
-                        fc::brackets_type b,
-                        bool s )
+void FListBox::insert ( long item
+                      , fc::brackets_type b
+                      , bool s )
 {
   insert (FString().setNumber(item), b, s);
 }
@@ -1594,5 +1596,5 @@ void FListBox::clear()
 //----------------------------------------------------------------------
 void FListBox::setText (FString txt)
 {
-  this->text = txt;
+  text = txt;
 }

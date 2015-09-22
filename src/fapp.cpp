@@ -28,6 +28,22 @@ std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FApplication::FApplication (int &_argc, char* _argv[])
+  : app_argc(0)
+  , app_argv(0)
+  , key(0)
+#ifdef F_HAVE_LIBGPM
+  , gpm_ev()
+  , gpmMouseEvent(false)
+#endif
+  , b_state()
+  , fifo_offset(0)
+  , fifo_in_use(false)
+  , fifo_buf_size(sizeof(fifo_buf))
+  , key_timeout(100000)  // 100 ms
+  , dblclick_interval(500000)  // 500 ms
+  , time_keypressed()
+  , time_mousepressed()
+  , newMousePosition()
 {
   assert ( ! rootObj
          && "FApplication: There should be only one application object" );
@@ -63,19 +79,12 @@ void FApplication::init (int _argc, char* _argv[])
   app_argv = _argv;
 
   // init keyboard values
-  key = 0;
-  key_timeout = 100000;  // 100 ms
-  dblclick_interval = 500000;  // 500 ms
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
   time_mousepressed.tv_sec = 0;
   time_mousepressed.tv_usec = 0;
-  fifo_offset = 0;
-  fifo_in_use = false;
-  fifo_buf_size = sizeof(fifo_buf);
   x11_button_state = 0x23;
 #ifdef F_HAVE_LIBGPM
-  gpmMouseEvent = false;
   gpm_ev.x = -1;
 #endif
   zero_point = new FPoint(0,0);
@@ -106,8 +115,8 @@ void FApplication::cmd_options ()
       {0,          0,                 0,  0 }
     };
     opterr = 0;
-    c = getopt_long ( app_argc, app_argv, "",
-                      long_options, &idx );
+    c = getopt_long ( app_argc, app_argv, ""
+                    , long_options, &idx );
     if ( c == -1 )
       break;
     if ( c == 0 )
@@ -267,7 +276,7 @@ void FApplication::processKeyboardEvent()
         if ( key != NEED_MORE_DATA )
         {
           if ( key == 0x0c )  // Ctrl-L (redraw the screen)
-            this->redraw();
+            redraw();
 
           if ( key == fc::Fkey_mouse )
           {

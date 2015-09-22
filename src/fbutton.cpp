@@ -12,16 +12,40 @@
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FButton::FButton(FWidget* parent) : FWidget(parent)
+FButton::FButton(FWidget* parent)
+  : FWidget(parent)
+  , text()
+  , button_down(false)
+  , click_animation(true)
+  , click_time(150)
+  , button_fg(wc.button_active_fg)
+  , button_bg(wc.button_active_bg)
+  , button_hotkey_fg(wc.button_hotkey_fg)
+  , button_focus_fg(wc.button_active_focus_fg)
+  , button_focus_bg(wc.button_active_focus_bg)
+  , button_inactive_fg(wc.button_inactive_fg)
+  , button_inactive_bg(wc.button_inactive_bg)
 {
-  this->init();
+  init();
 }
 
 //----------------------------------------------------------------------
-FButton::FButton (const FString& txt, FWidget* parent) : FWidget(parent)
+FButton::FButton (const FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , button_down(false)
+  , click_animation(true)
+  , click_time(150)
+  , button_fg(wc.button_active_fg)
+  , button_bg(wc.button_active_bg)
+  , button_hotkey_fg(wc.button_hotkey_fg)
+  , button_focus_fg(wc.button_active_focus_fg)
+  , button_focus_bg(wc.button_active_focus_bg)
+  , button_inactive_fg(wc.button_inactive_fg)
+  , button_inactive_bg(wc.button_inactive_bg)
 {
-  this->init();
-  setText(txt);
+  init();
+  detectHotkey();
 }
 
 //----------------------------------------------------------------------
@@ -36,27 +60,14 @@ FButton::~FButton()  // destructor
 //----------------------------------------------------------------------
 void FButton::init()
 {
-  flags = 0;
-  button_down = false;
-  click_animation = true;
-  click_time = 150;
-  this->text = "";
-
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
-  setHotkeyForegroundColor (wc.button_hotkey_fg);
-  setFocusForegroundColor (wc.button_active_focus_fg);
-  setFocusBackgroundColor (wc.button_active_focus_bg);
-  setInactiveForegroundColor (wc.button_inactive_fg);
-  setInactiveBackgroundColor (wc.button_inactive_bg);
 
   if ( hasFocus() )
-    this->flags = FOCUS;
+    flags = FOCUS;
 
   if ( isEnabled() )
-    this->flags |= ACTIVE;
-
-  updateButtonColor();
+    flags |= ACTIVE;
 }
 
 //----------------------------------------------------------------------
@@ -96,6 +107,16 @@ void FButton::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
+void FButton::detectHotkey()
+{
+  if ( isEnabled() )
+  {
+    delAccelerator (this);
+    setHotkeyAccelerator();
+  }
+}
+
+//----------------------------------------------------------------------
 void FButton::draw()
 {
   register wchar_t* src;
@@ -120,7 +141,7 @@ void FButton::draw()
   else
     ButtonText = new wchar_t[length+1];
 
-  txt  = this->text;
+  txt  = text;
   src  = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(ButtonText);
 
@@ -207,7 +228,7 @@ void FButton::draw()
     for (int y=1; y <= height; y++)
     {
        // Cygwin terminal use IBM Codepage 850
-      if ( this->isCygwinTerminal() )
+      if ( isCygwinTerminal() )
         print (fc::FullBlock); // █
       else
         print (fc::RightHalfBlock); // ▐
@@ -439,9 +460,9 @@ void FButton::hide()
 bool FButton::setNoUnderline (bool on)
 {
   if ( on )
-    this->flags |= NO_UNDERLINE;
+    flags |= NO_UNDERLINE;
   else
-    this->flags &= ~NO_UNDERLINE;
+    flags &= ~NO_UNDERLINE;
   return on;
 }
 
@@ -452,12 +473,12 @@ bool FButton::setEnable (bool on)
 
   if ( on )
   {
-    this->flags |= ACTIVE;
+    flags |= ACTIVE;
     setHotkeyAccelerator();
   }
   else
   {
-    this->flags &= ~ACTIVE;
+    flags &= ~ACTIVE;
     delAccelerator (this);
   }
   updateButtonColor();
@@ -471,7 +492,7 @@ bool FButton::setFocus (bool on)
 
   if ( on )
   {
-    this->flags |= FOCUS;
+    flags |= FOCUS;
 
     if ( isEnabled() )
     {
@@ -486,7 +507,7 @@ bool FButton::setFocus (bool on)
   }
   else
   {
-    this->flags &= ~FOCUS;
+    flags &= ~FOCUS;
 
     if ( isEnabled() && statusBar() )
       statusBar()->clearMessage();
@@ -499,9 +520,9 @@ bool FButton::setFocus (bool on)
 bool FButton::setFlat (bool on)
 {
   if ( on )
-    this->flags |= FLAT;
+    flags |= FLAT;
   else
-    this->flags &= ~FLAT;
+    flags &= ~FLAT;
   return on;
 }
 
@@ -509,9 +530,9 @@ bool FButton::setFlat (bool on)
 bool FButton::setShadow (bool on)
 {
   if ( on && Encoding != fc::VT100 && Encoding != fc::ASCII )
-    this->flags |= SHADOW;
+    flags |= SHADOW;
   else
-    this->flags &= ~SHADOW;
+    flags &= ~SHADOW;
   return on;
 }
 
@@ -569,7 +590,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
     FWidget* focused_widget = getFocusWidget();
     FFocusEvent out (FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
-    this->setFocus();
+    setFocus();
     if ( focused_widget )
       focused_widget->redraw();
     if ( statusBar() )
@@ -667,10 +688,6 @@ void FButton::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FButton::setText (const FString& txt)
 {
-  this->text = txt;
-  if ( isEnabled() )
-  {
-    delAccelerator (this);
-    setHotkeyAccelerator();
-  }
+  text = txt;
+  detectHotkey();
 }

@@ -64,52 +64,54 @@ class FFileDialog : public FDialog
    bool       show_hidden;
 
  private:
-   void init();
-   static char* getHomeDir();
-   virtual void draw();
-   inline bool pattern_match (const char*, const char*);
-   void clear();
-   int numOfDirs();
-   int changeDir (const FString&);
-   void printPath (const FString&);
-   void cb_processActivate (FWidget*, void*);
-   void cb_processRowChanged (FWidget*, void*);
-   void cb_processClicked (FWidget*, void*);
-   void cb_processCancel (FWidget*, void*);
-   void cb_processOpen (FWidget*, void*);
-   void cb_processShowHidden (FWidget*, void*);
+   void          init();
+   static char*  getHomeDir();
+   virtual void  draw();
+   inline bool   pattern_match (const char*, const char*);
+   void          clear();
+   int           numOfDirs();
+   int           changeDir (const FString&);
+   void          printPath (const FString&);
+   void          cb_processActivate (FWidget*, void*);
+   void          cb_processRowChanged (FWidget*, void*);
+   void          cb_processClicked (FWidget*, void*);
+   void          cb_processCancel (FWidget*, void*);
+   void          cb_processOpen (FWidget*, void*);
+   void          cb_processShowHidden (FWidget*, void*);
 
  protected:
    void adjustSize();
 
  public:
    explicit FFileDialog (FWidget* parent=0);
-   FFileDialog (const FString&,
-                const FString&,
-                DialogType type = FFileDialog::Open,
-                FWidget* parent=0);
+   FFileDialog (const FFileDialog&);       // copy constructor
+   FFileDialog ( const FString&
+               , const FString&
+               , DialogType type = FFileDialog::Open
+               , FWidget* parent=0 );
   ~FFileDialog();
-   const char* getClassName() const;
+   FFileDialog& operator = (const FFileDialog&); // assignment
+   const char*   getClassName() const;
 
-   void onKeyPress (FKeyEvent*);
+   void          onKeyPress (FKeyEvent*);
 
    const FString getPath() const;
-   void setPath (const FString&);
+   void          setPath (const FString&);
    const FString getFilter() const;
-   void setFilter (const FString&);
+   void          setFilter (const FString&);
    const FString getSelectedFile() const;
-   int readDir();
-   bool setShowHiddenFiles(bool);
-   bool setShowHiddenFiles();
-   bool unsetShowHiddenFiles();
-   bool getShowHiddenFiles();
+   int           readDir();
+   bool          setShowHiddenFiles(bool);
+   bool          setShowHiddenFiles();
+   bool          unsetShowHiddenFiles();
+   bool          getShowHiddenFiles();
 
-   static FString fileOpenChooser (FWidget*,
-                                   const FString& = FString(),
-                                   const FString& = FString());
-   static FString fileSaveChooser (FWidget*,
-                                   const FString& = FString(),
-                                   const FString& = FString());
+   static FString fileOpenChooser ( FWidget*
+                                  , const FString& = FString()
+                                  , const FString& = FString() );
+   static FString fileSaveChooser ( FWidget*
+                                  , const FString& = FString()
+                                  , const FString& = FString() );
 };
 #pragma pack(pop)
 
