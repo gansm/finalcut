@@ -2000,7 +2000,7 @@ FString FString::expandTabs (uInt tabstop) const
   uLong last;
   std::vector<FString> tab_split;
   FString instr(string);
-  FString outstr("");
+  FString outstr;
 
   tab_split = instr.split("\t");
   last = tab_split.size();
