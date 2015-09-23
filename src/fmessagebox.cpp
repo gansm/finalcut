@@ -293,11 +293,11 @@ void FMessageBox::adjustButtons()
       btn_width += button[n]->getWidth() + gap;
   }
 
-  if ( btn_width > width-5 )
+  if ( btn_width >= width-4 )
   {
     setWidth(btn_width + 5);
     int max_width = getRootWidget()->getClientWidth();
-    setX(int((max_width-width)/2));
+    setX(int((max_width-width) / 2));
   }
 
   int btn_x = int((width-btn_width) / 2);

@@ -65,7 +65,7 @@ void Mandelbrot::draw()
   dX = (x_max - x_min) / (Cols - 1);
   dY = (y_max - y_min) / Lines;
 
-  for (y0=y_min; y0 < y_max && current_line-1 < Lines; y0+=dY)
+  for (y0=y_min; y0 < y_max && current_line <= Lines; y0+=dY)
   {
     gotoxy (xoffset, yoffset+current_line);
 

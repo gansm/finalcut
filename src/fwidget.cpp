@@ -1854,7 +1854,7 @@ void FWidget::drawShadow()
         print (ch.code);
       }
       setColor (wc.shadow_bg, wc.shadow_fg);
-      for (int i=2; i < width+2 && x1+i <= xmax; i++)
+      for (int i=2; i <= width+1 && x1+i <= xmax; i++)
       {
         ch = getCoveredCharacter (x1+i, y2+1, this);
         if (  ch.code == fc::LowerHalfBlock
@@ -1997,7 +1997,7 @@ void FWidget::clearFlatBorder()
   y2 = ypos+ymin-1+height;
 
   setColor (wc.dialog_fg, wc.dialog_bg);
-  for (register int y=0; y <= height-1; y++)
+  for (register int y=0; y < height; y++)
   {
     gotoxy (x1-1, y1+y+1);
     print (' '); // clear on left side
@@ -2108,7 +2108,7 @@ void FWidget::drawBorder()
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
     print (fc::NF_border_corner_middle_upper_right); // ┐
-    for (int y=y1+1; y < y2+1; y++)
+    for (int y=y1+1; y <= y2; y++)
     {
       gotoxy (x1, y);
       print (fc::NF_border_line_left); // border left ⎸

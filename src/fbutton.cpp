@@ -212,7 +212,7 @@ void FButton::draw()
     if ( margin == 1 )
     {
       setColor (foregroundColor, button_bg);
-      for (int y=0; y <= height-1; y++)
+      for (int y=0; y < height; y++)
       {
         gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
         print (space); // full block █
@@ -310,13 +310,13 @@ void FButton::draw()
     for (i=0; i < j; i++)
     {
       gotoxy (xpos+xmin+d, ypos+ymin-1+i);
-      for (int z=1; z <= width-1; z++)
+      for (int z=1; z < width; z++)
         print (space); // █
     }
     for (i=j+1; i < height; i++)
     {
       gotoxy (xpos+xmin+d, ypos+ymin-1+i);
-      for (int z=1; z <= width-1; z++)
+      for (int z=1; z < width; z++)
         print (space); // █
     }
   }

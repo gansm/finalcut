@@ -226,7 +226,7 @@ void FDialog::drawTitleBar()
   print (tb_text);
 
   // fill the rest of the bar
-  for (; x+1+int(length) <= width-2; x++)
+  for (; x+1+int(length) < width-1; x++)
     print (' ');
 
   if ( isMonochron() )
@@ -495,8 +495,8 @@ void FDialog::onMouseUp (FMouseEvent* ev)
   if ( ev->getButton() == LeftButton )
   {
     if (  ! TitleBarClickPos.isNull()
-       && titlebar_x >= xpos+xmin+3
-       && titlebar_x <= xpos+xmin-1+width
+       && titlebar_x > xpos+xmin+2
+       && titlebar_x < xpos+xmin+width
        && titlebar_y == ypos+ymin-1 )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());

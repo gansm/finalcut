@@ -608,7 +608,7 @@ void FStatusBar::drawMessage()
       }
     }
   }
-  for (int i=x; i < termWidth+1; i++)
+  for (int i=x; i <= termWidth; i++)
     print (vstatusbar, ' ');
   if ( isMonochron() )
     setReverse(false);

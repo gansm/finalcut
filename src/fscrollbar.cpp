@@ -389,7 +389,7 @@ void FScrollbar::onTimer (FTimerEvent*)
   if (  (  scrollType == scrollPageBackward
         && SliderPos < SliderClickStopPos )
      || (  scrollType == scrollPageForward
-        && SliderPos+SliderLength-1 >= SliderClickStopPos ) )
+        && SliderPos+SliderLength > SliderClickStopPos ) )
   {
     delAllTimer();
     return;

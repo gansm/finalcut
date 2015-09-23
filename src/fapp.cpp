@@ -115,10 +115,14 @@ void FApplication::cmd_options ()
       {0,          0,                 0,  0 }
     };
     opterr = 0;
-    c = getopt_long ( app_argc, app_argv, ""
-                    , long_options, &idx );
+    c = getopt_long ( app_argc
+                    , app_argv
+                    , ""
+                    , long_options
+                    , &idx );
     if ( c == -1 )
       break;
+
     if ( c == 0 )
     {
       if ( strcmp(long_options[idx].name, "encoding") == 0 )
@@ -256,7 +260,7 @@ void FApplication::processKeyboardEvent()
 
     while ( (bytesread = readKey()) > 0 )
     {
-      if ( bytesread+fifo_offset-1 < fifo_buf_size )
+      if ( bytesread + fifo_offset <= fifo_buf_size )
       {
         for (int i=0; i < bytesread; i++)
         {

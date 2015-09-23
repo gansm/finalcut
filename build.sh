@@ -4,7 +4,7 @@ PREFIX="/usr"
 
 case "$1" in
   "--help"|"help")
-    echo "Usage: $0 {help|debug|profile|gcov|release}"
+    echo "Usage: $0 {help|debug|fulldebug|profile|gcov|release}"
     exit 1
     ;;
   "--debug"|"debug")

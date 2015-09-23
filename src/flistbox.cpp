@@ -231,8 +231,8 @@ void FListBox::drawList()
      && last_current != current )
   {
     // speed up: redraw only the changed rows
-    uInt last_pos = uInt(current)-uInt(yoffset)-1;
-    uInt current_pos = uInt(last_current)-uInt(yoffset)-1;
+    uInt last_pos = uInt(current - yoffset) - 1;
+    uInt current_pos = uInt(last_current - yoffset) - 1;
     start = std::min(last_pos, current_pos);
     end = std::max(last_pos, current_pos)+1;
   }
@@ -242,9 +242,9 @@ void FListBox::drawList()
   {
     gotoxy (xpos+xmin, ypos+ymin+int(y));
     bool serach_mark = false;
-    bool lineHasBrackets = hasBrackets(int(y)+yoffset+1);
-    bool isLineSelected = isSelected(int(y)+yoffset+1);
-    bool isCurrentLine = bool(uInt(y)+uInt(yoffset)+1 == uInt(current));
+    bool lineHasBrackets = hasBrackets(int(y) + yoffset + 1);
+    bool isLineSelected = isSelected(int(y) + yoffset + 1);
+    bool isCurrentLine = bool(uInt(y) + uInt(yoffset) + 1 == uInt(current));
 
     if ( isLineSelected )
     {
@@ -462,7 +462,7 @@ void FListBox::adjustYOffset()
     yoffset = 0;
   if ( current < yoffset )
     current = yoffset;
-  if ( current > yoffset+height-2 )
+  if ( current >= yoffset + height - 1 )
     yoffset = current - height + 2;
 }
 
@@ -475,24 +475,24 @@ void FListBox::adjustSize()
   FWidget::adjustSize();
 
   element_count = int(count());
-  VBar->setMaximum(element_count-height+2);
-  VBar->setPageSize(element_count, height-2);
+  VBar->setMaximum(element_count - height + 2);
+  VBar->setPageSize(element_count, height - 2);
   VBar->setX(width);
   VBar->setHeight (height-2, false);
   VBar->resize();
 
-  HBar->setMaximum(maxLineWidth-width+nf_offset+4);
-  HBar->setPageSize(maxLineWidth, width-nf_offset-4);
+  HBar->setMaximum(maxLineWidth - width + nf_offset + 4);
+  HBar->setPageSize(maxLineWidth, width - nf_offset - 4);
   HBar->setY(height);
   HBar->setWidth (width-2, false);
   HBar->resize();
 
-  if ( element_count <= height-2 )
+  if ( element_count < height - 1 )
     VBar->hide();
   else
     VBar->setVisible();
 
-  if ( maxLineWidth <= width-nf_offset-4 )
+  if ( maxLineWidth < width - nf_offset - 3 )
     HBar->hide();
   else
     HBar->setVisible();
@@ -560,10 +560,10 @@ void FListBox::showInsideBrackets ( int index
     if ( len > maxLineWidth )
     {
       maxLineWidth = len;
-      if ( len > width-nf_offset-4 )
+      if ( len >= width - nf_offset - 3 )
       {
-        HBar->setMaximum(maxLineWidth-width+nf_offset+4);
-        HBar->setPageSize(maxLineWidth, width-nf_offset-4);
+        HBar->setMaximum(maxLineWidth - width + nf_offset + 4);
+        HBar->setPageSize(maxLineWidth, width - nf_offset - 4);
         HBar->setValue (xoffset);
         if ( ! HBar->isVisible() )
           HBar->setVisible();
@@ -669,7 +669,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       current++;
       if ( current > element_count )
         current = element_count;
-      if ( current-yoffset > height - 2 )
+      if ( current - yoffset >= height - 1 )
         yoffset++;
       inc_search.clear();
       ev->accept();
@@ -685,8 +685,8 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_right:
       xoffset++;
-      if ( xoffset > maxLineWidth-width+nf_offset+4 )
-        xoffset = maxLineWidth-width+nf_offset+4;
+      if ( xoffset > maxLineWidth - width + nf_offset + 4 )
+        xoffset = maxLineWidth - width + nf_offset + 4;
       if ( xoffset < 0 )
         xoffset = 0;
       inc_search.clear();
@@ -711,7 +711,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       current += height-3;
       if ( current > element_count )
         current = element_count;
-      if ( current-yoffset > height-2 )
+      if ( current - yoffset >= height - 1 )
       {
         yoffset += height-3;
         if ( yoffset > element_count - height + 2 )
@@ -730,7 +730,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_end:
       current = element_count;
-      if ( current > height - 2 )
+      if ( current >= height - 1 )
         yoffset = element_count - height + 2;
       inc_search.clear();
       ev->accept();
@@ -747,7 +747,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
         current++;
         if ( current > element_count )
           current = element_count;
-        if ( current-yoffset > height - 2 )
+        if ( current-yoffset >= height - 1 )
           yoffset++;
         ev->accept();
       }
@@ -919,8 +919,8 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   yoffset_before = yoffset;
   mouse_x = ev->getX();
   mouse_y = ev->getY();
-  if (  mouse_x >= 2 && mouse_x <= width-1
-     && mouse_y >= 2 && mouse_y <= height-1 )
+  if (  mouse_x > 1 && mouse_x < width
+     && mouse_y > 1 && mouse_y < height )
   {
     current = yoffset + mouse_y - 1;
     if ( current > int(count()) )
@@ -970,8 +970,8 @@ void FListBox::onMouseUp (FMouseEvent* ev)
   {
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
-    if (  mouse_x >= 2 && mouse_x <= width-1
-       && mouse_y >= 2 && mouse_y <= height-1 )
+    if (  mouse_x > 1 && mouse_x < width
+       && mouse_y > 1 && mouse_y < height )
     {
       processChanged();
       if ( ! isMultiSelection() )
@@ -998,8 +998,8 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if (  mouse_x >= 2 && mouse_x <= width-1
-     && mouse_y >= 2 && mouse_y <= height-1 )
+  if (  mouse_x > 1 && mouse_x < width
+     && mouse_y > 1 && mouse_y < height )
   {
     current = yoffset + mouse_y - 1;
     if ( current > int(count()) )
@@ -1110,8 +1110,8 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if (  mouse_x >= 2 && mouse_x <= width-1
-     && mouse_y >= 2 && mouse_y <= height-1 )
+  if (  mouse_x > 1 && mouse_x < width
+     && mouse_y > 1 && mouse_y < height )
   {
     if ( yoffset + mouse_y - 1 > int(count()) )
       return;
@@ -1157,7 +1157,7 @@ void FListBox::onTimer (FTimerEvent*)
       current += scrollDistance;
       if ( current > element_count )
         current = element_count;
-      if ( current-yoffset > height - 2 )
+      if ( current - yoffset >= height - 1 )
         yoffset += scrollDistance;
       if ( yoffset > element_count - height + 2 )
         yoffset = element_count - height + 2;
@@ -1257,7 +1257,7 @@ void FListBox::onWheel (FWheelEvent* ev)
       yoffset += 4;
       if ( yoffset > yoffset_end )
       {
-        current += 4 - (yoffset-yoffset_end);
+        current += 4 - (yoffset - yoffset_end);
         yoffset = yoffset_end;
       }
       else
@@ -1336,7 +1336,7 @@ void FListBox::cb_VBarChange (FWidget*, void*)
       current += distance;
       if ( current > element_count )
         current = element_count;
-      if ( current-yoffset > height - 2 )
+      if ( current - yoffset >= height - 1 )
         yoffset += distance;
       if ( yoffset > element_count - height + 2 )
         yoffset = element_count - height + 2;
@@ -1398,13 +1398,13 @@ void FListBox::cb_HBarChange (FWidget*, void*)
 {
   int distance = 1;
   int xoffset_before = xoffset;
-  int xoffset_end = maxLineWidth-width+nf_offset+4;
+  int xoffset_end = maxLineWidth - width + nf_offset + 4;
   int scrollType = HBar->getScrollType();
 
   switch ( scrollType )
   {
     case FScrollbar::scrollPageBackward:
-      distance = width-nf_offset-4;
+      distance = width - nf_offset - 4;
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
       if ( xoffset < 0 )
@@ -1412,11 +1412,11 @@ void FListBox::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = width-nf_offset-4;
+      distance = width - nf_offset - 4;
     case FScrollbar::scrollStepForward:
       xoffset += distance;
-      if ( xoffset > maxLineWidth-width+nf_offset+4 )
-        xoffset = maxLineWidth-width+nf_offset+4;
+      if ( xoffset > maxLineWidth - width + nf_offset + 4 )
+        xoffset = maxLineWidth - width + nf_offset + 4;
       if ( xoffset < 0 )
         xoffset = 0;
       break;
@@ -1427,8 +1427,8 @@ void FListBox::cb_HBarChange (FWidget*, void*)
       if ( xoffset == val )
         break;
       xoffset = val;
-      if ( xoffset > maxLineWidth-width+nf_offset+4 )
-        xoffset = maxLineWidth-width+nf_offset+4;
+      if ( xoffset > maxLineWidth - width + nf_offset + 4 )
+        xoffset = maxLineWidth - width + nf_offset + 4;
       if ( xoffset < 0 )
         xoffset = 0;
       break;
@@ -1486,10 +1486,10 @@ void FListBox::insert ( FString item
   if ( len > maxLineWidth )
   {
     maxLineWidth = len;
-    if ( len > width-nf_offset-4 )
+    if ( len >= width - nf_offset - 3 )
     {
-      HBar->setMaximum(maxLineWidth-width+nf_offset+4);
-      HBar->setPageSize(maxLineWidth, width-nf_offset-4);
+      HBar->setMaximum(maxLineWidth - width + nf_offset + 4);
+      HBar->setPageSize(maxLineWidth, width - nf_offset - 4);
       HBar->calculateSliderValues();
       if ( ! HBar->isVisible() )
         HBar->setVisible();
@@ -1498,13 +1498,13 @@ void FListBox::insert ( FString item
   FListBoxItem listItem (item);
   listItem.brackets = b;
   listItem.selected = s;
-  data.push_back ( listItem );
+  data.push_back (listItem);
 
   element_count = int(count());
-  VBar->setMaximum(element_count-height+2);
-  VBar->setPageSize(element_count, height-2);
+  VBar->setMaximum(element_count - height + 2);
+  VBar->setPageSize(element_count, height - 2);
   VBar->calculateSliderValues();
-  if ( ! VBar->isVisible() && element_count > height-2 )
+  if ( ! VBar->isVisible() && element_count >= height - 1 )
     VBar->setVisible();
 }
 
@@ -1524,7 +1524,7 @@ void FListBox::remove (int item)
   if ( int(count()) < item )
     return;
 
-  data.erase (data.begin()+item-1);
+  data.erase (data.begin() + item - 1);
 
   element_count = int(count());
   maxLineWidth = 0;
@@ -1535,14 +1535,14 @@ void FListBox::remove (int item)
     if ( len > maxLineWidth )
       maxLineWidth = len;
   }
-  HBar->setMaximum(maxLineWidth-width+nf_offset+4);
-  HBar->setPageSize(maxLineWidth, width-nf_offset-4);
-  if ( HBar->isVisible() && maxLineWidth <= width-nf_offset-4 )
+  HBar->setMaximum(maxLineWidth - width + nf_offset + 4);
+  HBar->setPageSize(maxLineWidth, width - nf_offset - 4);
+  if ( HBar->isVisible() && maxLineWidth < width - nf_offset - 3 )
     HBar->hide();
 
-  VBar->setMaximum(element_count-height+2);
-  VBar->setPageSize(element_count, height-2);
-  if ( VBar->isVisible() && element_count <= height-2 )
+  VBar->setMaximum(element_count - height + 2);
+  VBar->setPageSize(element_count, height - 2);
+  if ( VBar->isVisible() && element_count < height - 1 )
     VBar->hide();
 
   if ( current >= item && current > 1 )

@@ -137,6 +137,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{libname}.a
 
 %changelog
-* Mon Sep 18 2015 Markus Gans <guru.mail@muenster.de> - 0.1.1-1
+* Fri Sep 18 2015 Markus Gans <guru.mail@muenster.de> - 0.1.1-1
 - Initial Release (version 0.1.1)
 

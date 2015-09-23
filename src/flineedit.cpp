@@ -178,7 +178,7 @@ void FLineEdit::drawInputField()
     print (show_text);
 
   x = int(show_text.getLength());
-  while ( x <= width-2 )
+  while ( x < width-1 )
   {
     print (' ');
     x++;
@@ -397,7 +397,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       cursor_pos++;
       if ( cursor_pos >= len )
         cursor_pos=len;
-      if ( cursor_pos-offset >= width-2 && offset < len-width+2 )
+      if ( cursor_pos-offset >= width-2 && offset <= len-width+1 )
         offset++;
       ev->accept();
       break;
@@ -410,7 +410,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_end:
       cursor_pos=len;
-      if ( cursor_pos > width-2 )
+      if ( cursor_pos >= width-1 )
         offset=len-width+2;
       ev->accept();
       break;
@@ -425,7 +425,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         cursor_pos=len;
       if ( cursor_pos < 0 )
         cursor_pos=0;
-      if ( offset > 0 && len-offset <= width-2 )
+      if ( offset > 0 && len-offset < width-1 )
         offset--;
       ev->accept();
       break;
@@ -496,7 +496,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
           processChanged();
         }
         cursor_pos++;
-        if ( cursor_pos > width-2 )
+        if ( cursor_pos >= width-1 )
           offset++;
         ev->accept();
       }
@@ -601,7 +601,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   else if ( mouse_x >= width )
   {
     // drag right
-    if ( ! scrollTimer && offset < len-width+2 )
+    if ( ! scrollTimer && offset <= len-width+1 )
     {
       scrollTimer = true;
       addTimer(scrollRepeat);

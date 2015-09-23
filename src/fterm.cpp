@@ -821,10 +821,10 @@ int FTerm::parseKeyString ( char* buffer
     key = uChar(buffer[0] & 0xff);
 
   n = len;
-  for (; n < buf_size; n++)
-    buffer[n-len] = buffer[n];  // remove the key
-  for (; n-len < len; n++)
-    buffer[n-len] = '\0';
+  for (; n < buf_size; n++)  // remove the key from the buffer front
+    buffer[n-len] = buffer[n];
+  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
+    buffer[n] = '\0';
 
   return int(key == 127 ? fc::Fkey_backspace : key);
 }
@@ -1888,9 +1888,9 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
       if ( ax == 0 )
         line_xmin = ol;
-      if ( ax + line_xmin + 1 > vterm->width )
+      if ( ax + line_xmin >= vterm->width )
         continue;
-      if ( aw + rsh + ax - ol > vterm->width - 1 )
+      if ( aw + rsh + ax - ol >= vterm->width )
         line_xmax = vterm->width + ol - ax - 1;
       for (register int x=line_xmin; x <= line_xmax; x++)
       {
@@ -2397,19 +2397,23 @@ void FTerm::resizeVTerm()
 {
   char_data default_char;
   line_changes unchanged;
-  int vterm_size = term->getWidth() * term->getHeight();
+  int term_width, term_height, vterm_size;
 
-  if ( vterm->height != term->getHeight() )
+  term_width  = term->getWidth();
+  term_height = term->getHeight();
+  vterm_size  = term_width * term_height;
+
+  if ( vterm->height != term_height )
   {
     if ( vterm->changes != 0 )
       delete[] vterm->changes;
     if ( vterm->text != 0 )
       delete[] vterm->text;
 
-    vterm->changes = new line_changes[term->getHeight()];
+    vterm->changes = new line_changes[term_height];
     vterm->text    = new char_data[vterm_size];
   }
-  else if ( vterm->width != term->getWidth() )
+  else if ( vterm->width != term_width )
   {
     if ( vterm->text != 0 )
       delete[] vterm->text;
@@ -2418,8 +2422,8 @@ void FTerm::resizeVTerm()
   else
     return;
 
-  vterm->width  = term->getWidth();
-  vterm->height = term->getHeight();
+  vterm->width  = term_width;
+  vterm->height = term_height;
 
   default_char.code      = ' ';
   default_char.fg_color  = fc::LightGray;
@@ -2429,9 +2433,9 @@ void FTerm::resizeVTerm()
   default_char.underline = 0;
   std::fill_n (vterm->text, vterm_size, default_char);
 
-  unchanged.xmin = uInt(term->getWidth());
+  unchanged.xmin = uInt(term_width);
   unchanged.xmax = 0;
-  std::fill_n (vterm->changes, term->getHeight(), unchanged);
+  std::fill_n (vterm->changes, term_height, unchanged);
 }
 
 //----------------------------------------------------------------------
@@ -2451,6 +2455,7 @@ void FTerm::updateTerminal()
   term_area* vt;
   FWidget* focus_widget;
   FApplication* fapp;
+  int term_width, term_height;
 
   if ( static_cast<FApplication*>(term_object)->isQuit() )
     return;
@@ -2459,6 +2464,8 @@ void FTerm::updateTerminal()
     return;
 
   vt = vterm;
+  term_width = term->getWidth();
+  term_height = term->getHeight();
 
   for (register uInt y=0; y < uInt(vt->height); y++)
   {
@@ -2475,8 +2482,8 @@ void FTerm::updateTerminal()
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
 
-        if (  x_term_pos == term->getWidth() - 1
-           && y_term_pos == term->getHeight() - 1 )
+        if (  x_term_pos == term_width - 1
+           && y_term_pos == term_height - 1 )
           appendLowerRight (print_char);
         else
           appendCharacter (print_char);
@@ -2487,9 +2494,9 @@ void FTerm::updateTerminal()
       vt->changes[y].xmax = 0;
     }
     // cursor wrap
-    if ( x_term_pos >= term->getWidth() )
+    if ( x_term_pos >= term_width )
     {
-      if ( y_term_pos == term->getHeight()-1 )
+      if ( y_term_pos == term_height - 1 )
         x_term_pos--;
       else
       {
@@ -2993,22 +3000,26 @@ bool FTerm::gpmMouse (bool on)
 //----------------------------------------------------------------------
 void FTerm::setTermXY (register int x, register int y)
 {
+  int term_width, term_height;
   char* move_str;
 
   if ( x_term_pos == x && y_term_pos == y )
     return;
 
-  if ( x >= term->getWidth() )
+  term_width = term->getWidth();
+  term_height = term->getHeight();
+
+  if ( x >= term_width )
   {
-    y += x / term->getWidth();
-    x %= term->getWidth();
+    y += x / term_width;
+    x %= term_width;
   }
 
-  if ( y_term_pos > term->getHeight()-1 )
-    y_term_pos = term->getHeight() - 1;
+  if ( y_term_pos >= term_height )
+    y_term_pos = term_height - 1;
 
-  if ( y > term->getHeight()-1 )
-    y = term->getHeight() - 1;
+  if ( y >= term_height )
+    y = term_height - 1;
 
   move_str = opti->cursor_move (x_term_pos, y_term_pos, x, y);
   if ( move_str )
@@ -3841,11 +3852,13 @@ int FTerm::appendLowerRight (char_data*& screen_char)
   }
   else
   {
-    setTermXY (term->getWidth()-2, term->getHeight()-1);
+    int x = term->getWidth() - 2;
+    int y = term->getHeight() - 1;
+    setTermXY (x, y);
     appendCharacter (screen_char);
     x_term_pos++;
 
-    setTermXY (term->getWidth()-2, term->getHeight()-1);
+    setTermXY (x, y);
     screen_char--;
 
     if ( tcap[t_parm_ich].string )
