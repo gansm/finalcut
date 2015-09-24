@@ -83,8 +83,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	mandelbrot$(EXEEXT) calculator$(EXEEXT) watch$(EXEEXT) \
-	timer$(EXEEXT) ui$(EXEEXT) string$(EXEEXT)
+	string-operations$(EXEEXT) mandelbrot$(EXEEXT) \
+	calculator$(EXEEXT) watch$(EXEEXT) timer$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -119,9 +119,9 @@ input_dialog_LDADD = $(LDADD)
 am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
-am_string_OBJECTS = string.$(OBJEXT)
-string_OBJECTS = $(am_string_OBJECTS)
-string_LDADD = $(LDADD)
+am_string_operations_OBJECTS = string-operations.$(OBJEXT)
+string_operations_OBJECTS = $(am_string_operations_OBJECTS)
+string_operations_LDADD = $(LDADD)
 am_timer_OBJECTS = timer.$(OBJEXT)
 timer_OBJECTS = $(am_timer_OBJECTS)
 timer_LDADD = $(LDADD)
@@ -167,11 +167,11 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(hello_SOURCES) \
 	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
-	$(string_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
 	$(watch_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
 	$(hello_SOURCES) $(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
-	$(string_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
 	$(watch_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -324,12 +324,12 @@ AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
-string_SOURCES = string.cpp
 all: all-am
 
 .SUFFIXES:
@@ -394,9 +394,9 @@ mandelbrot$(EXEEXT): $(mandelbrot_OBJECTS) $(mandelbrot_DEPENDENCIES) $(EXTRA_ma
 	@rm -f mandelbrot$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mandelbrot_OBJECTS) $(mandelbrot_LDADD) $(LIBS)
 
-string$(EXEEXT): $(string_OBJECTS) $(string_DEPENDENCIES) $(EXTRA_string_DEPENDENCIES) 
-	@rm -f string$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(string_OBJECTS) $(string_LDADD) $(LIBS)
+string-operations$(EXEEXT): $(string_operations_OBJECTS) $(string_operations_DEPENDENCIES) $(EXTRA_string_operations_DEPENDENCIES) 
+	@rm -f string-operations$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(string_operations_OBJECTS) $(string_operations_LDADD) $(LIBS)
 
 timer$(EXEEXT): $(timer_OBJECTS) $(timer_DEPENDENCIES) $(EXTRA_timer_DEPENDENCIES) 
 	@rm -f timer$(EXEEXT)
@@ -421,7 +421,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string-operations.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/watch.Po@am__quote@

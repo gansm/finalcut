@@ -9,20 +9,20 @@ noinst_PROGRAMS = \
 	hello \
 	dialog \
 	input-dialog \
+	string-operations \
 	mandelbrot \
 	calculator \
 	watch \
 	timer \
-	ui \
-	string
+	ui
 
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
-string_SOURCES = string.cpp
 

@@ -25,7 +25,7 @@ test/.deps/
 test/.libs/
 test/calculator
 test/dialog
-test/string
+test/string-operations
 test/hello
 test/watch
 test/input-dialog
