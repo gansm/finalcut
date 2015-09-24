@@ -377,9 +377,7 @@ void FLabel::setAccelWidget (FWidget* widget)
   accel_widget->addCallback
   (
     "destroy",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FLabel::cb_accel_widget_destroyed),
-    null
+    _METHOD_CALLBACK (this, &FLabel::cb_accel_widget_destroyed)
   );
 }
 

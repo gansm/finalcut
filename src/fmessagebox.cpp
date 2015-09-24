@@ -160,8 +160,7 @@ void FMessageBox::init(int button0, int button1, int button2)
     button[0]->addCallback
     (
       "clicked",
-      this,
-      reinterpret_cast<FWidget::FMemberCallback>(&FMessageBox::cb_processClick),
+      _METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
       static_cast<FWidget::data_ptr>(button_digit[0])
     );
 
@@ -170,8 +169,7 @@ void FMessageBox::init(int button0, int button1, int button2)
     button[1]->addCallback
     (
       "clicked",
-      this,
-      reinterpret_cast<FWidget::FMemberCallback>(&FMessageBox::cb_processClick),
+      _METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
       static_cast<FWidget::data_ptr>(button_digit[1])
     );
 
@@ -179,8 +177,7 @@ void FMessageBox::init(int button0, int button1, int button2)
     button[2]->addCallback
     (
       "clicked",
-      this,
-      reinterpret_cast<FWidget::FMemberCallback>(&FMessageBox::cb_processClick),
+      _METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
       static_cast<FWidget::data_ptr>(button_digit[2])
     );
 

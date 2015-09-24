@@ -148,44 +148,32 @@ void FFileDialog::init()
   filename->addCallback
   (
     "activate",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processActivate),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
   );
   filebrowser->addCallback
   (
     "row-changed",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processRowChanged),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
   );
   filebrowser->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processClicked),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
   );
   hidden->addCallback
   (
     "toggled",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processShowHidden),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
   );
   cancel->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processCancel),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
   );
   open->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FFileDialog::cb_processOpen),
-    null
+    _METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
   );
   setModal();
   setTransparentShadow();

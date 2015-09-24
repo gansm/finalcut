@@ -109,7 +109,7 @@ int main (int argc, char* argv[])
   check1->addCallback
   (
     "clicked",
-    reinterpret_cast<FWidget::FCallback>(&cb_publish),
+    _FUNCTION_CALLBACK (&cb_publish),
     check2
   );
 
@@ -117,7 +117,7 @@ int main (int argc, char* argv[])
   btn.addCallback
   (
     "clicked",
-    reinterpret_cast<FWidget::FCallback>(&cb_quit),
+    _FUNCTION_CALLBACK (&cb_quit),
     &app
   );
 

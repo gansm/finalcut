@@ -298,9 +298,7 @@ void FButtonGroup::insert(FToggleButton* button)
   button->addCallback
   (
     "toggled",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FButtonGroup::cb_buttonToggled),
-    null
+    _METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
   );
 }
 

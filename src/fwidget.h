@@ -17,6 +17,14 @@
 #define FLAT          0x00000080
 #define NO_UNDERLINE  0x00000100
 
+// Callback macros
+#define _FUNCTION_CALLBACK(h) \
+           reinterpret_cast<FWidget::FCallback>((h))
+
+#define _METHOD_CALLBACK(i,h) \
+           reinterpret_cast<FWidget*>((i)) \
+         , reinterpret_cast<FWidget::FMemberCallback>((h))
+
 class FStatusBar;
 class FMenuBar;
 
@@ -268,8 +276,13 @@ class FWidget : public FObject, public FTerm
    void           clearStatusbarMessage();
    FString        getStatusbarMessage();
 
-   void           addCallback (FString, FCallback, void*);
-   void           addCallback (FString, FWidget*, FMemberCallback, void*);
+   void           addCallback ( FString
+                              , FCallback
+                              , void* data = null );
+   void           addCallback ( FString
+                              , FWidget*
+                              , FMemberCallback
+                              , void* data = null );
    void           delCallback (FCallback);
    void           delCallback (FWidget*);
    void           emitCallback (FString);

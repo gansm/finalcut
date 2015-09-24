@@ -259,8 +259,7 @@ Calc::Calc (FWidget* parent)
     btn->addCallback
     (
       "clicked",
-      this,
-      reinterpret_cast<FWidget::FMemberCallback>(&Calc::cb_buttonClicked),
+      _METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
       &button_no[key]
     );
 

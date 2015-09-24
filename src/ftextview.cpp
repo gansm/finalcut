@@ -53,16 +53,12 @@ void FTextView::init()
   VBar->addCallback
   (
     "change-value",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FTextView::cb_VBarChange),
-    null
+    _METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
   );
   HBar->addCallback
   (
     "change-value",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FTextView::cb_HBarChange),
-    null
+    _METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
   );
 }
 

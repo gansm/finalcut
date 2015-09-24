@@ -99,9 +99,7 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "activate",
-        (FWidget*)superMenu(),
-        reinterpret_cast<FWidget::FMemberCallback>(&FMenuBar::cb_item_activated),
-        null
+        _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_activated)
       );
     }
     else if ( isMenu(parent) ) // Parent is menu
@@ -114,9 +112,7 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "activate",
-        (FWidget*)superMenu(),
-        reinterpret_cast<FWidget::FMemberCallback>(&FMenu::cb_menuitem_activated),
-        null
+        _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_activated)
       );
     }
   }

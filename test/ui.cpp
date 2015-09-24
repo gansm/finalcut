@@ -14,6 +14,10 @@
 
 class ProgressDialog : public FDialog
 {
+ private:
+   ProgressDialog (const ProgressDialog&);    // Disabled copy constructor
+   ProgressDialog& operator = (const ProgressDialog&); // and operator '='
+
  public:
    FButton* reset;
    FButton* more;
@@ -33,7 +37,12 @@ class ProgressDialog : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-ProgressDialog::ProgressDialog (FWidget* parent) : FDialog(parent)
+ProgressDialog::ProgressDialog (FWidget* parent)
+  : FDialog(parent)
+  , reset()
+  , more()
+  , quit()
+  , progressBar()
 {
   setGeometry (int((this->parentWidget()->getWidth()-40)/2), 7, 40, 10);
   setText("Progress bar");
@@ -66,25 +75,19 @@ ProgressDialog::ProgressDialog (FWidget* parent) : FDialog(parent)
   reset->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&ProgressDialog::cb_reset_bar),
-    null
+    _METHOD_CALLBACK (this, &ProgressDialog::cb_reset_bar)
   );
 
   more->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&ProgressDialog::cb_more_bar),
-    null
+    _METHOD_CALLBACK (this, &ProgressDialog::cb_more_bar)
   );
 
   quit->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&ProgressDialog::cb_exit_bar),
-    null
+    _METHOD_CALLBACK (this, &ProgressDialog::cb_exit_bar)
   );
 }
 
@@ -143,7 +146,7 @@ void ProgressDialog::cb_more_bar (FWidget*, void*)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_exit_bar (FWidget*, void*)
 {
-  this->close();
+  close();
 }
 
 
@@ -158,6 +161,11 @@ class MyDialog : public FDialog
 {
  private:
    FListBox* myList;
+
+ private:
+   MyDialog (const MyDialog&);    // Disabled copy constructor
+   MyDialog& operator = (const MyDialog&); // and operator '='
+
  public:
    explicit MyDialog (FWidget* parent=0);  // constructor
   ~MyDialog();  // destructor
@@ -179,8 +187,29 @@ class MyDialog : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
+MyDialog::MyDialog (FWidget* parent)
+  : FDialog(parent)
+  , myList()
 {
+/* This Code is working in progress...
+ 
+  FMenuBar* menubar = new FMenuBar(this);
+  FMenu* file       = new FMenu("&File", menubar);
+  FMenu* edit       = new FMenu("&Edit", menubar);
+
+  FMenuItem* open   = new FMenuItem("&Open", file);
+  FMenuItem* quit   = new FMenuItem("&Quit", file);
+
+  FMenuItem* cut    = new FMenuItem("Cu&t", edit);
+  FMenuItem* copy   = new FMenuItem("&Copy", edit);
+  FMenuItem* paste  = new FMenuItem("&Paste", edit);
+
+  quit->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+  );
+*/
   FButton* MyButton1 = new FButton(this);
   MyButton1->setGeometry(3, 3, 5, 1);
   MyButton1->setText(L"&SIN");
@@ -302,133 +331,109 @@ MyDialog::MyDialog (FWidget* parent) : FDialog(parent)
   MyButton1->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_noFunctionMsg),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton2->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_noFunctionMsg),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton3->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_noFunctionMsg),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton4->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_ProgressBar),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
   );
 
   MyButton5->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_info),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_info)
   );
 
   MyButton6->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_input2buttonText),
+    _METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
     dynamic_cast<FWidget::data_ptr>(MyLineEdit)
   );
 
   MyButton7->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_exitApp),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 
   MyLineEdit->addCallback
   (
     "activate",  // e.g. on <Enter>
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_setTitlebar),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_setTitlebar)
   );
 
   radio1->addCallback
   (
     "toggled",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_activateButton),
+    _METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
     dynamic_cast<FWidget::data_ptr>(MyButton4)
   );
 
   myList->addCallback
   (
     "clicked",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_setInput),
+    _METHOD_CALLBACK (this, &MyDialog::cb_setInput),
     dynamic_cast<FWidget::data_ptr>(MyLineEdit)
   );
 
   myList->addCallback
   (
     "row-selected",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_updateNumber),
+    _METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
     dynamic_cast<FWidget::data_ptr>(tagged_count)
   );
 
   key_F1->addCallback
   (
     "activate",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_about),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
 
   key_F2->addCallback
   (
     "activate",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_view),
-    null
+    _METHOD_CALLBACK (this, &MyDialog::cb_view)
   );
 
   key_F3->addCallback
   (
     "activate",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&MyDialog::cb_exitApp),
+    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp),
     key_F3
   );
 }
 
 //----------------------------------------------------------------------
 MyDialog::~MyDialog()
-{
-}
+{ }
 
 //----------------------------------------------------------------------
-void MyDialog::onClose (FCloseEvent* event)
+void MyDialog::onClose (FCloseEvent* ev)
 {
-  int ret = FMessageBox::info ( this, "Quit",
-                                "Do you really want\n"
-                                "to quit the program ?",
-                                FMessageBox::Yes,
-                                FMessageBox::No );
+  int ret = FMessageBox::info ( this, "Quit"
+                              , "Do you really want\n"
+                                "to quit the program ?"
+                              , FMessageBox::Yes
+                              , FMessageBox::No );
   if ( ret == FMessageBox::Yes )
-    event->accept();
+    ev->accept();
   else
-    event->ignore();
+    ev->ignore();
 }
 
 //----------------------------------------------------------------------
@@ -444,13 +449,15 @@ void MyDialog::cb_noFunctionMsg (FWidget* widget, void*)
 //----------------------------------------------------------------------
 void MyDialog::cb_about (FWidget* widget, void*)
 {
+  const char ver[] = F_VERSION;
   FStatusKey* skey = static_cast<FStatusKey*>(widget);
   FString line(2, wchar_t(fc::BoxDrawingsHorizontal));
 
-  FMessageBox info ( "About", line + L" The Final Cut " + line + "\n\n"
-                     L"Version 0.1.1\n\n"
-                     L"(c) 2015 by Markus Gans",
-                     FMessageBox::Ok, 0, 0, this );
+  FMessageBox info ( "About"
+                   , line + L" The Final Cut " + line + "\n\n"
+                     L"Version " + ver + "\n\n"
+                     L"(c) 2015 by Markus Gans"
+                   , FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
   info.show();
   skey->unsetActive();
@@ -460,21 +467,21 @@ void MyDialog::cb_about (FWidget* widget, void*)
 void MyDialog::cb_info (FWidget*, void*)
 {
   {
-    FMessageBox info1 ( "Environment",
-                        "  Type: " + FString(getTermType()) + "\n"
+    FMessageBox info1 ( "Environment"
+                      , "  Type: " + FString(getTermType()) + "\n"
                         "  Name: " + FString(getTermName()) + "\n"
-                        "  Mode: " + FString(getEncoding()),
-                        FMessageBox::Ok, 0, 0, this );
+                        "  Mode: " + FString(getEncoding())
+                      , FMessageBox::Ok, 0, 0, this );
     info1.setHeadline("Terminal:");
     info1.exec();
   } // end of scope => delete info1
 
   FString line(15, wchar_t(fc::BoxDrawingsHorizontal));
-  FMessageBox info2 ( "Drive symbols",
-                      "Generic:       \n\n"
+  FMessageBox info2 ( "Drive symbols"
+                    , "Generic:       \n\n"
                       "Network:       \n\n"
-                      "     CD:",
-                      FMessageBox::Ok, 0, 0, this );
+                      "     CD:"
+                    , FMessageBox::Ok, 0, 0, this );
   if ( isNewFont() )
   {
     FLabel drive (NF_Drive, &info2);
@@ -526,8 +533,8 @@ void MyDialog::cb_setTitlebar (FWidget* widget, void*)
 {
   FLineEdit* lineedit = static_cast<FLineEdit*>(widget);
   lineedit->setXTermTitle(lineedit->getText());
-  this->setText(lineedit->getText());
-  this->redraw();
+  setText(lineedit->getText());
+  redraw();
 }
 
 //----------------------------------------------------------------------
@@ -629,13 +636,13 @@ void MyDialog::cb_exitApp (FWidget*, void* data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  int h = parentWidget()->getHeight() - 3;
+  int h = parentWidget()->getHeight() - 4;
   setHeight (h, false);
   int X = int((parentWidget()->getWidth() - getWidth()) / 2);
   if ( X < 1 )
     X = 1;
   setX (X, false);
-  myList->setHeight (getHeight() - 3, false);
+  myList->setHeight (getHeight() - 4, false);
   FDialog::adjustSize();
 }
 
@@ -664,7 +671,7 @@ int main (int argc, char* argv[])
 
   MyDialog d(&app);
   d.setText ("The FINAL CUT 0.1.1 (C) 2015 by Markus Gans");
-  d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-3);
+  d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
   d.setShadow();
 
   app.setMainWidget(&d);

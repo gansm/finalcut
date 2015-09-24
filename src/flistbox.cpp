@@ -115,16 +115,12 @@ void FListBox::init()
   VBar->addCallback
   (
     "change-value",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FListBox::cb_VBarChange),
-    null
+    _METHOD_CALLBACK (this, &FListBox::cb_VBarChange)
   );
   HBar->addCallback
   (
     "change-value",
-    this,
-    reinterpret_cast<FWidget::FMemberCallback>(&FListBox::cb_HBarChange),
-    null
+    _METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
   );
 }
 

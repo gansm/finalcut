@@ -1,4 +1,10 @@
-2015-09-22  Markus Gans  <guru.mail@muenster.de>
+2015-09-24  Markus Gans  <guru.mail@muenster.de>
+	* Add macro _METHOD_CALLBACK and _FUNCTION_CALLBACK 
+	  to simplify the use callback functions
+	* The callback data pointer is now predefined with 
+	  NULL as default argument
+
+2015-09-23  Markus Gans  <guru.mail@muenster.de>
 	* Further code optimizations
 
 2015-09-22  Markus Gans  <guru.mail@muenster.de>

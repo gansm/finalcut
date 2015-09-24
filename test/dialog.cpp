@@ -56,7 +56,7 @@ int main (int argc, char* argv[])
   btn.addCallback
   (
     "clicked",
-    reinterpret_cast<FWidget::FCallback>(&cb_quit),
+    _FUNCTION_CALLBACK (&cb_quit),
     &app
   );
 
