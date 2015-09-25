@@ -1,4 +1,4 @@
-// calculator.cpp
+// File: calculator.cpp
 
 //----------------------------------------------------------------------
 // A simple calculator with trigonometric functions

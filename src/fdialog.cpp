@@ -1,5 +1,5 @@
-// fdialog.cpp
-// class FDialog
+// File: fdialog.cpp
+// Provides: class FDialog
 
 #include "fapp.h"
 #include "fdialog.h"

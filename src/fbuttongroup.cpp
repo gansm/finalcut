@@ -1,5 +1,5 @@
-// fbuttongroup.cpp
-// class FButtonGroup
+// File: fbuttongroup.cpp
+// Provides: class FButtonGroup
 
 #include "fapp.h"
 #include "fbuttongroup.h"

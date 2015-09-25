@@ -1,5 +1,5 @@
-// fcheckbox.cpp
-// class FCheckBox
+// File: fcheckbox.cpp
+// Provides: class FCheckBox
 
 #include "fcheckbox.h"
 

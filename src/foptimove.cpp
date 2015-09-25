@@ -1,5 +1,5 @@
-// foptimove.cpp
-// class FOptiMove
+// File: foptimove.cpp
+// Provides: class FOptiMove
 
 #include "foptimove.h"
 

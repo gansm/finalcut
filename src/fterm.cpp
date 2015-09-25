@@ -1,5 +1,5 @@
-// fterm.cpp
-// class FTerm
+// File: fterm.cpp
+// Provides: class FTerm
 
 #include "fapp.h"
 #include "fcharmap.h"

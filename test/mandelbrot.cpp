@@ -1,4 +1,4 @@
-// mandelbrot.cpp
+// File: mandelbrot.cpp
 
 #include "fapp.h"
 #include "fdialog.h"

@@ -1,5 +1,5 @@
-// fobject.cpp
-// class FObject
+// File: fobject.cpp
+// Provides: class FObject
 
 #include "fobject.h"
 

@@ -1,5 +1,5 @@
-// fwidget.cpp
-// class FWidget
+// File: fwidget.cpp
+// Provides: class FWidget
 
 #include "fapp.h"
 #include "fstatusbar.h"

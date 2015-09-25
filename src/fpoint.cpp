@@ -1,5 +1,5 @@
-// fpoint.cpp
-// class FPoint
+// File: fpoint.cpp
+// Provides: class FPoint
 
 #include "fpoint.h"
 

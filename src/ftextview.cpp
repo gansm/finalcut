@@ -1,5 +1,5 @@
-// ftextview.cpp
-// class FTextView
+// File: ftextview.cpp
+// Provides: class FTextView
 
 #include "fstatusbar.h"
 #include "ftextview.h"

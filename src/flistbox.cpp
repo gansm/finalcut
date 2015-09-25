@@ -1,6 +1,6 @@
-// flistbox.cpp
-// class FListBoxItem
-// class FListBox
+// File: flistbox.cpp
+// Provides: class FListBoxItem
+//           class FListBox
 
 #include "fapp.h"
 #include "flistbox.h"

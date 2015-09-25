@@ -1,5 +1,12 @@
-// fstring.h
-// class FString
+// File: fstring.h
+// Provides: class FString
+//
+//  Standalone class
+//  ════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FString ▏
+// ▕▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FSTRING_H
 #define _FSTRING_H
@@ -24,6 +31,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
 
 #define FWDBUFFER 15
 #define INPBUFFER 200

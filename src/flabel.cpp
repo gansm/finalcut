@@ -1,5 +1,5 @@
-// flabel.cpp
-// class FLabel
+// File: flabel.cpp
+// Provides: class FLabel
 
 #include "fapp.h"
 #include "flabel.h"

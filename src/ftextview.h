@@ -1,5 +1,24 @@
-// ftextview.h
-// class FTextView
+// File: ftextview.h
+// Provides: class FTextView
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▏
+//      ▕ FTextView ▏
+//      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FTEXTVIEW_H
 #define _FTEXTVIEW_H

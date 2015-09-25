@@ -1,5 +1,5 @@
-// ffiledialog.cpp
-// class FFileDialog
+// File: ffiledialog.cpp
+// Provides: class FFileDialog
 
 #include "ffiledialog.h"
 

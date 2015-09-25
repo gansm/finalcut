@@ -1,5 +1,29 @@
-// fcheckbox.h
-// class FCheckBox
+// File: fcheckbox.h
+// Provides: class FCheckBox
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//    ▕ FToggleButton ▏
+//    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▏
+//      ▕ FCheckBox ▏
+//      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FCHECKBOX_H
 #define _FCHECKBOX_H

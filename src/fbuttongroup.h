@@ -1,5 +1,24 @@
-// fbuttongroup.h
-// class FButtonGroup
+// File: fbuttongroup.h
+// Provides: class FButtonGroup
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//     ▕ FButtonGroup ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FBUTTONGROUP_H
 #define _FBUTTONGROUP_H

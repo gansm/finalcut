@@ -1,5 +1,5 @@
-// fmessagebox.cpp
-// class FMessageBox
+// File: fmessagebox.cpp
+// Provides: class FMessageBox
 
 #include "fapp.h"
 #include "fmessagebox.h"

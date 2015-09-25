@@ -1,8 +1,16 @@
-// fenum.h
-// class fc
+// File: fenum.h
+// Provides: class fc
+//
+//  Standalone class
+//  ════════════════
+//
+//  ▕▔▔▔▔▏
+//  ▕ fc ▏
+//  ▕▁▁▁▁▏
 
 #ifndef _FENUM_H
 #define _FENUM_H
+
 
 //----------------------------------------------------------------------
 // class fc

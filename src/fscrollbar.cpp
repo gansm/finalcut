@@ -1,5 +1,5 @@
-// fscrollbar.cpp
-// class FScrollbar
+// File: fscrollbar.cpp
+// Provides: class FScrollbar
 
 #include "fscrollbar.h"
 

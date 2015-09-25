@@ -1,4 +1,4 @@
-// fcharmap.h
+// File: fcharmap.h
 
 #ifndef _FCHARMAP_H
 #define _FCHARMAP_H

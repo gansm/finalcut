@@ -1,5 +1,24 @@
-// ftogglebutton.h
-// class FToggleButton.h
+// File: ftogglebutton.h
+// Provides: class FToggleButton.h
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//    ▕ FToggleButton ▏
+//    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FTOGGLEBUTTON_H
 #define _FTOGGLEBUTTON_H

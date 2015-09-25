@@ -1,5 +1,32 @@
-// fapplication.h
-// class FApplication
+// File: fapplication.h
+// Provides: class FApplication
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏ 1      *▕▔▔▔▔▔▔▔▔▏
+//     ▕ FApplication ▏-┬- - - -▕ FEvent ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▏
+//                      :
+//                      :      *▕▔▔▔▔▔▔▔▔▏
+//                      :- - - -▕ FPoint ▏
+//                      :       ▕▁▁▁▁▁▁▁▁▏
+//                      :
+//                      :      *▕▔▔▔▔▔▔▔▔▔▏
+//                      └- - - -▕ FWidget ▏
+//                              ▕▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FAPPLICATION_H
 #define _FAPPLICATION_H

@@ -1,5 +1,24 @@
-// fprogressbar.h
-// class FProgressbar
+// File: fprogressbar.h
+// Provides: class FProgressbar
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//    ▕ FProgressbar ▏
+//    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FPROGRESSBAR_H
 #define _FPROGRESSBAR_H

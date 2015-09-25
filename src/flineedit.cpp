@@ -1,5 +1,5 @@
-// flineedit.cpp
-// class FLineEdit
+// File: flineedit.cpp
+// Provides: class FLineEdit
 
 #include "fapp.h"
 #include "flineedit.h"

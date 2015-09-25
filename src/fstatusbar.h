@@ -1,11 +1,38 @@
-// fstatusbar.h
-// class FStatusKey
-// class FStatusBar
+// File: fstatusbar.h
+// Provides: class FStatusKey
+//           class FStatusBar
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//            ├────────────────────┐
+//            │                    │
+//       ▕▔▔▔▔▔▔▔▔▔▏               │
+//       ▕ FWindow ▏               │
+//       ▕▁▁▁▁▁▁▁▁▁▏               │
+//            ▲                    │
+//            │                    │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▏
+//     ▕ FStatusBar ▏- - - -▕ FStatusKey ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FSTATUSBAR_H
 #define _FSTATUSBAR_H
 
 #include "fwindow.h"
+
 
 class FStatusBar;
 

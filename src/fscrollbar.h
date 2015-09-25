@@ -1,10 +1,30 @@
-// fscrollbar.h
-// class FScrollbar
+// File: fscrollbar.h
+// Provides: class FScrollbar
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▔▏
+//      ▕ FScrollbar ▏
+//      ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FSCROLLBAR_H
 #define _FSCROLLBAR_H
 
 #include "fwidget.h"
+
 
 //----------------------------------------------------------------------
 // class FScrollbar

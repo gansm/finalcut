@@ -1,5 +1,24 @@
-// fbutton.h
-// class FButton
+// File: fbutton.h
+// Provides: class FButton
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FButton ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FBUTTON_H
 #define _FBUTTON_H

@@ -1,4 +1,4 @@
-// input-dialog.cpp
+// File: input-dialog.cpp
 
 #include "fapp.h"
 #include "fbutton.h"

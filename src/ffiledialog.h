@@ -1,5 +1,34 @@
-// ffiledialog.h
-// class FFileDialog.h
+// File: ffiledialog.h
+// Provides: class FFileDialog.h
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWindow ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FDialog ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//     ▕ FFileDialog ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FFILEDIALOG_H
 #define _FFILEDIALOG_H

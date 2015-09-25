@@ -1,5 +1,5 @@
-// fstring.cpp
-// class FString
+// File: fstring.cpp
+// Provides: class FString
 
 #include "fstring.h"
 

@@ -1,6 +1,13 @@
-// foptimove.h
-// class FOptiMove
+// File: foptimove.h
+// Provides: class FOptiMove
 //
+//  Standalone class
+//  ════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▔▔▏
+// ▕ FOptiMove ▏
+// ▕▁▁▁▁▁▁▁▁▁▁▁▏
+
 // The cursor optimisation based on ncurses lib_mvcur.c
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -14,6 +21,8 @@
 #include <cstdio>  // need for printf
 #include <cstdlib>
 #include <cstring>
+
+
 
 // value for a long capability waiting time
 #define LONG_DURATION 9999999

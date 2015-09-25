@@ -1,10 +1,35 @@
-// fradiobutton.h
-// class FRadioButton
+// File: fradiobutton.h
+// Provides: class FRadioButton
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//    ▕ FToggleButton ▏
+//    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//     ▕ FRadioButton ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FRADIOBUTTON_H
 #define _FRADIOBUTTON_H
 
 #include "ftogglebutton.h"
+
 
 //----------------------------------------------------------------------
 // class FRadioButton

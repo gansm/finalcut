@@ -1,5 +1,34 @@
-// fmessagebox.h
-// class FMessageBox
+// File: fmessagebox.h
+// Provides: class FMessageBox
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWindow ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FDialog ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//     ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//     ▕ FMessageBox ▏
+//     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FMESSAGEBOX_H
 #define _FMESSAGEBOX_H

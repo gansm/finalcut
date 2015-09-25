@@ -1,10 +1,31 @@
-// flabel.h
-// class FLabel
+// File: flabel.h
+// Provides: class FLabel
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▏
+//       ▕ FLabel ▏
+//       ▕▁▁▁▁▁▁▁▁▏
 
 #ifndef _FLABEL_H
 #define _FLABEL_H
 
 #include "fwidget.h"
+
+
 
 #define NO_EMPHASIS  0x00000000
 #define EMPHASIS     0x00000001

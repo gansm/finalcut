@@ -1,5 +1,5 @@
-// fapplication.cpp
-// class FApplication
+// File: fapplication.cpp
+// Provides: class FApplication
 
 #include "fapp.h"
 #include "fwindow.h"

@@ -1,5 +1,5 @@
-// fmenu.cpp
-// class FMenu
+// File: fmenu.cpp
+// Provides: class FMenu
 
 #include "fmenu.h"
 

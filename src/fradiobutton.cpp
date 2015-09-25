@@ -1,5 +1,5 @@
-// fradiobutton.cpp
-// class FRadioButton
+// File: fradiobutton.cpp
+// Provides: class FRadioButton
 
 #include "fapp.h"
 #include "fradiobutton.h"

@@ -1,5 +1,5 @@
-// frect.cpp
-// class FRect
+// File: frect.cpp
+// Provides: class FRect
 
 #include "frect.h"
 

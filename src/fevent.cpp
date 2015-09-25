@@ -1,5 +1,5 @@
-// fevent.cpp
-// class FEvent
+// File: fevent.cpp
+// Provides: class FEvent
 
 #include <cstdio>
 

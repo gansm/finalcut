@@ -1,11 +1,38 @@
-// fmenubar.h
-// class FMenuBar
+// File: fmenubar.h
+// Provides: class FMenuBar
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWindow ▏ ▕ FMenuList ▏- - - -▕ FMenuItem ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▏
+//            ▲           ▲
+//            │           │
+//            └─────┬─────┘
+//                  │
+//            ▕▔▔▔▔▔▔▔▔▔▔▏
+//            ▕ FMenuBar ▏
+//            ▕▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FMENUBAR_H
 #define _FMENUBAR_H
 
 #include "fwindow.h"
 #include "fmenulist.h"
+
 
 //----------------------------------------------------------------------
 // class FMenuBar

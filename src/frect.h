@@ -1,11 +1,17 @@
-// frect.h
-// class FRect
+// File: frect.h
+// Provides: class FRect
+//
+//  Standalone class
+//  ════════════════
+//
+//     ▕▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▏
+//     ▕ FRect ▏- - - -▕ FPoint ▏
+//     ▕▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▏
 
 #ifndef _FRECT_H
 #define _FRECT_H
 
 #include <algorithm>
-
 #include "fpoint.h"
 
 

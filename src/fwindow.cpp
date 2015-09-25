@@ -1,5 +1,5 @@
-// fwindow.cpp
-// class FWindow
+// File: fwindow.cpp
+// Provides: class FWindow
 
 #include "fapp.h"
 #include "fmenubar.h"

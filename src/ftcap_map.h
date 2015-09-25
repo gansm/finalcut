@@ -1,4 +1,4 @@
-// ftcap_map.h
+// File: ftcap_map.h
 
 #ifndef _FTCAPMAP_H
 #define _FTCAPMAP_H

@@ -1,6 +1,6 @@
-// fstatusbar.cpp
-// class FStatusKey
-// class FStatusBar
+// File: fstatusbar.cpp
+// Provides: class FStatusKey
+//           class FStatusBar
 
 #include "fstatusbar.h"
 

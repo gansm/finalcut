@@ -1,5 +1,5 @@
-// fswitch.cpp
-// class FSwitch
+// File: fswitch.cpp
+// Provides: class FSwitch
 
 #include "fswitch.h"
 

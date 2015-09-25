@@ -1,5 +1,12 @@
-// fobject.h
-// class FObject
+// File: fobject.h
+// Provides: class FObject
+//
+//  Base class
+//  ══════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏
+// ▕▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FOBJECT_H
 #define _FOBJECT_H
@@ -10,6 +17,7 @@
 #include <vector>
 
 #include "fevent.h"
+
 
 #define null NULL
 

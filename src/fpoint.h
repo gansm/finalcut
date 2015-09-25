@@ -1,5 +1,12 @@
-// fpoint.h
-// class FPoint
+// File: fpoint.h
+// Provides: class FPoint
+//
+//  Standalone class
+//  ════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▏
+// ▕ FPoint ▏
+// ▕▁▁▁▁▁▁▁▁▏
 
 #ifndef _FPOINT_H
 #define _FPOINT_H

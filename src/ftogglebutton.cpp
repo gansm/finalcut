@@ -1,5 +1,5 @@
-// ftogglebutton.cpp
-// class FToggleButton
+// File: ftogglebutton.cpp
+// Provides: class FToggleButton
 
 #include "fapp.h"
 #include "fbuttongroup.h"

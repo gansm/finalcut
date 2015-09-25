@@ -1,10 +1,34 @@
-// fmenuitem.h
-// class FMenuItem
+// File: fmenuitem.h
+// Provides: class FMenuItem
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▏  1     *▕▔▔▔▔▔▔▔▏
+//      ▕ FMenuItem ▏-┬- - - -▕ FMenu ▏
+//      ▕▁▁▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▏
+//                    :
+//                    :      *▕▔▔▔▔▔▔▔▔▔▔▔▏
+//                    └- - - -▕ FMenuList ▏
+//                            ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FMENUITEM_H
 #define _FMENUITEM_H
 
 #include "fwidget.h"
+
 
 class FMenu;
 class FMenuList;

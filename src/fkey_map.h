@@ -1,4 +1,4 @@
-// fkey_map.h
+// File: fkey_map.h
 
 #ifndef _FKEYMAP_H
 #define _FKEYMAP_H

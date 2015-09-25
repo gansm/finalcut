@@ -1,5 +1,29 @@
-// fswitch.h
-// class FSwitch
+// File: fswitch.h
+// Provides: class FSwitch
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//    ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//    ▕ FToggleButton ▏
+//    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FSwitch ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FSWITCH_H
 #define _FSWITCH_H

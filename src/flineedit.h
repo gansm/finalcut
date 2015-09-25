@@ -1,11 +1,31 @@
-// flineedit.h
-// class FLineEdit
+// File: flineedit.h
+// Provides: class FLineEdit
+//
+//  Inheritance diagram
+//  ═══════════════════
+//
+// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+// ▕ FObject ▏ ▕  FTerm  ▏
+// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+//      ▲           ▲
+//      │           │
+//      └─────┬─────┘
+//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▏
+//      ▕ FLineEdit ▏
+//      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FLINEEDIT_H
 #define _FLINEEDIT_H
 
 #include "fwidget.h"
 #include "flabel.h"
+
 
 //----------------------------------------------------------------------
 // class FLineEdit
