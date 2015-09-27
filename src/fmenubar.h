@@ -44,8 +44,9 @@
 class FMenuBar : public FWindow, public FMenuList
 {
  private:
-   bool mouse_down;
-   int x;
+   bool   mouse_down;
+   FPoint next_item_pos;
+   int    x;
 
  private:
    FMenuBar (const FMenuBar&);

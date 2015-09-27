@@ -37,34 +37,37 @@ class FRect
    virtual ~FRect();  // destructor
    virtual const char* getClassName();
 
-   bool  isNull() const;
-   int   getX1() const;
-   int   getY1() const;
-   int   getX2() const;
-   int   getY2() const;
-   int   getX() const;
-   int   getY() const;
-   int   getWidth() const;
-   int   getHeight() const;
+   bool   isNull() const;
+   int    getX1() const;
+   int    getY1() const;
+   int    getX2() const;
+   int    getY2() const;
+   int    getX() const;
+   int    getY() const;
+   FPoint getPos() const;
+   int    getWidth() const;
+   int    getHeight() const;
 
-   void  setX1 (int);
-   void  setY1 (int);
-   void  setX2 (int);
-   void  setY2 (int);
-   void  setX (int);
-   void  setY (int);
-   void  setWidth (int);
-   void  setHeight (int);
-   void  setRect (const FRect&);
-   void  setRect (int, int, int, int);
+   void   setX1 (int);
+   void   setY1 (int);
+   void   setX2 (int);
+   void   setY2 (int);
+   void   setX (int);
+   void   setY (int);
+   void   setPos (int, int);
+   void   setPos (const FPoint&);
+   void   setWidth (int);
+   void   setHeight (int);
+   void   setRect (const FRect&);
+   void   setRect (int, int, int, int);
 
-   void  move (int, int);
-   void  move (const FPoint&);
-   bool  contains (int, int) const;
-   bool  contains (const FPoint&) const;
-   bool  contains (const FRect&) const;
-   bool  overlap  (const FRect&) const;
-   FRect intersect (const FRect&) const;
+   void   move (int, int);
+   void   move (const FPoint&);
+   bool   contains (int, int) const;
+   bool   contains (const FPoint&) const;
+   bool   contains (const FRect&) const;
+   bool   overlap  (const FRect&) const;
+   FRect  intersect (const FRect&) const;
 
    friend FRect operator + (const FRect&, const FPoint&);
    friend FRect operator - (const FRect&, const FPoint&);
@@ -118,6 +121,10 @@ inline int FRect::getX() const
 //----------------------------------------------------------------------
 inline int FRect::getY() const
 { return Y1; }
+
+//----------------------------------------------------------------------
+inline FPoint FRect::getPos() const
+{ return FPoint(X1,Y1); }
 
 //----------------------------------------------------------------------
 inline int FRect::getWidth() const

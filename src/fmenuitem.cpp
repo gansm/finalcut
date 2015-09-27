@@ -19,6 +19,7 @@ FMenuItem::FMenuItem (FWidget* parent)
   , selected(false)
   , separator(false)
   , checked(false)
+  , text_length(0)
   , hotkey(0)
 //, accel_key(0)
   , menu(0)
@@ -35,6 +36,7 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , selected(false)
   , separator(false)
   , checked(false)
+  , text_length(0)
   , hotkey(0)
 //, accel_key(0)
   , menu(0)
@@ -51,6 +53,7 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , selected(false)
   , separator(false)
   , checked(false)
+  , text_length(0)
   , hotkey(0)
 //, accel_key(0)
   , menu(0)
@@ -67,6 +70,7 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , selected(false)
   , separator(false)
   , checked(false)
+  , text_length(0)
   , hotkey(0)
 //, accel_key(0)
   , menu(0)
@@ -84,8 +88,11 @@ FMenuItem::~FMenuItem()  // destructor
 //----------------------------------------------------------------------
 void FMenuItem::init (FWidget* parent)
 {
+  text_length = text.getLength();
   hotkey = getHotkey();
-  setGeometry (1,1,1,1);
+  if ( hotkey )
+    text_length--;
+  setGeometry (1,1,text_length+2,1);
 
   if ( parent )
   {
@@ -200,19 +207,31 @@ void FMenuItem::setSelected()
 inline void FMenuItem::setText (FString& txt)
 {
   text = txt;
+  text_length = text.getLength();
   hotkey = getHotkey();
+  if ( hotkey )
+    text_length--;
+  setWidth(text_length);
 }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const std::string& txt)
 {
   text = txt;
+  text_length = text.getLength();
   hotkey = getHotkey();
+  if ( hotkey )
+    text_length--;
+  setWidth(text_length);
 }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const char* txt)
 {
   text = txt;
+  text_length = text.getLength();
   hotkey = getHotkey();
+  if ( hotkey )
+    text_length--;
+  setWidth(text_length);
 }

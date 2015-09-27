@@ -16,16 +16,16 @@
 //       ▕▁▁▁▁▁▁▁▁▁▏
 //            ▲
 //            │
-//       ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▏
+//       ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▏       ▕▔▔▔▔▔▔▔▔▔▔▔▏
 //       ▕ FWindow ▏ ▕ FMenuList ▏- - - -▕ FMenuItem ▏
-//       ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▏
-//            ▲           ▲
-//            │           │
-//            └─────┬─────┘
-//                  │
-//              ▕▔▔▔▔▔▔▔▏
-//              ▕ FMenu ▏
-//              ▕▁▁▁▁▁▁▁▏
+//       ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▏1     *▕▁▁▁▁▁▁▁▁▁▁▁▏
+//            ▲           ▲   1:
+//            │           │    :
+//            └─────┬─────┘    :
+//                  │    1     :
+//              ▕▔▔▔▔▔▔▔▏- - - ┘        ▕▔▔▔▔▔▔▔▔▔▔▔▏
+//              ▕ FMenu ▏- - - - - - - -▕ FMenuItem ▏
+//              ▕▁▁▁▁▁▁▁▏1             1▕▁▁▁▁▁▁▁▁▁▁▁▏
 
 #ifndef _FMENU_H
 #define _FMENU_H
@@ -47,6 +47,7 @@ class FMenu : public FWindow, public FMenuList
  private:
    FMenuItem* item;
    FMenuList* super_menu;
+   FPoint     next_item_pos;
    uInt       maxItemWidth;
    int        current;
    bool       mouse_down;

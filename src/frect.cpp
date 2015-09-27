@@ -68,6 +68,20 @@ void FRect::setY (int n)
 }
 
 //----------------------------------------------------------------------
+void FRect::setPos (int x, int y)
+{
+  X1 = short(x);
+  Y1 = short(y);
+}
+
+//----------------------------------------------------------------------
+void FRect::setPos (const FPoint& p)
+{
+  X1 = short(p.getX());
+  Y1 = short(p.getY());
+}
+
+//----------------------------------------------------------------------
 void FRect::setWidth (int w)
 {
   X2 = short(X1 + w - 1);

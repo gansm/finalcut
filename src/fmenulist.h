@@ -16,15 +16,22 @@
 #include "fwidget.h"
 
 /*
-    ┌─────────┐          ┌──────────┐ 
-    │ FWindow │◄───┐ ┌───┤ FMenuBar │
-    └─────────┘    ├─┤   └──────────┘     
-  ┌───────────┐◄───┘ │   ┌───────┐    
-  │ FMenuList ├-----┐└───┤ FMenu │
-  └───────────┘     :    └───────┘ 
-                    :    ┌───────────┐
-                    └----┤ FMenuItem │
-                         └───────────┘
+- FMenuBar muß die x + y Positionen des nächsten
+  einzufügenden FMenuItem kennen
+
+- FMenu muß die x + y Positionen des nächsten
+  einzufügenden FMenuItem kennen
+
+    ┌─────────┐           ┌──────────┐
+    │ FWindow │◄───┐  ┌───┤ FMenuBar │
+    └─────────┘    │  │   └──────────┘
+                   ├──┤
+  ┌───────────┐    │  │   ┌───────┐
+  │ FMenuList │◄───┘  └───┤ FMenu │
+  └─────┬─────┘           └───────┘ 
+        :                 ┌───────────┐
+        └-----------------┤ FMenuItem │
+                          └───────────┘
 */
 
 //----------------------------------------------------------------------

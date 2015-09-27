@@ -1,3 +1,6 @@
+2015-09-27  Markus Gans  <guru.mail@muenster.de>
+	* Add methods getPos and setPos to FRect and FWidget
+
 2015-09-24  Markus Gans  <guru.mail@muenster.de>
 	* Add macro _METHOD_CALLBACK and _FUNCTION_CALLBACK 
 	  to simplify the use callback functions

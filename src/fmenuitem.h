@@ -48,6 +48,7 @@ class FMenuItem : public FWidget
    bool       selected;
    bool       separator;
    bool       checked;
+   uInt       text_length;
    int        hotkey;
  //int        accel_key;
    FMenu*     menu;

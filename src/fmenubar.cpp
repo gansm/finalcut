@@ -12,6 +12,7 @@
 FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
   , mouse_down(false)
+  , next_item_pos(1,1)
   , x(-1)
 {
   init();

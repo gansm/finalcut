@@ -391,6 +391,7 @@ class FWidget : public FObject, public FTerm
    int            getBackgroundColor() const;
    int            getX() const;
    int            getY() const;
+   const FPoint   getPos() const;
    int            getGlobalX() const;
    int            getGlobalY() const;
    const FPoint   getGlobalPos() const;
@@ -412,6 +413,8 @@ class FWidget : public FObject, public FTerm
    void           setBackgroundColor (int);
    void           setX (int, bool adjust=true);
    void           setY (int, bool adjust=true);
+   void           setPos (const FPoint&, bool adjust=true);
+   void           setPos (int, int, bool adjust=true);
    void           setWidth (int, bool adjust=true);
    void           setHeight (int, bool adjust=true);
    void           setTopPadding (int, bool adjust=true);
@@ -584,6 +587,10 @@ inline int FWidget::getX() const
 //----------------------------------------------------------------------
 inline int FWidget::getY() const
 { return ypos; }
+
+//----------------------------------------------------------------------
+inline const FPoint FWidget::getPos() const
+{ return adjustWidgetSize.getPos(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getGlobalX() const
