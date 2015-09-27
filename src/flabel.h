@@ -26,7 +26,6 @@
 #include "fwidget.h"
 
 
-
 #define NO_EMPHASIS  0x00000000
 #define EMPHASIS     0x00000001
 
@@ -60,12 +59,12 @@ class FLabel : public FWidget
    int   getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void  setHotkeyAccelerator();
    int   getXOffset (int);
-   void  printLine (wchar_t*&, uInt, int, int xoffset=0);
+   void  printLine (wchar_t*&, uInt, int, int = 0);
    void  draw();
 
  public:
-   explicit FLabel (FWidget* parent=0);  // constructor
-   FLabel (const FString&, FWidget* parent=0);  // constructor
+   explicit FLabel (FWidget* = 0);  // constructor
+   FLabel (const FString&, FWidget* = 0);  // constructor
    virtual ~FLabel();  // destructor
    const char* getClassName() const;
 
@@ -73,7 +72,7 @@ class FLabel : public FWidget
    void onMouseDown (FMouseEvent*);
    void onAccel (FAccelEvent*);
    void cb_accel_widget_destroyed (FWidget*, void*);
-   void setAccelWidget (FWidget* widget=0);
+   void setAccelWidget (FWidget* = 0);
    FTerm* getAccelWidget();
    void setAlignment(uInt);
    uInt getAlignment();

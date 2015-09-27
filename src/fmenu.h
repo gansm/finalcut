@@ -68,10 +68,10 @@ class FMenu : public FWindow, public FMenuList
    void       processActivate();
 
  public:
-   explicit FMenu (FWidget* parent=0);  // constructor
-   FMenu (FString&, FWidget* parent=0);
-   FMenu (const std::string&, FWidget* parent=0);
-   FMenu (const char*, FWidget* parent=0);
+   explicit FMenu (FWidget* = 0);  // constructor
+   FMenu (FString&, FWidget* = 0);
+   FMenu (const std::string&, FWidget* = 0);
+   FMenu (const char*, FWidget* = 0);
    virtual ~FMenu();  // destructor
    virtual const char* getClassName() const;
 
@@ -81,7 +81,7 @@ class FMenu : public FWindow, public FMenuList
    void       hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void       setGeometry (int, int, int, int, bool adjust=true);
+   void       setGeometry (int, int, int, int, bool = true);
    FMenuItem* getItem() const;
 
    void       onAccel (FAccelEvent*);

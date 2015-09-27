@@ -61,8 +61,8 @@ class FButton : public FWidget
    friend class FDialog;
 
  public:
-   explicit FButton (FWidget* parent=0);  // constructor
-   FButton (const FString&, FWidget* parent=0);  // constructor
+   explicit FButton (FWidget* = 0);  // constructor
+   FButton (const FString&, FWidget* = 0);  // constructor
    virtual ~FButton();  // destructor
 
    const char*  getClassName() const;

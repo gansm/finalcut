@@ -58,7 +58,7 @@ class FWindow : public FWidget
    virtual void    onWindowLowered (FEvent*);
 
  public:
-   explicit FWindow (FWidget* parent=0);  // constructor
+   explicit FWindow (FWidget* = 0);  // constructor
   ~FWindow ();  // destructor
 
    const char*     getClassName() const;

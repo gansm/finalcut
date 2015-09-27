@@ -70,8 +70,8 @@ class FDialog : public FWindow
    virtual void onClose (FCloseEvent*);
 
  public:
-   explicit FDialog (FWidget* parent=0);  // constructor
-   FDialog (const FString&, FWidget* parent=0);  // constructor
+   explicit FDialog (FWidget* = 0);  // constructor
+   FDialog (const FString&, FWidget* = 0);  // constructor
    virtual ~FDialog();  // destructor
    virtual const char* getClassName() const;
 
@@ -91,11 +91,11 @@ class FDialog : public FWindow
    int      exec();
    void     move (const FPoint&);
    void     move (int, int);
-   void     setWidth (int, bool adjust=true);
-   void     setHeight (int, bool adjust=true);
+   void     setWidth (int, bool = true);
+   void     setHeight (int, bool = true);
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void     setGeometry (int, int, int, int, bool adjust=true);
+   void     setGeometry (int, int, int, int, bool = true);
    FWidget* getFocusWidget() const;
    void     setFocusWidget (FWidget*);
    bool     setFocus(bool);

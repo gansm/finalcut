@@ -153,7 +153,7 @@ class FApplication : public FWidget
    int         exec(); // run
    int         enter_loop();
    void        exit_loop();
-   static void exit (int retcode=0);
+   static void exit (int = 0);
    void        quit();
    bool        isQuit();
    static bool sendEvent (FObject*, FEvent*);

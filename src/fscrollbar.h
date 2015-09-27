@@ -79,8 +79,8 @@ class FScrollbar : public FWidget
    void processScroll();
 
  public:
-   explicit FScrollbar(FWidget* parent=0);  // constructor
-   FScrollbar(int o=fc::vertical, FWidget* parent=0);  // constructor
+   explicit FScrollbar(FWidget* = 0);  // constructor
+   FScrollbar(int = fc::vertical, FWidget* = 0);  // constructor
    virtual ~FScrollbar();
    const char* getClassName() const;
 
@@ -103,7 +103,7 @@ class FScrollbar : public FWidget
    void setOrientation (int);
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
    void drawButtons();
    void drawBar();
    int  getScrollType() const;

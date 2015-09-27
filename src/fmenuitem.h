@@ -67,10 +67,10 @@ class FMenuItem : public FWidget
    void       processClicked();
 
  public:
-   explicit FMenuItem (FWidget* parent=0);
-   FMenuItem (FString&, FWidget* parent=0);
-   FMenuItem (const std::string&, FWidget* parent=0);
-   FMenuItem (const char*, FWidget* parent=0);
+   explicit FMenuItem (FWidget* = 0);
+   FMenuItem (FString&, FWidget* = 0);
+   FMenuItem (const std::string&, FWidget* = 0);
+   FMenuItem (const char*, FWidget* = 0);
    virtual ~FMenuItem();
 
    void       onAccel (FAccelEvent*);

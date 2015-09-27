@@ -31,7 +31,7 @@ class watch : public FDialog
    watch& operator = (const watch&); // and operator '='
 
  public:
-   explicit watch (FWidget* parent=0);  // constructor
+   explicit watch (FWidget* = 0);  // constructor
   ~watch();  // destructor
    void printTime();
    void onTimer (FTimerEvent*);

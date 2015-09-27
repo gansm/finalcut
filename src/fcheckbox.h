@@ -48,8 +48,8 @@ class FCheckBox : public FToggleButton
    void drawCheckButton();
 
  public:
-   explicit FCheckBox (FWidget* parent=0);  // constructor
-   FCheckBox (const FString&, FWidget* parent=0);  // constructor
+   explicit FCheckBox (FWidget* = 0);  // constructor
+   FCheckBox (const FString&, FWidget* = 0);  // constructor
    virtual ~FCheckBox();  // destructor
    const char* getClassName() const;
 };

@@ -28,7 +28,7 @@ class Button : public FButton
 private:
    bool checked;
  public:
-   explicit Button (FWidget* parent=0);  // constructor
+   explicit Button (FWidget* = 0);  // constructor
    void setChecked(bool);
    void onKeyPress (FKeyEvent*);
 };

@@ -158,16 +158,16 @@ class FString
    FString& setNumber (uInt);
    FString& setNumber (long);
    FString& setNumber (uLong);
-   FString& setNumber (float, int precision=8);
-   FString& setNumber (double, int precision=11);
-   FString& setNumber (lDouble, int precision=11);
+   FString& setNumber (float, int = 8);
+   FString& setNumber (double, int = 11);
+   FString& setNumber (lDouble, int = 11);
 
-   FString& setFormatedNumber (sInt16, char separator='.');
-   FString& setFormatedNumber (uInt16, char separator='.');
-   FString& setFormatedNumber (int,    char separator='.');
-   FString& setFormatedNumber (uInt,   char separator='.');
-   FString& setFormatedNumber (long,   char separator='.');
-   FString& setFormatedNumber (uLong,  char separator='.');
+   FString& setFormatedNumber (sInt16, char = '.');
+   FString& setFormatedNumber (uInt16, char = '.');
+   FString& setFormatedNumber (int,    char = '.');
+   FString& setFormatedNumber (uInt,   char = '.');
+   FString& setFormatedNumber (long,   char = '.');
+   FString& setFormatedNumber (uLong,  char = '.');
 
    friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
    friend std::istream&  operator >> (std::istream& instr, FString& s);
@@ -278,7 +278,7 @@ class FString
    FString replace (const char, const char);
 
    FString replaceControlCodes() const;
-   FString expandTabs (uInt tabsize=8) const;
+   FString expandTabs (uInt = 8) const;
    FString removeDel() const;
    FString removeBackspaces() const;
 

@@ -76,8 +76,8 @@ class FLineEdit : public FWidget
    void adjustSize();
 
  public:
-   explicit FLineEdit (FWidget* parent=0);  // constructor
-   FLineEdit (const FString&, FWidget* parent=0);  // constructor
+   explicit FLineEdit (FWidget* = 0);  // constructor
+   FLineEdit (const FString&, FWidget* = 0);  // constructor
    virtual ~FLineEdit();  // destructor
    const char* getClassName() const;
 

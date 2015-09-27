@@ -17,7 +17,7 @@ class Mandelbrot : public FDialog
    virtual void draw();
 
  public:
-   explicit Mandelbrot (FWidget* parent=0);  // constructor
+   explicit Mandelbrot (FWidget* = 0);  // constructor
   ~Mandelbrot();  // destructor
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);

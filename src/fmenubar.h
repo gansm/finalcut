@@ -59,7 +59,7 @@ class FMenuBar : public FWindow, public FMenuList
    void adjustSize();
 
  public:
-   explicit FMenuBar (FWidget* parent=0);  // constructor
+   explicit FMenuBar (FWidget* = 0);  // constructor
    virtual ~FMenuBar();  // destructor
    virtual const char* getClassName() const;
 
@@ -69,7 +69,7 @@ class FMenuBar : public FWindow, public FMenuList
    void hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
    void cb_item_activated (FWidget*, void*);
 };
 #pragma pack(pop)

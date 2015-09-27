@@ -87,11 +87,11 @@ class FMessageBox : public FDialog
    void cb_processClick (FWidget*, void*);
 
  public:
-   explicit FMessageBox (FWidget* parent=0);
+   explicit FMessageBox (FWidget* = 0);
    FMessageBox (const FMessageBox&);       // copy constructor
    FMessageBox ( const FString&, const FString&
                , int, int, int
-               , FWidget* parent=0 );
+               , FWidget* = 0 );
   ~FMessageBox();
    FMessageBox& operator = (const FMessageBox&); // assignment
    const char* getClassName() const;
@@ -116,22 +116,22 @@ class FMessageBox : public FDialog
    static int info ( FWidget*
                    , const FString&
                    , const FString&
-                   , int button0 = FMessageBox::Ok
-                   , int button1=0
-                   , int button2=0 );
+                   , int = FMessageBox::Ok
+                   , int = 0
+                   , int = 0 );
 
    static int info ( FWidget*
                    , const FString&
                    , int
-                   , int button0 = FMessageBox::Ok
-                   , int button1=0
-                   , int button2=0 );
+                   , int = FMessageBox::Ok
+                   , int = 0
+                   , int = 0 );
 
    static int error ( FWidget*
                     , const FString&
-                    , int button0 = FMessageBox::Ok
-                    , int button1=0
-                    , int button2=0 );
+                    , int = FMessageBox::Ok
+                    , int = 0
+                    , int = 0 );
 };
 #pragma pack(pop)
 

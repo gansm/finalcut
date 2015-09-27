@@ -64,7 +64,7 @@ class FTextView : public FWidget
    void adjustSize();
 
  public:
-   explicit FTextView (FWidget* parent=0);  // constructor
+   explicit FTextView (FWidget* = 0);  // constructor
   ~FTextView();  // destructor
    const char* getClassName() const;
 
@@ -77,7 +77,7 @@ class FTextView : public FWidget
    void        onFocusOut (FFocusEvent*);
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void        setGeometry (int, int, int, int, bool adjust=true);
+   void        setGeometry (int, int, int, int, bool = true);
    uInt        getColumns() const;
    uInt        getRows() const;
    void        setPosition (int);

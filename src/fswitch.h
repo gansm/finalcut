@@ -51,8 +51,8 @@ class FSwitch : public FToggleButton
    void drawCheckButton();
 
  public:
-   explicit FSwitch (FWidget* parent=0);  // constructor
-   FSwitch (const FString&, FWidget* parent=0);  // constructor
+   explicit FSwitch (FWidget* = 0);  // constructor
+   FSwitch (const FString&, FWidget* = 0);  // constructor
    virtual ~FSwitch();  // destructor
    const char* getClassName() const;
    void onKeyPress (FKeyEvent*);

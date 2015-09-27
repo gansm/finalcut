@@ -61,10 +61,10 @@ class FStatusKey : public FWidget
    void setStatusbar (FStatusBar*);
 
  public:
-   explicit FStatusKey (FWidget* parent=0);
-   FStatusKey (int, FString&, FWidget* parent=0);
-   FStatusKey (int, const std::string&, FWidget* parent=0);
-   FStatusKey (int, const char*, FWidget* parent=0);
+   explicit FStatusKey (FWidget* = 0);
+   FStatusKey (int, FString&, FWidget* = 0);
+   FStatusKey (int, const std::string&, FWidget* = 0);
+   FStatusKey (int, const char*, FWidget* = 0);
    virtual ~FStatusKey();
 
    void onAccel (FAccelEvent*);
@@ -161,7 +161,7 @@ class FStatusBar : public FWindow
    void adjustSize();
 
  public:
-   explicit FStatusBar (FWidget* parent=0);  // constructor
+   explicit FStatusBar (FWidget* = 0);  // constructor
    virtual ~FStatusBar();  // destructor
    virtual const char* getClassName() const;
 
@@ -171,7 +171,7 @@ class FStatusBar : public FWindow
    void hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
 
    uInt count() const;
    FStatusKey* key (int) const;

@@ -131,7 +131,7 @@ class FListBox : public FWidget
    void adjustSize();
 
  public:
-   explicit FListBox (FWidget* parent=0);  // constructor
+   explicit FListBox (FWidget* = 0);  // constructor
   ~FListBox();  // destructor
    const char* getClassName() const;
 
@@ -161,7 +161,7 @@ class FListBox : public FWidget
    bool hasBrackets(int) const;
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
 
    void setMultiSelection (bool);
    void setMultiSelection ();
@@ -180,11 +180,11 @@ class FListBox : public FWidget
    bool hasShadow();
 
    void insert ( FString
-               , fc::brackets_type b = fc::NoBrackets
-               , bool s = false );
+               , fc::brackets_type = fc::NoBrackets
+               , bool = false );
    void insert ( long
-               , fc::brackets_type b = fc::NoBrackets
-               , bool s = false );
+               , fc::brackets_type = fc::NoBrackets
+               , bool = false );
    void remove ( int);
    void clear();
 

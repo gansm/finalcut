@@ -314,7 +314,7 @@ class FWidget : public FObject, public FTerm
    virtual bool focusPrevChild (void);
 
  public:
-   explicit FWidget (FWidget* parent=0);  // constructor
+   explicit FWidget (FWidget* = 0);  // constructor
   ~FWidget();  // destructor
 
    const char*      getClassName() const;
@@ -341,11 +341,11 @@ class FWidget : public FObject, public FTerm
 
    void           addCallback ( FString
                               , FCallback
-                              , void* data = null );
+                              , void* = null );
    void           addCallback ( FString
                               , FWidget*
                               , FMemberCallback
-                              , void* data = null );
+                              , void* = null );
    void           delCallback (FCallback);
    void           delCallback (FWidget*);
    void           emitCallback (FString);
@@ -411,20 +411,20 @@ class FWidget : public FObject, public FTerm
    FPoint         globalToLocalPos(const FPoint&);
    void           setForegroundColor (int);
    void           setBackgroundColor (int);
-   void           setX (int, bool adjust=true);
-   void           setY (int, bool adjust=true);
-   void           setPos (const FPoint&, bool adjust=true);
-   void           setPos (int, int, bool adjust=true);
-   void           setWidth (int, bool adjust=true);
-   void           setHeight (int, bool adjust=true);
-   void           setTopPadding (int, bool adjust=true);
-   void           setLeftPadding (int, bool adjust=true);
-   void           setBottomPadding (int, bool adjust=true);
-   void           setRightPadding (int, bool adjust=true);
+   void           setX (int, bool = true);
+   void           setY (int, bool = true);
+   void           setPos (const FPoint&, bool = true);
+   void           setPos (int, int, bool = true);
+   void           setWidth (int, bool = true);
+   void           setHeight (int, bool = true);
+   void           setTopPadding (int, bool = true);
+   void           setLeftPadding (int, bool = true);
+   void           setBottomPadding (int, bool = true);
+   void           setRightPadding (int, bool = true);
    void           getTermGeometry();
    void           setTermGeometry (int, int);
-   virtual void   setGeometry (const FRect&, bool adjust=true);
-   virtual void   setGeometry (int, int, int, int, bool adjust=true);
+   virtual void   setGeometry (const FRect&, bool = true);
+   virtual void   setGeometry (int, int, int, int, bool = true);
    virtual void   move (const FPoint&);
    virtual void   move (int x, int y);
    int            getFlags() const;
@@ -458,7 +458,7 @@ class FWidget : public FObject, public FTerm
    void           clearShadow();
    void           drawFlatBorder();
    void           clearFlatBorder();
-   void           setDoubleFlatLine(int, bool bit=true);
+   void           setDoubleFlatLine(int, bool = true);
    void           unsetDoubleFlatLine(int);
    std::vector<bool>& doubleFlatLine_ref(int);
    virtual void   drawBorder();

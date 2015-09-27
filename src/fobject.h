@@ -68,7 +68,7 @@ class FObject
    friend class FApplication;
 
  public:
-   explicit FObject (FObject* parent=0);
+   explicit FObject (FObject* = 0);
    virtual ~FObject();
    virtual const char* getClassName() const;
 

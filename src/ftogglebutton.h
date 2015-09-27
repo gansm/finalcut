@@ -67,15 +67,15 @@ class FToggleButton : public FWidget
    virtual void onKeyPress (FKeyEvent*);
 
  public:
-   explicit FToggleButton (FWidget* parent=0);  // constructor
-   FToggleButton (const FString&, FWidget* parent=0);  // constructor
+   explicit FToggleButton (FWidget* = 0);  // constructor
+   FToggleButton (const FString&, FWidget* = 0);  // constructor
    virtual ~FToggleButton();  // destructor
    virtual const char* getClassName() const;
 
    void hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
 
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);

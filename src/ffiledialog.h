@@ -112,12 +112,12 @@ class FFileDialog : public FDialog
    void adjustSize();
 
  public:
-   explicit FFileDialog (FWidget* parent=0);
+   explicit FFileDialog (FWidget* = 0);
    FFileDialog (const FFileDialog&);       // copy constructor
    FFileDialog ( const FString&
                , const FString&
-               , DialogType type = FFileDialog::Open
-               , FWidget* parent=0 );
+               , DialogType = FFileDialog::Open
+               , FWidget* = 0 );
   ~FFileDialog();
    FFileDialog& operator = (const FFileDialog&); // assignment
    const char*   getClassName() const;

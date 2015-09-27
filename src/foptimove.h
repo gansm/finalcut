@@ -23,7 +23,6 @@
 #include <cstring>
 
 
-
 // value for a long capability waiting time
 #define LONG_DURATION 9999999
 
@@ -86,8 +85,8 @@ class FOptiMove
    bool isWideMove (int, int, int, int);
 
  public:
-   explicit FOptiMove(int baud=0);  // constructor
-  ~FOptiMove();            // destructor
+   explicit FOptiMove (int = 0);  // constructor
+  ~FOptiMove();                   // destructor
 
    void setBaudRate (int);
    void setTabStop (int);

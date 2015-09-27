@@ -232,7 +232,7 @@ class FTerm
    static int   closeConsole();
    static int   isConsole();
    static int   getScreenFont();
-   static int   setScreenFont (uChar*, uInt, uInt, uInt, bool direct=false);
+   static int   setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int   setUnicodeMap (struct unimapdesc*);
    static int   getUnicodeMap ();
    static int   setLightBackgroundColors (bool);

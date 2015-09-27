@@ -47,7 +47,7 @@ class FProgressbar : public FWidget
    virtual void draw();
 
  public:
-   explicit FProgressbar(FWidget* parent=0);  // constructor
+   explicit FProgressbar(FWidget* = 0);  // constructor
    virtual ~FProgressbar();
    const char* getClassName() const;
 
@@ -58,7 +58,7 @@ class FProgressbar : public FWidget
    void reset();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool adjust=true);
+   void setGeometry (int, int, int, int, bool = true);
    bool setEnable (bool);
    bool setEnable();
    bool unsetEnable();
