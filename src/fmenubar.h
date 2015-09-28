@@ -30,8 +30,9 @@
 #ifndef _FMENUBAR_H
 #define _FMENUBAR_H
 
-#include "fwindow.h"
 #include "fmenulist.h"
+#include "fmenu.h"
+#include "fwindow.h"
 
 
 //----------------------------------------------------------------------
@@ -45,13 +46,13 @@ class FMenuBar : public FWindow, public FMenuList
 {
  private:
    bool   mouse_down;
-   FPoint next_item_pos;
    int    x;
 
  private:
    FMenuBar (const FMenuBar&);
    FMenuBar& operator = (const FMenuBar&);
    void init();
+   void menu_dimension();
    bool isMenu (FMenuItem*) const;
    int  getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void draw();
@@ -71,6 +72,9 @@ class FMenuBar : public FWindow, public FMenuList
    using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool = true);
    void cb_item_activated (FWidget*, void*);
+
+ private:
+   friend class FMenuItem;
 };
 #pragma pack(pop)
 

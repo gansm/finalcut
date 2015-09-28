@@ -59,7 +59,9 @@ class FMenuItem : public FWidget
    FMenuItem& operator = (const FMenuItem&);
    void       init (FWidget*);
    uChar      getHotkey();
+   bool       isMenuBar (FMenuList*) const;
    bool       isMenuBar (FWidget*) const;
+   bool       isMenu (FMenuList*) const;
    bool       isMenu (FWidget*) const;
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
@@ -74,6 +76,9 @@ class FMenuItem : public FWidget
    virtual ~FMenuItem();
 
    void       onAccel (FAccelEvent*);
+   void       onMouseDown (FMouseEvent*);
+   void       onMouseUp (FMouseEvent*);
+   void       onMouseMove (FMouseEvent*);
    FString    getText() const;
    void       setActive();
    void       unsetActive();
@@ -88,8 +93,10 @@ class FMenuItem : public FWidget
    void       unsetChecked();
    bool       isChecked() const;
    bool       hasHotkey() const;
+   FMenu*     getMenu() const;
    void       setMenu(FMenu*);
    bool       hasMenu() const;
+   uInt       getTextLength() const;
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
@@ -155,6 +162,10 @@ inline bool FMenuItem::hasHotkey() const
 { return bool(hotkey != 0); }
 
 //----------------------------------------------------------------------
+inline FMenu* FMenuItem::getMenu() const
+{ return menu; }
+
+//----------------------------------------------------------------------
 inline void FMenuItem::setMenu(FMenu* m)
 { menu = m; }
 
@@ -162,5 +173,8 @@ inline void FMenuItem::setMenu(FMenu* m)
 inline bool FMenuItem::hasMenu() const
 { return bool(menu != 0); }
 
+//----------------------------------------------------------------------
+inline uInt FMenuItem::getTextLength() const
+{ return text_length; }
 
 #endif  // _FMENUITEM_H

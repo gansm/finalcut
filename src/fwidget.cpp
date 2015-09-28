@@ -1492,10 +1492,11 @@ void FWidget::setPos (const FPoint& p, bool adjust)
 //----------------------------------------------------------------------
 void FWidget::setPos (int x, int y, bool adjust)
 {
-  if ( xpos == x && widgetSize.getX() == x )
+  if (  xpos == x && widgetSize.getX() == x
+     && ypos == y && widgetSize.getY() == y )
+  {
     return;
-  if ( ypos == y && widgetSize.getY() == y )
-    return;
+  }
 
   if ( ! isWindow() )
   {
@@ -1675,8 +1676,9 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
   adjustWidgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
   adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
-                                 , ypos + ymin - 1,
-                                   width, height );
+                                 , ypos + ymin - 1
+                                 , width
+                                 , height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 
   if ( adjust )

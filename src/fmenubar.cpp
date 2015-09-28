@@ -2,7 +2,7 @@
 // Provides: class FMenuBar
 
 #include "fmenubar.h"
-
+#include "fmessagebox.h"
 //----------------------------------------------------------------------
 // class FMenuBar
 //----------------------------------------------------------------------
@@ -12,7 +12,6 @@
 FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
   , mouse_down(false)
-  , next_item_pos(1,1)
   , x(-1)
 {
   init();
@@ -54,6 +53,34 @@ void FMenuBar::init()
 }
 
 //----------------------------------------------------------------------
+void FMenuBar::menu_dimension()
+{
+  int item_X = 1;
+  int item_Y = 1;
+  std::vector<FMenuItem*>::const_iterator begin, end, iter;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  // find the max item width
+  while ( iter != end )
+  {
+    uInt len = (*iter)->getTextLength();
+    int item_width = int(len + 2);
+
+    // set item geometry
+    (*iter)->setGeometry (item_X, item_Y, item_width, 1, false);
+
+    // set menu position
+    if ( (*iter)->hasMenu() )
+      (*iter)->getMenu()->setPos (item_X, item_Y, false);
+
+    item_X += item_width;
+
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
 bool FMenuBar::isMenu (FMenuItem* mi) const
 {
   return mi->hasMenu();
@@ -86,6 +113,9 @@ void FMenuBar::draw()
   xmin = ymin = 1;
   height = 1;
   xpos = 1;
+
+  menu_dimension();
+  
   drawItems();
 }
 
@@ -120,6 +150,7 @@ void FMenuBar::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
+
 
     is_Active = (*iter)->isActivated();
     is_Selected = (*iter)->isSelected();
@@ -255,18 +286,17 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
 
     iter = itemlist.begin();
     end = itemlist.end();
-
+//FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)", ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()));  // + #include
     while ( iter != end )
     {
       int x1, x2, mouse_x, mouse_y, txt_length;
 
       x1 = X;
-      txt_length = int((*iter)->getText().getLength());
-      if ( (*iter)->hasHotkey() )
-        txt_length--;
-      x2 = x1 + txt_length;
-      mouse_x = ev->getX();
-      mouse_y = ev->getY();
+      txt_length = int((*iter)->getTextLength());
+
+      x2 = x1 + txt_length + 1;
+      mouse_x = ev->getGlobalX();
+      mouse_y = ev->getGlobalY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
@@ -306,16 +336,16 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
 
       while ( iter != end )
       {
-        int x1 = X;
-        int txt_length = int((*iter)->getText().getLength());
-        if ( (*iter)->hasHotkey() )
-          txt_length--;
-        int x2 = x1 + txt_length;
+        int x1, x2, txt_length;
+
+        x1 = X;
+        txt_length = int((*iter)->getTextLength());
+        x2 = x1 + txt_length + 1;
 
         if ( (*iter)->isSelected() )
         {
-          int mouse_x = ev->getX();
-          int mouse_y = ev->getY();
+          int mouse_x = ev->getGlobalX();
+          int mouse_y = ev->getGlobalY();
           if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
             (*iter)->unsetSelected();
           else
@@ -348,14 +378,14 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 
     while ( iter != end )
     {
-      int x1 = X;
-      int txt_length = int((*iter)->getText().getLength());
-      if ( (*iter)->hasHotkey() )
-        txt_length--;
-      int x2 = x1 + txt_length;
+      int x1, x2, txt_length;
 
-      int mouse_x = ev->getX();
-      int mouse_y = ev->getY();
+      x1 = X;
+      txt_length = int((*iter)->getTextLength());
+      x2 = x1 + txt_length + 1;
+
+      int mouse_x = ev->getGlobalX();
+      int mouse_y = ev->getGlobalY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )

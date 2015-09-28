@@ -425,16 +425,19 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
       while ( iter != end )
       {
-        int x1 = X;
-        int kname_len = int(getKeyName((*iter)->getKey()).getLength());
-        int txt_length = int((*iter)->getText().getLength());
-        int x2 = x1 + kname_len + txt_length + 1;
+        int x1, x2, kname_len, txt_length;
+
+        x1 = X;
+        kname_len = int(getKeyName((*iter)->getKey()).getLength());
+        txt_length = int((*iter)->getText().getLength());
+        x2 = x1 + kname_len + txt_length + 1;
 
         if ( (*iter)->hasMouseFocus() )
         {
+          int mouse_x, mouse_y;
           (*iter)->unsetMouseFocus();
-          int mouse_x = ev->getX();
-          int mouse_y = ev->getY();
+          mouse_x = ev->getX();
+          mouse_y = ev->getY();
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();
           redraw();
@@ -465,13 +468,15 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 
     while ( iter != end )
     {
-      int x1 = X;
-      int kname_len = int(getKeyName((*iter)->getKey()).getLength());
-      int txt_length = int((*iter)->getText().getLength());
-      int x2 = x1 + kname_len + txt_length + 1;
+      int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
 
-      int mouse_x = ev->getX();
-      int mouse_y = ev->getY();
+      x1 = X;
+      kname_len = int(getKeyName((*iter)->getKey()).getLength());
+      txt_length = int((*iter)->getText().getLength());
+      x2 = x1 + kname_len + txt_length + 1;
+
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )

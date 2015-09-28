@@ -16,12 +16,6 @@
 #include "fwidget.h"
 
 /*
-- FMenuBar muß die x + y Positionen des nächsten
-  einzufügenden FMenuItem kennen
-
-- FMenu muß die x + y Positionen des nächsten
-  einzufügenden FMenuItem kennen
-
     ┌─────────┐           ┌──────────┐
     │ FWindow │◄───┐  ┌───┤ FMenuBar │
     └─────────┘    │  │   └──────────┘

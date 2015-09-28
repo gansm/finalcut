@@ -47,7 +47,6 @@ class FMenu : public FWindow, public FMenuList
  private:
    FMenuItem* item;
    FMenuList* super_menu;
-   FPoint     next_item_pos;
    uInt       maxItemWidth;
    int        current;
    bool       mouse_down;

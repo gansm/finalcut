@@ -13,7 +13,6 @@ FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
   , item(0)
   , super_menu(0)
-  , next_item_pos(1,1)
   , maxItemWidth(0)
   , current(0)
   , mouse_down(false)
@@ -26,7 +25,6 @@ FMenu::FMenu (FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
   , super_menu(0)
-  , next_item_pos(1,1)
   , maxItemWidth(0)
   , current(0)
   , mouse_down(false)
@@ -40,7 +38,6 @@ FMenu::FMenu (const std::string& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
   , super_menu(0)
-  , next_item_pos(1,1)
   , maxItemWidth(0)
   , current(0)
   , mouse_down(false)
@@ -54,7 +51,6 @@ FMenu::FMenu (const char* txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
   , super_menu(0)
-  , next_item_pos(1,1)
   , maxItemWidth(0)
   , current(0)
   , mouse_down(false)
@@ -122,6 +118,7 @@ void FMenu::init()
 //----------------------------------------------------------------------
 void FMenu::menu_dimension()
 {
+  int item_X, item_Y;
   std::vector<FMenuItem*>::const_iterator iter, end;
   iter = itemlist.begin();
   end = itemlist.end();
@@ -130,18 +127,29 @@ void FMenu::menu_dimension()
   // find the max item width
   while ( iter != end )
   {
-    FString item_text = (*iter)->getText();
-    uInt len = item_text.getLength();
+    uInt item_width = (*iter)->getTextLength() + 2;
 
-   if ( item_text.includes(L'&') )  // item has a hotkey '&'
-     len--;
+    if ( item_width > maxItemWidth )
+      maxItemWidth = item_width;
 
-    if ( len > maxItemWidth )
-      maxItemWidth = len;
     ++iter;
   }
 
-  setGeometry (xpos, ypos, int(maxItemWidth + 4), int(count() + 2));
+  // set widget geometry
+  setGeometry (xpos, ypos, int(maxItemWidth + 2), int(count() + 2));
+
+  // set geometry of all items
+  iter = itemlist.begin();
+  item_X = 1;
+  item_Y = 1;
+
+  while ( iter != end )
+  {
+    (*iter)->setGeometry (item_X, item_Y, maxItemWidth, 1);
+    item_Y++;
+
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -350,7 +358,7 @@ void FMenu::drawItems()
 
     if ( is_Selected )
     {
-      for (uInt i=uInt(to_char); i <= maxItemWidth; i++)
+      for (uInt i=uInt(to_char); i < maxItemWidth-1; i++)
         print (' ');
     }
 
