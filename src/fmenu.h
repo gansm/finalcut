@@ -46,9 +46,9 @@ class FMenu : public FWindow, public FMenuList
 {
  private:
    FMenuItem* item;
+   FMenuItem* selectedListItem;
    FMenuList* super_menu;
    uInt       maxItemWidth;
-   int        current;
    bool       mouse_down;
 
  private:
@@ -57,7 +57,6 @@ class FMenu : public FWindow, public FMenuList
    void       init();
    void       menu_dimension();
    bool       isMenuBar (FWidget*) const;
-
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
@@ -77,6 +76,7 @@ class FMenu : public FWindow, public FMenuList
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
+   void       show();
    void       hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
@@ -91,15 +91,20 @@ class FMenu : public FWindow, public FMenuList
    void       setSelected();
    void       unsetSelected();
    bool       isSelected() const;
+   void       selectFirstItemInList();
+   void       unselectItemInList();
+   bool       hasSelectedListItem() const;
    bool       hasHotkey() const;
    void       setMenu (FMenu*);
    bool       hasMenu() const;
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
-   void       insert (FMenuItem*);
-   void       remove (FMenuItem*);
    void       cb_menuitem_activated (FWidget*, void*);
+   void       cb_menuitem_deactivated (FWidget*, void*);
+
+ private:
+   friend class FMenuItem;
 };
 #pragma pack(pop)
 
@@ -144,6 +149,10 @@ inline void FMenu::unsetSelected()
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const
 { return item->isSelected(); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::hasSelectedListItem() const
+{ return selectedListItem; }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasHotkey() const

@@ -81,8 +81,17 @@ uChar FButton::getHotkey()
   length = int(text.getLength());
 
   for (int i=0; i < length; i++)
-    if ( (i+1 < length) && (text[uInt(i)] == '&') )
-      return uChar(text[uInt(++i)]);
+  {
+    try
+    {
+      if ( (i+1 < length) && (text[uInt(i)] == '&') )
+        return uChar(text[uInt(++i)]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;;
+    }
+  }
   return 0;
 }
 

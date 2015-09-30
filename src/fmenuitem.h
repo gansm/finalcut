@@ -66,6 +66,7 @@ class FMenuItem : public FWidget
    FMenuList* superMenu() const;
    void       setSuperMenu (FMenuList*);
    void       processActivate();
+   void       processDeactivate();
    void       processClicked();
 
  public:
@@ -104,6 +105,7 @@ class FMenuItem : public FWidget
  private:
    friend class FMenuList;
    friend class FMenuBar;
+   friend class FMenu;
 };
 #pragma pack(pop)
 
@@ -124,10 +126,6 @@ inline void FMenuItem::unsetActive()
 //----------------------------------------------------------------------
 inline bool FMenuItem::isActivated() const
 { return active; }
-
-//----------------------------------------------------------------------
-inline void FMenuItem::unsetSelected()
-{ selected = false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isSelected() const

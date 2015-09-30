@@ -214,7 +214,7 @@ void FFileDialog::draw()
 inline bool FFileDialog::pattern_match ( const char* pattern
                                        , const char* fname )
 {
-  char search[128];
+  char search[128] = {};
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
     search[0] = '.';
@@ -222,7 +222,7 @@ inline bool FFileDialog::pattern_match ( const char* pattern
     strncat(search, pattern, sizeof(search) - strlen(search) - 1);
   }
   else
-    strncpy(search, pattern, sizeof(search));
+    strncpy(search, pattern, sizeof(search) - 1);
 
   if ( fnmatch (search, fname, FNM_PERIOD) == 0 )
     return true;
@@ -610,9 +610,9 @@ int FFileDialog::readDir()
 
       if ( next->d_type == DT_LNK )  // symbolic link
       {
-        char resolved_path[MAXPATHLEN];
-        char symLink[MAXPATHLEN];
-        strncpy(symLink, dir, sizeof(symLink));
+        char resolved_path[MAXPATHLEN] = {};
+        char symLink[MAXPATHLEN] = {};
+        strncpy(symLink, dir, sizeof(symLink) - 1);
         strncat(symLink, next->d_name, sizeof(symLink) - strlen(symLink) - 1);
 
         if ( realpath(symLink, resolved_path) != 0 )  // follow link

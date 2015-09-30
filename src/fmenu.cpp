@@ -12,9 +12,9 @@
 FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
   , item(0)
+  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
-  , current(0)
   , mouse_down(false)
 {
   init();
@@ -24,9 +24,9 @@ FMenu::FMenu(FWidget* parent)
 FMenu::FMenu (FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
+  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
-  , current(0)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
@@ -37,9 +37,9 @@ FMenu::FMenu (FString& txt, FWidget* parent)
 FMenu::FMenu (const std::string& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
+  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
-  , current(0)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
@@ -50,9 +50,9 @@ FMenu::FMenu (const std::string& txt, FWidget* parent)
 FMenu::FMenu (const char* txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
+  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
-  , current(0)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
@@ -101,16 +101,10 @@ void FMenu::init()
   setGeometry (1, 1 , 10, 2, false);  // initialize geometry values
   window_object  = true;
   addWindow(this);
+  hide();
 
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
-
-  FWidget* old_focus = FWidget::getFocusWidget();
-  if ( old_focus )
-  {
-    setFocus();
-    old_focus->redraw();
-  }
 
   item->setMenu(this);
 }
@@ -195,25 +189,12 @@ int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 //----------------------------------------------------------------------
 void FMenu::draw()
 {
-  if ( itemlist.empty() )
-    return;
-
-  if ( current < 1 )
-  {
-    current = 1;
-    itemlist[0]->setSelected();
-  }
-
-  menu_dimension();
-
   // fill the background
-  setColor (foregroundColor, backgroundColor);
+  setColor (wc.menu_active_fg, wc.menu_active_bg);
   setUpdateVTerm(false);
   clrscr();
   drawBorder();
-
   drawItems();
-
   setUpdateVTerm(true);
 }
 
@@ -393,6 +374,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       while ( iter != end )
       {
         (*iter)->unsetSelected();
+        selectedListItem = 0;
         ++iter;
       }
     }
@@ -406,32 +388,36 @@ void FMenu::onMouseDown (FMouseEvent* ev)
   if ( ! itemlist.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
-    int X = 1;
+    bool focus_changed = false;
 
     iter = itemlist.begin();
     end = itemlist.end();
 
     while ( iter != end )
     {
-      int x1, x2, mouse_x, mouse_y, txt_length;
+      int x1, x2, y, mouse_x, mouse_y;
 
-      x1 = X;
-      txt_length = int((*iter)->getText().getLength());
-      x2 = x1 + txt_length + 1;
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      y  = (*iter)->getY();
       mouse_x = ev->getX();
       mouse_y = ev->getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
-         && mouse_y == 1
+         && mouse_y == y
          && ! (*iter)->isSelected() )
       {
+        if ( hasSelectedListItem() )
+          unselectItemInList();
         (*iter)->setSelected();
-        redraw();
+        selectedListItem = *iter;
+        focus_changed = true;
       }
-      X = x2 + 2;
       ++iter;
     }
+    if ( focus_changed )
+      redraw();
   }
 }
 
@@ -447,28 +433,36 @@ void FMenu::onMouseUp (FMouseEvent* ev)
     if ( ! itemlist.empty() )
     {
       std::vector<FMenuItem*>::const_iterator iter, end;
-      int X = 1;
+      bool focus_changed = false;
 
       iter = itemlist.begin();
       end = itemlist.end();
 
       while ( iter != end )
       {
-        int x1 = X;
-        int txt_length = int((*iter)->getText().getLength());
-        int x2 = x1 + txt_length + 1;
+        int x1, x2, y;
+        
+        x1 = (*iter)->getX();
+        x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+        y  = (*iter)->getY();
 
         if ( (*iter)->isSelected() )
         {
           int mouse_x = ev->getX();
           int mouse_y = ev->getY();
-          if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
-            (*iter)->unsetSelected();
-          redraw();
+
+          if (  mouse_x >= x1
+             && mouse_x <= x2
+             && mouse_y == y )
+          {
+            (*iter)->processClicked();
+            redraw();
+          }
         }
-        X = x2 + 2;
         ++iter;
       }
+      if ( focus_changed )
+        redraw();
     }
   }
 }
@@ -483,38 +477,31 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     bool focus_changed = false;
-    int X=1;
 
     iter = itemlist.begin();
     end = itemlist.end();
 
     while ( iter != end )
     {
-      int x1 = X;
-      int txt_length = int((*iter)->getText().getLength());
-      int x2 = x1 + txt_length + 1;
+      int x1, x2, y, mouse_x, mouse_y;
 
-      int mouse_x = ev->getX();
-      int mouse_y = ev->getY();
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      y  = (*iter)->getY();
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
+
       if (  mouse_x >= x1
          && mouse_x <= x2
-         && mouse_y == 1 )
+         && mouse_y == y
+         && ! (*iter)->isSelected() )
       {
-        if ( ! (*iter)->isSelected() )
-        {
-          (*iter)->setSelected();
-          focus_changed = true;
-        }
+        if ( hasSelectedListItem() )
+          unselectItemInList();
+        (*iter)->setSelected();
+        selectedListItem = *iter;
+        focus_changed = true;
       }
-      else
-      {
-        if ( (*iter)->isSelected() )
-        {
-          (*iter)->unsetSelected();
-          focus_changed = true;
-        }
-      }
-      X = x2 + 2;
       ++iter;
     }
     if ( focus_changed )
@@ -523,8 +510,30 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FMenu::show()
+{
+  if ( ! isVisible() )
+    return;
+
+  FWindow::show();
+
+  // set the cursor to the focus widget
+  if (  FWidget::getFocusWidget()
+     && FWidget::getFocusWidget()->isVisible()
+     && FWidget::getFocusWidget()->hasVisibleCursor()
+     && FWidget::getFocusWidget()->isCursorInside() )
+  {
+    FWidget::getFocusWidget()->setCursor();
+    showCursor();
+    flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenu::hide()
-{ }
+{
+  FWindow::hide();
+}
 
 //----------------------------------------------------------------------
 void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
@@ -537,15 +546,25 @@ void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FMenu::insert (FMenuItem* i)
+void FMenu::selectFirstItemInList()
 {
-  FMenuList::insert(i);
+  if ( itemlist.empty() )
+    return;
+
+  if ( ! hasSelectedListItem() )
+  {
+    // select the first item
+    itemlist[0]->setSelected();
+    selectedListItem = itemlist[0];
+  }
 }
 
 //----------------------------------------------------------------------
-void FMenu::remove (FMenuItem* i)
+void FMenu::unselectItemInList()
 {
-  FMenuList::remove(i);
+  if ( hasSelectedListItem() )
+    selectedListItem->unsetSelected();
+  selectedListItem = 0;
 }
 
 //----------------------------------------------------------------------
@@ -555,6 +574,17 @@ void FMenu::cb_menuitem_activated (FWidget* widget, void*)
 
   if ( menuitem->hasMenu() )
   {
-    beep();
+    //beep();
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::cb_menuitem_deactivated (FWidget* widget, void*)
+{
+  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+
+  if ( menuitem->hasMenu() )
+  {
+    //beep();
   }
 }

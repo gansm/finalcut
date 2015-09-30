@@ -45,8 +45,7 @@
 class FMenuBar : public FWindow, public FMenuList
 {
  private:
-   bool   mouse_down;
-   int    x;
+   bool mouse_down;
 
  private:
    FMenuBar (const FMenuBar&);
@@ -72,6 +71,7 @@ class FMenuBar : public FWindow, public FMenuList
    using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool = true);
    void cb_item_activated (FWidget*, void*);
+   void cb_item_deactivated (FWidget*, void*);
 
  private:
    friend class FMenuItem;

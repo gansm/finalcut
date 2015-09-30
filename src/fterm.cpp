@@ -330,7 +330,7 @@ int FTerm::setScreenFont (uChar* fontdata, uInt count,
     font.data = fontdata;
   else
   {
-    const uInt bytes_per_line = uInt(ceil(font.width/8));
+    const uInt bytes_per_line = font.width / 8;
     const size_t data_size = bytes_per_line * 32 * font.charcount;
 
     try
@@ -776,8 +776,8 @@ int FTerm::parseKeyString ( char* buffer
     // look for meta keys
     for (int i=0; Fmetakey[i].string[0] != 0; i++)
     {
-      char* kmeta = Fmetakey[i].string;
-      len = (kmeta) ? int(strlen(kmeta)) : 0;
+      char* kmeta = Fmetakey[i].string;  // The string is never null
+      len = int(strlen(kmeta));
       if ( kmeta && strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
       {
         if ( len == 2 && (  buffer[1] == 'O'
@@ -805,7 +805,7 @@ int FTerm::parseKeyString ( char* buffer
 
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[4] = { '\0' };  // init array with '\0'
+    char utf8char[4] = {};  // init array with '\0'
     if ((firstchar & 0xe0) == 0xc0)
       len = 2;
     else if ((firstchar & 0xf0) == 0xe0)
@@ -948,6 +948,8 @@ void FTerm::init()
   stdin_no  = fileno(stdin);
   stdout_no = fileno(stdout);
   stdin_status_flags = fcntl(stdin_no, F_GETFL);
+  if ( stdin_status_flags == -1 )
+    std::abort();
 
   term_name = ttyname(stdout_no);
   // look into /etc/ttytype for the type
@@ -994,7 +996,7 @@ void FTerm::init()
   background_color_erase = false;
   x11_button_state = 0x03;
 
-  termtype = getenv("TERM");
+  termtype = getenv(const_cast<char*>("TERM"));
   if ( ! termtype )
     termtype = const_cast<char*>("vt100");
   locale_xterm = getenv("XTERM_LOCALE");
@@ -1112,80 +1114,90 @@ void FTerm::init()
     FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
     temp.remove(temp.getLength()-1, 1);
     std::vector<FString> Sec_DA_split = temp.split(';');
-    FString* Sec_DA_components = &Sec_DA_split[0];
 
-    switch ( Sec_DA_components[0].toInt() )
+    if ( Sec_DA_split.size() >= 2 )
     {
-      case 0:
-        if ( Sec_DA_components[1].toInt() == 136 )
-          putty_terminal = true;  // PuTTY
-        break;
+      FString* Sec_DA_components = &Sec_DA_split[0];
 
-      case 1:
-        // also used by apple terminal
-        if ( strncmp(Sec_DA_components[1].c_str(), "2c", 2) == 0 )
-          kterm_terminal = true;  // kterm
-        else
-        {
-          gnome_terminal = true;  // vte / gnome terminal
-          if ( color256 )
-            termtype = const_cast<char*>("gnome-256color");
+      switch ( Sec_DA_components[0].toInt() )
+      {
+        case 0:
+          if (  Sec_DA_components[1]
+             && Sec_DA_components[1].toInt() == 136 )
+          {
+            putty_terminal = true;  // PuTTY
+          }
+          break;
+  
+        case 1:
+          // also used by apple terminal
+          if (  Sec_DA_components[1]
+             && strncmp(Sec_DA_components[1].c_str(), "2c", 2) == 0 )
+          {
+            kterm_terminal = true;  // kterm
+          }
           else
-            termtype = const_cast<char*>("gnome");
-        }
-        break;
-
-      case 32:  // Tera Term
-        tera_terminal = true;
-        termtype = const_cast<char*>("teraterm");
-        break;
-
-      case 77:  // mintty
-        mintty_terminal = true;
-        termtype = const_cast<char*>("xterm-256color");
-        // application escape key mode
-        tputs ("\033[?7727h", 1, putchar);
-        fflush(stdout);
-        break;
-
-      case 83:  // screen
-        screen_terminal = true;
-        break;
-
-      case 82:  // rxvt
-        rxvt_terminal = true;
-        force_vt100 = true;  // this rxvt terminal support on utf-8
-        if (  strncmp(termtype, "rxvt-", 5) != 0
-           || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
-          termtype = const_cast<char*>("rxvt-16color");
-        break;
-
-      case 85:  // rxvt-unicode
-        rxvt_terminal = true;
-        urxvt_terminal = true;
-        if ( strncmp(termtype, "rxvt-", 5) != 0 )
-        {
-          if ( color256 )
-            termtype = const_cast<char*>("rxvt-256color");
-          else
-            termtype = const_cast<char*>("rxvt");
-        }
-        break;
-
-      default:
-        break;
+          {
+            gnome_terminal = true;  // vte / gnome terminal
+            if ( color256 )
+              termtype = const_cast<char*>("gnome-256color");
+            else
+              termtype = const_cast<char*>("gnome");
+          }
+          break;
+  
+        case 32:  // Tera Term
+          tera_terminal = true;
+          termtype = const_cast<char*>("teraterm");
+          break;
+  
+        case 77:  // mintty
+          mintty_terminal = true;
+          termtype = const_cast<char*>("xterm-256color");
+          // application escape key mode
+          tputs ("\033[?7727h", 1, putchar);
+          fflush(stdout);
+          break;
+  
+        case 83:  // screen
+          screen_terminal = true;
+          break;
+  
+        case 82:  // rxvt
+          rxvt_terminal = true;
+          force_vt100 = true;  // this rxvt terminal support on utf-8
+          if (  strncmp(termtype, "rxvt-", 5) != 0
+             || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
+            termtype = const_cast<char*>("rxvt-16color");
+          break;
+  
+        case 85:  // rxvt-unicode
+          rxvt_terminal = true;
+          urxvt_terminal = true;
+          if ( strncmp(termtype, "rxvt-", 5) != 0 )
+          {
+            if ( color256 )
+              termtype = const_cast<char*>("rxvt-256color");
+            else
+              termtype = const_cast<char*>("rxvt");
+          }
+          break;
+  
+        default:
+          break;
+      }
     }
   }
   // end of terminal detection
 
-  if (  strncmp(termtype, "xterm", 5) == 0
-     || strncmp(termtype, "Eterm", 4) == 0 )
+  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
     xterm = true;
   else
     xterm = false;
 
-  if (  strncmp(termtype, "linux", 5) == 0
-     || strncmp(termtype, "con", 3) == 0 )
+  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
     linux_terminal = true;
   else
     linux_terminal = false;
@@ -2549,7 +2561,7 @@ FString FTerm::getXTermFont()
   if ( raw_mode && non_blocking_stdin )
   {
     int n;
-    char temp[150] = { '\0' };
+    char temp[150] = {};
     tputs("\033]50;?\07", 1, putchar);  // get font
     fflush(stdout);
     usleep(150000);  // wait 150 ms
@@ -2557,8 +2569,11 @@ FString FTerm::getXTermFont()
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
     // Esc \ = OSC String Terminator
     if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
+    {
       temp[n-2] = '\0';
-    font = temp;
+      font = temp;
+    }
+
     if ( font.getLength() > 6 )
       font = font.mid(6, font.getLength()-1);
   }
@@ -2576,7 +2591,7 @@ FString FTerm::getXTermTitle()
   if ( raw_mode && non_blocking_stdin )
   {
     int n;
-    char temp[512] = { '\0' };
+    char temp[512] = {};
     tputs("\033[21t", 1, putchar);  // get title
     fflush(stdout);
     usleep(150000);  // wait 150 ms
@@ -2584,8 +2599,11 @@ FString FTerm::getXTermTitle()
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
     // Esc \ = OSC String Terminator
     if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
+    {
       temp[n-2] = '\0';
-    title = temp;
+      title = temp;
+    }
+
     if ( title.getLength() > 3 )
       title = title.right( title.getLength()-3 );
   }
@@ -3309,14 +3327,14 @@ bool FTerm::setNonBlockingInput(bool on)
   if ( on )  // make stdin non-blocking
   {
     stdin_status_flags |= O_NONBLOCK;
-    fcntl (stdin_no, F_SETFL, stdin_status_flags);
-    non_blocking_stdin = true;
+    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = true;
   }
   else
   {
     stdin_status_flags &= ~O_NONBLOCK;
-    fcntl (stdin_no, F_SETFL, stdin_status_flags);
-    non_blocking_stdin = false;
+    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = false;
   }
   return non_blocking_stdin;
 }
@@ -3425,7 +3443,7 @@ FString FTerm::getAnswerbackMsg()
 
   if ( raw_mode )
   {
-    char temp[10] = { '\0' };
+    char temp[10] = {};
     putchar(0x05);  // send enquiry character
     fflush(stdout);
     usleep(150000);  // wait 150 ms
@@ -3443,7 +3461,7 @@ FString FTerm::getSecDA()
 
   if ( raw_mode )
   {
-    char temp[16] = { '\0' };
+    char temp[16] = {};
     // get the secondary device attributes
     putchar(0x1b);  // ESC
     putchar(0x5b);  //  [

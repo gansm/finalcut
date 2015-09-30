@@ -1,3 +1,6 @@
+2015-09-39  Markus Gans  <guru.mail@muenster.de>
+	* Some code improvements
+
 2015-09-27  Markus Gans  <guru.mail@muenster.de>
 	* Add methods getPos and setPos to FRect and FWidget
 

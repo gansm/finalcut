@@ -5,15 +5,15 @@ install:
   - lsb_release -a
   - uname -a
   - sudo apt-get update
-  - sudo apt-get -y install libglib2.0-dev libncursesw5-dev libgpm-dev autoconf-archive
+  - sudo apt-get -y install autotools-dev automake autoconf autoconf-archive libtool libglib2.0-dev libncurses5-dev libgpm-dev gperf
   - git clone git://github.com/gansm/finalcut.git
   - cd finalcut
   - autoreconf -v --install --force
   - ./configure --prefix=/usr
-  - make
+  - make V=1 -j10
   - sudo make install
   - cd ..
   - rm -rf finalcut
 script:
-  - autoreconf -v --install --force && ./configure --prefix=/usr && make && make check
+  - autoreconf -v --install --force && ./configure --prefix=/usr && make -j10 && make check
 

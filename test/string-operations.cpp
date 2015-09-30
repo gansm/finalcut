@@ -149,8 +149,10 @@ int main (int, char**)
   try
   {
     double double_num = FString("2.7182818284590452353").toDouble();
+    std::ios_base::fmtflags save_flags = std::cout.flags();
     std::cout << "  toDouble:  " << std::setprecision(11)
                                  << double_num << std::endl;
+    std::cout.flags(save_flags);
   }
   catch (const std::invalid_argument& ex)
   {
@@ -210,10 +212,16 @@ int main (int, char**)
   FString index(5); // a string with five characters
   index = "index";
   index[0] = L'I'; // write a wide character at position 0
-  printf ( "    index: [0] = %c ; [4] = %c\n"
-         , char(index[0])
-         , char(index[4]) );
-
+  try
+  {
+    printf ( "    index: [0] = %c ; [4] = %c\n"
+           , char(index[0])
+           , char(index[4]) );
+  }
+  catch (const std::out_of_range& ex)
+  {
+    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+  }
   FString stringIterator = "iterator";
   FString::iterator iter;
   iter = stringIterator.begin();

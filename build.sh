@@ -24,5 +24,5 @@ case "$1" in
     ;;
 esac
 
-make
+make V=1 -j10
 # make install

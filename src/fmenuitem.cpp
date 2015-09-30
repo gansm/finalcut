@@ -100,7 +100,9 @@ void FMenuItem::init (FWidget* parent)
     {
       setSuperMenu( dynamic_cast<FMenuList*>(parent) );
       superMenu()->insert(this);
-      dynamic_cast<FMenuBar*>(parent)->menu_dimension();
+      FMenuBar* menubar_ptr = dynamic_cast<FMenuBar*>(parent);
+      if ( menubar_ptr )
+        menubar_ptr->menu_dimension();
 
       //addAccelerator (item->getKey(), item);
 
@@ -109,12 +111,19 @@ void FMenuItem::init (FWidget* parent)
         "activate",
         _METHOD_CALLBACK (superMenu(), &FMenuBar::cb_item_activated)
       );
+      this->addCallback
+      (
+        "deactivate",
+        _METHOD_CALLBACK (superMenu(), &FMenuBar::cb_item_deactivated)
+      );
     }
     else if ( isMenu(parent) ) // Parent is menu
     {
       setSuperMenu( dynamic_cast<FMenuList*>(parent) );
       superMenu()->insert(this);
-      
+      FMenu* super_menu_ptr = dynamic_cast<FMenu*>(parent);
+      if ( super_menu_ptr )
+        super_menu_ptr->menu_dimension();
 
       //addAccelerator (item->getKey(), item);
 
@@ -122,6 +131,11 @@ void FMenuItem::init (FWidget* parent)
       (
         "activate",
         _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_activated)
+      );
+      this->addCallback
+      (
+        "deactivate",
+        _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_deactivated)
       );
     }
   }
@@ -138,15 +152,29 @@ uChar FMenuItem::getHotkey()
   length = text.getLength();
 
   for (uInt i=0; i < length; i++)
-    if ( (i+1 < length) && (text[i] == '&') )
-      return uChar(text[++i]);
+  {
+    try
+    {
+      if ( (i+1 < length) && (text[i] == '&') )
+        return uChar(text[++i]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;;
+    }
+  }
   return 0;
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FMenuList* ml) const
 {
-  return isMenuBar (dynamic_cast<FWidget*>(ml));
+  FWidget* menubar_ptr = dynamic_cast<FWidget*>(ml);
+
+  if ( menubar_ptr )
+    return isMenuBar(menubar_ptr);
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -159,7 +187,12 @@ bool FMenuItem::isMenuBar (FWidget* w) const
 //----------------------------------------------------------------------
 bool FMenuItem::isMenu (FMenuList* ml) const
 {
-  return isMenu (dynamic_cast<FWidget*>(ml));
+  FWidget* super_menu_ptr = dynamic_cast<FWidget*>(ml);
+
+  if ( super_menu_ptr )
+    return isMenu(super_menu_ptr);
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -188,6 +221,12 @@ void FMenuItem::processActivate()
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::processDeactivate()
+{
+  emitCallback("deactivate");
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::processClicked()
 {
   emitCallback("clicked");
@@ -201,7 +240,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   {
     unsetSelected();
     FWidget* w = reinterpret_cast<FWidget*>(superMenu());
-    if ( isMenuBar(w) )
+    if ( w && isMenuBar(w) )
       w->redraw();
     ev->accept();
   }
@@ -216,12 +255,15 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   int b = ev->getButton();
   p2 = p1 + getPos() - FPoint(1,1);
   ev = new FMouseEvent (MouseMove_Event, p2, g, b);
-   
-  if ( isMenu(super_menu) )
-    dynamic_cast<FMenu*>(super_menu)->onMouseDown(ev);
 
-  if ( isMenuBar(super_menu) )
-    dynamic_cast<FMenuBar*>(super_menu)->onMouseDown(ev);
+  if ( super_menu )
+  {
+    if ( isMenu(super_menu) )
+      dynamic_cast<FMenu*>(super_menu)->onMouseDown(ev);
+  
+    if ( isMenuBar(super_menu) )
+      dynamic_cast<FMenuBar*>(super_menu)->onMouseDown(ev);
+  }
 
   delete ev;
 }
@@ -236,11 +278,14 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   p2 = p1 + getPos() - FPoint(1,1);
   ev = new FMouseEvent (MouseMove_Event, p2, g, b);
 
-  if ( isMenu(super_menu) )
-    dynamic_cast<FMenu*>(super_menu)->onMouseUp(ev);
-
-  if ( isMenuBar(super_menu) )
-    dynamic_cast<FMenuBar*>(super_menu)->onMouseUp(ev);
+  if ( super_menu )
+  {
+    if ( isMenu(super_menu) )
+      dynamic_cast<FMenu*>(super_menu)->onMouseUp(ev);
+  
+    if ( isMenuBar(super_menu) )
+      dynamic_cast<FMenuBar*>(super_menu)->onMouseUp(ev);
+  }
 
   delete ev;
 }
@@ -255,11 +300,14 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   p2 = p1 + getPos() - FPoint(1,1);
   ev = new FMouseEvent (MouseMove_Event, p2, g, b);
 
-  if ( isMenu(super_menu) )
-    dynamic_cast<FMenu*>(super_menu)->onMouseMove(ev);
-
-  if ( isMenuBar(super_menu) )
-    dynamic_cast<FMenuBar*>(super_menu)->onMouseMove(ev);
+  if ( super_menu )
+  {
+    if ( isMenu(super_menu) )
+      dynamic_cast<FMenu*>(super_menu)->onMouseMove(ev);
+  
+    if ( isMenuBar(super_menu) )
+      dynamic_cast<FMenuBar*>(super_menu)->onMouseMove(ev);
+  }
 
   delete ev;
 }
@@ -275,7 +323,14 @@ void FMenuItem::setSelected()
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setText (FString& txt)
+void FMenuItem::unsetSelected()
+{
+  selected = false;
+  processDeactivate();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::setText (FString& txt)
 {
   text = txt;
   text_length = text.getLength();
@@ -288,21 +343,11 @@ inline void FMenuItem::setText (FString& txt)
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const std::string& txt)
 {
-  text = txt;
-  text_length = text.getLength();
-  hotkey = getHotkey();
-  if ( hotkey )
-    text_length--;
-  setWidth(text_length);
+  setText (FString(txt));
 }
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setText (const char* txt)
 {
-  text = txt;
-  text_length = text.getLength();
-  hotkey = getHotkey();
-  if ( hotkey )
-    text_length--;
-  setWidth(text_length);
+  setText (FString(txt));
 }

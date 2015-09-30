@@ -75,8 +75,17 @@ uChar FLabel::getHotkey()
   length = text.getLength();
 
   for (uInt i=0; i < length; i++)
-    if ( (i+1 < length) && (text[i] == '&') )
-      return uChar(text[++i]);
+  {
+    try
+    {
+      if ( (i+1 < length) && (text[i] == '&') )
+        return uChar(text[++i]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;;
+    }
+  }
   return 0;
 }
 
@@ -240,15 +249,13 @@ void FLabel::draw()
     {
       length = multiline_text[y].getLength();
       LabelText = new wchar_t[length+1];
+      src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
+      dest = const_cast<wchar_t*>(LabelText);
 
       if ( ! hotkey_printed )
-      {
-        src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-        dest = const_cast<wchar_t*>(LabelText);
         hotkeypos = getHotkeyPos(src, dest, length);
-      }
       else
-        LabelText = const_cast<wchar_t*>(multiline_text[y].wc_str());
+        wcsncpy(dest, src, length);
 
       gotoxy (xpos+xmin-1, ypos+ymin-1+int(y));
 

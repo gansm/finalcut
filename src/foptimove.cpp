@@ -357,9 +357,8 @@ int FOptiMove::relative_move ( char*& move
 
   if ( to_x != from_x )  // horizontal move
   {
-    char str[sizeof(move_buf)];
-    char hmove[sizeof(move_buf)];
-    hmove[0] = '\0';
+    char str[sizeof(move_buf)] = {};
+    char hmove[sizeof(move_buf)] = {};
     htime = LONG_DURATION;
 
     if ( F_column_address.cap )
@@ -460,7 +459,7 @@ int FOptiMove::relative_move ( char*& move
     if ( move )
       strcat (move, hmove);
     else
-      move = hmove;
+      strcpy (move, hmove);
   }
 
   return (vtime + htime);

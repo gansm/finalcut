@@ -2,7 +2,7 @@
 // Provides: class FMenuBar
 
 #include "fmenubar.h"
-#include "fmessagebox.h"
+
 //----------------------------------------------------------------------
 // class FMenuBar
 //----------------------------------------------------------------------
@@ -12,7 +12,6 @@
 FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
   , mouse_down(false)
-  , x(-1)
 {
   init();
 }
@@ -113,22 +112,16 @@ void FMenuBar::draw()
   xmin = ymin = 1;
   height = 1;
   xpos = 1;
-
-  menu_dimension();
-  
   drawItems();
 }
 
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  bool is_Active;
-  bool is_Selected;
-  bool is_NoUnderline;
   std::vector<FMenuItem*>::const_iterator iter, end;
   int screenWidth;
 
-  x = 1;
+  int x = 1;
   screenWidth = getColumnNumber();
   width = screenWidth;
   ypos = 1;
@@ -150,7 +143,7 @@ void FMenuBar::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
-
+    bool is_Active, is_Selected, is_NoUnderline;
 
     is_Active = (*iter)->isActivated();
     is_Selected = (*iter)->isSelected();
@@ -229,7 +222,8 @@ void FMenuBar::drawItems()
       x++;
       print (vmenubar, ' ');
     }
-
+    
+    setColor (wc.menu_active_fg, wc.menu_active_bg);
     if ( is_Active && is_Selected )
       setReverse(false);
     delete[] item_text;
@@ -282,38 +276,52 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   if ( ! itemlist.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
-    int X = 1;
+    bool focus_changed = false;
 
     iter = itemlist.begin();
     end = itemlist.end();
-//FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)", ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()));  // + #include
+//FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)", ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()));
+// #include "fmessagebox.h"
     while ( iter != end )
     {
-      int x1, x2, mouse_x, mouse_y, txt_length;
+      int x1, x2, mouse_x, mouse_y;
 
-      x1 = X;
-      txt_length = int((*iter)->getTextLength());
-
-      x2 = x1 + txt_length + 1;
-      mouse_x = ev->getGlobalX();
-      mouse_y = ev->getGlobalY();
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
-         && mouse_y == 1
-         && ! (*iter)->isSelected() )
+         && mouse_y == 1 )
       {
-        (*iter)->setSelected();
-        redraw();
+        if ( ! (*iter)->isSelected() )
+        {
+          (*iter)->setSelected();
+          focus_changed = true;
+        }
+        if ( (*iter)->hasMenu() )
+        {
+           FMenu* menu = (*iter)->getMenu();
+           if ( menu->hasSelectedListItem() )
+           {
+             menu->unselectItemInList();
+             menu->redraw();
+           }
+        }
       }
       else
       {
-        (*iter)->unsetSelected();
-        redraw();
+        if ( mouse_y == 1 && (*iter)->isSelected() )
+        {
+          (*iter)->unsetSelected();
+          focus_changed = true;
+        }
       }
-      X = x2 + 1;
       ++iter;
     }
+    if ( focus_changed )
+      redraw();
   }
 }
 
@@ -329,32 +337,40 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
     if ( ! itemlist.empty() )
     {
       std::vector<FMenuItem*>::const_iterator iter, end;
-      int X = 1;
 
       iter = itemlist.begin();
       end = itemlist.end();
 
       while ( iter != end )
       {
-        int x1, x2, txt_length;
+        int x1, x2, mouse_x, mouse_y;
 
-        x1 = X;
-        txt_length = int((*iter)->getTextLength());
-        x2 = x1 + txt_length + 1;
+        x1 = (*iter)->getX();
+        x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+        mouse_x = ev->getX();
+        mouse_y = ev->getY();
 
-        if ( (*iter)->isSelected() )
+        if (  mouse_x >= x1
+           && mouse_x <= x2
+           && mouse_y == 1
+           && (*iter)->isSelected() )
         {
-          int mouse_x = ev->getGlobalX();
-          int mouse_y = ev->getGlobalY();
-          if ( mouse_x < x1 || mouse_x > x2 || mouse_y != 1 )
-            (*iter)->unsetSelected();
+          if ( (*iter)->hasMenu() )
+          {
+            FMenu* menu = (*iter)->getMenu();
+            if ( ! menu->hasSelectedListItem() )
+            {
+              menu->selectFirstItemInList();
+              menu->redraw();
+            }
+          }
           else
           {
+            (*iter)->unsetSelected();
+            redraw();
             (*iter)->processClicked();
           }
-          redraw();
         }
-        X = x2 + 1;
         ++iter;
       }
     }
@@ -371,40 +387,46 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     bool focus_changed = false;
-    int X=1;
 
     iter = itemlist.begin();
     end = itemlist.end();
 
     while ( iter != end )
     {
-      int x1, x2, txt_length;
+      int x1, x2, mouse_x, mouse_y;
 
-      x1 = X;
-      txt_length = int((*iter)->getTextLength());
-      x2 = x1 + txt_length + 1;
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      mouse_x = ev->getX();
+      mouse_y = ev->getY();
 
-      int mouse_x = ev->getGlobalX();
-      int mouse_y = ev->getGlobalY();
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )
       {
         if ( ! (*iter)->isSelected() )
         {
-          (*iter)->setSelected();
+           (*iter)->setSelected();
           focus_changed = true;
+        }
+        if ( (*iter)->hasMenu() )
+        {
+           FMenu* menu = (*iter)->getMenu();
+           if ( menu->hasSelectedListItem() )
+           {
+             menu->unselectItemInList();
+             menu->redraw();
+           }
         }
       }
       else
       {
-        if ( (*iter)->isSelected() )
+        if ( mouse_y == 1 && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
           focus_changed = true;
         }
       }
-      X = x2 + 1;
       ++iter;
     }
     if ( focus_changed )
@@ -429,7 +451,7 @@ void FMenuBar::hide()
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
 
-  gotoxy (1, 1);
+  gotoxy (1,1);
   print (vmenubar, blank);
   delete[] blank;
 }
@@ -451,6 +473,36 @@ void FMenuBar::cb_item_activated (FWidget* widget, void*)
 
   if ( menuitem->hasMenu() )
   {
-    beep();
+    //beep();
+    FMenu* menu = menuitem->getMenu();
+    if ( ! menu->isVisible() )
+    {
+      menu->setVisible();
+      menu->show();
+      raiseWindow(menu);
+      menu->redraw();
+    }
+
+    updateTerminal();
+    flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::cb_item_deactivated (FWidget* widget, void*)
+{
+  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+
+  if ( menuitem->hasMenu() )
+  {
+    //beep();
+    FMenu* menu = menuitem->getMenu();
+    if ( menu->isVisible() )
+      menu->hide();
+
+    restoreVTerm (menu->getGeometryGlobalShadow());
+
+    updateTerminal();
+    flush_out();
   }
 }
