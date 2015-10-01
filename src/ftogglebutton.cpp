@@ -114,8 +114,17 @@ uChar FToggleButton::getHotkey()
   length = text.getLength();
 
   for (uInt i=0; i < length; i++)
-    if ( (i+1 < length) && (text[i] == '&') )
-      return uChar(text[++i]);
+  {
+    try
+    {
+      if ( (i+1 < length) && (text[i] == '&') )
+        return uChar(text[++i]);
+    }
+    catch (const std::out_of_range&)
+    {
+      return 0;;
+    }
+  }
   return 0;
 }
 

@@ -194,22 +194,21 @@ int FTerm::inb_Attribute_Controller (int index)
 int FTerm::getFramebuffer_bpp ()
 {
   int fd = -1;
-  struct stat fb_stat;
   struct fb_var_screeninfo fb_var;
   struct fb_fix_screeninfo fb_fix;
 
   const char* fb = const_cast<char*>("/dev/fb/0");
 
-  if ( stat(fb, &fb_stat) < 0 )
+  if ( (fd = open(fb, O_RDWR)) < 0 )
   {
     if ( errno != ENOENT && errno != ENOTDIR )
       return -1;
+
     fb = const_cast<char*>("/dev/fb0");
-    if ( stat(fb, &fb_stat) < 0 )
+    if ( (fd = open(fb, O_RDWR)) < 0 )
       return -1;
   }
 
-  fd = open(fb, O_RDWR);
   if (fd >= 0)
   {
     if (  ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
@@ -778,7 +777,7 @@ int FTerm::parseKeyString ( char* buffer
     {
       char* kmeta = Fmetakey[i].string;  // The string is never null
       len = int(strlen(kmeta));
-      if ( kmeta && strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
+      if ( strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
       {
         if ( len == 2 && (  buffer[1] == 'O'
                          || buffer[1] == '['
@@ -1108,7 +1107,6 @@ void FTerm::init()
     putchar(0x8);  // cygwin needs a backspace to delete the '♣' char
 
   Sec_DA = new FString(getSecDA());  // get Secondary DA
-
   if ( Sec_DA->getLength() > 5 )
   {
     FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
@@ -1128,7 +1126,7 @@ void FTerm::init()
             putty_terminal = true;  // PuTTY
           }
           break;
-  
+
         case 1:
           // also used by apple terminal
           if (  Sec_DA_components[1]
@@ -1145,12 +1143,12 @@ void FTerm::init()
               termtype = const_cast<char*>("gnome");
           }
           break;
-  
+
         case 32:  // Tera Term
           tera_terminal = true;
           termtype = const_cast<char*>("teraterm");
           break;
-  
+
         case 77:  // mintty
           mintty_terminal = true;
           termtype = const_cast<char*>("xterm-256color");
@@ -1158,11 +1156,11 @@ void FTerm::init()
           tputs ("\033[?7727h", 1, putchar);
           fflush(stdout);
           break;
-  
+
         case 83:  // screen
           screen_terminal = true;
           break;
-  
+
         case 82:  // rxvt
           rxvt_terminal = true;
           force_vt100 = true;  // this rxvt terminal support on utf-8
@@ -1170,7 +1168,7 @@ void FTerm::init()
              || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
             termtype = const_cast<char*>("rxvt-16color");
           break;
-  
+
         case 85:  // rxvt-unicode
           rxvt_terminal = true;
           urxvt_terminal = true;
@@ -1182,7 +1180,7 @@ void FTerm::init()
               termtype = const_cast<char*>("rxvt");
           }
           break;
-  
+
         default:
           break;
       }
@@ -1207,7 +1205,7 @@ void FTerm::init()
   // stop non-blocking stdin
   unsetNonBlockingInput();
 
-  setenv("TERM", termtype, 1);
+  setenv(const_cast<char*>("TERM"), termtype, 1);
 
   // Initializes variables for the current terminal
   init_termcaps();
@@ -3443,13 +3441,18 @@ FString FTerm::getAnswerbackMsg()
 
   if ( raw_mode )
   {
+    int n;
     char temp[10] = {};
     putchar(0x05);  // send enquiry character
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answerback message
-    if ( read(fileno(stdin), &temp, sizeof(temp)-1) > 0 )
+    n = read(fileno(stdin), &temp, sizeof(temp)-1);
+    if ( n > 0 )
+    {
+      temp[n] = '\0';
       answerback = temp;
+    }
   }
   return answerback;
 }
@@ -3461,6 +3464,7 @@ FString FTerm::getSecDA()
 
   if ( raw_mode )
   {
+    int n;
     char temp[16] = {};
     // get the secondary device attributes
     putchar(0x1b);  // ESC
@@ -3470,8 +3474,12 @@ FString FTerm::getSecDA()
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
-    if ( read(fileno(stdin), &temp, sizeof(temp)-1) > 0 )
+    n = read(fileno(stdin), &temp, sizeof(temp)-1);
+    if ( n > 0 )
+    {
+      temp[n] = '\0';
       sec_da = temp;
+    }
   }
   return sec_da;
 }
@@ -3610,13 +3618,18 @@ int FTerm::print (FString& s)
 //----------------------------------------------------------------------
 int FTerm::print (FTerm::term_area* area, FString& s)
 {
-  assert ( area != 0 );
   assert ( ! s.isNull() );
   register int len = 0;
-  const wchar_t* p = s.wc_str();
-  FWidget* area_widget = area->widget;
+  const wchar_t* p;
+  FWidget* area_widget;
+
+  if ( ! area )
+    return -1;
+  area_widget = area->widget;
   if ( ! area_widget )
     return -1;
+
+  p = s.wc_str();
 
   if ( p )
   {
@@ -3735,12 +3748,13 @@ int FTerm::print (register int c)
 //----------------------------------------------------------------------
 int FTerm::print (FTerm::term_area* area, register int c)
 {
-  assert ( area != 0 );
   char_data nc; // new character
   FWidget* area_widget;
-  int rsh, bsh;
-  short x = short(cursor->getX());
-  short y = short(cursor->getY());
+  int rsh, bsh, ax, ay;
+  short x, y;
+
+  if ( ! area )
+    return -1;
 
   nc.code      = c;
   nc.fg_color  = uChar(fg_color);
@@ -3749,15 +3763,17 @@ int FTerm::print (FTerm::term_area* area, register int c)
   nc.reverse   = reverse;
   nc.underline = underline;
 
+  x = short(cursor->getX());
+  y = short(cursor->getY());
+
   area_widget = area->widget;
   if ( ! area_widget )
     return -1;
 
-  int ax = x - area_widget->getGlobalX();
-  int ay = y - area_widget->getGlobalY();
+  ax = x - area_widget->getGlobalX();
+  ay = y - area_widget->getGlobalY();
 
-  if (  area
-     && ax >= 0 && ay >= 0
+  if (  ax >= 0 && ay >= 0
      && ax < area->width + area->right_shadow
      && ay < area->height + area->bottom_shadow )
   {
@@ -3825,6 +3841,7 @@ inline void FTerm::appendAttributes (char_data*& screen_attr)
     {
       case fc::LowerHalfBlock:
         screen_attr->code = fc::UpperHalfBlock;
+        // fall through
       case fc::NF_rev_left_arrow2:
       case fc::NF_rev_right_arrow2:
       case fc::NF_rev_border_corner_upper_right:

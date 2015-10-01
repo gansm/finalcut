@@ -702,7 +702,7 @@ const FString FString::operator + (const std::string& s)
   wchar_t* wc_string = c_to_wc_str(s.c_str());
   if ( ! wc_string )
     return (tmp);
-  tmp._insert (length, uInt(wcslen(wc_string)), wc_string);  
+  tmp._insert (length, uInt(wcslen(wc_string)), wc_string);
   delete[] wc_string;
 
   return (tmp);

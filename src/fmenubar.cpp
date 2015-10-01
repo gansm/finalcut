@@ -222,7 +222,7 @@ void FMenuBar::drawItems()
       x++;
       print (vmenubar, ' ');
     }
-    
+
     setColor (wc.menu_active_fg, wc.menu_active_bg);
     if ( is_Active && is_Selected )
       setReverse(false);

@@ -441,7 +441,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
       while ( iter != end )
       {
         int x1, x2, y;
-        
+
         x1 = (*iter)->getX();
         x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
         y  = (*iter)->getY();
@@ -456,7 +456,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
              && mouse_y == y )
           {
             (*iter)->processClicked();
-            redraw();
+            focus_changed = true;
           }
         }
         ++iter;

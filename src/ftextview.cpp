@@ -365,6 +365,7 @@ void FTextView::cb_VBarChange (FWidget*, void*)
   {
     case FScrollbar::scrollPageBackward:
       distance = height+nf_offset-2;
+      // fall through
     case FScrollbar::scrollStepBackward:
       yoffset -= distance;
       if ( yoffset < 0 )
@@ -373,6 +374,7 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 
     case FScrollbar::scrollPageForward:
       distance = height+nf_offset-2;
+      // fall through
     case FScrollbar::scrollStepForward:
       yoffset += distance;
       if ( yoffset > last_line - height - nf_offset + 2 )
@@ -438,6 +440,7 @@ void FTextView::cb_HBarChange (FWidget*, void*)
   {
     case FScrollbar::scrollPageBackward:
       distance = width - nf_offset - 4;
+      // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
       if ( xoffset < 0 )
@@ -446,6 +449,7 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 
     case FScrollbar::scrollPageForward:
       distance = width - nf_offset - 4;
+      // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
       if ( xoffset > int(maxLineWidth) - width + nf_offset + 4 )

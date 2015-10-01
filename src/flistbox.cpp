@@ -1316,6 +1316,7 @@ void FListBox::cb_VBarChange (FWidget*, void*)
   {
     case FScrollbar::scrollPageBackward:
       distance = height-2;
+      // fall through
     case FScrollbar::scrollStepBackward:
       current -= distance;
       if ( current < 1 )
@@ -1328,6 +1329,7 @@ void FListBox::cb_VBarChange (FWidget*, void*)
 
     case FScrollbar::scrollPageForward:
       distance = height-2;
+      // fall through
     case FScrollbar::scrollStepForward:
       current += distance;
       if ( current > element_count )
@@ -1401,6 +1403,7 @@ void FListBox::cb_HBarChange (FWidget*, void*)
   {
     case FScrollbar::scrollPageBackward:
       distance = width - nf_offset - 4;
+      // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
       if ( xoffset < 0 )
@@ -1409,6 +1412,7 @@ void FListBox::cb_HBarChange (FWidget*, void*)
 
     case FScrollbar::scrollPageForward:
       distance = width - nf_offset - 4;
+      // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
       if ( xoffset > maxLineWidth - width + nf_offset + 4 )

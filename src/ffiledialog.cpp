@@ -535,10 +535,18 @@ void FFileDialog::setPath (const FString& dir)
   FString r_dir;
   struct stat sb;
 
-  stat(dirname, &sb);
+  if ( stat(dirname, &sb) != 0 )
+  {
+    directory = '/';
+    return;
+  }
   if ( S_ISLNK(sb.st_mode) )
   {
-    lstat(dirname, &sb);
+    if ( lstat(dirname, &sb) != 0 )
+    {
+      directory = '/';
+      return;
+    }
   }
   if ( ! S_ISDIR(sb.st_mode) )
   {
@@ -618,9 +626,11 @@ int FFileDialog::readDir()
         if ( realpath(symLink, resolved_path) != 0 )  // follow link
         {
           struct stat sb;
-          lstat(resolved_path, &sb);
-          if ( S_ISDIR(sb.st_mode) )
-            entry.type = DT_DIR;
+          if ( lstat(resolved_path, &sb) == 0 )
+          {
+            if ( S_ISDIR(sb.st_mode) )
+              entry.type = DT_DIR;
+          }
         }
       }
       if ( entry.type == DT_DIR )

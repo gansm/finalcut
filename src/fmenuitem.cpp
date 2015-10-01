@@ -260,7 +260,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   {
     if ( isMenu(super_menu) )
       dynamic_cast<FMenu*>(super_menu)->onMouseDown(ev);
-  
+
     if ( isMenuBar(super_menu) )
       dynamic_cast<FMenuBar*>(super_menu)->onMouseDown(ev);
   }
@@ -282,7 +282,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   {
     if ( isMenu(super_menu) )
       dynamic_cast<FMenu*>(super_menu)->onMouseUp(ev);
-  
+
     if ( isMenuBar(super_menu) )
       dynamic_cast<FMenuBar*>(super_menu)->onMouseUp(ev);
   }
@@ -304,7 +304,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   {
     if ( isMenu(super_menu) )
       dynamic_cast<FMenu*>(super_menu)->onMouseMove(ev);
-  
+
     if ( isMenuBar(super_menu) )
       dynamic_cast<FMenuBar*>(super_menu)->onMouseMove(ev);
   }
