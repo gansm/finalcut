@@ -96,10 +96,12 @@ void FMenuItem::init (FWidget* parent)
 
   if ( parent )
   {
+    FMenuList* super_menu_list = dynamic_cast<FMenuList*>(parent);
+    setSuperMenu(super_menu_list);
+    super_menu_list->insert(this);
+
     if ( isMenuBar(parent) ) // Parent is menubar
     {
-      setSuperMenu( dynamic_cast<FMenuList*>(parent) );
-      superMenu()->insert(this);
       FMenuBar* menubar_ptr = dynamic_cast<FMenuBar*>(parent);
       if ( menubar_ptr )
         menubar_ptr->menu_dimension();
@@ -119,8 +121,6 @@ void FMenuItem::init (FWidget* parent)
     }
     else if ( isMenu(parent) ) // Parent is menu
     {
-      setSuperMenu( dynamic_cast<FMenuList*>(parent) );
-      superMenu()->insert(this);
       FMenu* super_menu_ptr = dynamic_cast<FMenu*>(parent);
       if ( super_menu_ptr )
         super_menu_ptr->menu_dimension();
@@ -259,10 +259,18 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   if ( super_menu )
   {
     if ( isMenu(super_menu) )
-      dynamic_cast<FMenu*>(super_menu)->onMouseDown(ev);
+    {
+      FMenu* sm = dynamic_cast<FMenu*>(super_menu);
+      if ( sm )
+        sm->onMouseDown(ev);
+    }
 
     if ( isMenuBar(super_menu) )
-      dynamic_cast<FMenuBar*>(super_menu)->onMouseDown(ev);
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mb )
+        mb->onMouseDown(ev);
+    }
   }
 
   delete ev;
@@ -281,10 +289,18 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   if ( super_menu )
   {
     if ( isMenu(super_menu) )
-      dynamic_cast<FMenu*>(super_menu)->onMouseUp(ev);
+    {
+      FMenu* sm = dynamic_cast<FMenu*>(super_menu);
+      if ( sm )
+        sm->onMouseUp(ev);
+    }
 
     if ( isMenuBar(super_menu) )
-      dynamic_cast<FMenuBar*>(super_menu)->onMouseUp(ev);
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mb )
+        mb->onMouseUp(ev);
+    }
   }
 
   delete ev;
@@ -303,10 +319,18 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   if ( super_menu )
   {
     if ( isMenu(super_menu) )
-      dynamic_cast<FMenu*>(super_menu)->onMouseMove(ev);
+    {
+      FMenu* sm = dynamic_cast<FMenu*>(super_menu);
+      if ( sm )
+        sm->onMouseMove(ev);
+    }
 
     if ( isMenuBar(super_menu) )
-      dynamic_cast<FMenuBar*>(super_menu)->onMouseMove(ev);
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mb )
+        mb->onMouseMove(ev);
+    }
   }
 
   delete ev;

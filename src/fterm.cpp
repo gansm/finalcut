@@ -220,11 +220,9 @@ int FTerm::getFramebuffer_bpp ()
     else
     {
       ::close(fd);
-      return -1;
     }
   }
-  else
-    return -1;
+  return -1;
 }
 
 //----------------------------------------------------------------------

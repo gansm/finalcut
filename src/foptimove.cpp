@@ -422,7 +422,9 @@ int FOptiMove::relative_move ( char*& move
 
       if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
       {
-        strcat (hmove, tparm(F_parm_right_cursor.cap, num));
+        strncat ( hmove
+                , tparm(F_parm_right_cursor.cap, num)
+                , sizeof(hmove) - strlen(hmove) - 1 );
         htime = F_parm_right_cursor.duration;
       }
 
@@ -647,7 +649,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         break;
 
       case 4:
-        strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf));
+        strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
         move_ptr += F_cursor_to_ll.length;
         relative_move (move_ptr, 0, screen_height-1, xnew, ynew);
         break;
@@ -656,7 +658,9 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         move_buf[0] = '\0';
         if ( xold >= 0 )
           strcat (move_ptr, F_carriage_return.cap);
-        strcat (move_ptr, F_cursor_left.cap);
+        strncat ( move_ptr
+                , F_cursor_left.cap
+                , sizeof(move_buf) - strlen(move_ptr) - 1 );
         move_ptr += strlen(move_buf);
         relative_move (move_ptr, screen_width-1, yold-1, xnew, ynew);
         break;

@@ -206,8 +206,15 @@ int main (int, char**)
             << alphabet.right(11)  << "\"" << std::endl;
 
   FString insert_str = "I am a string";
-  std::cout << "   insert: "
-            << insert_str.insert("changed ", 7) << std::endl;
+  try
+  {
+    std::cout << "   insert: "
+              << insert_str.insert("changed ", 7) << std::endl;
+  }
+  catch (const std::out_of_range& ex)
+  {
+    std::cerr << "Out of Range error: " << ex.what() << std::endl;
+  }
 
   FString index(5); // a string with five characters
   index = "index";
@@ -222,6 +229,7 @@ int main (int, char**)
   {
     std::cerr << "Out of Range error: " << ex.what() << std::endl;
   }
+
   FString stringIterator = "iterator";
   FString::iterator iter;
   iter = stringIterator.begin();
