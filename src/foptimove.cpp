@@ -553,7 +553,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   if ( move_xy )
   {
     method = 0;
-    strcpy (move_ptr, move_xy);
+    strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
     move_time = F_cursor_address.duration;
 
     if (  xold < 0
