@@ -96,9 +96,12 @@ void FMenuItem::init (FWidget* parent)
 
   if ( parent )
   {
-    FMenuList* super_menu_list = dynamic_cast<FMenuList*>(parent);
-    setSuperMenu(super_menu_list);
-    super_menu_list->insert(this);
+    FMenuList* sm_list = dynamic_cast<FMenuList*>(parent);
+    if ( sm_list )
+    {
+      setSuperMenu(sm_list);
+      sm_list->insert(this);
+    }
 
     if ( isMenuBar(parent) ) // Parent is menubar
     {

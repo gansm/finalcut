@@ -412,7 +412,9 @@ int FOptiMove::relative_move ( char*& move
 
     if ( F_column_address.cap )
     {
-      strcat (hmove, tparm(F_column_address.cap, to_x));
+      strncat ( hmove
+              , tparm(F_column_address.cap, to_x)
+              , sizeof(hmove) - strlen(hmove) - 1 );
       htime = F_column_address.duration;
     }
 
@@ -637,13 +639,13 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         break;
 
       case 2:
-        strcpy (move_ptr, F_carriage_return.cap);
+        strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
         move_ptr += F_carriage_return.length;
         relative_move (move_ptr, 0, yold, xnew, ynew);
         break;
 
       case 3:
-        strcpy (move_ptr, F_cursor_home.cap);
+        strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
         move_ptr += F_cursor_home.length;
         relative_move (move_ptr, 0, 0, xnew, ynew);
         break;
