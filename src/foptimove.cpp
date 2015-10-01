@@ -659,7 +659,9 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
       case 5:
         move_buf[0] = '\0';
         if ( xold >= 0 )
-          strcat (move_ptr, F_carriage_return.cap);
+          strncat ( move_ptr
+                  , F_carriage_return.cap
+                  , sizeof(move_buf) - strlen(move_ptr) - 1 );
         strncat ( move_ptr
                 , F_cursor_left.cap
                 , sizeof(move_buf) - strlen(move_ptr) - 1 );
