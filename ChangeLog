@@ -1,4 +1,10 @@
-2015-09-39  Markus Gans  <guru.mail@muenster.de>
+2015-10-02  Markus Gans  <guru.mail@muenster.de>
+	* No terminal updates until input data is pending. 
+	  This speeds up the window moving with the mouse on terminals 
+	  with a high latency.
+	* Use now the select command before read ENQ and SEC_DA
+
+2015-09-29  Markus Gans  <guru.mail@muenster.de>
 	* Some code improvements
 
 2015-09-27  Markus Gans  <guru.mail@muenster.de>

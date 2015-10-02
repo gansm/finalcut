@@ -30,6 +30,7 @@ std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 FApplication::FApplication (int &_argc, char* _argv[])
   : app_argc(0)
   , app_argv(0)
+  , skipped_terminal_update(0)
   , key(0)
 #ifdef F_HAVE_LIBGPM
   , gpm_ev()
@@ -147,7 +148,7 @@ void FApplication::cmd_options ()
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-inline int FApplication::gpmEvent(void)
+inline int FApplication::gpmEvent(bool clear)
 {
   register int result;
   register int max = (gpm_fd > stdin_no) ? gpm_fd : stdin_no;
@@ -162,10 +163,11 @@ inline int FApplication::gpmEvent(void)
   result = select (max+1, &ifds, 0, 0, &tv);
   if ( FD_ISSET(stdin_no, &ifds) )
   {
-    FD_CLR (stdin_no, &ifds);
+    if ( clear )
+      FD_CLR (stdin_no, &ifds);
     return keyboard_event;
   }
-  if ( FD_ISSET(gpm_fd, &ifds) )
+  if ( clear && FD_ISSET(gpm_fd, &ifds) )
     FD_CLR (gpm_fd, &ifds);
   if (result > 0)
     return mouse_event;
@@ -225,6 +227,8 @@ void FApplication::processKeyboardEvent()
     fifo_in_use = false;
   }
 
+  flush_out();
+
 #ifdef F_HAVE_LIBGPM
   if ( gpm_mouse_enabled )
   {
@@ -272,7 +276,7 @@ void FApplication::processKeyboardEvent()
 
       // read the rest from the fifo buffer
       while (  ! widget->isKeyTimeout(&time_keypressed, key_timeout)
-            && fifo_offset
+            && fifo_offset > 0
             && key != NEED_MORE_DATA )
       {
         key = FTerm::parseKeyString(fifo_buf, fifo_buf_size, &time_keypressed);
@@ -289,39 +293,55 @@ void FApplication::processKeyboardEvent()
             x11_mouse[1] = fifo_buf[4];
             x11_mouse[2] = fifo_buf[5];
             x11_mouse[3] = '\0';
-            len = int(strlen(fifo_buf));
+            len = 6;
             n = len;
 
-            for (; n < fifo_buf_size; n++)
-              fifo_buf[n-len] = fifo_buf[n];  // remove the founded entry
-            for (; n-len < len; n++)
+            for (; n < fifo_buf_size; n++)   // Remove founded entry
+              fifo_buf[n-len] = fifo_buf[n];
+            for (; n-len < len; n++)         // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+            input_data_pending = bool(fifo_buf[0] != '\0');
+            processMouseEvent();
           }
           else if ( key == fc::Fkey_extended_mouse )
           {
             int n = 3;
             int len = int(strlen(fifo_buf));
 
-            for (; n < len && n < fifo_buf_size; n++)
+            while ( n < len && n < fifo_buf_size )
+            {
               sgr_mouse[n-3] = fifo_buf[n];
+              n++;
+              if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+                len = n + 1;
+            }
             sgr_mouse[n-3] = '\0';
-            for (n=len; n < fifo_buf_size; n++)
-              fifo_buf[n-len] = fifo_buf[n];  // remove the founded entry
-            for (; n-len < len; n++)
+            for (n=len; n < fifo_buf_size; n++) // Remove founded entry
+              fifo_buf[n-len] = fifo_buf[n];
+            for (; n-len < len; n++)            // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+            input_data_pending = bool(fifo_buf[0] != '\0');
+            processMouseEvent();
           }
           else if ( key == fc::Fkey_urxvt_mouse )
           {
             int n = 2;
             int len = int(strlen(fifo_buf));
 
-            for (; n < len && n < fifo_buf_size; n++)
+            while ( n < len && n < fifo_buf_size )
+            {
               urxvt_mouse[n-2] = fifo_buf[n];
+              n++;
+              if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+                len = n + 1;
+            }
             urxvt_mouse[n-2] = '\0';
-            for (n=len; n < fifo_buf_size; n++)
-              fifo_buf[n-len] = fifo_buf[n];  // remove the founded entry
-            for (; n-len < len; n++)
+            for (n=len; n < fifo_buf_size; n++) // Remove founded entry
+              fifo_buf[n-len] = fifo_buf[n];
+            for (; n-len < len; n++)            // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+            input_data_pending = bool(fifo_buf[0] != '\0');
+            processMouseEvent();
           }
           else
           {
@@ -377,6 +397,7 @@ void FApplication::processKeyboardEvent()
   {
     FKeyEvent k_press_ev(KeyPress_Event, fc::Fkey_escape);
     sendEvent(widget, &k_press_ev);
+    input_data_pending = false;
   }
 }
 
@@ -904,10 +925,18 @@ bool FApplication::processGpmEvent()
         break;
     }
     mouse->setPoint(gpm_ev.x, gpm_ev.y);
-    flush_out();
+
+    if ( gpmEvent(false) == mouse_event )
+      input_data_pending = true;
+    else
+      input_data_pending = false;
+
     GPM_DRAWPOINTER(&gpm_ev);
+    gpmMouseEvent = false;
+
     return true;
   }
+  gpmMouseEvent = false;
   return false;
 }
 #endif  // F_HAVE_LIBGPM
@@ -1101,7 +1130,6 @@ void FApplication::processMouseEvent()
       sendEvent(scroll_over_widget, &wheel_ev);
     }
   }
-  flush_out();
 
 #ifdef F_HAVE_LIBGPM
   if ( gpm_mouse_enabled && gpm_ev.x != -1 )
@@ -1174,6 +1202,26 @@ bool FApplication::processNextEvent()
   processKeyboardEvent();
   processMouseEvent();
   processResizeEvent();
+
+  if ( terminal_update_pending )
+  {
+    if ( ! input_data_pending )
+    {
+      updateTerminal();
+      terminal_update_pending = false;
+      skipped_terminal_update = 0;
+    }
+    else if ( skipped_terminal_update > 8 )
+    {
+      force_terminal_update = true;
+      updateTerminal();
+      force_terminal_update = false;
+      terminal_update_pending = false;
+      skipped_terminal_update = 0;
+    }
+    else
+      skipped_terminal_update++;
+  }
 
   if ( close_widget && ! close_widget->empty() )
   {

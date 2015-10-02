@@ -56,7 +56,7 @@ void FMenuBar::menu_dimension()
 {
   int item_X = 1;
   int item_Y = 1;
-  std::vector<FMenuItem*>::const_iterator begin, end, iter;
+  std::vector<FMenuItem*>::const_iterator end, iter;
   iter = itemlist.begin();
   end = itemlist.end();
 

@@ -511,7 +511,7 @@ int FOptiMove::relative_move ( char*& move
     if ( htime >= LONG_DURATION )
       return LONG_DURATION;
 
-    if ( move )
+    if ( *move )
       strcat (move, hmove);
     else
       strcpy (move, hmove);

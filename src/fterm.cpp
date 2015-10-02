@@ -48,6 +48,9 @@ bool     FTerm::mouse_support;
 bool     FTerm::vt100_state;
 bool     FTerm::ignore_vt100_state;
 bool     FTerm::raw_mode;
+bool     FTerm::input_data_pending;
+bool     FTerm::terminal_update_pending;
+bool     FTerm::force_terminal_update;
 bool     FTerm::non_blocking_stdin;
 bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
@@ -762,10 +765,11 @@ int FTerm::parseKeyString ( char* buffer
       if ( k && strncmp(k, buffer, uInt(len)) == 0 ) // found
       {
         n = len;
-        for (; n < buf_size; n++)
-          buffer[n-len] = buffer[n];  // remove the founded entry
-        for (; n-len < len; n++)
+        for (; n < buf_size; n++)   // Remove founded entry
+          buffer[n-len] = buffer[n];
+        for (; n-len < len; n++)    // Fill rest with '\0'
           buffer[n-len] = '\0';
+        input_data_pending = bool(buffer[0] != '\0');
         return Fkey[i].num;
       }
     }
@@ -785,10 +789,11 @@ int FTerm::parseKeyString ( char* buffer
             return NEED_MORE_DATA;
         }
         n = len;
-        for (; n < buf_size; n++)
-          buffer[n-len] = buffer[n];  // remove the founded entry
-        for (; n-len < len; n++)
+        for (; n < buf_size; n++)    // Remove founded entry
+          buffer[n-len] = buffer[n];
+        for (; n-len < len; n++)     // Fill rest with '\0'
           buffer[n-len] = '\0';
+        input_data_pending = bool(buffer[0] != '\0');
         return Fmetakey[i].num;
       }
     }
@@ -822,6 +827,7 @@ int FTerm::parseKeyString ( char* buffer
     buffer[n-len] = buffer[n];
   for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
     buffer[n] = '\0';
+  input_data_pending = bool(buffer[0] != '\0');
 
   return int(key == 127 ? fc::Fkey_backspace : key);
 }
@@ -940,6 +946,9 @@ void FTerm::init()
 
   // assertion: programm start in cooked mode
   raw_mode = false;
+  input_data_pending = false;
+  terminal_update_pending = false;
+  force_terminal_update = false;
   non_blocking_stdin = false;
 
   stdin_no  = fileno(stdin);
@@ -2468,8 +2477,17 @@ void FTerm::updateTerminal()
   if ( static_cast<FApplication*>(term_object)->isQuit() )
     return;
 
-  if ( ! terminal_updates )
-    return;
+  if ( ! force_terminal_update )
+  {
+    if ( ! terminal_updates )
+      return;
+
+    if ( input_data_pending )
+    {
+      terminal_update_pending = true;
+      return;
+    }
+  }
 
   vt = vterm;
   term_width = term->getWidth();
@@ -3440,16 +3458,28 @@ FString FTerm::getAnswerbackMsg()
   if ( raw_mode )
   {
     int n;
+    fd_set ifds;
+    struct timeval tv;
     char temp[10] = {};
+
+    FD_ZERO(&ifds);
+    FD_SET(stdin_no, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 150000;  // 150 ms
+
     putchar(0x05);  // send enquiry character
     fflush(stdout);
-    usleep(150000);  // wait 150 ms
+
     // read the answerback message
-    n = read(fileno(stdin), &temp, sizeof(temp)-1);
-    if ( n > 0 )
+    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
     {
-      temp[n] = '\0';
-      answerback = temp;
+      n = read(fileno(stdin), &temp, sizeof(temp)-1);
+
+      if ( n > 0 )
+      {
+        temp[n] = '\0';
+        answerback = temp;
+      }
     }
   }
   return answerback;
@@ -3463,20 +3493,32 @@ FString FTerm::getSecDA()
   if ( raw_mode )
   {
     int n;
+    fd_set ifds;
+    struct timeval tv;
     char temp[16] = {};
+
+    FD_ZERO(&ifds);
+    FD_SET(stdin_no, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 150000;  // 150 ms
+
     // get the secondary device attributes
     putchar(0x1b);  // ESC
     putchar(0x5b);  //  [
     putchar(0x3e);  //  >
     putchar(0x63);  //  c
     fflush(stdout);
-    usleep(150000);  // wait 150 ms
+
     // read the answer
-    n = read(fileno(stdin), &temp, sizeof(temp)-1);
-    if ( n > 0 )
+    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0 )
     {
-      temp[n] = '\0';
-      sec_da = temp;
+      n = read(fileno(stdin), &temp, sizeof(temp)-1);
+
+      if ( n > 0 )
+      {
+        temp[n] = '\0';
+        sec_da = temp;
+      }
     }
   }
   return sec_da;

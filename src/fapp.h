@@ -61,6 +61,7 @@ class FApplication : public FWidget
    static int      loop_level;
    static bool     process_timer_event;
    static FPoint*  zero_point;
+   int             skipped_terminal_update;
    int             key;
    char            k_buf[1024];
    char            x11_mouse[4];
@@ -127,7 +128,7 @@ class FApplication : public FWidget
    bool    parseUrxvtMouse();
 
 #ifdef F_HAVE_LIBGPM
-   int     gpmEvent();
+   int     gpmEvent(bool = true);
    bool    processGpmEvent();
 #endif
 
@@ -143,11 +144,12 @@ class FApplication : public FWidget
    FApplication (int &argc, char* argv[]);  // constructor
    virtual ~FApplication(); // destructor
 
-   const char* getClassName() const;
-   int         argc()         const;
-   char**      argv()         const;
-   FWidget*    mainWidget()   const;
-   FWidget*    focusWidget()  const;
+   const char* getClassName()     const;
+   int         argc()             const;
+   char**      argv()             const;
+   FWidget*    mainWidget()       const;
+   FWidget*    focusWidget()      const;
+   bool        unprocessedInput() const;
    static void print_cmd_Options();
    void        setMainWidget (FWidget*);
    int         exec(); // run
@@ -167,6 +169,10 @@ class FApplication : public FWidget
 
 // FApplication inline functions
 //----------------------------------------------------------------------
+inline const char* FApplication::getClassName() const
+{ return "FApplication"; }
+
+//----------------------------------------------------------------------
 inline int FApplication::argc() const
 { return app_argc; }
 
@@ -183,7 +189,7 @@ inline FWidget* FApplication::focusWidget() const
 { return focus_widget; }
 
 //----------------------------------------------------------------------
-inline const char* FApplication::getClassName() const
-{ return "FApplication"; }
+inline bool FApplication::unprocessedInput() const
+{ return input_data_pending; }
 
 #endif  // _FAPPLICATION_H

@@ -98,6 +98,9 @@ class FTerm
    static bool    vt100_state;
    static bool    ignore_vt100_state;
    static bool    raw_mode;
+   static bool    input_data_pending;
+   static bool    terminal_update_pending;
+   static bool    force_terminal_update;
    static bool    non_blocking_stdin;
    static bool    gpm_mouse_enabled;
    static bool    pc_charset_state;
