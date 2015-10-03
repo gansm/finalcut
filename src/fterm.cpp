@@ -1002,10 +1002,10 @@ void FTerm::init()
   background_color_erase = false;
   x11_button_state = 0x03;
 
-  char* term_env = getenv(const_cast<char*>("TERM"));  
-  if ( term_env )
-    strncpy (termtype, term_env, sizeof(termtype) - 1);
-  else
+  
+  // Use format-string to import the untrusted environment variable
+  snprintf(termtype, sizeof(termtype), "%s", getenv("TERM"));
+  if ( strnlen(termtype, sizeof(termtype)-1) == 0 )
     strncpy (termtype, const_cast<char*>("vt100"), 6);
 
   locale_xterm = getenv("XTERM_LOCALE");
