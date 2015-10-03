@@ -1001,10 +1001,11 @@ void FTerm::init()
 
   background_color_erase = false;
   x11_button_state = 0x03;
-
-  char const* term_env = getenv("TERM");
-  if ( term_env ) // Import untrusted environment variable TERM
-    snprintf(termtype, sizeof(termtype), "%s", getenv("TERM"));  
+  
+  // Import untrusted environment variable TERM
+  const char* term_env = getenv("TERM");
+  if ( term_env )
+    snprintf(termtype, sizeof(termtype), "%s", term_env);  
   else
     strncpy (termtype, const_cast<char*>("vt100"), 6);
 
