@@ -134,7 +134,7 @@ class FTerm
    static bool    automatic_left_margin;
    static bool    automatic_right_margin;
    static bool    eat_nl_glitch;
-   static char*   termtype;
+   static char    termtype[30];
    static char*   term_name;
    static char*   locale_name;
    static char*   locale_xterm;

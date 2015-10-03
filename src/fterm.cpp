@@ -88,7 +88,7 @@ bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
 uChar    FTerm::x11_button_state;
 termios  FTerm::term_init;
-char*    FTerm::termtype     = 0;
+char     FTerm::termtype[30] = {};
 char*    FTerm::term_name    = 0;
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
@@ -1002,9 +1002,12 @@ void FTerm::init()
   background_color_erase = false;
   x11_button_state = 0x03;
 
-  termtype = getenv(const_cast<char*>("TERM"));
-  if ( ! termtype )
-    termtype = const_cast<char*>("vt100");
+  char* term_env = getenv(const_cast<char*>("TERM"));  
+  if ( term_env )
+    strncpy (termtype, term_env, sizeof(termtype) - 1);
+  else
+    strncpy (termtype, const_cast<char*>("vt100"), 6);
+
   locale_xterm = getenv("XTERM_LOCALE");
 
   // Enable 256 color capabilities
@@ -1041,11 +1044,11 @@ void FTerm::init()
   if ( strlen(local256) > 0 )
   {
     if ( strncmp(termtype, "xterm", 5) == 0 )
-      termtype = const_cast<char*>("xterm-256color");
+      strcpy (termtype, "xterm-256color");
 
     if ( strncmp(termtype, "screen", 6) == 0 )
     {
-      termtype = const_cast<char*>("screen-256color");
+      strcpy (termtype, "screen-256color");
       screen_terminal = true;
 
       char* tmux = getenv("TMUX");
@@ -1054,18 +1057,18 @@ void FTerm::init()
     }
 
     if ( strncmp(termtype, "Eterm", 5) == 0 )
-      termtype = const_cast<char*>("Eterm-256color");
+      strcpy (termtype, "Eterm-256color");
 
     if ( strncmp(termtype, "mlterm", 6) == 0 )
     {
-      termtype = const_cast<char*>("mlterm-256color");
+      strcpy (termtype, "mlterm-256color");
       mlterm_terminal = true;
     }
     if ( strncmp(termtype, "rxvt", 4) != 0
        && s1
        && strncmp(s1, "rxvt-xpm", 8) == 0 )
     {
-      termtype = const_cast<char*>("rxvt-256color");
+      strcpy (termtype, "rxvt-256color");
       rxvt_terminal = true;
     }
     color256 = true;
@@ -1086,9 +1089,9 @@ void FTerm::init()
   if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
   {
     if ( color256 )
-      termtype = const_cast<char*>("gnome-256color");
+      strcpy (termtype, "gnome-256color");
     else
-      termtype = const_cast<char*>("gnome");
+      strcpy (termtype, "gnome");
     gnome_terminal = true;
   }
   else
@@ -1103,9 +1106,9 @@ void FTerm::init()
   {
     putty_terminal = true;
     if ( color256 )
-      termtype = const_cast<char*>("putty-256color");
+      strcpy (termtype, "putty-256color");
     else
-      termtype = const_cast<char*>("putty");
+      strcpy (termtype, "putty");
   }
   else
     putty_terminal = false;
@@ -1145,20 +1148,20 @@ void FTerm::init()
           {
             gnome_terminal = true;  // vte / gnome terminal
             if ( color256 )
-              termtype = const_cast<char*>("gnome-256color");
+              strcpy (termtype, "gnome-256color");
             else
-              termtype = const_cast<char*>("gnome");
+              strcpy (termtype, "gnome");
           }
           break;
 
         case 32:  // Tera Term
           tera_terminal = true;
-          termtype = const_cast<char*>("teraterm");
+          strcpy (termtype, "teraterm");
           break;
 
         case 77:  // mintty
           mintty_terminal = true;
-          termtype = const_cast<char*>("xterm-256color");
+          strcpy (termtype, "xterm-256color");
           // application escape key mode
           tputs ("\033[?7727h", 1, putchar);
           fflush(stdout);
@@ -1173,7 +1176,7 @@ void FTerm::init()
           force_vt100 = true;  // this rxvt terminal support on utf-8
           if (  strncmp(termtype, "rxvt-", 5) != 0
              || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
-            termtype = const_cast<char*>("rxvt-16color");
+            strcpy (termtype, "rxvt-16color");
           break;
 
         case 85:  // rxvt-unicode
@@ -1182,9 +1185,9 @@ void FTerm::init()
           if ( strncmp(termtype, "rxvt-", 5) != 0 )
           {
             if ( color256 )
-              termtype = const_cast<char*>("rxvt-256color");
+              strcpy (termtype, "rxvt-256color");
             else
-              termtype = const_cast<char*>("rxvt");
+              strcpy (termtype, "rxvt");
           }
           break;
 
@@ -1281,7 +1284,8 @@ void FTerm::init()
     utf8_input = true;
     setUTF8(true);
   }
-  else if (  isatty(stdout_no) && (termtype) && (strlen(termtype) > 0)
+  else if (  isatty(stdout_no)
+          && (strlen(termtype) > 0)
           && (tcap[t_exit_alt_charset_mode].string != 0) )
   {
     vt100_console = true;
