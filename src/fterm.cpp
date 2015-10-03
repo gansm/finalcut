@@ -938,7 +938,7 @@ void FTerm::signal_handler (int signum)
 void FTerm::init()
 {
   char local256[80] = "";
-  char *s1, *s2, *s3, *s4, *s5, *s6;
+  char *s1, *s2, *s3, *s4, *s5, *s6, *term_env;
 
   output_buffer  = new std::queue<int>;
   vt100_alt_char = new std::map<uChar,uChar>;
@@ -1003,7 +1003,7 @@ void FTerm::init()
   x11_button_state = 0x03;
   
   // Import untrusted environment variable TERM
-  const char* term_env = getenv("TERM");
+  term_env = getenv("TERM");
   if ( term_env != 0 )
     strncat (termtype, term_env, sizeof(termtype) - strlen(termtype) - 1);
   else
