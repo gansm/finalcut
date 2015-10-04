@@ -31,7 +31,7 @@ addons:
     notification_email: guru.mail@muenster.de
     build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr && make clean"
     build_command:   "make -j10 && make check"
-    branch_pattern: coverity_scan
+    branch_pattern: master
 
 script:
   - autoreconf -v --install --force && ./configure --prefix=/usr && make -j10 && make check
