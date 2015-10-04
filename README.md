@@ -1,8 +1,17 @@
+### Building and code analysis
 *Travis CI:*<br />
-&#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut)
-
+&#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
 *Coverity Scan:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Coverity Scan Status](https://scan.coverity.com/projects/6508/badge.svg)](https://scan.coverity.com/projects/6508)
+
+### Installation
+```
+> git clone git://github.com/gansm/finalcut.git
+> cd finalcut
+> ./configure --prefix=/usrX
+> make
+> su -c "make install"
+```
 
 The Final Cut
 =============
