@@ -139,7 +139,7 @@ void FMenu::menu_dimension()
 
   while ( iter != end )
   {
-    (*iter)->setGeometry (item_X, item_Y, maxItemWidth, 1);
+    (*iter)->setGeometry (item_X, item_Y, int(maxItemWidth), 1);
     item_Y++;
 
     ++iter;

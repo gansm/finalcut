@@ -92,7 +92,7 @@ void FMenuItem::init (FWidget* parent)
   hotkey = getHotkey();
   if ( hotkey )
     text_length--;
-  setGeometry (1,1,text_length+2,1, false);
+  setGeometry (1,1,int(text_length+2),1, false);
 
   if ( parent )
   {
@@ -364,17 +364,19 @@ void FMenuItem::setText (FString& txt)
   hotkey = getHotkey();
   if ( hotkey )
     text_length--;
-  setWidth(text_length);
+  setWidth(int(text_length));
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setText (const std::string& txt)
+void FMenuItem::setText (const std::string& txt)
 {
-  setText (FString(txt));
+  FString s = FString(txt);
+  setText (s);
 }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setText (const char* txt)
+void FMenuItem::setText (const char* txt)
 {
-  setText (FString(txt));
+  FString s = FString(txt);
+  setText (s);
 }

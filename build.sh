@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#CXX="clang++"
 PREFIX="/usr"
 
 case "$1" in

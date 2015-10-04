@@ -3467,7 +3467,7 @@ FString FTerm::getAnswerbackMsg()
 
   if ( raw_mode )
   {
-    int n;
+    ssize_t n;
     fd_set ifds;
     struct timeval tv;
     char temp[10] = {};
@@ -3502,7 +3502,7 @@ FString FTerm::getSecDA()
 
   if ( raw_mode )
   {
-    int n;
+    ssize_t n;
     fd_set ifds;
     struct timeval tv;
     char temp[16] = {};
