@@ -30,7 +30,7 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email: guru.mail@muenster.de
     build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr && make clean"
-    build_command:   "make -j10 && make check"
+    build_command:   "make -j10"
     branch_pattern: master
 
 script:
