@@ -289,6 +289,7 @@ class FTerm
    static bool    hasASCII();
    static bool    isMonochron();
    static bool    isCygwinTerminal();
+   static bool    isTeraTerm();
    static bool    isUrxvtTerminal();
    static bool    setVGAFont();
    static bool    setNewFont();
@@ -474,6 +475,10 @@ inline bool FTerm::isMonochron()
 //----------------------------------------------------------------------
 inline bool FTerm::isCygwinTerminal()
 { return cygwin_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isTeraTerm()
+{ return tera_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isUrxvtTerminal()

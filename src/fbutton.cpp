@@ -239,6 +239,8 @@ void FButton::draw()
        // Cygwin terminal use IBM Codepage 850
       if ( isCygwinTerminal() )
         print (fc::FullBlock); // █
+      else if ( isTeraTerm() )
+        print (0xdb);
       else
         print (fc::RightHalfBlock); // ▐
       gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
@@ -538,7 +540,9 @@ bool FButton::setFlat (bool on)
 //----------------------------------------------------------------------
 bool FButton::setShadow (bool on)
 {
-  if ( on && Encoding != fc::VT100 && Encoding != fc::ASCII )
+  if (  on
+     && (Encoding != fc::VT100 || isTeraTerm() )
+     && Encoding != fc::ASCII )
     flags |= SHADOW;
   else
     flags &= ~SHADOW;

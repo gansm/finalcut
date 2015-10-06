@@ -1,3 +1,7 @@
+2015-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Improve compatibility with initialize_color
+	* Better support for TeraTerm
+
 2015-10-02  Markus Gans  <guru.mail@muenster.de>
 	* No terminal updates until input data is pending. 
 	  This speeds up the window moving with the mouse on terminals 

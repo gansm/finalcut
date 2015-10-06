@@ -1838,7 +1838,7 @@ void FWidget::drawShadow()
 
   trans_shadow = bool((flags & TRANS_SHADOW) != 0);
 
-  if (  (Encoding == fc::VT100 && ! trans_shadow)
+  if (  (Encoding == fc::VT100 && ! trans_shadow && ! isTeraTerm() )
      || (Encoding == fc::ASCII && ! trans_shadow)
      || monochron )
   {
@@ -1909,27 +1909,40 @@ void FWidget::drawShadow()
   {
     if ( x2 < xmax )
     {
+      uInt block;
       gotoxy (x2+1, y1);
       ch = getCoveredCharacter (x2+1, y1, this);
       setColor (wc.shadow_fg, ch.bg_color);
-      print (fc::LowerHalfBlock); // ▄
+
+      if ( isTeraTerm() )
+      {
+        block = 0xdb; // █
+        print (0xdc); // ▄
+      }
+      else
+      {
+        block = fc::FullBlock; // █
+        print (fc::LowerHalfBlock); // ▄
+      }
 
       for (int i=1; i < height && y1+i <= ymax; i++)
       {
         gotoxy (x2+1, y1+i);
-        print (fc::FullBlock); // █
+        print (block); // █
       }
     }
 
     if ( y2 < ymax )
     {
       gotoxy (x1+1, y2+1);
-
       for (int i=1; i <= width && x1+i <= xmax; i++)
       {
         ch = getCoveredCharacter (x1+i, y2+1, this);
         setColor(wc.shadow_fg, ch.bg_color);
-        print (fc::UpperHalfBlock); // ▀
+        if ( isTeraTerm() )
+          print (0xdf); // ▀
+        else
+          print (fc::UpperHalfBlock); // ▀
       }
     }
   }

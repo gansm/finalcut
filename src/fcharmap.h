@@ -16,6 +16,8 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x00d6,0xd6, 0x99, 'O'},  // Ö  -  O-umlaut
   {0x00c4,0xc4, 0x8e, 'A'},  // Ä  -  A-umlaut
   {0x00dc,0xdc, 0x9a, 'U'},  // Ü  -  U-umlaut
+  {0x00db,0xdb, 0x96, 'U'},  // Û  -  U-circumflex
+  {0x00fb,0xfb, 0x96, 'u'},  // û  -  u-circumflex
   {0x00df,0xdf, 0xe1, 's'},  // ß  -  sz-ligature
   {0x20ac, 'E', 0xee, 'E'},  // €  -  Euro
   {0x00a3, '}', 0x9c, 'P'},  // £  -  Pound

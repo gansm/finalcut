@@ -574,14 +574,14 @@ void FTerm::init_termcaps()
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
     }
-    if ( tera_terminal && color256 )
+    else if ( tera_terminal && color256 )
     {
       tcap[t_set_a_foreground].string = \
         const_cast<char*>("\033[38;5;%p1%dm");
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[48;5;%p1%dm");
     }
-    if ( putty_terminal )
+    else if ( putty_terminal )
     {
       tcap[t_set_a_foreground].string = \
         const_cast<char*>("\033[%?%p1%{8}%<"
@@ -596,12 +596,24 @@ void FTerm::init_termcaps()
                           "%t10%p1%{8}%-%d"
                           "%e48;5;%p1%d%;m");
     }
+
+    // fallback if "AF" is not found
     if ( ! tcap[t_set_a_foreground].string )
       tcap[t_set_a_foreground].string = \
         const_cast<char*>("\033[3%p1%dm");
+
+    // fallback if "AB" is not found
     if ( ! tcap[t_set_a_background].string )
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[4%p1%dm");
+
+    // fallback if "Ic" is not found
+    if ( ! tcap[t_initialize_color].string )
+      tcap[t_initialize_color].string = \
+        const_cast<char*>("\033]P%p1%x"
+                          "%p2%{255}%*%{1000}%/%02x"
+                          "%p3%{255}%*%{1000}%/%02x"
+                          "%p4%{255}%*%{1000}%/%02x");
 
     // fallback if "ti" is not found
     if ( ! tcap[t_enter_ca_mode].string )
@@ -1089,6 +1101,9 @@ void FTerm::init()
   else
     cygwin_terminal = false;
 
+  if ( strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+    new_termtype = const_cast<char*>("rxvt-16color");
+
   if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
   {
     if ( color256 )
@@ -1103,8 +1118,8 @@ void FTerm::init()
   // terminal detection
   setRawMode();
 
+  // send ENQ and read the answerback message
   AnswerBack = new FString(getAnswerbackMsg());
-
   if ( AnswerBack && *AnswerBack == FString("PuTTY") )
   {
     putty_terminal = true;
@@ -1119,7 +1134,8 @@ void FTerm::init()
   if ( cygwin_terminal )
     putchar(0x8);  // cygwin needs a backspace to delete the '♣' char
 
-  Sec_DA = new FString(getSecDA());  // get Secondary DA
+  // secondary device attributes (SEC_DA)
+  Sec_DA = new FString(getSecDA());
   if ( Sec_DA->getLength() > 5 )
   {
     FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
@@ -1130,8 +1146,10 @@ void FTerm::init()
     {
       FString* Sec_DA_components = &Sec_DA_split[0];
 
-      switch ( Sec_DA_components[0].toInt() )
+      if ( ! Sec_DA_components[0].isEmpty() )
       {
+        switch ( Sec_DA_components[0].toInt() )
+        {
         case 0:
           if (  Sec_DA_components[1]
              && Sec_DA_components[1].toInt() == 136 )
@@ -1196,6 +1214,7 @@ void FTerm::init()
 
         default:
           break;
+        }
       }
     }
   }
@@ -1220,7 +1239,7 @@ void FTerm::init()
   if ( new_termtype )
   {
     setenv(const_cast<char*>("TERM"), new_termtype, 1);
-    strncpy (termtype, new_termtype, strlen(new_termtype));
+    strncpy (termtype, new_termtype, strlen(new_termtype)+1);
   }
 
   // Initializes variables for the current terminal
@@ -1307,7 +1326,6 @@ void FTerm::init()
 
   if (  linux_terminal
      || cygwin_terminal
-     || tera_terminal
      || NewFont
      || (putty_terminal && ! utf8_state) )
   {
@@ -1372,8 +1390,9 @@ void FTerm::init()
   setXTermMouseForeground ("rgb:0000/0000/0000");
   if ( ! gnome_terminal )
     setXTermCursor("rgb:ffff/ffff/ffff");
-  if ( ! mintty_terminal )
+  if ( ! gnome_terminal && ! mintty_terminal )
   {
+    // gnome-terminal and mintty can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
     setXTermForeground("rgb:0000/0000/0000");
     setXTermHighlightBackground("rgb:b1b1/b1b1/b1b1");
@@ -2838,7 +2857,7 @@ void FTerm::setPalette (int index, int r, int g, int b)
   }
   else if ( linux_terminal )
   {
-    ::printf ("\033]P%x%.2x%.2x%.2x", index, r, g, b);
+    //::printf ("\033]P%x%.2x%.2x%.2x", index, r, g, b);
 
 /*  // direct vga-register set
     if (  r>=0 && r<256
@@ -2850,26 +2869,6 @@ void FTerm::setPalette (int index, int r, int g, int b)
       map.d[index].blue = b;
     }
     ioctl (0, PIO_CMAP, &map); */
-  }
-  else if ( xterm || mintty_terminal || rxvt_terminal )
-  {
-    ::printf ("\033]4;%d;#%2.2x%2.2x%2.2x\033\\", index, r, g, b);
-    switch (index)
-    {
-      case 0:
-        ::printf ("\033]11;#%2.2x%2.2x%2.2x\033\\", r, g, b);
-        break;
-
-      case 7:
-        ::printf ("\033]10;#%2.2x%2.2x%2.2x\033\\", r, g, b);
-
-    default:
-      break;
-    }
-  }
-  else
-  {
-    ::printf ("\033]P%x%.2x%.2x%.2x", index, r, g, b);
   }
   fflush(stdout);
 }
@@ -3476,7 +3475,7 @@ FString FTerm::getAnswerbackMsg()
     FD_SET(stdin_no, &ifds);
     tv.tv_sec  = 0;
     tv.tv_usec = 150000;  // 150 ms
-
+    
     putchar(0x05);  // send enquiry character
     fflush(stdout);
 
@@ -3510,7 +3509,7 @@ FString FTerm::getSecDA()
     FD_ZERO(&ifds);
     FD_SET(stdin_no, &ifds);
     tv.tv_sec  = 0;
-    tv.tv_usec = 150000;  // 150 ms
+    tv.tv_usec = 550000;  // 150 ms
 
     // get the secondary device attributes
     putchar(0x1b);  // ESC
@@ -3518,6 +3517,7 @@ FString FTerm::getSecDA()
     putchar(0x3e);  //  >
     putchar(0x63);  //  c
     fflush(stdout);
+    usleep(150000);  // min. wait time 150 ms (need for mintty)
 
     // read the answer
     if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0 )

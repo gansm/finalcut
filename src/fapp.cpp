@@ -1230,9 +1230,10 @@ bool FApplication::processNextEvent()
 
     while ( iter != close_widget->end() )
     {
-      delete(*iter);
-      close_widget->erase(iter);
+      delete *iter;
+      ++iter;
     }
+    close_widget->clear();
   }
 
   sendQueuedEvents();

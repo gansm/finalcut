@@ -146,6 +146,8 @@ void FLineEdit::drawInputField()
     setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
     else
       print (fc::RightHalfBlock); // ▐
   }
@@ -154,6 +156,8 @@ void FLineEdit::drawInputField()
     setColor (wc.inputfield_active_bg, wc.dialog_bg);
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
     else
       print (fc::RightHalfBlock); // ▐
   }
@@ -162,6 +166,8 @@ void FLineEdit::drawInputField()
     setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
     else
       print (fc::RightHalfBlock); // ▐
   }
@@ -369,7 +375,9 @@ bool FLineEdit::setFocus (bool on)
 //----------------------------------------------------------------------
 bool FLineEdit::setShadow (bool on)
 {
-  if ( on )
+  if (  on
+     && (Encoding != fc::VT100 || isTeraTerm() )
+     && Encoding != fc::ASCII )
     flags |= SHADOW;
   else
     flags &= ~SHADOW;

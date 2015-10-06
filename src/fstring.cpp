@@ -2161,8 +2161,7 @@ bool FString::includes (const char* s)
   if ( ! wc_string )
     return false;
   ret = bool(wcsstr(string, wc_string) != 0);
-  if ( wc_string )
-    delete[] wc_string;
+  delete[] wc_string;
   return (ret);
 }
 
