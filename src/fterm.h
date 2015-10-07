@@ -242,7 +242,7 @@ class FTerm
    static void  init_console();
    static uInt  getBaudRate (const struct termios*);
    static void  init_consoleCharMap();
-   static char* init_256colorTerminal(char[]);
+   static char* init_256colorTerminal();
    static char* parseAnswerbackMsg(char*&);
    static char* parseSecDA(char*&);
    static void  init_termcaps();

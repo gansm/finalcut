@@ -709,10 +709,10 @@ void FTerm::signal_handler (int signum)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::init_256colorTerminal (char current_termtype[])
+char* FTerm::init_256colorTerminal()
 {
   char local256[80] = "";
-  char* new_termtype = current_termtype;
+  char* new_termtype = 0;
   char *s1, *s2, *s3, *s4, *s5, *s6;
 
   // Enable 256 color capabilities
@@ -1343,7 +1343,7 @@ void FTerm::init()
     strncpy (termtype, const_cast<char*>("vt100"), 6);
 
   // initialize 256 colors terminals
-  new_termtype = init_256colorTerminal (termtype);
+  new_termtype = init_256colorTerminal();
 
   if ( strncmp(termtype, "cygwin", 6) == 0 )
     cygwin_terminal = true;
