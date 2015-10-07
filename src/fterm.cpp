@@ -476,6 +476,162 @@ int FTerm::setLightBackgroundColors (bool on)
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isKeyTimeout (timeval* time, register long timeout)
+{
+  register long diff_usec;
+  struct timeval now;
+  struct timeval diff;
+
+  FObject::getCurrentTime(now);
+
+  diff.tv_sec = now.tv_sec - time->tv_sec;
+  diff.tv_usec = now.tv_usec - time->tv_usec;
+  if ( diff.tv_usec < 0 )
+  {
+    diff.tv_sec--;
+    diff.tv_usec += 1000000;
+  }
+  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  return (diff_usec > timeout);
+}
+
+//----------------------------------------------------------------------
+int FTerm::parseKeyString ( char* buffer
+                          , int buf_size
+                          , timeval* time_keypressed )
+{
+  register uChar firstchar = uChar(buffer[0]);
+  register size_t buf_len = strlen(buffer);
+  const long key_timeout = 100000;  // 100 ms
+  int key, len, n;
+
+  if ( firstchar == 0x1b )
+  {
+    // x11 mouse tracking
+    if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
+      return fc::Fkey_mouse;
+    // SGR mouse tracking
+    if (  buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
+       && (buffer[buf_len-1] == 'M' || buffer[buf_len-1] == 'm') )
+     return fc::Fkey_extended_mouse;
+    // urxvt mouse tracking
+    if (  buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
+       && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
+       && buffer[buf_len-1] == 'M' )
+     return fc::Fkey_urxvt_mouse;
+
+    // look for termcap keys
+    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    {
+      char* k = Fkey[i].string;
+      len = (k) ? int(strlen(k)) : 0;
+
+      if ( k && strncmp(k, buffer, uInt(len)) == 0 ) // found
+      {
+        n = len;
+        for (; n < buf_size; n++)   // Remove founded entry
+          buffer[n-len] = buffer[n];
+        for (; n-len < len; n++)    // Fill rest with '\0'
+          buffer[n-len] = '\0';
+        input_data_pending = bool(buffer[0] != '\0');
+        return Fkey[i].num;
+      }
+    }
+
+    // look for meta keys
+    for (int i=0; Fmetakey[i].string[0] != 0; i++)
+    {
+      char* kmeta = Fmetakey[i].string;  // The string is never null
+      len = int(strlen(kmeta));
+      if ( strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
+      {
+        if ( len == 2 && (  buffer[1] == 'O'
+                         || buffer[1] == '['
+                         || buffer[1] == ']') )
+        {
+          if ( ! isKeyTimeout(time_keypressed, key_timeout) )
+            return NEED_MORE_DATA;
+        }
+        n = len;
+        for (; n < buf_size; n++)    // Remove founded entry
+          buffer[n-len] = buffer[n];
+        for (; n-len < len; n++)     // Fill rest with '\0'
+          buffer[n-len] = '\0';
+        input_data_pending = bool(buffer[0] != '\0');
+        return Fmetakey[i].num;
+      }
+    }
+    if ( ! isKeyTimeout(time_keypressed, key_timeout) )
+      return NEED_MORE_DATA;
+  }
+
+  // look for utf-8 character
+
+  len = 1;
+
+  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
+  {
+    char utf8char[4] = {};  // init array with '\0'
+    if ((firstchar & 0xe0) == 0xc0)
+      len = 2;
+    else if ((firstchar & 0xf0) == 0xe0)
+      len = 3;
+    else if ((firstchar & 0xf8) == 0xf0)
+      len = 4;
+    for (n=0; n < len ; n++)
+      utf8char[n] = char(buffer[n] & 0xff);
+
+    key = UTF8decode(utf8char);
+  }
+  else
+    key = uChar(buffer[0] & 0xff);
+
+  n = len;
+  for (; n < buf_size; n++)  // remove the key from the buffer front
+    buffer[n-len] = buffer[n];
+  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
+    buffer[n] = '\0';
+  input_data_pending = bool(buffer[0] != '\0');
+
+  return int(key == 127 ? fc::Fkey_backspace : key);
+}
+
+//----------------------------------------------------------------------
+FString FTerm::getKeyName(int keynum)
+{
+  for (int i=0; FkeyName[i].string[0] != 0; i++)
+    if ( FkeyName[i].num && FkeyName[i].num == keynum )
+      return FString(FkeyName[i].string);
+  if ( keynum > 32 && keynum < 127 )
+    return FString(char(keynum));
+  return FString("");
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_console()
+{
+  fd_tty = -1;
+  screenUnicodeMap.entries = 0;
+  screenFont.data = 0;
+
+  if ( openConsole() == 0 )
+  {
+    if ( isConsole() )
+    {
+      getUnicodeMap();
+      getScreenFont();
+    }
+    getTermSize();
+    closeConsole();
+  }
+  else
+  {
+    std::cerr << "can not open the console.\n";
+    std::abort();
+  }
+}
+
+//----------------------------------------------------------------------
 uInt FTerm::getBaudRate (const struct termios* termios_p)
 {
   std::map<speed_t,uInt> ospeed;
@@ -500,6 +656,319 @@ uInt FTerm::getBaudRate (const struct termios* termios_p)
   ospeed[B230400] = 230400;  // 230,400 baud
 
   return ospeed[cfgetospeed(termios_p)];
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_consoleCharMap()
+{
+  if ( screenUnicodeMap.entry_ct != 0 )
+  {
+    for (int i=0; i <= lastCharItem; i++ )
+    {
+      bool found = false;
+      for (uInt n=0; n < screenUnicodeMap.entry_ct; n++)
+      {
+        if ( character[i][fc::UTF8] == screenUnicodeMap.entries[n].unicode )
+        {
+          found = true;
+          break;
+        }
+      }
+      if ( ! found )
+        character[i][fc::PC] = character[i][fc::ASCII];
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::signal_handler (int signum)
+{
+  switch (signum)
+  {
+    case SIGWINCH:
+      if ( resize_term )
+        break;
+      // initialize a resize event to the root element
+      resize_term = true;
+      break;
+
+    case SIGTERM:
+    case SIGQUIT:
+    case SIGINT:
+    case SIGABRT:
+    case SIGILL:
+    case SIGSEGV:
+      term_object->finish();
+      fflush (stderr); fflush (stdout);
+      fprintf ( stderr
+              , "\nProgram stopped: signal %d (%s)\n"
+              , signum
+              , strsignal(signum) );
+      std::terminate();
+  }
+}
+
+//----------------------------------------------------------------------
+char* FTerm::init_256colorTerminal (char current_termtype[])
+{
+  char local256[80] = "";
+  char* new_termtype = current_termtype;
+  char *s1, *s2, *s3, *s4, *s5, *s6;
+
+  // Enable 256 color capabilities
+  s1 = getenv("COLORTERM");
+  s2 = getenv("VTE_VERSION");
+  s3 = getenv("XTERM_VERSION");
+  s4 = getenv("ROXTERM_ID");
+  s5 = getenv("KONSOLE_DBUS_SESSION");
+  s6 = getenv("KONSOLE_DCOP");
+
+  if ( s1 != 0 )
+    strncat (local256, s1, sizeof(local256) - strlen(local256) - 1);
+  if ( s2 != 0 )
+    strncat (local256, s2, sizeof(local256) - strlen(local256) - 1);
+  if ( s3 != 0 )
+    strncat (local256, s3, sizeof(local256) - strlen(local256) - 1);
+  if ( s4 != 0 )
+    strncat (local256, s4, sizeof(local256) - strlen(local256) - 1);
+  if ( s5 != 0 )
+    strncat (local256, s5, sizeof(local256) - strlen(local256) - 1);
+  if ( s6 != 0 )
+    strncat (local256, s6, sizeof(local256) - strlen(local256) - 1);
+
+  if ( strlen(local256) > 0 )
+  {
+    if ( strncmp(termtype, "xterm", 5) == 0 )
+      new_termtype = const_cast<char*>("xterm-256color");
+
+    if ( strncmp(termtype, "screen", 6) == 0 )
+    {
+      new_termtype = const_cast<char*>("screen-256color");
+      screen_terminal = true;
+
+      char* tmux = getenv("TMUX");
+      if ( tmux && strlen(tmux) != 0 )
+        tmux_terminal = true;
+    }
+
+    if ( strncmp(termtype, "Eterm", 5) == 0 )
+      new_termtype = const_cast<char*>("Eterm-256color");
+
+    if ( strncmp(termtype, "mlterm", 6) == 0 )
+    {
+      new_termtype = const_cast<char*>("mlterm-256color");
+      mlterm_terminal = true;
+    }
+    if ( strncmp(termtype, "rxvt", 4) != 0
+       && s1
+       && strncmp(s1, "rxvt-xpm", 8) == 0 )
+    {
+      new_termtype = const_cast<char*>("rxvt-256color");
+      rxvt_terminal = true;
+    }
+    color256 = true;
+  }
+  else
+    color256 = false;
+
+  if ( (s5 && strlen(s5) > 0) || (s6 && strlen(s6) > 0) )
+    kde_konsole = true;
+  else
+    kde_konsole = false;
+
+  if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
+  {
+    if ( color256 )
+      new_termtype = const_cast<char*>("gnome-256color");
+    else
+      new_termtype = const_cast<char*>("gnome");
+    gnome_terminal = true;
+  }
+  else
+    gnome_terminal = false;
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::parseAnswerbackMsg (char*& current_termtype)
+{
+  char* new_termtype = current_termtype;
+
+  // send ENQ and read the answerback message
+  AnswerBack = new FString(getAnswerbackMsg());
+
+  if ( AnswerBack && *AnswerBack == FString("PuTTY") )
+  {
+    putty_terminal = true;
+    if ( color256 )
+      new_termtype = const_cast<char*>("putty-256color");
+    else
+      new_termtype = const_cast<char*>("putty");
+  }
+  else
+    putty_terminal = false;
+
+  if ( cygwin_terminal )
+    putchar(0x8);  // cygwin needs a backspace to delete the '♣' char
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::parseSecDA (char*& current_termtype)
+{
+  char* new_termtype = current_termtype;
+
+  // secondary device attributes (SEC_DA) <- decTerminalID string
+  Sec_DA = new FString(getSecDA());
+
+  if ( Sec_DA && Sec_DA->getLength() > 5 )
+  {
+    FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
+    temp.remove(temp.getLength()-1, 1);
+    std::vector<FString> Sec_DA_split = temp.split(';');
+
+    if ( Sec_DA_split.size() >= 2 )
+    {
+      FString* Sec_DA_components = &Sec_DA_split[0];
+
+      if ( ! Sec_DA_components[0].isEmpty() )
+      {
+        int terminal_id_type, terminal_id_version;
+
+        // Read the terminal type
+        try
+        {
+          terminal_id_type = Sec_DA_components[0].toInt();
+        }
+        catch (const std::exception&)
+        {
+          terminal_id_type = -1;
+        }
+
+        // Read the terminal (firmware) version
+        try
+        {
+          if ( Sec_DA_components[1] )
+            terminal_id_version = Sec_DA_components[1].toInt();
+          else
+            terminal_id_version = -1;
+        }
+        catch (const std::exception&)
+        {
+          terminal_id_version = -1;
+        }
+
+        switch ( terminal_id_type )
+        {
+          case 0:
+            if ( terminal_id_version == 136 )
+              putty_terminal = true;  // PuTTY
+            break;
+          
+          case 1:
+            // also used by apple terminal
+            if (  Sec_DA_components[1]
+               && strncmp(Sec_DA_components[1].c_str(), "2c", 2) == 0 )
+            {
+              kterm_terminal = true;  // kterm
+            }
+            else
+            {
+              gnome_terminal = true;  // vte / gnome terminal
+              if ( color256 )
+                new_termtype = const_cast<char*>("gnome-256color");
+              else
+                new_termtype = const_cast<char*>("gnome");
+            }
+            break;
+          
+          case 32:  // Tera Term
+            tera_terminal = true;
+            new_termtype = const_cast<char*>("teraterm");
+            break;
+          
+          case 77:  // mintty
+            mintty_terminal = true;
+            new_termtype = const_cast<char*>("xterm-256color");
+            // application escape key mode
+            tputs ("\033[?7727h", 1, putchar);
+            fflush(stdout);
+            break;
+          
+          case 83:  // screen
+            screen_terminal = true;
+            break;
+          
+          case 82:  // rxvt
+            rxvt_terminal = true;
+            force_vt100 = true;  // this rxvt terminal support on utf-8
+            if (  strncmp(termtype, "rxvt-", 5) != 0
+               || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
+              new_termtype = const_cast<char*>("rxvt-16color");
+            break;
+          
+          case 85:  // rxvt-unicode
+            rxvt_terminal = true;
+            urxvt_terminal = true;
+            if ( strncmp(termtype, "rxvt-", 5) != 0 )
+            {
+              if ( color256 )
+                new_termtype = const_cast<char*>("rxvt-256color");
+              else
+                new_termtype = const_cast<char*>("rxvt");
+            }
+            break;
+          
+          default:
+            break;
+        }
+      }
+    }
+  }
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_vt100altChar()
+{
+  // read the used vt100 pairs
+  if ( tcap[t_acs_chars].string )
+  {
+    for (int n=0; tcap[t_acs_chars].string[n]; tcap[t_acs_chars].string += 2)
+    {
+      // insert the vt100 key/value pairs into a map
+      uChar p1 = uChar(tcap[t_acs_chars].string[n]);
+      uChar p2 = uChar(tcap[t_acs_chars].string[n+1]);
+      (*vt100_alt_char)[p1] = p2;
+    }
+  }
+  enum column
+  {
+    vt100_key = 0,
+    utf8_char = 1
+  };
+  // update array 'character' with discovered vt100 pairs
+  for (int n=0; n <= lastKeyItem; n++ )
+  {
+    uChar keyChar = uChar(vt100_key_to_utf8[n][vt100_key]);
+    uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
+    uInt utf8char = uInt(vt100_key_to_utf8[n][utf8_char]);
+
+    uInt* p = std::find ( character[0]
+                        , character[lastCharItem] + fc::NUM_OF_ENCODINGS
+                        , utf8char );
+    if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found in character
+    {
+      int item = int(std::distance(character[0], p) / fc::NUM_OF_ENCODINGS);
+
+      if ( altChar )
+        character[item][fc::VT100] = altChar; // update alternate character set
+      else
+        character[item][fc::VT100] = 0; // delete vt100 char in character
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -724,582 +1193,8 @@ void FTerm::init_termcaps()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isKeyTimeout (timeval* time, register long timeout)
+void FTerm::init_encoding()
 {
-  register long diff_usec;
-  struct timeval now;
-  struct timeval diff;
-
-  FObject::getCurrentTime(now);
-
-  diff.tv_sec = now.tv_sec - time->tv_sec;
-  diff.tv_usec = now.tv_usec - time->tv_usec;
-  if ( diff.tv_usec < 0 )
-  {
-    diff.tv_sec--;
-    diff.tv_usec += 1000000;
-  }
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
-  return (diff_usec > timeout);
-}
-
-//----------------------------------------------------------------------
-int FTerm::parseKeyString ( char* buffer
-                          , int buf_size
-                          , timeval* time_keypressed )
-{
-  register uChar firstchar = uChar(buffer[0]);
-  register size_t buf_len = strlen(buffer);
-  const long key_timeout = 100000;  // 100 ms
-  int key, len, n;
-
-  if ( firstchar == 0x1b )
-  {
-    // x11 mouse tracking
-    if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
-      return fc::Fkey_mouse;
-    // SGR mouse tracking
-    if (  buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-       && (buffer[buf_len-1] == 'M' || buffer[buf_len-1] == 'm') )
-     return fc::Fkey_extended_mouse;
-    // urxvt mouse tracking
-    if (  buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
-       && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-       && buffer[buf_len-1] == 'M' )
-     return fc::Fkey_urxvt_mouse;
-
-    // look for termcap keys
-    for (int i=0; Fkey[i].tname[0] != 0; i++)
-    {
-      char* k = Fkey[i].string;
-      len = (k) ? int(strlen(k)) : 0;
-
-      if ( k && strncmp(k, buffer, uInt(len)) == 0 ) // found
-      {
-        n = len;
-        for (; n < buf_size; n++)   // Remove founded entry
-          buffer[n-len] = buffer[n];
-        for (; n-len < len; n++)    // Fill rest with '\0'
-          buffer[n-len] = '\0';
-        input_data_pending = bool(buffer[0] != '\0');
-        return Fkey[i].num;
-      }
-    }
-
-    // look for meta keys
-    for (int i=0; Fmetakey[i].string[0] != 0; i++)
-    {
-      char* kmeta = Fmetakey[i].string;  // The string is never null
-      len = int(strlen(kmeta));
-      if ( strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
-      {
-        if ( len == 2 && (  buffer[1] == 'O'
-                         || buffer[1] == '['
-                         || buffer[1] == ']') )
-        {
-          if ( ! isKeyTimeout(time_keypressed, key_timeout) )
-            return NEED_MORE_DATA;
-        }
-        n = len;
-        for (; n < buf_size; n++)    // Remove founded entry
-          buffer[n-len] = buffer[n];
-        for (; n-len < len; n++)     // Fill rest with '\0'
-          buffer[n-len] = '\0';
-        input_data_pending = bool(buffer[0] != '\0');
-        return Fmetakey[i].num;
-      }
-    }
-    if ( ! isKeyTimeout(time_keypressed, key_timeout) )
-      return NEED_MORE_DATA;
-  }
-
-  // look for utf-8 character
-
-  len = 1;
-
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
-  {
-    char utf8char[4] = {};  // init array with '\0'
-    if ((firstchar & 0xe0) == 0xc0)
-      len = 2;
-    else if ((firstchar & 0xf0) == 0xe0)
-      len = 3;
-    else if ((firstchar & 0xf8) == 0xf0)
-      len = 4;
-    for (n=0; n < len ; n++)
-      utf8char[n] = char(buffer[n] & 0xff);
-
-    key = UTF8decode(utf8char);
-  }
-  else
-    key = uChar(buffer[0] & 0xff);
-
-  n = len;
-  for (; n < buf_size; n++)  // remove the key from the buffer front
-    buffer[n-len] = buffer[n];
-  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
-    buffer[n] = '\0';
-  input_data_pending = bool(buffer[0] != '\0');
-
-  return int(key == 127 ? fc::Fkey_backspace : key);
-}
-
-//----------------------------------------------------------------------
-FString FTerm::getKeyName(int keynum)
-{
-  for (int i=0; FkeyName[i].string[0] != 0; i++)
-    if ( FkeyName[i].num && FkeyName[i].num == keynum )
-      return FString(FkeyName[i].string);
-  if ( keynum > 32 && keynum < 127 )
-    return FString(char(keynum));
-  return FString("");
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_vt100altChar()
-{
-  // read the used vt100 pairs
-  if ( tcap[t_acs_chars].string )
-  {
-    for (int n=0; tcap[t_acs_chars].string[n]; tcap[t_acs_chars].string += 2)
-    {
-      // insert the vt100 key/value pairs into a map
-      uChar p1 = uChar(tcap[t_acs_chars].string[n]);
-      uChar p2 = uChar(tcap[t_acs_chars].string[n+1]);
-      (*vt100_alt_char)[p1] = p2;
-    }
-  }
-  enum column
-  {
-    vt100_key = 0,
-    utf8_char = 1
-  };
-  // update array 'character' with discovered vt100 pairs
-  for (int n=0; n <= lastKeyItem; n++ )
-  {
-    uChar keyChar = uChar(vt100_key_to_utf8[n][vt100_key]);
-    uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
-    uInt utf8char = uInt(vt100_key_to_utf8[n][utf8_char]);
-
-    uInt* p = std::find ( character[0]
-                        , character[lastCharItem] + fc::NUM_OF_ENCODINGS
-                        , utf8char );
-    if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found in character
-    {
-      int item = int(std::distance(character[0], p) / fc::NUM_OF_ENCODINGS);
-
-      if ( altChar )
-        character[item][fc::VT100] = altChar; // update alternate character set
-      else
-        character[item][fc::VT100] = 0; // delete vt100 char in character
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_consoleCharMap()
-{
-  if ( screenUnicodeMap.entry_ct != 0 )
-  {
-    for (int i=0; i <= lastCharItem; i++ )
-    {
-      bool found = false;
-      for (uInt n=0; n < screenUnicodeMap.entry_ct; n++)
-      {
-        if ( character[i][fc::UTF8] == screenUnicodeMap.entries[n].unicode )
-        {
-          found = true;
-          break;
-        }
-      }
-      if ( ! found )
-        character[i][fc::PC] = character[i][fc::ASCII];
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::signal_handler (int signum)
-{
-  switch (signum)
-  {
-    case SIGWINCH:
-      if ( resize_term )
-        break;
-      // initialize a resize event to the root element
-      resize_term = true;
-      break;
-
-    case SIGTERM:
-    case SIGQUIT:
-    case SIGINT:
-    case SIGABRT:
-    case SIGILL:
-    case SIGSEGV:
-      term_object->finish();
-      fflush (stderr); fflush (stdout);
-      fprintf ( stderr
-              , "\nProgram stopped: signal %d (%s)\n"
-              , signum
-              , strsignal(signum) );
-      std::terminate();
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init()
-{
-  char local256[80] = "";
-  char *s1, *s2, *s3, *s4, *s5, *s6;
-  char* new_termtype = 0;
-  
-
-  output_buffer  = new std::queue<int>;
-  vt100_alt_char = new std::map<uChar,uChar>;
-  encoding_set   = new std::map<std::string,fc::encoding>;
-
-  // assertion: programm start in cooked mode
-  raw_mode = false;
-  input_data_pending = false;
-  terminal_update_pending = false;
-  force_terminal_update = false;
-  non_blocking_stdin = false;
-
-  stdin_no  = fileno(stdin);
-  stdout_no = fileno(stdout);
-  stdin_status_flags = fcntl(stdin_no, F_GETFL);
-  if ( stdin_status_flags == -1 )
-    std::abort();
-
-  term_name = ttyname(stdout_no);
-  // look into /etc/ttytype for the type
-
-  fd_tty = -1;
-  max_color = 1;
-  screenUnicodeMap.entries = 0;
-  screenFont.data = 0;
-
-  if ( openConsole() == 0 )
-  {
-    if ( isConsole() )
-    {
-      getUnicodeMap();
-      getScreenFont();
-    }
-    getTermSize();
-    closeConsole();
-  }
-  else
-  {
-    std::cerr << "can not open the console.\n";
-    std::abort();
-  }
-
-  // create virtual terminal
-  createVTerm();
-  // create virtual desktop area
-  createArea (vdesktop);
-  vdesktop->visible = true;
-
-  // make stdin non-blocking
-  setNonBlockingInput();
-
-  // save termios settings
-  tcgetattr (stdin_no, &term_init);
-
-  // get output baud rate
-  baudrate = getBaudRate(&term_init);
-
-  if ( isatty(stdout_no) )
-    opti->setBaudRate(int(baudrate));
-
-  background_color_erase = false;
-  x11_button_state = 0x03;
-  
-  // Import the untrusted environment variable TERM
-  const char* term_env = getenv(const_cast<char*>("TERM"));
-  if ( term_env )
-    strncpy (termtype, term_env, sizeof(termtype) - 1);
-  else
-    strncpy (termtype, const_cast<char*>("vt100"), 6);
-
-  locale_xterm = getenv("XTERM_LOCALE");
-
-  // Enable 256 color capabilities
-  s1 = getenv("COLORTERM");
-  s2 = getenv("VTE_VERSION");
-  s3 = getenv("XTERM_VERSION");
-  s4 = getenv("ROXTERM_ID");
-  s5 = getenv("KONSOLE_DBUS_SESSION");
-  s6 = getenv("KONSOLE_DCOP");
-
-  if ( s1 != 0 )
-    strncat (local256, s1, sizeof(local256) - strlen(local256) - 1);
-  if ( s2 != 0 )
-    strncat (local256, s2, sizeof(local256) - strlen(local256) - 1);
-  if ( s3 != 0 )
-    strncat (local256, s3, sizeof(local256) - strlen(local256) - 1);
-  if ( s4 != 0 )
-    strncat (local256, s4, sizeof(local256) - strlen(local256) - 1);
-  if ( s5 != 0 )
-    strncat (local256, s5, sizeof(local256) - strlen(local256) - 1);
-  if ( s6 != 0 )
-    strncat (local256, s6, sizeof(local256) - strlen(local256) - 1);
-
-  force_vt100     = \
-  tera_terminal   = \
-  kterm_terminal  = \
-  rxvt_terminal   = \
-  urxvt_terminal  = \
-  mlterm_terminal = \
-  mintty_terminal = \
-  screen_terminal = \
-  tmux_terminal   = false;
-
-  if ( strlen(local256) > 0 )
-  {
-    if ( strncmp(termtype, "xterm", 5) == 0 )
-      new_termtype = const_cast<char*>("xterm-256color");
-
-    if ( strncmp(termtype, "screen", 6) == 0 )
-    {
-      new_termtype = const_cast<char*>("screen-256color");
-      screen_terminal = true;
-
-      char* tmux = getenv("TMUX");
-      if ( tmux && strlen(tmux) != 0 )
-        tmux_terminal = true;
-    }
-
-    if ( strncmp(termtype, "Eterm", 5) == 0 )
-      new_termtype = const_cast<char*>("Eterm-256color");
-
-    if ( strncmp(termtype, "mlterm", 6) == 0 )
-    {
-      new_termtype = const_cast<char*>("mlterm-256color");
-      mlterm_terminal = true;
-    }
-    if ( strncmp(termtype, "rxvt", 4) != 0
-       && s1
-       && strncmp(s1, "rxvt-xpm", 8) == 0 )
-    {
-      new_termtype = const_cast<char*>("rxvt-256color");
-      rxvt_terminal = true;
-    }
-    color256 = true;
-  }
-  else
-    color256 = false;
-
-  if ( (s5 && strlen(s5) > 0) || (s6 && strlen(s6) > 0) )
-    kde_konsole = true;
-  else
-    kde_konsole = false;
-
-  if ( strncmp(termtype, "cygwin", 6) == 0 )
-    cygwin_terminal = true;
-  else
-    cygwin_terminal = false;
-
-  if ( strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    new_termtype = const_cast<char*>("rxvt-16color");
-
-  if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
-  {
-    if ( color256 )
-      new_termtype = const_cast<char*>("gnome-256color");
-    else
-      new_termtype = const_cast<char*>("gnome");
-    gnome_terminal = true;
-  }
-  else
-    gnome_terminal = false;
-
-  // terminal detection
-  setRawMode();
-
-  // send ENQ and read the answerback message
-  AnswerBack = new FString(getAnswerbackMsg());
-  if ( AnswerBack && *AnswerBack == FString("PuTTY") )
-  {
-    putty_terminal = true;
-    if ( color256 )
-      new_termtype = const_cast<char*>("putty-256color");
-    else
-      new_termtype = const_cast<char*>("putty");
-  }
-  else
-    putty_terminal = false;
-
-  if ( cygwin_terminal )
-    putchar(0x8);  // cygwin needs a backspace to delete the '♣' char
-
-  // secondary device attributes (SEC_DA)
-  Sec_DA = new FString(getSecDA());
-  if ( Sec_DA->getLength() > 5 )
-  {
-    FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
-    temp.remove(temp.getLength()-1, 1);
-    std::vector<FString> Sec_DA_split = temp.split(';');
-
-    if ( Sec_DA_split.size() >= 2 )
-    {
-      FString* Sec_DA_components = &Sec_DA_split[0];
-
-      if ( ! Sec_DA_components[0].isEmpty() )
-      {
-        switch ( Sec_DA_components[0].toInt() )
-        {
-        case 0:
-          if (  Sec_DA_components[1]
-             && Sec_DA_components[1].toInt() == 136 )
-          {
-            putty_terminal = true;  // PuTTY
-          }
-          break;
-
-        case 1:
-          // also used by apple terminal
-          if (  Sec_DA_components[1]
-             && strncmp(Sec_DA_components[1].c_str(), "2c", 2) == 0 )
-          {
-            kterm_terminal = true;  // kterm
-          }
-          else
-          {
-            gnome_terminal = true;  // vte / gnome terminal
-            if ( color256 )
-              new_termtype = const_cast<char*>("gnome-256color");
-            else
-              new_termtype = const_cast<char*>("gnome");
-          }
-          break;
-
-        case 32:  // Tera Term
-          tera_terminal = true;
-          new_termtype = const_cast<char*>("teraterm");
-          break;
-
-        case 77:  // mintty
-          mintty_terminal = true;
-          new_termtype = const_cast<char*>("xterm-256color");
-          // application escape key mode
-          tputs ("\033[?7727h", 1, putchar);
-          fflush(stdout);
-          break;
-
-        case 83:  // screen
-          screen_terminal = true;
-          break;
-
-        case 82:  // rxvt
-          rxvt_terminal = true;
-          force_vt100 = true;  // this rxvt terminal support on utf-8
-          if (  strncmp(termtype, "rxvt-", 5) != 0
-             || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
-            new_termtype = const_cast<char*>("rxvt-16color");
-          break;
-
-        case 85:  // rxvt-unicode
-          rxvt_terminal = true;
-          urxvt_terminal = true;
-          if ( strncmp(termtype, "rxvt-", 5) != 0 )
-          {
-            if ( color256 )
-              new_termtype = const_cast<char*>("rxvt-256color");
-            else
-              new_termtype = const_cast<char*>("rxvt");
-          }
-          break;
-
-        default:
-          break;
-        }
-      }
-    }
-  }
-  // end of terminal detection
-
-  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
-    xterm = true;
-  else
-    xterm = false;
-
-  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
-    linux_terminal = true;
-  else
-    linux_terminal = false;
-
-  unsetRawMode();
-
-  // stop non-blocking stdin
-  unsetNonBlockingInput();
-  if ( new_termtype )
-  {
-    setenv(const_cast<char*>("TERM"), new_termtype, 1);
-    strncpy (termtype, new_termtype, strlen(new_termtype)+1);
-  }
-
-  // Initializes variables for the current terminal
-  init_termcaps();
-  init_vt100altChar();
-
-  // Define the encoding set
-  (*encoding_set)["UTF8"]  = fc::UTF8;
-  (*encoding_set)["UTF-8"] = fc::UTF8;
-  (*encoding_set)["VT100"] = fc::VT100;
-  (*encoding_set)["PC"]    = fc::PC;
-  (*encoding_set)["ASCII"] = fc::ASCII;
-
-  // Preset to false
-  utf8_console        = \
-  utf8_input          = \
-  utf8_state          = \
-  utf8_linux_terminal = \
-  vt100_console       = \
-  vt100_state         = \
-  ignore_vt100_state  = \
-  pc_charset_state    = \
-  NewFont             = \
-  VGAFont             = \
-  ascii_console       = \
-  hiddenCursor        = \
-  mouse_support       = \
-  bold                = \
-  underline           = \
-  reverse             = \
-  term_bold           = \
-  term_underline      = \
-  term_reverse        = false;
-
-  // set the Fputchar function pointer
-  locale_name = setlocale(LC_ALL, ""); // init current locale
-
-  if ( locale_xterm )
-    locale_name = setlocale(LC_ALL, locale_xterm);
-
-  if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
-  {
-    // if locale C => switch from 7bit ascii -> latin1
-    locale_name = setlocale(LC_ALL, "en_US");
-  }
-  if ( locale_name )
-    locale_name = setlocale(LC_CTYPE, 0);
-  else
-  {
-    locale_name = getenv("LC_ALL");
-    if ( ! locale_name )
-    {
-      locale_name = getenv("LC_CTYPE");
-      if ( ! locale_name )
-        locale_name = getenv("LANG");
-    }
-  }
-  if ( ! locale_name )
-    locale_name = const_cast<char*>("C");
-
   if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     utf8_console = true;
@@ -1350,6 +1245,189 @@ void FTerm::init()
     Encoding = fc::VT100;
     Fputchar = &FTerm::putchar_VT100;  // function pointer
   }
+}
+
+//----------------------------------------------------------------------
+void FTerm::init()
+{
+  char* new_termtype = 0;
+  x11_button_state = 0x03;
+  max_color = 1;
+
+  output_buffer  = new std::queue<int>;
+  vt100_alt_char = new std::map<uChar,uChar>;
+  encoding_set   = new std::map<std::string,fc::encoding>;
+
+  // Define the encoding set
+  (*encoding_set)["UTF8"]  = fc::UTF8;
+  (*encoding_set)["UTF-8"] = fc::UTF8;
+  (*encoding_set)["VT100"] = fc::VT100;
+  (*encoding_set)["PC"]    = fc::PC;
+  (*encoding_set)["ASCII"] = fc::ASCII;
+
+  // Preset to false
+  utf8_console           = \
+  utf8_input             = \
+  utf8_state             = \
+  utf8_linux_terminal    = \
+  vt100_console          = \
+  vt100_state            = \
+  ignore_vt100_state     = \
+  pc_charset_state       = \
+  NewFont                = \
+  VGAFont                = \
+  ascii_console          = \
+  hiddenCursor           = \
+  mouse_support          = \
+  bold                   = \
+  underline              = \
+  reverse                = \
+  term_bold              = \
+  term_underline         = \
+  term_reverse           = \
+  force_vt100            = \
+  tera_terminal          = \
+  kterm_terminal         = \
+  rxvt_terminal          = \
+  urxvt_terminal         = \
+  mlterm_terminal        = \
+  mintty_terminal        = \
+  screen_terminal        = \
+  tmux_terminal          = \
+  background_color_erase = false;
+
+  // assertion: programm start in cooked mode
+  raw_mode                = \
+  input_data_pending      = \
+  terminal_update_pending = \
+  force_terminal_update   = \
+  non_blocking_stdin      = false;
+
+  stdin_no  = fileno(stdin);
+  stdout_no = fileno(stdout);
+  stdin_status_flags = fcntl(stdin_no, F_GETFL);
+
+  if ( stdin_status_flags == -1 )
+    std::abort();
+
+  term_name = ttyname(stdout_no);
+  // -> possible fallback: look into /etc/ttytype for the type?
+
+  // initialize terminal and Linux console
+  init_console();
+
+  // create virtual terminal
+  createVTerm();
+
+  // create virtual desktop area
+  createArea (vdesktop);
+  vdesktop->visible = true;
+
+  // make stdin non-blocking
+  setNonBlockingInput();
+
+  // save termios settings
+  tcgetattr (stdin_no, &term_init);
+
+  // get output baud rate
+  baudrate = getBaudRate(&term_init);
+
+  if ( isatty(stdout_no) )
+    opti->setBaudRate(int(baudrate));
+  
+  // Import the untrusted environment variable TERM
+  const char* term_env = getenv(const_cast<char*>("TERM"));
+  if ( term_env )
+    strncpy (termtype, term_env, sizeof(termtype) - 1);
+  else
+    strncpy (termtype, const_cast<char*>("vt100"), 6);
+
+  // initialize 256 colors terminals
+  new_termtype = init_256colorTerminal (termtype);
+
+  if ( strncmp(termtype, "cygwin", 6) == 0 )
+    cygwin_terminal = true;
+  else
+    cygwin_terminal = false;
+
+  if ( strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+  {
+    new_termtype = const_cast<char*>("rxvt-16color");
+    rxvt_terminal = true;
+  }
+
+  // terminal detection...
+  setRawMode();
+
+  new_termtype = parseAnswerbackMsg (new_termtype);
+  new_termtype = parseSecDA (new_termtype);
+
+  unsetRawMode();
+  // ...end of terminal detection
+
+  // stop non-blocking stdin
+  unsetNonBlockingInput();
+
+  // set the new environment variable TERM
+  if ( new_termtype )
+  {
+    setenv(const_cast<char*>("TERM"), new_termtype, 1);
+    strncpy (termtype, new_termtype, strlen(new_termtype)+1);
+  }
+
+  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
+    xterm = true;
+  else
+    xterm = false;
+
+  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+    linux_terminal = true;
+  else
+    linux_terminal = false;
+
+  // Initializes variables for the current terminal
+  init_termcaps();
+  init_vt100altChar();
+
+  // set the Fputchar function pointer
+  locale_name = setlocale(LC_ALL, ""); // init current locale
+
+  // get XTERM_LOCALE
+  locale_xterm = getenv("XTERM_LOCALE");
+
+  // set LC_ALL to XTERM_LOCALE
+  if ( locale_xterm )
+    locale_name = setlocale(LC_ALL, locale_xterm);
+
+  // TeraTerm can not show UTF-8 character
+  if ( tera_terminal && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = setlocale(LC_ALL, "en_US");
+    
+  // if locale C => switch from 7bit ascii -> latin1
+  if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
+    locale_name = setlocale(LC_ALL, "en_US");
+
+  // try to found a meaningful content for locale_name
+  if ( locale_name )
+    locale_name = setlocale(LC_CTYPE, 0);
+  else
+  {
+    locale_name = getenv("LC_ALL");
+    if ( ! locale_name )
+    {
+      locale_name = getenv("LC_CTYPE");
+      if ( ! locale_name )
+        locale_name = getenv("LANG");
+    }
+  }
+  // Fallback to C
+  if ( ! locale_name )
+    locale_name = const_cast<char*>("C");
+
+  // Detect environment and set encoding
+  init_encoding();
 
 #ifdef F_HAVE_LIBGPM
   // Enable the linux general purpose mouse (gpm) server

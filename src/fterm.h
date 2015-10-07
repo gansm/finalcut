@@ -239,10 +239,15 @@ class FTerm
    static int   setUnicodeMap (struct unimapdesc*);
    static int   getUnicodeMap ();
    static int   setLightBackgroundColors (bool);
+   static void  init_console();
    static uInt  getBaudRate (const struct termios*);
+   static void  init_consoleCharMap();
+   static char* init_256colorTerminal(char[]);
+   static char* parseAnswerbackMsg(char*&);
+   static char* parseSecDA(char*&);
    static void  init_termcaps();
    static void  init_vt100altChar();
-   static void  init_consoleCharMap();
+   static void  init_encoding();
    void         init();
    void         finish();
    static uInt  charEncode (uInt);

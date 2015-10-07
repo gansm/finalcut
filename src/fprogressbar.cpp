@@ -74,6 +74,8 @@ void FProgressbar::drawBar()
     // Cygwin terminal use IBM Codepage 850
     if ( isCygwinTerminal() )
       print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
     else
       print (fc::RightHalfBlock); // ▐
   }
@@ -230,7 +232,9 @@ bool FProgressbar::setEnable (bool on)
 //----------------------------------------------------------------------
 bool FProgressbar::setShadow (bool on)
 {
-  if ( on )
+  if (  on
+     && (Encoding != fc::VT100 || isTeraTerm() )
+     && Encoding != fc::ASCII )
     flags |= SHADOW;
   else
     flags &= ~SHADOW;

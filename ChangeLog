@@ -1,3 +1,6 @@
+2015-10-06  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FTerm::init()
+
 2015-10-05  Markus Gans  <guru.mail@muenster.de>
 	* Improve compatibility with initialize_color
 	* Better support for TeraTerm

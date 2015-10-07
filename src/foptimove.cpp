@@ -511,10 +511,13 @@ int FOptiMove::relative_move ( char*& move
     if ( htime >= LONG_DURATION )
       return LONG_DURATION;
 
-    if ( *move )
-      strcat (move, hmove);
-    else
-      strcpy (move, hmove);
+    if ( move )
+    {
+      if ( *move )
+        strcat (move, hmove);
+      else
+        strcpy (move, hmove);
+    }
   }
 
   return (vtime + htime);
@@ -639,9 +642,12 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         break;
 
       case 2:
-        strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
-        move_ptr += F_carriage_return.length;
-        relative_move (move_ptr, 0, yold, xnew, ynew);
+        if ( F_carriage_return.cap )
+        {
+          strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
+          move_ptr += F_carriage_return.length;
+          relative_move (move_ptr, 0, yold, xnew, ynew);
+        }
         break;
 
       case 3:
