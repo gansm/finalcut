@@ -409,10 +409,19 @@ class FTerm
    static void    appendCharacter (char_data*&);
    static void    appendAttributes (char_data*&);
    static int     appendLowerRight (char_data*&);
+   static void    appendOutputBuffer (std::string&);
+   static void    appendOutputBuffer (const char*);
    static int     appendOutputBuffer (int);
    static void    flush_out();
-
    static int     (*Fputchar)(int); // function pointer -> static function
+   static void    putstringf (const char*, ...)
+   #if defined(__clang__)
+     __attribute__((__format__ (__printf__, 1, 2)))
+   #elif defined(__GNUC__)
+     __attribute__ ((format (printf, 1, 2)))
+   #endif
+                  ;
+   static void    putstring (const char*, int = 1);
    static int     putchar_ASCII (register int);
    static int     putchar_VT100 (register int);
    static int     putchar_PC    (register int);

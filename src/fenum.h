@@ -4,9 +4,9 @@
 //  Standalone class
 //  ════════════════
 //
-//  ▕▔▔▔▔▏
-//  ▕ fc ▏
-//  ▕▁▁▁▁▏
+//  ▕▔▔▔▔▔▔▔▔▏
+//  ▕   fc   ▏
+//  ▕▁▁▁▁▁▁▁▁▏
 
 #ifndef _FENUM_H
 #define _FENUM_H

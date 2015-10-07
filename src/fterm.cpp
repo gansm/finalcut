@@ -866,7 +866,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             if ( terminal_id_version == 136 )
               putty_terminal = true;  // PuTTY
             break;
-          
+
           case 1:
             // also used by apple terminal
             if (  Sec_DA_components[1]
@@ -883,24 +883,24 @@ char* FTerm::parseSecDA (char*& current_termtype)
                 new_termtype = const_cast<char*>("gnome");
             }
             break;
-          
+
           case 32:  // Tera Term
             tera_terminal = true;
             new_termtype = const_cast<char*>("teraterm");
             break;
-          
+
           case 77:  // mintty
             mintty_terminal = true;
             new_termtype = const_cast<char*>("xterm-256color");
             // application escape key mode
-            tputs ("\033[?7727h", 1, putchar);
+            putstring ("\033[?7727h");
             fflush(stdout);
             break;
-          
+
           case 83:  // screen
             screen_terminal = true;
             break;
-          
+
           case 82:  // rxvt
             rxvt_terminal = true;
             force_vt100 = true;  // this rxvt terminal support on utf-8
@@ -908,7 +908,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
                || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
               new_termtype = const_cast<char*>("rxvt-16color");
             break;
-          
+
           case 85:  // rxvt-unicode
             rxvt_terminal = true;
             urxvt_terminal = true;
@@ -920,7 +920,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
                 new_termtype = const_cast<char*>("rxvt");
             }
             break;
-          
+
           default:
             break;
         }
@@ -944,24 +944,27 @@ void FTerm::init_vt100altChar()
       (*vt100_alt_char)[p1] = p2;
     }
   }
+
   enum column
   {
     vt100_key = 0,
     utf8_char = 1
   };
+
   // update array 'character' with discovered vt100 pairs
   for (int n=0; n <= lastKeyItem; n++ )
   {
     uChar keyChar = uChar(vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
     uInt utf8char = uInt(vt100_key_to_utf8[n][utf8_char]);
+    fc::encoding num = fc::NUM_OF_ENCODINGS;
 
     uInt* p = std::find ( character[0]
-                        , character[lastCharItem] + fc::NUM_OF_ENCODINGS
+                        , character[lastCharItem] + num
                         , utf8char );
-    if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found in character
+    if ( p != character[lastCharItem] + num ) // found in character
     {
-      int item = int(std::distance(character[0], p) / fc::NUM_OF_ENCODINGS);
+      int item = int(std::distance(character[0], p) / num);
 
       if ( altChar )
         character[item][fc::VT100] = altChar; // update alternate character set
@@ -1334,7 +1337,7 @@ void FTerm::init()
 
   if ( isatty(stdout_no) )
     opti->setBaudRate(int(baudrate));
-  
+
   // Import the untrusted environment variable TERM
   const char* term_env = getenv(const_cast<char*>("TERM"));
   if ( term_env )
@@ -1404,7 +1407,7 @@ void FTerm::init()
   // TeraTerm can not show UTF-8 character
   if ( tera_terminal && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = setlocale(LC_ALL, "en_US");
-    
+
   // if locale C => switch from 7bit ascii -> latin1
   if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
     locale_name = setlocale(LC_ALL, "en_US");
@@ -1441,25 +1444,31 @@ void FTerm::init()
     enableXTermMouse();
   }
 
-  // set screen settings
+  // enter 'keyboard_transmit' mode
   if ( tcap[t_keypad_xmit].string )
   {
-    tputs (tcap[t_keypad_xmit].string, 1, putchar);
+    putstring (tcap[t_keypad_xmit].string);
     fflush(stdout);
   }
+
+  // save current cursor position
   if ( tcap[t_save_cursor].string )
   {
-    tputs (tcap[t_save_cursor].string, 1, putchar);
+    putstring (tcap[t_save_cursor].string);
     fflush(stdout);
   }
+
+  // saves the screen and the cursor position
   if ( tcap[t_enter_ca_mode].string )
   {
-    tputs (tcap[t_enter_ca_mode].string, 1, putchar);
+    putstring (tcap[t_enter_ca_mode].string);
     fflush(stdout);
   }
+
+  // enable alternate charset
   if ( tcap[t_enable_acs].string )
   {
-    tputs (tcap[t_enable_acs].string, 1, putchar);
+    putstring (tcap[t_enable_acs].string);
     fflush(stdout);
   }
 
@@ -1551,9 +1560,10 @@ void FTerm::finish()
   showCursor();
   setCookedMode(); // leave raw mode
 
+  // turn off all attributes
   if ( tcap[t_exit_attribute_mode].string )
   {
-    tputs (tcap[t_exit_attribute_mode].string, 1, putchar);
+    putstring (tcap[t_exit_attribute_mode].string);
     fflush(stdout);
   }
   if ( ! gnome_terminal )
@@ -1581,7 +1591,7 @@ void FTerm::finish()
   if ( mintty_terminal )
   {
     //  normal escape key mode
-    tputs ("\033[?7727l", 1, putchar);
+    putstring ("\033[?7727l");
     fflush(stdout);
   }
   if ( linux_terminal )
@@ -1600,7 +1610,7 @@ void FTerm::finish()
      && tcap[t_clear_screen].string )
   {
     int rows = term->getHeight();
-    tputs (tcap[t_clear_screen].string, rows, putchar);
+    putstring (tcap[t_clear_screen].string, rows);
   }
 
   if ( mouse_support )
@@ -1611,19 +1621,24 @@ void FTerm::finish()
     disableGpmMouse();  // Disable gpm server
 #endif
 
+  // restores the screen and the cursor position
   if ( tcap[t_exit_ca_mode].string )
   {
-    tputs (tcap[t_exit_ca_mode].string, 1, putchar);
+    putstring (tcap[t_exit_ca_mode].string);
     fflush(stdout);
   }
+
+  // restore cursor to position of last save_cursor
   if ( tcap[t_restore_cursor].string )
   {
-    tputs (tcap[t_restore_cursor].string, 1, putchar);
+    putstring (tcap[t_restore_cursor].string);
     fflush(stdout);
   }
+
+  // leave 'keyboard_transmit' mode
   if ( tcap[t_keypad_local].string )
   {
-    tputs (tcap[t_keypad_local].string, 1, putchar);
+    putstring (tcap[t_keypad_local].string);
     fflush(stdout);
   }
 
@@ -1677,13 +1692,15 @@ void FTerm::finish()
 uInt FTerm::charEncode (uInt c)
 {
   register uInt* p;
+  fc::encoding num = fc::NUM_OF_ENCODINGS;
+
   p = std::find ( character[0]
-                , character[lastCharItem] + fc::NUM_OF_ENCODINGS
+                , character[lastCharItem] + num
                 , c );
-  if ( p != character[lastCharItem] + fc::NUM_OF_ENCODINGS ) // found
+  if ( p != character[lastCharItem] + num ) // found
   {
     register uInt item = uInt( std::distance(character[0], p)
-                             / fc::NUM_OF_ENCODINGS );
+                             / num );
     c = character[item][Encoding];
   }
   return c;
@@ -2300,7 +2317,7 @@ bool FTerm::setVGAFont()
   if ( xterm )
   {
     // Set font in xterm to vga
-    tputs("\033]50;vga\07", 1, putchar);
+    putstring("\033]50;vga\07");
     fflush(stdout);
     NewFont = false;
     pc_charset_console = true;
@@ -2352,7 +2369,7 @@ bool FTerm::setNewFont()
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
-    tputs("\033]50;8x16graph\07", 1, putchar);
+    putstring("\033]50;8x16graph\07");
     fflush(stdout);
     pc_charset_console = true;
     Encoding = fc::PC;
@@ -2408,10 +2425,10 @@ bool FTerm::setOldFont()
   {
     if ( xterm_font->getLength() > 2 )
       // restore saved xterm font
-      ::printf ("\033]50;%s\07", xterm_font->c_str() );
+      putstringf ("\033]50;%s\07", xterm_font->c_str() );
     else
       // Set font in xterm to vga
-      tputs("\033]50;vga\07", 1, putchar);
+      putstring("\033]50;vga\07");
     fflush(stdout);
     retval = true;
   }
@@ -2423,11 +2440,11 @@ bool FTerm::setOldFont()
       {
         if ( screenFont.data )
         {
-          int ret = setScreenFont( screenFont.data,
-                                   screenFont.charcount,
-                                   screenFont.width,
-                                   screenFont.height,
-                                   true);
+          int ret = setScreenFont ( screenFont.data,
+                                    screenFont.charcount,
+                                    screenFont.width,
+                                    screenFont.height,
+                                    true );
           delete[] screenFont.data;
           if ( ret == 0 )
             retval = true;
@@ -2454,7 +2471,7 @@ void FTerm::setConsoleCursor (fc::console_cursor_style style)
     consoleCursorStyle = style;
     if ( hiddenCursor )
       return;
-    ::printf ("\033[?%dc", style);
+    putstringf ("\033[?%dc", style);
     fflush(stdout);
   }
 }
@@ -2494,7 +2511,7 @@ void FTerm::setTermSize (int term_width, int term_height)
   // Set xterm size to {term_width} x {term_height}
   if ( xterm )
   {
-    ::printf ("\033[8;%d;%dt", term_height, term_width);
+    putstringf ("\033[8;%d;%dt", term_height, term_width);
     fflush(stdout);
   }
 }
@@ -2669,7 +2686,7 @@ void FTerm::setKDECursor(fc::kde_konsole_CursorShape style)
   // Set cursor style in KDE konsole
   if ( kde_konsole )
   {
-    ::printf ("\033]50;CursorShape=%d\007", style);
+    putstringf ("\033]50;CursorShape=%d\007", style);
     fflush(stdout);
   }
 }
@@ -2683,7 +2700,7 @@ FString FTerm::getXTermFont()
   {
     int n;
     char temp[150] = {};
-    tputs("\033]50;?\07", 1, putchar);  // get font
+    putstring("\033]50;?\07");  // get font
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
@@ -2713,7 +2730,7 @@ FString FTerm::getXTermTitle()
   {
     int n;
     char temp[512] = {};
-    tputs("\033[21t", 1, putchar);  // get title
+    putstring("\033[21t");  // get title
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
@@ -2737,7 +2754,7 @@ void FTerm::setXTermCursorStyle(fc::xterm_cursor_style style)
   // Set the xterm cursor style
   if ( (xterm || mintty_terminal) && ! gnome_terminal && ! kde_konsole )
   {
-    ::printf ("\033[%d q", style);
+    putstringf ("\033[%d q", style);
     fflush(stdout);
   }
 }
@@ -2748,7 +2765,7 @@ void FTerm::setXTermTitle (const FString& title)
   // Set the xterm title
   if ( xterm || mintty_terminal || putty_terminal )
   {
-    ::printf ("\033]0;%s\07", title.c_str());
+    putstringf ("\033]0;%s\07", title.c_str());
     fflush(stdout);
   }
 }
@@ -2759,7 +2776,7 @@ void FTerm::setXTermForeground (const FString& fg)
   // Set the VT100 text foreground color
   if ( xterm || mintty_terminal || mlterm_terminal )
   {
-    ::printf ("\033]10;%s\07", fg.c_str());
+    putstringf ("\033]10;%s\07", fg.c_str());
     fflush(stdout);
   }
 }
@@ -2770,7 +2787,7 @@ void FTerm::setXTermBackground (const FString& bg)
   // Set the VT100 text background color
   if ( xterm || mintty_terminal || mlterm_terminal )
   {
-    ::printf ("\033]11;%s\07", bg.c_str());
+    putstringf ("\033]11;%s\07", bg.c_str());
     fflush(stdout);
   }
 }
@@ -2781,7 +2798,7 @@ void FTerm::setXTermCursor (const FString& cc)
   // Set the text cursor color
   if ( xterm || mintty_terminal || urxvt_terminal )
   {
-    ::printf ("\033]12;%s\07", cc.c_str());
+    putstringf ("\033]12;%s\07", cc.c_str());
     fflush(stdout);
   }
 }
@@ -2792,7 +2809,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
   // Set the mouse foreground color
   if ( xterm || urxvt_terminal )
   {
-    ::printf ("\033]13;%s\07", mfg.c_str());
+    putstringf ("\033]13;%s\07", mfg.c_str());
     fflush(stdout);
   }
 }
@@ -2803,7 +2820,7 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
   // Set the mouse background color
   if ( xterm )
   {
-    ::printf ("\033]14;%s\07", mbg.c_str());
+    putstringf ("\033]14;%s\07", mbg.c_str());
     fflush(stdout);
   }
 }
@@ -2814,7 +2831,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
   // Set the highlight background color
   if ( xterm || urxvt_terminal )
   {
-    ::printf ("\033]17;%s\07", hbg.c_str());
+    putstringf ("\033]17;%s\07", hbg.c_str());
     fflush(stdout);
   }
 }
@@ -2825,7 +2842,7 @@ void FTerm::resetXTermForeground()
   // Reset the VT100 text foreground color
   if ( xterm )
   {
-    tputs("\033]110;\07", 1, putchar);
+    putstring("\033]110;\07");
     fflush(stdout);
   }
 }
@@ -2836,7 +2853,7 @@ void FTerm::resetXTermBackground()
   // Reset the VT100 text background color
   if ( xterm )
   {
-    tputs("\033]111;\07", 1, putchar);
+    putstring("\033]111;\07");
     fflush(stdout);
   }
 }
@@ -2847,7 +2864,7 @@ void FTerm::resetXTermCursor()
   // Reset the text cursor color
   if ( xterm )
   {
-    tputs("\033]112;\07", 1, putchar);
+    putstring("\033]112;\07");
     fflush(stdout);
   }
 }
@@ -2858,7 +2875,7 @@ void FTerm::resetXTermMouseForeground()
   // Reset the mouse foreground color
   if ( xterm )
   {
-    tputs("\033]113;\07", 1, putchar);
+    putstring("\033]113;\07");
     fflush(stdout);
   }
 }
@@ -2869,7 +2886,7 @@ void FTerm::resetXTermMouseBackground()
   // Reset the mouse background color
   if ( xterm )
   {
-    tputs("\033]114;\07", 1, putchar);
+    putstring("\033]114;\07");
     fflush(stdout);
   }
 }
@@ -2883,11 +2900,13 @@ void FTerm::saveColorMap()
 //----------------------------------------------------------------------
 void FTerm::resetColorMap()
 {
-  if ( tcap[t_orig_pair].string )
-    tputs (tcap[t_orig_pair].string, 1, putchar);
-  else if ( tcap[t_orig_colors].string )
-    tputs (tcap[t_orig_colors].string, 1, putchar);
-  fflush(stdout);
+  char* op = tcap[t_orig_pair].string;
+  char* oc = tcap[t_orig_colors].string;
+
+  if ( op )
+    putstring (op);
+  else if ( oc )
+    putstring (oc);
 /*else
   {
     dacreg CurrentColors[16] =
@@ -2909,34 +2928,35 @@ void FTerm::resetColorMap()
     }
     ioctl (0, PIO_CMAP, &map);
   }*/
+  fflush(stdout);
 }
 
 //----------------------------------------------------------------------
 void FTerm::setPalette (int index, int r, int g, int b)
 {
+  char* Ic = tcap[t_initialize_color].string;
+  char* Ip = tcap[t_initialize_pair].string;
+
   index = vga2ansi(index);
 
-  if (  tcap[t_initialize_color].string
-     || tcap[t_initialize_pair].string )
+  if ( Ic || Ip )
   {
     int rr, gg, bb;
-    const char* putString = "";
+    const char* color_str = "";
+
     rr = (r * 1001) / 256;
     gg = (g * 1001) / 256;
     bb = (b * 1001) / 256;
 
-    if ( tcap[t_initialize_color].string )
-      putString = tparm(tcap[t_initialize_color].string,
-                        index, rr, gg, bb, 0, 0, 0, 0, 0);
-    else if ( tcap[t_initialize_pair].string )
-      putString = tparm(tcap[t_initialize_pair].string,
-                        index, 0, 0, 0, rr, gg, bb, 0, 0);
-    tputs (putString, 1, putchar);
+    if ( Ic )
+      color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
+    else if ( Ip )
+      color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
+
+    putstring (color_str);
   }
   else if ( linux_terminal )
   {
-    //::printf ("\033]P%x%.2x%.2x%.2x", index, r, g, b);
-
 /*  // direct vga-register set
     if (  r>=0 && r<256
        && g>=0 && g<256
@@ -2996,53 +3016,54 @@ inline int FTerm::vga2ansi (register int color)
 //----------------------------------------------------------------------
 void FTerm::setTermColor (register int fg, register int bg)
 {
-  char* putString;
+  char* color_str;
+  char* AF = tcap[t_set_a_foreground].string;
+  char* AB = tcap[t_set_a_background].string;
+  char* Sf = tcap[t_set_foreground].string;
+  char* Sb = tcap[t_set_background].string;
+  char* sp = tcap[t_set_color_pair].string;
 
-  if ( tcap[t_set_a_foreground].string && tcap[t_set_a_background].string )
+  if ( AF && AB )
   {
     int ansi_fg = vga2ansi(fg);
     int ansi_bg = vga2ansi(bg);
 
     if ( cygwin_terminal )
     {
-      tputs ("\033[m", 1, appendOutputBuffer);
+      appendOutputBuffer ("\033[m");
 
-      putString = tparm(tcap[t_set_a_foreground].string, ansi_fg);
-      if ( putString )
-        tputs (putString, 1, appendOutputBuffer);
+      color_str = tparm(AF, ansi_fg);
+      if ( color_str )
+        appendOutputBuffer (color_str);
 
-      putString = tparm(tcap[t_set_a_background].string, ansi_bg);
-      if ( putString )
-        tputs (putString, 1, appendOutputBuffer);
+      color_str = tparm(AB, ansi_bg);
+      if ( color_str )
+        appendOutputBuffer (color_str);
     }
     else
     {
-      if (  fg_term_color != fg
-         && (putString = tparm(tcap[t_set_a_foreground].string, ansi_fg)) )
-        tputs (putString, 1, appendOutputBuffer);
+      if ( fg_term_color != fg && (color_str = tparm(AF, ansi_fg)) )
+        appendOutputBuffer (color_str);
 
-      if (  bg_term_color != bg
-         && (putString = tparm(tcap[t_set_a_background].string, ansi_bg)) )
-        tputs (putString, 1, appendOutputBuffer);
+      if ( bg_term_color != bg && (color_str = tparm(AB, ansi_bg)) )
+        appendOutputBuffer (color_str);
     }
   }
-  else if ( tcap[t_set_foreground].string && tcap[t_set_background].string )
+  else if ( Sf && Sb )
   {
-    if (  fg_term_color != fg
-       && (putString = tparm(tcap[t_set_foreground].string, fg)) )
-      tputs (putString, 1, appendOutputBuffer);
+    if ( fg_term_color != fg && (color_str = tparm(Sf, fg)) )
+      appendOutputBuffer (color_str);
 
-    if (  bg_term_color != bg
-       && (putString = tparm(tcap[t_set_background].string, bg)) )
-      tputs (putString, 1, appendOutputBuffer);
+    if ( bg_term_color != bg && (color_str = tparm(Sb, bg)) )
+      appendOutputBuffer (color_str);
   }
-  else if ( tcap[t_set_color_pair].string )
+  else if ( sp )
   {
     fg = vga2ansi(fg);
     bg = vga2ansi(bg);
 
-    if ( (putString = tparm(tcap[t_set_color_pair].string, fg, bg)) )
-      tputs (putString, 1, appendOutputBuffer);
+    if ( (color_str = tparm(sp, fg, bg)) )
+      appendOutputBuffer (color_str);
   }
 
   fg_term_color = fg;
@@ -3055,19 +3076,17 @@ void FTerm::xtermMouse (bool on)
   if ( ! mouse_support )
     return;
   if ( on )
-    tputs ("\033[?1001s"  // save old highlight mouse tracking
-           "\033[?1000h"  // enable x11 mouse tracking
-           "\033[?1002h"  // enable cell motion mouse tracking
-           "\033[?1015h"  // enable urxvt mouse mode
-           "\033[?1006h"  // enable SGR mouse mode
-           , 1, putchar);
+    putstring ("\033[?1001s"   // save old highlight mouse tracking
+               "\033[?1000h"   // enable x11 mouse tracking
+               "\033[?1002h"   // enable cell motion mouse tracking
+               "\033[?1015h"   // enable urxvt mouse mode
+               "\033[?1006h"); // enable SGR mouse mode
   else
-    tputs ("\033[?1006l"  // disable SGR mouse mode
-           "\033[?1015l"  // disable urxvt mouse mode
-           "\033[?1002l"  // disable cell motion mouse tracking
-           "\033[?1000l"  // disable x11 mouse tracking
-           "\033[?1001r"  // restore old highlight mouse tracking
-           , 1, putchar);
+    putstring ("\033[?1006l"   // disable SGR mouse mode
+               "\033[?1015l"   // disable urxvt mouse mode
+               "\033[?1002l"   // disable cell motion mouse tracking
+               "\033[?1000l"   // disable x11 mouse tracking
+               "\033[?1001r"); // restore old highlight mouse tracking
   fflush(stdout);
 }
 
@@ -3142,7 +3161,7 @@ void FTerm::setTermXY (register int x, register int y)
 
   move_str = opti->cursor_move (x_term_pos, y_term_pos, x, y);
   if ( move_str )
-    tputs (move_str, 1, appendOutputBuffer);
+    appendOutputBuffer(move_str);
   flush_out();
   x_term_pos = x;
   y_term_pos = y;
@@ -3159,7 +3178,7 @@ void FTerm::setBeep(int Hz, int ms)
   // range for duration:  0-1999
   if ( ms < 0 || ms > 1999 )
     return;
-  ::printf("\033[10;%d]\033[11;%d]", Hz, ms);
+  putstringf("\033[10;%d]\033[11;%d]", Hz, ms);
   fflush(stdout);
 }
 
@@ -3170,7 +3189,7 @@ void FTerm::resetBeep()
     return;
   // default frequency: 750 Hz
   // default duration:  125 ms
-  tputs("\033[10;750]\033[11;125]", 1, putchar);
+  putstring ("\033[10;750]\033[11;125]");
   fflush(stdout);
 }
 
@@ -3179,7 +3198,7 @@ void FTerm::beep()
 {
   if ( tcap[t_bell].string )
   {
-    tputs (tcap[t_bell].string, 1, putchar);
+    putstring (tcap[t_bell].string);
     fflush(stdout);
   }
 }
@@ -3192,8 +3211,9 @@ bool FTerm::setTermBold (bool on)
 
   if ( on )
   {
-    if ( tcap[t_enter_bold_mode].string )
-      tputs (tcap[t_enter_bold_mode].string, 1, appendOutputBuffer);
+    char* md = tcap[t_enter_bold_mode].string;
+    if ( md )
+      appendOutputBuffer (md);
     term_bold = true;
   }
   else
@@ -3201,17 +3221,18 @@ bool FTerm::setTermBold (bool on)
     char* me = tcap[t_exit_attribute_mode].string;
     if ( me )
     {
-      char *ue, *us, *mr;
-      tputs (me, 1, appendOutputBuffer);
+      char* ue = tcap[t_exit_underline_mode].string;
+      char* us = tcap[t_enter_underline_mode].string;
+      char* mr = tcap[t_enter_reverse_mode].string;
+
+      appendOutputBuffer (me);
       setTermColor (fg_color, bg_color); // restore the last color
 
-      ue = tcap[t_exit_underline_mode].string;
-      us = tcap[t_enter_underline_mode].string;
       if ( underline && ue && us )
-        tputs (us, 1, appendOutputBuffer);
-      mr = tcap[t_enter_reverse_mode].string;
+        appendOutputBuffer (us);
+
       if ( reverse && me && mr )
-        tputs (mr, 1, appendOutputBuffer);
+        appendOutputBuffer (mr);
     }
     term_bold = false;
   }
@@ -3226,8 +3247,9 @@ bool FTerm::setTermReverse (bool on)
 
   if ( on )
   {
-    if ( tcap[t_enter_reverse_mode].string )
-      tputs (tcap[t_enter_reverse_mode].string, 1, appendOutputBuffer);
+    char* mr = tcap[t_enter_reverse_mode].string;
+    if ( mr )
+      appendOutputBuffer (mr);
     term_reverse = true;
   }
   else
@@ -3235,16 +3257,17 @@ bool FTerm::setTermReverse (bool on)
     char* se = tcap[t_exit_standout_mode].string;
     if ( se )
     {
-      char *ue, *us, *md;
-      tputs (se, 1, appendOutputBuffer);
+      char* ue = tcap[t_exit_underline_mode].string;
+      char* us = tcap[t_enter_underline_mode].string;
+      char* md = tcap[t_enter_bold_mode].string;
 
-      ue = tcap[t_exit_underline_mode].string;
-      us = tcap[t_enter_underline_mode].string;
+      appendOutputBuffer (se);
+
       if ( term_underline && ue && us )
-        tputs (us, 1, appendOutputBuffer);
-      md = tcap[t_enter_bold_mode].string;
+        appendOutputBuffer (us);
+
       if ( term_bold && md && se )
-        tputs (md, 1, appendOutputBuffer);
+        appendOutputBuffer (md);
     }
     term_reverse = false;
   }
@@ -3262,8 +3285,9 @@ bool FTerm::setTermUnderline (bool on)
 
   if ( on )
   {
-    if ( tcap[t_enter_underline_mode].string )
-      tputs (tcap[t_enter_underline_mode].string, 1, appendOutputBuffer);
+    char* us = tcap[t_enter_underline_mode].string;
+    if ( us )
+      appendOutputBuffer (us);
     term_underline = true;
   }
   else
@@ -3271,16 +3295,17 @@ bool FTerm::setTermUnderline (bool on)
     char* ue = tcap[t_exit_underline_mode].string;
     if ( ue )
     {
-      char *se, *mr, *md;
-      tputs (ue, 1, appendOutputBuffer);
+      char* se = tcap[t_exit_standout_mode].string;
+      char* mr = tcap[t_enter_reverse_mode].string;
+      char* md = tcap[t_enter_bold_mode].string;
 
-      se = tcap[t_exit_standout_mode].string;
-      mr = tcap[t_enter_reverse_mode].string;
+      appendOutputBuffer (ue);
+
       if ( term_reverse && se && mr && strcmp(ue, se) == 0 )
-        tputs (mr, 1, appendOutputBuffer);
-      md = tcap[t_enter_bold_mode].string;
+        appendOutputBuffer (mr);
+
       if ( term_bold && md && se && strcmp(ue, se) == 0 )
-        tputs (md, 1, appendOutputBuffer);
+        appendOutputBuffer (md);
     }
     term_underline = false;
   }
@@ -3301,19 +3326,19 @@ bool FTerm::hideCursor(bool on)
   if ( on )
   {
     if ( vi )
-      tputs (vi, 1, appendOutputBuffer);
+      appendOutputBuffer (vi);
     else
-      tputs ("\033[?25l", 1, appendOutputBuffer);
+      appendOutputBuffer ("\033[?25l");
     hiddenCursor = true;  // global
   }
   else
   {
     if ( vs )
-      tputs (vs, 1, appendOutputBuffer);
+      appendOutputBuffer (vs);
     else if ( vi ) // putty-256color
-      tputs ("\033[?12;25h", 1, appendOutputBuffer);
+      appendOutputBuffer ("\033[?12;25h");
     else
-      tputs ("\033[?25h", 1, appendOutputBuffer);
+      appendOutputBuffer ("\033[?25h");
     hiddenCursor = false;
   }
   flush_out();
@@ -3398,9 +3423,9 @@ bool FTerm::setPCcharset(bool on)
   if ( on )
   {
     if ( linux_terminal )  // man 4 console_codes
-      tputs ("\033%@\033(U", 1, putchar);
+      putstring ("\033%@\033(U");
     else if ( tcap[t_enter_alt_charset_mode].string )
-      tputs (tcap[t_enter_alt_charset_mode].string, 1, putchar);
+      putstring (tcap[t_enter_alt_charset_mode].string);
     else
       return pc_charset_state;
     pc_charset_state = true;
@@ -3408,9 +3433,9 @@ bool FTerm::setPCcharset(bool on)
   else
   {
     if ( linux_terminal )
-      tputs ("\033(B", 1, putchar);
+      putstring ("\033(B");
     else if ( tcap[t_exit_alt_charset_mode].string )
-      tputs (tcap[t_exit_alt_charset_mode].string, 1, putchar);
+      putstring (tcap[t_exit_alt_charset_mode].string);
     else
       return pc_charset_state;
     pc_charset_state = false;
@@ -3448,15 +3473,13 @@ bool FTerm::setVT100altChar(bool on)
 
   if ( on && tcap[t_enter_alt_charset_mode].string )
   {
-    tputs ( tcap[t_enter_alt_charset_mode].string,
-            1, appendOutputBuffer );
+    appendOutputBuffer (tcap[t_enter_alt_charset_mode].string);
     ignore_vt100_state = true;
     vt100_state = true;
   }
   else if ( tcap[t_exit_alt_charset_mode].string )
   {
-    tputs ( tcap[t_exit_alt_charset_mode].string,
-            1, appendOutputBuffer );
+    appendOutputBuffer (tcap[t_exit_alt_charset_mode].string);
     ignore_vt100_state = false;
     vt100_state = false;
   }
@@ -3478,9 +3501,9 @@ bool FTerm::setUTF8(bool on) // UTF-8 (Unicode)
   if ( linux_terminal )
   {
     if ( on )
-      tputs ("\033%G", 1, putchar);
+      putstring ("\033%G");
     else
-      tputs ("\033%@", 1, putchar);
+      putstring ("\033%@");
   }
   fflush(stdout);
   return utf8_state;
@@ -3553,7 +3576,7 @@ FString FTerm::getAnswerbackMsg()
     FD_SET(stdin_no, &ifds);
     tv.tv_sec  = 0;
     tv.tv_usec = 150000;  // 150 ms
-    
+
     putchar(0x05);  // send enquiry character
     fflush(stdout);
 
@@ -4002,21 +4025,30 @@ inline void FTerm::appendAttributes (char_data*& screen_attr)
 //----------------------------------------------------------------------
 int FTerm::appendLowerRight (char_data*& screen_char)
 {
+  char* SA = tcap[t_enter_am_mode].string;
+  char* RA = tcap[t_exit_am_mode].string;
+
   if ( ! automatic_right_margin )
   {
     appendCharacter (screen_char);
   }
-  else if (  tcap[t_enter_am_mode].string
-          && tcap[t_exit_am_mode].string )
+  else if ( SA && RA )
   {
-    tputs (tcap[t_exit_am_mode].string, 1, appendOutputBuffer);
+    appendOutputBuffer (RA);
     appendCharacter (screen_char);
-    tputs (tcap[t_enter_am_mode].string, 1, appendOutputBuffer);
+    appendOutputBuffer (SA);
   }
   else
   {
-    int x = term->getWidth() - 2;
-    int y = term->getHeight() - 1;
+    int x, y;
+    char* IC = tcap[t_parm_ich].string;
+    char* im = tcap[t_enter_insert_mode].string;
+    char* ei = tcap[t_exit_insert_mode].string;
+    char* ip = tcap[t_insert_padding].string;
+    char* ic = tcap[t_insert_character].string;
+
+    x = term->getWidth() - 2;
+    y = term->getHeight() - 1;
     setTermXY (x, y);
     appendCharacter (screen_char);
     x_term_pos++;
@@ -4024,29 +4056,41 @@ int FTerm::appendLowerRight (char_data*& screen_char)
     setTermXY (x, y);
     screen_char--;
 
-    if ( tcap[t_parm_ich].string )
+    if ( IC )
     {
-      tputs (tparm(tcap[t_parm_ich].string, 1), 1, appendOutputBuffer);
+      appendOutputBuffer (tparm(IC, 1));
       appendCharacter (screen_char);
     }
-    else if ( tcap[t_enter_insert_mode].string
-            && tcap[t_exit_insert_mode].string )
+    else if ( im && ei )
     {
-      tputs (tcap[t_enter_insert_mode].string, 1, appendOutputBuffer);
+      appendOutputBuffer (im);
       appendCharacter (screen_char);
-      if ( tcap[t_insert_padding].string )
-        tputs (tcap[t_insert_padding].string, 1, appendOutputBuffer);
-      tputs (tcap[t_exit_insert_mode].string, 1, appendOutputBuffer);
+      if ( ip )
+        appendOutputBuffer (ip);
+      appendOutputBuffer (ei);
     }
-    else if ( tcap[t_insert_character].string )
+    else if ( ic )
     {
-      tputs (tcap[t_insert_character].string, 1, appendOutputBuffer);
+      appendOutputBuffer (ic);
       appendCharacter (screen_char);
-      if ( tcap[t_insert_padding].string )
-        tputs (tcap[t_insert_padding].string, 1, appendOutputBuffer);
+      if ( ip )
+        appendOutputBuffer (ip);
     }
   }
   return screen_char->code;
+}
+
+//----------------------------------------------------------------------
+void FTerm::appendOutputBuffer (std::string& s)
+{
+  const char* c_string = s.c_str();
+  tputs (c_string, 1, appendOutputBuffer);
+}
+
+//----------------------------------------------------------------------
+void FTerm::appendOutputBuffer (const char* s)
+{
+  tputs (s, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
@@ -4067,6 +4111,28 @@ void FTerm::flush_out()
     output_buffer->pop();
   }
   fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::putstringf (const char* format, ...)
+{
+  assert ( format != 0 );
+  char  buf[512];
+  char* buffer;
+  va_list args;
+
+  buffer = buf;
+  va_start (args, format);
+  vsnprintf (buffer, sizeof(buf), format, args);
+  va_end (args);
+
+  tputs (buffer, 1, putchar);
+}
+
+//----------------------------------------------------------------------
+void FTerm::putstring (const char* s, int affcnt)
+{
+  tputs (s, affcnt, putchar);
 }
 
 //----------------------------------------------------------------------
@@ -4094,7 +4160,7 @@ int FTerm::putchar_VT100 (register int c)
        && tcap[t_enter_alt_charset_mode].string
        && ! ignore_vt100_state )
     {
-      tputs (tcap[t_enter_alt_charset_mode].string, 1, putchar);
+      putstring (tcap[t_enter_alt_charset_mode].string);
       vt100_state = true;
     }
     if ( putchar(ch) == EOF )
@@ -4108,7 +4174,7 @@ int FTerm::putchar_VT100 (register int c)
        && tcap[t_exit_alt_charset_mode].string
        && ! ignore_vt100_state )
     {
-      tputs (tcap[t_exit_alt_charset_mode].string, 1, putchar);
+      putstring (tcap[t_exit_alt_charset_mode].string);
       vt100_state = false;
     }
     if ( c >> 7 )  // more than 7-bit
@@ -4136,7 +4202,7 @@ int FTerm::putchar_PC (register int c)
   {
     ch = char(charEncode(uInt(c)));
     // IBM PC alternate character set on
-    tputs (tcap[t_enter_pc_charset_mode].string, 1, putchar);
+    putstring (tcap[t_enter_pc_charset_mode].string);
   }
   else
     ch = char(c);
@@ -4149,7 +4215,7 @@ int FTerm::putchar_PC (register int c)
   if ( c >> 7 )
   {
     // IBM PC alternate character set off
-    tputs (tcap[t_exit_pc_charset_mode].string, 1, putchar);
+    putstring (tcap[t_exit_pc_charset_mode].string);
   }
 
   if ( ret == EOF )

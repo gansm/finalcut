@@ -40,7 +40,7 @@ FApplication::FApplication (int &_argc, char* _argv[])
   , fifo_offset(0)
   , fifo_in_use(false)
   , fifo_buf_size(sizeof(fifo_buf))
-  , key_timeout(100000)  // 100 ms
+  , key_timeout(100000)        // 100 ms
   , dblclick_interval(500000)  // 500 ms
   , time_keypressed()
   , time_mousepressed()
