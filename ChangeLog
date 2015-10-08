@@ -1,3 +1,6 @@
+2015-10-09  Markus Gans  <guru.mail@muenster.de>
+	* Eliminate duplicate code
+
 2015-10-06  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FTerm::init()
 

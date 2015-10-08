@@ -402,11 +402,11 @@ void FApplication::processKeyboardEvent()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::parseX11Mouse()
+void FApplication::getX11ButtonState (int button)
 {
-  uChar x, y;
+  // get the x11 and urxvt mouse button state
 
-  enum x11_btn_states
+  enum btn_states
   {
     key_shift            = 0x04,
     key_meta             = 0x08,
@@ -421,29 +421,12 @@ bool FApplication::parseX11Mouse()
     button3_pressed_move = 0x42,
     button_mask          = 0x63,
     button_up            = 0x60,
-    button_down          = 0x61
+    button_down          = 0x61,
+    button_up_move       = 0x60,
+    button_down_move     = 0x61
   };
 
-  x = uChar(x11_mouse[1] - 0x20);
-  y = uChar(x11_mouse[2] - 0x20);
-  newMousePosition.setPoint(x,y);
-  memset(&b_state, 0x00, sizeof(b_state));
-
-  if ( (x11_mouse[0] & key_shift) == key_shift )
-    b_state.shift_button = Pressed;
-  if ( (x11_mouse[0] & key_meta) == key_meta )
-    b_state.meta_button = Pressed;
-  if ( (x11_mouse[0] & key_ctrl) == key_ctrl )
-    b_state.control_button = Pressed;
-
-  if (  (x11_mouse[0] & button_mask) >= button1_pressed_move
-     && (x11_mouse[0] & button_mask) <= button3_pressed_move
-     && *mouse != *zero_point )
-  {
-    b_state.mouse_moved = true;
-  }
-
-  switch ( x11_mouse[0] & button_mask )
+  switch ( button )
   {
     case button1_pressed:
     case button1_pressed_move:
@@ -514,6 +497,52 @@ bool FApplication::parseX11Mouse()
       default:
         break;
   }
+}
+
+//----------------------------------------------------------------------
+bool FApplication::parseX11Mouse()
+{
+  uChar x, y;
+
+  enum x11_btn_states
+  {
+    key_shift            = 0x04,
+    key_meta             = 0x08,
+    key_ctrl             = 0x10,
+    key_button_mask      = 0x1c,
+    button1_pressed      = 0x20,
+    button2_pressed      = 0x21,
+    button3_pressed      = 0x22,
+    all_buttons_released = 0x23,
+    button1_pressed_move = 0x40,
+    button2_pressed_move = 0x41,
+    button3_pressed_move = 0x42,
+    button_mask          = 0x63,
+    button_up            = 0x60,
+    button_down          = 0x61
+  };
+
+  x = uChar(x11_mouse[1] - 0x20);
+  y = uChar(x11_mouse[2] - 0x20);
+  newMousePosition.setPoint(x,y);
+  memset(&b_state, 0x00, sizeof(b_state));
+
+  if ( (x11_mouse[0] & key_shift) == key_shift )
+    b_state.shift_button = Pressed;
+  if ( (x11_mouse[0] & key_meta) == key_meta )
+    b_state.meta_button = Pressed;
+  if ( (x11_mouse[0] & key_ctrl) == key_ctrl )
+    b_state.control_button = Pressed;
+
+  if (  (x11_mouse[0] & button_mask) >= button1_pressed_move
+     && (x11_mouse[0] & button_mask) <= button3_pressed_move
+     && *mouse != *zero_point )
+  {
+    b_state.mouse_moved = true;
+  }
+
+  getX11ButtonState (x11_mouse[0] & button_mask);
+
   if (  uChar(x11_mouse[1]) == mouse->getX() + 0x20
      && uChar(x11_mouse[2]) == mouse->getY() + 0x20
      && b_state.wheel_up != Pressed
@@ -783,77 +812,8 @@ bool FApplication::parseUrxvtMouse()
     b_state.mouse_moved = true;
   }
 
-  switch ( button & button_mask )
-  {
-    case button1_pressed:
-    case button1_pressed_move:
-      if (  *mouse == newMousePosition
-         && x11_button_state == all_buttons_released
-         && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
-      {
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.left_button = DoubleClick;
-      }
-      else
-      {
-        time_mousepressed = time_keypressed;  // save click time
-        b_state.left_button = Pressed;
-      }
-      break;
+  getX11ButtonState (button & button_mask);
 
-    case button2_pressed:
-    case button2_pressed_move:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.middle_button = Pressed;
-      break;
-
-    case button3_pressed:
-    case button3_pressed_move:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.right_button = Pressed;
-      break;
-
-    case all_buttons_released:
-      switch ( x11_button_state & button_mask )
-      {
-        case button1_pressed:
-        case button1_pressed_move:
-          b_state.left_button = Released;
-          break;
-
-        case button2_pressed:
-        case button2_pressed_move:
-          b_state.middle_button = Released;
-          break;
-
-        case button3_pressed:
-        case button3_pressed_move:
-          b_state.right_button = Released;
-          break;
-
-        default:
-          break;
-      }
-      break;
-
-    case button_up:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.wheel_up = Pressed;
-      break;
-
-    case button_down:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.wheel_down = Pressed;
-      break;
-
-      default:
-        break;
-  }
   if (  *mouse == newMousePosition
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed

@@ -123,6 +123,7 @@ class FApplication : public FWidget
    bool    KeyPressed();
    ssize_t readKey();
    void    processKeyboardEvent();
+   void    getX11ButtonState (int button);
    bool    parseX11Mouse();
    bool    parseSGRMouse();
    bool    parseUrxvtMouse();
