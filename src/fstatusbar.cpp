@@ -94,6 +94,9 @@ void FStatusKey::onAccel (FAccelEvent* ev)
     setActive();
     statusbar()->redraw();
     ev->accept();
+    // unset after get back from callback
+    unsetActive();
+    statusbar()->redraw();
   }
 }
 
@@ -440,6 +443,8 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
           mouse_y = ev->getY();
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();
+          // unset after get back from callback
+          (*iter)->unsetActive();
           redraw();
         }
         X = x2 + 2;

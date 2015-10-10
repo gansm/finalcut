@@ -3,8 +3,8 @@
 
 #include "fmenu.h"
 #include "fmenubar.h"
-#include "fmenuitem.h"
 #include "fmenulist.h"
+#include "fmenuitem.h"
 
 //----------------------------------------------------------------------
 // class FMenuItem
@@ -96,12 +96,10 @@ void FMenuItem::init (FWidget* parent)
 
   if ( parent )
   {
+    setSuperMenu(parent);
     FMenuList* sm_list = dynamic_cast<FMenuList*>(parent);
     if ( sm_list )
-    {
-      setSuperMenu(sm_list);
       sm_list->insert(this);
-    }
 
     if ( isMenuBar(parent) ) // Parent is menubar
     {
@@ -114,12 +112,12 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "activate",
-        _METHOD_CALLBACK (superMenu(), &FMenuBar::cb_item_activated)
+        _METHOD_CALLBACK (getSuperMenu(), &FMenuBar::cb_item_activated)
       );
       this->addCallback
       (
         "deactivate",
-        _METHOD_CALLBACK (superMenu(), &FMenuBar::cb_item_deactivated)
+        _METHOD_CALLBACK (getSuperMenu(), &FMenuBar::cb_item_deactivated)
       );
     }
     else if ( isMenu(parent) ) // Parent is menu
@@ -133,12 +131,12 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "activate",
-        _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_activated)
+        _METHOD_CALLBACK (getSuperMenu(), &FMenu::cb_menuitem_activated)
       );
       this->addCallback
       (
         "deactivate",
-        _METHOD_CALLBACK (superMenu(), &FMenu::cb_menuitem_deactivated)
+        _METHOD_CALLBACK (getSuperMenu(), &FMenu::cb_menuitem_deactivated)
       );
     }
   }
@@ -170,32 +168,10 @@ uChar FMenuItem::getHotkey()
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenuBar (FMenuList* ml) const
-{
-  FWidget* menubar_ptr = dynamic_cast<FWidget*>(ml);
-
-  if ( menubar_ptr )
-    return isMenuBar(menubar_ptr);
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
   return bool ( strcmp ( w->getClassName()
                        , const_cast<char*>("FMenuBar") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FMenuItem::isMenu (FMenuList* ml) const
-{
-  FWidget* super_menu_ptr = dynamic_cast<FWidget*>(ml);
-
-  if ( super_menu_ptr )
-    return isMenu(super_menu_ptr);
-  else
-    return false;
 }
 
 //----------------------------------------------------------------------
@@ -206,13 +182,13 @@ bool FMenuItem::isMenu (FWidget* w) const
 }
 
 //----------------------------------------------------------------------
-FMenuList* FMenuItem::superMenu() const
+FWidget* FMenuItem::getSuperMenu() const
 {
   return super_menu;
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::setSuperMenu (FMenuList* smenu)
+void FMenuItem::setSuperMenu (FWidget* smenu)
 {
   super_menu = smenu;
 }
@@ -242,7 +218,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   if ( isSelected() )
   {
     unsetSelected();
-    FWidget* w = reinterpret_cast<FWidget*>(superMenu());
+    FWidget* w = reinterpret_cast<FWidget*>(getSuperMenu());
     if ( w && isMenuBar(w) )
       w->redraw();
     ev->accept();
@@ -252,91 +228,106 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onMouseDown (FMouseEvent* ev)
 {
-  const FPoint& p1 = ev->getPos();
-  const FPoint& g = ev->getGlobalPos();
-  FPoint p2(p1);
-  int b = ev->getButton();
-  p2 = p1 + getPos() - FPoint(1,1);
-  ev = new FMouseEvent (MouseMove_Event, p2, g, b);
-
   if ( super_menu )
   {
+    const FPoint& g = ev->getGlobalPos();
+    int b = ev->getButton();
+
     if ( isMenu(super_menu) )
     {
       FMenu* sm = dynamic_cast<FMenu*>(super_menu);
       if ( sm )
+      {
+        const FPoint& p2 = sm->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         sm->onMouseDown(ev);
+        delete ev;
+      }
     }
 
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
       if ( mb )
+      {
+        const FPoint& p2 = mb->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         mb->onMouseDown(ev);
+        delete ev;
+      }
     }
-  }
 
-  delete ev;
+  }
 }
 
 //----------------------------------------------------------------------
 void FMenuItem::onMouseUp (FMouseEvent* ev)
 {
-  const FPoint& p1 = ev->getPos();
-  const FPoint& g = ev->getGlobalPos();
-  FPoint p2(p1);
-  int b = ev->getButton();
-  p2 = p1 + getPos() - FPoint(1,1);
-  ev = new FMouseEvent (MouseMove_Event, p2, g, b);
-
   if ( super_menu )
   {
+    const FPoint& g = ev->getGlobalPos();
+    int b = ev->getButton();
+
     if ( isMenu(super_menu) )
     {
       FMenu* sm = dynamic_cast<FMenu*>(super_menu);
       if ( sm )
+      {
+        const FPoint& p2 = sm->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         sm->onMouseUp(ev);
+        delete ev;
+      }
     }
 
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
       if ( mb )
+      {
+        const FPoint& p2 = mb->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         mb->onMouseUp(ev);
+        delete ev;
+      }
     }
-  }
 
-  delete ev;
+  }
 }
 
 //----------------------------------------------------------------------
 void FMenuItem::onMouseMove (FMouseEvent* ev)
 {
-  const FPoint& p1 = ev->getPos();
-  const FPoint& g = ev->getGlobalPos();
-  FPoint p2(p1);
-  int b = ev->getButton();
-  p2 = p1 + getPos() - FPoint(1,1);
-  ev = new FMouseEvent (MouseMove_Event, p2, g, b);
-
   if ( super_menu )
   {
+    const FPoint& g = ev->getGlobalPos();
+    int b = ev->getButton();
+
     if ( isMenu(super_menu) )
     {
       FMenu* sm = dynamic_cast<FMenu*>(super_menu);
       if ( sm )
+      {
+        const FPoint& p2 = sm->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         sm->onMouseMove(ev);
+        delete ev;
+      }
     }
 
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
       if ( mb )
+      {
+        const FPoint& p2 = mb->globalToLocalPos(g);
+        ev = new FMouseEvent (MouseMove_Event, p2, g, b);
         mb->onMouseMove(ev);
+        delete ev;
+      }
     }
-  }
 
-  delete ev;
+  }
 }
 
 //----------------------------------------------------------------------

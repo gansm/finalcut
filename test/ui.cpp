@@ -1,4 +1,4 @@
-// ui.cpp
+// File: ui.cpp
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +25,7 @@ class ProgressDialog : public FDialog
    FProgressbar* progressBar;
 
  public:
-   explicit ProgressDialog (FWidget* parent=0);  // constructor
+   explicit ProgressDialog (FWidget* = 0);  // constructor
   ~ProgressDialog();  // destructor
 
    void onShow (FShowEvent*);
@@ -167,7 +167,7 @@ class MyDialog : public FDialog
    MyDialog& operator = (const MyDialog&); // and operator '='
 
  public:
-   explicit MyDialog (FWidget* parent=0);  // constructor
+   explicit MyDialog (FWidget* = 0);  // constructor
   ~MyDialog();  // destructor
    void onClose (FCloseEvent*);
    void cb_noFunctionMsg (FWidget*, void*);
@@ -191,25 +191,77 @@ MyDialog::MyDialog (FWidget* parent)
   : FDialog(parent)
   , myList()
 {
-/* This Code is working in progress...
- 
-  FMenuBar* menubar = new FMenuBar(this);
-  FMenu* file       = new FMenu("&File", menubar);
-  FMenu* edit       = new FMenu("&Edit", menubar);
+  /* .--------------------------------------------. */
+  /* v      This Code is working in progress      v * /
 
-  FMenuItem* open   = new FMenuItem("&Open", file);
-  FMenuItem* quit   = new FMenuItem("&Quit", file);
+  FMenuBar* Menubar  = new FMenuBar(this);
 
-  FMenuItem* cut    = new FMenuItem("Cu&t", edit);
-  FMenuItem* copy   = new FMenuItem("&Copy", edit);
-  FMenuItem* paste  = new FMenuItem("&Paste", edit);
+  FMenu* File        = new FMenu("&File", Menubar);
+  FMenu* Edit        = new FMenu("&Edit", Menubar);
+  FMenu* View        = new FMenu("&View", Menubar);
+  FMenuItem* Options  = new FMenuItem("&Options", Menubar);
+  Options->unsetActive();
+  FMenuItem* Help    = new FMenuItem("&Help", Menubar);
 
-  quit->addCallback
+  FMenuItem* Open    = new FMenuItem("&Open...", File);
+  FMenuItem* Quit    = new FMenuItem("&Quit", File);
+
+  FMenuItem* Cut     = new FMenuItem("Cu&t", Edit);
+  FMenuItem* Copy    = new FMenuItem("&Copy", Edit);
+  FMenuItem* Paste   = new FMenuItem("&Paste", Edit);
+
+  FMenuItem* Env     = new FMenuItem("&Terminal info...", View);
+  FMenuItem* Drive     = new FMenuItem("&Drive symbols...", View);
+
+  Open->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+  );
+  Quit->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
-*/
+  Cut->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+  Copy->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+  Paste->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+  Env->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_info)
+  );
+  Drive->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_info)
+  );
+  Options->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+  );
+  Help->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_about)
+  );
+
+ / * ^      This Code is working in progress      ^ */
+  /* '--------------------------------------------' */
+
   FButton* MyButton1 = new FButton(this);
   MyButton1->setGeometry(3, 3, 5, 1);
   MyButton1->setText(L"&SIN");
@@ -413,8 +465,7 @@ MyDialog::MyDialog (FWidget* parent)
   key_F3->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp),
-    key_F3
+    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 }
 
@@ -447,10 +498,9 @@ void MyDialog::cb_noFunctionMsg (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_about (FWidget* widget, void*)
+void MyDialog::cb_about (FWidget*, void*)
 {
   const char ver[] = F_VERSION;
-  FStatusKey* skey = static_cast<FStatusKey*>(widget);
   FString line(2, wchar_t(fc::BoxDrawingsHorizontal));
 
   FMessageBox info ( "About"
@@ -460,7 +510,6 @@ void MyDialog::cb_about (FWidget* widget, void*)
                    , FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
   info.show();
-  skey->unsetActive();
 }
 
 //----------------------------------------------------------------------
@@ -571,15 +620,11 @@ void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (FWidget* widget, void*)
+void MyDialog::cb_view (FWidget*, void*)
 {
-  FStatusKey* skey = static_cast<FStatusKey*>(widget);
   FString file = FFileDialog::fileOpenChooser (this);
   if ( file.isNull() )
-  {
-    skey->unsetActive();
     return;
-  }
 
   FDialog* view = new FDialog(this);
   view->setText ("viewer");
@@ -612,7 +657,6 @@ void MyDialog::cb_view (FWidget* widget, void*)
   if ( infile.is_open() )
     infile.close();
   view->show();
-  skey->unsetActive();
 }
 
 //----------------------------------------------------------------------
@@ -625,12 +669,9 @@ void MyDialog::cb_setInput (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_exitApp (FWidget*, void* data_ptr)
+void MyDialog::cb_exitApp (FWidget*, void*)
 {
-  FStatusKey* skey = static_cast<FStatusKey*>(data_ptr);
   close();
-  if ( skey )
-    skey->unsetActive();
 }
 
 //----------------------------------------------------------------------

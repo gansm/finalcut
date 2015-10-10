@@ -1,3 +1,7 @@
+2015-10-10  Markus Gans  <guru.mail@muenster.de>
+	* Deactivate a key from the status bar automatically 
+	  after getting back from the callback.
+
 2015-10-09  Markus Gans  <guru.mail@muenster.de>
 	* Eliminate duplicate code
 

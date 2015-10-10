@@ -137,9 +137,9 @@ class FApplication : public FWidget
    void    processResizeEvent();
    int     processTimerEvent();
    bool    processNextEvent();
+   friend  class FDialog;
    friend  class FWidget;
    friend  class FWindow;
-   friend  class FDialog;
 
  public:
    FApplication (int &argc, char* argv[]);  // constructor

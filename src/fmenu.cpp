@@ -2,6 +2,7 @@
 // Provides: class FMenu
 
 #include "fmenu.h"
+#include "fmessagebox.h" // <----- remove later
 
 //----------------------------------------------------------------------
 // class FMenu
@@ -17,7 +18,7 @@ FMenu::FMenu(FWidget* parent)
   , maxItemWidth(0)
   , mouse_down(false)
 {
-  init();
+  init(parent);
 }
 
 //----------------------------------------------------------------------
@@ -30,7 +31,7 @@ FMenu::FMenu (FString& txt, FWidget* parent)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  init();
+  init(parent);
 }
 
 //----------------------------------------------------------------------
@@ -43,7 +44,7 @@ FMenu::FMenu (const std::string& txt, FWidget* parent)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  init();
+  init(parent);
 }
 
 //----------------------------------------------------------------------
@@ -56,7 +57,7 @@ FMenu::FMenu (const char* txt, FWidget* parent)
   , mouse_down(false)
 {
   item = new FMenuItem(txt, parent);
-  init();
+  init(parent);
 }
 
 //----------------------------------------------------------------------
@@ -81,7 +82,7 @@ FMenu::~FMenu()
 
 // private methods of FMenu
 //----------------------------------------------------------------------
-void FMenu::init()
+void FMenu::init(FWidget* parent)
 {
   width  = 10;
   height = 2;
@@ -107,6 +108,9 @@ void FMenu::init()
   backgroundColor = wc.menu_active_bg;
 
   item->setMenu(this);
+
+  if ( parent )
+    setSuperMenu(parent);
 }
 
 //----------------------------------------------------------------------
@@ -154,13 +158,20 @@ bool FMenu::isMenuBar (FWidget* w) const
 }
 
 //----------------------------------------------------------------------
-FMenuList* FMenu::superMenu() const
+bool FMenu::isMenu (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenu") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+FWidget* FMenu::getSuperMenu() const
 {
   return super_menu;
 }
 
 //----------------------------------------------------------------------
-void FMenu::setSuperMenu (FMenuList* smenu)
+void FMenu::setSuperMenu (FWidget* smenu)
 {
   super_menu = smenu;
 }
@@ -195,6 +206,8 @@ void FMenu::draw()
   clrscr();
   drawBorder();
   drawItems();
+  //if ( (flags & SHADOW) != 0 )
+  //  drawMenuShadow();
   setUpdateVTerm(true);
 }
 
@@ -365,6 +378,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != LeftButton )
   {
     mouse_down = false;
+
     if ( ! itemlist.empty() )
     {
       std::vector<FMenuItem*>::const_iterator iter, end;
@@ -374,24 +388,33 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       while ( iter != end )
       {
         (*iter)->unsetSelected();
-        selectedListItem = 0;
+        if ( selectedListItem == *iter )
+          selectedListItem = 0;
         ++iter;
       }
     }
     redraw();
     return;
   }
+
   if ( mouse_down )
     return;
+
+  if ( ! isActiveWindow() )
+    setActiveWindow(this);
+
   mouse_down = true;
 
   if ( ! itemlist.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     bool focus_changed = false;
+    FPoint mouse_pos;
 
     iter = itemlist.begin();
     end = itemlist.end();
+    mouse_pos = ev->getPos();
+    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
 
     while ( iter != end )
     {
@@ -400,8 +423,8 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       x1 = (*iter)->getX();
       x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
       y  = (*iter)->getY();
-      mouse_x = ev->getX();
-      mouse_y = ev->getY();
+      mouse_x = mouse_pos.getX();
+      mouse_y = mouse_pos.getY();
 
       if (  mouse_x >= x1
          && mouse_x <= x2
@@ -410,6 +433,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       {
         if ( hasSelectedListItem() )
           unselectItemInList();
+
         (*iter)->setSelected();
         selectedListItem = *iter;
         focus_changed = true;
@@ -434,9 +458,12 @@ void FMenu::onMouseUp (FMouseEvent* ev)
     {
       std::vector<FMenuItem*>::const_iterator iter, end;
       bool focus_changed = false;
+      FPoint mouse_pos;
 
       iter = itemlist.begin();
       end = itemlist.end();
+      mouse_pos = ev->getPos();
+      mouse_pos -= FPoint(getRightPadding(),getTopPadding());
 
       while ( iter != end )
       {
@@ -448,8 +475,8 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 
         if ( (*iter)->isSelected() )
         {
-          int mouse_x = ev->getX();
-          int mouse_y = ev->getY();
+          int mouse_x = mouse_pos.getX();
+          int mouse_y = mouse_pos.getY();
 
           if (  mouse_x >= x1
              && mouse_x <= x2
@@ -473,13 +500,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != LeftButton )
     return;
 
+  if ( ! isActiveWindow() )
+    setActiveWindow(this);
+
   if ( mouse_down && ! itemlist.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     bool focus_changed = false;
+    FPoint mouse_pos;
 
     iter = itemlist.begin();
     end = itemlist.end();
+    mouse_pos = ev->getPos();
+    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
 
     while ( iter != end )
     {
@@ -488,22 +521,54 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       x1 = (*iter)->getX();
       x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
       y  = (*iter)->getY();
-      mouse_x = ev->getX();
-      mouse_y = ev->getY();
-
+      mouse_x = mouse_pos.getX();
+      mouse_y = mouse_pos.getY();
+/*
+FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n"
+                                                   "iter x1=%d, x2=%d, y=%d"
+                                                   , ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()
+                                                   , x1, x2, y) );*/
       if (  mouse_x >= x1
          && mouse_x <= x2
-         && mouse_y == y
-         && ! (*iter)->isSelected() )
+         && mouse_y == y )
       {
-        if ( hasSelectedListItem() )
-          unselectItemInList();
-        (*iter)->setSelected();
-        selectedListItem = *iter;
-        focus_changed = true;
+        if ( (*iter)->isActivated() && ! (*iter)->isSelected() )
+        {
+          (*iter)->setSelected();
+          selectedListItem = *iter;
+          focus_changed = true;
+        }
+      }
+      else
+      {
+        if ( getGeometryGlobal().contains(ev->getGlobalPos())
+         && (*iter)->isActivated()
+         && (*iter)->isSelected() )
+        {
+          (*iter)->unsetSelected();
+          if ( selectedListItem == *iter )
+            selectedListItem = 0;
+          focus_changed = true;
+        }
       }
       ++iter;
     }
+
+    FWidget* menubar = getSuperMenu();
+    if (  menubar
+       && isMenuBar(menubar)
+       && menubar->getGeometryGlobal().contains(ev->getGlobalPos()) )
+    {
+      const FPoint& g = ev->getGlobalPos();
+      const FPoint& p = menubar->globalToLocalPos(g);
+      int b = ev->getButton();
+      ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      setClickedWidget(menubar);
+      FMenuBar* sm = reinterpret_cast<FMenuBar*>(menubar);
+      sm->onMouseMove(ev);
+      delete ev;
+    }
+
     if ( focus_changed )
       redraw();
   }

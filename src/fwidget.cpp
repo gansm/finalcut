@@ -2,8 +2,8 @@
 // Provides: class FWidget
 
 #include "fapp.h"
-#include "fstatusbar.h"
 #include "fmenubar.h"
+#include "fstatusbar.h"
 #include "fwidget.h"
 #include "fwindow.h"
 

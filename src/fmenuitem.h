@@ -52,19 +52,17 @@ class FMenuItem : public FWidget
    int        hotkey;
  //int        accel_key;
    FMenu*     menu;
-   FMenuList* super_menu;
+   FWidget*   super_menu;
 
  private:
    FMenuItem (const FMenuItem&);
    FMenuItem& operator = (const FMenuItem&);
    void       init (FWidget*);
    uChar      getHotkey();
-   bool       isMenuBar (FMenuList*) const;
    bool       isMenuBar (FWidget*) const;
-   bool       isMenu (FMenuList*) const;
    bool       isMenu (FWidget*) const;
-   FMenuList* superMenu() const;
-   void       setSuperMenu (FMenuList*);
+   FWidget*   getSuperMenu() const;
+   void       setSuperMenu (FWidget*);
    void       processActivate();
    void       processDeactivate();
    void       processClicked();

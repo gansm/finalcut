@@ -31,6 +31,7 @@
 #define _FMENU_H
 
 #include "fwindow.h"
+#include "fmenubar.h"
 #include "fmenulist.h"
 #include "fmenuitem.h"
 
@@ -47,18 +48,19 @@ class FMenu : public FWindow, public FMenuList
  private:
    FMenuItem* item;
    FMenuItem* selectedListItem;
-   FMenuList* super_menu;
+   FWidget*   super_menu;
    uInt       maxItemWidth;
    bool       mouse_down;
 
  private:
    FMenu (const FMenu&);
    FMenu& operator = (const FMenu&);
-   void       init();
+   void       init(FWidget*);
    void       menu_dimension();
    bool       isMenuBar (FWidget*) const;
-   FMenuList* superMenu() const;
-   void       setSuperMenu (FMenuList*);
+   bool       isMenu (FWidget*) const;
+   FWidget*   getSuperMenu() const;
+   void       setSuperMenu (FWidget*);
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawBorder();
