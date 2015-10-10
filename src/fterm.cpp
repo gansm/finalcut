@@ -308,8 +308,9 @@ int FTerm::getScreenFont()
 }
 
 //----------------------------------------------------------------------
-int FTerm::setScreenFont (uChar* fontdata, uInt count,
-                          uInt fontwidth, uInt fontheight, bool direct)
+int FTerm::setScreenFont ( uChar* fontdata, uInt count
+                         , uInt fontwidth, uInt fontheight
+                         , bool direct)
 {
   struct console_font_op font;
   int ret;
@@ -347,9 +348,9 @@ int FTerm::setScreenFont (uChar* fontdata, uInt count,
     memset(font.data, 0, data_size);
 
     for (uInt i=0; i < count; i++)
-      memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i),
-               &fontdata[i * font.height],
-               font.height);
+      memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
+             , &fontdata[i * font.height]
+             , font.height);
   }
   // font operation
   ret = ioctl (fd_tty, KDFONTOP, &font);
@@ -2440,11 +2441,11 @@ bool FTerm::setOldFont()
       {
         if ( screenFont.data )
         {
-          int ret = setScreenFont ( screenFont.data,
-                                    screenFont.charcount,
-                                    screenFont.width,
-                                    screenFont.height,
-                                    true );
+          int ret = setScreenFont ( screenFont.data
+                                  , screenFont.charcount
+                                  , screenFont.width
+                                  , screenFont.height
+                                  , true );
           delete[] screenFont.data;
           if ( ret == 0 )
             retval = true;

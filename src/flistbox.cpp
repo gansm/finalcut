@@ -388,8 +388,8 @@ void FListBox::drawList()
       const wchar_t* element_str;
       uInt i, len;
       element = data[y+uInt(yoffset)].getText()
-                                     .mid( uInt(1+xoffset),
-                                           uInt(width-nf_offset-4) );
+                                     .mid ( uInt(1+xoffset)
+                                          , uInt(width-nf_offset-4) );
       element_str = element.wc_str();
       len = element.getLength();
 

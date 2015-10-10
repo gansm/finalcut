@@ -11,7 +11,8 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FRadioButton::FRadioButton(FWidget* parent) : FToggleButton(parent)
+FRadioButton::FRadioButton(FWidget* parent)
+  : FToggleButton(parent)
 {
   init();
 }

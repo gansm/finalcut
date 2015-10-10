@@ -10,14 +10,15 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FCheckBox::FCheckBox(FWidget* parent) : FToggleButton(parent)
+FCheckBox::FCheckBox(FWidget* parent)
+  : FToggleButton(parent)
 {
   init();
 }
 
 //----------------------------------------------------------------------
-FCheckBox::FCheckBox ( const FString& txt,
-                       FWidget* parent ) : FToggleButton(txt, parent)
+FCheckBox::FCheckBox (const FString& txt, FWidget* parent)
+  : FToggleButton(txt, parent)
 {
   init();
 }

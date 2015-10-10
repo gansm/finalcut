@@ -168,8 +168,8 @@ void FButton::draw()
     if ( is_Flat )
       clearFlatBorder();
     clearShadow();
-    setColor ( parentWidget()->getForegroundColor(),
-               parentWidget()->getBackgroundColor() );
+    setColor ( parentWidget()->getForegroundColor()
+             , parentWidget()->getBackgroundColor() );
     for (int y=1; y <= height; y++)
     {
       gotoxy (xpos+xmin-1, ypos+ymin-2+y);
@@ -252,8 +252,8 @@ void FButton::draw()
      && (is_Flat || ! hasShadow() || isMonochron()) )
   {
     // clear the right █ from button down
-    setColor ( parentWidget()->getForegroundColor(),
-               parentWidget()->getBackgroundColor() );
+    setColor ( parentWidget()->getForegroundColor()
+             , parentWidget()->getBackgroundColor() );
     for (int y=1; y <= height; y++)
     {
       if ( isMonochron() )
@@ -283,11 +283,11 @@ void FButton::draw()
     print (space); // █
 
   if ( hotkeypos == -1 )
-    setCursorPos ( xpos+xmin-1+margin+i,
-                   ypos+ymin-1+j ); // first character
+    setCursorPos ( xpos+xmin-1+margin+i
+                 , ypos+ymin-1+j ); // first character
   else
-    setCursorPos ( xpos+xmin-1+margin+i+hotkeypos,
-                   ypos+ymin-1+j ); // hotkey
+    setCursorPos ( xpos+xmin-1+margin+i+hotkeypos
+                 , ypos+ymin-1+j ); // hotkey
 
   if ( isMonochron() && is_ActiveFocus )
     setBold();
@@ -337,8 +337,8 @@ void FButton::draw()
 
   if ( is_NonFlatShadow && ! button_down )
   {
-    setColor ( parentWidget()->getForegroundColor(),
-               parentWidget()->getBackgroundColor() );
+    setColor ( parentWidget()->getForegroundColor()
+             , parentWidget()->getBackgroundColor() );
     print(' '); // restore background after button down
     drawShadow();
   }

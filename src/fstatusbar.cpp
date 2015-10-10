@@ -261,10 +261,10 @@ void FStatusBar::drawKeys()
         }
         else
         {
-          print ( vstatusbar,
-                  (*iter)->getText()
+          print ( vstatusbar
+                , (*iter)->getText()
                           .left(uInt(txt_length+screenWidth-x-1)) );
-          print ( vstatusbar, ".." );
+          print (vstatusbar, "..");
         }
         if ( isMonochron() )
           setReverse(true);
@@ -612,9 +612,9 @@ void FStatusBar::drawMessage()
         print (vstatusbar, getMessage());
       else
       {
-        print ( vstatusbar,
-                getMessage().left(uInt(msg_length+termWidth-x-1)) );
-        print ( vstatusbar, ".." );
+        print ( vstatusbar
+              , getMessage().left(uInt(msg_length+termWidth-x-1)) );
+        print (vstatusbar, "..");
       }
     }
   }

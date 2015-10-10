@@ -28,7 +28,8 @@ class Mandelbrot : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Mandelbrot::Mandelbrot (FWidget* parent) : FDialog(parent)
+Mandelbrot::Mandelbrot (FWidget* parent)
+  : FDialog(parent)
 {
   setText ("Mandelbrot set");
 }

@@ -169,19 +169,19 @@ FRect FRect::intersect (const FRect& r) const
 //----------------------------------------------------------------------
 FRect operator + (const FRect& r, const FPoint& p)
 {
-  return FRect( r.X1,
-                r.Y1,
-                r.X2 - r.X1 + 1 + p.getX(),
-                r.Y2 - r.Y1 + 1 + p.getY() );
+  return FRect ( r.X1
+               , r.Y1
+               , r.X2 - r.X1 + 1 + p.getX()
+               , r.Y2 - r.Y1 + 1 + p.getY() );
 }
 
 //----------------------------------------------------------------------
 FRect operator - (const FRect& r, const FPoint& p)
 {
-  return FRect( r.X1,
-                r.Y1,
-                r.X2 - r.X1 + 1 - p.getX(),
-                r.Y2 - r.Y1 + 1 - p.getY() );
+  return FRect ( r.X1
+               , r.Y1
+               , r.X2 - r.X1 + 1 - p.getX()
+               , r.Y2 - r.Y1 + 1 - p.getY() );
 }
 
 //----------------------------------------------------------------------

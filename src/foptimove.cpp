@@ -532,8 +532,8 @@ inline bool FOptiMove::isTwoDirectionMove ( int xold, int yold
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiMove::isWideMove ( int xold, int yold,
-                                    int xnew, int ynew )
+inline bool FOptiMove::isWideMove ( int xold, int yold
+                                  , int xnew, int ynew )
 {
   return bool (  (xnew > MOVE_LIMIT)
               && (xnew < screen_width - 1 - MOVE_LIMIT)

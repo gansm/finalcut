@@ -78,8 +78,8 @@ void FSwitch::drawCheckButton()
     print (on);
     setColor (wc.button_inactive_fg, wc.button_inactive_bg);
     print (off);
-    setCursorPos ( xpos + xmin + 1 + switch_offset_pos,
-                   ypos + ymin - 1 );
+    setCursorPos ( xpos + xmin + 1 + switch_offset_pos
+                 , ypos + ymin - 1 );
   }
   else
   {
@@ -101,8 +101,8 @@ void FSwitch::drawCheckButton()
       else
         setColor (wc.button_hotkey_fg, wc.button_active_bg);
     print (off);
-    setCursorPos ( xpos + xmin + 5 + switch_offset_pos,
-                   ypos + ymin - 1 );
+    setCursorPos ( xpos + xmin + 5 + switch_offset_pos
+                 , ypos + ymin - 1 );
   }
 }
 

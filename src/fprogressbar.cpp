@@ -54,8 +54,8 @@ void FProgressbar::drawBar()
   }
   else if ( getMaxColor() < 16 )
   {
-    setColor ( wc.progressbar_bg,
-               wc.progressbar_fg );
+    setColor ( wc.progressbar_bg
+             , wc.progressbar_fg );
     if ( round(length) >= 1)
       print (' ');
     else
@@ -63,11 +63,11 @@ void FProgressbar::drawBar()
   }
 
   if ( round(length) >= 1)
-    setColor( wc.progressbar_fg,
-              parentWidget()->getBackgroundColor() );
+    setColor ( wc.progressbar_fg
+             , parentWidget()->getBackgroundColor() );
   else
-    setColor( wc.progressbar_bg,
-              parentWidget()->getBackgroundColor() );
+    setColor ( wc.progressbar_bg
+             , parentWidget()->getBackgroundColor() );
 
   if ( ! isMonochron() &&  getMaxColor() >= 16 )
   {
@@ -80,8 +80,8 @@ void FProgressbar::drawBar()
       print (fc::RightHalfBlock); // ▐
   }
 
-  setColor ( wc.progressbar_bg,
-             wc.progressbar_fg );
+  setColor ( wc.progressbar_bg
+           , wc.progressbar_fg );
   if ( isMonochron() )
     setReverse(true);
   for (; i < trunc(length); i++)

@@ -742,9 +742,9 @@ const FString FString::operator + (const char c)
 const FString operator + (const FString& s1, const FString& s2)
 {
   FString tmp(s1);
-  tmp._insert ( uInt(wcslen(s1.wc_str())),
-                uInt(wcslen(s2.wc_str())),
-                s2.wc_str() );
+  tmp._insert ( uInt(wcslen(s1.wc_str()))
+              , uInt(wcslen(s2.wc_str()))
+              , s2.wc_str() );
   return (tmp);
 }
 

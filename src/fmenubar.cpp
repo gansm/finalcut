@@ -215,9 +215,8 @@ void FMenuBar::drawItems()
 
     if ( x > screenWidth )
     {
-      print ( vmenubar,
-              txt.left(uInt(int(txt_length)+screenWidth-x-1)) );
-      print ( vmenubar, ".." );
+      print (vmenubar, txt.left(uInt(int(txt_length)+screenWidth-x-1)));
+      print (vmenubar, "..");
     }
     else
     {
