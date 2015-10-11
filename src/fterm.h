@@ -130,6 +130,7 @@ class FTerm
    static bool    tmux_terminal;
    static bool    terminal_updates;
    static bool    vterm_updates;
+   static bool    exit_underline_caused_reset;
    static bool    background_color_erase;
    static bool    automatic_left_margin;
    static bool    automatic_right_margin;

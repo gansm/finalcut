@@ -565,7 +565,7 @@ FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n
       ev = new FMouseEvent (MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
       FMenuBar* sm = reinterpret_cast<FMenuBar*>(menubar);
-      sm->onMouseMove(ev);
+      sm->onMouseDown(ev);
       delete ev;
     }
 

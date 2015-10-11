@@ -137,6 +137,8 @@ void FMenuBar::drawItems()
   iter = itemlist.begin();
   end = itemlist.end();
 
+  if ( isMonochron() )
+    setReverse(true);
   while ( iter != end )
   {
     wchar_t* src;
@@ -231,8 +233,11 @@ void FMenuBar::drawItems()
 
     ++iter;
   }
+
   for (; x <= screenWidth; x++)
     print (vmenubar, ' ');
+  if ( isMonochron() )
+    setReverse(false);
 
   setUpdateVTerm(true);
 }

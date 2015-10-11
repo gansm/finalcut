@@ -55,6 +55,7 @@ bool     FTerm::non_blocking_stdin;
 bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
 bool     FTerm::monochron;
+bool     FTerm::exit_underline_caused_reset;
 bool     FTerm::background_color_erase;
 bool     FTerm::automatic_left_margin;
 bool     FTerm::automatic_right_margin;
@@ -1102,6 +1103,19 @@ void FTerm::init_termcaps()
     if ( ! tcap[t_cursor_address].string )
       tcap[t_cursor_address].string = \
         const_cast<char*>("\033[%i%p1%d;%p2%dH");
+
+    // test if "ue" reset all attributes
+    if ( tcap[t_exit_underline_mode].string )
+    {
+      if (  strncmp(tcap[t_exit_underline_mode].string, "\033[m", 3) == 0
+         || strncmp(tcap[t_exit_underline_mode].string, "\033G0", 3) == 0
+         || strncmp(tcap[t_exit_underline_mode].string, "\033[7m", 4) == 0
+         || strcmp ( tcap[t_exit_underline_mode].string
+                   , tcap[t_exit_standout_mode].string ) == 0 )
+        exit_underline_caused_reset = true;
+      else
+        exit_underline_caused_reset = false;
+    }
 
     // read termcap key strings
     for (int i=0; Fkey[i].tname[0] != 0; i++)
@@ -3024,6 +3038,9 @@ void FTerm::setTermColor (register int fg, register int bg)
   char* Sb = tcap[t_set_background].string;
   char* sp = tcap[t_set_color_pair].string;
 
+  if ( monochron )
+    return;
+
   if ( AF && AB )
   {
     int ansi_fg = vga2ansi(fg);
@@ -3226,13 +3243,23 @@ bool FTerm::setTermBold (bool on)
       char* us = tcap[t_enter_underline_mode].string;
       char* mr = tcap[t_enter_reverse_mode].string;
 
+      // "t_exit_attribute_mode" will reset all attributes!
       appendOutputBuffer (me);
-      setTermColor (fg_color, bg_color); // restore the last color
 
-      if ( underline && ue && us )
+      // last color restore
+      if ( ! monochron )
+      {
+        fg_color = fg_term_color;
+        bg_color = bg_term_color;
+        fg_term_color = -1;
+        bg_term_color = -1;
+        setTermColor (fg_color, bg_color);
+      }
+      // underline mode restore
+      if ( term_underline && ue && us )
         appendOutputBuffer (us);
-
-      if ( reverse && me && mr )
+      // reverse mode restore
+      if ( term_reverse && me && mr )
         appendOutputBuffer (mr);
     }
     term_bold = false;
@@ -3262,11 +3289,22 @@ bool FTerm::setTermReverse (bool on)
       char* us = tcap[t_enter_underline_mode].string;
       char* md = tcap[t_enter_bold_mode].string;
 
+      // "t_exit_standout_mode" will reset all attributes!
       appendOutputBuffer (se);
 
+      // last color restore
+      if ( ! monochron )
+      {
+        fg_color = fg_term_color;
+        bg_color = bg_term_color;
+        fg_term_color = -1;
+        bg_term_color = -1;
+        setTermColor (fg_color, bg_color);
+      }
+      // underline mode restore
       if ( term_underline && ue && us )
         appendOutputBuffer (us);
-
+      // bold mode restore
       if ( term_bold && md && se )
         appendOutputBuffer (md);
     }
@@ -3302,11 +3340,24 @@ bool FTerm::setTermUnderline (bool on)
 
       appendOutputBuffer (ue);
 
-      if ( term_reverse && se && mr && strcmp(ue, se) == 0 )
-        appendOutputBuffer (mr);
-
-      if ( term_bold && md && se && strcmp(ue, se) == 0 )
-        appendOutputBuffer (md);
+      if ( exit_underline_caused_reset )
+      {
+        // last color restore
+        if ( ! monochron )
+        {
+          fg_color = fg_term_color;
+          bg_color = bg_term_color;
+          fg_term_color = -1;
+          bg_term_color = -1;
+          setTermColor (fg_color, bg_color);
+        }
+        // reverse mode restore
+        if ( term_reverse && se && mr )
+          appendOutputBuffer (mr);
+        // bold mode restore
+        if ( term_bold && md && se )
+          appendOutputBuffer (md);
+      }
     }
     term_underline = false;
   }

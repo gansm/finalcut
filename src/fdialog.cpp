@@ -198,12 +198,18 @@ void FDialog::drawTitleBar()
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+
+  if ( isMonochron() )
+    setReverse(true);
+
   if ( isNewFont() )
   {
     print (fc::NF_rev_menu_button1);
     print (fc::NF_rev_menu_button2);
     print (fc::NF_rev_menu_button3);
   }
+  else if ( isMonochron() )
+    print ("[-]");
   else
     print (" - ");
 
@@ -212,9 +218,6 @@ void FDialog::drawTitleBar()
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
-
-  if ( isMonochron() )
-    setReverse(true);
 
   i = width - 3 - int(length);
   i = int(i/2);

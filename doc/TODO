@@ -1,6 +1,19 @@
 Bugs
 ~~~~
-- 
+-
+
+
+Improvements
+~~~~~~~~~~~~
+- Use only termpap variables for FTerm::hideCursor()
+- If t_exit_underline_mode == "\E[24m"
+  -> implement t_exit_bold_mode with "\E[21m"
+  -> implement t_exit_reverse_mode with "\E[27m"
+- New behavior in FTerm::appendAttributes(...)
+  - 1st: reset don't needed attributes (bold, reverse and underline)
+  - 2nd: set the foreground and background color
+  - 3rd: set new attributes (bold, reverse and underline)
+
 
 Missing Features
 ~~~~~~~~~~~~~~~~
