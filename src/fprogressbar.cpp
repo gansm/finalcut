@@ -27,11 +27,15 @@ void FProgressbar::drawPercentage()
 {
   setColor ( parentWidget()->getForegroundColor()
            , parentWidget()->getBackgroundColor() );
+  if ( isMonochron() )
+    setReverse(true);
   gotoxy (xpos+xmin+width-5, ypos+ymin-2);
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
   else
     printf ("%3d %%", percentage);
+  if ( isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------
@@ -45,9 +49,9 @@ void FProgressbar::drawBar()
   {
     if ( round(length) >= 1)
     {
-      setReverse(true);
-      print (' ');
       setReverse(false);
+      print (' ');
+      setReverse(true);
     }
     else
       print (fc::MediumShade);  // ▒
@@ -83,11 +87,11 @@ void FProgressbar::drawBar()
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
   if ( isMonochron() )
-    setReverse(true);
+    setReverse(false);
   for (; i < trunc(length); i++)
     print (' ');
   if ( isMonochron() )
-    setReverse(false);
+    setReverse(true);
 
   if ( trunc(length) >= 1 && trunc(length) < BarLength )
   {
@@ -97,9 +101,9 @@ void FProgressbar::drawBar()
     {
       if ( isMonochron() )
       {
-        setReverse(true);
-        print (' ');
         setReverse(false);
+        print (' ');
+        setReverse(true);
       }
       else
         print (' ');
@@ -123,6 +127,8 @@ void FProgressbar::drawBar()
     for (; i < BarLength; i++)
       print (' ');
   }
+  if ( isMonochron() )
+    setReverse(false);
   updateTerminal();
   flush_out();
 }

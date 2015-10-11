@@ -222,6 +222,9 @@ void FToggleButton::drawLabel()
 
   gotoxy (xpos+xmin-1+label_offset_pos, ypos+ymin-1);
 
+  if ( isMonochron() )
+    setReverse(true);
+
   if ( isEnabled() )
     setColor(wc.label_fg, wc.label_bg);
   else
@@ -240,8 +243,12 @@ void FToggleButton::drawLabel()
       setColor (wc.label_fg, wc.label_bg);
     }
     else
-      print ( LabelText[z] );
+      print (LabelText[z]);
   }
+
+  if ( isMonochron() )
+    setReverse(false);
+
   delete[] LabelText;
 }
 
@@ -422,6 +429,7 @@ bool FToggleButton::setFocus(bool on)
 
       foregroundColor = wc.toggle_button_active_focus_fg;
       backgroundColor = wc.toggle_button_active_focus_bg;
+
 
       if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
         showCursor();

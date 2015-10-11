@@ -226,11 +226,12 @@ void FStatusBar::drawKeys()
   setUpdateVTerm(false);
   gotoxy (1, lastLine);
 
+  if ( isMonochron() )
+    setReverse(true);
+
   iter = keylist.begin();
   end = keylist.end();
 
-  if ( isMonochron() )
-    setReverse(true);
   while ( iter != end )
   {
     int kname_len = int(getKeyName((*iter)->getKey()).getLength());
@@ -620,6 +621,7 @@ void FStatusBar::drawMessage()
   }
   for (int i=x; i <= termWidth; i++)
     print (vstatusbar, ' ');
+
   if ( isMonochron() )
     setReverse(false);
 

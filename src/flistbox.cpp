@@ -134,6 +134,8 @@ void FListBox::draw()
 
   setUpdateVTerm(false);
   setColor (foregroundColor, backgroundColor);
+  if ( isMonochron() )
+    setReverse(true);
   if ( isNewFont() )
     width--;
   drawBorder();
@@ -151,6 +153,8 @@ void FListBox::draw()
     }
   }
   drawLabel();
+  if ( isMonochron() )
+    setReverse(false);
   setUpdateVTerm(true);
 
   if ( VBar->isVisible() )
@@ -291,10 +295,10 @@ void FListBox::drawList()
                    , wc.current_element_bg );
       }
       if ( isMonochron() )
-        setReverse(true);
+        setReverse(false);
     }
     else if ( isMonochron() )
-      setReverse(false);
+      setReverse(true);
 
     // print the entry
     if ( isMonochron() && isCurrentLine )

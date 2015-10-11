@@ -145,7 +145,7 @@ void FButton::draw()
   hotkey_offset = 0;
   space = int(' ');
 
-  if ( isMonochron() )
+  if ( isMonochron() || getMaxColor() < 16 )
     ButtonText = new wchar_t[length+3];
   else
     ButtonText = new wchar_t[length+1];
@@ -162,6 +162,8 @@ void FButton::draw()
   is_NoUnderline = ((flags & NO_UNDERLINE) != 0);
 
   setUpdateVTerm(false);
+  if ( isMonochron() )
+    setReverse(true);
   if ( button_down && click_animation )
   {
     // noshadow + indent one character to the right
@@ -214,7 +216,7 @@ void FButton::draw()
     margin = 0;
 
   if ( isMonochron() && (is_Active || is_Focus) )
-    setReverse(true);
+    setReverse(false);
 
   if ( is_Flat )
   {
@@ -257,11 +259,11 @@ void FButton::draw()
     for (int y=1; y <= height; y++)
     {
       if ( isMonochron() )
-        setReverse(false);
+        setReverse(true);
       gotoxy (xpos+xmin-1+width, ypos+ymin-2+y);
       print (' '); // clear right
       if ( isMonochron() )
-        setReverse(true);
+        setReverse(false);
     }
   }
 
@@ -333,7 +335,7 @@ void FButton::draw()
   }
 
   if ( isMonochron() )
-    setReverse(false);
+    setReverse(true);
 
   if ( is_NonFlatShadow && ! button_down )
   {
@@ -342,6 +344,9 @@ void FButton::draw()
     print(' '); // restore background after button down
     drawShadow();
   }
+
+  if ( isMonochron() )
+    setReverse(false);
 
   setUpdateVTerm(true);
   delete[] ButtonText;

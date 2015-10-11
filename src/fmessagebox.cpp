@@ -226,6 +226,10 @@ void FMessageBox::draw()
   int msg_x = int((width - int(maxLineWidth)) / 2);  // center the whole block
 
   setUpdateVTerm(false);
+
+  if ( isMonochron() )
+    setReverse(true);
+
   if ( ! headline_text.isNull() )
   {
     setColor(emphasis_color, backgroundColor);
@@ -247,6 +251,10 @@ void FMessageBox::draw()
     gotoxy (xpos+xmin-1+msg_x+center_x, ypos+ymin+2+head_offset+i);
     print(text_components[i]);
   }
+
+  if ( isMonochron() )
+    setReverse(false);
+
   setUpdateVTerm(true);
 }
 

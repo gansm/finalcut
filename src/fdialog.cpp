@@ -198,9 +198,13 @@ void FDialog::drawTitleBar()
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-
   if ( isMonochron() )
-    setReverse(true);
+  {
+    if ( isActiveWindow() )
+      setReverse(false);
+    else
+      setReverse(true);
+  }
 
   if ( isNewFont() )
   {
@@ -256,6 +260,7 @@ void FDialog::drawDialogShadow()
   {
     // transparent shadow
     drawShadow();
+
     if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
     {
       FTerm::char_data ch;
@@ -272,7 +277,11 @@ void FDialog::drawDialogShadow()
   }
   else
   {
+    if ( isMonochron() )
+      return;
+
     drawShadow();
+
     FTerm::char_data ch;
     ch = getCoveredCharacter (xpos+xmin-1, ypos+ymin-1+height, this);
     // left of the shaddow ▀▀
@@ -297,12 +306,9 @@ void FDialog::drawDialogShadow()
 
       print (ch.code);
 
-      if ( ch.underline )
-        unsetUnderline();
-      if ( ch.reverse )
-        unsetReverse();
-      if ( ch.bold )
-        unsetBold();
+      unsetUnderline();
+      unsetReverse();
+      unsetBold();
     }
   }
 }
@@ -317,9 +323,14 @@ void FDialog::draw()
     width = xmax;
     height = ymax;
   }
+
+  setUpdateVTerm(false);
+
   // fill the background
   setColor (foregroundColor, backgroundColor);
-  setUpdateVTerm(false);
+  if ( isMonochron() )
+    setReverse(true);
+
   clrscr();
   drawBorder();
   drawTitleBar();
@@ -329,6 +340,9 @@ void FDialog::draw()
 
   if ( (flags & RESIZEABLE) != 0 )
   {
+    if ( isMonochron() )
+      setReverse(false);
+
     if ( maximized )
     {
       if ( isNewFont() )
@@ -366,6 +380,8 @@ void FDialog::draw()
       }
     }
   }
+  if ( isMonochron() )
+    setReverse(false);
   setUpdateVTerm(true);
 }
 
@@ -872,6 +888,9 @@ bool FDialog::setTransparentShadow (bool on)
 //----------------------------------------------------------------------
 bool FDialog::setShadow (bool on)
 {
+  if ( isMonochron() )
+    return false;
+
   if ( on )
   {
     flags |= SHADOW;

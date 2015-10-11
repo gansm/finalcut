@@ -550,10 +550,11 @@ void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
 {
-  setUpdateVTerm(false);
   if (SliderPos != currentSliderPos)
   {
     int z;
+    setUpdateVTerm(false);
+
     if ( bar_orientation == fc::vertical )
     {
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
@@ -569,7 +570,7 @@ void FScrollbar::drawBar()
       }
       setColor (wc.scrollbar_bg, wc.scrollbar_fg);
       if ( isMonochron() )
-        setReverse(true);
+        setReverse(false);
       for (z=1; z <= SliderLength; z++)
       {
         gotoxy (xpos+xmin-1, ypos+ymin-1+SliderPos+z);
@@ -578,7 +579,7 @@ void FScrollbar::drawBar()
         print (' ');
       }
       if ( isMonochron() )
-        setReverse(false);
+        setReverse(true);
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
       for (z=SliderPos+SliderLength+1; z <= BarLength; z++)
       {
@@ -612,13 +613,13 @@ void FScrollbar::drawBar()
       }
       setColor (wc.scrollbar_bg, wc.scrollbar_fg);
       if ( isMonochron() )
-        setReverse(true);
+        setReverse(false);
 
       z = 0;
       for (; z < SliderLength; z++)
         print (' ');
       if ( isMonochron() )
-        setReverse(false);
+        setReverse(true);
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
       z = SliderPos + SliderLength + 1;
       for (; z <= BarLength; z++)
@@ -632,8 +633,12 @@ void FScrollbar::drawBar()
       }
     }
     currentSliderPos = SliderPos;
+
+    if ( isMonochron() )
+      setReverse(false);
+
+    setUpdateVTerm(true);
   }
-  setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -643,9 +648,10 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
+    gotoxy (xpos+xmin-1, ypos+ymin-1);
+
     if ( bar_orientation == fc::vertical )
     {
-      gotoxy (xpos+xmin-1, ypos+ymin-1);
       print (fc::NF_rev_up_arrow1);
       print (fc::NF_rev_up_arrow2);
       gotoxy (xpos+xmin-1, ypos+ymin+length-2);
@@ -654,7 +660,6 @@ void FScrollbar::drawButtons()
     }
     else // horizontal
     {
-      gotoxy (xpos+xmin-1, ypos+ymin-1);
       print (fc::NF_rev_left_arrow1);
       print (fc::NF_rev_left_arrow2);
       gotoxy (xpos+xmin+length-3, ypos+ymin-1);
@@ -664,11 +669,13 @@ void FScrollbar::drawButtons()
   }
   else
   {
+    gotoxy (xpos+xmin-1, ypos+ymin-1);
+
+    if ( isMonochron() )
+      setReverse(true);
+
     if ( bar_orientation == fc::vertical )
     {
-      gotoxy (xpos+xmin-1, ypos+ymin-1);
-      if ( isMonochron() )
-        setReverse(true);
       if ( isCygwinTerminal() )
         print ('^');
       else
@@ -678,19 +685,15 @@ void FScrollbar::drawButtons()
         print ('v');
       else
         print (fc::BlackDownPointingTriangle); // ▼
-      if ( isMonochron() )
-        setReverse(false);
     }
     else // horizontal
     {
-      gotoxy (xpos+xmin-1, ypos+ymin-1);
-      if ( isMonochron() )
-        setReverse(true);
       print (fc::BlackLeftPointingPointer); // ◄
       gotoxy (xpos+xmin+length-2, ypos+ymin-1);
       print (fc::BlackRightPointingPointer); // ►
-      if ( isMonochron() )
-        setReverse(false);
+
     }
+    if ( isMonochron() )
+      setReverse(false);
   }
 }

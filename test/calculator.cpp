@@ -313,11 +313,15 @@ void Calc::drawDispay()
     display = " Error                          ";
 
   setColor(fc::Black, fc::LightGray);
+  if ( isMonochron() )
+    setReverse(false);
   gotoxy (xpos+xmin+1, ypos+ymin+1);
   print(display);
   print(L' ');
 
   setColor(wc.dialog_fg, wc.dialog_bg);
+  if ( isMonochron() )
+    setReverse(true);
   if ( isNewFont() )
   {
     FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));

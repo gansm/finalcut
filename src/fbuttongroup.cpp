@@ -134,10 +134,14 @@ void FButtonGroup::directFocus()
 void FButtonGroup::draw()
 {
   setUpdateVTerm(false);
+  if ( isMonochron() )
+    setReverse(true);
   setColor (foregroundColor, backgroundColor);
   if ( border )
     drawBorder();
   drawLabel();
+  if ( isMonochron() )
+    setReverse(false);
   setUpdateVTerm(true);
 }
 

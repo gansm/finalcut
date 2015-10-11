@@ -636,11 +636,6 @@ void FWidget::onAccel (FAccelEvent*)
 //----------------------------------------------------------------------
 void FWidget::onResize (FResizeEvent* ev)
 {
-  if ( openConsole() == 0 )
-  {
-    getTermGeometry();
-    closeConsole();
-  }
   rootObject->resize();
   rootObject->redraw();
   ev->accept();
@@ -1226,6 +1221,8 @@ void FWidget::resize()
   }
   else
     adjustSize();
+
+  // resize the four double-flatline-masks
   double_flatline_mask.top.resize (uLong(width), false);
   double_flatline_mask.right.resize (uLong(height), false);
   double_flatline_mask.bottom.resize (uLong(width), false);
@@ -1834,13 +1831,13 @@ void FWidget::drawShadow()
 {
   FTerm::char_data ch;
   int x1, x2, y1, y2;
-  bool trans_shadow;
+  bool trans_shadow = ((flags & TRANS_SHADOW) != 0);
 
-  trans_shadow = bool((flags & TRANS_SHADOW) != 0);
+  if ( isMonochron() && ! trans_shadow )
+    return;
 
   if (  (Encoding == fc::VT100 && ! trans_shadow && ! isTeraTerm() )
-     || (Encoding == fc::ASCII && ! trans_shadow)
-     || monochron )
+     || (Encoding == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();
     return;
@@ -1857,12 +1854,25 @@ void FWidget::drawShadow()
     if ( x2 < xmax )
     {
       gotoxy (x2+1, y1);
+
       for (int x=1; x <= 2; x++)
       {
         ch = getCoveredCharacter (x2+x, y1, this);
         setColor (ch.fg_color, ch.bg_color);
+        if ( ch.reverse )
+          setReverse(true);
+        if ( ch.bold )
+          setBold(true);
+        if ( ch.underline )
+          setUnderline(true);
+
         print (ch.code);
+
+        setReverse(false);
+        setBold(false);
+        setUnderline(false);
       }
+
       setColor (wc.shadow_bg, wc.shadow_fg);
       for (int i=1; i < height && y1+i <= ymax; i++)
       {
@@ -1884,12 +1894,25 @@ void FWidget::drawShadow()
     if ( y2 < ymax )
     {
       gotoxy (x1, y2+1);
+
       for (int x=0; x <= 1; x++)
       {
         ch = getCoveredCharacter (x1+x, y2+1, this);
         setColor (ch.fg_color, ch.bg_color);
+        if ( ch.reverse )
+          setReverse(true);
+        if ( ch.bold )
+          setBold(true);
+        if ( ch.underline )
+          setUnderline(true);
+
         print (ch.code);
+
+        setReverse(false);
+        setBold(false);
+        setUnderline(false);
       }
+
       setColor (wc.shadow_bg, wc.shadow_fg);
       for (int i=2; i <= width+1 && x1+i <= xmax; i++)
       {
@@ -1904,6 +1927,8 @@ void FWidget::drawShadow()
           print (ch.code);
       }
     }
+    if ( isMonochron() )
+      setReverse(false);
   }
   else
   {
@@ -1953,6 +1978,9 @@ void FWidget::clearShadow()
 {
   FTerm::char_data ch;
   int x1, x2, y1, y2;
+
+  if ( isMonochron() )
+    return;
 
   x1 = xpos+xmin-1;
   x2 = xpos+xmin-2+width;

@@ -138,8 +138,12 @@ void FLineEdit::drawInputField()
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   if ( isMonochron() )
   {
+    setReverse(true);
     print (' ');
-    setUnderline(true);
+    if ( isActiveFocus )
+      setReverse(false);
+    else
+      setUnderline(true);
   }
   else if ( isActiveFocus )
   {
@@ -190,7 +194,10 @@ void FLineEdit::drawInputField()
     x++;
   }
   if ( isMonochron() )
+  {
+    setReverse(false);
     setUnderline(false);
+  }
 
   if ( isShadow )
     drawShadow ();

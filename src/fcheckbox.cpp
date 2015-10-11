@@ -55,6 +55,13 @@ void FCheckBox::drawCheckButton()
     return;
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   setColor (foregroundColor, backgroundColor);
+  if ( isMonochron() )
+  {
+    if ( hasFocus() )
+      setReverse(false);
+    else
+      setReverse(true);
+  }
   if ( checked )
   {
     if ( isNewFont() )
@@ -77,4 +84,6 @@ void FCheckBox::drawCheckButton()
       print (']');
     }
   }
+  if ( isMonochron() )
+    setReverse(false);
 }

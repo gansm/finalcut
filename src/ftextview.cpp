@@ -67,9 +67,12 @@ void FTextView::draw()
 {
   setUpdateVTerm(false);
   setColor (foregroundColor, backgroundColor);
+  if ( isMonochron() )
+    setReverse(true);
   if ( ! isNewFont() )
     drawBorder();
-
+  if ( isMonochron() )
+    setReverse(false);
   if ( VBar->isVisible() )
     VBar->redraw();
   if ( HBar->isVisible() )
@@ -108,6 +111,10 @@ void FTextView::drawText()
 
   setUpdateVTerm(false);
   setColor (foregroundColor, backgroundColor);
+
+  if ( isMonochron() )
+    setReverse(true);
+
   for (uInt y=start; y < end; y++)
   {
     gotoxy (xpos+xmin, ypos+ymin-nf_offset+int(y));
@@ -125,6 +132,10 @@ void FTextView::drawText()
     for (; i < uInt(width - nf_offset - 2); i++)
       print (' ');
   }
+
+  if ( isMonochron() )
+    setReverse(false);
+
   setUpdateVTerm(true);
 }
 

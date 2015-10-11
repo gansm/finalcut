@@ -134,11 +134,12 @@ void FMenuBar::drawItems()
   setUpdateVTerm(false);
   gotoxy (1,1);
 
+  if ( isMonochron() )
+    setReverse(true);
+
   iter = itemlist.begin();
   end = itemlist.end();
 
-  if ( isMonochron() )
-    setReverse(true);
   while ( iter != end )
   {
     wchar_t* src;
@@ -157,10 +158,10 @@ void FMenuBar::drawItems()
     {
       if ( is_Selected )
       {
-        foregroundColor = wc.menu_active_focus_fg;
-        backgroundColor = wc.menu_active_focus_bg;
         if ( isMonochron() )
           setReverse(false);
+        foregroundColor = wc.menu_active_focus_fg;
+        backgroundColor = wc.menu_active_focus_bg;
       }
       else
       {
@@ -227,8 +228,8 @@ void FMenuBar::drawItems()
     }
 
     setColor (wc.menu_active_fg, wc.menu_active_bg);
-    if ( is_Active && is_Selected )
-      setReverse(false);
+    if ( isMonochron() && is_Active && is_Selected )
+      setReverse(true);
     delete[] item_text;
 
     ++iter;
@@ -236,6 +237,7 @@ void FMenuBar::drawItems()
 
   for (; x <= screenWidth; x++)
     print (vmenubar, ' ');
+
   if ( isMonochron() )
     setReverse(false);
 

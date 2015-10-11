@@ -63,6 +63,7 @@ void FSwitch::drawCheckButton()
     {
       if ( isMonochron() )
         setBold(true);
+
       if ( isMonochron() || getMaxColor() < 16 )
       {
         wcsncpy ( on, L" <On>", 6);
@@ -78,22 +79,30 @@ void FSwitch::drawCheckButton()
         setColor (wc.button_hotkey_fg, wc.button_active_bg);
 
     if ( isMonochron() )
-      setReverse(true);
+      setReverse(false);
+
     print (on);
+
     if ( isMonochron() )
     {
-      setReverse(false);
+      setReverse(true);
       setBold(false);
     }
 
     setColor (wc.button_inactive_fg, wc.button_inactive_bg);
     print (off);
+    if ( isMonochron() )
+      setReverse(false);
     setCursorPos ( xpos + xmin + 1 + switch_offset_pos
                  , ypos + ymin - 1 );
   }
   else
   {
     setColor (wc.button_inactive_fg, wc.button_inactive_bg);
+
+    if ( isMonochron() )
+      setReverse(true);
+
     print (on);
 
     if ( hasFocus() && ! button_pressed )
@@ -115,13 +124,12 @@ void FSwitch::drawCheckButton()
         setColor (wc.button_hotkey_fg, wc.button_active_bg);
 
     if ( isMonochron() )
-      setReverse(true);
-    print (off);
-    if ( isMonochron() )
-    {
       setReverse(false);
+
+    print (off);
+
+    if ( isMonochron() )
       setBold(false);
-    }
 
     setCursorPos ( xpos + xmin + 5 + switch_offset_pos
                  , ypos + ymin - 1 );

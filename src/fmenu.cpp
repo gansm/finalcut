@@ -203,9 +203,13 @@ void FMenu::draw()
   // fill the background
   setColor (wc.menu_active_fg, wc.menu_active_bg);
   setUpdateVTerm(false);
+  if ( isMonochron() )
+    setReverse(true);
   clrscr();
   drawBorder();
   drawItems();
+  if ( isMonochron() )
+    setReverse(false);
   //if ( (flags & SHADOW) != 0 )
   //  drawMenuShadow();
   setUpdateVTerm(true);
@@ -356,8 +360,8 @@ void FMenu::drawItems()
         print (' ');
     }
 
-    if ( is_Active && is_Selected )
-      setReverse(false);
+    if ( isMonochron() && is_Active && is_Selected )
+      setReverse(true);
     delete[] item_text;
 
     ++iter;

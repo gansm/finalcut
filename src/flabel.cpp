@@ -232,6 +232,13 @@ void FLabel::draw()
 
   setUpdateVTerm(false);
 
+  if ( isMonochron() )
+  {
+    setReverse(true);
+    if ( hasEmphasis() )
+      setBold(true);
+  }
+
   if ( hasEmphasis() )
     setColor (emphasis_color, backgroundColor);
   else
@@ -291,6 +298,12 @@ void FLabel::draw()
     xoffset = getXOffset (int(length));
     printLine (LabelText, length, hotkeypos, xoffset);
     delete[] LabelText;
+  }
+  if ( isMonochron() )
+  {
+    setReverse(false);
+    if ( hasEmphasis() )
+      setBold(false);
   }
   setUpdateVTerm(true);
 }
