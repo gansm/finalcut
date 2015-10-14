@@ -277,6 +277,8 @@ class FWidget : public FObject, public FTerm
    static FMenuBar* menubar;
    static FWidget* show_root_widget;
    static FWidget* redraw_root_widget;
+   term_area* print_area;
+   friend class FTerm;
    friend class FApplication;
    friend class FToggleButton;
 
@@ -288,6 +290,8 @@ class FWidget : public FObject, public FTerm
    void         processDestroy();
    virtual void draw();
    static void  setColorTheme();
+   term_area*   getPrintArea();
+   void         setPrintArea(term_area*);
 
  protected:
    virtual void adjustSize();

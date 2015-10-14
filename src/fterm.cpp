@@ -3804,14 +3804,12 @@ int FTerm::print (FString& s)
   term_area* area;
   FWidget* w;
   w = static_cast<FWidget*>(this);
-  FWidget* area_widget = FWindow::getWindowWidget(w);
+  area = w->getPrintArea();
 
-  if ( area_widget && area_widget->getVWin() )
-    area = area_widget->getVWin();
-  else
+  if ( ! area )
   {
+    FWidget* area_widget = w->getRootWidget();
     area = vdesktop;
-    area_widget = w->getRootWidget();
     if ( ! area_widget )
       return -1;
   }
@@ -3934,14 +3932,12 @@ int FTerm::print (register int c)
   term_area* area;
   FWidget* w;
   w = static_cast<FWidget*>(this);
-  FWidget* area_widget = FWindow::getWindowWidget(w);
+  area = w->getPrintArea();
 
-  if ( area_widget )
-    area = area_widget->getVWin();
-  else
+  if ( ! area )
   {
+    FWidget* area_widget = w->getRootWidget();
     area = vdesktop;
-    area_widget = w->getRootWidget();
     if ( ! area_widget )
       return -1;
   }

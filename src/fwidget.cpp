@@ -68,6 +68,7 @@ FWidget::FWidget (FWidget* parent)
   , adjustWidgetSize(1,1,1,1)
   , adjustWidgetSizeGlobal(1,1,1,1)
   , statusbar_message()
+  , print_area(0)
 {
   resize_term = false;
 
@@ -357,6 +358,38 @@ void FWidget::setColorTheme()
     wc.progressbar_fg                = fc::Black;
     wc.progressbar_bg                = fc::LightGray;
   }
+}
+
+//----------------------------------------------------------------------
+FTerm::term_area* FWidget::getPrintArea()
+{
+  if ( print_area )
+    return print_area;
+  else
+  {
+    FWidget* area_widget = FWindow::getWindowWidget(this);
+
+    if ( area_widget )
+    {
+      term_area* area = area_widget->getVWin();
+
+      if ( area )
+      {
+        print_area = area;
+        return area;
+      }
+      else
+        return 0;
+    }
+    else
+      return 0;
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::setPrintArea(term_area* area)
+{
+  print_area = area;
 }
 
 // protected methods of FWidget

@@ -1,3 +1,6 @@
+2015-10-13  Markus Gans  <guru.mail@muenster.de>
+	* Reduce the number of getParent() function calls for print operations
+
 2015-10-11  Markus Gans  <guru.mail@muenster.de>
 	* Improve attribute setting for bold, reverse and underline output
 	* Better support for monochrom terminals
