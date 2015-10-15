@@ -16,6 +16,10 @@ case "$1" in
     ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
     ;;
 
+  "--cpu-profiler"|"cpu-profiler")
+    ./configure --prefix="$PREFIX" --with-profiler
+    ;;
+
   "--gcov"|"gcov")
     ./configure --prefix="$PREFIX" CXXFLAGS="-fprofile-arcs -ftest-coverage"
     ;;
@@ -33,6 +37,7 @@ case "$1" in
     echo "  debug         Compile with debug option"
     echo "  fulldebug     Compile with all warning options"
     echo "  profile       Compile with profile option (analysis with gprof)"
+    echo "  cpu-profiler  Link with Google cpu performance profiler"
     echo "  gcov          Compile with options for coverage analysis with gcov"
     echo "  release       Compile for release"
     exit 1

@@ -767,6 +767,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 with_gpm
+with_profiler
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1420,6 +1421,7 @@ Optional Packages:
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
   --without-gpm           Disable GPM mouse support
+  --with-profiler         build extra google profiler binaries
 
 Some influential environment variables:
   CC          C compiler command
@@ -16903,6 +16905,59 @@ fi
 
 
 $as_echo "#define HAVE_LIBGPM 1" >>confdefs.h
+
+fi
+
+# profiling
+
+# Check whether --with-profiler was given.
+if test "${with_profiler+set}" = set; then :
+  withval=$with_profiler; with_profiler=yes
+else
+  with_profiler=no
+fi
+
+if test "x$with_profiler" = "xyes"
+then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ProfilerFlush in -lprofiler" >&5
+$as_echo_n "checking for ProfilerFlush in -lprofiler... " >&6; }
+if ${ac_cv_lib_profiler_ProfilerFlush+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lprofiler  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ProfilerFlush ();
+int
+main ()
+{
+return ProfilerFlush ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_profiler_ProfilerFlush=yes
+else
+  ac_cv_lib_profiler_ProfilerFlush=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_profiler_ProfilerFlush" >&5
+$as_echo "$ac_cv_lib_profiler_ProfilerFlush" >&6; }
+if test "x$ac_cv_lib_profiler_ProfilerFlush" = xyes; then :
+  LIBS="$LIBS -lprofiler"
+fi
 
 fi
 

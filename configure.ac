@@ -69,4 +69,16 @@ then
   AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
 fi
 
+# profiling
+AC_ARG_WITH([profiler],
+            [AS_HELP_STRING([--with-profiler], [build extra google profiler binaries])],
+ 	    [with_profiler=yes],
+            [with_profiler=no])
+if test "x$with_profiler" = "xyes"
+then
+  AC_CHECK_LIB([profiler],
+               [ProfilerFlush],
+               [LIBS="$LIBS -lprofiler"])
+fi
+
 AC_OUTPUT
