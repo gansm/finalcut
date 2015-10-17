@@ -1503,7 +1503,6 @@ void FTerm::init()
     setNonBlockingInput();
     xterm_font  = new FString(getXTermFont());
     xterm_title = new FString(getXTermTitle());
-::printf("(%s)",xterm_title->c_str()); fflush(stdout); sleep(2);
     unsetNonBlockingInput();
   }
 
