@@ -181,7 +181,13 @@ void FLabel::printLine ( wchar_t*& line
   for (int z=0; z < to_char; z++)
   {
     if ( ! iswprint(wint_t(line[z])) )
-      line[z] = L' ';
+    {
+      if ( ! isNewFont() && (  int(line[z]) < fc::NF_rev_left_arrow2
+                            || int(line[z]) > fc::NF_check_mark ) )
+      {
+        line[z] = L' ';
+      }
+    }
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);

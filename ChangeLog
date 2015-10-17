@@ -1,6 +1,7 @@
 2015-10-17  Markus Gans  <guru.mail@muenster.de>
 	* More faster header inline code
 	* Improve getXTermFont() and getXTermTitle()
+	* Newfont characters are now printable in FLabel, FMenuBar and FMenu.
 
 2015-10-16  Markus Gans  <guru.mail@muenster.de>
 	* Fixed: calculator behavior for negative values 

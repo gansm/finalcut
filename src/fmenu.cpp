@@ -339,7 +339,13 @@ void FMenu::drawItems()
     for (int z=0; z < to_char; z++)
     {
       if ( ! iswprint(wint_t(item_text[z])) )
-        item_text[z] = L' ';
+      {
+        if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
+                              || int(item_text[z]) > fc::NF_check_mark ) )
+        {
+          item_text[z] = L' ';
+        }
+      }
       if ( (z == hotkeypos) && is_Active && ! is_Selected )
       {
         setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
