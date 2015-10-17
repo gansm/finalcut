@@ -826,14 +826,14 @@ FWidget* FWidget::getRootWidget() const
 }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::getMainWidget()
+FWidget* FWidget::getMainWidget()
 {
   FWidget* main_widget = static_cast<FWidget*>(FApplication::main_widget);
   return main_widget;
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMainWidget(FWidget* obj)
+void FWidget::setMainWidget(FWidget* obj)
 {
   FApplication* fapp = static_cast<FApplication*>(rootObject);
   fapp->setMainWidget(obj);
@@ -888,14 +888,14 @@ inline void FWidget::setFocusWidget(FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::getClickedWidget()
+FWidget* FWidget::getClickedWidget()
 {
   FWidget* clicked_widget = static_cast<FWidget*>(FApplication::clicked_widget);
   return clicked_widget;
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setClickedWidget(FWidget* obj)
+void FWidget::setClickedWidget(FWidget* obj)
 {
   FApplication::clicked_widget = obj;
 }
@@ -1785,13 +1785,13 @@ inline void FWidget::unsetCursorPos()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::gotoxy (const FPoint& pos)
+void FWidget::gotoxy (const FPoint& pos)
 {
   gotoxy (pos.getX(), pos.getY());
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::gotoxy (register int x, register int y)
+void FWidget::gotoxy (register int x, register int y)
 {
   cursor->setPoint(x,y);
 }
@@ -1842,19 +1842,19 @@ void FWidget::clrscr()
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setBold (register bool on)
+bool FWidget::setBold (register bool on)
 {
   return (bold = on);
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setReverse (register bool on)
+bool FWidget::setReverse (register bool on)
 {
   return (reverse = on);
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setUnderline (register bool on)
+bool FWidget::setUnderline (register bool on)
 {
   return (underline = on);
 }

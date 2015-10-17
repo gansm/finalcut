@@ -2316,12 +2316,6 @@ FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 
 // public methods of FTerm
 //----------------------------------------------------------------------
-inline FTerm::term_area* FTerm::getVWin() const
-{
-  return vwin;
-}
-
-//----------------------------------------------------------------------
 bool FTerm::setVGAFont()
 {
   if ( VGAFont )

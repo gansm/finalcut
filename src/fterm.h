@@ -436,6 +436,12 @@ inline const char* FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
+inline FTerm::term_area* FTerm::getVWin() const
+{
+  return vwin;
+}
+
+//----------------------------------------------------------------------
 inline int FTerm::getLineNumber()
 {
   if ( term->getHeight() == 0 )
