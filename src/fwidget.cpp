@@ -2264,7 +2264,7 @@ void FWidget::drawBorder()
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::quit()
+void FWidget::quit()
 {
   FApplication* fapp = static_cast<FApplication*>(rootObject);
   fapp->exit(0);
