@@ -182,7 +182,7 @@ void FWidget::finish()
 }
 
 //----------------------------------------------------------------------
-void FWidget::processDestroy()
+inline void FWidget::processDestroy()
 {
   emitCallback("destroy");
 }
@@ -308,7 +308,7 @@ void FWidget::setColorTheme()
     wc.label_hotkey_fg               = fc::Red;
     wc.label_hotkey_bg               = fc::LightGray;
     wc.label_emphasis_fg             = fc::Blue;
-    wc.label_ellipsis_fg             = fc::DarkGray;
+    wc.label_ellipsis_fg             = fc::Black;
     wc.inputfield_active_focus_fg    = fc::LightGray;
     wc.inputfield_active_focus_bg    = fc::Blue;
     wc.inputfield_active_fg          = fc::Black;
@@ -338,7 +338,7 @@ void FWidget::setColorTheme()
     wc.menu_active_focus_bg          = fc::Blue;
     wc.menu_active_fg                = fc::Black;
     wc.menu_active_bg                = fc::LightGray;
-    wc.menu_inactive_fg              = fc::DarkGray;
+    wc.menu_inactive_fg              = fc::Cyan;
     wc.menu_inactive_bg              = fc::LightGray;
     wc.menu_hotkey_fg                = fc::Red;
     wc.menu_hotkey_bg                = fc::LightGray;
@@ -387,7 +387,7 @@ FTerm::term_area* FWidget::getPrintArea()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPrintArea(term_area* area)
+inline void FWidget::setPrintArea(term_area* area)
 {
   print_area = area;
 }
@@ -826,21 +826,21 @@ FWidget* FWidget::getRootWidget() const
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getMainWidget()
+inline FWidget* FWidget::getMainWidget()
 {
   FWidget* main_widget = static_cast<FWidget*>(FApplication::main_widget);
   return main_widget;
 }
 
 //----------------------------------------------------------------------
-void FWidget::setMainWidget(FWidget* obj)
+inline void FWidget::setMainWidget(FWidget* obj)
 {
   FApplication* fapp = static_cast<FApplication*>(rootObject);
   fapp->setMainWidget(obj);
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
+inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
 {
   return childWidgetAt (p, pos.getX(), pos.getY());
 }
@@ -875,27 +875,27 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getFocusWidget() const
+inline FWidget* FWidget::getFocusWidget() const
 {
   FWidget* focus_widget = static_cast<FWidget*>(FApplication::focus_widget);
   return focus_widget;
 }
 
 //----------------------------------------------------------------------
-void FWidget::setFocusWidget(FWidget* obj)
+inline void FWidget::setFocusWidget(FWidget* obj)
 {
   FApplication::focus_widget = obj;
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getClickedWidget()
+inline FWidget* FWidget::getClickedWidget()
 {
   FWidget* clicked_widget = static_cast<FWidget*>(FApplication::clicked_widget);
   return clicked_widget;
 }
 
 //----------------------------------------------------------------------
-void FWidget::setClickedWidget(FWidget* obj)
+inline void FWidget::setClickedWidget(FWidget* obj)
 {
   FApplication::clicked_widget = obj;
 }
@@ -1331,13 +1331,13 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setEnable(bool on)
+inline bool FWidget::setEnable(bool on)
 {
   return enable = (on) ? true : false;
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setVisibleCursor(bool on)
+inline bool FWidget::setVisibleCursor(bool on)
 {
   return visibleCursor = (on) ? true : false;
 }
@@ -1514,7 +1514,7 @@ void FWidget::setY (int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPos (const FPoint& p, bool adjust)
+inline void FWidget::setPos (const FPoint& p, bool adjust)
 {
   setPos (p.getX(), p.getY(), adjust);
 }
@@ -1669,7 +1669,7 @@ void FWidget::setTermGeometry (int w, int h)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setGeometry (const FRect& box, bool adjust)
+inline void FWidget::setGeometry (const FRect& box, bool adjust)
 {
   setGeometry ( box.getX()
               , box.getY()
@@ -1721,7 +1721,7 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::move (const FPoint& pos)
+inline void FWidget::move (const FPoint& pos)
 {
   move( pos.getX(), pos.getY() );
 }
@@ -1779,19 +1779,19 @@ bool FWidget::setCursorPos (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FWidget::unsetCursorPos()
+inline void FWidget::unsetCursorPos()
 {
   widgetCursorPosition.setPoint(-1,-1);
 }
 
 //----------------------------------------------------------------------
-void FWidget::gotoxy (const FPoint& pos)
+inline void FWidget::gotoxy (const FPoint& pos)
 {
   gotoxy (pos.getX(), pos.getY());
 }
 
 //----------------------------------------------------------------------
-void FWidget::gotoxy (register int x, register int y)
+inline void FWidget::gotoxy (register int x, register int y)
 {
   cursor->setPoint(x,y);
 }
@@ -1842,19 +1842,19 @@ void FWidget::clrscr()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setBold (register bool on)
+inline bool FWidget::setBold (register bool on)
 {
   return (bold = on);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setReverse (register bool on)
+inline bool FWidget::setReverse (register bool on)
 {
   return (reverse = on);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setUnderline (register bool on)
+inline bool FWidget::setUnderline (register bool on)
 {
   return (underline = on);
 }
@@ -2264,7 +2264,7 @@ void FWidget::drawBorder()
 }
 
 //----------------------------------------------------------------------
-void FWidget::quit()
+inline void FWidget::quit()
 {
   FApplication* fapp = static_cast<FApplication*>(rootObject);
   fapp->exit(0);

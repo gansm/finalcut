@@ -582,7 +582,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = asin(*x) * 180.0L/PI;
-        else if ( fmod(*x,180.0L) < LDBL_EPSILON )  // x/180 = 0
+        else if ( fabs(fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 = 0
           *x = 0.0L;
         else
           *x = sin(*x * PI/180.0L);
@@ -614,7 +614,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
           *x = acos(*x) * 180.0L/PI;
-        else if ( fmod(*x - 90.0L,180.0L) < LDBL_EPSILON )  // (x - 90)/180 == 0
+        else if ( fabs(fmod(*x - 90.0L,180.0L)) < LDBL_EPSILON )  // (x - 90)/180 == 0
           *x = 0.0L;
         else
           *x = cos(*x * PI/180.0L);
@@ -649,9 +649,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
           *x = atan(*x) * 180.0L/PI;
         else
           // Test if (x/180) != 0 and x/90 == 0
-          if ( fmod(*x,180.0L) > LDBL_EPSILON && fmod(*x,90.0L) < LDBL_EPSILON )
+          if ( fabs(fmod(*x,180.0L)) > LDBL_EPSILON
+             && fabs(fmod(*x,90.0L)) < LDBL_EPSILON )
             error = true;
-          else if ( fmod(*x,180.0L) < LDBL_EPSILON )  // x/180 == 0
+          else if ( fabs(fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 == 0
             *x = 0.0L;
           else
             *x = tan(*x * PI/180.0L);

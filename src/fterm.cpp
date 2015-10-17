@@ -1921,7 +1921,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isCovered(const FPoint& pos, FTerm::term_area* area) const
+inline bool FTerm::isCovered(const FPoint& pos, FTerm::term_area* area) const
 {
   if ( area == 0 )
     return false;
@@ -2085,7 +2085,7 @@ void FTerm::setUpdateVTerm (bool on)
 }
 
 //----------------------------------------------------------------------
-void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
+inline void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
 {
   if ( area == 0 )
     return;
@@ -2129,7 +2129,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-void FTerm::getArea (const FRect& box, FTerm::term_area* area)
+inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
 {
   getArea ( box.getX()
           , box.getY()
@@ -2251,7 +2251,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
+inline FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
 {
   return getCoveredCharacter (pos.getX(), pos.getY(), obj);
 }
@@ -2316,7 +2316,7 @@ FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 
 // public methods of FTerm
 //----------------------------------------------------------------------
-FTerm::term_area* FTerm::getVWin() const
+inline FTerm::term_area* FTerm::getVWin() const
 {
   return vwin;
 }
@@ -4129,14 +4129,14 @@ int FTerm::appendLowerRight (char_data*& screen_char)
 }
 
 //----------------------------------------------------------------------
-void FTerm::appendOutputBuffer (std::string& s)
+inline void FTerm::appendOutputBuffer (std::string& s)
 {
   const char* c_string = s.c_str();
   tputs (c_string, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
-void FTerm::appendOutputBuffer (const char* s)
+inline void FTerm::appendOutputBuffer (const char* s)
 {
   tputs (s, 1, appendOutputBuffer);
 }
@@ -4178,7 +4178,7 @@ void FTerm::putstringf (const char* format, ...)
 }
 
 //----------------------------------------------------------------------
-void FTerm::putstring (const char* s, int affcnt)
+inline void FTerm::putstring (const char* s, int affcnt)
 {
   tputs (s, affcnt, putchar);
 }

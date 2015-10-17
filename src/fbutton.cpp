@@ -116,7 +116,7 @@ void FButton::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-void FButton::detectHotkey()
+inline void FButton::detectHotkey()
 {
   if ( isEnabled() )
   {

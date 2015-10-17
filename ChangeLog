@@ -1,3 +1,7 @@
+2015-10-16  Markus Gans  <guru.mail@muenster.de>
+	* Fixed: calculator behavior for negative values 
+	  in trigonometric functions
+
 2015-10-13  Markus Gans  <guru.mail@muenster.de>
 	* Reduce the number of getParent() function calls for print operations
 
