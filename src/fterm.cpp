@@ -1503,6 +1503,7 @@ void FTerm::init()
     setNonBlockingInput();
     xterm_font  = new FString(getXTermFont());
     xterm_title = new FString(getXTermTitle());
+::printf("(%s)",xterm_title->c_str()); fflush(stdout); sleep(2);
     unsetNonBlockingInput();
   }
 
@@ -2674,17 +2675,16 @@ FString FTerm::getXTermFont()
     putstring ("\033]50;?\07");  // get font
     fflush(stdout);
     usleep(150000);  // wait 150 ms
-    // read the answer
-    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-    // Esc + \ = OSC string terminator
-    if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
-    {
-      temp[n-2] = '\0';
-      font = temp;
-    }
 
-    if ( font.getLength() > 6 )
-      font = font.mid(6, font.getLength()-1);
+    // read the terminal answer
+    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
+    // BEL + '\0' = string terminator
+    if ( n >= 6 && temp[n-1] == '\07' && temp[n] == '\0' )
+    {
+      temp[n-1] = '\0';
+      font = static_cast<char*>(temp + 5);
+    }
   }
   return font;
 }
@@ -2704,17 +2704,16 @@ FString FTerm::getXTermTitle()
     putstring ("\033[21t");  // get title
     fflush(stdout);
     usleep(150000);  // wait 150 ms
-    // read the answer
+
+    // read the terminal answer
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
     // Esc + \ = OSC string terminator
-    if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
+    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
     {
       temp[n-2] = '\0';
-      title = temp;
+      title = static_cast<char*>(temp + 3);
     }
-
-    if ( title.getLength() > 3 )
-      title = title.right( title.getLength()-3 );
   }
   return title;
 }
