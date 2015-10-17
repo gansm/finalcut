@@ -146,9 +146,9 @@ void FButton::draw()
   space = int(' ');
 
   if ( isMonochron() || getMaxColor() < 16 )
-    ButtonText = new wchar_t[length+3];
+    ButtonText = new wchar_t[length+3]();
   else
-    ButtonText = new wchar_t[length+1];
+    ButtonText = new wchar_t[length+1]();
 
   txt  = text;
   src  = const_cast<wchar_t*>(txt.wc_str());

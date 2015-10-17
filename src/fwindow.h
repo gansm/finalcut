@@ -92,6 +92,10 @@ inline const char* FWindow::getClassName() const
 { return "FWindow"; }
 
 //----------------------------------------------------------------------
+inline FWindow* FWindow::windowWidgetAt (const FPoint& pos)
+{ return windowWidgetAt(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
 inline bool FWindow::raiseWindow()
 { return raiseWindow(this); }
 

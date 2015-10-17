@@ -114,7 +114,7 @@ void FStatusKey::setStatusbar (FStatusBar* sb)
 
 // public methods of FStatusKey
 //----------------------------------------------------------------------
-inline void FStatusKey::setActive()
+void FStatusKey::setActive()
 {
   active = true;
   processActivate();

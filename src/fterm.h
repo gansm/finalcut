@@ -431,15 +431,37 @@ class FTerm
 };
 
 #pragma pack(pop)
+
+// FTerm inline functions
+//----------------------------------------------------------------------
+inline bool FTerm::isCovered(const FPoint& pos, FTerm::term_area* area) const
+{ return isCovered (pos.getX(), pos.getY(), area); }
+
+//----------------------------------------------------------------------
+inline void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
+{ return getArea (pos.getX(), pos.getY(), area); }
+
+//----------------------------------------------------------------------
+inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
+{
+  getArea ( box.getX()
+          , box.getY()
+          , box.getWidth()
+          , box.getHeight()
+          , area );
+}
+
+//----------------------------------------------------------------------
+inline FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
+{ return getCoveredCharacter (pos.getX(), pos.getY(), obj); }
+
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
 
 //----------------------------------------------------------------------
 inline FTerm::term_area* FTerm::getVWin() const
-{
-  return vwin;
-}
+{ return vwin; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getLineNumber()

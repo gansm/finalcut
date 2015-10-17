@@ -87,12 +87,6 @@ void FWindow::hide()
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::windowWidgetAt(const FPoint& pos)
-{
-  return windowWidgetAt(pos.getX(), pos.getY());
-}
-
-//----------------------------------------------------------------------
 FWindow* FWindow::windowWidgetAt(int x, int y)
 {
   if ( statusBar() && statusBar()->getGeometryGlobal().contains(x,y) )

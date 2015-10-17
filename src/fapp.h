@@ -129,7 +129,7 @@ class FApplication : public FWidget
    bool    parseUrxvtMouse();
 
 #ifdef F_HAVE_LIBGPM
-   int     gpmEvent(bool = true);
+   int     gpmEvent (bool = true);
    bool    processGpmEvent();
 #endif
 

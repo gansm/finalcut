@@ -285,37 +285,37 @@ class FWidget : public FObject, public FTerm
  private:
    FWidget (const FWidget&);
    FWidget& operator = (const FWidget&);
-   void         init();
-   void         finish();
-   void         processDestroy();
-   virtual void draw();
-   static void  setColorTheme();
-   term_area*   getPrintArea();
-   void         setPrintArea(term_area*);
+   void             init();
+   void             finish();
+   void             processDestroy();
+   virtual void     draw();
+   static void      setColorTheme();
+   term_area*       getPrintArea();
+   void             setPrintArea (term_area*);
 
  protected:
-   virtual void adjustSize();
-   virtual void setStatusBar (FStatusBar*);
-   virtual void setMenuBar (FMenuBar*);
+   virtual void     adjustSize();
+   virtual void     setStatusBar (FStatusBar*);
+   virtual void     setMenuBar (FMenuBar*);
  // Event handlers
-   bool         event (FEvent*);
-   virtual void onKeyPress (FKeyEvent*);
-   virtual void onKeyUp (FKeyEvent*);
-   virtual void onKeyDown (FKeyEvent*);
-   virtual void onMouseDown (FMouseEvent*);
-   virtual void onMouseUp (FMouseEvent*);
-   virtual void onMouseDoubleClick (FMouseEvent*);
-   virtual void onWheel (FWheelEvent*);
-   virtual void onMouseMove (FMouseEvent*);
-   virtual void onFocusIn (FFocusEvent*);
-   virtual void onFocusOut (FFocusEvent*);
-   virtual void onAccel (FAccelEvent*);
-   virtual void onResize (FResizeEvent*);
-   virtual void onShow (FShowEvent*);
-   virtual void onHide (FHideEvent*);
-   virtual void onClose (FCloseEvent*);
-   virtual bool focusNextChild (void);
-   virtual bool focusPrevChild (void);
+   bool             event (FEvent*);
+   virtual void     onKeyPress (FKeyEvent*);
+   virtual void     onKeyUp (FKeyEvent*);
+   virtual void     onKeyDown (FKeyEvent*);
+   virtual void     onMouseDown (FMouseEvent*);
+   virtual void     onMouseUp (FMouseEvent*);
+   virtual void     onMouseDoubleClick (FMouseEvent*);
+   virtual void     onWheel (FWheelEvent*);
+   virtual void     onMouseMove (FMouseEvent*);
+   virtual void     onFocusIn (FFocusEvent*);
+   virtual void     onFocusOut (FFocusEvent*);
+   virtual void     onAccel (FAccelEvent*);
+   virtual void     onResize (FResizeEvent*);
+   virtual void     onShow (FShowEvent*);
+   virtual void     onHide (FHideEvent*);
+   virtual void     onClose (FCloseEvent*);
+   virtual bool     focusNextChild (void);
+   virtual bool     focusPrevChild (void);
 
  public:
    explicit FWidget (FWidget* = 0);  // constructor
@@ -339,142 +339,155 @@ class FWidget : public FObject, public FTerm
 
    static FStatusBar* statusBar();
    static FMenuBar* menuBar();
-   void           setStatusbarMessage (FString);
-   void           clearStatusbarMessage();
-   FString        getStatusbarMessage();
+   void             setStatusbarMessage (FString);
+   void             clearStatusbarMessage();
+   FString          getStatusbarMessage();
 
-   void           addCallback ( FString
-                              , FCallback
-                              , void* = null );
-   void           addCallback ( FString
-                              , FWidget*
-                              , FMemberCallback
-                              , void* = null );
-   void           delCallback (FCallback);
-   void           delCallback (FWidget*);
-   void           emitCallback (FString);
+   void             addCallback ( FString
+                                , FCallback
+                                , void* = null );
+   void             addCallback ( FString
+                                , FWidget*
+                                , FMemberCallback
+                                , void* = null );
+   void             delCallback (FCallback);
+   void             delCallback (FWidget*);
+   void             emitCallback (FString);
 
-   void           addAccelerator (int key);
-   void           addAccelerator (int, FWidget*);
-   void           delAccelerator (FWidget*);
+   void             addAccelerator (int key);
+   void             addAccelerator (int, FWidget*);
+   void             delAccelerator (FWidget*);
 
-   virtual void   redraw();
-   virtual void   resize();
-   virtual void   show();
-   virtual void   hide();
-   bool           setVisible();
-   bool           isVisible() const;
-   bool           isShown() const;
+   virtual void     redraw();
+   virtual void     resize();
+   virtual void     show();
+   virtual void     hide();
+   bool             setVisible();
+   bool             isVisible() const;
+   bool             isShown() const;
 
-   virtual bool   setEnable(bool);
-   virtual bool   setEnable();
-   virtual bool   unsetEnable();
-   virtual bool   setDisable();
-   bool           isEnabled() const;
+   virtual bool     setEnable(bool);
+   virtual bool     setEnable();
+   virtual bool     unsetEnable();
+   virtual bool     setDisable();
+   bool             isEnabled() const;
 
-   virtual bool   setVisibleCursor(bool);
-   virtual bool   setVisibleCursor();
-   virtual bool   unsetVisibleCursor();
-   bool           hasVisibleCursor() const;
+   virtual bool     setVisibleCursor(bool);
+   virtual bool     setVisibleCursor();
+   virtual bool     unsetVisibleCursor();
+   bool             hasVisibleCursor() const;
 
-   virtual bool   focusFirstChild (void);
-   virtual bool   focusLastChild (void);
-   virtual bool   setFocus(bool);
-   virtual bool   setFocus();
-   virtual bool   unsetFocus();
-   bool           hasFocus() const;
-   bool           acceptFocus() const;
-   void           setFocusable();
-   void           unsetFocusable();
+   virtual bool     focusFirstChild (void);
+   virtual bool     focusLastChild (void);
+   virtual bool     setFocus(bool);
+   virtual bool     setFocus();
+   virtual bool     unsetFocus();
+   bool             hasFocus() const;
+   bool             acceptFocus() const;
+   void             setFocusable();
+   void             unsetFocusable();
 
-   bool           ignorePadding(bool);
-   bool           ignorePadding();
-   bool           acceptPadding();
+   bool             ignorePadding(bool);
+   bool             ignorePadding();
+   bool             acceptPadding();
 
-   int            getForegroundColor() const;
-   int            getBackgroundColor() const;
-   int            getX() const;
-   int            getY() const;
-   const FPoint   getPos() const;
-   int            getGlobalX() const;
-   int            getGlobalY() const;
-   const FPoint   getGlobalPos() const;
-   int            getWidth() const;
-   int            getHeight() const;
-   int            getTopPadding() const;
-   int            getLeftPadding() const;
-   int            getBottomPadding() const;
-   int            getRightPadding() const;
-   int            getClientWidth() const;
-   int            getClientHeight() const;
-   const FPoint&  getShadow() const;
-   const FRect&   getGeometry() const;
-   const FRect&   getGeometryShadow() const;
-   const FRect&   getGeometryGlobal() const;
-   const FRect&   getGeometryGlobalShadow() const;
-   FPoint         globalToLocalPos(const FPoint&);
-   void           setForegroundColor (int);
-   void           setBackgroundColor (int);
-   void           setX (int, bool = true);
-   void           setY (int, bool = true);
-   void           setPos (const FPoint&, bool = true);
-   void           setPos (int, int, bool = true);
-   void           setWidth (int, bool = true);
-   void           setHeight (int, bool = true);
-   void           setTopPadding (int, bool = true);
-   void           setLeftPadding (int, bool = true);
-   void           setBottomPadding (int, bool = true);
-   void           setRightPadding (int, bool = true);
-   void           getTermGeometry();
-   void           setTermGeometry (int, int);
-   virtual void   setGeometry (const FRect&, bool = true);
-   virtual void   setGeometry (int, int, int, int, bool = true);
-   virtual void   move (const FPoint&);
-   virtual void   move (int x, int y);
-   int            getFlags() const;
+   int              getForegroundColor() const;
+   int              getBackgroundColor() const;
+   int              getX() const;
+   int              getY() const;
+   const FPoint     getPos() const;
+   int              getGlobalX() const;
+   int              getGlobalY() const;
+   const FPoint     getGlobalPos() const;
+   int              getWidth() const;
+   int              getHeight() const;
+   int              getTopPadding() const;
+   int              getLeftPadding() const;
+   int              getBottomPadding() const;
+   int              getRightPadding() const;
+   int              getClientWidth() const;
+   int              getClientHeight() const;
+   const FPoint&    getShadow() const;
+   const FRect&     getGeometry() const;
+   const FRect&     getGeometryShadow() const;
+   const FRect&     getGeometryGlobal() const;
+   const FRect&     getGeometryGlobalShadow() const;
+   FPoint           globalToLocalPos (const FPoint&);
+   void             setForegroundColor (int);
+   void             setBackgroundColor (int);
+   void             setX (int, bool = true);
+   void             setY (int, bool = true);
+   void             setPos (const FPoint&, bool = true);
+   void             setPos (int, int, bool = true);
+   void             setWidth (int, bool = true);
+   void             setHeight (int, bool = true);
+   void             setTopPadding (int, bool = true);
+   void             setLeftPadding (int, bool = true);
+   void             setBottomPadding (int, bool = true);
+   void             setRightPadding (int, bool = true);
+   void             getTermGeometry();
+   void             setTermGeometry (int, int);
+   virtual void     setGeometry (const FRect&, bool = true);
+   virtual void     setGeometry (int, int, int, int, bool = true);
+   virtual void     move (const FPoint&);
+   virtual void     move (int x, int y);
+   int              getFlags() const;
 
-   bool           setCursor();
-   FPoint         getCursorPos();
-   bool           setCursorPos (const FPoint&);
-   bool           setCursorPos (register int, register int);
-   void           unsetCursorPos();
+   bool             setCursor();
+   FPoint           getCursorPos();
+   bool             setCursorPos (const FPoint&);
+   bool             setCursorPos (register int, register int);
+   void             unsetCursorPos();
 
-   static void    gotoxy (const FPoint&);
-   static void    gotoxy (register int, register int);
-   void           clrscr();
+   static void      gotoxy (const FPoint&);
+   static void      gotoxy (register int, register int);
+   void             clrscr();
 
-   static bool    setBold(register bool);
-   static bool    setBold();
-   static bool    unsetBold();
-   static bool    isBold();
+   static bool      setBold(register bool);
+   static bool      setBold();
+   static bool      unsetBold();
+   static bool      isBold();
 
-   static bool    setReverse(register bool);
-   static bool    setReverse();
-   static bool    unsetReverse();
-   static bool    isReverse();
+   static bool      setReverse(register bool);
+   static bool      setReverse();
+   static bool      unsetReverse();
+   static bool      isReverse();
 
-   static bool    setUnderline(register bool);
-   static bool    setUnderline();
-   static bool    unsetUnderline();
-   static bool    isUnderline();
+   static bool      setUnderline(register bool);
+   static bool      setUnderline();
+   static bool      unsetUnderline();
+   static bool      isUnderline();
 
-   void           drawShadow();
-   void           clearShadow();
-   void           drawFlatBorder();
-   void           clearFlatBorder();
-   void           setDoubleFlatLine(int, bool = true);
-   void           unsetDoubleFlatLine(int);
+   void             drawShadow();
+   void             clearShadow();
+   void             drawFlatBorder();
+   void             clearFlatBorder();
+   void             setDoubleFlatLine(int, bool = true);
+   void             unsetDoubleFlatLine(int);
    std::vector<bool>& doubleFlatLine_ref(int);
-   virtual void   drawBorder();
+   virtual void     drawBorder();
 
-   static void    quit();
+   static void      quit();
 };
 
 #pragma pack(pop)
 
+// FWidget inline functions
+//----------------------------------------------------------------------
+inline void FWidget::processDestroy()
+{ emitCallback("destroy"); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setPrintArea (term_area* area)
+{ print_area = area; }
+
 //----------------------------------------------------------------------
 inline const char* FWidget::getClassName() const
 { return "FWidget"; }
+
+//----------------------------------------------------------------------
+inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
+{ return childWidgetAt (p, pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline FWidget* FWidget::parentWidget() const
@@ -513,6 +526,10 @@ inline bool FWidget::isWindow() const
 { return window_object; }
 
 //----------------------------------------------------------------------
+inline bool FWidget::setEnable (bool on)
+{ return enable = (on) ? true : false; }
+
+//----------------------------------------------------------------------
 inline bool FWidget::setEnable()
 { return setEnable(true); }
 
@@ -527,6 +544,10 @@ inline bool FWidget::setDisable()
 //----------------------------------------------------------------------
 inline bool FWidget::isEnabled() const
 { return enable; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setVisibleCursor (bool on)
+{ return visibleCursor = (on) ? true : false; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()
@@ -609,6 +630,31 @@ inline const FPoint FWidget::getGlobalPos() const
 { return FPoint(xpos+xmin-1, ypos+ymin-1); }
 
 //----------------------------------------------------------------------
+inline FPoint FWidget::globalToLocalPos (const FPoint& gPos)
+{
+  return FPoint ( gPos.getX() - xpos - xmin + 2
+                , gPos.getY() - ypos - ymin + 2 );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setForegroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    foregroundColor = color;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setBackgroundColor (int color)
+{
+  if ( color >> 8 == 0 )  // valid colors 0..254
+    backgroundColor = color;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setPos (const FPoint& p, bool adjust)
+{ setPos (p.getX(), p.getY(), adjust); }
+
+//----------------------------------------------------------------------
 inline int FWidget::getWidth() const
 { return width; }
 
@@ -661,12 +707,46 @@ inline const FRect& FWidget::getGeometryGlobalShadow() const
 { return adjustWidgetSizeGlobalShadow; }
 
 //----------------------------------------------------------------------
+inline void FWidget::setGeometry (const FRect& box, bool adjust)
+{
+  setGeometry ( box.getX()
+              , box.getY()
+              , box.getWidth()
+              , box.getHeight()
+              , adjust );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::move (const FPoint& pos)
+{ move( pos.getX(), pos.getY() ); }
+
+//----------------------------------------------------------------------
 inline int FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
 inline FPoint FWidget::getCursorPos()
 { return widgetCursorPosition; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setCursorPos (const FPoint& pos)
+{ return setCursorPos (pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline void FWidget::unsetCursorPos()
+{ widgetCursorPosition.setPoint(-1,-1); }
+
+//----------------------------------------------------------------------
+inline void FWidget::gotoxy (const FPoint& pos)
+{ gotoxy (pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline void FWidget::gotoxy (register int x, register int y)
+{ cursor->setPoint(x,y); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setBold (register bool on)
+{ return (bold = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setBold()
@@ -681,6 +761,10 @@ inline bool FWidget::isBold()
 { return bold; }
 
 //----------------------------------------------------------------------
+inline bool FWidget::setReverse (register bool on)
+{ return (reverse = on); }
+
+//----------------------------------------------------------------------
 inline bool FWidget::setReverse()
 { return setReverse(true); }
 
@@ -691,6 +775,10 @@ inline bool FWidget::unsetReverse()
 //----------------------------------------------------------------------
 inline bool FWidget::isReverse()
 { return reverse; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setUnderline (register bool on)
+{ return (underline = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setUnderline()

@@ -255,7 +255,7 @@ void FLabel::draw()
     while ( y < text_lines && y < uInt(height) )
     {
       length = multiline_text[y].getLength();
-      LabelText = new wchar_t[length+1];
+      LabelText = new wchar_t[length+1]();
       src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
       dest = const_cast<wchar_t*>(LabelText);
 
@@ -285,7 +285,7 @@ void FLabel::draw()
   else
   {
     length = text.getLength();
-    LabelText = new wchar_t[length+1];
+    LabelText = new wchar_t[length+1]();
     src  = const_cast<wchar_t*>(text.wc_str());
     dest = const_cast<wchar_t*>(LabelText);
 

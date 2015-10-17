@@ -198,7 +198,7 @@ void FToggleButton::drawLabel()
   length = text.getLength();
   hotkeypos = -1;
 
-  LabelText = new wchar_t[length+1];
+  LabelText = new wchar_t[length+1]();
   txt = text;
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);

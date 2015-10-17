@@ -324,7 +324,7 @@ void FMenu::drawItems()
 
     txt = (*iter)->getText();
     txt_length = uInt(txt.getLength());
-    item_text = new wchar_t[txt_length+1];
+    item_text = new wchar_t[txt_length+1]();
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
     to_char = int(txt_length);

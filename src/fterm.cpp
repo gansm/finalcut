@@ -288,10 +288,8 @@ int FTerm::getScreenFont()
   font.width = 32;
   font.height = 32;
   font.charcount = 512;
-  font.data = new uChar[data_size];
-
   // initialize with 0
-  memset(font.data, 0, data_size);
+  font.data = new uChar[data_size]();
 
   // font operation
   ret = ioctl (fd_tty, KDFONTOP, &font);
@@ -337,16 +335,13 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
 
     try
     {
-      font.data = new uChar[data_size];
+      font.data = new uChar[data_size](); // initialize with 0
     }
     catch (const std::bad_alloc& ex)
     {
       std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
       return -1;
     }
-
-    // initialize with 0
-    memset(font.data, 0, data_size);
 
     for (uInt i=0; i < count; i++)
       memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
@@ -397,7 +392,7 @@ int FTerm::getUnicodeMap()
 
     try
     {
-      unimap.entries = new struct unipair[count];
+      unimap.entries = new struct unipair[count]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -1921,15 +1916,6 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 }
 
 //----------------------------------------------------------------------
-inline bool FTerm::isCovered(const FPoint& pos, FTerm::term_area* area) const
-{
-  if ( area == 0 )
-    return false;
-
-  return isCovered (pos.getX(), pos.getY(), area);
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
 {
   bool covered, found;
@@ -2085,14 +2071,6 @@ void FTerm::setUpdateVTerm (bool on)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
-{
-  if ( area == 0 )
-    return;
-  getArea (pos.getX(), pos.getY(), area);
-}
-
-//----------------------------------------------------------------------
 void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 {
   int y_end;
@@ -2126,16 +2104,6 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
     if ( short(area->changes[y].xmax) < length-1 )
       area->changes[y].xmax = uInt(length-1);
   }
-}
-
-//----------------------------------------------------------------------
-inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
-{
-  getArea ( box.getX()
-          , box.getY()
-          , box.getWidth()
-          , box.getHeight()
-          , area );
 }
 
 //----------------------------------------------------------------------
@@ -2248,12 +2216,6 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     if ( ax+length-1 > short(vterm->changes[ay+y].xmax) )
       vterm->changes[ay+y].xmax = uInt(ax+length-1);
   }
-}
-
-//----------------------------------------------------------------------
-inline FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
-{
-  return getCoveredCharacter (pos.getX(), pos.getY(), obj);
 }
 
 //----------------------------------------------------------------------
@@ -2703,18 +2665,18 @@ void FTerm::setKDECursor(fc::kde_konsole_CursorShape style)
 //----------------------------------------------------------------------
 FString FTerm::getXTermFont()
 {
-  FString font = "";
+  FString font("");
 
   if ( raw_mode && non_blocking_stdin )
   {
     int n;
     char temp[150] = {};
-    putstring("\033]50;?\07");  // get font
+    putstring ("\033]50;?\07");  // get font
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-    // Esc \ = OSC String Terminator
+    // Esc + \ = OSC string terminator
     if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
     {
       temp[n-2] = '\0';
@@ -2730,7 +2692,7 @@ FString FTerm::getXTermFont()
 //----------------------------------------------------------------------
 FString FTerm::getXTermTitle()
 {
-  FString title = "";
+  FString title("");
 
   if ( kde_konsole )
     return title;
@@ -2739,12 +2701,12 @@ FString FTerm::getXTermTitle()
   {
     int n;
     char temp[512] = {};
-    putstring("\033[21t");  // get title
+    putstring ("\033[21t");  // get title
     fflush(stdout);
     usleep(150000);  // wait 150 ms
     // read the answer
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-    // Esc \ = OSC String Terminator
+    // Esc + \ = OSC string terminator
     if ( n >= 2 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
     {
       temp[n-2] = '\0';
@@ -3713,7 +3675,7 @@ int FTerm::printf (const char* format, ...)
 
   if ( len >= int(sizeof(buf)) )
   {
-    buffer = new char[len+1];
+    buffer = new char[len+1]();
     va_start (args, format);
     vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
@@ -4017,7 +3979,7 @@ inline void FTerm::appendCharacter (char_data*& screen_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::appendAttributes (char_data*& screen_attr)
+void FTerm::appendAttributes (char_data*& screen_attr)
 {
   if (  screen_attr->fg_color != fg_term_color
      || screen_attr->bg_color != bg_term_color )

@@ -148,7 +148,7 @@ void FApplication::cmd_options ()
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-inline int FApplication::gpmEvent(bool clear)
+int FApplication::gpmEvent (bool clear)
 {
   register int result;
   register int max = (gpm_fd > stdin_no) ? gpm_fd : stdin_no;
@@ -948,13 +948,10 @@ void FApplication::processMouseEvent()
         || b_state.wheel_up == Pressed
         || b_state.wheel_down == Pressed ) )
   {
-    FWidget* window = FWindow::windowWidgetAt ( mouse->getX()
-                                              , mouse->getY() );
+    FWidget* window = FWindow::windowWidgetAt (*mouse);
     if ( window )
     {
-      FWidget* child = childWidgetAt ( window
-                                     , mouse->getX()
-                                     , mouse->getY() );
+      FWidget* child = childWidgetAt (window, *mouse);
       clicked_widget = (child != 0) ? child : window;
     }
   }

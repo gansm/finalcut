@@ -208,7 +208,7 @@ void FButtonGroup::drawLabel()
   txt = " " + text + " ";
   length = txt.getLength();
   hotkeypos = -1;
-  LabelText = new wchar_t[length+1];
+  LabelText = new wchar_t[length+1]();
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);
 

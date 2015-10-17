@@ -124,8 +124,8 @@ FWidget::~FWidget()  // destructor
 //----------------------------------------------------------------------
 void FWidget::init()
 {
-  window_list    = new widgetList;
-  close_widget   = new widgetList;
+  window_list    = new widgetList();
+  close_widget   = new widgetList();
 
   getTermGeometry(); // <-----.
                      //       |
@@ -161,7 +161,7 @@ void FWidget::init()
   setColor (foregroundColor, backgroundColor);
   clrscr();
 
-  accelerator_list = new Accelerators;
+  accelerator_list = new Accelerators();
 }
 
 //----------------------------------------------------------------------
@@ -179,12 +179,6 @@ void FWidget::finish()
     delete window_list;
     window_list = 0;
   }
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::processDestroy()
-{
-  emitCallback("destroy");
 }
 
 //----------------------------------------------------------------------
@@ -384,12 +378,6 @@ FTerm::term_area* FWidget::getPrintArea()
     else
       return 0;
   }
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::setPrintArea(term_area* area)
-{
-  print_area = area;
 }
 
 // protected methods of FWidget
@@ -840,12 +828,6 @@ void FWidget::setMainWidget(FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
-{
-  return childWidgetAt (p, pos.getX(), pos.getY());
-}
-
-//----------------------------------------------------------------------
 FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 {
   if ( p && p->hasChildren() )
@@ -875,14 +857,14 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::getFocusWidget() const
+FWidget* FWidget::getFocusWidget() const
 {
   FWidget* focus_widget = static_cast<FWidget*>(FApplication::focus_widget);
   return focus_widget;
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setFocusWidget(FWidget* obj)
+void FWidget::setFocusWidget(FWidget* obj)
 {
   FApplication::focus_widget = obj;
 }
@@ -1331,18 +1313,6 @@ void FWidget::hide()
 }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setEnable(bool on)
-{
-  return enable = (on) ? true : false;
-}
-
-//----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor(bool on)
-{
-  return visibleCursor = (on) ? true : false;
-}
-
-//----------------------------------------------------------------------
 bool FWidget::focusFirstChild (void)
 {
   FObject::object_list children;
@@ -1447,27 +1417,6 @@ bool FWidget::setFocus(bool on)
 }
 
 //----------------------------------------------------------------------
-FPoint FWidget::globalToLocalPos (const FPoint& gPos)
-{
-  return FPoint ( gPos.getX() - xpos - xmin + 2
-                , gPos.getY() - ypos - ymin + 2 );
-}
-
-//----------------------------------------------------------------------
-void FWidget::setForegroundColor (int color)
-{
-  if ( color >> 8 == 0 )  // valid colors 0..254
-    foregroundColor = color;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setBackgroundColor (int color)
-{
-  if ( color >> 8 == 0 )  // valid colors 0..254
-    backgroundColor = color;
-}
-
-//----------------------------------------------------------------------
 void FWidget::setX (int x, bool adjust)
 {
   if ( xpos == x && widgetSize.getX() == x )
@@ -1511,12 +1460,6 @@ void FWidget::setY (int y, bool adjust)
 
   if ( adjust )
     adjustSize();
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::setPos (const FPoint& p, bool adjust)
-{
-  setPos (p.getX(), p.getY(), adjust);
 }
 
 //----------------------------------------------------------------------
@@ -1669,16 +1612,6 @@ void FWidget::setTermGeometry (int w, int h)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setGeometry (const FRect& box, bool adjust)
-{
-  setGeometry ( box.getX()
-              , box.getY()
-              , box.getWidth()
-              , box.getHeight()
-              , adjust );
-}
-
-//----------------------------------------------------------------------
 void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   if ( xpos == x && ypos == y && width == w && height == h )
@@ -1721,12 +1654,6 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::move (const FPoint& pos)
-{
-  move( pos.getX(), pos.getY() );
-}
-
-//----------------------------------------------------------------------
 void FWidget::move (int x, int y)
 {
   if ( x == xpos && y == ypos )
@@ -1762,12 +1689,6 @@ bool FWidget::setCursor()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (const FPoint& pos)
-{
-  return setCursorPos (pos.getX(), pos.getY());
-}
-
-//----------------------------------------------------------------------
 bool FWidget::setCursorPos (register int x, register int y)
 {
   widgetCursorPosition.setPoint(x,y);
@@ -1776,24 +1697,6 @@ bool FWidget::setCursorPos (register int x, register int y)
     return true;
   else
     return false;
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::unsetCursorPos()
-{
-  widgetCursorPosition.setPoint(-1,-1);
-}
-
-//----------------------------------------------------------------------
-void FWidget::gotoxy (const FPoint& pos)
-{
-  gotoxy (pos.getX(), pos.getY());
-}
-
-//----------------------------------------------------------------------
-void FWidget::gotoxy (register int x, register int y)
-{
-  cursor->setPoint(x,y);
 }
 
 //----------------------------------------------------------------------
@@ -1839,24 +1742,6 @@ void FWidget::clrscr()
     area->changes[i].xmax = uInt(area->width + area->right_shadow - 1);
   }
   putArea (xpos+xmin-1, ypos+ymin-1, area);
-}
-
-//----------------------------------------------------------------------
-bool FWidget::setBold (register bool on)
-{
-  return (bold = on);
-}
-
-//----------------------------------------------------------------------
-bool FWidget::setReverse (register bool on)
-{
-  return (reverse = on);
-}
-
-//----------------------------------------------------------------------
-bool FWidget::setUnderline (register bool on)
-{
-  return (underline = on);
 }
 
 //----------------------------------------------------------------------

@@ -123,7 +123,7 @@ void FDialog::init()
     setFocus();
     old_focus->redraw();
   }
-  accelerator_list = new Accelerators;
+  accelerator_list = new Accelerators();
 }
 
 //----------------------------------------------------------------------

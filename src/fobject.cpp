@@ -27,7 +27,7 @@ FObject::FObject (FObject* parent)
   if ( parent == 0 )
   {
     modify_timer = false;
-    timer_list   = new TimerList;
+    timer_list   = new TimerList();
   }
   else
     has_parent = true;
@@ -132,7 +132,7 @@ int FObject::addTimer (int interval)
   modify_timer = true;
 
   if ( ! timer_list )
-    timer_list = new TimerList;
+    timer_list = new TimerList();
 
   // find an unused timer id
   if ( ! timer_list->empty() )
