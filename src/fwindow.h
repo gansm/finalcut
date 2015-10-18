@@ -64,8 +64,8 @@ class FWindow : public FWidget
    const char*     getClassName() const;
    virtual void    show();
    virtual void    hide();
-   static FWindow* windowWidgetAt (const FPoint&);
-   static FWindow* windowWidgetAt (int, int);
+   static FWindow* getWindowWidgetAt (const FPoint&);
+   static FWindow* getWindowWidgetAt (int, int);
    static void     addWindow (FWidget*);
    static void     delWindow (FWidget*);
    static FWindow* getWindowWidget (FWidget*);
@@ -82,6 +82,7 @@ class FWindow : public FWidget
    bool            activateWindow();
    bool            deactivateWindow();
    bool            isActiveWindow() const;
+   bool            isHiddenWindow() const;
 };
 #pragma pack(pop)
 
@@ -92,8 +93,8 @@ inline const char* FWindow::getClassName() const
 { return "FWindow"; }
 
 //----------------------------------------------------------------------
-inline FWindow* FWindow::windowWidgetAt (const FPoint& pos)
-{ return windowWidgetAt(pos.getX(), pos.getY()); }
+inline FWindow* FWindow::getWindowWidgetAt (const FPoint& pos)
+{ return getWindowWidgetAt (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline bool FWindow::raiseWindow()
@@ -117,4 +118,3 @@ inline bool FWindow::isActiveWindow() const
 
 
 #endif  // _FWINDOW_H
-

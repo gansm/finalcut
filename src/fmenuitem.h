@@ -110,6 +110,14 @@ class FMenuItem : public FWidget
 
 // FMenuItem inline functions
 //----------------------------------------------------------------------
+inline FWidget* FMenuItem::getSuperMenu() const
+{ return super_menu; }
+
+//----------------------------------------------------------------------
+inline void FMenuItem::setSuperMenu (FWidget* smenu)
+{ super_menu = smenu; }
+
+//----------------------------------------------------------------------
 inline FString FMenuItem::getText() const
 { return text; }
 

@@ -165,15 +165,48 @@ bool FMenu::isMenu (FWidget* w) const
 }
 
 //----------------------------------------------------------------------
-FWidget* FMenu::getSuperMenu() const
+void FMenu::hideSubMenus()
 {
-  return super_menu;
+  // hide all sub-menus
+  if ( selectedListItem )
+  {
+    if ( selectedListItem->hasMenu() )
+    {
+      FMenu* m = selectedListItem->getMenu();
+      m->hideSubMenus();
+      m->hide();
+    }
+    selectedListItem->unsetSelected();
+    selectedListItem = 0;
+  }
 }
 
 //----------------------------------------------------------------------
-void FMenu::setSuperMenu (FWidget* smenu)
+void FMenu::hideSuperMenus()
 {
-  super_menu = smenu;
+  // hide all menus to the top
+  FWidget* super = getSuperMenu();
+  if ( super )
+  {
+    if ( isMenuBar(super) )
+    {
+      FMenuBar* mb = reinterpret_cast<FMenuBar*>(super);
+      FMenuItem* selectedMenuItem = mb->selectedMenuItem;
+
+      if ( selectedMenuItem )
+      {
+        selectedMenuItem->unsetSelected();
+        selectedMenuItem = 0;
+        mb->redraw();
+      }
+    }
+    else if ( isMenu(super) )
+    {
+      FMenu* m = reinterpret_cast<FMenu*>(super);
+      m->hide();
+      m->hideSuperMenus();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -467,7 +500,6 @@ void FMenu::onMouseUp (FMouseEvent* ev)
     if ( ! itemlist.empty() )
     {
       std::vector<FMenuItem*>::const_iterator iter, end;
-      bool focus_changed = false;
       FPoint mouse_pos;
 
       iter = itemlist.begin();
@@ -492,14 +524,14 @@ void FMenu::onMouseUp (FMouseEvent* ev)
              && mouse_x <= x2
              && mouse_y == y )
           {
+            unselectItemInList();
+            hide();
+            hideSuperMenus();
             (*iter)->processClicked();
-            focus_changed = true;
           }
         }
         ++iter;
       }
-      if ( focus_changed )
-        redraw();
     }
   }
 }
@@ -607,7 +639,13 @@ void FMenu::show()
 //----------------------------------------------------------------------
 void FMenu::hide()
 {
-  FWindow::hide();
+  if ( isVisible() )
+  {
+    FWindow::hide();
+    restoreVTerm (getGeometryGlobalShadow());
+    updateTerminal();
+    flush_out();
+  }
 }
 
 //----------------------------------------------------------------------

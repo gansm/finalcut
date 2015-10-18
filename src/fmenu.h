@@ -61,6 +61,8 @@ class FMenu : public FWindow, public FMenuList
    bool       isMenu (FWidget*) const;
    FWidget*   getSuperMenu() const;
    void       setSuperMenu (FWidget*);
+   void       hideSubMenus();
+   void       hideSuperMenus();
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawBorder();
@@ -112,6 +114,14 @@ class FMenu : public FWindow, public FMenuList
 
 
 // FMenu inline functions
+//----------------------------------------------------------------------
+inline FWidget* FMenu::getSuperMenu() const
+{ return super_menu; }
+
+//----------------------------------------------------------------------
+inline void FMenu::setSuperMenu (FWidget* smenu)
+{ super_menu = smenu; }
+
 //----------------------------------------------------------------------
 inline const char* FMenu::getClassName() const
 { return "FMenu"; }

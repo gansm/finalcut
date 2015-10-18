@@ -1,3 +1,6 @@
+2015-10-18  Markus Gans  <guru.mail@muenster.de>
+	* Hidden windows are now non-clickable
+
 2015-10-17  Markus Gans  <guru.mail@muenster.de>
 	* More faster header inline code
 	* Improve getXTermFont() and getXTermTitle()

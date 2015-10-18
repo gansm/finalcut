@@ -87,7 +87,7 @@ void FWindow::hide()
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::windowWidgetAt(int x, int y)
+FWindow* FWindow::getWindowWidgetAt(int x, int y)
 {
   if ( statusBar() && statusBar()->getGeometryGlobal().contains(x,y) )
     return statusBar();
@@ -104,8 +104,13 @@ FWindow* FWindow::windowWidgetAt(int x, int y)
     do
     {
       --iter;
-      if ( *iter && (*iter)->getGeometryGlobal().contains(x,y) )
-        return static_cast<FWindow*>(*iter);
+      if ( *iter )
+      {
+        FWindow* w = static_cast<FWindow*>(*iter);
+        if ( ! w->isHiddenWindow()
+           && w->getGeometryGlobal().contains(x,y) )
+          return w;
+      }
     }
     while ( iter != begin );
   }
@@ -360,4 +365,14 @@ bool FWindow::activateWindow(bool on)
     FApplication::active_window = this;
 
   return window_active = (on) ? true : false;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::isHiddenWindow() const
+{
+  term_area* area = getVWin();
+  if ( area )
+    return ! area->visible;
+  else
+    return false;
 }

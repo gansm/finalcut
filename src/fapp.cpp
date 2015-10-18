@@ -948,7 +948,7 @@ void FApplication::processMouseEvent()
         || b_state.wheel_up == Pressed
         || b_state.wheel_down == Pressed ) )
   {
-    FWidget* window = FWindow::windowWidgetAt (*mouse);
+    FWidget* window = FWindow::getWindowWidgetAt (*mouse);
     if ( window )
     {
       FWidget* child = childWidgetAt (window, *mouse);

@@ -76,6 +76,7 @@ class FMenuBar : public FWindow, public FMenuList
    void cb_item_deactivated (FWidget*, void*);
 
  private:
+   friend class FMenu;
    friend class FMenuItem;
 };
 #pragma pack(pop)

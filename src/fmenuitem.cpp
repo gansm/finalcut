@@ -182,18 +182,6 @@ bool FMenuItem::isMenu (FWidget* w) const
 }
 
 //----------------------------------------------------------------------
-FWidget* FMenuItem::getSuperMenu() const
-{
-  return super_menu;
-}
-
-//----------------------------------------------------------------------
-void FMenuItem::setSuperMenu (FWidget* smenu)
-{
-  super_menu = smenu;
-}
-
-//----------------------------------------------------------------------
 void FMenuItem::processActivate()
 {
   emitCallback("activate");

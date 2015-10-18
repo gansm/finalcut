@@ -536,10 +536,9 @@ void FMenuBar::cb_item_activated (FWidget* widget, void*)
       menu->show();
       raiseWindow(menu);
       menu->redraw();
+      updateTerminal();
+      flush_out();
     }
-
-    updateTerminal();
-    flush_out();
   }
 }
 
@@ -551,12 +550,6 @@ void FMenuBar::cb_item_deactivated (FWidget* widget, void*)
   if ( menuitem->hasMenu() )
   {
     FMenu* menu = menuitem->getMenu();
-    if ( menu->isVisible() )
-      menu->hide();
-
-    restoreVTerm (menu->getGeometryGlobalShadow());
-
-    updateTerminal();
-    flush_out();
+    menu->hide();
   }
 }
