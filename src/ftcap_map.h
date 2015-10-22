@@ -48,6 +48,7 @@ static tcap_map tcap[] =
   { 0, "cv" },  // row_address            -> vertical position #1 absolute (P)
   { 0, "vs" },  // cursor_visible         -> make cursor very visible
   { 0, "vi" },  // cursor_invisible       -> make cursor invisible
+  { 0, "ve" },  // cursor_normal          -> make cursor appear normal (undo vi/vs)
   { 0, "up" },  // cursor_up              -> up one line
   { 0, "do" },  // cursor_down            -> down one line
   { 0, "le" },  // cursor_left            -> move left one space
@@ -120,6 +121,7 @@ enum termcaps
   t_row_address,
   t_cursor_visible,
   t_cursor_invisible,
+  t_cursor_normal,
   t_cursor_up,
   t_cursor_down,
   t_cursor_left,

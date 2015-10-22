@@ -107,7 +107,8 @@ void FMenuItem::init (FWidget* parent)
       if ( menubar_ptr )
         menubar_ptr->menu_dimension();
 
-      //addAccelerator (item->getKey(), item);
+      // Meta + hotkey
+      addAccelerator (0x20000e0+tolower(hotkey), this);
 
       this->addCallback
       (
@@ -203,13 +204,19 @@ void FMenuItem::processClicked()
 //----------------------------------------------------------------------
 void FMenuItem::onAccel (FAccelEvent* ev)
 {
-  if ( isSelected() )
+  if ( isActivated() && ! isSelected() )
   {
-    unsetSelected();
-    FWidget* w = reinterpret_cast<FWidget*>(getSuperMenu());
-    if ( w && isMenuBar(w) )
-      w->redraw();
-    ev->accept();
+    if ( super_menu && isMenuBar(super_menu) )
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mb )
+      {
+        setSelected();
+        mb->selectedMenuItem = this;
+        mb->redraw();
+        ev->accept();
+      }
+    }
   }
 }
 

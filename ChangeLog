@@ -1,3 +1,6 @@
+2015-10-22  Markus Gans  <guru.mail@muenster.de>
+	* Make cursor visibility more standards compliant.
+
 2015-10-18  Markus Gans  <guru.mail@muenster.de>
 	* Hidden windows are now non-clickable
 

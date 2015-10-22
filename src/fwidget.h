@@ -331,6 +331,8 @@ class FWidget : public FObject, public FTerm
    virtual void     setFocusWidget(FWidget*);
    static FWidget*  getClickedWidget();
    static void      setClickedWidget(FWidget*);
+   static FWidget*  getOpenMenu();
+   static void      setOpenMenu(FWidget*);
    int              numOfFocusableChildren();
    FWidget*         parentWidget() const;
    bool             isRootWidget() const;

@@ -197,6 +197,7 @@ void FMenu::hideSuperMenus()
       {
         selectedMenuItem->unsetSelected();
         selectedMenuItem = 0;
+        mb->mouse_down = false;
         mb->redraw();
       }
     }
@@ -207,6 +208,22 @@ void FMenu::hideSuperMenus()
       m->hideSuperMenus();
     }
   }
+}
+
+//----------------------------------------------------------------------
+bool FMenu::containsMenuStructure (int x, int y) const
+{
+  // Check mouse click position for item, menu and all sub menus
+  FMenuItem* si = selectedListItem;
+
+  if ( getGeometryGlobal().contains(x,y) )
+    return true;
+  else if ( si && si->hasMenu() )
+    return si->getMenu()->getGeometryGlobal().contains(x,y);
+  else if ( item && item->getGeometryGlobal().contains(x,y) )
+    return true;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -414,31 +431,13 @@ void FMenu::processActivate()
   emitCallback("activate");
 }
 
+
 // public methods of FMenu
 //----------------------------------------------------------------------
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != LeftButton )
-  {
-    mouse_down = false;
-
-    if ( ! itemlist.empty() )
-    {
-      std::vector<FMenuItem*>::const_iterator iter, end;
-      iter = itemlist.begin();
-      end = itemlist.end();
-
-      while ( iter != end )
-      {
-        (*iter)->unsetSelected();
-        if ( selectedListItem == *iter )
-          selectedListItem = 0;
-        ++iter;
-      }
-    }
-    redraw();
     return;
-  }
 
   if ( mouse_down )
     return;
@@ -532,6 +531,10 @@ void FMenu::onMouseUp (FMouseEvent* ev)
         }
         ++iter;
       }
+      // Click on a non-FMenuItem (border or separator line)
+      unselectItemInList();
+      hide();
+      hideSuperMenus();
     }
   }
 }
@@ -645,6 +648,12 @@ void FMenu::hide()
     restoreVTerm (getGeometryGlobalShadow());
     updateTerminal();
     flush_out();
+
+    FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+    if ( open_menu && open_menu != this )
+      open_menu->hide();
+    setOpenMenu(0);
+    mouse_down = false;
   }
 }
 
@@ -687,7 +696,23 @@ void FMenu::cb_menuitem_activated (FWidget* widget, void*)
 
   if ( menuitem->hasMenu() )
   {
-    //beep();
+    FMenu* menu = menuitem->getMenu();
+    if ( ! menu->isVisible() )
+    {
+      FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+      if ( open_menu && open_menu != menu )
+        open_menu->hide();
+      setOpenMenu(menu);
+
+      menu->setVisible();
+      menu->show();
+      raiseWindow(menu);
+      menu->redraw();
+      updateTerminal();
+      flush_out();
+      if ( ! isMenu(getSuperMenu()) )
+        setOpenMenu(menu);
+    }
   }
 }
 

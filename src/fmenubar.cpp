@@ -532,12 +532,18 @@ void FMenuBar::cb_item_activated (FWidget* widget, void*)
     FMenu* menu = menuitem->getMenu();
     if ( ! menu->isVisible() )
     {
+      FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+      if ( open_menu && open_menu != menu )
+        open_menu->hide();
+      setOpenMenu(menu);
+
       menu->setVisible();
       menu->show();
       raiseWindow(menu);
       menu->redraw();
       updateTerminal();
       flush_out();
+
     }
   }
 }

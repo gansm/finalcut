@@ -63,6 +63,8 @@ class FMenu : public FWindow, public FMenuList
    void       setSuperMenu (FWidget*);
    void       hideSubMenus();
    void       hideSuperMenus();
+   bool       containsMenuStructure (const FPoint&) const;
+   bool       containsMenuStructure (int, int) const;
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawBorder();
@@ -108,6 +110,7 @@ class FMenu : public FWindow, public FMenuList
    void       cb_menuitem_deactivated (FWidget*, void*);
 
  private:
+   friend class FApplication;
    friend class FMenuItem;
 };
 #pragma pack(pop)
@@ -121,6 +124,10 @@ inline FWidget* FMenu::getSuperMenu() const
 //----------------------------------------------------------------------
 inline void FMenu::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
+
+//----------------------------------------------------------------------
+inline bool FMenu::containsMenuStructure (const FPoint& p) const
+{ return containsMenuStructure (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------
 inline const char* FMenu::getClassName() const

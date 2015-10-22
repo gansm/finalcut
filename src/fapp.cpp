@@ -2,6 +2,7 @@
 // Provides: class FApplication
 
 #include "fapp.h"
+#include "fmenu.h"
 #include "fwindow.h"
 
 // global application object
@@ -16,6 +17,7 @@ FWidget* FApplication::main_widget    = 0;  // main application widget
 FWidget* FApplication::active_window  = 0;  // the active window
 FWidget* FApplication::focus_widget   = 0;  // has keyboard input focus
 FWidget* FApplication::clicked_widget = 0;  // is focused by click
+FWidget* FApplication::open_menu      = 0;  // currently open menu
 FPoint*  FApplication::zero_point     = 0;  // zero point (x=0, y=0)
 int      FApplication::quit_code      = 0;
 bool     FApplication::quit_now       = false;
@@ -956,6 +958,19 @@ void FApplication::processMouseEvent()
     }
   }
 
+  if ( open_menu && ! b_state.mouse_moved )
+  {
+    FMenu* menu = static_cast<FMenu*>(open_menu);
+
+    if ( ! menu->containsMenuStructure(*mouse) )
+    {
+      menu->unselectItemInList();
+      menu->hide();
+      menu->hideSubMenus();
+      menu->hideSuperMenus();
+    }
+  }
+
   if ( clicked_widget )
   {
     FPoint localMousePos;
@@ -1022,7 +1037,9 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , LeftButton | key_state );
         FWidget* released_widget = clicked_widget;
-        clicked_widget = 0;
+        if (  b_state.right_button != Pressed
+           && b_state.middle_button != Pressed )
+          clicked_widget = 0;
         sendEvent (released_widget, &m_up_ev);
       }
 
@@ -1041,7 +1058,9 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , RightButton | key_state );
         FWidget* released_widget = clicked_widget;
-        clicked_widget = 0;
+        if (  b_state.left_button != Pressed
+           && b_state.middle_button != Pressed )
+          clicked_widget = 0;
         sendEvent (released_widget, &m_up_ev);
       }
 
@@ -1063,6 +1082,8 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , MiddleButton | key_state );
         FWidget* released_widget = clicked_widget;
+        if (  b_state.right_button != Pressed
+           && b_state.left_button != Pressed )
         clicked_widget = 0;
         sendEvent (released_widget, &m_up_ev);
       }

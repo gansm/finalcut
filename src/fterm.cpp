@@ -110,11 +110,12 @@ FTerm::term_area*      FTerm::vstatusbar         = 0;
 FTerm::term_area*      FTerm::last_area          = 0;
 std::queue<int>*       FTerm::output_buffer      = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char     = 0;
-std::map<std::string,fc::encoding>*
+std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set       = 0;
 console_font_op        FTerm::screenFont;
 unimapdesc             FTerm::screenUnicodeMap;
-fc::console_cursor_style  FTerm::consoleCursorStyle;
+fc::console_cursor_style \
+                       FTerm::consoleCursorStyle;
 
 
 //----------------------------------------------------------------------
@@ -1015,6 +1016,16 @@ void FTerm::init_termcaps()
     // read termcap output strings
     for (int i=0; tcap[i].tname[0] != 0; i++)
       tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+
+    // set invisible cursor for cygwin terminal
+    if ( cygwin_terminal && ! tcap[t_cursor_invisible].string )
+      tcap[t_cursor_invisible].string = \
+        const_cast<char*>("\033[?25l");
+
+    // set visible cursor for cygwin terminal
+    if ( cygwin_terminal && ! tcap[t_cursor_visible].string )
+      tcap[t_cursor_visible].string = \
+        const_cast<char*>("\033[?25h");
 
     // set ansi blink for cygwin terminal
     if ( cygwin_terminal && ! tcap[t_enter_blink_mode].string )
@@ -3321,30 +3332,27 @@ bool FTerm::setTermUnderline (bool on)
 //----------------------------------------------------------------------
 bool FTerm::hideCursor(bool on)
 {
-  char *vi, *vs;
+  char *vi, *vs, *ve;
 
   if ( on == hiddenCursor )
     return hiddenCursor;
 
   vi = tcap[t_cursor_invisible].string;
   vs = tcap[t_cursor_visible].string;
+  ve = tcap[t_cursor_normal].string;
 
   if ( on )
   {
     if ( vi )
       appendOutputBuffer (vi);
-    else
-      appendOutputBuffer ("\033[?25l");
     hiddenCursor = true;  // global
   }
   else
   {
     if ( vs )
       appendOutputBuffer (vs);
-    else if ( vi ) // putty-256color
-      appendOutputBuffer ("\033[?12;25h");
-    else
-      appendOutputBuffer ("\033[?25h");
+    else if ( ve )
+      appendOutputBuffer (ve);
     hiddenCursor = false;
   }
   flush_out();

@@ -113,6 +113,7 @@ class FApplication : public FWidget
    static FWidget* active_window;
    static FWidget* focus_widget;
    static FWidget* clicked_widget;
+   static FWidget* open_menu;
 
  private:
    FApplication (const FApplication&);             // Disabled copy constructor
