@@ -1054,7 +1054,7 @@ void FTerm::init_termcaps()
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
     }
-    else if ( tera_terminal && color256 )
+    else if ( tera_terminal )
     {
       tcap[t_set_a_foreground].string = \
         const_cast<char*>("\033[38;5;%p1%dm");
@@ -1497,10 +1497,10 @@ void FTerm::init()
   setXTermMouseBackground("rgb:ffff/ffff/ffff");
   setXTermMouseForeground ("rgb:0000/0000/0000");
   if ( ! gnome_terminal )
-    setXTermCursor("rgb:ffff/ffff/ffff");
-  if ( ! gnome_terminal && ! mintty_terminal )
+    setXTermCursorColor("rgb:ffff/ffff/ffff");
+  if ( ! mintty_terminal )
   {
-    // gnome-terminal and mintty can't reset these settings
+    // mintty can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
     setXTermForeground("rgb:0000/0000/0000");
     setXTermHighlightBackground("rgb:b1b1/b1b1/b1b1");
@@ -1587,15 +1587,14 @@ void FTerm::finish()
     putstring (tcap[t_exit_attribute_mode].string);
     fflush(stdout);
   }
-  if ( ! gnome_terminal )
-  {
-    setXTermCursor("rgb:b1b1/b1b1/b1b1");
-    resetXTermMouseForeground();
-    resetXTermMouseBackground();
-    resetXTermCursor();
-    resetXTermForeground();
-    resetXTermBackground();
-  }
+
+  // reset xterm color settings to default
+  setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
+  resetXTermMouseForeground();
+  resetXTermMouseBackground();
+  resetXTermCursorColor();
+  resetXTermForeground();
+  resetXTermBackground();
   setXTermCursorStyle(fc::steady_block);
 
   if ( max_color >= 16 && ! kde_konsole && ! tera_terminal )
@@ -2773,7 +2772,7 @@ void FTerm::setXTermBackground (const FString& bg)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setXTermCursor (const FString& cc)
+void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
   if ( xterm || mintty_terminal || urxvt_terminal )
@@ -2822,7 +2821,7 @@ void FTerm::resetXTermForeground()
   // Reset the VT100 text foreground color
   if ( xterm )
   {
-    putstring("\033]110;\07");
+    putstring("\033]110\07");
     fflush(stdout);
   }
 }
@@ -2833,18 +2832,18 @@ void FTerm::resetXTermBackground()
   // Reset the VT100 text background color
   if ( xterm )
   {
-    putstring("\033]111;\07");
+    putstring("\033]111\07");
     fflush(stdout);
   }
 }
 
 //----------------------------------------------------------------------
-void FTerm::resetXTermCursor()
+void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
   if ( xterm )
   {
-    putstring("\033]112;\07");
+    putstring("\033]112\07");
     fflush(stdout);
   }
 }
@@ -2855,7 +2854,7 @@ void FTerm::resetXTermMouseForeground()
   // Reset the mouse foreground color
   if ( xterm )
   {
-    putstring("\033]113;\07");
+    putstring("\033]113\07");
     fflush(stdout);
   }
 }
@@ -2866,7 +2865,7 @@ void FTerm::resetXTermMouseBackground()
   // Reset the mouse background color
   if ( xterm )
   {
-    putstring("\033]114;\07");
+    putstring("\033]114\07");
     fflush(stdout);
   }
 }

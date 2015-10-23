@@ -204,6 +204,7 @@ void FMenuItem::processClicked()
 //----------------------------------------------------------------------
 void FMenuItem::onAccel (FAccelEvent* ev)
 {
+  beep(); //  activate by key
   if ( isActivated() && ! isSelected() )
   {
     if ( super_menu && isMenuBar(super_menu) )

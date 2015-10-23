@@ -263,19 +263,26 @@ void FListBox::drawList()
 
     if ( isCurrentLine )
     {
+      if ( isFocus && getMaxColor() < 16 )
+        setBold();
       if ( isLineSelected )
       {
         if ( isMonochron() )
           setBold();
+        else if ( isFocus )
+          setColor ( wc.selected_current_element_focus_fg
+                   , wc.selected_current_element_focus_bg );
         else
           setColor ( wc.selected_current_element_fg
                    , wc.selected_current_element_bg );
+        setCursorPos ( xpos+xmin+1
+                     , ypos+ymin+int(y) ); // first character
       }
       else
       {
         if ( isMonochron() )
           unsetBold();
-        else if ( isFocus )
+        if ( isFocus )
         {
           setColor ( wc.current_element_focus_fg
                    , wc.current_element_focus_bg );
@@ -297,8 +304,13 @@ void FListBox::drawList()
       if ( isMonochron() )
         setReverse(false);
     }
-    else if ( isMonochron() )
-      setReverse(true);
+    else
+    {
+      if ( isFocus && getMaxColor() < 16 )
+        unsetBold();
+      if ( isMonochron() )
+        setReverse(true);
+    }
 
     // print the entry
     if ( isMonochron() && isCurrentLine )

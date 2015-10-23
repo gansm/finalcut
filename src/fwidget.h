@@ -152,6 +152,8 @@ class FWidget : public FObject, public FTerm
      uChar current_element_fg;
      uChar current_element_bg;
      uChar current_inc_search_element_fg;
+     uChar selected_current_element_focus_fg;
+     uChar selected_current_element_focus_bg;
      uChar selected_current_element_fg;
      uChar selected_current_element_bg;
      uChar label_fg;

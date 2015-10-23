@@ -206,6 +206,7 @@ void FDialog::drawTitleBar()
       setReverse(true);
   }
 
+
   if ( isNewFont() )
   {
     print (fc::NF_rev_menu_button1);
@@ -218,6 +219,8 @@ void FDialog::drawTitleBar()
     print (" - ");
 
   // fill with spaces (left of the title)
+  if ( getMaxColor() < 16 )
+    setBold();
   if ( isActiveWindow() )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
@@ -236,6 +239,8 @@ void FDialog::drawTitleBar()
   for (; x+1+int(length) < width-1; x++)
     print (' ');
 
+  if ( getMaxColor() < 16 )
+    unsetBold();
   if ( isMonochron() )
     setReverse(false);
 

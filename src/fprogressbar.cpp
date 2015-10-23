@@ -43,7 +43,7 @@ void FProgressbar::drawBar()
 {
   int i = 1;
   float length = float(BarLength*percentage)/100;
-
+  
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   if ( isMonochron() )
   {
@@ -129,6 +129,7 @@ void FProgressbar::drawBar()
   }
   if ( isMonochron() )
     setReverse(false);
+
   updateTerminal();
   flush_out();
 }

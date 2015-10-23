@@ -93,6 +93,7 @@ void FTextView::draw()
       setUpdateVTerm(true);
     }
   }
+  setCursorPos(1,1);
   updateTerminal();
   flush_out();
 }

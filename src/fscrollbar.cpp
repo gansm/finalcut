@@ -80,11 +80,11 @@ void FScrollbar::init()
 //----------------------------------------------------------------------
 void FScrollbar::draw()
 {
-  //setUpdateVTerm(false);
+  setUpdateVTerm(false);
   drawButtons();
   currentSliderPos = -1;
   drawBar();
-  //setUpdateVTerm(true);
+  setUpdateVTerm(true);
 }
 
 //----------------------------------------------------------------------

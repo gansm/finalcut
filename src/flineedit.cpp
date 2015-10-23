@@ -55,7 +55,7 @@ FLineEdit::~FLineEdit()  // destructor
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
     if ( isUrxvtTerminal() )
-      setXTermCursor("rgb:ffff/ffff/ffff");
+      setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
   if ( hasFocus() )
     hideCursor();
@@ -175,6 +175,10 @@ void FLineEdit::drawInputField()
     else
       print (fc::RightHalfBlock); // ▐
   }
+
+  if ( isActiveFocus && getMaxColor() < 16 )
+    setBold();
+
   setColor (foregroundColor, backgroundColor);
   show_text = text.mid(uInt(1+offset), uInt(width-2));
 
@@ -193,6 +197,10 @@ void FLineEdit::drawInputField()
     print (' ');
     x++;
   }
+
+  if ( isActiveFocus && getMaxColor() < 16 )
+    unsetBold();
+
   if ( isMonochron() )
   {
     setReverse(false);
@@ -466,7 +474,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         setKDECursor(fc::UnderlineCursor);
         setConsoleCursor(fc::underscore_cursor);
         if ( isUrxvtTerminal() )
-          setXTermCursor("rgb:ffff/ffff/ffff");
+          setXTermCursorColor("rgb:ffff/ffff/ffff");
       }
       else
       {
@@ -474,7 +482,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         setKDECursor(fc::BlockCursor);
         setConsoleCursor(fc::full_block_cursor);
         if ( isUrxvtTerminal() )
-          setXTermCursor("rgb:0000/0000/0000");
+          setXTermCursorColor("rgb:0000/0000/0000");
       }
       ev->accept();
       break;
@@ -717,7 +725,7 @@ void FLineEdit::onHide (FHideEvent*)
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
     if ( isUrxvtTerminal() )
-      setXTermCursor("rgb:ffff/ffff/ffff");
+      setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
   if ( hasFocus() )
     hideCursor();
@@ -735,7 +743,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
     if ( isUrxvtTerminal() )
-      setXTermCursor("rgb:ffff/ffff/ffff");
+      setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
   else
   {
@@ -743,7 +751,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
     setKDECursor(fc::BlockCursor);
     setConsoleCursor(fc::full_block_cursor);
     if ( isUrxvtTerminal() )
-      setXTermCursor("rgb:0000/0000/0000");
+      setXTermCursorColor("rgb:0000/0000/0000");
   }
   if ( statusBar() )
   {
@@ -768,7 +776,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
     if ( isUrxvtTerminal() )
-      setXTermCursor("rgb:ffff/ffff/ffff");
+      setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
 
   hideCursor();

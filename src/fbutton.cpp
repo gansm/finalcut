@@ -185,7 +185,7 @@ void FButton::draw()
   if ( ! is_Active && isMonochron() )
     space = fc::MediumShade;  // ▒
 
-  if ( (isMonochron() || getMaxColor() < 16) && is_ActiveFocus )
+  if ( isMonochron() && is_ActiveFocus )
   {
     txt = "<" + txt + ">";
     length = int(txt.getLength());
@@ -291,7 +291,7 @@ void FButton::draw()
     setCursorPos ( xpos+xmin-1+margin+i+hotkeypos
                  , ypos+ymin-1+j ); // hotkey
 
-  if ( isMonochron() && is_ActiveFocus )
+  if ( (isMonochron() || getMaxColor() < 16) && is_ActiveFocus )
     setBold();
 
   for (int z=0; x < i+length && z < width; z++,x++)
@@ -312,7 +312,7 @@ void FButton::draw()
     }
   }
 
-  if ( isMonochron() && is_ActiveFocus )
+  if ( (isMonochron() || getMaxColor() < 16) && is_ActiveFocus )
     unsetBold();
 
   for (x=i+length; x < width-1; x++)
