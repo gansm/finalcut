@@ -1392,24 +1392,26 @@ void FTerm::init()
   // stop non-blocking stdin
   unsetNonBlockingInput();
 
+  // Test if the terminal is a xterm
+  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
+    xterm = true;
+  else
+    xterm = false;
+    
+  // Test for Linux console
+  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+    linux_terminal = true;
+  else
+    linux_terminal = false;
+
   // set the new environment variable TERM
   if ( new_termtype )
   {
     setenv(const_cast<char*>("TERM"), new_termtype, 1);
     strncpy (termtype, new_termtype, strlen(new_termtype)+1);
   }
-
-  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
-    xterm = true;
-  else
-    xterm = false;
-
-  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
-    linux_terminal = true;
-  else
-    linux_terminal = false;
 
   // Initializes variables for the current terminal
   init_termcaps();
@@ -1541,6 +1543,7 @@ void FTerm::init()
     resetColorMap();
     saveColorMap();
 
+    setPalette (fc::Black, 0x00, 0x00, 0x00);
     setPalette (fc::Blue, 0x22, 0x22, 0xb2);
     setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
     setPalette (fc::Red, 0xb2, 0x18, 0x18);
@@ -1606,6 +1609,7 @@ void FTerm::finish()
     setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
     setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
 
+    resetXTermColors();
     resetColorMap();
   }
   if ( mintty_terminal )
@@ -2811,6 +2815,17 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
   if ( xterm || urxvt_terminal )
   {
     putstringf ("\033]17;%s\07", hbg.c_str());
+    fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermColors()
+{
+  // Reset the entire color table
+  if ( xterm )
+  {
+    putstringf ("\033]104\07");
     fflush(stdout);
   }
 }

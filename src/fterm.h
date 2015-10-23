@@ -319,6 +319,7 @@ class FTerm
    static void    setXTermMouseForeground (const FString&);
    static void    setXTermMouseBackground (const FString&);
    static void    setXTermHighlightBackground (const FString&);
+   static void    resetXTermColors();
    static void    resetXTermForeground();
    static void    resetXTermBackground();
    static void    resetXTermCursorColor();
