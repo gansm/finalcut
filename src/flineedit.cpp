@@ -482,7 +482,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         setKDECursor(fc::BlockCursor);
         setConsoleCursor(fc::full_block_cursor);
         if ( isUrxvtTerminal() )
-          setXTermCursorColor("rgb:0000/0000/0000");
+          setXTermCursorColor("rgb:eeee/0000/0000");
       }
       ev->accept();
       break;

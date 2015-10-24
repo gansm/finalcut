@@ -306,10 +306,10 @@ void FListBox::drawList()
     }
     else
     {
-      if ( isFocus && getMaxColor() < 16 )
-        unsetBold();
       if ( isMonochron() )
         setReverse(true);
+      else if ( isFocus && getMaxColor() < 16 )
+        unsetBold();
     }
 
     // print the entry

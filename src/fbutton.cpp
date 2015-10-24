@@ -291,7 +291,7 @@ void FButton::draw()
     setCursorPos ( xpos+xmin-1+margin+i+hotkeypos
                  , ypos+ymin-1+j ); // hotkey
 
-  if ( (isMonochron() || getMaxColor() < 16) && is_ActiveFocus )
+  if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
   for (int z=0; x < i+length && z < width; z++,x++)
@@ -299,9 +299,13 @@ void FButton::draw()
     if ( (z == hotkeypos) && is_Active )
     {
       setColor (button_hotkey_fg, button_bg);
+      if ( ! is_ActiveFocus && getMaxColor() < 16 )
+        setBold();
       if ( ! is_NoUnderline )
         setUnderline();
       print ( ButtonText[z] );
+      if ( ! is_ActiveFocus && getMaxColor() < 16 )
+        unsetBold();
       if ( ! is_NoUnderline )
         unsetUnderline();
       setColor (button_fg, button_bg);
@@ -312,7 +316,7 @@ void FButton::draw()
     }
   }
 
-  if ( (isMonochron() || getMaxColor() < 16) && is_ActiveFocus )
+  if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     unsetBold();
 
   for (x=i+length; x < width-1; x++)
