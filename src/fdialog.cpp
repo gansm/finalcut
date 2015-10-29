@@ -269,7 +269,7 @@ void FDialog::drawDialogShadow()
     if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
     {
       FTerm::char_data ch;
-      // left of the shaddow ▀▀
+      // left of the shadow ▀▀
       gotoxy (xpos+xmin-1, ypos+ymin-1+height);
       for (int x=0; x <= 1; x++)
       {
@@ -289,7 +289,7 @@ void FDialog::drawDialogShadow()
 
     FTerm::char_data ch;
     ch = getCoveredCharacter (xpos+xmin-1, ypos+ymin-1+height, this);
-    // left of the shaddow ▀▀
+    // left of the shadow ▀▀
     gotoxy (xpos+xmin-1, ypos+ymin-1+height);
 
     if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
@@ -608,7 +608,7 @@ void FDialog::onWindowRaised (FEvent*)
   if ( window_list->empty() )
     return;
 
-  // redraw shaddow of the other windows
+  // redraw shadow of the other windows
   iter = window_list->begin();
   end  = window_list->end();
 

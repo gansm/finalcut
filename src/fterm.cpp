@@ -1398,7 +1398,7 @@ void FTerm::init()
     xterm = true;
   else
     xterm = false;
-    
+
   // Test for Linux console
   if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
      || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
@@ -1538,7 +1538,10 @@ void FTerm::init()
   if ( kde_konsole )
     setKDECursor(fc::UnderlineCursor);
 
-  if ( max_color >= 16 && ! kde_konsole && ! tera_terminal )
+  if (  max_color >= 16
+     && ! cygwin_terminal
+     && ! kde_konsole
+     && ! tera_terminal )
   {
     resetColorMap();
     saveColorMap();

@@ -84,7 +84,8 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
 	string-operations$(EXEEXT) mandelbrot$(EXEEXT) \
-	calculator$(EXEEXT) watch$(EXEEXT) timer$(EXEEXT) ui$(EXEEXT)
+	calculator$(EXEEXT) watch$(EXEEXT) keyboard$(EXEEXT) \
+	timer$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -116,6 +117,9 @@ hello_LDADD = $(LDADD)
 am_input_dialog_OBJECTS = input-dialog.$(OBJEXT)
 input_dialog_OBJECTS = $(am_input_dialog_OBJECTS)
 input_dialog_LDADD = $(LDADD)
+am_keyboard_OBJECTS = keyboard.$(OBJEXT)
+keyboard_OBJECTS = $(am_keyboard_OBJECTS)
+keyboard_LDADD = $(LDADD)
 am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
@@ -166,13 +170,13 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(hello_SOURCES) \
-	$(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
-	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
-	$(watch_SOURCES)
+	$(input_dialog_SOURCES) $(keyboard_SOURCES) \
+	$(mandelbrot_SOURCES) $(string_operations_SOURCES) \
+	$(timer_SOURCES) $(ui_SOURCES) $(watch_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
-	$(hello_SOURCES) $(input_dialog_SOURCES) $(mandelbrot_SOURCES) \
-	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
-	$(watch_SOURCES)
+	$(hello_SOURCES) $(input_dialog_SOURCES) $(keyboard_SOURCES) \
+	$(mandelbrot_SOURCES) $(string_operations_SOURCES) \
+	$(timer_SOURCES) $(ui_SOURCES) $(watch_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -328,6 +332,7 @@ string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
+keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
 ui_SOURCES = ui.cpp
 all: all-am
@@ -390,6 +395,10 @@ input-dialog$(EXEEXT): $(input_dialog_OBJECTS) $(input_dialog_DEPENDENCIES) $(EX
 	@rm -f input-dialog$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(input_dialog_OBJECTS) $(input_dialog_LDADD) $(LIBS)
 
+keyboard$(EXEEXT): $(keyboard_OBJECTS) $(keyboard_DEPENDENCIES) $(EXTRA_keyboard_DEPENDENCIES) 
+	@rm -f keyboard$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(keyboard_OBJECTS) $(keyboard_LDADD) $(LIBS)
+
 mandelbrot$(EXEEXT): $(mandelbrot_OBJECTS) $(mandelbrot_DEPENDENCIES) $(EXTRA_mandelbrot_DEPENDENCIES) 
 	@rm -f mandelbrot$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mandelbrot_OBJECTS) $(mandelbrot_LDADD) $(LIBS)
@@ -420,6 +429,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hello.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-dialog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyboard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string-operations.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@

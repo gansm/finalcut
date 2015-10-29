@@ -172,7 +172,8 @@ class MyDialog : public FDialog
    void onClose (FCloseEvent*);
    void cb_noFunctionMsg (FWidget*, void*);
    void cb_about (FWidget*, void*);
-   void cb_info (FWidget*, void*);
+   void cb_terminfo (FWidget*, void*);
+   void cb_drives (FWidget*, void*);
    void cb_input2buttonText (FWidget*, void*);
    void cb_setTitlebar (FWidget*, void*);
    void cb_ProgressBar (FWidget*, void*);
@@ -192,19 +193,24 @@ MyDialog::MyDialog (FWidget* parent)
   , myList()
 {
   /* .--------------------------------------------. */
-  /* v      This Code is working in progress      v * /
+  /* v      This Code is working in progress      v */
 
   FMenuBar* Menubar  = new FMenuBar(this);
 
   FMenu* File        = new FMenu("&File", Menubar);
+  File->setStatusbarMessage("File management commands");
   FMenu* Edit        = new FMenu("&Edit", Menubar);
   FMenu* View        = new FMenu("&View", Menubar);
-  FMenuItem* Options  = new FMenuItem("&Options", Menubar);
-  Options->unsetActive();
+  FMenuItem* Options = new FMenuItem("&Options", Menubar);
+  Options->setDisable();
   FMenuItem* Help    = new FMenuItem("&Help", Menubar);
 
   FMenuItem* Open    = new FMenuItem("&Open...", File);
+  Open->setStatusbarMessage("Locate and open a text file");
+  FMenuItem* Line    = new FMenuItem(File);
+  Line->setSeparator();
   FMenuItem* Quit    = new FMenuItem("&Quit", File);
+  Quit->setStatusbarMessage("Exit the program");
 
   FMenuItem* Cut     = new FMenuItem("Cu&t", Edit);
   FMenuItem* Copy    = new FMenuItem("&Copy", Edit);
@@ -241,12 +247,12 @@ MyDialog::MyDialog (FWidget* parent)
   Env->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_info)
+    _METHOD_CALLBACK (this, &MyDialog::cb_terminfo)
   );
   Drive->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_info)
+    _METHOD_CALLBACK (this, &MyDialog::cb_drives)
   );
   Options->addCallback
   (
@@ -259,7 +265,7 @@ MyDialog::MyDialog (FWidget* parent)
     _METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
 
- / * ^      This Code is working in progress      ^ */
+  /* ^      This Code is working in progress      ^ */
   /* '--------------------------------------------' */
 
   FButton* MyButton1 = new FButton(this);
@@ -289,7 +295,7 @@ MyDialog::MyDialog (FWidget* parent)
   radioButtonGroup->setGeometry(3, 8, 14, 4);
   //radioButtonGroup->unsetBorder();
 
-  FRadioButton* radio1 = new FRadioButton("&Enable", radioButtonGroup);
+  FRadioButton* radio1 = new FRadioButton("E&nable", radioButtonGroup);
   radio1->setGeometry(1, 1, 7, 1);
   radio1->setStatusbarMessage("Enable button Test");
 
@@ -303,7 +309,7 @@ MyDialog::MyDialog (FWidget* parent)
   FButtonGroup* checkButtonGroup = new FButtonGroup("Options", this);
   checkButtonGroup->setGeometry(3, 12, 14, 4);
 
-  FCheckBox* check1 = new FCheckBox("&Fastmode", checkButtonGroup);
+  FCheckBox* check1 = new FCheckBox("&Bitmode", checkButtonGroup);
   check1->setGeometry(1, 1, 7, 1);
   check1->setNoUnderline();
 
@@ -313,38 +319,32 @@ MyDialog::MyDialog (FWidget* parent)
   check2->setNoUnderline();
 
   FLineEdit* MyLineEdit = new FLineEdit(this);
-  MyLineEdit->setGeometry(21, 1, 10, 1);
+  MyLineEdit->setGeometry(22, 1, 10, 1);
   MyLineEdit->setText( FString("EnTry").toLower());
   MyLineEdit->setLabelText(L"&Input:");
   MyLineEdit->setStatusbarMessage("Press Enter to set the title");
   MyLineEdit->setShadow();
 
   FButton* MyButton4 = new FButton(this);
-  MyButton4->setGeometry(19, 8, 12, 1);
-  MyButton4->setText(L"&Test");
-  MyButton4->setStatusbarMessage("Progressbar testing dialog");
+  MyButton4->setGeometry(20, 8, 12, 1);
+  MyButton4->setText(L"&Get input");
+  MyButton4->setStatusbarMessage("Take text from input field");
   MyButton4->setShadow();
-  MyButton4->setDisable();
+  MyButton4->setFocus();
 
   FButton* MyButton5 = new FButton(this);
-  MyButton5->setGeometry(19, 11, 12, 1);
-  MyButton5->setText(L"Environs");
-  MyButton5->setStatusbarMessage("Show environment settings");
+  MyButton5->setGeometry(20, 11, 12, 1);
+  MyButton5->setText(L"&Test");
+  MyButton5->setStatusbarMessage("Progressbar testing dialog");
   MyButton5->setShadow();
+  MyButton5->setDisable();
 
   FButton* MyButton6 = new FButton(this);
-  MyButton6->setGeometry(19, 14, 12, 1);
-  MyButton6->setText(L"&Get input");
-  MyButton6->setStatusbarMessage("Take text from input field");
+  MyButton6->setGeometry(20, 14, 12, 1);
+  MyButton6->setText(L"&Quit");
+  MyButton6->setStatusbarMessage("Exit the program");
   MyButton6->setShadow();
-  MyButton6->setFocus();
-
-  FButton* MyButton7 = new FButton(this);
-  MyButton7->setGeometry(19, 17, 12, 1);
-  MyButton7->setText(L"&Quit");
-  MyButton7->setStatusbarMessage("Exit the program");
-  MyButton7->setShadow();
-  MyButton7->addAccelerator('x');
+  MyButton6->addAccelerator('x');
 
   myList = new FListBox(this);
   myList->setGeometry(38, 1, 14, 17);
@@ -355,24 +355,24 @@ MyDialog::MyDialog (FWidget* parent)
     myList->insert( FString().setNumber(z) + L" placeholder" );
 
   FLabel* headline = new FLabel(this);
-  headline->setGeometry(20, 3, 10, 1);
+  headline->setGeometry(21, 3, 10, 1);
   headline->setText(L"List items");
   headline->setEmphasis();
   headline->setAlignment(fc::alignCenter);
 
   FLabel* tagged = new FLabel(L"Tagged:", this);
-  tagged->setGeometry(20, 4, 7, 1);
+  tagged->setGeometry(21, 4, 7, 1);
 
   FLabel* tagged_count = new FLabel(this);
-  tagged_count->setGeometry(28, 4, 5, 1);
+  tagged_count->setGeometry(29, 4, 5, 1);
   tagged_count->setNumber(0);
 
   FLabel* sum = new FLabel(L"Sum:", this);
-  sum->setGeometry(20, 5, 7, 3);
+  sum->setGeometry(21, 5, 7, 3);
   sum->setAlignment(fc::alignRight);
 
   FLabel* sum_count = new FLabel(this);
-  sum_count->setGeometry(28, 5, 5, 3);
+  sum_count->setGeometry(29, 5, 5, 3);
   sum_count->setNumber(myList->count());
 
   FStatusBar* statusbar = new FStatusBar(this);
@@ -401,23 +401,17 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton4->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
+    _METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
+    dynamic_cast<FWidget::data_ptr>(MyLineEdit)
   );
 
   MyButton5->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_info)
+    _METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
   );
 
   MyButton6->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
-    dynamic_cast<FWidget::data_ptr>(MyLineEdit)
-  );
-
-  MyButton7->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
@@ -433,7 +427,7 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "toggled",
     _METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
-    dynamic_cast<FWidget::data_ptr>(MyButton4)
+    dynamic_cast<FWidget::data_ptr>(MyButton5)
   );
 
   myList->addCallback
@@ -513,19 +507,21 @@ void MyDialog::cb_about (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_info (FWidget*, void*)
+void MyDialog::cb_terminfo (FWidget*, void*)
 {
-  {
-    FMessageBox info1 ( "Environment"
-                      , "  Type: " + FString(getTermType()) + "\n"
-                        "  Name: " + FString(getTermName()) + "\n"
-                        "  Mode: " + FString(getEncoding())
-                      , FMessageBox::Ok, 0, 0, this );
-    info1.setHeadline("Terminal:");
-    info1.exec();
-  } // end of scope => delete info1
+  FMessageBox info1 ( "Environment"
+                    , "  Type: " + FString(getTermType()) + "\n"
+                      "  Name: " + FString(getTermName()) + "\n"
+                      "  Mode: " + FString(getEncoding()) + "\n"
+                      "Colors: " + FString().setNumber(getMaxColor())
+                    , FMessageBox::Ok, 0, 0, this );
+  info1.setHeadline("Terminal:");
+  info1.exec();
+}
 
-  FString line(15, wchar_t(fc::BoxDrawingsHorizontal));
+//----------------------------------------------------------------------
+void MyDialog::cb_drives (FWidget*, void*)
+{
   FMessageBox info2 ( "Drive symbols"
                     , "Generic:       \n\n"
                       "Network:       \n\n"

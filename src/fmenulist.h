@@ -51,8 +51,8 @@ class FMenuList
 
    uInt         count() const;
    FMenuItem*   item (int) const;
-   void         activateItem (int);
-   void         deactivateItem (int);
+   void         enableItem (int);
+   void         disableItem (int);
    bool         isSelected (int) const;
    bool         hasSelectedItem();
 
@@ -78,12 +78,12 @@ inline FMenuItem* FMenuList::item(int index) const
 { return itemlist[uInt(index-1)]; }
 
 //----------------------------------------------------------------------
-inline void FMenuList::activateItem (int index)
-{ itemlist[uInt(index-1)]->setActive(); }
+inline void FMenuList::enableItem (int index)
+{ itemlist[uInt(index-1)]->setEnable(); }
 
 //----------------------------------------------------------------------
-inline void FMenuList::deactivateItem (int index)
-{ itemlist[uInt(index-1)]->unsetActive(); }
+inline void FMenuList::disableItem (int index)
+{ itemlist[uInt(index-1)]->unsetEnable(); }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const

@@ -150,7 +150,7 @@ void FMenuBar::drawItems()
     int  hotkeypos, to_char;
     bool is_Active, is_Selected, is_NoUnderline;
 
-    is_Active = (*iter)->isActivated();
+    is_Active = (*iter)->isEnabled();
     is_Selected = (*iter)->isSelected();
     is_NoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
 
@@ -263,6 +263,26 @@ void FMenuBar::adjustSize()
 
 // public methods of FMenuBar
 //----------------------------------------------------------------------
+void FMenuBar::onKeyPress (FKeyEvent* ev)
+{
+  switch ( ev->key() )
+  {
+    case fc::Fkey_left:
+      beep();
+      ev->accept();
+      break;
+
+    case fc::Fkey_right:
+      beep();
+      ev->accept();
+      break;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != LeftButton )
@@ -318,9 +338,10 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
          && mouse_x <= x2
          && mouse_y == 1 )
       {
-        if ( (*iter)->isActivated() && ! (*iter)->isSelected() )
+        if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           (*iter)->setSelected();
+          (*iter)->setFocus();
           selectedMenuItem = *iter;
           focus_changed = true;
         }
@@ -337,7 +358,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
       else
       {
         if ( mouse_y == 1
-           && (*iter)->isActivated()
+           && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
@@ -382,7 +403,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
         if (  mouse_x >= x1
            && mouse_x <= x2
            && mouse_y == 1
-           && (*iter)->isActivated()
+           && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {
           if ( (*iter)->hasMenu() )
@@ -391,6 +412,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
             if ( ! menu->hasSelectedListItem() )
             {
               menu->selectFirstItemInList();
+              menu->getSelectedListItem()->setFocus();
               menu->redraw();
             }
           }
@@ -440,9 +462,10 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
          && mouse_x <= x2
          && mouse_y == 1 )
       {
-        if ( (*iter)->isActivated() && ! (*iter)->isSelected() )
+        if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           (*iter)->setSelected();
+          (*iter)->setFocus();
           selectedMenuItem = *iter;
           focus_changed = true;
         }
@@ -459,7 +482,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       else
       {
         if ( getGeometryGlobal().contains(ev->getGlobalPos())
-           && (*iter)->isActivated()
+           && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
@@ -543,7 +566,6 @@ void FMenuBar::cb_item_activated (FWidget* widget, void*)
       menu->redraw();
       updateTerminal();
       flush_out();
-
     }
   }
 }

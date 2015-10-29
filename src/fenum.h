@@ -426,6 +426,14 @@ class fc
      Fcmkey_sdown               = 0x150015d,  // shifted control-M-Down
      Fcmkey_sright              = 0x150015e,  // shifted control-M-Right
      Fcmkey_sleft               = 0x150015f,  // shifted control-M-Left
+     Fkey_menu                  = 0x1600000,  // menu
+     Fkey_smenu                 = 0x1600001,  // shifted menu
+     Fckey_menu                 = 0x1600002,  // control-menu
+     Fckey_smenu                = 0x1600003,  // shifted control-menu
+     Fmkey_menu                 = 0x1600004,  // M-menu
+     Fmkey_smenu                = 0x1600005,  // shifted M-menu
+     Fcmkey_menu                = 0x1600006,  // control-M-menu
+     Fcmkey_smenu               = 0x1600007,  // shifted control-M-menu
      Fkey_escape_mintty         = 0x200001b,  // mintty Esc
      Fkey_mouse                 = 0x2000020,  // xterm mouse
      Fkey_extended_mouse        = 0x2000021,  // SGR extended mouse

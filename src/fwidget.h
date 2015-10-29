@@ -530,22 +530,6 @@ inline bool FWidget::isWindow() const
 { return window_object; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setEnable (bool on)
-{ return enable = (on) ? true : false; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::unsetEnable()
-{ return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setDisable()
-{ return setEnable(false); }
-
-//----------------------------------------------------------------------
 inline bool FWidget::isEnabled() const
 { return enable; }
 

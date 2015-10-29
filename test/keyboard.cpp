@@ -1,43 +1,38 @@
-// File: timer.cpp
+// File: keyboard.cpp
 
 #include "final.h"
 
 //----------------------------------------------------------------------
-// class timer
+// class keyboard
 //----------------------------------------------------------------------
 
-class timer : public FWidget
+class keyboard : public FWidget
 {
  public:
-   explicit timer (FWidget* = 0);
+   explicit keyboard (FWidget* = 0);
  protected:
-   void onTimer (FTimerEvent*);
+   void onKeyPress (FKeyEvent*);
    void onAccel (FAccelEvent*);
 };
 
 //----------------------------------------------------------------------
-timer::timer (FWidget* parent)
+keyboard::keyboard (FWidget* parent)
   : FWidget(parent)
 {
-  addTimer (60000);        // 1-minute timer
-  int id = addTimer (50);  // 50-millisecond timer
-  addTimer (1000);         // 1-second timer
-  delTimer (id);
-  addTimer (250);          // 250-millisecond timer
-
   setColor(fc::LightGray, fc::Black);
   clrscr();
   updateTerminal();
 }
 
 //----------------------------------------------------------------------
-void timer::onTimer (FTimerEvent* ev)
+void keyboard::onKeyPress (FKeyEvent* ev)
 {
-  ::printf("timer event, id %d\n\r", ev->timerId() );
+  int key_id = ev->key();
+  ::printf("Key %s (id %d)\n\r", getKeyName(key_id).c_str(), key_id);
 }
 
 //----------------------------------------------------------------------
-void timer::onAccel (FAccelEvent* ev)
+void keyboard::onAccel (FAccelEvent* ev)
 {
   quit();
   ev->accept();
@@ -50,7 +45,7 @@ void timer::onAccel (FAccelEvent* ev)
 int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
-  timer t(&app);
+  keyboard t(&app);
   t.addAccelerator('q');
   app.setMainWidget(&t);
   t.show();

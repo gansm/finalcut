@@ -1,10 +1,12 @@
 // File: fmenuitem.cpp
 // Provides: class FMenuItem
 
+#include "fapp.h"
 #include "fmenu.h"
 #include "fmenubar.h"
 #include "fmenulist.h"
 #include "fmenuitem.h"
+#include "fstatusbar.h"
 
 //----------------------------------------------------------------------
 // class FMenuItem
@@ -15,7 +17,6 @@
 FMenuItem::FMenuItem (FWidget* parent)
   : FWidget(parent)
   , text()
-  , active(true)
   , selected(false)
   , separator(false)
   , checked(false)
@@ -32,7 +33,6 @@ FMenuItem::FMenuItem (FWidget* parent)
 FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , active(true)
   , selected(false)
   , separator(false)
   , checked(false)
@@ -49,7 +49,6 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
 FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , active(true)
   , selected(false)
   , separator(false)
   , checked(false)
@@ -66,7 +65,6 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
 FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , active(true)
   , selected(false)
   , separator(false)
   , checked(false)
@@ -108,7 +106,7 @@ void FMenuItem::init (FWidget* parent)
         menubar_ptr->menu_dimension();
 
       // Meta + hotkey
-      addAccelerator (0x20000e0+tolower(hotkey), this);
+      menubar_ptr->addAccelerator (0x20000e0+tolower(hotkey), this);
 
       this->addCallback
       (
@@ -127,7 +125,7 @@ void FMenuItem::init (FWidget* parent)
       if ( super_menu_ptr )
         super_menu_ptr->menu_dimension();
 
-      //addAccelerator (item->getKey(), item);
+      //addAccelerator (accel_key, this);
 
       this->addCallback
       (
@@ -141,6 +139,11 @@ void FMenuItem::init (FWidget* parent)
       );
     }
   }
+  if ( hasFocus() )
+    flags = FOCUS;
+
+  if ( isEnabled() )
+    flags |= ACTIVE;
 }
 
 //----------------------------------------------------------------------
@@ -202,21 +205,22 @@ void FMenuItem::processClicked()
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-void FMenuItem::onAccel (FAccelEvent* ev)
+void FMenuItem::onKeyPress (FKeyEvent* ev)
 {
-  beep(); //  activate by key
-  if ( isActivated() && ! isSelected() )
+  if ( super_menu )
   {
-    if ( super_menu && isMenuBar(super_menu) )
+    if ( isMenu(super_menu) )
+    {
+      FMenu* sm = dynamic_cast<FMenu*>(super_menu);
+      if ( sm )
+        sm->onKeyPress(ev);
+    }
+
+    if ( isMenuBar(super_menu) )
     {
       FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
       if ( mb )
-      {
-        setSelected();
-        mb->selectedMenuItem = this;
-        mb->redraw();
-        ev->accept();
-      }
+        mb->onKeyPress(ev);
     }
   }
 }
@@ -252,7 +256,6 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
         delete ev;
       }
     }
-
   }
 }
 
@@ -287,7 +290,6 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
         delete ev;
       }
     }
-
   }
 }
 
@@ -327,9 +329,117 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::onAccel (FAccelEvent* ev)
+{
+  if ( isEnabled() && ! isSelected() )
+  {
+    if ( super_menu && isMenuBar(super_menu) )
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mb )
+      {
+        if ( mb->selectedMenuItem )
+          mb->selectedMenuItem->unsetSelected();
+        setSelected();
+        mb->selectedMenuItem = this;
+        mb->redraw();
+        if ( menu && ! menu->hasSelectedListItem() )
+        {
+          FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+          FFocusEvent out (FocusOut_Event);
+          FApplication::queueEvent(focused_widget, &out);
+          menu->selectFirstItemInList();
+          menu->selectedListItem->setFocus();
+          if ( focused_widget )
+            focused_widget->redraw();
+          menu->redraw();
+          if ( statusBar() )
+            statusBar()->drawMessage();
+        }
+        ev->accept();
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::onFocusIn (FFocusEvent*)
+{
+  if ( statusBar() )
+    statusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::onFocusOut (FFocusEvent*)
+{
+  if ( statusBar() )
+  {
+    statusBar()->clearMessage();
+    statusBar()->drawMessage();
+  }
+}
+
+//----------------------------------------------------------------------
+bool FMenuItem::setEnable (bool on)
+{
+  FWidget::setEnable(on);
+
+  FWidget* super = getSuperMenu();
+
+  if ( on )
+  {
+    flags |= ACTIVE;
+
+    if ( super && isMenuBar(super) )
+    {
+      // Meta + hotkey
+      super->addAccelerator (0x20000e0+tolower(hotkey), this);
+    }
+  }
+  else
+  {
+    flags &= ~ACTIVE;
+
+    if ( super && isMenuBar(super) )
+      super->delAccelerator (this);
+  }
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FMenuItem::setFocus (bool on)
+{
+  FWidget::setFocus(on);
+
+  if ( on )
+  {
+    flags |= FOCUS;
+
+    if ( isEnabled() )
+    {
+      /*if ( statusBar() )
+      {
+        FString msg = getStatusbarMessage();
+        FString curMsg = statusBar()->getMessage();
+        if ( curMsg != msg )
+          statusBar()->setMessage(msg);
+      }*/
+    }
+  }
+  else
+  {
+    flags &= ~FOCUS;
+
+    if ( isEnabled() && statusBar() )
+      statusBar()->clearMessage();
+  }
+  return on;
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::setSelected()
 {
-  if ( isActivated() )
+  if ( isEnabled() )
   {
     selected = true;
     processActivate();

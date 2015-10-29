@@ -65,10 +65,15 @@ class FMenu : public FWindow, public FMenuList
    void       hideSuperMenus();
    bool       containsMenuStructure (const FPoint&) const;
    bool       containsMenuStructure (int, int) const;
+   bool       selectNextItem();
+   bool       selectPrevItem();
+   void       keypressMenuBar (FKeyEvent*);
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawBorder();
+   void       drawMenuShadow();
    void       drawItems();
+   void       drawSeparator(int);
    void       processActivate();
 
  public:
@@ -79,30 +84,37 @@ class FMenu : public FWindow, public FMenuList
    virtual ~FMenu();  // destructor
    virtual const char* getClassName() const;
 
+   void       onKeyPress (FKeyEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
+   void       onAccel (FAccelEvent*);
    void       show();
    void       hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool = true);
    FMenuItem* getItem() const;
-
-   void       onAccel (FAccelEvent*);
    FString    getText() const;
-   void       setActive();
-   void       unsetActive();
-   bool       isActivated() const;
+   bool       setEnable(bool);
+   bool       setEnable();
+   bool       unsetEnable();
+   bool       setDisable();
+   bool       isEnabled() const;
    void       setSelected();
    void       unsetSelected();
    bool       isSelected() const;
    void       selectFirstItemInList();
    void       unselectItemInList();
+   FMenuItem* getSelectedListItem() const;
    bool       hasSelectedListItem() const;
    bool       hasHotkey() const;
    void       setMenu (FMenu*);
    bool       hasMenu() const;
+   bool       setTransparentShadow (bool);
+   bool       setTransparentShadow();
+   bool       unsetTransparentShadow();
+   bool       hasTransparentShadow();
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
@@ -146,16 +158,24 @@ inline FString FMenu::getText() const
 { return item->getText(); }
 
 //----------------------------------------------------------------------
-inline void FMenu::setActive()
-{ item->setActive(); }
+inline bool FMenu::setEnable(bool on)
+{ return item->setEnable(on); }
 
 //----------------------------------------------------------------------
-inline void FMenu::unsetActive()
-{ item->unsetActive(); }
+inline bool FMenu::setEnable()
+{ return item->setEnable(); }
 
 //----------------------------------------------------------------------
-inline bool FMenu::isActivated() const
-{ return item->isActivated(); }
+inline bool FMenu::unsetEnable()
+{ return item->unsetEnable(); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::setDisable()
+{ return item->setDisable(); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::isEnabled() const
+{ return item->isEnabled(); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setSelected()
@@ -168,6 +188,10 @@ inline void FMenu::unsetSelected()
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const
 { return item->isSelected(); }
+
+//----------------------------------------------------------------------
+inline FMenuItem* FMenu::getSelectedListItem() const
+{ return selectedListItem; }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasSelectedListItem() const
@@ -184,6 +208,18 @@ inline void FMenu::setMenu (FMenu* m)
 //----------------------------------------------------------------------
 inline bool FMenu::hasMenu() const
 { return item->hasMenu(); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::setTransparentShadow()
+{ return setTransparentShadow(true); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::unsetTransparentShadow()
+{ return setTransparentShadow(false); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::hasTransparentShadow()
+{ return ((flags & TRANS_SHADOW) != 0); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setText (FString& txt)

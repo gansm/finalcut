@@ -1,8 +1,10 @@
 // File: fmenu.cpp
 // Provides: class FMenu
 
+#include "fapp.h"
 #include "fmenu.h"
 #include "fmessagebox.h" // <----- remove later
+#include "fstatusbar.h"
 
 //----------------------------------------------------------------------
 // class FMenu
@@ -100,6 +102,7 @@ void FMenu::init(FWidget* parent)
   right_padding  = 1;
   createArea (vwin);
   setGeometry (1, 1 , 10, 2, false);  // initialize geometry values
+  setTransparentShadow();
   window_object  = true;
   addWindow(this);
   hide();
@@ -227,6 +230,103 @@ bool FMenu::containsMenuStructure (int x, int y) const
 }
 
 //----------------------------------------------------------------------
+bool FMenu::selectNextItem()
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->isSelected() )
+    {
+      FMenuItem* next;
+      std::vector<FMenuItem*>::const_iterator next_element;
+
+      next_element = iter;
+      do
+      {
+        ++next_element;
+        if ( next_element == itemlist.end() )
+          next_element = itemlist.begin();
+        next = static_cast<FMenuItem*>(*next_element);
+      } while (  ! next->isEnabled()
+              || ! next->acceptFocus()
+              || ! next->isVisible()
+              || next->isSeparator() );
+      if ( next == *iter )
+        return false;
+      unselectItemInList();
+      next->setSelected();
+      next->setFocus();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      selectedListItem = next;
+      redraw();
+      break;
+    }
+    ++iter;
+  }
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FMenu::selectPrevItem()
+{
+  std::vector<FMenuItem*>::const_iterator iter, begin;
+  iter = itemlist.end();
+  begin = itemlist.begin();
+
+  do
+  {
+    --iter;
+    if ( (*iter)->isSelected() )
+    {
+      FMenuItem* prev;
+      std::vector<FMenuItem*>::const_iterator prev_element;
+
+      prev_element = iter;
+      do
+      {
+        if ( prev_element == itemlist.begin() )
+          prev_element = itemlist.end();
+        --prev_element;
+        prev = static_cast<FMenuItem*>(*prev_element);
+      } while (  ! prev->isEnabled()
+              || ! prev->acceptFocus()
+              || ! prev->isVisible()
+              || prev->isSeparator() );
+      if ( prev == *iter )
+        return false;
+      unselectItemInList();
+      prev->setSelected();
+      prev->setFocus();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      selectedListItem = prev;
+      redraw();
+      break;
+    }
+  } while ( iter != begin );
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+void FMenu::keypressMenuBar (FKeyEvent* ev)
+{
+  FWidget* super = getSuperMenu();
+  if ( super )
+  {
+    if ( isMenuBar(super) )
+    {
+      FMenuBar* mb = reinterpret_cast<FMenuBar*>(super);
+      mb->onKeyPress(ev);
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 {
   // find hotkey position in string
@@ -260,8 +360,8 @@ void FMenu::draw()
   drawItems();
   if ( isMonochron() )
     setReverse(false);
-  //if ( (flags & SHADOW) != 0 )
-  //  drawMenuShadow();
+  if ( (flags & SHADOW) != 0 )
+    drawMenuShadow();
   setUpdateVTerm(true);
 }
 
@@ -328,6 +428,12 @@ void FMenu::drawBorder()
 }
 
 //----------------------------------------------------------------------
+void FMenu::drawMenuShadow()
+{
+  drawShadow();
+}
+
+//----------------------------------------------------------------------
 void FMenu::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
@@ -344,85 +450,114 @@ void FMenu::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
-    bool is_Active = (*iter)->isActivated();
-    bool is_Selected = (*iter)->isSelected();
-    bool is_NoUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    bool is_enabled = (*iter)->isEnabled();
+    bool has_focus = (*iter)->hasFocus();
+    bool is_selected = (*iter)->isSelected();
+    bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    bool is_separator = (*iter)->isSeparator();
 
-    if ( is_Active )
+    if ( is_separator )
     {
-      if ( is_Selected )
-      {
-        foregroundColor = wc.menu_active_focus_fg;
-        backgroundColor = wc.menu_active_focus_bg;
-        if ( isMonochron() )
-          setReverse(false);
-      }
-      else
-      {
-        foregroundColor = wc.menu_active_fg;
-        backgroundColor = wc.menu_active_bg;
-      }
+      drawSeparator(y);
     }
     else
     {
-      foregroundColor = wc.menu_inactive_fg;
-      backgroundColor = wc.menu_inactive_bg;
-    }
-    gotoxy (xpos+xmin, ypos+ymin+y);
-    setColor (foregroundColor, backgroundColor);
-    print (' ');
-
-    txt = (*iter)->getText();
-    txt_length = uInt(txt.getLength());
-    item_text = new wchar_t[txt_length+1]();
-    src  = const_cast<wchar_t*>(txt.wc_str());
-    dest = const_cast<wchar_t*>(item_text);
-    to_char = int(txt_length);
-    hotkeypos = getHotkeyPos (src, dest, txt_length);
-
-    if ( hotkeypos != -1 )
-    {
-      txt_length--;
-      to_char--;
-    }
-
-    for (int z=0; z < to_char; z++)
-    {
-      if ( ! iswprint(wint_t(item_text[z])) )
+      if ( is_enabled )
       {
-        if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
-                              || int(item_text[z]) > fc::NF_check_mark ) )
+        if ( is_selected )
         {
-          item_text[z] = L' ';
+          foregroundColor = wc.menu_active_focus_fg;
+          backgroundColor = wc.menu_active_focus_bg;
+          if ( isMonochron() )
+            setReverse(false);
+        }
+        else
+        {
+          foregroundColor = wc.menu_active_fg;
+          backgroundColor = wc.menu_active_bg;
         }
       }
-      if ( (z == hotkeypos) && is_Active && ! is_Selected )
-      {
-        setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
-        if ( ! is_NoUnderline )
-          setUnderline();
-        print (item_text[z]);
-        if ( ! is_NoUnderline )
-          unsetUnderline();
-        setColor (foregroundColor, backgroundColor);
-      }
       else
-        print (item_text[z]);
-    }
+      {
+        foregroundColor = wc.menu_inactive_fg;
+        backgroundColor = wc.menu_inactive_bg;
+      }
+      gotoxy (xpos+xmin, ypos+ymin+y);
+      setColor (foregroundColor, backgroundColor);
+      print (' ');
 
-    if ( is_Selected )
+      txt = (*iter)->getText();
+      txt_length = uInt(txt.getLength());
+      item_text = new wchar_t[txt_length+1]();
+      src  = const_cast<wchar_t*>(txt.wc_str());
+      dest = const_cast<wchar_t*>(item_text);
+      to_char = int(txt_length);
+      hotkeypos = getHotkeyPos (src, dest, txt_length);
+
+      if ( hotkeypos != -1 )
+      {
+        txt_length--;
+        to_char--;
+      }
+
+      for (int z=0; z < to_char; z++)
+      {
+        if ( ! iswprint(wint_t(item_text[z])) )
+        {
+          if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
+                                || int(item_text[z]) > fc::NF_check_mark ) )
+          {
+            item_text[z] = L' ';
+          }
+        }
+        if ( (z == hotkeypos) && is_enabled && ! is_selected )
+        {
+          setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+          if ( ! is_noUnderline )
+            setUnderline();
+          print (item_text[z]);
+          if ( ! is_noUnderline )
+            unsetUnderline();
+          setColor (foregroundColor, backgroundColor);
+        }
+        else
+          print (item_text[z]);
+      }
+
+      if ( is_selected )
+      {
+        for (uInt i=uInt(to_char); i < maxItemWidth-1; i++)
+          print (' ');
+      }
+
+      if ( isMonochron() && is_enabled && is_selected )
+        setReverse(true);
+      delete[] item_text;
+    }
+    if ( has_focus && statusBar() )
     {
-      for (uInt i=uInt(to_char); i < maxItemWidth-1; i++)
-        print (' ');
+      FString msg = (*iter)->getStatusbarMessage();
+      FString curMsg = statusBar()->getMessage();
+      if ( curMsg != msg )
+      {
+        statusBar()->setMessage(msg);
+        statusBar()->drawMessage();
+      }
     }
-
-    if ( isMonochron() && is_Active && is_Selected )
-      setReverse(true);
-    delete[] item_text;
-
     ++iter;
     y++;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::drawSeparator(int y)
+{
+  gotoxy (xpos+xmin-1, ypos+ymin+y);
+  setColor (wc.menu_active_fg, wc.menu_active_bg);
+  print(fc::BoxDrawingsVerticalAndRight);
+  FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
+  print (line);
+  print(fc::BoxDrawingsVerticalAndLeft);
 }
 
 //----------------------------------------------------------------------
@@ -433,6 +568,86 @@ void FMenu::processActivate()
 
 
 // public methods of FMenu
+//----------------------------------------------------------------------
+void FMenu::onKeyPress (FKeyEvent* ev)
+{
+  switch ( ev->key() )
+  {
+    case fc::Fkey_return:
+    case fc::Fkey_enter:
+      if ( hasSelectedListItem() )
+      {
+        FMenuItem* sel_item = selectedListItem;
+        unselectItemInList();
+        hide();
+        hideSuperMenus();
+        sel_item->processClicked();
+      }
+      ev->accept();
+      break;
+
+    case fc::Fkey_up:
+      selectPrevItem();
+      ev->accept();
+      break;
+
+    case fc::Fkey_down:
+      selectNextItem();
+      ev->accept();
+      break;
+
+    case fc::Fkey_left:
+      if ( selectedListItem->hasMenu() )
+      {
+        FMenu* sub_menu = selectedListItem->getMenu();
+        if ( sub_menu->isVisible() )
+          hideSubMenus();
+        else
+          keypressMenuBar(ev);  // select previous menu
+        ev->accept();
+      }
+      else
+        keypressMenuBar(ev);  // select previous menu
+      break;
+
+    case fc::Fkey_right:
+      if ( selectedListItem->hasMenu() )
+      {
+        FMenu* sub_menu = selectedListItem->getMenu();
+        if ( ! sub_menu->isVisible() )
+        {
+          // open sub menu
+          sub_menu->selectFirstItemInList();
+          sub_menu->getSelectedListItem()->setFocus();;
+          sub_menu->setVisible();
+          sub_menu->show();
+          raiseWindow (sub_menu);
+          sub_menu->redraw();
+          updateTerminal();
+          flush_out();
+        }
+        else
+          keypressMenuBar(ev);  // select next menu
+        ev->accept();
+      }
+      else
+        keypressMenuBar(ev);  // select next menu
+      break;
+
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
+      unselectItemInList();
+      hide();
+      hideSubMenus();
+      hideSuperMenus();
+      ev->accept();
+      break;
+
+    default:
+      break;
+  }
+}
+
 //----------------------------------------------------------------------
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
@@ -473,10 +688,17 @@ void FMenu::onMouseDown (FMouseEvent* ev)
          && mouse_y == y
          && ! (*iter)->isSelected() )
       {
+        FWidget* focused_widget = getFocusWidget();
+        FFocusEvent out (FocusOut_Event);
+        FApplication::queueEvent(focused_widget, &out);
         if ( hasSelectedListItem() )
           unselectItemInList();
-
         (*iter)->setSelected();
+        (*iter)->setFocus();
+        if ( focused_widget )
+          focused_widget->redraw();
+        if ( statusBar() )
+          statusBar()->drawMessage();
         selectedListItem = *iter;
         focus_changed = true;
       }
@@ -577,9 +799,17 @@ FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n
          && mouse_x <= x2
          && mouse_y == y )
       {
-        if ( (*iter)->isActivated() && ! (*iter)->isSelected() )
+        if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
+          FWidget* focused_widget = getFocusWidget();
+          FFocusEvent out (FocusOut_Event);
+          FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
+          (*iter)->setFocus();
+          if ( focused_widget )
+            focused_widget->redraw();
+          if ( statusBar() )
+            statusBar()->drawMessage();
           selectedListItem = *iter;
           focus_changed = true;
         }
@@ -587,7 +817,7 @@ FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n
       else
       {
         if ( getGeometryGlobal().contains(ev->getGlobalPos())
-         && (*iter)->isActivated()
+         && (*iter)->isEnabled()
          && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
@@ -706,7 +936,7 @@ void FMenu::cb_menuitem_activated (FWidget* widget, void*)
 
       menu->setVisible();
       menu->show();
-      raiseWindow(menu);
+      raiseWindow (menu);
       menu->redraw();
       updateTerminal();
       flush_out();
@@ -714,6 +944,29 @@ void FMenu::cb_menuitem_activated (FWidget* widget, void*)
         setOpenMenu(menu);
     }
   }
+}
+
+//----------------------------------------------------------------------
+bool FMenu::setTransparentShadow (bool on)
+{
+  if ( on )
+  {
+    flags |= SHADOW;
+    flags |= TRANS_SHADOW;
+    shadow.setPoint(2,1);
+    adjustWidgetSizeShadow = getGeometry() + getShadow();
+    adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
+  }
+  else
+  {
+    flags &= ~SHADOW;
+    flags &= ~TRANS_SHADOW;
+    shadow.setPoint(0,0);
+    adjustWidgetSizeShadow = getGeometry() + getShadow();
+    adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
+  }
+  resizeArea (vwin);
+  return on;
 }
 
 //----------------------------------------------------------------------

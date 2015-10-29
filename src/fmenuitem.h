@@ -44,7 +44,6 @@ class FMenuItem : public FWidget
 {
  private:
    FString    text;
-   bool       active;
    bool       selected;
    bool       separator;
    bool       checked;
@@ -74,14 +73,20 @@ class FMenuItem : public FWidget
    FMenuItem (const char*, FWidget* = 0);
    virtual ~FMenuItem();
 
-   void       onAccel (FAccelEvent*);
+   void       onKeyPress (FKeyEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
+   void       onAccel (FAccelEvent*);
+   void       onFocusIn (FFocusEvent*);
+   void       onFocusOut (FFocusEvent*);
    FString    getText() const;
-   void       setActive();
-   void       unsetActive();
-   bool       isActivated() const;
+   // make every setEnable from FWidget available
+   using FWidget::setEnable;
+   bool       setEnable(bool);
+   bool       setFocus(bool);
+   bool       setFocus();
+   bool       unsetFocus();
    void       setSelected();
    void       unsetSelected();
    bool       isSelected() const;
@@ -122,16 +127,12 @@ inline FString FMenuItem::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::setActive()
-{ active = true; }
+inline bool FMenuItem::setFocus()
+{ return setFocus(true); }
 
 //----------------------------------------------------------------------
-inline void FMenuItem::unsetActive()
-{ active = false; }
-
-//----------------------------------------------------------------------
-inline bool FMenuItem::isActivated() const
-{ return active; }
+inline bool FMenuItem::unsetFocus()
+{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isSelected() const

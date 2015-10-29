@@ -290,6 +290,17 @@ static metakeymap Fmetakey[] =
   { fc::Fcmkey_sdown               , "\033[1;8B"  },  // shift-ctrl-M-down
   { fc::Fcmkey_sright              , "\033[1;8C"  },  // shift-ctrl-M-right
   { fc::Fcmkey_sleft               , "\033[1;8D"  },  // shift-ctrl-M-left
+  { fc::Fkey_menu                  , "\033[29~"   },  // menu
+  { fc::Fkey_smenu                 , "\033[29$"   },  // shift-menu
+  { fc::Fkey_smenu                 , "\033[29;2~" },  // shift-menu
+  { fc::Fckey_menu                 , "\033[29^"   },  // ctrl-menu
+  { fc::Fckey_menu                 , "\033[29;5~" },  // ctrl-menu
+  { fc::Fckey_smenu                , "\033[29@"   },  // shift-ctrl-menu
+  { fc::Fckey_smenu                , "\033[29;6~" },  // shift-ctrl-menu
+  { fc::Fmkey_menu                 , "\033[29;3~" },  // M-menu
+  { fc::Fmkey_smenu                , "\033[29;4~" },  // shift-M-menu
+  { fc::Fcmkey_menu                , "\033[29;7~" },  // ctrl-M-menu
+  { fc::Fcmkey_smenu               , "\033[29;8~" },  // shift-ctrl-M-menu
   { fc::Fkey_escape_mintty         , "\033O["},  // mintty Esc
   { fc::Fmkey_space                , "\033 " },  // M-' '
   { fc::Fmkey_bang                 , "\033!" },  // M-!
@@ -654,6 +665,14 @@ static keyname FkeyName[] =
   { fc::Fcmkey_sdown              , "Shift+Ctrl+Meta+Down" },
   { fc::Fcmkey_sright             , "Shift+Ctrl+Meta+Right" },
   { fc::Fcmkey_sleft              , "Shift+Ctrl+Meta+Left" },
+  { fc::Fkey_menu                 , "Menu" },
+  { fc::Fkey_smenu                , "Shift+Menu" },
+  { fc::Fckey_menu                , "Ctrl+Menu" },
+  { fc::Fckey_smenu               , "Shift+Ctrl+Menu" },
+  { fc::Fmkey_menu                , "Meta+Menu" },
+  { fc::Fmkey_smenu               , "Shift+Meta+Menu" },
+  { fc::Fcmkey_menu               , "Ctrl+Meta+Menu" },
+  { fc::Fcmkey_smenu              , "Shift+Ctrl+Meta+Menu" },
   { fc::Fmkey_space               , "Meta+Space" },
   { fc::Fmkey_bang                , "Meta+!" },
   { fc::Fmkey_quotes              , "Meta+\"" },

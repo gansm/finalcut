@@ -64,6 +64,7 @@ class FMenuBar : public FWindow, public FMenuList
    virtual ~FMenuBar();  // destructor
    virtual const char* getClassName() const;
 
+   void onKeyPress (FKeyEvent*);
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
    void onMouseMove (FMouseEvent*);

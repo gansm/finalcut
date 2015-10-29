@@ -207,9 +207,9 @@ void FWidget::setColorTheme()
   wc.current_element_fg                = fc::LightGray;
   wc.current_element_bg                = fc::Blue;
   wc.current_inc_search_element_fg     = fc::LightRed;
-  wc.selected_current_element_focus_fg = fc::LightBlue;
+  wc.selected_current_element_focus_fg = fc::LightCyan;
   wc.selected_current_element_focus_bg = fc::Blue;
-  wc.selected_current_element_fg       = fc::Cyan;
+  wc.selected_current_element_fg       = fc::LightBlue;
   wc.selected_current_element_bg       = fc::Blue;
   wc.label_fg                          = fc::Black;
   wc.label_bg                          = fc::White;
@@ -1074,7 +1074,7 @@ void FWidget::addAccelerator (int key)
 
   if ( ! window )
     window = getRootWidget();
-  if ( window == statusbar )
+  if ( window == statusbar || window == menubar )
     window = FWindow::getWindowWidget(parentWidget());
   if ( window && window->accelerator_list )
     window->accelerator_list->push_back(accel);
@@ -1088,7 +1088,7 @@ void FWidget::addAccelerator (int key, FWidget* obj)
 
   if ( ! window )
     window = getRootWidget();
-  if ( window == statusbar )
+  if ( window == statusbar || window == menubar )
     window = FWindow::getWindowWidget(parentWidget());
   if ( window && window->accelerator_list )
     window->accelerator_list->push_back(accel);
@@ -1101,7 +1101,7 @@ void FWidget::delAccelerator (FWidget* obj)
 
   if ( ! window )
     window = getRootWidget();
-  if ( window == statusbar )
+  if ( window == statusbar || window == menubar )
     window = FWindow::getWindowWidget(parentWidget());
   if (  window
      && window->accelerator_list
@@ -1327,6 +1327,30 @@ void FWidget::hide()
     FHideEvent hide_ev (Hide_Event);
     FApplication::sendEvent(this, &hide_ev);
   }
+}
+
+//----------------------------------------------------------------------
+bool FWidget::setEnable (bool on)
+{
+  return enable = (on) ? true : false;
+}
+
+//----------------------------------------------------------------------
+bool FWidget::setEnable()
+{
+  return setEnable(true);
+}
+
+//----------------------------------------------------------------------
+bool FWidget::unsetEnable()
+{
+  return setEnable(false);
+}
+
+//----------------------------------------------------------------------
+bool FWidget::setDisable()
+{
+  return setEnable(false);
 }
 
 //----------------------------------------------------------------------
