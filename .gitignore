@@ -30,6 +30,7 @@ test/hello
 test/watch
 test/input-dialog
 test/mandelbrot
+test/keyboard
 test/timer
 test/ui
 
