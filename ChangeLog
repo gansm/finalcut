@@ -1,3 +1,8 @@
+2015-11-01  Markus Gans  <guru.mail@muenster.de>
+	* First working version of an application menu, 
+	  it uses the new classes FMenuBar, FMenu and FMenuItem 
+	  (alpha state)
+
 2015-10-29  Markus Gans  <guru.mail@muenster.de>
 	* Support for the menu key
 

@@ -57,7 +57,7 @@ class FMenuItem : public FWidget
    FMenuItem (const FMenuItem&);
    FMenuItem& operator = (const FMenuItem&);
    void       init (FWidget*);
-   uChar      getHotkey();
+   uChar      hotKey();
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;
    FWidget*   getSuperMenu() const;
@@ -96,6 +96,7 @@ class FMenuItem : public FWidget
    void       setChecked();
    void       unsetChecked();
    bool       isChecked() const;
+   int        getHotkey() const;
    bool       hasHotkey() const;
    FMenu*     getMenu() const;
    void       setMenu(FMenu*);
@@ -161,6 +162,10 @@ inline void FMenuItem::unsetChecked()
 //----------------------------------------------------------------------
 inline bool FMenuItem::isChecked() const
 { return checked; }
+
+//----------------------------------------------------------------------
+inline int FMenuItem::getHotkey() const
+{ return hotkey; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::hasHotkey() const

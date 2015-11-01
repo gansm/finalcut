@@ -94,6 +94,7 @@ class FMenu : public FWindow, public FMenuList
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool = true);
+   void       setStatusbarMessage (FString);
    FMenuItem* getItem() const;
    FString    getText() const;
    bool       setEnable(bool);

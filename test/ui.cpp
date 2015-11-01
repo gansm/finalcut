@@ -192,33 +192,53 @@ MyDialog::MyDialog (FWidget* parent)
   : FDialog(parent)
   , myList()
 {
-  /* .--------------------------------------------. */
-  /* v      This Code is working in progress      v */
-
+  // menu bar
   FMenuBar* Menubar  = new FMenuBar(this);
 
+  // menu bar items
   FMenu* File        = new FMenu("&File", Menubar);
   File->setStatusbarMessage("File management commands");
   FMenu* Edit        = new FMenu("&Edit", Menubar);
+  Edit->setStatusbarMessage("Cut-and-paste editing commands");
   FMenu* View        = new FMenu("&View", Menubar);
+  View->setStatusbarMessage("Show internal informations");
   FMenuItem* Options = new FMenuItem("&Options", Menubar);
+  Options->setStatusbarMessage("Set program defaults");
   Options->setDisable();
   FMenuItem* Help    = new FMenuItem("&Help", Menubar);
+  Help->setStatusbarMessage("Show version and copyright information");
 
+  // "File" menu items
   FMenuItem* Open    = new FMenuItem("&Open...", File);
   Open->setStatusbarMessage("Locate and open a text file");
-  FMenuItem* Line    = new FMenuItem(File);
-  Line->setSeparator();
+  FMenuItem* Line1   = new FMenuItem(File);
+  Line1->setSeparator();
   FMenuItem* Quit    = new FMenuItem("&Quit", File);
   Quit->setStatusbarMessage("Exit the program");
 
+  // "Edit" menu items
+  FMenuItem* Undo    = new FMenuItem("Undo", Edit);
+  Undo->setDisable();
+  FMenuItem* Redo    = new FMenuItem("Redo", Edit);
+  Redo->setDisable();
+  FMenuItem* Line2   = new FMenuItem(Edit);
+  Line2->setSeparator();
   FMenuItem* Cut     = new FMenuItem("Cu&t", Edit);
+  Cut->setStatusbarMessage("Remove the input text and put it in the clipboard");
   FMenuItem* Copy    = new FMenuItem("&Copy", Edit);
+  Copy->setStatusbarMessage("Copy the input text into the clipboad");
   FMenuItem* Paste   = new FMenuItem("&Paste", Edit);
+  Paste->setStatusbarMessage("Insert text form clipboard");
+  FMenuItem* Clear   = new FMenuItem("C&lear", Edit);
+  Clear->setStatusbarMessage("Delete input text");
 
+  // "View" menu items
   FMenuItem* Env     = new FMenuItem("&Terminal info...", View);
+  Env->setStatusbarMessage("Informations about this terminal");
   FMenuItem* Drive     = new FMenuItem("&Drive symbols...", View);
+  Drive->setStatusbarMessage("Show drive symbols");
 
+  // Menu function callbacks
   Open->addCallback
   (
     "clicked",
@@ -244,6 +264,11 @@ MyDialog::MyDialog (FWidget* parent)
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
+  Clear->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
   Env->addCallback
   (
     "clicked",
@@ -254,20 +279,13 @@ MyDialog::MyDialog (FWidget* parent)
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_drives)
   );
-  Options->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
-  );
   Help->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
 
-  /* ^      This Code is working in progress      ^ */
-  /* '--------------------------------------------' */
-
+  // Buttons
   FButton* MyButton1 = new FButton(this);
   MyButton1->setGeometry(3, 3, 5, 1);
   MyButton1->setText(L"&SIN");
@@ -291,6 +309,7 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton3->setNoUnderline();
   MyButton3->setFlat();
 
+  // Radio buttons in a group
   FButtonGroup* radioButtonGroup = new FButtonGroup("Button", this);
   radioButtonGroup->setGeometry(3, 8, 14, 4);
   //radioButtonGroup->unsetBorder();
@@ -306,6 +325,7 @@ MyDialog::MyDialog (FWidget* parent)
   radio2->setChecked();
   //radio2->setDisable();
 
+  // Checkboxes in a group
   FButtonGroup* checkButtonGroup = new FButtonGroup("Options", this);
   checkButtonGroup->setGeometry(3, 12, 14, 4);
 
@@ -318,6 +338,7 @@ MyDialog::MyDialog (FWidget* parent)
   check2->setChecked();
   check2->setNoUnderline();
 
+  // A text input field
   FLineEdit* MyLineEdit = new FLineEdit(this);
   MyLineEdit->setGeometry(22, 1, 10, 1);
   MyLineEdit->setText( FString("EnTry").toLower());
@@ -325,6 +346,7 @@ MyDialog::MyDialog (FWidget* parent)
   MyLineEdit->setStatusbarMessage("Press Enter to set the title");
   MyLineEdit->setShadow();
 
+  // Buttons
   FButton* MyButton4 = new FButton(this);
   MyButton4->setGeometry(20, 8, 12, 1);
   MyButton4->setText(L"&Get input");
@@ -346,6 +368,7 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton6->setShadow();
   MyButton6->addAccelerator('x');
 
+  // A multiple selection listbox
   myList = new FListBox(this);
   myList->setGeometry(38, 1, 14, 17);
   myList->setText("Items");
@@ -354,6 +377,7 @@ MyDialog::MyDialog (FWidget* parent)
   for (int z=1; z < 100; z++)
     myList->insert( FString().setNumber(z) + L" placeholder" );
 
+  // Text labels
   FLabel* headline = new FLabel(this);
   headline->setGeometry(21, 3, 10, 1);
   headline->setText(L"List items");
@@ -375,11 +399,14 @@ MyDialog::MyDialog (FWidget* parent)
   sum_count->setGeometry(29, 5, 5, 3);
   sum_count->setNumber(myList->count());
 
+  // Statusbar at the bottom
   FStatusBar* statusbar = new FStatusBar(this);
+  // Statusbar keys
   FStatusKey* key_F1 = new FStatusKey(fc::Fkey_f1, "About", statusbar);
   FStatusKey* key_F2 = new FStatusKey(fc::Fkey_f2, "View", statusbar);
   FStatusKey* key_F3 = new FStatusKey(fc::Fkey_f3, "Quit", statusbar);
 
+  // Add some function callbacks
   MyButton1->addCallback
   (
     "clicked",

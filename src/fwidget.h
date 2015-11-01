@@ -343,7 +343,7 @@ class FWidget : public FObject, public FTerm
 
    static FStatusBar* statusBar();
    static FMenuBar* menuBar();
-   void             setStatusbarMessage (FString);
+   virtual void     setStatusbarMessage (FString);
    void             clearStatusbarMessage();
    FString          getStatusbarMessage();
 
@@ -500,10 +500,6 @@ inline FWidget* FWidget::parentWidget() const
 //----------------------------------------------------------------------
 inline bool FWidget::isRootWidget() const
 { return (! hasParent()); }
-
-//----------------------------------------------------------------------
-inline void FWidget::setStatusbarMessage(FString msg)
-{ statusbar_message = msg; }
 
 //----------------------------------------------------------------------
 inline void FWidget::clearStatusbarMessage()

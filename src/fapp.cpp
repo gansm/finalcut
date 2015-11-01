@@ -347,8 +347,11 @@ void FApplication::processKeyboardEvent()
           }
           else
           {
+            // send key down event
             FKeyEvent k_down_ev (KeyDown_Event, key);
             sendEvent (widget, &k_down_ev);
+
+            // send key press event
             FKeyEvent k_press_ev (KeyPress_Event, key);
             sendEvent (widget, &k_press_ev);
 
@@ -384,6 +387,7 @@ void FApplication::processKeyboardEvent()
         }
         fifo_offset = int(strlen(fifo_buf));
       }
+      // send key up event
       FKeyEvent k_up_ev (KeyUp_Event, key);
       sendEvent (widget, &k_up_ev);
       key = 0;

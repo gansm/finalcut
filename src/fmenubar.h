@@ -54,6 +54,8 @@ class FMenuBar : public FWindow, public FMenuList
    void init();
    void menu_dimension();
    bool isMenu (FMenuItem*) const;
+   bool selectNextItem();
+   bool selectPrevItem();
    int  getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void draw();
    void drawItems();
@@ -64,17 +66,19 @@ class FMenuBar : public FWindow, public FMenuList
    virtual ~FMenuBar();  // destructor
    virtual const char* getClassName() const;
 
-   void onKeyPress (FKeyEvent*);
-   void onMouseDown (FMouseEvent*);
-   void onMouseUp (FMouseEvent*);
-   void onMouseMove (FMouseEvent*);
-   void hide();
-   bool hasSelectedMenuItem() const;
+   void       onKeyPress (FKeyEvent*);
+   void       onMouseDown (FMouseEvent*);
+   void       onMouseUp (FMouseEvent*);
+   void       onMouseMove (FMouseEvent*);
+   void       hide();
+   void       unselectItemInMenu();
+   FMenuItem* getSelectedMenuItem() const;
+   bool       hasSelectedMenuItem() const;
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool = true);
-   void cb_item_activated (FWidget*, void*);
-   void cb_item_deactivated (FWidget*, void*);
+   void       setGeometry (int, int, int, int, bool = true);
+   void       cb_item_activated (FWidget*, void*);
+   void       cb_item_deactivated (FWidget*, void*);
 
  private:
    friend class FMenu;
@@ -87,6 +91,10 @@ class FMenuBar : public FWindow, public FMenuList
 //----------------------------------------------------------------------
 inline const char* FMenuBar::getClassName() const
 { return "FMenuBar"; }
+
+//----------------------------------------------------------------------
+inline FMenuItem* FMenuBar::getSelectedMenuItem() const
+{ return selectedMenuItem; }
 
 //----------------------------------------------------------------------
 inline bool FMenuBar::hasSelectedMenuItem() const

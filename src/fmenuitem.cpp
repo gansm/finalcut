@@ -87,7 +87,7 @@ FMenuItem::~FMenuItem()  // destructor
 void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
-  hotkey = getHotkey();
+  hotkey = hotKey();
   if ( hotkey )
     text_length--;
   setGeometry (1,1,int(text_length+2),1, false);
@@ -147,7 +147,7 @@ void FMenuItem::init (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-uChar FMenuItem::getHotkey()
+uChar FMenuItem::hotKey()
 {
   uInt length;
 
@@ -338,14 +338,17 @@ void FMenuItem::onAccel (FAccelEvent* ev)
       FMenuBar* mb = dynamic_cast<FMenuBar*>(super_menu);
       if ( mb )
       {
-        if ( mb->selectedMenuItem )
-          mb->selectedMenuItem->unsetSelected();
-        setSelected();
-        mb->selectedMenuItem = this;
-        mb->redraw();
         if ( menu && ! menu->hasSelectedListItem() )
         {
-          FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+          FWidget* focused_widget;
+
+          if ( mb->getSelectedMenuItem() )
+            mb->getSelectedMenuItem()->unsetSelected();
+          setSelected();
+          mb->selectedMenuItem = this;
+
+
+          focused_widget = static_cast<FWidget*>(ev->focusedWidget());
           FFocusEvent out (FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           menu->selectFirstItemInList();
@@ -355,6 +358,14 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           menu->redraw();
           if ( statusBar() )
             statusBar()->drawMessage();
+          mb->redraw();
+        }
+        else
+        {
+          unsetSelected();
+          mb->selectedMenuItem = 0;
+          mb->redraw();
+          processClicked();
         }
         ev->accept();
       }
@@ -417,13 +428,13 @@ bool FMenuItem::setFocus (bool on)
 
     if ( isEnabled() )
     {
-      /*if ( statusBar() )
+      if ( statusBar() )
       {
         FString msg = getStatusbarMessage();
         FString curMsg = statusBar()->getMessage();
         if ( curMsg != msg )
           statusBar()->setMessage(msg);
-      }*/
+      }
     }
   }
   else
@@ -458,7 +469,7 @@ void FMenuItem::setText (FString& txt)
 {
   text = txt;
   text_length = text.getLength();
-  hotkey = getHotkey();
+  hotkey = hotKey();
   if ( hotkey )
     text_length--;
   setWidth(int(text_length));

@@ -25,7 +25,6 @@ FMenuList::~FMenuList()  // destructor
     while ( iter != itemlist.end() )
     {
       (*iter)->setSuperMenu(0);
-      //delAccelerator (*iter);
       iter = itemlist.erase(iter);
     }
   }

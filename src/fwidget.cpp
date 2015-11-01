@@ -965,6 +965,12 @@ FMenuBar* FWidget::menuBar()
 }
 
 //----------------------------------------------------------------------
+void FWidget::setStatusbarMessage (FString msg)
+{
+  statusbar_message = msg;
+}
+
+//----------------------------------------------------------------------
 void FWidget::addCallback ( FString cb_signal
                           , FWidget::FCallback cb_handler
                           , data_ptr data )

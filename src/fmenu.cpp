@@ -3,7 +3,6 @@
 
 #include "fapp.h"
 #include "fmenu.h"
-#include "fmessagebox.h" // <----- remove later
 #include "fstatusbar.h"
 
 //----------------------------------------------------------------------
@@ -113,7 +112,16 @@ void FMenu::init(FWidget* parent)
   item->setMenu(this);
 
   if ( parent )
+  {
+    if ( isMenuBar(parent) )
+    {
+      FMenuBar* mb = dynamic_cast<FMenuBar*>(parent);
+      if ( mb )
+        mb->menu_dimension();
+    }
     setSuperMenu(parent);
+  }
+  menu_dimension();
 }
 
 //----------------------------------------------------------------------
@@ -123,7 +131,7 @@ void FMenu::menu_dimension()
   std::vector<FMenuItem*>::const_iterator iter, end;
   iter = itemlist.begin();
   end = itemlist.end();
-  maxItemWidth = 0;
+  maxItemWidth = 10;
 
   // find the max item width
   while ( iter != end )
@@ -451,7 +459,6 @@ void FMenu::drawItems()
     uInt txt_length;
     int  hotkeypos, to_char;
     bool is_enabled = (*iter)->isEnabled();
-    bool has_focus = (*iter)->hasFocus();
     bool is_selected = (*iter)->isSelected();
     bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
     bool is_separator = (*iter)->isSeparator();
@@ -475,12 +482,16 @@ void FMenu::drawItems()
         {
           foregroundColor = wc.menu_active_fg;
           backgroundColor = wc.menu_active_bg;
+          if ( isMonochron() )
+            setReverse(true);
         }
       }
       else
       {
         foregroundColor = wc.menu_inactive_fg;
         backgroundColor = wc.menu_inactive_bg;
+        if ( isMonochron() )
+          setReverse(true);
       }
       gotoxy (xpos+xmin, ypos+ymin+y);
       setColor (foregroundColor, backgroundColor);
@@ -494,8 +505,17 @@ void FMenu::drawItems()
       to_char = int(txt_length);
       hotkeypos = getHotkeyPos (src, dest, txt_length);
 
-      if ( hotkeypos != -1 )
+      if ( hotkeypos == -1 )
       {
+        if ( is_selected )
+          setCursorPos ( xpos+xmin+1
+                       , ypos+ymin+y ); // first character
+      }
+      else
+      {
+        if ( is_selected )
+          setCursorPos ( xpos+xmin+1+hotkeypos
+                       , ypos+ymin+y ); // hotkey
         txt_length--;
         to_char--;
       }
@@ -534,7 +554,7 @@ void FMenu::drawItems()
         setReverse(true);
       delete[] item_text;
     }
-    if ( has_focus && statusBar() )
+    /*if ( is_selected && statusBar() )
     {
       FString msg = (*iter)->getStatusbarMessage();
       FString curMsg = statusBar()->getMessage();
@@ -543,10 +563,12 @@ void FMenu::drawItems()
         statusBar()->setMessage(msg);
         statusBar()->drawMessage();
       }
-    }
+    }*/
     ++iter;
     y++;
   }
+  if ( hasFocus() )
+    setCursor();
 }
 
 //----------------------------------------------------------------------
@@ -554,10 +576,14 @@ inline void FMenu::drawSeparator(int y)
 {
   gotoxy (xpos+xmin-1, ypos+ymin+y);
   setColor (wc.menu_active_fg, wc.menu_active_bg);
+  if ( isMonochron() )
+    setReverse(true);
   print(fc::BoxDrawingsVerticalAndRight);
   FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
   print (line);
   print(fc::BoxDrawingsVerticalAndLeft);
+  if ( isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------
@@ -571,6 +597,40 @@ void FMenu::processActivate()
 //----------------------------------------------------------------------
 void FMenu::onKeyPress (FKeyEvent* ev)
 {
+  // looking for a hotkey
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->hasHotkey() )
+    {
+      bool found = false;
+      int hotkey = (*iter)->getHotkey();
+      int key = ev->key();
+
+      if ( isalpha(hotkey) || isdigit(hotkey) )
+      {
+        if ( tolower(hotkey) == key || toupper(hotkey) == key )
+          found = true;
+      }
+      else if ( hotkey == key )
+        found = true;
+
+      if ( found )
+      {
+        unselectItemInList();
+        hide();
+        hideSuperMenus();
+        ev->accept();
+        (*iter)->processClicked();
+        return;
+      }
+    }
+    ++iter;
+  }
+
   switch ( ev->key() )
   {
     case fc::Fkey_return:
@@ -597,7 +657,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_left:
-      if ( selectedListItem->hasMenu() )
+      if ( hasSelectedListItem() && selectedListItem->hasMenu() )
       {
         FMenu* sub_menu = selectedListItem->getMenu();
         if ( sub_menu->isVisible() )
@@ -611,7 +671,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_right:
-      if ( selectedListItem->hasMenu() )
+      if ( hasSelectedListItem() && selectedListItem->hasMenu() )
       {
         FMenu* sub_menu = selectedListItem->getMenu();
         if ( ! sub_menu->isVisible() )
@@ -790,16 +850,14 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       y  = (*iter)->getY();
       mouse_x = mouse_pos.getX();
       mouse_y = mouse_pos.getY();
-/*
-FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n"
-                                                   "iter x1=%d, x2=%d, y=%d"
-                                                   , ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()
-                                                   , x1, x2, y) );*/
+
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == y )
       {
-        if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
+        if (    (*iter)->isEnabled()
+           && ! (*iter)->isSelected()
+           && ! (*iter)->isSeparator() )
         {
           FWidget* focused_widget = getFocusWidget();
           FFocusEvent out (FocusOut_Event);
@@ -829,6 +887,20 @@ FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)\n
       ++iter;
     }
 
+    // Mouse is over border or separator
+    if ( ! selectedListItem && statusBar()
+       && getGeometryGlobal().contains(ev->getGlobalPos()) )
+    {
+      FString msg = getStatusbarMessage();
+      FString curMsg = statusBar()->getMessage();
+      if ( curMsg != msg )
+      {
+        statusBar()->setMessage(msg);
+        statusBar()->drawMessage();
+      }
+    }
+
+    // Mouse event handover to the menu bar
     FWidget* menubar = getSuperMenu();
     if (  menubar
        && isMenuBar(menubar)
@@ -898,16 +970,36 @@ void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 }
 
 //----------------------------------------------------------------------
+void FMenu::setStatusbarMessage(FString msg)
+{
+  FWidget::setStatusbarMessage(msg);
+  if ( item )
+    item->setStatusbarMessage(msg);
+}
+
+//----------------------------------------------------------------------
 void FMenu::selectFirstItemInList()
 {
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
   if ( itemlist.empty() )
     return;
 
-  if ( ! hasSelectedListItem() )
+  if ( hasSelectedListItem() )
+    unselectItemInList();
+
+  while ( iter != end )
   {
-    // select the first item
-    itemlist[0]->setSelected();
-    selectedListItem = itemlist[0];
+    if ( (*iter)->isEnabled() && ! (*iter)->isSeparator() )
+    {
+      // select first enabled item
+      (*iter)->setSelected();
+      selectedListItem = *iter;
+      break;
+    }
+    ++iter;
   }
 }
 
