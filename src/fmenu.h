@@ -67,7 +67,8 @@ class FMenu : public FWindow, public FMenuList
    bool       containsMenuStructure (int, int) const;
    bool       selectNextItem();
    bool       selectPrevItem();
-   void       keypressMenuBar (FKeyEvent*);
+   void       keypressMenuBar (FKeyEvent*&);
+   bool       hotkeyMenu (FKeyEvent*&);
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawBorder();

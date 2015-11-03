@@ -31,11 +31,6 @@ FMenuList::~FMenuList()  // destructor
 }
 
 
-// private methods of FMenuList
-//----------------------------------------------------------------------
-
-
-
 // public methods of FMenuList
 //----------------------------------------------------------------------
 bool FMenuList::hasSelectedItem()

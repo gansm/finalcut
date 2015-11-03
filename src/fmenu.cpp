@@ -115,9 +115,9 @@ void FMenu::init(FWidget* parent)
   {
     if ( isMenuBar(parent) )
     {
-      FMenuBar* mb = dynamic_cast<FMenuBar*>(parent);
-      if ( mb )
-        mb->menu_dimension();
+      FMenuBar* mbar = dynamic_cast<FMenuBar*>(parent);
+      if ( mbar )
+        mbar->menu_dimension();
     }
     setSuperMenu(parent);
   }
@@ -201,15 +201,15 @@ void FMenu::hideSuperMenus()
   {
     if ( isMenuBar(super) )
     {
-      FMenuBar* mb = reinterpret_cast<FMenuBar*>(super);
-      FMenuItem* selectedMenuItem = mb->selectedMenuItem;
+      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(super);
+      FMenuItem* selectedMenuItem = mbar->selectedMenuItem;
 
       if ( selectedMenuItem )
       {
         selectedMenuItem->unsetSelected();
         selectedMenuItem = 0;
-        mb->mouse_down = false;
-        mb->redraw();
+        mbar->mouse_down = false;
+        mbar->redraw();
       }
     }
     else if ( isMenu(super) )
@@ -321,17 +321,55 @@ bool FMenu::selectPrevItem()
 }
 
 //----------------------------------------------------------------------
-void FMenu::keypressMenuBar (FKeyEvent* ev)
+void FMenu::keypressMenuBar (FKeyEvent*& ev)
 {
   FWidget* super = getSuperMenu();
   if ( super )
   {
     if ( isMenuBar(super) )
     {
-      FMenuBar* mb = reinterpret_cast<FMenuBar*>(super);
-      mb->onKeyPress(ev);
+      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(super);
+      mbar->onKeyPress(ev);
     }
   }
+}
+
+//----------------------------------------------------------------------
+bool FMenu::hotkeyMenu (FKeyEvent*& ev)
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->hasHotkey() )
+    {
+      bool found = false;
+      int hotkey = (*iter)->getHotkey();
+      int key = ev->key();
+
+      if ( isalpha(hotkey) || isdigit(hotkey) )
+      {
+        if ( tolower(hotkey) == key || toupper(hotkey) == key )
+          found = true;
+      }
+      else if ( hotkey == key )
+        found = true;
+
+      if ( found )
+      {
+        unselectItemInList();
+        hide();
+        hideSuperMenus();
+        ev->accept();
+        (*iter)->processClicked();
+        return true;
+      }
+    }
+    ++iter;
+  }
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -554,16 +592,6 @@ void FMenu::drawItems()
         setReverse(true);
       delete[] item_text;
     }
-    /*if ( is_selected && statusBar() )
-    {
-      FString msg = (*iter)->getStatusbarMessage();
-      FString curMsg = statusBar()->getMessage();
-      if ( curMsg != msg )
-      {
-        statusBar()->setMessage(msg);
-        statusBar()->drawMessage();
-      }
-    }*/
     ++iter;
     y++;
   }
@@ -597,38 +625,17 @@ void FMenu::processActivate()
 //----------------------------------------------------------------------
 void FMenu::onKeyPress (FKeyEvent* ev)
 {
-  // looking for a hotkey
-  std::vector<FMenuItem*>::const_iterator iter, end;
-  iter = itemlist.begin();
-  end = itemlist.end();
+  // looking for menu hotkey
+  if ( hotkeyMenu(ev) )
+    return;
 
-  while ( iter != end )
+  // looking for menu bar hotkey
+  FWidget* smenu = getSuperMenu();
+  if ( smenu && isMenuBar(smenu))
   {
-    if ( (*iter)->hasHotkey() )
-    {
-      bool found = false;
-      int hotkey = (*iter)->getHotkey();
-      int key = ev->key();
-
-      if ( isalpha(hotkey) || isdigit(hotkey) )
-      {
-        if ( tolower(hotkey) == key || toupper(hotkey) == key )
-          found = true;
-      }
-      else if ( hotkey == key )
-        found = true;
-
-      if ( found )
-      {
-        unselectItemInList();
-        hide();
-        hideSuperMenus();
-        ev->accept();
-        (*iter)->processClicked();
-        return;
-      }
-    }
-    ++iter;
+    FMenuBar* mbar = reinterpret_cast<FMenuBar*>(smenu);
+    if ( mbar->hotkeyMenu(ev) )
+      return;
   }
 
   switch ( ev->key() )
@@ -911,8 +918,8 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       int b = ev->getButton();
       ev = new FMouseEvent (MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
-      FMenuBar* sm = reinterpret_cast<FMenuBar*>(menubar);
-      sm->onMouseDown(ev);
+      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
+      mbar->onMouseDown(ev);
       delete ev;
     }
 

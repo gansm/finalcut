@@ -47,6 +47,7 @@ void FMenuBar::init()
   setGeometry (1, 1, getColumnNumber(), 1, false);
   getRootWidget()->setTopPadding(1, true);
   setMenuBar(this);
+  addAccelerator (fc::Fkey_f10, this);
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
   window_object  = true;
@@ -189,6 +190,60 @@ bool FMenuBar::selectPrevItem()
   } while ( iter != begin );
 
   return true;
+}
+
+//----------------------------------------------------------------------
+bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->isEnabled() )
+    {
+      int hotkey = (*iter)->getHotkey();
+      int key = ev->key();
+      
+      if ( 0x20000e0+tolower(hotkey) == key )
+      {
+        FMenuItem* sel_item = getSelectedMenuItem();
+
+        if ( sel_item && sel_item->hasMenu() )
+          sel_item->getMenu()->unselectItemInList();
+
+        unselectItemInMenu();
+
+        if ( (*iter)->hasMenu() )
+        {
+           FMenuItem* first_item;
+           FMenu* menu = (*iter)->getMenu();
+           (*iter)->setSelected();
+           (*iter)->setFocus();
+           menu->selectFirstItemInList();
+           first_item = menu->getSelectedListItem();
+           if ( first_item )
+             first_item->setFocus();
+           menu->redraw();
+           if ( statusBar() )
+             statusBar()->drawMessage();
+           selectedMenuItem = *iter;
+           redraw();
+        }
+        else
+        {
+          selectedMenuItem = 0;
+          redraw();
+          (*iter)->processClicked();
+        }
+        ev->accept();
+        return true;
+      }
+    }
+    ++iter;
+  }
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -369,17 +424,6 @@ void FMenuBar::drawItems()
     setReverse(false);
 
   setUpdateVTerm(true);
-/*
-  if ( hasSelectedMenuItem() && statusBar() )
-  {
-    FString msg = getSelectedMenuItem()->getStatusbarMessage();
-    FString curMsg = statusBar()->getMessage();
-    if ( curMsg != msg )
-    {
-      statusBar()->setMessage(msg);
-      statusBar()->drawMessage();
-    }
-  }*/
 }
 
 //----------------------------------------------------------------------
@@ -467,8 +511,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     end = itemlist.end();
     mouse_x = ev->getX();
     mouse_y = ev->getY();
-//FMessageBox::info (this, "Info", FString().sprintf("local(%d,%d) global(%d,%d)", ev->getX(),ev->getY(),ev->getGlobalX(), ev->getGlobalY()));
-// #include "fmessagebox.h"
+
     while ( iter != end )
     {
       int x1, x2;
@@ -486,9 +529,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
           FFocusEvent out (FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
-//FMessageBox::info (this, "Info", (*iter)->getStatusbarMessage());
           (*iter)->setFocus();
-//FMessageBox::info (this, "Info", statusBar()->getMessage());
           selectedMenuItem = *iter;
           focus_changed = true;
           if ( focused_widget )
@@ -685,6 +726,20 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FMenuBar::onAccel (FAccelEvent* ev)
+{
+  if ( ! hasSelectedMenuItem() )
+  {
+    selectFirstItemInMenu();
+    getSelectedMenuItem()->setFocus();
+    if ( statusBar() )
+      statusBar()->drawMessage();
+    redraw();
+  }
+  ev->accept();
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::hide()
 {
   int fg, bg, screenWidth;
@@ -704,6 +759,32 @@ void FMenuBar::hide()
   gotoxy (1,1);
   print (vmenubar, blank);
   delete[] blank;
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::selectFirstItemInMenu()
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  if ( itemlist.empty() )
+    return;
+
+  if ( hasSelectedMenuItem() )
+    unselectItemInMenu();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->isEnabled() && ! (*iter)->isSeparator() )
+    {
+      // select first enabled item
+      (*iter)->setSelected();
+      selectedMenuItem = *iter;
+      break;
+    }
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------

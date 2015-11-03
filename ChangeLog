@@ -1,3 +1,6 @@
+2015-11-03  Markus Gans  <guru.mail@muenster.de>
+	* Improve keyboard shortcut handling in menus
+
 2015-11-01  Markus Gans  <guru.mail@muenster.de>
 	* First working version of an application menu, 
 	  it uses the new classes FMenuBar, FMenu and FMenuItem 

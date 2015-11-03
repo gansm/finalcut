@@ -56,6 +56,7 @@ class FMenuBar : public FWindow, public FMenuList
    bool isMenu (FMenuItem*) const;
    bool selectNextItem();
    bool selectPrevItem();
+   bool hotkeyMenu (FKeyEvent*&);
    int  getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void draw();
    void drawItems();
@@ -70,7 +71,9 @@ class FMenuBar : public FWindow, public FMenuList
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
+   void       onAccel (FAccelEvent*);
    void       hide();
+   void       selectFirstItemInMenu();
    void       unselectItemInMenu();
    FMenuItem* getSelectedMenuItem() const;
    bool       hasSelectedMenuItem() const;
