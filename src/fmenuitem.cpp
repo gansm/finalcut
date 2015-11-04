@@ -219,10 +219,12 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-      if ( mbar->hotkeyMenu(ev) )
-        return;
       if ( mbar )
+      {
+        if ( mbar->hotkeyMenu(ev) )
+          return;
         mbar->onKeyPress(ev);
+      }
     }
   }
 }
