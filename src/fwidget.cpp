@@ -72,7 +72,7 @@ FWidget::FWidget (FWidget* parent)
 {
   resize_term = false;
 
-  if ( parent == 0 )
+  if ( ! parent )
   {
     assert ( ! rootObject
            && "FTerm: There should be only one root object" );

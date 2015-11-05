@@ -1776,7 +1776,7 @@ void FTerm::resizeArea (term_area* area)
   char_data default_char;
   line_changes unchanged;
 
-  if ( area == 0 )
+  if ( ! area )
     return;
 
   if ( term_object == this )
@@ -1939,7 +1939,7 @@ bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
   bool covered, found;
   FWidget* w;
 
-  if ( area == 0 )
+  if ( ! area )
     return false;
 
   covered = false;
@@ -2014,7 +2014,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
     return;
   }
 
-  if ( area == 0 )
+  if ( ! area )
     return;
 
   if ( ! area->visible )
@@ -2096,7 +2096,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
   FTerm::char_data* tc; // terminal character
   FTerm::char_data* ac; // area character
 
-  if ( area == 0 )
+  if ( ! area )
     return;
   ax--;
   ay--;
@@ -2131,7 +2131,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
   FTerm::char_data* tc; // terminal character
   FTerm::char_data* ac; // area character
 
-  if ( area == 0 )
+  if ( ! area )
     return;
 
   dx = x - area->widget->getGlobalX();
@@ -2170,7 +2170,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 {
-  if ( area == 0 )
+  if ( ! area )
     return;
   if ( ! area->visible )
     return;
@@ -2184,7 +2184,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
   FTerm::char_data* tc; // terminal character
   FTerm::char_data* ac; // area character
 
-  if ( area == 0 )
+  if ( ! area )
     return;
   if ( ! area->visible )
     return;

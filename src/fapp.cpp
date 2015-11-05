@@ -54,7 +54,7 @@ FApplication::FApplication (int &_argc, char* _argv[])
   rootObj = this;
   static char* empty = const_cast<char*>("");
 
-  if ( _argc == 0 || _argv == 0 )
+  if ( ! _argc || ! _argv )
   {
     _argc = 0;
     _argv = &empty;
@@ -962,6 +962,7 @@ void FApplication::processMouseEvent()
     }
   }
 
+  // close open menu
   if ( open_menu && ! b_state.mouse_moved )
   {
     FMenu* menu = static_cast<FMenu*>(open_menu);
@@ -972,6 +973,17 @@ void FApplication::processMouseEvent()
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
+    }
+  }
+
+  if (  ! open_menu && menuBar()
+     && menuBar()->hasSelectedMenuItem()
+     && ! b_state.mouse_moved )
+  {
+    if ( ! menuBar()->getGeometryGlobal().contains(*mouse) )
+    {
+      menuBar()->resetMenu();
+      menuBar()->redraw();
     }
   }
 
@@ -1155,8 +1167,8 @@ int FApplication::processTimerEvent()
 
   while ( iter != end )
   {
-    if (  (*iter).id == 0
-       || (*iter).object == 0
+    if (  ! (*iter).id
+       || ! (*iter).object
        || currentTime < (*iter).timeout )  // no timer expired
       break;
 
@@ -1323,7 +1335,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
   if ( quit_now || app_exit_loop )
     return false;
 
-  if ( receiver == 0 )
+  if ( ! receiver )
     return false;
 
   widget = static_cast<FWidget*>(receiver);
@@ -1373,7 +1385,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
 //----------------------------------------------------------------------
 void FApplication::queueEvent (FObject* receiver, FEvent* event)
 {
-  if ( receiver == 0 )
+  if ( ! receiver )
     return;
 
   // queue this event
@@ -1415,7 +1427,7 @@ bool FApplication::removeQueuedEvent(FObject* receiver)
 
   if ( ! eventInQueue() )
     return false;
-  if ( receiver == 0 )
+  if ( ! receiver )
     return false;
 
   retval = false;

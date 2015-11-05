@@ -187,13 +187,13 @@ char* FFileDialog::getHomeDir()
   struct passwd* pwd;
   pwd = getpwuid( geteuid() );
 
-  if ( pwd == 0 )
+  if ( ! pwd )
     return const_cast<char*>("");
   else
   {
     pwd = getpwnam(pwd->pw_name);
 
-    if ( pwd == 0 )
+    if ( ! pwd )
       return const_cast<char*>("");
     else
       return pwd->pw_dir;

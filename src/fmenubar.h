@@ -46,21 +46,22 @@ class FMenuBar : public FWindow, public FMenuList
 {
  private:
    bool mouse_down;
+   bool drop_down;
    FMenuItem* selectedMenuItem;
 
  private:
    FMenuBar (const FMenuBar&);
    FMenuBar& operator = (const FMenuBar&);
-   void init();
-   void menu_dimension();
-   bool isMenu (FMenuItem*) const;
-   bool selectNextItem();
-   bool selectPrevItem();
-   bool hotkeyMenu (FKeyEvent*&);
-   int  getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void draw();
-   void drawItems();
-   void adjustSize();
+   void       init();
+   void       menu_dimension();
+   bool       isMenu (FMenuItem*) const;
+   bool       selectNextItem();
+   bool       selectPrevItem();
+   bool       hotkeyMenu (FKeyEvent*&);
+   int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+   void       draw();
+   void       drawItems();
+   void       adjustSize();
 
  public:
    explicit FMenuBar (FWidget* = 0);  // constructor
@@ -75,6 +76,7 @@ class FMenuBar : public FWindow, public FMenuList
    void       hide();
    void       selectFirstItemInMenu();
    void       unselectItemInMenu();
+   void       resetMenu();
    FMenuItem* getSelectedMenuItem() const;
    bool       hasSelectedMenuItem() const;
    // make every setGeometry from FWidget available

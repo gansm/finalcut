@@ -10,7 +10,6 @@ EXTRA_DIST = \
 	console_codes-manual.sh \
 	console_ioctl-manual.sh \
 	fileopen-dialog.png \
-	menu-draft.png \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \
@@ -30,7 +29,6 @@ doc_DATA = \
 	console_codes-manual.sh \
 	console_ioctl-manual.sh \
 	fileopen-dialog.png \
-	menu-draft.png \
 	ncurses.supp \
 	newfont1.png \
 	newfont2.png \

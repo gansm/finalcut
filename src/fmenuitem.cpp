@@ -350,7 +350,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
             mbar->getSelectedMenuItem()->unsetSelected();
           setSelected();
           mbar->selectedMenuItem = this;
-
+          openMenu();
 
           focused_widget = static_cast<FWidget*>(ev->focusedWidget());
           FFocusEvent out (FocusOut_Event);
@@ -363,6 +363,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           if ( statusBar() )
             statusBar()->drawMessage();
           mbar->redraw();
+          mbar->drop_down = true;
         }
         else
         {
@@ -370,6 +371,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           mbar->selectedMenuItem = 0;
           mbar->redraw();
           processClicked();
+          mbar->drop_down = false;
         }
         ev->accept();
       }
@@ -387,6 +389,13 @@ void FMenuItem::onFocusIn (FFocusEvent*)
 //----------------------------------------------------------------------
 void FMenuItem::onFocusOut (FFocusEvent*)
 {
+  unsetSelected();
+  if ( super_menu && isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+    if ( mbar )
+      mbar->redraw();
+  }
   if ( statusBar() )
   {
     statusBar()->clearMessage();
@@ -466,6 +475,33 @@ void FMenuItem::unsetSelected()
 {
   selected = false;
   processDeactivate();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::openMenu()
+{
+  FMenu* menu;
+  FMenu* open_menu;
+
+  if ( hasMenu() )
+  {
+    menu = getMenu();
+  
+    if ( ! menu->isVisible() )
+    {
+      open_menu = static_cast<FMenu*>(getOpenMenu());
+      if ( open_menu && open_menu != menu )
+        open_menu->hide();
+      setOpenMenu(menu);
+  
+      menu->setVisible();
+      menu->show();
+      menu->raiseWindow(menu);
+      menu->redraw();
+      updateTerminal();
+      flush_out();
+    }
+  }
 }
 
 //----------------------------------------------------------------------

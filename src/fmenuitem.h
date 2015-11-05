@@ -101,6 +101,7 @@ class FMenuItem : public FWidget
    FMenu*     getMenu() const;
    void       setMenu(FMenu*);
    bool       hasMenu() const;
+   void       openMenu();
    uInt       getTextLength() const;
    void       setText (FString&);
    void       setText (const std::string&);
