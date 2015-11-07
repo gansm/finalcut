@@ -347,7 +347,7 @@ bool FWindow::activatePrevWindow()
     {
       --iter;
       FWindow* w = static_cast<FWindow*>(*iter);
-      if ( w && ! w->isActiveWindow() )
+      if ( w && ! w->isHiddenWindow() && ! w->isActiveWindow() )
       {
         setActiveWindow(w);
         return true;

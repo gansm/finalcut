@@ -95,9 +95,9 @@ void FMenuItem::init (FWidget* parent)
   if ( parent )
   {
     setSuperMenu(parent);
-    FMenuList* sm_list = dynamic_cast<FMenuList*>(parent);
-    if ( sm_list )
-      sm_list->insert(this);
+    FMenuList* menu_list = dynamic_cast<FMenuList*>(parent);
+    if ( menu_list )
+      menu_list->insert(this);
 
     if ( isMenuBar(parent) ) // Parent is menubar
     {
@@ -121,9 +121,9 @@ void FMenuItem::init (FWidget* parent)
     }
     else if ( isMenu(parent) ) // Parent is menu
     {
-      FMenu* super_menu_ptr = dynamic_cast<FMenu*>(parent);
-      if ( super_menu_ptr )
-        super_menu_ptr->menu_dimension();
+      FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+      if ( menu_ptr )
+        menu_ptr->menu_dimension();
 
       //addAccelerator (accel_key, this);
 
@@ -342,21 +342,22 @@ void FMenuItem::onAccel (FAccelEvent* ev)
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
       if ( mbar )
       {
-        if ( menu && ! menu->hasSelectedListItem() )
+        if ( menu )
         {
           FWidget* focused_widget;
 
-          if ( mbar->getSelectedMenuItem() )
-            mbar->getSelectedMenuItem()->unsetSelected();
+          if ( mbar->getSelectedItem() )
+            mbar->getSelectedItem()->unsetSelected();
           setSelected();
-          mbar->selectedMenuItem = this;
+          mbar->selectedItem = this;
           openMenu();
 
           focused_widget = static_cast<FWidget*>(ev->focusedWidget());
           FFocusEvent out (FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
-          menu->selectFirstItemInList();
-          menu->selectedListItem->setFocus();
+          menu->unselectItem();
+          menu->selectFirstItem();
+          menu->getSelectedItem()->setFocus();
           if ( focused_widget )
             focused_widget->redraw();
           menu->redraw();
@@ -368,7 +369,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
         else
         {
           unsetSelected();
-          mbar->selectedMenuItem = 0;
+          mbar->selectedItem = 0;
           mbar->redraw();
           processClicked();
           mbar->drop_down = false;
@@ -441,6 +442,31 @@ bool FMenuItem::setFocus (bool on)
 
     if ( isEnabled() )
     {
+      if ( ! selected )
+      {
+        FMenuList* menu_list = dynamic_cast<FMenuList*>(getSuperMenu());
+        menu_list->unselectItem();
+        setSelected();
+        menu_list->setSelectedItem(this);
+
+        if ( statusBar() )
+          statusBar()->drawMessage();
+
+        FWidget* parent = getSuperMenu();
+        if ( isMenuBar(parent) )
+        {
+          FMenuBar* menubar_ptr = dynamic_cast<FMenuBar*>(parent);
+          if ( menubar_ptr )
+            menubar_ptr->redraw();
+        }
+        else if ( isMenu(parent) )
+        {
+          FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+          if ( menu_ptr )
+            menu_ptr->redraw();
+        }
+      }
+      
       if ( statusBar() )
       {
         FString msg = getStatusbarMessage();

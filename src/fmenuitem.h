@@ -142,11 +142,17 @@ inline bool FMenuItem::isSelected() const
 
 //----------------------------------------------------------------------
 inline void FMenuItem::setSeparator()
-{ separator = true; }
+{
+  separator = true;
+  unsetFocusable();
+}
 
 //----------------------------------------------------------------------
 inline void FMenuItem::unsetSeparator()
-{ separator = false; }
+{
+  separator = false;
+  setFocusable();
+}
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::isSeparator() const

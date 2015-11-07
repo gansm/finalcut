@@ -38,6 +38,7 @@
 class FMenuList
 {
  protected:
+   FMenuItem* selectedItem;
    std::vector<FMenuItem*> itemlist;
 
  private:
@@ -54,7 +55,12 @@ class FMenuList
    void         enableItem (int);
    void         disableItem (int);
    bool         isSelected (int) const;
+   void         selectFirstItem();
+   void         unselectItem();
    bool         hasSelectedItem();
+   FMenuItem*   getSelectedItem() const;
+   void         setSelectedItem (FMenuItem*);
+   bool         hasSelectedItem() const;
 
    virtual void insert (FMenuItem*);
    virtual void remove (FMenuItem*);
@@ -89,5 +95,16 @@ inline void FMenuList::disableItem (int index)
 inline bool FMenuList::isSelected(int index) const
 { return itemlist[uInt(index-1)]->isSelected(); }
 
+//----------------------------------------------------------------------
+inline FMenuItem* FMenuList::getSelectedItem() const
+{ return selectedItem; }
+
+//----------------------------------------------------------------------
+inline void FMenuList::setSelectedItem (FMenuItem* item)
+{ selectedItem = item; }
+
+//----------------------------------------------------------------------
+inline bool FMenuList::hasSelectedItem() const
+{ return selectedItem; }
 
 #endif  // _FMENULIST_H

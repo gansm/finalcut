@@ -10,7 +10,8 @@
 // constructor and destructor
 //----------------------------------------------------------------------
 FMenuList::FMenuList()
-  : itemlist()
+  : selectedItem()
+  , itemlist()
 { }
 
 //----------------------------------------------------------------------
@@ -32,6 +33,40 @@ FMenuList::~FMenuList()  // destructor
 
 
 // public methods of FMenuList
+//----------------------------------------------------------------------
+void FMenuList::selectFirstItem()
+{
+  std::vector<FMenuItem*>::const_iterator iter, end;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  if ( itemlist.empty() )
+    return;
+
+  if ( hasSelectedItem() )
+    unselectItem();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->isEnabled() && ! (*iter)->isSeparator() )
+    {
+      // select first enabled item
+      (*iter)->setSelected();
+      setSelectedItem(*iter);
+      break;
+    }
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuList::unselectItem()
+{
+  if ( hasSelectedItem() )
+    getSelectedItem()->unsetSelected();
+  setSelectedItem(0);
+}
+
 //----------------------------------------------------------------------
 bool FMenuList::hasSelectedItem()
 {

@@ -969,7 +969,7 @@ void FApplication::processMouseEvent()
 
     if ( ! menu->containsMenuStructure(*mouse) )
     {
-      menu->unselectItemInList();
+      menu->unselectItem();
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
@@ -977,7 +977,7 @@ void FApplication::processMouseEvent()
   }
 
   if (  ! open_menu && menuBar()
-     && menuBar()->hasSelectedMenuItem()
+     && menuBar()->hasSelectedItem()
      && ! b_state.mouse_moved )
   {
     if ( ! menuBar()->getGeometryGlobal().contains(*mouse) )

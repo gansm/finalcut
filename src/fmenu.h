@@ -47,7 +47,6 @@ class FMenu : public FWindow, public FMenuList
 {
  private:
    FMenuItem* item;
-   FMenuItem* selectedListItem;
    FWidget*   super_menu;
    uInt       maxItemWidth;
    bool       mouse_down;
@@ -106,10 +105,6 @@ class FMenu : public FWindow, public FMenuList
    void       setSelected();
    void       unsetSelected();
    bool       isSelected() const;
-   void       selectFirstItemInList();
-   void       unselectItemInList();
-   FMenuItem* getSelectedListItem() const;
-   bool       hasSelectedListItem() const;
    bool       hasHotkey() const;
    void       setMenu (FMenu*);
    bool       hasMenu() const;
@@ -125,6 +120,7 @@ class FMenu : public FWindow, public FMenuList
 
  private:
    friend class FApplication;
+   friend class FMenuBar;
    friend class FMenuItem;
 };
 #pragma pack(pop)
@@ -190,14 +186,6 @@ inline void FMenu::unsetSelected()
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const
 { return item->isSelected(); }
-
-//----------------------------------------------------------------------
-inline FMenuItem* FMenu::getSelectedListItem() const
-{ return selectedListItem; }
-
-//----------------------------------------------------------------------
-inline bool FMenu::hasSelectedListItem() const
-{ return selectedListItem; }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasHotkey() const

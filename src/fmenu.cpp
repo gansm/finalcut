@@ -14,7 +14,6 @@
 FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
   , item(0)
-  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
@@ -26,7 +25,6 @@ FMenu::FMenu(FWidget* parent)
 FMenu::FMenu (FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
-  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
@@ -39,7 +37,6 @@ FMenu::FMenu (FString& txt, FWidget* parent)
 FMenu::FMenu (const std::string& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
-  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
@@ -52,7 +49,6 @@ FMenu::FMenu (const std::string& txt, FWidget* parent)
 FMenu::FMenu (const char* txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
-  , selectedListItem(0)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
@@ -179,16 +175,15 @@ bool FMenu::isMenu (FWidget* w) const
 void FMenu::hideSubMenus()
 {
   // hide all sub-menus
-  if ( selectedListItem )
+  if ( hasSelectedItem() )
   {
-    if ( selectedListItem->hasMenu() )
+    if ( getSelectedItem()->hasMenu() )
     {
-      FMenu* m = selectedListItem->getMenu();
+      FMenu* m = getSelectedItem()->getMenu();
       m->hideSubMenus();
       m->hide();
     }
-    selectedListItem->unsetSelected();
-    selectedListItem = 0;
+    unselectItem();
   }
 }
 
@@ -202,13 +197,14 @@ void FMenu::hideSuperMenus()
     if ( isMenuBar(super) )
     {
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(super);
-      FMenuItem* selectedMenuItem = mbar->selectedMenuItem;
+      FMenuItem* selectedMenuItem = mbar->getSelectedItem();
 
       if ( selectedMenuItem )
       {
         selectedMenuItem->unsetSelected();
         selectedMenuItem = 0;
         mbar->mouse_down = false;
+        mbar->drop_down = false;
         mbar->redraw();
       }
     }
@@ -225,7 +221,7 @@ void FMenu::hideSuperMenus()
 bool FMenu::containsMenuStructure (int x, int y) const
 {
   // Check mouse click position for item, menu and all sub menus
-  FMenuItem* si = selectedListItem;
+  FMenuItem* si = getSelectedItem();
 
   if ( getGeometryGlobal().contains(x,y) )
     return true;
@@ -264,12 +260,12 @@ bool FMenu::selectNextItem()
               || next->isSeparator() );
       if ( next == *iter )
         return false;
-      unselectItemInList();
+      unselectItem();
       next->setSelected();
+      setSelectedItem(next);
       next->setFocus();
       if ( statusBar() )
         statusBar()->drawMessage();
-      selectedListItem = next;
       redraw();
       break;
     }
@@ -306,12 +302,12 @@ bool FMenu::selectPrevItem()
               || prev->isSeparator() );
       if ( prev == *iter )
         return false;
-      unselectItemInList();
+      unselectItem();
       prev->setSelected();
+      setSelectedItem(prev);
       prev->setFocus();
       if ( statusBar() )
         statusBar()->drawMessage();
-      selectedListItem = prev;
       redraw();
       break;
     }
@@ -359,7 +355,7 @@ bool FMenu::hotkeyMenu (FKeyEvent*& ev)
 
       if ( found )
       {
-        unselectItemInList();
+        unselectItem();
         hide();
         hideSuperMenus();
         ev->accept();
@@ -642,10 +638,10 @@ void FMenu::onKeyPress (FKeyEvent* ev)
   {
     case fc::Fkey_return:
     case fc::Fkey_enter:
-      if ( hasSelectedListItem() )
+      if ( hasSelectedItem() )
       {
-        FMenuItem* sel_item = selectedListItem;
-        unselectItemInList();
+        FMenuItem* sel_item = getSelectedItem();
+        unselectItem();
         hide();
         hideSuperMenus();
         sel_item->processClicked();
@@ -664,9 +660,9 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_left:
-      if ( hasSelectedListItem() && selectedListItem->hasMenu() )
+      if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
       {
-        FMenu* sub_menu = selectedListItem->getMenu();
+        FMenu* sub_menu = getSelectedItem()->getMenu();
         if ( sub_menu->isVisible() )
           hideSubMenus();
         else
@@ -678,14 +674,14 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_right:
-      if ( hasSelectedListItem() && selectedListItem->hasMenu() )
+      if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
       {
-        FMenu* sub_menu = selectedListItem->getMenu();
+        FMenu* sub_menu = getSelectedItem()->getMenu();
         if ( ! sub_menu->isVisible() )
         {
           // open sub menu
-          sub_menu->selectFirstItemInList();
-          sub_menu->getSelectedListItem()->setFocus();;
+          sub_menu->selectFirstItem();
+          sub_menu->getSelectedItem()->setFocus();;
           sub_menu->setVisible();
           sub_menu->show();
           raiseWindow (sub_menu);
@@ -703,10 +699,17 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      unselectItemInList();
+      unselectItem();
       hide();
       hideSubMenus();
       hideSuperMenus();
+      activatePrevWindow();
+      getActiveWindow()->getFocusWidget()->setFocus();
+      getActiveWindow()->redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
       ev->accept();
       break;
 
@@ -758,15 +761,15 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         FWidget* focused_widget = getFocusWidget();
         FFocusEvent out (FocusOut_Event);
         FApplication::queueEvent(focused_widget, &out);
-        if ( hasSelectedListItem() )
-          unselectItemInList();
+        if ( hasSelectedItem() )
+          unselectItem();
         (*iter)->setSelected();
+        setSelectedItem(*iter);
         (*iter)->setFocus();
         if ( focused_widget )
           focused_widget->redraw();
         if ( statusBar() )
           statusBar()->drawMessage();
-        selectedListItem = *iter;
         focus_changed = true;
       }
       ++iter;
@@ -812,7 +815,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
              && mouse_x <= x2
              && mouse_y == y )
           {
-            unselectItemInList();
+            unselectItem();
             hide();
             hideSuperMenus();
             (*iter)->processClicked();
@@ -821,7 +824,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
         ++iter;
       }
       // Click on a non-FMenuItem (border or separator line)
-      unselectItemInList();
+      unselectItem();
       hide();
       hideSuperMenus();
     }
@@ -870,12 +873,12 @@ void FMenu::onMouseMove (FMouseEvent* ev)
           FFocusEvent out (FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
+          setSelectedItem(*iter);
           (*iter)->setFocus();
           if ( focused_widget )
             focused_widget->redraw();
           if ( statusBar() )
             statusBar()->drawMessage();
-          selectedListItem = *iter;
           focus_changed = true;
         }
       }
@@ -886,8 +889,8 @@ void FMenu::onMouseMove (FMouseEvent* ev)
          && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
-          if ( selectedListItem == *iter )
-            selectedListItem = 0;
+          if ( getSelectedItem() == *iter )
+            setSelectedItem(0);
           focus_changed = true;
         }
       }
@@ -895,7 +898,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     }
 
     // Mouse is over border or separator
-    if ( ! selectedListItem && statusBar()
+    if ( ! hasSelectedItem() && statusBar()
        && getGeometryGlobal().contains(ev->getGlobalPos()) )
     {
       FString msg = getStatusbarMessage();
@@ -919,7 +922,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       ev = new FMouseEvent (MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
-      mbar->onMouseDown(ev);
+      mbar->onMouseMove(ev);
       delete ev;
     }
 
@@ -982,40 +985,6 @@ void FMenu::setStatusbarMessage(FString msg)
   FWidget::setStatusbarMessage(msg);
   if ( item )
     item->setStatusbarMessage(msg);
-}
-
-//----------------------------------------------------------------------
-void FMenu::selectFirstItemInList()
-{
-  std::vector<FMenuItem*>::const_iterator iter, end;
-  iter = itemlist.begin();
-  end = itemlist.end();
-
-  if ( itemlist.empty() )
-    return;
-
-  if ( hasSelectedListItem() )
-    unselectItemInList();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->isEnabled() && ! (*iter)->isSeparator() )
-    {
-      // select first enabled item
-      (*iter)->setSelected();
-      selectedListItem = *iter;
-      break;
-    }
-    ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::unselectItemInList()
-{
-  if ( hasSelectedListItem() )
-    selectedListItem->unsetSelected();
-  selectedListItem = 0;
 }
 
 //----------------------------------------------------------------------

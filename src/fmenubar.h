@@ -47,7 +47,6 @@ class FMenuBar : public FWindow, public FMenuList
  private:
    bool mouse_down;
    bool drop_down;
-   FMenuItem* selectedMenuItem;
 
  private:
    FMenuBar (const FMenuBar&);
@@ -74,11 +73,7 @@ class FMenuBar : public FWindow, public FMenuList
    void       onMouseMove (FMouseEvent*);
    void       onAccel (FAccelEvent*);
    void       hide();
-   void       selectFirstItemInMenu();
-   void       unselectItemInMenu();
    void       resetMenu();
-   FMenuItem* getSelectedMenuItem() const;
-   bool       hasSelectedMenuItem() const;
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool = true);
@@ -96,13 +91,5 @@ class FMenuBar : public FWindow, public FMenuList
 //----------------------------------------------------------------------
 inline const char* FMenuBar::getClassName() const
 { return "FMenuBar"; }
-
-//----------------------------------------------------------------------
-inline FMenuItem* FMenuBar::getSelectedMenuItem() const
-{ return selectedMenuItem; }
-
-//----------------------------------------------------------------------
-inline bool FMenuBar::hasSelectedMenuItem() const
-{ return selectedMenuItem; }
 
 #endif  // _FMENUBAR_H

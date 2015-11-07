@@ -15,7 +15,6 @@ FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
   , mouse_down(false)
   , drop_down(false)
-  , selectedMenuItem()
 {
   init();
 }
@@ -117,23 +116,23 @@ bool FMenuBar::selectNextItem()
               || next->isSeparator() );
       if ( next == *iter )
         return false;
-      unselectItemInMenu();
+      unselectItem();
       next->setSelected();
+      setSelectedItem(next);
       next->setFocus();
       if ( drop_down && next->hasMenu() )
       {
          FMenuItem* first_item;
          FMenu* menu = next->getMenu();
          next->openMenu();
-         menu->selectFirstItemInList();
-         first_item = menu->getSelectedListItem();
+         menu->selectFirstItem();
+         first_item = menu->getSelectedItem();
          if ( first_item )
            first_item->setFocus();
          menu->redraw();
       }
       if ( statusBar() )
         statusBar()->drawMessage();
-      selectedMenuItem = next;
       redraw();
       break;
     }
@@ -170,23 +169,23 @@ bool FMenuBar::selectPrevItem()
               || prev->isSeparator() );
       if ( prev == *iter )
         return false;
-      unselectItemInMenu();
+      unselectItem();
       prev->setSelected();
       prev->setFocus();
       if ( drop_down && prev->hasMenu() )
       {
-         FMenuItem* first_item;
-         FMenu* menu = prev->getMenu();
-         prev->openMenu();
-         menu->selectFirstItemInList();
-         first_item = menu->getSelectedListItem();
-         if ( first_item )
-           first_item->setFocus();
-         menu->redraw();
+        FMenuItem* first_item;
+        FMenu* menu = prev->getMenu();
+        prev->openMenu();
+        menu->selectFirstItem();
+        first_item = menu->getSelectedItem();
+        if ( first_item )
+          first_item->setFocus();
+        menu->redraw();
       }
       if ( statusBar() )
         statusBar()->drawMessage();
-      selectedMenuItem = prev;
+      setSelectedItem(prev);
       redraw();
       break;
     }
@@ -211,34 +210,34 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
       if ( 0x20000e0+tolower(hotkey) == key )
       {
-        FMenuItem* sel_item = getSelectedMenuItem();
+        FMenuItem* sel_item = getSelectedItem();
 
         if ( sel_item && sel_item->hasMenu() )
-          sel_item->getMenu()->unselectItemInList();
+          sel_item->getMenu()->unselectItem();
 
-        unselectItemInMenu();
+        unselectItem();
 
         if ( (*iter)->hasMenu() )
         {
            FMenuItem* first_item;
            FMenu* menu = (*iter)->getMenu();
            (*iter)->setSelected();
+           setSelectedItem(*iter);
            (*iter)->setFocus();
            (*iter)->openMenu();
-           menu->selectFirstItemInList();
-           first_item = menu->getSelectedListItem();
+           menu->selectFirstItem();
+           first_item = menu->getSelectedItem();
            if ( first_item )
              first_item->setFocus();
            menu->redraw();
            if ( statusBar() )
              statusBar()->drawMessage();
-           selectedMenuItem = *iter;
            redraw();
            drop_down = true;
         }
         else
         {
-          selectedMenuItem = 0;
+          setSelectedItem(0);
           redraw();
           drop_down = false;
           (*iter)->processClicked();
@@ -453,17 +452,17 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_enter:
     case fc::Fkey_up:
     case fc::Fkey_down:
-      if ( hasSelectedMenuItem() )
+      if ( hasSelectedItem() )
       {
-        FMenuItem* sel_item = getSelectedMenuItem();
+        FMenuItem* sel_item = getSelectedItem();
 
         if ( sel_item->hasMenu() )
         {
           FMenuItem* first_item;
           FMenu* menu = sel_item->getMenu();
           sel_item->openMenu();
-          menu->selectFirstItemInList();
-          first_item = menu->getSelectedListItem();
+          menu->selectFirstItem();
+          first_item = menu->getSelectedItem();
           if ( first_item )
             first_item->setFocus();
           menu->redraw();
@@ -475,8 +474,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
         else if (  ev->key() == fc::Fkey_return
                 || ev->key() == fc::Fkey_enter )
         {
-          sel_item->unsetSelected();
-          selectedMenuItem = 0;
+          unselectItem();
           redraw();
           sel_item->processClicked();
         }
@@ -498,6 +496,14 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_escape_mintty:
       resetMenu();
       redraw();
+      activatePrevWindow();
+      getActiveWindow()->getFocusWidget()->setFocus();
+      getActiveWindow()->redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
+      drop_down = false;
       ev->accept();
       break;
 
@@ -514,7 +520,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     mouse_down = false;
     if ( ! itemlist.empty() )
     {
-      unselectItemInMenu();
+      unselectItem();
       redraw();
       drop_down = false;
     }
@@ -543,7 +549,6 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     while ( iter != end )
     {
       int x1, x2;
-
       x1 = (*iter)->getX();
       x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
 
@@ -559,7 +564,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
           (*iter)->setSelected();
           (*iter)->setFocus();
           (*iter)->openMenu();
-          selectedMenuItem = *iter;
+          setSelectedItem(*iter);
           focus_changed = true;
           if ( focused_widget )
             focused_widget->redraw();
@@ -567,15 +572,14 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
         if ( (*iter)->hasMenu() )
         {
            FMenu* menu = (*iter)->getMenu();
-           if ( menu->hasSelectedListItem() )
+           if ( menu->hasSelectedItem() )
            {
-             menu->unselectItemInList();
+             menu->unselectItem();
              menu->redraw();
              focus_changed = true;
              drop_down = true;
            }
         }
-
       }
       else
       {
@@ -584,8 +588,8 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
            && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
-          if ( selectedMenuItem == *iter )
-            selectedMenuItem = 0;
+          if ( getSelectedItem() == *iter )
+            setSelectedItem(0);
           focus_changed = true;
         }
       }
@@ -633,11 +637,11 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
           if ( (*iter)->hasMenu() )
           {
             FMenu* menu = (*iter)->getMenu();
-            if ( ! menu->hasSelectedListItem() )
+            if ( ! menu->hasSelectedItem() )
             {
               FMenuItem* first_item;
-              menu->selectFirstItemInList();
-              first_item = menu->getSelectedListItem();
+              menu->selectFirstItem();
+              first_item = menu->getSelectedItem();
               if ( first_item )
                 first_item->setFocus();
               menu->redraw();
@@ -650,11 +654,23 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
           else
           {
             (*iter)->unsetSelected();
-            if ( selectedMenuItem == *iter )
-              selectedMenuItem = 0;
+            if ( getSelectedItem() == *iter )
+              setSelectedItem(0);
             redraw();
             (*iter)->processClicked();
             drop_down = false;
+          }
+        }
+        else
+        {
+          if ( mouse_y == 1
+             && (*iter)->isEnabled()
+             && (*iter)->isSelected() )
+          {
+            (*iter)->unsetSelected();
+            if ( getSelectedItem() == *iter )
+              setSelectedItem(0);
+            redraw();
           }
         }
         ++iter;
@@ -702,7 +718,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           (*iter)->setSelected();
           (*iter)->setFocus();
           (*iter)->openMenu();
-          selectedMenuItem = *iter;
+          setSelectedItem(*iter);
           focus_changed = true;
           if ( focused_widget )
             focused_widget->redraw();
@@ -710,9 +726,9 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           if ( (*iter)->hasMenu() )
           {
              FMenu* menu = (*iter)->getMenu();
-             if ( menu->hasSelectedListItem() )
+             if ( menu->hasSelectedItem() )
              {
-               menu->unselectItemInList();
+               menu->unselectItem();
                menu->redraw();
                drop_down = true;
              }
@@ -728,15 +744,15 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
            && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
-          if ( selectedMenuItem == *iter )
-            selectedMenuItem = 0;
+          if ( getSelectedItem() == *iter )
+            setSelectedItem(0);
           focus_changed = true;
           drop_down = false;
         }
-        else if ( hasSelectedMenuItem() && selectedMenuItem->hasMenu() )
+        else if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
         {
           // Mouse event handover to the menu
-          FMenu* menu = selectedMenuItem->getMenu();
+          FMenu* menu = getSelectedItem()->getMenu();
           const FRect& menu_geometry = menu->getGeometryGlobal();
 
           if ( menu_geometry.contains(ev->getGlobalPos()) )
@@ -745,8 +761,9 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             const FPoint& p = menu->globalToLocalPos(g);
             int b = ev->getButton();
             ev = new FMouseEvent (MouseMove_Event, p, g, b);
+            menu->mouse_down = true;
             setClickedWidget(menu);
-            menu->onMouseDown(ev);
+            menu->onMouseMove(ev);
           }
         }
       }
@@ -762,14 +779,12 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onAccel (FAccelEvent* ev)
 {
-  if ( ! hasSelectedMenuItem() )
-  {
-    selectFirstItemInMenu();
-    getSelectedMenuItem()->setFocus();
-    if ( statusBar() )
-      statusBar()->drawMessage();
-    redraw();
-  }
+  unselectItem();
+  selectFirstItem();
+  getSelectedItem()->setFocus();
+  if ( statusBar() )
+    statusBar()->drawMessage();
+  redraw();
   ev->accept();
 }
 
@@ -796,43 +811,9 @@ void FMenuBar::hide()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::selectFirstItemInMenu()
-{
-  std::vector<FMenuItem*>::const_iterator iter, end;
-  iter = itemlist.begin();
-  end = itemlist.end();
-
-  if ( itemlist.empty() )
-    return;
-
-  if ( hasSelectedMenuItem() )
-    unselectItemInMenu();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->isEnabled() && ! (*iter)->isSeparator() )
-    {
-      // select first enabled item
-      (*iter)->setSelected();
-      selectedMenuItem = *iter;
-      break;
-    }
-    ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenuBar::unselectItemInMenu()
-{
-  if ( hasSelectedMenuItem() )
-    selectedMenuItem->unsetSelected();
-  selectedMenuItem = 0;
-}
-
-//----------------------------------------------------------------------
 void FMenuBar::resetMenu()
 {
-  unselectItemInMenu();
+  unselectItem();
   drop_down = false;
 }
 
