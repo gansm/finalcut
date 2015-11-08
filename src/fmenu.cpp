@@ -601,17 +601,17 @@ inline void FMenu::drawSeparator(int y)
     setReverse(true);
   if ( isNewFont() )
   {
-    print(fc::NF_border_line_vertical_right);
+    print (fc::NF_border_line_vertical_right);
     FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
-    print(fc::NF_rev_border_line_vertical_left);
+    print (fc::NF_rev_border_line_vertical_left);
   }
   else
   {
-    print(fc::BoxDrawingsVerticalAndRight);
+    print (fc::BoxDrawingsVerticalAndRight);
     FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
-    print(fc::BoxDrawingsVerticalAndLeft);
+    print (fc::BoxDrawingsVerticalAndLeft);
   }
   if ( isMonochron() )
     setReverse(false);
