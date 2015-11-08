@@ -1,3 +1,7 @@
+2015-11-08  Markus Gans  <guru.mail@muenster.de>
+	* Activate the previous window in case if the menu is open and 
+	  the mouse click has activated no window.
+
 2015-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Improved menu focus handling
 	* Menu supports newfont

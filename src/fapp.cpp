@@ -3,6 +3,7 @@
 
 #include "fapp.h"
 #include "fmenu.h"
+#include "fstatusbar.h"
 #include "fwindow.h"
 
 // global application object
@@ -973,6 +974,19 @@ void FApplication::processMouseEvent()
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
+
+      // No widget was been clicked
+      if ( ! clicked_widget )
+      {
+        // activate previous window
+        FWindow::activatePrevWindow();
+        FWindow::getActiveWindow()->getFocusWidget()->setFocus();
+        FWindow::getActiveWindow()->redraw();
+        if ( statusBar() )
+          statusBar()->drawMessage();
+        updateTerminal();
+        flush_out();
+      }
     }
   }
 
