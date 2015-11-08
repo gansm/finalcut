@@ -433,17 +433,14 @@ void FMenu::drawBorder()
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
-    if ( (flags & SHADOW) == 0 )
-    {
-      gotoxy (x1, y2);
-      // lower left corner border ⎣
-      print (fc::NF_border_corner_lower_left);
-      for (int x=1; x < width-1; x++) // low line _
-        print (fc::NF_border_line_bottom);
-      gotoxy (x2, y2);
-      // lower right corner border ⎦
-      print (fc::NF_rev_border_corner_lower_right);
-    }
+    gotoxy (x1, y2);
+    // lower left corner border ⎣
+    print (fc::NF_border_corner_lower_left);
+    for (int x=1; x < width-1; x++) // low line _
+      print (fc::NF_border_line_bottom);
+    gotoxy (x2, y2);
+    // lower right corner border ⎦
+    print (fc::NF_rev_border_corner_lower_right);
   }
   else
   {
@@ -602,10 +599,20 @@ inline void FMenu::drawSeparator(int y)
   setColor (wc.menu_active_fg, wc.menu_active_bg);
   if ( isMonochron() )
     setReverse(true);
-  print(fc::BoxDrawingsVerticalAndRight);
-  FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
-  print (line);
-  print(fc::BoxDrawingsVerticalAndLeft);
+  if ( isNewFont() )
+  {
+    print(fc::NF_border_line_vertical_right);
+    FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
+    print (line);
+    print(fc::NF_rev_border_line_vertical_left);
+  }
+  else
+  {
+    print(fc::BoxDrawingsVerticalAndRight);
+    FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
+    print (line);
+    print(fc::BoxDrawingsVerticalAndLeft);
+  }
   if ( isMonochron() )
     setReverse(false);
 }

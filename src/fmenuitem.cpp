@@ -445,9 +445,12 @@ bool FMenuItem::setFocus (bool on)
       if ( ! selected )
       {
         FMenuList* menu_list = dynamic_cast<FMenuList*>(getSuperMenu());
-        menu_list->unselectItem();
         setSelected();
-        menu_list->setSelectedItem(this);
+        if ( menu_list )
+        {
+          menu_list->unselectItem();
+          menu_list->setSelectedItem(this);
+        }
 
         if ( statusBar() )
           statusBar()->drawMessage();

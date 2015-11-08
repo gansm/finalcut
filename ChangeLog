@@ -1,5 +1,6 @@
-2015-11-05  Markus Gans  <guru.mail@muenster.de>
+2015-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Improved menu focus handling
+	* Menu supports newfont
 
 2015-11-05  Markus Gans  <guru.mail@muenster.de>
 	* Menu bar navigation without menu drop down
