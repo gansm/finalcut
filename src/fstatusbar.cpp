@@ -62,7 +62,7 @@ FStatusKey::~FStatusKey()  // destructor
 {
   if ( statusbar() )
     statusbar()->remove(this);
-  delAccelerator(this);
+  delAccelerator();
 }
 
 

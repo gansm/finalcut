@@ -358,9 +358,10 @@ class FWidget : public FObject, public FTerm
    void             delCallback (FWidget*);
    void             emitCallback (FString);
 
-   void             addAccelerator (int key);
-   void             addAccelerator (int, FWidget*);
-   void             delAccelerator (FWidget*);
+   void             addAccelerator (int);
+   virtual void     addAccelerator (int, FWidget*);
+   void             delAccelerator ();
+   virtual void     delAccelerator (FWidget*);
 
    virtual void     redraw();
    virtual void     resize();
@@ -434,7 +435,7 @@ class FWidget : public FObject, public FTerm
    virtual void     setGeometry (const FRect&, bool = true);
    virtual void     setGeometry (int, int, int, int, bool = true);
    virtual void     move (const FPoint&);
-   virtual void     move (int x, int y);
+   virtual void     move (int, int);
    int              getFlags() const;
 
    bool             setCursor();
@@ -508,6 +509,14 @@ inline void FWidget::clearStatusbarMessage()
 //----------------------------------------------------------------------
 inline FString FWidget::getStatusbarMessage()
 { return statusbar_message; }
+
+//----------------------------------------------------------------------
+inline void FWidget::addAccelerator (int key)
+{ addAccelerator (key, this); }
+
+//----------------------------------------------------------------------
+inline void FWidget::delAccelerator()
+{ delAccelerator(this); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisible()

@@ -97,8 +97,6 @@ void FMenuList::remove (FMenuItem* i)
 {
   std::vector<FMenuItem*>::iterator iter;
 
-  //delAccelerator (i);
-
   if ( itemlist.empty() )
     return;
 

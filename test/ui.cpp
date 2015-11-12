@@ -193,50 +193,52 @@ MyDialog::MyDialog (FWidget* parent)
   , myList()
 {
   // menu bar
-  FMenuBar* Menubar  = new FMenuBar(this);
+  FMenuBar* Menubar  = new FMenuBar (this);
 
   // menu bar items
-  FMenu* File        = new FMenu("&File", Menubar);
-  File->setStatusbarMessage("File management commands");
-  FMenu* Edit        = new FMenu("&Edit", Menubar);
-  Edit->setStatusbarMessage("Cut-and-paste editing commands");
-  FMenu* View        = new FMenu("&View", Menubar);
-  View->setStatusbarMessage("Show internal informations");
-  FMenuItem* Options = new FMenuItem("&Options", Menubar);
-  Options->setStatusbarMessage("Set program defaults");
+  FMenu* File        = new FMenu ("&File", Menubar);
+  File->setStatusbarMessage ("File management commands");
+  FMenu* Edit        = new FMenu ("&Edit", Menubar);
+  Edit->setStatusbarMessage ("Cut-and-paste editing commands");
+  FMenu* View        = new FMenu ("&View", Menubar);
+  View->setStatusbarMessage ("Show internal informations");
+  FMenuItem* Options = new FMenuItem ("&Options", Menubar);
+  Options->setStatusbarMessage ("Set program defaults");
   Options->setDisable();
-  FMenuItem* Help    = new FMenuItem("&Help", Menubar);
-  Help->setStatusbarMessage("Show version and copyright information");
+  FMenuItem* Help    = new FMenuItem ("&Help", Menubar);
+  Help->setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  FMenuItem* Open    = new FMenuItem("&Open...", File);
-  Open->setStatusbarMessage("Locate and open a text file");
-  FMenuItem* Line1   = new FMenuItem(File);
+  FMenuItem* Open    = new FMenuItem ("&Open...", File);
+  Open->addAccelerator (fc::Fckey_o); // Ctrl + O
+  Open->setStatusbarMessage ("Locate and open a text file");
+  FMenuItem* Line1   = new FMenuItem (File);
   Line1->setSeparator();
-  FMenuItem* Quit    = new FMenuItem("&Quit", File);
-  Quit->setStatusbarMessage("Exit the program");
+  FMenuItem* Quit    = new FMenuItem ("&Quit", File);
+  Quit->addAccelerator (fc::Fmkey_x); // Meta/Alt + X
+  Quit->setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
-  FMenuItem* Undo    = new FMenuItem("Undo", Edit);
+  FMenuItem* Undo    = new FMenuItem ("Undo", Edit);
   Undo->setDisable();
-  FMenuItem* Redo    = new FMenuItem("Redo", Edit);
+  FMenuItem* Redo    = new FMenuItem ("Redo", Edit);
   Redo->setDisable();
-  FMenuItem* Line2   = new FMenuItem(Edit);
+  FMenuItem* Line2   = new FMenuItem (Edit);
   Line2->setSeparator();
-  FMenuItem* Cut     = new FMenuItem("Cu&t", Edit);
-  Cut->setStatusbarMessage("Remove the input text and put it in the clipboard");
-  FMenuItem* Copy    = new FMenuItem("&Copy", Edit);
-  Copy->setStatusbarMessage("Copy the input text into the clipboad");
-  FMenuItem* Paste   = new FMenuItem("&Paste", Edit);
-  Paste->setStatusbarMessage("Insert text form clipboard");
-  FMenuItem* Clear   = new FMenuItem("C&lear", Edit);
-  Clear->setStatusbarMessage("Delete input text");
+  FMenuItem* Cut     = new FMenuItem (fc::Fckey_x, "Cu&t", Edit);
+  Cut->setStatusbarMessage ("Remove the input text and put it in the clipboard");
+  FMenuItem* Copy    = new FMenuItem (fc::Fckey_c, "&Copy", Edit);
+  Copy->setStatusbarMessage ("Copy the input text into the clipboad");
+  FMenuItem* Paste   = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
+  Paste->setStatusbarMessage ("Insert text form clipboard");
+  FMenuItem* Clear   = new FMenuItem ("C&lear", Edit);
+  Clear->setStatusbarMessage ("Delete input text");
 
   // "View" menu items
-  FMenuItem* Env     = new FMenuItem("&Terminal info...", View);
-  Env->setStatusbarMessage("Informations about this terminal");
-  FMenuItem* Drive     = new FMenuItem("&Drive symbols...", View);
-  Drive->setStatusbarMessage("Show drive symbols");
+  FMenuItem* Env     = new FMenuItem ("&Terminal info...", View);
+  Env->setStatusbarMessage ("Informations about this terminal");
+  FMenuItem* Drive   = new FMenuItem ("&Drive symbols...", View);
+  Drive->setStatusbarMessage ("Show drive symbols");
 
   // Menu function callbacks
   Open->addCallback
@@ -286,125 +288,125 @@ MyDialog::MyDialog (FWidget* parent)
   );
 
   // Buttons
-  FButton* MyButton1 = new FButton(this);
+  FButton* MyButton1 = new FButton (this);
   MyButton1->setGeometry(3, 3, 5, 1);
-  MyButton1->setText(L"&SIN");
-  MyButton1->setStatusbarMessage("Sine function");
+  MyButton1->setText (L"&SIN");
+  MyButton1->setStatusbarMessage ("Sine function");
   MyButton1->setNoUnderline();
   MyButton1->setFlat();
-  MyButton1->setDoubleFlatLine(fc::bottom);
+  MyButton1->setDoubleFlatLine (fc::bottom);
 
-  FButton* MyButton2 = new FButton(this);
+  FButton* MyButton2 = new FButton (this);
   MyButton2->setGeometry(3, 5, 5, 1);
-  MyButton2->setText(L"&COS");
-  MyButton2->setStatusbarMessage("Cosine function");
+  MyButton2->setText (L"&COS");
+  MyButton2->setStatusbarMessage ("Cosine function");
   MyButton2->setNoUnderline();
   MyButton2->setFlat();
   MyButton2->setDoubleFlatLine(fc::top);
 
-  FButton* MyButton3 = new FButton(this);
+  FButton* MyButton3 = new FButton (this);
   MyButton3->setGeometry(10, 3, 5, 3);
-  MyButton3->setText(L"&=");
-  MyButton3->setStatusbarMessage("Equal");
+  MyButton3->setText (L"&=");
+  MyButton3->setStatusbarMessage ("Equal");
   MyButton3->setNoUnderline();
   MyButton3->setFlat();
 
   // Radio buttons in a group
-  FButtonGroup* radioButtonGroup = new FButtonGroup("Button", this);
+  FButtonGroup* radioButtonGroup = new FButtonGroup ("Button", this);
   radioButtonGroup->setGeometry(3, 8, 14, 4);
   //radioButtonGroup->unsetBorder();
 
-  FRadioButton* radio1 = new FRadioButton("E&nable", radioButtonGroup);
+  FRadioButton* radio1 = new FRadioButton ("E&nable", radioButtonGroup);
   radio1->setGeometry(1, 1, 7, 1);
-  radio1->setStatusbarMessage("Enable button Test");
+  radio1->setStatusbarMessage ("Enable button Test");
 
-  FRadioButton* radio2 = new FRadioButton(radioButtonGroup);
+  FRadioButton* radio2 = new FRadioButton (radioButtonGroup);
   radio2->setGeometry(1, 2, 7, 1);
-  radio2->setText("&Disable");
-  radio2->setStatusbarMessage("Disable button Test");
+  radio2->setText ("&Disable");
+  radio2->setStatusbarMessage ("Disable button Test");
   radio2->setChecked();
   //radio2->setDisable();
 
   // Checkboxes in a group
-  FButtonGroup* checkButtonGroup = new FButtonGroup("Options", this);
+  FButtonGroup* checkButtonGroup = new FButtonGroup ("Options", this);
   checkButtonGroup->setGeometry(3, 12, 14, 4);
 
-  FCheckBox* check1 = new FCheckBox("&Bitmode", checkButtonGroup);
+  FCheckBox* check1 = new FCheckBox ("&Bitmode", checkButtonGroup);
   check1->setGeometry(1, 1, 7, 1);
   check1->setNoUnderline();
 
-  FCheckBox* check2 = new FCheckBox("&8-Bit", checkButtonGroup);
+  FCheckBox* check2 = new FCheckBox ("&8-Bit", checkButtonGroup);
   check2->setGeometry(1, 2, 7, 1);
   check2->setChecked();
   check2->setNoUnderline();
 
   // A text input field
-  FLineEdit* MyLineEdit = new FLineEdit(this);
+  FLineEdit* MyLineEdit = new FLineEdit (this);
   MyLineEdit->setGeometry(22, 1, 10, 1);
-  MyLineEdit->setText( FString("EnTry").toLower());
-  MyLineEdit->setLabelText(L"&Input:");
-  MyLineEdit->setStatusbarMessage("Press Enter to set the title");
+  MyLineEdit->setText (FString("EnTry").toLower());
+  MyLineEdit->setLabelText (L"&Input:");
+  MyLineEdit->setStatusbarMessage ("Press Enter to set the title");
   MyLineEdit->setShadow();
 
   // Buttons
-  FButton* MyButton4 = new FButton(this);
+  FButton* MyButton4 = new FButton (this);
   MyButton4->setGeometry(20, 8, 12, 1);
-  MyButton4->setText(L"&Get input");
-  MyButton4->setStatusbarMessage("Take text from input field");
+  MyButton4->setText (L"&Get input");
+  MyButton4->setStatusbarMessage ("Take text from input field");
   MyButton4->setShadow();
   MyButton4->setFocus();
 
-  FButton* MyButton5 = new FButton(this);
+  FButton* MyButton5 = new FButton (this);
   MyButton5->setGeometry(20, 11, 12, 1);
-  MyButton5->setText(L"&Test");
-  MyButton5->setStatusbarMessage("Progressbar testing dialog");
+  MyButton5->setText (L"&Test");
+  MyButton5->setStatusbarMessage ("Progressbar testing dialog");
   MyButton5->setShadow();
   MyButton5->setDisable();
 
-  FButton* MyButton6 = new FButton(this);
+  FButton* MyButton6 = new FButton (this);
   MyButton6->setGeometry(20, 14, 12, 1);
-  MyButton6->setText(L"&Quit");
-  MyButton6->setStatusbarMessage("Exit the program");
+  MyButton6->setText (L"&Quit");
+  MyButton6->setStatusbarMessage ("Exit the program");
   MyButton6->setShadow();
   MyButton6->addAccelerator('x');
 
   // A multiple selection listbox
-  myList = new FListBox(this);
+  myList = new FListBox (this);
   myList->setGeometry(38, 1, 14, 17);
-  myList->setText("Items");
-  myList->setStatusbarMessage("99 items in a list");
+  myList->setText ("Items");
+  myList->setStatusbarMessage ("99 items in a list");
   myList->setMultiSelection();
   for (int z=1; z < 100; z++)
-    myList->insert( FString().setNumber(z) + L" placeholder" );
+    myList->insert (FString().setNumber(z) + L" placeholder");
 
   // Text labels
-  FLabel* headline = new FLabel(this);
+  FLabel* headline = new FLabel (this);
   headline->setGeometry(21, 3, 10, 1);
-  headline->setText(L"List items");
+  headline->setText (L"List items");
   headline->setEmphasis();
-  headline->setAlignment(fc::alignCenter);
+  headline->setAlignment (fc::alignCenter);
 
-  FLabel* tagged = new FLabel(L"Tagged:", this);
+  FLabel* tagged = new FLabel (L"Tagged:", this);
   tagged->setGeometry(21, 4, 7, 1);
 
   FLabel* tagged_count = new FLabel(this);
   tagged_count->setGeometry(29, 4, 5, 1);
   tagged_count->setNumber(0);
 
-  FLabel* sum = new FLabel(L"Sum:", this);
+  FLabel* sum = new FLabel (L"Sum:", this);
   sum->setGeometry(21, 5, 7, 3);
-  sum->setAlignment(fc::alignRight);
+  sum->setAlignment (fc::alignRight);
 
-  FLabel* sum_count = new FLabel(this);
+  FLabel* sum_count = new FLabel (this);
   sum_count->setGeometry(29, 5, 5, 3);
-  sum_count->setNumber(myList->count());
+  sum_count->setNumber (myList->count());
 
   // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar(this);
+  FStatusBar* statusbar = new FStatusBar (this);
   // Statusbar keys
-  FStatusKey* key_F1 = new FStatusKey(fc::Fkey_f1, "About", statusbar);
-  FStatusKey* key_F2 = new FStatusKey(fc::Fkey_f2, "View", statusbar);
-  FStatusKey* key_F3 = new FStatusKey(fc::Fkey_f3, "Quit", statusbar);
+  FStatusKey* key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
+  FStatusKey* key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
+  FStatusKey* key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
 
   // Add some function callbacks
   MyButton1->addCallback

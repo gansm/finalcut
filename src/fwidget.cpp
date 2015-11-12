@@ -1073,20 +1073,6 @@ void FWidget::emitCallback (FString emit_signal)
 }
 
 //----------------------------------------------------------------------
-void FWidget::addAccelerator (int key)
-{
-  FWidget* window = FWindow::getWindowWidget(this);
-  accelerator accel = { key, this };
-
-  if ( ! window )
-    window = getRootWidget();
-  if ( window == statusbar || window == menubar )
-    window = FWindow::getWindowWidget(parentWidget());
-  if ( window && window->accelerator_list )
-    window->accelerator_list->push_back(accel);
-}
-
-//----------------------------------------------------------------------
 void FWidget::addAccelerator (int key, FWidget* obj)
 {
   FWidget* window = FWindow::getWindowWidget(obj);

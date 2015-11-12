@@ -49,7 +49,7 @@ class FMenuItem : public FWidget
    bool       checked;
    uInt       text_length;
    int        hotkey;
- //int        accel_key;
+   int        accel_key;
    FMenu*     menu;
    FWidget*   super_menu;
 
@@ -71,8 +71,17 @@ class FMenuItem : public FWidget
    FMenuItem (FString&, FWidget* = 0);
    FMenuItem (const std::string&, FWidget* = 0);
    FMenuItem (const char*, FWidget* = 0);
+   FMenuItem (int, FString&, FWidget* = 0);
+   FMenuItem (int, const std::string&, FWidget* = 0);
+   FMenuItem (int, const char*, FWidget* = 0);
    virtual ~FMenuItem();
 
+   // make every addAccelerator from FWidget available
+   using FWidget::addAccelerator;
+   void       addAccelerator (int, FWidget*);
+   // make every delAccelerator from FWidget available
+   using FWidget::delAccelerator;
+   void       delAccelerator (FWidget*);
    void       onKeyPress (FKeyEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);

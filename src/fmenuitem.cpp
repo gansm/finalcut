@@ -22,7 +22,7 @@ FMenuItem::FMenuItem (FWidget* parent)
   , checked(false)
   , text_length(0)
   , hotkey(0)
-//, accel_key(0)
+  , accel_key(0)
   , menu(0)
   , super_menu(0)
 {
@@ -38,7 +38,7 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , checked(false)
   , text_length(0)
   , hotkey(0)
-//, accel_key(0)
+  , accel_key(0)
   , menu(0)
   , super_menu(0)
 {
@@ -54,7 +54,7 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , checked(false)
   , text_length(0)
   , hotkey(0)
-//, accel_key(0)
+  , accel_key(0)
   , menu(0)
   , super_menu(0)
 {
@@ -70,13 +70,59 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , checked(false)
   , text_length(0)
   , hotkey(0)
-//, accel_key(0)
+  , accel_key(0)
+  , menu(0)
+  , super_menu(0)
+{
+  init (parent);
+}
+//----------------------------------------------------------------------
+FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , text_length(0)
+  , hotkey(0)
+  , accel_key(k)
   , menu(0)
   , super_menu(0)
 {
   init (parent);
 }
 
+//----------------------------------------------------------------------
+FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , text_length(0)
+  , hotkey(0)
+  , accel_key(k)
+  , menu(0)
+  , super_menu(0)
+{
+  init (parent);
+}
+
+//----------------------------------------------------------------------
+FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
+  : FWidget(parent)
+  , text(txt)
+  , selected(false)
+  , separator(false)
+  , checked(false)
+  , text_length(0)
+  , hotkey(0)
+  , accel_key(k)
+  , menu(0)
+  , super_menu(0)
+{
+  init (parent);
+}
 //----------------------------------------------------------------------
 FMenuItem::~FMenuItem()  // destructor
 { }
@@ -88,14 +134,21 @@ void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
   hotkey = hotKey();
+
   if ( hotkey )
     text_length--;
+
   setGeometry (1,1,int(text_length+2),1, false);
 
   if ( parent )
   {
-    setSuperMenu(parent);
-    FMenuList* menu_list = dynamic_cast<FMenuList*>(parent);
+    FMenuList* menu_list;
+    setSuperMenu (parent);
+
+    if ( accel_key  )
+      addAccelerator (accel_key);
+
+    menu_list = dynamic_cast<FMenuList*>(parent);
     if ( menu_list )
       menu_list->insert(this);
 
@@ -106,7 +159,8 @@ void FMenuItem::init (FWidget* parent)
         menubar_ptr->menu_dimension();
 
       // Meta + hotkey
-      menubar_ptr->addAccelerator (0x20000e0+tolower(hotkey), this);
+      if ( hotkey )
+        menubar_ptr->addAccelerator (fc::Fmkey_meta + tolower(hotkey), this);
 
       this->addCallback
       (
@@ -124,8 +178,6 @@ void FMenuItem::init (FWidget* parent)
       FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
       if ( menu_ptr )
         menu_ptr->menu_dimension();
-
-      //addAccelerator (accel_key, this);
 
       this->addCallback
       (
@@ -204,6 +256,64 @@ void FMenuItem::processClicked()
 }
 
 // public methods of FMenuItem
+//----------------------------------------------------------------------
+void FMenuItem::addAccelerator (int key, FWidget* obj)
+{
+  FWidget* super = super_menu;
+
+  while ( super && strncmp ( super->getClassName()
+                           , const_cast<char*>("FMenu"), 5) == 0 )
+  {
+    super = super->parentWidget();
+  }
+
+  if ( super )
+  {
+    FWidget* window = FWindow::getWindowWidget(super);
+    accelerator accel = { key, obj };
+
+    if ( ! window )
+      window = getRootWidget();
+    if ( window && window->accelerator_list )
+      window->accelerator_list->push_back(accel);
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::delAccelerator (FWidget* obj)
+{
+  FWidget* super = super_menu;
+
+  while ( super && strncmp ( super->getClassName()
+                           , const_cast<char*>("FMenu"), 5) == 0 )
+  {
+    super = super->parentWidget();
+  }
+
+  if ( super )
+  {
+    FWidget* window = FWindow::getWindowWidget(super);
+
+    if ( ! window )
+      window = getRootWidget();
+    if (  window
+       && window->accelerator_list
+       && ! window->accelerator_list->empty() )
+    {
+      FWidget::Accelerators::iterator iter;
+      iter = window->accelerator_list->begin();
+    
+      while ( iter != window->accelerator_list->end() )
+      {
+        if ( iter->object == obj )
+          iter = window->accelerator_list->erase(iter);
+        else
+          ++iter;
+      }
+    }
+  }
+}
+
 //----------------------------------------------------------------------
 void FMenuItem::onKeyPress (FKeyEvent* ev)
 {
@@ -377,6 +487,8 @@ void FMenuItem::onAccel (FAccelEvent* ev)
         ev->accept();
       }
     }
+    else
+      processClicked();
   }
 }
 
@@ -418,7 +530,7 @@ bool FMenuItem::setEnable (bool on)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator (0x20000e0+tolower(hotkey), this);
+      super->addAccelerator (fc::Fmkey_meta + tolower(hotkey), this);
     }
   }
   else
@@ -509,24 +621,24 @@ void FMenuItem::unsetSelected()
 //----------------------------------------------------------------------
 void FMenuItem::openMenu()
 {
-  FMenu* menu;
+  FMenu* submenu;
   FMenu* open_menu;
 
   if ( hasMenu() )
   {
-    menu = getMenu();
+    submenu = getMenu();
   
-    if ( ! menu->isVisible() )
+    if ( ! submenu->isVisible() )
     {
       open_menu = static_cast<FMenu*>(getOpenMenu());
-      if ( open_menu && open_menu != menu )
+      if ( open_menu && open_menu != submenu )
         open_menu->hide();
-      setOpenMenu(menu);
+      setOpenMenu(submenu);
   
-      menu->setVisible();
-      menu->show();
-      menu->raiseWindow(menu);
-      menu->redraw();
+      submenu->setVisible();
+      submenu->show();
+      submenu->raiseWindow(submenu);
+      submenu->redraw();
       updateTerminal();
       flush_out();
     }

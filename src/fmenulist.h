@@ -100,8 +100,8 @@ inline FMenuItem* FMenuList::getSelectedItem() const
 { return selectedItem; }
 
 //----------------------------------------------------------------------
-inline void FMenuList::setSelectedItem (FMenuItem* item)
-{ selectedItem = item; }
+inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
+{ selectedItem = menuitem; }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::hasSelectedItem() const

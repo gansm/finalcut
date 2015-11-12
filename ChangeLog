@@ -1,3 +1,6 @@
+2015-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Improve menu accelerator keys
+
 2015-11-08  Markus Gans  <guru.mail@muenster.de>
 	* Activate the previous window in case if the menu is open and 
 	  the mouse click has activated no window.

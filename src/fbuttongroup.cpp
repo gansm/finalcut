@@ -179,16 +179,16 @@ void FButtonGroup::setHotkeyAccelerator()
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey), this);
-      addAccelerator (toupper(hotkey), this);
+      addAccelerator (tolower(hotkey));
+      addAccelerator (toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (0x20000e0 + tolower(hotkey), this);
+      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
     }
     else
-      addAccelerator (getHotkey(), this);
+      addAccelerator (getHotkey());
   }
   else
-    delAccelerator(this);
+    delAccelerator();
 }
 
 //----------------------------------------------------------------------
@@ -528,7 +528,7 @@ bool FButtonGroup::setEnable (bool on)
   else
   {
     flags &= ~ACTIVE;
-    delAccelerator (this);
+    delAccelerator();
   }
   return on;
 }
@@ -549,7 +549,7 @@ void FButtonGroup::setText (const FString& txt)
   text = txt;
   if ( isEnabled() )
   {
-    delAccelerator (this);
+    delAccelerator();
     setHotkeyAccelerator();
   }
 }

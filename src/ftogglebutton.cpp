@@ -56,7 +56,7 @@ FToggleButton::FToggleButton ( const FString& txt, FWidget* parent )
 //----------------------------------------------------------------------
 FToggleButton::~FToggleButton()  // destructor
 {
-  delAccelerator(this);
+  delAccelerator();
   if ( group() )
     group()->remove(this);
   if ( hasFocus() )
@@ -137,16 +137,16 @@ void FToggleButton::setHotkeyAccelerator()
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey), this);
-      addAccelerator (toupper(hotkey), this);
+      addAccelerator (tolower(hotkey));
+      addAccelerator (toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (0x20000e0 + tolower(hotkey), this);
+      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
     }
     else
-      addAccelerator (getHotkey(), this);
+      addAccelerator (getHotkey());
   }
   else
-    delAccelerator(this);
+    delAccelerator();
 }
 
 //----------------------------------------------------------------------
@@ -406,7 +406,7 @@ bool FToggleButton::setEnable(bool on)
   else
   {
     flags &= ~ACTIVE;
-    delAccelerator (this);
+    delAccelerator();
     foregroundColor = wc.toggle_button_inactive_fg;
     backgroundColor = wc.toggle_button_inactive_bg;
   }
@@ -625,7 +625,7 @@ void FToggleButton::setText (FString txt)
   setWidth(button_width + int(text.getLength()));
   if ( isEnabled() )
   {
-    delAccelerator (this);
+    delAccelerator();
     setHotkeyAccelerator();
   }
 }

@@ -286,7 +286,7 @@ void FApplication::processKeyboardEvent()
 
         if ( key != NEED_MORE_DATA )
         {
-          if ( key == 0x0c )  // Ctrl-L (redraw the screen)
+          if ( key == fc::Fckey_l )  // Ctrl-L (redraw the screen)
             redraw();
 
           if ( key == fc::Fkey_mouse )

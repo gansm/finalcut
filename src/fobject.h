@@ -81,8 +81,8 @@ class FObject
    void         delChild (FObject*);
    int          numOfChildren() const;
    static void  getCurrentTime (timeval&);
-   int          addTimer (int interval);
-   bool         delTimer (int id);
+   int          addTimer (int);
+   bool         delTimer (int);
    bool         delAllTimer();
    virtual bool event (FEvent*);
 

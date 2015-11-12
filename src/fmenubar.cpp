@@ -47,7 +47,7 @@ void FMenuBar::init()
   setGeometry (1, 1, getColumnNumber(), 1, false);
   getRootWidget()->setTopPadding(1, true);
   setMenuBar(this);
-  addAccelerator (fc::Fkey_f10, this);
+  addAccelerator (fc::Fkey_f10);
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
   window_object  = true;
@@ -208,7 +208,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
       int hotkey = (*iter)->getHotkey();
       int key = ev->key();
 
-      if ( 0x20000e0+tolower(hotkey) == key )
+      if ( fc::Fmkey_meta + tolower(hotkey) == key )
       {
         FMenuItem* sel_item = getSelectedItem();
 

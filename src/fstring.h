@@ -72,13 +72,13 @@ class FString
    mutable char* c_string;
 
  private:
-   inline void initLength (uInt);
-   inline void _replace (const wchar_t*);
-   inline void _insert (uInt, uInt, const wchar_t*);
-   inline void _remove (uInt, uInt);
-   inline char* wc_to_c_str (const wchar_t* s) const;
-   inline wchar_t* c_to_wc_str (const char* s) const;
-   inline wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
+   void initLength (uInt);
+   void _replace (const wchar_t*);
+   void _insert (uInt, uInt, const wchar_t*);
+   void _remove (uInt, uInt);
+   char* wc_to_c_str (const wchar_t*) const;
+   wchar_t* c_to_wc_str (const char*) const;
+   wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
 
  public:
    FString ();                    // constructor

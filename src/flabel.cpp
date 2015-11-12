@@ -47,7 +47,7 @@ FLabel::FLabel (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FLabel::~FLabel() // destructor
 {
-  delAccelerator (this);
+  delAccelerator();
 }
 
 
@@ -118,16 +118,16 @@ void FLabel::setHotkeyAccelerator()
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey), this);
-      addAccelerator (toupper(hotkey), this);
+      addAccelerator (tolower(hotkey));
+      addAccelerator (toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (0x20000e0 + tolower(hotkey), this);
+      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
     }
     else
-      addAccelerator (getHotkey(), this);
+      addAccelerator (getHotkey());
   }
   else
-    delAccelerator(this);
+    delAccelerator();
 }
 
 //----------------------------------------------------------------------
@@ -391,7 +391,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 void FLabel::cb_accel_widget_destroyed (FWidget*, void*)
 {
   accel_widget = 0;
-  delAccelerator (this);
+  delAccelerator();
 }
 
 //----------------------------------------------------------------------
@@ -449,7 +449,7 @@ bool FLabel::setEnable (bool on)
   else
   {
     flags &= ~ACTIVE;
-    delAccelerator (this);
+    delAccelerator();
   }
   return on;
 }
@@ -472,7 +472,7 @@ void FLabel::setText (const FString& txt)
 
   if ( isEnabled() )
   {
-    delAccelerator (this);
+    delAccelerator();
     setHotkeyAccelerator();
   }
 }

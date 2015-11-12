@@ -51,7 +51,7 @@ FButton::FButton (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButton::~FButton()  // destructor
 {
-  delAccelerator (this);
+  delAccelerator();
   delAllTimer();
 }
 
@@ -103,16 +103,16 @@ void FButton::setHotkeyAccelerator()
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey), this);
-      addAccelerator (toupper(hotkey), this);
+      addAccelerator (tolower(hotkey));
+      addAccelerator (toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (0x20000e0+tolower(hotkey), this);
+      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
     }
     else
-      addAccelerator (getHotkey(), this);
+      addAccelerator (getHotkey());
   }
   else
-    delAccelerator(this);
+    delAccelerator();
 }
 
 //----------------------------------------------------------------------
@@ -120,7 +120,7 @@ inline void FButton::detectHotkey()
 {
   if ( isEnabled() )
   {
-    delAccelerator (this);
+    delAccelerator();
     setHotkeyAccelerator();
   }
 }
@@ -499,7 +499,7 @@ bool FButton::setEnable (bool on)
   else
   {
     flags &= ~ACTIVE;
-    delAccelerator (this);
+    delAccelerator();
   }
   updateButtonColor();
   return on;

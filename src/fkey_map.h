@@ -415,10 +415,37 @@ keyname;
 
 static keyname FkeyName[] =
 {
-  { fc::Fkey_erase                , "Backspace" },
-  { fc::Fkey_tab                  , "Tab" },
-  { fc::Fkey_return               , "Return" },
-  { fc::Fkey_escape               , "Esc" },
+  { fc::Fckey_at                  , "Ctrl+@" },
+  { fc::Fckey_a                   , "Ctrl+a" },
+  { fc::Fckey_b                   , "Ctrl+b" },
+  { fc::Fckey_c                   , "Ctrl+c" },
+  { fc::Fckey_d                   , "Ctrl+d" },
+  { fc::Fckey_e                   , "Ctrl+e" },
+  { fc::Fckey_f                   , "Ctrl+f" },
+  { fc::Fckey_g                   , "Ctrl+g" },
+  { fc::Fkey_erase                , "Backspace" }, // Ctrl+h
+  { fc::Fkey_tab                  , "Tab" },       // Ctrl+i
+  { fc::Fckey_h                   , "Ctrl+k" },
+  { fc::Fckey_l                   , "Ctrl+l" },
+  { fc::Fkey_return               , "Return" },    // Ctrl+m
+  { fc::Fckey_n                   , "Ctrl+n" },
+  { fc::Fckey_o                   , "Ctrl+o" },
+  { fc::Fckey_p                   , "Ctrl+p" },
+  { fc::Fckey_q                   , "Ctrl+q" },
+  { fc::Fckey_r                   , "Ctrl+r" },
+  { fc::Fckey_s                   , "Ctrl+s" },
+  { fc::Fckey_t                   , "Ctrl+t" },
+  { fc::Fckey_u                   , "Ctrl+u" },
+  { fc::Fckey_v                   , "Ctrl+v" },
+  { fc::Fckey_w                   , "Ctrl+w" },
+  { fc::Fckey_x                   , "Ctrl+x" },
+  { fc::Fckey_y                   , "Ctrl+y" },
+  { fc::Fckey_z                   , "Ctrl+t" },
+  { fc::Fkey_escape               , "Esc" },       // Ctrl+[
+  { fc::Fckey_backslash           , "Ctrl+\\" },
+  { fc::Fckey_right_square_bracket, "Ctrl+]" },
+  { fc::Fckey_caret               , "Ctrl+^" },
+  { fc::Fckey_underscore          , "Ctrl+_" },
   { fc::Fkey_space                , "Space" },
   { fc::Fkey_backspace            , "Backspace" },
   { fc::Fkey_catab                , "Clear-All-Tabs" },
