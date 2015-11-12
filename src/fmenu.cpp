@@ -127,12 +127,19 @@ void FMenu::menu_dimension()
   std::vector<FMenuItem*>::const_iterator iter, end;
   iter = itemlist.begin();
   end = itemlist.end();
-  maxItemWidth = 10;
+  maxItemWidth = 10; // minimum width
 
-  // find the max item width
+  // find the maximum item width
   while ( iter != end )
   {
     uInt item_width = (*iter)->getTextLength() + 2;
+    int  accel_key  = (*iter)->accel_key;
+
+    if ( accel_key )
+    {
+      uInt accel_len = getKeyName(accel_key).getLength();
+      item_width += accel_len + 2;
+    }
 
     if ( item_width > maxItemWidth )
       maxItemWidth = item_width;
@@ -489,6 +496,7 @@ void FMenu::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
+    int  accel_key = (*iter)->accel_key;
     bool is_enabled = (*iter)->isEnabled();
     bool is_selected = (*iter)->isSelected();
     bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
@@ -573,6 +581,19 @@ void FMenu::drawItems()
         }
         else
           print (item_text[z]);
+      }
+
+      if ( accel_key )
+      {
+        FString accel_name (getKeyName(accel_key));
+        int accel_len = int(accel_name.getLength());
+        int len = maxItemWidth - (to_char + accel_len + 2);
+        if ( len > 0 )
+        {
+          FString line(len, wchar_t(' '));
+          print (line + accel_name);
+          to_char = maxItemWidth - 2;
+        }
       }
 
       if ( is_selected )

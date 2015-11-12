@@ -64,7 +64,7 @@ void FMenuBar::menu_dimension()
   iter = itemlist.begin();
   end = itemlist.end();
 
-  // find the max item width
+  // find the maximum item width
   while ( iter != end )
   {
     uInt len = (*iter)->getTextLength();

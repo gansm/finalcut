@@ -219,9 +219,9 @@ MyDialog::MyDialog (FWidget* parent)
   Quit->setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
-  FMenuItem* Undo    = new FMenuItem ("Undo", Edit);
+  FMenuItem* Undo    = new FMenuItem (fc::Fckey_z, "Undo", Edit);
   Undo->setDisable();
-  FMenuItem* Redo    = new FMenuItem ("Redo", Edit);
+  FMenuItem* Redo    = new FMenuItem (fc::Fckey_y, "Redo", Edit);
   Redo->setDisable();
   FMenuItem* Line2   = new FMenuItem (Edit);
   Line2->setSeparator();
@@ -231,11 +231,11 @@ MyDialog::MyDialog (FWidget* parent)
   Copy->setStatusbarMessage ("Copy the input text into the clipboad");
   FMenuItem* Paste   = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
   Paste->setStatusbarMessage ("Insert text form clipboard");
-  FMenuItem* Clear   = new FMenuItem ("C&lear", Edit);
+  FMenuItem* Clear   = new FMenuItem (fc::Fkey_dc, "C&lear", Edit);
   Clear->setStatusbarMessage ("Delete input text");
 
   // "View" menu items
-  FMenuItem* Env     = new FMenuItem ("&Terminal info...", View);
+  FMenuItem* Env     = new FMenuItem ("&Terminal...", View);
   Env->setStatusbarMessage ("Informations about this terminal");
   FMenuItem* Drive   = new FMenuItem ("&Drive symbols...", View);
   Drive->setStatusbarMessage ("Show drive symbols");

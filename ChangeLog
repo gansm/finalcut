@@ -1,5 +1,6 @@
 2015-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Improve menu accelerator keys
+	* Shows accelerator keys on the right side of the FMenu.
 
 2015-11-08  Markus Gans  <guru.mail@muenster.de>
 	* Activate the previous window in case if the menu is open and 

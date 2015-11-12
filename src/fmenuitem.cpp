@@ -125,7 +125,9 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
 }
 //----------------------------------------------------------------------
 FMenuItem::~FMenuItem()  // destructor
-{ }
+{
+  delAccelerator();
+}
 
 
 // private methods of FMenuItem
@@ -260,6 +262,8 @@ void FMenuItem::processClicked()
 void FMenuItem::addAccelerator (int key, FWidget* obj)
 {
   FWidget* super = super_menu;
+  if ( ! super )
+    return;
 
   while ( super && strncmp ( super->getClassName()
                            , const_cast<char*>("FMenu"), 5) == 0 )
@@ -275,7 +279,17 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
     if ( ! window )
       window = getRootWidget();
     if ( window && window->accelerator_list )
+    {
+      accel_key = key;
       window->accelerator_list->push_back(accel);
+    }
+  }
+
+  if ( isMenu(super_menu) )
+  {
+    FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
+    if ( menu_ptr )
+      menu_ptr->menu_dimension();
   }
 }
 
@@ -283,6 +297,8 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
 void FMenuItem::delAccelerator (FWidget* obj)
 {
   FWidget* super = super_menu;
+  if ( ! super )
+    return;
 
   while ( super && strncmp ( super->getClassName()
                            , const_cast<char*>("FMenu"), 5) == 0 )
@@ -302,15 +318,25 @@ void FMenuItem::delAccelerator (FWidget* obj)
     {
       FWidget::Accelerators::iterator iter;
       iter = window->accelerator_list->begin();
-    
+
       while ( iter != window->accelerator_list->end() )
       {
         if ( iter->object == obj )
+        {
+          accel_key = 0;
           iter = window->accelerator_list->erase(iter);
+        }
         else
           ++iter;
       }
     }
+  }
+
+  if ( isMenu(super_menu) )
+  {
+    FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
+    if ( menu_ptr )
+      menu_ptr->menu_dimension();
   }
 }
 
@@ -581,7 +607,7 @@ bool FMenuItem::setFocus (bool on)
             menu_ptr->redraw();
         }
       }
-      
+
       if ( statusBar() )
       {
         FString msg = getStatusbarMessage();
@@ -627,14 +653,14 @@ void FMenuItem::openMenu()
   if ( hasMenu() )
   {
     submenu = getMenu();
-  
+
     if ( ! submenu->isVisible() )
     {
       open_menu = static_cast<FMenu*>(getOpenMenu());
       if ( open_menu && open_menu != submenu )
         open_menu->hide();
       setOpenMenu(submenu);
-  
+
       submenu->setVisible();
       submenu->show();
       submenu->raiseWindow(submenu);
