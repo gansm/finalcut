@@ -446,9 +446,6 @@ void FMenuBar::adjustSize()
 void FMenuBar::leaveMenuBar()
 {
   resetMenu();
-  if ( hasSelectedItem() )
-    getSelectedItem()->unsetSelected();
-  setSelectedItem(0);
   redraw();
   activatePrevWindow();
   getActiveWindow()->getFocusWidget()->setFocus();

@@ -1885,7 +1885,7 @@ void FWidget::drawShadow()
   {
     if ( x2 < xmax )
     {
-      uInt block;
+      int block;
       gotoxy (x2+1, y1);
       ch = getCoveredCharacter (x2+1, y1, this);
       setColor (wc.shadow_fg, ch.bg_color);

@@ -628,12 +628,12 @@ void FMenu::drawItems()
       {
         FString accel_name (getKeyName(accel_key));
         int accel_len = int(accel_name.getLength());
-        int len = maxItemWidth - (to_char + accel_len + c + 2);
+        int len = int(maxItemWidth) - (to_char + accel_len + c + 2);
         if ( len > 0 )
         {
           FString spaces (len, wchar_t(' '));
           print (spaces + accel_name);
-          to_char = maxItemWidth - (c + 2);
+          to_char = int(maxItemWidth) - (c + 2);
         }
       }
 
