@@ -218,16 +218,9 @@ void FMenu::hideSuperMenus()
     if ( isMenuBar(super) )
     {
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(super);
-      FMenuItem* selectedMenuItem = mbar->getSelectedItem();
 
-      if ( selectedMenuItem )
-      {
-        selectedMenuItem->unsetSelected();
-        selectedMenuItem = 0;
-        mbar->mouse_down = false;
-        mbar->drop_down = false;
-        mbar->redraw();
-      }
+      if ( mbar->hasSelectedItem() )
+        mbar->leaveMenuBar();
     }
     else if ( isMenu(super) )
     {

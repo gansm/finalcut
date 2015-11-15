@@ -446,6 +446,9 @@ void FMenuBar::adjustSize()
 void FMenuBar::leaveMenuBar()
 {
   resetMenu();
+  if ( hasSelectedItem() )
+    getSelectedItem()->unsetSelected();
+  setSelectedItem(0);
   redraw();
   activatePrevWindow();
   getActiveWindow()->getFocusWidget()->setFocus();
@@ -454,7 +457,7 @@ void FMenuBar::leaveMenuBar()
     statusBar()->drawMessage();
   updateTerminal();
   flush_out();
-  drop_down = false;
+  mouse_down = false;
 }
 
 // public methods of FMenuBar
