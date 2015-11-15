@@ -132,9 +132,10 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fprogressbar.lo flineedit.lo fbutton.lo fbuttongroup.lo \
 	ftogglebutton.lo fradiobutton.lo fcheckbox.lo fswitch.lo \
 	flabel.lo flistbox.lo fmenu.lo fmenubar.lo fmenuitem.lo \
-	fmenulist.lo fdialog.lo fwindow.lo fmessagebox.lo \
-	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fevent.lo \
-	foptimove.lo fapp.lo fwidget.lo fobject.lo
+	fradiomenuitem.lo fcheckmenuitem.lo fmenulist.lo fdialog.lo \
+	fwindow.lo fmessagebox.lo ffiledialog.lo ftextview.lo \
+	fstatusbar.lo fterm.lo fevent.lo foptimove.lo fapp.lo \
+	fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -389,6 +390,8 @@ libfinal_la_SOURCES = \
 	fmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
+	fradiomenuitem.cpp \
+	fcheckmenuitem.cpp \
 	fmenulist.cpp \
 	fdialog.cpp \
 	fwindow.cpp \
@@ -425,6 +428,8 @@ finalcutinclude_HEADERS = \
 	fmenu.h \
 	fmenubar.h \
 	fmenuitem.h \
+	fradiomenuitem.h \
+	fcheckmenuitem.h \
 	fmenulist.h \
 	fmessagebox.h \
 	fobject.h \
@@ -526,6 +531,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbutton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbuttongroup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fcheckbox.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fcheckmenuitem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fdialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fevent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ffiledialog.Plo@am__quote@
@@ -542,6 +548,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fpoint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fprogressbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fradiobutton.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fradiomenuitem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/frect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fscrollbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstatusbar.Plo@am__quote@

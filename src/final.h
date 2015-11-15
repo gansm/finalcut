@@ -22,6 +22,8 @@
 #include "fmenu.h"
 #include "fmenubar.h"
 #include "fmenuitem.h"
+#include "fcheckmenuitem.h"
+#include "fradiomenuitem.h"
 #include "fstatusbar.h"
 #include "fscrollbar.h"
 #include "fprogressbar.h"

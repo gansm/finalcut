@@ -24,7 +24,7 @@ FString::FString (int len)
   , bufsize(0)
   , c_string(0)
 {
-  if ( len >= 0 )
+  if ( len > 0 )
     initLength(uInt(len));
   else
     initLength(0);
@@ -47,7 +47,7 @@ FString::FString (int len, wchar_t c)
   , bufsize(0)
   , c_string(0)
 {
-  if ( len >= 0 )
+  if ( len > 0 )
     _replace ( FString(uInt(len), c).string );
   else
     initLength(0);
@@ -83,7 +83,7 @@ FString::FString (int len, char c)
   bufsize = 0;
   c_string = 0;
 
-  if ( len >= 0 )
+  if ( len > 0 )
     _replace ( FString(uInt(len), c).string );
   else
     initLength(0);

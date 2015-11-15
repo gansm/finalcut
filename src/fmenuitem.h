@@ -16,11 +16,11 @@
 //       ▕▁▁▁▁▁▁▁▁▁▏
 //            ▲
 //            │
-//      ▕▔▔▔▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▏
+//      ▕▔▔▔▔▔▔▔▔▔▔▔▏*       1▕▔▔▔▔▔▔▔▏
 //      ▕ FMenuItem ▏-┬- - - -▕ FMenu ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▏
 //                    :
-//                    :      *▕▔▔▔▔▔▔▔▔▔▔▔▏
+//                    :      1▕▔▔▔▔▔▔▔▔▔▔▔▏
 //                    └- - - -▕ FMenuList ▏
 //                            ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
@@ -42,29 +42,33 @@ class FMenuList;
 
 class FMenuItem : public FWidget
 {
- private:
+ protected:
    FString    text;
    bool       selected;
    bool       separator;
+   bool       checkable;
    bool       checked;
    uInt       text_length;
    int        hotkey;
    int        accel_key;
    FMenu*     menu;
    FWidget*   super_menu;
+   bool       radio_button;
 
  private:
    FMenuItem (const FMenuItem&);
    FMenuItem& operator = (const FMenuItem&);
    void       init (FWidget*);
    uChar      hotKey();
+   void       processActivate();
+   void       processDeactivate();
+   virtual void processClicked();
+
+ protected:
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;
    FWidget*   getSuperMenu() const;
    void       setSuperMenu (FWidget*);
-   void       processActivate();
-   void       processDeactivate();
-   void       processClicked();
 
  public:
    explicit FMenuItem (FWidget* = 0);
@@ -75,6 +79,7 @@ class FMenuItem : public FWidget
    FMenuItem (int, const std::string&, FWidget* = 0);
    FMenuItem (int, const char*, FWidget* = 0);
    virtual ~FMenuItem();
+   const char* getClassName() const;
 
    // make every addAccelerator from FWidget available
    using FWidget::addAccelerator;
@@ -125,6 +130,10 @@ class FMenuItem : public FWidget
 
 
 // FMenuItem inline functions
+//----------------------------------------------------------------------
+inline const char* FMenuItem::getClassName() const
+{ return "FMenuItem"; }
+
 //----------------------------------------------------------------------
 inline FWidget* FMenuItem::getSuperMenu() const
 { return super_menu; }

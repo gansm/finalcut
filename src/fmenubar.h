@@ -61,6 +61,7 @@ class FMenuBar : public FWindow, public FMenuList
    void       draw();
    void       drawItems();
    void       adjustSize();
+   void       leaveMenuBar();
 
  public:
    explicit FMenuBar (FWidget* = 0);  // constructor
@@ -77,7 +78,6 @@ class FMenuBar : public FWindow, public FMenuList
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool = true);
-   void       cb_item_activated (FWidget*, void*);
    void       cb_item_deactivated (FWidget*, void*);
 
  private:

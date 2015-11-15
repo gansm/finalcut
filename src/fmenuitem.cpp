@@ -19,12 +19,14 @@ FMenuItem::FMenuItem (FWidget* parent)
   , text()
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
@@ -35,12 +37,14 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
@@ -51,12 +55,14 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
@@ -67,27 +73,32 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
+
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
@@ -98,12 +109,14 @@ FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
@@ -114,15 +127,18 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
   , text(txt)
   , selected(false)
   , separator(false)
+  , checkable(false)
   , checked(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , radio_button(false)
 {
   init (parent);
 }
+
 //----------------------------------------------------------------------
 FMenuItem::~FMenuItem()  // destructor
 {
@@ -166,13 +182,8 @@ void FMenuItem::init (FWidget* parent)
 
       this->addCallback
       (
-        "activate",
-        _METHOD_CALLBACK (getSuperMenu(), &FMenuBar::cb_item_activated)
-      );
-      this->addCallback
-      (
         "deactivate",
-        _METHOD_CALLBACK (getSuperMenu(), &FMenuBar::cb_item_deactivated)
+        _METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
       );
     }
     else if ( isMenu(parent) ) // Parent is menu
@@ -184,12 +195,7 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "activate",
-        _METHOD_CALLBACK (getSuperMenu(), &FMenu::cb_menuitem_activated)
-      );
-      this->addCallback
-      (
-        "deactivate",
-        _METHOD_CALLBACK (getSuperMenu(), &FMenu::cb_menuitem_deactivated)
+        _METHOD_CALLBACK (parent, &FMenu::cb_menuitem_activated)
       );
     }
   }
@@ -226,20 +232,6 @@ uChar FMenuItem::hotKey()
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::isMenuBar (FWidget* w) const
-{
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenuBar") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FMenuItem::isMenu (FWidget* w) const
-{
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenu") ) == 0 );
-}
-
-//----------------------------------------------------------------------
 void FMenuItem::processActivate()
 {
   emitCallback("activate");
@@ -256,6 +248,23 @@ void FMenuItem::processClicked()
 {
   emitCallback("clicked");
 }
+
+
+// protected methods of FMenuItem
+//----------------------------------------------------------------------
+bool FMenuItem::isMenuBar (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenuBar") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenuItem::isMenu (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FMenu") ) == 0 );
+}
+
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------

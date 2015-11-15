@@ -26,6 +26,8 @@ libfinal_la_SOURCES = \
 	fmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
+	fradiomenuitem.cpp \
+	fcheckmenuitem.cpp \
 	fmenulist.cpp \
 	fdialog.cpp \
 	fwindow.cpp \
@@ -64,6 +66,8 @@ finalcutinclude_HEADERS = \
 	fmenu.h \
 	fmenubar.h \
 	fmenuitem.h \
+	fradiomenuitem.h \
+	fcheckmenuitem.h \
 	fmenulist.h \
 	fmessagebox.h \
 	fobject.h \

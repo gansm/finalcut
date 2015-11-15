@@ -107,7 +107,8 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x1ae9,   0, 0xe9,   0},  // ◤  -  NF_rev_down_pointing_triangle2
   {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3
   {0x1af5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right
-  {0x1afb,   0, 0xfb,   0}   // ✓  -  NF_check_mark
+  {0x1afb,   0, 0xfb,   0},  // ✓  -  NF_check_mark
+  {0x221a,   0, 0xfb, 'x'}   // √  -  square root
 };
 
 const int lastCharItem = int(sizeof(character) / sizeof(character[0])) - 1;

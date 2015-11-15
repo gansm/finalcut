@@ -442,6 +442,21 @@ void FMenuBar::adjustSize()
   FWidget::adjustSize();
 }
 
+//----------------------------------------------------------------------
+void FMenuBar::leaveMenuBar()
+{
+  resetMenu();
+  redraw();
+  activatePrevWindow();
+  getActiveWindow()->getFocusWidget()->setFocus();
+  getActiveWindow()->redraw();
+  if ( statusBar() )
+    statusBar()->drawMessage();
+  updateTerminal();
+  flush_out();
+  drop_down = false;
+}
+
 // public methods of FMenuBar
 //----------------------------------------------------------------------
 void FMenuBar::onKeyPress (FKeyEvent* ev)
@@ -494,16 +509,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      resetMenu();
-      redraw();
-      activatePrevWindow();
-      getActiveWindow()->getFocusWidget()->setFocus();
-      getActiveWindow()->redraw();
-      if ( statusBar() )
-        statusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
-      drop_down = false;
+      leaveMenuBar();
       ev->accept();
       break;
 
@@ -519,11 +525,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   {
     mouse_down = false;
     if ( ! itemlist.empty() )
-    {
-      unselectItem();
-      redraw();
-      drop_down = false;
-    }
+      leaveMenuBar();
     return;
   }
 
@@ -675,6 +677,8 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
         }
         ++iter;
       }
+      if ( ! hasSelectedItem() )
+        leaveMenuBar();
     }
   }
 }
@@ -825,11 +829,6 @@ void FMenuBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
   if ( vmenubar && (width != old_width || height != old_height) )
     resizeArea (vmenubar);
-}
-
-//----------------------------------------------------------------------
-void FMenuBar::cb_item_activated (FWidget*, void*)
-{
 }
 
 //----------------------------------------------------------------------

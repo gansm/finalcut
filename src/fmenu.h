@@ -8,15 +8,15 @@
 // ▕ FObject ▏ ▕  FTerm  ▏
 // ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
 //      ▲           ▲
-//      │           │
-//      └─────┬─────┘
-//            │
-//       ▕▔▔▔▔▔▔▔▔▔▏
-//       ▕ FWidget ▏
-//       ▕▁▁▁▁▁▁▁▁▁▏
-//            ▲
-//            │
-//       ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▏       ▕▔▔▔▔▔▔▔▔▔▔▔▏
+//      │           │                   *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//      └─────┬─────┘               ┌ - -▕ FRadioMenuItem ▏
+//            │                     :    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+//       ▕▔▔▔▔▔▔▔▔▔▏                :
+//       ▕ FWidget ▏                :   *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+//       ▕▁▁▁▁▁▁▁▁▁▏                ├ - -▕ FCheckMenuItem ▏
+//            ▲                     :    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+//            │                   1 :
+//       ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▔▔▏- ┘    ▕▔▔▔▔▔▔▔▔▔▔▔▏
 //       ▕ FWindow ▏ ▕ FMenuList ▏- - - -▕ FMenuItem ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▁▁▏1     *▕▁▁▁▁▁▁▁▁▁▁▁▏
 //            ▲           ▲   1:
@@ -50,6 +50,7 @@ class FMenu : public FWindow, public FMenuList
    FWidget*   super_menu;
    uInt       maxItemWidth;
    bool       mouse_down;
+   bool       has_checkable_items;
 
  private:
    FMenu (const FMenu&);
@@ -58,6 +59,7 @@ class FMenu : public FWindow, public FMenuList
    void       menu_dimension();
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;
+   bool       isRadioMenuItem (FWidget*) const;
    FWidget*   getSuperMenu() const;
    void       setSuperMenu (FWidget*);
    void       hideSubMenus();
@@ -116,12 +118,14 @@ class FMenu : public FWindow, public FMenuList
    void       setText (const std::string&);
    void       setText (const char*);
    void       cb_menuitem_activated (FWidget*, void*);
-   void       cb_menuitem_deactivated (FWidget*, void*);
+   void       cb_menuitem_toggled (FWidget*, void*);
 
  private:
    friend class FApplication;
+   friend class FCheckMenuItem;
    friend class FMenuBar;
    friend class FMenuItem;
+   friend class FRadioMenuItem;
 };
 #pragma pack(pop)
 

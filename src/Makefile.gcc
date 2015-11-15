@@ -7,33 +7,38 @@ VERSION = "0.1.1"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib64
 INCLUDEDIR = /usr/local/include/final
-INCLUDE_HEADERS = fapp.h \
-                  fbuttongroup.h \
-                  fbutton.h \
-                  fcheckbox.h \
-                  fswitch.h \
-                  fdialog.h \
-                  fevent.h \
-                  ffiledialog.h \
-                  final.h \
-                  flabel.h \
-                  flineedit.h \
-                  flistbox.h \
-                  fmessagebox.h \
-                  fobject.h \
-                  foptimove.h \
-                  fpoint.h \
-                  fprogressbar.h \
-                  fradiobutton.h \
-                  frect.h \
-                  fscrollbar.h \
-                  fstatusbar.h \
-                  fstring.h \
-                  fterm.h \
-                  ftextview.h \
-                  ftogglebutton.h \
-                  fwidget.h \
-                  fwindow.h
+INCLUDE_HEADERS = \
+	fapp.h \
+	fbuttongroup.h \
+	fbutton.h \
+	fcheckbox.h \
+	fswitch.h \
+	fdialog.h \
+	fevent.h \
+	ffiledialog.h \
+	final.h \
+	flabel.h \
+	flineedit.h \
+	flistbox.h \
+	fmenu.h \
+	fmenubar.h \
+	fradiomenuitem.h \
+	fcheckmenuitem.h \
+	fmessagebox.h \
+	fobject.h \
+	foptimove.h \
+	fpoint.h \
+	fprogressbar.h \
+	fradiobutton.h \
+	frect.h \
+	fscrollbar.h \
+	fstatusbar.h \
+	fstring.h \
+	fterm.h \
+	ftextview.h \
+	ftogglebutton.h \
+	fwidget.h \
+	fwindow.h
 
 # compiler parameter
 CXX = g++
@@ -45,32 +50,39 @@ GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=$(VERSION)
 RM = rm -f
 LIB = libfinal.so
-OBJS = fstring.o \
-       fpoint.o \
-       frect.o \
-       fscrollbar.o \
-       fprogressbar.o \
-       flineedit.o \
-       fbutton.o \
-       fbuttongroup.o \
-       ftogglebutton.o \
-       fradiobutton.o \
-       fcheckbox.o \
-       fswitch.o \
-       flabel.o \
-       flistbox.o \
-       fdialog.o \
-       fwindow.o \
-       fmessagebox.o \
-       ffiledialog.o \
-       ftextview.o \
-       fstatusbar.o \
-       fterm.o \
-       fevent.o \
-       foptimove.o \
-       fapp.o \
-       fwidget.o \
-       fobject.o
+OBJS = \
+	fstring.o \
+	fpoint.o \
+	frect.o \
+	fscrollbar.o \
+	fprogressbar.o \
+	flineedit.o \
+	fbutton.o \
+	fbuttongroup.o \
+	ftogglebutton.o \
+	fradiobutton.o \
+	fcheckbox.o \
+	fswitch.o \
+	flabel.o \
+	flistbox.o \
+	fmenu.o \
+	fmenubar.o \
+	fmenuitem.o \
+	fradiomenuitem.o \
+	fcheckmenuitem.o \
+	fmenulist.o \
+	fdialog.o \
+	fwindow.o \
+	fmessagebox.o \
+	ffiledialog.o \
+	ftextview.o \
+	fstatusbar.o \
+	fterm.o \
+	fevent.o \
+	foptimove.o \
+	fapp.o \
+	fwidget.o \
+	fobject.o
 
 TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
 

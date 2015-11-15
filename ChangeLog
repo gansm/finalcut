@@ -1,4 +1,8 @@
 2015-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Add two new classes FCheckMenuItem and FRadioMenuItem 
+	  for menu check marks and menu option marks (bullets)
+
+2015-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Improve menu accelerator keys
 	* Shows accelerator keys on the right side of the FMenu.
 

@@ -17,6 +17,7 @@ FMenu::FMenu(FWidget* parent)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
+  , has_checkable_items(false)
 {
   init(parent);
 }
@@ -28,6 +29,7 @@ FMenu::FMenu (FString& txt, FWidget* parent)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
+  , has_checkable_items(false)
 {
   item = new FMenuItem(txt, parent);
   init(parent);
@@ -40,6 +42,7 @@ FMenu::FMenu (const std::string& txt, FWidget* parent)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
+  , has_checkable_items(false)
 {
   item = new FMenuItem(txt, parent);
   init(parent);
@@ -52,6 +55,7 @@ FMenu::FMenu (const char* txt, FWidget* parent)
   , super_menu(0)
   , maxItemWidth(0)
   , mouse_down(false)
+  , has_checkable_items(false)
 {
   item = new FMenuItem(txt, parent);
   init(parent);
@@ -141,6 +145,9 @@ void FMenu::menu_dimension()
       item_width += accel_len + 2;
     }
 
+    if ( has_checkable_items )
+      item_width++;
+
     if ( item_width > maxItemWidth )
       maxItemWidth = item_width;
 
@@ -176,6 +183,13 @@ bool FMenu::isMenu (FWidget* w) const
 {
   return bool ( strcmp ( w->getClassName()
                        , const_cast<char*>("FMenu") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isRadioMenuItem (FWidget* w) const
+{
+  return bool ( strcmp ( w->getClassName()
+                       , const_cast<char*>("FRadioMenuItem") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -483,10 +497,13 @@ void FMenu::drawMenuShadow()
 void FMenu::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
+  int c = 0;
   int y = 0;
-
   iter = itemlist.begin();
   end = itemlist.end();
+
+  if ( has_checkable_items )
+    c = 1;
 
   while ( iter != end )
   {
@@ -498,6 +515,9 @@ void FMenu::drawItems()
     int  hotkeypos, to_char;
     int  accel_key = (*iter)->accel_key;
     bool is_enabled = (*iter)->isEnabled();
+    bool is_checked = (*iter)->isChecked();
+    bool is_checkable = (*iter)->checkable;
+    bool is_radio_btn = (*iter)->radio_button;
     bool is_selected = (*iter)->isSelected();
     bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
     bool is_separator = (*iter)->isSeparator();
@@ -534,6 +554,34 @@ void FMenu::drawItems()
       }
       gotoxy (xpos+xmin, ypos+ymin+y);
       setColor (foregroundColor, backgroundColor);
+      if ( has_checkable_items )
+      {
+        if ( is_checkable )
+        {
+          if ( is_checked )
+          {
+            if ( is_radio_btn )
+            {
+              print (fc::Bullet);
+            }
+            else
+            {
+              if ( isNewFont() )
+                print (fc::NF_check_mark);
+              else
+                print (fc::SquareRoot);
+            }
+          }
+          else
+          {
+            setColor (wc.menu_inactive_fg, backgroundColor);
+            print ('-');
+            setColor (foregroundColor, backgroundColor);
+          }
+        }
+        else
+          print (' ');
+      }
       print (' ');
 
       txt = (*iter)->getText();
@@ -587,18 +635,18 @@ void FMenu::drawItems()
       {
         FString accel_name (getKeyName(accel_key));
         int accel_len = int(accel_name.getLength());
-        int len = maxItemWidth - (to_char + accel_len + 2);
+        int len = maxItemWidth - (to_char + accel_len + c + 2);
         if ( len > 0 )
         {
-          FString line(len, wchar_t(' '));
-          print (line + accel_name);
-          to_char = maxItemWidth - 2;
+          FString spaces (len, wchar_t(' '));
+          print (spaces + accel_name);
+          to_char = maxItemWidth - (c + 2);
         }
       }
 
       if ( is_selected )
       {
-        for (uInt i=uInt(to_char); i < maxItemWidth-1; i++)
+        for (uInt i=uInt(to_char+c); i < maxItemWidth-1; i++)
           print (' ');
       }
 
@@ -950,6 +998,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       ev = new FMouseEvent (MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
+      mbar->mouse_down = true;
       mbar->onMouseMove(ev);
       delete ev;
     }
@@ -1043,6 +1092,34 @@ void FMenu::cb_menuitem_activated (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
+void FMenu::cb_menuitem_toggled (FWidget* widget, void*)
+{
+  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+  std::vector<FMenuItem*>::const_iterator iter, end;
+
+  if ( ! has_checkable_items )
+    return;
+  if ( ! menuitem->isChecked() )
+    return;
+  if ( itemlist.empty() )
+    return;
+
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if (  (*iter) != menuitem
+       && (*iter)->isChecked()
+       && isRadioMenuItem(*iter) )
+    {
+      (*iter)->unsetChecked();
+    }
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
 bool FMenu::setTransparentShadow (bool on)
 {
   if ( on )
@@ -1065,13 +1142,3 @@ bool FMenu::setTransparentShadow (bool on)
   return on;
 }
 
-//----------------------------------------------------------------------
-void FMenu::cb_menuitem_deactivated (FWidget* widget, void*)
-{
-  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
-
-  if ( menuitem->hasMenu() )
-  {
-    //beep();
-  }
-}
