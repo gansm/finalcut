@@ -69,7 +69,7 @@ void FCheckBox::drawCheckButton()
     else
     {
       print ('[');
-      print ('x');
+      print (fc::Times);  // Times ×
       print (']');
     }
   }

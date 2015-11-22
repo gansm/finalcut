@@ -48,6 +48,7 @@ class FMenu : public FWindow, public FMenuList
  private:
    FMenuItem* item;
    FWidget*   super_menu;
+   FMenu*     open_sub_menu;
    uInt       maxItemWidth;
    bool       mouse_down;
    bool       has_checkable_items;
@@ -62,6 +63,8 @@ class FMenu : public FWindow, public FMenuList
    bool       isRadioMenuItem (FWidget*) const;
    FWidget*   getSuperMenu() const;
    void       setSuperMenu (FWidget*);
+   bool       isSubMenu() const;
+   void       openSubMenu (FMenu*);
    void       hideSubMenus();
    void       hideSuperMenus();
    bool       containsMenuStructure (const FPoint&) const;

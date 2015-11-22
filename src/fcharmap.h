@@ -28,7 +28,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x2260, '|', 0xd8, '!'},  // ≠  -  NotEqualTo
   {0x00b1, 'g', 0xf1, '#'},  // ±  -  PlusMinus
   {0x00f7, '/', 0xf6, '/'},  // ÷  -  Division sign
-  {0x00d7, '*',  '*', '*'},  // ×  -  Multiplication sign
+  {0x00d7, 'x',  'x', 'x'},  // ×  -  Multiplication sign
   {0x02e3, '~', 0xfc, '~'},  // ˣ  -  Modifier letter small x
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
@@ -108,7 +108,8 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3
   {0x1af5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right
   {0x1afb,   0, 0xfb,   0},  // ✓  -  NF_check_mark
-  {0x221a,   0, 0xfb, 'x'}   // √  -  square root
+  {0x221a,   0, 0xfb, 'x'},  // √  -  square root
+  {0x25cf, '`', 0x04, '*'}   // ●  -  black circle
 };
 
 const int lastCharItem = int(sizeof(character) / sizeof(character[0])) - 1;

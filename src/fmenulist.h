@@ -52,7 +52,6 @@ class FMenuList
    bool         isSelected (int) const;
    void         selectFirstItem();
    void         unselectItem();
-   bool         hasSelectedItem();
    FMenuItem*   getSelectedItem() const;
    void         setSelectedItem (FMenuItem*);
    bool         hasSelectedItem() const;

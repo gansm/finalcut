@@ -87,6 +87,7 @@ class fc
      LessThanOrEqualTo                   = 0x2264,  // ≤
      NotEqualTo                          = 0x2260,  // ≠
      PlusMinus                           = 0x00b1,  // ±
+     Times                               = 0x00d7,  // ×
      Degree                              = 0x00b0,  // °
      BlackVerticalRectangle              = 0x25ae,  // ▮
      SmallBullet                         = 0x00b7,  // ·
@@ -166,7 +167,8 @@ class fc
      NF_rev_menu_button3                 = 0x1af4,  // ]
      NF_shadow_box_right                 = 0x1af5,  // ]
      NF_check_mark                       = 0x1afb,  // ✓
-     SquareRoot                          = 0x221a   // √
+     SquareRoot                          = 0x221a,  // √
+     BlackCircle                         = 0x25CF   // ●
    };
 
    // keyboard - single keys

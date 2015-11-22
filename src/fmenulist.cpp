@@ -68,25 +68,6 @@ void FMenuList::unselectItem()
 }
 
 //----------------------------------------------------------------------
-bool FMenuList::hasSelectedItem()
-{
-  if ( ! itemlist.empty() )
-  {
-    std::vector<FMenuItem*>::const_iterator iter, end;
-    iter = itemlist.begin();
-    end = itemlist.end();
-
-    while ( iter != end )
-    {
-      if ( (*iter)->isSelected() )
-        return true;
-      ++iter;
-    }
-  }
-  return false;
-}
-
-//----------------------------------------------------------------------
 void FMenuList::insert (FMenuItem* i)
 {
   itemlist.push_back(i);

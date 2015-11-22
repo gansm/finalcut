@@ -558,6 +558,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
          && mouse_x <= x2
          && mouse_y == 1 )
       {
+        // Mouse pointer over item
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           FWidget* focused_widget = getFocusWidget();
@@ -636,6 +637,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
            && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {
+          // Mouse pointer over item
           if ( (*iter)->hasMenu() )
           {
             FMenu* menu = (*iter)->getMenu();
@@ -714,6 +716,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
          && mouse_x <= x2
          && mouse_y == 1 )
       {
+        // Mouse pointer over item
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           FWidget* focused_widget = getFocusWidget();
@@ -747,6 +750,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
            && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {
+          // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
           if ( getSelectedItem() == *iter )
             setSelectedItem(0);

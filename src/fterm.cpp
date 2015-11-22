@@ -1505,7 +1505,7 @@ void FTerm::init()
     // mintty can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
     setXTermForeground("rgb:0000/0000/0000");
-    setXTermHighlightBackground("rgb:b1b1/b1b1/b1b1");
+    setXTermHighlightBackground("rgb:4a4a/9090/d9d9");
   }
 
   setRawMode();
@@ -1606,6 +1606,7 @@ void FTerm::finish()
   resetXTermCursorColor();
   resetXTermForeground();
   resetXTermBackground();
+  resetXTermHighlightBackground();
   setXTermCursorStyle(fc::steady_block);
 
   if ( max_color >= 16 && ! kde_konsole && ! tera_terminal )
@@ -2889,6 +2890,17 @@ void FTerm::resetXTermMouseBackground()
   if ( xterm )
   {
     putstring("\033]114\07");
+    fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermHighlightBackground()
+{
+  // Reset the highlight background color
+  if ( xterm || urxvt_terminal )
+  {
+    putstringf ("\033]117\07");
     fflush(stdout);
   }
 }

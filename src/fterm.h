@@ -325,6 +325,7 @@ class FTerm
    static void    resetXTermCursorColor();
    static void    resetXTermMouseForeground();
    static void    resetXTermMouseBackground();
+   static void    resetXTermHighlightBackground();
    static void    saveColorMap();
    static void    resetColorMap();
    static void    setPalette (int, int, int, int);
