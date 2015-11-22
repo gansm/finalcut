@@ -698,12 +698,16 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     int mouse_x, mouse_y;
+    bool mouse_over_menubar = false;
     bool focus_changed = false;
 
     iter = itemlist.begin();
     end = itemlist.end();
     mouse_x = ev->getX();
     mouse_y = ev->getY();
+
+    if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+      mouse_over_menubar = true;
 
     while ( iter != end )
     {
@@ -746,7 +750,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       }
       else
       {
-        if ( getGeometryGlobal().contains(ev->getGlobalPos())
+        if (  mouse_over_menubar
            && (*iter)->isEnabled()
            && (*iter)->isSelected() )
         {

@@ -989,7 +989,9 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     bool focus_changed = false;
+    bool mouse_over_menu = false;
     bool mouse_over_submenu = false;
+    bool mouse_over_supermenu = false;
     bool hide_sub_menu = false;
     FMenu* show_sub_menu = 0;
     FPoint mouse_pos;
@@ -999,11 +1001,21 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     mouse_pos = ev->getPos();
     mouse_pos -= FPoint(getRightPadding(),getTopPadding());
 
+    if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+      mouse_over_menu = true;
+
     if ( open_sub_menu )
     {
       const FRect& submenu_geometry = open_sub_menu->getGeometryGlobal();
       if ( submenu_geometry.contains(ev->getGlobalPos()) )
         mouse_over_submenu = true;
+    }
+
+    if ( isSubMenu() )
+    {
+      const FRect& supermenu_geometry = getSuperMenu()->getGeometryGlobal();
+      if ( supermenu_geometry.contains(ev->getGlobalPos()) )
+        mouse_over_supermenu = true;
     }
 
     while ( iter != end )
@@ -1048,7 +1060,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       }
       else
       {
-        if ( getGeometryGlobal().contains(ev->getGlobalPos())
+        if ( mouse_over_menu
          && (*iter)->isEnabled()
          && (*iter)->isSelected()
          && ! mouse_over_submenu )
@@ -1074,8 +1086,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       setClickedWidget(open_sub_menu);
       open_sub_menu->onMouseMove(ev);
     }
-    else if ( ! hasSelectedItem() && statusBar()
-       && getGeometryGlobal().contains(ev->getGlobalPos()) )
+    else if ( ! mouse_over_menu && mouse_over_supermenu )
+    {
+      // Mouse event handover to super-menu
+      FMenu* smenu = dynamic_cast<FMenu*>(getSuperMenu());
+      const FPoint& g = ev->getGlobalPos();
+      const FPoint& p = smenu->globalToLocalPos(g);
+      int b = ev->getButton();
+      ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      smenu->mouse_down = true;
+      setClickedWidget(smenu);
+      smenu->onMouseMove(ev);
+    }
+    else if ( ! hasSelectedItem() && statusBar() && mouse_over_menu )
     {
       // Mouse is over border or separator
       FString msg = getStatusbarMessage();
