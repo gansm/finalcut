@@ -36,3 +36,5 @@ addons:
 script:
   - autoreconf -v --install --force && ./configure --prefix=/usr && make -j10 && make check
 
+sudo: false
+
