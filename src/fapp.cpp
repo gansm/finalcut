@@ -356,13 +356,15 @@ void FApplication::processKeyboardEvent()
             FKeyEvent k_press_ev (KeyPress_Event, key);
             sendEvent (widget, &k_press_ev);
 
-            if ( ! k_press_ev.isAccepted() && ! k_down_ev.isAccepted() )
+            if ( ! open_menu
+               && ! k_press_ev.isAccepted()
+               && ! k_down_ev.isAccepted() )
             {
               // keyboard accelerator
               FWidget* window = static_cast<FWidget*>(active_window);
               if ( ! window )
                 window = getRootWidget();
-              if (  window
+              if ( window
                  && window->accelerator_list
                  && ! window->accelerator_list->empty() )
               {

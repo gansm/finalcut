@@ -191,12 +191,6 @@ void FMenuItem::init (FWidget* parent)
       FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
       if ( menu_ptr )
         menu_ptr->menu_dimension();
-
-      this->addCallback
-      (
-        "activate",
-        _METHOD_CALLBACK (parent, &FMenu::cb_menuitem_activated)
-      );
     }
   }
   if ( hasFocus() )
@@ -656,27 +650,29 @@ void FMenuItem::unsetSelected()
 //----------------------------------------------------------------------
 void FMenuItem::openMenu()
 {
-  FMenu* submenu;
+  FMenu* menu;
   FMenu* open_menu;
 
   if ( hasMenu() )
   {
-    submenu = getMenu();
+    menu = getMenu();
+    if ( menu->isVisible() )
+      return;
 
-    if ( ! submenu->isVisible() )
+    open_menu = static_cast<FMenu*>(getOpenMenu());
+    if ( open_menu && open_menu != menu )
     {
-      open_menu = static_cast<FMenu*>(getOpenMenu());
-      if ( open_menu && open_menu != submenu )
-        open_menu->hide();
-      setOpenMenu(submenu);
-
-      submenu->setVisible();
-      submenu->show();
-      submenu->raiseWindow(submenu);
-      submenu->redraw();
-      updateTerminal();
-      flush_out();
+      open_menu->hide();
+      open_menu->hideSubMenus();
     }
+    setOpenMenu(menu);
+
+    menu->setVisible();
+    menu->show();
+    menu->raiseWindow(menu);
+    menu->redraw();
+    updateTerminal();
+    flush_out();
   }
 }
 

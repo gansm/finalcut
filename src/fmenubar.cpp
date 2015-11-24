@@ -848,5 +848,6 @@ void FMenuBar::cb_item_deactivated (FWidget* widget, void*)
   {
     FMenu* menu = menuitem->getMenu();
     menu->hide();
+    menu->hideSubMenus();
   }
 }

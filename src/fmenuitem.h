@@ -94,7 +94,6 @@ class FMenuItem : public FWidget
    void       onAccel (FAccelEvent*);
    void       onFocusIn (FFocusEvent*);
    void       onFocusOut (FFocusEvent*);
-   FString    getText() const;
    // make every setEnable from FWidget available
    using FWidget::setEnable;
    bool       setEnable(bool);
@@ -117,6 +116,7 @@ class FMenuItem : public FWidget
    bool       hasMenu() const;
    void       openMenu();
    uInt       getTextLength() const;
+   FString    getText() const;
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
@@ -141,10 +141,6 @@ inline FWidget* FMenuItem::getSuperMenu() const
 //----------------------------------------------------------------------
 inline void FMenuItem::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
-
-//----------------------------------------------------------------------
-inline FString FMenuItem::getText() const
-{ return text; }
 
 //----------------------------------------------------------------------
 inline bool FMenuItem::setFocus()
@@ -211,5 +207,9 @@ inline bool FMenuItem::hasMenu() const
 //----------------------------------------------------------------------
 inline uInt FMenuItem::getTextLength() const
 { return text_length; }
+
+//----------------------------------------------------------------------
+inline FString FMenuItem::getText() const
+{ return text; }
 
 #endif  // _FMENUITEM_H

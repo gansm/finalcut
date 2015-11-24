@@ -69,6 +69,8 @@ class FMenu : public FWindow, public FMenuList
    void       hideSuperMenus();
    bool       containsMenuStructure (const FPoint&) const;
    bool       containsMenuStructure (int, int) const;
+   FMenu*     superMenuAt (const FPoint&) const;
+   FMenu*     superMenuAt (int, int) const;
    bool       selectNextItem();
    bool       selectPrevItem();
    void       keypressMenuBar (FKeyEvent*&);
@@ -120,7 +122,6 @@ class FMenu : public FWindow, public FMenuList
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
-   void       cb_menuitem_activated (FWidget*, void*);
    void       cb_menuitem_toggled (FWidget*, void*);
 
  private:
@@ -145,6 +146,10 @@ inline void FMenu::setSuperMenu (FWidget* smenu)
 //----------------------------------------------------------------------
 inline bool FMenu::containsMenuStructure (const FPoint& p) const
 { return containsMenuStructure (p.getX(), p.getY()); }
+
+//----------------------------------------------------------------------
+inline FMenu* FMenu::superMenuAt (const FPoint& p) const
+{ return superMenuAt (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------
 inline const char* FMenu::getClassName() const
