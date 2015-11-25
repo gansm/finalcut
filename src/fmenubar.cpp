@@ -772,10 +772,11 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             const FPoint& g = ev->getGlobalPos();
             const FPoint& p = menu->globalToLocalPos(g);
             int b = ev->getButton();
-            ev = new FMouseEvent (MouseMove_Event, p, g, b);
+            FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
             menu->mouse_down = true;
             setClickedWidget(menu);
-            menu->onMouseMove(ev);
+            menu->onMouseMove(_ev);
+            delete _ev;
           }
         }
       }

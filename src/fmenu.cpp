@@ -401,15 +401,10 @@ bool FMenu::selectPrevItem()
 //----------------------------------------------------------------------
 void FMenu::keypressMenuBar (FKeyEvent*& ev)
 {
-  FWidget* super = getSuperMenu();
-  if ( super )
-  {
-    if ( isMenuBar(super) )
-    {
-      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(super);
-      mbar->onKeyPress(ev);
-    }
-  }
+  FMenuBar* mbar = menuBar();
+
+  if ( mbar )
+    mbar->onKeyPress(ev);
 }
 
 //----------------------------------------------------------------------
@@ -437,14 +432,27 @@ bool FMenu::hotkeyMenu (FKeyEvent*& ev)
 
       if ( found )
       {
-        unselectItem();
-        hideSubMenus();
-        hide();
-        hideSuperMenus();
-        updateTerminal();
-        flush_out();
-        ev->accept();
-        (*iter)->processClicked();
+        if ( (*iter)->hasMenu() )
+        {
+          FMenu* sub_menu = (*iter)->getMenu();
+          unselectItem();
+          (*iter)->setSelected();
+          setSelectedItem (*iter);
+          redraw();
+          openSubMenu (sub_menu);
+          sub_menu->redraw();
+        }
+        else
+        {
+          unselectItem();
+          hideSubMenus();
+          hide();
+          hideSuperMenus();
+          updateTerminal();
+          flush_out();
+          ev->accept();
+          (*iter)->processClicked();
+        }
         return true;
       }
     }
@@ -577,15 +585,15 @@ void FMenu::drawItems()
     FString txt;
     uInt txt_length;
     int  hotkeypos, to_char;
-    int  accel_key = (*iter)->accel_key;
-    bool has_menu = (*iter)->hasMenu();
-    bool is_enabled = (*iter)->isEnabled();
-    bool is_checked = (*iter)->isChecked();
-    bool is_checkable = (*iter)->checkable;
-    bool is_radio_btn = (*iter)->radio_button;
-    bool is_selected = (*iter)->isSelected();
+    int  accel_key      = (*iter)->accel_key;
+    bool has_menu       = (*iter)->hasMenu();
+    bool is_enabled     = (*iter)->isEnabled();
+    bool is_checked     = (*iter)->isChecked();
+    bool is_checkable   = (*iter)->checkable;
+    bool is_radio_btn   = (*iter)->radio_button;
+    bool is_selected    = (*iter)->isSelected();
     bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
-    bool is_separator = (*iter)->isSeparator();
+    bool is_separator   = (*iter)->isSeparator();
 
     if ( is_separator )
     {
@@ -1180,10 +1188,11 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = open_sub_menu->globalToLocalPos(g);
       int b = ev->getButton();
-      ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
       open_sub_menu->mouse_down = true;
       setClickedWidget(open_sub_menu);
-      open_sub_menu->onMouseMove(ev);
+      open_sub_menu->onMouseMove(_ev);
+      delete _ev;
     }
     else if ( ! mouse_over_menu && mouse_over_supermenu )
     {
@@ -1191,10 +1200,11 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = smenu->globalToLocalPos(g);
       int b = ev->getButton();
-      ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
       smenu->mouse_down = true;
       setClickedWidget(smenu);
-      smenu->onMouseMove(ev);
+      smenu->onMouseMove(_ev);
+      delete _ev;
     }
     else if ( mouse_over_menubar )
     {
@@ -1203,12 +1213,12 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = menubar->globalToLocalPos(g);
       int b = ev->getButton();
-      ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
       mbar->mouse_down = true;
-      mbar->onMouseMove(ev);
-      delete ev;
+      mbar->onMouseMove(_ev);
+      delete _ev;
     }
     else if ( ! hasSelectedItem() && statusBar() && mouse_over_menu )
     {
