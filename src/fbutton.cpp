@@ -137,9 +137,6 @@ void FButton::draw()
   bool is_ActiveFocus, is_Active, is_Focus, is_Flat;
   bool is_NonFlatShadow, is_NoUnderline;
 
-  if ( text.isNull() || text.isEmpty() )
-    return;
-
   length = int(text.getLength());
   hotkeypos = -1;
   hotkey_offset = 0;
@@ -150,7 +147,7 @@ void FButton::draw()
   else
     ButtonText = new wchar_t[length+1]();
 
-  txt  = text;
+  txt  = FString(text);
   src  = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(ButtonText);
 
@@ -710,6 +707,9 @@ void FButton::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FButton::setText (const FString& txt)
 {
-  text = txt;
+  if ( txt )
+    text = txt;
+  else
+    text = "";
   detectHotkey();
 }

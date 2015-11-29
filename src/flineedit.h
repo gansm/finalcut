@@ -105,6 +105,7 @@ class FLineEdit : public FWidget
    void onFocusIn (FFocusEvent*);
    void onFocusOut (FFocusEvent*);
 
+   void clearText();
    void setText (FString);
    FString getText() const;
    void setLabelText (FString);

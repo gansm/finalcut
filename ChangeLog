@@ -1,3 +1,7 @@
+2015-11-29  Markus Gans  <guru.mail@muenster.de>
+	* Better handling of empty strings in FLineEdit and FButton
+	* Add a sub-menu to the "ui.cpp" example
+
 2015-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Small menu improvements
 

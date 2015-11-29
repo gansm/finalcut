@@ -659,15 +659,20 @@ const FString& FString::operator += (const char* s)
 //----------------------------------------------------------------------
 const FString& FString::operator += (const wchar_t c)
 {
-  _insert (length, 1, &c);
+  wchar_t s[2];
+  s[0] = c;
+  s[1] = L'\0';
+  _insert (length, 1, s);
   return (*this);
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator += (const char c)
 {
-  const wchar_t wc = static_cast<wchar_t>(c);
-  _insert (length, 1, &wc );
+  wchar_t s[2];
+  s[0] = wchar_t(c & 0xff);
+  s[1] = L'\0';
+  _insert (length, 1, s);
   return (*this);
 }
 
@@ -724,17 +729,22 @@ const FString FString::operator + (const char* s)
 //----------------------------------------------------------------------
 const FString FString::operator + (const wchar_t c)
 {
+  wchar_t s[2];
+  s[0] = c;
+  s[1] = L'\0';
   FString tmp(string);
-  tmp._insert (length, 1, &c);
+  tmp._insert (length, 1, s);
   return(tmp);
 }
 
 //----------------------------------------------------------------------
 const FString FString::operator + (const char c)
 {
-  const wchar_t wc = static_cast<wchar_t>(c);
+  wchar_t s[2];
+  s[0] = wchar_t(c & 0xff);
+  s[1] = L'\0';
   FString tmp(string);
-  tmp._insert (length, 1, &wc);
+  tmp._insert (length, 1, s);
   return(tmp);
 }
 

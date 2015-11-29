@@ -160,7 +160,9 @@ void ProgressDialog::cb_exit_bar (FWidget*, void*)
 class MyDialog : public FDialog
 {
  private:
+   FLineEdit* myLineEdit;
    FListBox* myList;
+   FString clipboard;
 
  private:
    MyDialog (const MyDialog&);    // Disabled copy constructor
@@ -174,6 +176,10 @@ class MyDialog : public FDialog
    void cb_about (FWidget*, void*);
    void cb_terminfo (FWidget*, void*);
    void cb_drives (FWidget*, void*);
+   void cb_cutClipboard (FWidget*, void*);
+   void cb_copyClipboard (FWidget*, void*);
+   void cb_pasteClipboard (FWidget*, void*);
+   void cb_clearInput (FWidget*, void*);
    void cb_input2buttonText (FWidget*, void*);
    void cb_setTitlebar (FWidget*, void*);
    void cb_ProgressBar (FWidget*, void*);
@@ -190,7 +196,9 @@ class MyDialog : public FDialog
 //----------------------------------------------------------------------
 MyDialog::MyDialog (FWidget* parent)
   : FDialog(parent)
+  , myLineEdit()
   , myList()
+  , clipboard()
 {
   // menu bar
   FMenuBar* Menubar  = new FMenuBar (this);
@@ -202,9 +210,10 @@ MyDialog::MyDialog (FWidget* parent)
   Edit->setStatusbarMessage ("Cut-and-paste editing commands");
   FMenu* View        = new FMenu ("&View", Menubar);
   View->setStatusbarMessage ("Show internal informations");
-  FMenuItem* Options = new FMenuItem ("&Options", Menubar);
+  //FMenuItem* Options = new FMenuItem ("&Options", Menubar);
+  FMenu* Options = new FMenu ("&Options", Menubar);
   Options->setStatusbarMessage ("Set program defaults");
-  Options->setDisable();
+  //Options->setDisable();
   FMenuItem* Help    = new FMenuItem ("&Help", Menubar);
   Help->setStatusbarMessage ("Show version and copyright information");
 
@@ -212,11 +221,19 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Open    = new FMenuItem ("&Open...", File);
   Open->addAccelerator (fc::Fckey_o); // Ctrl + O
   Open->setStatusbarMessage ("Locate and open a text file");
+  FMenu* Recent   = new FMenu ("System files", File);
+  Recent->setStatusbarMessage ("View text file");
+
   FMenuItem* Line1   = new FMenuItem (File);
   Line1->setSeparator();
   FMenuItem* Quit    = new FMenuItem ("&Quit", File);
   Quit->addAccelerator (fc::Fmkey_x); // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
+
+  // "Recent" menu items
+  FMenuItem* File1 = new FMenuItem ("/etc/services", Recent);
+  FMenuItem* File2 = new FMenuItem ("/etc/fstab", Recent);
+  FMenuItem* File3 = new FMenuItem ("/etc/passwd", Recent);
 
   // "Edit" menu items
   FMenuItem* Undo    = new FMenuItem (fc::Fckey_z, "Undo", Edit);
@@ -240,6 +257,15 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Drive   = new FMenuItem ("&Drive symbols...", View);
   Drive->setStatusbarMessage ("Show drive symbols");
 
+  // "Options" menu items
+  FCheckMenuItem* aa = new FCheckMenuItem ("Disk &Status", Options);
+  aa->setStatusbarMessage ("1");
+  aa->setChecked();
+  FRadioMenuItem* bb = new FRadioMenuItem ("&Quick View", Options);
+  bb->setStatusbarMessage ("2");
+  FRadioMenuItem* cc = new FRadioMenuItem ("&Baumstrucktur", Options);
+  cc->setStatusbarMessage ("3");
+
   // Menu function callbacks
   Open->addCallback
   (
@@ -254,22 +280,22 @@ MyDialog::MyDialog (FWidget* parent)
   Cut->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    _METHOD_CALLBACK (this, &MyDialog::cb_cutClipboard)
   );
   Copy->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    _METHOD_CALLBACK (this, &MyDialog::cb_copyClipboard)
   );
   Paste->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    _METHOD_CALLBACK (this, &MyDialog::cb_pasteClipboard)
   );
   Clear->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    _METHOD_CALLBACK (this, &MyDialog::cb_clearInput)
   );
   Env->addCallback
   (
@@ -285,6 +311,21 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_about)
+  );
+  File1->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+  );
+  File2->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+  );
+  File3->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &MyDialog::cb_view)
   );
 
   // Buttons
@@ -341,12 +382,12 @@ MyDialog::MyDialog (FWidget* parent)
   check2->setNoUnderline();
 
   // A text input field
-  FLineEdit* MyLineEdit = new FLineEdit (this);
-  MyLineEdit->setGeometry(22, 1, 10, 1);
-  MyLineEdit->setText (FString("EnTry").toLower());
-  MyLineEdit->setLabelText (L"&Input:");
-  MyLineEdit->setStatusbarMessage ("Press Enter to set the title");
-  MyLineEdit->setShadow();
+  myLineEdit = new FLineEdit (this);
+  myLineEdit->setGeometry(22, 1, 10, 1);
+  myLineEdit->setText (FString("EnTry").toLower());
+  myLineEdit->setLabelText (L"&Input:");
+  myLineEdit->setStatusbarMessage ("Press Enter to set the title");
+  myLineEdit->setShadow();
 
   // Buttons
   FButton* MyButton4 = new FButton (this);
@@ -431,7 +472,7 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
-    dynamic_cast<FWidget::data_ptr>(MyLineEdit)
+    dynamic_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   MyButton5->addCallback
@@ -446,7 +487,7 @@ MyDialog::MyDialog (FWidget* parent)
     _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 
-  MyLineEdit->addCallback
+  myLineEdit->addCallback
   (
     "activate",  // e.g. on <Enter>
     _METHOD_CALLBACK (this, &MyDialog::cb_setTitlebar)
@@ -463,7 +504,7 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_setInput),
-    dynamic_cast<FWidget::data_ptr>(MyLineEdit)
+    dynamic_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   myList->addCallback
@@ -594,6 +635,43 @@ void MyDialog::cb_drives (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
+void  MyDialog::cb_cutClipboard (FWidget*, void*)
+{
+  if ( ! myLineEdit )
+    return;
+  clipboard = myLineEdit->getText();
+  myLineEdit->clearText();
+  myLineEdit->redraw();
+}
+
+//----------------------------------------------------------------------
+void  MyDialog::cb_copyClipboard (FWidget*, void*)
+{
+  if ( ! myLineEdit )
+    return;
+  clipboard = myLineEdit->getText();
+}
+
+//----------------------------------------------------------------------
+void  MyDialog::cb_pasteClipboard (FWidget*, void*)
+{
+  if ( ! myLineEdit )
+    return;
+  myLineEdit->setText(clipboard);
+  myLineEdit->redraw();
+}
+
+//----------------------------------------------------------------------
+void  MyDialog::cb_clearInput (FWidget*, void*)
+{
+  if ( ! myLineEdit )
+    return;
+  clipboard.clear();
+  myLineEdit->clearText();
+  myLineEdit->redraw();
+}
+
+//----------------------------------------------------------------------
 void MyDialog::cb_input2buttonText (FWidget* widget, void* data_ptr)
 {
   FButton* button = static_cast<FButton*>(widget);
@@ -645,9 +723,14 @@ void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (FWidget*, void*)
+void MyDialog::cb_view (FWidget* widget, void*)
 {
-  FString file = FFileDialog::fileOpenChooser (this);
+  FString file;
+  FMenuItem* item = static_cast<FMenuItem*>(widget);
+  if ( item->getText() )
+    file = item->getText();
+  else
+    file = FFileDialog::fileOpenChooser (this);
   if ( file.isNull() )
     return;
 

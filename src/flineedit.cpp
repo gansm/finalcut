@@ -185,10 +185,11 @@ void FLineEdit::drawInputField()
   if ( isUTF8_linux_terminal() )
   {
     setUTF8(true);
-    print (show_text);
+    if ( show_text )
+      print (show_text);
     setUTF8(false);
   }
-  else
+  else if ( show_text )
     print (show_text);
 
   x = int(show_text.getLength());
@@ -783,11 +784,22 @@ void FLineEdit::onFocusOut (FFocusEvent*)
 }
 
 //----------------------------------------------------------------------
+void FLineEdit::clearText()
+{
+  offset = 0;
+  cursor_pos = 0;
+  text.clear();
+}
+
+//----------------------------------------------------------------------
 void FLineEdit::setText (FString txt)
 {
   offset = 0;
   cursor_pos = 0;
-  text = txt;
+  if ( txt )
+    text = txt;
+  else
+    text = "";
 }
 
 //----------------------------------------------------------------------
