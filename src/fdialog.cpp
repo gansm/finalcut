@@ -233,7 +233,8 @@ void FDialog::drawTitleBar()
     print (' ');
 
   // the title bar text
-  print (tb_text);
+  if ( tb_text )
+    print (tb_text);
 
   // fill the rest of the bar
   for (; x+1+int(length) < width-1; x++)

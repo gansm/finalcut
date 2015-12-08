@@ -685,7 +685,8 @@ bool FWidget::focusNextChild(void)
 {
   if ( hasParent() )
   {
-    if ( getParent()->hasChildren() )
+    FWidget* parent = static_cast<FWidget*>(getParent());
+    if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObject::object_list children;
       FObject::object_list::iterator iter, end;
@@ -746,7 +747,8 @@ bool FWidget::focusPrevChild(void)
 {
   if ( hasParent() )
   {
-    if ( getParent()->hasChildren() )
+    FWidget* parent = static_cast<FWidget*>(getParent());
+    if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObject::object_list children;
       FObject::object_list::iterator iter, begin;

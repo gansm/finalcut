@@ -85,7 +85,7 @@ host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
 	string-operations$(EXEEXT) mandelbrot$(EXEEXT) \
 	calculator$(EXEEXT) watch$(EXEEXT) keyboard$(EXEEXT) \
-	timer$(EXEEXT) ui$(EXEEXT)
+	timer$(EXEEXT) menu$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -123,6 +123,9 @@ keyboard_LDADD = $(LDADD)
 am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
+am_menu_OBJECTS = menu.$(OBJEXT)
+menu_OBJECTS = $(am_menu_OBJECTS)
+menu_LDADD = $(LDADD)
 am_string_operations_OBJECTS = string-operations.$(OBJEXT)
 string_operations_OBJECTS = $(am_string_operations_OBJECTS)
 string_operations_LDADD = $(LDADD)
@@ -171,12 +174,14 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(hello_SOURCES) \
 	$(input_dialog_SOURCES) $(keyboard_SOURCES) \
-	$(mandelbrot_SOURCES) $(string_operations_SOURCES) \
-	$(timer_SOURCES) $(ui_SOURCES) $(watch_SOURCES)
+	$(mandelbrot_SOURCES) $(menu_SOURCES) \
+	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(watch_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
 	$(hello_SOURCES) $(input_dialog_SOURCES) $(keyboard_SOURCES) \
-	$(mandelbrot_SOURCES) $(string_operations_SOURCES) \
-	$(timer_SOURCES) $(ui_SOURCES) $(watch_SOURCES)
+	$(mandelbrot_SOURCES) $(menu_SOURCES) \
+	$(string_operations_SOURCES) $(timer_SOURCES) $(ui_SOURCES) \
+	$(watch_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -334,6 +339,7 @@ calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
+menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
 all: all-am
 
@@ -403,6 +409,10 @@ mandelbrot$(EXEEXT): $(mandelbrot_OBJECTS) $(mandelbrot_DEPENDENCIES) $(EXTRA_ma
 	@rm -f mandelbrot$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mandelbrot_OBJECTS) $(mandelbrot_LDADD) $(LIBS)
 
+menu$(EXEEXT): $(menu_OBJECTS) $(menu_DEPENDENCIES) $(EXTRA_menu_DEPENDENCIES) 
+	@rm -f menu$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(menu_OBJECTS) $(menu_LDADD) $(LIBS)
+
 string-operations$(EXEEXT): $(string_operations_OBJECTS) $(string_operations_DEPENDENCIES) $(EXTRA_string_operations_DEPENDENCIES) 
 	@rm -f string-operations$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(string_operations_OBJECTS) $(string_operations_LDADD) $(LIBS)
@@ -431,6 +441,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input-dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyboard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string-operations.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@

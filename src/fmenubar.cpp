@@ -566,22 +566,22 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           (*iter)->setFocus();
+          if ( focused_widget )
+            focused_widget->redraw();
           (*iter)->openMenu();
           setSelectedItem(*iter);
           focus_changed = true;
-          if ( focused_widget )
-            focused_widget->redraw();
-        }
-        if ( (*iter)->hasMenu() )
-        {
-           FMenu* menu = (*iter)->getMenu();
-           if ( menu->hasSelectedItem() )
-           {
-             menu->unselectItem();
-             menu->redraw();
-             focus_changed = true;
-             drop_down = true;
-           }
+
+          if ( (*iter)->hasMenu() )
+          {
+            FMenu* menu = (*iter)->getMenu();
+            if ( menu->hasSelectedItem() )
+            {
+              menu->unselectItem();
+              menu->redraw();
+              drop_down = true;
+            }
+          }
         }
       }
       else
@@ -728,11 +728,11 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           (*iter)->setFocus();
+          if ( focused_widget )
+            focused_widget->redraw();
           (*iter)->openMenu();
           setSelectedItem(*iter);
           focus_changed = true;
-          if ( focused_widget )
-            focused_widget->redraw();
 
           if ( (*iter)->hasMenu() )
           {

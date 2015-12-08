@@ -1,3 +1,8 @@
+2015-12-08  Markus Gans  <guru.mail@muenster.de>
+	* Add "menu" example to demonstrate the behavior from FMenuBar, 
+	  FMenu, FMenuItem, FCheckMenuItem and FRadioMenuItem widgets.
+	* Show status bar messages, if no keys are available.
+
 2015-11-29  Markus Gans  <guru.mail@muenster.de>
 	* Better handling of empty strings in FLineEdit and FButton
 	* Add a sub-menu to the "ui.cpp" example

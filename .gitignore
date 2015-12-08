@@ -28,6 +28,7 @@ test/dialog
 test/string-operations
 test/hello
 test/watch
+test/menu
 test/input-dialog
 test/mandelbrot
 test/keyboard

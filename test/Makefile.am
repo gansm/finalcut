@@ -15,6 +15,7 @@ noinst_PROGRAMS = \
 	watch \
 	keyboard \
 	timer \
+	menu \
 	ui
 
 hello_SOURCES = hello.cpp
@@ -26,5 +27,5 @@ calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
+menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
-

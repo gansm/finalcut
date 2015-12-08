@@ -221,7 +221,7 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Open    = new FMenuItem ("&Open...", File);
   Open->addAccelerator (fc::Fckey_o); // Ctrl + O
   Open->setStatusbarMessage ("Locate and open a text file");
-  FMenu* Recent   = new FMenu ("System files", File);
+  FMenu* Recent   = new FMenu ("&System files", File);
   Recent->setStatusbarMessage ("View text file");
 
   FMenuItem* Line1   = new FMenuItem (File);
@@ -315,17 +315,20 @@ MyDialog::MyDialog (FWidget* parent)
   File1->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    dynamic_cast<FWidget::data_ptr>(File1)
   );
   File2->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    dynamic_cast<FWidget::data_ptr>(File2)
   );
   File3->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    dynamic_cast<FWidget::data_ptr>(File3)
   );
 
   // Buttons
@@ -635,7 +638,7 @@ void MyDialog::cb_drives (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void  MyDialog::cb_cutClipboard (FWidget*, void*)
+void MyDialog::cb_cutClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
@@ -645,7 +648,7 @@ void  MyDialog::cb_cutClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void  MyDialog::cb_copyClipboard (FWidget*, void*)
+void MyDialog::cb_copyClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
@@ -653,7 +656,7 @@ void  MyDialog::cb_copyClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void  MyDialog::cb_pasteClipboard (FWidget*, void*)
+void MyDialog::cb_pasteClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
@@ -662,7 +665,7 @@ void  MyDialog::cb_pasteClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void  MyDialog::cb_clearInput (FWidget*, void*)
+void MyDialog::cb_clearInput (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
@@ -723,11 +726,12 @@ void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (FWidget* widget, void*)
+void MyDialog::cb_view (FWidget*, void* data_ptr)
 {
   FString file;
-  FMenuItem* item = static_cast<FMenuItem*>(widget);
-  if ( item->getText() )
+  FMenuItem* item = static_cast<FMenuItem*>(data_ptr);
+  
+  if ( item && item->getText() )
     file = item->getText();
   else
     file = FFileDialog::fileOpenChooser (this);

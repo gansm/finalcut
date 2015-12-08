@@ -221,7 +221,10 @@ void FStatusBar::drawKeys()
   ypos = lastLine;
 
   if ( keylist.empty() )
+  {
+    x_msg = 1;
     return;
+  }
 
   setUpdateVTerm(false);
   gotoxy (1, lastLine);
@@ -565,7 +568,7 @@ bool FStatusBar::hasActivatedKey()
 void FStatusBar::drawMessage()
 {
   int  termWidth, lastLine, space_offset;
-  bool isLastActiveFocus;
+  bool isLastActiveFocus, hasKeys;
 
   if ( ! isVisible() )
     return;
@@ -576,8 +579,9 @@ void FStatusBar::drawMessage()
   termWidth = getColumnNumber();
   lastLine = getLineNumber();
   space_offset = 1;
+  hasKeys = bool(! keylist.empty());
 
-  if ( ! keylist.empty() )
+  if ( hasKeys )
   {
     std::vector<FStatusKey*>::const_iterator iter = keylist.end();
     isLastActiveFocus = bool(  (*(iter-1))->isActivated()
@@ -598,14 +602,17 @@ void FStatusBar::drawMessage()
   {
     if ( text )
     {
-      x += 2;
       if ( ! isLastActiveFocus )
       {
         x++;
         print (vstatusbar, ' ');
       }
-      print (vstatusbar, fc::BoxDrawingsVertical);  // │
-      print (vstatusbar, ' ');
+      if ( hasKeys )
+      {
+        x += 2;
+        print (vstatusbar, fc::BoxDrawingsVertical);  // │
+        print (vstatusbar, ' ');
+      }
 
       int msg_length = int(getMessage().getLength());
       x += msg_length;

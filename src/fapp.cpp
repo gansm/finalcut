@@ -976,12 +976,15 @@ void FApplication::processMouseEvent()
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
+      if ( statusBar() )
+        statusBar()->clearMessage();
 
       // No widget was been clicked
       if ( ! clicked_widget )
       {
         // activate previous window
         FWindow::activatePrevWindow();
+        FWindow::raiseWindow (FWindow::getActiveWindow());
         FWindow::getActiveWindow()->getFocusWidget()->setFocus();
         FWindow::getActiveWindow()->redraw();
         if ( statusBar() )
