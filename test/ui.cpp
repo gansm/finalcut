@@ -210,10 +210,9 @@ MyDialog::MyDialog (FWidget* parent)
   Edit->setStatusbarMessage ("Cut-and-paste editing commands");
   FMenu* View        = new FMenu ("&View", Menubar);
   View->setStatusbarMessage ("Show internal informations");
-  //FMenuItem* Options = new FMenuItem ("&Options", Menubar);
-  FMenu* Options = new FMenu ("&Options", Menubar);
+  FMenuItem* Options = new FMenuItem ("&Options", Menubar);
   Options->setStatusbarMessage ("Set program defaults");
-  //Options->setDisable();
+  Options->setDisable();
   FMenuItem* Help    = new FMenuItem ("&Help", Menubar);
   Help->setStatusbarMessage ("Show version and copyright information");
 
@@ -256,15 +255,6 @@ MyDialog::MyDialog (FWidget* parent)
   Env->setStatusbarMessage ("Informations about this terminal");
   FMenuItem* Drive   = new FMenuItem ("&Drive symbols...", View);
   Drive->setStatusbarMessage ("Show drive symbols");
-
-  // "Options" menu items
-  FCheckMenuItem* aa = new FCheckMenuItem ("Disk &Status", Options);
-  aa->setStatusbarMessage ("1");
-  aa->setChecked();
-  FRadioMenuItem* bb = new FRadioMenuItem ("&Quick View", Options);
-  bb->setStatusbarMessage ("2");
-  FRadioMenuItem* cc = new FRadioMenuItem ("&Baumstrucktur", Options);
-  cc->setStatusbarMessage ("3");
 
   // Menu function callbacks
   Open->addCallback

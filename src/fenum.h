@@ -166,6 +166,7 @@ class fc
      NF_rev_down_pointing_triangle2      = 0x1ae9,  // ◤
      NF_rev_menu_button3                 = 0x1af4,  // ]
      NF_shadow_box_right                 = 0x1af5,  // ]
+     NF_Bullet                           = 0x1af9,  // ●
      NF_check_mark                       = 0x1afb,  // ✓
      SquareRoot                          = 0x221a,  // √
      BlackCircle                         = 0x25CF   // ●

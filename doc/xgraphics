@@ -10,9 +10,9 @@ Unicode Box Drawing graphics
 
 VT100 line drawing graphics
 (used by xterm, rxvt, ...)
-codes	`abcdefghijklmnopqrstuvwxyz{|}~
-with G1	)0`abcdefghijklmnopqrstuvwxyz{|}~
-with G0	(0`abcdefghijklmnopqrstuvwxyz{|}~(B
+codes	+,-.0_`abcdefghijklmnopqrstuvwxyz{|}~
+with G1	)0+,-.0_`abcdefghijklmnopqrstuvwxyz{|}~
+with G0	(0+,-.0_`abcdefghijklmnopqrstuvwxyz{|}~(B
 
 VGA graphics, switching to "active codepage"
 (used by cygwin console, Linux console)

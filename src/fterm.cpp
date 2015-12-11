@@ -818,6 +818,10 @@ char* FTerm::parseSecDA (char*& current_termtype)
 {
   char* new_termtype = current_termtype;
 
+  // The Linux console knows no Sec_DA
+  if ( linux_terminal )
+    return new_termtype;
+
   // secondary device attributes (SEC_DA) <- decTerminalID string
   Sec_DA = new FString(getSecDA());
 
@@ -1380,6 +1384,13 @@ void FTerm::init()
     rxvt_terminal = true;
   }
 
+  // Test for Linux console
+  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+    linux_terminal = true;
+  else
+    linux_terminal = false;
+
   // terminal detection...
   setRawMode();
 
@@ -1398,13 +1409,6 @@ void FTerm::init()
     xterm = true;
   else
     xterm = false;
-
-  // Test for Linux console
-  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
-    linux_terminal = true;
-  else
-    linux_terminal = false;
 
   // set the new environment variable TERM
   if ( new_termtype )
@@ -3665,6 +3669,7 @@ FString FTerm::getSecDA()
     putchar(0x5b);  //  [
     putchar(0x3e);  //  >
     putchar(0x63);  //  c
+
     fflush(stdout);
     usleep(150000);  // min. wait time 150 ms (need for mintty)
 
@@ -4252,7 +4257,17 @@ int FTerm::putchar_PC (register int c)
     ch = char(c);
 
   if ( xterm && utf8_console )
-    ret = putchar_UTF8(ch & 0xff);
+  {
+    if ( uChar(ch) < 0x20 )  // Character 0x00..0x1f
+    {
+      Encoding = fc::ASCII;
+      ch = uChar(charEncode(uInt(c)));
+      Encoding = fc::PC;
+      ret = putchar(ch);
+    }
+    else
+      ret = putchar_UTF8(ch & 0xff);
+  }
   else
     ret = putchar(ch);
 

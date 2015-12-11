@@ -642,14 +642,17 @@ void FMenu::drawItems()
           {
             if ( is_radio_btn )
             {
-              print (fc::BlackCircle);  // BlackCircle ●
+              if ( isNewFont() )
+                print (fc::NF_Bullet);
+              else
+                print (fc::BlackCircle);  // BlackCircle ●
             }
             else
             {
               if ( isNewFont() )
                 print (fc::NF_check_mark);
               else
-                print (fc::SquareRoot);
+                print (fc::SquareRoot);  // SquareRoot √
             }
           }
           else
@@ -716,6 +719,7 @@ void FMenu::drawItems()
         if ( len > 0 )
         {
           FString spaces (len, wchar_t(' '));
+          // BlackRightPointingPointer ►
           print (spaces + wchar_t(fc::BlackRightPointingPointer));
           to_char = int(maxItemWidth) - (c + 2);
         }

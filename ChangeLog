@@ -1,3 +1,7 @@
+2015-12-10  Markus Gans  <guru.mail@muenster.de>
+	* PC encoding: Avoid to print ASCII sign 0x00..0x1f in xterm
+	* Newfont Bullet sign
+
 2015-12-08  Markus Gans  <guru.mail@muenster.de>
 	* Add "menu" example to demonstrate the behavior from FMenuBar, 
 	  FMenu, FMenuItem, FCheckMenuItem and FRadioMenuItem widgets.
