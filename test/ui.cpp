@@ -720,7 +720,7 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
 {
   FString file;
   FMenuItem* item = static_cast<FMenuItem*>(data_ptr);
-  
+
   if ( item && item->getText() )
     file = item->getText();
   else

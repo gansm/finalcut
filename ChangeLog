@@ -1,3 +1,6 @@
+2015-12-12  Markus Gans  <guru.mail@muenster.de>
+	* Improve sub-sub-menu handling
+
 2015-12-10  Markus Gans  <guru.mail@muenster.de>
 	* PC encoding: Avoid to print ASCII sign 0x00..0x1f in xterm
 	* Newfont Bullet sign

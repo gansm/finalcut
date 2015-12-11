@@ -180,7 +180,7 @@ void FMenu::menu_dimension()
   while ( iter != end )
   {
     (*iter)->setGeometry (item_X, item_Y, int(maxItemWidth), 1);
- 
+
     if ( (*iter)->hasMenu() )
     {//(*iter)->setText( FString().setNumber(itemlist.size()) );
       int menu_X = (*iter)->getGlobalX() + int(maxItemWidth);
@@ -290,8 +290,8 @@ bool FMenu::containsMenuStructure (int x, int y) const
 
   if ( getGeometryGlobal().contains(x,y) )
     return true;
-  else if ( si && si->hasMenu() )
-    return si->getMenu()->getGeometryGlobal().contains(x,y);
+  else if ( si && si->hasMenu() && open_sub_menu )
+    return si->getMenu()->containsMenuStructure(x,y);
   else if ( item && item->getGeometryGlobal().contains(x,y) )
     return true;
   else
@@ -1207,6 +1207,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       setClickedWidget(open_sub_menu);
       open_sub_menu->onMouseMove(_ev);
       delete _ev;
+      return;
     }
     else if ( ! mouse_over_menu && mouse_over_supermenu )
     {
@@ -1219,6 +1220,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       setClickedWidget(smenu);
       smenu->onMouseMove(_ev);
       delete _ev;
+      return;
     }
     else if ( mouse_over_menubar )
     {
@@ -1233,6 +1235,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       mbar->mouse_down = true;
       mbar->onMouseMove(_ev);
       delete _ev;
+      return;
     }
     else if ( ! hasSelectedItem() && statusBar() && mouse_over_menu )
     {
@@ -1250,7 +1253,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
     if ( focus_changed )
       redraw();
- 
+
     if ( show_sub_menu )
     {
       // close open sub menu

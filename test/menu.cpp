@@ -199,12 +199,12 @@ Menu::Menu (FWidget* parent)
   Headline1->ignorePadding();
   Headline1->setGeometry(3,2,5,1);
   Headline1->setEmphasis();
-  
+
   FLabel* Headline2 = new FLabel(" Function ", this);
   Headline2->ignorePadding();
   Headline2->setGeometry(15,2,10,1);
   Headline2->setEmphasis();
-  
+
   // Info label
   FLabel* Info = new FLabel("<F10>        Activate menu bar\n"
                             "<Meta>+<X>   Exit", this);
