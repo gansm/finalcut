@@ -32,7 +32,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x02e3, '~', 0xfc, '~'},  // ˣ  -  Modifier letter small x
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
-  {0x00b7, '`', 0xf9, '.'},  // ·  -  small Bullet
+  {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet
   {0x25c6, '`', 0x04, '*'},  // ◆  -  BlackDiamond
   {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline
   {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab
