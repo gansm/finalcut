@@ -70,7 +70,7 @@ void FRadioButton::drawRadioButton()
     else
     {
       print ('(');
-      print (fc::BlackCircle);  // BlackCircle ●
+      print (fc::Bullet);  // Bullet ●
       print (')');
     }
   }

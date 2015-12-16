@@ -181,7 +181,9 @@ class FStatusBar : public FWindow
    bool hasActivatedKey();
 
    void drawMessage();
-   void setMessage (const FString);
+   void setMessage (FString&);
+   void setMessage (const std::string&);
+   void setMessage (const char*);
    FString getMessage() const;
    void clearMessage();
 
@@ -219,10 +221,6 @@ inline void FStatusBar::deactivateKey (int index)
 //----------------------------------------------------------------------
 inline bool FStatusBar::isActivated(int index) const
 { return keylist[uInt(index-1)]->isActivated(); }
-
-//----------------------------------------------------------------------
-inline void FStatusBar::setMessage (FString mgs)
-{ text = mgs; }
 
 //----------------------------------------------------------------------
 inline FString FStatusBar::getMessage() const

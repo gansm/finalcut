@@ -422,8 +422,8 @@ class FWidget : public FObject, public FTerm
    void             setBackgroundColor (int);
    void             setX (int, bool = true);
    void             setY (int, bool = true);
-   void             setPos (const FPoint&, bool = true);
-   void             setPos (int, int, bool = true);
+   virtual void     setPos (const FPoint&, bool = true);
+   virtual void     setPos (int, int, bool = true);
    void             setWidth (int, bool = true);
    void             setHeight (int, bool = true);
    void             setTopPadding (int, bool = true);

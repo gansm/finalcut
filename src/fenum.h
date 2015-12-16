@@ -168,8 +168,7 @@ class fc
      NF_shadow_box_right                 = 0x1af5,  // ]
      NF_Bullet                           = 0x1af9,  // ●
      NF_check_mark                       = 0x1afb,  // ✓
-     SquareRoot                          = 0x221a,  // √
-     BlackCircle                         = 0x25CF   // ●
+     SquareRoot                          = 0x221a   // √
    };
 
    // keyboard - single keys

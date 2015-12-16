@@ -137,7 +137,7 @@ void FMenu::init(FWidget* parent)
 //----------------------------------------------------------------------
 void FMenu::menu_dimension()
 {
-  int item_X, item_Y;
+  int item_X, item_Y, adjust_X;
   std::vector<FMenuItem*>::const_iterator iter, end;
   iter = itemlist.begin();
   end = itemlist.end();
@@ -169,8 +169,10 @@ void FMenu::menu_dimension()
     ++iter;
   }
 
+  adjust_X = adjustX(xpos);
+
   // set widget geometry
-  setGeometry (xpos, ypos, int(maxItemWidth + 2), int(count() + 2));
+  setGeometry (adjust_X, ypos, int(maxItemWidth + 2), int(count() + 2));
 
   // set geometry of all items
   iter = itemlist.begin();
@@ -182,8 +184,8 @@ void FMenu::menu_dimension()
     (*iter)->setGeometry (item_X, item_Y, int(maxItemWidth), 1);
 
     if ( (*iter)->hasMenu() )
-    {//(*iter)->setText( FString().setNumber(itemlist.size()) );
-      int menu_X = (*iter)->getGlobalX() + int(maxItemWidth);
+    {
+      int menu_X = getGlobalX() + int(maxItemWidth) + 1;
       int menu_Y = (*iter)->getGlobalY() - 2;
       // set sub-menu position
       (*iter)->getMenu()->setPos (menu_X, menu_Y, false);
@@ -192,6 +194,59 @@ void FMenu::menu_dimension()
 
     ++iter;
   }
+}
+
+//----------------------------------------------------------------------
+void FMenu::adjustItems()
+{
+  std::vector<FMenuItem*>::const_iterator end, iter;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->hasMenu() )
+    {
+      int menu_X, menu_Y;
+      FMenu* menu = (*iter)->getMenu();
+
+      menu_X = getGlobalX() + int(maxItemWidth) + 1;
+      menu_X = menu->adjustX(menu_X);
+      menu_Y = (*iter)->getGlobalY() - 2;
+
+      // set sub-menu position
+      menu->move (menu_X, menu_Y);
+
+      // call sub-menu adjustItems()
+      if ( menu->count() > 0 )
+        menu->adjustItems();
+    }
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+int FMenu::adjustX (int x_pos)
+{
+  // Is menu outside on the right of the screen?
+  if ( x_pos+int(maxItemWidth)+2 > getColumnNumber() )
+  {
+    x_pos = getColumnNumber() - int(maxItemWidth + 1);
+    // Menu to large for the screen
+    if ( x_pos < 1 )
+      x_pos = 1;
+  }
+  return x_pos;
+}
+
+//----------------------------------------------------------------------
+void FMenu::adjustSize()
+{
+  //int adjust_X = adjustX(xpos);
+
+  FWidget::adjustSize();
+
+  //move (adjust_X, ypos);
 }
 
 //----------------------------------------------------------------------
@@ -643,22 +698,25 @@ void FMenu::drawItems()
             if ( is_radio_btn )
             {
               if ( isNewFont() )
-                print (fc::NF_Bullet);
+                print (fc::NF_Bullet);     // NF_Bullet ●
               else
-                print (fc::BlackCircle);  // BlackCircle ●
+                print (fc::Bullet);   // Bullet ●
             }
             else
             {
               if ( isNewFont() )
-                print (fc::NF_check_mark);
+                print (fc::NF_check_mark); // NF_check_mark ✓
               else
-                print (fc::SquareRoot);  // SquareRoot √
+                print (fc::SquareRoot);    // SquareRoot √
             }
           }
           else
           {
             setColor (wc.menu_inactive_fg, backgroundColor);
-            print ('-');
+            if ( getEncoding() == "ASCII" )
+              print ('-');
+            else
+              print (fc::SmallBullet);
             setColor (foregroundColor, backgroundColor);
           }
         }
@@ -1043,28 +1101,14 @@ void FMenu::onMouseUp (FMouseEvent* ev)
                 openSubMenu (sub_menu);
               else if ( open_sub_menu )
               {
-                /*if ( open_sub_menu->hasSelectedItem() )
-                {
-                  FMenuItem* sel_item = getSelectedItem();
-                  hideSubMenus();
-                  sel_item->setFocus();
-                  redraw();
-                  if ( statusBar() )
-                    statusBar()->drawMessage();
-                  updateTerminal();
-                  flush_out();
-                }
-                else*/
-                {
-                  open_sub_menu->selectFirstItem();
-                  if ( open_sub_menu->hasSelectedItem() )
-                    open_sub_menu->getSelectedItem()->setFocus();
-                  open_sub_menu->redraw();
-                  if ( statusBar() )
-                    statusBar()->drawMessage();
-                  updateTerminal();
-                  flush_out();
-                }
+                open_sub_menu->selectFirstItem();
+                if ( open_sub_menu->hasSelectedItem() )
+                  open_sub_menu->getSelectedItem()->setFocus();
+                open_sub_menu->redraw();
+                if ( statusBar() )
+                  statusBar()->drawMessage();
+                updateTerminal();
+                flush_out();
               }
               return;
             }

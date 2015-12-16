@@ -1224,6 +1224,7 @@ void FWidget::resize()
       menubar->setGeometry(1, 1, width, 1, false);
       if ( vmenubar )
         resizeArea(vmenubar);
+      menubar->adjustSize();
     }
     if ( statusbar )
     {
@@ -1239,8 +1240,7 @@ void FWidget::resize()
 
       while ( iter != end )
       {
-        if ( (*iter)->isVisible() )
-          (*iter)->adjustSize();
+        (*iter)->adjustSize();
         ++iter;
       }
     }

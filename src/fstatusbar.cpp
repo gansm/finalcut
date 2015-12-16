@@ -636,6 +636,26 @@ void FStatusBar::drawMessage()
 }
 
 //----------------------------------------------------------------------
+void FStatusBar::setMessage (FString& mgs)
+{
+  text = mgs;
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::setMessage (const std::string& mgs)
+{
+  FString s = FString(mgs);
+  setMessage (s);
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::setMessage (const char* mgs)
+{
+  FString s = FString(mgs);
+  setMessage (s);
+}
+
+//----------------------------------------------------------------------
 void FStatusBar::insert (FStatusKey* skey)
 {
   keylist.push_back (skey);

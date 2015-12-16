@@ -58,6 +58,9 @@ class FMenu : public FWindow, public FMenuList
    FMenu& operator = (const FMenu&);
    void       init(FWidget*);
    void       menu_dimension();
+   void       adjustItems();
+   int        adjustX(int);
+   void       adjustSize();
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;
    bool       isRadioMenuItem (FWidget*) const;

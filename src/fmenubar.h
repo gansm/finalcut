@@ -60,7 +60,7 @@ class FMenuBar : public FWindow, public FMenuList
    int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void       draw();
    void       drawItems();
-   void       adjustSize();
+   void       adjustItems();
    void       leaveMenuBar();
 
  public:
@@ -75,6 +75,7 @@ class FMenuBar : public FWindow, public FMenuList
    void       onAccel (FAccelEvent*);
    void       hide();
    void       resetMenu();
+   void       adjustSize();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void       setGeometry (int, int, int, int, bool = true);

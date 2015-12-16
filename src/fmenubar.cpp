@@ -432,14 +432,33 @@ void FMenuBar::drawItems()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::adjustSize()
+void FMenuBar::adjustItems()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
-  width = getColumnNumber();
-  ypos = 1;
-  FWidget::adjustSize();
+  int item_X = 1;
+  int item_Y = 1;
+  std::vector<FMenuItem*>::const_iterator end, iter;
+  iter = itemlist.begin();
+  end = itemlist.end();
+
+  while ( iter != end )
+  {
+    // get item width
+    int item_width = (*iter)->getWidth();
+
+    if ( (*iter)->hasMenu() )
+    {
+      FMenu* menu = (*iter)->getMenu();
+
+      // set menu position
+      menu->move (menu->adjustX(item_X), item_Y);
+
+      // call menu adjustItems()
+      menu->adjustItems();
+    }
+    item_X += item_width;
+
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -767,7 +786,8 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           FMenu* menu = getSelectedItem()->getMenu();
           const FRect& menu_geometry = menu->getGeometryGlobal();
 
-          if ( menu_geometry.contains(ev->getGlobalPos()) )
+          if (  menu->count() > 0
+             && menu_geometry.contains(ev->getGlobalPos()) )
           {
             const FPoint& g = ev->getGlobalPos();
             const FPoint& p = menu->globalToLocalPos(g);
@@ -828,6 +848,17 @@ void FMenuBar::resetMenu()
 {
   unselectItem();
   drop_down = false;
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::adjustSize()
+{
+  xmin = ymin = 1;
+  height = 1;
+  xpos = 1;
+  width = getColumnNumber();
+  ypos = 1;
+  adjustItems();
 }
 
 //----------------------------------------------------------------------

@@ -2,8 +2,6 @@
 
 #include "final.h"
 
-// You have chosen "Cola".
-
 //----------------------------------------------------------------------
 // class Menu
 //----------------------------------------------------------------------
@@ -154,6 +152,7 @@ Menu::Menu (FWidget* parent)
     "clicked",
     _METHOD_CALLBACK (this, &Menu::cb_message)
   );
+
   Quit->addCallback
   (
     "clicked",
@@ -232,8 +231,8 @@ void Menu::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Menu::cb_message (FWidget* widget, void*)
 {
-  FButton* button = static_cast<FButton*>(widget);
-  FString text = button->getText();
+  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+  FString text = menuitem->getText();
   text = text.replace('&', "");
   FMessageBox::info (this, "Info", "You have chosen \"" + text + "\"");
 }
