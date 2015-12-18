@@ -1,6 +1,15 @@
 // File: menu.cpp
 
-#include "final.h"
+#include "fapp.h"
+#include "fcheckmenuitem.h"
+#include "fdialog.h"
+#include "flabel.h"
+#include "fmenubar.h"
+#include "fmenu.h"
+#include "fmessagebox.h"
+#include "fradiomenuitem.h"
+#include "fstatusbar.h"
+
 
 //----------------------------------------------------------------------
 // class Menu
@@ -14,13 +23,15 @@ class Menu : public FDialog
  private:
    Menu (const Menu&);    // Disabled copy constructor
    Menu& operator = (const Menu&); // and operator '='
+   void defaultCallback (FMenuList*);
+   void onClose (FCloseEvent*);
+   void cb_message (FWidget*, void*);
+   void cb_exitApp (FWidget*, void*);
 
  public:
    explicit Menu (FWidget* = 0);  // constructor
   ~Menu();  // destructor
-   void onClose (FCloseEvent*);
-   void cb_message (FWidget*, void*);
-   void cb_exitApp (FWidget*, void*);
+
  protected:
    void adjustSize();
 };
@@ -146,47 +157,14 @@ Menu::Menu (FWidget* parent)
   FRadioMenuItem* BStyle4 = new FRadioMenuItem ("-  -  -  -  -", BStyle);
   BStyle4->setStatusbarMessage ("Set border 4");
 
-  // Menu function callbacks
-  Open->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
+  // Add default menu item callback
+  defaultCallback (Menubar);
 
+  // Add quit menu item callback
   Quit->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &Menu::cb_exitApp)
-  );
-  Undo->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
-  Cut->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
-  Copy->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
-  Paste->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
-  SelectAll->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
-  );
-  Help->addCallback
-  (
-    "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_message)
   );
 
   // Statusbar at the bottom
@@ -213,6 +191,34 @@ Menu::Menu (FWidget* parent)
 //----------------------------------------------------------------------
 Menu::~Menu()
 { }
+
+//----------------------------------------------------------------------
+void Menu::defaultCallback (FMenuList* mb)
+{
+  for (uInt i=1; i <= mb->count(); i++)
+  {
+    FMenuItem* item = mb->item(i);
+
+    if (  item
+       && item->isEnabled()
+       && item->acceptFocus()
+       && item->isVisible()
+       && ! item->isSeparator()
+       && item->getText() != "&Quit" )
+    {
+      // Add the callback function
+      item->addCallback
+      (
+        "clicked",
+        _METHOD_CALLBACK (this, &Menu::cb_message)
+      );
+
+      // Call sub-menu
+      if ( item->hasMenu() )
+        defaultCallback (item->getMenu());
+    }
+  }
+}
 
 //----------------------------------------------------------------------
 void Menu::onClose (FCloseEvent* ev)
@@ -252,6 +258,7 @@ void Menu::adjustSize()
   setY (1 + (ph - getHeight()) / 4, false);
   FDialog::adjustSize();
 }
+
 
 //----------------------------------------------------------------------
 //                               main part

@@ -74,8 +74,8 @@ inline uInt FMenuList::count() const
 { return uInt(itemlist.size()); }
 
 //----------------------------------------------------------------------
-inline FMenuItem* FMenuList::item(int index) const
-{ return itemlist[uInt(index-1)]; }
+inline FMenuItem* FMenuList::item (int index) const
+{ return (index > 0) ? itemlist[uInt(index-1)] : 0; }
 
 //----------------------------------------------------------------------
 inline void FMenuList::enableItem (int index)
@@ -87,7 +87,7 @@ inline void FMenuList::disableItem (int index)
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const
-{ return itemlist[uInt(index-1)]->isSelected(); }
+{ return (index > 0) ? itemlist[uInt(index-1)]->isSelected() : false; }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getSelectedItem() const

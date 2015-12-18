@@ -4261,7 +4261,7 @@ int FTerm::putchar_PC (register int c)
     if ( uChar(ch) < 0x20 )  // Character 0x00..0x1f
     {
       Encoding = fc::ASCII;
-      ch = uChar(charEncode(uInt(c)));
+      ch = char(charEncode(uInt(c)));
       Encoding = fc::PC;
       ret = putchar(ch);
     }

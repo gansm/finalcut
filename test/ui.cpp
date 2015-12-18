@@ -5,6 +5,7 @@
 
 #include "final.h"
 
+
 //----------------------------------------------------------------------
 // class ProgressDialog
 //----------------------------------------------------------------------
@@ -15,34 +16,34 @@
 class ProgressDialog : public FDialog
 {
  private:
+   FProgressbar* progressBar;
+   FButton*      reset;
+   FButton*      more;
+   FButton*      quit;
+
+ private:
    ProgressDialog (const ProgressDialog&);    // Disabled copy constructor
    ProgressDialog& operator = (const ProgressDialog&); // and operator '='
-
- public:
-   FButton* reset;
-   FButton* more;
-   FButton* quit;
-   FProgressbar* progressBar;
-
- public:
-   explicit ProgressDialog (FWidget* = 0);  // constructor
-  ~ProgressDialog();  // destructor
 
    void onShow (FShowEvent*);
    void onTimer (FTimerEvent*);
    void cb_reset_bar (FWidget*, void*);
    void cb_more_bar (FWidget*, void*);
    void cb_exit_bar (FWidget*, void*);
+
+ public:
+   explicit ProgressDialog (FWidget* = 0);  // constructor
+  ~ProgressDialog();  // destructor
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 ProgressDialog::ProgressDialog (FWidget* parent)
   : FDialog(parent)
+  , progressBar()
   , reset()
   , more()
   , quit()
-  , progressBar()
 {
   setGeometry (int((this->parentWidget()->getWidth()-40)/2), 7, 40, 10);
   setText("Progress bar");
@@ -161,16 +162,13 @@ class MyDialog : public FDialog
 {
  private:
    FLineEdit* myLineEdit;
-   FListBox* myList;
-   FString clipboard;
+   FListBox*  myList;
+   FString    clipboard;
 
  private:
    MyDialog (const MyDialog&);    // Disabled copy constructor
    MyDialog& operator = (const MyDialog&); // and operator '='
 
- public:
-   explicit MyDialog (FWidget* = 0);  // constructor
-  ~MyDialog();  // destructor
    void onClose (FCloseEvent*);
    void cb_noFunctionMsg (FWidget*, void*);
    void cb_about (FWidget*, void*);
@@ -188,8 +186,11 @@ class MyDialog : public FDialog
    void cb_view (FWidget*, void*);
    void cb_setInput (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
- protected:
    void adjustSize();
+
+ public:
+   explicit MyDialog (FWidget* = 0);  // constructor
+  ~MyDialog();  // destructor
 };
 #pragma pack(pop)
 
