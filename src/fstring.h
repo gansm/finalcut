@@ -213,11 +213,47 @@ class FString
    const FString operator () (uInt, uInt);
 
    bool operator <  (const FString&) const;
+   bool operator <  (const std::wstring&) const;
+   bool operator <  (const wchar_t*) const;
+   bool operator <  (const std::string&) const;
+   bool operator <  (const char*) const;
+   bool operator <  (const wchar_t) const;
+   bool operator <  (const char) const;
    bool operator <= (const FString&) const;
+   bool operator <= (const std::wstring&) const;
+   bool operator <= (const wchar_t*) const;
+   bool operator <= (const std::string&) const;
+   bool operator <= (const char*) const;
+   bool operator <= (const wchar_t) const;
+   bool operator <= (const char) const;
    bool operator == (const FString&) const;
+   bool operator == (const std::wstring&) const;
+   bool operator == (const wchar_t*) const;
+   bool operator == (const std::string&) const;
+   bool operator == (const char*) const;
+   bool operator == (const wchar_t) const;
+   bool operator == (const char) const;
    bool operator != (const FString&) const;
+   bool operator != (const std::wstring&) const;
+   bool operator != (const wchar_t*) const;
+   bool operator != (const std::string&) const;
+   bool operator != (const char*) const;
+   bool operator != (const wchar_t) const;
+   bool operator != (const char) const;
    bool operator >= (const FString&) const;
+   bool operator >= (const std::wstring&) const;
+   bool operator >= (const wchar_t*) const;
+   bool operator >= (const std::string&) const;
+   bool operator >= (const char*) const;
+   bool operator >= (const wchar_t) const;
+   bool operator >= (const char) const;
    bool operator >  (const FString&) const;
+   bool operator >  (const std::wstring&) const;
+   bool operator >  (const wchar_t*) const;
+   bool operator >  (const std::string&) const;
+   bool operator >  (const char*) const;
+   bool operator >  (const wchar_t) const;
+   bool operator >  (const char) const;
 
    operator const char* () const { return c_str(); }
 

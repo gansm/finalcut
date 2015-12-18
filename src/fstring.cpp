@@ -1467,6 +1467,48 @@ bool FString::operator < (const FString& s) const
 }
 
 //----------------------------------------------------------------------
+bool FString::operator < (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator < (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator < (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator < (const char* s) const
+{
+  const FString tmp(s);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator < (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator < (const char c) const
+{
+  const FString tmp(c);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
 bool FString::operator <= (const FString& s) const
 {
   if ( ! s )
@@ -1478,6 +1520,48 @@ bool FString::operator <= (const FString& s) const
   if ( ! string && ! s.string )
     return true;
   return (wcscmp(string, s.string) <= 0);
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const char* s) const
+{
+  const FString tmp(s);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator <= (const char c) const
+{
+  const FString tmp(c);
+  return *this <= tmp;
 }
 
 //----------------------------------------------------------------------
@@ -1493,6 +1577,48 @@ bool FString::operator == (const FString& s) const
 }
 
 //----------------------------------------------------------------------
+bool FString::operator == (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator == (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator == (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator == (const char* s) const
+{
+  const FString tmp(s);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator == (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator == (const char c) const
+{
+  const FString tmp(c);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
 bool FString::operator != (const FString& s) const
 {
   if ( ! s )
@@ -1502,6 +1628,48 @@ bool FString::operator != (const FString& s) const
   if ( ! string && ! s.string )
     return false;
   return (wcscmp(string, s.string) != 0);
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const char* s) const
+{
+  const FString tmp(s);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator != (const char c) const
+{
+  const FString tmp(c);
+  return *this != tmp;
 }
 
 //----------------------------------------------------------------------
@@ -1519,6 +1687,48 @@ bool FString::operator >= (const FString& s) const
 }
 
 //----------------------------------------------------------------------
+bool FString::operator >= (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator >= (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator >= (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator >= (const char* s) const
+{
+  const FString tmp(s);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator >= (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator >= (const char c) const
+{
+  const FString tmp(c);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
 bool FString::operator > (const FString& s) const
 {
   if ( ! s )
@@ -1530,6 +1740,48 @@ bool FString::operator > (const FString& s) const
   if ( ! string && ! s.string )
     return false;
   return (wcscmp(string, s.string) > 0);
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const std::wstring& s) const
+{
+  const FString tmp(s);
+  return *this > tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const wchar_t* s) const
+{
+  const FString tmp(s);
+  return *this > tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const std::string& s) const
+{
+  const FString tmp(s);
+  return *this > tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const char* s) const
+{
+  const FString tmp(s);
+  return *this > tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const wchar_t c) const
+{
+  const FString tmp(c);
+  return *this > tmp;
+}
+
+//----------------------------------------------------------------------
+bool FString::operator > (const char c) const
+{
+  const FString tmp(c);
+  return *this > tmp;
 }
 
 //----------------------------------------------------------------------
