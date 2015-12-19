@@ -933,6 +933,8 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       else
       {
         hideSuperMenus();
+        if ( statusBar() )
+          statusBar()->clearMessage();
         activatePrevWindow();
         raiseWindow (getActiveWindow());
         getActiveWindow()->getFocusWidget()->setFocus();
@@ -956,7 +958,18 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != LeftButton )
+  {
+    if ( open_sub_menu )
+    {
+      // close open sub menu
+      open_sub_menu->hideSubMenus();
+      open_sub_menu->hide();
+      open_sub_menu = 0;
+      updateTerminal();
+      flush_out();
+    }
     return;
+  }
 
   if ( mouse_down )
     return;
