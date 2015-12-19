@@ -65,7 +65,7 @@ FScrollbar::FScrollbar(int o, FWidget* parent)
 //----------------------------------------------------------------------
 FScrollbar::~FScrollbar()
 {
-  delAllTimer();
+  delOwnTimer();
 }
 
 // private methods of FScrollbar
@@ -284,7 +284,7 @@ void FScrollbar::onMouseUp (FMouseEvent* ev)
 
   if ( scrollType != FScrollbar::noScroll )
   {
-    delAllTimer();
+    delOwnTimer();
     scrollType = FScrollbar::noScroll;
   }
 }
@@ -341,7 +341,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   if (  mouse_x < 1 || mouse_x > width
      || mouse_y < 1 || mouse_y > height )
   {
-    delAllTimer();
+    delOwnTimer();
   }
   else if ( scrollType != FScrollbar::scrollJump )
   {
@@ -350,7 +350,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
   if ( scrollType != newScrollType )
   {
-    delAllTimer();
+    delOwnTimer();
   }
 }
 
@@ -361,7 +361,7 @@ void FScrollbar::onWheel (FWheelEvent* ev)
 
   if ( scrollType != FScrollbar::noScroll )
   {
-    delAllTimer();
+    delOwnTimer();
     scrollType = FScrollbar::noScroll;
   }
 
@@ -382,7 +382,7 @@ void FScrollbar::onTimer (FTimerEvent*)
   if ( ! thresholdReached )
   {
     thresholdReached = true;
-    delAllTimer();
+    delOwnTimer();
     addTimer(repeatTime);
   }
 
@@ -391,7 +391,7 @@ void FScrollbar::onTimer (FTimerEvent*)
      || (  scrollType == scrollPageForward
         && SliderPos+SliderLength > SliderClickStopPos ) )
   {
-    delAllTimer();
+    delOwnTimer();
     return;
   }
 

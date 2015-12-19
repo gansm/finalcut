@@ -8,7 +8,7 @@ Name:		finalcut
 %define         libname libfinal
 %define         libsoname %{libname}0
 
-Version:	0.1.1
+Version:	0.2.0
 Release:	%{buildno}
 License:	GPL-3.0
 Summary:	The Final Cut 
@@ -137,6 +137,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{libname}.a
 
 %changelog
+* Sat Dec 19 2015 Markus Gans <guru.mail@muenster.de> - 0.2.0-1
+- Release (version 0.2.0)
+
 * Fri Sep 18 2015 Markus Gans <guru.mail@muenster.de> - 0.1.1-1
 - Initial Release (version 0.1.1)
-

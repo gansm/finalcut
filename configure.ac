@@ -4,7 +4,7 @@
 
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([finalcut], [0.1.1])
+AC_INIT([finalcut], [0.2.0])
 AC_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H([src/fconfig.h], [F])
 AC_CONFIG_SRCDIR([src/fobject.cpp])

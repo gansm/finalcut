@@ -1,3 +1,8 @@
+2015-12-19  Markus Gans  <guru.mail@muenster.de>
+	* Add delOwnTimer() for FObject
+	* Close sub-menu on right and middle click
+	* Version 0.2.0
+
 2015-12-18  Markus Gans  <guru.mail@muenster.de>
 	* Optimize menu example
 	* More string types for FString relational operators 
