@@ -95,7 +95,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
 //----------------------------------------------------------------------
 ProgressDialog::~ProgressDialog()
 {
-  delAllTimer();
+  delOwnTimer();
   delCallback(quit);
   delCallback(more);
   delCallback(reset);
@@ -120,7 +120,7 @@ void ProgressDialog::onTimer (FTimerEvent*)
 
   if ( p == 100 )
   {
-    delAllTimer();
+    delOwnTimer();
     activateWindow();
     raiseWindow();
     reset->setEnable();
@@ -807,14 +807,14 @@ int main (int argc, char* argv[])
   }
 
   FApplication app(argc, argv);
-  app.setXTermTitle ("The FINAL CUT 0.1.1 (C) 2015 by Markus Gans");
+  app.setXTermTitle ("The FINAL CUT 0.2.0 (C) 2015 by Markus Gans");
 
   //app.setEncoding("VT100");
   //app.setTermGeometry(94,30);
   //app.setNewFont();
 
   MyDialog d(&app);
-  d.setText ("The FINAL CUT 0.1.1 (C) 2015 by Markus Gans");
+  d.setText ("The FINAL CUT 0.2.0 (C) 2015 by Markus Gans");
   d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
   d.setShadow();
 

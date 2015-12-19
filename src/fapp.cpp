@@ -987,11 +987,11 @@ void FApplication::processMouseEvent()
         FWindow::raiseWindow (FWindow::getActiveWindow());
         FWindow::getActiveWindow()->getFocusWidget()->setFocus();
         FWindow::getActiveWindow()->redraw();
-        if ( statusBar() )
-          statusBar()->drawMessage();
-        updateTerminal();
-        flush_out();
       }
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
     }
   }
 

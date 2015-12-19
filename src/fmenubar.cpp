@@ -545,6 +545,8 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     mouse_down = false;
     if ( ! itemlist.empty() )
       leaveMenuBar();
+    if ( statusBar() )
+          statusBar()->clearMessage();
     return;
   }
 

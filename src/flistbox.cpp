@@ -80,7 +80,7 @@ FListBox::FListBox(FWidget* parent)
 //----------------------------------------------------------------------
 FListBox::~FListBox()  // destructor
 {
-  delAllTimer();
+  delOwnTimer();
   delete VBar;
   delete HBar;
 }
@@ -972,7 +972,7 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 {
   if ( dragScroll != FListBox::noScroll )
   {
-    delAllTimer();
+    delOwnTimer();
     dragScroll = FListBox::noScroll;
     scrollDistance = 1;
     scrollTimer = false;
@@ -1077,7 +1077,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     }
     if ( current == 1 )
     {
-      delAllTimer();
+      delOwnTimer();
       dragScroll = FListBox::noScroll;
     }
   }
@@ -1097,14 +1097,14 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     }
     if ( current == int(count()) )
     {
-      delAllTimer();
+      delOwnTimer();
       dragScroll = FListBox::noScroll;
     }
   }
   else
   {
     // no dragging
-    delAllTimer();
+    delOwnTimer();
     scrollTimer = false;
     scrollDistance = 1;
     dragScroll = FListBox::noScroll;
@@ -1239,7 +1239,7 @@ void FListBox::onWheel (FWheelEvent* ev)
 
   if ( dragScroll != FListBox::noScroll )
   {
-    delAllTimer();
+    delOwnTimer();
     scrollTimer = false;
     scrollDistance = 1;
     dragScroll = FListBox::noScroll;
@@ -1316,7 +1316,7 @@ void FListBox::onFocusOut (FFocusEvent*)
     statusBar()->clearMessage();
     statusBar()->drawMessage();
   }
-  delAllTimer();
+  delOwnTimer();
   inc_search.clear();
 }
 

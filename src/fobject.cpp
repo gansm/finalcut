@@ -39,7 +39,7 @@ FObject::~FObject()  // destructor
   if ( parentObj )
     parentObj->delChild(this);
 
-  delAllTimer();  // delete all timers of this object
+  delOwnTimer();  // delete all timers of this object
 
   if ( ! has_parent && timer_list )
   {
@@ -199,6 +199,31 @@ bool FObject::delTimer (int id)
   modify_timer = false;
 
   return false;
+}
+
+//----------------------------------------------------------------------
+bool FObject::delOwnTimer()
+{
+  FObject::TimerList::iterator iter, end;
+
+  if ( ! timer_list )
+    return false;
+  if ( timer_list->empty() )
+    return false;
+
+  modify_timer = true;
+  iter = timer_list->begin();
+
+  while ( iter != timer_list->end() )
+  {  
+    if ( (*iter).object == this )
+      iter = timer_list->erase(iter);
+    else
+      ++iter;
+  }
+  modify_timer = false;
+
+  return true;
 }
 
 //----------------------------------------------------------------------

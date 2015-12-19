@@ -83,6 +83,7 @@ class FObject
    static void  getCurrentTime (timeval&);
    int          addTimer (int);
    bool         delTimer (int);
+   bool         delOwnTimer();
    bool         delAllTimer();
    virtual bool event (FEvent*);
 
