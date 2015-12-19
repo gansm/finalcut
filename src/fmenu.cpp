@@ -965,6 +965,10 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       open_sub_menu->hideSubMenus();
       open_sub_menu->hide();
       open_sub_menu = 0;
+      getSelectedItem()->setFocus();
+      redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
       updateTerminal();
       flush_out();
     }

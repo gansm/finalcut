@@ -558,12 +558,12 @@ void MyDialog::cb_noFunctionMsg (FWidget* widget, void*)
 //----------------------------------------------------------------------
 void MyDialog::cb_about (FWidget*, void*)
 {
-  const char ver[] = F_VERSION;
+  const char libver[] = F_VERSION;
   FString line(2, wchar_t(fc::BoxDrawingsHorizontal));
 
   FMessageBox info ( "About"
                    , line + L" The Final Cut " + line + "\n\n"
-                     L"Version " + ver + "\n\n"
+                     L"Version " + libver + "\n\n"
                      L"(c) 2015 by Markus Gans"
                    , FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
@@ -796,6 +796,9 @@ void MyDialog::adjustSize()
 
 int main (int argc, char* argv[])
 {
+  FString ver = F_VERSION;  // library version
+  FString title = "The FINAL CUT " + ver + " (C) 2015 by Markus Gans";
+
   if ( argv[1] && (  strcmp(argv[1], "--help") == 0
                   || strcmp(argv[1], "-h") == 0 ) )
   {
@@ -807,14 +810,14 @@ int main (int argc, char* argv[])
   }
 
   FApplication app(argc, argv);
-  app.setXTermTitle ("The FINAL CUT 0.2.0 (C) 2015 by Markus Gans");
+  app.setXTermTitle (title);
 
   //app.setEncoding("VT100");
   //app.setTermGeometry(94,30);
   //app.setNewFont();
 
   MyDialog d(&app);
-  d.setText ("The FINAL CUT 0.2.0 (C) 2015 by Markus Gans");
+  d.setText (title);
   d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
   d.setShadow();
 

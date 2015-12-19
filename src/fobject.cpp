@@ -215,7 +215,7 @@ bool FObject::delOwnTimer()
   iter = timer_list->begin();
 
   while ( iter != timer_list->end() )
-  {  
+  {
     if ( (*iter).object == this )
       iter = timer_list->erase(iter);
     else

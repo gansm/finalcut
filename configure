@@ -16846,8 +16846,9 @@ $lt_cl_success || as_fn_exit 1
 
 
 ### This defines the version number of the installed .so files
+### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-SO_VERSION="0:1:0"
+SO_VERSION="2:0:2"
 
 
 

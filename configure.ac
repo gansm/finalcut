@@ -46,8 +46,9 @@ LT_LANG([C++])
 LT_OUTPUT
 
 ### This defines the version number of the installed .so files
+### Update this value for every release!  (A:B:C will map to foo.so.(A-C).C.B)
 ### using libtool's versioning system.
-AC_SUBST(SO_VERSION, ["0:1:0"])
+AC_SUBST(SO_VERSION, ["2:0:2"])
 
 AC_SUBST([LIBTOOL_DEPS])
 
