@@ -69,7 +69,10 @@ void FCheckBox::drawCheckButton()
     else
     {
       print ('[');
-      print (fc::Times);  // Times ×
+      if ( isTeraTerm() )
+        print ('x');
+      else
+        print (fc::Times);  // Times ×
       print (']');
     }
   }

@@ -467,6 +467,7 @@ void FMenuBar::leaveMenuBar()
   resetMenu();
   redraw();
   activatePrevWindow();
+  raiseWindow (getActiveWindow());
   getActiveWindow()->getFocusWidget()->setFocus();
   getActiveWindow()->redraw();
   if ( statusBar() )
@@ -543,8 +544,12 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != LeftButton )
   {
     mouse_down = false;
-    if ( ! itemlist.empty() )
+
+    if ( ! itemlist.empty() && hasSelectedItem() )
       leaveMenuBar();
+    else
+      return;
+
     if ( statusBar() )
           statusBar()->clearMessage();
     return;
@@ -680,10 +685,13 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
           {
             (*iter)->unsetSelected();
             if ( getSelectedItem() == *iter )
+            {
               setSelectedItem(0);
-            redraw();
-            (*iter)->processClicked();
-            drop_down = false;
+              leaveMenuBar();
+              drop_down = false;
+              (*iter)->processClicked();
+              return;
+            }
           }
         }
         else

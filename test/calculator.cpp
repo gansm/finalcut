@@ -155,6 +155,7 @@ class Calc : public FDialog
    void setInfixOperator(char);
    void clearInfixOperator();
    void calcInfixOperator();
+   void adjustSize();
 
  public:
    explicit Calc (FWidget* parent=0);  // constructor
@@ -163,9 +164,6 @@ class Calc : public FDialog
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
    void cb_buttonClicked (FWidget*, void*);
-
- protected:
-   void adjustSize();
 };
 #pragma pack(pop)
 

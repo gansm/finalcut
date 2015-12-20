@@ -539,7 +539,7 @@ FString& FString::operator = (const FString& s)
   if ( s )
     _replace (s.string);
   else
-    length = bufsize = 0, string = 0;
+    clear();
   return (*this);
 }
 
@@ -549,7 +549,7 @@ FString& FString::operator = (const std::wstring& s)
   if ( ! s.empty() )
     _replace (s.c_str());
   else
-    length = bufsize = 0, string = 0;
+    clear();
   return (*this);
 }
 
@@ -559,7 +559,7 @@ const FString& FString::operator = (const wchar_t* s)
   if ( s )
     _replace (s);
   else
-    length = bufsize = 0, string = 0;
+    clear();
   return (*this);
 }
 
@@ -573,7 +573,7 @@ FString& FString::operator = (const std::string& s)
     delete[] wc_string;
   }
   else
-    length = bufsize = 0, string = 0;
+    clear();
   return (*this);
 }
 
@@ -587,7 +587,7 @@ const FString& FString::operator = (const char* s)
     delete[] wc_string;
   }
   else
-    length = bufsize = 0, string = 0;
+    clear();
   return (*this);
 }
 

@@ -2057,10 +2057,12 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
       if ( ax == 0 )
         line_xmin = ol;
+      else if ( aw + rsh + ax - ol >= vterm->width )
+        line_xmax = vterm->width + ol - ax - 1;
+
       if ( ax + line_xmin >= vterm->width )
         continue;
-      if ( aw + rsh + ax - ol >= vterm->width )
-        line_xmax = vterm->width + ol - ax - 1;
+
       for (register int x=line_xmin; x <= line_xmax; x++)
       {
         int gx, gy, line_len;

@@ -698,16 +698,18 @@ void FMenu::drawItems()
             if ( is_radio_btn )
             {
               if ( isNewFont() )
-                print (fc::NF_Bullet);     // NF_Bullet ●
+                print (fc::NF_Bullet); // NF_Bullet ●
               else
-                print (fc::Bullet);   // Bullet ●
+                print (fc::Bullet);    // Bullet ●
             }
             else
             {
               if ( isNewFont() )
-                print (fc::NF_check_mark); // NF_check_mark ✓
+                print (fc::NF_check_mark);   // NF_check_mark ✓
+              else if ( isCygwinTerminal() )
+                print (fc::Times);           // Times ×
               else
-                print (fc::SquareRoot);    // SquareRoot √
+                print (fc::SquareRoot);      // SquareRoot √
             }
           }
           else
@@ -777,8 +779,10 @@ void FMenu::drawItems()
         if ( len > 0 )
         {
           FString spaces (len, wchar_t(' '));
-          // BlackRightPointingPointer ►
-          print (spaces + wchar_t(fc::BlackRightPointingPointer));
+          if ( isTeraTerm() )
+            print (spaces + wchar_t('>'));
+          else // BlackRightPointingPointer ►
+            print (spaces + wchar_t(fc::BlackRightPointingPointer));
           to_char = int(maxItemWidth) - (c + 2);
         }
       }
@@ -1298,15 +1302,18 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       delete _ev;
       return;
     }
-    else if ( ! hasSelectedItem() && statusBar() && mouse_over_menu )
+    else if ( ! hasSelectedItem() && mouse_over_menu )
     {
       // Mouse is over border or separator
-      FString msg = getStatusbarMessage();
-      FString curMsg = statusBar()->getMessage();
-      if ( curMsg != msg )
+      if ( statusBar() )
       {
-        statusBar()->setMessage(msg);
-        statusBar()->drawMessage();
+        FString msg = getStatusbarMessage();
+        FString curMsg = statusBar()->getMessage();
+        if ( curMsg != msg )
+        {
+          statusBar()->setMessage(msg);
+          statusBar()->drawMessage();
+        }
       }
       if ( open_sub_menu )
         hide_sub_menu = true;

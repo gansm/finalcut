@@ -27,13 +27,11 @@ class Menu : public FDialog
    void onClose (FCloseEvent*);
    void cb_message (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
+   void adjustSize();
 
  public:
    explicit Menu (FWidget* = 0);  // constructor
   ~Menu();  // destructor
-
- protected:
-   void adjustSize();
 };
 #pragma pack(pop)
 
