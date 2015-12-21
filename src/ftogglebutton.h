@@ -84,18 +84,18 @@ class FToggleButton : public FWidget
    void onFocusIn (FFocusEvent*);
    void onFocusOut (FFocusEvent*);
 
-   bool setNoUnderline(bool);
+   bool setNoUnderline (bool);
    bool setNoUnderline();
    bool unsetNoUnderline();
 
-   bool setEnable(bool);
+   bool setEnable (bool);
    bool setEnable();
    bool unsetEnable();
    bool setDisable();
-   bool setFocus(bool);
+   bool setFocus (bool);
    bool setFocus();
    bool unsetFocus();
-   bool setChecked(bool);
+   bool setChecked (bool);
    bool setChecked();
    bool unsetChecked();
    bool isChecked();

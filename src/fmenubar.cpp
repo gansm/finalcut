@@ -48,6 +48,7 @@ void FMenuBar::init()
   getRootWidget()->setTopPadding(1, true);
   setMenuBar(this);
   addAccelerator (fc::Fkey_f10);
+  addAccelerator (fc::Fckey_space);
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
   window_object  = true;

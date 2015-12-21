@@ -296,7 +296,7 @@ void FButtonGroup::hide()
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::insert(FToggleButton* button)
+void FButtonGroup::insert (FToggleButton* button)
 {
   if ( button->group() )
     button->group()->remove(button);
@@ -316,7 +316,7 @@ void FButtonGroup::insert(FToggleButton* button)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::remove(FToggleButton* button)
+void FButtonGroup::remove (FToggleButton* button)
 {
   FButtonGroup::FButtonList::iterator iter;
 

@@ -33,7 +33,7 @@ FToggleButton::FToggleButton(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FToggleButton::FToggleButton ( const FString& txt, FWidget* parent )
+FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , focus_inside_group(true)
   , text()
@@ -374,7 +374,7 @@ void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setNoUnderline(bool on)
+bool FToggleButton::setNoUnderline (bool on)
 {
   if ( on )
     flags |= NO_UNDERLINE;
@@ -384,7 +384,7 @@ bool FToggleButton::setNoUnderline(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setEnable(bool on)
+bool FToggleButton::setEnable (bool on)
 {
   FWidget::setEnable(on);
 
@@ -414,7 +414,7 @@ bool FToggleButton::setEnable(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setFocus(bool on)
+bool FToggleButton::setFocus (bool on)
 {
   FWidget::setFocus(on);
 
@@ -608,7 +608,7 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
 }
 
 //----------------------------------------------------------------------
-bool FToggleButton::setChecked(bool on)
+bool FToggleButton::setChecked (bool on)
 {
   if ( checked != on )
   {

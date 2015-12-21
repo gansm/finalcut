@@ -174,7 +174,6 @@ class fc
    // keyboard - single keys
    enum keys
    {
-     Fckey_at                   = 0x0000000,  // control-@
      Fckey_a                    = 0x0000001,  // control-a
      Fckey_b                    = 0x0000002,  // control-b
      Fckey_c                    = 0x0000003,  // control-c
@@ -207,6 +206,7 @@ class fc
      Fckey_caret                = 0x000001e,  // control-^
      Fckey_underscore           = 0x000001f,  // control-_
      Fkey_space                 = 0x0000020,
+     Fckey_space                = 0x1000020,  // control-space
      Fkey_backspace             = 0x1000100,
      Fkey_catab                 = 0x1000101,
      Fkey_clear                 = 0x1000102,

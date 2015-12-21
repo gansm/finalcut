@@ -415,7 +415,6 @@ keyname;
 
 static keyname FkeyName[] =
 {
-  { fc::Fckey_at                  , "Ctrl+@" },
   { fc::Fckey_a                   , "Ctrl+A" },
   { fc::Fckey_b                   , "Ctrl+B" },
   { fc::Fckey_c                   , "Ctrl+C" },
@@ -447,6 +446,7 @@ static keyname FkeyName[] =
   { fc::Fckey_caret               , "Ctrl+^" },
   { fc::Fckey_underscore          , "Ctrl+_" },
   { fc::Fkey_space                , "Space" },
+  { fc::Fckey_space               , "Ctrl+Space" }, // Ctrl+(Space or @)
   { fc::Fkey_backspace            , "Backspace" },
   { fc::Fkey_catab                , "Clear-All-Tabs" },
   { fc::Fkey_clear                , "Clear-Screen" },
