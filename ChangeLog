@@ -3,6 +3,7 @@
 	* Add raiseWindow() to FMenuBar::leaveMenuBar()
 	* Fix allocation of null strings with the FString = operator
 	* Fix for non printable characters in Cygwin and TeraTerm
+	* Fix missing eat_newline_glitch (xn) in TeraTerm
 
 2015-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Add delOwnTimer() for FObject

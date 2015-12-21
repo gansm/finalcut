@@ -1008,8 +1008,12 @@ void FTerm::init_termcaps()
     // newline ignored after 80 cols
     eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
 
+    if ( isTeraTerm() )
+      eat_nl_glitch = true;
+
     // maximum number of colors on screen
     max_color = tgetnum(const_cast<char*>("Co"));
+
     if ( max_color < 8 )
       monochron = true;
     else
