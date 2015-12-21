@@ -87,6 +87,7 @@ bool     FTerm::vt100_console;
 bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
+bool     FTerm::cursor_optimisation;
 uChar    FTerm::x11_button_state;
 termios  FTerm::term_init;
 char     FTerm::termtype[30] = "";
@@ -590,6 +591,9 @@ int FTerm::parseKeyString ( char* buffer
   for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
     buffer[n] = '\0';
   input_data_pending = bool(buffer[0] != '\0');
+
+  if ( key == 0 )  // Ctrl+Space or Ctrl+@
+    key = fc::Fckey_space;
 
   return int(key == 127 ? fc::Fkey_backspace : key);
 }
@@ -1327,6 +1331,9 @@ void FTerm::init()
   screen_terminal        = \
   tmux_terminal          = \
   background_color_erase = false;
+
+  // Preset to true
+  cursor_optimisation    = true;
 
   // assertion: programm start in cooked mode
   raw_mode                = \
@@ -2685,7 +2692,7 @@ void FTerm::updateTerminal()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setKDECursor(fc::kde_konsole_CursorShape style)
+void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
 {
   // Set cursor style in KDE konsole
   if ( kde_konsole )
@@ -3186,7 +3193,10 @@ void FTerm::setTermXY (register int x, register int y)
   if ( y >= term_height )
     y = term_height - 1;
 
-  move_str = opti->cursor_move (x_term_pos, y_term_pos, x, y);
+  if ( cursor_optimisation )
+    move_str = opti->cursor_move (x_term_pos, y_term_pos, x, y);
+  else
+    move_str = tgoto(tcap[t_cursor_address].string, x, y);
   if ( move_str )
     appendOutputBuffer(move_str);
   flush_out();
@@ -3195,7 +3205,7 @@ void FTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setBeep(int Hz, int ms)
+void FTerm::setBeep (int Hz, int ms)
 {
   if ( ! linux_terminal )
     return;
@@ -3374,7 +3384,7 @@ bool FTerm::setTermUnderline (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::hideCursor(bool on)
+bool FTerm::hideCursor (bool on)
 {
   char *vi, *vs, *ve;
 
@@ -3424,7 +3434,7 @@ bool FTerm::isCursorInside()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setEncoding(std::string enc)
+void FTerm::setEncoding (std::string enc)
 {
   std::map<std::string,fc::encoding>::const_iterator it;
 
@@ -3472,7 +3482,7 @@ std::string FTerm::getEncoding()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setPCcharset(bool on)
+bool FTerm::setPCcharset (bool on)
 {
   // display all CP437/VGA characters [00...ff]
   if ( on == pc_charset_state )
@@ -3503,7 +3513,7 @@ bool FTerm::setPCcharset(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setNonBlockingInput(bool on)
+bool FTerm::setNonBlockingInput (bool on)
 {
   if ( on == non_blocking_stdin )
     return non_blocking_stdin;
@@ -3524,7 +3534,7 @@ bool FTerm::setNonBlockingInput(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setVT100altChar(bool on)
+bool FTerm::setVT100altChar (bool on)
 {
   if ( on == vt100_state )
     return vt100_state;
@@ -3546,7 +3556,7 @@ bool FTerm::setVT100altChar(bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setUTF8(bool on) // UTF-8 (Unicode)
+bool FTerm::setUTF8 (bool on) // UTF-8 (Unicode)
 {
   if ( on == utf8_state )
     return utf8_state;
@@ -3568,7 +3578,7 @@ bool FTerm::setUTF8(bool on) // UTF-8 (Unicode)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setRawMode(bool on)
+bool FTerm::setRawMode (bool on)
 {
   if ( on == raw_mode )
     return raw_mode;

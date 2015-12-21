@@ -113,10 +113,11 @@ void FApplication::cmd_options ()
     int c, idx = 0;
     static struct option long_options[] =
     {
-      {"encoding", required_argument, 0,  0 },
-      {"vgafont",  no_argument,       0,  0 },
-      {"newfont",  no_argument,       0,  0 },
-      {0,          0,                 0,  0 }
+      {"encoding",            required_argument, 0,  0 },
+      {"no-optimized-cursor", no_argument,       0,  0 },
+      {"vgafont",             no_argument,       0,  0 },
+      {"newfont",             no_argument,       0,  0 },
+      {0,                     0,                 0,  0 }
     };
     opterr = 0;
     c = getopt_long ( app_argc
@@ -141,8 +142,13 @@ void FApplication::cmd_options ()
           setEncoding(encoding.c_str());
         }
       }
+
+      if ( strcmp(long_options[idx].name, "no-optimize-cursor")  == 0 )
+        setCursorOptimisation (false);
+
       if ( strcmp(long_options[idx].name, "vgafont")  == 0 )
         setVGAFont();
+
       if ( strcmp(long_options[idx].name, "newfont")  == 0 )
         setNewFont();
     }
@@ -1264,6 +1270,7 @@ void FApplication::print_cmd_Options ()
   ::printf("\nFinalCut Options:\n"
     "  --encoding <name>           Sets the character encoding mode\n"
     "                              {UTF8, VT100, PC, ASCII}\n"
+    "  --no-optimized-cursor       No cursor optimisation\n"
     "  --vgafont                   Set the standard vga 8x16 font\n"
     "  --newfont                   Enables the graphical font\n");
 }

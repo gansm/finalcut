@@ -8,7 +8,7 @@
 // ▕ FOptiMove ▏
 // ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-// The cursor optimisation based on ncurses lib_mvcur.c
+// The cursor optimization based on ncurses lib_mvcur.c
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #ifndef _FOPTIMOVE_H

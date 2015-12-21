@@ -186,6 +186,7 @@ class FTerm
    static bool underline;
    static bool NewFont;
    static bool VGAFont;
+   static bool cursor_optimisation;
    static uInt tabstop;
    static fc::encoding Encoding;
 
@@ -244,8 +245,8 @@ class FTerm
    static uInt  getBaudRate (const struct termios*);
    static void  init_consoleCharMap();
    static char* init_256colorTerminal();
-   static char* parseAnswerbackMsg(char*&);
-   static char* parseSecDA(char*&);
+   static char* parseAnswerbackMsg (char*&);
+   static char* parseSecDA (char*&);
    static void  init_termcaps();
    static void  init_vt100altChar();
    static void  init_encoding();
@@ -285,7 +286,7 @@ class FTerm
    static int     parseKeyString (char*, int, timeval*);
    int            getLineNumber();
    int            getColumnNumber();
-   static FString getKeyName(int);
+   static FString getKeyName (int);
 
    static char*   getTermType();
    static char*   getTermName();
@@ -301,14 +302,15 @@ class FTerm
    static bool    setNewFont();
    static bool    isNewFont();
    static bool    setOldFont();
-   static void    setConsoleCursor(fc::console_cursor_style);
+   static bool    setCursorOptimisation (bool);
+   static void    setConsoleCursor (fc::console_cursor_style);
    static void    getTermSize();
    static void    setTermSize (int, int);
    void           createVTerm();
    static void    resizeVTerm();
    static void    putVTerm();
    static void    updateTerminal();
-   static void    setKDECursor(fc::kde_konsole_CursorShape);
+   static void    setKDECursor (fc::kde_konsole_CursorShape);
    static FString getXTermFont();
    static FString getXTermTitle();
    static void    setXTermCursorStyle (fc::xterm_cursor_style);
@@ -344,44 +346,44 @@ class FTerm
 #endif  // F_HAVE_LIBGPM
 
    static void    setTermXY (register int, register int);
-   static void    setBeep(int, int);
+   static void    setBeep (int, int);
    static void    resetBeep();
    static void    beep();
 
-   static bool    setTermBold(bool);
-   static bool    setTermReverse(bool);
-   static bool    setTermUnderline(bool);
+   static bool    setTermBold (bool);
+   static bool    setTermReverse (bool);
+   static bool    setTermUnderline (bool);
 
-   static bool    hideCursor(bool);
+   static bool    hideCursor (bool);
    static bool    hideCursor();
    static bool    showCursor();
    static bool    isHiddenCursor();
    bool           isCursorInside();
 
-   static void         setEncoding(std::string);
+   static void         setEncoding (std::string);
    static std::string  getEncoding();
 
-   static bool    setPCcharset(bool);
+   static bool    setPCcharset (bool);
    static bool    setPCcharset();
    static bool    unsetPCcharset();
    static bool    isPCcharset();
 
-   static bool    setNonBlockingInput(bool);
+   static bool    setNonBlockingInput (bool);
    static bool    setNonBlockingInput();
    static bool    unsetNonBlockingInput();
 
-   static bool    setVT100altChar(bool);
+   static bool    setVT100altChar (bool);
    static bool    setVT100altChar();
    static bool    unsetVT100altChar();
    static bool    isVT100altChar();
 
-   static bool    setUTF8(bool);
+   static bool    setUTF8 (bool);
    static bool    setUTF8();
    static bool    unsetUTF8();
    static bool    isUTF8();
    static bool    isUTF8_linux_terminal();
 
-   static bool    setRawMode(bool);
+   static bool    setRawMode (bool);
    static bool    setRawMode();
    static bool    unsetRawMode();
    static bool    setCookedMode();
@@ -528,6 +530,13 @@ inline bool FTerm::isTeraTerm()
 //----------------------------------------------------------------------
 inline bool FTerm::isUrxvtTerminal()
 { return urxvt_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::setCursorOptimisation (bool on)
+{
+  cursor_optimisation = on;
+  return cursor_optimisation;
+}
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
