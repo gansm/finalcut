@@ -13,6 +13,7 @@ noinst_PROGRAMS = \
 	mandelbrot \
 	calculator \
 	watch \
+	term-attributes \
 	keyboard \
 	timer \
 	menu \
@@ -25,7 +26,9 @@ string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
+term_attributes_SOURCES = term-attributes.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
+

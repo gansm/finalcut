@@ -1,3 +1,7 @@
+2015-12-23  Markus Gans  <guru.mail@muenster.de>
+	* Add video attribute support for dim (half-bright) and italic
+	* An example program to test video attributes on your terminal
+
 2015-12-20  Markus Gans  <guru.mail@muenster.de>
 	* Add the possibility to switch off the cursor optimization 
 	  for bad ANSI-terminal implementations like HyperTerminal 

@@ -29,6 +29,7 @@ test/string-operations
 test/hello
 test/watch
 test/menu
+test/term-attributes
 test/input-dialog
 test/mandelbrot
 test/keyboard
