@@ -38,9 +38,13 @@ uInt     FTerm::baudrate;
 uInt     FTerm::tabstop;
 bool     FTerm::resize_term;
 bool     FTerm::bold;
+bool     FTerm::dim;
+bool     FTerm::italic;
 bool     FTerm::reverse;
 bool     FTerm::underline;
 bool     FTerm::term_bold;
+bool     FTerm::term_dim;
+bool     FTerm::term_italic;
 bool     FTerm::term_reverse;
 bool     FTerm::term_underline;
 bool     FTerm::hiddenCursor;
@@ -1133,6 +1137,34 @@ void FTerm::init_termcaps()
         exit_underline_caused_reset = true;
       else
         exit_underline_caused_reset = false;
+
+      // test for standard ECMA-48 terminal
+      if ( strncmp(tcap[t_exit_underline_mode].string, "\033[24m", 5) == 0 )
+      {
+        tcap[t_exit_bold_mode].string = \
+          const_cast<char*>("\033[22m");  // Exit dim, too
+
+        tcap[t_exit_dim_mode].string = \
+          const_cast<char*>("\033[22m");
+
+        tcap[t_exit_underline_mode].string = \
+          const_cast<char*>("\033[24m");
+
+        tcap[t_exit_blink_mode].string = \
+          const_cast<char*>("\033[25m");
+
+        tcap[t_exit_reverse_mode].string = \
+          const_cast<char*>("\033[27m");
+
+        tcap[t_exit_secure_mode].string = \
+          const_cast<char*>("\033[28m");
+
+        tcap[t_enter_crossed_out_mode].string = \
+          const_cast<char*>("\033[9m");
+
+        tcap[t_exit_crossed_out_mode].string = \
+          const_cast<char*>("\033[29m");
+      }
     }
 
     // read termcap key strings
@@ -1316,9 +1348,13 @@ void FTerm::init()
   hiddenCursor           = \
   mouse_support          = \
   bold                   = \
+  dim                    = \
+  italic                 = \
   underline              = \
   reverse                = \
   term_bold              = \
+  term_dim               = \
+  term_italic            = \
   term_underline         = \
   term_reverse           = \
   force_vt100            = \
@@ -1520,7 +1556,7 @@ void FTerm::init()
     // mintty can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
     setXTermForeground("rgb:0000/0000/0000");
-    setXTermHighlightBackground("rgb:4a4a/9090/d9d9");
+    setXTermHighlightBackground("rgb:8686/8686/8686");
   }
 
   setRawMode();
@@ -1843,6 +1879,8 @@ void FTerm::resizeArea (term_area* area)
   default_char.fg_color  = fc::Black;
   default_char.bg_color  = fc::Black;
   default_char.bold      = 0;
+  default_char.dim       = 0;
+  default_char.italic    = 0;
   default_char.reverse   = 0;
   default_char.underline = 0;
   std::fill_n (area->text, area_size, default_char);
@@ -2581,6 +2619,8 @@ void FTerm::resizeVTerm()
   default_char.fg_color  = fc::LightGray;
   default_char.bg_color  = fc::Black;
   default_char.bold      = 0;
+  default_char.dim       = 0;
+  default_char.italic    = 0;
   default_char.reverse   = 0;
   default_char.underline = 0;
   std::fill_n (vterm->text, vterm_size, default_char);
@@ -3287,6 +3327,82 @@ bool FTerm::setTermBold (bool on)
 }
 
 //----------------------------------------------------------------------
+bool FTerm::setTermDim (bool on)
+{
+  if ( on == term_dim )
+    return term_dim;
+
+  if ( on )
+  {
+    char* mh = tcap[t_enter_dim_mode].string;
+    if ( mh )
+      appendOutputBuffer (mh);
+    term_dim = true;
+  }
+  else
+  {
+    char* me = tcap[t_exit_attribute_mode].string;
+    if ( me )
+    {
+      char* se = tcap[t_exit_standout_mode].string;
+      char* ue = tcap[t_exit_underline_mode].string;
+      char* us = tcap[t_enter_underline_mode].string;
+      char* mr = tcap[t_enter_reverse_mode].string;
+      char* md = tcap[t_enter_bold_mode].string;
+
+      // "t_exit_attribute_mode" will reset all attributes!
+      appendOutputBuffer (me);
+
+      // last color restore
+      if ( ! monochron )
+      {
+        fg_color = fg_term_color;
+        bg_color = bg_term_color;
+        fg_term_color = -1;
+        bg_term_color = -1;
+        setTermColor (fg_color, bg_color);
+      }
+      // underline mode restore
+      if ( term_underline && ue && us )
+        appendOutputBuffer (us);
+      // reverse mode restore
+      if ( term_reverse && me && mr )
+        appendOutputBuffer (mr);
+      // bold mode restore
+      if ( term_bold && md && se )
+        appendOutputBuffer (md);
+    }
+    term_dim = false;
+  }
+  return term_dim;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setTermItalic (bool on)
+{
+  if ( on == term_italic )
+    return term_italic;
+
+  if ( on )
+  {
+    char* ZH = tcap[t_enter_italics_mode].string;
+    if ( ZH )
+      appendOutputBuffer (ZH);
+    term_italic = true;
+  }
+  else
+  {
+    char* ZR = tcap[t_exit_italics_mode].string;
+
+    if ( ZR )
+      appendOutputBuffer (ZR);
+
+    term_italic = false;
+  }
+  return term_italic;
+}
+
+//----------------------------------------------------------------------
 bool FTerm::setTermReverse (bool on)
 {
   if ( on == term_reverse )
@@ -3889,6 +4005,8 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           nc.fg_color  = uChar(fg_color);
           nc.bg_color  = uChar(bg_color);
           nc.bold      = bold;
+          nc.dim       = dim;
+          nc.italic    = italic;
           nc.reverse   = reverse;
           nc.underline = underline;
 
@@ -3901,14 +4019,29 @@ int FTerm::print (FTerm::term_area* area, FString& s)
              && ay < area->height + area->bottom_shadow )
           {
             char_data* ac; // area character
+            uChar ac_attr, nc_attr;
+            uInt ac_color, nc_color;
             int line_len = area->width + area->right_shadow;
             ac = &area->text[ay * line_len + ax];
 
+            ac_color = ac->fg_color | ac->bg_color << 8;
+            nc_color = nc.fg_color | nc.bg_color << 8;
+
+            ac_attr = ac->bold
+                    | ac->reverse << 1
+                    | ac->dim  << 2
+                    | ac->italic  << 3
+                    | ac->underline << 4;
+
+            nc_attr = nc.bold
+                    | nc.reverse << 1
+                    | nc.dim  << 2
+                    | nc.italic  << 3
+                    | nc.underline << 4;
+
             if (  (ac->code != nc.code)
-               || (ac->fg_color | ac->bg_color << 8)
-               != (nc.fg_color | nc.bg_color << 8)
-               || (ac->bold | ac->reverse << 1 | ac->underline << 2)
-               != (nc.bold | nc.reverse << 1 | nc.underline << 2) )
+               || ac_color!= nc_color
+               || ac_attr != nc_attr )
             {
               memcpy (ac, &nc, sizeof(nc));
 
@@ -3976,6 +4109,8 @@ int FTerm::print (FTerm::term_area* area, register int c)
   nc.fg_color  = uChar(fg_color);
   nc.bg_color  = uChar(bg_color);
   nc.bold      = bold;
+  nc.dim       = dim;
+  nc.italic    = italic;
   nc.reverse   = reverse;
   nc.underline = underline;
 
@@ -3994,14 +4129,30 @@ int FTerm::print (FTerm::term_area* area, register int c)
      && ay < area->height + area->bottom_shadow )
   {
     char_data* ac; // area character
+    uChar ac_attr, nc_attr;
+    uInt ac_color, nc_color;
+
     int line_len = area->width + area->right_shadow;
     ac = &area->text[ay * line_len + ax];
 
+    ac_color = ac->fg_color | ac->bg_color << 8;
+    nc_color = nc.fg_color | nc.bg_color << 8;
+
+    ac_attr = ac->bold
+            | ac->reverse << 1
+            | ac->dim  << 2
+            | ac->italic  << 3
+            | ac->underline << 4;
+
+    nc_attr = nc.bold
+            | nc.reverse << 1
+            | nc.dim  << 2
+            | nc.italic  << 3
+            | nc.underline << 4;
+
     if (  (ac->code != nc.code)
-       || (ac->fg_color | ac->bg_color << 8)
-       != (nc.fg_color | nc.bg_color << 8)
-       || (ac->bold | ac->reverse << 1 | ac->underline << 2)
-       != (nc.bold | nc.reverse << 1 | nc.underline << 2) )
+       || ac_color != nc_color
+       || ac_attr != nc_attr )
     {
       memcpy (ac, &nc, sizeof(nc));
 
@@ -4044,13 +4195,24 @@ void FTerm::appendAttributes (char_data*& screen_attr)
 {
   if (  screen_attr->fg_color != fg_term_color
      || screen_attr->bg_color != bg_term_color )
-    setTermColor (screen_attr->fg_color, screen_attr->bg_color);
+    setTermColor ( screen_attr->fg_color,
+                   screen_attr->bg_color );
+
   if ( bool(screen_attr->bold) != term_bold )
     setTermBold (bool(screen_attr->bold));
+
+  if ( bool(screen_attr->dim) != term_dim )
+    setTermDim (bool(screen_attr->dim));
+
+  if ( bool(screen_attr->italic) != term_italic )
+    setTermItalic (bool(screen_attr->italic));
+
   if ( bool(screen_attr->reverse) != term_reverse )
     setTermReverse (bool(screen_attr->reverse));
+
   if ( bool(screen_attr->underline) != term_underline )
     setTermUnderline (bool(screen_attr->underline));
+
   if ( isNewFont() )
   {
     switch ( screen_attr->code )

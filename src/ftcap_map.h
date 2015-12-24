@@ -63,13 +63,24 @@ static tcap_map tcap[] =
   { 0, "te" },  // exit_ca_mode           -> strings to end programs using cup
   { 0, "eA" },  // enable_acs             -> enable alternate char set
   { 0, "md" },  // enter_bold_mode        -> turn on bold (extra bright) mode
+  { 0, "me" },  // exit_bold_mode         -> turn off bold mode
+  { 0, "mh" },  // enter_dim_mode         -> turn on half-bright
+  { 0, "me" },  // exit_dim_mode          -> turn off half-bright
+  { 0, "ZH" },  // enter_italics_mode     -> Enter italic mode
+  { 0, "ZR" },  // exit_italics_mode      -> End italic mode
   { 0, "mb" },  // enter_blink_mode       -> turn on blinking
+  { 0, "me" },  // exit_blink_mode        -> turn off blinking
   { 0, "us" },  // enter_underline_mode   -> begin underline mode
   { 0, "ue" },  // exit_underline_mode    -> exit underline mode
   { 0, "mr" },  // enter_reverse_mode     -> turn on reverse video mode
+  { 0, "me" },  // exit_reverse_mode      -> turn off reverse video mode
+  { 0, "mk" },  // enter_secure_mode      -> turn on blank mode (characters invisible)
+  { 0, "me" },  // exit_secure_mode       -> turn off blank mode (characters visible)
+  { 0, "XX" },  // enter_crossed_out_mode -> turn on mark character as deleted
+  { 0, "me" },  // exit_crossed_out_mode  -> turn off mark character as deleted
   { 0, "so" },  // enter_standout_mode    -> begin standout mode
-  { 0, "me" },  // exit_attribute_mode    -> turn off all attributes
   { 0, "se" },  // exit_standout_mode     -> exit standout mode
+  { 0, "me" },  // exit_attribute_mode    -> turn off all attributes
   { 0, "as" },  // enter_alt_charset_mode -> start alternate character set (P)
   { 0, "ae" },  // exit_alt_charset_mode  -> end alternate character set (P)
   { 0, "S2" },  // enter_pc_charset_mode  -> Enter PC character display mode
@@ -136,13 +147,24 @@ enum termcaps
   t_exit_ca_mode,
   t_enable_acs,
   t_enter_bold_mode,
+  t_exit_bold_mode,
+  t_enter_dim_mode,
+  t_exit_dim_mode,
+  t_enter_italics_mode,
+  t_exit_italics_mode,
   t_enter_blink_mode,
+  t_exit_blink_mode,
   t_enter_underline_mode,
   t_exit_underline_mode,
   t_enter_reverse_mode,
+  t_exit_reverse_mode,
+  t_enter_secure_mode,
+  t_exit_secure_mode,
+  t_enter_crossed_out_mode,
+  t_exit_crossed_out_mode,
   t_enter_standout_mode,
-  t_exit_attribute_mode,
   t_exit_standout_mode,
+  t_exit_attribute_mode,
   t_enter_alt_charset_mode,
   t_exit_alt_charset_mode,
   t_enter_pc_charset_mode,

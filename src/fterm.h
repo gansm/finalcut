@@ -91,6 +91,8 @@ class FTerm
    static std::map <std::string,fc::encoding>* encoding_set;
 
    static bool    term_bold;
+   static bool    term_dim;
+   static bool    term_italic;
    static bool    term_reverse;
    static bool    term_underline;
    static bool    hiddenCursor;
@@ -182,6 +184,8 @@ class FTerm
 
  protected:
    static bool bold;
+   static bool dim;
+   static bool italic;
    static bool reverse;
    static bool underline;
    static bool NewFont;
@@ -202,9 +206,11 @@ class FTerm
      uChar fg_color;       // foreground color
      uChar bg_color;       // background color
      uChar bold      : 1;  // bold
+     uChar dim       : 1;  // dim
+     uChar italic    : 1;  // italic
      uChar reverse   : 1;  // reverse
      uChar underline : 1;  // underline
-     uChar           : 5;  // padding bits
+     uChar           : 3;  // padding bits
    } char_data;
 
    typedef struct
@@ -334,6 +340,8 @@ class FTerm
    static int     vga2ansi (int);
    void           setColor (int, int);
    static void    setTermColor (int, int);
+   static int     getTermForegroundColor();
+   static int     getTermBackgroundColor();
    static int     getMaxColor();
    static void    xtermMouse (bool);
    static void    enableXTermMouse();
@@ -351,6 +359,8 @@ class FTerm
    static void    beep();
 
    static bool    setTermBold (bool);
+   static bool    setTermDim (bool);
+   static bool    setTermItalic (bool);
    static bool    setTermReverse (bool);
    static bool    setTermUnderline (bool);
 
@@ -541,6 +551,14 @@ inline bool FTerm::setCursorOptimisation (bool on)
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
 { return raw_mode; }
+
+//----------------------------------------------------------------------
+inline int FTerm::getTermForegroundColor()
+{ return fg_color; }
+
+//----------------------------------------------------------------------
+inline int FTerm::getTermBackgroundColor()
+{ return bg_color; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getMaxColor()

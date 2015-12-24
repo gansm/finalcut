@@ -448,17 +448,27 @@ class FWidget : public FObject, public FTerm
    static void      gotoxy (register int, register int);
    void             clrscr();
 
-   static bool      setBold(register bool);
+   static bool      setBold (register bool);
    static bool      setBold();
    static bool      unsetBold();
    static bool      isBold();
 
-   static bool      setReverse(register bool);
+   static bool      setDim (register bool);
+   static bool      setDim();
+   static bool      unsetDim();
+   static bool      isDim();
+
+   static bool      setItalic (register bool);
+   static bool      setItalic();
+   static bool      unsetItalic();
+   static bool      isItalic();
+
+   static bool      setReverse (register bool);
    static bool      setReverse();
    static bool      unsetReverse();
    static bool      isReverse();
 
-   static bool      setUnderline(register bool);
+   static bool      setUnderline (register bool);
    static bool      setUnderline();
    static bool      unsetUnderline();
    static bool      isUnderline();
@@ -752,6 +762,38 @@ inline bool FWidget::unsetBold()
 //----------------------------------------------------------------------
 inline bool FWidget::isBold()
 { return bold; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setDim (register bool on)
+{ return (dim = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setDim()
+{ return setDim(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetDim()
+{ return setDim(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isDim()
+{ return dim; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setItalic (register bool on)
+{ return (italic = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setItalic()
+{ return setItalic(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetItalic()
+{ return setItalic(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isItalic()
+{ return italic; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setReverse (register bool on)

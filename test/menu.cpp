@@ -177,13 +177,14 @@ Menu::Menu (FWidget* parent)
 
   FLabel* Headline2 = new FLabel(" Function ", this);
   Headline2->ignorePadding();
-  Headline2->setGeometry(15,2,10,1);
+  Headline2->setGeometry(19,2,10,1);
   Headline2->setEmphasis();
 
   // Info label
-  FLabel* Info = new FLabel("<F10>        Activate menu bar\n"
-                            "<Meta>+<X>   Exit", this);
-  Info->setGeometry(2,1,32,2);
+  FLabel* Info = new FLabel("<F10>            Activate menu bar\n"
+                            "<Ctrl>+<Space>   Activate menu bar\n"
+                            "<Meta>+<X>       Exit", this);
+  Info->setGeometry(2,1,36,3);
 }
 
 //----------------------------------------------------------------------
@@ -278,7 +279,7 @@ int main (int argc, char* argv[])
 
   Menu main_dlg (&app);
   main_dlg.setText ("Menu example");
-  main_dlg.setGeometry (int(1+(app.getWidth()-36)/2), 2, 36, 5);
+  main_dlg.setGeometry (int(1+(app.getWidth()-40)/2), 2, 40, 6);
   main_dlg.setShadow();
 
   app.setMainWidget (&main_dlg);

@@ -33,7 +33,7 @@ class ProgressDialog : public FDialog
 
  public:
    explicit ProgressDialog (FWidget* = 0);  // constructor
-  ~ProgressDialog();  // destructor
+  ~ProgressDialog();                        // destructor
 };
 #pragma pack(pop)
 
