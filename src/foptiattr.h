@@ -169,7 +169,7 @@ class FOptiAttr
    explicit FOptiAttr();  // constructor
   ~FOptiAttr();           // destructor
 
-   static short vga2ansi (short);
+   static short vga2ansi (register short);
 
    void  setMaxColor (int&);
    void  setNoColorVideo (int);
