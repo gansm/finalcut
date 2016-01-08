@@ -194,13 +194,13 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   if ( monochron )
     return;
 
-  if ( fg == -1 && fg != term->fg_color )
+  if ( fg == -1 && term->fg_color != -1 )
   {
     char* sgr_39 = const_cast<char*>("\033[39m");
     append_sequence (sgr_39);
     term->fg_color = next->fg_color;
   }
-  if ( bg == -1 && bg != term->bg_color )
+  if ( bg == -1 && term->bg_color != -1 )
   {
     char* sgr_49 = const_cast<char*>("\033[49m");
     append_sequence (sgr_49);
@@ -733,7 +733,10 @@ inline bool FOptiAttr::unsetTermAttributes (char_data*& term)
 inline bool FOptiAttr::setTermAltCharset (char_data*& term)
 {
   if ( append_sequence(F_enter_alt_charset_mode.cap) )
-    return (term->alt_charset = true);
+  {
+    term->alt_charset = true;
+    return true;
+  }
   else
     return false;
 }
@@ -742,7 +745,10 @@ inline bool FOptiAttr::setTermAltCharset (char_data*& term)
 inline bool FOptiAttr::unsetTermAltCharset (char_data*& term)
 {
   if ( append_sequence(F_exit_alt_charset_mode.cap) )
-    return !(term->alt_charset = false);
+  {
+    term->alt_charset = false;
+    return true;
+  }
   else
     return false;
 }
@@ -751,7 +757,10 @@ inline bool FOptiAttr::unsetTermAltCharset (char_data*& term)
 inline bool FOptiAttr::setTermPCcharset (char_data*& term)
 {
   if ( append_sequence(F_enter_pc_charset_mode.cap) )
-    return (term->pc_charset = true);
+  {
+    term->pc_charset = true;
+    return true;
+  }
   else
     return false;
 }
@@ -760,7 +769,10 @@ inline bool FOptiAttr::setTermPCcharset (char_data*& term)
 inline bool FOptiAttr::unsetTermPCcharset (char_data*& term)
 {
   if ( append_sequence(F_exit_pc_charset_mode.cap) )
-    return !(term->pc_charset = false);
+  {
+    term->pc_charset = false;
+    return true;
+  }
   else
     return false;
 }
