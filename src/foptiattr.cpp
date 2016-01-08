@@ -768,7 +768,7 @@ inline bool FOptiAttr::unsetTermPCcharset (char_data*& term)
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
-inline short FOptiAttr::vga2ansi (register short color)
+short FOptiAttr::vga2ansi (register short color)
 {
   //   VGA   |  ANSI
   // i R G B | i B G R
