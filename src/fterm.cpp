@@ -1927,7 +1927,7 @@ inline uInt FTerm::charEncode (uInt c)
 //----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c, fc::encoding enc)
 {
-  for (uInt i=0; i<=lastCharItem; i++)
+  for (uInt i=0; i <= uInt(lastCharItem); i++)
   {
     if ( character[i][0] == c )
     {
