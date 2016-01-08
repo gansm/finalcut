@@ -79,6 +79,7 @@ static keymap Fkey[] =
   { fc::Fkey_create   , 0, "@6" },  // create key
   { fc::Fkey_end      , 0, "@7" },  // end key
   { fc::Fkey_end      , 0, "@7x"},  // end key
+  { fc::Fkey_end      , 0, "@7X"},  // end key
   { fc::Fkey_enter    , 0, "@8" },  // enter/send key
   { fc::Fkey_exit     , 0, "@9" },  // exit key
   { fc::Fkey_find     , 0, "@0" },  // find key
@@ -424,6 +425,7 @@ static keyname FkeyName[] =
   { fc::Fckey_g                   , "Ctrl+G" },
   { fc::Fkey_erase                , "Backspace" }, // Ctrl+H
   { fc::Fkey_tab                  , "Tab" },       // Ctrl+I
+  { fc::Fckey_j                   , "Ctrl+J" },
   { fc::Fckey_h                   , "Ctrl+K" },
   { fc::Fckey_l                   , "Ctrl+L" },
   { fc::Fkey_return               , "Return" },    // Ctrl+M

@@ -396,53 +396,53 @@ void FButton::processClick()
 
 // public methods of FButton
 //----------------------------------------------------------------------
-void FButton::setForegroundColor (int color)
+void FButton::setForegroundColor (short color)
 {
   FWidget::setForegroundColor(color);
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setBackgroundColor (int color)
+void FButton::setBackgroundColor (short color)
 {
   FWidget::setBackgroundColor(color);
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setHotkeyForegroundColor (int color)
+void FButton::setHotkeyForegroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     button_hotkey_fg = color;
 }
 
-void FButton::setFocusForegroundColor (int color)
+void FButton::setFocusForegroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     button_focus_fg = color;
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setFocusBackgroundColor (int color)
+void FButton::setFocusBackgroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     button_focus_bg = color;
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setInactiveForegroundColor (int color)
+void FButton::setInactiveForegroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     button_inactive_fg = color;
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setInactiveBackgroundColor (int color)
+void FButton::setInactiveBackgroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     button_inactive_bg = color;
   updateButtonColor();
 }
@@ -450,7 +450,8 @@ void FButton::setInactiveBackgroundColor (int color)
 //----------------------------------------------------------------------
 void FButton::hide()
 {
-  int fg, bg, s, f, size;
+  int s, f, size;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

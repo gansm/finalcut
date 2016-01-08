@@ -1,3 +1,7 @@
+2016-01-07  Markus Gans  <guru.mail@muenster.de>
+	* Add the new class FOptiAttr to control video attributes and colors 
+	  for output on terminals
+
 2015-12-23  Markus Gans  <guru.mail@muenster.de>
 	* Add video attribute support for dim (half-bright) and italic
 	* An example program to test video attributes on your terminal

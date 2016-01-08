@@ -15,7 +15,7 @@
 #define _FOPTIMOVE_H
 
 #include <assert.h>
-#include <term.h>
+#include <term.h>  // need for tparm
 
 #include <cctype>
 #include <cstdio>  // need for printf

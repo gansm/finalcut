@@ -4,11 +4,7 @@ Bugs
 
 Improvements
 ~~~~~~~~~~~~
-- New behavior in FTerm::appendAttributes(...)
-  - 1st: reset don't needed attributes (bold, reverse and underline)
-         use 'sgr' for this, to do this in one step => 3rd is don't need
-  - 2nd: set the foreground and background color
-  - 3rd: set new attributes (bold, reverse and underline)
+-
 
 Missing Features
 ~~~~~~~~~~~~~~~~

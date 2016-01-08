@@ -106,9 +106,6 @@ void FLineEdit::draw()
 {
   bool isFocus;
 
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
   drawInputField();
 
   isFocus = ((flags & FOCUS) != 0);
@@ -276,7 +273,8 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::hide()
 {
-  int fg, bg, s, size, lable_Length;
+  int s, size, lable_Length;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

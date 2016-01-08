@@ -37,16 +37,16 @@ class FButton : public FWidget
 {
  private:
    FString text;
-   bool button_down;
-   bool click_animation;
-   int  click_time;
-   int  button_fg;
-   int  button_bg;
-   int  button_hotkey_fg;
-   int  button_focus_fg;
-   int  button_focus_bg;
-   int  button_inactive_fg;
-   int  button_inactive_bg;
+   bool  button_down;
+   bool  click_animation;
+   int   click_time;
+   short button_fg;
+   short button_bg;
+   short button_hotkey_fg;
+   short button_focus_fg;
+   short button_focus_bg;
+   short button_inactive_fg;
+   short button_inactive_bg;
 
  private:
    FButton (const FButton&);
@@ -66,13 +66,13 @@ class FButton : public FWidget
    virtual ~FButton();  // destructor
 
    const char*  getClassName() const;
-   void         setForegroundColor (int);
-   void         setBackgroundColor (int);
-   void         setHotkeyForegroundColor (int);
-   void         setFocusForegroundColor (int);
-   void         setFocusBackgroundColor (int);
-   void         setInactiveForegroundColor (int);
-   void         setInactiveBackgroundColor (int);
+   void         setForegroundColor (short);
+   void         setBackgroundColor (short);
+   void         setHotkeyForegroundColor (short);
+   void         setFocusForegroundColor (short);
+   void         setFocusBackgroundColor (short);
+   void         setInactiveForegroundColor (short);
+   void         setInactiveBackgroundColor (short);
    void         hide();
 
    void         onKeyPress (FKeyEvent*);

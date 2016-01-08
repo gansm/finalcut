@@ -835,7 +835,8 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  int fg, bg, screenWidth;
+  int screenWidth;
+  short fg, bg;
   char* blank;
 
   FWindow::hide();

@@ -95,7 +95,6 @@ class FFileDialog : public FDialog
  private:
    void          init();
    static char*  getHomeDir();
-   virtual void  draw();
    inline bool   pattern_match (const char*, const char*);
    void          clear();
    int           numOfDirs();

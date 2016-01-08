@@ -13,6 +13,7 @@ class timer : public FWidget
  protected:
    void onTimer (FTimerEvent*);
    void onAccel (FAccelEvent*);
+   void draw();
 };
 
 //----------------------------------------------------------------------
@@ -25,9 +26,10 @@ timer::timer (FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  setColor(fc::LightGray, fc::Black);
-  clrscr();
-  updateTerminal();
+  resetXTermForeground();
+  resetXTermBackground();
+  wc.term_fg = -1;
+  wc.term_bg = -1;
 }
 
 //----------------------------------------------------------------------
@@ -43,6 +45,19 @@ void timer::onAccel (FAccelEvent* ev)
   ev->accept();
 }
 
+//----------------------------------------------------------------------
+void timer::draw()
+{
+  setNormal();
+  setColor(-1,-1);
+  clrscr();
+  gotoxy (1,1);
+  print ("---------------\n");
+  print ("Press Q to quit\n");
+  print ("---------------\n");
+  setCursorPos (1,4);
+}
+
 
 //----------------------------------------------------------------------
 //                               main part
@@ -54,10 +69,5 @@ int main (int argc, char* argv[])
   t.addAccelerator('q');
   app.setMainWidget(&t);
   t.show();
-  t.setTermXY(0,0);
-  t.flush_out();
-  ::printf("---------------\n\r");
-  ::printf("Press Q to quit\n\r");
-  ::printf("---------------\n\r\n");
   return app.exec();
 }

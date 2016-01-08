@@ -40,9 +40,10 @@ static tcap_map tcap[] =
   { 0, "Sf" },  // set_foreground         -> Set foreground color #1
   { 0, "Sb" },  // set_background         -> Set background color #1
   { 0, "sp" },  // set_color_pair         -> Set current color pair to #1
-  { 0, "sa" },  // set_attributes         -> define videoattributes #1-#9 (PG9)
   { 0, "op" },  // orig_pair              -> Set default pair to original value
   { 0, "oc" },  // orig_colors            -> Set all color pairs to the original
+  { 0, "NC" },  // no_color_video         -> video attributes that cannot be used
+                //                           with colors
   { 0, "cm" },  // cursor_address         -> move to row #1 columns #2
   { 0, "ch" },  // column_address         -> horizontal position #1, absolute (P)
   { 0, "cv" },  // row_address            -> vertical position #1 absolute (P)
@@ -62,24 +63,29 @@ static tcap_map tcap[] =
   { 0, "ti" },  // enter_ca_mode          -> string to start programs using cup
   { 0, "te" },  // exit_ca_mode           -> strings to end programs using cup
   { 0, "eA" },  // enable_acs             -> enable alternate char set
-  { 0, "md" },  // enter_bold_mode        -> turn on bold (extra bright) mode
+  { 0, "md" },  // enter_bold_mode        -> turn on bold (double-bright) mode
   { 0, "me" },  // exit_bold_mode         -> turn off bold mode
   { 0, "mh" },  // enter_dim_mode         -> turn on half-bright
   { 0, "me" },  // exit_dim_mode          -> turn off half-bright
   { 0, "ZH" },  // enter_italics_mode     -> Enter italic mode
   { 0, "ZR" },  // exit_italics_mode      -> End italic mode
-  { 0, "mb" },  // enter_blink_mode       -> turn on blinking
-  { 0, "me" },  // exit_blink_mode        -> turn off blinking
   { 0, "us" },  // enter_underline_mode   -> begin underline mode
   { 0, "ue" },  // exit_underline_mode    -> exit underline mode
+  { 0, "mb" },  // enter_blink_mode       -> turn on blinking
+  { 0, "me" },  // exit_blink_mode        -> turn off blinking
   { 0, "mr" },  // enter_reverse_mode     -> turn on reverse video mode
   { 0, "me" },  // exit_reverse_mode      -> turn off reverse video mode
-  { 0, "mk" },  // enter_secure_mode      -> turn on blank mode (characters invisible)
-  { 0, "me" },  // exit_secure_mode       -> turn off blank mode (characters visible)
-  { 0, "XX" },  // enter_crossed_out_mode -> turn on mark character as deleted
-  { 0, "me" },  // exit_crossed_out_mode  -> turn off mark character as deleted
   { 0, "so" },  // enter_standout_mode    -> begin standout mode
   { 0, "se" },  // exit_standout_mode     -> exit standout mode
+  { 0, "mk" },  // enter_secure_mode      -> turn on blank mode (characters invisible)
+  { 0, "me" },  // exit_secure_mode       -> turn off blank mode (characters visible)
+  { 0, "mp" },  // enter_protected_mode   -> turn on protected mode
+  { 0, "me" },  // exit_protected_mode    -> turn off protected mode
+  { 0, "XX" },  // enter_crossed_out_mode -> turn on mark character as deleted
+  { 0, "me" },  // exit_crossed_out_mode  -> turn off mark character as deleted
+  { 0, "Us" },  // enter_dbl_underline_mode -> begin double underline mode
+  { 0, "Ue" },  // exit_dbl_underline_mode  -> exit double underline mode
+  { 0, "sa" },  // set_attributes         -> define videoattributes #1-#9 (PG9)
   { 0, "me" },  // exit_attribute_mode    -> turn off all attributes
   { 0, "as" },  // enter_alt_charset_mode -> start alternate character set (P)
   { 0, "ae" },  // exit_alt_charset_mode  -> end alternate character set (P)
@@ -103,6 +109,8 @@ static tcap_map tcap[] =
  * (P*)   indicates that padding may vary in proportion
  *        to the number of lines affected
  * (#i)   indicates the ith parameter.
+ *
+ * "XX", "Us" and "Ue" are unofficial and are only used here.
  */
 
 enum termcaps
@@ -124,9 +132,9 @@ enum termcaps
   t_set_foreground,
   t_set_background,
   t_set_color_pair,
-  t_set_attributes,
   t_orig_pair,
   t_orig_colors,
+  t_no_color_video,
   t_cursor_address,
   t_column_address,
   t_row_address,
@@ -152,18 +160,23 @@ enum termcaps
   t_exit_dim_mode,
   t_enter_italics_mode,
   t_exit_italics_mode,
-  t_enter_blink_mode,
-  t_exit_blink_mode,
   t_enter_underline_mode,
   t_exit_underline_mode,
+  t_enter_blink_mode,
+  t_exit_blink_mode,
   t_enter_reverse_mode,
   t_exit_reverse_mode,
-  t_enter_secure_mode,
-  t_exit_secure_mode,
-  t_enter_crossed_out_mode,
-  t_exit_crossed_out_mode,
   t_enter_standout_mode,
   t_exit_standout_mode,
+  t_enter_secure_mode,
+  t_exit_secure_mode,
+  t_enter_protected_mode,
+  t_exit_protected_mode,
+  t_enter_crossed_out_mode,
+  t_exit_crossed_out_mode,
+  t_enter_dbl_underline_mode,
+  t_exit_dbl_underline_mode,
+  t_set_attributes,
   t_exit_attribute_mode,
   t_enter_alt_charset_mode,
   t_exit_alt_charset_mode,

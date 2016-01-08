@@ -754,8 +754,10 @@ void FMenu::drawItems()
       {
         if ( ! iswprint(wint_t(item_text[z])) )
         {
-          if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
-                                || int(item_text[z]) > fc::NF_check_mark ) )
+          if ( ! isNewFont()
+             && (  int(item_text[z]) < fc::NF_rev_left_arrow2
+                || int(item_text[z]) > fc::NF_check_mark )
+             && ! charEncodable(uInt(item_text[z])) )
           {
             item_text[z] = L' ';
           }
@@ -778,11 +780,9 @@ void FMenu::drawItems()
         int len = int(maxItemWidth) - (to_char + c + 3);
         if ( len > 0 )
         {
-          FString spaces (len, wchar_t(' '));
-          if ( isTeraTerm() )
-            print (spaces + wchar_t('>'));
-          else // BlackRightPointingPointer ►
-            print (spaces + wchar_t(fc::BlackRightPointingPointer));
+          print (FString(len, wchar_t(' ')));
+          // BlackRightPointingPointer ►
+          print (wchar_t(fc::BlackRightPointingPointer));
           to_char = int(maxItemWidth) - (c + 2);
         }
       }

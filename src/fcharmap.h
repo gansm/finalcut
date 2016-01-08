@@ -10,26 +10,17 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   //  |     |     .--------- PC (IBM-437)
   //  |     |     |    .---- ASCII (7-Bit)
   //  |     |     |    |
-  {0x00f6,0xf6, 0x94, 'o'},  // ö  -  o-umlaut
-  {0x00e4,0xe4, 0x84, 'a'},  // ä  -  a-umlaut
-  {0x00fc,0xfc, 0x81, 'u'},  // ü  -  u-umlaut
-  {0x00d6,0xd6, 0x99, 'O'},  // Ö  -  O-umlaut
-  {0x00c4,0xc4, 0x8e, 'A'},  // Ä  -  A-umlaut
-  {0x00dc,0xdc, 0x9a, 'U'},  // Ü  -  U-umlaut
-  {0x00db,0xdb, 0x96, 'U'},  // Û  -  U-circumflex
-  {0x00fb,0xfb, 0x96, 'u'},  // û  -  u-circumflex
-  {0x00df,0xdf, 0xe1, 's'},  // ß  -  sz-ligature
-  {0x20ac, 'E', 0xee, 'E'},  // €  -  Euro
+  {0x20ac,   0, 0xee, 'E'},  // €  -  Euro
   {0x00a3, '}', 0x9c, 'P'},  // £  -  Pound
   {0x03c0, '{', 0xe3, 'n'},  // π  -  Pi
   {0x207F, 'I', 0xfc, ' '},  // ⁿ  -  SuperscriptLatinSmallLetterN
   {0x2265, 'z', 0xf2, '>'},  // ≥  -  GreaterThanOrEqualTo
   {0x2264, 'y', 0xf3, '<'},  // ≤  -  LessThanOrEqualTo
-  {0x2260, '|', 0xd8, '!'},  // ≠  -  NotEqualTo
+  {0x2260,   0, 0xd8, '#'},  // ≠  -  NotEqualTo
   {0x00b1, 'g', 0xf1, '#'},  // ±  -  PlusMinus
   {0x00f7, '/', 0xf6, '/'},  // ÷  -  Division sign
-  {0x00d7, 'x',  'x', 'x'},  // ×  -  Multiplication sign
-  {0x02e3, '~', 0xfc, '~'},  // ˣ  -  Modifier letter small x
+  {0x00d7,   0,  'x', 'x'},  // ×  -  Multiplication sign
+  {0x02e3, '~', 0xfc, '`'},  // ˣ  -  Modifier letter small x
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
   {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet

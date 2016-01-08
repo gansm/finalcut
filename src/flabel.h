@@ -45,8 +45,8 @@ class FLabel : public FWidget
    FString  text;
    int      emphasis;
    uInt     alignment;
-   uChar    emphasis_color;
-   uChar    ellipsis_color;
+   short    emphasis_color;
+   short    ellipsis_color;
    bool     reverse_mode;
    FWidget* accel_widget;
 

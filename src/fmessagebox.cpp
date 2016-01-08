@@ -218,9 +218,6 @@ void FMessageBox::draw()
 {
   FDialog::draw();
 
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
   int head_offset = 0;
   int center_x = 0;
   int msg_x = int((width - int(maxLineWidth)) / 2);  // center the whole block

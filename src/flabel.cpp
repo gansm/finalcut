@@ -233,9 +233,6 @@ void FLabel::draw()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
   setUpdateVTerm(false);
 
   if ( isMonochron() )
@@ -319,7 +316,7 @@ void FLabel::draw()
 //----------------------------------------------------------------------
 void FLabel::hide()
 {
-  int fg, bg;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

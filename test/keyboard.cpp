@@ -13,15 +13,17 @@ class keyboard : public FWidget
  protected:
    void onKeyPress (FKeyEvent*);
    void onAccel (FAccelEvent*);
+   void draw();
 };
 
 //----------------------------------------------------------------------
 keyboard::keyboard (FWidget* parent)
   : FWidget(parent)
 {
-  setColor(fc::LightGray, fc::Black);
-  clrscr();
-  updateTerminal();
+  resetXTermForeground();
+  resetXTermBackground();
+  wc.term_fg = -1;
+  wc.term_bg = -1;
 }
 
 //----------------------------------------------------------------------
@@ -38,6 +40,18 @@ void keyboard::onAccel (FAccelEvent* ev)
   ev->accept();
 }
 
+//----------------------------------------------------------------------
+void keyboard::draw()
+{
+  setNormal();
+  setColor(-1,-1);
+  clrscr();
+  gotoxy (1,1);
+  print ("---------------\n");
+  print ("Press Q to quit\n");
+  print ("---------------\n");
+  setCursorPos (1,5);
+}
 
 //----------------------------------------------------------------------
 //                               main part
@@ -45,14 +59,9 @@ void keyboard::onAccel (FAccelEvent* ev)
 int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
-  keyboard t(&app);
-  t.addAccelerator('q');
-  app.setMainWidget(&t);
-  t.show();
-  t.setTermXY(0,0);
-  t.flush_out();
-  ::printf("---------------\n\r");
-  ::printf("Press Q to quit\n\r");
-  ::printf("---------------\n\r\n");
+  keyboard key(&app);
+  key.addAccelerator('q');
+  app.setMainWidget(&key);
+  key.show();
   return app.exec();
 }

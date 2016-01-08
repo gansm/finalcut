@@ -46,9 +46,6 @@ void Mandelbrot::draw()
 
   FDialog::draw();
 
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
   x_min = -2.20;
   x_max =  1.00;
   y_min = -1.05;

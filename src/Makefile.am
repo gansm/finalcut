@@ -37,6 +37,7 @@ libfinal_la_SOURCES = \
 	fstatusbar.cpp \
 	fterm.cpp \
 	fevent.cpp \
+	foptiattr.cpp \
 	foptimove.cpp \
 	fapp.cpp \
 	fwidget.cpp \
@@ -71,8 +72,9 @@ finalcutinclude_HEADERS = \
 	fmenulist.h \
 	fmessagebox.h \
 	fobject.h \
-	foptimove.h \
 	fpoint.h \
+	foptiattr.h \
+	foptimove.h \
 	fprogressbar.h \
 	fradiobutton.h \
 	frect.h \

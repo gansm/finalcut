@@ -126,10 +126,20 @@ void FTextView::drawText()
     uInt len = line.getLength();
 
     for (i=0; i < len; i++)
-      if ( wcwidth(line_str[i]) == 1 )  // only 1 column per character
-        print (line_str[i]);
+    {
+      wchar_t ch = line_str[i];
+      bool utf8 = (Encoding == fc::UTF8) ? true : false;
+
+      // only printable and 1 column per character
+      if (  (  (utf8 && iswprint(wint_t(ch)))
+            || (!utf8 && ch < 256 && isprint(ch)) )
+         && wcwidth(ch) == 1 )
+      {
+        print (ch);
+      }
       else
         print ('.');
+    }
     for (; i < uInt(width - nf_offset - 2); i++)
       print (' ');
   }
@@ -180,7 +190,8 @@ void FTextView::adjustSize()
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
-  int fg, bg, n, size;
+  int n, size;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

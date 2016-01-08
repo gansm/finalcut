@@ -196,7 +196,7 @@ void Menu::defaultCallback (FMenuList* mb)
 {
   for (uInt i=1; i <= mb->count(); i++)
   {
-    FMenuItem* item = mb->item(i);
+    FMenuItem* item = mb->item(int(i));
 
     if (  item
        && item->isEnabled()

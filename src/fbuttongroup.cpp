@@ -263,7 +263,8 @@ void FButtonGroup::drawLabel()
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  int fg, bg, size;
+  int size;
+  short fg, bg;
   char* blank;
   FWidget::hide();
   if ( ! buttonlist.empty() )

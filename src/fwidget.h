@@ -141,85 +141,85 @@ class FWidget : public FObject, public FTerm
 
    static struct widget_colors
    {
-     uChar term_fg;
-     uChar term_bg;
-     uChar list_fg;
-     uChar list_bg;
-     uChar selected_list_fg;
-     uChar selected_list_bg;
-     uChar current_element_focus_fg;
-     uChar current_element_focus_bg;
-     uChar current_element_fg;
-     uChar current_element_bg;
-     uChar current_inc_search_element_fg;
-     uChar selected_current_element_focus_fg;
-     uChar selected_current_element_focus_bg;
-     uChar selected_current_element_fg;
-     uChar selected_current_element_bg;
-     uChar label_fg;
-     uChar label_bg;
-     uChar label_inactive_fg;
-     uChar label_inactive_bg;
-     uChar label_hotkey_fg;
-     uChar label_hotkey_bg;
-     uChar label_emphasis_fg;
-     uChar label_ellipsis_fg;
-     uChar inputfield_active_focus_fg;
-     uChar inputfield_active_focus_bg;
-     uChar inputfield_active_fg;
-     uChar inputfield_active_bg;
-     uChar inputfield_inactive_fg;
-     uChar inputfield_inactive_bg;
-     uChar dialog_fg;
-     uChar dialog_emphasis_fg;
-     uChar dialog_bg;
-     uChar error_box_fg;
-     uChar error_box_emphasis_fg;
-     uChar error_box_bg;
-     uChar shadow_fg;
-     uChar shadow_bg;
-     uChar toggle_button_active_focus_fg;
-     uChar toggle_button_active_focus_bg;
-     uChar toggle_button_active_fg;
-     uChar toggle_button_active_bg;
-     uChar toggle_button_inactive_fg;
-     uChar toggle_button_inactive_bg;
-     uChar button_active_focus_fg;
-     uChar button_active_focus_bg;
-     uChar button_active_fg;
-     uChar button_active_bg;
-     uChar button_inactive_fg;
-     uChar button_inactive_bg;
-     uChar button_hotkey_fg;
-     uChar titlebar_active_fg;
-     uChar titlebar_active_bg;
-     uChar titlebar_inactive_fg;
-     uChar titlebar_inactive_bg;
-     uChar titlebar_button_fg;
-     uChar titlebar_button_bg;
-     uChar menu_active_focus_fg;
-     uChar menu_active_focus_bg;
-     uChar menu_active_fg;
-     uChar menu_active_bg;
-     uChar menu_inactive_fg;
-     uChar menu_inactive_bg;
-     uChar menu_hotkey_fg;
-     uChar menu_hotkey_bg;
-     uChar statusbar_fg;
-     uChar statusbar_bg;
-     uChar statusbar_hotkey_fg;
-     uChar statusbar_hotkey_bg;
-     uChar statusbar_separator_fg;
-     uChar statusbar_active_fg;
-     uChar statusbar_active_bg;
-     uChar statusbar_active_hotkey_fg;
-     uChar statusbar_active_hotkey_bg;
-     uChar scrollbar_fg;
-     uChar scrollbar_bg;
-     uChar scrollbar_button_fg;
-     uChar scrollbar_button_bg;
-     uChar progressbar_fg;
-     uChar progressbar_bg;
+     short term_fg;
+     short term_bg;
+     short list_fg;
+     short list_bg;
+     short selected_list_fg;
+     short selected_list_bg;
+     short current_element_focus_fg;
+     short current_element_focus_bg;
+     short current_element_fg;
+     short current_element_bg;
+     short current_inc_search_element_fg;
+     short selected_current_element_focus_fg;
+     short selected_current_element_focus_bg;
+     short selected_current_element_fg;
+     short selected_current_element_bg;
+     short label_fg;
+     short label_bg;
+     short label_inactive_fg;
+     short label_inactive_bg;
+     short label_hotkey_fg;
+     short label_hotkey_bg;
+     short label_emphasis_fg;
+     short label_ellipsis_fg;
+     short inputfield_active_focus_fg;
+     short inputfield_active_focus_bg;
+     short inputfield_active_fg;
+     short inputfield_active_bg;
+     short inputfield_inactive_fg;
+     short inputfield_inactive_bg;
+     short dialog_fg;
+     short dialog_emphasis_fg;
+     short dialog_bg;
+     short error_box_fg;
+     short error_box_emphasis_fg;
+     short error_box_bg;
+     short shadow_fg;
+     short shadow_bg;
+     short toggle_button_active_focus_fg;
+     short toggle_button_active_focus_bg;
+     short toggle_button_active_fg;
+     short toggle_button_active_bg;
+     short toggle_button_inactive_fg;
+     short toggle_button_inactive_bg;
+     short button_active_focus_fg;
+     short button_active_focus_bg;
+     short button_active_fg;
+     short button_active_bg;
+     short button_inactive_fg;
+     short button_inactive_bg;
+     short button_hotkey_fg;
+     short titlebar_active_fg;
+     short titlebar_active_bg;
+     short titlebar_inactive_fg;
+     short titlebar_inactive_bg;
+     short titlebar_button_fg;
+     short titlebar_button_bg;
+     short menu_active_focus_fg;
+     short menu_active_focus_bg;
+     short menu_active_fg;
+     short menu_active_bg;
+     short menu_inactive_fg;
+     short menu_inactive_bg;
+     short menu_hotkey_fg;
+     short menu_hotkey_bg;
+     short statusbar_fg;
+     short statusbar_bg;
+     short statusbar_hotkey_fg;
+     short statusbar_hotkey_bg;
+     short statusbar_separator_fg;
+     short statusbar_active_fg;
+     short statusbar_active_bg;
+     short statusbar_active_hotkey_fg;
+     short statusbar_active_hotkey_bg;
+     short scrollbar_fg;
+     short scrollbar_bg;
+     short scrollbar_button_fg;
+     short scrollbar_button_bg;
+     short progressbar_fg;
+     short progressbar_bg;
    } wc;
    // widget_colors wc;
 
@@ -258,8 +258,8 @@ class FWidget : public FObject, public FTerm
    bool   ignore_padding;
    bool   window_object;
    int    flags;
-   int    foregroundColor;
-   int    backgroundColor;
+   short  foregroundColor;
+   short  backgroundColor;
    static uInt modal_dialogs;
 
  private:
@@ -396,8 +396,8 @@ class FWidget : public FObject, public FTerm
    bool             ignorePadding();
    bool             acceptPadding();
 
-   int              getForegroundColor() const;
-   int              getBackgroundColor() const;
+   short            getForegroundColor() const;
+   short            getBackgroundColor() const;
    int              getX() const;
    int              getY() const;
    const FPoint     getPos() const;
@@ -418,8 +418,9 @@ class FWidget : public FObject, public FTerm
    const FRect&     getGeometryGlobal() const;
    const FRect&     getGeometryGlobalShadow() const;
    FPoint           globalToLocalPos (const FPoint&);
-   void             setForegroundColor (int);
-   void             setBackgroundColor (int);
+   void             setForegroundColor (short);
+   void             setBackgroundColor (short);
+   void             setColor (short, short);
    void             setX (int, bool = true);
    void             setY (int, bool = true);
    virtual void     setPos (const FPoint&, bool = true);
@@ -448,6 +449,8 @@ class FWidget : public FObject, public FTerm
    static void      gotoxy (register int, register int);
    void             clrscr();
 
+   static void      setNormal();
+
    static bool      setBold (register bool);
    static bool      setBold();
    static bool      unsetBold();
@@ -463,15 +466,55 @@ class FWidget : public FObject, public FTerm
    static bool      unsetItalic();
    static bool      isItalic();
 
+   static bool      setUnderline (register bool);
+   static bool      setUnderline();
+   static bool      unsetUnderline();
+   static bool      isUnderline();
+
+   static bool      setBlink (register bool);
+   static bool      setBlink();
+   static bool      unsetBlink();
+   static bool      isBlink();
+
    static bool      setReverse (register bool);
    static bool      setReverse();
    static bool      unsetReverse();
    static bool      isReverse();
 
-   static bool      setUnderline (register bool);
-   static bool      setUnderline();
-   static bool      unsetUnderline();
-   static bool      isUnderline();
+   static bool      setStandout (register bool);
+   static bool      setStandout();
+   static bool      unsetStandout();
+   static bool      isStandout();
+
+   static bool      setInvisible (register bool);
+   static bool      setInvisible();
+   static bool      unsetInvisible();
+   static bool      isInvisible();
+
+   static bool      setProtected (register bool);
+   static bool      setProtected();
+   static bool      unsetProtected();
+   static bool      isProtected();
+
+   static bool      setCrossedOut (register bool);
+   static bool      setCrossedOut();
+   static bool      unsetCrossedOut();
+   static bool      isCrossedOut();
+
+   static bool      setDoubleUnderline (register bool);
+   static bool      setDoubleUnderline();
+   static bool      unsetDoubleUnderline();
+   static bool      isDoubleUnderline();
+
+   static bool      setAltCharset (register bool);
+   static bool      setAltCharset();
+   static bool      unsetAltCharset();
+   static bool      isAltCharset();
+
+   static bool      setPCcharset (register bool);
+   static bool      setPCcharset();
+   static bool      unsetPCcharset();
+   static bool      isPCcharset();
 
    void             drawShadow();
    void             clearShadow();
@@ -601,11 +644,11 @@ inline void FWidget::unsetFocusable()
 { focusable = false; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getForegroundColor() const
+inline short FWidget::getForegroundColor() const
 { return foregroundColor; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getBackgroundColor() const
+inline short FWidget::getBackgroundColor() const
 { return backgroundColor; }
 
 //----------------------------------------------------------------------
@@ -640,16 +683,16 @@ inline FPoint FWidget::globalToLocalPos (const FPoint& gPos)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setForegroundColor (int color)
+inline void FWidget::setForegroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     foregroundColor = color;
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setBackgroundColor (int color)
+inline void FWidget::setBackgroundColor (short color)
 {
-  if ( color >> 8 == 0 )  // valid colors 0..254
+  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
     backgroundColor = color;
 }
 
@@ -748,8 +791,29 @@ inline void FWidget::gotoxy (register int x, register int y)
 { cursor->setPoint(x,y); }
 
 //----------------------------------------------------------------------
+inline void FWidget::setNormal()
+{
+  next_attribute.bold          = \
+  next_attribute.dim           = \
+  next_attribute.italic        = \
+  next_attribute.underline     = \
+  next_attribute.blink         = \
+  next_attribute.reverse       = \
+  next_attribute.standout      = \
+  next_attribute.invisible     = \
+  next_attribute.protect       = \
+  next_attribute.crossed_out   = \
+  next_attribute.dbl_underline = \
+  next_attribute.alt_charset   = \
+  next_attribute.pc_charset    = false;
+
+  next_attribute.fg_color      = -1;
+  next_attribute.bg_color      = -1;
+}
+
+//----------------------------------------------------------------------
 inline bool FWidget::setBold (register bool on)
-{ return (bold = on); }
+{ return (next_attribute.bold = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setBold()
@@ -761,11 +825,11 @@ inline bool FWidget::unsetBold()
 
 //----------------------------------------------------------------------
 inline bool FWidget::isBold()
-{ return bold; }
+{ return next_attribute.bold; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setDim (register bool on)
-{ return (dim = on); }
+{ return (next_attribute.dim = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setDim()
@@ -777,11 +841,11 @@ inline bool FWidget::unsetDim()
 
 //----------------------------------------------------------------------
 inline bool FWidget::isDim()
-{ return dim; }
+{ return next_attribute.dim; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setItalic (register bool on)
-{ return (italic = on); }
+{ return (next_attribute.italic = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setItalic()
@@ -793,27 +857,11 @@ inline bool FWidget::unsetItalic()
 
 //----------------------------------------------------------------------
 inline bool FWidget::isItalic()
-{ return italic; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setReverse (register bool on)
-{ return (reverse = on); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setReverse()
-{ return setReverse(true); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::unsetReverse()
-{ return setReverse(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isReverse()
-{ return reverse; }
+{ return next_attribute.italic; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setUnderline (register bool on)
-{ return (underline = on); }
+{ return (next_attribute.underline = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setUnderline()
@@ -825,7 +873,151 @@ inline bool FWidget::unsetUnderline()
 
 //----------------------------------------------------------------------
 inline bool FWidget::isUnderline()
-{ return underline; }
+{ return next_attribute.underline; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setBlink (register bool on)
+{ return (next_attribute.blink = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setBlink()
+{ return setBlink(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetBlink()
+{ return setBlink(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isBlink()
+{ return next_attribute.blink; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setReverse (register bool on)
+{ return (next_attribute.reverse = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setReverse()
+{ return setReverse(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetReverse()
+{ return setReverse(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isReverse()
+{ return next_attribute.reverse; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setStandout (register bool on)
+{ return (next_attribute.standout = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setStandout()
+{ return setStandout(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetStandout()
+{ return setStandout(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isStandout()
+{ return next_attribute.standout; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setInvisible (register bool on)
+{ return (next_attribute.invisible = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setInvisible()
+{ return setInvisible(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetInvisible()
+{ return setInvisible(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isInvisible()
+{ return next_attribute.invisible; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setProtected (register bool on)
+{ return (next_attribute.protect = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setProtected()
+{ return setProtected(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetProtected()
+{ return setProtected(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isProtected()
+{ return next_attribute.protect; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setCrossedOut (register bool on)
+{ return (next_attribute.crossed_out = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setCrossedOut()
+{ return setCrossedOut(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetCrossedOut()
+{ return setCrossedOut(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isCrossedOut()
+{ return next_attribute.crossed_out; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setDoubleUnderline (register bool on)
+{ return (next_attribute.dbl_underline = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setDoubleUnderline()
+{ return setDoubleUnderline(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetDoubleUnderline()
+{ return setDoubleUnderline(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isDoubleUnderline()
+{ return next_attribute.dbl_underline; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setAltCharset (register bool on)
+{ return (next_attribute.alt_charset = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setAltCharset()
+{ return setAltCharset(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetAltCharset()
+{ return setAltCharset(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isAltCharset()
+{ return next_attribute.alt_charset; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setPCcharset (register bool on)
+{ return (next_attribute.pc_charset = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setPCcharset()
+{ return setPCcharset(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetPCcharset()
+{ return setPCcharset(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isPCcharset()
+{ return next_attribute.pc_charset; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine(int side)

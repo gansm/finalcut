@@ -1,6 +1,7 @@
 // File: term-attributes.cpp
 
 #include "fapp.h"
+#include "fbutton.h"
 #include "fdialog.h"
 #include "fmessagebox.h"
 
@@ -14,6 +15,15 @@
 class AttribDlg : public FDialog
 {
  private:
+   FButton* next_button;
+   FButton* back_button;
+
+ public:
+   short bgcolor;
+
+ private:
+   AttribDlg (const AttribDlg&);             // Disabled copy constructor
+   AttribDlg& operator = (const AttribDlg&); // and operator '='
    void adjustSize();
 
  public:
@@ -21,14 +31,44 @@ class AttribDlg : public FDialog
   ~AttribDlg();                        // destructor
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
+   void cb_next (FWidget*, void*);
+   void cb_back (FWidget*, void*);
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (FWidget* parent)
   : FDialog(parent)
+  , next_button()
+  , back_button()
+  , bgcolor(wc.label_bg)
 {
-  setText ("A terminal attributes test");
+  resetXTermForeground();
+  resetXTermBackground();
+  setText ( "A terminal attributes test ("
+          + FString(getTermType())
+          + ")");
+
+  next_button = new FButton("&Next >", this);
+  next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1);
+  next_button->setShadow();
+  next_button->addAccelerator(fc::Fkey_right);
+  back_button = new FButton("< &Back", this);
+  back_button->setGeometry(getWidth()-25, getHeight()-4, 10, 1);
+  back_button->setShadow();
+  back_button->addAccelerator(fc::Fkey_left);
+
+  // Add function callbacks
+  next_button->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &AttribDlg::cb_next)
+  );
+  back_button->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &AttribDlg::cb_back)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -57,11 +97,36 @@ void AttribDlg::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void AttribDlg::cb_next (FWidget*, void*)
+{
+  if ( isMonochron() )
+    return;
+  bgcolor++;
+  if ( bgcolor >= getMaxColor() )
+    bgcolor = -1;
+  redraw();
+}
+
+//----------------------------------------------------------------------
+void AttribDlg::cb_back (FWidget*, void*)
+{
+  if ( isMonochron() )
+    return;
+  bgcolor--;
+  if ( bgcolor < -1 )
+    bgcolor = short(getMaxColor() - 1);
+  redraw();
+}
+
+//----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int h = parentWidget()->getHeight() - 2;
   int x = ((parentWidget()->getWidth() - getWidth()) / 2 );
-  setGeometry(x, 2, 62, h, false);
+  int y = ((parentWidget()->getHeight() - getHeight()) / 2 ) + 1;
+
+  setGeometry(x, y, 69, 21, false);
+  next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1, false);
+  back_button->setGeometry(getWidth()-25, getHeight()-4, 10, 1, false);
   FDialog::adjustSize();
 }
 
@@ -76,125 +141,190 @@ void AttribDlg::adjustSize()
 class AttribDemo : public FWidget
 {
  private:
-  int colors;
+   int colors;
 
  private:
    void printColorLine();
+   void printAltCharset();
    void draw();
 
  public:
-   explicit AttribDemo (FWidget* parent = 0)  // constructor
-     : FWidget(parent)
-     , colors(getMaxColor())
-   {
-     if ( isMonochron() )
-       colors = 1;
-     else if ( colors > 16 )
-       colors = 16;
-   }
-
-  ~AttribDemo()  // destructor
+   explicit AttribDemo (FWidget* = 0);  // constructor
+  ~AttribDemo()                         // destructor
    { }
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
+AttribDemo::AttribDemo (FWidget* parent)
+ : FWidget(parent)
+ , colors(getMaxColor())
+{
+  if ( isMonochron() )
+    colors = 1;
+  else if ( colors > 16 )
+    colors = 16;
+  unsetFocusable();
+}
+
+//----------------------------------------------------------------------
 void AttribDemo::printColorLine()
 {
-  int bg = getTermBackgroundColor();
-  for (int color=0; color < colors; color++)
+  AttribDlg* parent = static_cast<AttribDlg*>(getParent());
+
+  for (short color=0; color < colors; color++)
   {
-    setColor(color, bg);
+    setColor (color, parent->bgcolor);
     print (" # ");
   }
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printAltCharset()
+{
+  AttribDlg* parent = static_cast<AttribDlg*>(getParent());
+
+  if ( ! isMonochron() )
+    setColor (wc.label_fg, wc.label_bg);
+
+  gotoxy (xpos + xmin - 1, ypos + ymin - 1);
+  print("alternate charset: ");
+  if ( parent->bgcolor == -1 )
+  {
+    setColor (-1,-1);
+  }
+  else
+  {
+    if ( parent->bgcolor == 0 || parent->bgcolor == 16 )
+      setColor (fc::White, parent->bgcolor);
+    else
+      setColor (fc::Black, parent->bgcolor);
+  }
+  setAltCharset();
+  print("`abcdefghijklmnopqrstuvwxyz{|}~");
+  unsetAltCharset();
+  print("                 ");
 }
 
 //----------------------------------------------------------------------
 void AttribDemo::draw()
 {
   setUpdateVTerm(false);
-  int color_loop = 0;
-  std::vector<int> background;
-  std::vector<int>::iterator iter;
-  background.push_back(fc::White);
-  background.push_back(fc::Black);
-  background.push_back(-1);
-  iter = background.begin();
 
-  while ( iter != background.end() )
+  // test alternate character set
+  printAltCharset();
+
+  for (int y=0; y < parentWidget()->getHeight()-7; y++)
   {
-    for (int y=color_loop*7; y < parentWidget()->getHeight()-3; y++)
+    gotoxy ( xpos + xmin - 1,
+             ypos + ymin + y );
+
+    if ( ! isMonochron() )
+      setColor (wc.label_fg, wc.label_bg);
+
+    switch (y)
     {
-      if ( *iter == -1 )
+      case 0:
+        print("              Dim: ");
+        setDim();
+        printColorLine();
+        unsetDim();
         break;
-      else if ( *iter == fc::Black )
-      {
-        if ( colors < 16 )
-          setColor(fc::LightGray, fc::Black);
-        else
-          setColor(fc::White, fc::Black);
-      }
-      else
-        setColor(fc::Black, *iter);
 
-      gotoxy ( xpos + xmin - 1,
-               ypos + ymin - 1 + y );
+      case 1:
+        print("           Normal: ");
+        setNormal();
+        printColorLine();
+        break;
 
-      switch (y - (color_loop*7))
-      {
-        case 0:
-          print("       Dim: ");
-          setDim();
-          printColorLine();
-          unsetDim();
-          break;
+      case 2:
+        print("             Bold: ");
+        setBold();
+        printColorLine();
+        unsetBold();
+        break;
 
-        case 1:
-          print("    Normal: ");
-          printColorLine();
-          break;
+      case 3:
+        print("         Bold+Dim: ");
+        setBold();
+        setDim();
+        printColorLine();
+        unsetDim();
+        unsetBold();
+        break;
 
-        case 2:
-          print("      Bold: ");
-          setBold();
-          printColorLine();
-          unsetBold();
-          break;
+      case 4:
+        print("           Italic: ");
+        setItalic();
+        printColorLine();
+        unsetItalic();
+        break;
 
-        case 3:
-          print("  Bold+Dim: ");
-          setBold();
-          setDim();
-          printColorLine();
-          unsetDim();
-          unsetBold();
-          break;
+      case 5:
+        print("        Underline: ");
+        setUnderline();
+        printColorLine();
+        unsetUnderline();
+        break;
 
-        case 4:
-          print("    Italic: ");
-          setItalic();
-          printColorLine();
-          unsetItalic();
-          break;
+      case 6:
+        print(" Double underline: ");
+        setDoubleUnderline();
+        printColorLine();
+        unsetDoubleUnderline();
+        break;
 
-        case 5:
-          print(" Underline: ");
-          setUnderline();
-          printColorLine();
-          unsetUnderline();
-          break;
+      case 7:
+        print("      Crossed-out: ");
+        setCrossedOut();
+        printColorLine();
+        unsetCrossedOut();
+        break;
 
-        case 6:
-          print("   Reverse: ");
-          setReverse();
-          printColorLine();
-          unsetReverse();
-          break;
-      }
+      case 8:
+        print("            Blink: ");
+        setBlink();
+        printColorLine();
+        unsetBlink();
+        break;
+
+      case 9:
+        print("          Reverse: ");
+        setReverse();
+        printColorLine();
+        unsetReverse();
+        break;
+
+      case 10:
+        print("         Standout: ");
+        setStandout();
+        printColorLine();
+        unsetStandout();
+        break;
+
+      case 11:
+        print("        Invisible: ");
+        setInvisible();
+        printColorLine();
+        unsetInvisible();
+        break;
+
+      case 12:
+        print("        Protected: ");
+        setProtected();
+        printColorLine();
+        unsetProtected();
+        break;
     }
-    color_loop++;
-    ++iter;
   }
+
+  if ( ! isMonochron() )
+    setColor(wc.label_fg, wc.label_bg);
+  gotoxy (xpos + xmin - 1, ypos + ymin + 13);
+  printf ( " Background color: %d  ",
+           static_cast<AttribDlg*>(getParent())->bgcolor );
+  gotoxy (xpos + xmin + 14, ypos + ymin + 15);
+  print ("Change background color ->");
 
   setUpdateVTerm(true);
 }
@@ -212,13 +342,12 @@ int main (int argc, char* argv[])
   // the parent object "app" (FObject destructor).
   AttribDlg* dialog = new AttribDlg(&app);
 
-  dialog->setGeometry (6, 2, 62, 22);
+  dialog->setGeometry (6, 2, 69, 21);
   dialog->addAccelerator('q');  // press 'q' to quit
   dialog->setShadow();
 
   AttribDemo* demo = new AttribDemo(dialog);
-  demo->ignorePadding(false);
-  demo->setGeometry (1,1,63,20);
+  demo->setGeometry (1,1,67,19);
 
   app.setMainWidget(dialog);
   dialog->show();

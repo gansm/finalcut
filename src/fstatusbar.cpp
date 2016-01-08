@@ -515,7 +515,8 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  int fg, bg, lastLine, screenWidth;
+  int lastLine, screenWidth;
+  short fg, bg;
   char* blank;
 
   FWindow::hide();

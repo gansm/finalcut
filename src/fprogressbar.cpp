@@ -110,13 +110,13 @@ void FProgressbar::drawBar()
     }
     else
     {
-      setColor(wc.progressbar_fg, wc.progressbar_bg);
+      setColor (wc.progressbar_fg, wc.progressbar_bg);
       print (fc::LeftHalfBlock); // ▌
     }
     i++;
   }
 
-  setColor(wc.progressbar_fg, wc.progressbar_bg);
+  setColor (wc.progressbar_fg, wc.progressbar_bg);
   if ( getMaxColor() < 16 )
   {
     for (; i < BarLength; i++)
@@ -154,7 +154,8 @@ void FProgressbar::draw()
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  int fg, bg, s, size;
+  int s, size;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

@@ -1134,13 +1134,23 @@ void FWidget::redraw()
   if ( isRootWidget() )
   {
     // draw windows
-    char_data default_char;
-    default_char.code      = ' ';
-    default_char.fg_color  = fc::Black;
-    default_char.bg_color  = fc::Black;
-    default_char.bold      = 0;
-    default_char.reverse   = 0;
-    default_char.underline = 0;
+    FOptiAttr::char_data default_char;
+    default_char.code          = ' ';
+    default_char.fg_color      = fc::Black;
+    default_char.bg_color      = fc::Black;
+    default_char.bold          = 0;
+    default_char.dim           = 0;
+    default_char.italic        = 0;
+    default_char.underline     = 0;
+    default_char.blink         = 0;
+    default_char.reverse       = 0;
+    default_char.standout      = 0;
+    default_char.invisible     = 0;
+    default_char.protect       = 0;
+    default_char.crossed_out   = 0;
+    default_char.dbl_underline = 0;
+    default_char.alt_charset   = 0;
+    default_char.pc_charset    = 0;
 
     if ( window_list && ! window_list->empty() )
     {
@@ -1452,6 +1462,14 @@ bool FWidget::setFocus(bool on)
 }
 
 //----------------------------------------------------------------------
+void FWidget::setColor (register short fg, register short bg)
+{
+  // Changes colors
+  next_attribute.fg_color = fg;
+  next_attribute.bg_color = bg;
+}
+
+//----------------------------------------------------------------------
 void FWidget::setX (int x, bool adjust)
 {
   if ( xpos == x && widgetSize.getX() == x )
@@ -1739,14 +1757,24 @@ void FWidget::clrscr()
 {
   term_area* area;
   FWindow*   area_widget;
-  char_data  default_char;
+  FOptiAttr::char_data  default_char;
 
-  default_char.code      = ' ';
-  default_char.fg_color  = uChar(fg_color);
-  default_char.bg_color  = uChar(bg_color);
-  default_char.bold      = bold;
-  default_char.reverse   = reverse;
-  default_char.underline = underline;
+  default_char.code          = ' ';
+  default_char.fg_color      = next_attribute.fg_color;
+  default_char.bg_color      = next_attribute.bg_color;
+  default_char.bold          = next_attribute.bold;
+  default_char.dim           = next_attribute.dim;
+  default_char.italic        = next_attribute.italic;
+  default_char.underline     = next_attribute.underline;
+  default_char.blink         = next_attribute.blink;
+  default_char.reverse       = next_attribute.reverse;
+  default_char.standout      = next_attribute.standout;
+  default_char.invisible     = next_attribute.invisible;
+  default_char.protect       = next_attribute.protect;
+  default_char.crossed_out   = next_attribute.crossed_out;
+  default_char.dbl_underline = next_attribute.dbl_underline;
+  default_char.alt_charset   = next_attribute.alt_charset;
+  default_char.pc_charset    = next_attribute.pc_charset;
 
   area_widget = FWindow::getWindowWidget(this);
 
@@ -1782,7 +1810,7 @@ void FWidget::clrscr()
 //----------------------------------------------------------------------
 void FWidget::drawShadow()
 {
-  FTerm::char_data ch;
+  FOptiAttr::char_data ch;
   int x1, x2, y1, y2;
   bool trans_shadow = ((flags & TRANS_SHADOW) != 0);
 
@@ -1812,18 +1840,37 @@ void FWidget::drawShadow()
       {
         ch = getCoveredCharacter (x2+x, y1, this);
         setColor (ch.fg_color, ch.bg_color);
-        if ( ch.reverse )
-          setReverse(true);
+
         if ( ch.bold )
-          setBold(true);
+          setBold (true);
+        if ( ch.dim )
+          setDim (true);
+        if ( ch.italic )
+          setItalic (true);
         if ( ch.underline )
-          setUnderline(true);
+          setUnderline (true);
+        if ( ch.blink )
+          setBlink (true);
+        if ( ch.reverse )
+          setReverse (true);
+        if ( ch.standout )
+          setStandout (true);
+        if ( ch.invisible )
+          setInvisible (true);
+        if ( ch.protect )
+          setProtected (true);
+        if ( ch.crossed_out )
+          setCrossedOut (true);
+        if ( ch.dbl_underline )
+          setDoubleUnderline (true);
+        if ( ch.alt_charset )
+          setAltCharset (true);
+        if ( ch.pc_charset )
+          setPCcharset (true);
 
         print (ch.code);
 
-        setReverse(false);
-        setBold(false);
-        setUnderline(false);
+        setNormal();
       }
 
       setColor (wc.shadow_bg, wc.shadow_fg);
@@ -1852,18 +1899,37 @@ void FWidget::drawShadow()
       {
         ch = getCoveredCharacter (x1+x, y2+1, this);
         setColor (ch.fg_color, ch.bg_color);
-        if ( ch.reverse )
-          setReverse(true);
+
         if ( ch.bold )
-          setBold(true);
+          setBold (true);
+        if ( ch.dim )
+          setDim (true);
+        if ( ch.italic )
+          setItalic (true);
         if ( ch.underline )
-          setUnderline(true);
+          setUnderline (true);
+        if ( ch.blink )
+          setBlink (true);
+        if ( ch.reverse )
+          setReverse (true);
+        if ( ch.standout )
+          setStandout (true);
+        if ( ch.invisible )
+          setInvisible (true);
+        if ( ch.protect )
+          setProtected (true);
+        if ( ch.crossed_out )
+          setCrossedOut (true);
+        if ( ch.dbl_underline )
+          setDoubleUnderline (true);
+        if ( ch.alt_charset )
+          setAltCharset (true);
+        if ( ch.pc_charset )
+          setPCcharset (true);
 
         print (ch.code);
 
-        setReverse(false);
-        setBold(false);
-        setUnderline(false);
+        setNormal();
       }
 
       setColor (wc.shadow_bg, wc.shadow_fg);
@@ -1916,7 +1982,7 @@ void FWidget::drawShadow()
       for (int i=1; i <= width && x1+i <= xmax; i++)
       {
         ch = getCoveredCharacter (x1+i, y2+1, this);
-        setColor(wc.shadow_fg, ch.bg_color);
+        setColor (wc.shadow_fg, ch.bg_color);
         if ( isTeraTerm() )
           print (0xdf); // ▀
         else
@@ -1929,7 +1995,7 @@ void FWidget::drawShadow()
 //----------------------------------------------------------------------
 void FWidget::clearShadow()
 {
-  FTerm::char_data ch;
+  FOptiAttr::char_data ch;
   int x1, x2, y1, y2;
 
   if ( isMonochron() )

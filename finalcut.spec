@@ -1,7 +1,7 @@
 #
 # spec file for package finalcut
 #
-# Copyright (c) 2015 by Markus Gans
+# Copyright (c) 2016 by Markus Gans
 #
 
 Name:		finalcut

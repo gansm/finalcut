@@ -226,9 +226,9 @@ void FToggleButton::drawLabel()
     setReverse(true);
 
   if ( isEnabled() )
-    setColor(wc.label_fg, wc.label_bg);
+    setColor (wc.label_fg, wc.label_bg);
   else
-    setColor(wc.label_inactive_fg, wc.label_inactive_bg);
+    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
   for (int z=0; z < int(length); z++)
   {
@@ -346,7 +346,8 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FToggleButton::hide()
 {
-  int fg, bg, size;
+  int size;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

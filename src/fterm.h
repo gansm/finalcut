@@ -8,6 +8,10 @@
 // ▕ FTerm ▏-┬- - - -▕ FOptiMove ▏
 // ▕▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
 //           :
+//           :      1▕▔▔▔▔▔▔▔▔▔▔▔▏
+//           :- - - -▕ FOptiAttr ▏
+//           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
+//           :
 //           :      *▕▔▔▔▔▔▔▔▔▔▏
 //           :- - - -▕ FString ▏
 //           :       ▕▁▁▁▁▁▁▁▁▁▏
@@ -54,6 +58,7 @@
 
 #include "fenum.h"
 #include "fobject.h"
+#include "foptiattr.h"
 #include "foptimove.h"
 #include "fpoint.h"
 #include "frect.h"
@@ -90,22 +95,14 @@ class FTerm
    static std::map <uChar,uChar>* vt100_alt_char;
    static std::map <std::string,fc::encoding>* encoding_set;
 
-   static bool    term_bold;
-   static bool    term_dim;
-   static bool    term_italic;
-   static bool    term_reverse;
-   static bool    term_underline;
    static bool    hiddenCursor;
    static bool    mouse_support;
-   static bool    vt100_state;
-   static bool    ignore_vt100_state;
    static bool    raw_mode;
    static bool    input_data_pending;
    static bool    terminal_update_pending;
    static bool    force_terminal_update;
    static bool    non_blocking_stdin;
    static bool    gpm_mouse_enabled;
-   static bool    pc_charset_state;
    static bool    pc_charset_console;
    static bool    utf8_input;
    static bool    utf8_state;
@@ -132,7 +129,6 @@ class FTerm
    static bool    tmux_terminal;
    static bool    terminal_updates;
    static bool    vterm_updates;
-   static bool    exit_underline_caused_reset;
    static bool    background_color_erase;
    static bool    automatic_left_margin;
    static bool    automatic_right_margin;
@@ -151,24 +147,26 @@ class FTerm
    static int     max_color;
    static int     fd_tty;
    static uInt    baudrate;
-   static int     fg_color;
-   static int     bg_color;
-   static int     fg_term_color;
-   static int     bg_term_color;
    static int     x_term_pos;
    static int     y_term_pos;
    static bool    resize_term;
 
    static struct termios term_init;
+   static FOptiAttr::char_data term_attribute;
+   static FOptiAttr::char_data next_attribute;
 
    static fc::console_cursor_style consoleCursorStyle;
    static struct console_font_op screenFont;
    static struct unimapdesc      screenUnicodeMap;
-   static FOptiMove* opti;
+
+   static FOptiMove*     opti_move;
+   static FOptiAttr*     opti_attr;
    static const FString* xterm_font;
    static const FString* xterm_title;
    static const FString* AnswerBack;
    static const FString* Sec_DA;
+
+   typedef FOptiAttr::char_data char_data;
 
    typedef struct
    {
@@ -183,15 +181,11 @@ class FTerm
    } map;
 
  protected:
-   static bool bold;
-   static bool dim;
-   static bool italic;
-   static bool reverse;
-   static bool underline;
    static bool NewFont;
    static bool VGAFont;
    static bool cursor_optimisation;
    static uInt tabstop;
+   static uInt attr_without_color;
    static fc::encoding Encoding;
 
    typedef struct
@@ -199,19 +193,6 @@ class FTerm
      uInt xmin;
      uInt xmax;
    } line_changes;
-
-   typedef struct
-   {
-     int   code;           // character code
-     uChar fg_color;       // foreground color
-     uChar bg_color;       // background color
-     uChar bold      : 1;  // bold
-     uChar dim       : 1;  // dim
-     uChar italic    : 1;  // italic
-     uChar reverse   : 1;  // reverse
-     uChar underline : 1;  // underline
-     uChar           : 3;  // padding bits
-   } char_data;
 
    typedef struct
    {
@@ -254,17 +235,20 @@ class FTerm
    static char* parseAnswerbackMsg (char*&);
    static char* parseSecDA (char*&);
    static void  init_termcaps();
-   static void  init_vt100altChar();
+   static void  init_alt_charset();
+   static void  init_pc_charset();
    static void  init_encoding();
    void         init();
    void         finish();
    static uInt  charEncode (uInt);
+   static uInt  charEncode (uInt, fc::encoding);
    static uInt  cp437_to_unicode (uChar);
    static void  signal_handler (int);
    friend class FWidget;
    friend class FApplication;
 
  protected:
+   static bool  charEncodable (uInt);
    void         createArea (FTerm::term_area*&); // reference to pointer
    void         resizeArea (FTerm::term_area*);
    void         restoreVTerm (const FRect&);
@@ -283,7 +267,7 @@ class FTerm
    char_data    getCoveredCharacter (int, int, FTerm*);
 
  public:
-   FTerm ();  // constructor
+   FTerm ();          // constructor
    virtual ~FTerm();  // destructor
 
    virtual const char* getClassName() const;
@@ -336,12 +320,9 @@ class FTerm
    static void    resetXTermHighlightBackground();
    static void    saveColorMap();
    static void    resetColorMap();
-   static void    setPalette (int, int, int, int);
-   static int     vga2ansi (int);
-   void           setColor (int, int);
-   static void    setTermColor (int, int);
-   static int     getTermForegroundColor();
-   static int     getTermBackgroundColor();
+   static void    setPalette (short, int, int, int);
+   static short   getTermForegroundColor();
+   static short   getTermBackgroundColor();
    static int     getMaxColor();
    static void    xtermMouse (bool);
    static void    enableXTermMouse();
@@ -358,12 +339,6 @@ class FTerm
    static void    resetBeep();
    static void    beep();
 
-   static bool    setTermBold (bool);
-   static bool    setTermDim (bool);
-   static bool    setTermItalic (bool);
-   static bool    setTermReverse (bool);
-   static bool    setTermUnderline (bool);
-
    static bool    hideCursor (bool);
    static bool    hideCursor();
    static bool    showCursor();
@@ -373,19 +348,9 @@ class FTerm
    static void         setEncoding (std::string);
    static std::string  getEncoding();
 
-   static bool    setPCcharset (bool);
-   static bool    setPCcharset();
-   static bool    unsetPCcharset();
-   static bool    isPCcharset();
-
    static bool    setNonBlockingInput (bool);
    static bool    setNonBlockingInput();
    static bool    unsetNonBlockingInput();
-
-   static bool    setVT100altChar (bool);
-   static bool    setVT100altChar();
-   static bool    unsetVT100altChar();
-   static bool    isVT100altChar();
 
    static bool    setUTF8 (bool);
    static bool    setUTF8();
@@ -421,6 +386,8 @@ class FTerm
    int            print (FTerm::term_area*, FString&);
    int            print (int);
    int            print (FTerm::term_area*, int);
+   static void    newFontChanges (char_data*&);
+   static void    charsetChanges (char_data*&);
    static void    appendCharacter (char_data*&);
    static void    appendAttributes (char_data*&);
    static int     appendLowerRight (char_data*&);
@@ -438,8 +405,6 @@ class FTerm
                   ;
    static void    putstring (const char*, int = 1);
    static int     putchar_ASCII (register int);
-   static int     putchar_VT100 (register int);
-   static int     putchar_PC    (register int);
    static int     putchar_UTF8  (register int);
    static int     UTF8decode (char*);
 };
@@ -553,12 +518,12 @@ inline bool FTerm::isRaw()
 { return raw_mode; }
 
 //----------------------------------------------------------------------
-inline int FTerm::getTermForegroundColor()
-{ return fg_color; }
+inline short FTerm::getTermForegroundColor()
+{ return next_attribute.fg_color; }
 
 //----------------------------------------------------------------------
-inline int FTerm::getTermBackgroundColor()
-{ return bg_color; }
+inline short FTerm::getTermBackgroundColor()
+{ return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getMaxColor()
@@ -593,36 +558,12 @@ inline bool FTerm::showCursor()
 { return hideCursor(false); }
 
 //----------------------------------------------------------------------
-inline bool FTerm::setPCcharset()
-{ return setPCcharset(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::unsetPCcharset()
-{ return setPCcharset(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isPCcharset()
-{ return pc_charset_state; }
-
-//----------------------------------------------------------------------
 inline bool FTerm::setNonBlockingInput()
 { return setNonBlockingInput(true); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::unsetNonBlockingInput()
 { return setNonBlockingInput(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setVT100altChar()
-{ return setVT100altChar(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::unsetVT100altChar()
-{ return setVT100altChar(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isVT100altChar()
-{ return vt100_state; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setUTF8()

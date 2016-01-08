@@ -570,6 +570,7 @@ class fc
    // console color names
    enum colornames
    {
+     Default           = -1,
      Black             = 0,
      Blue              = 1,
      Green             = 2,

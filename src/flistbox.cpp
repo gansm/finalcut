@@ -187,9 +187,6 @@ void FListBox::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
   txt = " " + text + " ";
   length = txt.getLength();
   gotoxy (xpos+xmin, ypos+ymin-1);
@@ -537,7 +534,8 @@ void FListBox::setCurrentItem(int index)
 //----------------------------------------------------------------------
 void FListBox::hide()
 {
-  int fg, bg, n, size;
+  int n, size;
+  short fg, bg;
   char* blank;
 
   FWidget::hide();

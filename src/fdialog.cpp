@@ -137,7 +137,7 @@ void FDialog::drawBorder()
 
   if ( isNewFont() )
   {
-    int fg;
+    short fg;
     if ( ! isRootWidget() )
       fg = parentWidget()->getForegroundColor();
     else
@@ -269,7 +269,7 @@ void FDialog::drawDialogShadow()
 
     if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
     {
-      FTerm::char_data ch;
+      FOptiAttr::char_data ch;
       // left of the shadow ▀▀
       gotoxy (xpos+xmin-1, ypos+ymin-1+height);
       for (int x=0; x <= 1; x++)
@@ -288,7 +288,7 @@ void FDialog::drawDialogShadow()
 
     drawShadow();
 
-    FTerm::char_data ch;
+    FOptiAttr::char_data ch;
     ch = getCoveredCharacter (xpos+xmin-1, ypos+ymin-1+height, this);
     // left of the shadow ▀▀
     gotoxy (xpos+xmin-1, ypos+ymin-1+height);
@@ -305,16 +305,34 @@ void FDialog::drawDialogShadow()
 
       if ( ch.bold )
         setBold();
-      if ( ch.reverse )
-        setReverse();
+      if ( ch.dim )
+        setDim();
+      if ( ch.italic )
+        setItalic();
       if ( ch.underline )
         setUnderline();
+      if ( ch.blink )
+        setBlink();
+      if ( ch.reverse )
+        setReverse();
+      if ( ch.standout )
+        setStandout();
+      if ( ch.invisible )
+        setInvisible();
+      if ( ch.protect )
+        setProtected();
+      if ( ch.crossed_out )
+        setCrossedOut();
+      if ( ch.dbl_underline )
+        setDoubleUnderline();
+      if ( ch.alt_charset )
+        setAltCharset (true);
+      if ( ch.pc_charset )
+        setPCcharset (true);
 
       print (ch.code);
 
-      unsetUnderline();
-      unsetReverse();
-      unsetBold();
+      setNormal();
     }
   }
 }

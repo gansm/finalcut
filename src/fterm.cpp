@@ -26,31 +26,16 @@ int (*FTerm::Fputchar)(int);
 int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
-int      FTerm::fg_color;
-int      FTerm::bg_color;
-int      FTerm::fg_term_color;
-int      FTerm::bg_term_color;
 int      FTerm::x_term_pos;
 int      FTerm::y_term_pos;
 int      FTerm::max_color;
 int      FTerm::stdin_status_flags;
 uInt     FTerm::baudrate;
 uInt     FTerm::tabstop;
+uInt     FTerm::attr_without_color;
 bool     FTerm::resize_term;
-bool     FTerm::bold;
-bool     FTerm::dim;
-bool     FTerm::italic;
-bool     FTerm::reverse;
-bool     FTerm::underline;
-bool     FTerm::term_bold;
-bool     FTerm::term_dim;
-bool     FTerm::term_italic;
-bool     FTerm::term_reverse;
-bool     FTerm::term_underline;
 bool     FTerm::hiddenCursor;
 bool     FTerm::mouse_support;
-bool     FTerm::vt100_state;
-bool     FTerm::ignore_vt100_state;
 bool     FTerm::raw_mode;
 bool     FTerm::input_data_pending;
 bool     FTerm::terminal_update_pending;
@@ -59,7 +44,6 @@ bool     FTerm::non_blocking_stdin;
 bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
 bool     FTerm::monochron;
-bool     FTerm::exit_underline_caused_reset;
 bool     FTerm::background_color_erase;
 bool     FTerm::automatic_left_margin;
 bool     FTerm::automatic_right_margin;
@@ -80,7 +64,6 @@ bool     FTerm::screen_terminal;
 bool     FTerm::tmux_terminal;
 bool     FTerm::terminal_updates;
 bool     FTerm::vterm_updates;
-bool     FTerm::pc_charset_state;
 bool     FTerm::pc_charset_console;
 bool     FTerm::utf8_input;
 bool     FTerm::utf8_state;
@@ -94,6 +77,7 @@ bool     FTerm::VGAFont;
 bool     FTerm::cursor_optimisation;
 uChar    FTerm::x11_button_state;
 termios  FTerm::term_init;
+
 char     FTerm::termtype[30] = "";
 char*    FTerm::term_name    = 0;
 char*    FTerm::locale_name  = 0;
@@ -107,7 +91,8 @@ const FString*         FTerm::xterm_font         = 0;
 const FString*         FTerm::xterm_title        = 0;
 const FString*         FTerm::AnswerBack         = 0;
 const FString*         FTerm::Sec_DA             = 0;
-FOptiMove*             FTerm::opti               = 0;
+FOptiMove*             FTerm::opti_move          = 0;
+FOptiAttr*             FTerm::opti_attr          = 0;
 FTerm::term_area*      FTerm::vterm              = 0;
 FTerm::term_area*      FTerm::vdesktop           = 0;
 FTerm::term_area*      FTerm::vmenubar           = 0;
@@ -117,6 +102,8 @@ std::queue<int>*       FTerm::output_buffer      = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char     = 0;
 std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set       = 0;
+FOptiAttr::char_data   FTerm::term_attribute;
+FOptiAttr::char_data   FTerm::next_attribute;
 console_font_op        FTerm::screenFont;
 unimapdesc             FTerm::screenUnicodeMap;
 fc::console_cursor_style \
@@ -146,17 +133,14 @@ FTerm::FTerm()
     vmenubar = 0;
     vstatusbar = 0;
     last_area = 0;
-    fg_color = -1;
-    bg_color = -1;
-    fg_term_color = -1;
-    bg_term_color = -1;
     x_term_pos = -1;
     y_term_pos = -1;
 
-    opti   = new FOptiMove();
-    term   = new FRect(0,0,0,0);
-    mouse  = new FPoint(0,0);
-    cursor = new FPoint(0,0);
+    opti_move = new FOptiMove();
+    opti_attr = new FOptiAttr();
+    term      = new FRect(0,0,0,0);
+    mouse     = new FPoint(0,0);
+    cursor    = new FPoint(0,0);
 
     init();
   }
@@ -171,7 +155,8 @@ FTerm::~FTerm()  // destructor
     delete cursor;
     delete mouse;
     delete term;
-    delete opti;
+    delete opti_attr;
+    delete opti_move;
   }
 }
 
@@ -825,6 +810,8 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
 char* FTerm::parseSecDA (char*& current_termtype)
 {
   char* new_termtype = current_termtype;
+  bool  sec_da_supported = false;
+
 
   // The Linux console knows no Sec_DA
   if ( linux_terminal )
@@ -835,11 +822,21 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
   if ( Sec_DA && Sec_DA->getLength() > 5 )
   {
+    uLong num_components;
+
+    // remove the first 3 bytes ("\033[>")
     FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
+    // remove the last byte ("c")
     temp.remove(temp.getLength()-1, 1);
+    // split into components
     std::vector<FString> Sec_DA_split = temp.split(';');
 
-    if ( Sec_DA_split.size() >= 2 )
+    num_components = Sec_DA_split.size();
+
+    if ( num_components == 3 )
+      sec_da_supported = true;
+
+    if ( num_components >= 2 )
     {
       FString* Sec_DA_components = &Sec_DA_split[0];
 
@@ -878,13 +875,24 @@ char* FTerm::parseSecDA (char*& current_termtype)
             break;
 
           case 1:
-            // also used by apple terminal
-            if (  Sec_DA_components[1]
-               && strncmp(Sec_DA_components[1].c_str(), "2c", 2) == 0 )
+            // Read the terminal (firmware) version
+            try
             {
-              kterm_terminal = true;  // kterm
+              if ( Sec_DA_components[1] )
+                terminal_id_version = Sec_DA_components[1].toInt();
+              else
+                terminal_id_version = -1;
             }
-            else
+            catch (const std::exception&)
+            {
+              terminal_id_version = -1;
+            }
+            if ( ! sec_da_supported )
+            {
+              if ( terminal_id_version ==  2 )  // also used by apple terminal
+                kterm_terminal = true;  // kterm
+            }
+            else if ( terminal_id_version > 1000 )
             {
               gnome_terminal = true;  // vte / gnome terminal
               if ( color256 )
@@ -941,7 +949,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_vt100altChar()
+void FTerm::init_alt_charset()
 {
   // read the used vt100 pairs
   if ( tcap[t_acs_chars].string )
@@ -985,6 +993,53 @@ void FTerm::init_vt100altChar()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_pc_charset()
+{
+  bool reinit = false;
+
+  // fallback if "S2" is not found
+  if ( ! tcap[t_enter_pc_charset_mode].string )
+  {
+    if ( utf8_console )
+    {
+      // Select iso8859-1 + null mapping
+      tcap[t_enter_pc_charset_mode].string = \
+        const_cast<char*>("\033%@\033(U");
+    }
+    else
+    {
+      // Select null mapping
+      tcap[t_enter_pc_charset_mode].string = \
+        const_cast<char*>("\033(U");
+    }
+    opti_attr->set_enter_pc_charset_mode (tcap[t_enter_pc_charset_mode].string);
+    reinit = true;
+  }
+
+  // fallback if "S3" is not found
+  if ( ! tcap[t_exit_pc_charset_mode].string )
+  {
+    if ( utf8_console )
+    {
+      // Select ascii mapping + utf8
+      tcap[t_exit_pc_charset_mode].string = \
+        const_cast<char*>("\033(B\033%G");
+    }
+    else
+    {
+      // Select ascii mapping
+      tcap[t_enter_pc_charset_mode].string = \
+        const_cast<char*>("\033(B");
+    }
+    opti_attr->set_exit_pc_charset_mode (tcap[t_exit_pc_charset_mode].string);
+    reinit = true;
+  }
+
+  if ( reinit )
+    opti_attr->init();
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_termcaps()
 {
   /* Terminal capability data base
@@ -1022,12 +1077,19 @@ void FTerm::init_termcaps()
     // maximum number of colors on screen
     max_color = tgetnum(const_cast<char*>("Co"));
 
+    if ( max_color < 0 )
+      max_color = 1;
+
     if ( max_color < 8 )
       monochron = true;
     else
       monochron = false;
 
     tabstop = uInt(tgetnum(const_cast<char*>("it")));
+    attr_without_color = uInt(tgetnum(const_cast<char*>("NC")));
+    // gnome-terminal has NC=16 however, it can use the dim attribute
+    if ( gnome_terminal )
+      attr_without_color = 0;
 
     // read termcap output strings
     for (int i=0; tcap[i].tname[0] != 0; i++)
@@ -1070,12 +1132,21 @@ void FTerm::init_termcaps()
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
     }
+    else if ( rxvt_terminal && ! urxvt_terminal )
+    {
+      tcap[t_set_a_foreground].string = \
+        const_cast<char*>("\033[%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
+      tcap[t_set_a_background].string = \
+        const_cast<char*>("\033[%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
+    }
     else if ( tera_terminal )
     {
       tcap[t_set_a_foreground].string = \
         const_cast<char*>("\033[38;5;%p1%dm");
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[48;5;%p1%dm");
+      tcap[t_exit_attribute_mode].string = \
+        const_cast<char*>("\033[0m\017");
     }
     else if ( putty_terminal )
     {
@@ -1126,45 +1197,40 @@ void FTerm::init_termcaps()
       tcap[t_cursor_address].string = \
         const_cast<char*>("\033[%i%p1%d;%p2%dH");
 
-    // test if "ue" reset all attributes
-    if ( tcap[t_exit_underline_mode].string )
+    // test for standard ECMA-48 (ANSI X3.64) terminal
+    if ( tcap[t_exit_underline_mode].string
+       && strncmp(tcap[t_exit_underline_mode].string, "\033[24m", 5) == 0 )
     {
-      if (  strncmp(tcap[t_exit_underline_mode].string, "\033[m", 3) == 0
-         || strncmp(tcap[t_exit_underline_mode].string, "\033G0", 3) == 0
-         || strncmp(tcap[t_exit_underline_mode].string, "\033[7m", 4) == 0
-         || strcmp ( tcap[t_exit_underline_mode].string
-                   , tcap[t_exit_standout_mode].string ) == 0 )
-        exit_underline_caused_reset = true;
-      else
-        exit_underline_caused_reset = false;
+      // seems to be a ECMA-48 (ANSI X3.64) compatible terminal
+      tcap[t_enter_dbl_underline_mode].string = \
+        const_cast<char*>("\033[21m");  // Exit single underline, too
 
-      // test for standard ECMA-48 terminal
-      if ( strncmp(tcap[t_exit_underline_mode].string, "\033[24m", 5) == 0 )
-      {
-        tcap[t_exit_bold_mode].string = \
-          const_cast<char*>("\033[22m");  // Exit dim, too
+      tcap[t_exit_dbl_underline_mode].string = \
+        const_cast<char*>("\033[24m");
 
-        tcap[t_exit_dim_mode].string = \
-          const_cast<char*>("\033[22m");
+      tcap[t_exit_bold_mode].string = \
+        const_cast<char*>("\033[22m");  // Exit dim, too
 
-        tcap[t_exit_underline_mode].string = \
-          const_cast<char*>("\033[24m");
+      tcap[t_exit_dim_mode].string = \
+        const_cast<char*>("\033[22m");
 
-        tcap[t_exit_blink_mode].string = \
-          const_cast<char*>("\033[25m");
+      tcap[t_exit_underline_mode].string = \
+        const_cast<char*>("\033[24m");
 
-        tcap[t_exit_reverse_mode].string = \
-          const_cast<char*>("\033[27m");
+      tcap[t_exit_blink_mode].string = \
+        const_cast<char*>("\033[25m");
 
-        tcap[t_exit_secure_mode].string = \
-          const_cast<char*>("\033[28m");
+      tcap[t_exit_reverse_mode].string = \
+        const_cast<char*>("\033[27m");
 
-        tcap[t_enter_crossed_out_mode].string = \
-          const_cast<char*>("\033[9m");
+      tcap[t_exit_secure_mode].string = \
+        const_cast<char*>("\033[28m");
 
-        tcap[t_exit_crossed_out_mode].string = \
-          const_cast<char*>("\033[29m");
-      }
+      tcap[t_enter_crossed_out_mode].string = \
+        const_cast<char*>("\033[9m");
+
+      tcap[t_exit_crossed_out_mode].string = \
+        const_cast<char*>("\033[29m");
     }
 
     // read termcap key strings
@@ -1190,6 +1256,10 @@ void FTerm::init_termcaps()
 
       if ( strncmp(Fkey[i].tname, "k4x", 3) == 0 )
         Fkey[i].string = const_cast<char*>("\033[14~");  // F4
+
+      // fallback for TERM=ansi
+      if ( strncmp(Fkey[i].tname, "@7X", 3) == 0 )
+        Fkey[i].string = const_cast<char*>("\033[K");  // end key
     }
 
     // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
@@ -1238,26 +1308,66 @@ void FTerm::init_termcaps()
   }
 
   // duration precalculation of the cursor movement strings
-  opti->setTabStop(int(tabstop));
-  opti->set_cursor_home (tcap[t_cursor_home].string);
-  opti->set_cursor_to_ll (tcap[t_cursor_to_ll].string);
-  opti->set_carriage_return (tcap[t_carriage_return].string);
-  opti->set_tabular (tcap[t_tab].string);
-  opti->set_back_tab (tcap[t_back_tab].string);
-  opti->set_cursor_up (tcap[t_cursor_up].string);
-  opti->set_cursor_down (tcap[t_cursor_down].string);
-  opti->set_cursor_left (tcap[t_cursor_left].string);
-  opti->set_cursor_right (tcap[t_cursor_right].string);
-  opti->set_cursor_address (tcap[t_cursor_address].string);
-  opti->set_column_address (tcap[t_column_address].string);
-  opti->set_row_address (tcap[t_row_address].string);
-  opti->set_parm_up_cursor (tcap[t_parm_up_cursor].string);
-  opti->set_parm_down_cursor (tcap[t_parm_down_cursor].string);
-  opti->set_parm_left_cursor (tcap[t_parm_left_cursor].string);
-  opti->set_parm_right_cursor (tcap[t_parm_right_cursor].string);
-  opti->set_auto_left_margin (automatic_left_margin);
-  opti->set_eat_newline_glitch (eat_nl_glitch);
-  //opti->printDurations();
+  opti_move->setTabStop(int(tabstop));
+  opti_move->set_cursor_home (tcap[t_cursor_home].string);
+  opti_move->set_cursor_to_ll (tcap[t_cursor_to_ll].string);
+  opti_move->set_carriage_return (tcap[t_carriage_return].string);
+  opti_move->set_tabular (tcap[t_tab].string);
+  opti_move->set_back_tab (tcap[t_back_tab].string);
+  opti_move->set_cursor_up (tcap[t_cursor_up].string);
+  opti_move->set_cursor_down (tcap[t_cursor_down].string);
+  opti_move->set_cursor_left (tcap[t_cursor_left].string);
+  opti_move->set_cursor_right (tcap[t_cursor_right].string);
+  opti_move->set_cursor_address (tcap[t_cursor_address].string);
+  opti_move->set_column_address (tcap[t_column_address].string);
+  opti_move->set_row_address (tcap[t_row_address].string);
+  opti_move->set_parm_up_cursor (tcap[t_parm_up_cursor].string);
+  opti_move->set_parm_down_cursor (tcap[t_parm_down_cursor].string);
+  opti_move->set_parm_left_cursor (tcap[t_parm_left_cursor].string);
+  opti_move->set_parm_right_cursor (tcap[t_parm_right_cursor].string);
+  opti_move->set_auto_left_margin (automatic_left_margin);
+  opti_move->set_eat_newline_glitch (eat_nl_glitch);
+  //opti_move->printDurations();
+
+  // attribute settings
+  opti_attr->setNoColorVideo (int(attr_without_color));
+  opti_attr->set_enter_bold_mode (tcap[t_enter_bold_mode].string);
+  opti_attr->set_exit_bold_mode (tcap[t_exit_bold_mode].string);
+  opti_attr->set_enter_dim_mode (tcap[t_enter_dim_mode].string);
+  opti_attr->set_exit_dim_mode (tcap[t_exit_dim_mode].string);
+  opti_attr->set_enter_italics_mode (tcap[t_enter_italics_mode].string);
+  opti_attr->set_exit_italics_mode (tcap[t_exit_italics_mode].string);
+  opti_attr->set_enter_underline_mode (tcap[t_enter_underline_mode].string);
+  opti_attr->set_exit_underline_mode (tcap[t_exit_underline_mode].string);
+  opti_attr->set_enter_blink_mode (tcap[t_enter_blink_mode].string);
+  opti_attr->set_exit_blink_mode (tcap[t_exit_blink_mode].string);
+  opti_attr->set_enter_reverse_mode (tcap[t_enter_reverse_mode].string);
+  opti_attr->set_exit_reverse_mode (tcap[t_exit_reverse_mode].string);
+  opti_attr->set_enter_standout_mode (tcap[t_enter_standout_mode].string);
+  opti_attr->set_exit_standout_mode (tcap[t_exit_standout_mode].string);
+  opti_attr->set_enter_secure_mode (tcap[t_enter_secure_mode].string);
+  opti_attr->set_exit_secure_mode (tcap[t_exit_secure_mode].string);
+  opti_attr->set_enter_protected_mode (tcap[t_enter_protected_mode].string);
+  opti_attr->set_exit_protected_mode (tcap[t_exit_protected_mode].string);
+  opti_attr->set_enter_crossed_out_mode (tcap[t_enter_crossed_out_mode].string);
+  opti_attr->set_exit_crossed_out_mode (tcap[t_exit_crossed_out_mode].string);
+  opti_attr->set_enter_dbl_underline_mode (tcap[t_enter_dbl_underline_mode].string);
+  opti_attr->set_exit_dbl_underline_mode (tcap[t_exit_dbl_underline_mode].string);
+  opti_attr->set_set_attributes (tcap[t_set_attributes].string);
+  opti_attr->set_exit_attribute_mode (tcap[t_exit_attribute_mode].string);
+  opti_attr->set_enter_alt_charset_mode (tcap[t_enter_alt_charset_mode].string);
+  opti_attr->set_exit_alt_charset_mode (tcap[t_exit_alt_charset_mode].string);
+  opti_attr->set_enter_pc_charset_mode (tcap[t_enter_pc_charset_mode].string);
+  opti_attr->set_exit_pc_charset_mode (tcap[t_exit_pc_charset_mode].string);
+  opti_attr->set_a_foreground_color (tcap[t_set_a_foreground].string);
+  opti_attr->set_a_background_color (tcap[t_set_a_background].string);
+  opti_attr->set_foreground_color (tcap[t_set_foreground].string);
+  opti_attr->set_background_color (tcap[t_set_background].string);
+  opti_attr->set_term_color_pair (tcap[t_set_color_pair].string);
+  opti_attr->setMaxColor(max_color);
+  if ( cygwin_terminal )
+    opti_attr->setCygwinTerminal();
+  opti_attr->init();
 }
 
 //----------------------------------------------------------------------
@@ -1278,7 +1388,7 @@ void FTerm::init_encoding()
   {
     vt100_console = true;
     Encoding = fc::VT100;
-    Fputchar = &FTerm::putchar_VT100;  // function pointer
+    Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
@@ -1287,6 +1397,8 @@ void FTerm::init_encoding()
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
 
+  init_pc_charset();
+
   if (  linux_terminal
      || cygwin_terminal
      || NewFont
@@ -1294,24 +1406,24 @@ void FTerm::init_encoding()
   {
     pc_charset_console = true;
     Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_PC;  // function pointer
+    Fputchar = &FTerm::putchar_ASCII;  // function pointer
 
     if ( linux_terminal && utf8_console )
     {
       utf8_linux_terminal = true;
       setUTF8(false);
     }
-  }
-  else
-  {
-    pc_charset_console = false;
+    else if ( xterm && utf8_console )
+    {
+      Fputchar = &FTerm::putchar_UTF8;  // function pointer
+    }
   }
 
   if ( force_vt100 )
   {
     vt100_console = true;
     Encoding = fc::VT100;
-    Fputchar = &FTerm::putchar_VT100;  // function pointer
+    Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
 }
 
@@ -1338,25 +1450,13 @@ void FTerm::init()
   utf8_input             = \
   utf8_state             = \
   utf8_linux_terminal    = \
+  pc_charset_console     = \
   vt100_console          = \
-  vt100_state            = \
-  ignore_vt100_state     = \
-  pc_charset_state       = \
   NewFont                = \
   VGAFont                = \
   ascii_console          = \
   hiddenCursor           = \
   mouse_support          = \
-  bold                   = \
-  dim                    = \
-  italic                 = \
-  underline              = \
-  reverse                = \
-  term_bold              = \
-  term_dim               = \
-  term_italic            = \
-  term_underline         = \
-  term_reverse           = \
   force_vt100            = \
   tera_terminal          = \
   kterm_terminal         = \
@@ -1367,6 +1467,40 @@ void FTerm::init()
   screen_terminal        = \
   tmux_terminal          = \
   background_color_erase = false;
+
+  term_attribute.code          = '\0';
+  term_attribute.fg_color      = -1;
+  term_attribute.bg_color      = -1;
+  term_attribute.bold          = \
+  term_attribute.dim           = \
+  term_attribute.italic        = \
+  term_attribute.underline     = \
+  term_attribute.blink         = \
+  term_attribute.reverse       = \
+  term_attribute.standout      = \
+  term_attribute.invisible     = \
+  term_attribute.protect       = \
+  term_attribute.crossed_out   = \
+  term_attribute.dbl_underline = \
+  term_attribute.alt_charset   = \
+  term_attribute.pc_charset    = false;
+
+  next_attribute.code          = '\0';
+  next_attribute.fg_color      = -1;
+  next_attribute.bg_color      = -1;
+  next_attribute.bold          = \
+  next_attribute.dim           = \
+  next_attribute.italic        = \
+  next_attribute.underline     = \
+  next_attribute.blink         = \
+  next_attribute.reverse       = \
+  next_attribute.standout      = \
+  next_attribute.invisible     = \
+  next_attribute.protect       = \
+  next_attribute.crossed_out   = \
+  next_attribute.dbl_underline = \
+  next_attribute.alt_charset   = \
+  next_attribute.pc_charset    = false;
 
   // Preset to true
   cursor_optimisation    = true;
@@ -1408,7 +1542,7 @@ void FTerm::init()
   baudrate = getBaudRate(&term_init);
 
   if ( isatty(stdout_no) )
-    opti->setBaudRate(int(baudrate));
+    opti_move->setBaudRate(int(baudrate));
 
   // Import the untrusted environment variable TERM
   const char* term_env = getenv(const_cast<char*>("TERM"));
@@ -1426,10 +1560,7 @@ void FTerm::init()
     cygwin_terminal = false;
 
   if ( strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-  {
-    new_termtype = const_cast<char*>("rxvt-16color");
     rxvt_terminal = true;
-  }
 
   // Test for Linux console
   if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
@@ -1466,7 +1597,7 @@ void FTerm::init()
 
   // Initializes variables for the current terminal
   init_termcaps();
-  init_vt100altChar();
+  init_alt_charset();
 
   // set the Fputchar function pointer
   locale_name = setlocale(LC_ALL, ""); // init current locale
@@ -1570,9 +1701,15 @@ void FTerm::init()
     unsetNonBlockingInput();
   }
 
-  if (  (max_color == 8)
-     && (linux_terminal || cygwin_terminal || putty_terminal || tera_terminal) )
+  if ( (max_color == 8)
+     && (  linux_terminal
+        || cygwin_terminal
+        || putty_terminal
+        || tera_terminal
+        || rxvt_terminal) )
+  {
     max_color = 16;
+  }
 
   if ( linux_terminal && openConsole() == 0 )
   {
@@ -1650,6 +1787,13 @@ void FTerm::finish()
     fflush(stdout);
   }
 
+  // turn off pc charset mode
+  if ( tcap[t_exit_pc_charset_mode].string )
+  {
+    putstring (tcap[t_exit_pc_charset_mode].string);
+    fflush(stdout);
+  }
+
   // reset xterm color settings to default
   setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
   resetXTermMouseForeground();
@@ -1672,21 +1816,23 @@ void FTerm::finish()
     resetXTermColors();
     resetColorMap();
   }
+
   if ( mintty_terminal )
   {
     //  normal escape key mode
     putstring ("\033[?7727l");
     fflush(stdout);
   }
+
   if ( linux_terminal )
   {
     setLightBackgroundColors (false);
     setConsoleCursor(fc::default_cursor);
   }
+
   if ( kde_konsole )
     setKDECursor(fc::BlockCursor);
 
-  setVT100altChar(false);
   resetBeep();
 
   if (  linux_terminal
@@ -1773,19 +1919,21 @@ void FTerm::finish()
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c)
+inline uInt FTerm::charEncode (uInt c)
 {
-  register uInt* p;
-  fc::encoding num = fc::NUM_OF_ENCODINGS;
+  return charEncode (c, Encoding);
+}
 
-  p = std::find ( character[0]
-                , character[lastCharItem] + num
-                , c );
-  if ( p != character[lastCharItem] + num ) // found
+//----------------------------------------------------------------------
+uInt FTerm::charEncode (uInt c, fc::encoding enc)
+{
+  for (uInt i=0; i<=lastCharItem; i++)
   {
-    register uInt item = uInt( std::distance(character[0], p)
-                             / num );
-    c = character[item][Encoding];
+    if ( character[i][0] == c )
+    {
+      c = character[i][enc];
+      break;
+    }
   }
   return c;
 }
@@ -1807,6 +1955,14 @@ uInt FTerm::cp437_to_unicode (uChar c)
 }
 
 // protected methods of FTerm
+//----------------------------------------------------------------------
+bool FTerm::charEncodable (uInt c)
+{
+  uInt ch = charEncode(c);
+
+  return bool(ch > 0 && ch != c);
+}
+
 //----------------------------------------------------------------------
 void FTerm::createArea (term_area*& area)
 {
@@ -1875,18 +2031,28 @@ void FTerm::resizeArea (term_area* area)
   area->right_shadow = rsw;
   area->bottom_shadow = bsh;
 
-  default_char.code      = ' ';
-  default_char.fg_color  = fc::Black;
-  default_char.bg_color  = fc::Black;
-  default_char.bold      = 0;
-  default_char.dim       = 0;
-  default_char.italic    = 0;
-  default_char.reverse   = 0;
-  default_char.underline = 0;
+  default_char.code          = ' ';
+  default_char.fg_color      = fc::Black;
+  default_char.bg_color      = fc::Black;
+  default_char.bold          = 0;
+  default_char.dim           = 0;
+  default_char.italic        = 0;
+  default_char.underline     = 0;
+  default_char.blink         = 0;
+  default_char.reverse       = 0;
+  default_char.standout      = 0;
+  default_char.invisible     = 0;
+  default_char.protect       = 0;
+  default_char.crossed_out   = 0;
+  default_char.dbl_underline = 0;
+  default_char.alt_charset   = 0;
+  default_char.pc_charset    = 0;
+
   std::fill_n (area->text, area_size, default_char);
 
   unchanged.xmin = uInt(width+rsw);
   unchanged.xmax = 0;
+
   std::fill_n (area->changes, height+bsh, unchanged);
 }
 
@@ -1902,8 +2068,8 @@ void FTerm::restoreVTerm (const FRect& box)
 //----------------------------------------------------------------------
 void FTerm::restoreVTerm (int x, int y, int w, int h)
 {
-  FTerm::char_data* tc; // terminal character
-  FTerm::char_data* sc; // shown character
+  char_data* tc; // terminal character
+  char_data* sc; // shown character
   FWidget* widget;
 
   x--;
@@ -1981,7 +2147,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
           sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
       }
 
-      memcpy (tc, sc, sizeof(FTerm::char_data));
+      memcpy (tc, sc, sizeof(char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
         vterm->changes[y+ty].xmin = uInt(x);
@@ -2063,8 +2229,8 @@ bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
 void FTerm::updateVTerm (FTerm::term_area* area)
 {
   int ax, ay, aw, ah, rsh, bsh, y_end, ol;
-  FTerm::char_data* tc; // terminal character
-  FTerm::char_data* ac; // area character
+  char_data* tc; // terminal character
+  char_data* ac; // area character
 
   if ( ! vterm_updates )
   {
@@ -2126,7 +2292,9 @@ void FTerm::updateVTerm (FTerm::term_area* area)
         tc = &vterm->text[gy * vterm->width + gx - ol];
 
         if ( ! isCovered(gx-ol, gy, area) )
-          memcpy (tc, ac, sizeof(FTerm::char_data));
+          memcpy (tc, ac, sizeof(char_data));
+        else
+          line_xmin++;  // don't update covered character
       }
       _xmin = ax + line_xmin - ol;
       _xmax = ax + line_xmax;
@@ -2153,8 +2321,8 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 {
   int y_end;
   int length;
-  FTerm::char_data* tc; // terminal character
-  FTerm::char_data* ac; // area character
+  char_data* tc; // terminal character
+  char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2175,7 +2343,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
   {
     ac = &area->text[y * area->width];
     tc = &vterm->text[(ay+y) * vterm->width + ax];
-    memcpy (ac, tc, sizeof(FTerm::char_data) * unsigned(length));
+    memcpy (ac, tc, sizeof(char_data) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
@@ -2188,8 +2356,8 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
 {
   int y_end, length, dx, dy;
-  FTerm::char_data* tc; // terminal character
-  FTerm::char_data* ac; // area character
+  char_data* tc; // terminal character
+  char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2218,7 +2386,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
     tc = &vterm->text[(y+_y-1) * vterm->width + x-1];
     ac = &area->text[(dy+_y) * line_len + dx];
 
-    memcpy (ac, tc, sizeof(FTerm::char_data) * unsigned(length));
+    memcpy (ac, tc, sizeof(char_data) * unsigned(length));
 
     if ( short(area->changes[dy+_y].xmin) > dx )
       area->changes[dy+_y].xmin = uInt(dx);
@@ -2241,8 +2409,8 @@ void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 {
   int aw, ah, rsh, bsh, y_end, length, ol, sbar;
-  FTerm::char_data* tc; // terminal character
-  FTerm::char_data* ac; // area character
+  char_data* tc; // terminal character
+  char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2287,7 +2455,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     tc = &vterm->text[(ay+y) * vterm->width + ax];
     ac = &area->text[y * line_len + ol];
 
-    memcpy (tc, ac, sizeof(FTerm::char_data) * unsigned(length));
+    memcpy (tc, ac, sizeof(char_data) * unsigned(length));
 
     if ( ax < short(vterm->changes[ay+y].xmin) )
       vterm->changes[ay+y].xmin = uInt(ax);
@@ -2300,7 +2468,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 {
   int xx,yy;
-  FTerm::char_data* cc; // covered character
+  char_data* cc; // covered character
   FWidget* w;
 
   x--;
@@ -2371,7 +2539,10 @@ bool FTerm::setVGAFont()
     NewFont = false;
     pc_charset_console = true;
     Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_PC;  // function pointer
+    if ( xterm && utf8_console )
+      Fputchar = &FTerm::putchar_UTF8;
+    else
+      Fputchar = &FTerm::putchar_ASCII;
   }
   else if ( linux_terminal )
   {
@@ -2400,7 +2571,7 @@ bool FTerm::setVGAFont()
 
     pc_charset_console = true;
     Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_PC;  // function pointer
+    Fputchar = &FTerm::putchar_ASCII;
   }
   else
     VGAFont = false;
@@ -2422,7 +2593,10 @@ bool FTerm::setNewFont()
     fflush(stdout);
     pc_charset_console = true;
     Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_PC;  // function pointer
+    if ( xterm && utf8_console )
+      Fputchar = &FTerm::putchar_UTF8;
+    else
+      Fputchar = &FTerm::putchar_ASCII;
   }
   else if ( linux_terminal )
   {
@@ -2450,7 +2624,7 @@ bool FTerm::setNewFont()
     }
     pc_charset_console = true;
     Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_PC;  // function pointer
+    Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
   else
     NewFont = false;
@@ -2551,7 +2725,7 @@ void FTerm::getTermSize()
     term->setRect(1, 1, win_size.ws_col, win_size.ws_row);
   }
 
-  opti->setTermSize (term->getWidth(), term->getHeight());
+  opti_move->setTermSize (term->getWidth(), term->getHeight());
 }
 
 //----------------------------------------------------------------------
@@ -2615,18 +2789,28 @@ void FTerm::resizeVTerm()
   vterm->width  = term_width;
   vterm->height = term_height;
 
-  default_char.code      = ' ';
-  default_char.fg_color  = fc::LightGray;
-  default_char.bg_color  = fc::Black;
-  default_char.bold      = 0;
-  default_char.dim       = 0;
-  default_char.italic    = 0;
-  default_char.reverse   = 0;
-  default_char.underline = 0;
+  default_char.code          = ' ';
+  default_char.fg_color      = fc::LightGray;
+  default_char.bg_color      = fc::Black;
+  default_char.bold          = 0;
+  default_char.dim           = 0;
+  default_char.italic        = 0;
+  default_char.underline     = 0;
+  default_char.blink         = 0;
+  default_char.reverse       = 0;
+  default_char.standout      = 0;
+  default_char.invisible     = 0;
+  default_char.protect       = 0;
+  default_char.crossed_out   = 0;
+  default_char.dbl_underline = 0;
+  default_char.alt_charset   = 0;
+  default_char.pc_charset    = 0;
+
   std::fill_n (vterm->text, vterm_size, default_char);
 
   unchanged.xmin = uInt(term_width);
   unchanged.xmax = 0;
+
   std::fill_n (vterm->changes, term_height, unchanged);
 }
 
@@ -3003,12 +3187,12 @@ void FTerm::resetColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setPalette (int index, int r, int g, int b)
+void FTerm::setPalette (short index, int r, int g, int b)
 {
   char* Ic = tcap[t_initialize_color].string;
   char* Ip = tcap[t_initialize_pair].string;
 
-  index = vga2ansi(index);
+  index = FOptiAttr::vga2ansi(index);
 
   if ( Ic || Ip )
   {
@@ -3040,108 +3224,6 @@ void FTerm::setPalette (int index, int r, int g, int b)
     ioctl (0, PIO_CMAP, &map); */
   }
   fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-void FTerm::setColor (register int fg, register int bg) // Changes colors
-{
-  fg_color = fg;
-  bg_color = bg;
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::vga2ansi (register int color)
-{
-  //   VGA   |  ANSI
-  // i R G B | i B G R
-  //---------+---------
-  // 0 0 0 0 | 0 0 0 0    i = intensity bit
-  // 0 0 0 1 | 0 1 0 0    R = red
-  // 0 0 1 0 | 0 0 1 0    G = green
-  // 0 0 1 1 | 0 1 1 0    B = blue
-  // 0 1 0 0 | 0 0 0 1
-  // 0 1 0 1 | 0 1 0 1
-  // 0 1 1 0 | 0 0 1 1
-  // 0 1 1 1 | 0 1 1 1
-  // 1 0 0 0 | 1 0 0 0
-  // 1 0 0 1 | 1 1 0 0
-  // 1 0 1 0 | 1 0 1 0
-  // 1 0 1 1 | 1 1 1 0
-  // 1 1 0 0 | 1 0 0 1
-  // 1 1 0 1 | 1 1 0 1
-  // 1 1 1 0 | 1 0 1 1
-  // 1 1 1 1 | 1 1 1 1
-
-  if ( color < 16 )
-  {
-    static const int lookup_table[] =
-    {
-      0,  4,  2,  6,  1,  5,  3,  7,
-      8, 12, 10, 14,  9, 13, 11, 15
-    };
-    color = lookup_table[color];
-  }
-  return color;
-}
-
-//----------------------------------------------------------------------
-void FTerm::setTermColor (register int fg, register int bg)
-{
-  char* color_str;
-  char* AF = tcap[t_set_a_foreground].string;
-  char* AB = tcap[t_set_a_background].string;
-  char* Sf = tcap[t_set_foreground].string;
-  char* Sb = tcap[t_set_background].string;
-  char* sp = tcap[t_set_color_pair].string;
-
-  if ( monochron )
-    return;
-
-  if ( AF && AB )
-  {
-    int ansi_fg = vga2ansi(fg);
-    int ansi_bg = vga2ansi(bg);
-
-    if ( cygwin_terminal )
-    {
-      appendOutputBuffer ("\033[m");
-
-      color_str = tparm(AF, ansi_fg);
-      if ( color_str )
-        appendOutputBuffer (color_str);
-
-      color_str = tparm(AB, ansi_bg);
-      if ( color_str )
-        appendOutputBuffer (color_str);
-    }
-    else
-    {
-      if ( fg_term_color != fg && (color_str = tparm(AF, ansi_fg)) )
-        appendOutputBuffer (color_str);
-
-      if ( bg_term_color != bg && (color_str = tparm(AB, ansi_bg)) )
-        appendOutputBuffer (color_str);
-    }
-  }
-  else if ( Sf && Sb )
-  {
-    if ( fg_term_color != fg && (color_str = tparm(Sf, fg)) )
-      appendOutputBuffer (color_str);
-
-    if ( bg_term_color != bg && (color_str = tparm(Sb, bg)) )
-      appendOutputBuffer (color_str);
-  }
-  else if ( sp )
-  {
-    fg = vga2ansi(fg);
-    bg = vga2ansi(bg);
-
-    if ( (color_str = tparm(sp, fg, bg)) )
-      appendOutputBuffer (color_str);
-  }
-
-  fg_term_color = fg;
-  bg_term_color = bg;
 }
 
 //----------------------------------------------------------------------
@@ -3234,12 +3316,15 @@ void FTerm::setTermXY (register int x, register int y)
     y = term_height - 1;
 
   if ( cursor_optimisation )
-    move_str = opti->cursor_move (x_term_pos, y_term_pos, x, y);
+    move_str = opti_move->cursor_move (x_term_pos, y_term_pos, x, y);
   else
     move_str = tgoto(tcap[t_cursor_address].string, x, y);
+
   if ( move_str )
     appendOutputBuffer(move_str);
+
   flush_out();
+
   x_term_pos = x;
   y_term_pos = y;
 }
@@ -3278,225 +3363,6 @@ void FTerm::beep()
     putstring (tcap[t_bell].string);
     fflush(stdout);
   }
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setTermBold (bool on)
-{
-  if ( on == term_bold )
-    return term_bold;
-
-  if ( on )
-  {
-    char* md = tcap[t_enter_bold_mode].string;
-    if ( md )
-      appendOutputBuffer (md);
-    term_bold = true;
-  }
-  else
-  {
-    char* me = tcap[t_exit_attribute_mode].string;
-    if ( me )
-    {
-      char* ue = tcap[t_exit_underline_mode].string;
-      char* us = tcap[t_enter_underline_mode].string;
-      char* mr = tcap[t_enter_reverse_mode].string;
-
-      // "t_exit_attribute_mode" will reset all attributes!
-      appendOutputBuffer (me);
-
-      // last color restore
-      if ( ! monochron )
-      {
-        fg_color = fg_term_color;
-        bg_color = bg_term_color;
-        fg_term_color = -1;
-        bg_term_color = -1;
-        setTermColor (fg_color, bg_color);
-      }
-      // underline mode restore
-      if ( term_underline && ue && us )
-        appendOutputBuffer (us);
-      // reverse mode restore
-      if ( term_reverse && me && mr )
-        appendOutputBuffer (mr);
-    }
-    term_bold = false;
-  }
-  return term_bold;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setTermDim (bool on)
-{
-  if ( on == term_dim )
-    return term_dim;
-
-  if ( on )
-  {
-    char* mh = tcap[t_enter_dim_mode].string;
-    if ( mh )
-      appendOutputBuffer (mh);
-    term_dim = true;
-  }
-  else
-  {
-    char* me = tcap[t_exit_attribute_mode].string;
-    if ( me )
-    {
-      char* se = tcap[t_exit_standout_mode].string;
-      char* ue = tcap[t_exit_underline_mode].string;
-      char* us = tcap[t_enter_underline_mode].string;
-      char* mr = tcap[t_enter_reverse_mode].string;
-      char* md = tcap[t_enter_bold_mode].string;
-
-      // "t_exit_attribute_mode" will reset all attributes!
-      appendOutputBuffer (me);
-
-      // last color restore
-      if ( ! monochron )
-      {
-        fg_color = fg_term_color;
-        bg_color = bg_term_color;
-        fg_term_color = -1;
-        bg_term_color = -1;
-        setTermColor (fg_color, bg_color);
-      }
-      // underline mode restore
-      if ( term_underline && ue && us )
-        appendOutputBuffer (us);
-      // reverse mode restore
-      if ( term_reverse && me && mr )
-        appendOutputBuffer (mr);
-      // bold mode restore
-      if ( term_bold && md && se )
-        appendOutputBuffer (md);
-    }
-    term_dim = false;
-  }
-  return term_dim;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setTermItalic (bool on)
-{
-  if ( on == term_italic )
-    return term_italic;
-
-  if ( on )
-  {
-    char* ZH = tcap[t_enter_italics_mode].string;
-    if ( ZH )
-      appendOutputBuffer (ZH);
-    term_italic = true;
-  }
-  else
-  {
-    char* ZR = tcap[t_exit_italics_mode].string;
-
-    if ( ZR )
-      appendOutputBuffer (ZR);
-
-    term_italic = false;
-  }
-  return term_italic;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setTermReverse (bool on)
-{
-  if ( on == term_reverse )
-    return term_reverse;
-
-  if ( on )
-  {
-    char* mr = tcap[t_enter_reverse_mode].string;
-    if ( mr )
-      appendOutputBuffer (mr);
-    term_reverse = true;
-  }
-  else
-  {
-    char* se = tcap[t_exit_standout_mode].string;
-    if ( se )
-    {
-      char* ue = tcap[t_exit_underline_mode].string;
-      char* us = tcap[t_enter_underline_mode].string;
-      char* md = tcap[t_enter_bold_mode].string;
-
-      // "t_exit_standout_mode" will reset all attributes!
-      appendOutputBuffer (se);
-
-      // last color restore
-      if ( ! monochron )
-      {
-        fg_color = fg_term_color;
-        bg_color = bg_term_color;
-        fg_term_color = -1;
-        bg_term_color = -1;
-        setTermColor (fg_color, bg_color);
-      }
-      // underline mode restore
-      if ( term_underline && ue && us )
-        appendOutputBuffer (us);
-      // bold mode restore
-      if ( term_bold && md && se )
-        appendOutputBuffer (md);
-    }
-    term_reverse = false;
-  }
-  return term_reverse;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setTermUnderline (bool on)
-{
-  if ( linux_terminal || cygwin_terminal )
-    return false;
-
-  if ( on == term_underline )
-    return term_underline;
-
-  if ( on )
-  {
-    char* us = tcap[t_enter_underline_mode].string;
-    if ( us )
-      appendOutputBuffer (us);
-    term_underline = true;
-  }
-  else
-  {
-    char* ue = tcap[t_exit_underline_mode].string;
-    if ( ue )
-    {
-      char* se = tcap[t_exit_standout_mode].string;
-      char* mr = tcap[t_enter_reverse_mode].string;
-      char* md = tcap[t_enter_bold_mode].string;
-
-      appendOutputBuffer (ue);
-
-      if ( exit_underline_caused_reset )
-      {
-        // last color restore
-        if ( ! monochron )
-        {
-          fg_color = fg_term_color;
-          bg_color = bg_term_color;
-          fg_term_color = -1;
-          bg_term_color = -1;
-          setTermColor (fg_color, bg_color);
-        }
-        // reverse mode restore
-        if ( term_reverse && se && mr )
-          appendOutputBuffer (mr);
-        // bold mode restore
-        if ( term_bold && md && se )
-          appendOutputBuffer (md);
-      }
-    }
-    term_underline = false;
-  }
-  return term_underline;
 }
 
 //----------------------------------------------------------------------
@@ -3572,12 +3438,12 @@ void FTerm::setEncoding (std::string enc)
       case fc::UTF8:
         Fputchar = &FTerm::putchar_UTF8;
         break;
+
       case fc::VT100:
-        Fputchar = &FTerm::putchar_VT100;
-        break;
       case fc::PC:
-        Fputchar = &FTerm::putchar_PC;
-        break;
+        if ( xterm && utf8_console )
+          Fputchar = &FTerm::putchar_UTF8;
+        // fall through
       case fc::ASCII:
       default:
         Fputchar = &FTerm::putchar_ASCII;
@@ -3595,37 +3461,6 @@ std::string FTerm::getEncoding()
     if ( it->second == Encoding )
       return it->first;
   return "";
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setPCcharset (bool on)
-{
-  // display all CP437/VGA characters [00...ff]
-  if ( on == pc_charset_state )
-    return pc_charset_state;
-
-  if ( on )
-  {
-    if ( linux_terminal )  // man 4 console_codes
-      putstring ("\033%@\033(U");
-    else if ( tcap[t_enter_alt_charset_mode].string )
-      putstring (tcap[t_enter_alt_charset_mode].string);
-    else
-      return pc_charset_state;
-    pc_charset_state = true;
-  }
-  else
-  {
-    if ( linux_terminal )
-      putstring ("\033(B");
-    else if ( tcap[t_exit_alt_charset_mode].string )
-      putstring (tcap[t_exit_alt_charset_mode].string);
-    else
-      return pc_charset_state;
-    pc_charset_state = false;
-  }
-  fflush(stdout);
-  return pc_charset_state;
 }
 
 //----------------------------------------------------------------------
@@ -3647,28 +3482,6 @@ bool FTerm::setNonBlockingInput (bool on)
       non_blocking_stdin = false;
   }
   return non_blocking_stdin;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setVT100altChar (bool on)
-{
-  if ( on == vt100_state )
-    return vt100_state;
-
-  if ( on && tcap[t_enter_alt_charset_mode].string )
-  {
-    appendOutputBuffer (tcap[t_enter_alt_charset_mode].string);
-    ignore_vt100_state = true;
-    vt100_state = true;
-  }
-  else if ( tcap[t_exit_alt_charset_mode].string )
-  {
-    appendOutputBuffer (tcap[t_exit_alt_charset_mode].string);
-    ignore_vt100_state = false;
-    vt100_state = false;
-  }
-  flush_out();
-  return vt100_state;
 }
 
 //----------------------------------------------------------------------
@@ -3975,6 +3788,7 @@ int FTerm::print (FTerm::term_area* area, FString& s)
       {
         case '\n':
           cursor->y_ref()++;
+
         case '\r':
           cursor->x_ref() = 1;
           break;
@@ -4000,15 +3814,23 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           short x = short(cursor->getX());
           short y = short(cursor->getY());
 
-          char_data  nc; // new character
-          nc.code      = *p;
-          nc.fg_color  = uChar(fg_color);
-          nc.bg_color  = uChar(bg_color);
-          nc.bold      = bold;
-          nc.dim       = dim;
-          nc.italic    = italic;
-          nc.reverse   = reverse;
-          nc.underline = underline;
+          char_data  nc; // next character
+          nc.code          = *p;
+          nc.fg_color      = next_attribute.fg_color;
+          nc.bg_color      = next_attribute.bg_color;
+          nc.bold          = next_attribute.bold;
+          nc.dim           = next_attribute.dim;
+          nc.italic        = next_attribute.italic;
+          nc.underline     = next_attribute.underline;
+          nc.blink         = next_attribute.blink;
+          nc.reverse       = next_attribute.reverse;
+          nc.standout      = next_attribute.standout;
+          nc.invisible     = next_attribute.invisible;
+          nc.protect       = next_attribute.protect;
+          nc.crossed_out   = next_attribute.crossed_out;
+          nc.dbl_underline = next_attribute.dbl_underline;
+          nc.alt_charset   = next_attribute.alt_charset;
+          nc.pc_charset    = next_attribute.pc_charset;
 
           int ax = x - area_widget->getGlobalX();
           int ay = y - area_widget->getGlobalY();
@@ -4019,29 +3841,10 @@ int FTerm::print (FTerm::term_area* area, FString& s)
              && ay < area->height + area->bottom_shadow )
           {
             char_data* ac; // area character
-            uChar ac_attr, nc_attr;
-            uInt ac_color, nc_color;
             int line_len = area->width + area->right_shadow;
             ac = &area->text[ay * line_len + ax];
 
-            ac_color = ac->fg_color | ac->bg_color << 8;
-            nc_color = nc.fg_color | nc.bg_color << 8;
-
-            ac_attr = ac->bold
-                    | ac->reverse << 1
-                    | ac->dim  << 2
-                    | ac->italic  << 3
-                    | ac->underline << 4;
-
-            nc_attr = nc.bold
-                    | nc.reverse << 1
-                    | nc.dim  << 2
-                    | nc.italic  << 3
-                    | nc.underline << 4;
-
-            if (  (ac->code != nc.code)
-               || ac_color!= nc_color
-               || ac_attr != nc_attr )
+            if ( *ac != nc )
             {
               memcpy (ac, &nc, sizeof(nc));
 
@@ -4097,7 +3900,7 @@ int FTerm::print (register int c)
 //----------------------------------------------------------------------
 int FTerm::print (FTerm::term_area* area, register int c)
 {
-  char_data nc; // new character
+  char_data nc; // next character
   FWidget* area_widget;
   int rsh, bsh, ax, ay;
   short x, y;
@@ -4105,14 +3908,22 @@ int FTerm::print (FTerm::term_area* area, register int c)
   if ( ! area )
     return -1;
 
-  nc.code      = c;
-  nc.fg_color  = uChar(fg_color);
-  nc.bg_color  = uChar(bg_color);
-  nc.bold      = bold;
-  nc.dim       = dim;
-  nc.italic    = italic;
-  nc.reverse   = reverse;
-  nc.underline = underline;
+  nc.code          = c;
+  nc.fg_color      = next_attribute.fg_color;
+  nc.bg_color      = next_attribute.bg_color;
+  nc.bold          = next_attribute.bold;
+  nc.dim           = next_attribute.dim;
+  nc.italic        = next_attribute.italic;
+  nc.underline     = next_attribute.underline;
+  nc.blink         = next_attribute.blink;
+  nc.reverse       = next_attribute.reverse;
+  nc.standout      = next_attribute.standout;
+  nc.invisible     = next_attribute.invisible;
+  nc.protect       = next_attribute.protect;
+  nc.crossed_out   = next_attribute.crossed_out;
+  nc.dbl_underline = next_attribute.dbl_underline;
+  nc.alt_charset   = next_attribute.alt_charset;
+  nc.pc_charset    = next_attribute.pc_charset;
 
   x = short(cursor->getX());
   y = short(cursor->getY());
@@ -4129,30 +3940,10 @@ int FTerm::print (FTerm::term_area* area, register int c)
      && ay < area->height + area->bottom_shadow )
   {
     char_data* ac; // area character
-    uChar ac_attr, nc_attr;
-    uInt ac_color, nc_color;
-
     int line_len = area->width + area->right_shadow;
     ac = &area->text[ay * line_len + ax];
 
-    ac_color = ac->fg_color | ac->bg_color << 8;
-    nc_color = nc.fg_color | nc.bg_color << 8;
-
-    ac_attr = ac->bold
-            | ac->reverse << 1
-            | ac->dim  << 2
-            | ac->italic  << 3
-            | ac->underline << 4;
-
-    nc_attr = nc.bold
-            | nc.reverse << 1
-            | nc.dim  << 2
-            | nc.italic  << 3
-            | nc.underline << 4;
-
-    if (  (ac->code != nc.code)
-       || ac_color != nc_color
-       || ac_attr != nc_attr )
+    if ( *ac != nc )
     {
       memcpy (ac, &nc, sizeof(nc));
 
@@ -4184,41 +3975,15 @@ int FTerm::print (FTerm::term_area* area, register int c)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::appendCharacter (char_data*& screen_char)
+inline void FTerm::newFontChanges (char_data*& next_char)
 {
-  appendAttributes (screen_char);
-  appendOutputBuffer (screen_char->code);
-}
-
-//----------------------------------------------------------------------
-void FTerm::appendAttributes (char_data*& screen_attr)
-{
-  if (  screen_attr->fg_color != fg_term_color
-     || screen_attr->bg_color != bg_term_color )
-    setTermColor ( screen_attr->fg_color,
-                   screen_attr->bg_color );
-
-  if ( bool(screen_attr->bold) != term_bold )
-    setTermBold (bool(screen_attr->bold));
-
-  if ( bool(screen_attr->dim) != term_dim )
-    setTermDim (bool(screen_attr->dim));
-
-  if ( bool(screen_attr->italic) != term_italic )
-    setTermItalic (bool(screen_attr->italic));
-
-  if ( bool(screen_attr->reverse) != term_reverse )
-    setTermReverse (bool(screen_attr->reverse));
-
-  if ( bool(screen_attr->underline) != term_underline )
-    setTermUnderline (bool(screen_attr->underline));
-
+  // NewFont special cases
   if ( isNewFont() )
   {
-    switch ( screen_attr->code )
+    switch ( next_char->code )
     {
       case fc::LowerHalfBlock:
-        screen_attr->code = fc::UpperHalfBlock;
+        next_char->code = fc::UpperHalfBlock;
         // fall through
       case fc::NF_rev_left_arrow2:
       case fc::NF_rev_right_arrow2:
@@ -4240,13 +4005,67 @@ void FTerm::appendAttributes (char_data*& screen_attr)
       case fc::NF_rev_down_pointing_triangle2:
       case fc::NF_rev_menu_button3:
       case fc::NF_rev_border_line_right_and_left:
-        setTermColor (screen_attr->bg_color, screen_attr->fg_color);
+        // swap foreground and background color
+        std::swap (next_char->fg_color, next_char->bg_color);
         break;
 
       default:
         break;
     }
   }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::charsetChanges (char_data*& next_char)
+{
+  if ( Encoding == fc::UTF8 )
+    return;
+
+  uInt code = uInt(next_char->code);
+  uInt ch = charEncode(code);
+
+  if ( ch != code )
+  {
+    if ( ch == 0 )
+    {
+      next_char->code = int(charEncode(code, fc::ASCII));
+      return;
+    }
+    next_char->code = int(ch);
+
+    if ( Encoding == fc::VT100 )
+      next_char->alt_charset = true;
+    else if ( Encoding == fc::PC )
+    {
+      next_char->pc_charset = true;
+
+      if ( xterm && utf8_console && ch < 0x20 )  // Character 0x00..0x1f
+        next_char->code = int(charEncode(code, fc::ASCII));
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::appendCharacter (char_data*& next_char)
+{
+  newFontChanges (next_char);
+  charsetChanges (next_char);
+
+  appendAttributes (next_char);
+  appendOutputBuffer (next_char->code);
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::appendAttributes (char_data*& next_attr)
+{
+  char* attr_str;
+  char_data* term_attr = &term_attribute;
+
+  // generate attribute string for the next character
+  attr_str = opti_attr->change_attribute (term_attr, next_attr);
+
+  if ( attr_str )
+    appendOutputBuffer (attr_str);
 }
 
 //----------------------------------------------------------------------
@@ -4365,97 +4184,7 @@ inline void FTerm::putstring (const char* s, int affcnt)
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (register int c)
 {
-  register char ch;
-  if ( c >> 7 )  // more than 7-bit
-    ch = char(charEncode(uInt(c)));
-  else
-    ch = char(c);
-  if ( putchar(ch) == EOF )
-    return 0;
-  else
-    return 1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar_VT100 (register int c)
-{
-  register uChar ch;
-  ch = uChar(charEncode(uInt(c)));
-  if ( ch != 0 && (c >> 7) )  // vt100 alternate character set
-  {
-    if (  ! vt100_state
-       && tcap[t_enter_alt_charset_mode].string
-       && ! ignore_vt100_state )
-    {
-      putstring (tcap[t_enter_alt_charset_mode].string);
-      vt100_state = true;
-    }
-    if ( putchar(ch) == EOF )
-      return 0;
-    else
-      return 1;
-  }
-  else  // ascii
-  {
-    if (  vt100_state
-       && tcap[t_exit_alt_charset_mode].string
-       && ! ignore_vt100_state )
-    {
-      putstring (tcap[t_exit_alt_charset_mode].string);
-      vt100_state = false;
-    }
-    if ( c >> 7 )  // more than 7-bit
-    {
-      Encoding = fc::ASCII;
-      ch = uChar(charEncode(uInt(c)));
-      Encoding = fc::VT100;
-    }
-    else
-      ch = uChar(c);
-    if ( putchar(ch) == EOF )
-      return 0;
-    else
-      return 1;
-  }
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar_PC (register int c)
-{
-  register char ch;
-  register int ret;
-
-  if ( c >> 7 ) // more than 7-bit
-  {
-    ch = char(charEncode(uInt(c)));
-    // IBM PC alternate character set on
-    putstring (tcap[t_enter_pc_charset_mode].string);
-  }
-  else
-    ch = char(c);
-
-  if ( xterm && utf8_console )
-  {
-    if ( uChar(ch) < 0x20 )  // Character 0x00..0x1f
-    {
-      Encoding = fc::ASCII;
-      ch = char(charEncode(uInt(c)));
-      Encoding = fc::PC;
-      ret = putchar(ch);
-    }
-    else
-      ret = putchar_UTF8(ch & 0xff);
-  }
-  else
-    ret = putchar(ch);
-
-  if ( c >> 7 )
-  {
-    // IBM PC alternate character set off
-    putstring (tcap[t_exit_pc_charset_mode].string);
-  }
-
-  if ( ret == EOF )
+  if ( putchar(char(c)) == EOF )
     return 0;
   else
     return 1;

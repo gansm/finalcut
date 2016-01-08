@@ -69,7 +69,7 @@ class FMessageBox : public FDialog
    std::vector<FString> text_split;
    uInt  maxLineWidth;
    bool  center_text;
-   uChar emphasis_color;
+   short emphasis_color;
    uInt  numButtons;
    uInt  text_num_lines;
    int*  button_digit[3];

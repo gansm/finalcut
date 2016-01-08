@@ -204,7 +204,7 @@ bool FObject::delTimer (int id)
 //----------------------------------------------------------------------
 bool FObject::delOwnTimer()
 {
-  FObject::TimerList::iterator iter, end;
+  FObject::TimerList::iterator iter;
 
   if ( ! timer_list )
     return false;

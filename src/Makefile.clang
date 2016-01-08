@@ -26,6 +26,7 @@ INCLUDE_HEADERS = \
 	fcheckmenuitem.h \
 	fmessagebox.h \
 	fobject.h \
+	foptiattr.h \
 	foptimove.h \
 	fpoint.h \
 	fprogressbar.h \
@@ -79,6 +80,7 @@ OBJS = \
 	fstatusbar.o \
 	fterm.o \
 	fevent.o \
+	foptiattr.o \
 	foptimove.o \
 	fapp.o \
 	fwidget.o \

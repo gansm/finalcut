@@ -53,8 +53,10 @@ void FCheckBox::drawCheckButton()
 {
   if ( ! isVisible() )
     return;
+
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   setColor (foregroundColor, backgroundColor);
+
   if ( isMonochron() )
   {
     if ( hasFocus() )
@@ -69,10 +71,7 @@ void FCheckBox::drawCheckButton()
     else
     {
       print ('[');
-      if ( isTeraTerm() )
-        print ('x');
-      else
-        print (fc::Times);  // Times ×
+      print (fc::Times);  // Times ×
       print (']');
     }
   }

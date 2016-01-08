@@ -201,16 +201,6 @@ char* FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::draw()
-{
-  FDialog::draw();
-
-  if ( Encoding == fc::VT100 )
-    unsetVT100altChar();
-
-}
-
-//----------------------------------------------------------------------
 inline bool FFileDialog::pattern_match ( const char* pattern
                                        , const char* fname )
 {
