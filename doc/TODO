@@ -4,7 +4,11 @@ Bugs
 
 Improvements
 ~~~~~~~~~~~~
--
+- Every OSC sequence ("\033]") should have been a special prefix and
+  postfix sequence for screen and tmux:
+
+  screen =          "\033P" + OSC + control sequence + "\a\033\\"
+  tmux =   "\033Ptmux:\033" + OSC + control sequence + "\033\\"
 
 Missing Features
 ~~~~~~~~~~~~~~~~

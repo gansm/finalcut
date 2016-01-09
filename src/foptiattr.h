@@ -40,6 +40,13 @@ class FOptiAttr
      all_tests       = 0x1f
    };
 
+   enum default_color
+   {
+     Default   = -1,
+     Black     = 0,
+     LightGray = 7
+   };
+
    typedef struct
    {
      char* cap;
@@ -79,9 +86,12 @@ class FOptiAttr
    capability F_set_foreground;
    capability F_set_background;
    capability F_set_color_pair;
+   capability F_orig_pair;
+   capability F_orig_colors;
 
    int        max_color;
    int        attr_without_color;
+   bool       ansi_default_color;
    bool       monochron;
    bool       fake_reverse;
    bool       cygwin_terminal;
@@ -164,6 +174,7 @@ class FOptiAttr
    bool  unsetTermAltCharset (char_data*&);
    bool  setTermPCcharset (char_data*&);
    bool  unsetTermPCcharset (char_data*&);
+   bool  setTermDefaultColor (char_data*&);
 
  public:
    explicit FOptiAttr();  // constructor
@@ -173,6 +184,7 @@ class FOptiAttr
 
    void  setMaxColor (int&);
    void  setNoColorVideo (int);
+   void  setDefaultColorSupport();
    void  setCygwinTerminal();
    void  set_enter_bold_mode (char*&);
    void  set_exit_bold_mode (char*&);
@@ -207,6 +219,8 @@ class FOptiAttr
    void  set_foreground_color (char*&);
    void  set_background_color (char*&);
    void  set_term_color_pair (char*&);
+   void  set_orig_pair (char*&);
+   void  set_orig_orig_colors (char*&);
    void  init();
 
    char* change_attribute (char_data*&, char_data*&);
@@ -225,6 +239,10 @@ inline void FOptiAttr::setMaxColor (int& c)
 //----------------------------------------------------------------------
 inline void FOptiAttr::setNoColorVideo (int attr)
 { attr_without_color = attr; }
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setDefaultColorSupport()
+{ ansi_default_color = true; }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::setCygwinTerminal()

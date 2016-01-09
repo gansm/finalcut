@@ -44,8 +44,11 @@ FOptiAttr::FOptiAttr()
   , F_set_foreground()
   , F_set_background()
   , F_set_color_pair()
+  , F_orig_pair()
+  , F_orig_colors()
   , max_color(1)
   , attr_without_color(0)
+  , ansi_default_color(false)
   , monochron(true)
   , fake_reverse(false)
   , cygwin_terminal(false)
@@ -82,8 +85,8 @@ inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
 //----------------------------------------------------------------------
 inline void FOptiAttr::resetColor (char_data*& attr)
 {
-  attr->fg_color = -1;
-  attr->bg_color = -1;
+  attr->fg_color = Default;
+  attr->bg_color = Default;
 }
 
 //----------------------------------------------------------------------
@@ -194,17 +197,34 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   if ( monochron )
     return;
 
-  if ( fg == -1 && term->fg_color != -1 )
+  if ( fg == Default || bg == Default )
   {
-    char* sgr_39 = const_cast<char*>("\033[39m");
-    append_sequence (sgr_39);
-    term->fg_color = next->fg_color;
-  }
-  if ( bg == -1 && term->bg_color != -1 )
-  {
-    char* sgr_49 = const_cast<char*>("\033[49m");
-    append_sequence (sgr_49);
-    term->bg_color = next->bg_color;
+    if ( ansi_default_color )
+    {
+      if (  fg == Default && term->fg_color != Default
+         && bg == Default && term->bg_color != Default )
+      {
+        setTermDefaultColor(term);
+      }
+      else if ( fg == Default && term->fg_color != Default )
+      {
+        char* sgr_39 = const_cast<char*>("\033[39m");
+        append_sequence (sgr_39);
+        term->fg_color = Default;
+      }
+      else if ( bg == Default && term->bg_color != Default )
+      {
+        char* sgr_49 = const_cast<char*>("\033[49m");
+        append_sequence (sgr_49);
+        term->bg_color = Default;
+      }
+    }
+    else if ( ! setTermDefaultColor(term) )
+    {
+      // fallback to gray on black
+      fg = next->fg_color = LightGray;
+      bg = next->bg_color = Black;
+    }
   }
 
   if ( ! fake_reverse && fg < 0 && bg < 0 )
@@ -777,6 +797,33 @@ inline bool FOptiAttr::unsetTermPCcharset (char_data*& term)
     return false;
 }
 
+//----------------------------------------------------------------------
+bool FOptiAttr::setTermDefaultColor (char_data*& term)
+{
+  if ( append_sequence(F_orig_pair.cap) )
+  {
+    term->fg_color = Default;
+    term->bg_color = Default;
+    return true;
+  }
+  else if ( append_sequence(F_orig_colors.cap) )
+  {
+    term->fg_color = Default;
+    term->bg_color = Default;
+    return true;
+  }
+  else if ( ansi_default_color )
+  {
+    char* sgr_39_49 = const_cast<char*>("\033[39;49m");
+    append_sequence (sgr_39_49);
+    term->fg_color = Default;
+    term->bg_color = Default;
+    return true;
+  }
+  else
+    return false;
+}
+
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
@@ -1141,6 +1188,26 @@ void FOptiAttr::set_term_color_pair (char*& cap)
   {
     F_set_color_pair.cap = cap;
     F_set_color_pair.caused_reset = false;
+  }
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::set_orig_pair (char*& cap)
+{
+  if ( cap )
+  {
+    F_orig_pair.cap = cap;
+    F_orig_pair.caused_reset = false;
+  }
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::set_orig_orig_colors (char*& cap)
+{
+  if ( cap )
+  {
+    F_orig_colors.cap = cap;
+    F_orig_colors.caused_reset = false;
   }
 }
 

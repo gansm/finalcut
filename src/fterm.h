@@ -133,6 +133,8 @@ class FTerm
    static bool    automatic_left_margin;
    static bool    automatic_right_margin;
    static bool    eat_nl_glitch;
+   static bool    ansi_default_color;
+   static bool    osc_support;
    static char    termtype[30];
    static char*   term_name;
    static char*   locale_name;

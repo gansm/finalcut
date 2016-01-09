@@ -48,6 +48,7 @@ bool     FTerm::background_color_erase;
 bool     FTerm::automatic_left_margin;
 bool     FTerm::automatic_right_margin;
 bool     FTerm::eat_nl_glitch;
+bool     FTerm::ansi_default_color;
 bool     FTerm::xterm;
 bool     FTerm::rxvt_terminal;
 bool     FTerm::urxvt_terminal;
@@ -75,6 +76,7 @@ bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
 bool     FTerm::cursor_optimisation;
+bool     FTerm::osc_support;
 uChar    FTerm::x11_button_state;
 termios  FTerm::term_init;
 
@@ -1071,6 +1073,13 @@ void FTerm::init_termcaps()
     // newline ignored after 80 cols
     eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
 
+    // terminal supports ANSI set default fg and bg color
+    ansi_default_color = tgetflag(const_cast<char*>("AX"));
+
+    // terminal supports operating system commands (OSC)
+    // OSC = Esc + ]
+    osc_support = tgetflag(const_cast<char*>("XT"));
+
     if ( isTeraTerm() )
       eat_nl_glitch = true;
 
@@ -1364,7 +1373,11 @@ void FTerm::init_termcaps()
   opti_attr->set_foreground_color (tcap[t_set_foreground].string);
   opti_attr->set_background_color (tcap[t_set_background].string);
   opti_attr->set_term_color_pair (tcap[t_set_color_pair].string);
-  opti_attr->setMaxColor(max_color);
+  opti_attr->set_orig_pair (tcap[t_orig_pair].string);
+  opti_attr->set_orig_orig_colors (tcap[t_orig_colors].string);
+  opti_attr->setMaxColor (max_color);
+  if ( ansi_default_color )
+    opti_attr->setDefaultColorSupport();
   if ( cygwin_terminal )
     opti_attr->setCygwinTerminal();
   opti_attr->init();
@@ -1469,8 +1482,8 @@ void FTerm::init()
   background_color_erase = false;
 
   term_attribute.code          = '\0';
-  term_attribute.fg_color      = -1;
-  term_attribute.bg_color      = -1;
+  term_attribute.fg_color      = fc::Default;
+  term_attribute.bg_color      = fc::Default;
   term_attribute.bold          = \
   term_attribute.dim           = \
   term_attribute.italic        = \
@@ -1486,8 +1499,8 @@ void FTerm::init()
   term_attribute.pc_charset    = false;
 
   next_attribute.code          = '\0';
-  next_attribute.fg_color      = -1;
-  next_attribute.bg_color      = -1;
+  next_attribute.fg_color      = fc::Default;
+  next_attribute.bg_color      = fc::Default;
   next_attribute.bold          = \
   next_attribute.dim           = \
   next_attribute.italic        = \
@@ -2032,8 +2045,8 @@ void FTerm::resizeArea (term_area* area)
   area->bottom_shadow = bsh;
 
   default_char.code          = ' ';
-  default_char.fg_color      = fc::Black;
-  default_char.bg_color      = fc::Black;
+  default_char.fg_color      = fc::Default;
+  default_char.bg_color      = fc::Default;
   default_char.bold          = 0;
   default_char.dim           = 0;
   default_char.italic        = 0;
@@ -2531,7 +2544,7 @@ bool FTerm::setVGAFont()
 
   VGAFont = true;
 
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     // Set font in xterm to vga
     putstring("\033]50;vga\07");
@@ -2585,7 +2598,7 @@ bool FTerm::setNewFont()
   if ( NewFont )
     return true;
 
-  if ( xterm || urxvt_terminal )
+  if ( xterm || urxvt_terminal || osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
@@ -2644,7 +2657,7 @@ bool FTerm::setOldFont()
   NewFont = \
   VGAFont = false;
 
-  if ( xterm || urxvt_terminal )
+  if ( xterm || urxvt_terminal || osc_support )
   {
     if ( xterm_font->getLength() > 2 )
       // restore saved xterm font
@@ -2790,8 +2803,8 @@ void FTerm::resizeVTerm()
   vterm->height = term_height;
 
   default_char.code          = ' ';
-  default_char.fg_color      = fc::LightGray;
-  default_char.bg_color      = fc::Black;
+  default_char.fg_color      = fc::Default;
+  default_char.bg_color      = fc::Default;
   default_char.bold          = 0;
   default_char.dim           = 0;
   default_char.italic        = 0;
@@ -2919,7 +2932,7 @@ void FTerm::updateTerminal()
 void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
 {
   // Set cursor style in KDE konsole
-  if ( kde_konsole )
+  if ( kde_konsole || osc_support )
   {
     putstringf ("\033]50;CursorShape=%d\007", style);
     fflush(stdout);
@@ -2931,7 +2944,7 @@ FString FTerm::getXTermFont()
 {
   FString font("");
 
-  if ( raw_mode && non_blocking_stdin )
+  if ( raw_mode && non_blocking_stdin && osc_support )
   {
     int n;
     char temp[150] = {};
@@ -2996,7 +3009,7 @@ void FTerm::setXTermCursorStyle(fc::xterm_cursor_style style)
 void FTerm::setXTermTitle (const FString& title)
 {
   // Set the xterm title
-  if ( xterm || mintty_terminal || putty_terminal )
+  if ( xterm || mintty_terminal || putty_terminal || osc_support )
   {
     putstringf ("\033]0;%s\07", title.c_str());
     fflush(stdout);
@@ -3007,7 +3020,7 @@ void FTerm::setXTermTitle (const FString& title)
 void FTerm::setXTermForeground (const FString& fg)
 {
   // Set the VT100 text foreground color
-  if ( xterm || mintty_terminal || mlterm_terminal )
+  if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
   {
     putstringf ("\033]10;%s\07", fg.c_str());
     fflush(stdout);
@@ -3018,7 +3031,7 @@ void FTerm::setXTermForeground (const FString& fg)
 void FTerm::setXTermBackground (const FString& bg)
 {
   // Set the VT100 text background color
-  if ( xterm || mintty_terminal || mlterm_terminal )
+  if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
   {
     putstringf ("\033]11;%s\07", bg.c_str());
     fflush(stdout);
@@ -3029,7 +3042,7 @@ void FTerm::setXTermBackground (const FString& bg)
 void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
-  if ( xterm || mintty_terminal || urxvt_terminal )
+  if ( xterm || mintty_terminal || urxvt_terminal || osc_support )
   {
     putstringf ("\033]12;%s\07", cc.c_str());
     fflush(stdout);
@@ -3040,7 +3053,7 @@ void FTerm::setXTermCursorColor (const FString& cc)
 void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
-  if ( xterm || urxvt_terminal )
+  if ( xterm || urxvt_terminal || osc_support )
   {
     putstringf ("\033]13;%s\07", mfg.c_str());
     fflush(stdout);
@@ -3051,7 +3064,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 void FTerm::setXTermMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstringf ("\033]14;%s\07", mbg.c_str());
     fflush(stdout);
@@ -3062,7 +3075,7 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
 void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
-  if ( xterm || urxvt_terminal )
+  if ( xterm || urxvt_terminal || osc_support )
   {
     putstringf ("\033]17;%s\07", hbg.c_str());
     fflush(stdout);
@@ -3073,7 +3086,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstringf ("\033]104\07");
     fflush(stdout);
@@ -3084,7 +3097,7 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstring("\033]110\07");
     fflush(stdout);
@@ -3095,7 +3108,7 @@ void FTerm::resetXTermForeground()
 void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstring("\033]111\07");
     fflush(stdout);
@@ -3106,7 +3119,7 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstring("\033]112\07");
     fflush(stdout);
@@ -3117,7 +3130,7 @@ void FTerm::resetXTermCursorColor()
 void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstring("\033]113\07");
     fflush(stdout);
@@ -3128,7 +3141,7 @@ void FTerm::resetXTermMouseForeground()
 void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
-  if ( xterm )
+  if ( xterm || osc_support )
   {
     putstring("\033]114\07");
     fflush(stdout);
@@ -3139,7 +3152,7 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
-  if ( xterm || urxvt_terminal )
+  if ( xterm || urxvt_terminal || osc_support )
   {
     putstringf ("\033]117\07");
     fflush(stdout);

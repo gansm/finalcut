@@ -1,3 +1,6 @@
+2016-01-10  Markus Gans  <guru.mail@muenster.de>
+	* Better default color handling in FOptiAttr
+
 2016-01-07  Markus Gans  <guru.mail@muenster.de>
 	* Add the new class FOptiAttr to control video attributes and colors 
 	  for output on terminals

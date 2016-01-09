@@ -685,14 +685,16 @@ inline FPoint FWidget::globalToLocalPos (const FPoint& gPos)
 //----------------------------------------------------------------------
 inline void FWidget::setForegroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     foregroundColor = color;
 }
 
 //----------------------------------------------------------------------
 inline void FWidget::setBackgroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     backgroundColor = color;
 }
 
@@ -807,8 +809,8 @@ inline void FWidget::setNormal()
   next_attribute.alt_charset   = \
   next_attribute.pc_charset    = false;
 
-  next_attribute.fg_color      = -1;
-  next_attribute.bg_color      = -1;
+  next_attribute.fg_color      = fc::Default;
+  next_attribute.bg_color      = fc::Default;
 }
 
 //----------------------------------------------------------------------

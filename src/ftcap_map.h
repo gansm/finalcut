@@ -110,7 +110,7 @@ static tcap_map tcap[] =
  *        to the number of lines affected
  * (#i)   indicates the ith parameter.
  *
- * "XX", "Us" and "Ue" are unofficial and are only used here.
+ * "XX", "Us" and "Ue" are unofficial and they are only used here.
  */
 
 enum termcaps

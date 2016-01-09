@@ -412,13 +412,15 @@ void FButton::setBackgroundColor (short color)
 //----------------------------------------------------------------------
 void FButton::setHotkeyForegroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     button_hotkey_fg = color;
 }
 
 void FButton::setFocusForegroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     button_focus_fg = color;
   updateButtonColor();
 }
@@ -426,7 +428,8 @@ void FButton::setFocusForegroundColor (short color)
 //----------------------------------------------------------------------
 void FButton::setFocusBackgroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     button_focus_bg = color;
   updateButtonColor();
 }
@@ -434,7 +437,8 @@ void FButton::setFocusBackgroundColor (short color)
 //----------------------------------------------------------------------
 void FButton::setInactiveForegroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     button_inactive_fg = color;
   updateButtonColor();
 }
@@ -442,7 +446,8 @@ void FButton::setInactiveForegroundColor (short color)
 //----------------------------------------------------------------------
 void FButton::setInactiveBackgroundColor (short color)
 {
-  if ( color == -1 || color >> 8 == 0 )  // valid colors -1..254
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
     button_inactive_bg = color;
   updateButtonColor();
 }

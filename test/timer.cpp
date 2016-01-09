@@ -28,8 +28,8 @@ timer::timer (FWidget* parent)
 
   resetXTermForeground();
   resetXTermBackground();
-  wc.term_fg = -1;
-  wc.term_bg = -1;
+  wc.term_fg = fc::Default;
+  wc.term_bg = fc::Default;
 }
 
 //----------------------------------------------------------------------
@@ -49,7 +49,7 @@ void timer::onAccel (FAccelEvent* ev)
 void timer::draw()
 {
   setNormal();
-  setColor(-1,-1);
+  setColor (fc::Default, fc::Default);
   clrscr();
   gotoxy (1,1);
   print ("---------------\n");

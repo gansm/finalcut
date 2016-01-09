@@ -26,13 +26,17 @@ class AttribDlg : public FDialog
    AttribDlg& operator = (const AttribDlg&); // and operator '='
    void adjustSize();
 
+ protected:
+   friend class AttribDemo;
+
  public:
    explicit AttribDlg (FWidget* = 0);  // constructor
   ~AttribDlg();                        // destructor
    void onAccel (FAccelEvent*);
+   void onWheel (FWheelEvent*);
    void onClose (FCloseEvent*);
-   void cb_next (FWidget*, void*);
-   void cb_back (FWidget*, void*);
+   void cb_next (FWidget* = 0, void* = 0);
+   void cb_back (FWidget* = 0, void* = 0);
 };
 #pragma pack(pop)
 
@@ -83,6 +87,17 @@ void AttribDlg::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void AttribDlg::onWheel (FWheelEvent* ev)
+{
+  int wheel = ev->getWheel();
+
+  if ( wheel == WheelUp )
+    cb_next();
+  else if ( wheel == WheelDown )
+    cb_back();
+}
+
+//----------------------------------------------------------------------
 void AttribDlg::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit"
@@ -103,7 +118,7 @@ void AttribDlg::cb_next (FWidget*, void*)
     return;
   bgcolor++;
   if ( bgcolor >= getMaxColor() )
-    bgcolor = -1;
+    bgcolor = fc::Default;
   redraw();
 }
 
@@ -113,7 +128,7 @@ void AttribDlg::cb_back (FWidget*, void*)
   if ( isMonochron() )
     return;
   bgcolor--;
-  if ( bgcolor < -1 )
+  if ( bgcolor < fc::Default )
     bgcolor = short(getMaxColor() - 1);
   redraw();
 }
@@ -152,6 +167,10 @@ class AttribDemo : public FWidget
    explicit AttribDemo (FWidget* = 0);  // constructor
   ~AttribDemo()                         // destructor
    { }
+   void onWheel (FWheelEvent* ev)
+   {
+     dynamic_cast<AttribDlg*>(parentWidget())->onWheel(ev);
+   }
 };
 #pragma pack(pop)
 
@@ -189,9 +208,9 @@ void AttribDemo::printAltCharset()
 
   gotoxy (xpos + xmin - 1, ypos + ymin - 1);
   print("alternate charset: ");
-  if ( parent->bgcolor == -1 )
+  if ( parent->bgcolor == fc::Default )
   {
-    setColor (-1,-1);
+    setColor (fc::Default, fc::Default);
   }
   else
   {
@@ -328,6 +347,7 @@ void AttribDemo::draw()
 
   setUpdateVTerm(true);
 }
+
 
 //----------------------------------------------------------------------
 //                               main part
