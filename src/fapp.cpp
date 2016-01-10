@@ -297,17 +297,17 @@ void FApplication::processKeyboardEvent()
 
           if ( key == fc::Fkey_mouse )
           {
-            int n, len;
+            int n;
+            const int len = 6;
             x11_mouse[0] = fifo_buf[3];
             x11_mouse[1] = fifo_buf[4];
             x11_mouse[2] = fifo_buf[5];
             x11_mouse[3] = '\0';
-            len = 6;
-            n = len;
 
-            for (; n < fifo_buf_size; n++)   // Remove founded entry
-              fifo_buf[n-len] = fifo_buf[n];
-            for (; n-len < len; n++)         // Fill rest with '\0'
+            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
+              fifo_buf[n-len] = fifo_buf[n];               
+            n = fifo_buf_size-len-1;
+            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();
@@ -325,9 +325,10 @@ void FApplication::processKeyboardEvent()
                 len = n + 1;
             }
             sgr_mouse[n-3] = '\0';
-            for (n=len; n < fifo_buf_size; n++) // Remove founded entry
+            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
               fifo_buf[n-len] = fifo_buf[n];
-            for (; n-len < len; n++)            // Fill rest with '\0'
+            n = fifo_buf_size-len-1;
+            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();
@@ -345,9 +346,10 @@ void FApplication::processKeyboardEvent()
                 len = n + 1;
             }
             urxvt_mouse[n-2] = '\0';
-            for (n=len; n < fifo_buf_size; n++) // Remove founded entry
+            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
               fifo_buf[n-len] = fifo_buf[n];
-            for (; n-len < len; n++)            // Fill rest with '\0'
+            n = fifo_buf_size-len-1;
+            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();

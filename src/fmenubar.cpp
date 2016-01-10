@@ -402,7 +402,7 @@ void FMenuBar::drawItems()
         gotoxy(screenWidth-1,1);
         print (vmenubar, "..");
       }
-      else if ( startpos-2 < screenWidth )
+      else if ( startpos-1 <= screenWidth )
       {
         gotoxy(screenWidth,1);
         print (vmenubar, ' ');
@@ -579,10 +579,10 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     {
       int x1, x2;
       x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      x2 = (*iter)->getX() + (*iter)->getWidth();
 
       if (  mouse_x >= x1
-         && mouse_x <= x2
+         && mouse_x < x2
          && mouse_y == 1 )
       {
         // Mouse pointer over item
@@ -656,10 +656,10 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
         int x1, x2;
 
         x1 = (*iter)->getX();
-        x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+        x2 = (*iter)->getX() + (*iter)->getWidth();
 
         if (  mouse_x >= x1
-           && mouse_x <= x2
+           && mouse_x < x2
            && mouse_y == 1
            && (*iter)->isEnabled()
            && (*iter)->isSelected() )
@@ -744,10 +744,10 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       int x1, x2;
 
       x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      x2 = (*iter)->getX() + (*iter)->getWidth();
 
       if (  mouse_x >= x1
-         && mouse_x <= x2
+         && mouse_x < x2
          && mouse_y == 1 )
       {
         // Mouse pointer over item

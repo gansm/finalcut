@@ -229,7 +229,7 @@ void FMenu::adjustItems()
 int FMenu::adjustX (int x_pos)
 {
   // Is menu outside on the right of the screen?
-  if ( x_pos+int(maxItemWidth)+2 > getColumnNumber() )
+  if ( x_pos+int(maxItemWidth) >= getColumnNumber()-1 )
   {
     x_pos = getColumnNumber() - int(maxItemWidth + 1);
     // Menu to large for the screen
@@ -1004,13 +1004,13 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       int x1, x2, y, mouse_x, mouse_y;
 
       x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      x2 = (*iter)->getX() + (*iter)->getWidth();
       y  = (*iter)->getY();
       mouse_x = mouse_pos.getX();
       mouse_y = mouse_pos.getY();
 
       if (  mouse_x >= x1
-         && mouse_x <= x2
+         && mouse_x < x2
          && mouse_y == y )
       {
         // Mouse pointer over item
@@ -1102,7 +1102,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
         int x1, x2, y;
 
         x1 = (*iter)->getX();
-        x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+        x2 = (*iter)->getX() + (*iter)->getWidth();
         y  = (*iter)->getY();
 
         if ( (*iter)->isSelected() )
@@ -1111,7 +1111,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
           int mouse_y = mouse_pos.getY();
 
           if (  mouse_x >= x1
-             && mouse_x <= x2
+             && mouse_x < x2
              && mouse_y == y )
           {
             // Mouse pointer over item
@@ -1208,13 +1208,13 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       int x1, x2, y, mouse_x, mouse_y;
 
       x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth() - 1;
+      x2 = (*iter)->getX() + (*iter)->getWidth();
       y  = (*iter)->getY();
       mouse_x = mouse_pos.getX();
       mouse_y = mouse_pos.getY();
 
       if (  mouse_x >= x1
-         && mouse_x <= x2
+         && mouse_x < x2
          && mouse_y == y )
       {
         if (    (*iter)->isEnabled()

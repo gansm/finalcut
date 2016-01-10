@@ -2862,8 +2862,8 @@ void FTerm::updateTerminal()
   }
 
   vt = vterm;
-  term_width = term->getWidth();
-  term_height = term->getHeight();
+  term_width = term->getWidth() - 1;
+  term_height = term->getHeight() - 1;
 
   for (register uInt y=0; y < uInt(vt->height); y++)
   {
@@ -2880,8 +2880,8 @@ void FTerm::updateTerminal()
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
 
-        if (  x_term_pos == term_width - 1
-           && y_term_pos == term_height - 1 )
+        if (  x_term_pos == term_width
+           && y_term_pos == term_height )
           appendLowerRight (print_char);
         else
           appendCharacter (print_char);
@@ -2892,9 +2892,9 @@ void FTerm::updateTerminal()
       vt->changes[y].xmax = 0;
     }
     // cursor wrap
-    if ( x_term_pos >= term_width )
+    if ( x_term_pos > term_width )
     {
-      if ( y_term_pos == term_height - 1 )
+      if ( y_term_pos == term_height )
         x_term_pos--;
       else
       {
