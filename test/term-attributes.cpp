@@ -26,9 +26,6 @@ class AttribDlg : public FDialog
    AttribDlg& operator = (const AttribDlg&); // and operator '='
    void adjustSize();
 
- protected:
-   friend class AttribDemo;
-
  public:
    explicit AttribDlg (FWidget* = 0);  // constructor
   ~AttribDlg();                        // destructor
