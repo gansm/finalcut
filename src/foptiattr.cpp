@@ -849,7 +849,7 @@ short FOptiAttr::vga2ansi (register short color)
   // 1 1 1 0 | 1 0 1 1
   // 1 1 1 1 | 1 1 1 1
 
-  if ( color < 16 )
+  if ( ! color < 0 && color < 16 )
   {
     static const short lookup_table[] =
     {

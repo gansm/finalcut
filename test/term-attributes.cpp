@@ -169,7 +169,9 @@ class AttribDemo : public FWidget
    { }
    void onWheel (FWheelEvent* ev)
    {
-     dynamic_cast<AttribDlg*>(parentWidget())->onWheel(ev);
+     AttribDlg* p = dynamic_cast<AttribDlg*>(parentWidget());
+     if ( p )
+       p->onWheel(ev);
    }
 };
 #pragma pack(pop)
