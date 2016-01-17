@@ -445,6 +445,11 @@ void FWidget::adjustSize()
       width--;
     while ( ymin+height-1 > ymax )
       height--;
+
+    if ( width < 1 )
+      width = 1;
+    if ( height < 1 )
+      height = 1;
   }
 
   adjustWidgetSize.setRect(xpos, ypos, width, height);

@@ -305,7 +305,7 @@ void FApplication::processKeyboardEvent()
             x11_mouse[3] = '\0';
 
             for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-              fifo_buf[n-len] = fifo_buf[n];               
+              fifo_buf[n-len] = fifo_buf[n];
             n = fifo_buf_size-len-1;
             for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';

@@ -346,7 +346,7 @@ void AttribDemo::draw()
   short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
   if ( bg == fc::Default )
-    print (" default"); 
+    print (" default");
   else
     printf ( " %d", bg);
   gotoxy (xpos + xmin + 14, ypos + ymin + 15);

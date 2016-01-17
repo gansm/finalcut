@@ -999,7 +999,7 @@ void FTerm::init_pc_charset()
 {
   bool reinit = false;
 
-  // rxvt does not support pc charset 
+  // rxvt does not support pc charset
   if ( rxvt_terminal || urxvt_terminal )
     return;
 
@@ -1148,6 +1148,8 @@ void FTerm::init_termcaps()
         const_cast<char*>("\033[3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
       tcap[t_set_a_background].string = \
         const_cast<char*>("\033[4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+      tcap[t_orig_pair].string = \
+        const_cast<char*>("\033[39;49;25m");
     }
     else if ( rxvt_terminal && ! urxvt_terminal )
     {

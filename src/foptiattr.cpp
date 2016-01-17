@@ -214,7 +214,12 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       }
       else if ( bg == Default && term->bg_color != Default )
       {
-        char* sgr_49 = const_cast<char*>("\033[49m");
+        char* sgr_49;
+        char* op = F_orig_pair.cap;
+        if ( op && strncmp (op, "\033[39;49;25m", 11) == 0 )
+          sgr_49 = const_cast<char*>("\033[49;25m");
+        else
+          sgr_49 = const_cast<char*>("\033[49m");
         append_sequence (sgr_49);
         term->bg_color = Default;
       }
@@ -231,7 +236,11 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     return;
 
   if ( fake_reverse )
+  {
     std::swap (fg, bg);
+    if ( fg == Default || bg == Default )
+      setTermDefaultColor(term);
+  }
 
   if ( AF && AB )
   {
@@ -240,17 +249,23 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
 
     if ( cygwin_terminal )
     {
+      // reset blink and bold mode from colors > 7
       char* rst = const_cast<char*>("\033[m");
       append_sequence (rst);
       reset(term);
 
-      color_str = tparm(AF, ansi_fg);
-      if ( color_str )
-        append_sequence (color_str);
-
-      color_str = tparm(AB, ansi_bg);
-      if ( color_str )
-        append_sequence (color_str);
+      if ( ansi_fg != Default )
+      {
+        color_str = tparm(AF, ansi_fg);
+        if ( color_str )
+          append_sequence (color_str);
+      }
+      if ( ansi_bg != Default )
+      {
+        color_str = tparm(AB, ansi_bg);
+        if ( color_str )
+          append_sequence (color_str);
+      }
     }
     else
     {
@@ -1336,7 +1351,18 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
       setTermPCcharset(term);
 
     if ( colorChange(term, next) )
+    {
       change_color (term, next);
+      if ( cygwin_terminal )
+      {
+        if ( next->bold )
+          setTermBold(term);
+        if ( next->reverse )
+          setTermReverse(term);
+        if ( next->standout )
+         setTermStandout(term);
+      }
+    }
   }
   else
   {
