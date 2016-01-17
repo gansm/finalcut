@@ -515,7 +515,7 @@ void Calc::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
       {
-        FAccelEvent a_ev(Accelerator_Event, getFocusWidget());
+        FAccelEvent a_ev(fc::Accelerator_Event, getFocusWidget());
         calculator_buttons[On]->onAccel(&a_ev);
       }
       ev->accept();

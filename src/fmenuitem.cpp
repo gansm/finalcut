@@ -383,7 +383,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseDown_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
         smenu->onMouseDown(_ev);
         delete _ev;
       }
@@ -395,7 +395,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseDown_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
         mbar->onMouseDown(_ev);
         delete _ev;
       }
@@ -417,7 +417,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseUp_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
         smenu->onMouseUp(_ev);
         delete _ev;
       }
@@ -429,7 +429,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseUp_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
         mbar->onMouseUp(_ev);
         delete _ev;
       }
@@ -451,7 +451,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
         smenu->onMouseMove(_ev);
         delete _ev;
       }
@@ -463,7 +463,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p2, g, b);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
         mbar->onMouseMove(_ev);
         delete _ev;
       }
@@ -493,7 +493,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           openMenu();
 
           focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-          FFocusEvent out (FocusOut_Event);
+          FFocusEvent out (fc::FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           menu->unselectItem();
           menu->selectFirstItem();

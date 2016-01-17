@@ -87,7 +87,7 @@ void FObject::delChild (FObject* obj)
 //----------------------------------------------------------------------
 bool FObject::event (FEvent* ev)
 {
-  if ( ev->type() == Timer_Event )
+  if ( ev->type() == fc::Timer_Event )
   {
     onTimer ( static_cast<FTimerEvent*>(ev) );
     return true;

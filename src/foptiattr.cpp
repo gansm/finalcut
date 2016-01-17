@@ -68,7 +68,7 @@ FOptiAttr::~FOptiAttr() // destructor
 //----------------------------------------------------------------------
 inline bool FOptiAttr::hasColor (char_data*& attr)
 {
-  if ( attr->fg_color < 0 && attr->bg_color < 0 )
+  if ( attr && attr->fg_color < 0 && attr->bg_color < 0 )
     return false;
   else
     return true;
@@ -1312,18 +1312,20 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
   }
   else if ( F_set_attributes.cap )
   {
-    unsetTermPCcharset(term);
-    setTermAttributes ( term
-                      , next->standout
-                      , next->underline
-                      , next->reverse
-                      , next->blink
-                      , next->dim
-                      , next->bold
-                      , next->invisible
-                      , next->protect
-                      , next->alt_charset );
+    if ( off.pc_charset )
+      unsetTermPCcharset(term);
 
+    if ( switchOn() || switchOff() )
+      setTermAttributes ( term
+                        , next->standout
+                        , next->underline
+                        , next->reverse
+                        , next->blink
+                        , next->dim
+                        , next->bold
+                        , next->invisible
+                        , next->protect
+                        , next->alt_charset );
     if ( next->italic )
       setTermItalic(term);
     if ( next->crossed_out )

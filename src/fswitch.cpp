@@ -181,7 +181,7 @@ void FSwitch::onMouseDown (FMouseEvent* ev)
 {
   FToggleButton::onMouseDown(ev);
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   button_pressed = true;
@@ -193,7 +193,7 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 {
   FToggleButton::onMouseUp(ev);
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   button_pressed = false;

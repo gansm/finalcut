@@ -357,11 +357,11 @@ void FApplication::processKeyboardEvent()
           else
           {
             // send key down event
-            FKeyEvent k_down_ev (KeyDown_Event, key);
+            FKeyEvent k_down_ev (fc::KeyDown_Event, key);
             sendEvent (widget, &k_down_ev);
 
             // send key press event
-            FKeyEvent k_press_ev (KeyPress_Event, key);
+            FKeyEvent k_press_ev (fc::KeyPress_Event, key);
             sendEvent (widget, &k_press_ev);
 
             if ( ! open_menu
@@ -386,7 +386,7 @@ void FApplication::processKeyboardEvent()
                     break;
                   if ( iter->key == key )
                   {
-                    FAccelEvent a_ev (Accelerator_Event, focus_widget);
+                    FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
                     sendEvent (iter->object, &a_ev);
                     break;
                   };
@@ -399,7 +399,7 @@ void FApplication::processKeyboardEvent()
         fifo_offset = int(strlen(fifo_buf));
       }
       // send key up event
-      FKeyEvent k_up_ev (KeyUp_Event, key);
+      FKeyEvent k_up_ev (fc::KeyUp_Event, key);
       sendEvent (widget, &k_up_ev);
       key = 0;
     }
@@ -412,7 +412,7 @@ void FApplication::processKeyboardEvent()
      && fifo_buf[1] == 0x00
      && isKeyTimeout(&time_keypressed, key_timeout) )
   {
-    FKeyEvent k_press_ev (KeyPress_Event, fc::Fkey_escape);
+    FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
     sendEvent (widget, &k_press_ev);
     input_data_pending = false;
   }
@@ -1020,11 +1020,11 @@ void FApplication::processMouseEvent()
     int key_state = 0;
 
     if ( b_state.shift_button == Pressed )
-      key_state |= ShiftButton;
+      key_state |= fc::ShiftButton;
     if ( b_state.meta_button == Pressed )
-      key_state |= MetaButton;
+      key_state |= fc::MetaButton;
     if ( b_state.control_button == Pressed )
-      key_state |= ControlButton;
+      key_state |= fc::ControlButton;
 
     localMousePos = clicked_widget->globalToLocalPos(*mouse);
 
@@ -1032,26 +1032,26 @@ void FApplication::processMouseEvent()
     {
       if ( b_state.left_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseMove_Event
+        FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , localMousePos
                               , *mouse
-                              , LeftButton | key_state );
+                              , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
       if ( b_state.right_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseMove_Event
+        FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , localMousePos
                               , *mouse
-                              , RightButton | key_state );
+                              , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
       if ( b_state.middle_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseMove_Event
+        FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , localMousePos
                               , *mouse
-                              , MiddleButton | key_state );
+                              , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
     }
@@ -1059,26 +1059,26 @@ void FApplication::processMouseEvent()
     {
       if ( b_state.left_button == DoubleClick )
       {
-        FMouseEvent m_dblclick_ev ( MouseDoubleClick_Event
+        FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
                                   , localMousePos
                                   , *mouse
-                                  , LeftButton | key_state );
+                                  , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_dblclick_ev);
       }
       else if ( b_state.left_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseDown_Event
+        FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , localMousePos
                               , *mouse
-                              , LeftButton | key_state );
+                              , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
       else if ( b_state.left_button == Released )
       {
-        FMouseEvent m_up_ev ( MouseUp_Event
+        FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , localMousePos
                             , *mouse
-                            , LeftButton | key_state );
+                            , fc::LeftButton | key_state );
         FWidget* released_widget = clicked_widget;
         if (  b_state.right_button != Pressed
            && b_state.middle_button != Pressed )
@@ -1088,18 +1088,18 @@ void FApplication::processMouseEvent()
 
       if ( b_state.right_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseDown_Event
+        FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , localMousePos
                               , *mouse
-                              , RightButton | key_state );
+                              , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
       else if ( b_state.right_button == Released )
       {
-        FMouseEvent m_up_ev ( MouseUp_Event
+        FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , localMousePos
                             , *mouse
-                            , RightButton | key_state );
+                            , fc::RightButton | key_state );
         FWidget* released_widget = clicked_widget;
         if (  b_state.left_button != Pressed
            && b_state.middle_button != Pressed )
@@ -1109,10 +1109,10 @@ void FApplication::processMouseEvent()
 
       if ( b_state.middle_button == Pressed )
       {
-        FMouseEvent m_down_ev ( MouseDown_Event
+        FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , localMousePos
                               , *mouse
-                              , MiddleButton | key_state );
+                              , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
         // gnome-terminal sends no released on middle click
         if ( gnome_terminal )
@@ -1120,10 +1120,10 @@ void FApplication::processMouseEvent()
       }
       else if ( b_state.middle_button == Released )
       {
-        FMouseEvent m_up_ev ( MouseUp_Event
+        FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , localMousePos
                             , *mouse
-                            , MiddleButton | key_state );
+                            , fc::MiddleButton | key_state );
         FWidget* released_widget = clicked_widget;
         if (  b_state.right_button != Pressed
            && b_state.left_button != Pressed )
@@ -1131,22 +1131,24 @@ void FApplication::processMouseEvent()
         sendEvent (released_widget, &m_up_ev);
       }
     }
+
     if ( b_state.wheel_up == Pressed )
     {
-      FWheelEvent wheel_ev ( MouseWheel_Event
+      FWheelEvent wheel_ev ( fc::MouseWheel_Event
                            , localMousePos
                            , *mouse
-                           , WheelUp );
+                           , fc::WheelUp );
       FWidget* scroll_over_widget = clicked_widget;
       clicked_widget = 0;
       sendEvent(scroll_over_widget, &wheel_ev);
     }
+
     if ( b_state.wheel_down == Pressed )
     {
-      FWheelEvent wheel_ev ( MouseWheel_Event
+      FWheelEvent wheel_ev ( fc::MouseWheel_Event
                            , localMousePos
                            , *mouse
-                           , WheelDown );
+                           , fc::WheelDown );
       FWidget* scroll_over_widget = clicked_widget;
       clicked_widget = 0;
       sendEvent (scroll_over_widget, &wheel_ev);
@@ -1164,7 +1166,7 @@ void FApplication::processResizeEvent()
 {
   if ( resize_term )
   {
-    FResizeEvent r_ev(Resize_Event);
+    FResizeEvent r_ev(fc::Resize_Event);
     sendEvent(rootObj, &r_ev);
 
     if ( r_ev.isAccepted() )
@@ -1207,7 +1209,7 @@ int FApplication::processTimerEvent()
     if ( (*iter).interval.tv_usec > 0 || (*iter).interval.tv_sec > 0 )
       activated++;
 
-    FTimerEvent t_ev(Timer_Event, (*iter).id);
+    FTimerEvent t_ev(fc::Timer_Event, (*iter).id);
     sendEvent((*iter).object, &t_ev);
 
     ++iter;
@@ -1381,17 +1383,17 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
     {
       switch ( event->type() )
       {
-        case KeyPress_Event:
-        case KeyUp_Event:
-        case KeyDown_Event:
-        case MouseDown_Event:
-        case MouseUp_Event:
-        case MouseDoubleClick_Event:
-        case MouseWheel_Event:
-        case MouseMove_Event:
-        case FocusIn_Event:
-        case FocusOut_Event:
-        case Accelerator_Event:
+        case fc::KeyPress_Event:
+        case fc::KeyUp_Event:
+        case fc::KeyDown_Event:
+        case fc::MouseDown_Event:
+        case fc::MouseUp_Event:
+        case fc::MouseDoubleClick_Event:
+        case fc::MouseWheel_Event:
+        case fc::MouseMove_Event:
+        case fc::FocusIn_Event:
+        case fc::FocusOut_Event:
+        case fc::Accelerator_Event:
           return false;
 
         default:
@@ -1401,8 +1403,8 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
   }
 
   // throw away mouse events to disabled widgets
-  if (  event->type() >= MouseDown_Event
-     && event->type() <= MouseMove_Event
+  if (  event->type() >= fc::MouseDown_Event
+     && event->type() <= fc::MouseMove_Event
      && ! widget->isEnabled() )
     return false;
 

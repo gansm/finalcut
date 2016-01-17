@@ -26,10 +26,6 @@
 #include "fwidget.h"
 
 
-#define NO_EMPHASIS  0x00000000
-#define EMPHASIS     0x00000001
-
-
 //----------------------------------------------------------------------
 // class FLabel
 //----------------------------------------------------------------------
@@ -43,10 +39,10 @@ class FLabel : public FWidget
    std::vector<FString> multiline_text;
    bool     multiline;
    FString  text;
-   int      emphasis;
    uInt     alignment;
    short    emphasis_color;
    short    ellipsis_color;
+   bool     emphasis;
    bool     reverse_mode;
    FWidget* accel_widget;
 
@@ -116,7 +112,7 @@ inline bool FLabel::unsetEmphasis()
 
 //----------------------------------------------------------------------
 inline bool FLabel::hasEmphasis()
-{ return ((emphasis & EMPHASIS) != 0); }
+{ return emphasis; }
 
 //----------------------------------------------------------------------
 inline bool FLabel::setReverseMode()

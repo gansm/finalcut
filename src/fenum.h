@@ -22,6 +22,31 @@
 class fc
 {
  public:
+   // event types
+   enum events
+   {
+     None_Event,              // invalid event
+     KeyPress_Event,          // key pressed
+     KeyUp_Event,             // key released
+     KeyDown_Event,           // key pressed
+     MouseDown_Event,         // mouse button pressed
+     MouseUp_Event,           // mouse button released
+     MouseDoubleClick_Event,  // mouse button double click
+     MouseWheel_Event,        // mouse wheel rolled
+     MouseMove_Event,         // mouse move
+     FocusIn_Event,           // focus in
+     FocusOut_Event,          // focus out
+     WindowActive_Event,      // activate window
+     WindowInactive_Event,    // deactivate window
+     WindowRaised_Event,      // raise window
+     WindowLowered_Event,     // lower window
+     Accelerator_Event,       // keyboard accelerator
+     Resize_Event,            // terminal resize
+     Show_Event,              // widget is shown
+     Hide_Event,              // widget is hidden
+     Close_Event,             // widget close
+     Timer_Event              // timer event occur
+   };
 
    // internal character encoding
    enum encoding
@@ -828,6 +853,37 @@ class fc
      Grey85            = 253, // #dadada
      Grey89            = 254, // #e4e4e4
      Grey93            = 255  // #eeeeee
+   };
+
+   // mouse/keyboard state values
+   enum ButtonState
+   {
+     NoButton        = 0x00,
+     LeftButton      = 0x01,
+     RightButton     = 0x02,
+     MiddleButton    = 0x04,
+     MouseButtonMask = 0x07,
+     ShiftButton     = 0x08,
+     ControlButton   = 0x10,
+     MetaButton      = 0x20,
+     KeyButtonMask   = 0x38
+   };
+
+   // wheel state values
+   enum WheelState
+   {
+     NoWheel   = 0x00,
+     WheelUp   = 0x01,
+     WheelDown = 0x02,
+     WheelMask = 0x03
+   };
+
+   // type of focus
+   enum FocusTypes
+   {
+     FocusNextWidget     = 0x00,
+     FocusPreviousWidget = 0x01,
+     FocusDefiniteWidget = 0x03
    };
 
    // xterm cursor style

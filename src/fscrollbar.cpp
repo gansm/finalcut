@@ -209,8 +209,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if (  ev->getButton() != LeftButton
-     && ev->getButton() != MiddleButton )
+  if (  ev->getButton() != fc::LeftButton
+     && ev->getButton() != fc::MiddleButton )
     return;
 
   if ( min == max )
@@ -219,7 +219,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if ( ev->getButton() == MiddleButton )
+  if ( ev->getButton() == fc::MiddleButton )
   {
     processMiddleButton (mouse_x, mouse_y);
     return;
@@ -276,8 +276,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FScrollbar::onMouseUp (FMouseEvent* ev)
 {
-  if (  ev->getButton() != LeftButton
-     && ev->getButton() != MiddleButton )
+  if (  ev->getButton() != fc::LeftButton
+     && ev->getButton() != fc::MiddleButton )
     return;
 
   SliderClickPos = -1;
@@ -294,14 +294,14 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 {
   int mouse_x, mouse_y, newScrollType;
 
-  if (  ev->getButton() != LeftButton
-     && ev->getButton() != MiddleButton )
+  if (  ev->getButton() != fc::LeftButton
+     && ev->getButton() != fc::MiddleButton )
     return;
 
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if ( ev->getButton() == MiddleButton )
+  if ( ev->getButton() == fc::MiddleButton )
   {
     processMiddleButton (mouse_x, mouse_y);
     return;
@@ -365,9 +365,9 @@ void FScrollbar::onWheel (FWheelEvent* ev)
     scrollType = FScrollbar::noScroll;
   }
 
-  if ( wheel == WheelUp )
+  if ( wheel == fc::WheelUp )
     scrollType = FScrollbar::scrollWheelUp;
-  else if ( wheel == WheelDown )
+  else if ( wheel == fc::WheelDown )
     scrollType = FScrollbar::scrollWheelDown;
 
   processScroll();

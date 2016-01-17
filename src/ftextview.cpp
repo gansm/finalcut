@@ -298,13 +298,13 @@ void FTextView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
     if ( focused_widget )
@@ -322,7 +322,7 @@ void FTextView::onWheel (FWheelEvent* ev)
 
   switch ( wheel )
   {
-    case WheelUp:
+    case fc::WheelUp:
       if ( yoffset == 0 )
         break;
       yoffset -= 4;
@@ -330,7 +330,7 @@ void FTextView::onWheel (FWheelEvent* ev)
         yoffset=0;
       break;
 
-    case WheelDown:
+    case fc::WheelDown:
       {
         int yoffset_end = last_line - height - nf_offset + 2;
         if ( yoffset_end < 0 )
@@ -419,14 +419,14 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 
     case FScrollbar::scrollWheelUp:
     {
-      FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelUp);
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
       onWheel(&wheel_ev);
       break;
     }
 
     case FScrollbar::scrollWheelDown:
     {
-      FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelDown);
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
       onWheel(&wheel_ev);
       break;
     }

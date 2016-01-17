@@ -961,7 +961,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
     if ( open_sub_menu )
     {
@@ -1040,7 +1040,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         {
           unselectItem();
           FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (FocusOut_Event);
+          FFocusEvent out (fc::FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           setSelectedItem(*iter);
@@ -1081,7 +1081,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( mouse_down )
@@ -1155,7 +1155,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! isActiveWindow() )
@@ -1223,7 +1223,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
         {
           // Mouse pointer over item
           FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (FocusOut_Event);
+          FFocusEvent out (fc::FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           setSelectedItem(*iter);
@@ -1267,7 +1267,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = open_sub_menu->globalToLocalPos(g);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
       open_sub_menu->mouse_down = true;
       setClickedWidget(open_sub_menu);
       open_sub_menu->onMouseMove(_ev);
@@ -1280,7 +1280,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = smenu->globalToLocalPos(g);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
       smenu->mouse_down = true;
       setClickedWidget(smenu);
       smenu->onMouseMove(_ev);
@@ -1294,7 +1294,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& g = ev->getGlobalPos();
       const FPoint& p = menubar->globalToLocalPos(g);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
       setClickedWidget(menubar);
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
       mbar->mouse_down = true;

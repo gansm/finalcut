@@ -1,3 +1,6 @@
+2016-01-17  Markus Gans  <guru.mail@muenster.de>
+	* Moving events into the class fc
+
 2016-01-10  Markus Gans  <guru.mail@muenster.de>
 	* Better default color handling in FOptiAttr
 

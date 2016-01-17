@@ -96,7 +96,7 @@ void FButtonGroup::directFocus()
           {
             found_checked = true;
             FWidget* focused_widget = getFocusWidget();
-            FFocusEvent out (FocusOut_Event);
+            FFocusEvent out (fc::FocusOut_Event);
             FApplication::queueEvent(focused_widget, &out);
             (*iter)->setFocus();
             if ( focused_widget )
@@ -112,7 +112,7 @@ void FButtonGroup::directFocus()
     if ( ! found_checked )
     {
       FWidget* focused_widget = getFocusWidget();
-      FFocusEvent out (FocusOut_Event);
+      FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       focusFirstChild();
       if ( focused_widget )
@@ -448,7 +448,7 @@ bool FButtonGroup::hasCheckedButton()
 //----------------------------------------------------------------------
 void FButtonGroup::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
   directFocus();
 }
@@ -487,7 +487,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   }
   if ( in_ev->isAccepted() )
   {
-    if ( in_ev->getFocusType() == FocusNextWidget )
+    if ( in_ev->getFocusType() == fc::FocusNextWidget )
     {
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();
@@ -495,7 +495,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       prev_element->redraw();
       getFocusWidget()->redraw();
     }
-    else if ( in_ev->getFocusType() == FocusPreviousWidget )
+    else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
     {
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();

@@ -906,18 +906,18 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 {
   int yoffset_before, mouse_x, mouse_y;
 
-  if (  ev->getButton() != LeftButton
-     && ev->getButton() != RightButton )
+  if (  ev->getButton() != fc::LeftButton
+     && ev->getButton() != fc::RightButton )
   {
     return;
   }
-  if ( ev->getButton() == RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
     return;
 
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
     if ( focused_widget )
@@ -936,7 +936,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     if ( current > int(count()) )
       current = int(count());
     inc_search.clear();
-    if ( ev->getButton() == RightButton )
+    if ( ev->getButton() == fc::RightButton )
     {
       if ( isMultiSelection() )
       {
@@ -976,7 +976,7 @@ void FListBox::onMouseUp (FMouseEvent* ev)
     scrollTimer = false;
   }
 
-  if ( ev->getButton() == LeftButton )
+  if ( ev->getButton() == fc::LeftButton )
   {
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
@@ -995,12 +995,12 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 {
   int current_before, yoffset_before, mouse_x, mouse_y;
 
-  if (  ev->getButton() != LeftButton
-     && ev->getButton() != RightButton )
+  if (  ev->getButton() != fc::LeftButton
+     && ev->getButton() != fc::RightButton )
   {
     return;
   }
-  if ( ev->getButton() == RightButton && ! isMultiSelection() )
+  if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
     return;
 
   current_before = current;
@@ -1017,7 +1017,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     inc_search.clear();
 
     // handle multiple selections
-    if (  ev->getButton() == RightButton
+    if (  ev->getButton() == fc::RightButton
        && isMultiSelection()
        && current_before != current )
     {
@@ -1068,7 +1068,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
-      if ( ev->getButton() == RightButton )
+      if ( ev->getButton() == fc::RightButton )
         dragScroll = FListBox::scrollUpSelect;
       else
         dragScroll = FListBox::scrollUp;
@@ -1088,7 +1088,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
-      if ( ev->getButton() == RightButton )
+      if ( ev->getButton() == fc::RightButton )
         dragScroll = FListBox::scrollDownSelect;
       else
         dragScroll = FListBox::scrollDown;
@@ -1114,7 +1114,7 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   mouse_x = ev->getX();
@@ -1245,7 +1245,7 @@ void FListBox::onWheel (FWheelEvent* ev)
 
   switch ( wheel )
   {
-    case WheelUp:
+    case fc::WheelUp:
       if ( yoffset == 0 )
         break;
       yoffset -= 4;
@@ -1261,7 +1261,7 @@ void FListBox::onWheel (FWheelEvent* ev)
       inc_search.clear();
       break;
 
-    case WheelDown:
+    case fc::WheelDown:
       if ( yoffset == yoffset_end )
         break;
       yoffset += 4;
@@ -1375,14 +1375,14 @@ void FListBox::cb_VBarChange (FWidget*, void*)
 
     case FScrollbar::scrollWheelUp:
     {
-      FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelUp);
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
       onWheel(&wheel_ev);
     }
     break;
 
     case FScrollbar::scrollWheelDown:
     {
-      FWheelEvent wheel_ev (MouseWheel_Event, FPoint(2,2), WheelDown);
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
       onWheel(&wheel_ev);
     }
     break;

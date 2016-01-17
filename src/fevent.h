@@ -53,30 +53,8 @@
 #ifndef _FEVENT_H
 #define _FEVENT_H
 
+#include "fenum.h"
 #include "fpoint.h"
-
-
-#define None_Event               0  // invalid event
-#define KeyPress_Event           1  // key pressed
-#define KeyUp_Event              2  // key released
-#define KeyDown_Event            3  // key pressed
-#define MouseDown_Event          4  // mouse button pressed
-#define MouseUp_Event            5  // mouse button released
-#define MouseDoubleClick_Event   6  // mouse button double click
-#define MouseWheel_Event         7  // mouse wheel rolled
-#define MouseMove_Event          8  // mouse move
-#define FocusIn_Event            9  // focus in
-#define FocusOut_Event          10  // focus out
-#define WindowActive_Event      11  // activate window
-#define WindowInactive_Event    12  // deactivate window
-#define WindowRaised_Event      13  // raise window
-#define WindowLowered_Event     14  // lower window
-#define Accelerator_Event       15  // keyboard accelerator
-#define Resize_Event            16  // terminal resize
-#define Show_Event              17  // widget is shown
-#define Hide_Event              18  // widget is hidden
-#define Close_Event             19  // widget close
-#define Timer_Event             20  // timer event occur
 
 
 //----------------------------------------------------------------------
@@ -130,19 +108,6 @@ class FKeyEvent : public FEvent        // keyboard event
 // class FMouseEvent
 //----------------------------------------------------------------------
 
-enum ButtonState                    // mouse/keyboard state values
-{
-  NoButton        = 0x00,
-  LeftButton      = 0x01,
-  RightButton     = 0x02,
-  MiddleButton    = 0x04,
-  MouseButtonMask = 0x07,
-  ShiftButton     = 0x08,
-  ControlButton   = 0x10,
-  MetaButton      = 0x20,
-  KeyButtonMask   = 0x38
-};
-
 #pragma pack(push)
 #pragma pack(1)
 
@@ -173,14 +138,6 @@ class FMouseEvent : public FEvent   // mouse event
 //----------------------------------------------------------------------
 // class FWheelEvent
 //----------------------------------------------------------------------
-
-enum WheelState                    // wheel state values
-{
-  NoWheel   = 0x00,
-  WheelUp   = 0x01,
-  WheelDown = 0x02,
-  WheelMask = 0x03
-};
 
 #pragma pack(push)
 #pragma pack(1)
@@ -213,13 +170,6 @@ class FWheelEvent : public FEvent   // wheel event
 // class FFocusEvent
 //----------------------------------------------------------------------
 
-enum FocusTypes
-{
-  FocusNextWidget     = 0x00,
-  FocusPreviousWidget = 0x01,
-  FocusDefiniteWidget = 0x03
-};
-
 #pragma pack(push)
 #pragma pack(1)
 
@@ -231,14 +181,14 @@ class FFocusEvent : public FEvent        // focus event
 
    bool gotFocus()  const;
    bool lostFocus() const;
-   FocusTypes getFocusType() const;
-   void setFocusType(FocusTypes);
+   fc::FocusTypes getFocusType() const;
+   void setFocusType(fc::FocusTypes);
    bool isAccepted() const;
    void accept();
    void ignore();
  protected:
    bool accpt;
-   FocusTypes focus_type;
+   fc::FocusTypes focus_type;
 };
 
 #pragma pack(pop)

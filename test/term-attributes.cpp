@@ -88,9 +88,9 @@ void AttribDlg::onWheel (FWheelEvent* ev)
 {
   int wheel = ev->getWheel();
 
-  if ( wheel == WheelUp )
+  if ( wheel == fc::WheelUp )
     cb_next();
-  else if ( wheel == WheelDown )
+  else if ( wheel == fc::WheelDown )
     cb_back();
 }
 
@@ -135,6 +135,10 @@ void AttribDlg::adjustSize()
 {
   int x = ((parentWidget()->getWidth() - getWidth()) / 2 );
   int y = ((parentWidget()->getHeight() - getHeight()) / 2 ) + 1;
+  if ( x < 1 )
+    x = 1;
+  if ( y < 1 )
+    y = 1;
 
   setGeometry(x, y, 69, 21, false);
   next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1, false);
@@ -339,8 +343,12 @@ void AttribDemo::draw()
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
   gotoxy (xpos + xmin - 1, ypos + ymin + 13);
-  printf ( " Background color: %d  ",
-           static_cast<AttribDlg*>(getParent())->bgcolor );
+  short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
+  print (" Background color:");
+  if ( bg == fc::Default )
+    print (" default"); 
+  else
+    printf ( " %d", bg);
   gotoxy (xpos + xmin + 14, ypos + ymin + 15);
   print ("Change background color ->");
 

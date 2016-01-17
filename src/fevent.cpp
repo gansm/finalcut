@@ -175,7 +175,7 @@ int FWheelEvent::getWheel() const
 FFocusEvent::FFocusEvent (int ev_type)  // constructor
   : FEvent(ev_type)
   , accpt(true)
-  , focus_type(FocusDefiniteWidget)
+  , focus_type(fc::FocusDefiniteWidget)
 { }
 
 //----------------------------------------------------------------------
@@ -185,21 +185,21 @@ FFocusEvent::~FFocusEvent()  // destructor
 //----------------------------------------------------------------------
 bool FFocusEvent::gotFocus() const
 {
-  return (type() == FocusIn_Event);
+  return (type() == fc::FocusIn_Event);
 }
 
 //----------------------------------------------------------------------
 bool FFocusEvent::lostFocus() const
 {
-  return (type() == FocusOut_Event);
+  return (type() == fc::FocusOut_Event);
 }
 
 //----------------------------------------------------------------------
-FocusTypes FFocusEvent::getFocusType() const
+fc::FocusTypes FFocusEvent::getFocusType() const
 { return focus_type; }
 
 //----------------------------------------------------------------------
-void FFocusEvent::setFocusType(FocusTypes ft)
+void FFocusEvent::setFocusType(fc::FocusTypes ft)
 { focus_type = ft; }
 
 //----------------------------------------------------------------------

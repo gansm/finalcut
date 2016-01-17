@@ -999,6 +999,10 @@ void FTerm::init_pc_charset()
 {
   bool reinit = false;
 
+  // rxvt does not support pc charset 
+  if ( rxvt_terminal || urxvt_terminal )
+    return;
+
   // fallback if "S2" is not found
   if ( ! tcap[t_enter_pc_charset_mode].string )
   {
@@ -1096,9 +1100,13 @@ void FTerm::init_termcaps()
 
     tabstop = uInt(tgetnum(const_cast<char*>("it")));
     attr_without_color = uInt(tgetnum(const_cast<char*>("NC")));
+
     // gnome-terminal has NC=16 however, it can use the dim attribute
     if ( gnome_terminal )
       attr_without_color = 0;
+    // PuTTY has NC=22 however, it can show underline and reverse
+    if ( putty_terminal )
+      attr_without_color = 16;
 
     // read termcap output strings
     for (int i=0; tcap[i].tname[0] != 0; i++)
@@ -1481,6 +1489,7 @@ void FTerm::init()
   tmux_terminal          = \
   background_color_erase = false;
 
+  // term_attribute stores the current state of the terminal
   term_attribute.code          = '\0';
   term_attribute.fg_color      = fc::Default;
   term_attribute.bg_color      = fc::Default;
@@ -1498,6 +1507,7 @@ void FTerm::init()
   term_attribute.alt_charset   = \
   term_attribute.pc_charset    = false;
 
+  // next_attribute contains the state of the next printed character
   next_attribute.code          = '\0';
   next_attribute.fg_color      = fc::Default;
   next_attribute.bg_color      = fc::Default;
@@ -1695,9 +1705,9 @@ void FTerm::init()
   setXTermMouseForeground ("rgb:0000/0000/0000");
   if ( ! gnome_terminal )
     setXTermCursorColor("rgb:ffff/ffff/ffff");
-  if ( ! mintty_terminal )
+  if ( ! mintty_terminal && ! rxvt_terminal )
   {
-    // mintty can't reset these settings
+    // mintty and rxvt can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
     setXTermForeground("rgb:0000/0000/0000");
     setXTermHighlightBackground("rgb:8686/8686/8686");
@@ -1764,6 +1774,8 @@ void FTerm::init()
     setPalette (fc::Yellow, 0xff, 0xff, 0x54);
     setPalette (fc::White, 0xff, 0xff, 0xff);
   }
+
+  // set 200 Hz beep (100 ms)
   setBeep(200, 100);
 
   signal(SIGTERM,  FTerm::signal_handler); // Termination signal
@@ -1787,7 +1799,7 @@ void FTerm::finish()
   signal(SIGQUIT,  SIG_DFL); // Quit from keyboard (Ctrl-\)
   signal(SIGTERM,  SIG_DFL); // Termination signal
 
-  if ( xterm && ! rxvt_terminal )
+  if ( xterm_title && xterm && ! rxvt_terminal )
     setXTermTitle (*xterm_title);
 
   showCursor();
@@ -1924,9 +1936,15 @@ void FTerm::finish()
   if ( vterm != 0 )
   {
     if ( vterm->changes != 0 )
+    {
       delete[] vterm->changes;
+      vterm->changes = 0;
+    }
     if ( vterm->text != 0 )
+    {
       delete[] vterm->text;
+      vterm->text = 0;
+    }
     delete vterm;
   }
 }
@@ -1998,7 +2016,7 @@ void FTerm::createArea (term_area*& area)
 void FTerm::resizeArea (term_area* area)
 {
   int area_size, width, height, rsw, bsh;
-  char_data default_char;
+  FOptiAttr::char_data default_char;
   line_changes unchanged;
 
   if ( ! area )
@@ -2028,13 +2046,13 @@ void FTerm::resizeArea (term_area* area)
     if ( area->text != 0 )
       delete[] area->text;
     area->changes = new line_changes[height + bsh];
-    area->text    = new char_data[area_size];
+    area->text    = new FOptiAttr::char_data[area_size];
   }
   else if ( area->width + area->right_shadow != width + rsw )
   {
     if ( area->text != 0 )
       delete[] area->text;
-    area->text = new char_data[area_size];
+    area->text = new FOptiAttr::char_data[area_size];
   }
   else
     return;
@@ -2081,8 +2099,8 @@ void FTerm::restoreVTerm (const FRect& box)
 //----------------------------------------------------------------------
 void FTerm::restoreVTerm (int x, int y, int w, int h)
 {
-  char_data* tc; // terminal character
-  char_data* sc; // shown character
+  FOptiAttr::char_data* tc; // terminal character
+  FOptiAttr::char_data* sc; // shown character
   FWidget* widget;
 
   x--;
@@ -2160,7 +2178,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
           sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
       }
 
-      memcpy (tc, sc, sizeof(char_data));
+      memcpy (tc, sc, sizeof(FOptiAttr::char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
         vterm->changes[y+ty].xmin = uInt(x);
@@ -2242,8 +2260,8 @@ bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
 void FTerm::updateVTerm (FTerm::term_area* area)
 {
   int ax, ay, aw, ah, rsh, bsh, y_end, ol;
-  char_data* tc; // terminal character
-  char_data* ac; // area character
+  FOptiAttr::char_data* tc; // terminal character
+  FOptiAttr::char_data* ac; // area character
 
   if ( ! vterm_updates )
   {
@@ -2285,7 +2303,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
       if ( ax == 0 )
         line_xmin = ol;
-      else if ( aw + rsh + ax - ol >= vterm->width )
+      if ( aw + rsh + ax - ol >= vterm->width )
         line_xmax = vterm->width + ol - ax - 1;
 
       if ( ax + line_xmin >= vterm->width )
@@ -2305,7 +2323,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
         tc = &vterm->text[gy * vterm->width + gx - ol];
 
         if ( ! isCovered(gx-ol, gy, area) )
-          memcpy (tc, ac, sizeof(char_data));
+          memcpy (tc, ac, sizeof(FOptiAttr::char_data));
         else
           line_xmin++;  // don't update covered character
       }
@@ -2334,8 +2352,8 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 {
   int y_end;
   int length;
-  char_data* tc; // terminal character
-  char_data* ac; // area character
+  FOptiAttr::char_data* tc; // terminal character
+  FOptiAttr::char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2356,7 +2374,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
   {
     ac = &area->text[y * area->width];
     tc = &vterm->text[(ay+y) * vterm->width + ax];
-    memcpy (ac, tc, sizeof(char_data) * unsigned(length));
+    memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
@@ -2369,8 +2387,8 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
 {
   int y_end, length, dx, dy;
-  char_data* tc; // terminal character
-  char_data* ac; // area character
+  FOptiAttr::char_data* tc; // terminal character
+  FOptiAttr::char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2399,7 +2417,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
     tc = &vterm->text[(y+_y-1) * vterm->width + x-1];
     ac = &area->text[(dy+_y) * line_len + dx];
 
-    memcpy (ac, tc, sizeof(char_data) * unsigned(length));
+    memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
 
     if ( short(area->changes[dy+_y].xmin) > dx )
       area->changes[dy+_y].xmin = uInt(dx);
@@ -2422,8 +2440,8 @@ void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 {
   int aw, ah, rsh, bsh, y_end, length, ol, sbar;
-  char_data* tc; // terminal character
-  char_data* ac; // area character
+  FOptiAttr::char_data* tc; // terminal character
+  FOptiAttr::char_data* ac; // area character
 
   if ( ! area )
     return;
@@ -2468,7 +2486,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     tc = &vterm->text[(ay+y) * vterm->width + ax];
     ac = &area->text[y * line_len + ol];
 
-    memcpy (tc, ac, sizeof(char_data) * unsigned(length));
+    memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
 
     if ( ax < short(vterm->changes[ay+y].xmin) )
       vterm->changes[ay+y].xmin = uInt(ax);
@@ -2478,10 +2496,10 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-FTerm::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
+FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 {
   int xx,yy;
-  char_data* cc; // covered character
+  FOptiAttr::char_data* cc; // covered character
   FWidget* w;
 
   x--;
@@ -2659,7 +2677,7 @@ bool FTerm::setOldFont()
 
   if ( xterm || urxvt_terminal || osc_support )
   {
-    if ( xterm_font->getLength() > 2 )
+    if ( xterm_font && xterm_font->getLength() > 2 )
       // restore saved xterm font
       putstringf ("\033]50;%s\07", xterm_font->c_str() );
     else
@@ -2772,7 +2790,7 @@ void FTerm::createVTerm()
 //----------------------------------------------------------------------
 void FTerm::resizeVTerm()
 {
-  char_data default_char;
+  FOptiAttr::char_data default_char;
   line_changes unchanged;
   int term_width, term_height, vterm_size;
 
@@ -2783,18 +2801,27 @@ void FTerm::resizeVTerm()
   if ( vterm->height != term_height )
   {
     if ( vterm->changes != 0 )
+    {
       delete[] vterm->changes;
+      vterm->changes = 0;
+    }
     if ( vterm->text != 0 )
+    {
       delete[] vterm->text;
+      vterm->text = 0;
+    }
 
     vterm->changes = new line_changes[term_height];
-    vterm->text    = new char_data[vterm_size];
+    vterm->text    = new FOptiAttr::char_data[vterm_size];
   }
   else if ( vterm->width != term_width )
   {
     if ( vterm->text != 0 )
+    {
       delete[] vterm->text;
-    vterm->text = new char_data[vterm_size];
+      vterm->text = 0;
+    }
+    vterm->text = new FOptiAttr::char_data[vterm_size];
   }
   else
     return;
@@ -2877,7 +2904,7 @@ void FTerm::updateTerminal()
             x <= change_xmax;
             x++ )
       {
-        char_data* print_char;
+        FOptiAttr::char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
 
         if (  x_term_pos == term_width
@@ -3827,7 +3854,7 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           short x = short(cursor->getX());
           short y = short(cursor->getY());
 
-          char_data  nc; // next character
+          FOptiAttr::char_data  nc; // next character
           nc.code          = *p;
           nc.fg_color      = next_attribute.fg_color;
           nc.bg_color      = next_attribute.bg_color;
@@ -3853,7 +3880,7 @@ int FTerm::print (FTerm::term_area* area, FString& s)
              && ax < area->width + area->right_shadow
              && ay < area->height + area->bottom_shadow )
           {
-            char_data* ac; // area character
+            FOptiAttr::char_data* ac; // area character
             int line_len = area->width + area->right_shadow;
             ac = &area->text[ay * line_len + ax];
 
@@ -3913,7 +3940,7 @@ int FTerm::print (register int c)
 //----------------------------------------------------------------------
 int FTerm::print (FTerm::term_area* area, register int c)
 {
-  char_data nc; // next character
+  FOptiAttr::char_data nc; // next character
   FWidget* area_widget;
   int rsh, bsh, ax, ay;
   short x, y;
@@ -3952,7 +3979,7 @@ int FTerm::print (FTerm::term_area* area, register int c)
      && ax < area->width + area->right_shadow
      && ay < area->height + area->bottom_shadow )
   {
-    char_data* ac; // area character
+    FOptiAttr::char_data* ac; // area character
     int line_len = area->width + area->right_shadow;
     ac = &area->text[ay * line_len + ax];
 
@@ -3988,7 +4015,7 @@ int FTerm::print (FTerm::term_area* area, register int c)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::newFontChanges (char_data*& next_char)
+inline void FTerm::newFontChanges (FOptiAttr::char_data*& next_char)
 {
   // NewFont special cases
   if ( isNewFont() )
@@ -4029,7 +4056,7 @@ inline void FTerm::newFontChanges (char_data*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::charsetChanges (char_data*& next_char)
+inline void FTerm::charsetChanges (FOptiAttr::char_data*& next_char)
 {
   if ( Encoding == fc::UTF8 )
     return;
@@ -4059,7 +4086,7 @@ inline void FTerm::charsetChanges (char_data*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::appendCharacter (char_data*& next_char)
+inline void FTerm::appendCharacter (FOptiAttr::char_data*& next_char)
 {
   newFontChanges (next_char);
   charsetChanges (next_char);
@@ -4069,10 +4096,10 @@ inline void FTerm::appendCharacter (char_data*& next_char)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::appendAttributes (char_data*& next_attr)
+inline void FTerm::appendAttributes (FOptiAttr::char_data*& next_attr)
 {
   char* attr_str;
-  char_data* term_attr = &term_attribute;
+  FOptiAttr::char_data* term_attr = &term_attribute;
 
   // generate attribute string for the next character
   attr_str = opti_attr->change_attribute (term_attr, next_attr);
@@ -4082,7 +4109,7 @@ inline void FTerm::appendAttributes (char_data*& next_attr)
 }
 
 //----------------------------------------------------------------------
-int FTerm::appendLowerRight (char_data*& screen_char)
+int FTerm::appendLowerRight (FOptiAttr::char_data*& screen_char)
 {
   char* SA = tcap[t_enter_am_mode].string;
   char* RA = tcap[t_exit_am_mode].string;

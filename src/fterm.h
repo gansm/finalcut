@@ -168,8 +168,6 @@ class FTerm
    static const FString* AnswerBack;
    static const FString* Sec_DA;
 
-   typedef FOptiAttr::char_data char_data;
-
    typedef struct
    {
      uChar red;
@@ -204,7 +202,7 @@ class FTerm
      int bottom_shadow;
      FWidget* widget;
      line_changes* changes;
-     char_data* text;
+     FOptiAttr::char_data* text;
      bool visible;
    } term_area;
 
@@ -265,8 +263,8 @@ class FTerm
    void         getArea (int, int, int, int, FTerm::term_area*);
    void         putArea (const FPoint&, FTerm::term_area*);
    void         putArea (int, int, FTerm::term_area*);
-   char_data    getCoveredCharacter (const FPoint&, FTerm*);
-   char_data    getCoveredCharacter (int, int, FTerm*);
+   FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
+   FOptiAttr::char_data getCoveredCharacter (int, int, FTerm*);
 
  public:
    FTerm ();          // constructor
@@ -388,11 +386,11 @@ class FTerm
    int            print (FTerm::term_area*, FString&);
    int            print (int);
    int            print (FTerm::term_area*, int);
-   static void    newFontChanges (char_data*&);
-   static void    charsetChanges (char_data*&);
-   static void    appendCharacter (char_data*&);
-   static void    appendAttributes (char_data*&);
-   static int     appendLowerRight (char_data*&);
+   static void    newFontChanges (FOptiAttr::char_data*&);
+   static void    charsetChanges (FOptiAttr::char_data*&);
+   static void    appendCharacter (FOptiAttr::char_data*&);
+   static void    appendAttributes (FOptiAttr::char_data*&);
+   static int     appendLowerRight (FOptiAttr::char_data*&);
    static void    appendOutputBuffer (std::string&);
    static void    appendOutputBuffer (const char*);
    static int     appendOutputBuffer (int);
@@ -433,7 +431,7 @@ inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-inline FTerm::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
+inline FOptiAttr::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
 { return getCoveredCharacter (pos.getX(), pos.getY(), obj); }
 
 //----------------------------------------------------------------------

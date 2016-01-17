@@ -464,13 +464,13 @@ bool FToggleButton::setFocus (bool on)
 //----------------------------------------------------------------------
 void FToggleButton::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
     if ( focused_widget )
@@ -488,7 +488,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FToggleButton::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
@@ -519,7 +519,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
     if ( ! hasFocus() )
     {
       FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (FocusOut_Event);
+      FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
       if ( focused_widget )
@@ -585,21 +585,21 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     {
       focus_inside_group = true;
       out_ev->ignore();
-      if ( out_ev->getFocusType() == FocusNextWidget )
+      if ( out_ev->getFocusType() == fc::FocusNextWidget )
         group()->focusNextChild();
-      if ( out_ev->getFocusType() == FocusPreviousWidget )
+      if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
         group()->focusPrevChild();
       redraw();
     }
     else if (  this == group()->getLastButton()
-       && out_ev->getFocusType() == FocusNextWidget )
+       && out_ev->getFocusType() == fc::FocusNextWidget )
     {
       out_ev->ignore();
       group()->focusNextChild();
       redraw();
     }
     else if (  this == group()->getFirstButton()
-            && out_ev->getFocusType() == FocusPreviousWidget )
+            && out_ev->getFocusType() == fc::FocusPreviousWidget )
     {
       out_ev->ignore();
       group()->focusPrevChild();

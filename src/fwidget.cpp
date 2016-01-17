@@ -506,7 +506,7 @@ bool FWidget::event (FEvent* ev)
 {
   switch ( ev->type() )
   {
-    case KeyPress_Event:
+    case fc::KeyPress_Event:
       {
         FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
         bool accpt_focus = false;
@@ -538,11 +538,11 @@ bool FWidget::event (FEvent* ev)
       }
       break;
 
-    case KeyUp_Event:
+    case fc::KeyUp_Event:
       onKeyUp ( static_cast<FKeyEvent*>(ev) );
       break;
 
-    case KeyDown_Event:
+    case fc::KeyDown_Event:
       {
         FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
         FWidget* widget = this;
@@ -556,55 +556,55 @@ bool FWidget::event (FEvent* ev)
       }
       break;
 
-    case MouseDown_Event:
+    case fc::MouseDown_Event:
       onMouseDown ( static_cast<FMouseEvent*>(ev) );
       break;
 
-    case MouseUp_Event:
+    case fc::MouseUp_Event:
       onMouseUp ( static_cast<FMouseEvent*>(ev) );
       break;
 
-    case MouseDoubleClick_Event:
+    case fc::MouseDoubleClick_Event:
       onMouseDoubleClick ( static_cast<FMouseEvent*>(ev) );
       break;
 
-    case MouseWheel_Event:
+    case fc::MouseWheel_Event:
       onWheel ( static_cast<FWheelEvent*>(ev) );
       break;
 
-    case MouseMove_Event:
+    case fc::MouseMove_Event:
       onMouseMove ( static_cast<FMouseEvent*>(ev) );
       break;
 
-    case FocusIn_Event:
+    case fc::FocusIn_Event:
       onFocusIn ( static_cast<FFocusEvent*>(ev) );
       break;
 
-    case FocusOut_Event:
+    case fc::FocusOut_Event:
       onFocusOut ( static_cast<FFocusEvent*>(ev) );
       break;
 
-    case Accelerator_Event:
+    case fc::Accelerator_Event:
       onAccel ( static_cast<FAccelEvent*>(ev) );
       break;
 
-    case Resize_Event:
+    case fc::Resize_Event:
       onResize ( static_cast<FResizeEvent*>(ev) );
       break;
 
-    case Show_Event:
+    case fc::Show_Event:
       onShow ( static_cast<FShowEvent*>(ev) );
       break;
 
-    case Hide_Event:
+    case fc::Hide_Event:
       onHide ( static_cast<FHideEvent*>(ev) );
       break;
 
-    case Close_Event:
+    case fc::Close_Event:
       onClose ( static_cast<FCloseEvent*>(ev) );
       break;
 
-    case Timer_Event:
+    case fc::Timer_Event:
       onTimer ( static_cast<FTimerEvent*>(ev) );
       break;
 
@@ -714,16 +714,16 @@ bool FWidget::focusNextChild(void)
                   || ! next->acceptFocus()
                   || ! next->isVisible()
                   || next->isWindow() );
-          FFocusEvent out (FocusOut_Event);
-          out.setFocusType(FocusNextWidget);
+          FFocusEvent out (fc::FocusOut_Event);
+          out.setFocusType(fc::FocusNextWidget);
           FApplication::sendEvent(this, &out);
           if ( out.isAccepted() )
           {
             if ( next == this )
               return false;
             next->setFocus();
-            FFocusEvent in (FocusIn_Event);
-            in.setFocusType(FocusNextWidget);
+            FFocusEvent in (fc::FocusIn_Event);
+            in.setFocusType(fc::FocusNextWidget);
             FApplication::sendEvent(next, &in);
             if ( in.isAccepted() )
             {
@@ -776,16 +776,16 @@ bool FWidget::focusPrevChild(void)
                   || ! prev->acceptFocus()
                   || ! prev->isVisible()
                   || prev->isWindow() );
-          FFocusEvent out (FocusOut_Event);
-          out.setFocusType(FocusPreviousWidget);
+          FFocusEvent out (fc::FocusOut_Event);
+          out.setFocusType(fc::FocusPreviousWidget);
           FApplication::sendEvent(this, &out);
           if ( out.isAccepted() )
           {
             if ( prev == this )
               return false;
             prev->setFocus();
-            FFocusEvent in (FocusIn_Event);
-            in.setFocusType(FocusPreviousWidget);
+            FFocusEvent in (fc::FocusIn_Event);
+            in.setFocusType(fc::FocusPreviousWidget);
             FApplication::sendEvent(prev, &in);
             if ( in.isAccepted() )
             {
@@ -929,7 +929,7 @@ int FWidget::numOfFocusableChildren()
 //----------------------------------------------------------------------
 bool FWidget::close()
 {
-  FCloseEvent ev(Close_Event);
+  FCloseEvent ev(fc::Close_Event);
   FApplication::sendEvent(this, &ev);
 
   if ( ev.isAccepted() )
@@ -1308,7 +1308,7 @@ void FWidget::show()
     show_root_widget = 0;
   }
 
-  FShowEvent show_ev (Show_Event);
+  FShowEvent show_ev (fc::Show_Event);
   FApplication::sendEvent(this, &show_ev);
 }
 
@@ -1328,7 +1328,7 @@ void FWidget::hide()
         FWidget::setFocusWidget(parentWidget());
       }
     }
-    FHideEvent hide_ev (Hide_Event);
+    FHideEvent hide_ev (fc::Hide_Event);
     FApplication::sendEvent(this, &hide_ev);
   }
 }

@@ -604,7 +604,7 @@ void FButton::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
     setUp();
     return;
@@ -613,7 +613,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
     if ( focused_widget )
@@ -629,7 +629,7 @@ void FButton::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( button_down )
@@ -643,7 +643,7 @@ void FButton::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   FPoint gPos = ev->getGlobalPos();
@@ -671,7 +671,7 @@ void FButton::onAccel (FAccelEvent* ev)
     if ( ! hasFocus() )
     {
       FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (FocusOut_Event);
+      FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
       if ( focused_widget )

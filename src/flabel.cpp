@@ -17,10 +17,10 @@ FLabel::FLabel(FWidget* parent)
   , multiline_text()
   , multiline(false)
   , text()
-  , emphasis(0)
   , alignment(fc::alignLeft)
   , emphasis_color(wc.label_emphasis_fg)
   , ellipsis_color(wc.label_ellipsis_fg)
+  , emphasis(false)
   , reverse_mode(false)
   , accel_widget(0)
 {
@@ -33,10 +33,10 @@ FLabel::FLabel (const FString& txt, FWidget* parent)
   , multiline_text()
   , multiline(false)
   , text(txt)
-  , emphasis(0)
   , alignment(fc::alignLeft)
   , emphasis_color(wc.label_emphasis_fg)
   , ellipsis_color(wc.label_ellipsis_fg)
+  , emphasis(false)
   , reverse_mode(false)
   , accel_widget(0)
 {
@@ -335,7 +335,7 @@ void FLabel::hide()
 //----------------------------------------------------------------------
 void FLabel::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! isEnabled() || ! accel_widget  )
@@ -344,7 +344,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
   if ( ! accel_widget->hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
     if ( focused_widget )
@@ -368,7 +368,7 @@ void FLabel::onAccel (FAccelEvent* ev)
   if ( ! accel_widget->hasFocus() )
   {
     FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
     if ( focused_widget )
@@ -418,10 +418,8 @@ void FLabel::setAlignment (uInt align)
 //----------------------------------------------------------------------
 bool FLabel::setEmphasis (bool on)
 {
-  if ( on )
-    emphasis |= EMPHASIS;
-  else
-    emphasis &= ~EMPHASIS;
+  if ( emphasis != on )
+    emphasis = on;
   return on;
 }
 

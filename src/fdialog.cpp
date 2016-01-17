@@ -448,7 +448,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
-  if ( ev->getButton() == LeftButton )
+  if ( ev->getButton() == fc::LeftButton )
   {
     // click on titlebar or window: raise + activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
@@ -477,7 +477,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       redraw();
   }
 
-  if ( ev->getButton() == RightButton )
+  if ( ev->getButton() == fc::RightButton )
   {
     // click on titlebar: just activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
@@ -500,7 +500,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     }
   }
 
-  if ( ev->getButton() == MiddleButton )
+  if ( ev->getButton() == fc::MiddleButton )
   {
     // click on titlebar: lower + activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
@@ -535,7 +535,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
   int titlebar_x = TitleBarClickPos.getX();
   int titlebar_y = TitleBarClickPos.getY();
 
-  if ( ev->getButton() == LeftButton )
+  if ( ev->getButton() == fc::LeftButton )
   {
     if (  ! TitleBarClickPos.isNull()
        && titlebar_x > xpos+xmin+2
@@ -553,7 +553,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() == LeftButton )
+  if ( ev->getButton() == fc::LeftButton )
   {
     if ( ! TitleBarClickPos.isNull() )
     {
@@ -570,7 +570,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
   int x, y;
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   x = xpos + xmin - 1;

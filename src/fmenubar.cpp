@@ -542,7 +542,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
     mouse_down = false;
 
@@ -589,7 +589,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (FocusOut_Event);
+          FFocusEvent out (fc::FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           (*iter)->setFocus();
@@ -635,7 +635,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onMouseUp (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( mouse_down )
@@ -718,7 +718,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! isActiveWindow() )
@@ -754,7 +754,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
         {
           FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (FocusOut_Event);
+          FFocusEvent out (fc::FocusOut_Event);
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           (*iter)->setFocus();
@@ -803,7 +803,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             const FPoint& g = ev->getGlobalPos();
             const FPoint& p = menu->globalToLocalPos(g);
             int b = ev->getButton();
-            FMouseEvent* _ev = new FMouseEvent (MouseMove_Event, p, g, b);
+            FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
             menu->mouse_down = true;
             setClickedWidget(menu);
             menu->onMouseMove(_ev);

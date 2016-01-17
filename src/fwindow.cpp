@@ -28,19 +28,19 @@ bool FWindow::event (FEvent* ev)
 {
   switch ( ev->type() )
   {
-    case WindowActive_Event:
+    case fc::WindowActive_Event:
       onWindowActive (ev);
       break;
 
-    case WindowInactive_Event:
+    case fc::WindowInactive_Event:
       onWindowInactive (ev);
       break;
 
-    case WindowRaised_Event:
+    case fc::WindowRaised_Event:
       onWindowRaised (ev);
       break;
 
-    case WindowLowered_Event:
+    case fc::WindowLowered_Event:
       onWindowLowered (ev);
       break;
 
@@ -247,7 +247,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     {
       window_list->erase (iter);
       window_list->push_back (obj);
-      FEvent ev(WindowRaised_Event);
+      FEvent ev(fc::WindowRaised_Event);
       FApplication::sendEvent(obj, &ev);
       return true;
     }
@@ -280,7 +280,7 @@ bool FWindow::lowerWindow (FWidget* obj)
     {
       window_list->erase (iter);
       window_list->insert (window_list->begin(), obj);
-      FEvent ev(WindowLowered_Event);
+      FEvent ev(fc::WindowLowered_Event);
       FApplication::sendEvent(obj, &ev);
       return true;
     }
@@ -309,7 +309,7 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( ! window->isActiveWindow() )
       {
         window->activateWindow();
-        FEvent ev(WindowActive_Event);
+        FEvent ev(fc::WindowActive_Event);
         FApplication::sendEvent(window, &ev);
       }
     }
@@ -319,7 +319,7 @@ void FWindow::setActiveWindow (FWindow* window)
       if ( w->isActiveWindow() )
       {
         w->deactivateWindow();
-        FEvent ev(WindowInactive_Event);
+        FEvent ev(fc::WindowInactive_Event);
         FApplication::sendEvent(*iter, &ev);
       }
     }

@@ -541,13 +541,13 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (FocusOut_Event);
+    FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
     if ( focused_widget )
@@ -587,7 +587,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 {
   int len, mouse_x, mouse_y;
 
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   len = int(text.getLength());
@@ -698,7 +698,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
     if ( ! hasFocus() )
     {
       FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (FocusOut_Event);
+      FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
       if ( focused_widget )

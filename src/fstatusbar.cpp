@@ -356,7 +356,7 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
     mouse_down = false;
     if ( ! keylist.empty() )
@@ -416,7 +416,7 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( mouse_down )
@@ -463,7 +463,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
-  if ( ev->getButton() != LeftButton )
+  if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( mouse_down && ! keylist.empty() )
