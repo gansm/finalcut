@@ -150,7 +150,7 @@ inline bool FLineEdit::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
-{ return ((flags & SHADOW) != 0); }
+{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline FString FLineEdit::getText() const

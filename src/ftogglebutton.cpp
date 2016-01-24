@@ -71,11 +71,11 @@ void FToggleButton::init()
   setGeometry (1, 1, 4, 1, false);  // initialize geometry values
 
   if ( hasFocus() )
-    flags = FOCUS;
+    flags = fc::focus;
 
   if ( isEnabled() )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
 
     if ( hasFocus() )
     {
@@ -152,7 +152,7 @@ void FToggleButton::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 void FToggleButton::draw()
 {
-  bool isFocus = ((flags & FOCUS) != 0);
+  bool isFocus = ((flags & fc::focus) != 0);
   if ( isFocus && statusBar() )
   {
     FString msg = getStatusbarMessage();
@@ -202,8 +202,8 @@ void FToggleButton::drawLabel()
   txt = text;
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);
-  isActive = ((flags & ACTIVE) != 0);
-  isNoUnderline = ((flags & NO_UNDERLINE) != 0);
+  isActive = ((flags & fc::active) != 0);
+  isNoUnderline = ((flags & fc::no_underline) != 0);
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -378,9 +378,9 @@ void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 bool FToggleButton::setNoUnderline (bool on)
 {
   if ( on )
-    flags |= NO_UNDERLINE;
+    flags |= fc::no_underline;
   else
-    flags &= ~NO_UNDERLINE;
+    flags &= ~fc::no_underline;
   return on;
 }
 
@@ -391,7 +391,7 @@ bool FToggleButton::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
     setHotkeyAccelerator();
     if ( hasFocus() )
     {
@@ -406,7 +406,7 @@ bool FToggleButton::setEnable (bool on)
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
     delAccelerator();
     foregroundColor = wc.toggle_button_inactive_fg;
     backgroundColor = wc.toggle_button_inactive_bg;
@@ -421,7 +421,7 @@ bool FToggleButton::setFocus (bool on)
 
   if ( on )
   {
-    flags |= FOCUS;
+    flags |= fc::focus;
 
     if ( isEnabled() )
     {
@@ -446,7 +446,7 @@ bool FToggleButton::setFocus (bool on)
   }
   else
   {
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
 
     if ( isEnabled() )
     {

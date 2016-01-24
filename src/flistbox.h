@@ -277,7 +277,7 @@ inline bool FListBox::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FListBox::hasShadow()
-{ return ((flags & SHADOW) != 0); }
+{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline FString& FListBox::getText()

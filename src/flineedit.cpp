@@ -69,11 +69,11 @@ void FLineEdit::init()
   setVisibleCursor();
 
   if ( hasFocus() )
-    flags |= FOCUS;
+    flags |= fc::focus;
 
   if ( isEnabled() )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
 
     if ( hasFocus() )
     {
@@ -108,7 +108,7 @@ void FLineEdit::draw()
 
   drawInputField();
 
-  isFocus = ((flags & FOCUS) != 0);
+  isFocus = ((flags & fc::focus) != 0);
   if ( isFocus && statusBar() )
   {
     FString msg = getStatusbarMessage();
@@ -127,9 +127,9 @@ void FLineEdit::drawInputField()
   bool isActiveFocus, isActive, isShadow;
   int x;
   FString show_text;
-  isActiveFocus = (flags & (ACTIVE+FOCUS)) == (ACTIVE+FOCUS);
-  isActive = ((flags & ACTIVE) != 0);
-  isShadow = ((flags & SHADOW) != 0 );
+  isActiveFocus = (flags & (fc::active+fc::focus)) == (fc::active+fc::focus);
+  isActive = ((flags & fc::active) != 0);
+  isShadow = ((flags & fc::shadow) != 0 );
 
   setUpdateVTerm(false);
   gotoxy (xpos+xmin-1, ypos+ymin-1);
@@ -327,7 +327,7 @@ bool FLineEdit::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
     if ( hasFocus() )
     {
       foregroundColor = wc.inputfield_active_focus_fg;
@@ -341,7 +341,7 @@ bool FLineEdit::setEnable (bool on)
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
     foregroundColor = wc.inputfield_inactive_fg;
     backgroundColor = wc.inputfield_inactive_bg;
   }
@@ -355,7 +355,7 @@ bool FLineEdit::setFocus (bool on)
 
   if ( on )
   {
-    flags |= FOCUS;
+    flags |= fc::focus;
 
     if ( isEnabled() )
     {
@@ -373,7 +373,7 @@ bool FLineEdit::setFocus (bool on)
   }
   else
   {
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
 
     if ( isEnabled() )
     {
@@ -392,9 +392,9 @@ bool FLineEdit::setShadow (bool on)
   if (  on
      && (Encoding != fc::VT100 || isTeraTerm() )
      && Encoding != fc::ASCII )
-    flags |= SHADOW;
+    flags |= fc::shadow;
   else
-    flags &= ~SHADOW;
+    flags &= ~fc::shadow;
   return on;
 }
 

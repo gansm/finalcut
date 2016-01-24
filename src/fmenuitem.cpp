@@ -195,10 +195,10 @@ void FMenuItem::init (FWidget* parent)
     }
   }
   if ( hasFocus() )
-    flags = FOCUS;
+    flags = fc::focus;
 
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 }
 
 //----------------------------------------------------------------------
@@ -555,7 +555,7 @@ bool FMenuItem::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
 
     if ( super && isMenuBar(super) )
     {
@@ -565,7 +565,7 @@ bool FMenuItem::setEnable (bool on)
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
 
     if ( super && isMenuBar(super) )
       super->delAccelerator (this);
@@ -580,7 +580,7 @@ bool FMenuItem::setFocus (bool on)
 
   if ( on )
   {
-    flags |= FOCUS;
+    flags |= fc::focus;
 
     if ( isEnabled() )
     {
@@ -623,7 +623,7 @@ bool FMenuItem::setFocus (bool on)
   }
   else
   {
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
 
     if ( isEnabled() && statusBar() )
       statusBar()->clearMessage();

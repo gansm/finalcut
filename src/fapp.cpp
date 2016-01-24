@@ -1379,7 +1379,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
       window = FWindow::getWindowWidget(widget);
 
     // block events for widgets in non modal windows
-    if ( window && (window->getFlags() & MODAL) == 0 )
+    if ( window && (window->getFlags() & fc::modal) == 0 )
     {
       switch ( event->type() )
       {

@@ -318,7 +318,7 @@ void FMenuBar::drawItems()
     startpos = x + 1;
     is_active = (*iter)->isEnabled();
     is_selected = (*iter)->isSelected();
-    is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
 
     if ( is_active )
     {

@@ -64,10 +64,10 @@ void FButton::init()
   setBackgroundColor (wc.button_active_bg);
 
   if ( hasFocus() )
-    flags = FOCUS;
+    flags = fc::focus;
 
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 }
 
 //----------------------------------------------------------------------
@@ -151,12 +151,12 @@ void FButton::draw()
   src  = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(ButtonText);
 
-  is_ActiveFocus = (flags & (ACTIVE+FOCUS)) == (ACTIVE+FOCUS);
-  is_Active = ((flags & ACTIVE) != 0);
-  is_Focus = ((flags & FOCUS) != 0);
+  is_ActiveFocus = (flags & (fc::active+fc::focus)) == (fc::active+fc::focus);
+  is_Active = ((flags & fc::active) != 0);
+  is_Focus = ((flags & fc::focus) != 0);
   is_Flat = isFlat();
-  is_NonFlatShadow = ((flags & (SHADOW+FLAT)) == SHADOW);
-  is_NoUnderline = ((flags & NO_UNDERLINE) != 0);
+  is_NonFlatShadow = ((flags & (fc::shadow+fc::flat)) == fc::shadow);
+  is_NoUnderline = ((flags & fc::no_underline) != 0);
 
   setUpdateVTerm(false);
   if ( isMonochron() )
@@ -483,9 +483,9 @@ void FButton::hide()
 bool FButton::setNoUnderline (bool on)
 {
   if ( on )
-    flags |= NO_UNDERLINE;
+    flags |= fc::no_underline;
   else
-    flags &= ~NO_UNDERLINE;
+    flags &= ~fc::no_underline;
   return on;
 }
 
@@ -496,12 +496,12 @@ bool FButton::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
     setHotkeyAccelerator();
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
     delAccelerator();
   }
   updateButtonColor();
@@ -515,7 +515,7 @@ bool FButton::setFocus (bool on)
 
   if ( on )
   {
-    flags |= FOCUS;
+    flags |= fc::focus;
 
     if ( isEnabled() )
     {
@@ -530,7 +530,7 @@ bool FButton::setFocus (bool on)
   }
   else
   {
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
 
     if ( isEnabled() && statusBar() )
       statusBar()->clearMessage();
@@ -543,9 +543,9 @@ bool FButton::setFocus (bool on)
 bool FButton::setFlat (bool on)
 {
   if ( on )
-    flags |= FLAT;
+    flags |= fc::flat;
   else
-    flags &= ~FLAT;
+    flags &= ~fc::flat;
   return on;
 }
 
@@ -555,9 +555,9 @@ bool FButton::setShadow (bool on)
   if (  on
      && (Encoding != fc::VT100 || isTeraTerm() )
      && Encoding != fc::ASCII )
-    flags |= SHADOW;
+    flags |= fc::shadow;
   else
-    flags &= ~SHADOW;
+    flags &= ~fc::shadow;
   return on;
 }
 

@@ -102,7 +102,7 @@ inline bool FProgressbar::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FProgressbar::hasShadow()
-{ return ((flags & SHADOW) != 0); }
+{ return ((flags & fc::shadow) != 0); }
 
 
 #endif  // _FPROGRESSBAR_H

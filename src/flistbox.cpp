@@ -91,9 +91,9 @@ FListBox::~FListBox()  // destructor
 void FListBox::init()
 {
   if ( hasFocus() )
-    flags = FOCUS;
+    flags = fc::focus;
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 
   nf_offset = isNewFont() ? 1 : 0;
 
@@ -164,7 +164,7 @@ void FListBox::draw()
 
   drawList();
 
-  isFocus = ((flags & FOCUS) != 0);
+  isFocus = ((flags & fc::focus) != 0);
 
   if ( isFocus && statusBar() )
   {
@@ -215,7 +215,7 @@ void FListBox::drawList()
   if ( data.empty() || height < 4 || width < 5 )
     return;
 
-  isFocus = ((flags & FOCUS) != 0);
+  isFocus = ((flags & fc::focus) != 0);
   start   = 0;
   end     = uInt(height-2);
   inc_len = inc_search.getLength();
@@ -604,9 +604,9 @@ bool FListBox::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-    flags |= ACTIVE;
+    flags |= fc::active;
   else
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
   return on;
 }
 
@@ -617,7 +617,7 @@ bool FListBox::setFocus (bool on)
 
   if ( on )
   {
-    flags |= FOCUS;
+    flags |= fc::focus;
 
     if ( statusBar() )
     {
@@ -629,7 +629,7 @@ bool FListBox::setFocus (bool on)
   }
   else
   {
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
 
     if ( statusBar() )
       statusBar()->clearMessage();
@@ -641,9 +641,9 @@ bool FListBox::setFocus (bool on)
 bool FListBox::setShadow (bool on)
 {
   if ( on )
-    flags |= SHADOW;
+    flags |= fc::shadow;
   else
-    flags &= ~SHADOW;
+    flags &= ~fc::shadow;
   return on;
 }
 

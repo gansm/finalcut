@@ -143,7 +143,7 @@ void FProgressbar::draw()
   drawPercentage();
   drawBar();
 
-  if ( (flags & SHADOW) != 0 )
+  if ( (flags & fc::shadow) != 0 )
     drawShadow ();
   setUpdateVTerm(true);
   flush_out();
@@ -231,9 +231,9 @@ bool FProgressbar::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-    flags |= ACTIVE;
+    flags |= fc::active;
   else
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
   return on;
 }
 
@@ -243,8 +243,8 @@ bool FProgressbar::setShadow (bool on)
   if (  on
      && (Encoding != fc::VT100 || isTeraTerm() )
      && Encoding != fc::ASCII )
-    flags |= SHADOW;
+    flags |= fc::shadow;
   else
-    flags &= ~SHADOW;
+    flags &= ~fc::shadow;
   return on;
 }

@@ -224,7 +224,7 @@ inline bool FMenu::unsetTransparentShadow()
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasTransparentShadow()
-{ return ((flags & TRANS_SHADOW) != 0); }
+{ return ((flags & fc::trans_shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setText (FString& txt)

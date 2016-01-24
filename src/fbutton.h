@@ -161,7 +161,7 @@ inline bool FButton::unsetFlat()
 
 //----------------------------------------------------------------------
 inline bool FButton::isFlat() const
-{ return ((flags & FLAT) != 0); }
+{ return ((flags & fc::flat) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setShadow()
@@ -173,7 +173,7 @@ inline bool FButton::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FButton::hasShadow() const
-{ return ((flags & SHADOW) != 0); }
+{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setDown()

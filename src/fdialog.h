@@ -151,7 +151,7 @@ inline bool FDialog::unsetModal()
 
 //----------------------------------------------------------------------
 inline bool FDialog::isModal()
-{ return ((flags & MODAL) != 0); }
+{ return ((flags & fc::modal) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setScrollable()
@@ -163,7 +163,7 @@ inline bool FDialog::unsetScrollable()
 
 //----------------------------------------------------------------------
 inline bool FDialog::isScrollable()
-{ return ((flags & SCROLLABLE) != 0); }
+{ return ((flags & fc::scrollable) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setResizeable()
@@ -175,7 +175,7 @@ inline bool FDialog::unsetResizeable()
 
 //----------------------------------------------------------------------
 inline bool FDialog::isResizeable()
-{ return ((flags & RESIZEABLE) != 0); }
+{ return ((flags & fc::resizeable) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isMaximized() const
@@ -191,7 +191,7 @@ inline bool FDialog::unsetTransparentShadow()
 
 //----------------------------------------------------------------------
 inline bool FDialog::hasTransparentShadow()
-{ return ((flags & TRANS_SHADOW) != 0); }
+{ return ((flags & fc::trans_shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setShadow()
@@ -203,7 +203,7 @@ inline bool FDialog::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FDialog::hasShadow()
-{ return ((flags & SHADOW) != 0); }
+{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline FString FDialog::getText() const

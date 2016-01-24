@@ -200,9 +200,9 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
     return;
   if ( window_list->empty() )
     return;
-  if ( (obj1->getFlags() & MODAL) != 0 )
+  if ( (obj1->getFlags() & fc::modal) != 0 )
     return;
-  if ( (obj2->getFlags() & MODAL) != 0 )
+  if ( (obj2->getFlags() & fc::modal) != 0 )
     return;
 
   iter  = window_list->begin();
@@ -236,7 +236,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     return false;
   if ( window_list->back() == obj )
     return false;
-  if ( (window_list->back()->getFlags() & MODAL) != 0 )
+  if ( (window_list->back()->getFlags() & fc::modal) != 0 )
     return false;
 
   iter = window_list->begin();
@@ -269,7 +269,7 @@ bool FWindow::lowerWindow (FWidget* obj)
     return false;
   if ( window_list->front() == obj )
     return false;
-  if ( (obj->getFlags() & MODAL) != 0 )
+  if ( (obj->getFlags() & fc::modal) != 0 )
     return false;
 
   iter = window_list->begin();

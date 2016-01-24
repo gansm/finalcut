@@ -56,7 +56,7 @@ FLabel::~FLabel() // destructor
 void FLabel::init()
 {
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 
   unsetFocusable();
 
@@ -164,8 +164,8 @@ void FLabel::printLine ( wchar_t*& line
   int to_char;
   bool isActive, isNoUnderline;
 
-  isActive = ((flags & ACTIVE) != 0);
-  isNoUnderline = ((flags & NO_UNDERLINE) != 0);
+  isActive = ((flags & fc::active) != 0);
+  isNoUnderline = ((flags & fc::no_underline) != 0);
 
   for (int x=0; x < xoffset; x++)
     print (' ');
@@ -438,12 +438,12 @@ bool FLabel::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
     setHotkeyAccelerator();
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
     delAccelerator();
   }
   return on;

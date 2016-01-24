@@ -60,7 +60,7 @@ void FButtonGroup::init()
   right_padding  = 1;
 
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 
   foregroundColor = wc.label_fg;
   backgroundColor = wc.label_bg;
@@ -212,8 +212,8 @@ void FButtonGroup::drawLabel()
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);
 
-  isActive = ((flags & ACTIVE) != 0);
-  isNoUnderline = ((flags & NO_UNDERLINE) != 0);
+  isActive = ((flags & fc::active) != 0);
+  isNoUnderline = ((flags & fc::no_underline) != 0);
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -523,12 +523,12 @@ bool FButtonGroup::setEnable (bool on)
 
   if ( on )
   {
-    flags |= ACTIVE;
+    flags |= fc::active;
     setHotkeyAccelerator();
   }
   else
   {
-    flags &= ~ACTIVE;
+    flags &= ~fc::active;
     delAccelerator();
   }
   return on;

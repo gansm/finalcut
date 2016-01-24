@@ -557,7 +557,7 @@ void FMenu::draw()
   drawItems();
   if ( isMonochron() )
     setReverse(false);
-  if ( (flags & SHADOW) != 0 )
+  if ( (flags & fc::shadow) != 0 )
     drawMenuShadow();
   setUpdateVTerm(true);
 }
@@ -654,7 +654,7 @@ void FMenu::drawItems()
     bool is_checkable   = (*iter)->checkable;
     bool is_radio_btn   = (*iter)->radio_button;
     bool is_selected    = (*iter)->isSelected();
-    bool is_noUnderline = (((*iter)->getFlags() & NO_UNDERLINE) != 0);
+    bool is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
     bool is_separator   = (*iter)->isSeparator();
 
     if ( is_separator )
@@ -1442,16 +1442,16 @@ bool FMenu::setTransparentShadow (bool on)
 {
   if ( on )
   {
-    flags |= SHADOW;
-    flags |= TRANS_SHADOW;
+    flags |= fc::shadow;
+    flags |= fc::trans_shadow;
     shadow.setPoint(2,1);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
   else
   {
-    flags &= ~SHADOW;
-    flags &= ~TRANS_SHADOW;
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
     shadow.setPoint(0,0);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();

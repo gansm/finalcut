@@ -69,17 +69,6 @@
 #include "fterm.h"
 
 
-// widget flags
-#define SHADOW        0x00000001
-#define TRANS_SHADOW  0x00000002
-#define ACTIVE        0x00000004
-#define FOCUS         0x00000008
-#define SCROLLABLE    0x00000010
-#define RESIZEABLE    0x00000020
-#define MODAL         0x00000040
-#define FLAT          0x00000080
-#define NO_UNDERLINE  0x00000100
-
 // Callback macros
 #define _FUNCTION_CALLBACK(h) \
            reinterpret_cast<FWidget::FCallback>((h))

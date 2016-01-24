@@ -48,6 +48,20 @@ class fc
      Timer_Event              // timer event occur
    };
 
+   // properties of a widget
+   enum widget_flags
+   {
+     shadow       = 0x00000001,
+     trans_shadow = 0x00000002,
+     active       = 0x00000004,
+     focus        = 0x00000008,
+     scrollable   = 0x00000010,
+     resizeable   = 0x00000020,
+     modal        = 0x00000040,
+     flat         = 0x00000080,
+     no_underline = 0x00000100
+   };
+
    // internal character encoding
    enum encoding
    {

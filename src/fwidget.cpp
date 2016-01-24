@@ -944,7 +944,7 @@ bool FWidget::close()
     else
     {
       hide();
-      if ( (flags & MODAL) == 0 )
+      if ( (flags & fc::modal) == 0 )
         close_widget->push_back(this);
     }
     return true;
@@ -1817,7 +1817,7 @@ void FWidget::drawShadow()
 {
   FOptiAttr::char_data ch;
   int x1, x2, y1, y2;
-  bool trans_shadow = ((flags & TRANS_SHADOW) != 0);
+  bool trans_shadow = ((flags & fc::trans_shadow) != 0);
 
   if ( isMonochron() && ! trans_shadow )
     return;

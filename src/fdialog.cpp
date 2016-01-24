@@ -63,7 +63,7 @@ FDialog::~FDialog()  // destructor
     while ( iter != end )
     {
       putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-      if ( ! maximized && ((*iter)->getFlags() & SHADOW) != 0 )
+      if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
         static_cast<FDialog*>(*iter)->drawDialogShadow();
       ++iter;
     }
@@ -113,9 +113,9 @@ void FDialog::init()
   backgroundColor = wc.dialog_bg;
 
   if ( hasFocus() )
-    flags |= FOCUS;
+    flags |= fc::focus;
   if ( isEnabled() )
-    flags |= ACTIVE;
+    flags |= fc::active;
 
   FWidget* old_focus = FWidget::getFocusWidget();
   if ( old_focus )
@@ -152,7 +152,7 @@ void FDialog::drawBorder()
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
-    if ( (flags & SHADOW) == 0 )
+    if ( (flags & fc::shadow) == 0 )
     {
       setColor (fg, backgroundColor);
       gotoxy (x1, y2);
@@ -262,12 +262,12 @@ void FDialog::done(int result)
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ((flags & TRANS_SHADOW) != 0)
+  if ((flags & fc::trans_shadow) != 0)
   {
     // transparent shadow
     drawShadow();
 
-    if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
+    if ( isNewFont() && ((flags & fc::scrollable) == 0) )
     {
       FOptiAttr::char_data ch;
       // left of the shadow ▀▀
@@ -293,7 +293,7 @@ void FDialog::drawDialogShadow()
     // left of the shadow ▀▀
     gotoxy (xpos+xmin-1, ypos+ymin-1+height);
 
-    if ( isNewFont() && ((flags & SCROLLABLE) == 0) )
+    if ( isNewFont() && ((flags & fc::scrollable) == 0) )
     {
       setColor (wc.shadow_fg, ch.bg_color);
       // high line ⎺
@@ -359,10 +359,10 @@ void FDialog::draw()
   drawBorder();
   drawTitleBar();
 
-  if ( ! maximized && (flags & SHADOW) != 0 )
+  if ( ! maximized && (flags & fc::shadow) != 0 )
     drawDialogShadow();
 
-  if ( (flags & RESIZEABLE) != 0 )
+  if ( (flags & fc::resizeable) != 0 )
   {
     if ( isMonochron() )
       setReverse(false);
@@ -635,7 +635,7 @@ void FDialog::onWindowRaised (FEvent*)
   {
     if ( *iter != this
     && ! maximized
-    && ((*iter)->getFlags() & SHADOW) != 0 )
+    && ((*iter)->getFlags() & fc::shadow) != 0 )
       static_cast<FDialog*>(*iter)->drawDialogShadow();
     ++iter;
   }
@@ -657,7 +657,7 @@ void FDialog::onWindowLowered (FEvent*)
   while ( iter != end )
   {
     putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-    if ( ! maximized && ((*iter)->getFlags() & SHADOW) != 0 )
+    if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
       static_cast<FDialog*>(*iter)->drawDialogShadow();
     ++iter;
   }
@@ -775,7 +775,7 @@ void FDialog::move (int x, int y)
     restoreVTerm (old_x, old_y, width+rsw, height+bsh);
   }
 
-  if ( ! maximized && (flags & SHADOW) != 0 )
+  if ( ! maximized && (flags & fc::shadow) != 0 )
     drawDialogShadow();
 
   // handle overlaid windows
@@ -791,7 +791,7 @@ void FDialog::move (int x, int y)
       if ( overlaid )
       {
         putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-        if ( ! maximized && ((*iter)->getFlags() & SHADOW) != 0 )
+        if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
           static_cast<FDialog*>(*iter)->drawDialogShadow();
       }
       if ( vwin == (*iter)->getVWin() )
@@ -861,9 +861,9 @@ bool FDialog::setFocus (bool on)
   FWidget::setFocus(on);
 
   if ( on )
-    flags |= FOCUS;
+    flags |= fc::focus;
   else
-    flags &= ~FOCUS;
+    flags &= ~fc::focus;
   return on;
 }
 
@@ -875,12 +875,12 @@ bool FDialog::setModal (bool on)
 
   if ( on )
   {
-    flags |= MODAL;
+    flags |= fc::modal;
     modal_dialogs++;
   }
   else
   {
-    flags &= ~MODAL;
+    flags &= ~fc::modal;
     modal_dialogs--;
   }
   return on;
@@ -891,16 +891,16 @@ bool FDialog::setTransparentShadow (bool on)
 {
   if ( on )
   {
-    flags |= SHADOW;
-    flags |= TRANS_SHADOW;
+    flags |= fc::shadow;
+    flags |= fc::trans_shadow;
     shadow.setPoint(2,1);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
   else
   {
-    flags &= ~SHADOW;
-    flags &= ~TRANS_SHADOW;
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
     shadow.setPoint(0,0);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
@@ -917,16 +917,16 @@ bool FDialog::setShadow (bool on)
 
   if ( on )
   {
-    flags |= SHADOW;
-    flags &= ~TRANS_SHADOW;
+    flags |= fc::shadow;
+    flags &= ~fc::trans_shadow;
     shadow.setPoint(1,1);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
   else
   {
-    flags &= ~SHADOW;
-    flags &= ~TRANS_SHADOW;
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
     shadow.setPoint(0,0);
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
@@ -939,9 +939,9 @@ bool FDialog::setShadow (bool on)
 bool FDialog::setScrollable (bool on)
 {
   if ( on )
-    flags |= SCROLLABLE;
+    flags |= fc::scrollable;
   else
-    flags &= ~SCROLLABLE;
+    flags &= ~fc::scrollable;
   return on;
 }
 
@@ -949,9 +949,9 @@ bool FDialog::setScrollable (bool on)
 bool FDialog::setResizeable (bool on)
 {
   if ( on )
-    flags |= RESIZEABLE;
+    flags |= fc::resizeable;
   else
-    flags &= ~RESIZEABLE;
+    flags &= ~fc::resizeable;
   return on;
 }
 
