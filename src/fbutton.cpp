@@ -151,7 +151,8 @@ void FButton::draw()
   src  = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(ButtonText);
 
-  is_ActiveFocus = (flags & (fc::active+fc::focus)) == (fc::active+fc::focus);
+  int active_focus = fc::active + fc::focus;
+  is_ActiveFocus = ((flags & active_focus) == active_focus);
   is_Active = ((flags & fc::active) != 0);
   is_Focus = ((flags & fc::focus) != 0);
   is_Flat = isFlat();

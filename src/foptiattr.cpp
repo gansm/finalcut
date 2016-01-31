@@ -208,7 +208,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       }
       else if ( fg == Default && term->fg_color != Default )
       {
-        char* sgr_39 = const_cast<char*>("\033[39m");
+        char* sgr_39 = const_cast<char*>(CSI "39m");
         append_sequence (sgr_39);
         term->fg_color = Default;
       }
@@ -216,10 +216,10 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       {
         char* sgr_49;
         char* op = F_orig_pair.cap;
-        if ( op && strncmp (op, "\033[39;49;25m", 11) == 0 )
-          sgr_49 = const_cast<char*>("\033[49;25m");
+        if ( op && strncmp (op, CSI "39;49;25m", 11) == 0 )
+          sgr_49 = const_cast<char*>(CSI "49;25m");
         else
-          sgr_49 = const_cast<char*>("\033[49m");
+          sgr_49 = const_cast<char*>(CSI "49m");
         append_sequence (sgr_49);
         term->bg_color = Default;
       }
@@ -250,7 +250,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     if ( cygwin_terminal )
     {
       // reset blink and bold mode from colors > 7
-      char* rst = const_cast<char*>("\033[m");
+      char* rst = const_cast<char*>(CSI "m");
       append_sequence (rst);
       reset(term);
 
@@ -350,9 +350,9 @@ bool FOptiAttr::caused_reset_attributes (char*& cap, uChar test)
 
   if ( cap )
   {
-    if ( (test & test_ansi_reset) && strncmp (cap, "\033[m", 3) == 0 )
+    if ( (test & test_ansi_reset) && strncmp (cap, CSI "m", 3) == 0 )
       return true;
-    if ( (test & test_adm3_reset) && strncmp (cap, "\033G0", 3) == 0 )
+    if ( (test & test_adm3_reset) && strncmp (cap, ESC "G0", 3) == 0 )
       return true;
     if ( (test & same_like_ue) && ue && strcmp (cap, ue) == 0 )
       return true;
@@ -829,7 +829,7 @@ bool FOptiAttr::setTermDefaultColor (char_data*& term)
   }
   else if ( ansi_default_color )
   {
-    char* sgr_39_49 = const_cast<char*>("\033[39;49m");
+    char* sgr_39_49 = const_cast<char*>(CSI "39;49m");
     append_sequence (sgr_39_49);
     term->fg_color = Default;
     term->bg_color = Default;

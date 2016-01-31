@@ -69,6 +69,12 @@
   #undef buttons  // from term.h
 #endif
 
+// ascii sequences
+#define BEL  "\07"    // Bell (ctrl‐g)
+#define SO   "\016"   // Shift out (alternative character set)
+#define SI   "\017"   // Shift in  (regular character set)
+#define OSC  ESC "]"  // Operating system command (7-bit)
+
 // VGA I/O-ports
 #define VideoIOBase ( (inb(0x3CC) & 0x01) ? 0x3D0 : 0x3B0 )
 #define AttrC_Index  0x3C0  // Attribute controller index

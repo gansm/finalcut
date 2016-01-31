@@ -127,7 +127,8 @@ void FLineEdit::drawInputField()
   bool isActiveFocus, isActive, isShadow;
   int x;
   FString show_text;
-  isActiveFocus = (flags & (fc::active+fc::focus)) == (fc::active+fc::focus);
+  int active_focus = fc::active + fc::focus;
+  isActiveFocus = ((flags & active_focus) == active_focus);
   isActive = ((flags & fc::active) != 0);
   isShadow = ((flags & fc::shadow) != 0 );
 

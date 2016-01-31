@@ -913,7 +913,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             mintty_terminal = true;
             new_termtype = const_cast<char*>("xterm-256color");
             // application escape key mode
-            putstring ("\033[?7727h");
+            putstring (CSI "?7727h");
             fflush(stdout);
             break;
 
@@ -1010,13 +1010,13 @@ void FTerm::init_pc_charset()
     {
       // Select iso8859-1 + null mapping
       tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>("\033%@\033(U");
+        const_cast<char*>(ESC "%@" ESC "(U");
     }
     else
     {
       // Select null mapping
       tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>("\033(U");
+        const_cast<char*>(ESC "(U");
     }
     opti_attr->set_enter_pc_charset_mode (tcap[t_enter_pc_charset_mode].string);
     reinit = true;
@@ -1029,13 +1029,13 @@ void FTerm::init_pc_charset()
     {
       // Select ascii mapping + utf8
       tcap[t_exit_pc_charset_mode].string = \
-        const_cast<char*>("\033(B\033%G");
+        const_cast<char*>(ESC "(B" ESC "%G");
     }
     else
     {
       // Select ascii mapping
       tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>("\033(B");
+        const_cast<char*>(ESC "(B");
     }
     opti_attr->set_exit_pc_charset_mode (tcap[t_exit_pc_charset_mode].string);
     reinit = true;
@@ -1115,68 +1115,68 @@ void FTerm::init_termcaps()
     // set invisible cursor for cygwin terminal
     if ( cygwin_terminal && ! tcap[t_cursor_invisible].string )
       tcap[t_cursor_invisible].string = \
-        const_cast<char*>("\033[?25l");
+        const_cast<char*>(CSI "?25l");
 
     // set visible cursor for cygwin terminal
     if ( cygwin_terminal && ! tcap[t_cursor_visible].string )
       tcap[t_cursor_visible].string = \
-        const_cast<char*>("\033[?25h");
+        const_cast<char*>(CSI "?25h");
 
     // set ansi blink for cygwin terminal
     if ( cygwin_terminal && ! tcap[t_enter_blink_mode].string )
       tcap[t_enter_blink_mode].string = \
-        const_cast<char*>("\033[5m");
+        const_cast<char*>(CSI "5m");
 
     // set enter/exit alternative charset mode for rxvt terminal
     if ( rxvt_terminal && strncmp(termtype, "rxvt-16color", 12) == 0 )
     {
       tcap[t_enter_alt_charset_mode].string = \
-        const_cast<char*>("\033(0");
+        const_cast<char*>(ESC "(0");
       tcap[t_exit_alt_charset_mode].string  = \
-        const_cast<char*>("\033(B");
+        const_cast<char*>(ESC "(B");
     }
 
     // set exit underline for gnome terminal
     if ( gnome_terminal )
       tcap[t_exit_underline_mode].string = \
-        const_cast<char*>("\033[24m");
+        const_cast<char*>(CSI "24m");
 
     // set ansi foreground and background color
     if ( linux_terminal || cygwin_terminal )
     {
       tcap[t_set_a_foreground].string = \
-        const_cast<char*>("\033[3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
       tcap[t_set_a_background].string = \
-        const_cast<char*>("\033[4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
       tcap[t_orig_pair].string = \
-        const_cast<char*>("\033[39;49;25m");
+        const_cast<char*>(CSI "39;49;25m");
     }
     else if ( rxvt_terminal && ! urxvt_terminal )
     {
       tcap[t_set_a_foreground].string = \
-        const_cast<char*>("\033[%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
+        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
       tcap[t_set_a_background].string = \
-        const_cast<char*>("\033[%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
+        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
     }
     else if ( tera_terminal )
     {
       tcap[t_set_a_foreground].string = \
-        const_cast<char*>("\033[38;5;%p1%dm");
+        const_cast<char*>(CSI "38;5;%p1%dm");
       tcap[t_set_a_background].string = \
-        const_cast<char*>("\033[48;5;%p1%dm");
+        const_cast<char*>(CSI "48;5;%p1%dm");
       tcap[t_exit_attribute_mode].string = \
-        const_cast<char*>("\033[0m\017");
+        const_cast<char*>(CSI "0m" SI);
     }
     else if ( putty_terminal )
     {
       tcap[t_set_a_foreground].string = \
-        const_cast<char*>("\033[%?%p1%{8}%<"
+        const_cast<char*>(CSI "%?%p1%{8}%<"
                           "%t3%p1%d"
                           "%e%p1%{16}%<"
                           "%t9%p1%{8}%-%d"
                           "%e38;5;%p1%d%;m");
       tcap[t_set_a_background].string = \
-        const_cast<char*>("\033[%?%p1%{8}%<"
+        const_cast<char*>(CSI "%?%p1%{8}%<"
                           "%t4%p1%d"
                           "%e%p1%{16}%<"
                           "%t10%p1%{8}%-%d"
@@ -1186,17 +1186,17 @@ void FTerm::init_termcaps()
     // fallback if "AF" is not found
     if ( ! tcap[t_set_a_foreground].string )
       tcap[t_set_a_foreground].string = \
-        const_cast<char*>("\033[3%p1%dm");
+        const_cast<char*>(CSI "3%p1%dm");
 
     // fallback if "AB" is not found
     if ( ! tcap[t_set_a_background].string )
       tcap[t_set_a_background].string = \
-        const_cast<char*>("\033[4%p1%dm");
+        const_cast<char*>(CSI "4%p1%dm");
 
     // fallback if "Ic" is not found
     if ( ! tcap[t_initialize_color].string )
       tcap[t_initialize_color].string = \
-        const_cast<char*>("\033]P%p1%x"
+        const_cast<char*>(OSC "P%p1%x"
                           "%p2%{255}%*%{1000}%/%02x"
                           "%p3%{255}%*%{1000}%/%02x"
                           "%p4%{255}%*%{1000}%/%02x");
@@ -1204,52 +1204,52 @@ void FTerm::init_termcaps()
     // fallback if "ti" is not found
     if ( ! tcap[t_enter_ca_mode].string )
       tcap[t_enter_ca_mode].string = \
-        const_cast<char*>("\0337\033[?47h");
+        const_cast<char*>(ESC "7" CSI "?47h");
 
     // fallback if "te" is not found
     if ( ! tcap[t_exit_ca_mode].string )
       tcap[t_exit_ca_mode].string = \
-        const_cast<char*>("\033[?47l\0338\033[m");
+        const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
 
     // set ansi move if "cm" is not found
     if ( ! tcap[t_cursor_address].string )
       tcap[t_cursor_address].string = \
-        const_cast<char*>("\033[%i%p1%d;%p2%dH");
+        const_cast<char*>(CSI "%i%p1%d;%p2%dH");
 
     // test for standard ECMA-48 (ANSI X3.64) terminal
     if ( tcap[t_exit_underline_mode].string
-       && strncmp(tcap[t_exit_underline_mode].string, "\033[24m", 5) == 0 )
+       && strncmp(tcap[t_exit_underline_mode].string, CSI "24m", 5) == 0 )
     {
       // seems to be a ECMA-48 (ANSI X3.64) compatible terminal
       tcap[t_enter_dbl_underline_mode].string = \
-        const_cast<char*>("\033[21m");  // Exit single underline, too
+        const_cast<char*>(CSI "21m");  // Exit single underline, too
 
       tcap[t_exit_dbl_underline_mode].string = \
-        const_cast<char*>("\033[24m");
+        const_cast<char*>(CSI "24m");
 
       tcap[t_exit_bold_mode].string = \
-        const_cast<char*>("\033[22m");  // Exit dim, too
+        const_cast<char*>(CSI "22m");  // Exit dim, too
 
       tcap[t_exit_dim_mode].string = \
-        const_cast<char*>("\033[22m");
+        const_cast<char*>(CSI "22m");
 
       tcap[t_exit_underline_mode].string = \
-        const_cast<char*>("\033[24m");
+        const_cast<char*>(CSI "24m");
 
       tcap[t_exit_blink_mode].string = \
-        const_cast<char*>("\033[25m");
+        const_cast<char*>(CSI "25m");
 
       tcap[t_exit_reverse_mode].string = \
-        const_cast<char*>("\033[27m");
+        const_cast<char*>(CSI "27m");
 
       tcap[t_exit_secure_mode].string = \
-        const_cast<char*>("\033[28m");
+        const_cast<char*>(CSI "28m");
 
       tcap[t_enter_crossed_out_mode].string = \
-        const_cast<char*>("\033[9m");
+        const_cast<char*>(CSI "9m");
 
       tcap[t_exit_crossed_out_mode].string = \
-        const_cast<char*>("\033[29m");
+        const_cast<char*>(CSI "29m");
     }
 
     // read termcap key strings
@@ -1259,61 +1259,61 @@ void FTerm::init_termcaps()
 
       // fallback for rxvt with TERM=xterm
       if ( strncmp(Fkey[i].tname, "khx", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[7~");  // home key
+        Fkey[i].string = const_cast<char*>(CSI "7~");  // home key
 
       if ( strncmp(Fkey[i].tname, "@7x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[8~");  // end key
+        Fkey[i].string = const_cast<char*>(CSI "8~");  // end key
 
       if ( strncmp(Fkey[i].tname, "k1x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[11~");  // F1
+        Fkey[i].string = const_cast<char*>(CSI "11~");  // F1
 
       if ( strncmp(Fkey[i].tname, "k2x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[12~");  // F2
+        Fkey[i].string = const_cast<char*>(CSI "12~");  // F2
 
       if ( strncmp(Fkey[i].tname, "k3x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[13~");  // F3
+        Fkey[i].string = const_cast<char*>(CSI "13~");  // F3
 
       if ( strncmp(Fkey[i].tname, "k4x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[14~");  // F4
+        Fkey[i].string = const_cast<char*>(CSI "14~");  // F4
 
       // fallback for TERM=ansi
       if ( strncmp(Fkey[i].tname, "@7X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>("\033[K");  // end key
+        Fkey[i].string = const_cast<char*>(CSI "K");  // end key
     }
 
     // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
     // http://www.unix.com/shell-programming-scripting/..
     //      ..110380-using-arrow-keys-shell-scripts.html
     key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
-    if (  (key_up_string && (strcmp(key_up_string, "\033[A") == 0))
+    if (  (key_up_string && (strcmp(key_up_string, CSI "A") == 0))
        || (  tcap[t_cursor_up].string
-          && (strcmp(tcap[t_cursor_up].string, "\033[A") == 0)) )
+          && (strcmp(tcap[t_cursor_up].string, CSI "A") == 0)) )
     {
       for (int i=0; Fkey[i].tname[0] != 0; i++)
       {
         if ( strncmp(Fkey[i].tname, "kux", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033[A");  // key up
+          Fkey[i].string = const_cast<char*>(CSI "A");  // key up
 
         if ( strncmp(Fkey[i].tname, "kdx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033[B");  // key down
+          Fkey[i].string = const_cast<char*>(CSI "B");  // key down
 
         if ( strncmp(Fkey[i].tname, "krx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033[C");  // key right
+          Fkey[i].string = const_cast<char*>(CSI "C");  // key right
 
         if ( strncmp(Fkey[i].tname, "klx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033[D");  // key left
+          Fkey[i].string = const_cast<char*>(CSI "D");  // key left
 
         if ( strncmp(Fkey[i].tname, "k1X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033OP");  // PF1
+          Fkey[i].string = const_cast<char*>(ESC "OP");  // PF1
 
         if ( strncmp(Fkey[i].tname, "k2X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033OQ");  // PF2
+          Fkey[i].string = const_cast<char*>(ESC "OQ");  // PF2
 
         if ( strncmp(Fkey[i].tname, "k3X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033OR");  // PF3
+          Fkey[i].string = const_cast<char*>(ESC "OR");  // PF3
 
         if ( strncmp(Fkey[i].tname, "k4X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>("\033OS");  // PF4
+          Fkey[i].string = const_cast<char*>(ESC "OS");  // PF4
       }
     }
   }
@@ -1847,7 +1847,7 @@ void FTerm::finish()
   if ( mintty_terminal )
   {
     //  normal escape key mode
-    putstring ("\033[?7727l");
+    putstring (CSI "?7727l");
     fflush(stdout);
   }
 
@@ -2567,7 +2567,7 @@ bool FTerm::setVGAFont()
   if ( xterm || osc_support )
   {
     // Set font in xterm to vga
-    putstring("\033]50;vga\07");
+    putstring (OSC "50;vga" BEL);
     fflush(stdout);
     NewFont = false;
     pc_charset_console = true;
@@ -2622,7 +2622,7 @@ bool FTerm::setNewFont()
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
-    putstring("\033]50;8x16graph\07");
+    putstring (OSC "50;8x16graph" BEL);
     fflush(stdout);
     pc_charset_console = true;
     Encoding = fc::PC;
@@ -2681,10 +2681,10 @@ bool FTerm::setOldFont()
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
       // restore saved xterm font
-      putstringf ("\033]50;%s\07", xterm_font->c_str() );
+      putstringf (OSC "50;%s" BEL, xterm_font->c_str() );
     else
       // Set font in xterm to vga
-      putstring("\033]50;vga\07");
+      putstring (OSC "50;vga" BEL);
     fflush(stdout);
     retval = true;
   }
@@ -2727,7 +2727,7 @@ void FTerm::setConsoleCursor (fc::console_cursor_style style)
     consoleCursorStyle = style;
     if ( hiddenCursor )
       return;
-    putstringf ("\033[?%dc", style);
+    putstringf (CSI "?%dc", style);
     fflush(stdout);
   }
 }
@@ -2767,7 +2767,7 @@ void FTerm::setTermSize (int term_width, int term_height)
   // Set xterm size to {term_width} x {term_height}
   if ( xterm )
   {
-    putstringf ("\033[8;%d;%dt", term_height, term_width);
+    putstringf (CSI "8;%d;%dt", term_height, term_width);
     fflush(stdout);
   }
 }
@@ -2963,7 +2963,7 @@ void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
   // Set cursor style in KDE konsole
   if ( kde_konsole || osc_support )
   {
-    putstringf ("\033]50;CursorShape=%d\007", style);
+    putstringf (OSC "50;CursorShape=%d\007", style);
     fflush(stdout);
   }
 }
@@ -2977,7 +2977,7 @@ FString FTerm::getXTermFont()
   {
     int n;
     char temp[150] = {};
-    putstring ("\033]50;?\07");  // get font
+    putstring (OSC "50;?" BEL);  // get font
     fflush(stdout);
     usleep(150000);  // wait 150 ms
 
@@ -3006,7 +3006,7 @@ FString FTerm::getXTermTitle()
   {
     int n;
     char temp[512] = {};
-    putstring ("\033[21t");  // get title
+    putstring (CSI "21t");  // get title
     fflush(stdout);
     usleep(150000);  // wait 150 ms
 
@@ -3029,7 +3029,7 @@ void FTerm::setXTermCursorStyle(fc::xterm_cursor_style style)
   // Set the xterm cursor style
   if ( (xterm || mintty_terminal) && ! gnome_terminal && ! kde_konsole )
   {
-    putstringf ("\033[%d q", style);
+    putstringf (CSI "%d q", style);
     fflush(stdout);
   }
 }
@@ -3040,7 +3040,7 @@ void FTerm::setXTermTitle (const FString& title)
   // Set the xterm title
   if ( xterm || mintty_terminal || putty_terminal || osc_support )
   {
-    putstringf ("\033]0;%s\07", title.c_str());
+    putstringf (OSC "0;%s" BEL, title.c_str());
     fflush(stdout);
   }
 }
@@ -3051,7 +3051,7 @@ void FTerm::setXTermForeground (const FString& fg)
   // Set the VT100 text foreground color
   if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
   {
-    putstringf ("\033]10;%s\07", fg.c_str());
+    putstringf (OSC "10;%s" BEL, fg.c_str());
     fflush(stdout);
   }
 }
@@ -3062,7 +3062,7 @@ void FTerm::setXTermBackground (const FString& bg)
   // Set the VT100 text background color
   if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
   {
-    putstringf ("\033]11;%s\07", bg.c_str());
+    putstringf (OSC "11;%s" BEL, bg.c_str());
     fflush(stdout);
   }
 }
@@ -3073,7 +3073,7 @@ void FTerm::setXTermCursorColor (const FString& cc)
   // Set the text cursor color
   if ( xterm || mintty_terminal || urxvt_terminal || osc_support )
   {
-    putstringf ("\033]12;%s\07", cc.c_str());
+    putstringf (OSC "12;%s" BEL, cc.c_str());
     fflush(stdout);
   }
 }
@@ -3084,7 +3084,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
   // Set the mouse foreground color
   if ( xterm || urxvt_terminal || osc_support )
   {
-    putstringf ("\033]13;%s\07", mfg.c_str());
+    putstringf (OSC "13;%s" BEL, mfg.c_str());
     fflush(stdout);
   }
 }
@@ -3095,7 +3095,7 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
   // Set the mouse background color
   if ( xterm || osc_support )
   {
-    putstringf ("\033]14;%s\07", mbg.c_str());
+    putstringf (OSC "14;%s" BEL, mbg.c_str());
     fflush(stdout);
   }
 }
@@ -3106,7 +3106,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
   // Set the highlight background color
   if ( xterm || urxvt_terminal || osc_support )
   {
-    putstringf ("\033]17;%s\07", hbg.c_str());
+    putstringf (OSC "17;%s" BEL, hbg.c_str());
     fflush(stdout);
   }
 }
@@ -3117,7 +3117,7 @@ void FTerm::resetXTermColors()
   // Reset the entire color table
   if ( xterm || osc_support )
   {
-    putstringf ("\033]104\07");
+    putstringf (OSC "104" BEL);
     fflush(stdout);
   }
 }
@@ -3128,7 +3128,7 @@ void FTerm::resetXTermForeground()
   // Reset the VT100 text foreground color
   if ( xterm || osc_support )
   {
-    putstring("\033]110\07");
+    putstring (OSC "110" BEL);
     fflush(stdout);
   }
 }
@@ -3139,7 +3139,7 @@ void FTerm::resetXTermBackground()
   // Reset the VT100 text background color
   if ( xterm || osc_support )
   {
-    putstring("\033]111\07");
+    putstring (OSC "111" BEL);
     fflush(stdout);
   }
 }
@@ -3150,7 +3150,7 @@ void FTerm::resetXTermCursorColor()
   // Reset the text cursor color
   if ( xterm || osc_support )
   {
-    putstring("\033]112\07");
+    putstring (OSC "112" BEL);
     fflush(stdout);
   }
 }
@@ -3161,7 +3161,7 @@ void FTerm::resetXTermMouseForeground()
   // Reset the mouse foreground color
   if ( xterm || osc_support )
   {
-    putstring("\033]113\07");
+    putstring (OSC "113" BEL);
     fflush(stdout);
   }
 }
@@ -3172,7 +3172,7 @@ void FTerm::resetXTermMouseBackground()
   // Reset the mouse background color
   if ( xterm || osc_support )
   {
-    putstring("\033]114\07");
+    putstring (OSC "114" BEL);
     fflush(stdout);
   }
 }
@@ -3183,7 +3183,7 @@ void FTerm::resetXTermHighlightBackground()
   // Reset the highlight background color
   if ( xterm || urxvt_terminal || osc_support )
   {
-    putstringf ("\033]117\07");
+    putstringf (OSC "117" BEL);
     fflush(stdout);
   }
 }
@@ -3274,17 +3274,17 @@ void FTerm::xtermMouse (bool on)
   if ( ! mouse_support )
     return;
   if ( on )
-    putstring ("\033[?1001s"   // save old highlight mouse tracking
-               "\033[?1000h"   // enable x11 mouse tracking
-               "\033[?1002h"   // enable cell motion mouse tracking
-               "\033[?1015h"   // enable urxvt mouse mode
-               "\033[?1006h"); // enable SGR mouse mode
+    putstring (CSI "?1001s"   // save old highlight mouse tracking
+               CSI "?1000h"   // enable x11 mouse tracking
+               CSI "?1002h"   // enable cell motion mouse tracking
+               CSI "?1015h"   // enable urxvt mouse mode
+               CSI "?1006h"); // enable SGR mouse mode
   else
-    putstring ("\033[?1006l"   // disable SGR mouse mode
-               "\033[?1015l"   // disable urxvt mouse mode
-               "\033[?1002l"   // disable cell motion mouse tracking
-               "\033[?1000l"   // disable x11 mouse tracking
-               "\033[?1001r"); // restore old highlight mouse tracking
+    putstring (CSI "?1006l"   // disable SGR mouse mode
+               CSI "?1015l"   // disable urxvt mouse mode
+               CSI "?1002l"   // disable cell motion mouse tracking
+               CSI "?1000l"   // disable x11 mouse tracking
+               CSI "?1001r"); // restore old highlight mouse tracking
   fflush(stdout);
 }
 
@@ -3382,7 +3382,9 @@ void FTerm::setBeep (int Hz, int ms)
   // range for duration:  0-1999
   if ( ms < 0 || ms > 1999 )
     return;
-  putstringf("\033[10;%d]\033[11;%d]", Hz, ms);
+  putstringf ( CSI "10;%d]"
+               CSI "11;%d]"
+             , Hz, ms );
   fflush(stdout);
 }
 
@@ -3393,7 +3395,8 @@ void FTerm::resetBeep()
     return;
   // default frequency: 750 Hz
   // default duration:  125 ms
-  putstring ("\033[10;750]\033[11;125]");
+  putstring ( CSI "10;750]"
+              CSI "11;125]" );
   fflush(stdout);
 }
 
@@ -3540,9 +3543,9 @@ bool FTerm::setUTF8 (bool on) // UTF-8 (Unicode)
   if ( linux_terminal )
   {
     if ( on )
-      putstring ("\033%G");
+      putstring (ESC "%G");
     else
-      putstring ("\033%@");
+      putstring (ESC "%@");
   }
   fflush(stdout);
   return utf8_state;
