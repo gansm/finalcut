@@ -573,10 +573,14 @@ void MyDialog::cb_about (FWidget*, void*)
 //----------------------------------------------------------------------
 void MyDialog::cb_terminfo (FWidget*, void*)
 {
+  int x = getColumnNumber();
+  int y = getLineNumber();
   FMessageBox info1 ( "Environment"
                     , "  Type: " + FString(getTermType()) + "\n"
                       "  Name: " + FString(getTermName()) + "\n"
                       "  Mode: " + FString(getEncoding()) + "\n"
+                      "  Size: " + FString().setNumber(x) + fc::Times
+                                 + FString().setNumber(y) + "\n"
                       "Colors: " + FString().setNumber(getMaxColor())
                     , FMessageBox::Ok, 0, 0, this );
   info1.setHeadline("Terminal:");

@@ -70,10 +70,13 @@
 #endif
 
 // ascii sequences
-#define BEL  "\07"    // Bell (ctrl‐g)
-#define SO   "\016"   // Shift out (alternative character set)
-#define SI   "\017"   // Shift in  (regular character set)
-#define OSC  ESC "]"  // Operating system command (7-bit)
+#define ENQ    "\005"     // Enquiry
+#define BEL    "\007"     // Bell (ctrl‐g)
+#define BS     "\010"     // Backspace
+#define SO     "\016"     // Shift out (alternative character set)
+#define SI     "\017"     // Shift in  (regular character set)
+#define OSC    ESC "]"    // Operating system command (7-bit)
+#define SECDA  ESC "[>c"  // Secondary Device Attributes
 
 // VGA I/O-ports
 #define VideoIOBase ( (inb(0x3CC) & 0x01) ? 0x3D0 : 0x3B0 )
@@ -240,9 +243,11 @@ class FTerm
    static char* init_256colorTerminal();
    static char* parseAnswerbackMsg (char*&);
    static char* parseSecDA (char*&);
-   static void  init_termcaps();
+   static void  oscPrefix();
+   static void  oscPostfix();
    static void  init_alt_charset();
    static void  init_pc_charset();
+   static void  init_termcaps();
    static void  init_encoding();
    void         init();
    void         finish();

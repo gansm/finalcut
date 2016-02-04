@@ -495,7 +495,7 @@ int FTerm::parseKeyString ( char* buffer
   const long key_timeout = 100000;  // 100 ms
   int key, len, n;
 
-  if ( firstchar == 0x1b )
+  if ( firstchar == ESC[0] )
   {
     // x11 mouse tracking
     if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
@@ -766,8 +766,6 @@ char* FTerm::init_256colorTerminal()
 
   if ( (s5 && strlen(s5) > 0) || (s6 && strlen(s6) > 0) )
     kde_konsole = true;
-  else
-    kde_konsole = false;
 
   if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
   {
@@ -777,8 +775,6 @@ char* FTerm::init_256colorTerminal()
       new_termtype = const_cast<char*>("gnome");
     gnome_terminal = true;
   }
-  else
-    gnome_terminal = false;
 
   return new_termtype;
 }
@@ -803,7 +799,7 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
     putty_terminal = false;
 
   if ( cygwin_terminal )
-    putchar(0x8);  // cygwin needs a backspace to delete the '♣' char
+    putchar (BS[0]);  // cygwin needs a backspace to delete the '♣' char
 
   return new_termtype;
 }
@@ -872,23 +868,13 @@ char* FTerm::parseSecDA (char*& current_termtype)
         switch ( terminal_id_type )
         {
           case 0:
-            if ( terminal_id_version == 136 )
+            if ( terminal_id_version == 115 )
+              kde_konsole = true;
+            else if ( terminal_id_version == 136 )
               putty_terminal = true;  // PuTTY
             break;
 
           case 1:
-            // Read the terminal (firmware) version
-            try
-            {
-              if ( Sec_DA_components[1] )
-                terminal_id_version = Sec_DA_components[1].toInt();
-              else
-                terminal_id_version = -1;
-            }
-            catch (const std::exception&)
-            {
-              terminal_id_version = -1;
-            }
             if ( ! sec_da_supported )
             {
               if ( terminal_id_version ==  2 )  // also used by apple terminal
@@ -948,6 +934,31 @@ char* FTerm::parseSecDA (char*& current_termtype)
     }
   }
   return new_termtype;
+}
+
+//----------------------------------------------------------------------
+void FTerm::oscPrefix()
+{
+  if ( tmux_terminal )
+  {
+    // tmux device control string
+    putstring (ESC "Ptmux;" ESC);
+  }
+  else if ( screen_terminal )
+  {
+    // GNU Screen device control string
+    putstring (ESC "P");
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::oscPostfix()
+{
+  if ( screen_terminal || tmux_terminal )
+  {
+    // GNU Screen/tmux string terminator
+    putstring (ESC "\\");
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1081,7 +1092,7 @@ void FTerm::init_termcaps()
     ansi_default_color = tgetflag(const_cast<char*>("AX"));
 
     // terminal supports operating system commands (OSC)
-    // OSC = Esc + ]
+    // OSC = Esc + ']'
     osc_support = tgetflag(const_cast<char*>("XT"));
 
     if ( isTeraTerm() )
@@ -1195,11 +1206,35 @@ void FTerm::init_termcaps()
 
     // fallback if "Ic" is not found
     if ( ! tcap[t_initialize_color].string )
-      tcap[t_initialize_color].string = \
-        const_cast<char*>(OSC "P%p1%x"
-                          "%p2%{255}%*%{1000}%/%02x"
-                          "%p3%{255}%*%{1000}%/%02x"
-                          "%p4%{255}%*%{1000}%/%02x");
+    {
+      if ( screen_terminal )
+      {
+        if ( tmux_terminal )
+        {
+          tcap[t_initialize_color].string = \
+            const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
+                              "%p2%{255}%*%{1000}%/%2.2X/"
+                              "%p3%{255}%*%{1000}%/%2.2X/"
+                              "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+        }
+        else
+        {
+          tcap[t_initialize_color].string = \
+            const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
+                              "%p2%{255}%*%{1000}%/%2.2X/"
+                              "%p3%{255}%*%{1000}%/%2.2X/"
+                              "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+        }
+      }
+      else
+      {
+        tcap[t_initialize_color].string = \
+          const_cast<char*>(OSC "P%p1%x"
+                            "%p2%{255}%*%{1000}%/%02x"
+                            "%p3%{255}%*%{1000}%/%02x"
+                            "%p4%{255}%*%{1000}%/%02x");
+      }
+   }
 
     // fallback if "ti" is not found
     if ( ! tcap[t_enter_ca_mode].string )
@@ -1483,6 +1518,8 @@ void FTerm::init()
   force_vt100            = \
   tera_terminal          = \
   kterm_terminal         = \
+  gnome_terminal         = \
+  kde_konsole            = \
   rxvt_terminal          = \
   urxvt_terminal         = \
   mlterm_terminal        = \
@@ -1707,7 +1744,7 @@ void FTerm::init()
   setXTermMouseForeground ("rgb:0000/0000/0000");
   if ( ! gnome_terminal )
     setXTermCursorColor("rgb:ffff/ffff/ffff");
-  if ( ! mintty_terminal && ! rxvt_terminal )
+  if ( ! mintty_terminal && ! rxvt_terminal && ! screen_terminal )
   {
     // mintty and rxvt can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
@@ -2564,10 +2601,12 @@ bool FTerm::setVGAFont()
 
   VGAFont = true;
 
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
     // Set font in xterm to vga
+    oscPrefix();
     putstring (OSC "50;vga" BEL);
+    oscPostfix();
     fflush(stdout);
     NewFont = false;
     pc_charset_console = true;
@@ -2618,11 +2657,13 @@ bool FTerm::setNewFont()
   if ( NewFont )
     return true;
 
-  if ( xterm || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
+    oscPrefix();
     putstring (OSC "50;8x16graph" BEL);
+    oscPostfix();
     fflush(stdout);
     pc_charset_console = true;
     Encoding = fc::PC;
@@ -2677,14 +2718,22 @@ bool FTerm::setOldFont()
   NewFont = \
   VGAFont = false;
 
-  if ( xterm || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
+    {
       // restore saved xterm font
+      oscPrefix();
       putstringf (OSC "50;%s" BEL, xterm_font->c_str() );
+      oscPostfix();
+    }
     else
+    {
       // Set font in xterm to vga
+      oscPrefix();
       putstring (OSC "50;vga" BEL);
+      oscPostfix();
+    }
     fflush(stdout);
     retval = true;
   }
@@ -2961,9 +3010,11 @@ void FTerm::updateTerminal()
 void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
 {
   // Set cursor style in KDE konsole
-  if ( kde_konsole || osc_support )
+  if ( kde_konsole )
   {
-    putstringf (OSC "50;CursorShape=%d\007", style);
+    oscPrefix();
+    putstringf (OSC "50;CursorShape=%d" BEL, style);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -2972,23 +3023,27 @@ void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
 FString FTerm::getXTermFont()
 {
   FString font("");
-
-  if ( raw_mode && non_blocking_stdin && osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
-    int n;
-    char temp[150] = {};
-    putstring (OSC "50;?" BEL);  // get font
-    fflush(stdout);
-    usleep(150000);  // wait 150 ms
-
-    // read the terminal answer
-    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-    // BEL + '\0' = string terminator
-    if ( n >= 6 && temp[n-1] == '\07' && temp[n] == '\0' )
+    if ( raw_mode && non_blocking_stdin )
     {
-      temp[n-1] = '\0';
-      font = static_cast<char*>(temp + 5);
+      int n;
+      char temp[150] = {};
+      oscPrefix();
+      putstring (OSC "50;?" BEL);  // get font
+      oscPostfix();
+      fflush(stdout);
+      usleep(150000);  // wait 150 ms
+
+      // read the terminal answer
+      n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
+      // BEL + '\0' = string terminator
+      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+      {
+        temp[n-1] = '\0';
+        font = static_cast<char*>(temp + 5);
+      }
     }
   }
   return font;
@@ -3014,7 +3069,7 @@ FString FTerm::getXTermTitle()
     n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
 
     // Esc + \ = OSC string terminator
-    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == 0x1b )
+    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
     {
       temp[n-2] = '\0';
       title = static_cast<char*>(temp + 3);
@@ -3024,7 +3079,7 @@ FString FTerm::getXTermTitle()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setXTermCursorStyle(fc::xterm_cursor_style style)
+void FTerm::setXTermCursorStyle (fc::xterm_cursor_style style)
 {
   // Set the xterm cursor style
   if ( (xterm || mintty_terminal) && ! gnome_terminal && ! kde_konsole )
@@ -3038,9 +3093,13 @@ void FTerm::setXTermCursorStyle(fc::xterm_cursor_style style)
 void FTerm::setXTermTitle (const FString& title)
 {
   // Set the xterm title
-  if ( xterm || mintty_terminal || putty_terminal || osc_support )
+  if ( xterm || screen_terminal
+     || mintty_terminal || putty_terminal
+     || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "0;%s" BEL, title.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3049,9 +3108,13 @@ void FTerm::setXTermTitle (const FString& title)
 void FTerm::setXTermForeground (const FString& fg)
 {
   // Set the VT100 text foreground color
-  if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
+  if ( xterm || screen_terminal
+     || mintty_terminal || mlterm_terminal
+     || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "10;%s" BEL, fg.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3060,9 +3123,13 @@ void FTerm::setXTermForeground (const FString& fg)
 void FTerm::setXTermBackground (const FString& bg)
 {
   // Set the VT100 text background color
-  if ( xterm || mintty_terminal || mlterm_terminal || osc_support )
+  if ( xterm || screen_terminal
+     || mintty_terminal || mlterm_terminal
+     || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "11;%s" BEL, bg.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3071,9 +3138,13 @@ void FTerm::setXTermBackground (const FString& bg)
 void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
-  if ( xterm || mintty_terminal || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal
+     || mintty_terminal || urxvt_terminal
+     || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "12;%s" BEL, cc.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3082,9 +3153,11 @@ void FTerm::setXTermCursorColor (const FString& cc)
 void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
-  if ( xterm || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3093,9 +3166,11 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 void FTerm::setXTermMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "14;%s" BEL, mbg.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3104,9 +3179,11 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
 void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
-  if ( xterm || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3115,9 +3192,11 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "104" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3126,9 +3205,11 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstring (OSC "110" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3137,9 +3218,11 @@ void FTerm::resetXTermForeground()
 void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstring (OSC "111" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3148,9 +3231,11 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstring (OSC "112" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3159,9 +3244,11 @@ void FTerm::resetXTermCursorColor()
 void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstring (OSC "113" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3170,9 +3257,11 @@ void FTerm::resetXTermMouseForeground()
 void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
-  if ( xterm || osc_support )
+  if ( xterm || screen_terminal || osc_support )
   {
+    oscPrefix();
     putstring (OSC "114" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3181,9 +3270,11 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
-  if ( xterm || urxvt_terminal || osc_support )
+  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
+    oscPrefix();
     putstringf (OSC "117" BEL);
+    oscPostfix();
     fflush(stdout);
   }
 }
@@ -3249,7 +3340,6 @@ void FTerm::setPalette (short index, int r, int g, int b)
       color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
     else if ( Ip )
       color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
-
     putstring (color_str);
   }
   else if ( linux_terminal )
@@ -3430,10 +3520,10 @@ bool FTerm::hideCursor (bool on)
   }
   else
   {
-    if ( vs )
-      appendOutputBuffer (vs);
-    else if ( ve )
+    if ( ve )
       appendOutputBuffer (ve);
+    else if ( vs )
+      appendOutputBuffer (vs);
     hiddenCursor = false;
   }
   flush_out();
@@ -3619,7 +3709,7 @@ FString FTerm::getAnswerbackMsg()
     tv.tv_sec  = 0;
     tv.tv_usec = 150000;  // 150 ms
 
-    putchar(0x05);  // send enquiry character
+    putchar (ENQ[0]);  // send enquiry character
     fflush(stdout);
 
     // read the answerback message
@@ -3655,10 +3745,10 @@ FString FTerm::getSecDA()
     tv.tv_usec = 550000;  // 150 ms
 
     // get the secondary device attributes
-    putchar(0x1b);  // ESC
-    putchar(0x5b);  //  [
-    putchar(0x3e);  //  >
-    putchar(0x63);  //  c
+    putchar (SECDA[0]);
+    putchar (SECDA[1]);
+    putchar (SECDA[2]);
+    putchar (SECDA[3]);
 
     fflush(stdout);
     usleep(150000);  // min. wait time 150 ms (need for mintty)

@@ -1,3 +1,7 @@
+2016-02-04  Markus Gans  <guru.mail@muenster.de>
+	* KDE Konsole detection improved
+	* OSC sequence support for GNU Screen and tmux
+
 2016-01-31  Markus Gans  <guru.mail@muenster.de>
 	* Better escape sequences readability through 
 	  symbolic names like ESC, CSI or OSC
