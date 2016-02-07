@@ -30,9 +30,9 @@ std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication (int &_argc, char* _argv[])
-  : app_argc(0)
-  , app_argv(0)
+FApplication::FApplication (int& _argc, char**& _argv)
+  : app_argc(_argc)
+  , app_argv(_argv)
   , skipped_terminal_update(0)
   , key(0)
 #ifdef F_HAVE_LIBGPM
@@ -51,17 +51,16 @@ FApplication::FApplication (int &_argc, char* _argv[])
 {
   assert ( ! rootObj
          && "FApplication: There should be only one application object" );
-
   rootObj = this;
-  static char* empty = const_cast<char*>("");
 
   if ( ! _argc || ! _argv )
   {
+    static char* empty = const_cast<char*>("");
     _argc = 0;
-    _argv = &empty;
+    _argv = static_cast<char**>(&empty);
   }
 
-  init(_argc, _argv);
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -77,11 +76,8 @@ FApplication::~FApplication() // destructor
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (int _argc, char* _argv[])
+void FApplication::init()
 {
-  app_argc = _argc;
-  app_argv = _argv;
-
   // init keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;

@@ -119,7 +119,7 @@ class FApplication : public FWidget
    FApplication (const FApplication&);             // Disabled copy constructor
    FApplication& operator = (const FApplication&); // and operator '='
 
-   void    init (int _argc, char* _argv[]);
+   void    init();
    void    cmd_options();
    bool    KeyPressed();
    ssize_t readKey();
@@ -143,7 +143,7 @@ class FApplication : public FWidget
    friend  class FWindow;
 
  public:
-   FApplication (int &argc, char* argv[]);  // constructor
+   FApplication (int&, char**& );  // constructor
    virtual ~FApplication(); // destructor
 
    const char* getClassName()     const;
