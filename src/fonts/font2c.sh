@@ -13,7 +13,7 @@ FONTFILE="8x16std"
   | sed -e 's/ {$/\n{/' \
   | sed -e 's/^unsigned/static unsigned/' \
   | sed -e '/len = /d' \
-  | while IFS=$'\n'; read LINE
+  | while IFS=$'\n'; read -r LINE
   do
     if [ "${LINE:0:1}" != " " ]
     then

@@ -8,7 +8,7 @@
 ```
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
-> ./configure --prefix=/usrX
+> ./configure --prefix=/usr
 > make
 > su -c "make install"
 ```

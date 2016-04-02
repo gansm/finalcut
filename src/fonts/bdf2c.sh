@@ -14,12 +14,12 @@ FONTFILE="8x16graph.bdf"
   | tr '\n' ',' \
   | sed -e 's/BITMAP,//g' \
   | sed -e 's/--,/\n/g' \
-  | tr '[A-Z]' '[a-z]' \
+  | tr '[:upper:]' '[:lower:]' \
   | sed -e 's/,/, /g' \
   | sed -e 's/\([0-9a-f][0-9a-f]\)/0x\1/g' \
   | sed -e 's/^0/  0/g' \
   | sed -e '$s/, $/  \n/' \
-  | while IFS=$'\n'; read LINE
+  | while IFS=$'\n'; read -r LINE
   do
     echo "$LINE /* $N */"
     let N++
