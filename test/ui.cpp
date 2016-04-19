@@ -579,7 +579,7 @@ void MyDialog::cb_terminfo (FWidget*, void*)
                     , "  Type: " + FString(getTermType()) + "\n"
                       "  Name: " + FString(getTermName()) + "\n"
                       "  Mode: " + FString(getEncoding()) + "\n"
-                      "  Size: " + FString().setNumber(x) + fc::Times
+                      "  Size: " + FString().setNumber(x) + wchar_t(fc::Times)
                                  + FString().setNumber(y) + "\n"
                       "Colors: " + FString().setNumber(getMaxColor())
                     , FMessageBox::Ok, 0, 0, this );

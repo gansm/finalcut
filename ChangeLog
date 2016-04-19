@@ -1,3 +1,6 @@
+2016-04-19  Markus Gans  <guru.mail@muenster.de>
+	* Fix the missing typecast for SpecialCharacter in "ui.cpp"
+
 2016-02-04  Markus Gans  <guru.mail@muenster.de>
 	* KDE Konsole detection improved
 	* OSC sequence support for GNU Screen and tmux
