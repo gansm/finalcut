@@ -1,3 +1,5 @@
+![The Final Cut](logo/png/finalcut-logo.png)
+
 ### Building and code analysis
 *Travis CI:*<br />
 &#160;&#160;&#160;&#160;&#160;[![Build Status](https://travis-ci.org/gansm/finalcut.svg?branch=master)](https://travis-ci.org/gansm/finalcut) <br />
