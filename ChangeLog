@@ -1,3 +1,6 @@
+2016-04-30  Markus Gans  <guru.mail@muenster.de>
+	* Improve 256 color terminal detection
+
 2016-04-19  Markus Gans  <guru.mail@muenster.de>
 	* Fix the missing typecast for SpecialCharacter in "ui.cpp"
 

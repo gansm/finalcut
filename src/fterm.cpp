@@ -761,6 +761,8 @@ char* FTerm::init_256colorTerminal()
     }
     color256 = true;
   }
+  else if ( strstr (termtype, "256color") )
+    color256 = true;
   else
     color256 = false;
 
