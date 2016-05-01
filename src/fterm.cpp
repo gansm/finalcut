@@ -280,18 +280,20 @@ void FTerm::identifyTermType()
     if (  (fp = fopen("/etc/ttytype", "r")) != 0
        || (fp = fopen("/etc/ttys", "r"))    != 0 )
     {
-      char str[BUFSIZ];
-      char *p, *type, *name;
+      char* p;
+      char* type;
+      char* name;
+      char  str[BUFSIZ];
 
       // get term basename
-      const char *term_basename = strrchr(term_name, '/');
+      const char* term_basename = strrchr(term_name, '/');
       if ( term_basename == 0 )
 	      term_basename = term_name;
       else
 	      term_basename++;
 
       // read and parse the file
-      while ( fgets(str, sizeof(str) - 1, fp) != 0 )
+      while ( fgets(str, sizeof(str)-1, fp) != 0 )
       {
         type = name = 0;  // 0 == not found
         p = str;
