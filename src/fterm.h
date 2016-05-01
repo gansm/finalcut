@@ -232,6 +232,7 @@ class FTerm
    static int   openConsole();
    static int   closeConsole();
    static int   isConsole();
+   static void  identifyTermType();
    static int   getScreenFont();
    static int   setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int   setUnicodeMap (struct unimapdesc*);

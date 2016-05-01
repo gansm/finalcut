@@ -264,6 +264,63 @@ int FTerm::isConsole()
 }
 
 //----------------------------------------------------------------------
+void FTerm::identifyTermType()
+{
+  // Import the untrusted environment variable TERM
+  const char* term_env = getenv(const_cast<char*>("TERM"));
+  if ( term_env )
+  {
+    strncpy (termtype, term_env, sizeof(termtype) - 1);
+    return;
+  }
+  else if ( term_name )
+  {
+    FILE *fp;
+    // fallback: look into /etc/ttytype or /etc/ttys
+    if (  (fp = fopen("/etc/ttytype", "r")) != 0
+       || (fp = fopen("/etc/ttys", "r"))    != 0 )
+    {
+      char str[BUFSIZ];
+      char *p, *type, *name;
+
+      // get term basename
+      const char *term_basename = strrchr(term_name, '/');
+      if ( term_basename == 0 )
+	      term_basename = term_name;
+      else
+	      term_basename++;
+
+      // read and parse the file
+      while ( fgets(str, sizeof(str) - 1, fp) != 0 )
+      {
+        type = name = 0;  // 0 == not found
+        p = str;
+        
+        while ( *p )
+        {
+          if ( isspace(uChar(*p)) )
+            *p = '\0';
+          else if ( type == 0 )
+            type = p;
+          else if ( name == 0 && p != str && p[-1] == '\0' )
+            name = p;
+          p++;
+        }
+        if ( type != 0 && name != 0 && ! strcmp(name, term_basename) )
+        {
+          strncpy (termtype, type, sizeof(termtype) - 1);
+          fclose(fp);
+          return;
+        }
+      }
+      fclose(fp);
+    }
+  }
+  // use vt100 if not found
+  strncpy (termtype, const_cast<char*>("vt100"), 6);
+}
+
+//----------------------------------------------------------------------
 int FTerm::getScreenFont()
 {
   struct console_font_op font;
@@ -1584,7 +1641,6 @@ void FTerm::init()
     std::abort();
 
   term_name = ttyname(stdout_no);
-  // -> possible fallback: look into /etc/ttytype for the type?
 
   // initialize terminal and Linux console
   init_console();
@@ -1608,12 +1664,8 @@ void FTerm::init()
   if ( isatty(stdout_no) )
     opti_move->setBaudRate(int(baudrate));
 
-  // Import the untrusted environment variable TERM
-  const char* term_env = getenv(const_cast<char*>("TERM"));
-  if ( term_env )
-    strncpy (termtype, term_env, sizeof(termtype) - 1);
-  else
-    strncpy (termtype, const_cast<char*>("vt100"), 6);
+  // detect the type of the terminal
+  identifyTermType();
 
   // initialize 256 colors terminals
   new_termtype = init_256colorTerminal();

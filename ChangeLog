@@ -1,3 +1,6 @@
+2016-05-01  Markus Gans  <guru.mail@muenster.de>
+	* Better terminal identification
+
 2016-04-30  Markus Gans  <guru.mail@muenster.de>
 	* Improve 256 color terminal detection
 
