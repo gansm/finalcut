@@ -1,3 +1,7 @@
+2016-05-16  Markus Gans  <guru.mail@muenster.de>
+	* Improve adjustSize()
+	* Implement adjustSizeGlobal() for all widgets
+
 2016-05-01  Markus Gans  <guru.mail@muenster.de>
 	* Better terminal identification
 
