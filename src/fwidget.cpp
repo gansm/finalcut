@@ -1264,32 +1264,21 @@ void FWidget::resize()
     closeConsole();
     resizeVTerm();
     resizeArea (vdesktop);
+
     if ( menubar )
     {
       menubar->setGeometry(1, 1, width, 1, false);
       if ( vmenubar )
         resizeArea(vmenubar);
-      menubar->adjustSize();
     }
+
     if ( statusbar )
     {
       statusbar->setGeometry(1, height, width, 1, false);
       if ( vstatusbar )
         resizeArea(vstatusbar);
-      statusbar->adjustSize();
     }
-    if ( window_list && ! window_list->empty() )
-    {
-      widgetList::const_iterator iter, end;
-      iter = window_list->begin();
-      end  = window_list->end();
-
-      while ( iter != end )
-      {
-        (*iter)->adjustSize();
-        ++iter;
-      }
-    }
+    adjustSizeGlobal();
   }
   else
     adjustSize();

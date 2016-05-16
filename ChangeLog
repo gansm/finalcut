@@ -2,6 +2,7 @@
 	* Improve adjustSize()
 	* Implement adjustSizeGlobal() for all widgets
 	* Don't focus menus with focusFirstChild() and focusLastChild()
+	* Remove duplicate code
 
 2016-05-01  Markus Gans  <guru.mail@muenster.de>
 	* Better terminal identification
