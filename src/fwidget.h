@@ -286,6 +286,7 @@ class FWidget : public FObject, public FTerm
 
  protected:
    virtual void     adjustSize();
+   void             adjustSizeGlobal();
    virtual void     setStatusBar (FStatusBar*);
    virtual void     setMenuBar (FMenuBar*);
  // Event handlers

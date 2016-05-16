@@ -158,7 +158,6 @@ class FStatusBar : public FWindow
    void init();
    void draw();
    void drawKeys();
-   void adjustSize();
 
  public:
    explicit FStatusBar (FWidget* = 0);  // constructor
@@ -192,6 +191,7 @@ class FStatusBar : public FWindow
    void remove (int);
    void clear();
 
+   void adjustSize();
    void cb_statuskey_activated (FWidget*, void*);
 };
 #pragma pack(pop)

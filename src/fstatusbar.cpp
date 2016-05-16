@@ -185,16 +185,16 @@ void FStatusBar::init()
   ypos = getLineNumber();
   createArea (vstatusbar);
   vstatusbar->visible = true;
+  window_object  = true;
+  ignore_padding = true;
+  mouse_down = false;
 
   // initialize geometry values
   setGeometry (1, ypos, getColumnNumber(), 1, false);
-  getRootWidget()->setBottomPadding(1, true);
   setStatusBar(this);
+  getRootWidget()->setBottomPadding(1, true);
   foregroundColor = wc.statusbar_fg;
   backgroundColor = wc.statusbar_bg;
-  window_object  = true;
-  mouse_down = false;
-  ignore_padding = true;
   unsetFocusable();
 }
 
@@ -336,17 +336,6 @@ void FStatusBar::drawKeys()
 
   setUpdateVTerm(true);
   x_msg = x;
-}
-
-//----------------------------------------------------------------------
-void FStatusBar::adjustSize()
-{
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
-  width = getColumnNumber();
-  ypos = getLineNumber();
-  FWidget::adjustSize();
 }
 
 
@@ -707,6 +696,16 @@ void FStatusBar::remove (int pos)
 void FStatusBar::clear()
 {
   keylist.clear();
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::adjustSize()
+{
+  xmin = ymin = 1;
+  height = 1;
+  xpos = 1;
+  width = getColumnNumber();
+  ypos = getLineNumber();
 }
 
 //----------------------------------------------------------------------

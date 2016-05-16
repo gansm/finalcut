@@ -485,6 +485,35 @@ void FWidget::adjustSize()
 }
 
 //----------------------------------------------------------------------
+void FWidget::adjustSizeGlobal()
+{
+  if ( ! isRootWidget() )
+  {
+    getRootWidget()->adjustSizeGlobal();
+    return;
+  }
+
+  if ( menubar )
+    menubar->adjustSize();
+
+  if ( statusbar )
+    statusbar->adjustSize();
+
+  if ( window_list && ! window_list->empty() )
+  {
+    widgetList::const_iterator iter, end;
+    iter = window_list->begin();
+    end  = window_list->end();
+
+    while ( iter != end )
+    {
+      (*iter)->adjustSize();
+      ++iter;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 void FWidget::setStatusBar (FStatusBar* sbar)
 {
   if ( ! sbar || statusbar == sbar )
@@ -1246,6 +1275,7 @@ void FWidget::resize()
       statusbar->setGeometry(1, height, width, 1, false);
       if ( vstatusbar )
         resizeArea(vstatusbar);
+      statusbar->adjustSize();
     }
     if ( window_list && ! window_list->empty() )
     {
@@ -1597,9 +1627,20 @@ void FWidget::setTopPadding (int t, bool adjust)
 {
   if ( top_padding == t )
     return;
-  (t > 0) ? top_padding = t : top_padding = 1;
+
+  (t > 0) ? top_padding = t : top_padding = 0;
+
   if ( adjust )
-    adjustSize();
+  {
+    if ( isRootWidget() )
+    {
+      FWidget* r_obj = rootObject;
+      r_obj->client_ymin = 1 + r_obj->top_padding;
+      adjustSizeGlobal();
+    }
+    else
+      adjustSize();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1607,9 +1648,20 @@ void FWidget::setLeftPadding (int l, bool adjust)
 {
   if ( left_padding == l )
     return;
-  (l > 0) ? left_padding = l : left_padding = 1;
+
+  (l > 0) ? left_padding = l : left_padding = 0;
+
   if ( adjust )
-    adjustSize();
+  {
+    if ( isRootWidget() )
+    {
+      FWidget* r_obj = rootObject;
+      r_obj->client_xmin = 1 + r_obj->left_padding;
+      adjustSizeGlobal();
+    }
+    else
+      adjustSize();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1617,9 +1669,20 @@ void FWidget::setBottomPadding (int b, bool adjust)
 {
   if ( bottom_padding == b )
     return;
-  (b > 0) ? bottom_padding = b : bottom_padding = 1;
+
+  (b > 0) ? bottom_padding = b : bottom_padding = 0;
+
   if ( adjust )
-    adjustSize();
+  {
+    if ( isRootWidget() )
+    {
+      FWidget* r_obj = rootObject;
+      r_obj->client_ymax = r_obj->height - r_obj->bottom_padding;
+      adjustSizeGlobal();
+    }
+    else
+      adjustSize();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1627,30 +1690,43 @@ void FWidget::setRightPadding (int r, bool adjust)
 {
   if ( right_padding == r )
     return;
-  (r > 0) ? right_padding = r : right_padding = 1;
+
+  (r > 0) ? right_padding = r : right_padding = 0;
+
   if ( adjust )
-    adjustSize();
+  {
+    if ( isRootWidget() )
+    {
+      FWidget* r_obj = rootObject;
+      r_obj->client_xmax = r_obj->width - r_obj->right_padding;
+      adjustSizeGlobal();
+    }
+    else
+      adjustSize();
+  }
 }
 
 //----------------------------------------------------------------------
 void FWidget::getTermGeometry()
 {
+  FWidget* r_obj = rootObject;
+
   if ( openConsole() == 0 )
   {
     getTermSize();
     closeConsole();
   }
-
-  rootObject->width  = term->getWidth();
-  rootObject->height = term->getHeight();
-  rootObject->xmin = 1;
-  rootObject->ymin = 1;
-  rootObject->xmax = rootObject->width;
-  rootObject->ymax = rootObject->height;
-  rootObject->client_xmin = 1 + rootObject->left_padding;
-  rootObject->client_ymin = 1 + rootObject->top_padding;
-  rootObject->client_xmax = rootObject->width;
-  rootObject->client_ymax = rootObject->height;
+  
+  r_obj->width  = term->getWidth();
+  r_obj->height = term->getHeight();
+  r_obj->xmin = 1;
+  r_obj->ymin = 1;
+  r_obj->xmax = r_obj->width;
+  r_obj->ymax = r_obj->height;
+  r_obj->client_xmin = 1 + r_obj->left_padding;
+  r_obj->client_ymin = 1 + r_obj->top_padding;
+  r_obj->client_xmax = r_obj->width  - r_obj->right_padding;
+  r_obj->client_ymax = r_obj->height - r_obj->bottom_padding;
 }
 
 //----------------------------------------------------------------------
@@ -1659,10 +1735,11 @@ void FWidget::setTermGeometry (int w, int h)
   // Set xterm size to w x h
   if ( xterm )
   {
-    rootObject->xpos = 1;
-    rootObject->ypos = 1;
-    rootObject->width = w;  // columns
-    rootObject->height = h; // lines
+    FWidget* r_obj = rootObject;
+    r_obj->xpos = 1;
+    r_obj->ypos = 1;
+    r_obj->width = w;  // columns
+    r_obj->height = h; // lines
 
     setTermSize (w, h);
     getTermGeometry();

@@ -275,8 +275,17 @@ void FTerm::identifyTermType()
   }
   else if ( term_name )
   {
-    FILE *fp;
     // fallback: look into /etc/ttytype or /etc/ttys
+    //
+    // file format:
+    // <terminal type> <whitespace> <tty name>
+    //
+    // Example:
+    // linux	tty1
+    // vt100  ttys0
+
+    FILE *fp;
+
     if (  (fp = fopen("/etc/ttytype", "r")) != 0
        || (fp = fopen("/etc/ttys", "r"))    != 0 )
     {

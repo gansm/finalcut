@@ -790,7 +790,8 @@ void MyDialog::adjustSize()
   if ( X < 1 )
     X = 1;
   setX (X, false);
-  myList->setHeight (getHeight() - 3, false);
+  if ( myList )
+    myList->setHeight (getHeight() - 3, false);
   FDialog::adjustSize();
 }
 

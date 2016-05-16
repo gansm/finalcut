@@ -89,12 +89,13 @@ FMenu::~FMenu()
 //----------------------------------------------------------------------
 void FMenu::init(FWidget* parent)
 {
+  FWidget* rootObj = getRootWidget();
+  xmin = 1 + rootObj->getLeftPadding();
+  ymin = 1 + rootObj->getTopPadding();
+  xmax = rootObj->getWidth();
+  ymax = rootObj->getHeight();  
   width  = 10;
   height = 2;
-  xmin = 1;
-  ymin = 1;
-  xmax = width;
-  ymax = height;
   client_xmin = 1;
   client_ymin = 1;
   client_xmax = width;
@@ -113,7 +114,8 @@ void FMenu::init(FWidget* parent)
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
 
-  item->setMenu(this);
+  if ( item )
+    item->setMenu(this);
 
   if ( parent )
   {

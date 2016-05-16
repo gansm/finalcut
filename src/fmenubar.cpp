@@ -43,16 +43,17 @@ void FMenuBar::init()
   ypos = 1;
   createArea (vmenubar);
   vmenubar->visible = true;
+  window_object  = true;
+  ignore_padding = true;
+
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);
-  getRootWidget()->setTopPadding(1, true);
   setMenuBar(this);
+  getRootWidget()->setTopPadding(1, true);
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
   foregroundColor = wc.menu_active_fg;
   backgroundColor = wc.menu_active_bg;
-  window_object  = true;
-  ignore_padding = true;
   unsetFocusable();
 }
 
