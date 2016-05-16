@@ -93,7 +93,7 @@ void FMenu::init(FWidget* parent)
   xmin = 1 + rootObj->getLeftPadding();
   ymin = 1 + rootObj->getTopPadding();
   xmax = rootObj->getWidth();
-  ymax = rootObj->getHeight();  
+  ymax = rootObj->getHeight();
   width  = 10;
   height = 2;
   client_xmin = 1;
@@ -107,7 +107,8 @@ void FMenu::init(FWidget* parent)
   createArea (vwin);
   setGeometry (1, 1 , 10, 2, false);  // initialize geometry values
   setTransparentShadow();
-  window_object  = true;
+  window_object = true;
+  menu_object = true;
   addWindow(this);
   hide();
 

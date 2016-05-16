@@ -54,6 +54,7 @@ FWidget::FWidget (FWidget* parent)
   , adjustWidgetSizeGlobalShadow()
   , ignore_padding(false)
   , window_object(false)
+  , menu_object(false)
   , flags(0)
   , foregroundColor()
   , backgroundColor()
@@ -1408,7 +1409,10 @@ bool FWidget::focusFirstChild (void)
   while ( iter != end )
   {
     FWidget* widget = static_cast<FWidget*>(*iter);
-    if ( widget->isEnabled() && widget->acceptFocus() )
+
+    if (  widget->isEnabled()
+       && widget->acceptFocus()
+       && ! widget->isMenu() )
     {
       widget->setFocus();
       if ( widget->numOfChildren() >= 1 )
@@ -1445,7 +1449,10 @@ bool FWidget::focusLastChild (void)
   {
     --iter;
     FWidget* widget = static_cast<FWidget*>(*iter);
-    if ( widget->isEnabled() && widget->acceptFocus() )
+
+    if (  widget->isEnabled()
+       && widget->acceptFocus()
+       && ! widget->isMenu() )
     {
       widget->setFocus();
       if ( widget->numOfChildren() >= 1 )
@@ -1716,7 +1723,7 @@ void FWidget::getTermGeometry()
     getTermSize();
     closeConsole();
   }
-  
+
   r_obj->width  = term->getWidth();
   r_obj->height = term->getHeight();
   r_obj->xmin = 1;

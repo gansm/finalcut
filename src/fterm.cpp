@@ -306,7 +306,7 @@ void FTerm::identifyTermType()
       {
         type = name = 0;  // 0 == not found
         p = str;
-        
+
         while ( *p )
         {
           if ( isspace(uChar(*p)) )
