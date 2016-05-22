@@ -307,8 +307,8 @@ class FWidget : public FObject, public FTerm
    virtual void     onShow (FShowEvent*);
    virtual void     onHide (FHideEvent*);
    virtual void     onClose (FCloseEvent*);
-   virtual bool     focusNextChild (void);
-   virtual bool     focusPrevChild (void);
+   virtual bool     focusNextChild();
+   virtual bool     focusPrevChild();
 
  public:
    explicit FWidget (FWidget* = 0);  // constructor
@@ -374,8 +374,8 @@ class FWidget : public FObject, public FTerm
    virtual bool     unsetVisibleCursor();
    bool             hasVisibleCursor() const;
 
-   virtual bool     focusFirstChild (void);
-   virtual bool     focusLastChild (void);
+   virtual bool     focusFirstChild();
+   virtual bool     focusLastChild();
    virtual bool     setFocus(bool);
    virtual bool     setFocus();
    virtual bool     unsetFocus();

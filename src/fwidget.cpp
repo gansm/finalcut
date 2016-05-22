@@ -716,7 +716,7 @@ void FWidget::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusNextChild(void)
+bool FWidget::focusNextChild()
 {
   if ( hasParent() )
   {
@@ -778,7 +778,7 @@ bool FWidget::focusNextChild(void)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusPrevChild(void)
+bool FWidget::focusPrevChild()
 {
   if ( hasParent() )
   {
@@ -1383,7 +1383,7 @@ bool FWidget::setDisable()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusFirstChild (void)
+bool FWidget::focusFirstChild()
 {
   FObject::object_list children;
   FObject::object_list::const_iterator iter, end;
@@ -1422,7 +1422,7 @@ bool FWidget::focusFirstChild (void)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::focusLastChild (void)
+bool FWidget::focusLastChild()
 {
   FObject::object_list children;
   FObject::object_list::const_iterator iter, begin;

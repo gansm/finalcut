@@ -236,7 +236,8 @@ bool FWindow::raiseWindow (FWidget* obj)
     return false;
   if ( window_list->back() == obj )
     return false;
-  if ( (window_list->back()->getFlags() & fc::modal) != 0 )
+  if ( (window_list->back()->getFlags() & fc::modal) != 0
+     && ! obj->isMenu() )
     return false;
 
   iter = window_list->begin();
