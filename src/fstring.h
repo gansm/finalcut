@@ -13,6 +13,7 @@
 
 #include <sys/types.h>
 
+#include <langinfo.h>
 #include <stdint.h>
 
 #include <cassert>
@@ -162,12 +163,12 @@ class FString
    FString& setNumber (double, int = 11);
    FString& setNumber (lDouble, int = 11);
 
-   FString& setFormatedNumber (sInt16, char = '.');
-   FString& setFormatedNumber (uInt16, char = '.');
-   FString& setFormatedNumber (int,    char = '.');
-   FString& setFormatedNumber (uInt,   char = '.');
-   FString& setFormatedNumber (long,   char = '.');
-   FString& setFormatedNumber (uLong,  char = '.');
+   FString& setFormatedNumber (sInt16, char = nl_langinfo(THOUSEP)[0]);
+   FString& setFormatedNumber (uInt16, char = nl_langinfo(THOUSEP)[0]);
+   FString& setFormatedNumber (int,    char = nl_langinfo(THOUSEP)[0]);
+   FString& setFormatedNumber (uInt,   char = nl_langinfo(THOUSEP)[0]);
+   FString& setFormatedNumber (long,   char = nl_langinfo(THOUSEP)[0]);
+   FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
 
    friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
    friend std::istream&  operator >> (std::istream& instr, FString& s);

@@ -1501,6 +1501,8 @@ void FTerm::init_termcaps()
 //----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
+  // detect encoding and set the Fputchar function pointer
+
   if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     utf8_console = true;
@@ -1726,8 +1728,9 @@ void FTerm::init()
   init_termcaps();
   init_alt_charset();
 
-  // set the Fputchar function pointer
-  locale_name = setlocale(LC_ALL, ""); // init current locale
+  // init current locale
+  locale_name = setlocale(LC_ALL, "");
+  locale_name = setlocale(LC_NUMERIC, "");
 
   // get XTERM_LOCALE
   locale_xterm = getenv("XTERM_LOCALE");

@@ -174,6 +174,7 @@ int main (int, char**)
   std::cout << " setNumber:  "
             << num3 << " (long double)" << std::endl;
 
+  setlocale (LC_NUMERIC, "");
   FString fnum1, fnum2;
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture

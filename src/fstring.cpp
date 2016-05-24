@@ -7,7 +7,6 @@
 // class FString
 //----------------------------------------------------------------------
 
-
 // constructors and destructor
 //----------------------------------------------------------------------
 FString::FString()
@@ -1402,6 +1401,9 @@ FString& FString::setFormatedNumber (long num, char separator)
   n = 0;
   s = &buf[29];
 
+  if ( separator == 0 )
+    separator = ' ';
+
   if ( num < 0 )
   {
     neg = true;
@@ -1436,6 +1438,9 @@ FString& FString::setFormatedNumber (uLong num, char separator)
   n = 0;
   s = &buf[29];
   *s = L'\0';
+
+  if ( separator == 0 )
+    separator = ' ';
 
   do
   {

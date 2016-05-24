@@ -1,3 +1,7 @@
+2016-05-24  Markus Gans  <guru.mail@muenster.de>
+	* Use nl_langinfo to determine the numeric thousands separator
+	  for Fstring::setFormatedNumber as default parameter
+
 2016-05-22  Markus Gans  <guru.mail@muenster.de>
 	* Fix for menus in modal dialogs
 
