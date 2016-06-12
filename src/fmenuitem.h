@@ -65,6 +65,7 @@ class FMenuItem : public FWidget
    virtual void processClicked();
 
  protected:
+   bool       isWindowsMenu (FWidget*) const;
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;
    FWidget*   getSuperMenu() const;
@@ -88,6 +89,7 @@ class FMenuItem : public FWidget
    using FWidget::delAccelerator;
    void       delAccelerator (FWidget*);
    void       onKeyPress (FKeyEvent*);
+   void       onMouseDoubleClick (FMouseEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);

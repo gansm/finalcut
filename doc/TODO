@@ -20,8 +20,6 @@ Missing Features
      └──► tmp
 ---------------------------------------
 
-- A single click on the FDialog title button [-] should open 
-  a FMenu with a closing item
 - FDialog title button [▲] and [▼] should maximized or restore 
   the window size on a resizeable dialog
 - A possibility to change the window size dynamically with the mouse

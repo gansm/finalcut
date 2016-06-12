@@ -2,6 +2,7 @@
 // Provides: class FMenuItem
 
 #include "fapp.h"
+#include "fdialog.h"
 #include "fmenu.h"
 #include "fmenubar.h"
 #include "fmenulist.h"
@@ -247,6 +248,12 @@ void FMenuItem::processClicked()
 
 // protected methods of FMenuItem
 //----------------------------------------------------------------------
+bool FMenuItem::isWindowsMenu (FWidget* w) const
+{
+  return w->isDialog();
+}
+
+//----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
   return bool ( strcmp ( w->getClassName()
@@ -370,6 +377,52 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
+{
+  if ( super_menu )
+  {
+    const FPoint& g = ev->getGlobalPos();
+    int b = ev->getButton();
+
+    if ( isMenu(super_menu) )
+    {
+      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+      if ( smenu )
+      {
+        const FPoint& p2 = smenu->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        smenu->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+    }
+
+    if ( isMenuBar(super_menu) )
+    {
+      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+      if ( mbar )
+      {
+        const FPoint& p2 = mbar->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        mbar->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+    }
+
+    if ( isWindowsMenu(super_menu) )
+    {
+      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+      if ( dgl )
+      {
+        const FPoint& p2 = dgl->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        dgl->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::onMouseDown (FMouseEvent* ev)
 {
   if ( super_menu )
@@ -397,6 +450,18 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
         const FPoint& p2 = mbar->globalToLocalPos(g);
         FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
         mbar->onMouseDown(_ev);
+        delete _ev;
+      }
+    }
+
+    if ( isWindowsMenu(super_menu) )
+    {
+      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+      if ( dgl )
+      {
+        const FPoint& p2 = dgl->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
+        dgl->onMouseDown(_ev);
         delete _ev;
       }
     }
@@ -431,6 +496,18 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
         const FPoint& p2 = mbar->globalToLocalPos(g);
         FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
         mbar->onMouseUp(_ev);
+        delete _ev;
+      }
+    }
+
+    if ( isWindowsMenu(super_menu) )
+    {
+      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+      if ( dgl )
+      {
+        const FPoint& p2 = dgl->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
+        dgl->onMouseUp(_ev);
         delete _ev;
       }
     }
@@ -469,6 +546,17 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
       }
     }
 
+    if ( isWindowsMenu(super_menu) )
+    {
+      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+      if ( dgl )
+      {
+        const FPoint& p2 = dgl->globalToLocalPos(g);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
+        dgl->onMouseMove(_ev);
+        delete _ev;
+      }
+    }
   }
 }
 

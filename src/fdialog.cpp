@@ -20,6 +20,8 @@ FDialog::FDialog(FWidget* parent)
   , TitleBarClickPos()
   , oldGeometry()
   , focus_widget(0)
+  , dialog_menu()
+  , dgl_menuitem()
 {
   init();
 }
@@ -33,6 +35,8 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , TitleBarClickPos()
   , oldGeometry()
   , focus_widget(0)
+  , dialog_menu()
+  , dgl_menuitem()
 {
   init();
 }
@@ -88,12 +92,13 @@ FDialog::~FDialog()  // destructor
 //----------------------------------------------------------------------
 void FDialog::init()
 {
+  FWidget* rootObj = getRootWidget();
+  xmin = 1 + rootObj->getLeftPadding();
+  ymin = 1 + rootObj->getTopPadding();
+  xmax = rootObj->getWidth();
+  ymax = rootObj->getHeight();
   width  = 10;
   height = 10;
-  xmin = 1;
-  ymin = 1;
-  xmax = width;
-  ymax = height;
   client_xmin = 1;
   client_ymin = 1;
   client_xmax = width;
@@ -106,6 +111,7 @@ void FDialog::init()
   setGeometry (1, 1, 10, 10, false);  // initialize geometry values
   ignore_padding = true;
   window_object  = true;
+  dialog_object  = true;
   addWindow(this);
   setActiveWindow(this);
 
@@ -124,6 +130,25 @@ void FDialog::init()
     old_focus->redraw();
   }
   accelerator_list = new Accelerators();
+
+  dialog_menu = new FMenu ("-", this);
+  dialog_menu->move (xpos, ypos+1);
+  
+  dgl_menuitem = dialog_menu->getItem();
+  if ( dgl_menuitem )
+  {
+    dgl_menuitem->ignorePadding();
+    dgl_menuitem->unsetFocusable();
+  }
+
+  FMenuItem* close_item = new FMenuItem ("&Close", dialog_menu);
+  close_item->setStatusbarMessage ("Close window");
+
+  close_item->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &FDialog::cb_close)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -214,14 +239,28 @@ void FDialog::drawTitleBar()
     print (fc::NF_rev_menu_button3);
   }
   else if ( isMonochron() )
-    print ("[-]");
+  {
+    print ('[');
+    if ( dgl_menuitem )
+      print (dgl_menuitem->getText());
+    else
+      print ('-');
+    print (']');
+  }
   else
-    print (" - ");
+  {
+    print (' ');
+    if ( dgl_menuitem )
+      print (dgl_menuitem->getText());
+    else
+      print ('-');
+    print (' ');
+  }
 
   // fill with spaces (left of the title)
   if ( getMaxColor() < 16 )
     setBold();
-  if ( isActiveWindow() )
+  if ( isActiveWindow() || dialog_menu->isVisible() )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
@@ -250,6 +289,17 @@ void FDialog::drawTitleBar()
 //printf ("(%d)", getWindowLayer(this));
 
 }
+
+//----------------------------------------------------------------------
+void FDialog::cb_close (FWidget*, void*)
+{
+  dialog_menu->unselectItem();
+  dialog_menu->hide();
+  setClickedWidget(0);
+  drawTitleBar();
+  close();
+}
+
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
@@ -475,6 +525,47 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     }
     if ( has_raised )
       redraw();
+
+    // click on titlebar menu button
+    if ( mouse_x < 4  && mouse_y == 1 )
+    {
+      if ( dialog_menu->isVisible() )
+      {
+        dialog_menu->unselectItem();
+        dialog_menu->hide();
+        activateWindow();
+        raiseWindow();
+        getFocusWidget()->setFocus();
+        redraw();
+        if ( statusBar() )
+          statusBar()->drawMessage();
+      }
+      else
+      {
+        setOpenMenu(dialog_menu);
+        dialog_menu->move (xpos, ypos+1);
+        dialog_menu->setVisible();
+        dialog_menu->show();
+        dialog_menu->raiseWindow(dialog_menu);
+        dialog_menu->redraw();
+      }
+    }
+  }
+  else  // ev->getButton() != fc::LeftButton
+  {
+    // click on titlebar menu button
+    if ( mouse_x < 4  && mouse_y == 1 && dialog_menu->isVisible() )
+    {
+      // close menu
+      dialog_menu->unselectItem();
+      dialog_menu->hide();
+      activateWindow();
+      raiseWindow();
+      getFocusWidget()->setFocus();
+      redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+    }
   }
 
   if ( ev->getButton() == fc::RightButton )
@@ -537,6 +628,9 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::LeftButton )
   {
+    int mouse_x = ev->getX();
+    int mouse_y = ev->getY();
+
     if (  ! TitleBarClickPos.isNull()
        && titlebar_x > xpos+xmin+2
        && titlebar_x < xpos+xmin+width
@@ -546,6 +640,24 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       FPoint deltaPos = ev->getGlobalPos() - TitleBarClickPos;
       move (currentPos + deltaPos);
       TitleBarClickPos = ev->getGlobalPos();
+    }
+
+    // click on titlebar menu button
+    if (  mouse_x < 4
+       && mouse_y == 1
+       && dialog_menu->isVisible()
+       && ! dialog_menu->hasSelectedItem() )
+    {
+      FMenuItem* first_item; 
+      dialog_menu->selectFirstItem();
+      first_item = dialog_menu->getSelectedItem();
+      if ( first_item )
+        first_item->setFocus();
+      dialog_menu->redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
     }
   }
 }
@@ -561,6 +673,25 @@ void FDialog::onMouseMove (FMouseEvent* ev)
       FPoint deltaPos = ev->getGlobalPos() - TitleBarClickPos;
       move (currentPos + deltaPos);
       TitleBarClickPos = ev->getGlobalPos();
+    }
+
+    if ( dialog_menu->isVisible() && dialog_menu->isShown() )
+    {
+      // Mouse event handover to the menu
+      const FRect& menu_geometry = dialog_menu->getGeometryGlobal();
+      
+      if (  dialog_menu->count() > 0
+         && menu_geometry.contains(ev->getGlobalPos()) )
+      {
+        const FPoint& g = ev->getGlobalPos();
+        const FPoint& p = dialog_menu->globalToLocalPos(g);
+        int b = ev->getButton();
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+        dialog_menu->mouse_down = true;
+        setClickedWidget(dialog_menu);
+        dialog_menu->onMouseMove(_ev);
+        delete _ev;
+      }
     }
   }
 }
@@ -580,8 +711,14 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   FPoint gPos = ev->getGlobalPos();
   if ( title_button.contains(gPos) )
   {
+    dialog_menu->unselectItem();
+    dialog_menu->hide();
     setClickedWidget(0);
-    close();
+
+    if ( isModal() )
+      done(FDialog::Reject);
+    else
+      close();
   }
 }
 
@@ -591,18 +728,15 @@ void FDialog::onWindowActive (FEvent*)
   if ( isVisible() && isShown() )
     drawTitleBar();
 
-  if ( ! FWidget::getFocusWidget() )
+  if ( focus_widget && focus_widget->isVisible() && focus_widget->isShown() )
   {
-    if ( focus_widget && focus_widget->isVisible() && focus_widget->isShown() )
-    {
-      focus_widget->setFocus();
-      focus_widget->redraw();
-      if ( statusBar() )
-        statusBar()->drawMessage();
-    }
-    else
-      focusFirstChild();
+    focus_widget->setFocus();
+    focus_widget->redraw();
+    if ( statusBar() )
+      statusBar()->drawMessage();
   }
+  else
+    focusFirstChild();
 }
 
 //----------------------------------------------------------------------

@@ -246,6 +246,7 @@ class FWidget : public FObject, public FTerm
    FRect  adjustWidgetSizeGlobalShadow;
    bool   ignore_padding;
    bool   window_object;
+   bool   dialog_object;
    bool   menu_object;
    int    flags;
    short  foregroundColor;
@@ -331,6 +332,7 @@ class FWidget : public FObject, public FTerm
    FWidget*         parentWidget() const;
    bool             isRootWidget() const;
    bool             isWindow() const;
+   bool             isDialog() const;
    bool             isMenu() const;
    virtual bool     close();
 
@@ -579,6 +581,10 @@ inline bool FWidget::isShown() const
 //----------------------------------------------------------------------
 inline bool FWidget::isWindow() const
 { return window_object; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isDialog() const
+{ return dialog_object; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isMenu() const

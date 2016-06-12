@@ -1,3 +1,6 @@
+2016-06-12  Markus Gans  <guru.mail@muenster.de>
+	* Add a title bar menu to close dialogs
+
 2016-05-24  Markus Gans  <guru.mail@muenster.de>
 	* Use nl_langinfo to determine the numeric thousands separator
 	  for Fstring::setFormatedNumber as default parameter

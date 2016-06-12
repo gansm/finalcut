@@ -28,6 +28,8 @@
 #ifndef _FDIALOG_H
 #define _FDIALOG_H
 
+#include "fmenu.h"
+#include "fmenuitem.h"
 #include "fwindow.h"
 
 
@@ -48,12 +50,14 @@ class FDialog : public FWindow
    };
 
  private:
-   FString tb_text;         // title bar text
-   int  result_code;
-   bool maximized;
-   FPoint TitleBarClickPos;
-   FRect  oldGeometry;      // required by move()
-   FWidget* focus_widget;
+   FString    tb_text;         // title bar text
+   int        result_code;
+   bool       maximized;
+   FPoint     TitleBarClickPos;
+   FRect      oldGeometry;      // required by move()
+   FWidget*   focus_widget;
+   FMenu*     dialog_menu;
+   FMenuItem* dgl_menuitem;
 
  private:
    FDialog (const FDialog&);
@@ -61,6 +65,7 @@ class FDialog : public FWindow
    void init();
    void drawBorder();
    void drawTitleBar();
+   void cb_close (FWidget*, void*);
 
  protected:
    virtual void done (int);

@@ -969,7 +969,7 @@ void FApplication::processMouseEvent()
     }
   }
 
-  // close open menu
+  // close the open menu
   if ( open_menu && ! b_state.mouse_moved )
   {
     FMenu* menu = static_cast<FMenu*>(open_menu);
@@ -980,8 +980,6 @@ void FApplication::processMouseEvent()
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
-      if ( statusBar() )
-        statusBar()->clearMessage();
 
       // No widget was been clicked
       if ( ! clicked_widget )
@@ -1375,7 +1373,9 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
       window = FWindow::getWindowWidget(widget);
 
     // block events for widgets in non modal windows
-    if ( window && (window->getFlags() & fc::modal) == 0 )
+    if ( window
+       && (window->getFlags() & fc::modal) == 0
+       && ! window->isMenu() )
     {
       switch ( event->type() )
       {

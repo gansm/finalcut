@@ -130,6 +130,7 @@ class FMenu : public FWindow, public FMenuList
  private:
    friend class FApplication;
    friend class FCheckMenuItem;
+   friend class FDialog;
    friend class FMenuBar;
    friend class FMenuItem;
    friend class FRadioMenuItem;
