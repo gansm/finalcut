@@ -307,6 +307,7 @@ class FWidget : public FObject, public FTerm
    virtual void     onShow (FShowEvent*);
    virtual void     onHide (FHideEvent*);
    virtual void     onClose (FCloseEvent*);
+ // Change child focus
    virtual bool     focusNextChild();
    virtual bool     focusPrevChild();
 

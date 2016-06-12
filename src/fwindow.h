@@ -51,6 +51,7 @@ class FWindow : public FWidget
    FWindow& operator = (const FWindow&);
 
  protected:
+ // Event handlers
    bool            event (FEvent*);
    virtual void    onWindowActive (FEvent*);
    virtual void    onWindowInactive (FEvent*);
