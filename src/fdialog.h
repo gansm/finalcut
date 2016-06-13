@@ -65,6 +65,7 @@ class FDialog : public FWindow
    void init();
    void drawBorder();
    void drawTitleBar();
+   void leaveMenu();
    void cb_close (FWidget*, void*);
 
  protected:
@@ -130,6 +131,9 @@ class FDialog : public FWindow
    bool     hasShadow();
    FString  getText() const;
    void     setText (const FString&);
+
+ private:
+   friend class FMenu;
 };
 #pragma pack(pop)
 

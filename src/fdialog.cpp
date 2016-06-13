@@ -133,7 +133,7 @@ void FDialog::init()
 
   dialog_menu = new FMenu ("-", this);
   dialog_menu->move (xpos, ypos+1);
-  
+
   dgl_menuitem = dialog_menu->getItem();
   if ( dgl_menuitem )
   {
@@ -288,6 +288,21 @@ void FDialog::drawTitleBar()
 //gotoxy(xpos+xmin+width-4, ypos+ymin-1);
 //printf ("(%d)", getWindowLayer(this));
 
+}
+
+//----------------------------------------------------------------------
+void FDialog::leaveMenu()
+{
+  dialog_menu->unselectItem();
+  dialog_menu->hide();
+  activateWindow();
+  raiseWindow();
+  getFocusWidget()->setFocus();
+  redraw();
+  if ( statusBar() )
+    statusBar()->drawMessage();
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------
@@ -530,16 +545,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     if ( mouse_x < 4  && mouse_y == 1 )
     {
       if ( dialog_menu->isVisible() )
-      {
-        dialog_menu->unselectItem();
-        dialog_menu->hide();
-        activateWindow();
-        raiseWindow();
-        getFocusWidget()->setFocus();
-        redraw();
-        if ( statusBar() )
-          statusBar()->drawMessage();
-      }
+        leaveMenu();
       else
       {
         setOpenMenu(dialog_menu);
@@ -555,17 +561,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
   {
     // click on titlebar menu button
     if ( mouse_x < 4  && mouse_y == 1 && dialog_menu->isVisible() )
-    {
-      // close menu
-      dialog_menu->unselectItem();
-      dialog_menu->hide();
-      activateWindow();
-      raiseWindow();
-      getFocusWidget()->setFocus();
-      redraw();
-      if ( statusBar() )
-        statusBar()->drawMessage();
-    }
+      leaveMenu();  // close menu
   }
 
   if ( ev->getButton() == fc::RightButton )
@@ -648,7 +644,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
        && dialog_menu->isVisible()
        && ! dialog_menu->hasSelectedItem() )
     {
-      FMenuItem* first_item; 
+      FMenuItem* first_item;
       dialog_menu->selectFirstItem();
       first_item = dialog_menu->getSelectedItem();
       if ( first_item )
@@ -679,7 +675,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     {
       // Mouse event handover to the menu
       const FRect& menu_geometry = dialog_menu->getGeometryGlobal();
-      
+
       if (  dialog_menu->count() > 0
          && menu_geometry.contains(ev->getGlobalPos()) )
       {

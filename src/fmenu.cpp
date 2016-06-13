@@ -2,6 +2,7 @@
 // Provides: class FMenu
 
 #include "fapp.h"
+#include "fdialog.h"
 #include "fmenu.h"
 #include "fstatusbar.h"
 
@@ -253,6 +254,12 @@ void FMenu::adjustSize()
 }
 
 //----------------------------------------------------------------------
+bool FMenu::isWindowsMenu (FWidget* w) const
+{
+  return w->isDialog();
+}
+
+//----------------------------------------------------------------------
 bool FMenu::isMenuBar (FWidget* w) const
 {
   return bool ( strcmp ( w->getClassName()
@@ -336,6 +343,11 @@ void FMenu::hideSuperMenus()
       FMenu* m = reinterpret_cast<FMenu*>(super);
       m->hide();
       m->hideSuperMenus();
+    }
+    else if ( isWindowsMenu(super) )
+    {
+      FDialog* dgl = reinterpret_cast<FDialog*>(super);
+      dgl->leaveMenu();
     }
   }
 }
