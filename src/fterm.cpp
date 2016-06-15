@@ -282,7 +282,7 @@ void FTerm::identifyTermType()
     //
     // Example:
     // linux	tty1
-    // vt100  ttys0
+    // vt100	ttys0
 
     FILE *fp;
 
@@ -297,9 +297,9 @@ void FTerm::identifyTermType()
       // get term basename
       const char* term_basename = strrchr(term_name, '/');
       if ( term_basename == 0 )
-	      term_basename = term_name;
+        term_basename = term_name;
       else
-	      term_basename++;
+        term_basename++;
 
       // read and parse the file
       while ( fgets(str, sizeof(str)-1, fp) != 0 )
@@ -2369,6 +2369,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
   int ax, ay, aw, ah, rsh, bsh, y_end, ol;
   FOptiAttr::char_data* tc; // terminal character
   FOptiAttr::char_data* ac; // area character
+  bool modified = false;
 
   if ( ! vterm_updates )
   {
@@ -2430,8 +2431,11 @@ void FTerm::updateVTerm (FTerm::term_area* area)
         tc = &vterm->text[gy * vterm->width + gx - ol];
 
         if ( ! isCovered(gx-ol, gy, area) )
+        {
           memcpy (tc, ac, sizeof(FOptiAttr::char_data));
-        else
+          modified = true;
+        }
+        else if ( ! modified )
           line_xmin++;  // don't update covered character
       }
       _xmin = ax + line_xmin - ol;

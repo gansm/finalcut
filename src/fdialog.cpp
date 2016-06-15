@@ -534,9 +534,9 @@ void FDialog::onMouseDown (FMouseEvent* ev)
         if ( old_focus )
           old_focus->redraw();
       }
-      else if ( focusFirstChild() )
-        if ( old_focus )
-          old_focus->redraw();
+      else if ( old_focus && focusFirstChild() )
+        old_focus->redraw();
+      updateTerminal();
     }
     if ( has_raised )
       redraw();
