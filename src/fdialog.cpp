@@ -724,15 +724,18 @@ void FDialog::onWindowActive (FEvent*)
   if ( isVisible() && isShown() )
     drawTitleBar();
 
-  if ( focus_widget && focus_widget->isVisible() && focus_widget->isShown() )
+  if ( ! FWidget::getFocusWidget() )
   {
-    focus_widget->setFocus();
-    focus_widget->redraw();
-    if ( statusBar() )
-      statusBar()->drawMessage();
+    if ( focus_widget && focus_widget->isVisible() && focus_widget->isShown() )
+    {
+      focus_widget->setFocus();
+      focus_widget->redraw();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+    }
+    else
+      focusFirstChild();
   }
-  else
-    focusFirstChild();
 }
 
 //----------------------------------------------------------------------

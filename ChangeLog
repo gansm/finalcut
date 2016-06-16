@@ -1,5 +1,7 @@
 2016-06-16  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FTerm updateVTerm() for updates from vdesktop
+	* Bug fix in FDialog onWindowActive() for combined setFocus() 
+	  and activateWindow()
 
 2016-06-13  Markus Gans  <guru.mail@muenster.de>
 	* Improved title bar menu integration
@@ -8,7 +10,7 @@
 	* Add a title bar menu to close dialogs
 
 2016-05-24  Markus Gans  <guru.mail@muenster.de>
-	* Use nl_langinfo to determine the numeric thousands separator
+	* Use nl_langinfo to determine the numeric thousands separator 
 	  for Fstring::setFormatedNumber as default parameter
 
 2016-05-22  Markus Gans  <guru.mail@muenster.de>
