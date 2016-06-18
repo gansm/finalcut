@@ -52,12 +52,14 @@ ProgressDialog::ProgressDialog (FWidget* parent)
 
   reset = new FButton(this);
   reset->setText("&Reset");
+  reset->setStatusbarMessage ("Reset the progress bar");
   reset->setGeometry(2, 6, 8, 1, false);
   reset->setShadow();
   reset->setDisable();
 
   more = new FButton(this);
   more->setText("&More");
+  more->setStatusbarMessage ("Increases the progress bar position");
   more->setGeometry(15, 6, 8, 1, false);
   more->setShadow();
   more->setDisable();
