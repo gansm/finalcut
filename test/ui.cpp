@@ -130,6 +130,10 @@ void ProgressDialog::onTimer (FTimerEvent*)
     more->setEnable();
     quit->setEnable();
     redraw();
+    if ( statusBar() )
+      statusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
   }
 }
 

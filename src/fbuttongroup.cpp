@@ -477,7 +477,8 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
           in_ev->ignore();
           FWidget* prev_element = getFocusWidget();
           (*iter)->setFocus();
-          prev_element->redraw();
+          if ( prev_element )
+            prev_element->redraw();
           (*iter)->redraw();
         }
         break;
@@ -492,7 +493,8 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();
       focusFirstChild();
-      prev_element->redraw();
+      if ( prev_element )
+        prev_element->redraw();
       getFocusWidget()->redraw();
     }
     else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
@@ -500,7 +502,8 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();
       focusLastChild();
-      prev_element->redraw();
+      if ( prev_element )
+        prev_element->redraw();
       getFocusWidget()->redraw();
     }
   }

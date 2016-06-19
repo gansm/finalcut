@@ -379,7 +379,7 @@ class FWidget : public FObject, public FTerm
 
    virtual bool     focusFirstChild();
    virtual bool     focusLastChild();
-   virtual bool     setFocus(bool);
+   virtual bool     setFocus (bool);
    virtual bool     setFocus();
    virtual bool     unsetFocus();
    bool             hasFocus() const;
@@ -387,7 +387,7 @@ class FWidget : public FObject, public FTerm
    void             setFocusable();
    void             unsetFocusable();
 
-   bool             ignorePadding(bool);
+   bool             ignorePadding (bool);
    bool             ignorePadding();
    bool             acceptPadding();
 

@@ -1459,7 +1459,7 @@ bool FWidget::focusLastChild()
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setFocus(bool on)
+bool FWidget::setFocus (bool on)
 {
   FWindow* window;
 
@@ -1482,10 +1482,6 @@ bool FWidget::setFocus(bool on)
       FWidget::setFocusWidget(this);
     }
   }
-
-  // unset widget focus
-  if ( ! on && focus )
-    FWidget::setFocusWidget(0);
 
   window = FWindow::getWindowWidget(this);
 
