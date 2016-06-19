@@ -755,6 +755,9 @@ void FDialog::onWindowInactive (FEvent*)
 {
   if ( isVisible() && isEnabled() )
     drawTitleBar();
+
+  if ( hasFocus() )
+    unsetFocus();
 }
 
 //----------------------------------------------------------------------

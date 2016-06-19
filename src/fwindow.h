@@ -78,8 +78,9 @@ class FWindow : public FWidget
    bool            lowerWindow ();
    static void     setActiveWindow (FWindow*);
    static FWindow* getActiveWindow();
+   static void     switchToPrevWindow();
    static bool     activatePrevWindow();
-   bool            activateWindow(bool);
+   bool            activateWindow (bool);
    bool            activateWindow();
    bool            deactivateWindow();
    bool            isActiveWindow() const;

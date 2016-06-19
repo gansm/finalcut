@@ -1468,16 +1468,28 @@ bool FWidget::setFocus(bool on)
   if ( on == focus )
     return true;
 
+  // set widget focus
   if ( on && ! focus )
   {
+    int focusable_children = numOfFocusableChildren();
+    
     if ( FWidget::getFocusWidget() != 0 )
       FWidget::getFocusWidget()->unsetFocus();
-    if ( numOfFocusableChildren() == 0 )
+    
+    if ( (!isDialog() && focusable_children == 0)
+       || (isDialog() && focusable_children == 1) )
+    {
       FWidget::setFocusWidget(this);
+    }
   }
+
+  // unset widget focus
+  if ( ! on && focus )
+    FWidget::setFocusWidget(0);
 
   window = FWindow::getWindowWidget(this);
 
+  // set window focus
   if ( on && window )
   {
     if ( ! window->isActiveWindow() )

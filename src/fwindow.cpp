@@ -120,6 +120,7 @@ FWindow* FWindow::getWindowWidgetAt(int x, int y)
 //----------------------------------------------------------------------
 void FWindow::addWindow (FWidget* obj)
 {
+  // add the window object obj to the window list
   if ( window_list )
     window_list->push_back(obj);
 }
@@ -127,6 +128,7 @@ void FWindow::addWindow (FWidget* obj)
 //----------------------------------------------------------------------
 void FWindow::delWindow (FWidget* obj)
 {
+  // delete the window object obj from the window list
   if ( window_list && ! window_list->empty() )
   {
     widgetList::iterator iter;
@@ -147,6 +149,7 @@ void FWindow::delWindow (FWidget* obj)
 //----------------------------------------------------------------------
 FWindow* FWindow::getWindowWidget (FWidget* obj)
 {
+  // returns the window object to the given widget obj
   FWidget* p_obj = obj->parentWidget();
   while ( ! obj->isWindow() && p_obj )
   {
@@ -162,6 +165,7 @@ FWindow* FWindow::getWindowWidget (FWidget* obj)
 //----------------------------------------------------------------------
 int FWindow::getWindowLayer (FWidget* obj)
 {
+  // returns the window layer from the widget obj
   widgetList::iterator iter, end;
   FWidget* window;
 
@@ -194,6 +198,7 @@ int FWindow::getWindowLayer (FWidget* obj)
 //----------------------------------------------------------------------
 void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 {
+  // swaps the window layer between obj1 and obj2
   widgetList::iterator iter, iter1, iter2, end;
 
   if ( ! window_list )
@@ -226,6 +231,7 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 //----------------------------------------------------------------------
 bool FWindow::raiseWindow (FWidget* obj)
 {
+  // raises the window widget obj to the top
   widgetList::iterator iter;
 
   if ( ! window_list )
@@ -260,6 +266,7 @@ bool FWindow::raiseWindow (FWidget* obj)
 //----------------------------------------------------------------------
 bool FWindow::lowerWindow (FWidget* obj)
 {
+  // lowers the window widget obj to the bottom
   widgetList::iterator iter;
 
   if ( ! window_list )
@@ -293,6 +300,7 @@ bool FWindow::lowerWindow (FWidget* obj)
 //----------------------------------------------------------------------
 void FWindow::setActiveWindow (FWindow* window)
 {
+  // activate FWindow object window
   widgetList::const_iterator iter, end;
 
   if ( ! window_list )
@@ -331,13 +339,34 @@ void FWindow::setActiveWindow (FWindow* window)
 //----------------------------------------------------------------------
 FWindow* FWindow::getActiveWindow()
 {
+  // returns the active FWindow object
   FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
   return active_window;
 }
 
 //----------------------------------------------------------------------
+void FWindow::switchToPrevWindow()
+{
+  // switch to previous window
+  activatePrevWindow();
+
+  FWindow* active_window = getActiveWindow();
+  if ( active_window )
+  {
+    FWidget* focus_widget = active_window->getFocusWidget();
+    if ( ! active_window->isActiveWindow() )
+      setActiveWindow(active_window);
+    raiseWindow (active_window);
+    if ( focus_widget )
+      focus_widget->setFocus();
+    active_window->redraw();
+  }
+}
+
+//----------------------------------------------------------------------
 bool FWindow::activatePrevWindow()
 {
+  // activate the previous window
   if ( window_list && window_list->size() > 1 )
   {
     widgetList::const_iterator iter, begin;
@@ -360,8 +389,9 @@ bool FWindow::activatePrevWindow()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::activateWindow(bool on)
+bool FWindow::activateWindow (bool on)
 {
+  // activate/deactivate this window
   if ( on )
     FApplication::active_window = this;
 
@@ -371,6 +401,7 @@ bool FWindow::activateWindow(bool on)
 //----------------------------------------------------------------------
 bool FWindow::isHiddenWindow() const
 {
+  // returns the window hidden state
   term_area* area = getVWin();
   if ( area )
     return ! area->visible;

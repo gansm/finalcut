@@ -468,10 +468,9 @@ void FMenuBar::leaveMenuBar()
 {
   resetMenu();
   redraw();
-  activatePrevWindow();
-  raiseWindow (getActiveWindow());
-  getActiveWindow()->getFocusWidget()->setFocus();
-  getActiveWindow()->redraw();
+  if ( statusBar() )
+    statusBar()->clearMessage();
+  switchToPrevWindow();
   if ( statusBar() )
     statusBar()->drawMessage();
   updateTerminal();

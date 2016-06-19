@@ -1,3 +1,7 @@
+2016-06-19  Markus Gans  <guru.mail@muenster.de>
+	* Clear status bar text in FMenuBar::leaveMenuBar()
+	* Fixes some status bar update issues and focus problems
+
 2016-06-18  Markus Gans  <guru.mail@muenster.de>
 	* Improved status bar text updating at window change
 

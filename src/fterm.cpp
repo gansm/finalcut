@@ -3433,6 +3433,7 @@ void FTerm::setPalette (short index, int r, int g, int b)
 //----------------------------------------------------------------------
 void FTerm::xtermMouse (bool on)
 {
+  // activate/deactivate the xterm mouse support
   if ( ! mouse_support )
     return;
   if ( on )
@@ -3455,6 +3456,7 @@ void FTerm::xtermMouse (bool on)
 //----------------------------------------------------------------------
 bool FTerm::gpmMouse (bool on)
 {
+  // activate/deactivate the gpm mouse support
   if ( ! linux_terminal )
     return false;
 
@@ -3498,6 +3500,7 @@ bool FTerm::gpmMouse (bool on)
 //----------------------------------------------------------------------
 void FTerm::setTermXY (register int x, register int y)
 {
+  // sets the hardware cursor to the given (x,y) position
   int term_width, term_height;
   char* move_str;
 

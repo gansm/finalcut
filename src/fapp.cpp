@@ -983,13 +983,7 @@ void FApplication::processMouseEvent()
 
       // No widget was been clicked
       if ( ! clicked_widget )
-      {
-        // activate previous window
-        FWindow::activatePrevWindow();
-        FWindow::raiseWindow (FWindow::getActiveWindow());
-        FWindow::getActiveWindow()->getFocusWidget()->setFocus();
-        FWindow::getActiveWindow()->redraw();
-      }
+        FWindow::switchToPrevWindow();
       if ( statusBar() )
         statusBar()->drawMessage();
       updateTerminal();
@@ -997,14 +991,25 @@ void FApplication::processMouseEvent()
     }
   }
 
+  // unselected menu bar item
   if (  ! open_menu && menuBar()
      && menuBar()->hasSelectedItem()
      && ! b_state.mouse_moved )
   {
     if ( ! menuBar()->getGeometryGlobal().contains(*mouse) )
     {
+      if ( statusBar() )
+        statusBar()->clearMessage();
       menuBar()->resetMenu();
       menuBar()->redraw();
+
+      // No widget was been clicked
+      if ( ! clicked_widget )
+        FWindow::switchToPrevWindow();
+      if ( statusBar() )
+        statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
     }
   }
 
