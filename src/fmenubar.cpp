@@ -628,7 +628,10 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
     if ( statusBar() )
       statusBar()->drawMessage();
     if ( focus_changed )
+    {
       redraw();
+      updateTerminal();
+    }
   }
 }
 
@@ -816,7 +819,10 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
     if ( statusBar() )
         statusBar()->drawMessage();
     if ( focus_changed )
+    {
       redraw();
+      updateTerminal();
+    }
   }
 }
 

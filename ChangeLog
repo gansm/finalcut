@@ -1,3 +1,6 @@
+2016-06-22  Markus Gans  <guru.mail@muenster.de>
+	* Adding required updateTerminal() calls for FMenuBar
+
 2016-06-19  Markus Gans  <guru.mail@muenster.de>
 	* Clear status bar text in FMenuBar::leaveMenuBar()
 	* Fixes some status bar update issues and focus problems
