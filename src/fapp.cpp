@@ -1218,14 +1218,8 @@ int FApplication::processTimerEvent()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processNextEvent()
+void FApplication::processTerminalUpdate()
 {
-  int num_events = 0;
-
-  processKeyboardEvent();
-  processMouseEvent();
-  processResizeEvent();
-
   if ( terminal_update_pending )
   {
     if ( ! input_data_pending )
@@ -1245,7 +1239,11 @@ bool FApplication::processNextEvent()
     else
       skipped_terminal_update++;
   }
+}
 
+//----------------------------------------------------------------------
+void FApplication::processCloseWidget()
+{
   if ( close_widget && ! close_widget->empty() )
   {
     widgetList::iterator iter;
@@ -1258,6 +1256,18 @@ bool FApplication::processNextEvent()
     }
     close_widget->clear();
   }
+}
+
+//----------------------------------------------------------------------
+bool FApplication::processNextEvent()
+{
+  int num_events = 0;
+
+  processKeyboardEvent();
+  processMouseEvent();
+  processResizeEvent();
+  processTerminalUpdate();
+  processCloseWidget();
 
   sendQueuedEvents();
   num_events += processTimerEvent();

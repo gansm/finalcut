@@ -137,6 +137,8 @@ class FApplication : public FWidget
    void    processMouseEvent();
    void    processResizeEvent();
    int     processTimerEvent();
+   void    processTerminalUpdate();
+   void    processCloseWidget();
    bool    processNextEvent();
    friend  class FDialog;
    friend  class FWidget;

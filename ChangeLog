@@ -1,3 +1,6 @@
+2016-06-25  Markus Gans  <guru.mail@muenster.de>
+	* Move processNextEvent() code into sub functions
+
 2016-06-22  Markus Gans  <guru.mail@muenster.de>
 	* Adding required updateTerminal() calls for FMenuBar
 
