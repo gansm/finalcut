@@ -46,6 +46,9 @@ class FWindow : public FWidget
  private:
    bool window_active;
 
+ protected:
+   static FWindow* previous_widget;
+
  private:
    FWindow (const FWindow&);
    FWindow& operator = (const FWindow&);

@@ -6,6 +6,9 @@
 #include "fstatusbar.h"
 #include "fwindow.h"
 
+// static attributes
+FWindow* FWindow::previous_widget = 0;
+
 //----------------------------------------------------------------------
 // class FWindow
 //----------------------------------------------------------------------
@@ -87,8 +90,9 @@ void FWindow::hide()
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidgetAt(int x, int y)
+FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
+  // returns the window object to the corresponding coordinates
   if ( statusBar() && statusBar()->getGeometryGlobal().contains(x,y) )
     return statusBar();
 
@@ -367,25 +371,15 @@ void FWindow::switchToPrevWindow()
 bool FWindow::activatePrevWindow()
 {
   // activate the previous window
-  if ( window_list && window_list->size() > 1 )
+  FWindow* w = previous_widget;
+
+  if ( w && ! w->isHiddenWindow() && ! w->isActiveWindow() )
   {
-    widgetList::const_iterator iter, begin;
-    iter  = window_list->end();
-    begin = window_list->begin();
-    --iter;
-    do
-    {
-      --iter;
-      FWindow* w = static_cast<FWindow*>(*iter);
-      if ( w && ! w->isHiddenWindow() && ! w->isActiveWindow() )
-      {
-        setActiveWindow(w);
-        return true;
-      }
-    }
-    while ( iter != begin );
+    setActiveWindow(w);
+    return true;
   }
-  return false;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------

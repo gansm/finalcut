@@ -1,3 +1,6 @@
+2016-06-26  Markus Gans  <guru.mail@muenster.de>
+	* Bug fix for FWindow::activatePrevWindow()
+
 2016-06-25  Markus Gans  <guru.mail@muenster.de>
 	* Move processNextEvent() code into sub functions
 

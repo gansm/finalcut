@@ -128,6 +128,7 @@ class FWidget : public FObject, public FTerm
    typedef std::vector<accelerator> Accelerators;
    Accelerators* accelerator_list;
 
+ protected:
    static struct widget_colors
    {
      short term_fg;
@@ -212,19 +213,18 @@ class FWidget : public FObject, public FTerm
    } wc;
    // widget_colors wc;
 
-  struct dbl_line_mask
-  {
-    dbl_line_mask() : top(), right(), bottom(), left()
-    { }
-   ~dbl_line_mask()
-    { }
-    std::vector<bool> top;
-    std::vector<bool> right;
-    std::vector<bool> bottom;
-    std::vector<bool> left;
-  } double_flatline_mask;
+   struct dbl_line_mask
+   {
+     dbl_line_mask() : top(), right(), bottom(), left()
+     { }
+    ~dbl_line_mask()
+     { }
+     std::vector<bool> top;
+     std::vector<bool> right;
+     std::vector<bool> bottom;
+     std::vector<bool> left;
+   } double_flatline_mask;
 
- protected:
    int    xpos;
    int    ypos;
    int    width;
