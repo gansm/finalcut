@@ -22,7 +22,10 @@ FWindow::FWindow(FWidget* parent)
 
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
-{ }
+{
+  if ( previous_widget == this )
+    previous_widget = 0;
+}
 
 
 // protected methods of FWindow

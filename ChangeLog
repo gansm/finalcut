@@ -1,3 +1,6 @@
+2016-06-27  Markus Gans  <guru.mail@muenster.de>
+	* Fix the use after free bug for previous_widget
+
 2016-06-26  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix for FWindow::activatePrevWindow()
 

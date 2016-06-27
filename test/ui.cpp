@@ -740,7 +740,7 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
     return;
 
   FDialog* view = new FDialog(this);
-  view->setText ("viewer");
+  view->setText ("Viewer");
   view->setGeometry (1+int((getRootWidget()->getWidth()-60)/2),
                      int(getRootWidget()->getHeight()/6),
                      60,
