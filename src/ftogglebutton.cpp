@@ -352,8 +352,8 @@ void FToggleButton::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
 
   size = width;

@@ -106,7 +106,7 @@ void FMenu::init(FWidget* parent)
   bottom_padding = 1;
   right_padding  = 1;
   createArea (vwin);
-  setGeometry (1, 1 , 10, 2, false);  // initialize geometry values
+  setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
   window_object = true;
   menu_object = true;

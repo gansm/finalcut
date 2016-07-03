@@ -22,12 +22,13 @@ FMenuItem::FMenuItem (FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -40,12 +41,13 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -58,12 +60,13 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -76,12 +79,13 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -94,12 +98,13 @@ FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -112,12 +117,13 @@ FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -130,12 +136,13 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
   , separator(false)
   , checkable(false)
   , checked(false)
+  , radio_button(false)
+  , dialog_list(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
-  , radio_button(false)
 {
   init (parent);
 }
@@ -240,6 +247,53 @@ void FMenuItem::processDeactivate()
 }
 
 //----------------------------------------------------------------------
+void FMenuItem::createDialogList (FMenu* winmenu)
+{
+  winmenu->clear();
+
+  if ( window_list && ! window_list->empty() )
+  {
+    widgetList::const_iterator iter, begin;
+    iter  = window_list->end();
+    begin = window_list->begin();
+
+    do
+    {
+      --iter;
+      if ( (*iter)->isDialog() )
+      {
+        FDialog* win = dynamic_cast<FDialog*>(*iter);
+        FString win_title = win->getText();
+        FMenuItem* win_item = new FMenuItem (win_title, winmenu);
+        win_item->addCallback
+        (
+          "clicked",
+          _METHOD_CALLBACK (this, &FMenuItem::cb_switchToDialog),
+          dynamic_cast<FWidget::data_ptr>(win)
+        );
+      }
+    }
+    while ( iter != begin );
+  }
+  winmenu->menu_dimension();
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
+{
+  FDialog* win = static_cast<FDialog*>(data_ptr);
+  if ( win && ! win->isHiddenWindow() && ! win->isActiveWindow() )
+  {
+    FWindow::setActiveWindow(win);
+    FWidget* focus_widget = win->getFocusWidget();
+    FWindow::raiseWindow (win);
+    if ( focus_widget )
+      focus_widget->setFocus();
+    win->redraw();
+  }
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::processClicked()
 {
   emitCallback("clicked");
@@ -256,15 +310,18 @@ bool FMenuItem::isWindowsMenu (FWidget* w) const
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenuBar") ) == 0 );
+  return bool( strcmp ( w->getClassName()
+                      , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenu (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenu") ) == 0 );
+  bool m1 = ( strcmp ( w->getClassName()
+                     , const_cast<char*>("FMenu") ) == 0 );
+  bool m2 = ( strcmp ( w->getClassName()
+                     , const_cast<char*>("FDialogListMenu") ) == 0 );
+  return bool( m1 || m2 );
 }
 
 
@@ -279,7 +336,7 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
   while ( super && strncmp ( super->getClassName()
                            , const_cast<char*>("FMenu"), 5) == 0 )
   {
-    super = super->parentWidget();
+    super = super->getParentWidget();
   }
 
   if ( super )
@@ -314,7 +371,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
   while ( super && strncmp ( super->getClassName()
                            , const_cast<char*>("FMenu"), 5) == 0 )
   {
-    super = super->parentWidget();
+    super = super->getParentWidget();
   }
 
   if ( super )
@@ -754,6 +811,8 @@ void FMenuItem::openMenu()
       open_menu->hide();
       open_menu->hideSubMenus();
     }
+    if ( dialog_list )
+      createDialogList (dd_menu);
     setOpenMenu(dd_menu);
 
     dd_menu->setVisible();

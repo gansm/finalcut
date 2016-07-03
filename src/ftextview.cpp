@@ -196,8 +196,8 @@ void FTextView::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
 
   n = isNewFont() ? 1 : 0;

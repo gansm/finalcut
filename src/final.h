@@ -20,6 +20,7 @@
 #include "ftextview.h"
 #include "flineedit.h"
 #include "fmenu.h"
+#include "fdialoglistmenu.h"
 #include "fmenubar.h"
 #include "fmenuitem.h"
 #include "fcheckmenuitem.h"

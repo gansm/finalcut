@@ -55,7 +55,7 @@ FDialog::~FDialog()  // destructor
     const FRect& geometry = getGeometryGlobalShadow();
     restoreVTerm (geometry);
 
-    parentWidget()->redraw();
+    getParentWidget()->redraw();
   }
 
   if ( window_list && ! window_list->empty() )
@@ -164,7 +164,7 @@ void FDialog::drawBorder()
   {
     short fg;
     if ( ! isRootWidget() )
-      fg = parentWidget()->getForegroundColor();
+      fg = getParentWidget()->getForegroundColor();
     else
       fg = wc.term_fg;
     for (int y=y1; y <= y2; y++)

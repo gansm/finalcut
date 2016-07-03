@@ -56,7 +56,7 @@ watch::watch (FWidget* parent)
 {
   setText ("Watch");
   setShadow();
-  int pw = parentWidget()->getWidth();
+  int pw = getParentWidget()->getWidth();
   setGeometry (1+(pw-22)/2, 3, 22, 13);
 
   // Create labels
@@ -191,7 +191,7 @@ void watch::cb_exitApp (FWidget*, void*)
 //----------------------------------------------------------------------
 void watch::adjustSize()
 {
-  int pw = parentWidget()->getWidth();
+  int pw = getParentWidget()->getWidth();
   setX (1+(pw-22)/2, false);
   FDialog::adjustSize();
 }

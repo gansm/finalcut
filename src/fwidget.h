@@ -329,7 +329,7 @@ class FWidget : public FObject, public FTerm
    static FWidget*  getOpenMenu();
    static void      setOpenMenu(FWidget*);
    int              numOfFocusableChildren();
-   FWidget*         parentWidget() const;
+   FWidget*         getParentWidget() const;
    bool             isRootWidget() const;
    bool             isWindow() const;
    bool             isDialog() const;
@@ -543,7 +543,7 @@ inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
 { return childWidgetAt (p, pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::parentWidget() const
+inline FWidget* FWidget::getParentWidget() const
 { return static_cast<FWidget*>(getParent()); }
 
 //----------------------------------------------------------------------

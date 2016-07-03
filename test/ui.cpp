@@ -45,7 +45,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
   , more()
   , quit()
 {
-  setGeometry (int((this->parentWidget()->getWidth()-40)/2), 7, 40, 10);
+  setGeometry (int((this->getParentWidget()->getWidth()-40)/2), 7, 40, 10);
   setText("Progress bar");
   setTransparentShadow();
   //setModal();
@@ -220,6 +220,8 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Options = new FMenuItem ("&Options", Menubar);
   Options->setStatusbarMessage ("Set program defaults");
   Options->setDisable();
+  FDialogListMenu* Window = new FDialogListMenu ("&Window", Menubar);
+  Window->setStatusbarMessage ("List of all the active dialogs");
   FMenuItem* Help    = new FMenuItem ("&Help", Menubar);
   Help->setStatusbarMessage ("Show version and copyright information");
 
@@ -740,7 +742,8 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
     return;
 
   FDialog* view = new FDialog(this);
-  view->setText ("Viewer");
+  FString filename(basename(const_cast<char*>(file.c_str())));
+  view->setText ("Viewer: " + filename);
   view->setGeometry (1+int((getRootWidget()->getWidth()-60)/2),
                      int(getRootWidget()->getHeight()/6),
                      60,
@@ -790,9 +793,9 @@ void MyDialog::cb_exitApp (FWidget*, void*)
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  int h = parentWidget()->getHeight() - 4;
+  int h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
-  int X = int((parentWidget()->getWidth() - getWidth()) / 2);
+  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
   if ( X < 1 )
     X = 1;
   setX (X, false);

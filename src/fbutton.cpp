@@ -168,8 +168,8 @@ void FButton::draw()
     if ( is_Flat )
       clearFlatBorder();
     clearShadow();
-    setColor ( parentWidget()->getForegroundColor()
-             , parentWidget()->getBackgroundColor() );
+    setColor ( getParentWidget()->getForegroundColor()
+             , getParentWidget()->getBackgroundColor() );
     for (int y=1; y <= height; y++)
     {
       gotoxy (xpos+xmin-1, ypos+ymin-2+y);
@@ -232,7 +232,7 @@ void FButton::draw()
   }
   else if ( ! isMonochron() )
   {
-    setColor (button_bg, parentWidget()->getBackgroundColor());
+    setColor (button_bg, getParentWidget()->getBackgroundColor());
     gotoxy (xpos+xmin-1+d, ypos+ymin-1);
     for (int y=1; y <= height; y++)
     {
@@ -252,8 +252,8 @@ void FButton::draw()
      && (is_Flat || ! hasShadow() || isMonochron()) )
   {
     // clear the right █ from button down
-    setColor ( parentWidget()->getForegroundColor()
-             , parentWidget()->getBackgroundColor() );
+    setColor ( getParentWidget()->getForegroundColor()
+             , getParentWidget()->getBackgroundColor() );
     for (int y=1; y <= height; y++)
     {
       if ( isMonochron() )
@@ -341,8 +341,8 @@ void FButton::draw()
 
   if ( is_NonFlatShadow && ! button_down )
   {
-    setColor ( parentWidget()->getForegroundColor()
-             , parentWidget()->getBackgroundColor() );
+    setColor ( getParentWidget()->getForegroundColor()
+             , getParentWidget()->getBackgroundColor() );
     print(' '); // restore background after button down
     drawShadow();
   }
@@ -462,8 +462,8 @@ void FButton::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
 
   s = hasShadow() ? 1 : 0;

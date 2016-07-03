@@ -41,7 +41,7 @@ Button::Button (FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-void Button::setChecked(bool on)
+void Button::setChecked (bool on)
 {
   if ( checked != on )
   {
@@ -948,8 +948,8 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
 //----------------------------------------------------------------------
 void Calc::adjustSize()
 {
-  int pw = parentWidget()->getWidth();
-  int ph = parentWidget()->getHeight();
+  int pw = getParentWidget()->getWidth();
+  int ph = getParentWidget()->getHeight();
   setX (1 + (pw - getWidth()) / 2, false);
   setY (1 + (ph - getHeight()) / 2, false);
   FDialog::adjustSize();

@@ -46,7 +46,7 @@ FFileDialog::FFileDialog(FWidget* parent)
 
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog (const FFileDialog& fdlg)
-  : FDialog(fdlg.parentWidget())
+  : FDialog(fdlg.getParentWidget())
   , directory_stream(0)
   , dir_entries()
   , directory(fdlg.directory)
@@ -110,8 +110,8 @@ void FFileDialog::init()
     width = 15;
   if ( width < 20 )
     width = 20;
-  x = 1 + int((parentWidget()->getWidth()-width)/2);
-  y = 1 + int((parentWidget()->getHeight()-height)/3);
+  x = 1 + int((getParentWidget()->getWidth()-width)/2);
+  y = 1 + int((getParentWidget()->getHeight()-height)/3);
 
   if ( dlg_type == FFileDialog::Save )
     FDialog::setText("Save file");
@@ -476,7 +476,7 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
     delete filename;
     clear();
 
-    fdlg.parentWidget()->addChild (this);
+    fdlg.getParentWidget()->addChild (this);
 
     directory = fdlg.directory;
     filter_pattern = fdlg.filter_pattern;

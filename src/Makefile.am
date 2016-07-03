@@ -24,6 +24,7 @@ libfinal_la_SOURCES = \
 	flabel.cpp \
 	flistbox.cpp \
 	fmenu.cpp \
+	fdialoglistmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
 	fradiomenuitem.cpp \
@@ -65,6 +66,7 @@ finalcutinclude_HEADERS = \
 	flineedit.h \
 	flistbox.h \
 	fmenu.h \
+	fdialoglistmenu.h \
 	fmenubar.h \
 	fmenuitem.h \
 	fradiomenuitem.h \

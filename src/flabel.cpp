@@ -60,8 +60,8 @@ void FLabel::init()
 
   unsetFocusable();
 
-  foregroundColor = parentWidget()->getForegroundColor();
-  backgroundColor = parentWidget()->getBackgroundColor();
+  foregroundColor = getParentWidget()->getForegroundColor();
+  backgroundColor = getParentWidget()->getBackgroundColor();
 }
 
 //----------------------------------------------------------------------
@@ -321,8 +321,8 @@ void FLabel::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
 
   blank = new char[width+1];

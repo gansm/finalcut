@@ -25,8 +25,8 @@ FProgressbar::~FProgressbar()
 //----------------------------------------------------------------------
 void FProgressbar::drawPercentage()
 {
-  setColor ( parentWidget()->getForegroundColor()
-           , parentWidget()->getBackgroundColor() );
+  setColor ( getParentWidget()->getForegroundColor()
+           , getParentWidget()->getBackgroundColor() );
   if ( isMonochron() )
     setReverse(true);
   gotoxy (xpos+xmin+width-5, ypos+ymin-2);
@@ -68,10 +68,10 @@ void FProgressbar::drawBar()
 
   if ( round(length) >= 1)
     setColor ( wc.progressbar_fg
-             , parentWidget()->getBackgroundColor() );
+             , getParentWidget()->getBackgroundColor() );
   else
     setColor ( wc.progressbar_bg
-             , parentWidget()->getBackgroundColor() );
+             , getParentWidget()->getBackgroundColor() );
 
   if ( ! isMonochron() &&  getMaxColor() >= 16 )
   {
@@ -160,8 +160,8 @@ void FProgressbar::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
 
   s = hasShadow() ? 1 : 0;

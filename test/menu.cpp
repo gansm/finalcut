@@ -251,8 +251,8 @@ void Menu::cb_exitApp (FWidget*, void*)
 //----------------------------------------------------------------------
 void Menu::adjustSize()
 {
-  int pw = parentWidget()->getWidth();
-  int ph = parentWidget()->getHeight();
+  int pw = getParentWidget()->getWidth();
+  int ph = getParentWidget()->getHeight();
   setX (1 + (pw - getWidth()) / 2, false);
   setY (1 + (ph - getHeight()) / 4, false);
   FDialog::adjustSize();

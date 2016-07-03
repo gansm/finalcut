@@ -1,5 +1,10 @@
+2016-07-03  Markus Gans  <guru.mail@muenster.de>
+	* Add the new class FDialogListMenu to switch between dialog menus
+	* More consistent method names: 
+	  rename parentWidget() to getParentWidget()
+
 2016-06-27  Markus Gans  <guru.mail@muenster.de>
-	* Fix the use after free bug for previous_widget
+	* Fix the use-after-free bug for previous_widget
 
 2016-06-26  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix for FWindow::activatePrevWindow()

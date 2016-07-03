@@ -44,7 +44,7 @@ FMessageBox::FMessageBox(FWidget* parent)
 
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (const FMessageBox& mbox)
-  : FDialog(mbox.parentWidget())
+  : FDialog(mbox.getParentWidget())
   , headline_text(mbox.headline_text)
   , text(mbox.text)
   , text_components(mbox.text_components)
@@ -208,8 +208,8 @@ void FMessageBox::msg_dimension()
   w = int(maxLineWidth + 4);
   if ( w < 20 )
     w = 20;
-  x = 1 + int((parentWidget()->getWidth()-w)/2);
-  y = 1 + int((parentWidget()->getHeight()-h)/3);
+  x = 1 + int((getParentWidget()->getWidth()-w)/2);
+  y = 1 + int((getParentWidget()->getHeight()-h)/3);
   setGeometry (x, y, w, h);
 }
 
@@ -354,7 +354,7 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     delete button_digit[1];
     delete button_digit[0];
 
-    mbox.parentWidget()->addChild (this);
+    mbox.getParentWidget()->addChild (this);
 
     headline_text   = mbox.headline_text;
     text            = mbox.text;

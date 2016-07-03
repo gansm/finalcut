@@ -157,11 +157,11 @@ void FWindow::delWindow (FWidget* obj)
 FWindow* FWindow::getWindowWidget (FWidget* obj)
 {
   // returns the window object to the given widget obj
-  FWidget* p_obj = obj->parentWidget();
+  FWidget* p_obj = obj->getParentWidget();
   while ( ! obj->isWindow() && p_obj )
   {
     obj = p_obj;
-    p_obj = p_obj->parentWidget();
+    p_obj = p_obj->getParentWidget();
   }
   if ( obj->isWindow() )
     return static_cast<FWindow*>(obj);

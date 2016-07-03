@@ -280,8 +280,8 @@ void FLineEdit::hide()
 
   FWidget::hide();
 
-  fg = parentWidget()->getForegroundColor();
-  bg = parentWidget()->getBackgroundColor();
+  fg = getParentWidget()->getForegroundColor();
+  bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
   size = width + s;

@@ -170,6 +170,7 @@ void FWidget::init()
 void FWidget::finish()
 {
   delete accelerator_list;
+  accelerator_list = 0;
 
   if ( close_widget )
   {
@@ -401,19 +402,19 @@ void FWidget::adjustSize()
     }
     else if ( ignore_padding )
     {
-      xmin = parentWidget()->xpos + parentWidget()->xmin - 1;
-      ymin = parentWidget()->ypos + parentWidget()->ymin - 1;
-      xmax = parentWidget()->xpos + parentWidget()->xmin - 2
-           + parentWidget()->width;
-      ymax = parentWidget()->ypos + parentWidget()->ymin - 2
-           + parentWidget()->height;
+      xmin = getParentWidget()->xpos + getParentWidget()->xmin - 1;
+      ymin = getParentWidget()->ypos + getParentWidget()->ymin - 1;
+      xmax = getParentWidget()->xpos + getParentWidget()->xmin - 2
+           + getParentWidget()->width;
+      ymax = getParentWidget()->ypos + getParentWidget()->ymin - 2
+           + getParentWidget()->height;
     }
     else
     {
-      xmin = parentWidget()->client_xmin;
-      ymin = parentWidget()->client_ymin;
-      xmax = parentWidget()->client_xmax;
-      ymax = parentWidget()->client_ymax;
+      xmin = getParentWidget()->client_xmin;
+      ymin = getParentWidget()->client_ymin;
+      xmax = getParentWidget()->client_xmax;
+      ymax = getParentWidget()->client_ymax;
     }
     xpos   = widgetSize.getX();
     ypos   = widgetSize.getY();
@@ -569,7 +570,7 @@ bool FWidget::event (FEvent* ev)
           }
           if ( kev->isAccepted() || widget->isRootWidget() )
             break;
-          widget = widget->parentWidget();
+          widget = widget->getParentWidget();
         }
       }
       break;
@@ -587,7 +588,7 @@ bool FWidget::event (FEvent* ev)
           widget->onKeyDown(kev);
           if ( kev->isAccepted() || widget->isRootWidget() )
             break;
-          widget = widget->parentWidget();
+          widget = widget->getParentWidget();
         }
       }
       break;
@@ -845,12 +846,12 @@ bool FWidget::focusPrevChild()
 FWidget* FWidget::getRootWidget() const
 {
   FWidget* obj = const_cast<FWidget*>(this);
-  FWidget* p_obj = parentWidget();
+  FWidget* p_obj = getParentWidget();
 
   while ( ! obj->isRootWidget() && p_obj )
   {
     obj = p_obj;
-    p_obj = p_obj->parentWidget();
+    p_obj = p_obj->getParentWidget();
   }
   return obj;
 }
@@ -1119,7 +1120,7 @@ void FWidget::addAccelerator (int key, FWidget* obj)
   if ( ! window )
     window = getRootWidget();
   if ( window == statusbar || window == menubar )
-    window = FWindow::getWindowWidget(parentWidget());
+    window = FWindow::getWindowWidget(getParentWidget());
   if ( window && window->accelerator_list )
     window->accelerator_list->push_back(accel);
 }
@@ -1132,7 +1133,7 @@ void FWidget::delAccelerator (FWidget* obj)
   if ( ! window )
     window = getRootWidget();
   if ( window == statusbar || window == menubar )
-    window = FWindow::getWindowWidget(parentWidget());
+    window = FWindow::getWindowWidget(getParentWidget());
   if (  window
      && window->accelerator_list
      && ! window->accelerator_list->empty() )
@@ -1351,7 +1352,7 @@ void FWidget::hide()
       if ( ! focusPrevChild() )
       {
         FWidget::getFocusWidget()->unsetFocus();
-        FWidget::setFocusWidget(parentWidget());
+        FWidget::setFocusWidget(getParentWidget());
       }
     }
     FHideEvent hide_ev (fc::Hide_Event);
@@ -1472,10 +1473,10 @@ bool FWidget::setFocus (bool on)
   if ( on && ! focus )
   {
     int focusable_children = numOfFocusableChildren();
-    
+
     if ( FWidget::getFocusWidget() != 0 )
       FWidget::getFocusWidget()->unsetFocus();
-    
+
     if ( (!isDialog() && focusable_children == 0)
        || (isDialog() && focusable_children == 1) )
     {

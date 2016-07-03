@@ -21,6 +21,7 @@ INCLUDE_HEADERS = \
 	flineedit.h \
 	flistbox.h \
 	fmenu.h \
+	fdialoglistmenu.h \
 	fmenubar.h \
 	fradiomenuitem.h \
 	fcheckmenuitem.h \
@@ -67,6 +68,7 @@ OBJS = \
 	flabel.o \
 	flistbox.o \
 	fmenu.o \
+	fdialoglistmenu.o \
 	fmenubar.o \
 	fmenuitem.o \
 	fradiomenuitem.o \

@@ -114,8 +114,8 @@ void Mandelbrot::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  int h = parentWidget()->getHeight() - 1;
-  int w = parentWidget()->getWidth() - 10;
+  int h = getParentWidget()->getHeight() - 1;
+  int w = getParentWidget()->getWidth() - 10;
   setGeometry(6, 1, w, h, false);
   FDialog::adjustSize();
 }

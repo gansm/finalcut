@@ -48,12 +48,13 @@ class FMenuItem : public FWidget
    bool       separator;
    bool       checkable;
    bool       checked;
+   bool       radio_button;
+   bool       dialog_list;
    uInt       text_length;
    int        hotkey;
    int        accel_key;
    FMenu*     menu;
    FWidget*   super_menu;
-   bool       radio_button;
 
  private:
    FMenuItem (const FMenuItem&);
@@ -62,6 +63,8 @@ class FMenuItem : public FWidget
    uChar      hotKey();
    void       processActivate();
    void       processDeactivate();
+   void       createDialogList (FMenu*);
+   void       cb_switchToDialog (FWidget*, void*);
    virtual void processClicked();
 
  protected:
@@ -124,6 +127,7 @@ class FMenuItem : public FWidget
    void       setText (const char*);
 
  private:
+   friend class FDialogListMenu;
    friend class FMenuList;
    friend class FMenuBar;
    friend class FMenu;

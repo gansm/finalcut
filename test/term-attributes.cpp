@@ -133,8 +133,8 @@ void AttribDlg::cb_back (FWidget*, void*)
 //----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int x = ((parentWidget()->getWidth() - getWidth()) / 2 );
-  int y = ((parentWidget()->getHeight() - getHeight()) / 2 ) + 1;
+  int x = ((getParentWidget()->getWidth() - getWidth()) / 2 );
+  int y = ((getParentWidget()->getHeight() - getHeight()) / 2 ) + 1;
   if ( x < 1 )
     x = 1;
   if ( y < 1 )
@@ -170,7 +170,7 @@ class AttribDemo : public FWidget
    { }
    void onWheel (FWheelEvent* ev)
    {
-     AttribDlg* p = dynamic_cast<AttribDlg*>(parentWidget());
+     AttribDlg* p = dynamic_cast<AttribDlg*>(getParentWidget());
      if ( p )
        p->onWheel(ev);
    }
@@ -236,7 +236,7 @@ void AttribDemo::draw()
   // test alternate character set
   printAltCharset();
 
-  for (int y=0; y < parentWidget()->getHeight()-7; y++)
+  for (int y=0; y < getParentWidget()->getHeight()-7; y++)
   {
     gotoxy ( xpos + xmin - 1,
              ypos + ymin + y );
