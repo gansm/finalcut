@@ -1244,6 +1244,7 @@ void FApplication::processTerminalUpdate()
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
+  updateTerminal(false);
   if ( close_widget && ! close_widget->empty() )
   {
     widgetList::iterator iter;
@@ -1256,6 +1257,7 @@ void FApplication::processCloseWidget()
     }
     close_widget->clear();
   }
+  updateTerminal(true);
 }
 
 //----------------------------------------------------------------------

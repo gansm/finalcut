@@ -137,6 +137,7 @@ class FTerm
    static bool    screen_terminal;
    static bool    tmux_terminal;
    static bool    terminal_updates;
+   static bool    stop_terminal_updates;
    static bool    vterm_updates;
    static bool    background_color_erase;
    static bool    automatic_left_margin;
@@ -312,6 +313,7 @@ class FTerm
    static void    resizeVTerm();
    static void    putVTerm();
    static void    updateTerminal();
+   static void    updateTerminal (bool);
    static void    setKDECursor (fc::kde_konsole_CursorShape);
    static FString getXTermFont();
    static FString getXTermTitle();

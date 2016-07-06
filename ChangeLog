@@ -1,3 +1,6 @@
+2016-07-06  Markus Gans  <guru.mail@muenster.de>
+	* Stop terminal updates during processCloseWidget() is working
+
 2016-07-03  Markus Gans  <guru.mail@muenster.de>
 	* Add the new class FDialogListMenu to switch between dialog menus
 	* More consistent method names: 

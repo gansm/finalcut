@@ -64,6 +64,7 @@ bool     FTerm::linux_terminal;
 bool     FTerm::screen_terminal;
 bool     FTerm::tmux_terminal;
 bool     FTerm::terminal_updates;
+bool     FTerm::stop_terminal_updates;
 bool     FTerm::vterm_updates;
 bool     FTerm::pc_charset_console;
 bool     FTerm::utf8_input;
@@ -129,14 +130,14 @@ FTerm::FTerm()
   {
     term_initialized = true;
     term_object = this;
-    fd_tty = -1;
-    vterm = 0;
-    vdesktop = 0;
-    vmenubar = 0;
-    vstatusbar = 0;
-    last_area = 0;
-    x_term_pos = -1;
-    y_term_pos = -1;
+    fd_tty      = -1;
+    vterm       =  0;
+    vdesktop    =  0;
+    vmenubar    =  0;
+    vstatusbar  =  0;
+    last_area   =  0;
+    x_term_pos  = -1;
+    y_term_pos  = -1;
 
     opti_move = new FOptiMove();
     opti_attr = new FOptiAttr();
@@ -1598,6 +1599,7 @@ void FTerm::init()
   mintty_terminal        = \
   screen_terminal        = \
   tmux_terminal          = \
+  stop_terminal_updates  = \
   background_color_erase = false;
 
   // term_attribute stores the current state of the terminal
@@ -2996,7 +2998,8 @@ void FTerm::updateTerminal()
   FApplication* fapp;
   int term_width, term_height;
 
-  if ( static_cast<FApplication*>(term_object)->isQuit() )
+  if ( stop_terminal_updates
+     || static_cast<FApplication*>(term_object)->isQuit() )
     return;
 
   if ( ! force_terminal_update )
@@ -3076,6 +3079,14 @@ void FTerm::updateTerminal()
     if ( focus_widget->hasVisibleCursor() )
       showCursor();
   }
+}
+
+//----------------------------------------------------------------------
+void FTerm::updateTerminal (bool on)
+{
+  stop_terminal_updates = bool(! on);
+  if ( on )
+    updateTerminal();
 }
 
 //----------------------------------------------------------------------
