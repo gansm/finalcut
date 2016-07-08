@@ -135,6 +135,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
           if ( attr->reverse )
           {
             attr->reverse = false;
+
             if ( attr->fg_color != attr->bg_color )
               fake_reverse = true;
           }
@@ -216,10 +217,12 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       {
         char* sgr_49;
         char* op = F_orig_pair.cap;
+
         if ( op && strncmp (op, CSI "39;49;25m", 11) == 0 )
           sgr_49 = const_cast<char*>(CSI "49;25m");
         else
           sgr_49 = const_cast<char*>(CSI "49m");
+
         append_sequence (sgr_49);
         term->bg_color = Default;
       }
@@ -238,6 +241,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   if ( fake_reverse )
   {
     std::swap (fg, bg);
+
     if ( fg == Default || bg == Default )
       setTermDefaultColor(term);
   }
@@ -257,9 +261,11 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       if ( ansi_fg != Default )
       {
         color_str = tparm(AF, ansi_fg);
+
         if ( color_str )
           append_sequence (color_str);
       }
+
       if ( ansi_bg != Default )
       {
         color_str = tparm(AB, ansi_bg);
@@ -352,15 +358,20 @@ bool FOptiAttr::caused_reset_attributes (char*& cap, uChar test)
   {
     if ( (test & test_ansi_reset) && strncmp (cap, CSI "m", 3) == 0 )
       return true;
+
     if ( (test & test_adm3_reset) && strncmp (cap, ESC "G0", 3) == 0 )
       return true;
+
     if ( (test & same_like_ue) && ue && strcmp (cap, ue) == 0 )
       return true;
+
     if ( (test & same_like_se) && se && strcmp (cap, se) == 0 )
       return true;
+
     if ( (test & same_like_me) && me && strcmp (cap, me) == 0 )
       return true;
   }
+
   return false;
 }
 
@@ -460,6 +471,7 @@ inline bool FOptiAttr::unsetTermBold (char_data*& term)
       term->bold = false;
       term->dim = false;
     }
+
     return true;
   }
   else
@@ -488,6 +500,7 @@ inline bool FOptiAttr::unsetTermDim (char_data*& term)
       term->bold = false;
       term->dim = false;
     }
+
     return true;
   }
   else
@@ -512,6 +525,7 @@ inline bool FOptiAttr::unsetTermItalic (char_data*& term)
       reset(term);
     else
       term->italic = false;
+
     return true;
   }
   else
@@ -540,6 +554,7 @@ inline bool FOptiAttr::unsetTermUnderline (char_data*& term)
       term->underline = false;
       term->dbl_underline = false;
     }
+
     return true;
   }
   else
@@ -564,6 +579,7 @@ inline bool FOptiAttr::unsetTermBlink (char_data*& term)
       reset(term);
     else
       term->blink = false;
+
     return true;
   }
   else
@@ -588,6 +604,7 @@ inline bool FOptiAttr::unsetTermReverse (char_data*& term)
       reset(term);
     else
       term->reverse = false;
+
     return true;
   }
   else
@@ -612,6 +629,7 @@ inline bool FOptiAttr::unsetTermStandout (char_data*& term)
       reset(term);
     else
       term->standout = false;
+
     return true;
   }
   else
@@ -636,6 +654,7 @@ inline bool FOptiAttr::unsetTermInvisible (char_data*& term)
       reset(term);
     else
       term->invisible = false;
+
     return true;
   }
   else
@@ -660,6 +679,7 @@ inline bool FOptiAttr::unsetTermProtected (char_data*& term)
       reset(term);
     else
       term->protect = false;
+
     return true;
   }
   else
@@ -684,6 +704,7 @@ inline bool FOptiAttr::unsetTermCrossedOut (char_data*& term)
       reset(term);
     else
       term->crossed_out = false;
+
     return true;
   }
   else
@@ -712,6 +733,7 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (char_data*& term)
       term->underline = false;
       term->dbl_underline = false;
     }
+
     return true;
   }
   else
@@ -1289,6 +1311,7 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
   {
     if ( off.pc_charset )
       unsetTermPCcharset(term);
+
     if ( off.alt_charset )
       unsetTermAltCharset(term);
 
@@ -1300,28 +1323,39 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
       {
         if ( off.bold )
           unsetTermBold(term);
+
         if ( off.dim )
           unsetTermDim(term);
+
         if ( off.italic )
           unsetTermItalic(term);
+
         if ( off.underline )
           unsetTermUnderline(term);
+
         if ( off.blink )
           unsetTermBlink(term);
+
         if ( off.reverse )
           unsetTermReverse(term);
+
         if ( off.standout )
           unsetTermStandout(term);
+
         if ( off.invisible )
           unsetTermInvisible(term);
+
         if ( off.protect )
           unsetTermProtected(term);
+
         if ( off.crossed_out )
           unsetTermCrossedOut(term);
+
         if ( off.dbl_underline )
           unsetTermDoubleUnderline(term);
       }
     }
+
     if ( colorChange(term, next) )
       change_color (term, next);
   }
@@ -1341,24 +1375,31 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
                         , next->invisible
                         , next->protect
                         , next->alt_charset );
+
     if ( next->italic )
       setTermItalic(term);
+
     if ( next->crossed_out )
       setTermCrossedOut(term);
+
     if ( next->dbl_underline )
       setTermDoubleUnderline(term);
+
     if ( next->pc_charset )
       setTermPCcharset(term);
 
     if ( colorChange(term, next) )
     {
       change_color (term, next);
+
       if ( cygwin_terminal )
       {
         if ( next->bold )
           setTermBold(term);
+
         if ( next->reverse )
           setTermReverse(term);
+
         if ( next->standout )
          setTermStandout(term);
       }
@@ -1368,28 +1409,40 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
   {
     if ( off.pc_charset )
       unsetTermPCcharset(term);
+
     if ( off.alt_charset )
       unsetTermAltCharset(term);
+
     if ( off.bold )
       unsetTermBold(term);
+
     if ( off.dim )
       unsetTermDim(term);
+
     if ( off.italic )
       unsetTermItalic(term);
+
     if ( off.underline )
       unsetTermUnderline(term);
+
     if ( off.blink )
       unsetTermBlink(term);
+
     if ( off.reverse )
       unsetTermReverse(term);
+
     if ( off.standout )
       unsetTermStandout(term);
+
     if ( off.invisible )
       unsetTermInvisible(term);
+
     if ( off.protect )
       unsetTermProtected(term);
+
     if ( off.crossed_out )
       unsetTermCrossedOut(term);
+
     if ( off.dbl_underline )
       unsetTermDoubleUnderline(term);
 
@@ -1402,30 +1455,43 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
       change_color (term, next);
 
     detectSwitchOn (term, next);
+
     if ( on.pc_charset )
       setTermPCcharset(term);
+
     if ( on.alt_charset )
       setTermAltCharset(term);
+
     if ( on.bold )
       setTermBold(term);
+
     if ( on.dim )
       setTermDim(term);
+
     if ( on.italic )
       setTermItalic(term);
+
     if ( on.underline )
       setTermUnderline(term);
+
     if ( on.blink )
       setTermBlink(term);
+
     if ( on.reverse )
       setTermReverse(term);
+
     if ( on.standout )
       setTermStandout(term);
+
     if ( on.invisible )
       setTermInvisible(term);
+
     if ( on.protect )
       setTermProtected(term);
+
     if ( on.crossed_out )
       setTermCrossedOut(term);
+
     if ( on.dbl_underline )
       setTermDoubleUnderline(term);
   }

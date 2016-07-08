@@ -55,6 +55,7 @@ void FMenuList::selectFirstItem()
       setSelectedItem(*iter);
       break;
     }
+
     ++iter;
   }
 }
@@ -64,6 +65,7 @@ void FMenuList::unselectItem()
 {
   if ( hasSelectedItem() )
     getSelectedItem()->unsetSelected();
+
   setSelectedItem(0);
 }
 
@@ -82,6 +84,7 @@ void FMenuList::remove (FMenuItem* i)
     return;
 
   iter = itemlist.begin();
+
   while ( iter != itemlist.end() )
   {
     if ( (*iter) == i )
@@ -109,4 +112,3 @@ void FMenuList::clear()
 {
   itemlist.clear();
 }
-

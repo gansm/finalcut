@@ -67,24 +67,30 @@ void FTextView::draw()
 {
   setUpdateVTerm(false);
   setColor (foregroundColor, backgroundColor);
+
   if ( isMonochron() )
     setReverse(true);
+
   if ( ! isNewFont() )
     drawBorder();
+
   if ( isMonochron() )
     setReverse(false);
+
   if ( VBar->isVisible() )
     VBar->redraw();
+
   if ( HBar->isVisible() )
     HBar->redraw();
-  setUpdateVTerm(true);
 
+  setUpdateVTerm(true);
   drawText();
 
   if ( hasFocus() && statusBar() )
   {
     FString msg = getStatusbarMessage();
     FString curMsg = statusBar()->getMessage();
+
     if ( curMsg != msg )
     {
       setUpdateVTerm(false);
@@ -93,6 +99,7 @@ void FTextView::draw()
       setUpdateVTerm(true);
     }
   }
+
   setCursorPos(1,1);
   updateTerminal();
   flush_out();
@@ -105,8 +112,10 @@ void FTextView::drawText()
 
   if ( data.empty() || height < 4 || width < 5 )
     return;
+
   start = 0;
   end = uInt(height+nf_offset-2);
+
   if ( end > getRows() )
     end = getRows();
 
@@ -118,12 +127,14 @@ void FTextView::drawText()
 
   for (uInt y=start; y < end; y++)
   {
+    uInt i, len;
+    FString line;
+    const wchar_t* line_str;
     gotoxy (xpos+xmin, ypos+ymin-nf_offset+int(y));
-    uInt i;
-    FString line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                             , uInt(width - nf_offset - 2) );
-    const wchar_t* line_str = line.wc_str();
-    uInt len = line.getLength();
+    line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
+                                     , uInt(width - nf_offset - 2) );
+    line_str = line.wc_str();
+    len = line.getLength();
 
     for (i=0; i < len; i++)
     {
@@ -140,6 +151,7 @@ void FTextView::drawText()
       else
         print ('.');
     }
+
     for (; i < uInt(width - nf_offset - 2); i++)
       print (' ');
   }
@@ -195,11 +207,9 @@ void FTextView::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
-
   n = isNewFont() ? 1 : 0;
   size = width + n;
   blank = new char[size+1];
@@ -211,6 +221,7 @@ void FTextView::hide()
     gotoxy (xpos+xmin-1, ypos+ymin-1+y);
     print (blank);
   }
+
   delete[] blank;
   flush_out();
 }
@@ -226,41 +237,50 @@ void FTextView::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_up:
       if ( yoffset > 0 )
         yoffset--;
+
       ev->accept();
       break;
 
     case fc::Fkey_down:
       if ( yoffset + height + nf_offset <= last_line + 1 )
         yoffset++;
+
       ev->accept();
       break;
 
     case fc::Fkey_right:
       if ( xoffset + width - nf_offset <= int(maxLineWidth) + 1 )
         xoffset++;
+
       ev->accept();
       break;
 
     case fc::Fkey_left:
       if ( xoffset > 0 )
         xoffset--;
+
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
       yoffset -= height-2;
+
       if ( yoffset < 0 )
         yoffset = 0;
+
       ev->accept();
       break;
 
     case fc::Fkey_npage:
       if ( last_line >= height )
         yoffset += height-2;
+
       if ( yoffset > last_line - height - nf_offset + 2 )
         yoffset = last_line - height - nf_offset + 2;
+
       if ( yoffset < 0 )
         yoffset = 0;
+
       ev->accept();
       break;
 
@@ -272,6 +292,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_end:
       if ( last_line >= height )
         yoffset = last_line - height - nf_offset + 2;
+
       ev->accept();
       break;
 
@@ -285,11 +306,15 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       drawText();
 
     VBar->setValue (yoffset);
+
     if ( VBar->isVisible() )
       VBar->drawBar();
+
     HBar->setValue (xoffset);
+
     if ( HBar->isVisible() )
       HBar->drawBar();
+
     updateTerminal();
     flush_out();
   }
@@ -307,8 +332,10 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     if ( statusBar() )
       statusBar()->drawMessage();
   }
@@ -325,19 +352,26 @@ void FTextView::onWheel (FWheelEvent* ev)
     case fc::WheelUp:
       if ( yoffset == 0 )
         break;
+
       yoffset -= 4;
+
       if ( yoffset < 0 )
         yoffset=0;
+
       break;
 
     case fc::WheelDown:
       {
         int yoffset_end = last_line - height - nf_offset + 2;
+
         if ( yoffset_end < 0 )
           yoffset_end = 0;
+
         if ( yoffset == yoffset_end )
           break;
+
         yoffset += 4;
+
         if ( yoffset > yoffset_end )
           yoffset = yoffset_end;
       }
@@ -351,11 +385,15 @@ void FTextView::onWheel (FWheelEvent* ev)
     drawText();
 
   VBar->setValue (yoffset);
+
   if ( VBar->isVisible() )
     VBar->drawBar();
+
   HBar->setValue (xoffset);
+
   if ( HBar->isVisible() )
     HBar->drawBar();
+
   updateTerminal();
 }
 
@@ -391,8 +429,10 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       // fall through
     case FScrollbar::scrollStepBackward:
       yoffset -= distance;
+
       if ( yoffset < 0 )
         yoffset = 0;
+
       break;
 
     case FScrollbar::scrollPageForward:
@@ -400,20 +440,27 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       // fall through
     case FScrollbar::scrollStepForward:
       yoffset += distance;
+
       if ( yoffset > last_line - height - nf_offset + 2 )
         yoffset = last_line - height - nf_offset + 2;
+
       break;
 
     case FScrollbar::scrollJump:
     {
       int val = VBar->getValue();
+
       if ( yoffset == val )
         break;
+
       yoffset = val;
+
       if ( yoffset > last_line - height - nf_offset + 2 )
         yoffset = last_line - height - nf_offset + 2;
+
       if ( yoffset < 0 )
         yoffset = 0;
+
       break;
     }
 
@@ -445,8 +492,10 @@ void FTextView::cb_VBarChange (FWidget*, void*)
      && scrollType <= FScrollbar::scrollPageForward )
   {
     VBar->setValue (yoffset);
+
     if ( VBar->isVisible() && yoffset_before != yoffset )
       VBar->drawBar();
+
     updateTerminal();
   }
 }
@@ -466,8 +515,10 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
+
       if ( xoffset < 0 )
         xoffset = 0;
+
       break;
 
     case FScrollbar::scrollPageForward:
@@ -475,39 +526,53 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
+
       if ( xoffset > int(maxLineWidth) - width + nf_offset + 4 )
         xoffset = int(maxLineWidth) - width + nf_offset + 4;
+
       if ( xoffset < 0 )
         xoffset = 0;
+
       break;
 
     case FScrollbar::scrollJump:
     {
       int val = HBar->getValue();
+
       if ( xoffset == val )
         break;
+
       xoffset = val;
+
       if ( xoffset > int(maxLineWidth) - width + nf_offset + 4 )
         xoffset = int(maxLineWidth) - width + nf_offset + 4;
+
       if ( xoffset < 0 )
         xoffset = 0;
+
       break;
     }
 
     case FScrollbar::scrollWheelUp:
       if ( xoffset == 0 )
         break;
+
       xoffset -= 4;
+
       if ( xoffset < 0 )
         xoffset=0;
+
       break;
 
     case FScrollbar::scrollWheelDown:
       if ( xoffset == xoffset_end )
         break;
+
       xoffset += 4;
+
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
+
       break;
 
     default:
@@ -524,8 +589,10 @@ void FTextView::cb_HBarChange (FWidget*, void*)
      && scrollType <= FScrollbar::scrollWheelDown )
   {
     HBar->setValue (xoffset);
+
     if ( HBar->isVisible() && xoffset_before != xoffset )
       HBar->drawBar();
+
     updateTerminal();
   }
 }
@@ -551,6 +618,7 @@ void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
 void FTextView::setPosition (int pos)
 {
   int last_line = int(getRows());
+
   if ( pos < 0 || pos > last_line - height + 2 )
     return;
 
@@ -560,6 +628,7 @@ void FTextView::setPosition (int pos)
     drawText();
 
   VBar->setValue (yoffset);
+
   if ( VBar->isVisible() )
     VBar->drawBar();
 
@@ -583,14 +652,17 @@ FString FTextView::getText() const
 
   len = 0;
   rows = getRows();
+
   for (uInt i=0 ; i < rows; i++)
     len += data[i].getLength() + 1;
 
   FString s(len + 1);
   idx = 0;
+
   for (uInt i=0 ; i < rows; i++)
   {
     const wchar_t* p = data[i].wc_str();
+
     if ( p )
     {
       while ( (s[idx++] = *p++) != 0 );
@@ -601,6 +673,7 @@ FString FTextView::getText() const
       s[idx++] = '\n';
     }
   }
+
   s[idx-1] = 0;
   return s;
 }
@@ -639,28 +712,34 @@ void FTextView::insert (const FString& str, int pos)
                                  .replaceControlCodes()
                                  .rtrim();
     len = text_split[i].getLength();
+
     if ( len > maxLineWidth )
     {
       maxLineWidth = len;
+
       if ( len > uInt(width-nf_offset-2) )
       {
         HBar->setMaximum (int(maxLineWidth) - width + nf_offset + 2);
         HBar->setPageSize (int(maxLineWidth), width - nf_offset - 2);
         HBar->calculateSliderValues();
+
         if ( ! HBar->isVisible() )
           HBar->setVisible();
       }
     }
   }
-  data.insert (iter + pos, text_split.begin(), text_split.end());
 
+  data.insert (iter + pos, text_split.begin(), text_split.end());
   VBar->setMaximum (int(getRows()) - height + 2 - nf_offset);
   VBar->setPageSize (int(getRows()), height - 2 + nf_offset);
   VBar->calculateSliderValues();
+
   if ( ! VBar->isVisible() && int(getRows()) >= height + nf_offset - 1 )
     VBar->setVisible();
+
   if ( VBar->isVisible() && int(getRows()) < height + nf_offset - 1 )
     VBar->hide();
+
   processChanged();
 }
 
@@ -671,8 +750,10 @@ void FTextView::replaceRange (const FString& str, int start, int end)
 
   if ( start > end )
     return;
+
   if ( start < 0 || start >= int(getRows()) )
     return;
+
   if ( end < 0 || end >= int(getRows()) )
     return;
 
@@ -690,7 +771,6 @@ void FTextView::clear()
   char* blank;
 
   data.clear();
-
   xoffset = 0;
   yoffset = 0;
   maxLineWidth = 0;
@@ -715,6 +795,7 @@ void FTextView::clear()
     gotoxy (xpos+xmin, ypos+ymin-nf_offset+y);
     print (blank);
   }
+
   delete[] blank;
   processChanged();
 }

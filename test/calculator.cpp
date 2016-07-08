@@ -59,6 +59,7 @@ void Button::setChecked (bool on)
       setFocusForegroundColor(wc.button_active_focus_fg);
       setFocusBackgroundColor(wc.button_active_focus_bg);
     }
+
     redraw();
   }
 }
@@ -224,7 +225,6 @@ Calc::Calc (FWidget* parent)
   };
 
   setlocale(LC_NUMERIC, "C");
-
   setText ("calculator");
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // press 'q' to quit
@@ -245,12 +245,15 @@ Calc::Calc (FWidget* parent)
       y = (key+n)/5*2 + 3;
       btn->setGeometry(x, y, 5, 1);
     }
+
     btn->setFlat();
     btn->setNoUnderline();
     btn->setText(button_text[key]);
     btn->setDoubleFlatLine(fc::top);
+
     if ( isNewFont() )
       btn->unsetClickAnimation();
+
     if ( key <= Three )
       btn->setDoubleFlatLine(fc::bottom);
 
@@ -311,15 +314,18 @@ void Calc::drawDispay()
     display = " Error                          ";
 
   setColor(fc::Black, fc::LightGray);
+
   if ( isMonochron() )
     setReverse(false);
+
   gotoxy (xpos+xmin+1, ypos+ymin+1);
   print(display);
   print(L' ');
-
   setColor(wc.dialog_fg, wc.dialog_bg);
+
   if ( isMonochron() )
     setReverse(true);
+
   if ( isNewFont() )
   {
     FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));
@@ -346,6 +352,7 @@ void Calc::drawDispay()
     gotoxy (xpos+xmin-1, ypos+ymin+2);
     print(separator);
   }
+
   setUpdateVTerm(true);
 }
 
@@ -479,6 +486,7 @@ void Calc::calcInfixOperator()
 
     case '^':
       a = pow(a, b);
+
       if ( errno == EDOM || errno == ERANGE )
         error = true;
       break;
@@ -505,10 +513,12 @@ void Calc::onKeyPress (FKeyEvent* ev)
           input = "";
         else
           input = input.left(input.getLength() - 1);
+
         a = atof(input.c_str());
         drawDispay();
         updateTerminal();
       }
+
       ev->accept();
       break;
 
@@ -568,8 +578,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         if ( arcus_mode )
         {
           *x = log(*x + sqrt((*x) * (*x) + 1));
+
           if ( errno == EDOM || errno == ERANGE )
             error = true;
+
           if ( *x == INFINITY )
             error = true;
         }
@@ -585,8 +597,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         else
           *x = sin(*x * PI/180.0L);
       }
+
       if ( errno == EDOM )
         error = true;
+
       setDisplay(*x);
       arcus_mode = false;
       hyperbolic_mode = false;
@@ -600,8 +614,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         if ( arcus_mode )
         {
           *x = log(*x + sqrt((*x) * (*x) - 1));
+
           if ( errno == EDOM || errno == ERANGE )
             error = true;
+
           if ( *x == INFINITY )
             error = true;
         }
@@ -617,8 +633,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         else
           *x = cos(*x * PI/180.0L);
       }
+
       if ( errno == EDOM )
         error = true;
+
       setDisplay(*x);
       arcus_mode = false;
       hyperbolic_mode = false;
@@ -633,6 +651,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
           if ( *x < 1 )
           {
             *x = 0.5L * log((1+(*x))/(1-(*x)));
+
             if ( errno == EDOM || errno == ERANGE )
               error = true;
           }
@@ -655,8 +674,10 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
           else
             *x = tan(*x * PI/180.0L);
       }
+
       if ( errno == EDOM )
         error = true;
+
       setDisplay(*x);
       arcus_mode = false;
       hyperbolic_mode = false;
@@ -688,50 +709,62 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
 
     case Natural_logarithm:  // ln
       *x = log(*x);
+
       if ( errno == EDOM || errno == ERANGE )
         error = true;
+
       setDisplay(*x);
       break;
 
     case Powers_of_e:  // eˣ
       *x = exp(*x);
+
       if ( errno == ERANGE )
         error = true;
+
       setDisplay(*x);
       break;
 
     case Power:  // yˣ
       if ( ! isOperatorKey(last_key) )
         calcInfixOperator();
+
       setDisplay(*x);
       setInfixOperator('^');
       break;
 
     case Square_root:  // sqrt
       *x = sqrt(*x);
+
       if ( errno == EDOM || errno == ERANGE )
         error = true;
+
       setDisplay(*x);
       break;
 
     case Divide:  // ÷
       if ( ! isOperatorKey(last_key) )
         calcInfixOperator();
+
       setDisplay(a);
       setInfixOperator('/');
       break;
 
     case Common_logarithm:  // lg
       *x = log10(*x);
+
       if ( errno == EDOM || errno == ERANGE )
         error = true;
+
       setDisplay(*x);
       break;
 
     case Powers_of_ten:  // 10ˣ
       *x = pow(10,*x);
+
       if ( errno == EDOM || errno == ERANGE )
         error = true;
+
       setDisplay(*x);
       break;
 
@@ -762,6 +795,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
     case Multiply:  // *
       if ( ! isOperatorKey(last_key) )
         calcInfixOperator();
+
       setDisplay(a);
       setInfixOperator('*');
       break;
@@ -805,6 +839,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
     case Subtract:  // -
       if ( ! isOperatorKey(last_key) )
         calcInfixOperator();
+
       setDisplay(a);
       setInfixOperator('-');
       break;
@@ -848,6 +883,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
     case Add:  // +
       if ( ! isOperatorKey(last_key) )
         calcInfixOperator();
+
       setDisplay(a);
       setInfixOperator('+');
       break;
@@ -942,6 +978,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
 
   if ( infix_operator && ! isDataEntryKey(key) )
     input = "";
+
   last_key = key;
 }
 

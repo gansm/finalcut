@@ -26,10 +26,13 @@ FMenuBar::~FMenuBar()
   {
     if ( vmenubar->changes != 0 )
       delete[] vmenubar->changes;
+
     if ( vmenubar->text != 0 )
       delete[] vmenubar->text;
+
     delete vmenubar;
   }
+
   vmenubar = 0;
 }
 
@@ -45,7 +48,6 @@ void FMenuBar::init()
   vmenubar->visible = true;
   window_object  = true;
   ignore_padding = true;
-
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);
   setMenuBar(this);
@@ -104,42 +106,53 @@ bool FMenuBar::selectNextItem()
     {
       FMenuItem* next;
       std::vector<FMenuItem*>::const_iterator next_element;
-
       next_element = iter;
+
       do
       {
         ++next_element;
+
         if ( next_element == itemlist.end() )
           next_element = itemlist.begin();
+
         next = static_cast<FMenuItem*>(*next_element);
       } while (  ! next->isEnabled()
               || ! next->acceptFocus()
               || ! next->isVisible()
               || next->isSeparator() );
+
       if ( next == *iter )
         return false;
+
       unselectItem();
       next->setSelected();
       setSelectedItem(next);
       next->setFocus();
+
       if ( drop_down && next->hasMenu() )
       {
-         FMenuItem* first_item;
-         FMenu* menu = next->getMenu();
-         next->openMenu();
-         menu->selectFirstItem();
-         first_item = menu->getSelectedItem();
-         if ( first_item )
-           first_item->setFocus();
-         menu->redraw();
+        FMenuItem* first_item;
+        FMenu* menu = next->getMenu();
+        next->openMenu();
+        menu->selectFirstItem();
+        first_item = menu->getSelectedItem();
+
+        if ( first_item )
+          first_item->setFocus();
+
+        menu->redraw();
       }
+
       if ( statusBar() )
         statusBar()->drawMessage();
+
       redraw();
       break;
     }
+
     ++iter;
   }
+
   return true;
 }
 
@@ -153,27 +166,33 @@ bool FMenuBar::selectPrevItem()
   do
   {
     --iter;
+
     if ( (*iter)->isSelected() )
     {
       FMenuItem* prev;
       std::vector<FMenuItem*>::const_iterator prev_element;
-
       prev_element = iter;
+
       do
       {
         if ( prev_element == itemlist.begin() )
           prev_element = itemlist.end();
+
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
-      } while (  ! prev->isEnabled()
-              || ! prev->acceptFocus()
-              || ! prev->isVisible()
-              || prev->isSeparator() );
+      }
+      while (  ! prev->isEnabled()
+            || ! prev->acceptFocus()
+            || ! prev->isVisible()
+            || prev->isSeparator() );
+
       if ( prev == *iter )
         return false;
+
       unselectItem();
       prev->setSelected();
       prev->setFocus();
+
       if ( drop_down && prev->hasMenu() )
       {
         FMenuItem* first_item;
@@ -181,17 +200,22 @@ bool FMenuBar::selectPrevItem()
         prev->openMenu();
         menu->selectFirstItem();
         first_item = menu->getSelectedItem();
+
         if ( first_item )
           first_item->setFocus();
+
         menu->redraw();
       }
+
       if ( statusBar() )
         statusBar()->drawMessage();
+
       setSelectedItem(prev);
       redraw();
       break;
     }
-  } while ( iter != begin );
+  }
+  while ( iter != begin );
 
   return true;
 }
@@ -229,11 +253,15 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
            (*iter)->openMenu();
            menu->selectFirstItem();
            first_item = menu->getSelectedItem();
+
            if ( first_item )
              first_item->setFocus();
+
            menu->redraw();
+
            if ( statusBar() )
              statusBar()->drawMessage();
+
            redraw();
            drop_down = true;
         }
@@ -244,12 +272,15 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
           drop_down = false;
           (*iter)->processClicked();
         }
+
         ev->accept();
         return true;
       }
     }
+
     ++iter;
   }
+
   return false;
 }
 
@@ -269,8 +300,10 @@ int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
       i++;
       src++;
     }
+
     *dest++ = *src++;
   }
+
   return hotkeypos;
 }
 
@@ -288,7 +321,6 @@ void FMenuBar::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
   int screenWidth;
-
   int x = 1;
   screenWidth = getColumnNumber();
   width = screenWidth;
@@ -341,6 +373,7 @@ void FMenuBar::drawItems()
       foregroundColor = wc.menu_inactive_fg;
       backgroundColor = wc.menu_inactive_bg;
     }
+
     setColor (foregroundColor, backgroundColor);
 
     if ( x < screenWidth )
@@ -374,6 +407,7 @@ void FMenuBar::drawItems()
     {
       if ( startpos > screenWidth-z )
         break;
+
       if ( ! iswprint(wint_t(item_text[z])) )
       {
         if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
@@ -382,14 +416,19 @@ void FMenuBar::drawItems()
           item_text[z] = L' ';
         }
       }
+
       if ( (z == hotkeypos) && is_active && ! is_selected )
       {
         setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+
         if ( ! is_noUnderline )
           setUnderline();
+
         print (vmenubar, item_text[z]);
+
         if ( ! is_noUnderline )
           unsetUnderline();
+
         setColor (foregroundColor, backgroundColor);
       }
       else
@@ -417,10 +456,11 @@ void FMenuBar::drawItems()
     }
 
     setColor (wc.menu_active_fg, wc.menu_active_bg);
+
     if ( isMonochron() && is_active && is_selected )
       setReverse(true);
-    delete[] item_text;
 
+    delete[] item_text;
     ++iter;
   }
 
@@ -457,8 +497,8 @@ void FMenuBar::adjustItems()
       // call menu adjustItems()
       menu->adjustItems();
     }
-    item_X += item_width;
 
+    item_X += item_width;
     ++iter;
   }
 }
@@ -468,11 +508,15 @@ void FMenuBar::leaveMenuBar()
 {
   resetMenu();
   redraw();
+
   if ( statusBar() )
     statusBar()->clearMessage();
+
   switchToPrevWindow();
+
   if ( statusBar() )
     statusBar()->drawMessage();
+
   updateTerminal();
   flush_out();
   mouse_down = false;
@@ -499,11 +543,15 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
           sel_item->openMenu();
           menu->selectFirstItem();
           first_item = menu->getSelectedItem();
+
           if ( first_item )
             first_item->setFocus();
+
           menu->redraw();
+
           if ( statusBar() )
             statusBar()->drawMessage();
+
           redraw();
           drop_down = true;
         }
@@ -515,6 +563,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
           sel_item->processClicked();
         }
       }
+
       ev->accept();
       break;
 
@@ -552,7 +601,8 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
       return;
 
     if ( statusBar() )
-          statusBar()->clearMessage();
+      statusBar()->clearMessage();
+
     return;
   }
 
@@ -593,8 +643,10 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
             FApplication::queueEvent(focused_widget, &out);
             (*iter)->setSelected();
             (*iter)->setFocus();
+
             if ( focused_widget )
               focused_widget->redraw();
+
             (*iter)->openMenu();
             setSelectedItem(*iter);
             focus_changed = true;
@@ -602,6 +654,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
             if ( (*iter)->hasMenu() )
             {
               FMenu* menu = (*iter)->getMenu();
+
               if ( menu->hasSelectedItem() )
               {
                 menu->unselectItem();
@@ -614,11 +667,14 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
         else if ( (*iter)->isEnabled() && (*iter)->isSelected() )
         {
           (*iter)->unsetSelected();
+
           if ( getSelectedItem() == *iter )
             setSelectedItem(0);
+
           focus_changed = true;
         }
       }
+
       ++iter;
     }
 
@@ -642,11 +698,11 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
   if ( mouse_down )
   {
     mouse_down = false;
+
     if ( ! itemlist.empty() )
     {
-      std::vector<FMenuItem*>::const_iterator iter, end;
       int mouse_x, mouse_y;
-
+      std::vector<FMenuItem*>::const_iterator iter, end;
       iter = itemlist.begin();
       end = itemlist.end();
       mouse_x = ev->getX();
@@ -655,7 +711,6 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
       while ( iter != end )
       {
         int x1, x2;
-
         x1 = (*iter)->getX();
         x2 = (*iter)->getX() + (*iter)->getWidth();
 
@@ -669,16 +724,21 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
               if ( (*iter)->hasMenu() )
               {
                 FMenu* menu = (*iter)->getMenu();
+
                 if ( ! menu->hasSelectedItem() )
                 {
                   FMenuItem* first_item;
                   menu->selectFirstItem();
                   first_item = menu->getSelectedItem();
+
                   if ( first_item )
                     first_item->setFocus();
+
                   menu->redraw();
+
                   if ( statusBar() )
                     statusBar()->drawMessage();
+
                   redraw();
                   drop_down = true;
                 }
@@ -686,6 +746,7 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
               else
               {
                 (*iter)->unsetSelected();
+
                 if ( getSelectedItem() == *iter )
                 {
                   setSelectedItem(0);
@@ -699,14 +760,18 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
             else
             {
               (*iter)->unsetSelected();
+
               if ( getSelectedItem() == *iter )
                 setSelectedItem(0);
+
               redraw();
             }
           }
+
           ++iter;
         }
       }
+
       if ( ! hasSelectedItem() )
         leaveMenuBar();
     }
@@ -728,7 +793,6 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
     int mouse_x, mouse_y;
     bool mouse_over_menubar = false;
     bool focus_changed = false;
-
     iter = itemlist.begin();
     end = itemlist.end();
     mouse_x = ev->getX();
@@ -740,7 +804,6 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
     while ( iter != end )
     {
       int x1, x2;
-
       x1 = (*iter)->getX();
       x2 = (*iter)->getX() + (*iter)->getWidth();
 
@@ -756,21 +819,24 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           FApplication::queueEvent(focused_widget, &out);
           (*iter)->setSelected();
           (*iter)->setFocus();
+
           if ( focused_widget )
             focused_widget->redraw();
+
           (*iter)->openMenu();
           setSelectedItem(*iter);
           focus_changed = true;
 
           if ( (*iter)->hasMenu() )
           {
-             FMenu* menu = (*iter)->getMenu();
-             if ( menu->hasSelectedItem() )
-             {
-               menu->unselectItem();
-               menu->redraw();
-               drop_down = true;
-             }
+            FMenu* menu = (*iter)->getMenu();
+
+            if ( menu->hasSelectedItem() )
+            {
+              menu->unselectItem();
+              menu->redraw();
+              drop_down = true;
+            }
           }
         }
         else if ( statusBar() )
@@ -784,8 +850,10 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
         {
           // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
+
           if ( getSelectedItem() == *iter )
             setSelectedItem(0);
+
           focus_changed = true;
           drop_down = false;
         }
@@ -798,10 +866,11 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           if (  menu->count() > 0
              && menu_geometry.contains(ev->getGlobalPos()) )
           {
+            FMouseEvent* _ev;
             const FPoint& g = ev->getGlobalPos();
             const FPoint& p = menu->globalToLocalPos(g);
             int b = ev->getButton();
-            FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+            _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
             menu->mouse_down = true;
             setClickedWidget(menu);
             menu->onMouseMove(_ev);
@@ -809,10 +878,13 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           }
         }
       }
+
       ++iter;
     }
+
     if ( statusBar() )
         statusBar()->drawMessage();
+
     if ( focus_changed )
     {
       redraw();
@@ -827,8 +899,10 @@ void FMenuBar::onAccel (FAccelEvent* ev)
   unselectItem();
   selectFirstItem();
   getSelectedItem()->setFocus();
+
   if ( statusBar() )
     statusBar()->drawMessage();
+
   redraw();
   ev->accept();
 }
@@ -841,16 +915,13 @@ void FMenuBar::hide()
   char* blank;
 
   FWindow::hide();
-
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
-
   screenWidth = getColumnNumber();
   blank = new char[screenWidth+1];
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-
   gotoxy (1,1);
   print (vmenubar, blank);
   delete[] blank;
@@ -880,6 +951,7 @@ void FMenuBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
   int old_width = width;
   int old_height = height;
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
+
   if ( vmenubar && (width != old_width || height != old_height) )
     resizeArea (vmenubar);
 }

@@ -59,7 +59,6 @@ void FLabel::init()
     flags |= fc::active;
 
   unsetFocusable();
-
   foregroundColor = getParentWidget()->getForegroundColor();
   backgroundColor = getParentWidget()->getBackgroundColor();
 }
@@ -86,6 +85,7 @@ uChar FLabel::getHotkey()
       return 0;;
     }
   }
+
   return 0;
 }
 
@@ -105,8 +105,10 @@ int FLabel::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
       i++;
       src++;
     }
+
     *dest++ = *src++;
   }
+
   return hotkeypos;
 }
 
@@ -114,6 +116,7 @@ int FLabel::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 void FLabel::setHotkeyAccelerator()
 {
   int hotkey = getHotkey();
+
   if ( hotkey )
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
@@ -163,7 +166,6 @@ void FLabel::printLine ( wchar_t*& line
 {
   int to_char;
   bool isActive, isNoUnderline;
-
   isActive = ((flags & fc::active) != 0);
   isNoUnderline = ((flags & fc::no_underline) != 0);
 
@@ -191,11 +193,15 @@ void FLabel::printLine ( wchar_t*& line
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+
       if ( ! isNoUnderline )
         setUnderline();
+
       print ( line[z] );
+
       if ( ! isNoUnderline )
         unsetUnderline();
+
       if ( hasEmphasis() )
         setColor (emphasis_color, backgroundColor);
       else
@@ -281,6 +287,7 @@ void FLabel::draw()
         xoffset = getXOffset (int(length));
         printLine (LabelText, length, -1, xoffset);
       }
+
       y++;
       delete[] LabelText;
     }
@@ -291,7 +298,6 @@ void FLabel::draw()
     LabelText = new wchar_t[length+1]();
     src  = const_cast<wchar_t*>(text.wc_str());
     dest = const_cast<wchar_t*>(LabelText);
-
     hotkeypos = getHotkeyPos (src, dest, length);
 
     if ( hotkeypos != -1 )
@@ -302,12 +308,15 @@ void FLabel::draw()
     printLine (LabelText, length, hotkeypos, xoffset);
     delete[] LabelText;
   }
+
   if ( isMonochron() )
   {
     setReverse(false);
+
     if ( hasEmphasis() )
       setBold(false);
   }
+
   setUpdateVTerm(true);
 }
 
@@ -320,11 +329,9 @@ void FLabel::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
-
   blank = new char[width+1];
   memset(blank, ' ', uLong(width));
   blank[width] = '\0';
@@ -347,9 +354,12 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     accel_widget->redraw();
+
     if ( statusBar() )
     {
       accel_widget->statusBar()->drawMessage();
@@ -371,9 +381,12 @@ void FLabel::onAccel (FAccelEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     accel_widget->redraw();
+
     if ( statusBar() )
     {
       accel_widget->statusBar()->drawMessage();
@@ -381,6 +394,7 @@ void FLabel::onAccel (FAccelEvent* ev)
       flush_out();
     }
   }
+
   ev->accept();
 }
 
@@ -420,6 +434,7 @@ bool FLabel::setEmphasis (bool on)
 {
   if ( emphasis != on )
     emphasis = on;
+
   return on;
 }
 
@@ -428,6 +443,7 @@ bool FLabel::setReverseMode (bool on)
 {
   if ( reverse_mode != on )
     reverse_mode = on;
+
   return on;
 }
 
@@ -446,6 +462,7 @@ bool FLabel::setEnable (bool on)
     flags &= ~fc::active;
     delAccelerator();
   }
+
   return on;
 }
 
@@ -460,6 +477,7 @@ void FLabel::setText (const FString& txt)
 {
   text = txt;
   multiline_text = text.split("\r\n");
+
   if ( int(multiline_text.size()) > 1 )
     multiline = true;
   else

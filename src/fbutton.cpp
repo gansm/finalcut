@@ -92,6 +92,7 @@ uChar FButton::getHotkey()
       return 0;;
     }
   }
+
   return 0;
 }
 
@@ -99,6 +100,7 @@ uChar FButton::getHotkey()
 void FButton::setHotkeyAccelerator()
 {
   int hotkey = getHotkey();
+
   if ( hotkey )
   {
     if ( isalpha(hotkey) || isdigit(hotkey) )
@@ -132,6 +134,7 @@ void FButton::draw()
   register wchar_t* dest;
   wchar_t* ButtonText;
   FString txt;
+  int active_focus;
   int d, i, j, x, mono_offset, margin;
   int length, hotkeypos, hotkey_offset, space;
   bool is_ActiveFocus, is_Active, is_Focus, is_Flat;
@@ -151,30 +154,34 @@ void FButton::draw()
   src  = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(ButtonText);
 
-  int active_focus = fc::active + fc::focus;
+  active_focus = fc::active + fc::focus;
   is_ActiveFocus = ((flags & active_focus) == active_focus);
   is_Active = ((flags & fc::active) != 0);
   is_Focus = ((flags & fc::focus) != 0);
   is_Flat = isFlat();
   is_NonFlatShadow = ((flags & (fc::shadow+fc::flat)) == fc::shadow);
   is_NoUnderline = ((flags & fc::no_underline) != 0);
-
   setUpdateVTerm(false);
+
   if ( isMonochron() )
     setReverse(true);
+
   if ( button_down && click_animation )
   {
     // noshadow + indent one character to the right
     if ( is_Flat )
       clearFlatBorder();
+
     clearShadow();
     setColor ( getParentWidget()->getForegroundColor()
              , getParentWidget()->getBackgroundColor() );
+
     for (int y=1; y <= height; y++)
     {
       gotoxy (xpos+xmin-1, ypos+ymin-2+y);
       print (' '); // clear one left █
     }
+
     d = 1;
   }
   else
@@ -203,8 +210,10 @@ void FButton::draw()
       i++;
       src++;
     }
+
     *dest++ = *src++;
   }
+
   if ( hotkeypos != -1 )
     hotkey_offset = 1;
 
@@ -221,12 +230,14 @@ void FButton::draw()
     if ( margin == 1 )
     {
       setColor (foregroundColor, button_bg);
+
       for (int y=0; y < height; y++)
       {
         gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
         print (space); // full block █
       }
     }
+
     if ( ! button_down )
       drawFlatBorder();
   }
@@ -234,6 +245,7 @@ void FButton::draw()
   {
     setColor (button_bg, getParentWidget()->getBackgroundColor());
     gotoxy (xpos+xmin-1+d, ypos+ymin-1);
+
     for (int y=1; y <= height; y++)
     {
        // Cygwin terminal use IBM Codepage 850
@@ -243,6 +255,7 @@ void FButton::draw()
         print (0xdb);
       else
         print (fc::RightHalfBlock); // ▐
+
       gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
     }
   }
@@ -254,12 +267,15 @@ void FButton::draw()
     // clear the right █ from button down
     setColor ( getParentWidget()->getForegroundColor()
              , getParentWidget()->getBackgroundColor() );
+
     for (int y=1; y <= height; y++)
     {
       if ( isMonochron() )
         setReverse(true);
+
       gotoxy (xpos+xmin-1+width, ypos+ymin-2+y);
       print (' '); // clear right
+
       if ( isMonochron() )
         setReverse(false);
     }
@@ -297,15 +313,21 @@ void FButton::draw()
     if ( (z == hotkeypos) && is_Active )
     {
       setColor (button_hotkey_fg, button_bg);
+
       if ( ! is_ActiveFocus && getMaxColor() < 16 )
         setBold();
+
       if ( ! is_NoUnderline )
         setUnderline();
+
       print ( ButtonText[z] );
+
       if ( ! is_ActiveFocus && getMaxColor() < 16 )
         unsetBold();
+
       if ( ! is_NoUnderline )
         unsetUnderline();
+
       setColor (button_fg, button_bg);
     }
     else
@@ -325,12 +347,14 @@ void FButton::draw()
     for (i=0; i < j; i++)
     {
       gotoxy (xpos+xmin+d, ypos+ymin-1+i);
+
       for (int z=1; z < width; z++)
         print (space); // █
     }
     for (i=j+1; i < height; i++)
     {
       gotoxy (xpos+xmin+d, ypos+ymin-1+i);
+
       for (int z=1; z < width; z++)
         print (space); // █
     }
@@ -357,6 +381,7 @@ void FButton::draw()
   {
     FString msg = getStatusbarMessage();
     FString curMsg = statusBar()->getMessage();
+
     if ( curMsg != msg )
     {
       statusBar()->setMessage(msg);
@@ -423,6 +448,7 @@ void FButton::setFocusForegroundColor (short color)
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
     button_focus_fg = color;
+
   updateButtonColor();
 }
 
@@ -432,6 +458,7 @@ void FButton::setFocusBackgroundColor (short color)
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
     button_focus_bg = color;
+
   updateButtonColor();
 }
 
@@ -441,6 +468,7 @@ void FButton::setInactiveForegroundColor (short color)
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
     button_inactive_fg = color;
+
   updateButtonColor();
 }
 
@@ -450,6 +478,7 @@ void FButton::setInactiveBackgroundColor (short color)
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
     button_inactive_bg = color;
+
   updateButtonColor();
 }
 
@@ -461,22 +490,22 @@ void FButton::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
-
   s = hasShadow() ? 1 : 0;
   f = isFlat() ? 1 : 0;
   size = width + s + (f << 1);
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
+
   for (int y=0; y < height+s+(f << 1); y++)
   {
     gotoxy (xpos+xmin-1-f, ypos+ymin-1+y-f);
     print (blank);
   }
+
   delete[] blank;
 }
 
@@ -487,6 +516,7 @@ bool FButton::setNoUnderline (bool on)
     flags |= fc::no_underline;
   else
     flags &= ~fc::no_underline;
+
   return on;
 }
 
@@ -505,6 +535,7 @@ bool FButton::setEnable (bool on)
     flags &= ~fc::active;
     delAccelerator();
   }
+
   updateButtonColor();
   return on;
 }
@@ -524,6 +555,7 @@ bool FButton::setFocus (bool on)
       {
         FString msg = getStatusbarMessage();
         FString curMsg = statusBar()->getMessage();
+
         if ( curMsg != msg )
           statusBar()->setMessage(msg);
       }
@@ -536,6 +568,7 @@ bool FButton::setFocus (bool on)
     if ( isEnabled() && statusBar() )
       statusBar()->clearMessage();
   }
+
   updateButtonColor();
   return on;
 }
@@ -553,12 +586,13 @@ bool FButton::setFlat (bool on)
 //----------------------------------------------------------------------
 bool FButton::setShadow (bool on)
 {
-  if (  on
+  if ( on
      && (Encoding != fc::VT100 || isTeraTerm() )
      && Encoding != fc::ASCII )
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
+
   return on;
 }
 
@@ -570,6 +604,7 @@ bool FButton::setDown (bool on)
     button_down = on;
     redraw();
   }
+
   return on;
 }
 
@@ -617,12 +652,16 @@ void FButton::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     if ( statusBar() )
       statusBar()->drawMessage();
   }
+
   FPoint gPos = ev->getGlobalPos();
+
   if ( getGeometryGlobal().contains(gPos) )
     setDown();
 }
@@ -636,6 +675,7 @@ void FButton::onMouseUp (FMouseEvent* ev)
   if ( button_down )
   {
     setUp();
+
     if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
       processClick();
   }
@@ -648,6 +688,7 @@ void FButton::onMouseMove (FMouseEvent* ev)
     return;
 
   FPoint gPos = ev->getGlobalPos();
+
   if ( click_animation )
   {
     if ( getGeometryGlobal().contains(gPos) )
@@ -675,17 +716,21 @@ void FButton::onAccel (FAccelEvent* ev)
       FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
+
       if ( focused_widget )
         focused_widget->redraw();
+
       if ( click_animation )
         setDown();
       else
         redraw();
+
       if ( statusBar() )
         statusBar()->drawMessage();
     }
     else if ( click_animation )
       setDown();
+
     if ( click_animation )
       addTimer(click_time);
 
@@ -718,5 +763,6 @@ void FButton::setText (const FString& txt)
     text = txt;
   else
     text = "";
+
   detectHotkey();
 }

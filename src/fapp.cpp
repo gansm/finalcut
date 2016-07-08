@@ -68,8 +68,10 @@ FApplication::~FApplication() // destructor
 {
   if ( zero_point )
     delete zero_point;
+
   if ( event_queue )
     delete event_queue;
+
   rootObj = 0;
 }
 
@@ -130,6 +132,7 @@ void FApplication::cmd_options ()
       {
         FString encoding(optarg);
         encoding = encoding.toUpper();
+
         if (  encoding.includes("UTF8")
            || encoding.includes("VT100")
            || encoding.includes("PC")
@@ -166,14 +169,18 @@ int FApplication::gpmEvent (bool clear)
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
   result = select (max+1, &ifds, 0, 0, &tv);
+
   if ( FD_ISSET(stdin_no, &ifds) )
   {
     if ( clear )
       FD_CLR (stdin_no, &ifds);
+
     return keyboard_event;
   }
+
   if ( clear && FD_ISSET(gpm_fd, &ifds) )
     FD_CLR (gpm_fd, &ifds);
+
   if (result > 0)
     return mouse_event;
   else
@@ -193,8 +200,10 @@ inline bool FApplication::KeyPressed()
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
   result = select (stdin_no+1, &ifds, 0, 0, &tv);
+
   if ( FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
+
   return (result > 0);
 }
 
@@ -219,6 +228,7 @@ void FApplication::processKeyboardEvent()
   else
   {
     widget = static_cast<FWidget*>(main_widget);
+
     if ( widget->numOfChildren() >= 1 )
       widget->focusFirstChild();
   }
@@ -239,6 +249,7 @@ void FApplication::processKeyboardEvent()
   {
     gpmMouseEvent = false;
     int type = gpmEvent();
+
     switch ( type )
     {
       case mouse_event:
@@ -276,6 +287,7 @@ void FApplication::processKeyboardEvent()
           fifo_buf[fifo_offset] = k_buf[i];
           fifo_offset++;
         }
+
         fifo_in_use = true;
       }
 
@@ -302,9 +314,12 @@ void FApplication::processKeyboardEvent()
 
             for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
               fifo_buf[n-len] = fifo_buf[n];
+
             n = fifo_buf_size-len-1;
+
             for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();
           }
@@ -317,15 +332,21 @@ void FApplication::processKeyboardEvent()
             {
               sgr_mouse[n-3] = fifo_buf[n];
               n++;
+
               if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
                 len = n + 1;
             }
+
             sgr_mouse[n-3] = '\0';
+
             for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
               fifo_buf[n-len] = fifo_buf[n];
+
             n = fifo_buf_size-len-1;
+
             for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();
           }
@@ -338,15 +359,21 @@ void FApplication::processKeyboardEvent()
             {
               urxvt_mouse[n-2] = fifo_buf[n];
               n++;
+
               if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
                 len = n + 1;
             }
+
             urxvt_mouse[n-2] = '\0';
+
             for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
               fifo_buf[n-len] = fifo_buf[n];
+
             n = fifo_buf_size-len-1;
+
             for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
               fifo_buf[n-len] = '\0';
+
             input_data_pending = bool(fifo_buf[0] != '\0');
             processMouseEvent();
           }
@@ -366,8 +393,10 @@ void FApplication::processKeyboardEvent()
             {
               // keyboard accelerator
               FWidget* window = static_cast<FWidget*>(active_window);
+
               if ( ! window )
                 window = getRootWidget();
+
               if ( window
                  && window->accelerator_list
                  && ! window->accelerator_list->empty() )
@@ -380,27 +409,33 @@ void FApplication::processKeyboardEvent()
                 {
                   if ( quit_now || app_exit_loop )
                     break;
+
                   if ( iter->key == key )
                   {
                     FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
                     sendEvent (iter->object, &a_ev);
                     break;
                   };
+
                   ++iter;
                 }
               }
             }
           } // end of else
         }
+
         fifo_offset = int(strlen(fifo_buf));
       }
+
       // send key up event
       FKeyEvent k_up_ev (fc::KeyUp_Event, key);
       sendEvent (widget, &k_up_ev);
       key = 0;
     }
+
     std::fill_n (k_buf, sizeof(k_buf), '\0');
   }
+
   // special case: Esc key
   if (  fifo_in_use
      && fifo_offset == 1
@@ -542,8 +577,10 @@ bool FApplication::parseX11Mouse()
 
   if ( (x11_mouse[0] & key_shift) == key_shift )
     b_state.shift_button = Pressed;
+
   if ( (x11_mouse[0] & key_meta) == key_meta )
     b_state.meta_button = Pressed;
+
   if ( (x11_mouse[0] & key_ctrl) == key_ctrl )
     b_state.control_button = Pressed;
 
@@ -564,6 +601,7 @@ bool FApplication::parseX11Mouse()
   {
     return false;
   }
+
   mouse->setPoint(x,y);
   x11_button_state = uChar(x11_mouse[0]);
   x11_mouse[0] = '\0';
@@ -606,6 +644,7 @@ bool FApplication::parseSGRMouse()
   {
     if ( *p < '0' || *p > '9')
       return false;
+
     button = 10 * button + (*p - '0');
     p++;
   }
@@ -621,6 +660,7 @@ bool FApplication::parseSGRMouse()
   {
     if ( *p < '0' || *p > '9')
       return false;
+
     y = uChar(10 * y + (*p - '0'));
   }
 
@@ -629,8 +669,10 @@ bool FApplication::parseSGRMouse()
 
   if ( (button & key_shift) == key_shift )
     b_state.shift_button = Pressed;
+
   if ( (button & key_meta) == key_meta )
     b_state.meta_button = Pressed;
+
   if ( (button & key_ctrl) == key_ctrl )
     b_state.control_button = Pressed;
 
@@ -715,6 +757,7 @@ bool FApplication::parseSGRMouse()
         break;
     }
   }
+
   if (  *mouse == newMousePosition
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed
@@ -722,6 +765,7 @@ bool FApplication::parseSGRMouse()
   {
     return false;
   }
+
   mouse->setPoint(x,y);
   x11_button_state = uChar(((*p & 0x20) << 2) + button);
   sgr_mouse[0] = '\0';
@@ -769,6 +813,7 @@ bool FApplication::parseUrxvtMouse()
   {
     if ( *p < '0' || *p > '9')
       return false;
+
     button = 10 * button + (*p - '0');
     p++;
   }
@@ -778,10 +823,12 @@ bool FApplication::parseUrxvtMouse()
     p++;
     x_neg = true;
   }
+
   while ( *p && *p != ';' )
   {
     if ( *p < '0' || *p > '9')
       return false;
+
     x = uChar(10 * x + (*p - '0'));
     p++;
   }
@@ -791,20 +838,25 @@ bool FApplication::parseUrxvtMouse()
     p++;
     y_neg = true;
   }
+
   while ( *p && *p != 'M' )
   {
     if ( *p < '0' || *p > '9')
       return false;
+
     y = uChar(10 * y + (*p - '0'));
     p++;
   }
 
   if ( x_neg || x == 0 )
     x = 1;
+
   if ( y_neg || y == 0 )
     y = 1;
+
   if ( x > term->getWidth() )
     x = uChar(term->getWidth());
+
   if ( y > term->getHeight() )
     y = uChar(term->getHeight());
 
@@ -813,8 +865,10 @@ bool FApplication::parseUrxvtMouse()
 
   if ( (button & key_shift) == key_shift )
     b_state.shift_button = Pressed;
+
   if ( (button & key_meta) == key_meta )
     b_state.meta_button = Pressed;
+
   if ( (button & key_ctrl) == key_ctrl )
     b_state.control_button = Pressed;
 
@@ -834,6 +888,7 @@ bool FApplication::parseUrxvtMouse()
   {
     return false;
   }
+
   mouse->setPoint(x,y);
   x11_button_state = uChar(button);
   urxvt_mouse[0] = '\0';
@@ -849,6 +904,7 @@ bool FApplication::processGpmEvent()
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
     Gpm_FitEvent (&gpm_ev);
+
     if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
       b_state.mouse_moved = true;
 
@@ -868,35 +924,45 @@ bool FApplication::processGpmEvent()
           else
             b_state.left_button = Pressed;
         }
+
         if ( gpm_ev.buttons & GPM_B_MIDDLE )
           b_state.middle_button = Pressed;
+
         if ( gpm_ev.buttons & GPM_B_RIGHT )
           b_state.right_button = Pressed;
+
         if ( gpm_ev.buttons & GPM_B_UP )
           b_state.wheel_up = Pressed;
+
         if ( gpm_ev.buttons & GPM_B_DOWN )
           b_state.wheel_down = Pressed;
 
         // keyboard modifiers
         if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
           b_state.shift_button = Pressed;
+
         if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
           b_state.meta_button = Pressed;
+
         if ( gpm_ev.modifiers & (1 << KG_CTRL) )
           b_state.control_button = Pressed;
+
         break;
 
       case GPM_UP:
         if ( gpm_ev.buttons & GPM_B_LEFT )
           b_state.left_button = Released;
+
         if ( gpm_ev.buttons & GPM_B_MIDDLE )
           b_state.middle_button = Released;
+
         if ( gpm_ev.buttons & GPM_B_RIGHT )
           b_state.right_button = Released;
 
       default:
         break;
     }
+
     mouse->setPoint(gpm_ev.x, gpm_ev.y);
 
     if ( gpmEvent(false) == mouse_event )
@@ -909,6 +975,7 @@ bool FApplication::processGpmEvent()
 
     return true;
   }
+
   gpmMouseEvent = false;
   return false;
 }
@@ -962,6 +1029,7 @@ void FApplication::processMouseEvent()
         || b_state.wheel_down == Pressed ) )
   {
     FWidget* window = FWindow::getWindowWidgetAt (*mouse);
+
     if ( window )
     {
       FWidget* child = childWidgetAt (window, *mouse);
@@ -984,8 +1052,10 @@ void FApplication::processMouseEvent()
       // No widget was been clicked
       if ( ! clicked_widget )
         FWindow::switchToPrevWindow();
+
       if ( statusBar() )
         statusBar()->drawMessage();
+
       updateTerminal();
       flush_out();
     }
@@ -1000,14 +1070,17 @@ void FApplication::processMouseEvent()
     {
       if ( statusBar() )
         statusBar()->clearMessage();
+
       menuBar()->resetMenu();
       menuBar()->redraw();
 
       // No widget was been clicked
       if ( ! clicked_widget )
         FWindow::switchToPrevWindow();
+
       if ( statusBar() )
         statusBar()->drawMessage();
+
       updateTerminal();
       flush_out();
     }
@@ -1020,8 +1093,10 @@ void FApplication::processMouseEvent()
 
     if ( b_state.shift_button == Pressed )
       key_state |= fc::ShiftButton;
+
     if ( b_state.meta_button == Pressed )
       key_state |= fc::MetaButton;
+
     if ( b_state.control_button == Pressed )
       key_state |= fc::ControlButton;
 
@@ -1037,6 +1112,7 @@ void FApplication::processMouseEvent()
                               , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
+
       if ( b_state.right_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
@@ -1045,6 +1121,7 @@ void FApplication::processMouseEvent()
                               , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
+
       if ( b_state.middle_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
@@ -1113,6 +1190,7 @@ void FApplication::processMouseEvent()
                               , *mouse
                               , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
+
         // gnome-terminal sends no released on middle click
         if ( gnome_terminal )
           clicked_widget = 0;
@@ -1124,9 +1202,13 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , fc::MiddleButton | key_state );
         FWidget* released_widget = clicked_widget;
+
         if (  b_state.right_button != Pressed
            && b_state.left_button != Pressed )
-        clicked_widget = 0;
+        {
+          clicked_widget = 0;
+        }
+
         sendEvent (released_widget, &m_up_ev);
       }
     }
@@ -1152,6 +1234,7 @@ void FApplication::processMouseEvent()
       clicked_widget = 0;
       sendEvent (scroll_over_widget, &wheel_ev);
     }
+
   }
 
 #ifdef F_HAVE_LIBGPM
@@ -1187,6 +1270,7 @@ int FApplication::processTimerEvent()
 
   if ( ! timer_list )
     return 0;
+
   if ( timer_list->empty() )
     return 0;
 
@@ -1245,6 +1329,7 @@ void FApplication::processTerminalUpdate()
 void FApplication::processCloseWidget()
 {
   updateTerminal(false);
+
   if ( close_widget && ! close_widget->empty() )
   {
     widgetList::iterator iter;
@@ -1255,6 +1340,7 @@ void FApplication::processCloseWidget()
       delete *iter;
       ++iter;
     }
+
     close_widget->clear();
   }
   updateTerminal(true);
@@ -1314,6 +1400,7 @@ int FApplication::exec() // run
     showCursor();
     flush_out();
   }
+
   enter_loop();
   return quit_code;
 }
@@ -1327,12 +1414,12 @@ int FApplication::enter_loop() // event loop
 
   old_app_exit_loop = app_exit_loop;
   app_exit_loop = false;
+
   while ( ! quit_now && ! app_exit_loop )
     processNextEvent();
+
   app_exit_loop = old_app_exit_loop;
-
   loop_level--;
-
   return 0;
 }
 
@@ -1347,8 +1434,10 @@ void FApplication::exit (int retcode)
 {
   if ( ! rootObj )  // no global app object
     return;
+
   if ( quit_now ) // don't overwrite quit code
     return;
+
   quit_now  = true;
   quit_code = retcode;
 }
@@ -1470,6 +1559,7 @@ bool FApplication::removeQueuedEvent(FObject* receiver)
 
   if ( ! eventInQueue() )
     return false;
+
   if ( ! receiver )
     return false;
 
@@ -1486,5 +1576,6 @@ bool FApplication::removeQueuedEvent(FObject* receiver)
     else
       ++iter;
   }
+
   return retval;
 }

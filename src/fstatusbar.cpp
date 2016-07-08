@@ -62,6 +62,7 @@ FStatusKey::~FStatusKey()  // destructor
 {
   if ( statusbar() )
     statusbar()->remove(this);
+
   delAccelerator();
 }
 
@@ -154,10 +155,13 @@ FStatusBar::~FStatusBar()
   {
     if ( vstatusbar->changes != 0 )
       delete[] vstatusbar->changes;
+
     if ( vstatusbar->text != 0 )
       delete[] vstatusbar->text;
+
     delete vstatusbar;
   }
+
   vstatusbar = 0;
 
   // delete all keys
@@ -213,7 +217,6 @@ void FStatusBar::drawKeys()
 {
   std::vector<FStatusKey*>::const_iterator iter, end;
   int screenWidth, lastLine;
-
   x = 1;
   screenWidth = getColumnNumber();
   lastLine = getLineNumber();
@@ -238,25 +241,27 @@ void FStatusBar::drawKeys()
   while ( iter != end )
   {
     int kname_len = int(getKeyName((*iter)->getKey()).getLength());
+
     if ( x+kname_len+2 < screenWidth )
     {
       if ( (*iter)->isActivated() || (*iter)->hasMouseFocus() )
       {
+        int txt_length;
         if ( isMonochron() )
           setReverse(false);
+
         setColor ( wc.statusbar_active_hotkey_fg
                  , wc.statusbar_active_hotkey_bg );
         x++;
         print (vstatusbar, ' ');
         x += kname_len;
         print (vstatusbar, getKeyName((*iter)->getKey()));
-
         setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
         x++;
         print (vstatusbar, '-');
-
-        int txt_length = int((*iter)->getText().getLength());
+        txt_length = int((*iter)->getText().getLength());
         x += txt_length;
+
         if ( x <= screenWidth )
         {
           print (vstatusbar, (*iter)->getText());
@@ -270,6 +275,7 @@ void FStatusBar::drawKeys()
                           .left(uInt(txt_length+screenWidth-x-1)) );
           print (vstatusbar, "..");
         }
+
         if ( isMonochron() )
           setReverse(true);
       }
@@ -281,16 +287,14 @@ void FStatusBar::drawKeys()
         setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
         x++;
         print (vstatusbar, ' ');
-
         x += kname_len;
         print (vstatusbar, getKeyName((*iter)->getKey()));
-
         setColor (wc.statusbar_fg, wc.statusbar_bg);
         x++;
         print (vstatusbar, '-');
-
         txt_length = int((*iter)->getText().getLength());
         x += txt_length;
+
         if ( x-1 <= screenWidth )
           print (vstatusbar, (*iter)->getText());
         else
@@ -300,6 +304,7 @@ void FStatusBar::drawKeys()
                           .left(uInt(txt_length+screenWidth-x-1)) );
           print ( vstatusbar, ".." );
         }
+
         if (  iter+1 != keylist.end()
            && ( (*(iter+1))->isActivated() || (*(iter+1))->hasMouseFocus() )
            && x + int(getKeyName((*(iter+1))->getKey()).getLength()) + 3
@@ -308,9 +313,11 @@ void FStatusBar::drawKeys()
           // next element is active
           if ( isMonochron() )
             setReverse(false);
+
           setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
           x++;
           print (vstatusbar, fc::LeftHalfBlock);  // ▐
+
           if ( isMonochron() )
             setReverse(true);
         }
@@ -326,6 +333,7 @@ void FStatusBar::drawKeys()
     else
     {
       setColor (wc.statusbar_fg, wc.statusbar_bg);
+
       for (; x <= screenWidth; x++)
         print (vstatusbar, ' ');
     }
@@ -345,9 +353,11 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
+
   if ( ev->getButton() != fc::LeftButton )
   {
     mouse_down = false;
+
     if ( ! keylist.empty() )
     {
       std::vector<FStatusKey*>::const_iterator iter, end;
@@ -360,18 +370,20 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
         ++iter;
       }
     }
+
     redraw();
     return;
   }
+
   if ( mouse_down )
     return;
+
   mouse_down = true;
 
   if ( ! keylist.empty() )
   {
     std::vector<FStatusKey*>::const_iterator iter, end;
     int X = 1;
-
     iter = keylist.begin();
     end = keylist.end();
 
@@ -394,6 +406,7 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
         (*iter)->setMouseFocus();
         redraw();
       }
+
       X = x2 + 2;
       ++iter;
     }
@@ -405,24 +418,24 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
+
   if ( ev->getButton() != fc::LeftButton )
     return;
 
   if ( mouse_down )
   {
     mouse_down = false;
+
     if ( ! keylist.empty() )
     {
       std::vector<FStatusKey*>::const_iterator iter, end;
       int X = 1;
-
       iter = keylist.begin();
       end = keylist.end();
 
       while ( iter != end )
       {
         int x1, x2, kname_len, txt_length;
-
         x1 = X;
         kname_len = int(getKeyName((*iter)->getKey()).getLength());
         txt_length = int((*iter)->getText().getLength());
@@ -434,12 +447,15 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
           (*iter)->unsetMouseFocus();
           mouse_x = ev->getX();
           mouse_y = ev->getY();
+
           if ( mouse_x >= x1 && mouse_x <= x2 && mouse_y == 1 )
             (*iter)->setActive();
+
           // unset after get back from callback
           (*iter)->unsetActive();
           redraw();
         }
+
         X = x2 + 2;
         ++iter;
       }
@@ -452,6 +468,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
     return;
+
   if ( ev->getButton() != fc::LeftButton )
     return;
 
@@ -460,21 +477,19 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
     std::vector<FStatusKey*>::const_iterator iter, end;
     bool focus_changed = false;
     int X=1;
-
     iter = keylist.begin();
     end = keylist.end();
 
     while ( iter != end )
     {
       int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
-
       x1 = X;
       kname_len = int(getKeyName((*iter)->getKey()).getLength());
       txt_length = int((*iter)->getText().getLength());
       x2 = x1 + kname_len + txt_length + 1;
-
       mouse_x = ev->getX();
       mouse_y = ev->getY();
+
       if (  mouse_x >= x1
          && mouse_x <= x2
          && mouse_y == 1 )
@@ -493,9 +508,11 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
           focus_changed = true;
         }
       }
+
       X = x2 + 2;
       ++iter;
     }
+
     if ( focus_changed )
       redraw();
   }
@@ -509,17 +526,14 @@ void FStatusBar::hide()
   char* blank;
 
   FWindow::hide();
-
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
-
   lastLine = getLineNumber();
   screenWidth = getColumnNumber();
   blank = new char[screenWidth+1];
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-
   gotoxy (1, lastLine);
   print (vstatusbar, blank);
   delete[] blank;
@@ -531,6 +545,7 @@ void FStatusBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
   int old_width = width;
   int old_height = height;
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
+
   if ( vstatusbar && (width != old_width || height != old_height) )
     resizeArea (vstatusbar);
 }
@@ -548,9 +563,11 @@ bool FStatusBar::hasActivatedKey()
     {
       if ( (*iter)->isActivated() )
         return true;
+
       ++iter;
     }
   }
+
   return false;
 }
 
@@ -562,6 +579,7 @@ void FStatusBar::drawMessage()
 
   if ( ! isVisible() )
     return;
+
   if ( x < 0 || x_msg < 0 )
     return;
 
@@ -586,8 +604,10 @@ void FStatusBar::drawMessage()
   setUpdateVTerm(false);
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   gotoxy (x, lastLine);
+
   if ( isMonochron() )
     setReverse(true);
+
   if ( x+space_offset+3 < termWidth )
   {
     if ( text )
@@ -597,6 +617,7 @@ void FStatusBar::drawMessage()
         x++;
         print (vstatusbar, ' ');
       }
+
       if ( hasKeys )
       {
         x += 2;
@@ -606,6 +627,7 @@ void FStatusBar::drawMessage()
 
       int msg_length = int(getMessage().getLength());
       x += msg_length;
+
       if ( x-1 <= termWidth )
         print (vstatusbar, getMessage());
       else
@@ -616,6 +638,7 @@ void FStatusBar::drawMessage()
       }
     }
   }
+
   for (int i=x; i <= termWidth; i++)
     print (vstatusbar, ' ');
 
@@ -670,6 +693,7 @@ void FStatusBar::remove (FStatusKey* skey)
     return;
 
   iter = keylist.begin();
+
   while ( iter != keylist.end() )
   {
     if ( (*iter) == skey )
@@ -726,8 +750,10 @@ void FStatusBar::cb_statuskey_activated (FWidget* widget, void*)
       ++iter;
     }
   }
+
   if ( isVisible() && isShown() )
     redraw();
+
   if ( ! isHiddenCursor() )
     hideCursor();
 }

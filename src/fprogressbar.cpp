@@ -27,13 +27,17 @@ void FProgressbar::drawPercentage()
 {
   setColor ( getParentWidget()->getForegroundColor()
            , getParentWidget()->getBackgroundColor() );
+
   if ( isMonochron() )
     setReverse(true);
+
   gotoxy (xpos+xmin+width-5, ypos+ymin-2);
+
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
   else
     printf ("%3d %%", percentage);
+
   if ( isMonochron() )
     setReverse(false);
 }
@@ -43,8 +47,8 @@ void FProgressbar::drawBar()
 {
   int i = 1;
   float length = float(BarLength*percentage)/100;
-
   gotoxy (xpos+xmin-1, ypos+ymin-1);
+
   if ( isMonochron() )
   {
     if ( round(length) >= 1)
@@ -60,6 +64,7 @@ void FProgressbar::drawBar()
   {
     setColor ( wc.progressbar_bg
              , wc.progressbar_fg );
+
     if ( round(length) >= 1)
       print (' ');
     else
@@ -86,10 +91,13 @@ void FProgressbar::drawBar()
 
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
+
   if ( isMonochron() )
     setReverse(false);
+
   for (; i < trunc(length); i++)
     print (' ');
+
   if ( isMonochron() )
     setReverse(true);
 
@@ -113,10 +121,12 @@ void FProgressbar::drawBar()
       setColor (wc.progressbar_fg, wc.progressbar_bg);
       print (fc::LeftHalfBlock); // ▌
     }
+
     i++;
   }
 
   setColor (wc.progressbar_fg, wc.progressbar_bg);
+
   if ( getMaxColor() < 16 )
   {
     for (; i < BarLength; i++)
@@ -127,6 +137,7 @@ void FProgressbar::drawBar()
     for (; i < BarLength; i++)
       print (' ');
   }
+
   if ( isMonochron() )
     setReverse(false);
 
@@ -145,6 +156,7 @@ void FProgressbar::draw()
 
   if ( (flags & fc::shadow) != 0 )
     drawShadow ();
+
   setUpdateVTerm(true);
   flush_out();
 }
@@ -159,11 +171,9 @@ void FProgressbar::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
-
   s = hasShadow() ? 1 : 0;
   size = width + s;
   blank = new char[size+1];
@@ -175,8 +185,8 @@ void FProgressbar::hide()
     gotoxy (xpos+xmin-1, ypos+ymin-1+y);
     print (blank);
   }
-  delete[] blank;
 
+  delete[] blank;
   gotoxy (xpos+xmin+width-5, ypos+ymin-2);
   print ("     ");  // hide percentage
 }
@@ -195,11 +205,13 @@ void FProgressbar::setPercentage (int percentage_value)
     percentage = percentage_value;
 
   setUpdateVTerm(false);
+
   if ( isVisible() )
   {
     drawPercentage();
     drawBar();
   }
+
   setUpdateVTerm(true);
   updateTerminal();
 }
@@ -209,11 +221,13 @@ void FProgressbar::reset()
 {
   setUpdateVTerm(false);
   percentage = -1;
+
   if ( isVisible() )
   {
     drawPercentage();
     drawBar();
   }
+
   setUpdateVTerm(true);
   updateTerminal();
 }
@@ -234,6 +248,7 @@ bool FProgressbar::setEnable (bool on)
     flags |= fc::active;
   else
     flags &= ~fc::active;
+
   return on;
 }
 
@@ -246,5 +261,6 @@ bool FProgressbar::setShadow (bool on)
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
+
   return on;
 }

@@ -44,17 +44,18 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
+  FApplication* fapp;
+
   delete accelerator_list;
   accelerator_list = 0;
   activatePrevWindow();
   delWindow(this);
+  fapp = static_cast<FApplication*>(getRootWidget());
 
-  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
   if ( ! fapp->quit_now )
   {
     const FRect& geometry = getGeometryGlobalShadow();
     restoreVTerm (geometry);
-
     getParentWidget()->redraw();
   }
 
@@ -67,10 +68,13 @@ FDialog::~FDialog()  // destructor
     while ( iter != end )
     {
       putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
+
       if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
         static_cast<FDialog*>(*iter)->drawDialogShadow();
+
       ++iter;
     }
+
     setFocusWidget(0);
     updateTerminal();
     flush_out();
@@ -80,10 +84,13 @@ FDialog::~FDialog()  // destructor
   {
     if ( vwin->changes != 0 )
       delete[] vwin->changes;
+
     if ( vwin->text != 0 )
       delete[] vwin->text;
+
     delete vwin;
   }
+
   if ( isModal() )
     unsetModal();
 }
@@ -92,7 +99,10 @@ FDialog::~FDialog()  // destructor
 //----------------------------------------------------------------------
 void FDialog::init()
 {
-  FWidget* rootObj = getRootWidget();
+  FMenuItem* close_item;
+  FWidget*   old_focus;
+  FWidget*   rootObj = getRootWidget();
+
   xmin = 1 + rootObj->getLeftPadding();
   ymin = 1 + rootObj->getTopPadding();
   xmax = rootObj->getWidth();
@@ -120,28 +130,30 @@ void FDialog::init()
 
   if ( hasFocus() )
     flags |= fc::focus;
+
   if ( isEnabled() )
     flags |= fc::active;
 
-  FWidget* old_focus = FWidget::getFocusWidget();
+  old_focus = FWidget::getFocusWidget();
+
   if ( old_focus )
   {
     setFocus();
     old_focus->redraw();
   }
-  accelerator_list = new Accelerators();
 
+  accelerator_list = new Accelerators();
   dialog_menu = new FMenu ("-", this);
   dialog_menu->move (xpos, ypos+1);
-
   dgl_menuitem = dialog_menu->getItem();
+
   if ( dgl_menuitem )
   {
     dgl_menuitem->ignorePadding();
     dgl_menuitem->unsetFocusable();
   }
 
-  FMenuItem* close_item = new FMenuItem ("&Close", dialog_menu);
+  close_item = new FMenuItem ("&Close", dialog_menu);
   close_item->setStatusbarMessage ("Close window");
 
   close_item->addCallback
@@ -163,10 +175,12 @@ void FDialog::drawBorder()
   if ( isNewFont() )
   {
     short fg;
+
     if ( ! isRootWidget() )
       fg = getParentWidget()->getForegroundColor();
     else
       fg = wc.term_fg;
+
     for (int y=y1; y <= y2; y++)
     {
       setColor (fg, backgroundColor);
@@ -177,6 +191,7 @@ void FDialog::drawBorder()
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
+
     if ( (flags & fc::shadow) == 0 )
     {
       setColor (fg, backgroundColor);
@@ -189,19 +204,23 @@ void FDialog::drawBorder()
       // lower right corner border ⎦
       print (fc::NF_rev_border_corner_lower_right);
     }
+
   }
   else
   {
     gotoxy (x1, y1);
     print (fc::BoxDrawingsDownAndRight); // ┌
+
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
-    print (fc::BoxDrawingsDownAndLeft);  // ┐
 
+    print (fc::BoxDrawingsDownAndLeft);  // ┐
     gotoxy (x1, y2);
     print (fc::BoxDrawingsUpAndRight);   // └
+
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
+
     print (fc::BoxDrawingsUpAndLeft);    // ┘
 
     for (int y=y1+1; y < y2; y++)
@@ -211,6 +230,7 @@ void FDialog::drawBorder()
       gotoxy (x2, y);
       print (fc::BoxDrawingsVertical);   // │
     }
+
   }
 }
 
@@ -223,6 +243,7 @@ void FDialog::drawTitleBar()
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
   setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+
   if ( isMonochron() )
   {
     if ( isActiveWindow() )
@@ -241,25 +262,30 @@ void FDialog::drawTitleBar()
   else if ( isMonochron() )
   {
     print ('[');
+
     if ( dgl_menuitem )
       print (dgl_menuitem->getText());
     else
       print ('-');
+
     print (']');
   }
   else
   {
     print (' ');
+
     if ( dgl_menuitem )
       print (dgl_menuitem->getText());
     else
       print ('-');
+
     print (' ');
   }
 
   // fill with spaces (left of the title)
   if ( getMaxColor() < 16 )
     setBold();
+
   if ( isActiveWindow() || dialog_menu->isVisible() )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
@@ -281,6 +307,7 @@ void FDialog::drawTitleBar()
 
   if ( getMaxColor() < 16 )
     unsetBold();
+
   if ( isMonochron() )
     setReverse(false);
 
@@ -299,8 +326,10 @@ void FDialog::leaveMenu()
   raiseWindow();
   getFocusWidget()->setFocus();
   redraw();
+
   if ( statusBar() )
     statusBar()->drawMessage();
+
   updateTerminal();
   flush_out();
 }
@@ -337,6 +366,7 @@ void FDialog::drawDialogShadow()
       FOptiAttr::char_data ch;
       // left of the shadow ▀▀
       gotoxy (xpos+xmin-1, ypos+ymin-1+height);
+
       for (int x=0; x <= 1; x++)
       {
         ch = getCoveredCharacter (xpos+xmin-1+x, ypos+ymin-1+height, this);
@@ -348,12 +378,12 @@ void FDialog::drawDialogShadow()
   }
   else
   {
+    FOptiAttr::char_data ch;
+
     if ( isMonochron() )
       return;
 
     drawShadow();
-
-    FOptiAttr::char_data ch;
     ch = getCoveredCharacter (xpos+xmin-1, ypos+ymin-1+height, this);
     // left of the shadow ▀▀
     gotoxy (xpos+xmin-1, ypos+ymin-1+height);
@@ -370,33 +400,44 @@ void FDialog::drawDialogShadow()
 
       if ( ch.bold )
         setBold();
+
       if ( ch.dim )
         setDim();
+
       if ( ch.italic )
         setItalic();
+
       if ( ch.underline )
         setUnderline();
+
       if ( ch.blink )
         setBlink();
+
       if ( ch.reverse )
         setReverse();
+
       if ( ch.standout )
         setStandout();
+
       if ( ch.invisible )
         setInvisible();
+
       if ( ch.protect )
         setProtected();
+
       if ( ch.crossed_out )
         setCrossedOut();
+
       if ( ch.dbl_underline )
         setDoubleUnderline();
+
       if ( ch.alt_charset )
         setAltCharset (true);
+
       if ( ch.pc_charset )
         setPCcharset (true);
 
       print (ch.code);
-
       setNormal();
     }
   }
@@ -414,9 +455,9 @@ void FDialog::draw()
   }
 
   setUpdateVTerm(false);
-
   // fill the background
   setColor (foregroundColor, backgroundColor);
+
   if ( isMonochron() )
     setReverse(true);
 
@@ -469,8 +510,10 @@ void FDialog::draw()
       }
     }
   }
+
   if ( isMonochron() )
     setReverse(false);
+
   setUpdateVTerm(true);
 }
 
@@ -500,6 +543,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
      || ev->key() == fc::Fkey_escape_mintty )
   {
     ev->accept();
+
     if ( isModal() )
       done (FDialog::Reject);
     else
@@ -515,13 +559,15 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::LeftButton )
   {
+    bool has_raised;
+
     // click on titlebar or window: raise + activate
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
       TitleBarClickPos.setPoint (ev->getGlobalX(), ev->getGlobalY());
     else
       TitleBarClickPos.setPoint (0,0);
 
-    bool has_raised = raiseWindow();
+    has_raised = raiseWindow();
 
     if ( ! isActiveWindow() )
     {
@@ -532,6 +578,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       {
         focus_widget->setFocus();
         focus_widget->redraw();
+
         if ( old_focus )
           old_focus->redraw();
       }
@@ -540,8 +587,10 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
       if ( statusBar() )
         statusBar()->drawMessage();
+
       updateTerminal();
     }
+
     if ( has_raised )
       redraw();
 
@@ -577,10 +626,12 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       {
         FWidget* old_focus = FWidget::getFocusWidget();
         setActiveWindow(this);
+
         if ( focus_widget )
         {
           focus_widget->setFocus();
           focus_widget->redraw();
+
           if ( old_focus )
             old_focus->redraw();
         }
@@ -589,6 +640,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
         if ( statusBar() )
           statusBar()->drawMessage();
+
         updateTerminal();
       }
     }
@@ -605,10 +657,12 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       {
         FWidget* old_focus = FWidget::getFocusWidget();
         setActiveWindow(this);
+
         if ( focus_widget )
         {
           focus_widget->setFocus();
           focus_widget->redraw();
+
           if ( old_focus )
             old_focus->redraw();
         }
@@ -617,6 +671,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
         if ( statusBar() )
           statusBar()->drawMessage();
+
         updateTerminal();
       }
       else if ( has_lowered )
@@ -656,11 +711,15 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       FMenuItem* first_item;
       dialog_menu->selectFirstItem();
       first_item = dialog_menu->getSelectedItem();
+
       if ( first_item )
         first_item->setFocus();
+
       dialog_menu->redraw();
+
       if ( statusBar() )
         statusBar()->drawMessage();
+
       updateTerminal();
       flush_out();
     }
@@ -712,8 +771,8 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   x = xpos + xmin - 1;
   y = ypos + ymin - 1;
   FRect title_button(x, y, 3, 1);
-
   FPoint gPos = ev->getGlobalPos();
+
   if ( title_button.contains(gPos) )
   {
     dialog_menu->unselectItem();
@@ -774,6 +833,7 @@ void FDialog::onWindowRaised (FEvent*)
 
   if ( ! window_list )
     return;
+
   if ( window_list->empty() )
     return;
 
@@ -783,10 +843,12 @@ void FDialog::onWindowRaised (FEvent*)
 
   while ( iter != end )
   {
-    if ( *iter != this
-    && ! maximized
-    && ((*iter)->getFlags() & fc::shadow) != 0 )
+    if ( *iter != this && ! maximized
+       && ((*iter)->getFlags() & fc::shadow) != 0 )
+    {
       static_cast<FDialog*>(*iter)->drawDialogShadow();
+    }
+
     ++iter;
   }
 }
@@ -798,6 +860,7 @@ void FDialog::onWindowLowered (FEvent*)
 
   if ( ! window_list )
     return;
+
   if ( window_list->empty() )
     return;
 
@@ -807,8 +870,10 @@ void FDialog::onWindowLowered (FEvent*)
   while ( iter != end )
   {
     putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
+
     if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
       static_cast<FDialog*>(*iter)->drawDialogShadow();
+
     ++iter;
   }
 }
@@ -875,6 +940,7 @@ void FDialog::move (int x, int y)
 
   if ( x == xpos && y == ypos )
     return;
+
   if (  x+width < 1 || x > getColumnNumber() || y < 1 || y > getLineNumber() )
     return;
 
@@ -889,7 +955,6 @@ void FDialog::move (int x, int y)
   FWidget::move(x,y);
   xpos = x;
   ypos = y;
-
   putArea (getGlobalPos(), vwin);
 
   if ( getGeometry().overlap(oldGeometry) )
@@ -941,11 +1006,14 @@ void FDialog::move (int x, int y)
       if ( overlaid )
       {
         putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
+
         if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
           static_cast<FDialog*>(*iter)->drawDialogShadow();
       }
+
       if ( vwin == (*iter)->getVWin() )
         overlaid = true;
+
       ++iter;
     }
   }
@@ -959,9 +1027,11 @@ void FDialog::move (int x, int y)
   {
     FPoint cursor_pos = FWidget::getFocusWidget()->getCursorPos();
     cursor_pos -= FPoint(dx,dy);
+
     if ( ! FWidget::getFocusWidget()->setCursorPos(cursor_pos) )
       hideCursor();
   }
+
   updateTerminal();
 }
 
@@ -970,6 +1040,7 @@ void FDialog::setWidth (int w, bool adjust)
 {
   int old_width = width;
   FWidget::setWidth (w, adjust);
+
   if ( vwin && width != old_width )
     resizeArea (vwin);
 }
@@ -979,6 +1050,7 @@ void FDialog::setHeight (int h, bool adjust)
 {
   int old_height = height;
   FWidget::setHeight (h, adjust);
+
   if ( vwin && height != old_height )
     resizeArea (vwin);
 }
@@ -989,6 +1061,7 @@ void FDialog::setGeometry (int x, int y, int w, int h, bool adjust)
   int old_width = width;
   int old_height = height;
   FWidget::setGeometry (x, y, w, h, adjust);
+
   if ( vwin && (width != old_width || height != old_height) )
     resizeArea (vwin);
 }
@@ -1014,6 +1087,7 @@ bool FDialog::setFocus (bool on)
     flags |= fc::focus;
   else
     flags &= ~fc::focus;
+
   return on;
 }
 
@@ -1033,6 +1107,7 @@ bool FDialog::setModal (bool on)
     flags &= ~fc::modal;
     modal_dialogs--;
   }
+
   return on;
 }
 
@@ -1055,6 +1130,7 @@ bool FDialog::setTransparentShadow (bool on)
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
+
   resizeArea (vwin);
   return on;
 }
@@ -1081,6 +1157,7 @@ bool FDialog::setShadow (bool on)
     adjustWidgetSizeShadow = getGeometry() + getShadow();
     adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
   }
+
   resizeArea (vwin);
   return on;
 }
@@ -1092,6 +1169,7 @@ bool FDialog::setScrollable (bool on)
     flags |= fc::scrollable;
   else
     flags &= ~fc::scrollable;
+
   return on;
 }
 
@@ -1102,6 +1180,7 @@ bool FDialog::setResizeable (bool on)
     flags |= fc::resizeable;
   else
     flags &= ~fc::resizeable;
+
   return on;
 }
 
@@ -1112,6 +1191,7 @@ bool FDialog::setMaximized()
     return true;
 
   maximized = true;
- // setGeometry(1, 1, xmax, ymax);
+  //setGeometry (1, 1, xmax, ymax);
+
   return maximized;
 }

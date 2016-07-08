@@ -54,6 +54,7 @@ void FOptiMove::calculateCharDuration()
     const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
     char_duration = (baudbyte * 1000 * 10)
                     / (baudrate > 0 ? baudrate : 9600); // milliseconds
+
     if ( char_duration <= 0 )
       char_duration = 1;
   }
@@ -89,11 +90,13 @@ int FOptiMove::cap_duration (char*& cap, int affcnt)
           else if ( *p == '.' && *++p != '>' && isdigit(uChar(*p)) )
             num += float((*p - '0') / 10.0);
         }
+
         ms += num * 10;
       }
       else
         ms += float(char_duration);
     }
+
     return int(ms);
   }
   else
@@ -324,9 +327,11 @@ int FOptiMove::repeated_append (capability& o, int count, char* dst)
   if ( (dst_len + uInt(count) * src_len) < sizeof(move_buf)-1 )
   {
     total += count * o.duration;
+
     if ( dst )
     {
       dst += dst_len;
+
       while ( count-- > 0 )
       {
         strcpy (dst, o.cap);
@@ -360,6 +365,7 @@ int FOptiMove::relative_move ( char*& move
     {
       if ( move )
         strcpy (move, tparm(F_row_address.cap, to_y));
+
       vtime = F_row_address.duration;
     }
 
@@ -371,6 +377,7 @@ int FOptiMove::relative_move ( char*& move
       {
         if ( move )
           strcpy (move, tparm(F_parm_down_cursor.cap, num));
+
         vtime = F_parm_down_cursor.duration;
       }
 
@@ -378,6 +385,7 @@ int FOptiMove::relative_move ( char*& move
       {
         if ( move )
           move[0] = '\0';
+
         vtime = repeated_append (F_cursor_down, num, move);
       }
     }
@@ -389,6 +397,7 @@ int FOptiMove::relative_move ( char*& move
       {
         if ( move )
           strcpy (move, tparm(F_parm_up_cursor.cap, num));
+
         vtime = F_parm_up_cursor.duration;
       }
 
@@ -396,6 +405,7 @@ int FOptiMove::relative_move ( char*& move
       {
         if ( move )
           move[0] = '\0';
+
         vtime = repeated_append (F_cursor_up, num, move);
       }
     }
@@ -446,11 +456,15 @@ int FOptiMove::relative_move ( char*& move
 
             if ( tab_pos > to_x )
               break;
+
             htime_r += repeated_append (F_tab, 1, str);
+
             if ( htime_r >= LONG_DURATION )
               break;
+
             pos = tab_pos;
           }
+
           num = to_x - pos;
         }
 
@@ -461,6 +475,7 @@ int FOptiMove::relative_move ( char*& move
           strcpy (hmove, str);
           htime = htime_r;
         }
+
       }
     }
     else // to_x < from_x
@@ -484,17 +499,22 @@ int FOptiMove::relative_move ( char*& move
         if ( tabstop > 0 && F_back_tab.cap )
         {
           int pos = from_x;
+
           while ( true )
           {
             int tab_pos = ( pos > 0 ) ? ((pos-1)/tabstop)*tabstop : -1;
 
             if ( tab_pos < to_x )
               break;
+
             htime_l += repeated_append (F_back_tab, 1, str);
+
             if ( htime_l >= LONG_DURATION )
               break;
+
             pos = tab_pos;
           }
+
           num = pos - to_x;
         }
 
@@ -505,6 +525,7 @@ int FOptiMove::relative_move ( char*& move
           strcpy (hmove, str);
           htime = htime_l;
         }
+
       }
     }
 
@@ -572,6 +593,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   if ( xold >= 0 && yold >= 0 )
   {
     new_time = relative_move (null_ptr, xold, yold, xnew, ynew);
+
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
       method = 1;
@@ -583,6 +605,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   if ( yold >= 0 && F_carriage_return.cap )
   {
     new_time = relative_move (null_ptr, 0, yold, xnew, ynew);
+
     if (  new_time < LONG_DURATION
        && F_carriage_return.duration + new_time < move_time )
     {
@@ -595,6 +618,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   if ( F_cursor_home.cap )
   {
     new_time = relative_move (null_ptr, 0, 0, xnew, ynew);
+
     if (  new_time < LONG_DURATION
        && F_cursor_home.duration + new_time < move_time )
     {
@@ -607,6 +631,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   if ( F_cursor_to_ll.cap )
   {
     new_time = relative_move (null_ptr, 0, screen_height-1, xnew, ynew);
+
     if (  new_time < LONG_DURATION
        && F_cursor_to_ll.duration + new_time < move_time )
     {
@@ -622,6 +647,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
      && F_cursor_left.cap )
   {
     new_time = relative_move (null_ptr, screen_width-1, yold-1, xnew, ynew);
+
     if (  new_time < LONG_DURATION
        && F_carriage_return.cap
        && F_carriage_return.duration
@@ -664,10 +690,12 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
 
       case 5:
         move_buf[0] = '\0';
+
         if ( xold >= 0 )
           strncat ( move_ptr
                   , F_carriage_return.cap
                   , sizeof(move_buf) - strlen(move_ptr) - 1 );
+
         strncat ( move_ptr
                 , F_cursor_left.cap
                 , sizeof(move_buf) - strlen(move_ptr) - 1 );
@@ -679,6 +707,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         break;
     }
   }
+
   if ( move_time < LONG_DURATION )
     return move_buf;
   else

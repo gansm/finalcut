@@ -54,9 +54,11 @@ FLineEdit::~FLineEdit()  // destructor
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
+
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
+
   if ( hasFocus() )
     hideCursor();
 }
@@ -98,6 +100,7 @@ bool FLineEdit::hasHotkey()
 {
   if ( label_text.isEmpty() )
     return 0;
+
   return label_text.includes('&');
 }
 
@@ -105,14 +108,14 @@ bool FLineEdit::hasHotkey()
 void FLineEdit::draw()
 {
   bool isFocus;
-
   drawInputField();
-
   isFocus = ((flags & fc::focus) != 0);
+
   if ( isFocus && statusBar() )
   {
     FString msg = getStatusbarMessage();
     FString curMsg = statusBar()->getMessage();
+
     if ( curMsg != msg )
     {
       statusBar()->setMessage(msg);
@@ -134,10 +137,12 @@ void FLineEdit::drawInputField()
 
   setUpdateVTerm(false);
   gotoxy (xpos+xmin-1, ypos+ymin-1);
+
   if ( isMonochron() )
   {
     setReverse(true);
     print (' ');
+
     if ( isActiveFocus )
       setReverse(false);
     else
@@ -146,6 +151,7 @@ void FLineEdit::drawInputField()
   else if ( isActiveFocus )
   {
     setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
+
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else if ( isTeraTerm() )
@@ -156,6 +162,7 @@ void FLineEdit::drawInputField()
   else if ( isActive )
   {
     setColor (wc.inputfield_active_bg, wc.dialog_bg);
+
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else if ( isTeraTerm() )
@@ -166,6 +173,7 @@ void FLineEdit::drawInputField()
   else // isInactive
   {
     setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
+
     if ( isCygwinTerminal() )  // IBM Codepage 850
       print (fc::FullBlock); // █
     else if ( isTeraTerm() )
@@ -183,14 +191,17 @@ void FLineEdit::drawInputField()
   if ( isUTF8_linux_terminal() )
   {
     setUTF8(true);
+
     if ( show_text )
       print (show_text);
+
     setUTF8(false);
   }
   else if ( show_text )
     print (show_text);
 
   x = int(show_text.getLength());
+
   while ( x < width-1 )
   {
     print (' ');
@@ -228,6 +239,7 @@ void FLineEdit::processActivate()
     setFocus();
     redraw();
   }
+
   emitCallback("activate");
 }
 
@@ -279,7 +291,6 @@ void FLineEdit::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
@@ -294,8 +305,8 @@ void FLineEdit::hide()
     gotoxy (xpos+xmin-1, ypos+ymin-1+y);
     print (blank);
   }
-  delete[] blank;
 
+  delete[] blank;
   lable_Length = int(label_text.getLength());
 
   if ( lable_Length > 0 )
@@ -313,6 +324,7 @@ void FLineEdit::hide()
         gotoxy (xpos+xmin-int(lable_Length)-1, ypos+ymin-1);
         break;
     }
+
     blank = new char[lable_Length+1];
     memset(blank, ' ', uLong(size));
     blank[lable_Length] = '\0';
@@ -329,6 +341,7 @@ bool FLineEdit::setEnable (bool on)
   if ( on )
   {
     flags |= fc::active;
+
     if ( hasFocus() )
     {
       foregroundColor = wc.inputfield_active_focus_fg;
@@ -346,6 +359,7 @@ bool FLineEdit::setEnable (bool on)
     foregroundColor = wc.inputfield_inactive_fg;
     backgroundColor = wc.inputfield_inactive_bg;
   }
+
   return on;
 }
 
@@ -367,6 +381,7 @@ bool FLineEdit::setFocus (bool on)
       {
         FString msg = getStatusbarMessage();
         FString curMsg = statusBar()->getMessage();
+
         if ( curMsg != msg )
           statusBar()->setMessage(msg);
       }
@@ -380,10 +395,12 @@ bool FLineEdit::setFocus (bool on)
     {
       foregroundColor = wc.inputfield_active_fg;
       backgroundColor = wc.inputfield_active_bg;
+
       if ( statusBar() )
         statusBar()->clearMessage();
     }
   }
+
   return on;
 }
 
@@ -396,6 +413,7 @@ bool FLineEdit::setShadow (bool on)
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
+
   return on;
 }
 
@@ -409,19 +427,25 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
   {
     case fc::Fkey_left:
       cursor_pos--;
+
       if ( cursor_pos < 0 )
         cursor_pos=0;
+
       if ( cursor_pos < offset )
         offset--;
+
       ev->accept();
       break;
 
     case fc::Fkey_right:
       cursor_pos++;
+
       if ( cursor_pos >= len )
         cursor_pos=len;
+
       if ( cursor_pos-offset >= width-2 && offset <= len-width+1 )
         offset++;
+
       ev->accept();
       break;
 
@@ -444,12 +468,16 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         text.remove(uInt(cursor_pos), 1);
         processChanged();
       }
+
       if ( cursor_pos >= len )
         cursor_pos=len;
+
       if ( cursor_pos < 0 )
         cursor_pos=0;
+
       if ( offset > 0 && len-offset < width-1 )
         offset--;
+
       ev->accept();
       break;
 
@@ -460,19 +488,23 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         text.remove(uInt(cursor_pos-1), 1);
         processChanged();
         cursor_pos--;
+
         if ( offset > 0 )
           offset--;
       }
+
       ev->accept();
       break;
 
     case fc::Fkey_ic: // insert key
       insert_mode = not insert_mode;
+
       if ( insert_mode )
       {
         setXTermCursorStyle(fc::blinking_underline);
         setKDECursor(fc::UnderlineCursor);
         setConsoleCursor(fc::underscore_cursor);
+
         if ( isUrxvtTerminal() )
           setXTermCursorColor("rgb:ffff/ffff/ffff");
       }
@@ -481,9 +513,11 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         setXTermCursorStyle(fc::steady_block);
         setKDECursor(fc::BlockCursor);
         setConsoleCursor(fc::full_block_cursor);
+
         if ( isUrxvtTerminal() )
           setXTermCursorColor("rgb:eeee/0000/0000");
       }
+
       ev->accept();
       break;
 
@@ -511,6 +545,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
             text.insert(wchar_t(key), uInt(cursor_pos));
           else
             text.overwrite(wchar_t(key), uInt(cursor_pos));
+
           processChanged();
         }
         else
@@ -519,8 +554,10 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
           processChanged();
         }
         cursor_pos++;
+
         if ( cursor_pos >= width-1 )
           offset++;
+
         ev->accept();
       }
       else
@@ -551,9 +588,12 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     redraw();
+
     if ( statusBar() )
       statusBar()->drawMessage();
   }
@@ -565,8 +605,10 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
   {
     int len = int(text.getLength());
     cursor_pos = offset + mouse_x - 2;
+
     if ( cursor_pos >= len )
       cursor_pos = len;
+
     drawInputField();
     updateTerminal();
   }
@@ -597,10 +639,11 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
 
   if ( mouse_x >= 2 && mouse_x <= width && mouse_y == 1 )
   {
-
     cursor_pos = offset + mouse_x - 2;
+
     if ( cursor_pos >= len )
       cursor_pos=len;
+
     drawInputField();
     updateTerminal();
   }
@@ -615,6 +658,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
       addTimer(scrollRepeat);
       dragScroll = FLineEdit::scrollLeft;
     }
+
     if ( offset == 0 )
     {
       delOwnTimer();
@@ -630,6 +674,7 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
       addTimer(scrollRepeat);
       dragScroll = FLineEdit::scrollRight;
     }
+
     if ( offset == len-width+2 )
     {
       delOwnTimer();
@@ -656,18 +701,22 @@ void FLineEdit::onTimer (FTimerEvent*)
       return;
 
     case FLineEdit::scrollLeft:
-
       if ( offset == 0)
       {
         dragScroll = FLineEdit::noScroll;
         return;
       }
+
       offset--;
+
       if ( offset < 0 )
         offset = 0;
+
       cursor_pos--;
+
       if ( cursor_pos < 0 )
         cursor_pos = 0;
+
       break;
 
     case FLineEdit::scrollRight:
@@ -676,10 +725,14 @@ void FLineEdit::onTimer (FTimerEvent*)
         dragScroll = FLineEdit::noScroll;
         return;
       }
+
       offset++;
+
       if ( offset > len-width+2 )
         offset = len-width+2;
+
       cursor_pos++;
+
       if ( cursor_pos > len )
         cursor_pos = len;
 
@@ -702,9 +755,12 @@ void FLineEdit::onAccel (FAccelEvent* ev)
       FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
+
       if ( focused_widget )
         focused_widget->redraw();
+
       redraw();
+
       if ( statusBar() )
       {
         statusBar()->drawMessage();
@@ -712,6 +768,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
         flush_out();
       }
     }
+
     ev->accept();
   }
 }
@@ -727,6 +784,7 @@ void FLineEdit::onHide (FHideEvent*)
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
+
   if ( hasFocus() )
     hideCursor();
 }
@@ -753,6 +811,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:0000/0000/0000");
   }
+
   if ( statusBar() )
   {
     statusBar()->drawMessage();
@@ -775,6 +834,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
     setConsoleCursor(fc::underscore_cursor);
+
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
@@ -795,6 +855,7 @@ void FLineEdit::setText (FString txt)
 {
   offset = 0;
   cursor_pos = 0;
+
   if ( txt )
     text = txt;
   else

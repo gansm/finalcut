@@ -50,6 +50,7 @@ FDialogListMenu::~FDialogListMenu()
 void FDialogListMenu::init()
 {
   FMenuItem* menuitem = getItem();
+
   if ( menuitem )
     menuitem->dialog_list = true;
 }

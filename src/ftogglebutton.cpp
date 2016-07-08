@@ -57,8 +57,10 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
 FToggleButton::~FToggleButton()  // destructor
 {
   delAccelerator();
+
   if ( group() )
     group()->remove(this);
+
   if ( hasFocus() )
     hideCursor();
 }
@@ -125,6 +127,7 @@ uChar FToggleButton::getHotkey()
       return 0;;
     }
   }
+
   return 0;
 }
 
@@ -153,10 +156,12 @@ void FToggleButton::setHotkeyAccelerator()
 void FToggleButton::draw()
 {
   bool isFocus = ((flags & fc::focus) != 0);
+
   if ( isFocus && statusBar() )
   {
     FString msg = getStatusbarMessage();
     FString curMsg = statusBar()->getMessage();
+
     if ( curMsg != msg )
     {
       statusBar()->setMessage(msg);
@@ -192,6 +197,7 @@ void FToggleButton::drawLabel()
 
   if ( ! isVisible() )
     return;
+
   if ( text.isNull() || text.isEmpty() )
     return;
 
@@ -215,8 +221,10 @@ void FToggleButton::drawLabel()
       i++;
       src++;
     }
+
     *dest++ = *src++;
   }
+
   if ( hotkeypos != -1 )
     length--;
 
@@ -235,11 +243,15 @@ void FToggleButton::drawLabel()
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+
       if ( ! isNoUnderline )
         setUnderline();
+
       print ( LabelText[z] );
+
       if ( ! isNoUnderline )
         unsetUnderline();
+
       setColor (wc.label_fg, wc.label_bg);
     }
     else
@@ -351,7 +363,6 @@ void FToggleButton::hide()
   char* blank;
 
   FWidget::hide();
-
   fg = getParentWidget()->getForegroundColor();
   bg = getParentWidget()->getBackgroundColor();
   setColor (fg, bg);
@@ -369,8 +380,10 @@ void FToggleButton::hide()
 void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   int min_width = button_width + int(text.getLength());
+
   if ( w < min_width )
     w = min_width;
+
   FWidget::setGeometry(x, y, w, h, adjust);
 }
 
@@ -381,6 +394,7 @@ bool FToggleButton::setNoUnderline (bool on)
     flags |= fc::no_underline;
   else
     flags &= ~fc::no_underline;
+
   return on;
 }
 
@@ -393,6 +407,7 @@ bool FToggleButton::setEnable (bool on)
   {
     flags |= fc::active;
     setHotkeyAccelerator();
+
     if ( hasFocus() )
     {
       foregroundColor = wc.toggle_button_active_focus_fg;
@@ -411,6 +426,7 @@ bool FToggleButton::setEnable (bool on)
     foregroundColor = wc.toggle_button_inactive_fg;
     backgroundColor = wc.toggle_button_inactive_bg;
   }
+
   return on;
 }
 
@@ -431,7 +447,6 @@ bool FToggleButton::setFocus (bool on)
       foregroundColor = wc.toggle_button_active_focus_fg;
       backgroundColor = wc.toggle_button_active_focus_bg;
 
-
       if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
         showCursor();
 
@@ -439,6 +454,7 @@ bool FToggleButton::setFocus (bool on)
       {
         FString msg = getStatusbarMessage();
         FString curMsg = statusBar()->getMessage();
+
         if ( curMsg != msg )
           statusBar()->setMessage(msg);
       }
@@ -458,6 +474,7 @@ bool FToggleButton::setFocus (bool on)
         statusBar()->clearMessage();
     }
   }
+
   return on;
 }
 
@@ -473,9 +490,12 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     redraw();
+
     if ( statusBar() )
     {
       statusBar()->drawMessage();
@@ -522,6 +542,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
       FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       setFocus();
+
       if ( focused_widget )
         focused_widget->redraw();
     }
@@ -539,13 +560,16 @@ void FToggleButton::onAccel (FAccelEvent* ev)
       checked = not checked;
       processToggle();
     }
+
     redraw();
+
     if ( statusBar() )
     {
       statusBar()->drawMessage();
       updateTerminal();
       flush_out();
     }
+
     processClick();
     ev->accept();
   }
@@ -585,10 +609,13 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     {
       focus_inside_group = true;
       out_ev->ignore();
+
       if ( out_ev->getFocusType() == fc::FocusNextWidget )
         group()->focusNextChild();
+
       if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
         group()->focusPrevChild();
+
       redraw();
     }
     else if (  this == group()->getLastButton()
@@ -616,6 +643,7 @@ bool FToggleButton::setChecked (bool on)
     checked = on;
     processToggle();
   }
+
   return checked;
 }
 
@@ -624,6 +652,7 @@ void FToggleButton::setText (FString txt)
 {
   text = txt;
   setWidth(button_width + int(text.getLength()));
+
   if ( isEnabled() )
   {
     delAccelerator();

@@ -41,7 +41,6 @@ void FSwitch::draw()
   drawLabel();
   drawCheckButton();
   setUpdateVTerm(true);
-
   FToggleButton::draw();
   updateTerminal();
   flush_out();
@@ -75,10 +74,12 @@ void FSwitch::drawCheckButton()
         setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
     }
     else
+    {
       if ( isMonochron() || getMaxColor() < 16 )
         setColor (wc.button_active_focus_fg, wc.button_active_bg);
       else
         setColor (wc.button_hotkey_fg, wc.button_active_bg);
+    }
 
     if ( isMonochron() )
       setReverse(false);
@@ -93,8 +94,10 @@ void FSwitch::drawCheckButton()
 
     setColor (wc.button_inactive_fg, wc.button_inactive_bg);
     print (off);
+
     if ( isMonochron() )
       setReverse(false);
+
     setCursorPos ( xpos + xmin + 1 + switch_offset_pos
                  , ypos + ymin - 1 );
   }
@@ -123,10 +126,12 @@ void FSwitch::drawCheckButton()
         setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
     }
     else
+    {
       if ( isMonochron() || getMaxColor() < 16 )
         setColor (wc.button_active_focus_fg, wc.button_active_bg);
       else
         setColor (wc.button_hotkey_fg, wc.button_active_bg);
+    }
 
     if ( isMonochron() )
       setReverse(false);

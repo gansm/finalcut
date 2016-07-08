@@ -175,12 +175,14 @@ void FMenuItem::init (FWidget* parent)
       addAccelerator (accel_key);
 
     menu_list = dynamic_cast<FMenuList*>(parent);
+
     if ( menu_list )
       menu_list->insert(this);
 
     if ( isMenuBar(parent) ) // Parent is menubar
     {
       FMenuBar* menubar_ptr = dynamic_cast<FMenuBar*>(parent);
+
       if ( menubar_ptr )
       {
         menubar_ptr->menu_dimension();
@@ -198,10 +200,12 @@ void FMenuItem::init (FWidget* parent)
     else if ( isMenu(parent) ) // Parent is menu
     {
       FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+
       if ( menu_ptr )
         menu_ptr->menu_dimension();
     }
   }
+
   if ( hasFocus() )
     flags = fc::focus;
 
@@ -231,6 +235,7 @@ uChar FMenuItem::hotKey()
       return 0;;
     }
   }
+
   return 0;
 }
 
@@ -260,13 +265,16 @@ void FMenuItem::createDialogList (FMenu* winmenu)
     do
     {
       --iter;
+
       if ( (*iter)->isDialog() )
       {
         FDialog* win = dynamic_cast<FDialog*>(*iter);
+
         if ( win )
         {
           FString win_title = win->getText();
           FMenuItem* win_item = new FMenuItem (win_title, winmenu);
+
           win_item->addCallback
           (
             "clicked",
@@ -278,6 +286,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
     }
     while ( iter != begin );
   }
+
   winmenu->menu_dimension();
 }
 
@@ -285,13 +294,16 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
 {
   FDialog* win = static_cast<FDialog*>(data_ptr);
+
   if ( win && ! win->isHiddenWindow() && ! win->isActiveWindow() )
   {
     FWindow::setActiveWindow(win);
     FWidget* focus_widget = win->getFocusWidget();
     FWindow::raiseWindow (win);
+
     if ( focus_widget )
       focus_widget->setFocus();
+
     win->redraw();
   }
 }
@@ -333,6 +345,7 @@ bool FMenuItem::isMenu (FWidget* w) const
 void FMenuItem::addAccelerator (int key, FWidget* obj)
 {
   FWidget* super = super_menu;
+
   if ( ! super )
     return;
 
@@ -349,6 +362,7 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
 
     if ( ! window )
       window = getRootWidget();
+
     if ( window && window->accelerator_list )
     {
       accel_key = key;
@@ -359,6 +373,7 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
   if ( isMenu(super_menu) )
   {
     FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
+
     if ( menu_ptr )
       menu_ptr->menu_dimension();
   }
@@ -368,6 +383,7 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
 void FMenuItem::delAccelerator (FWidget* obj)
 {
   FWidget* super = super_menu;
+
   if ( ! super )
     return;
 
@@ -383,6 +399,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
 
     if ( ! window )
       window = getRootWidget();
+
     if (  window
        && window->accelerator_list
        && ! window->accelerator_list->empty() )
@@ -406,6 +423,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
   if ( isMenu(super_menu) )
   {
     FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
+
     if ( menu_ptr )
       menu_ptr->menu_dimension();
   }
@@ -419,6 +437,7 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
     if ( isMenu(super_menu) )
     {
       FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
       if ( smenu )
         smenu->onKeyPress(ev);
     }
@@ -426,10 +445,12 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         if ( mbar->hotkeyMenu(ev) )
           return;
+
         mbar->onKeyPress(ev);
       }
     }
@@ -447,6 +468,7 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( isMenu(super_menu) )
     {
       FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
@@ -459,6 +481,7 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
@@ -471,6 +494,7 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( isWindowsMenu(super_menu) )
     {
       FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
       if ( dgl )
       {
         const FPoint& p2 = dgl->globalToLocalPos(g);
@@ -493,6 +517,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( isMenu(super_menu) )
     {
       FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
@@ -505,6 +530,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
@@ -517,6 +543,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( isWindowsMenu(super_menu) )
     {
       FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
       if ( dgl )
       {
         const FPoint& p2 = dgl->globalToLocalPos(g);
@@ -539,6 +566,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
     if ( isMenu(super_menu) )
     {
       FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
@@ -551,6 +579,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
@@ -563,6 +592,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
     if ( isWindowsMenu(super_menu) )
     {
       FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
       if ( dgl )
       {
         const FPoint& p2 = dgl->globalToLocalPos(g);
@@ -585,6 +615,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
     if ( isMenu(super_menu) )
     {
       FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
       if ( smenu )
       {
         const FPoint& p2 = smenu->globalToLocalPos(g);
@@ -597,6 +628,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
     if ( isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         const FPoint& p2 = mbar->globalToLocalPos(g);
@@ -609,6 +641,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
     if ( isWindowsMenu(super_menu) )
     {
       FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
       if ( dgl )
       {
         const FPoint& p2 = dgl->globalToLocalPos(g);
@@ -628,6 +661,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     if ( super_menu && isMenuBar(super_menu) )
     {
       FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
       if ( mbar )
       {
         if ( menu )
@@ -636,6 +670,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
 
           if ( mbar->getSelectedItem() )
             mbar->getSelectedItem()->unsetSelected();
+
           setSelected();
           mbar->selectedItem = this;
           openMenu();
@@ -646,11 +681,15 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           menu->unselectItem();
           menu->selectFirstItem();
           menu->getSelectedItem()->setFocus();
+
           if ( focused_widget )
             focused_widget->redraw();
+
           menu->redraw();
+
           if ( statusBar() )
             statusBar()->drawMessage();
+
           mbar->redraw();
           mbar->drop_down = true;
         }
@@ -681,12 +720,15 @@ void FMenuItem::onFocusIn (FFocusEvent*)
 void FMenuItem::onFocusOut (FFocusEvent*)
 {
   unsetSelected();
+
   if ( super_menu && isMenuBar(super_menu) )
   {
     FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
     if ( mbar )
       mbar->redraw();
   }
+
   if ( statusBar() )
   {
     statusBar()->clearMessage();
@@ -698,7 +740,6 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 bool FMenuItem::setEnable (bool on)
 {
   FWidget::setEnable(on);
-
   FWidget* super = getSuperMenu();
 
   if ( on )
@@ -718,6 +759,7 @@ bool FMenuItem::setEnable (bool on)
     if ( super && isMenuBar(super) )
       super->delAccelerator (this);
   }
+
   return on;
 }
 
@@ -736,6 +778,7 @@ bool FMenuItem::setFocus (bool on)
       {
         FMenuList* menu_list = dynamic_cast<FMenuList*>(getSuperMenu());
         setSelected();
+
         if ( menu_list )
         {
           menu_list->unselectItem();
@@ -746,15 +789,18 @@ bool FMenuItem::setFocus (bool on)
           statusBar()->drawMessage();
 
         FWidget* parent = getSuperMenu();
+
         if ( isMenuBar(parent) )
         {
           FMenuBar* menubar_ptr = dynamic_cast<FMenuBar*>(parent);
+
           if ( menubar_ptr )
             menubar_ptr->redraw();
         }
         else if ( isMenu(parent) )
         {
           FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+
           if ( menu_ptr )
             menu_ptr->redraw();
         }
@@ -764,6 +810,7 @@ bool FMenuItem::setFocus (bool on)
       {
         FString msg = getStatusbarMessage();
         FString curMsg = statusBar()->getMessage();
+
         if ( curMsg != msg )
           statusBar()->setMessage(msg);
       }
@@ -776,6 +823,7 @@ bool FMenuItem::setFocus (bool on)
     if ( isEnabled() && statusBar() )
       statusBar()->clearMessage();
   }
+
   return on;
 }
 
@@ -805,19 +853,22 @@ void FMenuItem::openMenu()
   if ( hasMenu() )
   {
     dd_menu = getMenu();
+
     if ( dd_menu->isVisible() )
       return;
 
     open_menu = static_cast<FMenu*>(getOpenMenu());
+
     if ( open_menu && open_menu != dd_menu )
     {
       open_menu->hide();
       open_menu->hideSubMenus();
     }
+
     if ( dialog_list )
       createDialogList (dd_menu);
-    setOpenMenu(dd_menu);
 
+    setOpenMenu(dd_menu);
     dd_menu->setVisible();
     dd_menu->show();
     dd_menu->raiseWindow(dd_menu);
@@ -833,8 +884,10 @@ void FMenuItem::setText (FString& txt)
   text = txt;
   text_length = text.getLength();
   hotkey = hotKey();
+
   if ( hotkey )
     text_length--;
+
   setWidth(int(text_length));
 }
 

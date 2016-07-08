@@ -49,6 +49,7 @@ FObject::~FObject()  // destructor
 
   // delete children objects
   FObject::object_list children = this->getChildren();
+
   if ( ! children.empty() )
   {
     FObject::object_list::const_iterator iter;
@@ -92,6 +93,7 @@ bool FObject::event (FEvent* ev)
     onTimer ( static_cast<FTimerEvent*>(ev) );
     return true;
   }
+
   return false;
 }
 
@@ -106,6 +108,7 @@ void FObject::getCurrentTime (timeval &time)
     time.tv_usec -= 1000000;
     time.tv_sec++;
   }
+
   while ( time.tv_usec < 0 )
   {
     if ( time.tv_sec > 0 )
@@ -196,8 +199,8 @@ bool FObject::delTimer (int id)
     modify_timer = false;
     return true;
   }
-  modify_timer = false;
 
+  modify_timer = false;
   return false;
 }
 
@@ -208,6 +211,7 @@ bool FObject::delOwnTimer()
 
   if ( ! timer_list )
     return false;
+
   if ( timer_list->empty() )
     return false;
 
@@ -221,8 +225,8 @@ bool FObject::delOwnTimer()
     else
       ++iter;
   }
-  modify_timer = false;
 
+  modify_timer = false;
   return true;
 }
 
@@ -231,13 +235,13 @@ bool FObject::delAllTimer()
 {
   if ( ! timer_list )
     return false;
+
   if ( timer_list->empty() )
     return false;
 
   modify_timer = true;
   timer_list->clear();
   modify_timer = false;
-
   return true;
 }
 

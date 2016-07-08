@@ -60,7 +60,6 @@ class FMenu : public FWindow, public FMenuList
    void       menu_dimension();
    void       adjustItems();
    int        adjustX(int);
-   void       adjustSize();
    bool       isWindowsMenu (FWidget*) const;
    bool       isMenuBar (FWidget*) const;
    bool       isMenu (FWidget*) const;

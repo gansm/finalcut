@@ -207,6 +207,7 @@ FString::~FString()  // destructor
 {
   if ( string )
     delete[](string);
+
   if ( c_string )
     delete[](c_string);
 }
@@ -260,6 +261,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
     // string is null
     length = len;
     bufsize = FWDBUFFER + length + 1;
+
     try
     {
       string = new wchar_t[bufsize]();
@@ -269,6 +271,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
       std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
       return;
     }
+
     wcscpy (string, s);
     return;
   }
@@ -281,8 +284,10 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
       // output string <= bufsize
       for (x = length; x > pos-1; x--)  // shifting right side  + '\0'
         string[x+len] = string[x];
+
       for (x=0; x < len; x++)           // insert string
         string[x+pos] = s[x];
+
       length += len;
     }
     else
@@ -300,13 +305,18 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
         std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
         return;
       }
+
       uInt y = 0;
+
       for (x=0; x < pos; x++)           // left side
         sptr[y++] = string[x];
+
       for (x=0; x < len; x++)           // insert string
         sptr[y++] = s[x];
+
       for (x=pos; x < length+1; x++)    // right side  + '\0'
         sptr[y++] = string[x];
+
       length += len;
       delete[](string);                 // delete old string
       string = sptr;
@@ -322,6 +332,7 @@ inline void FString::_remove (uInt pos, uInt len)
     // shifting left side to pos
     for (uInt i=pos; (i+len) < length+1; i++)
       string[i] = string[i+len];
+
     length -= len;
   }
   else
@@ -338,11 +349,15 @@ inline void FString::_remove (uInt pos, uInt len)
       std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
       return;
     }
+
     uInt x, y = 0;
+
     for (x=0; x < pos; x++)             // left side
       sptr[y++] = string[x];
+
     for (x=pos+len; x < length+1; x++)  // right side  + '\0'
       sptr[y++] = string[x];
+
     delete[](string);                   // delete old string
     string = sptr;
     length -= len;
@@ -357,6 +372,7 @@ inline char* FString::wc_to_c_str (const wchar_t* s) const
 
   if ( ! s )  // handle NULL string
     return 0;
+
   if ( ! *s )  // handle empty string
   {
     try
@@ -369,8 +385,10 @@ inline char* FString::wc_to_c_str (const wchar_t* s) const
       std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
       return 0;
     }
+
     return c_string;
   }
+
   if ( c_string )
     delete[](c_string);
 
@@ -401,6 +419,7 @@ inline char* FString::wc_to_c_str (const wchar_t* s) const
     c_string = 0;
     return const_cast<char*>("");
   }
+
   return c_string;
 }
 
@@ -413,6 +432,7 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
 
   if ( ! s )   // handle NULL string
     return 0;
+
   if ( ! *s )  // handle empty string
   {
     try
@@ -457,8 +477,10 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
       return 0;
     }
   }
+
   if ( wclength == size )
     dest[size-1] = '\0';
+
   if ( wclength )
     return dest;
   else
@@ -495,6 +517,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
   if ( s.length )
     outstr << s.wc_to_c_str( s.string );
+
   return (outstr);
 }
 
@@ -512,6 +535,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
     s._replace (wc_str);
     delete[] wc_str;
   }
+
   return (instr);
 }
 
@@ -520,6 +544,7 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
   if ( s.length )
     outstr << s.string;
+
   return (outstr);
 }
 
@@ -539,6 +564,7 @@ FString& FString::operator = (const FString& s)
     _replace (s.string);
   else
     clear();
+
   return (*this);
 }
 
@@ -549,6 +575,7 @@ FString& FString::operator = (const std::wstring& s)
     _replace (s.c_str());
   else
     clear();
+
   return (*this);
 }
 
@@ -559,6 +586,7 @@ const FString& FString::operator = (const wchar_t* s)
     _replace (s);
   else
     clear();
+
   return (*this);
 }
 
@@ -566,6 +594,7 @@ const FString& FString::operator = (const wchar_t* s)
 FString& FString::operator = (const std::string& s)
 {
   const wchar_t* wc_string = c_to_wc_str(s.c_str());
+
   if ( wc_string )
   {
     _replace( wc_string );
@@ -573,6 +602,7 @@ FString& FString::operator = (const std::string& s)
   }
   else
     clear();
+
   return (*this);
 }
 
@@ -580,6 +610,7 @@ FString& FString::operator = (const std::string& s)
 const FString& FString::operator = (const char* s)
 {
   const wchar_t* wc_string = c_to_wc_str(s);
+
   if ( wc_string )
   {
     _replace( wc_string );
@@ -587,6 +618,7 @@ const FString& FString::operator = (const char* s)
   }
   else
     clear();
+
   return (*this);
 }
 
@@ -635,11 +667,13 @@ const FString& FString::operator += (const wchar_t* s)
 const FString& FString::operator += (const std::string& s)
 {
   const wchar_t* wc_string = c_to_wc_str(s.c_str());
+
   if ( wc_string )
   {
     _insert (length, uInt(s.length()), wc_string);
     delete[] wc_string;
   }
+
   return (*this);
 }
 
@@ -647,11 +681,13 @@ const FString& FString::operator += (const std::string& s)
 const FString& FString::operator += (const char* s)
 {
   const wchar_t* wc_string = c_to_wc_str(s);
+
   if ( wc_string )
   {
     _insert (length, uInt(strlen(s)), wc_string);
     delete[] wc_string;
   }
+
   return (*this);
 }
 
@@ -704,11 +740,12 @@ const FString FString::operator + (const std::string& s)
 {
   FString tmp(string);
   wchar_t* wc_string = c_to_wc_str(s.c_str());
+
   if ( ! wc_string )
     return (tmp);
+
   tmp._insert (length, uInt(wcslen(wc_string)), wc_string);
   delete[] wc_string;
-
   return (tmp);
 }
 
@@ -717,11 +754,12 @@ const FString FString::operator + (const char* s)
 {
   FString tmp(string);
   wchar_t* wc_string = c_to_wc_str(s);
+
   if ( ! wc_string )
     return (tmp);
+
   tmp._insert (length, uInt(wcslen(wc_string)), wc_string);
   delete[] wc_string;
-
   return (tmp);
 }
 
@@ -841,8 +879,10 @@ wchar_t& FString::operator [] (int pos)
 wchar_t& FString::operator [] (uInt pos)
 {
   assert ( (pos < length) && "Invalid index position!" );
+
   if (pos >= length)
     throw std::out_of_range("");
+
   return string[pos];
 }
 
@@ -910,11 +950,13 @@ FString& FString::sprintf (const char* format, ...)
   }
 
   wc_string = c_to_wc_str(buffer);
+
   if ( wc_string )
   {
     _replace(wc_string);
     delete[] wc_string;
   }
+
   if ( buffer != buf )
     delete[] buffer;
 
@@ -926,10 +968,10 @@ FString FString::clear()
 {
   if ( string )
     delete[](string);
+
   length  = 0;
   bufsize = 0;
   string  = 0;
-
   return (*this);
 }
 
@@ -966,6 +1008,7 @@ FString FString::toLower() const
       p++;
     }
   }
+
   return s;
 }
 
@@ -984,6 +1027,7 @@ FString FString::toUpper() const
       p++;
     }
   }
+
   return s;
 }
 
@@ -1070,11 +1114,13 @@ long FString::toLong() const
   while ( isdigit(*p) )
   {
     register uChar d = uChar((*p) - L'0');
+
     if (  num > tenth_limit
        || (num == tenth_limit && d > tenth_limit_digit) )
     {
       throw std::overflow_error ("overflow");
     }
+
     num = (num<<3)+(num<<1) + d;  // (10 * num) + d
     p++;
   }
@@ -1114,11 +1160,13 @@ uLong FString::toULong() const
   while ( isdigit(*p) )
   {
     register uChar d = uChar((*p) - L'0');
+
     if (  num > tenth_limit
        || (num == tenth_limit && d > tenth_limit_digit) )
     {
       throw std::overflow_error ("overflow");
     }
+
     num = (num<<3)+(num<<1) + d;  // (10 * num) + d
     p++;
   }
@@ -1162,9 +1210,11 @@ double FString::toDouble() const
   {
     if ( ret >= HUGE_VAL || ret <= -HUGE_VAL )
       throw std::overflow_error ("overflow");
+
     if ( fabs(ret) < DBL_EPSILON ) // ret == 0.0l
       throw std::underflow_error ("underflow");
   }
+
   return ret;
 }
 
@@ -1177,9 +1227,12 @@ FString FString::ltrim() const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   p = s.string;
+
   while ( iswspace(uInt(*p)) )
     p++;
+
   return FString(p);
 }
 
@@ -1193,9 +1246,12 @@ FString FString::rtrim() const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   p = s.string;
   last = p + length;
+
   while ( iswspace(uInt(*--last)) && last > p );
+
   if ( last == p && iswspace(uInt(*last)) )
     s.clear();
   else
@@ -1210,6 +1266,7 @@ FString FString::trim() const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return (*this);
+
   FString s(ltrim());
   return s.rtrim();
 }
@@ -1223,8 +1280,10 @@ FString FString::left(uInt len) const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   if ( len > length )
     return s;
+
   p = s.string;
   *(p+len) = '\0';
   return s;
@@ -1239,8 +1298,10 @@ FString FString::right(uInt len) const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   if ( len > length )
     return s;
+
   p = s.string;
   p += (length-len);
   return FString(p);
@@ -1256,10 +1317,13 @@ FString FString::mid(uInt pos, uInt len) const
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   if ( pos == 0 )
     pos = 1;
+
   if ( pos <= length && pos+len > length )
     len = length - pos + 1;
+
   if ( pos > length || pos+len-1 > length || len == 0 )
     return FString(L"");
 
@@ -1289,6 +1353,7 @@ std::vector<FString> FString::split (const FString& delimiter)
     stringList.push_back (FString(token));
     token = extractToken (&rest, 0, delimiter.wc_str());
   }
+
   return stringList;
 }
 
@@ -1303,11 +1368,13 @@ FString& FString::setString (const wchar_t* s)
 FString& FString::setString (const char* s)
 {
   const wchar_t* wc_string = c_to_wc_str(s);
+
   if ( wc_string )
   {
     _replace (wc_string);
     delete[] wc_string;
   }
+
   return (*this);
 }
 
@@ -1329,15 +1396,19 @@ FString& FString::setNumber (long num)
   {
     neg = false;
   }
+
   *s = '\0';
+
   do
   {
     *--s = wchar_t(int(num%10) + '0');
     num /= 10;
-  } while ( num );
+  }
+  while ( num );
 
   if ( neg )
     *--s = '-';
+
   _replace (s);
   return *this;
 }
@@ -1355,10 +1426,10 @@ FString& FString::setNumber (uLong num)
   {
     *--s = wchar_t(int(num%10) + '0');
     num /= 10;
-  } while ( num );
+  }
+  while ( num );
 
   _replace (s);
-
   return *this;
 }
 
@@ -1386,7 +1457,6 @@ FString& FString::setNumber (lDouble num, int precision)
   *s++ = L'L';
   *s++ = L'g';
   *s   = L'\0';
-
   return sprintf(format, num);
 }
 
@@ -1413,17 +1483,22 @@ FString& FString::setFormatedNumber (long num, char separator)
   {
     neg = false;
   }
+
   *s = L'\0';
+
   do
   {
     *--s = wchar_t(int(num%10) + '0');
     num /= 10;
+
     if ( num && ++n % 3 == 0 )
       *--s = separator;
-  } while ( num );
+  }
+  while ( num );
 
   if ( neg )
     *--s = '-';
+
   _replace (s);
   return *this;
 }
@@ -1446,13 +1521,14 @@ FString& FString::setFormatedNumber (uLong num, char separator)
   {
     *--s = wchar_t(int(num%10) + '0');
     num /= 10;
+
     if ( num && ++n % 3 == 0 )
       *--s = separator;
 
-  } while ( num );
+  }
+  while ( num );
 
   _replace (s);
-
   return *this;
 }
 
@@ -1462,12 +1538,16 @@ bool FString::operator < (const FString& s) const
 {
   if ( ! s )
     return false;
+
   if ( string && ! s.string )
     return false;
+
   if ( ! string && s.string )
     return true;
+
   if ( ! string && ! s.string )
     return false;
+
   return (wcscmp(string, s.string) < 0);
 }
 
@@ -1518,12 +1598,16 @@ bool FString::operator <= (const FString& s) const
 {
   if ( ! s )
     return false;
+
   if ( string && ! s.string )
     return false;
+
   if ( ! string && s.string )
     return true;
+
   if ( ! string && ! s.string )
     return true;
+
   return (wcscmp(string, s.string) <= 0);
 }
 
@@ -1574,10 +1658,13 @@ bool FString::operator == (const FString& s) const
 {
   if ( ! s )
     return false;
+
   if ( (string && ! s.string ) || (! string && s.string) )
     return false;
+
   if ( ! string && ! s.string )
     return true;
+
   return (wcscmp(string, s.string) == 0);
 }
 
@@ -1628,10 +1715,13 @@ bool FString::operator != (const FString& s) const
 {
   if ( ! s )
     return true;
+
   if ( (string && ! s.string ) || (! string && s.string) )
     return true;
+
   if ( ! string && ! s.string )
     return false;
+
   return (wcscmp(string, s.string) != 0);
 }
 
@@ -1682,12 +1772,16 @@ bool FString::operator >= (const FString& s) const
 {
   if ( ! s )
     return true;
+
   if ( string && ! s.string )
     return true;
+
   if ( ! string && s.string )
     return false;
+
   if ( ! string && ! s.string )
     return true;
+
   return (wcscmp(string, s.string) >= 0);
 }
 
@@ -1738,12 +1832,16 @@ bool FString::operator > (const FString& s) const
 {
   if ( ! s )
     return true;
+
   if ( string && ! s.string )
     return true;
+
   if ( ! string && s.string )
     return false;
+
   if ( ! string && ! s.string )
     return false;
+
   return (wcscmp(string, s.string) > 0);
 }
 
@@ -1795,6 +1893,7 @@ const FString& FString::insert (const FString& s, uInt pos)
   // assert (pos <= length);
   if ( pos >= length )
     throw std::out_of_range("");
+
   _insert (pos, s.length, s.string);
   return (*this);
 }
@@ -1805,6 +1904,7 @@ const FString& FString::insert (const wchar_t* s, uInt pos)
   // assert (pos <= length);
   if ( pos >= length )
     throw std::out_of_range("");
+
   _insert (pos, uInt(wcslen(s)), s);
   return (*this);
 }
@@ -1837,12 +1937,15 @@ FString FString::replace (const FString& from, const FString& to)
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   if ( from.isNull() || to.isNull() )
     return s;
+
   p = s.string;
   from_length = from.getLength();
   to_length = to.getLength();
   pos = 0;
+
   while ( *p )
   {
     if ( wcsncmp(p, from.string, from_length) == 0 )
@@ -2118,11 +2221,14 @@ FString FString::replace (const wchar_t from, const FString& to)
   // handle NULL and empty string
   if ( ! string || ! *string )
     return s;
+
   if ( to.isNull() )
     return s;
+
   p = s.string;
   uInt to_length = to.getLength();
   uInt pos = 0;
+
   while ( *p )
   {
     if ( wchar_t(*p) == from )
@@ -2138,6 +2244,7 @@ FString FString::replace (const wchar_t from, const FString& to)
       p++;
     }
   }
+
   return s;
 }
 
@@ -2234,12 +2341,15 @@ FString FString::replace (const char from, const char to)
     return s;
 
   p = s.string;
+
   while ( *p )
   {
     if ( char(*p) == from )
       *p = to;
+
     p++;
   }
+
   return s;
 }
 
@@ -2269,9 +2379,11 @@ FString FString::replaceControlCodes() const
       }
       else if ( ! iswprint(wint_t(*p)) )
         *p = L' ';
+
       p++;
     }
   }
+
   return s;
 }
 
@@ -2285,11 +2397,13 @@ FString FString::expandTabs (uInt tabstop) const
 
   tab_split = instr.split("\t");
   last = tab_split.size();
+
   for (uInt i=0; i < last; i++)
   {
     uInt len = tab_split[i].getLength();
     outstr += tab_split[i] + FString(tabstop - len % tabstop, L' ');
   }
+
   return outstr;
 }
 
@@ -2304,7 +2418,8 @@ FString FString::removeDel() const
   if ( p )
   {
     uInt i=0;
-    uInt  d=0;
+    uInt d=0;
+
     while ( *p )
     {
       if ( *p == 0x7f )
@@ -2320,11 +2435,14 @@ FString FString::removeDel() const
         s.string[i] = *p;
         i++;
       }
+
       p++;
     }
+
     s.string[i] = L'\0';
     s.length = i;
   }
+
   return s;
 }
 
@@ -2340,6 +2458,7 @@ FString FString::removeBackspaces() const
   if ( p )
   {
     uInt i=0;
+
     while ( *p )
     {
       if ( *p != L'\b' )
@@ -2351,11 +2470,14 @@ FString FString::removeBackspaces() const
       {
         i--;
       }
+
       p++;
     }
+
     s.string[i] = L'\0';
     s.length = i;
   }
+
   return s;
 }
 
@@ -2371,6 +2493,7 @@ const FString& FString::overwrite (const FString& s, uInt pos)
     wcsncpy (string + pos, s.string, length - pos);
     _insert (length, pos + s.length - length, s.string + length - pos);
   }
+
   return (*this);
 }
 
@@ -2378,6 +2501,7 @@ const FString& FString::overwrite (const FString& s, uInt pos)
 const FString& FString::overwrite (const wchar_t* s, uInt pos)
 {
   uInt len = uInt(wcslen(s));
+
   if (length >= (pos+len) )
   {
     wcsncpy (string + pos, s, len);
@@ -2387,6 +2511,7 @@ const FString& FString::overwrite (const wchar_t* s, uInt pos)
     wcsncpy (string + pos, s, length - pos);
     _insert (length, pos + len - length, s + length - pos);
   }
+
   return (*this);
 }
 
@@ -2397,6 +2522,7 @@ const FString& FString::overwrite (const wchar_t c, uInt pos)
   {
     string[pos] = c;
   }
+
   return (*this);
 }
 
@@ -2405,6 +2531,7 @@ const FString& FString::remove (uInt pos, uInt len)
 {
   assert ((pos < length) && ((pos + len) <= length));
   _remove (pos, len);
+
   return (*this);
 }
 
@@ -2425,8 +2552,10 @@ bool FString::includes (const char* s)
 {
   bool ret;
   const wchar_t* wc_string = c_to_wc_str(s);
+
   if ( ! wc_string )
     return false;
+
   ret = bool(wcsstr(string, wc_string) != 0);
   delete[] wc_string;
   return (ret);

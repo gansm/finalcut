@@ -64,7 +64,6 @@ void FButtonGroup::init()
 
   foregroundColor = wc.label_fg;
   backgroundColor = wc.label_bg;
-
   buttonlist.clear();  // no buttons yet
 }
 
@@ -99,12 +98,16 @@ void FButtonGroup::directFocus()
             FFocusEvent out (fc::FocusOut_Event);
             FApplication::queueEvent(focused_widget, &out);
             (*iter)->setFocus();
+
             if ( focused_widget )
               focused_widget->redraw();
+
             getFocusWidget()->redraw();
           }
+
           break;
         }
+
         ++iter;
       }
     }
@@ -115,8 +118,10 @@ void FButtonGroup::directFocus()
       FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       focusFirstChild();
+
       if ( focused_widget )
         focused_widget->redraw();
+
       getFocusWidget()->redraw();
     }
   }
@@ -134,14 +139,20 @@ void FButtonGroup::directFocus()
 void FButtonGroup::draw()
 {
   setUpdateVTerm(false);
+
   if ( isMonochron() )
     setReverse(true);
+
   setColor (foregroundColor, backgroundColor);
+
   if ( border )
     drawBorder();
+
   drawLabel();
+
   if ( isMonochron() )
     setReverse(false);
+
   setUpdateVTerm(true);
 }
 
@@ -246,16 +257,21 @@ void FButtonGroup::drawLabel()
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+
       if ( ! isNoUnderline )
         setUnderline();
+
       print ( LabelText[z] );
+
       if ( ! isNoUnderline )
         unsetUnderline();
+
       setColor (wc.label_emphasis_fg, wc.label_bg);
     }
     else
       print ( LabelText[z] );
   }
+
   delete[] LabelText;
 }
 
@@ -267,6 +283,7 @@ void FButtonGroup::hide()
   short fg, bg;
   char* blank;
   FWidget::hide();
+
   if ( ! buttonlist.empty() )
   {
     FButtonGroup::FButtonList::const_iterator iter, end;
@@ -288,11 +305,13 @@ void FButtonGroup::hide()
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
+
   for (int y=0; y < height; y++)
   {
     gotoxy (xpos+xmin-1, ypos+ymin-1+y);
     print (blank);
   }
+
   delete[] blank;
 }
 
@@ -332,7 +351,6 @@ void FButtonGroup::remove (FToggleButton* button)
     {
       iter = buttonlist.erase(iter);
       button->setGroup(0);
-
       button->delCallback(this);
       break;
     }
@@ -349,6 +367,7 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 
   if ( ! button->isChecked() )
     return;
+
   if ( buttonlist.empty() )
     return;
 
@@ -362,9 +381,11 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
        && isRadioButton(*iter) )
     {
       (*iter)->unsetChecked();
+
       if ( (*iter)->isVisible() && (*iter)->isShown() )
         (*iter)->redraw();
     }
+
     ++iter;
   }
 }
@@ -382,9 +403,11 @@ FToggleButton* FButtonGroup::getFirstButton()
     {
       if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
         return (*iter);
+
       ++iter;
     }
   }
+
   return 0;
 }
 
@@ -396,14 +419,17 @@ FToggleButton* FButtonGroup::getLastButton()
     FButtonGroup::FButtonList::const_iterator iter, begin;
     begin = buttonlist.begin();
     iter = buttonlist.end();
+
     do
     {
       --iter;
+
       if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
         return (*iter);
     }
     while ( iter != begin );
   }
+
   return 0;
 }
 
@@ -420,9 +446,11 @@ bool FButtonGroup::hasFocusedButton()
     {
       if ( (*iter)->hasFocus() )
         return true;
+
       ++iter;
     }
   }
+
   return false;
 }
 
@@ -439,9 +467,11 @@ bool FButtonGroup::hasCheckedButton()
     {
       if ( (*iter)->isChecked() )
         return true;
+
       ++iter;
     }
   }
+
   return false;
 }
 
@@ -450,6 +480,7 @@ void FButtonGroup::onMouseDown (FMouseEvent* ev)
 {
   if ( ev->getButton() != fc::LeftButton )
     return;
+
   directFocus();
 }
 
@@ -477,15 +508,20 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
           in_ev->ignore();
           FWidget* prev_element = getFocusWidget();
           (*iter)->setFocus();
+
           if ( prev_element )
             prev_element->redraw();
+
           (*iter)->redraw();
         }
+
         break;
       }
+
       ++iter;
     }
   }
+
   if ( in_ev->isAccepted() )
   {
     if ( in_ev->getFocusType() == fc::FocusNextWidget )
@@ -493,8 +529,10 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();
       focusFirstChild();
+
       if ( prev_element )
         prev_element->redraw();
+
       getFocusWidget()->redraw();
     }
     else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
@@ -502,11 +540,14 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       in_ev->ignore();
       FWidget* prev_element = getFocusWidget();
       focusLastChild();
+
       if ( prev_element )
         prev_element->redraw();
+
       getFocusWidget()->redraw();
     }
   }
+
   if ( statusBar() )
   {
     statusBar()->drawMessage();
@@ -534,6 +575,7 @@ bool FButtonGroup::setEnable (bool on)
     flags &= ~fc::active;
     delAccelerator();
   }
+
   return on;
 }
 
@@ -544,6 +586,7 @@ bool FButtonGroup::setBorder(bool on)
     border = true;
   else
     border = false;
+
   return on;
 }
 
@@ -551,6 +594,7 @@ bool FButtonGroup::setBorder(bool on)
 void FButtonGroup::setText (const FString& txt)
 {
   text = txt;
+
   if ( isEnabled() )
   {
     delAccelerator();

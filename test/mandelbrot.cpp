@@ -78,12 +78,15 @@ void Mandelbrot::draw()
         x = xtemp;
         iter++;
       }
+
       if ( iter < max_iter )
         setColor(fc::Black, iter%16);
       else
         setColor(fc::Black, 0);
+
       print(' ');
     }
+
     current_line++;
   }
 
@@ -105,6 +108,7 @@ void Mandelbrot::onClose (FCloseEvent* ev)
                                 "to quit the program ?"
                               , FMessageBox::Yes
                               , FMessageBox::No );
+
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else

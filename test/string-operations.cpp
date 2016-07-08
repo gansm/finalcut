@@ -15,11 +15,13 @@ int main (int, char**)
 
   // init current locale
   printf ("    Locale: %s\n", setlocale(LC_CTYPE, "") );
+
   if ( isatty(1) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
   {
     // locale C -> switch from 7bit ascii -> latin1
     setlocale(LC_ALL, "en_US");
   }
+
   printf ("   Codeset: %s\n", nl_langinfo(CODESET));
 
   std::cout << "--------------[ FString test ]-----------------"
@@ -78,26 +80,32 @@ int main (int, char**)
   std::cout << "       add: " << add13 << std::endl;
 
   FString cmp = "compare";
+
   if ( cmp == FString("compare") )
     std::cout << "       cmp: == Ok" << std::endl;
   else
     std::cout << "       cmp: == Not Ok" << std::endl;
+
   if ( cmp <= FString("d_compare") )
     std::cout << "       cmp: <= Ok" << std::endl;
   else
     std::cout << "       cmp: <= Not Ok" << std::endl;
+
   if ( cmp < FString("e_compare") )
     std::cout << "       cmp: <  Ok" << std::endl;
   else
     std::cout << "       cmp: <  Not Ok" << std::endl;
+
   if ( cmp >= FString("b_compare") )
     std::cout << "       cmp: >= Ok" << std::endl;
   else
     std::cout << "       cmp: >= Not Ok" << std::endl;
+
   if ( cmp > FString("a_compare") )
     std::cout << "       cmp: >  Ok" << std::endl;
   else
     std::cout << "       cmp: >  Not Ok" << std::endl;
+
   if ( cmp != FString("equal") )
     std::cout << "       cmp: != Ok" << std::endl;
   else
@@ -109,8 +117,10 @@ int main (int, char**)
   std::vector <FString> parts = split_str.split(",");
   std::vector<FString>::iterator it, end;
   end = parts.end();
+
   for (it = parts.begin(); it != end; ++it)
     std::cout << " \"" << (*it) << "\"";
+
   std::cout << std::endl;
 
   FString formatStr = "";
@@ -146,6 +156,7 @@ int main (int, char**)
   }
 
   setlocale(LC_NUMERIC, "C");
+
   try
   {
     double double_num = FString("2.7182818284590452353").toDouble();
@@ -207,6 +218,7 @@ int main (int, char**)
             << alphabet.right(11)  << "\"" << std::endl;
 
   FString insert_str = "I am a string";
+
   try
   {
     std::cout << "   insert: "
@@ -219,6 +231,7 @@ int main (int, char**)
 
   FString index(5); // a string with five characters
   index = "index";
+
   try
   {
     index[0] = L'I'; // write a wide character at position 0
@@ -235,11 +248,13 @@ int main (int, char**)
   FString::iterator iter;
   iter = stringIterator.begin();
   std::cout << " " << stringIterator << ": ";
+
   while ( iter != stringIterator.end() )
   {
     std::cout << char(*iter) << "|";
     ++iter;
   }
+
   std::cout << "  (front='" << char(stringIterator.front())
             << "', back='" << char(stringIterator.back())
             << "')" << std::endl;
@@ -253,6 +268,7 @@ int main (int, char**)
             << remove_std.remove(7,2) << std::endl;
 
   FString include_std = "string";
+
   if ( include_std.includes("ring") )
     std::cout << " includes: \""
               << include_std << "\" includes \"ring\" "
@@ -261,6 +277,7 @@ int main (int, char**)
     std::cout << " includes: \""
               << include_std << "\" includes no \"ring\" "
               << std::endl;
+
   if ( include_std.includes("data") )
     std::cout << " includes: \""
               << include_std << "\" includes \"data\" "

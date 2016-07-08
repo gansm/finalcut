@@ -177,6 +177,7 @@ void FWidget::finish()
     delete close_widget;
     close_widget = 0;
   }
+
   if ( window_list )
   {
     delete window_list;
@@ -416,6 +417,7 @@ void FWidget::adjustSize()
       xmax = getParentWidget()->client_xmax;
       ymax = getParentWidget()->client_ymax;
     }
+
     xpos   = widgetSize.getX();
     ypos   = widgetSize.getY();
     width  = widgetSize.getWidth();
@@ -427,6 +429,7 @@ void FWidget::adjustSize()
     while ( xpos+xmin-1+width > xmax+1 )
     {
       xpos--;
+
       if ( xpos < 1 )
       {
         xpos = 1;
@@ -437,6 +440,7 @@ void FWidget::adjustSize()
     while ( ypos+ymin-1+height > ymax+1 )
     {
       ypos--;
+
       if ( ypos < 1 )
       {
         ypos = 1;
@@ -446,18 +450,19 @@ void FWidget::adjustSize()
 
     while ( xmin+width-1 > xmax )
       width--;
+
     while ( ymin+height-1 > ymax )
       height--;
 
     if ( width < 1 )
       width = 1;
+
     if ( height < 1 )
       height = 1;
   }
 
   adjustWidgetSize.setRect(xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
-
   adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
                                  , ypos + ymin - 1
                                  , width, height );
@@ -480,8 +485,10 @@ void FWidget::adjustSize()
     while ( iter != end )
     {
       FWidget* widget = static_cast<FWidget*>(*iter);
+
       if ( ! widget->isWindow() )
         widget->adjustSize();
+
       ++iter;
     }
   }
@@ -521,6 +528,7 @@ void FWidget::setStatusBar (FStatusBar* sbar)
 {
   if ( ! sbar || statusbar == sbar )
     return;
+
   if ( statusbar )
     delete statusbar;
 
@@ -532,6 +540,7 @@ void FWidget::setMenuBar (FMenuBar* mbar)
 {
   if ( ! mbar || menubar == mbar )
     return;
+
   if ( menubar )
     delete menubar;
 
@@ -547,16 +556,21 @@ bool FWidget::event (FEvent* ev)
       {
         FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
         bool accpt_focus = false;
+
         if ( kev->key() == fc::Fkey_tab )
           accpt_focus = focusNextChild();
         else if ( kev->key() == fc::Fkey_btab )
           accpt_focus = focusPrevChild();
+
         if ( accpt_focus )
           break;
+
         FWidget* widget = this;
+
         while ( widget )
         {
           widget->onKeyPress(kev);
+
           if ( ! kev->isAccepted() )
           {
             if (  kev->key() == fc::Fkey_right
@@ -565,11 +579,14 @@ bool FWidget::event (FEvent* ev)
             else if (  kev->key() == fc::Fkey_left
                     || kev->key() == fc::Fkey_up )
               accpt_focus = focusPrevChild();
+
             if ( accpt_focus )
               break;
           }
+
           if ( kev->isAccepted() || widget->isRootWidget() )
             break;
+
           widget = widget->getParentWidget();
         }
       }
@@ -583,11 +600,14 @@ bool FWidget::event (FEvent* ev)
       {
         FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
         FWidget* widget = this;
+
         while ( widget )
         {
           widget->onKeyDown(kev);
+
           if ( kev->isAccepted() || widget->isRootWidget() )
             break;
+
           widget = widget->getParentWidget();
         }
       }
@@ -723,6 +743,7 @@ bool FWidget::focusNextChild()
   if ( hasParent() )
   {
     FWidget* parent = static_cast<FWidget*>(getParent());
+
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObject::object_list children;
@@ -735,33 +756,40 @@ bool FWidget::focusNextChild()
       while ( iter != end )
       {
         FWidget* w = static_cast<FWidget*>(*iter);
+
         if ( w == this )
         {
           FWidget* next;
           FObject::object_list::const_iterator next_element;
-
           next_element = iter;
+
           do
           {
             ++next_element;
+
             if ( next_element == children.end() )
               next_element = children.begin();
+
             next = static_cast<FWidget*>(*next_element);
           } while (  ! next->isEnabled()
                   || ! next->acceptFocus()
                   || ! next->isVisible()
                   || next->isWindow() );
+
           FFocusEvent out (fc::FocusOut_Event);
           out.setFocusType(fc::FocusNextWidget);
           FApplication::sendEvent(this, &out);
+
           if ( out.isAccepted() )
           {
             if ( next == this )
               return false;
+
             next->setFocus();
             FFocusEvent in (fc::FocusIn_Event);
             in.setFocusType(fc::FocusNextWidget);
             FApplication::sendEvent(next, &in);
+
             if ( in.isAccepted() )
             {
               this->draw();
@@ -785,6 +813,7 @@ bool FWidget::focusPrevChild()
   if ( hasParent() )
   {
     FWidget* parent = static_cast<FWidget*>(getParent());
+
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObject::object_list children;
@@ -793,29 +822,34 @@ bool FWidget::focusPrevChild()
       children = getParent()->getChildren();
       iter  = children.end();
       begin = children.begin();
+
       do
       {
         --iter;
         FWidget* w = static_cast<FWidget*>(*iter);
+
         if ( w == this )
         {
           FWidget* prev;
           FObject::object_list::const_iterator prev_element;
-
           prev_element = iter;
+
           do
           {
             if ( prev_element == children.begin() )
               prev_element = children.end();
+
             --prev_element;
             prev = static_cast<FWidget*>(*prev_element);
           } while (  ! prev->isEnabled()
                   || ! prev->acceptFocus()
                   || ! prev->isVisible()
                   || prev->isWindow() );
+
           FFocusEvent out (fc::FocusOut_Event);
           out.setFocusType(fc::FocusPreviousWidget);
           FApplication::sendEvent(this, &out);
+
           if ( out.isAccepted() )
           {
             if ( prev == this )
@@ -832,11 +866,14 @@ bool FWidget::focusPrevChild()
               flush_out();
             }
           }
+
           break;
         }
-      } while ( iter != begin );
+      }
+      while ( iter != begin );
     }
   }
+
   return true;
 }
 
@@ -885,6 +922,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
     while ( iter != end )
     {
       FWidget* widget = static_cast<FWidget*>(*iter);
+
       if (  widget->isEnabled()
          && widget->isVisible()
          && ! widget->isWindow()
@@ -893,9 +931,11 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
         FWidget* child = childWidgetAt(widget, x, y);
         return (child != 0) ? child : widget;
       }
+
       ++iter;
     }
   }
+
   return 0;
 }
 
@@ -948,7 +988,6 @@ int FWidget::numOfFocusableChildren()
     return 0;
 
   int num = 0;
-
   children = this->getChildren();
   iter = children.begin();
   end  = children.end();
@@ -956,10 +995,13 @@ int FWidget::numOfFocusableChildren()
   while ( iter != end )
   {
     FWidget* widget = static_cast<FWidget*>(*iter);
+
     if ( widget->acceptFocus() )
       num++;
+
     ++iter;
   }
+
   return num;
 }
 
@@ -976,6 +1018,7 @@ bool FWidget::close()
     else
     {
       hide();
+
       if ( (flags & fc::modal) == 0 )
         close_widget->push_back(this);
     }
@@ -1088,9 +1131,11 @@ void FWidget::emitCallback (FString emit_signal)
         // call the member function pointer
         (m_iter->cb_instance->*callback)(this, m_iter->data);
       }
+
       ++m_iter;
     }
   }
+
   // function pointer
   if ( ! callbackObjects.empty() )
   {
@@ -1106,6 +1151,7 @@ void FWidget::emitCallback (FString emit_signal)
         // call the function pointer
         callback(this, iter->data);
       }
+
       ++iter;
     }
   }
@@ -1119,8 +1165,10 @@ void FWidget::addAccelerator (int key, FWidget* obj)
 
   if ( ! window )
     window = getRootWidget();
+
   if ( window == statusbar || window == menubar )
     window = FWindow::getWindowWidget(getParentWidget());
+
   if ( window && window->accelerator_list )
     window->accelerator_list->push_back(accel);
 }
@@ -1132,8 +1180,10 @@ void FWidget::delAccelerator (FWidget* obj)
 
   if ( ! window )
     window = getRootWidget();
+
   if ( window == statusbar || window == menubar )
     window = FWindow::getWindowWidget(getParentWidget());
+
   if (  window
      && window->accelerator_list
      && ! window->accelerator_list->empty() )
@@ -1206,9 +1256,11 @@ void FWidget::redraw()
 
           (*iter)->redraw();
         }
+
         ++iter;
       }
     }
+
     if ( menubar && vmenubar )
     {
       int w = vmenubar->width;
@@ -1216,6 +1268,7 @@ void FWidget::redraw()
       std::fill_n (vmenubar->text, w * h, default_char);
       menubar->redraw();
     }
+
     if ( statusbar && vstatusbar )
     {
       int w = vstatusbar->width;
@@ -1239,8 +1292,10 @@ void FWidget::redraw()
       while ( iter != end )
       {
         FWidget* widget = static_cast<FWidget*>(*iter);
+
         if ( widget->isVisible() && ! widget->isWindow() )
           widget->redraw();
+
         ++iter;
       }
     }
@@ -1270,6 +1325,7 @@ void FWidget::resize()
     if ( menubar )
     {
       menubar->setGeometry(1, 1, width, 1, false);
+
       if ( vmenubar )
         resizeArea(vmenubar);
     }
@@ -1277,9 +1333,11 @@ void FWidget::resize()
     if ( statusbar )
     {
       statusbar->setGeometry(1, height, width, 1, false);
+
       if ( vstatusbar )
         resizeArea(vstatusbar);
     }
+
     adjustSizeGlobal();
   }
   else
@@ -1355,6 +1413,7 @@ void FWidget::hide()
         FWidget::setFocusWidget(getParentWidget());
       }
     }
+
     FHideEvent hide_ev (fc::Hide_Event);
     FApplication::sendEvent(this, &hide_ev);
   }
@@ -1406,6 +1465,7 @@ bool FWidget::focusFirstChild()
        && ! widget->isMenu() )
     {
       widget->setFocus();
+
       if ( widget->numOfChildren() >= 1 )
       {
         if ( ! widget->focusFirstChild() && widget->isWindow() )
@@ -1414,8 +1474,10 @@ bool FWidget::focusFirstChild()
           continue;
         }
       }
+
       return true;
     }
+
     // prefix increment (++) is faster
     // than postfix for non primitive type
     ++iter;
@@ -1446,11 +1508,13 @@ bool FWidget::focusLastChild()
        && ! widget->isMenu() )
     {
       widget->setFocus();
+
       if ( widget->numOfChildren() >= 1 )
       {
         if ( ! widget->focusLastChild() && widget->isWindow() )
           continue;
       }
+
       return true;
     }
   }
@@ -1466,6 +1530,7 @@ bool FWidget::setFocus (bool on)
 
   if ( ! enable )
     return false;
+
   if ( on == focus )
     return true;
 
@@ -1493,6 +1558,7 @@ bool FWidget::setFocus (bool on)
     {
       bool has_raised = window->raiseWindow();
       FWindow::setActiveWindow(window);
+
       if ( has_raised && window->isVisible() && window->isShown() )
         window->redraw();
     }
@@ -1799,6 +1865,7 @@ void FWidget::move (int x, int y)
 {
   if ( x == xpos && y == ypos )
     return;
+
   // Avoid to move widget completely outside the terminal
   if ( x+width < 1 || x > term->getWidth() || y < 1 || y > term->getHeight() )
     return;
@@ -1870,6 +1937,7 @@ void FWidget::clrscr()
     area = area_widget->getVWin();
   else
     area = vdesktop;
+
   if ( ! area )
     return;
 
@@ -1892,6 +1960,7 @@ void FWidget::clrscr()
     area->changes[i].xmin = 0;
     area->changes[i].xmax = uInt(area->width + area->right_shadow - 1);
   }
+
   putArea (xpos+xmin-1, ypos+ymin-1, area);
 }
 
@@ -1931,28 +2000,40 @@ void FWidget::drawShadow()
 
         if ( ch.bold )
           setBold (true);
+
         if ( ch.dim )
           setDim (true);
+
         if ( ch.italic )
           setItalic (true);
+
         if ( ch.underline )
           setUnderline (true);
+
         if ( ch.blink )
           setBlink (true);
+
         if ( ch.reverse )
           setReverse (true);
+
         if ( ch.standout )
           setStandout (true);
+
         if ( ch.invisible )
           setInvisible (true);
+
         if ( ch.protect )
           setProtected (true);
+
         if ( ch.crossed_out )
           setCrossedOut (true);
+
         if ( ch.dbl_underline )
           setDoubleUnderline (true);
+
         if ( ch.alt_charset )
           setAltCharset (true);
+
         if ( ch.pc_charset )
           setPCcharset (true);
 
@@ -1962,12 +2043,15 @@ void FWidget::drawShadow()
       }
 
       setColor (wc.shadow_bg, wc.shadow_fg);
+
       for (int i=1; i < height && y1+i <= ymax; i++)
       {
         gotoxy (x2+1, y1+i);
+
         for (int x=1; x <= 2; x++)
         {
           ch = getCoveredCharacter (x2+x, y1+i, this);
+
           if (  ch.code == fc::LowerHalfBlock
              || ch.code == fc::UpperHalfBlock
              || ch.code == fc::LeftHalfBlock
@@ -1979,6 +2063,7 @@ void FWidget::drawShadow()
         }
       }
     }
+
     if ( y2 < ymax )
     {
       gotoxy (x1, y2+1);
@@ -1990,40 +2075,53 @@ void FWidget::drawShadow()
 
         if ( ch.bold )
           setBold (true);
+
         if ( ch.dim )
           setDim (true);
+
         if ( ch.italic )
           setItalic (true);
+
         if ( ch.underline )
           setUnderline (true);
+
         if ( ch.blink )
           setBlink (true);
+
         if ( ch.reverse )
           setReverse (true);
+
         if ( ch.standout )
           setStandout (true);
+
         if ( ch.invisible )
           setInvisible (true);
+
         if ( ch.protect )
           setProtected (true);
+
         if ( ch.crossed_out )
           setCrossedOut (true);
+
         if ( ch.dbl_underline )
           setDoubleUnderline (true);
+
         if ( ch.alt_charset )
           setAltCharset (true);
+
         if ( ch.pc_charset )
           setPCcharset (true);
 
         print (ch.code);
-
         setNormal();
       }
 
       setColor (wc.shadow_bg, wc.shadow_fg);
+
       for (int i=2; i <= width+1 && x1+i <= xmax; i++)
       {
         ch = getCoveredCharacter (x1+i, y2+1, this);
+
         if (  ch.code == fc::LowerHalfBlock
            || ch.code == fc::UpperHalfBlock
            || ch.code == fc::LeftHalfBlock
@@ -2034,6 +2132,7 @@ void FWidget::drawShadow()
           print (ch.code);
       }
     }
+
     if ( isMonochron() )
       setReverse(false);
   }
@@ -2067,10 +2166,12 @@ void FWidget::drawShadow()
     if ( y2 < ymax )
     {
       gotoxy (x1+1, y2+1);
+
       for (int i=1; i <= width && x1+i <= xmax; i++)
       {
         ch = getCoveredCharacter (x1+i, y2+1, this);
         setColor (wc.shadow_fg, ch.bg_color);
+
         if ( isTeraTerm() )
           print (0xdf); // ▀
         else
@@ -2104,9 +2205,11 @@ void FWidget::clearShadow()
       print  (' ');  // clear █
     }
   }
+
   if ( y2 < ymax )
   {
     gotoxy (x1+1, y2+1);
+
     for (int i=1; i <= width && x1+i <= xmax; i++)
     {
       ch = getCoveredCharacter (x1+i, y2+1, this);
@@ -2130,9 +2233,11 @@ void FWidget::drawFlatBorder()
   y2 = ypos+ymin-1+height;
 
   setColor (wc.dialog_fg, wc.dialog_bg);
+
   for (int y=0; y < height; y++)
   {
     gotoxy (x1-1, y1+y+1);
+
     if ( double_flatline_mask.left[uLong(y)] )
       print (fc::NF_rev_border_line_right_and_left); // left+right line (on left side)
     else
@@ -2140,16 +2245,19 @@ void FWidget::drawFlatBorder()
   }
 
   gotoxy (x2, y1+1);
+
   for (int y=0; y < height; y++)
   {
     if ( double_flatline_mask.right[uLong(y)] )
       print (fc::NF_rev_border_line_right_and_left); // left+right line (on right side)
     else
       print (fc::NF_border_line_left); // left line (on right side)
+
     gotoxy (x2, y1+y+2);
   }
 
   gotoxy (x1, y1);
+
   for (int x=0; x < width; x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
@@ -2159,6 +2267,7 @@ void FWidget::drawFlatBorder()
   }
 
   gotoxy (x1, y2);
+
   for (int x=0; x < width; x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
@@ -2278,10 +2387,13 @@ void FWidget::drawBorder()
 
   if ( x1 < xmin )
     x1 = xmin;
+
   if ( y1 < ymin )
     y1 = ymin;
+
   if ( x2 > xmax )
     x2 = xmax;
+
   if ( y2 > ymax )
     y2 = ymax;
 
@@ -2290,9 +2402,12 @@ void FWidget::drawBorder()
     setColor (wc.dialog_fg, wc.dialog_bg);
     gotoxy (x1, y1);
     print (fc::NF_border_corner_middle_upper_left); // ┌
+
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
+
     print (fc::NF_border_corner_middle_upper_right); // ┐
+
     for (int y=y1+1; y <= y2; y++)
     {
       gotoxy (x1, y);
@@ -2300,10 +2415,13 @@ void FWidget::drawBorder()
       gotoxy (x2, y);
       print (fc::NF_rev_border_line_right); // border right⎹
     }
+
     gotoxy (x1, y2);
     print (fc::NF_border_corner_middle_lower_left); // └
+
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
+
     print (fc::NF_border_corner_middle_lower_right); // ┘
   }
   else
@@ -2313,7 +2431,9 @@ void FWidget::drawBorder()
 
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
+
     print (fc::BoxDrawingsDownAndLeft); // ┐
+
     for (int y=y1+1; y < y2; y++)
     {
       gotoxy (x1, y);
@@ -2321,10 +2441,13 @@ void FWidget::drawBorder()
       gotoxy (x2, y);
       print (fc::BoxDrawingsVertical); // │
     }
+
     gotoxy (x1, y2);
     print (fc::BoxDrawingsUpAndRight); // └
+
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
+
     print (fc::BoxDrawingsUpAndLeft); // ┘
 
     for (int x=x1+1; x < x2; x++)

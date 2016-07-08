@@ -45,7 +45,6 @@ void FRadioButton::draw()
   drawRadioButton();
   drawLabel();
   setUpdateVTerm(true);
-
   FToggleButton::draw();
 }
 
@@ -65,6 +64,7 @@ void FRadioButton::drawRadioButton()
     else
       setReverse(true);
   }
+
   if ( checked )
   {
     if ( isNewFont() )
@@ -87,7 +87,7 @@ void FRadioButton::drawRadioButton()
       print (')');
     }
   }
+
   if ( isMonochron() )
     setReverse(false);
 }
-

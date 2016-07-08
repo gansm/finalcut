@@ -227,6 +227,7 @@ void Menu::onClose (FCloseEvent* ev)
                                 "to quit the program ?"
                               , FMessageBox::Yes
                               , FMessageBox::No );
+
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else

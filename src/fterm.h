@@ -461,6 +461,7 @@ inline int FTerm::getLineNumber()
 {
   if ( term->getHeight() == 0 )
     getTermSize();
+
   return term->getHeight();
 }
 
@@ -469,6 +470,7 @@ inline int FTerm::getColumnNumber()
 {
   if ( term->getWidth() == 0 )
     getTermSize();
+
   return term->getWidth();
 }
 

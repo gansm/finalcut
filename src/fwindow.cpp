@@ -78,8 +78,10 @@ void FWindow::onWindowLowered (FEvent*)
 void FWindow::show()
 {
   term_area* area = getVWin();
+
   if ( area )
     area->visible = true;
+
   FWidget::show();
 }
 
@@ -87,8 +89,10 @@ void FWindow::show()
 void FWindow::hide()
 {
   term_area* area = getVWin();
+
   if ( area )
     area->visible = false;
+
   FWidget::hide();
 }
 
@@ -114,13 +118,16 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
       if ( *iter )
       {
         FWindow* w = static_cast<FWindow*>(*iter);
+
         if ( ! w->isHiddenWindow()
            && w->getGeometryGlobal().contains(x,y) )
           return w;
       }
     }
     while ( iter != begin );
+
   }
+
   return 0;
 }
 
@@ -148,6 +155,7 @@ void FWindow::delWindow (FWidget* obj)
         window_list->erase(iter);
         return;
       }
+
       ++iter;
     }
   }
@@ -158,11 +166,13 @@ FWindow* FWindow::getWindowWidget (FWidget* obj)
 {
   // returns the window object to the given widget obj
   FWidget* p_obj = obj->getParentWidget();
+
   while ( ! obj->isWindow() && p_obj )
   {
     obj = p_obj;
     p_obj = p_obj->getParentWidget();
   }
+
   if ( obj->isWindow() )
     return static_cast<FWindow*>(obj);
   else
@@ -178,6 +188,7 @@ int FWindow::getWindowLayer (FWidget* obj)
 
   if ( ! window_list )
     return -1;
+
   if ( window_list->empty() )
     return -1;
 
@@ -196,6 +207,7 @@ int FWindow::getWindowLayer (FWidget* obj)
   {
     if ( *iter == window )
       break;
+
     ++iter;
   }
 
@@ -210,10 +222,13 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 
   if ( ! window_list )
     return;
+
   if ( window_list->empty() )
     return;
+
   if ( (obj1->getFlags() & fc::modal) != 0 )
     return;
+
   if ( (obj2->getFlags() & fc::modal) != 0 )
     return;
 
@@ -228,6 +243,7 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
       iter1 = iter;
     else if ( (*iter) == obj2 )
       iter2 = iter;
+
     ++iter;
   }
 
@@ -243,12 +259,16 @@ bool FWindow::raiseWindow (FWidget* obj)
 
   if ( ! window_list )
     return false;
+
   if ( window_list->empty() )
     return false;
+
   if ( ! obj->isWindow() )
     return false;
+
   if ( window_list->back() == obj )
     return false;
+
   if ( (window_list->back()->getFlags() & fc::modal) != 0
      && ! obj->isMenu() )
     return false;
@@ -265,8 +285,10 @@ bool FWindow::raiseWindow (FWidget* obj)
       FApplication::sendEvent(obj, &ev);
       return true;
     }
+
     ++iter;
   }
+
   return false;
 }
 
@@ -278,12 +300,16 @@ bool FWindow::lowerWindow (FWidget* obj)
 
   if ( ! window_list )
     return false;
+
   if ( window_list->empty() )
     return false;
+
   if ( ! obj->isWindow() )
     return false;
+
   if ( window_list->front() == obj )
     return false;
+
   if ( (obj->getFlags() & fc::modal) != 0 )
     return false;
 
@@ -299,8 +325,10 @@ bool FWindow::lowerWindow (FWidget* obj)
       FApplication::sendEvent(obj, &ev);
       return true;
     }
+
     ++iter;
   }
+
   return false;
 }
 
@@ -312,6 +340,7 @@ void FWindow::setActiveWindow (FWindow* window)
 
   if ( ! window_list )
     return;
+
   if ( window_list->empty() )
     return;
 
@@ -332,6 +361,7 @@ void FWindow::setActiveWindow (FWindow* window)
     else
     {
       FWindow* w = static_cast<FWindow*>(*iter);
+
       if ( w->isActiveWindow() )
       {
         w->deactivateWindow();
@@ -339,6 +369,7 @@ void FWindow::setActiveWindow (FWindow* window)
         FApplication::sendEvent(*iter, &ev);
       }
     }
+
     ++iter;
   }
 }
@@ -356,16 +387,20 @@ void FWindow::switchToPrevWindow()
 {
   // switch to previous window
   activatePrevWindow();
-
   FWindow* active_window = getActiveWindow();
+
   if ( active_window )
   {
     FWidget* focus_widget = active_window->getFocusWidget();
+
     if ( ! active_window->isActiveWindow() )
       setActiveWindow(active_window);
+
     raiseWindow (active_window);
+
     if ( focus_widget )
       focus_widget->setFocus();
+
     active_window->redraw();
   }
 }
@@ -400,6 +435,7 @@ bool FWindow::isHiddenWindow() const
 {
   // returns the window hidden state
   term_area* area = getVWin();
+
   if ( area )
     return ! area->visible;
   else

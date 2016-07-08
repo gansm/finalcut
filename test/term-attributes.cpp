@@ -65,6 +65,7 @@ AttribDlg::AttribDlg (FWidget* parent)
     "clicked",
     _METHOD_CALLBACK (this, &AttribDlg::cb_next)
   );
+
   back_button->addCallback
   (
     "clicked",
@@ -102,6 +103,7 @@ void AttribDlg::onClose (FCloseEvent* ev)
                                 "to quit the program ?"
                               , FMessageBox::Yes
                               , FMessageBox::No );
+
   if ( ret == FMessageBox::Yes )
     ev->accept();
   else
@@ -113,9 +115,12 @@ void AttribDlg::cb_next (FWidget*, void*)
 {
   if ( isMonochron() )
     return;
+
   bgcolor++;
+
   if ( bgcolor >= getMaxColor() )
     bgcolor = fc::Default;
+
   redraw();
 }
 
@@ -124,9 +129,12 @@ void AttribDlg::cb_back (FWidget*, void*)
 {
   if ( isMonochron() )
     return;
+
   bgcolor--;
+
   if ( bgcolor < fc::Default )
     bgcolor = short(getMaxColor() - 1);
+
   redraw();
 }
 
@@ -135,8 +143,10 @@ void AttribDlg::adjustSize()
 {
   int x = ((getParentWidget()->getWidth() - getWidth()) / 2 );
   int y = ((getParentWidget()->getHeight() - getHeight()) / 2 ) + 1;
+
   if ( x < 1 )
     x = 1;
+
   if ( y < 1 )
     y = 1;
 
@@ -186,6 +196,7 @@ AttribDemo::AttribDemo (FWidget* parent)
     colors = 1;
   else if ( colors > 16 )
     colors = 16;
+
   unsetFocusable();
 }
 
@@ -211,6 +222,7 @@ void AttribDemo::printAltCharset()
 
   gotoxy (xpos + xmin - 1, ypos + ymin - 1);
   print("alternate charset: ");
+
   if ( parent->bgcolor == fc::Default )
   {
     setColor (fc::Default, fc::Default);
@@ -222,6 +234,7 @@ void AttribDemo::printAltCharset()
     else
       setColor (fc::Black, parent->bgcolor);
   }
+
   setAltCharset();
   print("`abcdefghijklmnopqrstuvwxyz{|}~");
   unsetAltCharset();
@@ -342,16 +355,18 @@ void AttribDemo::draw()
 
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
+
   gotoxy (xpos + xmin - 1, ypos + ymin + 13);
   short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
+
   if ( bg == fc::Default )
     print (" default");
   else
     printf ( " %d", bg);
+
   gotoxy (xpos + xmin + 14, ypos + ymin + 15);
   print ("Change background color ->");
-
   setUpdateVTerm(true);
 }
 

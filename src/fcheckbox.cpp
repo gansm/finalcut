@@ -44,7 +44,6 @@ void FCheckBox::draw()
   drawCheckButton();
   drawLabel();
   setUpdateVTerm(true);
-
   FToggleButton::draw();
 }
 
@@ -64,6 +63,7 @@ void FCheckBox::drawCheckButton()
     else
       setReverse(true);
   }
+
   if ( checked )
   {
     if ( isNewFont() )
@@ -86,6 +86,7 @@ void FCheckBox::drawCheckButton()
       print (']');
     }
   }
+
   if ( isMonochron() )
     setReverse(false);
 }

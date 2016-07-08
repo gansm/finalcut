@@ -91,6 +91,7 @@ void FScrollbar::draw()
 int FScrollbar::getClickedScrollType (int x, int y)
 {
   int stype;
+
   if ( bar_orientation == fc::vertical )
   {
     if ( y == 1 )
@@ -157,6 +158,7 @@ int FScrollbar::getClickedScrollType (int x, int y)
         stype = FScrollbar::noScroll;
     }
   }
+
   return stype;
 }
 
@@ -164,6 +166,7 @@ int FScrollbar::getClickedScrollType (int x, int y)
 void FScrollbar::processMiddleButton (int x, int y)
 {
     int new_val;
+
     if ( bar_orientation == fc::vertical )
     {
       if ( y >1 && y < height )
@@ -177,6 +180,7 @@ void FScrollbar::processMiddleButton (int x, int y)
     else  // horizontal
     {
       int nf = isNewFont() ? 1 : 0;
+
       if ( x > 1+nf && x < width-nf )
       {
         new_val = int( round ( float(max-min) * (x-2.0-nf-(SliderLength/2))
@@ -185,6 +189,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       else
         return;
     }
+
     if ( new_val != val )
     {
       setValue(new_val);
@@ -313,11 +318,11 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   if ( scrollType == FScrollbar::scrollJump )
   {
     int new_val;
+
     if ( bar_orientation == fc::vertical )
     {
       int dy = mouse_y - SliderClickPos;
       SliderClickPos = mouse_y;
-
       new_val = int( round ( float((max-min) * (SliderPos + dy))
                            / float(BarLength-SliderLength) ) );
     }
@@ -325,10 +330,10 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     {
       int dx = mouse_x - SliderClickPos;
       SliderClickPos = mouse_x;
-
       new_val = int( round ( float((max-min) * (SliderPos + dx))
                            / float(BarLength-SliderLength) ) );
     }
+
     if ( new_val != val )
     {
       setValue(new_val);
@@ -449,6 +454,7 @@ void FScrollbar::setSteps (float st)
     steps = 1;
   else
     steps = st;
+
   if ( pageSize == 0 )
     pageSize = int(float(max)/steps);
 }
@@ -475,6 +481,7 @@ void FScrollbar::calculateSliderValues()
     BarLength = length - 4;
   else
     BarLength = length - 2;
+
   SliderLength = int(float(BarLength) / steps);
 
   if ( SliderLength < 1 )
@@ -487,6 +494,7 @@ void FScrollbar::calculateSliderValues()
     SliderPos = 0;
     return;
   }
+
   if ( val == max )
   {
     SliderPos = BarLength - SliderLength;
@@ -517,6 +525,7 @@ void FScrollbar::setOrientation (int o)
   {
     height = 1;
     width = length;
+
     if ( isNewFont() )
       nf = 2;
   }
@@ -541,6 +550,7 @@ void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
   {
     height = 1;
     width = length;
+
     if ( isNewFont() )
       nf = 2;
   }
@@ -558,19 +568,25 @@ void FScrollbar::drawBar()
     if ( bar_orientation == fc::vertical )
     {
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
       for (z=1; z <= SliderPos; z++)
       {
         gotoxy (xpos+xmin-1, ypos+ymin-1+z);
+
         if ( isNewFont() )
           print (fc::NF_border_line_left); // ⎸
+
         if ( isMonochron() || max_color < 16 )
           print (fc::MediumShade); // ▒
         else
           print (' ');
       }
+
       setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
       if ( isMonochron() )
         setReverse(false);
+
       for (z=1; z <= SliderLength; z++)
       {
         gotoxy (xpos+xmin-1, ypos+ymin-1+SliderPos+z);
@@ -578,14 +594,19 @@ void FScrollbar::drawBar()
           print (' ');
         print (' ');
       }
+
       if ( isMonochron() )
         setReverse(true);
+
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
       for (z=SliderPos+SliderLength+1; z <= BarLength; z++)
       {
         gotoxy (xpos+xmin-1, ypos+ymin-1+z);
+
         if ( isNewFont() )
           print (fc::NF_border_line_left); // ⎸
+
         if ( isMonochron() || max_color < 16 )
           print (fc::MediumShade);
         else
@@ -595,8 +616,8 @@ void FScrollbar::drawBar()
     else  // horizontal
     {
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
       z = 0;
+
       if ( isNewFont() )
         gotoxy (xpos+xmin+1+z, ypos+ymin-1);
       else
@@ -611,17 +632,23 @@ void FScrollbar::drawBar()
         else
           print (' ');
       }
+
       setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
       if ( isMonochron() )
         setReverse(false);
 
       z = 0;
+
       for (; z < SliderLength; z++)
         print (' ');
+
       if ( isMonochron() )
         setReverse(true);
+
       setColor (wc.scrollbar_fg, wc.scrollbar_bg);
       z = SliderPos + SliderLength + 1;
+
       for (; z <= BarLength; z++)
       {
         if ( isNewFont() )
@@ -632,6 +659,7 @@ void FScrollbar::drawBar()
           print (' ');
       }
     }
+
     currentSliderPos = SliderPos;
 
     if ( isMonochron() )
@@ -680,7 +708,9 @@ void FScrollbar::drawButtons()
         print ('^');
       else
         print (fc::BlackUpPointingTriangle); // ▲
+
       gotoxy (xpos+xmin-1, ypos+ymin+length-2);
+
       if ( isCygwinTerminal() )
         print ('v');
       else
@@ -693,6 +723,7 @@ void FScrollbar::drawButtons()
       print (fc::BlackRightPointingPointer); // ►
 
     }
+
     if ( isMonochron() )
       setReverse(false);
   }

@@ -130,8 +130,10 @@ void ProgressDialog::onTimer (FTimerEvent*)
     more->setEnable();
     quit->setEnable();
     redraw();
+
     if ( statusBar() )
       statusBar()->drawMessage();
+
     updateTerminal();
     flush_out();
   }
@@ -621,6 +623,7 @@ void MyDialog::cb_drives (FWidget*, void*)
     net.setGeometry (11, 4, 4, 1);
     FLabel cd (" CD ", &info2);
     cd.setGeometry (11, 6, 4, 1);
+
     if ( isMonochron() )
     {
       net.setReverseMode();
@@ -636,6 +639,7 @@ void MyDialog::cb_drives (FWidget*, void*)
       cd.setForegroundColor (fc::White);
       cd.setBackgroundColor (fc::DarkGray);
     }
+
     info2.exec();
   }
 }
@@ -645,6 +649,7 @@ void MyDialog::cb_cutClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
+
   clipboard = myLineEdit->getText();
   myLineEdit->clearText();
   myLineEdit->redraw();
@@ -655,6 +660,7 @@ void MyDialog::cb_copyClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
+
   clipboard = myLineEdit->getText();
 }
 
@@ -663,6 +669,7 @@ void MyDialog::cb_pasteClipboard (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
+
   myLineEdit->setText(clipboard);
   myLineEdit->redraw();
 }
@@ -672,6 +679,7 @@ void MyDialog::cb_clearInput (FWidget*, void*)
 {
   if ( ! myLineEdit )
     return;
+
   clipboard.clear();
   myLineEdit->clearText();
   myLineEdit->redraw();
@@ -709,9 +717,11 @@ void MyDialog::cb_updateNumber (FWidget* widget, void* data_ptr)
   FLabel* num = static_cast<FLabel*>(data_ptr);
   int select_num = 0;
   uInt end = list->count();
+
   for (uInt n=1; n <= end; n++)
     if ( list->isSelected(int(n)) )
       select_num++;
+
   num->setNumber(select_num);
   num->redraw();
 }
@@ -721,10 +731,12 @@ void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
 {
   FRadioButton* rb = static_cast<FRadioButton*>(widget);
   FButton* button = static_cast<FButton*>(data_ptr);
+
   if ( rb->isChecked() )
     button->setEnable();
   else
     button->setDisable();
+
   button->redraw();
 }
 
@@ -738,6 +750,7 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
     file = item->getText();
   else
     file = FFileDialog::fileOpenChooser (this);
+
   if ( file.isNull() )
     return;
 
@@ -765,13 +778,16 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
   std::string line = "";
   std::ifstream infile;
   infile.open(file);
+
   while ( ! infile.eof() && infile.good() )
   {
     getline(infile, line);
     scrollText->append(line);
   }
+
   if ( infile.is_open() )
     infile.close();
+
   view->show();
 }
 
@@ -796,11 +812,15 @@ void MyDialog::adjustSize()
   int h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
   int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+
   if ( X < 1 )
     X = 1;
+
   setX (X, false);
+
   if ( myList )
     myList->setHeight (getHeight() - 3, false);
+
   FDialog::adjustSize();
 }
 
