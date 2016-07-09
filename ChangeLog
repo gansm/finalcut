@@ -1,3 +1,6 @@
+2016-07-10  Markus Gans  <guru.mail@muenster.de>
+	* Remove obsolete code from FDialog destructor
+
 2016-07-08  Markus Gans  <guru.mail@muenster.de>
 	* Better code readability: control structures (if/else, while, switch) 
 	  are now separated by a blank line.

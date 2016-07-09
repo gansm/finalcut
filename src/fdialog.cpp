@@ -46,6 +46,8 @@ FDialog::~FDialog()  // destructor
 {
   FApplication* fapp;
 
+  delete dialog_menu;
+  dgl_menuitem = 0;
   delete accelerator_list;
   accelerator_list = 0;
   activatePrevWindow();
@@ -56,28 +58,6 @@ FDialog::~FDialog()  // destructor
   {
     const FRect& geometry = getGeometryGlobalShadow();
     restoreVTerm (geometry);
-    getParentWidget()->redraw();
-  }
-
-  if ( window_list && ! window_list->empty() )
-  {
-    widgetList::const_iterator iter, end;
-    iter = window_list->begin();
-    end  = window_list->end();
-
-    while ( iter != end )
-    {
-      putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-
-      if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
-        static_cast<FDialog*>(*iter)->drawDialogShadow();
-
-      ++iter;
-    }
-
-    setFocusWidget(0);
-    updateTerminal();
-    flush_out();
   }
 
   if ( vwin != 0 )
@@ -777,10 +757,13 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   {
     dialog_menu->unselectItem();
     dialog_menu->hide();
+    activateWindow();
+    raiseWindow();
+    getFocusWidget()->setFocus();
     setClickedWidget(0);
 
     if ( isModal() )
-      done(FDialog::Reject);
+      done (FDialog::Reject);
     else
       close();
   }
@@ -812,7 +795,8 @@ void FDialog::onWindowActive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowInactive (FEvent*)
 {
-  FWindow::previous_widget = this;
+  if ( ! dialog_menu->isVisible() )
+    FWindow::previous_widget = this;
 
   if ( isVisible() && isEnabled() )
     drawTitleBar();

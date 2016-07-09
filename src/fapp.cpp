@@ -1304,6 +1304,8 @@ int FApplication::processTimerEvent()
 //----------------------------------------------------------------------
 void FApplication::processTerminalUpdate()
 {
+#define MAX_SKIP 8
+
   if ( terminal_update_pending )
   {
     if ( ! input_data_pending )
@@ -1312,7 +1314,7 @@ void FApplication::processTerminalUpdate()
       terminal_update_pending = false;
       skipped_terminal_update = 0;
     }
-    else if ( skipped_terminal_update > 8 )
+    else if ( skipped_terminal_update > MAX_SKIP )
     {
       force_terminal_update = true;
       updateTerminal();
@@ -1323,6 +1325,8 @@ void FApplication::processTerminalUpdate()
     else
       skipped_terminal_update++;
   }
+
+#undef MAX_SKIP
 }
 
 //----------------------------------------------------------------------
@@ -1343,6 +1347,7 @@ void FApplication::processCloseWidget()
 
     close_widget->clear();
   }
+
   updateTerminal(true);
 }
 

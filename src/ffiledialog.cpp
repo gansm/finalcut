@@ -526,6 +526,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
     return;
 
   int key = ev->key();
+
   switch ( key )
   {
     case fc::Fkey_erase:
