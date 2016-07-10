@@ -767,9 +767,9 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
               redraw();
             }
           }
-
-          ++iter;
         }
+
+        ++iter;
       }
 
       if ( ! hasSelectedItem() )

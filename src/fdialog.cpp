@@ -554,7 +554,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       FWidget* old_focus = FWidget::getFocusWidget();
       setActiveWindow(this);
 
-      if ( focus_widget )
+      if ( focus_widget && numOfFocusableChildren() > 1 )
       {
         focus_widget->setFocus();
         focus_widget->redraw();
@@ -607,7 +607,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
         FWidget* old_focus = FWidget::getFocusWidget();
         setActiveWindow(this);
 
-        if ( focus_widget )
+        if ( focus_widget && numOfFocusableChildren() > 1 )
         {
           focus_widget->setFocus();
           focus_widget->redraw();
@@ -638,7 +638,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
         FWidget* old_focus = FWidget::getFocusWidget();
         setActiveWindow(this);
 
-        if ( focus_widget )
+        if ( focus_widget && numOfFocusableChildren() > 1 )
         {
           focus_widget->setFocus();
           focus_widget->redraw();
