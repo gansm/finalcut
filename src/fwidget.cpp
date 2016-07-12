@@ -1160,41 +1160,35 @@ void FWidget::emitCallback (FString emit_signal)
 //----------------------------------------------------------------------
 void FWidget::addAccelerator (int key, FWidget* obj)
 {
-  FWidget* window = FWindow::getWindowWidget(obj);
+  FWidget* widget = FWindow::getWindowWidget(obj);
   accelerator accel = { key, obj };
 
-  if ( ! window )
-    window = getRootWidget();
+  if ( ! widget || widget == statusbar || widget == menubar )
+    widget = getRootWidget();
 
-  if ( window == statusbar || window == menubar )
-    window = FWindow::getWindowWidget(getParentWidget());
-
-  if ( window && window->accelerator_list )
-    window->accelerator_list->push_back(accel);
+  if ( widget && widget->accelerator_list )
+    widget->accelerator_list->push_back(accel);
 }
 
 //----------------------------------------------------------------------
 void FWidget::delAccelerator (FWidget* obj)
 {
-  FWidget* window = FWindow::getWindowWidget(this);
+  FWidget* widget = FWindow::getWindowWidget(this);
 
-  if ( ! window )
-    window = getRootWidget();
+  if ( ! widget || widget == statusbar || widget == menubar )
+    widget = getRootWidget();
 
-  if ( window == statusbar || window == menubar )
-    window = FWindow::getWindowWidget(getParentWidget());
-
-  if (  window
-     && window->accelerator_list
-     && ! window->accelerator_list->empty() )
+  if (  widget
+     && widget->accelerator_list
+     && ! widget->accelerator_list->empty() )
   {
     FWidget::Accelerators::iterator iter;
-    iter = window->accelerator_list->begin();
+    iter = widget->accelerator_list->begin();
 
-    while ( iter != window->accelerator_list->end() )
+    while ( iter != widget->accelerator_list->end() )
     {
       if ( iter->object == obj )
-        iter = window->accelerator_list->erase(iter);
+        iter = widget->accelerator_list->erase(iter);
       else
         ++iter;
     }

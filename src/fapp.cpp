@@ -391,35 +391,14 @@ void FApplication::processKeyboardEvent()
                && ! k_press_ev.isAccepted()
                && ! k_down_ev.isAccepted() )
             {
-              // keyboard accelerator
+              // windows keyboard accelerator
               FWidget* window = static_cast<FWidget*>(active_window);
 
-              if ( ! window )
-                window = getRootWidget();
+              if ( window )
+                processAccelerator (window);
 
-              if ( window
-                 && window->accelerator_list
-                 && ! window->accelerator_list->empty() )
-              {
-                FWidget::Accelerators::const_iterator iter, end;
-                iter = window->accelerator_list->begin();
-                end = window->accelerator_list->end();
-
-                while ( iter != end )
-                {
-                  if ( quit_now || app_exit_loop )
-                    break;
-
-                  if ( iter->key == key )
-                  {
-                    FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
-                    sendEvent (iter->object, &a_ev);
-                    break;
-                  };
-
-                  ++iter;
-                }
-              }
+              // global keyboard accelerator
+              processAccelerator (getRootWidget());
             }
           } // end of else
         }
@@ -446,6 +425,34 @@ void FApplication::processKeyboardEvent()
     FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
     sendEvent (widget, &k_press_ev);
     input_data_pending = false;
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::processAccelerator (FWidget* widget)
+{
+  if ( widget
+     && widget->accelerator_list
+     && ! widget->accelerator_list->empty() )
+  {
+    FWidget::Accelerators::const_iterator iter, end;
+    iter = widget->accelerator_list->begin();
+    end = widget->accelerator_list->end();
+
+    while ( iter != end )
+    {
+      if ( quit_now || app_exit_loop )
+        break;
+
+      if ( iter->key == key )
+      {
+        FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
+        sendEvent (iter->object, &a_ev);
+        break;
+      };
+
+      ++iter;
+    }
   }
 }
 

@@ -1,3 +1,7 @@
+2016-07-12  Markus Gans  <guru.mail@muenster.de>
+	* The status bar and the menu bar insert now the accelerator keys 
+	  into the global scope of the root widget
+
 2016-07-10  Markus Gans  <guru.mail@muenster.de>
 	* Remove obsolete code from FDialog destructor
 	* FDialog focus fix
