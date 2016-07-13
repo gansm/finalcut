@@ -319,19 +319,25 @@ void FMenuItem::processClicked()
 //----------------------------------------------------------------------
 bool FMenuItem::isWindowsMenu (FWidget* w) const
 {
-  return w->isDialog();
+  return ( ! w ) ? false : w->isDialog();
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
-  return bool( strcmp ( w->getClassName()
-                      , const_cast<char*>("FMenuBar") ) == 0 );
+  if ( ! w )
+    return false;
+  else
+    return bool( strcmp ( w->getClassName()
+                        , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenu (FWidget* w) const
 {
+  if ( ! w )
+    return false;
+
   bool m1 = ( strcmp ( w->getClassName()
                      , const_cast<char*>("FMenu") ) == 0 );
   bool m2 = ( strcmp ( w->getClassName()
@@ -344,30 +350,13 @@ bool FMenuItem::isMenu (FWidget* w) const
 //----------------------------------------------------------------------
 void FMenuItem::addAccelerator (int key, FWidget* obj)
 {
-  FWidget* super = super_menu;
+  FWidget* root = getRootWidget();
+  accelerator accel = { key, obj };
 
-  if ( ! super )
-    return;
-
-  while ( super && strncmp ( super->getClassName()
-                           , const_cast<char*>("FMenu"), 5) == 0 )
+  if ( root && root->accelerator_list )
   {
-    super = super->getParentWidget();
-  }
-
-  if ( super )
-  {
-    FWidget* window = FWindow::getWindowWidget(super);
-    accelerator accel = { key, obj };
-
-    if ( ! window )
-      window = getRootWidget();
-
-    if ( window && window->accelerator_list )
-    {
-      accel_key = key;
-      window->accelerator_list->push_back(accel);
-    }
+    accel_key = key;
+    root->accelerator_list->push_back(accel);
   }
 
   if ( isMenu(super_menu) )
@@ -382,41 +371,24 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
 //----------------------------------------------------------------------
 void FMenuItem::delAccelerator (FWidget* obj)
 {
-  FWidget* super = super_menu;
+  FWidget* root = getRootWidget();
 
-  if ( ! super )
-    return;
-
-  while ( super && strncmp ( super->getClassName()
-                           , const_cast<char*>("FMenu"), 5) == 0 )
+  if (  root
+     && root->accelerator_list
+     && ! root->accelerator_list->empty() )
   {
-    super = super->getParentWidget();
-  }
+    FWidget::Accelerators::iterator iter;
+    iter = root->accelerator_list->begin();
 
-  if ( super )
-  {
-    FWidget* window = FWindow::getWindowWidget(super);
-
-    if ( ! window )
-      window = getRootWidget();
-
-    if (  window
-       && window->accelerator_list
-       && ! window->accelerator_list->empty() )
+    while ( iter != root->accelerator_list->end() )
     {
-      FWidget::Accelerators::iterator iter;
-      iter = window->accelerator_list->begin();
-
-      while ( iter != window->accelerator_list->end() )
+      if ( iter->object == obj )
       {
-        if ( iter->object == obj )
-        {
-          accel_key = 0;
-          iter = window->accelerator_list->erase(iter);
-        }
-        else
-          ++iter;
+        accel_key = 0;
+        iter = root->accelerator_list->erase(iter);
       }
+      else
+        ++iter;
     }
   }
 
