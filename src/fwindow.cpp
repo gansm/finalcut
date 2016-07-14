@@ -143,21 +143,21 @@ void FWindow::addWindow (FWidget* obj)
 void FWindow::delWindow (FWidget* obj)
 {
   // delete the window object obj from the window list
-  if ( window_list && ! window_list->empty() )
+  if ( ! window_list || window_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = window_list->begin();
+
+  while ( iter != window_list->end() )
   {
-    widgetList::iterator iter;
-    iter = window_list->begin();
-
-    while ( iter != window_list->end() )
+    if ( (*iter) == obj )
     {
-      if ( (*iter) == obj )
-      {
-        window_list->erase(iter);
-        return;
-      }
-
-      ++iter;
+      window_list->erase(iter);
+      return;
     }
+
+    ++iter;
   }
 }
 

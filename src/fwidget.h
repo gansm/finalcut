@@ -92,6 +92,7 @@ class FWidget : public FObject, public FTerm
  public:
    typedef std::vector<FWidget*> widgetList;
    static widgetList* window_list;
+   static widgetList* dialog_list;
    static widgetList* close_widget;
 
    typedef void (*FCallback)(FWidget*, void*);

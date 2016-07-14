@@ -49,7 +49,7 @@ class FMenuItem : public FWidget
    bool       checkable;
    bool       checked;
    bool       radio_button;
-   bool       dialog_list;
+   bool       dialog_index;
    uInt       text_length;
    int        hotkey;
    int        accel_key;

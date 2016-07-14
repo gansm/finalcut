@@ -18,6 +18,7 @@ FMenuBar*              FWidget::menubar            = 0;
 FWidget*               FWidget::show_root_widget   = 0;
 FWidget*               FWidget::redraw_root_widget = 0;
 FWidget::widgetList*   FWidget::window_list        = 0;
+FWidget::widgetList*   FWidget::dialog_list        = 0;
 FWidget::widgetList*   FWidget::close_widget       = 0;
 FWidget::widget_colors FWidget::wc;
 
@@ -127,6 +128,7 @@ FWidget::~FWidget()  // destructor
 void FWidget::init()
 {
   window_list    = new widgetList();
+  dialog_list    = new widgetList();
   close_widget   = new widgetList();
 
   getTermGeometry(); // <-----.
@@ -176,6 +178,12 @@ void FWidget::finish()
   {
     delete close_widget;
     close_widget = 0;
+  }
+
+  if ( dialog_list )
+  {
+    delete dialog_list;
+    dialog_list = 0;
   }
 
   if ( window_list )

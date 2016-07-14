@@ -1,3 +1,7 @@
+2016-07-14  Markus Gans  <guru.mail@muenster.de>
+	* Adding a dialog list with the entries in the chronological 
+	  order of the generation
+
 2016-07-13  Markus Gans  <guru.mail@muenster.de>
 	* Bind accelerator key from the FMenuItem to the root widget
 

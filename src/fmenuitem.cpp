@@ -23,7 +23,7 @@ FMenuItem::FMenuItem (FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
@@ -42,7 +42,7 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
@@ -61,7 +61,7 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
@@ -80,7 +80,7 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(0)
@@ -99,7 +99,7 @@ FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
@@ -118,7 +118,7 @@ FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
@@ -137,7 +137,7 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
   , checkable(false)
   , checked(false)
   , radio_button(false)
-  , dialog_list(false)
+  , dialog_index(false)
   , text_length(0)
   , hotkey(0)
   , accel_key(k)
@@ -256,17 +256,14 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 {
   winmenu->clear();
 
-  if ( window_list && ! window_list->empty() )
+  if ( dialog_list && ! dialog_list->empty() )
   {
-    widgetList::const_iterator iter, begin;
-    iter  = window_list->end();
-    begin = window_list->begin();
+    widgetList::const_iterator iter;
+    iter  = dialog_list->begin();
 
-    do
+    while ( iter != dialog_list->end() )
     {
-      --iter;
-
-      if ( (*iter)->isDialog() )
+      if ( *iter && (*iter)->isDialog() )
       {
         FDialog* win = dynamic_cast<FDialog*>(*iter);
 
@@ -283,8 +280,9 @@ void FMenuItem::createDialogList (FMenu* winmenu)
           );
         }
       }
+
+      ++iter;
     }
-    while ( iter != begin );
   }
 
   winmenu->menu_dimension();
@@ -837,7 +835,7 @@ void FMenuItem::openMenu()
       open_menu->hideSubMenus();
     }
 
-    if ( dialog_list )
+    if ( dialog_index )
       createDialogList (dd_menu);
 
     setOpenMenu(dd_menu);

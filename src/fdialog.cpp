@@ -52,6 +52,7 @@ FDialog::~FDialog()  // destructor
   accelerator_list = 0;
   activatePrevWindow();
   delWindow(this);
+  delDialog(this);
   fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( ! fapp->quit_now )
@@ -102,6 +103,7 @@ void FDialog::init()
   ignore_padding = true;
   window_object  = true;
   dialog_object  = true;
+  addDialog(this);
   addWindow(this);
   setActiveWindow(this);
 
@@ -322,6 +324,36 @@ void FDialog::cb_close (FWidget*, void*)
   setClickedWidget(0);
   drawTitleBar();
   close();
+}
+
+//----------------------------------------------------------------------
+void FDialog::addDialog (FWidget* obj)
+{
+  // add the dialog object obj to the dialog list
+  if ( dialog_list )
+    dialog_list->push_back(obj);
+}
+
+//----------------------------------------------------------------------
+void FDialog::delDialog (FWidget* obj)
+{
+  // delete the dialog object obj from the dialog list
+  if ( ! dialog_list || dialog_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = dialog_list->begin();
+
+  while ( iter != dialog_list->end() )
+  {
+    if ( (*iter) == obj )
+    {
+      dialog_list->erase(iter);
+      return;
+    }
+
+    ++iter;
+  }
 }
 
 

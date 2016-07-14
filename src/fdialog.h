@@ -50,23 +50,25 @@ class FDialog : public FWindow
    };
 
  private:
-   FString    tb_text;         // title bar text
-   int        result_code;
-   bool       maximized;
-   FPoint     TitleBarClickPos;
-   FRect      oldGeometry;      // required by move()
-   FWidget*   focus_widget;
-   FMenu*     dialog_menu;
-   FMenuItem* dgl_menuitem;
+   FString      tb_text;         // title bar text
+   int          result_code;
+   bool         maximized;
+   FPoint       TitleBarClickPos;
+   FRect        oldGeometry;      // required by move()
+   FWidget*     focus_widget;
+   FMenu*       dialog_menu;
+   FMenuItem*   dgl_menuitem;
 
  private:
    FDialog (const FDialog&);
    FDialog& operator = (const FDialog&);
-   void init();
-   void drawBorder();
-   void drawTitleBar();
-   void leaveMenu();
-   void cb_close (FWidget*, void*);
+   void         init();
+   void         drawBorder();
+   void         drawTitleBar();
+   void         leaveMenu();
+   void         cb_close (FWidget*, void*);
+   static void  addDialog (FWidget*);
+   static void  delDialog (FWidget*);
 
  protected:
    virtual void done (int);

@@ -52,5 +52,5 @@ void FDialogListMenu::init()
   FMenuItem* menuitem = getItem();
 
   if ( menuitem )
-    menuitem->dialog_list = true;
+    menuitem->dialog_index = true;
 }
