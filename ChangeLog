@@ -1,3 +1,7 @@
+2016-07-16  Markus Gans  <guru.mail@muenster.de>
+	* Switch to a specific dialog with meta key + 1..9
+	* Add more meta key escape sequences (for putty)
+
 2016-07-14  Markus Gans  <guru.mail@muenster.de>
 	* Adding a dialog list with the entries in the chronological 
 	  order of the generation

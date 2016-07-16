@@ -88,6 +88,7 @@ class FDialog : public FWindow
    void     onMouseUp (FMouseEvent*);
    void     onMouseMove (FMouseEvent*);
    void     onMouseDoubleClick (FMouseEvent*);
+   void     onAccel (FAccelEvent*);
    void     onWindowActive (FEvent*);
    void     onWindowInactive (FEvent*);
    void     onWindowRaised (FEvent*);

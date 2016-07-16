@@ -258,27 +258,28 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
   if ( dialog_list && ! dialog_list->empty() )
   {
-    widgetList::const_iterator iter;
-    iter  = dialog_list->begin();
+    widgetList::const_iterator iter, begin;
+    iter = begin = dialog_list->begin();
 
-    while ( iter != dialog_list->end() )
+    while ( iter != dialog_list->end() && *iter )
     {
-      if ( *iter && (*iter)->isDialog() )
+      FDialog* win = dynamic_cast<FDialog*>(*iter);
+
+      if ( win )
       {
-        FDialog* win = dynamic_cast<FDialog*>(*iter);
+        int n = std::distance(begin, iter);
+        FString win_title = win->getText();
+        FMenuItem* win_item = new FMenuItem (win_title, winmenu);
 
-        if ( win )
-        {
-          FString win_title = win->getText();
-          FMenuItem* win_item = new FMenuItem (win_title, winmenu);
+        if ( n < 9 )
+          win_item->addAccelerator (fc::Fmkey_1 + n); // Meta + 1..9
 
-          win_item->addCallback
-          (
-            "clicked",
-            _METHOD_CALLBACK (this, &FMenuItem::cb_switchToDialog),
-            dynamic_cast<FWidget::data_ptr>(win)
-          );
-        }
+        win_item->addCallback
+        (
+          "clicked",
+          _METHOD_CALLBACK (this, &FMenuItem::cb_switchToDialog),
+          dynamic_cast<FWidget::data_ptr>(win)
+        );
       }
 
       ++iter;

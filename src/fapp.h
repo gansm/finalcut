@@ -124,6 +124,7 @@ class FApplication : public FWidget
    bool    KeyPressed();
    ssize_t readKey();
    void    processKeyboardEvent();
+   void    processDialogSwitchAccelerator();
    void    processAccelerator (FWidget*);
    void    getX11ButtonState (int);
    bool    parseX11Mouse();

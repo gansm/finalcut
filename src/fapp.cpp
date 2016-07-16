@@ -399,6 +399,9 @@ void FApplication::processKeyboardEvent()
 
               // global keyboard accelerator
               processAccelerator (getRootWidget());
+
+              // switch to a specific dialog with Meta + 1..9
+              processDialogSwitchAccelerator();
             }
           } // end of else
         }
@@ -425,6 +428,22 @@ void FApplication::processKeyboardEvent()
     FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
     sendEvent (widget, &k_press_ev);
     input_data_pending = false;
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::processDialogSwitchAccelerator()
+{
+  if ( key >= fc::Fmkey_1 && key <= fc::Fmkey_9 )
+  {
+    int n = key - fc::Fmkey_0;
+    int s = dialog_list->size();
+
+    if ( s > 0 && s >= n )
+    {
+      FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
+      sendEvent (dialog_list->at(n-1), &a_ev);
+    }
   }
 }
 
@@ -1346,7 +1365,7 @@ void FApplication::processCloseWidget()
     widgetList::iterator iter;
     iter = close_widget->begin();
 
-    while ( iter != close_widget->end() )
+    while ( iter != close_widget->end() && *iter )
     {
       delete *iter;
       ++iter;

@@ -802,6 +802,22 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FDialog::onAccel (FAccelEvent*)
+{
+  if ( ! this->isHiddenWindow() && ! this->isActiveWindow() )
+  {
+    FWindow::setActiveWindow(this);
+    FWidget* focus_widget = this->getFocusWidget();
+    FWindow::raiseWindow (this);
+
+    if ( focus_widget )
+      focus_widget->setFocus();
+
+    this->redraw();
+  }
+}
+
+//----------------------------------------------------------------------
 void FDialog::onWindowActive (FEvent*)
 {
   if ( isVisible() && isShown() )
