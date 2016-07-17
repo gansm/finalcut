@@ -325,6 +325,7 @@ static metakeymap Fmetakey[] =
   { fc::Fcmkey_menu                , "\033[29;7~"  },  // ctrl-M-menu
   { fc::Fcmkey_smenu               , "\033[29;8~"  },  // shift-ctrl-M-menu
   { fc::Fkey_escape_mintty         , "\033O["},  // mintty Esc
+  { fc::Fmkey_tab                  , "\033\t"},  // M-tab
   { fc::Fmkey_space                , "\033 " },  // M-' '
   { fc::Fmkey_bang                 , "\033!" },  // M-!
   { fc::Fmkey_quotes               , "\033\""},  // M-"
@@ -724,6 +725,7 @@ static keyname FkeyName[] =
   { fc::Fmkey_smenu               , "Shift+Meta+Menu" },
   { fc::Fcmkey_menu               , "Ctrl+Meta+Menu" },
   { fc::Fcmkey_smenu              , "Shift+Ctrl+Meta+Menu" },
+  { fc::Fmkey_tab                 , "Meta+Tab" },
   { fc::Fmkey_space               , "Meta+Space" },
   { fc::Fmkey_bang                , "Meta+!" },
   { fc::Fmkey_quotes              , "Meta+\"" },

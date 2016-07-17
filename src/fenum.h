@@ -509,6 +509,7 @@ class fc
      Fkey_extended_mouse        = 0x2000021,  // SGR extended mouse
      Fkey_urxvt_mouse           = 0x2000022,  // urxvt mouse extension
      Fmkey_meta                 = 0x20000e0,  // meta key offset
+     Fmkey_tab                  = 0x20000e9,  // M-tab
      Fmkey_space                = 0x2000100,  // M-' '
      Fmkey_bang                 = 0x2000101,  // M-!
      Fmkey_quotes               = 0x2000102,  // M-"

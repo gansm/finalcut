@@ -1,4 +1,7 @@
 2016-07-16  Markus Gans  <guru.mail@muenster.de>
+	* Support to read meta+tab from keyboard
+
+2016-07-16  Markus Gans  <guru.mail@muenster.de>
 	* Switch to a specific dialog with meta key + 1..9
 	* Add more meta key escape sequences (for putty)
 
