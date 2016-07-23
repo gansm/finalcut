@@ -434,7 +434,7 @@ void FApplication::processKeyboardEvent()
 }
 
 //----------------------------------------------------------------------
-int FApplication::modifierKeyCorrection (int& key)
+int FApplication::modifierKeyCorrection (int& key_id)
 {
   // get the current modifier key state
   getModifierKey();
@@ -442,11 +442,11 @@ int FApplication::modifierKeyCorrection (int& key)
 
   if ( ! m.shift && ! m.ctrl && ! m.alt )
   {
-    return key;
+    return key_id;
   }
   else if ( m.shift && ! m.ctrl && ! m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fkey_sr;        // Shift+Up
@@ -479,12 +479,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fkey_snext;     // Shift+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( ! m.shift && m.ctrl && ! m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fckey_up;    // Ctrl+Up
@@ -517,12 +517,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fckey_npage; // Ctrl+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( ! m.shift && ! m.ctrl && m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fmkey_up;    // Meta+Up
@@ -555,12 +555,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fmkey_npage; // Meta+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( m.shift && m.ctrl && ! m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fckey_sup;    // Shift+Ctrl+Up
@@ -593,12 +593,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fckey_snpage; // Shift+Ctrl+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( m.shift && ! m.ctrl && m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fmkey_sup;    // Shift+Meta+Up
@@ -631,12 +631,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fmkey_snpage; // Shift+Meta+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( ! m.shift &&  m.ctrl && m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fcmkey_up;    // Ctrl+Meta+Up
@@ -669,12 +669,12 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fcmkey_npage; // Ctrl+Meta+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
   else if ( m.shift &&  m.ctrl && m.alt )
   {
-    switch ( key )
+    switch ( key_id )
     {
       case fc::Fkey_up:
         return fc::Fcmkey_sup;    // Shift+Ctrl+Meta+Up
@@ -707,11 +707,11 @@ int FApplication::modifierKeyCorrection (int& key)
         return fc::Fcmkey_snpage; // Shift+Ctrl+Meta+PgDn
 
       default:
-        return key;
+        return key_id;
     }
   }
 
-  return key;
+  return key_id;
 }
 
 //----------------------------------------------------------------------
@@ -719,8 +719,8 @@ void FApplication::processDialogSwitchAccelerator()
 {
   if ( key >= fc::Fmkey_1 && key <= fc::Fmkey_9 )
   {
-    int n = key - fc::Fmkey_0;
-    int s = dialog_list->size();
+    uLong n = uLong(key - fc::Fmkey_0);
+    uLong s = dialog_list->size();
 
     if ( s > 0 && s >= n )
     {

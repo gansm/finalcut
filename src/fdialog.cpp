@@ -807,7 +807,6 @@ void FDialog::onAccel (FAccelEvent*)
   if ( ! this->isHiddenWindow() && ! this->isActiveWindow() )
   {
     FWindow::setActiveWindow(this);
-    FWidget* focus_widget = this->getFocusWidget();
     FWindow::raiseWindow (this);
 
     if ( focus_widget )
@@ -1101,7 +1100,7 @@ void FDialog::setGeometry (int x, int y, int w, int h, bool adjust)
 //----------------------------------------------------------------------
 FWidget* FDialog::getFocusWidget() const
 {
-  return static_cast<FWidget*>(focus_widget);
+  return focus_widget;
 }
 
 //----------------------------------------------------------------------

@@ -267,7 +267,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
       if ( win )
       {
-        int n = std::distance(begin, iter);
+        int n = int(std::distance(begin, iter));
         FString win_title = win->getText();
         FMenuItem* win_item = new FMenuItem (win_title, winmenu);
 
