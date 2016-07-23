@@ -440,7 +440,11 @@ int FApplication::modifierKeyCorrection (int& key)
   getModifierKey();
   modifier_key& m = mod_key;
 
-  if ( m.shift && ! m.ctrl && ! m.alt )
+  if ( ! m.shift && ! m.ctrl && ! m.alt )
+  {
+    return key;
+  }
+  else if ( m.shift && ! m.ctrl && ! m.alt )
   {
     switch ( key )
     {
