@@ -124,6 +124,7 @@ class FApplication : public FWidget
    bool    KeyPressed();
    ssize_t readKey();
    void    processKeyboardEvent();
+   int     modifierKeyCorrection (int& key);
    void    processDialogSwitchAccelerator();
    void    processAccelerator (FWidget*);
    void    getX11ButtonState (int);

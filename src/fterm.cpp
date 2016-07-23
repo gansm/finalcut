@@ -96,6 +96,7 @@ const FString*         FTerm::AnswerBack         = 0;
 const FString*         FTerm::Sec_DA             = 0;
 FOptiMove*             FTerm::opti_move          = 0;
 FOptiAttr*             FTerm::opti_attr          = 0;
+FTerm::modifier_key    FTerm::mod_key;
 FTerm::term_area*      FTerm::vterm              = 0;
 FTerm::term_area*      FTerm::vdesktop           = 0;
 FTerm::term_area*      FTerm::vmenubar           = 0;
@@ -388,7 +389,7 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
     return -1;
 
   // initialize unused padding bytes in struct
-  memset(&font, 0, sizeof(console_font_op));
+  memset(&font, 0x00, sizeof(console_font_op));
 
   font.op = KD_FONT_OP_SET;
   font.flags = 0;
@@ -687,7 +688,7 @@ int FTerm::parseKeyString ( char* buffer
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getKeyName(int keynum)
+FString FTerm::getKeyName (int keynum)
 {
   for (int i=0; FkeyName[i].string[0] != 0; i++)
     if ( FkeyName[i].num && FkeyName[i].num == keynum )
@@ -697,6 +698,30 @@ FString FTerm::getKeyName(int keynum)
     return FString(char(keynum));
 
   return FString("");
+}
+
+//----------------------------------------------------------------------
+void FTerm::getModifierKey()
+{
+  char subcode = 6;
+  // fill bit field with 0
+  memset (&mod_key, 0x00, sizeof(mod_key));
+
+  // TIOCLINUX, subcode=6
+  if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
+  {
+    if ( subcode & (1 << KG_SHIFT) )
+      mod_key.shift = true;
+
+    if ( subcode & (1 << KG_ALTGR) )
+      mod_key.alt_gr = true;
+
+    if ( subcode & (1 << KG_CTRL) )
+      mod_key.ctrl = true;
+
+    if ( subcode & (1 << KG_ALT) )
+      mod_key.alt = true;
+  }
 }
 
 //----------------------------------------------------------------------

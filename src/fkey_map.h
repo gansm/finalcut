@@ -326,6 +326,8 @@ static metakeymap Fmetakey[] =
   { fc::Fcmkey_smenu               , "\033[29;8~"  },  // shift-ctrl-M-menu
   { fc::Fkey_escape_mintty         , "\033O["},  // mintty Esc
   { fc::Fmkey_tab                  , "\033\t"},  // M-tab
+  { fc::Fmkey_enter                , "\033\n"},  // M-enter
+  { fc::Fmkey_enter                , "\033\r"},  // M-enter
   { fc::Fmkey_space                , "\033 " },  // M-' '
   { fc::Fmkey_bang                 , "\033!" },  // M-!
   { fc::Fmkey_quotes               , "\033\""},  // M-"
@@ -675,10 +677,10 @@ static keyname FkeyName[] =
   { fc::Fckey_down                , "Ctrl+Down" },
   { fc::Fckey_right               , "Ctrl+Right" },
   { fc::Fckey_left                , "Ctrl+Left" },
-  { fc::Fckey_sic                 , "Ctrl+Ins" },
-  { fc::Fckey_sdc                 , "Ctrl+Del" },
-  { fc::Fckey_shome               , "Ctrl+Home" },
-  { fc::Fckey_send                , "Ctrl+End" },
+  { fc::Fckey_sic                 , "Shift+Ctrl+Ins" },
+  { fc::Fckey_sdc                 , "Shift+Ctrl+Del" },
+  { fc::Fckey_shome               , "Shift+Ctrl+Home" },
+  { fc::Fckey_send                , "Shift+Ctrl+End" },
   { fc::Fckey_sppage              , "Shift+Ctrl+PgUp" },
   { fc::Fckey_snpage              , "Shift+Ctrl+PgDn" },
   { fc::Fckey_sup                 , "Shift+Ctrl+Up" },
@@ -726,6 +728,7 @@ static keyname FkeyName[] =
   { fc::Fcmkey_menu               , "Ctrl+Meta+Menu" },
   { fc::Fcmkey_smenu              , "Shift+Ctrl+Meta+Menu" },
   { fc::Fmkey_tab                 , "Meta+Tab" },
+  { fc::Fmkey_enter               , "Meta+Enter" }, 
   { fc::Fmkey_space               , "Meta+Space" },
   { fc::Fmkey_bang                , "Meta+!" },
   { fc::Fmkey_quotes              , "Meta+\"" },

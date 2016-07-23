@@ -300,6 +300,8 @@ void FApplication::processKeyboardEvent()
 
         if ( key != NEED_MORE_DATA )
         {
+          key = modifierKeyCorrection (key);
+
           if ( key == fc::Fckey_l )  // Ctrl-L (redraw the screen)
             redraw();
 
@@ -429,6 +431,283 @@ void FApplication::processKeyboardEvent()
     sendEvent (widget, &k_press_ev);
     input_data_pending = false;
   }
+}
+
+//----------------------------------------------------------------------
+int FApplication::modifierKeyCorrection (int& key)
+{
+  // get the current modifier key state
+  getModifierKey();
+  modifier_key& m = mod_key;
+
+  if ( m.shift && ! m.ctrl && ! m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fkey_sr;        // Shift+Up
+
+      case fc::Fkey_down:
+        return fc::Fkey_sf;        // Shift+Down
+
+      case fc::Fkey_left:
+        return fc::Fkey_sleft;     // Shift+Left
+
+      case fc::Fkey_right:
+        return fc::Fkey_sright;    // Shift+Right
+
+      case fc::Fkey_ic:
+        return fc::Fkey_sic;       // Shift+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fkey_sdc;       // Shift+Del
+
+      case fc::Fkey_home:
+        return fc::Fkey_shome;     // Shift+Home
+
+      case fc::Fkey_end:
+        return fc::Fkey_send;      // Shift+End
+
+      case fc::Fkey_ppage:
+        return fc::Fkey_sprevious; // Shift+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fkey_snext;     // Shift+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( ! m.shift && m.ctrl && ! m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fckey_up;    // Ctrl+Up
+
+      case fc::Fkey_down:
+        return fc::Fckey_down;  // Ctrl+Down
+
+      case fc::Fkey_left:
+        return fc::Fckey_left;  // Ctrl+Left
+
+      case fc::Fkey_right:
+        return fc::Fckey_right; // Ctrl+Right
+
+      case fc::Fkey_ic:
+        return fc::Fckey_ic;    // Ctrl+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fckey_dc;    // Ctrl+Del
+
+      case fc::Fkey_home:
+        return fc::Fckey_home;  // Ctrl+Home
+
+      case fc::Fkey_end:
+        return fc::Fckey_end;   // Ctrl+End
+
+      case fc::Fkey_ppage:
+        return fc::Fckey_ppage; // Ctrl+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fckey_npage; // Ctrl+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( ! m.shift && ! m.ctrl && m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fmkey_up;    // Meta+Up
+
+      case fc::Fkey_down:
+        return fc::Fmkey_down;  // Meta+Down
+
+      case fc::Fkey_left:
+        return fc::Fmkey_left;  // Meta+Left
+
+      case fc::Fkey_right:
+        return fc::Fmkey_right; // Meta+Right
+
+      case fc::Fkey_ic:
+        return fc::Fmkey_ic;    // Meta+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fmkey_dc;    // Meta+Del
+
+      case fc::Fkey_home:
+        return fc::Fmkey_home;  // Meta+Home
+
+      case fc::Fkey_end:
+        return fc::Fmkey_end;   // Meta+End
+
+      case fc::Fkey_ppage:
+        return fc::Fmkey_ppage; // Meta+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fmkey_npage; // Meta+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( m.shift && m.ctrl && ! m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fckey_sup;    // Shift+Ctrl+Up
+
+      case fc::Fkey_down:
+        return fc::Fckey_sdown;  // Shift+Ctrl+Down
+
+      case fc::Fkey_left:
+        return fc::Fckey_sleft;  // Shift+Ctrl+Left
+
+      case fc::Fkey_right:
+        return fc::Fckey_sright; // Shift+Ctrl+Right
+
+      case fc::Fkey_ic:
+        return fc::Fckey_sic;    // Shift+Ctrl+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fckey_sdc;    // Shift+Ctrl+Del
+
+      case fc::Fkey_home:
+        return fc::Fckey_shome;  // Shift+Ctrl+Home
+
+      case fc::Fkey_end:
+        return fc::Fckey_send;   // Shift+Ctrl+End
+
+      case fc::Fkey_ppage:
+        return fc::Fckey_sppage; // Shift+Ctrl+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fckey_snpage; // Shift+Ctrl+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( m.shift && ! m.ctrl && m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fmkey_sup;    // Shift+Meta+Up
+
+      case fc::Fkey_down:
+        return fc::Fmkey_sdown;  // Shift+Meta+Down
+
+      case fc::Fkey_left:
+        return fc::Fmkey_sright; // Shift+Meta+Left
+
+      case fc::Fkey_right:
+        return fc::Fmkey_sleft;  // Shift+Meta+Right
+
+      case fc::Fkey_ic:
+        return fc::Fmkey_sic;    // Shift+Meta+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fmkey_sdc;    // Shift+Meta+Del
+
+      case fc::Fkey_home:
+        return fc::Fmkey_shome;  // Shift+Meta+Home
+
+      case fc::Fkey_end:
+        return fc::Fmkey_send;   // Shift+Meta+End
+
+      case fc::Fkey_ppage:
+        return fc::Fmkey_sppage; // Shift+Meta+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fmkey_snpage; // Shift+Meta+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( ! m.shift &&  m.ctrl && m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fcmkey_up;    // Ctrl+Meta+Up
+
+      case fc::Fkey_down:
+        return fc::Fcmkey_down;  // Ctrl+Meta+Down
+
+      case fc::Fkey_left:
+        return fc::Fcmkey_left;  // Ctrl+Meta+Left
+
+      case fc::Fkey_right:
+        return fc::Fcmkey_right; // Ctrl+Meta+Right
+
+      case fc::Fkey_ic:
+        return fc::Fcmkey_ic;    // Ctrl+Meta+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fcmkey_dc;    // Ctrl+Meta+Del
+
+      case fc::Fkey_home:
+        return fc::Fcmkey_home;  // Ctrl+Meta+Home
+
+      case fc::Fkey_end:
+        return fc::Fcmkey_end;   // Ctrl+Meta+End
+
+      case fc::Fkey_ppage:
+        return fc::Fcmkey_ppage; // Ctrl+Meta+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fcmkey_npage; // Ctrl+Meta+PgDn
+
+      default:
+        return key;
+    }
+  }
+  else if ( m.shift &&  m.ctrl && m.alt )
+  {
+    switch ( key )
+    {
+      case fc::Fkey_up:
+        return fc::Fcmkey_sup;    // Shift+Ctrl+Meta+Up
+
+      case fc::Fkey_down:
+        return fc::Fcmkey_sdown;  // Shift+Ctrl+Meta+Down
+
+      case fc::Fkey_left:
+        return fc::Fcmkey_sleft;  // Shift+Ctrl+Meta+Left
+
+      case fc::Fkey_right:
+        return fc::Fcmkey_sright; // Shift+Ctrl+Meta+Right
+
+      case fc::Fkey_ic:
+        return fc::Fcmkey_sic;    // Shift+Ctrl+Meta+Ins
+
+      case fc::Fkey_dc:
+        return fc::Fcmkey_sdc;    // Shift+Ctrl+Meta+Del
+
+      case fc::Fkey_home:
+        return fc::Fcmkey_shome;  // Shift+Ctrl+Meta+Home
+
+      case fc::Fkey_end:
+        return fc::Fcmkey_send;   // Shift+Ctrl+Meta+End
+
+      case fc::Fkey_ppage:
+        return fc::Fcmkey_sppage; // Shift+Ctrl+Meta+PgUp
+
+      case fc::Fkey_npage:
+        return fc::Fcmkey_snpage; // Shift+Ctrl+Meta+PgDn
+
+      default:
+        return key;
+    }
+  }
+
+  return key;
 }
 
 //----------------------------------------------------------------------
@@ -599,6 +878,7 @@ bool FApplication::parseX11Mouse()
   x = uChar(x11_mouse[1] - 0x20);
   y = uChar(x11_mouse[2] - 0x20);
   newMousePosition.setPoint(x,y);
+  // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (x11_mouse[0] & key_shift) == key_shift )
@@ -691,6 +971,7 @@ bool FApplication::parseSGRMouse()
   }
 
   newMousePosition.setPoint(x,y);
+  // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (button & key_shift) == key_shift )
@@ -887,6 +1168,7 @@ bool FApplication::parseUrxvtMouse()
     y = uChar(term->getHeight());
 
   newMousePosition.setPoint(x,y);
+  // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (button & key_shift) == key_shift )
@@ -925,6 +1207,7 @@ bool FApplication::parseUrxvtMouse()
 #ifdef F_HAVE_LIBGPM
 bool FApplication::processGpmEvent()
 {
+  // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
   if ( Gpm_GetEvent(&gpm_ev) == 1 )

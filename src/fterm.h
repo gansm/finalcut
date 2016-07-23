@@ -190,6 +190,15 @@ class FTerm
      dacreg d[16];
    } map;
 
+   static struct modifier_key // bit field
+   {
+     uChar shift  : 1;  // 0..1
+     uChar alt_gr : 1;  // 0..1
+     uChar ctrl   : 1;  // 0..1
+     uChar alt    : 1;  // 0..1
+     uChar        : 4;  // padding bits
+   } mod_key;
+
  protected:
    static bool NewFont;
    static bool VGAFont;
@@ -290,6 +299,7 @@ class FTerm
    int            getLineNumber();
    int            getColumnNumber();
    static FString getKeyName (int);
+   static void    getModifierKey();
 
    static char*   getTermType();
    static char*   getTermName();
