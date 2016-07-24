@@ -1026,10 +1026,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
         if ( statusBar() )
           statusBar()->clearMessage();
 
-        activatePrevWindow();
-        raiseWindow (getActiveWindow());
-        getActiveWindow()->getFocusWidget()->setFocus();
-        getActiveWindow()->redraw();
+        switchToPrevWindow();
       }
 
       if ( statusBar() )

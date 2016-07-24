@@ -393,17 +393,20 @@ void FApplication::processKeyboardEvent()
                && ! k_press_ev.isAccepted()
                && ! k_down_ev.isAccepted() )
             {
+              bool accpt = false;
+              // switch to a specific dialog with Meta + 1..9
+              if ( ! accpt )
+                accpt = processDialogSwitchAccelerator();
+
               // windows keyboard accelerator
               FWidget* window = static_cast<FWidget*>(active_window);
 
-              if ( window )
-                processAccelerator (window);
+              if ( window && ! accpt )
+                accpt = processAccelerator (window);
 
               // global keyboard accelerator
-              processAccelerator (getRootWidget());
-
-              // switch to a specific dialog with Meta + 1..9
-              processDialogSwitchAccelerator();
+              if ( ! accpt )
+                accpt = processAccelerator (getRootWidget());
             }
           } // end of else
         }
@@ -715,7 +718,7 @@ int FApplication::modifierKeyCorrection (int& key_id)
 }
 
 //----------------------------------------------------------------------
-void FApplication::processDialogSwitchAccelerator()
+bool FApplication::processDialogSwitchAccelerator()
 {
   if ( key >= fc::Fmkey_1 && key <= fc::Fmkey_9 )
   {
@@ -726,13 +729,18 @@ void FApplication::processDialogSwitchAccelerator()
     {
       FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
       sendEvent (dialog_list->at(n-1), &a_ev);
+      return true;
     }
   }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
-void FApplication::processAccelerator (FWidget* widget)
+bool FApplication::processAccelerator (FWidget* widget)
 {
+  bool accpt = false;
+
   if ( widget
      && widget->accelerator_list
      && ! widget->accelerator_list->empty() )
@@ -750,12 +758,15 @@ void FApplication::processAccelerator (FWidget* widget)
       {
         FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
         sendEvent (iter->object, &a_ev);
+        accpt = a_ev.isAccepted();
         break;
       };
 
       ++iter;
     }
   }
+
+  return accpt;
 }
 
 //----------------------------------------------------------------------

@@ -280,6 +280,13 @@ void FMenuItem::createDialogList (FMenu* winmenu)
           _METHOD_CALLBACK (this, &FMenuItem::cb_switchToDialog),
           dynamic_cast<FWidget::data_ptr>(win)
         );
+
+        win->addCallback
+        (
+          "destroy",
+          _METHOD_CALLBACK (this, &FMenuItem::cb_destroyDialog),
+          static_cast<FWidget::data_ptr>(win_item)
+        );
       }
 
       ++iter;
@@ -304,6 +311,19 @@ void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
       focus_widget->setFocus();
 
     win->redraw();
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuItem::cb_destroyDialog (FWidget* widget, void* data_ptr)
+{
+  FDialog* win = static_cast<FDialog*>(widget);
+  FMenuItem* win_item  = static_cast<FMenuItem*>(data_ptr);
+
+  if ( win_item && win )
+  {
+    win_item->delAccelerator(win);
+    win_item->delCallback(this);
   }
 }
 

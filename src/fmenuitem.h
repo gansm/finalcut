@@ -65,6 +65,7 @@ class FMenuItem : public FWidget
    void       processDeactivate();
    void       createDialogList (FMenu*);
    void       cb_switchToDialog (FWidget*, void*);
+   void       cb_destroyDialog (FWidget*, void*);
    virtual void processClicked();
 
  protected:

@@ -644,7 +644,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
             (*iter)->setSelected();
             (*iter)->setFocus();
 
-            if ( focused_widget )
+            if ( focused_widget && ! focused_widget->isWindow() )
               focused_widget->redraw();
 
             (*iter)->openMenu();
@@ -820,7 +820,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           (*iter)->setSelected();
           (*iter)->setFocus();
 
-          if ( focused_widget )
+          if ( focused_widget && ! focused_widget->isWindow() )
             focused_widget->redraw();
 
           (*iter)->openMenu();

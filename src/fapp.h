@@ -125,8 +125,8 @@ class FApplication : public FWidget
    ssize_t readKey();
    void    processKeyboardEvent();
    int     modifierKeyCorrection (int& key);
-   void    processDialogSwitchAccelerator();
-   void    processAccelerator (FWidget*);
+   bool    processDialogSwitchAccelerator();
+   bool    processAccelerator (FWidget*);
    void    getX11ButtonState (int);
    bool    parseX11Mouse();
    bool    parseSGRMouse();
