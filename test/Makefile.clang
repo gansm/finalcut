@@ -16,7 +16,7 @@ INCLUDES = -I../src
 RM = rm -f
 
 ifdef DEBUG
-  OPTIMIZE = -O0
+  OPTIMIZE = -O0 -fsanitize=undefined
 else
   OPTIMIZE = -O2
 endif

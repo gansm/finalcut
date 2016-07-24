@@ -728,7 +728,7 @@ static keyname FkeyName[] =
   { fc::Fcmkey_menu               , "Ctrl+Meta+Menu" },
   { fc::Fcmkey_smenu              , "Shift+Ctrl+Meta+Menu" },
   { fc::Fmkey_tab                 , "Meta+Tab" },
-  { fc::Fmkey_enter               , "Meta+Enter" }, 
+  { fc::Fmkey_enter               , "Meta+Enter" },
   { fc::Fmkey_space               , "Meta+Space" },
   { fc::Fmkey_bang                , "Meta+!" },
   { fc::Fmkey_quotes              , "Meta+\"" },

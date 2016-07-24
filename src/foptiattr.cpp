@@ -83,7 +83,8 @@ inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
                 || term->fg_color != next->fg_color
                 || term->bg_color != next->bg_color );
   }
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -199,11 +200,13 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   char* Sf = F_set_foreground.cap;
   char* Sb = F_set_background.cap;
   char* sp = F_set_color_pair.cap;
-  short fg = next->fg_color;
-  short bg = next->bg_color;
+  short fg, bg;
 
   if ( monochron || ! term || ! next )
     return;
+
+  fg = next->fg_color;
+  bg = next->bg_color;
 
   if ( fg == Default || bg == Default )
   {
@@ -313,22 +316,24 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::hasAttribute (char_data*& attr)
 {
-  if ( ! attr )
-    return false;
+  if ( attr )
+  {
+    return attr->bold          == true
+        || attr->dim           == true
+        || attr->italic        == true
+        || attr->underline     == true
+        || attr->blink         == true
+        || attr->reverse       == true
+        || attr->standout      == true
+        || attr->invisible     == true
+        || attr->protect       == true
+        || attr->crossed_out   == true
+        || attr->dbl_underline == true
+        || attr->alt_charset   == true
+        || attr->pc_charset    == true;
+  }
 
-  return attr->bold          == true
-      || attr->dim           == true
-      || attr->italic        == true
-      || attr->underline     == true
-      || attr->blink         == true
-      || attr->reverse       == true
-      || attr->standout      == true
-      || attr->invisible     == true
-      || attr->protect       == true
-      || attr->crossed_out   == true
-      || attr->dbl_underline == true
-      || attr->alt_charset   == true
-      || attr->pc_charset    == true;
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -355,8 +360,11 @@ inline void FOptiAttr::resetAttribute (char_data*& attr)
 //----------------------------------------------------------------------
 inline void FOptiAttr::reset (char_data*& attr)
 {
-  resetAttribute(attr);
-  resetColor(attr);
+  if ( attr )
+  {
+    resetAttribute(attr);
+    resetColor(attr);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -915,8 +923,10 @@ short FOptiAttr::vga2ansi (register short color)
       0,  4,  2,  6,  1,  5,  3,  7,
       8, 12, 10, 14,  9, 13, 11, 15
     };
+
     color = lookup_table[color];
   }
+
   return color;
 }
 

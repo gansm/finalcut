@@ -91,7 +91,7 @@ OBJS = \
 TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
 
 ifdef DEBUG
-  OPTIMIZE = -O0
+  OPTIMIZE = -O0 -fsanitize=undefined
 else
   OPTIMIZE = -O2
 endif
