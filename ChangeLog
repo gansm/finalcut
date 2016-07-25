@@ -1,4 +1,7 @@
-2016-07-23  Markus Gans  <guru.mail@muenster.de>
+2016-07-25  Markus Gans  <guru.mail@muenster.de>
+	* Improvements for the window focus
+
+2016-07-24  Markus Gans  <guru.mail@muenster.de>
 	* Add missing null pointer check in FOptiAttr before dereferencing
 	* Remove callbacks and accelerator keys from FDialogListMenu
 	  on closing of a dialog window

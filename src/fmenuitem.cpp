@@ -301,16 +301,11 @@ void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
 {
   FDialog* win = static_cast<FDialog*>(data_ptr);
 
-  if ( win && ! win->isHiddenWindow() && ! win->isActiveWindow() )
+  if ( win )
   {
-    FWindow::setActiveWindow(win);
-    FWidget* focus_widget = win->getFocusWidget();
-    FWindow::raiseWindow (win);
-
-    if ( focus_widget )
-      focus_widget->setFocus();
-
-    win->redraw();
+    FWidget* focus_widget = getFocusWidget();
+    FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
+    FApplication::sendEvent (win, &a_ev);
   }
 }
 

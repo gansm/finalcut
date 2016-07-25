@@ -582,26 +582,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     has_raised = raiseWindow();
 
     if ( ! isActiveWindow() )
-    {
-      FWidget* old_focus = FWidget::getFocusWidget();
-      setActiveWindow(this);
-
-      if ( focus_widget && numOfFocusableChildren() > 1 )
-      {
-        focus_widget->setFocus();
-        focus_widget->redraw();
-
-        if ( old_focus )
-          old_focus->redraw();
-      }
-      else if ( old_focus && focusFirstChild() )
-        old_focus->redraw();
-
-      if ( statusBar() )
-        statusBar()->drawMessage();
-
-      updateTerminal();
-    }
+      activateDialog();
 
     if ( has_raised )
       redraw();
@@ -635,26 +616,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
     {
       if ( ! isActiveWindow() )
-      {
-        FWidget* old_focus = FWidget::getFocusWidget();
-        setActiveWindow(this);
-
-        if ( focus_widget && numOfFocusableChildren() > 1 )
-        {
-          focus_widget->setFocus();
-          focus_widget->redraw();
-
-          if ( old_focus )
-            old_focus->redraw();
-        }
-        else if ( old_focus && focusFirstChild() )
-          old_focus->redraw();
-
-        if ( statusBar() )
-          statusBar()->drawMessage();
-
-        updateTerminal();
-      }
+        activateDialog();
     }
   }
 
@@ -666,26 +628,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       bool has_lowered = lowerWindow();
 
       if ( ! isActiveWindow() )
-      {
-        FWidget* old_focus = FWidget::getFocusWidget();
-        setActiveWindow(this);
-
-        if ( focus_widget && numOfFocusableChildren() > 1 )
-        {
-          focus_widget->setFocus();
-          focus_widget->redraw();
-
-          if ( old_focus )
-            old_focus->redraw();
-        }
-        else if ( old_focus && focusFirstChild() )
-          old_focus->redraw();
-
-        if ( statusBar() )
-          statusBar()->drawMessage();
-
-        updateTerminal();
-      }
+        activateDialog();
       else if ( has_lowered )
         updateTerminal();
     }
@@ -804,15 +747,15 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onAccel (FAccelEvent*)
 {
-  if ( ! this->isHiddenWindow() && ! this->isActiveWindow() )
+  if ( ! isHiddenWindow() && ! isActiveWindow() )
   {
-    FWindow::setActiveWindow(this);
-    FWindow::raiseWindow (this);
+    bool has_raised = raiseWindow();
+    activateDialog();
 
-    if ( focus_widget )
-      focus_widget->setFocus();
+    if ( has_raised )
+      redraw();
 
-    this->redraw();
+    updateTerminal();
   }
 }
 
@@ -1062,6 +1005,34 @@ void FDialog::move (int x, int y)
     if ( ! FWidget::getFocusWidget()->setCursorPos(cursor_pos) )
       hideCursor();
   }
+
+  updateTerminal();
+}
+
+//----------------------------------------------------------------------
+void FDialog::activateDialog()
+{
+  FWidget* old_focus = FWidget::getFocusWidget();
+  setActiveWindow(this);
+
+  if ( focus_widget && numOfFocusableChildren() > 1 )
+  {
+    focus_widget->setFocus();
+    focus_widget->redraw();
+
+    if ( old_focus )
+      old_focus->redraw();
+  }
+  else if ( old_focus )
+  {
+    if ( ! focusFirstChild() )
+      old_focus->unsetFocus();
+
+    old_focus->redraw();
+  }
+
+  if ( statusBar() )
+    statusBar()->drawMessage();
 
   updateTerminal();
 }

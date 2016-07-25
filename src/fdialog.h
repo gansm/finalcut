@@ -50,7 +50,7 @@ class FDialog : public FWindow
    };
 
  private:
-   FString      tb_text;         // title bar text
+   FString      tb_text;          // title bar text
    int          result_code;
    bool         maximized;
    FPoint       TitleBarClickPos;
@@ -93,13 +93,14 @@ class FDialog : public FWindow
    void     onWindowInactive (FEvent*);
    void     onWindowRaised (FEvent*);
    void     onWindowLowered (FEvent*);
-
+   void     activateDialog();
    void     drawDialogShadow();
    void     show();
    void     hide();
    int      exec();
    void     move (const FPoint&);
    void     move (int, int);
+
    void     setWidth (int, bool = true);
    void     setHeight (int, bool = true);
    // make every setGeometry from FWidget available

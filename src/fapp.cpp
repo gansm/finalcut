@@ -399,14 +399,22 @@ void FApplication::processKeyboardEvent()
                 accpt = processDialogSwitchAccelerator();
 
               // windows keyboard accelerator
-              FWidget* window = static_cast<FWidget*>(active_window);
+              if ( ! accpt )
+              {
+                FWidget* window = static_cast<FWidget*>(active_window);
 
-              if ( window && ! accpt )
-                accpt = processAccelerator (window);
+                if ( window )
+                  accpt = processAccelerator (window);
+              }
 
               // global keyboard accelerator
               if ( ! accpt )
-                accpt = processAccelerator (getRootWidget());
+              {
+                FWidget* root_widget = getRootWidget();
+
+                if ( root_widget )
+                  accpt = processAccelerator (root_widget);
+              }
             }
           } // end of else
         }
@@ -737,7 +745,7 @@ bool FApplication::processDialogSwitchAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (FWidget* widget)
+bool FApplication::processAccelerator (FWidget*& widget)
 {
   bool accpt = false;
 
@@ -1480,9 +1488,11 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , fc::LeftButton | key_state );
         FWidget* released_widget = clicked_widget;
+
         if (  b_state.right_button != Pressed
            && b_state.middle_button != Pressed )
           clicked_widget = 0;
+
         sendEvent (released_widget, &m_up_ev);
       }
 
@@ -1501,9 +1511,11 @@ void FApplication::processMouseEvent()
                             , *mouse
                             , fc::RightButton | key_state );
         FWidget* released_widget = clicked_widget;
+
         if (  b_state.left_button != Pressed
            && b_state.middle_button != Pressed )
           clicked_widget = 0;
+
         sendEvent (released_widget, &m_up_ev);
       }
 
