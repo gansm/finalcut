@@ -1564,7 +1564,7 @@ bool FWidget::setFocus (bool on)
       if ( has_raised && window->isVisible() && window->isShown() )
         window->redraw();
     }
-    window->setFocusWidget(this);
+    window->setWindowFocusWidget(this);
   }
 
   return focus = (on) ? true : false;
