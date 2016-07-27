@@ -44,7 +44,8 @@
 class FWindow : public FWidget
 {
  private:
-   bool window_active;
+   bool     window_active;
+   FWidget* win_focus_widget;
 
  protected:
    static FWindow* previous_widget;
@@ -79,8 +80,10 @@ class FWindow : public FWidget
    bool            raiseWindow ();
    static bool     lowerWindow (FWidget*);
    bool            lowerWindow ();
-   static void     setActiveWindow (FWindow*);
    static FWindow* getActiveWindow();
+   static void     setActiveWindow (FWindow*);
+   FWidget*        getWindowFocusWidget() const;
+   void            setWindowFocusWidget (FWidget*);
    static void     switchToPrevWindow();
    static bool     activatePrevWindow();
    bool            activateWindow (bool);

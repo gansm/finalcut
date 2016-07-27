@@ -19,7 +19,6 @@ FDialog::FDialog(FWidget* parent)
   , maximized(false)
   , TitleBarClickPos()
   , oldGeometry()
-  , focus_widget(0)
   , dialog_menu()
   , dgl_menuitem()
 {
@@ -34,7 +33,6 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , maximized(false)
   , TitleBarClickPos()
   , oldGeometry()
-  , focus_widget(0)
   , dialog_menu()
   , dgl_menuitem()
 {
@@ -306,7 +304,7 @@ void FDialog::leaveMenu()
   dialog_menu->hide();
   activateWindow();
   raiseWindow();
-  getFocusWidget()->setFocus();
+  getWindowFocusWidget()->setFocus();
   redraw();
 
   if ( statusBar() )
@@ -734,7 +732,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     dialog_menu->hide();
     activateWindow();
     raiseWindow();
-    getFocusWidget()->setFocus();
+    getWindowFocusWidget()->setFocus();
     setClickedWidget(0);
 
     if ( isModal() )
@@ -767,10 +765,13 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( ! FWidget::getFocusWidget() )
   {
-    if ( focus_widget && focus_widget->isVisible() && focus_widget->isShown() )
+    if ( getWindowFocusWidget()
+       && getWindowFocusWidget()->isVisible()
+       && getWindowFocusWidget()->isShown() )
     {
-      focus_widget->setFocus();
-      focus_widget->redraw();
+      FWidget* win_focus_widget = getWindowFocusWidget();
+      win_focus_widget->setFocus();
+      win_focus_widget->redraw();
     }
     else
       focusFirstChild();
@@ -1013,12 +1014,13 @@ void FDialog::move (int x, int y)
 void FDialog::activateDialog()
 {
   FWidget* old_focus = FWidget::getFocusWidget();
+  FWidget* win_focus_widget = getWindowFocusWidget();
   setActiveWindow(this);
 
-  if ( focus_widget && numOfFocusableChildren() > 1 )
+  if ( win_focus_widget && numOfFocusableChildren() > 1 )
   {
-    focus_widget->setFocus();
-    focus_widget->redraw();
+    win_focus_widget->setFocus();
+    win_focus_widget->redraw();
 
     if ( old_focus )
       old_focus->redraw();
@@ -1066,18 +1068,6 @@ void FDialog::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( vwin && (width != old_width || height != old_height) )
     resizeArea (vwin);
-}
-
-//----------------------------------------------------------------------
-FWidget* FDialog::getFocusWidget() const
-{
-  return focus_widget;
-}
-
-//----------------------------------------------------------------------
-void FDialog::setFocusWidget (FWidget* obj)
-{
-  focus_widget = obj;
 }
 
 //----------------------------------------------------------------------

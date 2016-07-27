@@ -18,6 +18,7 @@ FWindow* FWindow::previous_widget = 0;
 FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
   , window_active(false)
+  , win_focus_widget(0)
 { }
 
 //----------------------------------------------------------------------
@@ -333,6 +334,14 @@ bool FWindow::lowerWindow (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
+FWindow* FWindow::getActiveWindow()
+{
+  // returns the active FWindow object
+  FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
+  return active_window;
+}
+
+//----------------------------------------------------------------------
 void FWindow::setActiveWindow (FWindow* window)
 {
   // activate FWindow object window
@@ -375,11 +384,17 @@ void FWindow::setActiveWindow (FWindow* window)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getActiveWindow()
+FWidget* FWindow::getWindowFocusWidget() const
 {
-  // returns the active FWindow object
-  FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
-  return active_window;
+  // returns the focused widget of this window
+  return win_focus_widget;
+}
+
+//----------------------------------------------------------------------
+void FWindow::setWindowFocusWidget (FWidget* obj)
+{
+  // set focus widget of this window
+  win_focus_widget = obj;
 }
 
 //----------------------------------------------------------------------
@@ -391,7 +406,7 @@ void FWindow::switchToPrevWindow()
 
   if ( active_window )
   {
-    FWidget* focus_widget = active_window->getFocusWidget();
+    FWidget* focus_widget = active_window->getWindowFocusWidget();
 
     if ( ! active_window->isActiveWindow() )
       setActiveWindow(active_window);

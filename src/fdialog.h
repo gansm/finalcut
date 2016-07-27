@@ -55,7 +55,6 @@ class FDialog : public FWindow
    bool         maximized;
    FPoint       TitleBarClickPos;
    FRect        oldGeometry;      // required by move()
-   FWidget*     focus_widget;
    FMenu*       dialog_menu;
    FMenuItem*   dgl_menuitem;
 
@@ -106,8 +105,6 @@ class FDialog : public FWindow
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void     setGeometry (int, int, int, int, bool = true);
-   FWidget* getFocusWidget() const;
-   void     setFocusWidget (FWidget*);
    bool     setFocus(bool);
    bool     setFocus();
    bool     unsetFocus();
