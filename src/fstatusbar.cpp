@@ -177,6 +177,7 @@ FStatusBar::~FStatusBar()
       iter = keylist.erase(iter);
     }
   }
+  setStatusBar(0);
 }
 
 

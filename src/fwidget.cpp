@@ -537,7 +537,7 @@ void FWidget::setStatusBar (FStatusBar* sbar)
   if ( ! sbar || statusbar == sbar )
     return;
 
-  if ( statusbar )
+  if ( statusbar && sbar != 0 )
     delete statusbar;
 
   statusbar = sbar;

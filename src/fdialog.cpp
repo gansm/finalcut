@@ -42,18 +42,20 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  FApplication* fapp;
-
+  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+  bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = 0;
   delete accelerator_list;
   accelerator_list = 0;
-  activatePrevWindow();
+
+  if ( ! is_quit )
+    switchToPrevWindow();
+
   delWindow(this);
   delDialog(this);
-  fapp = static_cast<FApplication*>(getRootWidget());
 
-  if ( ! fapp->quit_now )
+  if ( ! is_quit )
   {
     const FRect& geometry = getGeometryGlobalShadow();
     restoreVTerm (geometry);

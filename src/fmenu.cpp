@@ -69,7 +69,11 @@ FMenu::FMenu (const char* txt, FWidget* parent)
 //----------------------------------------------------------------------
 FMenu::~FMenu()
 {
-  activatePrevWindow();
+  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+
+  if ( ! fapp->isQuit() )
+    switchToPrevWindow();
+
   delWindow(this);
 
   const FRect& geometry = getGeometryGlobalShadow();
