@@ -314,8 +314,9 @@ void FMenuItem::cb_destroyDialog (FWidget* widget, void* data_ptr)
 {
   FDialog* win = static_cast<FDialog*>(widget);
   FMenuItem* win_item  = static_cast<FMenuItem*>(data_ptr);
+  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
-  if ( win_item && win )
+  if ( win_item && win && fapp && ! fapp->isQuit() )
   {
     win_item->delAccelerator(win);
     win_item->delCallback(this);

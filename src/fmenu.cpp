@@ -1040,6 +1040,19 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       flush_out();
       break;
 
+    case fc::Fmkey_1:
+    case fc::Fmkey_2:
+    case fc::Fmkey_3:
+    case fc::Fmkey_4:
+    case fc::Fmkey_5:
+    case fc::Fmkey_6:
+    case fc::Fmkey_7:
+    case fc::Fmkey_8:
+    case fc::Fmkey_9:
+      // do nothing:
+      //   handle the dialog switch accelerator in FApplication
+      return;
+
     default:
       break;
   }

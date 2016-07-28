@@ -1018,6 +1018,7 @@ void FDialog::activateDialog()
   FWidget* old_focus = FWidget::getFocusWidget();
   FWidget* win_focus_widget = getWindowFocusWidget();
   setActiveWindow(this);
+  setFocus();
 
   if ( win_focus_widget && numOfFocusableChildren() > 1 )
   {

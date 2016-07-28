@@ -39,6 +39,7 @@ FObject::~FObject()  // destructor
   if ( parentObj )
     parentObj->delChild(this);
 
+  parentObj = 0;
   delOwnTimer();  // delete all timers of this object
 
   if ( ! has_parent && timer_list )
@@ -61,6 +62,8 @@ FObject::~FObject()  // destructor
       ++iter;
     }
   }
+
+
 }
 
 // public methods of FObject

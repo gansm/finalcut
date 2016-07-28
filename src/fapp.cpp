@@ -302,121 +302,135 @@ void FApplication::processKeyboardEvent()
         {
           key = modifierKeyCorrection (key);
 
-          if ( key == fc::Fckey_l )  // Ctrl-L (redraw the screen)
-            redraw();
-
-          if ( key == fc::Fkey_mouse )
+          switch ( key )
           {
-            int n;
-            const int len = 6;
-            x11_mouse[0] = fifo_buf[3];
-            x11_mouse[1] = fifo_buf[4];
-            x11_mouse[2] = fifo_buf[5];
-            x11_mouse[3] = '\0';
+            case fc::Fckey_l:  // Ctrl-L (redraw the screen)
+              redraw();
+              break;
 
-            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-              fifo_buf[n-len] = fifo_buf[n];
-
-            n = fifo_buf_size-len-1;
-
-            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-              fifo_buf[n-len] = '\0';
-
-            input_data_pending = bool(fifo_buf[0] != '\0');
-            processMouseEvent();
-          }
-          else if ( key == fc::Fkey_extended_mouse )
-          {
-            int n = 3;
-            int len = int(strlen(fifo_buf));
-
-            while ( n < len && n < fifo_buf_size )
-            {
-              sgr_mouse[n-3] = fifo_buf[n];
-              n++;
-
-              if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-                len = n + 1;
-            }
-
-            sgr_mouse[n-3] = '\0';
-
-            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-              fifo_buf[n-len] = fifo_buf[n];
-
-            n = fifo_buf_size-len-1;
-
-            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-              fifo_buf[n-len] = '\0';
-
-            input_data_pending = bool(fifo_buf[0] != '\0');
-            processMouseEvent();
-          }
-          else if ( key == fc::Fkey_urxvt_mouse )
-          {
-            int n = 2;
-            int len = int(strlen(fifo_buf));
-
-            while ( n < len && n < fifo_buf_size )
-            {
-              urxvt_mouse[n-2] = fifo_buf[n];
-              n++;
-
-              if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-                len = n + 1;
-            }
-
-            urxvt_mouse[n-2] = '\0';
-
-            for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-              fifo_buf[n-len] = fifo_buf[n];
-
-            n = fifo_buf_size-len-1;
-
-            for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-              fifo_buf[n-len] = '\0';
-
-            input_data_pending = bool(fifo_buf[0] != '\0');
-            processMouseEvent();
-          }
-          else
-          {
-            // send key down event
-            FKeyEvent k_down_ev (fc::KeyDown_Event, key);
-            sendEvent (widget, &k_down_ev);
-
-            // send key press event
-            FKeyEvent k_press_ev (fc::KeyPress_Event, key);
-            sendEvent (widget, &k_press_ev);
-
-            if ( ! open_menu
-               && ! k_press_ev.isAccepted()
-               && ! k_down_ev.isAccepted() )
-            {
-              bool accpt = false;
-              // switch to a specific dialog with Meta + 1..9
-              if ( ! accpt )
-                accpt = processDialogSwitchAccelerator();
-
-              // windows keyboard accelerator
-              if ( ! accpt )
+            case fc::Fkey_mouse:
               {
-                FWidget* window = static_cast<FWidget*>(active_window);
+                int n;
+                const int len = 6;
+                x11_mouse[0] = fifo_buf[3];
+                x11_mouse[1] = fifo_buf[4];
+                x11_mouse[2] = fifo_buf[5];
+                x11_mouse[3] = '\0';
 
-                if ( window )
-                  accpt = processAccelerator (window);
+                // Remove founded entry
+                for (n=len; n < fifo_buf_size; n++)
+                  fifo_buf[n-len] = fifo_buf[n];
+    
+                n = fifo_buf_size-len-1;
+    
+                // Fill rest with '\0'
+                for (; n < fifo_buf_size; n++)
+                  fifo_buf[n-len] = '\0';
+    
+                input_data_pending = bool(fifo_buf[0] != '\0');
+                processMouseEvent();
               }
-
-              // global keyboard accelerator
-              if ( ! accpt )
+              break;
+              
+            case fc::Fkey_extended_mouse:
               {
-                FWidget* root_widget = getRootWidget();
-
-                if ( root_widget )
-                  accpt = processAccelerator (root_widget);
+                int n = 3;
+                int len = int(strlen(fifo_buf));
+    
+                while ( n < len && n < fifo_buf_size )
+                {
+                  sgr_mouse[n-3] = fifo_buf[n];
+                  n++;
+    
+                  if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+                    len = n + 1;
+                }
+    
+                sgr_mouse[n-3] = '\0';
+    
+                for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
+                  fifo_buf[n-len] = fifo_buf[n];
+    
+                n = fifo_buf_size-len-1;
+    
+                for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
+                  fifo_buf[n-len] = '\0';
+    
+                input_data_pending = bool(fifo_buf[0] != '\0');
+                processMouseEvent();
               }
-            }
-          } // end of else
+              break;
+
+            case fc::Fkey_urxvt_mouse:
+              {
+                int n = 2;
+                int len = int(strlen(fifo_buf));
+    
+                while ( n < len && n < fifo_buf_size )
+                {
+                  urxvt_mouse[n-2] = fifo_buf[n];
+                  n++;
+    
+                  if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+                    len = n + 1;
+                }
+    
+                urxvt_mouse[n-2] = '\0';
+    
+                for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
+                  fifo_buf[n-len] = fifo_buf[n];
+    
+                n = fifo_buf_size-len-1;
+    
+                for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
+                  fifo_buf[n-len] = '\0';
+    
+                input_data_pending = bool(fifo_buf[0] != '\0');
+                processMouseEvent();
+              }
+              break;
+
+            default:
+              {
+                // send key down event
+                FKeyEvent k_down_ev (fc::KeyDown_Event, key);
+                sendEvent (widget, &k_down_ev);
+    
+                // send key press event
+                FKeyEvent k_press_ev (fc::KeyPress_Event, key);
+                sendEvent (widget, &k_press_ev);
+    
+                if ( ! open_menu
+                   && ! k_press_ev.isAccepted()
+                   && ! k_down_ev.isAccepted() )
+                {
+                  bool accpt = false;
+                  // switch to a specific dialog with Meta + 1..9
+                  if ( ! accpt )
+                    accpt = processDialogSwitchAccelerator();
+    
+                  // windows keyboard accelerator
+                  if ( ! accpt )
+                  {
+                    FWidget* window = static_cast<FWidget*>(active_window);
+    
+                    if ( window )
+                      accpt = processAccelerator (window);
+                  }
+    
+                  // global keyboard accelerator
+                  if ( ! accpt )
+                  {
+                    FWidget* root_widget = getRootWidget();
+    
+                    if ( root_widget )
+                      accpt = processAccelerator (root_widget);
+                  }
+                }
+              }
+              break;
+
+          } // end of switch
         }
 
         fifo_offset = int(strlen(fifo_buf));
