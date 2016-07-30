@@ -31,7 +31,8 @@ std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FApplication::FApplication (int& _argc, char**& _argv)
-  : app_argc(_argc)
+  : FWidget(0)
+  , app_argc(_argc)
   , app_argv(_argv)
   , skipped_terminal_update(0)
   , key(0)

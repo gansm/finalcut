@@ -29,6 +29,7 @@ FMenuItem::FMenuItem (FWidget* parent)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -48,6 +49,7 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -67,6 +69,7 @@ FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -86,6 +89,7 @@ FMenuItem::FMenuItem (const char* txt, FWidget* parent)
   , accel_key(0)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -105,6 +109,7 @@ FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -124,6 +129,7 @@ FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -143,6 +149,7 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
   , accel_key(k)
   , menu(0)
   , super_menu(0)
+  , associated_window(0)
 {
   init (parent);
 }
@@ -151,6 +158,10 @@ FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
 FMenuItem::~FMenuItem()  // destructor
 {
   delAccelerator();
+
+  // remove dialog list item callback from the dialog
+  if ( associated_window )
+    associated_window->delCallback(this);
 }
 
 
@@ -268,8 +279,10 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       if ( win )
       {
         int n = int(std::distance(begin, iter));
-        FString win_title = win->getText();
-        FMenuItem* win_item = new FMenuItem (win_title, winmenu);
+        // get the dialog title
+        FString name = win->getText();
+        // create a new dialog list item
+        FMenuItem* win_item = new FMenuItem (name, winmenu);
 
         if ( n < 9 )
           win_item->addAccelerator (fc::Fmkey_1 + n); // Meta + 1..9
@@ -277,16 +290,17 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         win_item->addCallback
         (
           "clicked",
-          _METHOD_CALLBACK (this, &FMenuItem::cb_switchToDialog),
+          _METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
           dynamic_cast<FWidget::data_ptr>(win)
         );
 
         win->addCallback
         (
           "destroy",
-          _METHOD_CALLBACK (this, &FMenuItem::cb_destroyDialog),
-          static_cast<FWidget::data_ptr>(win_item)
+          _METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
         );
+        
+        win_item->associated_window = win;
       }
 
       ++iter;
@@ -310,16 +324,16 @@ void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, void* data_ptr)
+void FMenuItem::cb_destroyDialog (FWidget* widget, void*)
 {
   FDialog* win = static_cast<FDialog*>(widget);
-  FMenuItem* win_item  = static_cast<FMenuItem*>(data_ptr);
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
-  if ( win_item && win && fapp && ! fapp->isQuit() )
+  if ( win && fapp )
   {
-    win_item->delAccelerator(win);
-    win_item->delCallback(this);
+    delAccelerator(win);
+    delCallback(win);
+    associated_window = 0;
   }
 }
 

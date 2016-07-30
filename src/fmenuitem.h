@@ -29,7 +29,7 @@
 
 #include "fwidget.h"
 
-
+class FDialog;
 class FMenu;
 class FMenuList;
 
@@ -55,6 +55,7 @@ class FMenuItem : public FWidget
    int        accel_key;
    FMenu*     menu;
    FWidget*   super_menu;
+   FDialog*   associated_window;
 
  private:
    FMenuItem (const FMenuItem&);

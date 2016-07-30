@@ -103,7 +103,6 @@ FWidget::FWidget (FWidget* parent)
 //----------------------------------------------------------------------
 FWidget::~FWidget()  // destructor
 {
-  delCallbacks();
   processDestroy();
   FApplication::removeQueuedEvent(this);
 
