@@ -103,8 +103,8 @@ FWidget::FWidget (FWidget* parent)
 //----------------------------------------------------------------------
 FWidget::~FWidget()  // destructor
 {
+  delCallbacks();
   processDestroy();
-
   FApplication::removeQueuedEvent(this);
 
   if ( this == getClickedWidget() )
@@ -1119,6 +1119,14 @@ void FWidget::delCallback (FWidget* cb_instance)
     else
       ++iter;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::delCallbacks()
+{
+  // delete all callbacks from this widget
+  memberCallbackObjects.clear();  // member function pointer
+  callbackObjects.clear();        // function pointer
 }
 
 //----------------------------------------------------------------------

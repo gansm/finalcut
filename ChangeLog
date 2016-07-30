@@ -1,3 +1,6 @@
+2016-07-30  Markus Gans  <guru.mail@muenster.de>
+	* Delete all callbacks from a widget, when it will be destroyed
+
 2016-07-28  Markus Gans  <guru.mail@muenster.de>
 	* Improvements for the window focus
 

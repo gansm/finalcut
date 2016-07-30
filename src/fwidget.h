@@ -352,6 +352,7 @@ class FWidget : public FObject, public FTerm
                                 , void* = null );
    void             delCallback (FCallback);
    void             delCallback (FWidget*);
+   void             delCallbacks();
    void             emitCallback (FString);
 
    void             addAccelerator (int);
