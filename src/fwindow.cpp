@@ -411,10 +411,12 @@ void FWindow::switchToPrevWindow()
     if ( ! active_window->isActiveWindow() )
       setActiveWindow(active_window);
 
-    if ( focus_widget && ! focus_widget->isWindow() )
+    if ( focus_widget )
     {
       focus_widget->setFocus();
-      focus_widget->redraw();
+
+      if ( ! focus_widget->isWindow() )
+        focus_widget->redraw();
     }
   }
 }

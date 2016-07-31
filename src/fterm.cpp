@@ -3015,8 +3015,7 @@ void FTerm::getTermSize()
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
     char* str;
-    term->setX(1);
-    term->setY(1);
+    term->setPos(1,1);
     str = getenv("COLUMNS");
     term->setWidth(str ? atoi(str) : 80);
     str = getenv("LINES");

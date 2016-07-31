@@ -475,8 +475,7 @@ void FFileDialog::adjustSize()
   setHeight (h, false);
   X = 1 + int((max_width-width)/2);
   Y = 1 + int((max_height-height)/3);
-  setX(X, false);
-  setY(Y, false);
+  setPos(X, Y, false);
   filebrowser->setHeight(h-8, false);
   hidden->setY(h-4, false);
   cancel->setY(h-4, false);

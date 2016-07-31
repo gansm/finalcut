@@ -106,18 +106,30 @@ FWidget::~FWidget()  // destructor
   processDestroy();
   FApplication::removeQueuedEvent(this);
 
+  // unset clicked widget
   if ( this == getClickedWidget() )
     setClickedWidget(0);
 
+  // unset the local window widget focus
+  if ( focus )
+  {
+    FWindow* window = FWindow::getWindowWidget(this);
+    if ( window )
+      window->setWindowFocusWidget(0);
+  }
+
+  // unset the global widget focus
   if ( this == FWidget::getFocusWidget() )
     FWidget::setFocusWidget(0);
 
+  // unset main widget
   if ( this == getMainWidget() )
   {
     setMainWidget(0);
     quit();
   }
 
+  // finish the program
   if ( rootObject == this )
     this->finish();
 }
@@ -1881,13 +1893,10 @@ void FWidget::move (int x, int y)
 
   xpos = x;
   ypos = y;
-  widgetSize.setX(x);
-  widgetSize.setY(y);
-  adjustWidgetSize.setX(x);
-  adjustWidgetSize.setY(y);
+  widgetSize.setPos(x,y);
+  adjustWidgetSize.setPos(x,y);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
-  adjustWidgetSizeGlobal.setX(x + xmin - 1);
-  adjustWidgetSizeGlobal.setY(y + ymin - 1);
+  adjustWidgetSizeGlobal.setPos(x + xmin - 1, y + ymin - 1);
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 }
 

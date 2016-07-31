@@ -1,3 +1,9 @@
+2016-07-31  Markus Gans  <guru.mail@muenster.de>
+	* Resetting the local window widget focus at 
+	  the end of the lifetime of a widget.
+	* Fix method setPos in the class FRect
+	* Add the windows example to show window behavior
+
 2016-07-30  Markus Gans  <guru.mail@muenster.de>
 	* Delete all callbacks from a widget with delCallbacks()
 	* Remove dialog list item callback from the associated window

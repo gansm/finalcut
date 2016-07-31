@@ -76,8 +76,11 @@ FMenu::~FMenu()
 
   delWindow(this);
 
-  const FRect& geometry = getGeometryGlobalShadow();
-  restoreVTerm (geometry);
+  if ( ! fapp->isQuit() )
+  {
+    const FRect& geometry = getGeometryGlobalShadow();
+    restoreVTerm (geometry);
+  }
 
   if ( vwin != 0 )
   {

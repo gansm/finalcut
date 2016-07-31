@@ -299,7 +299,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
           "destroy",
           _METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
         );
-        
+
         win_item->associated_window = win;
       }
 

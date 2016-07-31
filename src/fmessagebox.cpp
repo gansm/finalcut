@@ -126,8 +126,7 @@ void FMessageBox::init(int button0, int button1, int button2)
 
   button[0] = new FButton (this);
   button[0]->setText(button_text[button0]);
-  button[0]->setX(3, false);
-  button[0]->setY(height-4, false);
+  button[0]->setPos(3, height-4, false);
   button[0]->setWidth(1, false);
   button[0]->setHeight(1, false);
   button[0]->setFocus();
@@ -137,8 +136,7 @@ void FMessageBox::init(int button0, int button1, int button2)
   {
     button[1] = new FButton(this);
     button[1]->setText(button_text[button1]);
-    button[1]->setX(17, false);
-    button[1]->setY(height-4, false);
+    button[1]->setPos(17, height-4, false);
     button[1]->setWidth(0, false);
     button[1]->setHeight(1, false);
     button[1]->setShadow();
@@ -148,8 +146,7 @@ void FMessageBox::init(int button0, int button1, int button2)
   {
     button[2] = new FButton(this);
     button[2]->setText(button_text[button2]);
-    button[2]->setX(32, false);
-    button[2]->setY(height-4, false);
+    button[2]->setPos(32, height-4, false);
     button[2]->setWidth(0, false);
     button[2]->setHeight(1, false);
     button[2]->setShadow();
@@ -318,7 +315,7 @@ void FMessageBox::adjustButtons()
   {
     setWidth(btn_width + 5);
     int max_width = getRootWidget()->getClientWidth();
-    setX(int((max_width-width) / 2));
+    setX (int((max_width-width) / 2));
   }
 
   int btn_x = int((width-btn_width) / 2);
@@ -352,8 +349,7 @@ void FMessageBox::adjustSize()
   max_width = getRootWidget()->getClientWidth();
   X = 1 + int((max_width-width)/2);
   Y = 1 + int((max_height-height)/3);
-  setX(X, false);
-  setY(Y, false);
+  setPos(X, Y, false);
   FDialog::adjustSize();
 }
 
