@@ -1033,7 +1033,8 @@ void FDialog::activateDialog()
     if ( ! focusFirstChild() )
       old_focus->unsetFocus();
 
-    old_focus->redraw();
+    if ( ! old_focus->isWindow() )
+      old_focus->redraw();
   }
 
   if ( statusBar() )
