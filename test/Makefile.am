@@ -16,6 +16,7 @@ noinst_PROGRAMS = \
 	term-attributes \
 	keyboard \
 	timer \
+	windows \
 	menu \
 	ui
 
@@ -29,6 +30,6 @@ watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
+windows_SOURCES = windows.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
-
