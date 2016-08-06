@@ -598,12 +598,12 @@ void FMenu::draw()
 {
   // fill the background
   setColor (wc.menu_active_fg, wc.menu_active_bg);
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( isMonochron() )
     setReverse(true);
 
-  clrscr();
+  clearArea();
   drawBorder();
   drawItems();
 
@@ -611,9 +611,13 @@ void FMenu::draw()
     setReverse(false);
 
   if ( (flags & fc::shadow) != 0 )
+  {
     drawMenuShadow();
-
-  setUpdateVTerm(true);
+    term_area* area = getWindowWidget(this)->getVWin();
+    putArea (xpos+xmin-1, ypos+ymin-1, area);
+  }
+  else
+    updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

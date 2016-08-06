@@ -150,14 +150,14 @@ void FProgressbar::drawBar()
 //----------------------------------------------------------------------
 void FProgressbar::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
   drawPercentage();
   drawBar();
 
   if ( (flags & fc::shadow) != 0 )
     drawShadow ();
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   flush_out();
 }
 
@@ -204,7 +204,7 @@ void FProgressbar::setPercentage (int percentage_value)
   else
     percentage = percentage_value;
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( isVisible() )
   {
@@ -212,14 +212,14 @@ void FProgressbar::setPercentage (int percentage_value)
     drawBar();
   }
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   updateTerminal();
 }
 
 //----------------------------------------------------------------------
 void FProgressbar::reset()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
   percentage = -1;
 
   if ( isVisible() )
@@ -228,7 +228,7 @@ void FProgressbar::reset()
     drawBar();
   }
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   updateTerminal();
 }
 

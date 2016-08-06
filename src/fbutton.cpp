@@ -161,7 +161,7 @@ void FButton::draw()
   is_Flat = isFlat();
   is_NonFlatShadow = ((flags & (fc::shadow+fc::flat)) == fc::shadow);
   is_NoUnderline = ((flags & fc::no_underline) != 0);
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( isMonochron() )
     setReverse(true);
@@ -374,7 +374,7 @@ void FButton::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   delete[] ButtonText;
 
   if ( is_Focus && statusBar() )

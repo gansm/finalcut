@@ -290,7 +290,7 @@ Calc::~Calc()
 void Calc::drawDispay()
 {
   FString display = input;
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( display.isNull() || display.isEmpty()  )
     display = L'0';
@@ -353,7 +353,7 @@ void Calc::drawDispay()
     print(separator);
   }
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

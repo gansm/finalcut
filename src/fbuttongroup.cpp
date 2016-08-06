@@ -138,7 +138,7 @@ void FButtonGroup::directFocus()
 //----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( isMonochron() )
     setReverse(true);
@@ -153,7 +153,7 @@ void FButtonGroup::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

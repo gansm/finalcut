@@ -1,4 +1,10 @@
 2016-07-31  Markus Gans  <guru.mail@muenster.de>
+	* Rename setUpdateVTerm to updateVTerm
+	* Rename clrscr to clearArea
+	* The widget clearing method updates now only non-covered 
+	  characters on the virtual terminal.
+
+2016-07-31  Markus Gans  <guru.mail@muenster.de>
 	* Resetting the local window widget focus at 
 	  the end of the lifetime of a widget.
 	* Fix method setPos in the class FRect

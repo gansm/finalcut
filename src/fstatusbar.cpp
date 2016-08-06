@@ -230,7 +230,7 @@ void FStatusBar::drawKeys()
     return;
   }
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   gotoxy (1, lastLine);
 
   if ( isMonochron() )
@@ -343,7 +343,7 @@ void FStatusBar::drawKeys()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   x_msg = x;
 }
 
@@ -602,7 +602,7 @@ void FStatusBar::drawMessage()
   if ( isLastActiveFocus )
     space_offset = 0;
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   gotoxy (x, lastLine);
 
@@ -646,7 +646,7 @@ void FStatusBar::drawMessage()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

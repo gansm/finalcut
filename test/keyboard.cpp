@@ -45,7 +45,7 @@ void keyboard::draw()
 {
   setNormal();
   setColor(fc::Default, fc::Default);
-  clrscr();
+  clearArea();
   gotoxy (1,1);
   print ("---------------\n");
   print ("Press Q to quit\n");

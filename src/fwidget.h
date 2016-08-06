@@ -444,7 +444,7 @@ class FWidget : public FObject, public FTerm
 
    static void      gotoxy (const FPoint&);
    static void      gotoxy (register int, register int);
-   void             clrscr();
+   void             clearArea();
 
    static void      setNormal();
 

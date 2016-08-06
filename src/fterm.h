@@ -278,7 +278,7 @@ class FTerm
    bool         isCovered (const FPoint&, FTerm::term_area*) const;
    bool         isCovered (int, int, FTerm::term_area*) const;
    void         updateVTerm (FTerm::term_area*);
-   void         setUpdateVTerm (bool);
+   void         updateVTerm (bool);
    void         getArea (const FPoint&, FTerm::term_area*);
    void         getArea (int, int, FTerm::term_area*);
    void         getArea (const FRect&, FTerm::term_area*);

@@ -135,7 +135,7 @@ void FLineEdit::drawInputField()
   isActive = ((flags & fc::active) != 0);
   isShadow = ((flags & fc::shadow) != 0 );
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   gotoxy (xpos+xmin-1, ypos+ymin-1);
 
   if ( isMonochron() )
@@ -220,7 +220,7 @@ void FLineEdit::drawInputField()
   if ( isShadow )
     drawShadow ();
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 
   // set the cursor to the first pos.
   setCursorPos (xpos+xmin+cursor_pos-offset, ypos+ymin-1);

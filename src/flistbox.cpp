@@ -134,7 +134,7 @@ void FListBox::draw()
   if ( current < 1 )
     current = 1;
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   setColor (foregroundColor, backgroundColor);
 
   if ( isMonochron() )
@@ -166,7 +166,7 @@ void FListBox::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 
   if ( VBar->isVisible() )
     VBar->redraw();
@@ -247,7 +247,7 @@ void FListBox::drawList()
     end = std::max(last_pos, current_pos)+1;
   }
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   for (uInt y=start; y < end; y++)
   {
@@ -473,7 +473,7 @@ void FListBox::drawList()
     setReverse(false);
 
   unsetBold();
-  setUpdateVTerm(true);
+  updateVTerm(true);
   updateTerminal();
   flush_out();
 

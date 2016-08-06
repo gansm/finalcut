@@ -466,14 +466,14 @@ void FDialog::draw()
     height = ymax;
   }
 
-  setUpdateVTerm(false);
+  updateVTerm(false);updateVTerm(true);
   // fill the background
   setColor (foregroundColor, backgroundColor);
 
   if ( isMonochron() )
     setReverse(true);
 
-  clrscr();
+  clearArea();
   drawBorder();
   drawTitleBar();
 
@@ -526,7 +526,7 @@ void FDialog::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

@@ -244,7 +244,7 @@ void AttribDemo::printAltCharset()
 //----------------------------------------------------------------------
 void AttribDemo::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   // test alternate character set
   printAltCharset();
@@ -367,7 +367,7 @@ void AttribDemo::draw()
 
   gotoxy (xpos + xmin + 14, ypos + ymin + 15);
   print ("Change background color ->");
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 

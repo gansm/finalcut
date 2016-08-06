@@ -329,7 +329,7 @@ void FMenuBar::drawItems()
   if ( itemlist.empty() )
     return;
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   gotoxy (1,1);
 
   if ( isMonochron() )
@@ -470,7 +470,7 @@ void FMenuBar::drawItems()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

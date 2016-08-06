@@ -239,7 +239,7 @@ void FLabel::draw()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
 
   if ( isMonochron() )
   {
@@ -317,7 +317,7 @@ void FLabel::draw()
       setBold(false);
   }
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 

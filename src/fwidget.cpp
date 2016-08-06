@@ -174,7 +174,7 @@ void FWidget::init()
   foregroundColor = wc.term_fg;
   backgroundColor = wc.term_bg;
   setColor (foregroundColor, backgroundColor);
-  clrscr();
+  clearArea();
 
   accelerator_list = new Accelerators();
 }
@@ -1232,7 +1232,7 @@ void FWidget::redraw()
   {
     terminal_updates = false;
     setColor (wc.term_fg, wc.term_bg);
-    clrscr();
+    clearArea();
   }
   else if ( ! visible )
     return;
@@ -1926,7 +1926,7 @@ bool FWidget::setCursorPos (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FWidget::clrscr()
+void FWidget::clearArea()
 {
   term_area* area;
   FWindow*   area_widget;
@@ -1979,7 +1979,7 @@ void FWidget::clrscr()
     area->changes[i].xmax = uInt(area->width + area->right_shadow - 1);
   }
 
-  putArea (xpos+xmin-1, ypos+ymin-1, area);
+  updateVTerm (area);
 }
 
 //----------------------------------------------------------------------

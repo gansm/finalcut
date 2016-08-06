@@ -37,10 +37,10 @@ FSwitch::~FSwitch()  // destructor
 //----------------------------------------------------------------------
 void FSwitch::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
   drawLabel();
   drawCheckButton();
-  setUpdateVTerm(true);
+  updateVTerm(true);
   FToggleButton::draw();
   updateTerminal();
   flush_out();

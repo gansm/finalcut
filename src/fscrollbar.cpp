@@ -80,11 +80,11 @@ void FScrollbar::init()
 //----------------------------------------------------------------------
 void FScrollbar::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
   drawButtons();
   currentSliderPos = -1;
   drawBar();
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -563,7 +563,7 @@ void FScrollbar::drawBar()
   if (SliderPos != currentSliderPos)
   {
     int z;
-    setUpdateVTerm(false);
+    updateVTerm(false);
 
     if ( bar_orientation == fc::vertical )
     {
@@ -665,7 +665,7 @@ void FScrollbar::drawBar()
     if ( isMonochron() )
       setReverse(false);
 
-    setUpdateVTerm(true);
+    updateVTerm(true);
   }
 }
 

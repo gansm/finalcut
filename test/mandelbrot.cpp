@@ -90,7 +90,7 @@ void Mandelbrot::draw()
     current_line++;
   }
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

@@ -154,7 +154,7 @@ void FWindow::delWindow (FWidget* obj)
   {
     if ( (*iter) == obj )
     {
-      window_list->erase(iter);
+      window_list->erase (iter);
       return;
     }
 

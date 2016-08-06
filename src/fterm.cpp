@@ -2573,7 +2573,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setUpdateVTerm (bool on)
+void FTerm::updateVTerm (bool on)
 {
   vterm_updates = on;
 

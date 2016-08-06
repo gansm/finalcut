@@ -65,7 +65,7 @@ void FTextView::init()
 //----------------------------------------------------------------------
 void FTextView::draw()
 {
-  setUpdateVTerm(false);
+  updateVTerm(false);
   setColor (foregroundColor, backgroundColor);
 
   if ( isMonochron() )
@@ -83,7 +83,7 @@ void FTextView::draw()
   if ( HBar->isVisible() )
     HBar->redraw();
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
   drawText();
 
   if ( hasFocus() && statusBar() )
@@ -93,10 +93,10 @@ void FTextView::draw()
 
     if ( curMsg != msg )
     {
-      setUpdateVTerm(false);
+      updateVTerm(false);
       statusBar()->setMessage(msg);
       statusBar()->drawMessage();
-      setUpdateVTerm(true);
+      updateVTerm(true);
     }
   }
 
@@ -119,7 +119,7 @@ void FTextView::drawText()
   if ( end > getRows() )
     end = getRows();
 
-  setUpdateVTerm(false);
+  updateVTerm(false);
   setColor (foregroundColor, backgroundColor);
 
   if ( isMonochron() )
@@ -159,7 +159,7 @@ void FTextView::drawText()
   if ( isMonochron() )
     setReverse(false);
 
-  setUpdateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
