@@ -614,7 +614,9 @@ void FMenu::draw()
   {
     drawMenuShadow();
     term_area* area = getWindowWidget(this)->getVWin();
-    putArea (xpos+xmin-1, ypos+ymin-1, area);
+
+    if ( area )
+      putArea (xpos+xmin-1, ypos+ymin-1, area);
   }
   else
     updateVTerm(true);
