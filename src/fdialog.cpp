@@ -466,7 +466,7 @@ void FDialog::draw()
     height = ymax;
   }
 
-  updateVTerm(false);updateVTerm(true);
+  updateVTerm(false);
   // fill the background
   setColor (foregroundColor, backgroundColor);
 

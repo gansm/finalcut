@@ -20,8 +20,6 @@ Missing Features
      └──► tmp
 ---------------------------------------
 
-- Screen characters should get the options transparent 
-  and transparent shadow (transparent with color)
 - FDialog title button [▲] and [▼] should maximized or restore 
   the window size on a resizeable dialog
 - A possibility to change the window size dynamically with the mouse

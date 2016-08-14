@@ -1259,6 +1259,8 @@ void FWidget::redraw()
     default_char.dbl_underline = 0;
     default_char.alt_charset   = 0;
     default_char.pc_charset    = 0;
+    default_char.transparent   = 0;
+    default_char.trans_shadow  = 0;
 
     if ( window_list && ! window_list->empty() )
     {
@@ -1930,7 +1932,7 @@ void FWidget::clearArea()
 {
   term_area* area;
   FWindow*   area_widget;
-  FOptiAttr::char_data  default_char;
+  FOptiAttr::char_data default_char;
 
   default_char.code          = ' ';
   default_char.fg_color      = next_attribute.fg_color;
@@ -1948,6 +1950,8 @@ void FWidget::clearArea()
   default_char.dbl_underline = next_attribute.dbl_underline;
   default_char.alt_charset   = next_attribute.alt_charset;
   default_char.pc_charset    = next_attribute.pc_charset;
+  default_char.transparent   = next_attribute.transparent;
+  default_char.trans_shadow  = next_attribute.trans_shadow;
 
   area_widget = FWindow::getWindowWidget(this);
 
@@ -1975,8 +1979,14 @@ void FWidget::clearArea()
 
   for (int i=0; i < area->height; i++)
   {
+    uInt w = uInt(area->width + area->right_shadow);
     area->changes[i].xmin = 0;
-    area->changes[i].xmax = uInt(area->width + area->right_shadow - 1);
+    area->changes[i].xmax = w - 1;
+
+    if ( default_char.transparent || default_char.trans_shadow )
+      area->changes[i].trans_count = w;
+    else
+      area->changes[i].trans_count = 0;
   }
 
   updateVTerm (area);
@@ -2156,6 +2166,7 @@ void FWidget::drawShadow()
   }
   else
   {
+    // non-transparent shadow
     if ( x2 < xmax )
     {
       int block;

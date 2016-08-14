@@ -513,6 +513,16 @@ class FWidget : public FObject, public FTerm
    static bool      unsetPCcharset();
    static bool      isPCcharset();
 
+   static bool      setTransparent (register bool);
+   static bool      setTransparent();
+   static bool      unsetTransparent();
+   static bool      isTransparent();
+
+   static bool      setTransShadow (register bool);
+   static bool      setTransShadow();
+   static bool      unsetTransShadow();
+   static bool      isTransShadow();
+
    void             drawShadow();
    void             clearShadow();
    void             drawFlatBorder();
@@ -812,7 +822,9 @@ inline void FWidget::setNormal()
   next_attribute.crossed_out   = \
   next_attribute.dbl_underline = \
   next_attribute.alt_charset   = \
-  next_attribute.pc_charset    = false;
+  next_attribute.pc_charset    = \
+  next_attribute.transparent   = \
+  next_attribute.trans_shadow  = false;
 
   next_attribute.fg_color      = fc::Default;
   next_attribute.bg_color      = fc::Default;
@@ -1025,6 +1037,38 @@ inline bool FWidget::unsetPCcharset()
 //----------------------------------------------------------------------
 inline bool FWidget::isPCcharset()
 { return next_attribute.pc_charset; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setTransparent (register bool on)
+{ return (next_attribute.transparent = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setTransparent()
+{ return setTransparent(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetTransparent()
+{ return setTransparent(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isTransparent()
+{ return next_attribute.transparent; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setTransShadow (register bool on)
+{ return (next_attribute.trans_shadow = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setTransShadow()
+{ return setTransShadow(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetTransShadow()
+{ return setTransShadow(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isTransShadow()
+{ return next_attribute.trans_shadow; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine(int side)

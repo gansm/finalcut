@@ -1,3 +1,7 @@
+2016-08-14  Markus Gans  <guru.mail@muenster.de>
+	* Screen characters now have a transparent 
+	  and a transparent shadow option
+
 2016-07-31  Markus Gans  <guru.mail@muenster.de>
 	* Rename setUpdateVTerm to updateVTerm
 	* Rename clrscr to clearArea

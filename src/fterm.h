@@ -211,6 +211,7 @@ class FTerm
    {
      uInt xmin;
      uInt xmax;
+     uInt trans_count;
    } line_changes;
 
    typedef struct

@@ -1695,7 +1695,9 @@ void FTerm::init()
   term_attribute.crossed_out   = \
   term_attribute.dbl_underline = \
   term_attribute.alt_charset   = \
-  term_attribute.pc_charset    = false;
+  term_attribute.pc_charset    = \
+  term_attribute.transparent   = \
+  term_attribute.trans_shadow  = false;
 
   // next_attribute contains the state of the next printed character
   next_attribute.code          = '\0';
@@ -1713,7 +1715,9 @@ void FTerm::init()
   next_attribute.crossed_out   = \
   next_attribute.dbl_underline = \
   next_attribute.alt_charset   = \
-  next_attribute.pc_charset    = false;
+  next_attribute.pc_charset    = \
+  next_attribute.transparent   = \
+  next_attribute.trans_shadow  = false;
 
   // Preset to true
   cursor_optimisation    = true;
@@ -2283,11 +2287,14 @@ void FTerm::resizeArea (term_area* area)
   default_char.dbl_underline = 0;
   default_char.alt_charset   = 0;
   default_char.pc_charset    = 0;
+  default_char.transparent   = 0;
+  default_char.trans_shadow  = 0;
 
   std::fill_n (area->text, area_size, default_char);
 
   unchanged.xmin = uInt(width+rsw);
   unchanged.xmax = 0;
+  unchanged.trans_count = 0;
 
   std::fill_n (area->changes, height+bsh, unchanged);
 }
@@ -2304,8 +2311,9 @@ void FTerm::restoreVTerm (const FRect& box)
 //----------------------------------------------------------------------
 void FTerm::restoreVTerm (int x, int y, int w, int h)
 {
-  FOptiAttr::char_data* tc; // terminal character
-  FOptiAttr::char_data* sc; // shown character
+  FOptiAttr::char_data* tc;   // terminal character
+  FOptiAttr::char_data* sc;   // shown character
+  FOptiAttr::char_data  s_ch; // shadow character
   FWidget* widget;
 
   x--;
@@ -2349,17 +2357,34 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 
         while ( iter != end )
         {
+          term_area* win = (*iter)->getVWin();
           const FRect& geometry = (*iter)->getGeometryGlobalShadow();
 
-          if ( geometry.contains(x+tx+1, y+ty+1) )
+          // window visible and contains current character
+          if ( win && win->visible && geometry.contains(x+tx+1, y+ty+1) )
           {
+            FOptiAttr::char_data* tmp;
             int win_x = (*iter)->getGlobalX() - 1;
             int win_y = (*iter)->getGlobalY() - 1;
-            term_area* win = (*iter)->getVWin();
             int line_len = win->width + win->right_shadow;
+            tmp = &win->text[(y+ty-win_y) * line_len + (x+tx-win_x)];
 
-            if ( win->visible )
-              sc = &win->text[(y+ty-win_y) * line_len + (x+tx-win_x)];
+            // current character not transparent
+            if ( ! tmp->transparent )
+            {
+              if ( tmp->trans_shadow )  // transparent shadow
+              {
+                // keep the current vterm character
+                memcpy (&s_ch, sc, sizeof(FOptiAttr::char_data));
+                s_ch.fg_color = tmp->fg_color;
+                s_ch.bg_color = tmp->bg_color;
+                s_ch.reverse  = false;
+                s_ch.standout = false;
+                sc = &s_ch;
+              }
+              else  // default
+                sc = tmp;
+            }
           }
 
           ++iter;
@@ -2406,7 +2431,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
+bool FTerm::isCovered (int x, int y, FTerm::term_area* area) const
 {
   bool covered, found;
   FWidget* w;
@@ -2429,18 +2454,28 @@ bool FTerm::isCovered(int x, int y, FTerm::term_area* area) const
 
     while ( iter != end )
     {
+      term_area* win = (*iter)->getVWin();
       const FRect& geometry = (*iter)->getGeometryGlobalShadow();
 
-      if (  found
+      if (  win && found
          && (*iter)->isVisible()
          && (*iter)->isShown()
          && geometry.contains(x,y) )
       {
-        covered = true;
-        break;
+        FOptiAttr::char_data* tmp;
+        int win_x = (*iter)->getGlobalX() - 1;
+        int win_y = (*iter)->getGlobalY() - 1;
+        int line_len = win->width + win->right_shadow;
+        tmp = &win->text[(y-win_y-1) * line_len + (x-win_x-1)];
+
+        if ( ! tmp->transparent )
+        {
+          covered = true;
+          break;
+        }
       }
 
-      if ( area == (*iter)->getVWin() )
+      if ( area == win )
         found = true;
 
       ++iter;
@@ -2517,7 +2552,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
   else
     y_end = ah + bsh;
 
-  for (register int y=0; y < y_end; y++)
+  for (register int y=0; y < y_end; y++)  // line loop
   {
     int line_xmin = int(area->changes[y].xmin);
     int line_xmax = int(area->changes[y].xmax);
@@ -2535,7 +2570,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
       if ( ax + line_xmin >= vterm->width )
         continue;
 
-      for (register int x=line_xmin; x <= line_xmax; x++)
+      for (register int x=line_xmin; x <= line_xmax; x++)  // column loop
       {
         int gx, gy, line_len;
         gx = ax + x;  // global position
@@ -2550,7 +2585,30 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
         if ( ! isCovered(gx-ol, gy, area) )
         {
-          memcpy (tc, ac, sizeof(FOptiAttr::char_data));
+          if ( ac->transparent )   // transparent
+          {
+            // restore one character on vterm
+            FOptiAttr::char_data ch;
+            ch = getCoveredCharacter (gx+1, gy+1, area->widget);
+            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+          }
+          else   // not transparent
+          {
+            if ( ac->trans_shadow )  // transparent shadow
+            {
+              // get covered character + add the current color
+              FOptiAttr::char_data ch;
+              ch = getCoveredCharacter (gx+1, gy+1, area->widget);
+              ch.fg_color = ac->fg_color;
+              ch.bg_color = ac->bg_color;
+              ch.reverse  = false;
+              ch.standout = false;
+              memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            }
+            else  // default
+              memcpy (tc, ac, sizeof(FOptiAttr::char_data));
+          }
+
           modified = true;
         }
         else if ( ! modified )
@@ -2605,7 +2663,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
   else
     length = area->width;
 
-  for (int y=0; y < y_end; y++)
+  for (int y=0; y < y_end; y++)  // line loop
   {
     ac = &area->text[y * area->width];
     tc = &vterm->text[(ay+y) * vterm->width + ax];
@@ -2648,7 +2706,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
   if ( length < 1 )
     return;
 
-  for (int _y=0; _y < y_end; _y++)
+  for (int _y=0; _y < y_end; _y++)  // line loop
   {
     int line_len = area->width + area->right_shadow;
     tc = &vterm->text[(y+_y-1) * vterm->width + x-1];
@@ -2719,12 +2777,50 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
   if ( length < 1 )
     return;
 
-  for (int y=0; y < y_end; y++)
+  for (register int y=0; y < y_end; y++)  // line loop
   {
     int line_len = aw + rsh;
-    tc = &vterm->text[(ay+y) * vterm->width + ax];
-    ac = &area->text[y * line_len + ol];
-    memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
+
+    if ( area->changes[y].trans_count == 0 )
+    {
+      // only covered character
+      tc = &vterm->text[(ay+y) * vterm->width + ax];
+      ac = &area->text[y * line_len + ol];
+      memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
+    }
+    else
+    {
+      // Line has transparent character
+      for (register int x=0; x < length; x++)  // column loop
+      {
+        tc = &vterm->text[(ay+y) * vterm->width + (ax+x)];
+        ac = &area->text[y * line_len + ol + x];
+
+        if ( ac->transparent )  // transparent
+        {
+          // restore one character on vterm
+          FOptiAttr::char_data ch;
+          ch = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
+          memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+        }
+        else  // not transparent
+        {
+          if ( ac->trans_shadow )  // transparent shadow
+          {
+            // get covered character + add the current color
+            FOptiAttr::char_data ch;
+            ch = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
+            ch.fg_color = ac->fg_color;
+            ch.bg_color = ac->bg_color;
+            ch.reverse  = false;
+            ch.standout = false;
+            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+          }
+          else  // default
+            memcpy (tc, ac, sizeof(FOptiAttr::char_data));
+        }
+      }
+    }
 
     if ( ax < short(vterm->changes[ay+y].xmin) )
       vterm->changes[ay+y].xmin = uInt(ax);
@@ -2738,7 +2834,8 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 {
   int xx,yy;
-  FOptiAttr::char_data* cc; // covered character
+  FOptiAttr::char_data* cc;   // covered character
+  FOptiAttr::char_data  s_ch; // shadow character
   FWidget* w;
 
   x--;
@@ -2772,16 +2869,34 @@ FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
     {
       if ( obj && *iter != obj && layer >= FWindow::getWindowLayer(*iter) )
       {
+        term_area* win = (*iter)->getVWin();
         const FRect& geometry = (*iter)->getGeometryGlobalShadow();
 
-        if ( geometry.contains(x+1,y+1) )
+        // window visible and contains current character
+        if ( win && win->visible && geometry.contains(x+1,y+1) )
         {
+          FOptiAttr::char_data* tmp;
           int win_x = (*iter)->getGlobalX() - 1;
           int win_y = (*iter)->getGlobalY() - 1;
-          term_area* win = (*iter)->getVWin();
           int line_len = win->width + win->right_shadow;
-          if ( win->visible )
-            cc = &win->text[(y-win_y) * line_len + (x-win_x)];
+          tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
+
+          // current character not transparent
+          if ( ! tmp->transparent )
+          {
+            if ( tmp->trans_shadow )  // transparent shadow
+            {
+              // keep the current vterm character
+              memcpy (&s_ch, cc, sizeof(FOptiAttr::char_data));
+              s_ch.fg_color = tmp->fg_color;
+              s_ch.bg_color = tmp->bg_color;
+              s_ch.reverse  = false;
+              s_ch.standout = false;
+              cc = &s_ch;
+            }
+            else  // default
+              cc = tmp;
+          }
         }
       }
       else
@@ -3117,10 +3232,13 @@ void FTerm::resizeVTerm()
   default_char.dbl_underline = 0;
   default_char.alt_charset   = 0;
   default_char.pc_charset    = 0;
+  default_char.transparent   = 0;
+  default_char.trans_shadow  = 0;
 
   std::fill_n (vterm->text, vterm_size, default_char);
   unchanged.xmin = uInt(term_width);
   unchanged.xmax = 0;
+  unchanged.trans_count = 0;
   std::fill_n (vterm->changes, term_height, unchanged);
 }
 
@@ -4228,6 +4346,8 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           nc.dbl_underline = next_attribute.dbl_underline;
           nc.alt_charset   = next_attribute.alt_charset;
           nc.pc_charset    = next_attribute.pc_charset;
+          nc.transparent   = next_attribute.transparent;
+          nc.trans_shadow  = next_attribute.trans_shadow;
 
           int ax = x - area_widget->getGlobalX();
           int ay = y - area_widget->getGlobalY();
@@ -4241,8 +4361,22 @@ int FTerm::print (FTerm::term_area* area, FString& s)
             int line_len = area->width + area->right_shadow;
             ac = &area->text[ay * line_len + ax];
 
-            if ( *ac != nc )
+            if ( *ac != nc )  // compare with an overloaded operator
             {
+              if (  ( ! ac->transparent  && nc.transparent )
+                 || ( ! ac->trans_shadow && nc.trans_shadow ) )
+              {
+                // add one transparent character form line
+                area->changes[ay].trans_count++;
+              }
+              else if (  ( ac->transparent  && ! nc.transparent )
+                 || ( ac->trans_shadow && ! nc.trans_shadow ) )
+              {
+                // remove one transparent character from line
+                area->changes[ay].trans_count--;
+              }
+
+              // copy character to area
               memcpy (ac, &nc, sizeof(nc));
 
               if ( ax < short(area->changes[ay].xmin) )
@@ -4330,6 +4464,8 @@ int FTerm::print (FTerm::term_area* area, register int c)
   nc.dbl_underline = next_attribute.dbl_underline;
   nc.alt_charset   = next_attribute.alt_charset;
   nc.pc_charset    = next_attribute.pc_charset;
+  nc.transparent   = next_attribute.transparent;
+  nc.trans_shadow  = next_attribute.trans_shadow;
 
   x = short(cursor->getX());
   y = short(cursor->getY());
@@ -4349,8 +4485,23 @@ int FTerm::print (FTerm::term_area* area, register int c)
     int line_len = area->width + area->right_shadow;
     ac = &area->text[ay * line_len + ax];
 
-    if ( *ac != nc )
+    if ( *ac != nc )  // compare with an overloaded operator
     {
+      if (  ( ! ac->transparent  && nc.transparent )
+         || ( ! ac->trans_shadow && nc.trans_shadow ) )
+      {
+        // add one transparent character form line
+        area->changes[ay].trans_count++;
+      }
+
+      if (  ( ac->transparent  && ! nc.transparent )
+         || ( ac->trans_shadow && ! nc.trans_shadow ) )
+      {
+        // remove one transparent character from line
+        area->changes[ay].trans_count--;
+      }
+
+      // copy character to area
       memcpy (ac, &nc, sizeof(nc));
 
       if ( ax < short(area->changes[ay].xmin) )

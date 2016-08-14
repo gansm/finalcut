@@ -121,7 +121,9 @@ class FOptiAttr
      uChar dbl_underline : 1;  // double underline
      uChar alt_charset   : 1;  // alternate character set (vt100)
      uChar pc_charset    : 1;  // pc character set (CP437)
-     uChar               : 3;  // padding bits
+     uChar transparent   : 1;  // transparent
+     uChar trans_shadow  : 1;  // transparent shadow
+     uChar               : 1;  // padding bits
    } char_data;
 
  private:
@@ -275,7 +277,9 @@ inline bool operator == ( const FOptiAttr::char_data& lhs,
       && lhs.crossed_out   == rhs.crossed_out
       && lhs.dbl_underline == rhs.dbl_underline
       && lhs.alt_charset   == rhs.alt_charset
-      && lhs.pc_charset    == rhs.pc_charset;
+      && lhs.pc_charset    == rhs.pc_charset
+      && lhs.transparent   == rhs.transparent
+      && lhs.trans_shadow  == rhs.trans_shadow;
 }
 
 //----------------------------------------------------------------------
