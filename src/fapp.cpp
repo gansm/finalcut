@@ -1405,7 +1405,7 @@ void FApplication::processMouseEvent()
       menu->hideSuperMenus();
 
       // No widget was been clicked and the menu is no dialog menu
-      if ( ! (clicked_widget && is_window_menu) )
+      if ( ! (clicked_widget || is_window_menu) )
         FWindow::switchToPrevWindow();
 
       if ( statusBar() )
