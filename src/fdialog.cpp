@@ -730,11 +730,16 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 
   if ( title_button.contains(gPos) )
   {
+    FWidget* window_focus_widget;
     dialog_menu->unselectItem();
     dialog_menu->hide();
     activateWindow();
     raiseWindow();
-    getWindowFocusWidget()->setFocus();
+    window_focus_widget = getWindowFocusWidget();
+
+    if ( window_focus_widget )
+      window_focus_widget->setFocus();
+  
     setClickedWidget(0);
 
     if ( isModal() )

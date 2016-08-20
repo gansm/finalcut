@@ -96,9 +96,6 @@ void FWindow::hide()
   if ( area )
     area->visible = false;
 
-  if ( isDialog() )
-    switchToPrevWindow();
-
   FWidget::hide();
 }
 
@@ -406,8 +403,33 @@ void FWindow::setWindowFocusWidget (FWidget* obj)
 void FWindow::switchToPrevWindow()
 {
   // switch to previous window
-  activatePrevWindow();
+  bool is_activated = activatePrevWindow();
   FWindow* active_window = getActiveWindow();
+
+  if ( ! is_activated )
+  {
+    // no previous window -> looking for another window
+    if ( window_list && window_list->size() > 1 )
+    {
+      widgetList::const_iterator iter, begin;
+      iter  = window_list->end();
+      begin = window_list->begin();
+
+      do
+      {
+        --iter;
+        FWindow* w = static_cast<FWindow*>(*iter);
+
+        if ( w && w != active_window
+           && ! (w->isHiddenWindow() || w->isActiveWindow()) )
+        {
+          setActiveWindow(w);
+          break;
+        }
+      }
+       while ( iter != begin );
+    }
+  }
 
   if ( active_window )
   {
