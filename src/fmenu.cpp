@@ -117,7 +117,6 @@ void FMenu::init(FWidget* parent)
   createArea (vwin);
   setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
-  window_object = true;
   menu_object = true;
   addWindow(this);
   hide();
@@ -1040,12 +1039,14 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       }
       else
       {
+        FWidget* super = getSuperMenu();
         hideSuperMenus();
 
         if ( statusBar() )
           statusBar()->clearMessage();
 
-        switchToPrevWindow();
+        if ( ! super || ! isWindowsMenu(super) )
+          switchToPrevWindow();
       }
 
       if ( statusBar() )

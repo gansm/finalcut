@@ -768,7 +768,7 @@ bool FWidget::focusNextChild()
       FObject::object_list children;
       FObject::object_list::iterator iter, end;
 
-      children = getParent()->getChildren();
+      children = parent->getChildren();
       iter = children.begin();
       end  = children.end();
 
@@ -838,7 +838,7 @@ bool FWidget::focusPrevChild()
       FObject::object_list children;
       FObject::object_list::iterator iter, begin;
 
-      children = getParent()->getChildren();
+      children = parent->getChildren();
       iter  = children.end();
       begin = children.begin();
 
@@ -1428,13 +1428,12 @@ void FWidget::hide()
     visible = false;
     shown = false;
 
-    if ( FWidget::getFocusWidget() == this )
+    if ( ! isDialog()
+       && FWidget::getFocusWidget() == this
+       && ! focusPrevChild() )
     {
-      if ( ! focusPrevChild() )
-      {
-        FWidget::getFocusWidget()->unsetFocus();
-        FWidget::setFocusWidget(getParentWidget());
-      }
+      FWidget::getFocusWidget()->unsetFocus();
+      FWidget::setFocusWidget(getParentWidget());
     }
 
     FHideEvent hide_ev (fc::Hide_Event);

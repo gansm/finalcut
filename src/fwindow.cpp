@@ -19,7 +19,9 @@ FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
   , window_active(false)
   , win_focus_widget(0)
-{ }
+{
+  window_object = true;
+}
 
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
@@ -93,6 +95,9 @@ void FWindow::hide()
 
   if ( area )
     area->visible = false;
+
+  if ( isDialog() )
+    switchToPrevWindow();
 
   FWidget::hide();
 }

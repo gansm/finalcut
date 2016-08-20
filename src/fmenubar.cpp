@@ -46,7 +46,6 @@ void FMenuBar::init()
   ypos = 1;
   createArea (vmenubar);
   vmenubar->visible = true;
-  window_object  = true;
   ignore_padding = true;
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);

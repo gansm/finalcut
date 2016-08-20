@@ -190,7 +190,6 @@ void FStatusBar::init()
   ypos = getLineNumber();
   createArea (vstatusbar);
   vstatusbar->visible = true;
-  window_object  = true;
   ignore_padding = true;
   mouse_down = false;
 

@@ -1,3 +1,6 @@
+2016-08-20  Markus Gans  <guru.mail@muenster.de>
+	* Switch back to the own dialog when you closing a dialog menu
+
 2016-08-14  Markus Gans  <guru.mail@muenster.de>
 	* Screen characters now have a transparent 
 	  and a transparent shadow option

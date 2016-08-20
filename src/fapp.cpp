@@ -1391,13 +1391,21 @@ void FApplication::processMouseEvent()
 
     if ( ! menu->containsMenuStructure(*mouse) )
     {
+      bool is_window_menu;
+      FWidget* super = menu->getSuperMenu();
+
+      if ( super && menu->isWindowsMenu(super) )
+        is_window_menu = true;
+      else
+        is_window_menu = false;
+
       menu->unselectItem();
       menu->hide();
       menu->hideSubMenus();
       menu->hideSuperMenus();
 
-      // No widget was been clicked
-      if ( ! clicked_widget )
+      // No widget was been clicked and the menu is no dialog menu
+      if ( ! (clicked_widget && is_window_menu) )
         FWindow::switchToPrevWindow();
 
       if ( statusBar() )

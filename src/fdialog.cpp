@@ -101,7 +101,6 @@ void FDialog::init()
   createArea (vwin);
   setGeometry (1, 1, 10, 10, false);  // initialize geometry values
   ignore_padding = true;
-  window_object  = true;
   dialog_object  = true;
   addDialog(this);
   addWindow(this);
@@ -125,6 +124,7 @@ void FDialog::init()
   }
 
   accelerator_list = new Accelerators();
+  // Add the dialog menu
   dialog_menu = new FMenu ("-", this);
   dialog_menu->move (xpos, ypos+1);
   dgl_menuitem = dialog_menu->getItem();
@@ -268,7 +268,7 @@ void FDialog::drawTitleBar()
   if ( getMaxColor() < 16 )
     setBold();
 
-  if ( isActiveWindow() || dialog_menu->isVisible() )
+  if ( isActiveWindow() || (dialog_menu && dialog_menu->isVisible()) )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
@@ -788,7 +788,7 @@ void FDialog::onWindowActive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowInactive (FEvent*)
 {
-  if ( ! dialog_menu->isVisible() )
+  if ( dialog_menu && ! dialog_menu->isVisible() )
     FWindow::previous_widget = this;
 
   if ( isVisible() && isEnabled() )

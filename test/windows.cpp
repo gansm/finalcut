@@ -220,8 +220,13 @@ void Window::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Window::cb_createWindows (FWidget*, void*)
 {
+  int w,h,dx,dy;
   std::vector<win_data*>::const_iterator iter, begin;
   iter = begin = windows.begin();
+  w = getRootWidget()->getWidth();
+  h = getRootWidget()->getHeight();
+  dx = (w > 80) ? (w - 80) / 2 : 0;
+  dy = (h > 24) ? (h - 24) / 2 : 0;
 
   while ( iter != windows.end() )
   {
@@ -234,8 +239,8 @@ void Window::cb_createWindows (FWidget*, void*)
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);
       n = int(std::distance(begin, iter));
-      x = 5 + (n%3)*25 + int(n/3)*3;
-      y = 11 + int(n/3)*3;
+      x = dx + 5 + (n%3)*25 + int(n/3)*3;
+      y = dy + 11 + int(n/3)*3;
       win->setGeometry (x, y, 20, 8);
       win->setTransparentShadow();
       win->show();
@@ -369,12 +374,14 @@ void Window::cb_destroyWindow (FWidget*, void* data_ptr)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  int w,h,X,Y;
+  int w,h,X,Y,dx,dy;
   std::vector<win_data*>::const_iterator iter, begin;
-  w = getRootWidget()->getWidth();
-  h = getRootWidget()->getHeight();
-  X = int(1 + (w - 40) / 2);
-  Y = int(1 + (h - 22) / 2);
+  w  = getRootWidget()->getWidth();
+  h  = getRootWidget()->getHeight();
+  X  = int(1 + (w - 40) / 2);
+  Y  = int(1 + (h - 22) / 2);
+  dx = (w > 80) ? (w - 80) / 2 : 0;
+  dy = (h > 24) ? (h - 24) / 2 : 0;
 
   if ( Y < 2)
     Y = 2;
@@ -386,12 +393,10 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      int x,y,dx,dy,n;
-      n  = int(std::distance(begin, iter));
-      dx = (w > 80) ? (w - 80) / 2 : 0;
-      dy = (h > 24) ? (h - 24) / 2 : 0;
-      x  = dx + 5 + (n%3)*25 + int(n/3)*3;
-      y  = dy + 11 + int(n/3)*3;
+      int x,y,n;
+      n = int(std::distance(begin, iter));
+      x = dx + 5 + (n%3)*25 + int(n/3)*3;
+      y = dy + 11 + int(n/3)*3;
       (*iter)->dgl->setPos (x, y, false);
     }
 
