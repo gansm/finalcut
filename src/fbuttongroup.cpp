@@ -70,6 +70,9 @@ void FButtonGroup::init()
 //----------------------------------------------------------------------
 bool FButtonGroup::isRadioButton(FToggleButton* button) const
 {
+  if ( ! button )
+    return false;
+
   return bool ( strcmp ( button->getClassName()
                        , const_cast<char*>("FRadioButton") ) == 0 );
 }
@@ -333,7 +336,10 @@ void FButtonGroup::hide()
 //----------------------------------------------------------------------
 void FButtonGroup::insert (FToggleButton* button)
 {
-  if ( button && button->group() )
+  if ( ! button )
+    return;
+
+  if ( button->group() )
     button->group()->remove(button);
 
   // setChecked the first FRadioButton
@@ -355,7 +361,7 @@ void FButtonGroup::remove (FToggleButton* button)
 {
   FButtonGroup::FButtonList::iterator iter;
 
-  if ( buttonlist.empty() )
+  if ( ! button || buttonlist.empty() )
     return;
 
   iter = buttonlist.begin();
