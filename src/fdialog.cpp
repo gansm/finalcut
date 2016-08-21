@@ -158,7 +158,7 @@ void FDialog::drawBorder()
   {
     short fg;
 
-    if ( ! isRootWidget() )
+    if ( ! isRootWidget() && getParentWidget() )
       fg = getParentWidget()->getForegroundColor();
     else
       fg = wc.term_fg;
@@ -306,7 +306,10 @@ void FDialog::leaveMenu()
   dialog_menu->hide();
   activateWindow();
   raiseWindow();
-  getWindowFocusWidget()->setFocus();
+
+  if ( getWindowFocusWidget() )
+    getWindowFocusWidget()->setFocus();
+
   redraw();
 
   if ( statusBar() )
@@ -739,7 +742,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 
     if ( window_focus_widget )
       window_focus_widget->setFocus();
-  
+
     setClickedWidget(0);
 
     if ( isModal() )
@@ -752,7 +755,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onAccel (FAccelEvent*)
 {
-  if ( ! isHiddenWindow() && ! isActiveWindow() )
+  if ( ! (isHiddenWindow() || isActiveWindow()) )
   {
     bool has_raised = raiseWindow();
     activateDialog();
@@ -772,11 +775,12 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( ! FWidget::getFocusWidget() )
   {
-    if ( getWindowFocusWidget()
-       && getWindowFocusWidget()->isVisible()
-       && getWindowFocusWidget()->isShown() )
+    FWidget* win_focus_widget = getWindowFocusWidget();
+
+    if ( win_focus_widget
+       && win_focus_widget->isVisible()
+       && win_focus_widget->isShown() )
     {
-      FWidget* win_focus_widget = getWindowFocusWidget();
       win_focus_widget->setFocus();
       win_focus_widget->redraw();
     }
@@ -808,7 +812,7 @@ void FDialog::onWindowRaised (FEvent*)
 {
   widgetList::const_iterator iter, end;
 
-  if ( ! isVisible() || ! isShown() )
+  if ( ! (isVisible() && isShown()) )
     return;
 
   putArea (getGlobalPos(), vwin);
@@ -869,12 +873,14 @@ void FDialog::show()
   FWindow::show();
 
   // set the cursor to the focus widget
-  if (  FWidget::getFocusWidget()
-     && FWidget::getFocusWidget()->isVisible()
-     && FWidget::getFocusWidget()->hasVisibleCursor()
-     && FWidget::getFocusWidget()->isCursorInside() )
+  FWidget* focus_widget = FWidget::getFocusWidget();
+
+  if (  focus_widget
+     && focus_widget->isVisible()
+     && focus_widget->hasVisibleCursor()
+     && focus_widget->isCursorInside() )
   {
-    FWidget::getFocusWidget()->setCursor();
+    focus_widget->setCursor();
     showCursor();
     flush_out();
   }
@@ -1003,14 +1009,15 @@ void FDialog::move (int x, int y)
   FWidget::adjustSize();
 
   // set the cursor to the focus widget
-  if (  FWidget::getFocusWidget()
-     && FWidget::getFocusWidget()->isVisible()
-     && FWidget::getFocusWidget()->hasVisibleCursor() )
+  FWidget* focus_widget = FWidget::getFocusWidget();
+  if (  focus_widget
+     && focus_widget->isVisible()
+     && focus_widget->hasVisibleCursor() )
   {
-    FPoint cursor_pos = FWidget::getFocusWidget()->getCursorPos();
+    FPoint cursor_pos = focus_widget->getCursorPos();
     cursor_pos -= FPoint(dx,dy);
 
-    if ( ! FWidget::getFocusWidget()->setCursorPos(cursor_pos) )
+    if ( ! focus_widget->setCursorPos(cursor_pos) )
       hideCursor();
   }
 

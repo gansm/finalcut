@@ -413,6 +413,8 @@ void FWidget::adjustSize()
 {
   if ( ! isRootWidget() )
   {
+    FWidget* parent_widget = getParentWidget();
+
     if ( isWindow() )
     {
       xmin = rootObject->client_xmin;
@@ -420,21 +422,21 @@ void FWidget::adjustSize()
       xmax = rootObject->client_xmax;
       ymax = rootObject->client_ymax;
     }
-    else if ( ignore_padding )
+    else if ( ignore_padding && parent_widget )
     {
-      xmin = getParentWidget()->xpos + getParentWidget()->xmin - 1;
-      ymin = getParentWidget()->ypos + getParentWidget()->ymin - 1;
-      xmax = getParentWidget()->xpos + getParentWidget()->xmin - 2
-           + getParentWidget()->width;
-      ymax = getParentWidget()->ypos + getParentWidget()->ymin - 2
-           + getParentWidget()->height;
+      xmin = parent_widget->xpos + parent_widget->xmin - 1;
+      ymin = parent_widget->ypos + parent_widget->ymin - 1;
+      xmax = parent_widget->xpos + parent_widget->xmin - 2
+           + parent_widget->width;
+      ymax = parent_widget->ypos + parent_widget->ymin - 2
+           + parent_widget->height;
     }
-    else
+    else if ( parent_widget )
     {
-      xmin = getParentWidget()->client_xmin;
-      ymin = getParentWidget()->client_ymin;
-      xmax = getParentWidget()->client_xmax;
-      ymax = getParentWidget()->client_ymax;
+      xmin = parent_widget->client_xmin;
+      ymin = parent_widget->client_ymin;
+      xmax = parent_widget->client_xmax;
+      ymax = parent_widget->client_ymax;
     }
 
     xpos   = widgetSize.getX();
@@ -759,6 +761,9 @@ void FWidget::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 bool FWidget::focusNextChild()
 {
+  if ( isDialog() )
+    return false;
+
   if ( hasParent() )
   {
     FWidget* parent = static_cast<FWidget*>(getParent());
@@ -829,6 +834,9 @@ bool FWidget::focusNextChild()
 //----------------------------------------------------------------------
 bool FWidget::focusPrevChild()
 {
+  if ( isDialog() )
+    return false;
+
   if ( hasParent() )
   {
     FWidget* parent = static_cast<FWidget*>(getParent());
@@ -1379,7 +1387,7 @@ void FWidget::show()
   if ( ! visible )
     return;
 
-  if ( getMainWidget() == this && ! NewFont && ! VGAFont )
+  if ( getMainWidget() == this && ! (NewFont || VGAFont) )
     init_consoleCharMap();
 
   if ( ! show_root_widget )
@@ -1432,7 +1440,9 @@ void FWidget::hide()
        && FWidget::getFocusWidget() == this
        && ! focusPrevChild() )
     {
-      FWidget::getFocusWidget()->unsetFocus();
+      if ( FWidget::getFocusWidget() )
+        FWidget::getFocusWidget()->unsetFocus();
+
       FWidget::setFocusWidget(getParentWidget());
     }
 
@@ -1561,7 +1571,7 @@ bool FWidget::setFocus (bool on)
   {
     int focusable_children = numOfFocusableChildren();
 
-    if ( FWidget::getFocusWidget() != 0 )
+    if ( FWidget::getFocusWidget() )
       FWidget::getFocusWidget()->unsetFocus();
 
     if ( (!isDialog() && focusable_children == 0)
@@ -2001,7 +2011,7 @@ void FWidget::drawShadow()
   if ( isMonochron() && ! trans_shadow )
     return;
 
-  if (  (Encoding == fc::VT100 && ! trans_shadow && ! isTeraTerm() )
+  if (  (Encoding == fc::VT100 && ! (trans_shadow || isTeraTerm()) )
      || (Encoding == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();

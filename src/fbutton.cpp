@@ -134,6 +134,7 @@ void FButton::draw()
   register wchar_t* dest;
   wchar_t* ButtonText;
   FString txt;
+  FWidget* parent_widget = getParentWidget();
   int active_focus;
   int d, i, j, x, mono_offset, margin;
   int length, hotkeypos, hotkey_offset, space;
@@ -173,8 +174,10 @@ void FButton::draw()
       clearFlatBorder();
 
     clearShadow();
-    setColor ( getParentWidget()->getForegroundColor()
-             , getParentWidget()->getBackgroundColor() );
+
+    if ( parent_widget )
+      setColor ( parent_widget->getForegroundColor()
+               , parent_widget->getBackgroundColor() );
 
     for (int y=1; y <= height; y++)
     {
@@ -243,7 +246,9 @@ void FButton::draw()
   }
   else if ( ! isMonochron() )
   {
-    setColor (button_bg, getParentWidget()->getBackgroundColor());
+    if ( parent_widget )
+      setColor (button_bg, parent_widget->getBackgroundColor());
+
     gotoxy (xpos+xmin-1+d, ypos+ymin-1);
 
     for (int y=1; y <= height; y++)
@@ -265,8 +270,9 @@ void FButton::draw()
      && (is_Flat || ! hasShadow() || isMonochron()) )
   {
     // clear the right █ from button down
-    setColor ( getParentWidget()->getForegroundColor()
-             , getParentWidget()->getBackgroundColor() );
+    if ( parent_widget )
+      setColor ( parent_widget->getForegroundColor()
+               , parent_widget->getBackgroundColor() );
 
     for (int y=1; y <= height; y++)
     {
@@ -365,8 +371,10 @@ void FButton::draw()
 
   if ( is_NonFlatShadow && ! button_down )
   {
-    setColor ( getParentWidget()->getForegroundColor()
-             , getParentWidget()->getBackgroundColor() );
+    if ( parent_widget )
+      setColor ( parent_widget->getForegroundColor()
+               , parent_widget->getBackgroundColor() );
+
     print(' '); // restore background after button down
     drawShadow();
   }
@@ -488,10 +496,20 @@ void FButton::hide()
   int s, f, size;
   short fg, bg;
   char* blank;
-
+  FWidget* parent_widget = getParentWidget();
   FWidget::hide();
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
   f = isFlat() ? 1 : 0;

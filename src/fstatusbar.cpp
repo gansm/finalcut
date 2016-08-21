@@ -77,7 +77,9 @@ void FStatusKey::init (FWidget* parent)
                         , const_cast<char*>("FStatusBar") ) == 0 )
   {
     setStatusbar( static_cast<FStatusBar*>(parent) );
-    statusbar()->insert(this);
+
+    if ( statusbar() )
+      statusbar()->insert(this);
   }
 }
 
@@ -93,11 +95,16 @@ void FStatusKey::onAccel (FAccelEvent* ev)
   if ( ! isActivated() )
   {
     setActive();
-    statusbar()->redraw();
+
+    if ( statusbar() )
+      statusbar()->redraw();
+
     ev->accept();
     // unset after get back from callback
     unsetActive();
-    statusbar()->redraw();
+
+    if ( statusbar() )
+      statusbar()->redraw();
   }
 }
 
@@ -196,7 +203,10 @@ void FStatusBar::init()
   // initialize geometry values
   setGeometry (1, ypos, getColumnNumber(), 1, false);
   setStatusBar(this);
-  getRootWidget()->setBottomPadding(1, true);
+
+  if ( getRootWidget() )
+    getRootWidget()->setBottomPadding(1, true);
+
   foregroundColor = wc.statusbar_fg;
   backgroundColor = wc.statusbar_bg;
   unsetFocusable();
@@ -217,11 +227,15 @@ void FStatusBar::drawKeys()
 {
   std::vector<FStatusKey*>::const_iterator iter, end;
   int screenWidth, lastLine;
-  x = 1;
+
+  if ( ! vstatusbar )
+    return;
+
   screenWidth = getColumnNumber();
   lastLine = getLineNumber();
   width = screenWidth;
   ypos = lastLine;
+  x = 1;
 
   if ( keylist.empty() )
   {
@@ -577,7 +591,7 @@ void FStatusBar::drawMessage()
   int  termWidth, lastLine, space_offset;
   bool isLastActiveFocus, hasKeys;
 
-  if ( ! isVisible() )
+  if ( ! (isVisible() && vstatusbar) )
     return;
 
   if ( x < 0 || x_msg < 0 )

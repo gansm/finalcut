@@ -681,7 +681,9 @@ void FMenuItem::onAccel (FAccelEvent* ev)
           FApplication::queueEvent(focused_widget, &out);
           menu->unselectItem();
           menu->selectFirstItem();
-          menu->getSelectedItem()->setFocus();
+
+          if ( menu->getSelectedItem() )
+            menu->getSelectedItem()->setFocus();
 
           if ( focused_widget )
             focused_widget->redraw();

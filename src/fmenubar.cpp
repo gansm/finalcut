@@ -50,7 +50,10 @@ void FMenuBar::init()
   // initialize geometry values
   setGeometry (1, 1, getColumnNumber(), 1, false);
   setMenuBar(this);
-  getRootWidget()->setTopPadding(1, true);
+
+  if ( getRootWidget() )
+    getRootWidget()->setTopPadding(1, true);
+
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
   foregroundColor = wc.menu_active_fg;

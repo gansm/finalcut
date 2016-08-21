@@ -199,6 +199,19 @@ class FTerm
      uChar        : 4;  // padding bits
    } mod_key;
 
+   enum covered_state
+   {
+     non_covered,
+     half_covered,
+     fully_covered
+   };
+
+   enum character_type
+   {
+     overlapped_character,
+     covered_character
+   };
+
  protected:
    static bool NewFont;
    static bool VGAFont;
@@ -276,8 +289,8 @@ class FTerm
    void         resizeArea (FTerm::term_area*);
    void         restoreVTerm (const FRect&);
    void         restoreVTerm (int, int, int, int);
-   bool         isCovered (const FPoint&, FTerm::term_area*) const;
-   bool         isCovered (int, int, FTerm::term_area*) const;
+   FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*) const;
+   FTerm::covered_state isCovered (int, int, FTerm::term_area*) const;
    void         updateVTerm (FTerm::term_area*);
    void         updateVTerm (bool);
    void         getArea (const FPoint&, FTerm::term_area*);
@@ -286,8 +299,12 @@ class FTerm
    void         getArea (int, int, int, int, FTerm::term_area*);
    void         putArea (const FPoint&, FTerm::term_area*);
    void         putArea (int, int, FTerm::term_area*);
+   FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
+   FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
    FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
    FOptiAttr::char_data getCoveredCharacter (int, int, FTerm*);
+   FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FTerm*);
+   FOptiAttr::char_data getOverlappedCharacter (int, int, FTerm*);
 
  public:
    FTerm ();          // constructor
@@ -438,7 +455,8 @@ class FTerm
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline bool FTerm::isCovered(const FPoint& pos, FTerm::term_area* area) const
+inline FTerm::covered_state FTerm::isCovered ( const FPoint& pos
+                                             , FTerm::term_area* area) const
 { return isCovered (pos.getX(), pos.getY(), area); }
 
 //----------------------------------------------------------------------
@@ -456,8 +474,24 @@ inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
+inline FOptiAttr::char_data FTerm::getCharacter (int type, const FPoint& pos, FTerm* obj)
+{ return getCharacter (type, pos.getX(), pos.getY(), obj); }
+
+//----------------------------------------------------------------------
+inline FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
+{ return getCharacter (covered_character, x, y, obj); }
+
+//----------------------------------------------------------------------
 inline FOptiAttr::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
-{ return getCoveredCharacter (pos.getX(), pos.getY(), obj); }
+{ return getCharacter (covered_character, pos.getX(), pos.getY(), obj); }
+
+//----------------------------------------------------------------------
+inline FOptiAttr::char_data FTerm::getOverlappedCharacter (int x, int y, FTerm* obj)
+{ return getCharacter (overlapped_character, x, y, obj); }
+
+//----------------------------------------------------------------------
+inline FOptiAttr::char_data FTerm::getOverlappedCharacter (const FPoint& pos, FTerm* obj)
+{ return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj); }
 
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const

@@ -998,7 +998,10 @@ void FMenu::onKeyPress (FKeyEvent* ev)
         FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
         hideSubMenus();
         hide();
-        smenu->getSelectedItem()->setFocus();
+
+        if ( smenu->getSelectedItem() )
+          smenu->getSelectedItem()->setFocus();
+
         smenu->redraw();
 
         if ( statusBar() )
@@ -1034,7 +1037,10 @@ void FMenu::onKeyPress (FKeyEvent* ev)
       if ( isSubMenu() )
       {
         FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
-        smenu->getSelectedItem()->setFocus();
+
+        if ( smenu->getSelectedItem() )
+          smenu->getSelectedItem()->setFocus();
+
         smenu->redraw();
       }
       else
@@ -1045,7 +1051,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
         if ( statusBar() )
           statusBar()->clearMessage();
 
-        if ( ! super || ! isWindowsMenu(super) )
+        if ( ! (super && isWindowsMenu(super)) )
           switchToPrevWindow();
       }
 
@@ -1088,7 +1094,10 @@ void FMenu::onMouseDown (FMouseEvent* ev)
       open_sub_menu->hideSubMenus();
       open_sub_menu->hide();
       open_sub_menu = 0;
-      getSelectedItem()->setFocus();
+
+      if ( getSelectedItem() )
+        getSelectedItem()->setFocus();
+
       redraw();
 
       if ( statusBar() )
@@ -1150,8 +1159,10 @@ void FMenu::onMouseDown (FMouseEvent* ev)
               raiseWindow (open_sub_menu);
               open_sub_menu->redraw();
               sel_item->setFocus();
+
               if ( statusBar() )
                 statusBar()->drawMessage();
+
               updateTerminal();
               flush_out();
             }
@@ -1504,12 +1515,14 @@ void FMenu::show()
   FWindow::show();
 
   // set the cursor to the focus widget
-  if (  FWidget::getFocusWidget()
-     && FWidget::getFocusWidget()->isVisible()
-     && FWidget::getFocusWidget()->hasVisibleCursor()
-     && FWidget::getFocusWidget()->isCursorInside() )
+  FWidget* focus_widget = FWidget::getFocusWidget();
+
+  if (  focus_widget
+     && focus_widget->isVisible()
+     && focus_widget->hasVisibleCursor()
+     && focus_widget->isCursorInside() )
   {
-    FWidget::getFocusWidget()->setCursor();
+    focus_widget->setCursor();
     showCursor();
     flush_out();
   }

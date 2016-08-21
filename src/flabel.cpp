@@ -55,12 +55,23 @@ FLabel::~FLabel() // destructor
 //----------------------------------------------------------------------
 void FLabel::init()
 {
+  FWidget* parent_widget = getParentWidget();
+
   if ( isEnabled() )
     flags |= fc::active;
 
   unsetFocusable();
-  foregroundColor = getParentWidget()->getForegroundColor();
-  backgroundColor = getParentWidget()->getBackgroundColor();
+
+  if ( parent_widget )
+  {
+    foregroundColor = parent_widget->getForegroundColor();
+    backgroundColor = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    foregroundColor = wc.dialog_fg;
+    backgroundColor = wc.dialog_bg;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -327,10 +338,21 @@ void FLabel::hide()
 {
   short fg, bg;
   char* blank;
+  FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
   setColor (fg, bg);
   blank = new char[width+1];
   memset(blank, ' ', uLong(width));
@@ -345,7 +367,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( ! isEnabled() || ! accel_widget  )
+  if ( ! (isEnabled() && accel_widget) )
     return;
 
   if ( ! accel_widget->hasFocus() )
@@ -372,7 +394,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLabel::onAccel (FAccelEvent* ev)
 {
-  if ( ! isEnabled() || ! accel_widget  )
+  if ( ! (isEnabled() && accel_widget) )
     return;
 
   if ( ! accel_widget->hasFocus() )

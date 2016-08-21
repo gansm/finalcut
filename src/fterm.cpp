@@ -1900,7 +1900,7 @@ void FTerm::init()
   if ( ! gnome_terminal )
     setXTermCursorColor("rgb:ffff/ffff/ffff");
 
-  if ( ! mintty_terminal && ! rxvt_terminal && ! screen_terminal )
+  if ( ! (mintty_terminal || rxvt_terminal || screen_terminal) )
   {
     // mintty and rxvt can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
@@ -2025,7 +2025,7 @@ void FTerm::finish()
   resetXTermHighlightBackground();
   setXTermCursorStyle(fc::steady_block);
 
-  if ( max_color >= 16 && ! kde_konsole && ! tera_terminal )
+  if ( max_color >= 16 && ! (kde_konsole || tera_terminal) )
   {
     // reset screen settings
     setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
@@ -2431,15 +2431,16 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isCovered (int x, int y, FTerm::term_area* area) const
+FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) const
 {
-  bool covered, found;
+  bool found;
+  FTerm::covered_state is_covered;
   FWidget* w;
 
   if ( ! area )
-    return false;
+    return non_covered;
 
-  covered = false;
+  is_covered = non_covered;
   found = bool(area == vdesktop);
   x++;
   y++;
@@ -2468,9 +2469,13 @@ bool FTerm::isCovered (int x, int y, FTerm::term_area* area) const
         int line_len = win->width + win->right_shadow;
         tmp = &win->text[(y-win_y-1) * line_len + (x-win_x-1)];
 
-        if ( ! tmp->transparent )
+        if ( tmp->trans_shadow )
         {
-          covered = true;
+          is_covered = half_covered;
+        }
+        else if ( ! tmp->transparent )
+        {
+          is_covered = fully_covered;
           break;
         }
       }
@@ -2493,7 +2498,7 @@ bool FTerm::isCovered (int x, int y, FTerm::term_area* area) const
   if (  area != vmenubar && menubar
      && menubar->getGeometryGlobal().contains(x,y) )
   {
-    covered = true;
+    is_covered = fully_covered;
   }
 
   // statusbar is always on top
@@ -2507,10 +2512,10 @@ bool FTerm::isCovered (int x, int y, FTerm::term_area* area) const
   if (  area != vstatusbar && statusbar
      && statusbar->getGeometryGlobal().contains(x,y) )
   {
-    covered = true;
+    is_covered = fully_covered;
   }
 
-  return covered;
+  return is_covered;
 }
 
 //----------------------------------------------------------------------
@@ -2573,6 +2578,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
       for (register int x=line_xmin; x <= line_xmax; x++)  // column loop
       {
         int gx, gy, line_len;
+        FTerm::covered_state is_covered;
         gx = ax + x;  // global position
         gy = ay + y;
 
@@ -2582,10 +2588,21 @@ void FTerm::updateVTerm (FTerm::term_area* area)
         line_len = aw + rsh;
         ac = &area->text[y * line_len + x];
         tc = &vterm->text[gy * vterm->width + gx - ol];
+        is_covered = isCovered(gx-ol, gy, area);  // get covered state
 
-        if ( ! isCovered(gx-ol, gy, area) )
+        if ( is_covered != fully_covered )
         {
-          if ( ac->transparent )   // transparent
+          if ( is_covered == half_covered )
+          {
+            // add the overlapping color to this character
+            FOptiAttr::char_data ch, oc;
+            memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+            oc = getOverlappedCharacter (gx+1, gy+1, area->widget);
+            ch.fg_color = oc.fg_color;
+            ch.bg_color = oc.bg_color;
+            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+          }
+          else if ( ac->transparent )   // transparent
           {
             // restore one character on vterm
             FOptiAttr::char_data ch;
@@ -2831,8 +2848,12 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
+FOptiAttr::char_data FTerm::getCharacter ( int char_type
+                                         , int x
+                                         , int y
+                                         , FTerm* obj )
 {
+  // get the overlapped or the covered character for a position
   int xx,yy;
   FOptiAttr::char_data* cc;   // covered character
   FOptiAttr::char_data  s_ch; // shadow character
@@ -2867,7 +2888,14 @@ FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 
     while ( iter != end )
     {
-      if ( obj && *iter != obj && layer >= FWindow::getWindowLayer(*iter) )
+      bool significant_char;
+
+      if ( char_type == covered_character )
+        significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
+      else
+        significant_char = bool(layer < FWindow::getWindowLayer(*iter));
+
+      if ( obj && *iter != obj && significant_char )
       {
         term_area* win = (*iter)->getVWin();
         const FRect& geometry = (*iter)->getGeometryGlobalShadow();
@@ -2899,7 +2927,7 @@ FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
           }
         }
       }
-      else
+      else if ( char_type == covered_character )
         break;
 
       ++iter;
@@ -2908,7 +2936,6 @@ FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
 
   return *cc;
 }
-
 
 // public methods of FTerm
 //----------------------------------------------------------------------
@@ -3038,7 +3065,7 @@ bool FTerm::setOldFont()
 {
   bool retval;
 
-  if ( ! NewFont && ! VGAFont )
+  if ( ! (NewFont || VGAFont) )
     return false;
 
   retval  = \
@@ -3437,7 +3464,7 @@ FString FTerm::getXTermTitle()
 void FTerm::setXTermCursorStyle (fc::xterm_cursor_style style)
 {
   // Set the xterm cursor style
-  if ( (xterm || mintty_terminal) && ! gnome_terminal && ! kde_konsole )
+  if ( (xterm || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
   {
     putstringf (CSI "%d q", style);
     fflush(stdout);

@@ -28,7 +28,9 @@ FToggleButton::FToggleButton(FWidget* parent)
                         , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
-    group()->insert(this);  // insert into button group
+
+    if ( group() )
+      group()->insert(this);  // insert into button group
   }
 }
 
@@ -49,7 +51,9 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
                         , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
-    group()->insert( this );  // insert into button group
+
+    if ( group() )
+      group()->insert( this );  // insert into button group
   }
 }
 
@@ -361,12 +365,22 @@ void FToggleButton::hide()
   int size;
   short fg, bg;
   char* blank;
+  FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
-  setColor (fg, bg);
 
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
   size = width;
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));

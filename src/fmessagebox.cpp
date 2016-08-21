@@ -194,6 +194,7 @@ void FMessageBox::msg_dimension()
 {
   int x, y, w, h;
   int headline_height = 0;
+  FWidget* parent_widget = getParentWidget();
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
   text_components = &text_split[0];
@@ -216,8 +217,14 @@ void FMessageBox::msg_dimension()
   if ( w < 20 )
     w = 20;
 
-  x = 1 + int((getParentWidget()->getWidth()-w)/2);
-  y = 1 + int((getParentWidget()->getHeight()-h)/3);
+  if ( parent_widget )
+  {
+    x = 1 + int((parent_widget->getWidth()-w)/2);
+    y = 1 + int((parent_widget->getHeight()-h)/3);
+  }
+  else
+    x = y = 1;
+
   setGeometry (x, y, w, h);
 }
 
@@ -313,8 +320,10 @@ void FMessageBox::adjustButtons()
 
   if ( btn_width >= width-4 )
   {
+    int max_width;
+    FWidget* root_widget = getRootWidget();
     setWidth(btn_width + 5);
-    int max_width = getRootWidget()->getClientWidth();
+    max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
     setX (int((max_width-width) / 2));
   }
 
@@ -345,8 +354,19 @@ void FMessageBox::cb_processClick (FWidget*, void* data_ptr)
 void FMessageBox::adjustSize()
 {
   int X, Y, max_width, max_height;
-  max_height = getRootWidget()->getClientHeight();
-  max_width = getRootWidget()->getClientWidth();
+  FWidget* root_widget = getRootWidget();
+
+  if ( root_widget )
+  {
+    max_width = root_widget->getClientWidth();
+    max_height = root_widget->getClientHeight();
+  }
+  else
+  {
+    max_width = 80;
+    max_height = 24;
+  }
+
   X = 1 + int((max_width-width)/2);
   Y = 1 + int((max_height-height)/3);
   setPos(X, Y, false);
@@ -369,7 +389,8 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     delete button_digit[1];
     delete button_digit[0];
 
-    mbox.getParentWidget()->addChild (this);
+    if ( mbox.getParentWidget() )
+      mbox.getParentWidget()->addChild (this);
 
     headline_text   = mbox.headline_text;
     text            = mbox.text;

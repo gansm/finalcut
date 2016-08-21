@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	calculator \
 	watch \
 	term-attributes \
+	transparent \
 	keyboard \
 	timer \
 	windows \
@@ -28,6 +29,7 @@ mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp
+transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
 windows_SOURCES = windows.cpp

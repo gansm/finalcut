@@ -102,7 +102,10 @@ void FButtonGroup::directFocus()
             if ( focused_widget )
               focused_widget->redraw();
 
-            getFocusWidget()->redraw();
+            focused_widget = getFocusWidget();
+
+            if ( focused_widget )
+              focused_widget->redraw();
           }
 
           break;
@@ -122,7 +125,10 @@ void FButtonGroup::directFocus()
       if ( focused_widget )
         focused_widget->redraw();
 
-      getFocusWidget()->redraw();
+      focused_widget = getFocusWidget();
+
+      if ( focused_widget )
+        focused_widget->redraw();
     }
   }
 
@@ -283,6 +289,7 @@ void FButtonGroup::hide()
   short fg, bg;
   char* blank;
   FWidget::hide();
+  FWidget* parent_widget = getParentWidget();
 
   if ( ! buttonlist.empty() )
   {
@@ -297,10 +304,18 @@ void FButtonGroup::hide()
     }
   }
 
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
-  setColor (fg, bg);
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
 
+  setColor (fg, bg);
   size = width;
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
@@ -318,7 +333,7 @@ void FButtonGroup::hide()
 //----------------------------------------------------------------------
 void FButtonGroup::insert (FToggleButton* button)
 {
-  if ( button->group() )
+  if ( button && button->group() )
     button->group()->remove(button);
 
   // setChecked the first FRadioButton
@@ -533,7 +548,8 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       if ( prev_element )
         prev_element->redraw();
 
-      getFocusWidget()->redraw();
+      if ( getFocusWidget() )
+        getFocusWidget()->redraw();
     }
     else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
     {
@@ -544,7 +560,8 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       if ( prev_element )
         prev_element->redraw();
 
-      getFocusWidget()->redraw();
+      if ( getFocusWidget() )
+        getFocusWidget()->redraw();
     }
   }
 

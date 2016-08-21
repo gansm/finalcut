@@ -31,6 +31,7 @@ test/watch
 test/menu
 test/windows
 test/term-attributes
+test/transparent
 test/input-dialog
 test/mandelbrot
 test/keyboard

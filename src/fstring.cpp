@@ -1225,7 +1225,7 @@ FString FString::ltrim() const
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   p = s.string;
@@ -1244,7 +1244,7 @@ FString FString::rtrim() const
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   p = s.string;
@@ -1264,7 +1264,7 @@ FString FString::rtrim() const
 FString FString::trim() const
 {
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return (*this);
 
   FString s(ltrim());
@@ -1278,7 +1278,7 @@ FString FString::left(uInt len) const
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   if ( len > length )
@@ -1296,7 +1296,7 @@ FString FString::right(uInt len) const
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   if ( len > length )
@@ -1315,7 +1315,7 @@ FString FString::mid(uInt pos, uInt len) const
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   if ( pos == 0 )
@@ -1342,7 +1342,7 @@ std::vector<FString> FString::split (const FString& delimiter)
   std::vector<FString> stringList;
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return stringList;
 
   rest = 0;
@@ -1545,7 +1545,7 @@ bool FString::operator < (const FString& s) const
   if ( ! string && s.string )
     return true;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return false;
 
   return (wcscmp(string, s.string) < 0);
@@ -1605,7 +1605,7 @@ bool FString::operator <= (const FString& s) const
   if ( ! string && s.string )
     return true;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return true;
 
   return (wcscmp(string, s.string) <= 0);
@@ -1662,7 +1662,7 @@ bool FString::operator == (const FString& s) const
   if ( (string && ! s.string ) || (! string && s.string) )
     return false;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return true;
 
   return (wcscmp(string, s.string) == 0);
@@ -1719,7 +1719,7 @@ bool FString::operator != (const FString& s) const
   if ( (string && ! s.string ) || (! string && s.string) )
     return true;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return false;
 
   return (wcscmp(string, s.string) != 0);
@@ -1779,7 +1779,7 @@ bool FString::operator >= (const FString& s) const
   if ( ! string && s.string )
     return false;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return true;
 
   return (wcscmp(string, s.string) >= 0);
@@ -1839,7 +1839,7 @@ bool FString::operator > (const FString& s) const
   if ( ! string && s.string )
     return false;
 
-  if ( ! string && ! s.string )
+  if ( ! (string || s.string) )
     return false;
 
   return (wcscmp(string, s.string) > 0);
@@ -1935,7 +1935,7 @@ FString FString::replace (const FString& from, const FString& to)
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   if ( from.isNull() || to.isNull() )
@@ -2219,7 +2219,7 @@ FString FString::replace (const wchar_t from, const FString& to)
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   if ( to.isNull() )
@@ -2337,7 +2337,7 @@ FString FString::replace (const char from, const char to)
   FString s(string);
 
   // handle NULL and empty string
-  if ( ! string || ! *string )
+  if ( ! (string && *string) )
     return s;
 
   p = s.string;

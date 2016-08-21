@@ -54,7 +54,7 @@ FApplication::FApplication (int& _argc, char**& _argv)
          && "FApplication: There should be only one application object" );
   rootObj = this;
 
-  if ( ! _argc || ! _argv )
+  if ( ! (_argc && _argv) )
   {
     static char* empty = const_cast<char*>("");
     _argc = 0;
@@ -466,7 +466,7 @@ int FApplication::modifierKeyCorrection (int& key_id)
   getModifierKey();
   modifier_key& m = mod_key;
 
-  if ( ! m.shift && ! m.ctrl && ! m.alt )
+  if ( ! (m.shift || m.ctrl || m.alt) )
   {
     return key_id;
   }
@@ -1752,15 +1752,18 @@ void FApplication::setMainWidget (FWidget* widget)
 //----------------------------------------------------------------------
 int FApplication::exec() // run
 {
+  FWidget* focus_widget;
   quit_now = false;
   quit_code = 0;
 
   // set the cursor to the focus widget
-  if (  getFocusWidget()
-     && getFocusWidget()->isVisible()
-     && getFocusWidget()->hasVisibleCursor() )
+  focus_widget = getFocusWidget();
+
+  if (  focus_widget
+     && focus_widget->isVisible()
+     && focus_widget->hasVisibleCursor() )
   {
-    getFocusWidget()->setCursor();
+    focus_widget->setCursor();
     showCursor();
     flush_out();
   }
@@ -1779,7 +1782,7 @@ int FApplication::enter_loop() // event loop
   old_app_exit_loop = app_exit_loop;
   app_exit_loop = false;
 
-  while ( ! quit_now && ! app_exit_loop )
+  while ( ! (quit_now || app_exit_loop) )
     processNextEvent();
 
   app_exit_loop = old_app_exit_loop;

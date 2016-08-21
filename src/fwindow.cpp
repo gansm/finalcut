@@ -454,7 +454,7 @@ bool FWindow::activatePrevWindow()
   // activate the previous window
   FWindow* w = previous_widget;
 
-  if ( w && ! w->isHiddenWindow() && ! w->isActiveWindow() )
+  if ( w && ! (w->isHiddenWindow() || w->isActiveWindow()) )
   {
     setActiveWindow(w);
     return true;

@@ -105,6 +105,7 @@ FFileDialog::~FFileDialog()  // destructor
 //----------------------------------------------------------------------
 void FFileDialog::init()
 {
+  FWidget* parent_widget;
   int x, y;
   height = 15;
   width  = 42;
@@ -115,8 +116,15 @@ void FFileDialog::init()
   if ( width < 20 )
     width = 20;
 
-  x = 1 + int((getParentWidget()->getWidth()-width)/2);
-  y = 1 + int((getParentWidget()->getHeight()-height)/3);
+  parent_widget = getParentWidget();
+
+  if ( parent_widget )
+  {
+    x = 1 + int((parent_widget->getWidth()-width)/2);
+    y = 1 + int((parent_widget->getHeight()-height)/3);
+  }
+  else
+    x = y = 1;
 
   if ( dlg_type == FFileDialog::Save )
     FDialog::setText("Save file");
@@ -461,10 +469,21 @@ void FFileDialog::cb_processShowHidden (FWidget*, void*)
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  int X, Y;
-  int max_height = getRootWidget()->getClientHeight();
-  int max_width = getRootWidget()->getClientWidth();
-  int h = max_height - 6;
+  int h, X, Y, max_width, max_height;
+  FWidget* root_widget = getRootWidget();
+
+  if ( root_widget )
+  {
+    max_width = root_widget->getClientWidth();
+    max_height = root_widget->getClientHeight();
+  }
+  else
+  {
+    max_width = 80;
+    max_height = 24;
+  }
+
+  h = max_height - 6;
 
   if ( h < 15 )  // minimum
     h = 15;
@@ -499,7 +518,10 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
     delete filebrowser;
     delete filename;
     clear();
-    fdlg.getParentWidget()->addChild (this);
+
+    if ( fdlg.getParentWidget() )
+      fdlg.getParentWidget()->addChild (this);
+
     directory = fdlg.directory;
     filter_pattern = fdlg.filter_pattern;
     dlg_type = fdlg.dlg_type;

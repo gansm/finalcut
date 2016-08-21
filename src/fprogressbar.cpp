@@ -25,8 +25,13 @@ FProgressbar::~FProgressbar()
 //----------------------------------------------------------------------
 void FProgressbar::drawPercentage()
 {
-  setColor ( getParentWidget()->getForegroundColor()
-           , getParentWidget()->getBackgroundColor() );
+  FWidget* parent_widget = getParentWidget();
+
+  if ( parent_widget )
+    setColor ( parent_widget->getForegroundColor()
+             , parent_widget->getBackgroundColor() );
+  else
+    setColor ( wc.dialog_fg, wc.dialog_bg );
 
   if ( isMonochron() )
     setReverse(true);
@@ -71,12 +76,15 @@ void FProgressbar::drawBar()
       print (fc::MediumShade);
   }
 
-  if ( round(length) >= 1)
-    setColor ( wc.progressbar_fg
-             , getParentWidget()->getBackgroundColor() );
-  else
-    setColor ( wc.progressbar_bg
-             , getParentWidget()->getBackgroundColor() );
+  if ( getParentWidget() )
+  {
+    if ( round(length) >= 1)
+      setColor ( wc.progressbar_fg
+               , getParentWidget()->getBackgroundColor() );
+    else
+      setColor ( wc.progressbar_bg
+               , getParentWidget()->getBackgroundColor() );
+  }
 
   if ( ! isMonochron() &&  getMaxColor() >= 16 )
   {
@@ -169,10 +177,21 @@ void FProgressbar::hide()
   int s, size;
   short fg, bg;
   char* blank;
+  FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
   size = width + s;

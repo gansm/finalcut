@@ -202,7 +202,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   char* sp = F_set_color_pair.cap;
   short fg, bg;
 
-  if ( monochron || ! term || ! next )
+  if ( monochron || ! (term && next) )
     return;
 
   fg = next->fg_color;
@@ -399,7 +399,7 @@ bool FOptiAttr::caused_reset_attributes (char*& cap, uChar test)
 //----------------------------------------------------------------------
 inline void FOptiAttr::detectSwitchOn (char_data*& term, char_data*& next)
 {
-  if ( ! term || ! next )
+  if ( ! (term && next) )
     return;
 
   on.bold          = ! term->bold          && next->bold;
@@ -420,7 +420,7 @@ inline void FOptiAttr::detectSwitchOn (char_data*& term, char_data*& next)
 //----------------------------------------------------------------------
 inline void FOptiAttr::detectSwitchOff (char_data*& term, char_data*& next)
 {
-  if ( ! term || ! next )
+  if ( ! (term && next) )
     return;
 
   off.bold          = term->bold          && ! next->bold;
@@ -1330,7 +1330,7 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
   fake_reverse = false;
   attr_buf[0] = '\0';
 
-  if ( ! term || ! next )
+  if ( ! (term && next) )
     return attr_buf;
 
   prevent_no_color_video_attributes (next);

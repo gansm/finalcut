@@ -585,10 +585,21 @@ void FListBox::hide()
   int n, size;
   short fg, bg;
   char* blank;
+  FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
-  fg = getParentWidget()->getForegroundColor();
-  bg = getParentWidget()->getBackgroundColor();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
   setColor (fg, bg);
   n = isNewFont() ? 1 : 0;
   size = width + n;
@@ -1018,8 +1029,10 @@ void FListBox::onMouseDown (FMouseEvent* ev)
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
+
     if ( focused_widget )
       focused_widget->redraw();
+
     if ( statusBar() )
       statusBar()->drawMessage();
   }
