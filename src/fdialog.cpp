@@ -775,14 +775,14 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( ! FWidget::getFocusWidget() )
   {
-    FWidget* win_focus_widget = getWindowFocusWidget();
+    FWidget* win_focus = getWindowFocusWidget();
 
-    if ( win_focus_widget
-       && win_focus_widget->isVisible()
-       && win_focus_widget->isShown() )
+    if ( win_focus
+       && win_focus->isVisible()
+       && win_focus->isShown() )
     {
-      win_focus_widget->setFocus();
-      win_focus_widget->redraw();
+      win_focus->setFocus();
+      win_focus->redraw();
     }
     else
       focusFirstChild();
@@ -943,7 +943,7 @@ void FDialog::move (int x, int y)
   FWidget::move(x,y);
   xpos = x;
   ypos = y;
-  putArea (getGlobalPos(), vwin);
+  putArea (getGlobalPos(), vwin);updateTerminal();
 
   if ( getGeometry().overlap(oldGeometry) )
   {
@@ -978,8 +978,8 @@ void FDialog::move (int x, int y)
     restoreVTerm (old_x, old_y, width+rsw, height+bsh);
   }
 
-  if ( ! maximized && (flags & fc::shadow) != 0 )
-    drawDialogShadow();
+ // if ( ! maximized && (flags & fc::shadow) != 0 )
+   // drawDialogShadow();
 
   // handle overlaid windows
   if ( window_list && ! window_list->empty() )
@@ -1028,14 +1028,14 @@ void FDialog::move (int x, int y)
 void FDialog::activateDialog()
 {
   FWidget* old_focus = FWidget::getFocusWidget();
-  FWidget* win_focus_widget = getWindowFocusWidget();
+  FWidget* win_focus = getWindowFocusWidget();
   setActiveWindow(this);
   setFocus();
 
-  if ( win_focus_widget && numOfFocusableChildren() > 1 )
+  if ( win_focus && numOfFocusableChildren() > 1 )
   {
-    win_focus_widget->setFocus();
-    win_focus_widget->redraw();
+    win_focus->setFocus();
+    win_focus->redraw();
 
     if ( old_focus )
       old_focus->redraw();

@@ -1,3 +1,6 @@
+2016-08-25  Markus Gans  <guru.mail@muenster.de>
+	* Use the new transparent shadow option in drawShadow()
+
 2016-08-21  Markus Gans  <guru.mail@muenster.de>
 	* Improved transparent shadow background
 	* Add "transparent" example to demonstrate transparency

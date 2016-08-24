@@ -2361,16 +2361,15 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
           const FRect& geometry = (*iter)->getGeometryGlobalShadow();
 
           // window visible and contains current character
-          if ( win && win->visible && geometry.contains(x+tx+1, y+ty+1) )
+          if ( win && win->visible && geometry.contains(tx+x+1, ty+y+1) )
           {
             FOptiAttr::char_data* tmp;
             int win_x = (*iter)->getGlobalX() - 1;
             int win_y = (*iter)->getGlobalY() - 1;
             int line_len = win->width + win->right_shadow;
-            tmp = &win->text[(y+ty-win_y) * line_len + (x+tx-win_x)];
+            tmp = &win->text[(ty+y-win_y) * line_len + (tx+x-win_x)];
 
-            // current character not transparent
-            if ( ! tmp->transparent )
+            if ( ! tmp->transparent )   // current character not transparent
             {
               if ( tmp->trans_shadow )  // transparent shadow
               {
@@ -2380,6 +2379,14 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
                 s_ch.bg_color = tmp->bg_color;
                 s_ch.reverse  = false;
                 s_ch.standout = false;
+
+                if (  s_ch.code == fc::LowerHalfBlock
+                   || s_ch.code == fc::UpperHalfBlock
+                   || s_ch.code == fc::LeftHalfBlock
+                   || s_ch.code == fc::RightHalfBlock
+                   || s_ch.code == fc::FullBlock )
+                  s_ch.code = ' ';
+
                 sc = &s_ch;
               }
               else  // default
@@ -2600,6 +2607,16 @@ void FTerm::updateVTerm (FTerm::term_area* area)
             oc = getOverlappedCharacter (gx+1, gy+1, area->widget);
             ch.fg_color = oc.fg_color;
             ch.bg_color = oc.bg_color;
+            ch.reverse  = false;
+            ch.standout = false;
+
+            if (  ch.code == fc::LowerHalfBlock
+               || ch.code == fc::UpperHalfBlock
+               || ch.code == fc::LeftHalfBlock
+               || ch.code == fc::RightHalfBlock
+               || ch.code == fc::FullBlock )
+              ch.code = ' ';
+
             memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else if ( ac->transparent )   // transparent
@@ -2620,6 +2637,14 @@ void FTerm::updateVTerm (FTerm::term_area* area)
               ch.bg_color = ac->bg_color;
               ch.reverse  = false;
               ch.standout = false;
+
+              if (  ch.code == fc::LowerHalfBlock
+                 || ch.code == fc::UpperHalfBlock
+                 || ch.code == fc::LeftHalfBlock
+                 || ch.code == fc::RightHalfBlock
+                 || ch.code == fc::FullBlock )
+                ch.code = ' ';
+
               memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
             }
             else  // default
@@ -2800,14 +2825,14 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 
     if ( area->changes[y].trans_count == 0 )
     {
-      // only covered character
+      // Line has only covered characters
       tc = &vterm->text[(ay+y) * vterm->width + ax];
       ac = &area->text[y * line_len + ol];
       memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
     }
     else
     {
-      // Line has transparent character
+      // Line has one or more transparent characters
       for (register int x=0; x < length; x++)  // column loop
       {
         tc = &vterm->text[(ay+y) * vterm->width + (ax+x)];
@@ -2831,6 +2856,14 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
             ch.bg_color = ac->bg_color;
             ch.reverse  = false;
             ch.standout = false;
+
+            if (  ch.code == fc::LowerHalfBlock
+               || ch.code == fc::UpperHalfBlock
+               || ch.code == fc::LeftHalfBlock
+               || ch.code == fc::RightHalfBlock
+               || ch.code == fc::FullBlock )
+              ch.code = ' ';
+
             memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else  // default

@@ -1752,18 +1752,18 @@ void FApplication::setMainWidget (FWidget* widget)
 //----------------------------------------------------------------------
 int FApplication::exec() // run
 {
-  FWidget* focus_widget;
+  FWidget* widget;
   quit_now = false;
   quit_code = 0;
 
   // set the cursor to the focus widget
-  focus_widget = getFocusWidget();
+  widget = getFocusWidget();
 
-  if (  focus_widget
-     && focus_widget->isVisible()
-     && focus_widget->hasVisibleCursor() )
+  if (  widget
+     && widget->isVisible()
+     && widget->hasVisibleCursor() )
   {
-    focus_widget->setCursor();
+    widget->setCursor();
     showCursor();
     flush_out();
   }

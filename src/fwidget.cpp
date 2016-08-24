@@ -1942,6 +1942,8 @@ void FWidget::clearArea()
   term_area* area;
   FWindow*   area_widget;
   FOptiAttr::char_data default_char;
+  int  total_width;
+  uInt w;
 
   default_char.code          = ' ';
   default_char.fg_color      = next_attribute.fg_color;
@@ -1972,6 +1974,9 @@ void FWidget::clearArea()
   if ( ! area )
     return;
 
+  total_width = area->width + area->right_shadow;
+  w = uInt(total_width);
+
   if ( area->right_shadow == 0 )
   {
     int area_size = area->width * area->height;
@@ -1979,23 +1984,43 @@ void FWidget::clearArea()
   }
   else
   {
+    FOptiAttr::char_data t_char = default_char;
+    t_char.transparent = true;
+
     for (int y=0; y < area->height; y++)
     {
-      int pos = y * (area->width + area->right_shadow);
-      std::fill_n (&area->text[pos], area->width, default_char);
+      int pos = y * total_width;
+      std::fill_n (&area->text[pos], total_width, default_char);
+      std::fill_n (&area->text[pos+area->width], area->right_shadow, t_char);
+    }
+
+    for (int y=0; y < area->bottom_shadow; y++)
+    {
+      int pos = total_width * (y + area->height);
+      std::fill_n (&area->text[pos], total_width, t_char);
     }
   }
 
   for (int i=0; i < area->height; i++)
   {
-    uInt w = uInt(area->width + area->right_shadow);
+
     area->changes[i].xmin = 0;
     area->changes[i].xmax = w - 1;
 
     if ( default_char.transparent || default_char.trans_shadow )
       area->changes[i].trans_count = w;
+    else if ( area->right_shadow != 0 )
+      area->changes[i].trans_count = area->right_shadow;
     else
       area->changes[i].trans_count = 0;
+  }
+
+  for (int i=0; i < area->bottom_shadow; i++)
+  {
+    int y = area->height + i;
+    area->changes[y].xmin = 0;
+    area->changes[y].xmax = w - 1;
+    area->changes[y].trans_count = w;
   }
 
   updateVTerm (area);
@@ -2026,149 +2051,33 @@ void FWidget::drawShadow()
   if ( trans_shadow )
   {
     // transparent shadow
-    if ( x2 < xmax )
+    gotoxy (x2+1, y1);
+    setTransparent();
+    print ("  ");
+    unsetTransparent();
+
+    setColor (wc.shadow_bg, wc.shadow_fg);
+    setTransShadow();
+
+    for (int i=1; i < height; i++)
     {
-      gotoxy (x2+1, y1);
-
-      for (int x=1; x <= 2; x++)
-      {
-        ch = getCoveredCharacter (x2+x, y1, this);
-        setColor (ch.fg_color, ch.bg_color);
-
-        if ( ch.bold )
-          setBold (true);
-
-        if ( ch.dim )
-          setDim (true);
-
-        if ( ch.italic )
-          setItalic (true);
-
-        if ( ch.underline )
-          setUnderline (true);
-
-        if ( ch.blink )
-          setBlink (true);
-
-        if ( ch.reverse )
-          setReverse (true);
-
-        if ( ch.standout )
-          setStandout (true);
-
-        if ( ch.invisible )
-          setInvisible (true);
-
-        if ( ch.protect )
-          setProtected (true);
-
-        if ( ch.crossed_out )
-          setCrossedOut (true);
-
-        if ( ch.dbl_underline )
-          setDoubleUnderline (true);
-
-        if ( ch.alt_charset )
-          setAltCharset (true);
-
-        if ( ch.pc_charset )
-          setPCcharset (true);
-
-        print (ch.code);
-
-        setNormal();
-      }
-
-      setColor (wc.shadow_bg, wc.shadow_fg);
-
-      for (int i=1; i < height && y1+i <= ymax; i++)
-      {
-        gotoxy (x2+1, y1+i);
-
-        for (int x=1; x <= 2; x++)
-        {
-          ch = getCoveredCharacter (x2+x, y1+i, this);
-
-          if (  ch.code == fc::LowerHalfBlock
-             || ch.code == fc::UpperHalfBlock
-             || ch.code == fc::LeftHalfBlock
-             || ch.code == fc::RightHalfBlock
-             || ch.code == fc::FullBlock )
-            print (' ');
-          else
-            print (ch.code);
-        }
-      }
+      gotoxy (x2+1, y1+i);
+      print ("  ");
     }
 
-    if ( y2 < ymax )
-    {
-      gotoxy (x1, y2+1);
+    unsetTransShadow();
+    gotoxy (x1, y2+1);
+    setTransparent();
+    print ("  ");
+    unsetTransparent();
 
-      for (int x=0; x <= 1; x++)
-      {
-        ch = getCoveredCharacter (x1+x, y2+1, this);
-        setColor (ch.fg_color, ch.bg_color);
+    setColor (wc.shadow_bg, wc.shadow_fg);
+    setTransShadow();
 
-        if ( ch.bold )
-          setBold (true);
+    for (int i=2; i <= width+1; i++)
+      print (' ');
 
-        if ( ch.dim )
-          setDim (true);
-
-        if ( ch.italic )
-          setItalic (true);
-
-        if ( ch.underline )
-          setUnderline (true);
-
-        if ( ch.blink )
-          setBlink (true);
-
-        if ( ch.reverse )
-          setReverse (true);
-
-        if ( ch.standout )
-          setStandout (true);
-
-        if ( ch.invisible )
-          setInvisible (true);
-
-        if ( ch.protect )
-          setProtected (true);
-
-        if ( ch.crossed_out )
-          setCrossedOut (true);
-
-        if ( ch.dbl_underline )
-          setDoubleUnderline (true);
-
-        if ( ch.alt_charset )
-          setAltCharset (true);
-
-        if ( ch.pc_charset )
-          setPCcharset (true);
-
-        print (ch.code);
-        setNormal();
-      }
-
-      setColor (wc.shadow_bg, wc.shadow_fg);
-
-      for (int i=2; i <= width+1 && x1+i <= xmax; i++)
-      {
-        ch = getCoveredCharacter (x1+i, y2+1, this);
-
-        if (  ch.code == fc::LowerHalfBlock
-           || ch.code == fc::UpperHalfBlock
-           || ch.code == fc::LeftHalfBlock
-           || ch.code == fc::RightHalfBlock
-           || ch.code == fc::FullBlock )
-          print (' ');
-        else
-          print (ch.code);
-      }
-    }
+    unsetTransShadow();
 
     if ( isMonochron() )
       setReverse(false);
@@ -2176,45 +2085,39 @@ void FWidget::drawShadow()
   else
   {
     // non-transparent shadow
-    if ( x2 < xmax )
+    int block;
+    gotoxy (x2+1, y1);
+    ch = getCoveredCharacter (x2+1, y1, this);
+    setColor (wc.shadow_fg, ch.bg_color);
+
+    if ( isTeraTerm() )
     {
-      int block;
-      gotoxy (x2+1, y1);
-      ch = getCoveredCharacter (x2+1, y1, this);
+      block = 0xdb; // █
+      print (0xdc); // ▄
+    }
+    else
+    {
+      block = fc::FullBlock; // █
+      print (fc::LowerHalfBlock); // ▄
+    }
+
+    for (int i=1; i < height; i++)
+    {
+      gotoxy (x2+1, y1+i);
+      print (block); // █
+    }
+
+    gotoxy (x1+1, y2+1);
+
+    for (int i=1; i <= width; i++)
+    {
+      ch = getCoveredCharacter (x1+i, y2+1, this);
       setColor (wc.shadow_fg, ch.bg_color);
 
       if ( isTeraTerm() )
-      {
-        block = 0xdb; // █
-        print (0xdc); // ▄
-      }
+        print (0xdf); // ▀
       else
-      {
-        block = fc::FullBlock; // █
-        print (fc::LowerHalfBlock); // ▄
-      }
-
-      for (int i=1; i < height && y1+i <= ymax; i++)
-      {
-        gotoxy (x2+1, y1+i);
-        print (block); // █
-      }
-    }
-
-    if ( y2 < ymax )
-    {
-      gotoxy (x1+1, y2+1);
-
-      for (int i=1; i <= width && x1+i <= xmax; i++)
-      {
-        ch = getCoveredCharacter (x1+i, y2+1, this);
-        setColor (wc.shadow_fg, ch.bg_color);
-
-        if ( isTeraTerm() )
-          print (0xdf); // ▀
-        else
-          print (fc::UpperHalfBlock); // ▀
-      }
+        print (fc::UpperHalfBlock); // ▀
     }
   }
 }

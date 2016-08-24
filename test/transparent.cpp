@@ -42,9 +42,9 @@ class Transparent : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Transparent::Transparent (FWidget* parent, bool shadow)
+Transparent::Transparent (FWidget* parent, bool s)
   : FDialog(parent)
-  , shadow_win(shadow)
+  , shadow_win(s)
 {
   setStatusbarMessage("Press Q to quit");
   addAccelerator('q');
