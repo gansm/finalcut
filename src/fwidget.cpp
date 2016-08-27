@@ -1269,6 +1269,7 @@ void FWidget::redraw()
     default_char.pc_charset    = 0;
     default_char.transparent   = 0;
     default_char.trans_shadow  = 0;
+    default_char.inherit_bg    = 0;
 
     if ( window_list && ! window_list->empty() )
     {
@@ -1963,6 +1964,7 @@ void FWidget::clearArea()
   default_char.pc_charset    = next_attribute.pc_charset;
   default_char.transparent   = next_attribute.transparent;
   default_char.trans_shadow  = next_attribute.trans_shadow;
+  default_char.inherit_bg    = next_attribute.inherit_bg;
 
   area_widget = FWindow::getWindowWidget(this);
 
@@ -2007,10 +2009,12 @@ void FWidget::clearArea()
     area->changes[i].xmin = 0;
     area->changes[i].xmax = w - 1;
 
-    if ( default_char.transparent || default_char.trans_shadow )
+    if (  default_char.transparent
+       || default_char.trans_shadow
+       || default_char.inherit_bg )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
-      area->changes[i].trans_count = area->right_shadow;
+      area->changes[i].trans_count = uInt(area->right_shadow);
     else
       area->changes[i].trans_count = 0;
   }
@@ -2029,7 +2033,6 @@ void FWidget::clearArea()
 //----------------------------------------------------------------------
 void FWidget::drawShadow()
 {
-  FOptiAttr::char_data ch;
   int x1, x2, y1, y2;
   bool trans_shadow = ((flags & fc::trans_shadow) != 0);
 
@@ -2087,8 +2090,15 @@ void FWidget::drawShadow()
     // non-transparent shadow
     int block;
     gotoxy (x2+1, y1);
-    ch = getCoveredCharacter (x2+1, y1, this);
-    setColor (wc.shadow_fg, ch.bg_color);
+
+    if ( isWindow() )
+    {
+      setColor (wc.shadow_fg, wc.shadow_bg);
+      setInheritBackground();  // current background color will be ignored
+    }
+    else if ( FWidget* p = getParentWidget() )
+      setColor (wc.shadow_fg, p->getBackgroundColor());
+
 
     if ( isTeraTerm() )
     {
@@ -2101,6 +2111,9 @@ void FWidget::drawShadow()
       print (fc::LowerHalfBlock); // ▄
     }
 
+    if ( isWindow() )
+      unsetInheritBackground();
+
     for (int i=1; i < height; i++)
     {
       gotoxy (x2+1, y1+i);
@@ -2109,23 +2122,25 @@ void FWidget::drawShadow()
 
     gotoxy (x1+1, y2+1);
 
+    if ( isWindow() )
+      setInheritBackground();
+
     for (int i=1; i <= width; i++)
     {
-      ch = getCoveredCharacter (x1+i, y2+1, this);
-      setColor (wc.shadow_fg, ch.bg_color);
-
       if ( isTeraTerm() )
         print (0xdf); // ▀
       else
         print (fc::UpperHalfBlock); // ▀
     }
+
+    if ( isWindow() )
+      unsetInheritBackground();
   }
 }
 
 //----------------------------------------------------------------------
 void FWidget::clearShadow()
 {
-  FOptiAttr::char_data ch;
   int x1, x2, y1, y2;
 
   if ( isMonochron() )
@@ -2136,13 +2151,19 @@ void FWidget::clearShadow()
   y1 = ypos+ymin-1;
   y2 = ypos+ymin-2+height;
 
+  if ( isWindow() )
+  {
+    setColor (wc.shadow_fg, wc.shadow_bg);
+    setInheritBackground();  // current background color will be ignored
+  }
+  else if ( FWidget* p = getParentWidget() )
+    setColor (wc.shadow_fg, p->getBackgroundColor());
+
   if ( x2 < xmax )
   {
-    for (int i=0; i < height && y1+i <= ymax; i++)
+    for (int i=0; i < height; i++)
     {
       gotoxy (x2+1, y1+i);
-      ch = getCoveredCharacter (x2+1, y1+i, this);
-      setColor (wc.shadow_fg, ch.bg_color);
       print  (' ');  // clear █
     }
   }
@@ -2151,13 +2172,12 @@ void FWidget::clearShadow()
   {
     gotoxy (x1+1, y2+1);
 
-    for (int i=1; i <= width && x1+i <= xmax; i++)
-    {
-      ch = getCoveredCharacter (x1+i, y2+1, this);
-      setColor (wc.shadow_fg, ch.bg_color);
+    for (int i=1; i <= width; i++)
       print (' '); // clear ▀
-    }
   }
+
+  if ( isWindow() )
+    unsetInheritBackground();
 }
 
 //----------------------------------------------------------------------
@@ -2173,7 +2193,10 @@ void FWidget::drawFlatBorder()
   y1 = ypos+ymin-2;
   y2 = ypos+ymin-1+height;
 
-  setColor (wc.dialog_fg, wc.dialog_bg);
+  if ( FWidget* p = getParentWidget() )
+    setColor (wc.dialog_fg, p->getBackgroundColor());
+  else
+    setColor (wc.dialog_fg, wc.dialog_bg);
 
   for (int y=0; y < height; y++)
   {
@@ -2231,7 +2254,11 @@ void FWidget::clearFlatBorder()
   y1 = ypos+ymin-2;
   y2 = ypos+ymin-1+height;
 
-  setColor (wc.dialog_fg, wc.dialog_bg);
+  if ( FWidget* p = getParentWidget() )
+    setColor (wc.dialog_fg, p->getBackgroundColor());
+  else
+    setColor (wc.dialog_fg, wc.dialog_bg);
+
   for (register int y=0; y < height; y++)
   {
     gotoxy (x1-1, y1+y+1);
@@ -2338,9 +2365,13 @@ void FWidget::drawBorder()
   if ( y2 > ymax )
     y2 = ymax;
 
+  if ( FWidget* p = getParentWidget() )
+    setColor (wc.dialog_fg, p->getBackgroundColor());
+  else
+    setColor (wc.dialog_fg, wc.dialog_bg);
+
   if ( isNewFont() )
   {
-    setColor (wc.dialog_fg, wc.dialog_bg);
     gotoxy (x1, y1);
     print (fc::NF_border_corner_middle_upper_left); // ┌
 

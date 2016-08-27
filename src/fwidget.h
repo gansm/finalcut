@@ -523,6 +523,11 @@ class FWidget : public FObject, public FTerm
    static bool      unsetTransShadow();
    static bool      isTransShadow();
 
+   static bool      setInheritBackground (register bool);
+   static bool      setInheritBackground();
+   static bool      unsetInheritBackground();
+   static bool      isInheritBackground();
+
    void             drawShadow();
    void             clearShadow();
    void             drawFlatBorder();
@@ -824,7 +829,8 @@ inline void FWidget::setNormal()
   next_attribute.alt_charset   = \
   next_attribute.pc_charset    = \
   next_attribute.transparent   = \
-  next_attribute.trans_shadow  = false;
+  next_attribute.trans_shadow  = \
+  next_attribute.inherit_bg    = false;
 
   next_attribute.fg_color      = fc::Default;
   next_attribute.bg_color      = fc::Default;
@@ -1069,6 +1075,22 @@ inline bool FWidget::unsetTransShadow()
 //----------------------------------------------------------------------
 inline bool FWidget::isTransShadow()
 { return next_attribute.trans_shadow; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setInheritBackground (register bool on)
+{ return (next_attribute.inherit_bg = on); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setInheritBackground()
+{ return setInheritBackground(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetInheritBackground()
+{ return setInheritBackground(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isInheritBackground()
+{ return next_attribute.inherit_bg; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine(int side)

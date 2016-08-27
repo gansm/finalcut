@@ -1697,7 +1697,8 @@ void FTerm::init()
   term_attribute.alt_charset   = \
   term_attribute.pc_charset    = \
   term_attribute.transparent   = \
-  term_attribute.trans_shadow  = false;
+  term_attribute.trans_shadow  = \
+  term_attribute.inherit_bg    = false;
 
   // next_attribute contains the state of the next printed character
   next_attribute.code          = '\0';
@@ -1717,7 +1718,8 @@ void FTerm::init()
   next_attribute.alt_charset   = \
   next_attribute.pc_charset    = \
   next_attribute.transparent   = \
-  next_attribute.trans_shadow  = false;
+  next_attribute.trans_shadow  = \
+  next_attribute.inherit_bg    = false;
 
   // Preset to true
   cursor_optimisation    = true;
@@ -2289,6 +2291,7 @@ void FTerm::resizeArea (term_area* area)
   default_char.pc_charset    = 0;
   default_char.transparent   = 0;
   default_char.trans_shadow  = 0;
+  default_char.inherit_bg    = 0;
 
   std::fill_n (area->text, area_size, default_char);
 
@@ -2314,6 +2317,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
   FOptiAttr::char_data* tc;   // terminal character
   FOptiAttr::char_data* sc;   // shown character
   FOptiAttr::char_data  s_ch; // shadow character
+  FOptiAttr::char_data  i_ch; // inherit background character
   FWidget* widget;
 
   x--;
@@ -2388,6 +2392,13 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
                   s_ch.code = ' ';
 
                 sc = &s_ch;
+              }
+              else if ( tmp->inherit_bg )
+              {
+                // add the covered background to this character
+                memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
+                i_ch.bg_color = sc->bg_color;  // last background color;
+                sc = &i_ch;
               }
               else  // default
                 sc = tmp;
@@ -2647,6 +2658,15 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
               memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
             }
+            else if ( ac->inherit_bg )
+            {
+              // add the covered background to this character
+              FOptiAttr::char_data ch, cc;
+              memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+              cc = getCoveredCharacter (gx+1, gy+1, area->widget);
+              ch.bg_color = cc.bg_color;
+              memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            }
             else  // default
               memcpy (tc, ac, sizeof(FOptiAttr::char_data));
           }
@@ -2866,6 +2886,15 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 
             memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
+          else if ( ac->inherit_bg )
+          {
+            // add the covered background to this character
+            FOptiAttr::char_data ch, cc;
+            memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+            cc = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
+            ch.bg_color = cc.bg_color;
+            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+          }
           else  // default
             memcpy (tc, ac, sizeof(FOptiAttr::char_data));
         }
@@ -2890,6 +2919,7 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
   int xx,yy;
   FOptiAttr::char_data* cc;   // covered character
   FOptiAttr::char_data  s_ch; // shadow character
+  FOptiAttr::char_data  i_ch; // inherit background character
   FWidget* w;
 
   x--;
@@ -2915,6 +2945,7 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
   if ( w->window_list && ! w->window_list->empty() )
   {
     FWidget::widgetList::const_iterator iter, end;
+    // get the window layer of this object
     int layer = FWindow::getWindowLayer(w);
     iter = w->window_list->begin();
     end  = w->window_list->end();
@@ -2923,6 +2954,8 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
     {
       bool significant_char;
 
+      // char_type can be "overlapped_character"
+      // or "covered_character"
       if ( char_type == covered_character )
         significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
       else
@@ -2954,6 +2987,13 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
               s_ch.reverse  = false;
               s_ch.standout = false;
               cc = &s_ch;
+            }
+            else if ( tmp->inherit_bg )
+            {
+              // add the covered background to this character
+              memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
+              i_ch.bg_color = cc->bg_color;  // last background color
+              cc = &i_ch;
             }
             else  // default
               cc = tmp;
@@ -4408,6 +4448,7 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           nc.pc_charset    = next_attribute.pc_charset;
           nc.transparent   = next_attribute.transparent;
           nc.trans_shadow  = next_attribute.trans_shadow;
+          nc.inherit_bg    = next_attribute.inherit_bg;
 
           int ax = x - area_widget->getGlobalX();
           int ay = y - area_widget->getGlobalY();
@@ -4424,13 +4465,15 @@ int FTerm::print (FTerm::term_area* area, FString& s)
             if ( *ac != nc )  // compare with an overloaded operator
             {
               if (  ( ! ac->transparent  && nc.transparent )
-                 || ( ! ac->trans_shadow && nc.trans_shadow ) )
+                 || ( ! ac->trans_shadow && nc.trans_shadow )
+                 || ( ! ac->inherit_bg && nc.inherit_bg ) )
               {
                 // add one transparent character form line
                 area->changes[ay].trans_count++;
               }
               else if (  ( ac->transparent  && ! nc.transparent )
-                 || ( ac->trans_shadow && ! nc.trans_shadow ) )
+                      || ( ac->trans_shadow && ! nc.trans_shadow )
+                      || ( ac->inherit_bg && ! nc.inherit_bg ) )
               {
                 // remove one transparent character from line
                 area->changes[ay].trans_count--;
@@ -4526,6 +4569,7 @@ int FTerm::print (FTerm::term_area* area, register int c)
   nc.pc_charset    = next_attribute.pc_charset;
   nc.transparent   = next_attribute.transparent;
   nc.trans_shadow  = next_attribute.trans_shadow;
+  nc.inherit_bg    = next_attribute.inherit_bg;
 
   x = short(cursor->getX());
   y = short(cursor->getY());
@@ -4548,14 +4592,16 @@ int FTerm::print (FTerm::term_area* area, register int c)
     if ( *ac != nc )  // compare with an overloaded operator
     {
       if (  ( ! ac->transparent  && nc.transparent )
-         || ( ! ac->trans_shadow && nc.trans_shadow ) )
+         || ( ! ac->trans_shadow && nc.trans_shadow )
+         || ( ! ac->inherit_bg && nc.inherit_bg ) )
       {
         // add one transparent character form line
         area->changes[ay].trans_count++;
       }
 
       if (  ( ac->transparent  && ! nc.transparent )
-         || ( ac->trans_shadow && ! nc.trans_shadow ) )
+         || ( ac->trans_shadow && ! nc.trans_shadow )
+         || ( ac->inherit_bg && ! nc.inherit_bg ) )
       {
         // remove one transparent character from line
         area->changes[ay].trans_count--;

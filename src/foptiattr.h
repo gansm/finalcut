@@ -123,7 +123,7 @@ class FOptiAttr
      uChar pc_charset    : 1;  // pc character set (CP437)
      uChar transparent   : 1;  // transparent
      uChar trans_shadow  : 1;  // transparent shadow
-     uChar               : 1;  // padding bits
+     uChar inherit_bg    : 1;  // inherit background
    } char_data;
 
  private:
@@ -279,7 +279,8 @@ inline bool operator == ( const FOptiAttr::char_data& lhs,
       && lhs.alt_charset   == rhs.alt_charset
       && lhs.pc_charset    == rhs.pc_charset
       && lhs.transparent   == rhs.transparent
-      && lhs.trans_shadow  == rhs.trans_shadow;
+      && lhs.trans_shadow  == rhs.trans_shadow
+      && lhs.inherit_bg    == rhs.inherit_bg;
 }
 
 //----------------------------------------------------------------------

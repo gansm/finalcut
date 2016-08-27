@@ -378,82 +378,40 @@ void FDialog::drawDialogShadow()
 
     if ( isNewFont() && ((flags & fc::scrollable) == 0) )
     {
-      FOptiAttr::char_data ch;
       // left of the shadow ▀▀
       gotoxy (xpos+xmin-1, ypos+ymin-1+height);
+      setColor (wc.shadow_fg, wc.shadow_bg);
+      // current background color will be ignored
+      setInheritBackground();
 
       for (int x=0; x <= 1; x++)
-      {
-        ch = getCoveredCharacter (xpos+xmin-1+x, ypos+ymin-1+height, this);
-        setColor (wc.shadow_fg, ch.bg_color);
-        // high line ⎺
-        print (fc::NF_border_line_upper);
-      }
+        print (fc::NF_border_line_upper);  // high line ⎺
+
+      unsetInheritBackground();
     }
   }
   else
   {
-    FOptiAttr::char_data ch;
-
     if ( isMonochron() )
       return;
 
     drawShadow();
-    ch = getCoveredCharacter (xpos+xmin-1, ypos+ymin-1+height, this);
     // left of the shadow ▀▀
     gotoxy (xpos+xmin-1, ypos+ymin-1+height);
 
     if ( isNewFont() && ((flags & fc::scrollable) == 0) )
     {
-      setColor (wc.shadow_fg, ch.bg_color);
-      // high line ⎺
-      print (fc::NF_border_line_upper);
+      setColor (wc.shadow_fg, wc.shadow_bg);
+      // current background color will be ignored
+      setInheritBackground();
+      print (fc::NF_border_line_upper);  // high line ⎺
+      unsetInheritBackground();
     }
     else
     {
-      setColor(ch.fg_color, ch.bg_color);
-
-      if ( ch.bold )
-        setBold();
-
-      if ( ch.dim )
-        setDim();
-
-      if ( ch.italic )
-        setItalic();
-
-      if ( ch.underline )
-        setUnderline();
-
-      if ( ch.blink )
-        setBlink();
-
-      if ( ch.reverse )
-        setReverse();
-
-      if ( ch.standout )
-        setStandout();
-
-      if ( ch.invisible )
-        setInvisible();
-
-      if ( ch.protect )
-        setProtected();
-
-      if ( ch.crossed_out )
-        setCrossedOut();
-
-      if ( ch.dbl_underline )
-        setDoubleUnderline();
-
-      if ( ch.alt_charset )
-        setAltCharset (true);
-
-      if ( ch.pc_charset )
-        setPCcharset (true);
-
-      print (ch.code);
-      setNormal();
+      setTransparent();
+      print(' ');
+      unsetTransparent();
     }
   }
 }
@@ -1031,6 +989,7 @@ void FDialog::activateDialog()
   FWidget* win_focus = getWindowFocusWidget();
   setActiveWindow(this);
   setFocus();
+  setFocusWidget(this);
 
   if ( win_focus && numOfFocusableChildren() > 1 )
   {

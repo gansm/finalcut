@@ -17,8 +17,16 @@
 
 class Transparent : public FDialog
 {
+ public:
+   typedef enum ttype
+   {
+     transparent        = 0,
+     shadow             = 1,
+     inherit_background = 2
+   } trans_type;
+
  private:
-   bool shadow_win;
+   trans_type type;
 
  private:
    Transparent (const Transparent&);    // Disabled copy constructor
@@ -36,15 +44,15 @@ class Transparent : public FDialog
    }
 
  public:
-   explicit Transparent (FWidget* = 0, bool = false);  // constructor
+   explicit Transparent (FWidget* = 0, trans_type = transparent);  // constructor
   ~Transparent();  // destructor
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Transparent::Transparent (FWidget* parent, bool s)
+Transparent::Transparent (FWidget* parent, Transparent::trans_type tt)
   : FDialog(parent)
-  , shadow_win(s)
+  , type(tt)
 {
   setStatusbarMessage("Press Q to quit");
   addAccelerator('q');
@@ -63,15 +71,20 @@ void Transparent::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( shadow_win )
+  if ( type == shadow )
   {
     setColor(wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
   }
+  else if ( type == inherit_background )
+  {
+    setColor(fc::Blue, fc::Black);
+    setInheritBackground();
+  }
   else
     setTransparent();
 
-  FString line(getClientWidth(), wchar_t(' '));
+  FString line(getClientWidth(), wchar_t('.'));
 
   for (int n=1; n <= getClientHeight(); n++)
   {
@@ -79,8 +92,10 @@ void Transparent::draw()
     print(line);
   }
 
-  if ( shadow_win )
+  if ( type == shadow )
     unsetTransShadow();
+  else if ( type == inherit_background )
+    unsetInheritBackground();
   else
     unsetTransparent();
 
@@ -134,19 +149,25 @@ MainWindow::MainWindow (FWidget* parent)
 
   Transparent* transpwin = new Transparent(this);
   transpwin->setText("transparent");
-  transpwin->setGeometry (6, 11, 29, 12);
+  transpwin->setGeometry (6, 3, 29, 12);
   transpwin->show();
 
-  Transparent* shadowwin = new Transparent(this, true);
+  Transparent* shadowwin = new Transparent(this, Transparent::shadow);
   shadowwin->setText("shadow");
-  shadowwin->setGeometry (47, 11, 29, 12);
+  shadowwin->setGeometry (46, 11, 29, 12);
   shadowwin->show();
+
+  Transparent* ibg = new Transparent(this, Transparent::inherit_background);
+  ibg->setText("inherit background");
+  ibg->setGeometry (42, 3, 29, 7);
+  ibg->show();
 
   // Statusbar at the bottom
   FStatusBar* statusbar = new FStatusBar (this);
   statusbar->setMessage("Press Q to quit");
 
   addAccelerator('q');
+  activateDialog();
 }
 
 //----------------------------------------------------------------------
@@ -226,7 +247,7 @@ int main (int argc, char* argv[])
 
   MainWindow main_dlg (&app);
   main_dlg.setText ("non-transparent");
-  main_dlg.setGeometry (27, 3, 26, 7);
+  main_dlg.setGeometry (8, 16, 26, 7);
 
   app.setMainWidget (&main_dlg);
   main_dlg.show();

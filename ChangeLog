@@ -1,4 +1,9 @@
 2016-08-25  Markus Gans  <guru.mail@muenster.de>
+	* A new inherit background option for characters
+	* Use inherit background for the simple shadows
+	* Updating the transparent example program
+
+2016-08-25  Markus Gans  <guru.mail@muenster.de>
 	* Use the new transparent shadow option in drawShadow()
 
 2016-08-21  Markus Gans  <guru.mail@muenster.de>
