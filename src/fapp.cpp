@@ -110,7 +110,8 @@ void FApplication::setExitMessage (std::string message)
   quit_now = true;
   snprintf ( FTerm::exit_message
            , sizeof(FTerm::exit_message)
-           , message.c_str() );
+           , "%s"
+           ,message.c_str() );
 }
 
 //----------------------------------------------------------------------
