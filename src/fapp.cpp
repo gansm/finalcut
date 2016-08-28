@@ -105,6 +105,15 @@ void FApplication::init()
 }
 
 //----------------------------------------------------------------------
+void FApplication::setExitMessage (std::string message)
+{
+  quit_now = true;
+  snprintf ( FTerm::exit_message
+           , sizeof(FTerm::exit_message)
+           , message.c_str() );
+}
+
+//----------------------------------------------------------------------
 void FApplication::cmd_options ()
 {
   while ( true )
@@ -141,16 +150,29 @@ void FApplication::cmd_options ()
         {
           setEncoding(encoding.c_str());
         }
+        else
+          setExitMessage ( "Unknown encoding "
+                         + std::string(encoding.c_str()) );
       }
 
       if ( strcmp(long_options[idx].name, "no-optimize-cursor")  == 0 )
         setCursorOptimisation (false);
 
       if ( strcmp(long_options[idx].name, "vgafont")  == 0 )
-        setVGAFont();
+      {
+        bool ret = setVGAFont();
+
+        if ( ! ret )
+          setExitMessage ("VGAfont is not supported by this terminal");
+      }
 
       if ( strcmp(long_options[idx].name, "newfont")  == 0 )
-        setNewFont();
+      {
+        bool ret = setNewFont();
+
+        if ( ! ret )
+          setExitMessage ("Newfont is not supported by this terminal");
+      }
     }
   }
 }
@@ -1753,6 +1775,10 @@ void FApplication::setMainWidget (FWidget* widget)
 int FApplication::exec() // run
 {
   FWidget* widget;
+
+  if ( quit_now )
+    return EXIT_FAILURE;
+
   quit_now = false;
   quit_code = 0;
 

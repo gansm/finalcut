@@ -1,4 +1,11 @@
-2016-08-25  Markus Gans  <guru.mail@muenster.de>
+2016-08-28  Markus Gans  <guru.mail@muenster.de>
+	* Remove obsolete code from FDialog
+	* An incorrect parameter can now return an error message 
+	  on program exit
+	* Termcap S2 and S3 fallback only for the vte/gnome-terminal 
+	  and the linux terminal
+
+2016-08-27  Markus Gans  <guru.mail@muenster.de>
 	* A new inherit background option for characters
 	* Use inherit background for the simple shadows
 	* Updating the transparent example program

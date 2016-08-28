@@ -179,6 +179,7 @@ void MainWindow::draw()
 {
   FDialog::draw();
   updateVTerm(false);
+
   if ( isMonochron() )
     setReverse(true);
 

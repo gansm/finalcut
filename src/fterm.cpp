@@ -89,6 +89,7 @@ FPoint*  FTerm::mouse        = 0;
 FPoint*  FTerm::cursor       = 0;
 FRect*   FTerm::term         = 0;
 
+char                   FTerm::exit_message[8192] = "";
 fc::encoding           FTerm::Encoding;
 const FString*         FTerm::xterm_font         = 0;
 const FString*         FTerm::xterm_title        = 0;
@@ -161,6 +162,11 @@ FTerm::~FTerm()  // destructor
     delete term;
     delete opti_attr;
     delete opti_move;
+
+    if ( exit_message[0] )
+    {
+      fprintf (stderr, "Warning: %s\n", exit_message);
+    }
   }
 }
 
@@ -1155,44 +1161,47 @@ void FTerm::init_pc_charset()
   if ( rxvt_terminal || urxvt_terminal )
     return;
 
-  // fallback if "S2" is not found
-  if ( ! tcap[t_enter_pc_charset_mode].string )
+  if ( gnome_terminal || linux_terminal )
   {
-    if ( utf8_console )
+    // fallback if tcap "S2" is not found
+    if ( ! tcap[t_enter_pc_charset_mode].string )
     {
-      // Select iso8859-1 + null mapping
-      tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>(ESC "%@" ESC "(U");
-    }
-    else
-    {
-      // Select null mapping
-      tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>(ESC "(U");
+      if ( utf8_console )
+      {
+        // Select iso8859-1 + null mapping
+        tcap[t_enter_pc_charset_mode].string = \
+          const_cast<char*>(ESC "%@" ESC "(U");
+      }
+      else
+      {
+        // Select null mapping
+        tcap[t_enter_pc_charset_mode].string = \
+          const_cast<char*>(ESC "(U");
+      }
+
+      opti_attr->set_enter_pc_charset_mode (tcap[t_enter_pc_charset_mode].string);
+      reinit = true;
     }
 
-    opti_attr->set_enter_pc_charset_mode (tcap[t_enter_pc_charset_mode].string);
-    reinit = true;
-  }
-
-  // fallback if "S3" is not found
-  if ( ! tcap[t_exit_pc_charset_mode].string )
-  {
-    if ( utf8_console )
+    // fallback if tcap "S3" is not found
+    if ( ! tcap[t_exit_pc_charset_mode].string )
     {
-      // Select ascii mapping + utf8
-      tcap[t_exit_pc_charset_mode].string = \
-        const_cast<char*>(ESC "(B" ESC "%G");
-    }
-    else
-    {
-      // Select ascii mapping
-      tcap[t_enter_pc_charset_mode].string = \
-        const_cast<char*>(ESC "(B");
-    }
+      if ( utf8_console )
+      {
+        // Select ascii mapping + utf8
+        tcap[t_exit_pc_charset_mode].string = \
+          const_cast<char*>(ESC "(B" ESC "%G");
+      }
+      else
+      {
+        // Select ascii mapping
+        tcap[t_enter_pc_charset_mode].string = \
+          const_cast<char*>(ESC "(B");
+      }
 
-    opti_attr->set_exit_pc_charset_mode (tcap[t_exit_pc_charset_mode].string);
-    reinit = true;
+      opti_attr->set_exit_pc_charset_mode (tcap[t_exit_pc_charset_mode].string);
+      reinit = true;
+    }
   }
 
   if ( reinit )
@@ -1730,6 +1739,9 @@ void FTerm::init()
   terminal_update_pending = \
   force_terminal_update   = \
   non_blocking_stdin      = false;
+
+  // init arrays with '\0'
+  std::fill_n (exit_message, sizeof(exit_message), '\0');
 
   stdin_no  = fileno(stdin);
   stdout_no = fileno(stdout);
@@ -3017,6 +3029,14 @@ bool FTerm::setVGAFont()
   if ( VGAFont )
     return VGAFont;
 
+  if ( gnome_terminal
+     || kde_konsole
+     || putty_terminal
+     || tera_terminal
+     || cygwin_terminal
+     || mintty_terminal )
+    return false;
+
   VGAFont = true;
 
   if ( xterm || screen_terminal || osc_support )
@@ -3079,6 +3099,14 @@ bool FTerm::setNewFont()
   if ( NewFont )
     return true;
 
+  if ( gnome_terminal
+     || kde_konsole
+     || putty_terminal
+     || tera_terminal
+     || cygwin_terminal
+     || mintty_terminal )
+    return false;
+
   if ( xterm || screen_terminal || urxvt_terminal || osc_support )
   {
     NewFont = true;
@@ -3090,7 +3118,7 @@ bool FTerm::setNewFont()
     pc_charset_console = true;
     Encoding = fc::PC;
 
-    if ( xterm && utf8_console )
+   if ( xterm && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
@@ -4644,7 +4672,7 @@ int FTerm::print (FTerm::term_area* area, register int c)
 inline void FTerm::newFontChanges (FOptiAttr::char_data*& next_char)
 {
   // NewFont special cases
-  if ( isNewFont() )
+  if ( NewFont )
   {
     switch ( next_char->code )
     {

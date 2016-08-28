@@ -120,6 +120,7 @@ class FApplication : public FWidget
    FApplication& operator = (const FApplication&); // and operator '='
 
    void    init();
+   void    setExitMessage (std::string);
    void    cmd_options();
    bool    KeyPressed();
    ssize_t readKey();

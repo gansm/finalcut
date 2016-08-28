@@ -162,6 +162,7 @@ class FTerm
    static int     x_term_pos;
    static int     y_term_pos;
    static bool    resize_term;
+   static char    exit_message[8192];
 
    static struct termios term_init;
    static FOptiAttr::char_data term_attribute;

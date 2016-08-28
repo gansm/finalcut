@@ -780,21 +780,6 @@ void FDialog::onWindowRaised (FEvent*)
 
   if ( window_list->empty() )
     return;
-
-  // redraw shadow of the other windows
-  iter = window_list->begin();
-  end  = window_list->end();
-
-  while ( iter != end )
-  {
-    if ( *iter != this && ! maximized
-       && ((*iter)->getFlags() & fc::shadow) != 0 )
-    {
-      static_cast<FDialog*>(*iter)->drawDialogShadow();
-    }
-
-    ++iter;
-  }
 }
 
 //----------------------------------------------------------------------
@@ -814,10 +799,6 @@ void FDialog::onWindowLowered (FEvent*)
   while ( iter != end )
   {
     putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-
-    if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
-      static_cast<FDialog*>(*iter)->drawDialogShadow();
-
     ++iter;
   }
 }
@@ -936,9 +917,6 @@ void FDialog::move (int x, int y)
     restoreVTerm (old_x, old_y, width+rsw, height+bsh);
   }
 
- // if ( ! maximized && (flags & fc::shadow) != 0 )
-   // drawDialogShadow();
-
   // handle overlaid windows
   if ( window_list && ! window_list->empty() )
   {
@@ -950,12 +928,7 @@ void FDialog::move (int x, int y)
     while ( iter != end )
     {
       if ( overlaid )
-      {
         putArea ((*iter)->getGlobalPos(), (*iter)->getVWin());
-
-        if ( ! maximized && ((*iter)->getFlags() & fc::shadow) != 0 )
-          static_cast<FDialog*>(*iter)->drawDialogShadow();
-      }
 
       if ( vwin == (*iter)->getVWin() )
         overlaid = true;
