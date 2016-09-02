@@ -1867,6 +1867,7 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
     xpos = x;
     ypos = y;
   }
+
   (w > 0) ? width  = w : width  = 1;
   (h > 0) ? height = h : height = 1;
 
@@ -1884,13 +1885,13 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
                                  , height );
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 
-  if ( adjust )
-    adjustSize();
-
   double_flatline_mask.top.resize (uLong(width), false);
   double_flatline_mask.right.resize (uLong(height), false);
   double_flatline_mask.bottom.resize (uLong(width), false);
   double_flatline_mask.left.resize (uLong(height), false);
+
+  if ( adjust )
+    adjustSize();
 }
 
 //----------------------------------------------------------------------

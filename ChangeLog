@@ -1,3 +1,7 @@
+2016-09-02  Markus Gans  <guru.mail@muenster.de>
+	* Method setGeometry assigns now the full widget size to 
+	  the double_flatline_mask (previously, it was the adjust size)
+
 2016-08-28  Markus Gans  <guru.mail@muenster.de>
 	* Remove obsolete code from FDialog
 	* An incorrect parameter can now return an error message 
