@@ -347,7 +347,7 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton2->setStatusbarMessage ("Cosine function");
   MyButton2->setNoUnderline();
   MyButton2->setFlat();
-  MyButton2->setDoubleFlatLine(fc::top);
+  MyButton2->setDoubleFlatLine (fc::top);
 
   FButton* MyButton3 = new FButton (this);
   MyButton3->setGeometry(10, 3, 5, 3);

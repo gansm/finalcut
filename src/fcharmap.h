@@ -94,6 +94,7 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x1ad9,   0, 0xd9,   0},  // (  -  NF_radio_button1
   {0x1ada,   0, 0xda,   0},  // ⎡  -  NF_border_corner_upper_left
   {0x1adc,   0, 0xdc,   0},  // ✓  -  NF_shadow_box_checked
+  {0x1ae7,   0, 0xe7,   0},  // ║  -  NF_rev_border_line_right_and_left
   {0x1ae8,   0, 0xe8,   0},  // ◣  -  NF_rev_up_pointing_triangle2
   {0x1ae9,   0, 0xe9,   0},  // ◤  -  NF_rev_down_pointing_triangle2
   {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3

@@ -1,3 +1,9 @@
+2016-09-03  Markus Gans  <guru.mail@muenster.de>
+	* The method clearFlatBorder() replace now a double flatline 
+	  with a single flatline
+	* Add the possibility to set the double_flatline_mask for 
+	  every position on all sides
+
 2016-09-02  Markus Gans  <guru.mail@muenster.de>
 	* Method setGeometry assigns now the full widget size to 
 	  the double_flatline_mask (previously, it was the adjust size)

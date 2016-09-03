@@ -532,9 +532,11 @@ class FWidget : public FObject, public FTerm
    void             clearShadow();
    void             drawFlatBorder();
    void             clearFlatBorder();
-   void             setDoubleFlatLine(int, bool = true);
-   void             unsetDoubleFlatLine(int);
-   std::vector<bool>& doubleFlatLine_ref(int);
+   void             setDoubleFlatLine (int, bool = true);
+   void             unsetDoubleFlatLine (int);
+   void             setDoubleFlatLine (int, int, bool = true);
+   void             unsetDoubleFlatLine (int, int);
+   std::vector<bool>& doubleFlatLine_ref (int);
    virtual void     drawBorder();
 
    static void      quit();
@@ -1095,6 +1097,10 @@ inline bool FWidget::isInheritBackground()
 //----------------------------------------------------------------------
 inline void FWidget::unsetDoubleFlatLine(int side)
 { setDoubleFlatLine(side, false); }
+
+//----------------------------------------------------------------------
+inline void FWidget::unsetDoubleFlatLine(int side, int pos)
+{ setDoubleFlatLine(side, pos, false); }
 
 
 // NewFont elements

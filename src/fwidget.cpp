@@ -2260,30 +2260,53 @@ void FWidget::clearFlatBorder()
   else
     setColor (wc.dialog_fg, wc.dialog_bg);
 
+  // clear on left side
   for (register int y=0; y < height; y++)
   {
     gotoxy (x1-1, y1+y+1);
-    print (' '); // clear on left side
+
+    if ( double_flatline_mask.left[uLong(y)] )
+      print (fc::NF_border_line_left);
+    else
+      print (' ');
   }
 
-  gotoxy (x2, y1+1);
-  for (register int y=1; y <= height; y++)
+  // clear on right side
+  for (register int y=0; y < height; y++)
   {
-    print (' ');  // clear on right side
     gotoxy (x2, y1+y+1);
+
+    if ( double_flatline_mask.right[uLong(y)] )
+      print (fc::NF_rev_border_line_right);
+    else
+      print (' ');    
   }
 
+  // clear at top
   gotoxy (x1, y1);
-  for (register int x=0; x < width; x++)
-    print (' '); // clear at bottom
 
-  gotoxy (x1, y2);
   for (register int x=0; x < width; x++)
-    print (' '); // clear at top
+  {
+    if ( double_flatline_mask.top[uLong(x)] )
+      print (fc::NF_border_line_upper);
+    else
+      print (' ');
+  }
+
+  // clear at bottom
+  gotoxy (x1, y2);
+
+  for (register int x=0; x < width; x++)
+  {
+    if ( double_flatline_mask.bottom[uLong(x)] )
+      print (fc::NF_border_line_bottom);
+    else
+      print (' ');
+  }
 }
 
 //----------------------------------------------------------------------
-void FWidget::setDoubleFlatLine(int side, bool bit)
+void FWidget::setDoubleFlatLine (int side, bool bit)
 {
   uLong size;
 
@@ -2320,7 +2343,60 @@ void FWidget::setDoubleFlatLine(int side, bool bit)
 }
 
 //----------------------------------------------------------------------
-std::vector<bool>& FWidget::doubleFlatLine_ref(int side)
+void FWidget::setDoubleFlatLine (int side, int pos, bool bit)
+{
+  uLong size, index;
+
+  assert (  side == fc::top
+         || side == fc::right
+         || side == fc::bottom
+         || side == fc::left );
+
+  assert ( pos >= 1 );
+
+  index = uLong(pos - 1);
+
+  switch ( side )
+  {
+    case fc::top:
+      size = double_flatline_mask.top.size();
+
+      if ( index < size )
+        double_flatline_mask.top[index] = bit;
+
+      break;
+
+    case fc::right:
+      size = double_flatline_mask.right.size();
+
+      if ( index < size )
+        double_flatline_mask.right[index] = bit;
+
+      break;
+
+    case fc::bottom:
+      size = double_flatline_mask.bottom.size();
+
+      if ( index < size )
+        double_flatline_mask.bottom[index] = bit;
+
+      break;
+
+    case fc::left:
+      size = double_flatline_mask.left.size();
+
+      if ( index < size )
+        double_flatline_mask.left[index] = bit;
+
+      break;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+std::vector<bool>& FWidget::doubleFlatLine_ref (int side)
 {
   assert (  side == fc::top
          || side == fc::right

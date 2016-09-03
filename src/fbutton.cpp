@@ -172,8 +172,8 @@ void FButton::draw()
     // noshadow + indent one character to the right
     if ( is_Flat )
       clearFlatBorder();
-
-    clearShadow();
+    else
+      clearShadow();
 
     if ( parent_widget )
       setColor ( parent_widget->getForegroundColor()
