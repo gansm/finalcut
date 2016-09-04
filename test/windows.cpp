@@ -99,17 +99,14 @@ Window::Window (FWidget* parent)
   FButton* CreateButton = new FButton (this);
   CreateButton->setGeometry(2, 2, 9, 1);
   CreateButton->setText (L"&Create");
-  CreateButton->setShadow();
 
   FButton* CloseButton = new FButton (this);
   CloseButton->setGeometry(15, 2, 9, 1);
   CloseButton->setText (L"C&lose");
-  CloseButton->setShadow();
 
   FButton* QuitButton = new FButton (this);
   QuitButton->setGeometry(28, 2, 9, 1);
   QuitButton->setText (L"&Quit");
-  QuitButton->setShadow();
 
   // Add menu item callback
   New->addCallback
@@ -242,7 +239,6 @@ void Window::cb_createWindows (FWidget*, void*)
       x = dx + 5 + (n%3)*25 + int(n/3)*3;
       y = dy + 11 + int(n/3)*3;
       win->setGeometry (x, y, 20, 8);
-      win->setTransparentShadow();
       win->show();
 
       win->addCallback
@@ -427,7 +423,6 @@ int main (int argc, char* argv[])
   Window main_dlg (&app);
   main_dlg.setText ("Main window");
   main_dlg.setGeometry (int(1+(app.getWidth()-40)/2), 2, 40, 6);
-  main_dlg.setTransparentShadow();
 
   app.setMainWidget (&main_dlg);
   main_dlg.show();

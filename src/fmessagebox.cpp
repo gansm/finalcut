@@ -130,7 +130,6 @@ void FMessageBox::init(int button0, int button1, int button2)
   button[0]->setWidth(1, false);
   button[0]->setHeight(1, false);
   button[0]->setFocus();
-  button[0]->setShadow();
 
   if ( button1 > 0 )
   {
@@ -139,7 +138,6 @@ void FMessageBox::init(int button0, int button1, int button2)
     button[1]->setPos(17, height-4, false);
     button[1]->setWidth(0, false);
     button[1]->setHeight(1, false);
-    button[1]->setShadow();
   }
 
   if ( button2 > 0 )
@@ -149,7 +147,6 @@ void FMessageBox::init(int button0, int button1, int button2)
     button[2]->setPos(32, height-4, false);
     button[2]->setWidth(0, false);
     button[2]->setHeight(1, false);
-    button[2]->setShadow();
   }
 
   resizeButtons();
@@ -186,7 +183,6 @@ void FMessageBox::init(int button0, int button1, int button2)
   }
 
   setModal();
-  setTransparentShadow();
 }
 
 //----------------------------------------------------------------------

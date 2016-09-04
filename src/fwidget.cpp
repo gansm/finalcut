@@ -265,7 +265,7 @@ void FWidget::setColorTheme()
   wc.titlebar_active_bg                = fc::Blue;
   wc.titlebar_inactive_fg              = fc::LightGray;
   wc.titlebar_inactive_bg              = fc::DarkGray;
-  wc.titlebar_button_fg                = fc::Black;
+  wc.titlebar_button_fg                = fc::DarkGray;
   wc.titlebar_button_bg                = fc::LightGray;
   wc.menu_active_focus_fg              = fc::White;
   wc.menu_active_focus_bg              = fc::Blue;

@@ -105,6 +105,7 @@ void FDialog::init()
   addDialog(this);
   addWindow(this);
   setActiveWindow(this);
+  setTransparentShadow();
 
   foregroundColor = wc.dialog_fg;
   backgroundColor = wc.dialog_bg;
@@ -460,7 +461,12 @@ void FDialog::draw()
         gotoxy (xpos+xmin+width-4, ypos+ymin-1);
         setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
         print (' ');
-        print (fc::BlackDownPointingTriangle);  // ▼
+
+        if ( isCygwinTerminal() )
+          print ('v');
+        else
+          print (fc::BlackDownPointingTriangle);  // ▼
+
         print (' ');
       }
     }
@@ -478,7 +484,12 @@ void FDialog::draw()
         gotoxy (xpos+xmin+width-4, ypos+ymin-1);
         setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
         print (' ');
-        print (fc::BlackUpPointingTriangle);  // ▲
+
+        if ( isCygwinTerminal() )
+          print ('^');
+        else
+          print (fc::BlackUpPointingTriangle);  // ▲
+
         print (' ');
       }
     }

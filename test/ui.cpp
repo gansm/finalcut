@@ -47,33 +47,28 @@ ProgressDialog::ProgressDialog (FWidget* parent)
 {
   setGeometry (int((this->getParentWidget()->getWidth()-40)/2), 7, 40, 10);
   setText("Progress bar");
-  setTransparentShadow();
   //setModal();
 
   reset = new FButton(this);
   reset->setText("&Reset");
   reset->setStatusbarMessage ("Reset the progress bar");
   reset->setGeometry(2, 6, 8, 1, false);
-  reset->setShadow();
   reset->setDisable();
 
   more = new FButton(this);
   more->setText("&More");
   more->setStatusbarMessage ("Increases the progress bar position");
   more->setGeometry(15, 6, 8, 1, false);
-  more->setShadow();
   more->setDisable();
 
   quit = new FButton(this);
   quit->setText("E&xit");
   quit->setGeometry(28, 6, 8, 1, false);
-  quit->setShadow();
   quit->setDisable();
 
   progressBar = new FProgressbar(this);
   progressBar->setGeometry(2, 3, 34, 1, false);
-  //progressBar->setPercentage(78);
-  progressBar->setShadow();
+  //progressBar->setPercentage(78);<
 
   reset->addCallback
   (
@@ -391,28 +386,24 @@ MyDialog::MyDialog (FWidget* parent)
   myLineEdit->setText (FString("EnTry").toLower());
   myLineEdit->setLabelText (L"&Input:");
   myLineEdit->setStatusbarMessage ("Press Enter to set the title");
-  myLineEdit->setShadow();
 
   // Buttons
   FButton* MyButton4 = new FButton (this);
   MyButton4->setGeometry(20, 8, 12, 1);
   MyButton4->setText (L"&Get input");
   MyButton4->setStatusbarMessage ("Take text from input field");
-  MyButton4->setShadow();
   MyButton4->setFocus();
 
   FButton* MyButton5 = new FButton (this);
   MyButton5->setGeometry(20, 11, 12, 1);
   MyButton5->setText (L"&Test");
   MyButton5->setStatusbarMessage ("Progressbar testing dialog");
-  MyButton5->setShadow();
   MyButton5->setDisable();
 
   FButton* MyButton6 = new FButton (this);
   MyButton6->setGeometry(20, 14, 12, 1);
   MyButton6->setText (L"&Quit");
   MyButton6->setStatusbarMessage ("Exit the program");
-  MyButton6->setShadow();
   MyButton6->addAccelerator('x');
 
   // A multiple selection listbox
@@ -761,7 +752,6 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
                      int(getRootWidget()->getHeight()/6),
                      60,
                      int(getRootWidget()->getHeight()*3/4));
-  view->setTransparentShadow();
 
   FTextView* scrollText = new FTextView(view);
   scrollText->ignorePadding();
@@ -854,6 +844,7 @@ int main (int argc, char* argv[])
   d.setText (title);
   d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
   d.setShadow();
+  d.setResizeable();
 
   app.setMainWidget(&d);
   d.show();

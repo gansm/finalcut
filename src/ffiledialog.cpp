@@ -135,7 +135,6 @@ void FFileDialog::init()
   filename->setLabelText("File&name:");
   filename->setText(filter_pattern);
   filename->setGeometry(11, 1, 28, 1);
-  filename->setShadow();
   filename->setFocus();
 
   filebrowser = new FListBox(this);
@@ -147,7 +146,6 @@ void FFileDialog::init()
 
   cancel = new FButton("&Cancel", this);
   cancel->setGeometry(19, 10, 9, 1);
-  cancel->setShadow();
 
   if ( dlg_type == FFileDialog::Save )
     open = new FButton("&Save",this);
@@ -155,7 +153,6 @@ void FFileDialog::init()
     open = new FButton("&Open",this);
 
   open->setGeometry(30, 10, 9, 1);
-  open->setShadow();
   setGeometry (x, y, width, height);
 
   filename->addCallback
@@ -195,7 +192,6 @@ void FFileDialog::init()
   );
 
   setModal();
-  setTransparentShadow();
   readDir();
 }
 

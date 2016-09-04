@@ -72,13 +72,6 @@ int main (int argc, char* argv[])
   st_field->setGeometry(15, 9, 19, 1);
   c_field->setGeometry(15, 11, 4, 1);
 
-  name_field->setShadow();
-  email_field->setShadow();
-  org_field->setShadow();
-  city_field->setShadow();
-  st_field->setShadow();
-  c_field->setShadow();
-
   // Create the button group
   FButtonGroup* radioButtonGroup = new FButtonGroup("Sex", &dgl);
   radioButtonGroup->setGeometry(2, 13, 13, 4);
@@ -103,7 +96,6 @@ int main (int argc, char* argv[])
   // Create a OK button
   FButton btn("&OK", &dgl);
   btn.setGeometry (24, 18, 10, 1);
-  btn.setShadow();
 
   // Connect checkbox signal "clicked" with a callback function
   check1->addCallback

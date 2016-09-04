@@ -69,6 +69,7 @@ void FLineEdit::init()
 {
   label->setAccelWidget(this);
   setVisibleCursor();
+  setShadow();
 
   if ( hasFocus() )
     flags |= fc::focus;

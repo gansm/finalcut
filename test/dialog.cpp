@@ -29,7 +29,6 @@ int main (int argc, char* argv[])
   FDialog dgl(&app);
   dgl.setText ("FDialog");
   dgl.setGeometry (4, 3, 41, 11);
-  dgl.setShadow();
 
   // Create text labels
   FLabel label_1(&dgl),
@@ -50,7 +49,6 @@ int main (int argc, char* argv[])
   // Create the quit button
   FButton btn("&Quit", &dgl);
   btn.setGeometry (16, 7, 9, 1);
-  btn.setShadow();
 
   // Connect the button signal "clicked" with the callback function
   btn.addCallback

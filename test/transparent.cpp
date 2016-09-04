@@ -150,16 +150,19 @@ MainWindow::MainWindow (FWidget* parent)
   Transparent* transpwin = new Transparent(this);
   transpwin->setText("transparent");
   transpwin->setGeometry (6, 3, 29, 12);
+  transpwin->unsetTransparentShadow();
   transpwin->show();
 
   Transparent* shadowwin = new Transparent(this, Transparent::shadow);
   shadowwin->setText("shadow");
   shadowwin->setGeometry (46, 11, 29, 12);
+  shadowwin->unsetTransparentShadow();
   shadowwin->show();
 
   Transparent* ibg = new Transparent(this, Transparent::inherit_background);
   ibg->setText("inherit background");
   ibg->setGeometry (42, 3, 29, 7);
+  ibg->unsetTransparentShadow();
   ibg->show();
 
   // Statusbar at the bottom
@@ -167,6 +170,7 @@ MainWindow::MainWindow (FWidget* parent)
   statusbar->setMessage("Press Q to quit");
 
   addAccelerator('q');
+  unsetTransparentShadow();
   activateDialog();
 }
 

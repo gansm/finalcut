@@ -62,6 +62,7 @@ void FButton::init()
 {
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
+  setShadow();
 
   if ( hasFocus() )
     flags = fc::focus;

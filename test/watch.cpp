@@ -55,7 +55,6 @@ watch::watch (FWidget* parent)
   , seconds_sw(0)
 {
   setText ("Watch");
-  setShadow();
   int pw = getParentWidget()->getWidth();
   setGeometry (1+(pw-22)/2, 3, 22, 13);
 
@@ -76,8 +75,6 @@ watch::watch (FWidget* parent)
   // Create button
   FButton* quit_btn = new FButton(L"&Quit", this);
   quit_btn->setGeometry(6, 9, 9, 1);
-  quit_btn->setShadow();
-
 
   // Connect switch signal "toggled" with a callback member function
   clock_sw->addCallback

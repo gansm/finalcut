@@ -174,10 +174,6 @@ class FListBox : public FWidget
    bool setFocus(bool);
    bool setFocus();
    bool unsetFocus();
-   bool setShadow(bool);
-   bool setShadow();
-   bool unsetShadow();
-   bool hasShadow();
 
    void insert ( FString
                , fc::brackets_type = fc::NoBrackets
@@ -266,18 +262,6 @@ inline bool FListBox::setFocus()
 //----------------------------------------------------------------------
 inline bool FListBox::unsetFocus()
 { return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::unsetShadow()
-{ return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::hasShadow()
-{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline FString& FListBox::getText()

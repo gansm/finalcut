@@ -1,3 +1,8 @@
+2016-09-04  Markus Gans  <guru.mail@muenster.de>
+	* FButton, FLineEdit and FProgressbar has shadow now enabled 
+	  by default
+	* FDialog has now transparent shadow as default
+
 2016-09-03  Markus Gans  <guru.mail@muenster.de>
 	* The method clearFlatBorder() replace now a double flatline 
 	  with a single flatline

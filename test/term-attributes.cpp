@@ -52,11 +52,9 @@ AttribDlg::AttribDlg (FWidget* parent)
 
   next_button = new FButton("&Next >", this);
   next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1);
-  next_button->setShadow();
   next_button->addAccelerator(fc::Fkey_right);
   back_button = new FButton("< &Back", this);
   back_button->setGeometry(getWidth()-25, getHeight()-4, 10, 1);
-  back_button->setShadow();
   back_button->addAccelerator(fc::Fkey_left);
 
   // Add function callbacks

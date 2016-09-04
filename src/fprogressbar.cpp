@@ -15,6 +15,7 @@ FProgressbar::FProgressbar(FWidget* parent)
   , BarLength(width)
 {
   unsetFocusable();
+  setShadow();
 }
 
 //----------------------------------------------------------------------

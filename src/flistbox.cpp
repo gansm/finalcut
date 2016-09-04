@@ -703,17 +703,6 @@ bool FListBox::setFocus (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FListBox::setShadow (bool on)
-{
-  if ( on )
-    flags |= fc::shadow;
-  else
-    flags &= ~fc::shadow;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   int element_count = int(count());
