@@ -32,16 +32,7 @@ class Transparent : public FDialog
    Transparent (const Transparent&);    // Disabled copy constructor
    Transparent& operator = (const Transparent&); // and operator '='
    void draw();
-   void onAccel (FAccelEvent* ev)
-   {
-     if ( getParentWidget() )
-     {
-       if ( getParentWidget()->close() )
-         ev->accept();
-       else
-          ev->ignore();
-     }
-   }
+   void onKeyPress (FKeyEvent* ev);
 
  public:
    explicit Transparent (FWidget* = 0, trans_type = transparent);  // constructor
@@ -55,7 +46,6 @@ Transparent::Transparent (FWidget* parent, Transparent::trans_type tt)
   , type(tt)
 {
   setStatusbarMessage("Press Q to quit");
-  addAccelerator('q');
 }
 
 //----------------------------------------------------------------------
@@ -105,6 +95,18 @@ void Transparent::draw()
   updateVTerm(true);
 }
 
+//----------------------------------------------------------------------
+void Transparent::onKeyPress (FKeyEvent* ev)
+{
+  if ( ev && ev->key() == 'q' && getParentWidget() )
+  {
+    if ( getParentWidget()->close() )
+      ev->accept();
+    else
+      ev->ignore();
+  }
+}
+
 
 //----------------------------------------------------------------------
 // class MainWindow
@@ -126,10 +128,13 @@ class MainWindow : public FDialog
    void onClose (FCloseEvent*);
    void onShow  (FShowEvent*);
    void onTimer (FTimerEvent*);
-   void onAccel (FAccelEvent* ev)
+   void onKeyPress (FKeyEvent* ev)
    {
-     close();
-     ev->accept();
+     if ( ev && ev->key() == 'q' )
+     {
+       close();
+       ev->accept();
+     }
    }
 
  public:

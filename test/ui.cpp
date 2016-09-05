@@ -844,7 +844,6 @@ int main (int argc, char* argv[])
   d.setText (title);
   d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
   d.setShadow();
-  d.setResizeable();
 
   app.setMainWidget(&d);
   d.show();
