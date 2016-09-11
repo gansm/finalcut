@@ -1686,7 +1686,7 @@ int FApplication::processTimerEvent()
 //----------------------------------------------------------------------
 void FApplication::processTerminalUpdate()
 {
-#define MAX_SKIP 8
+  const int max_skip = 8;
 
   if ( terminal_update_pending )
   {
@@ -1696,7 +1696,7 @@ void FApplication::processTerminalUpdate()
       terminal_update_pending = false;
       skipped_terminal_update = 0;
     }
-    else if ( skipped_terminal_update > MAX_SKIP )
+    else if ( skipped_terminal_update > max_skip )
     {
       force_terminal_update = true;
       updateTerminal();
@@ -1707,8 +1707,6 @@ void FApplication::processTerminalUpdate()
     else
       skipped_terminal_update++;
   }
-
-#undef MAX_SKIP
 }
 
 //----------------------------------------------------------------------

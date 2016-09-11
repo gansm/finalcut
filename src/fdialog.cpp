@@ -233,7 +233,7 @@ void FDialog::drawTitleBar()
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
 
-  if ( dialog_menu->isVisible() )
+  if ( dialog_menu && dialog_menu->isVisible() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
   else
     setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
