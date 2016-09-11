@@ -162,6 +162,7 @@ class FWidget : public FObject, public FTerm
      short inputfield_inactive_fg;
      short inputfield_inactive_bg;
      short dialog_fg;
+     short dialog_resize_fg;
      short dialog_emphasis_fg;
      short dialog_bg;
      short error_box_fg;
@@ -188,6 +189,8 @@ class FWidget : public FObject, public FTerm
      short titlebar_inactive_bg;
      short titlebar_button_fg;
      short titlebar_button_bg;
+     short titlebar_button_focus_fg;
+     short titlebar_button_focus_bg;
      short menu_active_focus_fg;
      short menu_active_focus_bg;
      short menu_active_fg;
@@ -409,6 +412,8 @@ class FWidget : public FObject, public FTerm
    int              getRightPadding() const;
    int              getClientWidth() const;
    int              getClientHeight() const;
+   int              getMaxWidth() const;
+   int              getMinHeight() const;
    const FPoint&    getShadow() const;
    const FRect&     getGeometry() const;
    const FRect&     getGeometryShadow() const;
@@ -444,7 +449,6 @@ class FWidget : public FObject, public FTerm
 
    static void      gotoxy (const FPoint&);
    static void      gotoxy (register int, register int);
-   void             clearArea();
 
    static void      setNormal();
 
@@ -755,6 +759,14 @@ inline int FWidget::getClientWidth() const
 //----------------------------------------------------------------------
 inline int FWidget::getClientHeight() const
 { return client_ymax-client_ymin+1; }
+
+//----------------------------------------------------------------------
+inline int FWidget::getMaxWidth() const
+{ return xmax-xmin+1; }
+
+//----------------------------------------------------------------------
+inline int FWidget::getMinHeight() const
+{ return ymax-ymin+1; }
 
 //----------------------------------------------------------------------
 inline const FPoint& FWidget::getShadow() const

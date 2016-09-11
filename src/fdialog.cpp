@@ -16,11 +16,14 @@ FDialog::FDialog(FWidget* parent)
   : FWindow(parent)
   , tb_text()
   , result_code(FDialog::Reject)
-  , maximized(false)
+  , zoom_button_pressed(false)
+  , zoom_button_active(false)
   , TitleBarClickPos()
   , oldGeometry()
   , dialog_menu()
   , dgl_menuitem()
+  , zoom_item()
+  , close_item()
 {
   init();
 }
@@ -30,11 +33,14 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , tb_text(txt)
   , result_code(FDialog::Reject)
-  , maximized(false)
+  , zoom_button_pressed(false)
+  , zoom_button_active(false)
   , TitleBarClickPos()
   , oldGeometry()
   , dialog_menu()
   , dgl_menuitem()
+  , zoom_item()
+  , close_item()
 {
   init();
 }
@@ -80,7 +86,6 @@ FDialog::~FDialog()  // destructor
 //----------------------------------------------------------------------
 void FDialog::init()
 {
-  FMenuItem* close_item;
   FWidget*   old_focus;
   FWidget*   rootObj = getRootWidget();
 
@@ -136,8 +141,18 @@ void FDialog::init()
     dgl_menuitem->unsetFocusable();
   }
 
+  zoom_item = new FMenuItem ("&Zoom", dialog_menu);
+  zoom_item->setStatusbarMessage ("Enlarge or restore the window size");
+  zoom_item->setDisable();
+
+  zoom_item->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &FDialog::cb_zoom)
+  );
+
   close_item = new FMenuItem ("&Close", dialog_menu);
-  close_item->setStatusbarMessage ("Close window");
+  close_item->setStatusbarMessage ("Close this window");
 
   close_item->addCallback
   (
@@ -155,18 +170,13 @@ void FDialog::drawBorder()
   y1 = ypos+ymin;
   y2 = ypos+ymin-2+height;
 
+  //if ( resize )
+  //  setColor (wc.dialog_resize_fg, backgroundColor);
+
   if ( isNewFont() )
   {
-    short fg;
-
-    if ( ! isRootWidget() && getParentWidget() )
-      fg = getParentWidget()->getForegroundColor();
-    else
-      fg = wc.term_fg;
-
     for (int y=y1; y <= y2; y++)
     {
-      setColor (fg, backgroundColor);
       gotoxy (x1, y);
       // border left ⎸
       print (fc::NF_border_line_left);
@@ -175,19 +185,16 @@ void FDialog::drawBorder()
       print (fc::NF_rev_border_line_right);
     }
 
-    if ( (flags & fc::shadow) == 0 )
-    {
-      setColor (fg, backgroundColor);
-      gotoxy (x1, y2);
-      // lower left corner border ⎣
-      print (fc::NF_border_corner_lower_left);
-      for (int x=1; x < width-1; x++) // low line _
-        print (fc::NF_border_line_bottom);
-      gotoxy (x2, y2);
-      // lower right corner border ⎦
-      print (fc::NF_rev_border_corner_lower_right);
-    }
+    gotoxy (x1, y2);
+    // lower left corner border ⎣
+    print (fc::NF_border_corner_lower_left);
 
+    for (int x=1; x < width-1; x++) // low line _
+      print (fc::NF_border_line_bottom);
+
+    gotoxy (x2, y2);
+    // lower right corner border ⎦
+    print (fc::NF_rev_border_corner_lower_right);
   }
   else
   {
@@ -220,12 +227,16 @@ void FDialog::drawBorder()
 //----------------------------------------------------------------------
 void FDialog::drawTitleBar()
 {
-  int i,x;
-  uInt length = tb_text.getLength();
+  int i,x,length, zoom_btn;
+  const int menu_btn = 3;
 
   // draw the title button
   gotoxy (xpos+xmin-1, ypos+ymin-1);
-  setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+
+  if ( dialog_menu->isVisible() )
+    setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
+  else
+    setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
 
   if ( isMonochron() )
   {
@@ -274,7 +285,15 @@ void FDialog::drawTitleBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  i = width - 3 - int(length);
+  if ( (flags & fc::resizeable) == 0 )
+    zoom_btn = 0;
+  else if ( isNewFont() )
+    zoom_btn = 2;
+  else
+    zoom_btn = 3;
+
+  length = int(tb_text.getLength());
+  i = width - length - menu_btn  - zoom_btn;
   i = int(i/2);
 
   for (x=1; x <= i; x++)
@@ -285,11 +304,77 @@ void FDialog::drawTitleBar()
     print (tb_text);
 
   // fill the rest of the bar
-  for (; x+1+int(length) < width-1; x++)
+  for (; x+1+length < width-zoom_btn-1; x++)
     print (' ');
 
   if ( getMaxColor() < 16 )
     unsetBold();
+
+  // draw the zoom/unzoom button
+  if ( (flags & fc::resizeable) != 0 )
+  {
+    if ( zoom_button_pressed )
+      setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
+    else
+      setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+
+    if ( isZoomed() )
+    {
+      if ( isNewFont() )
+      {
+        print (fc::NF_rev_down_pointing_triangle1);
+        print (fc::NF_rev_down_pointing_triangle2);
+      }
+      else
+      {
+        if ( isMonochron() )
+        {
+          print ('[');
+          print (fc::BlackDownPointingTriangle);  // ▼
+          print (']');
+        }
+        else
+        {
+          print (' ');
+
+          if ( isCygwinTerminal() )
+            print ('v');
+          else
+            print (fc::BlackDownPointingTriangle);  // ▼
+
+          print (' ');
+        }
+      }
+    }
+    else // is not zoomed
+    {
+      if ( isNewFont() )
+      {
+        print (fc::NF_rev_up_pointing_triangle1);
+        print (fc::NF_rev_up_pointing_triangle2);
+      }
+      else
+      {
+        if ( isMonochron() )
+        {
+          print ('[');
+          print (fc::BlackUpPointingTriangle);  // ▲
+          print (']');
+        }
+        else
+        {
+          print (' ');
+
+          if ( isCygwinTerminal() )
+            print ('^');
+          else
+            print (fc::BlackUpPointingTriangle);  // ▲
+
+          print (' ');
+        }
+      }
+    }
+  }
 
   if ( isMonochron() )
     setReverse(false);
@@ -318,6 +403,16 @@ void FDialog::leaveMenu()
 
   updateTerminal();
   flush_out();
+}
+
+//----------------------------------------------------------------------
+void FDialog::cb_zoom (FWidget*, void*)
+{
+  dialog_menu->unselectItem();
+  dialog_menu->hide();
+  setClickedWidget(0);
+  drawTitleBar();
+  zoomWindow();
 }
 
 //----------------------------------------------------------------------
@@ -372,61 +467,26 @@ void FDialog::done(int result)
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ((flags & fc::trans_shadow) != 0)
-  {
-    // transparent shadow
-    drawShadow();
+  if ( isMonochron() && (flags & fc::trans_shadow) == 0 )
+    return;
 
-    if ( isNewFont() && ((flags & fc::scrollable) == 0) )
-    {
-      // left of the shadow ▀▀
-      gotoxy (xpos+xmin-1, ypos+ymin-1+height);
-      setColor (wc.shadow_fg, wc.shadow_bg);
-      // current background color will be ignored
-      setInheritBackground();
-
-      for (int x=0; x <= 1; x++)
-        print (fc::NF_border_line_upper);  // high line ⎺
-
-      unsetInheritBackground();
-    }
-  }
-  else
-  {
-    if ( isMonochron() )
-      return;
-
-    drawShadow();
-    // left of the shadow ▀▀
-    gotoxy (xpos+xmin-1, ypos+ymin-1+height);
-
-    if ( isNewFont() && ((flags & fc::scrollable) == 0) )
-    {
-      setColor (wc.shadow_fg, wc.shadow_bg);
-      // current background color will be ignored
-      setInheritBackground();
-      print (fc::NF_border_line_upper);  // high line ⎺
-      unsetInheritBackground();
-    }
-    else
-    {
-      setTransparent();
-      print(' ');
-      unsetTransparent();
-    }
-  }
+  drawShadow();
+  gotoxy (xpos+xmin-1, ypos+ymin-1+height);
+  setTransparent();
+  print(' ');
+  unsetTransparent();
 }
 
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
-  if ( maximized && ! isRootWidget() )
+  /*if ( isZoomed() && ! isRootWidget() )
   {
     xpos = 1;
     ypos = 1;
     width = xmax;
     height = ymax;
-  }
+  }*/
 
   updateVTerm(false);
   // fill the background
@@ -439,61 +499,8 @@ void FDialog::draw()
   drawBorder();
   drawTitleBar();
 
-  if ( ! maximized && (flags & fc::shadow) != 0 )
+  if ( (flags & fc::shadow) != 0 )
     drawDialogShadow();
-
-  if ( (flags & fc::resizeable) != 0 )
-  {
-    if ( isMonochron() )
-      setReverse(false);
-
-    if ( maximized )
-    {
-      if ( isNewFont() )
-      {
-        gotoxy (xpos+xmin+width-3, ypos+ymin-1);
-        setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-        print (fc::NF_rev_down_pointing_triangle1);
-        print (fc::NF_rev_down_pointing_triangle2);
-      }
-      else
-      {
-        gotoxy (xpos+xmin+width-4, ypos+ymin-1);
-        setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-        print (' ');
-
-        if ( isCygwinTerminal() )
-          print ('v');
-        else
-          print (fc::BlackDownPointingTriangle);  // ▼
-
-        print (' ');
-      }
-    }
-    else
-    {
-      if ( isNewFont() )
-      {
-        gotoxy (xpos+xmin+width-3, ypos+ymin-1);
-        setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-        print (fc::NF_rev_up_pointing_triangle1);
-        print (fc::NF_rev_up_pointing_triangle2);
-      }
-      else
-      {
-        gotoxy (xpos+xmin+width-4, ypos+ymin-1);
-        setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-        print (' ');
-
-        if ( isCygwinTerminal() )
-          print ('^');
-        else
-          print (fc::BlackUpPointingTriangle);  // ▲
-
-        print (' ');
-      }
-    }
-  }
 
   if ( isMonochron() )
     setReverse(false);
@@ -540,13 +547,28 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
+  int zoom_btn;
+
+  if ( (flags & fc::resizeable) == 0 )
+    zoom_btn = 0;
+  else if ( isNewFont() )
+    zoom_btn = 2;
+  else
+    zoom_btn = 3;
+
+  if ( zoom_button_pressed || zoom_button_active )
+  {
+    zoom_button_pressed = false;
+    zoom_button_active = false;
+    drawTitleBar();
+  }
 
   if ( ev->getButton() == fc::LeftButton )
   {
     bool has_raised;
 
     // click on titlebar or window: raise + activate
-    if ( mouse_x >= 4 && mouse_x <= width && mouse_y == 1 )
+    if ( mouse_x >= 4 && mouse_x <= width-zoom_btn && mouse_y == 1 )
       TitleBarClickPos.setPoint (ev->getGlobalX(), ev->getGlobalY());
     else
       TitleBarClickPos.setPoint (0,0);
@@ -563,16 +585,26 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     if ( mouse_x < 4  && mouse_y == 1 )
     {
       if ( dialog_menu->isVisible() )
+      {
         leaveMenu();
+        drawTitleBar();
+      }
       else
       {
         setOpenMenu(dialog_menu);
         dialog_menu->move (xpos, ypos+1);
         dialog_menu->setVisible();
+        drawTitleBar();
         dialog_menu->show();
         dialog_menu->raiseWindow(dialog_menu);
         dialog_menu->redraw();
       }
+    }
+    else if ( mouse_x > width-zoom_btn  && mouse_y == 1 )
+    {
+      zoom_button_pressed = true;
+      zoom_button_active = true;
+      drawTitleBar();
     }
   }
   else  // ev->getButton() != fc::LeftButton
@@ -612,6 +644,14 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 {
   int titlebar_x = TitleBarClickPos.getX();
   int titlebar_y = TitleBarClickPos.getY();
+  int zoom_btn;
+
+  if ( (flags & fc::resizeable) == 0 )
+    zoom_btn = 0;
+  else if ( isNewFont() )
+    zoom_btn = 2;
+  else
+    zoom_btn = 3;
 
   if ( ev->getButton() == fc::LeftButton )
   {
@@ -650,14 +690,40 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       updateTerminal();
       flush_out();
     }
+    else if ( mouse_x > width - zoom_btn
+            && mouse_y == 1
+            && zoom_button_pressed )
+    {
+      // zoom to maximum or restore the window size
+      zoomWindow();
+    }
+  }
+
+  if ( zoom_button_pressed || zoom_button_active )
+  {
+    zoom_button_pressed = false;
+    zoom_button_active = false;
+    drawTitleBar();
   }
 }
 
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
+  int zoom_btn;
+
+  if ( (flags & fc::resizeable) == 0 )
+    zoom_btn = 0;
+  else if ( isNewFont() )
+    zoom_btn = 2;
+  else
+    zoom_btn = 3;
+
   if ( ev->getButton() == fc::LeftButton )
   {
+    int mouse_x = ev->getX();
+    int mouse_y = ev->getY();
+
     if ( ! TitleBarClickPos.isNull() )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
@@ -684,6 +750,18 @@ void FDialog::onMouseMove (FMouseEvent* ev)
         delete _ev;
       }
     }
+
+    if ( mouse_x > width - zoom_btn && mouse_y == 1 && zoom_button_active )
+    {
+      zoom_button_pressed = true;
+      drawTitleBar();
+    }
+    else if ( zoom_button_pressed )
+    {
+      zoom_button_pressed = false;
+      drawTitleBar();
+    }
+
   }
 }
 
@@ -882,6 +960,9 @@ void FDialog::move (int x, int y)
   if (  x+width < 1 || x > getColumnNumber() || y < 1 || y > getLineNumber() )
     return;
 
+  if ( isZoomed() )
+    return;
+
   dx = xpos - x;
   dy = ypos - y;
   old_x = getGlobalX();
@@ -999,37 +1080,6 @@ void FDialog::activateDialog()
 }
 
 //----------------------------------------------------------------------
-void FDialog::setWidth (int w, bool adjust)
-{
-  int old_width = width;
-  FWidget::setWidth (w, adjust);
-
-  if ( vwin && width != old_width )
-    resizeArea (vwin);
-}
-
-//----------------------------------------------------------------------
-void FDialog::setHeight (int h, bool adjust)
-{
-  int old_height = height;
-  FWidget::setHeight (h, adjust);
-
-  if ( vwin && height != old_height )
-    resizeArea (vwin);
-}
-
-//----------------------------------------------------------------------
-void FDialog::setGeometry (int x, int y, int w, int h, bool adjust)
-{
-  int old_width = width;
-  int old_height = height;
-  FWidget::setGeometry (x, y, w, h, adjust);
-
-  if ( vwin && (width != old_width || height != old_height) )
-    resizeArea (vwin);
-}
-
-//----------------------------------------------------------------------
 bool FDialog::setFocus (bool on)
 {
   FWidget::setFocus(on);
@@ -1128,21 +1178,15 @@ bool FDialog::setScrollable (bool on)
 bool FDialog::setResizeable (bool on)
 {
   if ( on )
+  {
     flags |= fc::resizeable;
+    zoom_item->setEnable();
+  }
   else
+  {
     flags &= ~fc::resizeable;
+    zoom_item->setDisable();
+  }
 
   return on;
-}
-
-//----------------------------------------------------------------------
-bool FDialog::setMaximized()
-{
-  if ( maximized )
-    return true;
-
-  maximized = true;
-  //setGeometry (1, 1, xmax, ymax);
-
-  return maximized;
 }

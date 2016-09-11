@@ -218,6 +218,7 @@ void FWidget::setColorTheme()
   wc.selected_list_fg                  = fc::Cyan;
   wc.selected_list_bg                  = fc::White;
   wc.dialog_fg                         = fc::Black;
+  wc.dialog_resize_fg                  = fc::Red;
   wc.dialog_emphasis_fg                = fc::Blue;
   wc.dialog_bg                         = fc::White;
   wc.error_box_fg                      = fc::White;
@@ -267,6 +268,8 @@ void FWidget::setColorTheme()
   wc.titlebar_inactive_bg              = fc::DarkGray;
   wc.titlebar_button_fg                = fc::DarkGray;
   wc.titlebar_button_bg                = fc::LightGray;
+  wc.titlebar_button_focus_fg          = fc::LightGray;
+  wc.titlebar_button_focus_bg          = fc::Black;
   wc.menu_active_focus_fg              = fc::White;
   wc.menu_active_focus_bg              = fc::Blue;
   wc.menu_active_fg                    = fc::Black;
@@ -306,6 +309,7 @@ void FWidget::setColorTheme()
     wc.selected_list_fg                  = fc::Blue;
     wc.selected_list_bg                  = fc::LightGray;
     wc.dialog_fg                         = fc::Black;
+    wc.dialog_resize_fg                  = fc::Red;
     wc.dialog_emphasis_fg                = fc::Blue;
     wc.dialog_bg                         = fc::LightGray;
     wc.error_box_fg                      = fc::Black;
@@ -355,6 +359,8 @@ void FWidget::setColorTheme()
     wc.titlebar_inactive_bg              = fc::LightGray;
     wc.titlebar_button_fg                = fc::Black;
     wc.titlebar_button_bg                = fc::LightGray;
+    wc.titlebar_button_focus_fg          = fc::LightGray;
+    wc.titlebar_button_focus_bg          = fc::Black;
     wc.menu_active_focus_fg              = fc::LightGray;
     wc.menu_active_focus_bg              = fc::Blue;
     wc.menu_active_fg                    = fc::Black;
@@ -1854,6 +1860,8 @@ void FWidget::setTermGeometry (int w, int h)
 //----------------------------------------------------------------------
 void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  int global_x, global_y;
+
   if ( xpos == x && ypos == y && width == w && height == h )
     return;
 
@@ -1876,13 +1884,12 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
   client_xmax = xpos + xmin - 2 + width  - right_padding;
   client_ymax = ypos + ymin - 2 + height - bottom_padding;
 
-  widgetSize.setRect(xpos, ypos, width, height);
-  adjustWidgetSize.setRect(xpos, ypos, width, height);
+  widgetSize.setRect (xpos, ypos, width, height);
+  adjustWidgetSize.setRect (xpos, ypos, width, height);
   adjustWidgetSizeShadow = adjustWidgetSize + shadow;
-  adjustWidgetSizeGlobal.setRect ( xpos + xmin - 1
-                                 , ypos + ymin - 1
-                                 , width
-                                 , height );
+  global_x = xpos + xmin - 1;
+  global_y = ypos + ymin - 1;
+  adjustWidgetSizeGlobal.setRect (global_x, global_y, width, height);
   adjustWidgetSizeGlobalShadow = adjustWidgetSizeGlobal + shadow;
 
   double_flatline_mask.top.resize (uLong(width), false);
@@ -1936,99 +1943,6 @@ bool FWidget::setCursorPos (register int x, register int y)
     return true;
   else
     return false;
-}
-
-//----------------------------------------------------------------------
-void FWidget::clearArea()
-{
-  term_area* area;
-  FWindow*   area_widget;
-  FOptiAttr::char_data default_char;
-  int  total_width;
-  uInt w;
-
-  default_char.code          = ' ';
-  default_char.fg_color      = next_attribute.fg_color;
-  default_char.bg_color      = next_attribute.bg_color;
-  default_char.bold          = next_attribute.bold;
-  default_char.dim           = next_attribute.dim;
-  default_char.italic        = next_attribute.italic;
-  default_char.underline     = next_attribute.underline;
-  default_char.blink         = next_attribute.blink;
-  default_char.reverse       = next_attribute.reverse;
-  default_char.standout      = next_attribute.standout;
-  default_char.invisible     = next_attribute.invisible;
-  default_char.protect       = next_attribute.protect;
-  default_char.crossed_out   = next_attribute.crossed_out;
-  default_char.dbl_underline = next_attribute.dbl_underline;
-  default_char.alt_charset   = next_attribute.alt_charset;
-  default_char.pc_charset    = next_attribute.pc_charset;
-  default_char.transparent   = next_attribute.transparent;
-  default_char.trans_shadow  = next_attribute.trans_shadow;
-  default_char.inherit_bg    = next_attribute.inherit_bg;
-
-  area_widget = FWindow::getWindowWidget(this);
-
-  if ( area_widget )
-    area = area_widget->getVWin();
-  else
-    area = vdesktop;
-
-  if ( ! area )
-    return;
-
-  total_width = area->width + area->right_shadow;
-  w = uInt(total_width);
-
-  if ( area->right_shadow == 0 )
-  {
-    int area_size = area->width * area->height;
-    std::fill_n (area->text, area_size, default_char);
-  }
-  else
-  {
-    FOptiAttr::char_data t_char = default_char;
-    t_char.transparent = true;
-
-    for (int y=0; y < area->height; y++)
-    {
-      int pos = y * total_width;
-      std::fill_n (&area->text[pos], total_width, default_char);
-      std::fill_n (&area->text[pos+area->width], area->right_shadow, t_char);
-    }
-
-    for (int y=0; y < area->bottom_shadow; y++)
-    {
-      int pos = total_width * (y + area->height);
-      std::fill_n (&area->text[pos], total_width, t_char);
-    }
-  }
-
-  for (int i=0; i < area->height; i++)
-  {
-
-    area->changes[i].xmin = 0;
-    area->changes[i].xmax = w - 1;
-
-    if (  default_char.transparent
-       || default_char.trans_shadow
-       || default_char.inherit_bg )
-      area->changes[i].trans_count = w;
-    else if ( area->right_shadow != 0 )
-      area->changes[i].trans_count = uInt(area->right_shadow);
-    else
-      area->changes[i].trans_count = 0;
-  }
-
-  for (int i=0; i < area->bottom_shadow; i++)
-  {
-    int y = area->height + i;
-    area->changes[y].xmin = 0;
-    area->changes[y].xmax = w - 1;
-    area->changes[y].trans_count = w;
-  }
-
-  updateVTerm (area);
 }
 
 //----------------------------------------------------------------------
@@ -2279,7 +2193,7 @@ void FWidget::clearFlatBorder()
     if ( double_flatline_mask.right[uLong(y)] )
       print (fc::NF_rev_border_line_right);
     else
-      print (' ');    
+      print (' ');
   }
 
   // clear at top

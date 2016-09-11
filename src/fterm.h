@@ -300,6 +300,7 @@ class FTerm
    void         getArea (int, int, int, int, FTerm::term_area*);
    void         putArea (const FPoint&, FTerm::term_area*);
    void         putArea (int, int, FTerm::term_area*);
+   void         clearArea();
    FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
    FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
    FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);

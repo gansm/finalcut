@@ -239,6 +239,7 @@ void Window::cb_createWindows (FWidget*, void*)
       x = dx + 5 + (n%3)*25 + int(n/3)*3;
       y = dy + 11 + int(n/3)*3;
       win->setGeometry (x, y, 20, 8);
+      win->setResizeable();
       win->show();
 
       win->addCallback

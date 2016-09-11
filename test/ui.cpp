@@ -155,6 +155,68 @@ void ProgressDialog::cb_exit_bar (FWidget*, void*)
 
 
 //----------------------------------------------------------------------
+// class TextWindow
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class TextWindow : public FDialog
+{
+ private:
+   FTextView* scrollText;
+
+ private:
+   TextWindow (const TextWindow&);    // Disabled copy constructor
+   TextWindow& operator = (const TextWindow&); // and operator '='
+   void adjustSize();
+
+ public:
+   explicit TextWindow (FWidget* = 0);  // constructor
+  ~TextWindow();                        // destructor
+
+   void append (const FString&);
+};
+#pragma pack(pop)
+
+//----------------------------------------------------------------------
+TextWindow::TextWindow (FWidget* parent)
+  : FDialog(parent)
+  , scrollText()
+{
+  scrollText = new FTextView(this);
+  scrollText->ignorePadding();
+  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
+  scrollText->setFocus();
+  scrollText->insert(" -----------------------------------------------\n"
+                     " line 1\n"
+                     " -----------------------------------------------\n"
+                     " line 3\n"
+                     " line 4"
+                     , -1);
+  scrollText->replaceRange("                   File viewer", 1, 1);
+  scrollText->deleteRange(3, 4);
+}
+
+//----------------------------------------------------------------------
+TextWindow::~TextWindow()
+{ }
+
+//----------------------------------------------------------------------
+void TextWindow::append (const FString& str)
+{
+  scrollText->append(str);
+}
+
+//----------------------------------------------------------------------
+void TextWindow::adjustSize()
+{
+  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
+  FDialog::adjustSize();
+}
+
+
+//----------------------------------------------------------------------
 // class MyDialog
 //----------------------------------------------------------------------
 
@@ -745,26 +807,15 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
   if ( file.isNull() )
     return;
 
-  FDialog* view = new FDialog(this);
+  TextWindow* view = new TextWindow(this);
   FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
   view->setGeometry (1+int((getRootWidget()->getWidth()-60)/2),
                      int(getRootWidget()->getHeight()/6),
                      60,
                      int(getRootWidget()->getHeight()*3/4));
+  view->setResizeable();
 
-  FTextView* scrollText = new FTextView(view);
-  scrollText->ignorePadding();
-  scrollText->setGeometry (1, 2, view->getWidth(), view->getHeight()-1);
-  scrollText->setFocus();
-  scrollText->insert(" -----------------------------------------------\n"
-                     " line 1\n"
-                     " -----------------------------------------------\n"
-                     " line 3\n"
-                     " line 4"
-                     , -1);
-  scrollText->replaceRange("                   File viewer", 1, 1);
-  scrollText->deleteRange(3, 4);
   std::string line = "";
   std::ifstream infile;
   infile.open(file);
@@ -772,7 +823,7 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
   while ( ! infile.eof() && infile.good() )
   {
     getline(infile, line);
-    scrollText->append(line);
+    view->append(line);
   }
 
   if ( infile.is_open() )

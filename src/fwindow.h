@@ -45,7 +45,11 @@ class FWindow : public FWidget
 {
  private:
    bool     window_active;
+   bool     zoomed;
    FWidget* win_focus_widget;
+   FRect    normalGeometry;
+   FRect    maxGeometry;
+   FRect    minGeometry;
 
  protected:
    static FWindow* previous_widget;
@@ -69,6 +73,11 @@ class FWindow : public FWidget
    const char*     getClassName() const;
    virtual void    show();
    virtual void    hide();
+   void            setWidth (int, bool = true);
+   void            setHeight (int, bool = true);
+   // make every setGeometry from FWidget available
+   using FWidget::setGeometry;
+   void            setGeometry (int, int, int, int, bool = true);
    static FWindow* getWindowWidgetAt (const FPoint&);
    static FWindow* getWindowWidgetAt (int, int);
    static void     addWindow (FWidget*);
@@ -80,6 +89,8 @@ class FWindow : public FWidget
    bool            raiseWindow ();
    static bool     lowerWindow (FWidget*);
    bool            lowerWindow ();
+   bool            zoomWindow ();
+   bool            isZoomed() const;
    static FWindow* getActiveWindow();
    static void     setActiveWindow (FWindow*);
    FWidget*        getWindowFocusWidget() const;
@@ -111,6 +122,10 @@ inline bool FWindow::raiseWindow()
 //----------------------------------------------------------------------
 inline bool FWindow::lowerWindow()
 { return lowerWindow(this); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::isZoomed() const
+{ return zoomed; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::activateWindow()

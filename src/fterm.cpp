@@ -2922,6 +2922,101 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
+void FTerm::clearArea()
+{
+  term_area* area;
+  FWindow*   area_widget;
+  FWidget*   widget;
+  FOptiAttr::char_data default_char;
+  int  total_width;
+  uInt w;
+
+  default_char.code          = ' ';
+  default_char.fg_color      = next_attribute.fg_color;
+  default_char.bg_color      = next_attribute.bg_color;
+  default_char.bold          = next_attribute.bold;
+  default_char.dim           = next_attribute.dim;
+  default_char.italic        = next_attribute.italic;
+  default_char.underline     = next_attribute.underline;
+  default_char.blink         = next_attribute.blink;
+  default_char.reverse       = next_attribute.reverse;
+  default_char.standout      = next_attribute.standout;
+  default_char.invisible     = next_attribute.invisible;
+  default_char.protect       = next_attribute.protect;
+  default_char.crossed_out   = next_attribute.crossed_out;
+  default_char.dbl_underline = next_attribute.dbl_underline;
+  default_char.alt_charset   = next_attribute.alt_charset;
+  default_char.pc_charset    = next_attribute.pc_charset;
+  default_char.transparent   = next_attribute.transparent;
+  default_char.trans_shadow  = next_attribute.trans_shadow;
+  default_char.inherit_bg    = next_attribute.inherit_bg;
+
+  widget = static_cast<FWidget*>(this);
+  area_widget = FWindow::getWindowWidget(widget);
+
+  if ( area_widget )
+    area = area_widget->getVWin();
+  else
+    area = vdesktop;
+
+  if ( ! area )
+    return;
+
+  total_width = area->width + area->right_shadow;
+  w = uInt(total_width);
+
+  if ( area->right_shadow == 0 )
+  {
+    int area_size = area->width * area->height;
+    std::fill_n (area->text, area_size, default_char);
+  }
+  else
+  {
+    FOptiAttr::char_data t_char = default_char;
+    t_char.transparent = true;
+
+    for (int y=0; y < area->height; y++)
+    {
+      int pos = y * total_width;
+      std::fill_n (&area->text[pos], total_width, default_char);
+      std::fill_n (&area->text[pos+area->width], area->right_shadow, t_char);
+    }
+
+    for (int y=0; y < area->bottom_shadow; y++)
+    {
+      int pos = total_width * (y + area->height);
+      std::fill_n (&area->text[pos], total_width, t_char);
+    }
+  }
+
+  for (int i=0; i < area->height; i++)
+  {
+
+    area->changes[i].xmin = 0;
+    area->changes[i].xmax = w - 1;
+
+    if (  default_char.transparent
+       || default_char.trans_shadow
+       || default_char.inherit_bg )
+      area->changes[i].trans_count = w;
+    else if ( area->right_shadow != 0 )
+      area->changes[i].trans_count = uInt(area->right_shadow);
+    else
+      area->changes[i].trans_count = 0;
+  }
+
+  for (int i=0; i < area->bottom_shadow; i++)
+  {
+    int y = area->height + i;
+    area->changes[y].xmin = 0;
+    area->changes[y].xmax = w - 1;
+    area->changes[y].trans_count = w;
+  }
+
+  updateVTerm (area);
+}
+
+//----------------------------------------------------------------------
 FOptiAttr::char_data FTerm::getCharacter ( int char_type
                                          , int x
                                          , int y

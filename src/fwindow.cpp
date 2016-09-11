@@ -18,7 +18,11 @@ FWindow* FWindow::previous_widget = 0;
 FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
   , window_active(false)
+  , zoomed(false)
   , win_focus_widget(0)
+  , normalGeometry()
+  , maxGeometry()
+  , minGeometry()
 {
   window_object = true;
 }
@@ -97,6 +101,37 @@ void FWindow::hide()
     area->visible = false;
 
   FWidget::hide();
+}
+
+//----------------------------------------------------------------------
+void FWindow::setWidth (int w, bool adjust)
+{
+  int old_width = width;
+  FWidget::setWidth (w, adjust);
+
+  if ( vwin && width != old_width )
+    resizeArea (vwin);
+}
+
+//----------------------------------------------------------------------
+void FWindow::setHeight (int h, bool adjust)
+{
+  int old_height = height;
+  FWidget::setHeight (h, adjust);
+
+  if ( vwin && height != old_height )
+    resizeArea (vwin);
+}
+
+//----------------------------------------------------------------------
+void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
+{
+  int old_width = width;
+  int old_height = height;
+  FWidget::setGeometry (x, y, w, h, adjust);
+
+  if ( vwin && (width != old_width || height != old_height) )
+    resizeArea (vwin);
 }
 
 //----------------------------------------------------------------------
@@ -333,6 +368,29 @@ bool FWindow::lowerWindow (FWidget* obj)
   }
 
   return false;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::zoomWindow()
+{
+  if ( zoomed )
+  {
+    zoomed = false;
+    FRect currentGeometry = getGeometryShadow();
+    setGeometry (normalGeometry);
+    restoreVTerm (currentGeometry);
+    redraw();
+  }
+  else
+  {
+    zoomed = true;
+    // save the current geometry
+    normalGeometry = getGeometry();
+    setGeometry (1, 1, getMaxWidth(), getMinHeight());
+    redraw();
+  }
+
+  return zoomed;
 }
 
 //----------------------------------------------------------------------

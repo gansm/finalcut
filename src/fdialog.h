@@ -52,11 +52,14 @@ class FDialog : public FWindow
  private:
    FString      tb_text;          // title bar text
    int          result_code;
-   bool         maximized;
+   bool         zoom_button_pressed;
+   bool         zoom_button_active;
    FPoint       TitleBarClickPos;
    FRect        oldGeometry;      // required by move()
    FMenu*       dialog_menu;
    FMenuItem*   dgl_menuitem;
+   FMenuItem*   zoom_item;
+   FMenuItem*   close_item;
 
  private:
    FDialog (const FDialog&);
@@ -65,6 +68,7 @@ class FDialog : public FWindow
    void         drawBorder();
    void         drawTitleBar();
    void         leaveMenu();
+   void         cb_zoom (FWidget*, void*);
    void         cb_close (FWidget*, void*);
    static void  addDialog (FWidget*);
    static void  delDialog (FWidget*);
@@ -100,11 +104,6 @@ class FDialog : public FWindow
    void     move (const FPoint&);
    void     move (int, int);
 
-   void     setWidth (int, bool = true);
-   void     setHeight (int, bool = true);
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void     setGeometry (int, int, int, int, bool = true);
    bool     setFocus(bool);
    bool     setFocus();
    bool     unsetFocus();
@@ -120,8 +119,6 @@ class FDialog : public FWindow
    bool     setResizeable();
    bool     unsetResizeable();
    bool     isResizeable();
-   bool     setMaximized();
-   bool     isMaximized() const;
    bool     setTransparentShadow(bool);
    bool     setTransparentShadow();
    bool     unsetTransparentShadow();
@@ -186,10 +183,6 @@ inline bool FDialog::unsetResizeable()
 //----------------------------------------------------------------------
 inline bool FDialog::isResizeable()
 { return ((flags & fc::resizeable) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::isMaximized() const
-{ return maximized; }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setTransparentShadow()
