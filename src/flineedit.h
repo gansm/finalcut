@@ -51,7 +51,7 @@ class FLineEdit : public FWidget
    int  scrollRepeat;
    bool insert_mode;
    int  cursor_pos;
-   int  offset;
+   int  text_offset;
 
  public:
    enum label_o

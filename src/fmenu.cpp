@@ -78,8 +78,8 @@ FMenu::~FMenu()
 
   if ( ! fapp->isQuit() )
   {
-    const FRect& geometry = getGeometryGlobalShadow();
-    restoreVTerm (geometry);
+    const FRect& t_geometry = getTermGeometryWithShadow();
+    restoreVTerm (t_geometry);
   }
 
   if ( vwin != 0 )
@@ -99,30 +99,20 @@ FMenu::~FMenu()
 //----------------------------------------------------------------------
 void FMenu::init(FWidget* parent)
 {
-  FWidget* rootObj = getRootWidget();
-  xmin = 1 + rootObj->getLeftPadding();
-  ymin = 1 + rootObj->getTopPadding();
-  xmax = rootObj->getWidth();
-  ymax = rootObj->getHeight();
-  width  = 10;
-  height = 2;
-  client_xmin = 1;
-  client_ymin = 1;
-  client_xmax = width;
-  client_ymax = height;
-  top_padding    = 1;
-  left_padding   = 1;
-  bottom_padding = 1;
-  right_padding  = 1;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1);
   createArea (vwin);
+  setMenuWidget();
   setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
-  menu_object = true;
+  setMenuWidget();
   addWindow(this);
   hide();
 
-  foregroundColor = wc.menu_active_fg;
-  backgroundColor = wc.menu_active_bg;
+  setForegroundColor (wc.menu_active_fg);
+  setBackgroundColor (wc.menu_active_bg);
 
   if ( item )
     item->setMenu(this);
@@ -185,10 +175,10 @@ void FMenu::menu_dimension()
     ++iter;
   }
 
-  adjust_X = adjustX(xpos);
+  adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry (adjust_X, ypos, int(maxItemWidth + 2), int(count() + 2));
+  setGeometry (adjust_X, getY(), int(maxItemWidth + 2), int(count() + 2));
 
   // set geometry of all items
   iter = itemlist.begin();
@@ -201,8 +191,8 @@ void FMenu::menu_dimension()
 
     if ( (*iter)->hasMenu() )
     {
-      int menu_X = getGlobalX() + int(maxItemWidth) + 1;
-      int menu_Y = (*iter)->getGlobalY() - 2;
+      int menu_X = getTermX() + int(maxItemWidth) + 1;
+      int menu_Y = (*iter)->getTermY() - 2;
       // set sub-menu position
       (*iter)->getMenu()->setPos (menu_X, menu_Y, false);
     }
@@ -226,9 +216,9 @@ void FMenu::adjustItems()
       int menu_X, menu_Y;
       FMenu* menu = (*iter)->getMenu();
 
-      menu_X = getGlobalX() + int(maxItemWidth) + 1;
+      menu_X = getTermX() + int(maxItemWidth) + 1;
       menu_X = menu->adjustX(menu_X);
-      menu_Y = (*iter)->getGlobalY() - 2;
+      menu_Y = (*iter)->getTermY() - 2;
 
       // set sub-menu position
       menu->move (menu_X, menu_Y);
@@ -260,7 +250,7 @@ int FMenu::adjustX (int x_pos)
 //----------------------------------------------------------------------
 bool FMenu::isWindowsMenu (FWidget* w) const
 {
-  return w->isDialog();
+  return w->isDialogWidget();
 }
 
 //----------------------------------------------------------------------
@@ -364,33 +354,33 @@ void FMenu::hideSuperMenus()
 }
 
 //----------------------------------------------------------------------
-bool FMenu::containsMenuStructure (int x, int y) const
+bool FMenu::containsMenuStructure (int x, int y)
 {
   // Check mouse click position for item, menu and all sub menus
   FMenuItem* si = getSelectedItem();
 
-  if ( getGeometryGlobal().contains(x,y) )
+  if ( getTermGeometry().contains(x,y) )
     return true;
   else if ( si && si->hasMenu() && open_sub_menu )
     return si->getMenu()->containsMenuStructure(x,y);
-  else if ( item && item->getGeometryGlobal().contains(x,y) )
+  else if ( item && item->getTermGeometry().contains(x,y) )
     return true;
   else
     return false;
 }
 
 //----------------------------------------------------------------------
-FMenu* FMenu::superMenuAt (int x, int y) const
+FMenu* FMenu::superMenuAt (int x, int y)
 {
   // Check mouse click position for super menu
-  if ( getGeometryGlobal().contains(x,y) )
+  if ( getTermGeometry().contains(x,y) )
     return 0;
 
   FWidget* super = getSuperMenu();
 
   if ( super && isMenu(super) )
   {
-    if ( super->getGeometryGlobal().contains(x,y) )
+    if ( super->getTermGeometry().contains(x,y) )
       return dynamic_cast<FMenu*>(super);
     else
     {
@@ -620,7 +610,7 @@ void FMenu::draw()
       area = area_widget->getVWin();
 
       if ( area )
-        putArea (xpos+xmin-1, ypos+ymin-1, area);
+        putArea (getTermX(), getTermY(), area);
     }
   }
   else
@@ -630,15 +620,14 @@ void FMenu::draw()
 //----------------------------------------------------------------------
 void FMenu::drawBorder()
 {
-  int x1, x2, y1, y2;
-  x1 = xpos+xmin-1;
-  x2 = xpos+xmin-2+width;
-  y1 = ypos+ymin-1;
-  y2 = ypos+ymin-2+height;
+  int x1 = 1;
+  int x2 = 1 + getWidth() - 1;
+  int y1 = 1;
+  int y2 = 1 + getHeight() - 1;
 
   if ( isNewFont() )
   {
-    gotoxy (x1, y1);
+    printPos (x1, y1);
     print (fc::NF_border_corner_upper_left); // ⎡
 
     for (int x=x1+1; x < x2; x++)
@@ -648,35 +637,35 @@ void FMenu::drawBorder()
 
     for (int y=y1+1; y <= y2; y++)
     {
-      gotoxy (x1, y);
+      printPos (x1, y);
       // border left ⎸
       print (fc::NF_border_line_left);
-      gotoxy (x2, y);
+      printPos (x2, y);
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
 
-    gotoxy (x1, y2);
+    printPos (x1, y2);
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x=1; x < width-1; x++) // low line _
+    for (int x=1; x < getWidth()-1; x++) // low line _
       print (fc::NF_border_line_bottom);
 
-    gotoxy (x2, y2);
+    printPos (x2, y2);
     // lower right corner border ⎦
     print (fc::NF_rev_border_corner_lower_right);
   }
   else
   {
-    gotoxy (x1, y1);
+    printPos (x1, y1);
     print (fc::BoxDrawingsDownAndRight); // ┌
 
     for (int x=x1+1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
 
     print (fc::BoxDrawingsDownAndLeft);  // ┐
-    gotoxy (x1, y2);
+    printPos (x1, y2);
     print (fc::BoxDrawingsUpAndRight);   // └
 
     for (int x=x1+1; x < x2; x++)
@@ -686,9 +675,9 @@ void FMenu::drawBorder()
 
     for (int y=y1+1; y < y2; y++)
     {
-      gotoxy (x1, y);
+      printPos (x1, y);
       print (fc::BoxDrawingsVertical);   // │
-      gotoxy (x2, y);
+      printPos (x2, y);
       print (fc::BoxDrawingsVertical);   // │
     }
   }
@@ -740,16 +729,16 @@ void FMenu::drawItems()
       {
         if ( is_selected )
         {
-          foregroundColor = wc.menu_active_focus_fg;
-          backgroundColor = wc.menu_active_focus_bg;
+          setForegroundColor (wc.menu_active_focus_fg);
+          setBackgroundColor (wc.menu_active_focus_bg);
 
           if ( isMonochron() )
             setReverse(false);
         }
         else
         {
-          foregroundColor = wc.menu_active_fg;
-          backgroundColor = wc.menu_active_bg;
+          setForegroundColor (wc.menu_active_fg);
+          setBackgroundColor (wc.menu_active_bg);
 
           if ( isMonochron() )
             setReverse(true);
@@ -757,15 +746,15 @@ void FMenu::drawItems()
       }
       else
       {
-        foregroundColor = wc.menu_inactive_fg;
-        backgroundColor = wc.menu_inactive_bg;
+        setForegroundColor (wc.menu_inactive_fg);
+        setBackgroundColor (wc.menu_inactive_bg);
 
         if ( isMonochron() )
           setReverse(true);
       }
 
-      gotoxy (xpos+xmin, ypos+ymin+y);
-      setColor (foregroundColor, backgroundColor);
+      printPos (2, 2 + y);
+      setColor();
 
       if ( has_checkable_items )
       {
@@ -792,14 +781,14 @@ void FMenu::drawItems()
           }
           else
           {
-            setColor (wc.menu_inactive_fg, backgroundColor);
+            setColor (wc.menu_inactive_fg, getBackgroundColor());
 
             if ( getEncoding() == "ASCII" )
               print ('-');
             else
               print (fc::SmallBullet);
 
-            setColor (foregroundColor, backgroundColor);
+            setColor();
           }
         }
         else
@@ -818,14 +807,12 @@ void FMenu::drawItems()
       if ( hotkeypos == -1 )
       {
         if ( is_selected )
-          setCursorPos ( xpos+xmin+1
-                       , ypos+ymin+y ); // first character
+          setCursorPos (1, 2 + y);  // first character
       }
       else
       {
         if ( is_selected )
-          setCursorPos ( xpos+xmin+1+hotkeypos
-                       , ypos+ymin+y ); // hotkey
+          setCursorPos (1 + hotkeypos, 2 + y);  // hotkey
 
         txt_length--;
         to_char--;
@@ -856,7 +843,7 @@ void FMenu::drawItems()
           if ( ! is_noUnderline )
             unsetUnderline();
 
-          setColor (foregroundColor, backgroundColor);
+          setColor();
         }
         else
           print (item_text[z]);
@@ -911,7 +898,7 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator(int y)
 {
-  gotoxy (xpos+xmin-1, ypos+ymin+y);
+  printPos (1, 2 + y);
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
@@ -920,14 +907,14 @@ inline void FMenu::drawSeparator(int y)
   if ( isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
-    FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line(getWidth()-2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
   else
   {
     print (fc::BoxDrawingsVerticalAndRight);
-    FString line(width-2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line(getWidth()-2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }
@@ -1323,19 +1310,19 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     mouse_pos = ev->getPos();
     mouse_pos -= FPoint(getRightPadding(),getTopPadding());
 
-    if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+    if ( getTermGeometry().contains(ev->getTermPos()) )
       mouse_over_menu = true;
 
     if ( open_sub_menu )
     {
-      const FRect& submenu_geometry = open_sub_menu->getGeometryGlobal();
-      if ( submenu_geometry.contains(ev->getGlobalPos()) )
+      const FRect& submenu_geometry = open_sub_menu->getTermGeometry();
+      if ( submenu_geometry.contains(ev->getTermPos()) )
         mouse_over_submenu = true;
     }
 
     if ( isSubMenu() )
     {
-      smenu = superMenuAt (ev->getGlobalPos());
+      smenu = superMenuAt (ev->getTermPos());
 
       if ( smenu )
         mouse_over_supermenu = true;
@@ -1343,7 +1330,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
     if (  menuBar()
        && isMenuBar(menuBar())
-       && menuBar()->getGeometryGlobal().contains(ev->getGlobalPos()) )
+       && menuBar()->getTermGeometry().contains(ev->getTermPos()) )
     {
       mouse_over_menubar = true;
     }
@@ -1416,10 +1403,10 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     if ( mouse_over_submenu )
     {
       // Mouse event handover to sub-menu
-      const FPoint& g = ev->getGlobalPos();
-      const FPoint& p = open_sub_menu->globalToLocalPos(g);
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = open_sub_menu->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
       open_sub_menu->mouse_down = true;
       setClickedWidget(open_sub_menu);
       open_sub_menu->onMouseMove(_ev);
@@ -1429,10 +1416,10 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     else if ( ! mouse_over_menu && mouse_over_supermenu )
     {
       // Mouse event handover to super-menu
-      const FPoint& g = ev->getGlobalPos();
-      const FPoint& p = smenu->globalToLocalPos(g);
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = smenu->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
       smenu->mouse_down = true;
       setClickedWidget(smenu);
       smenu->onMouseMove(_ev);
@@ -1443,10 +1430,10 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     {
       // Mouse event handover to the menu bar
       FWidget* menubar = menuBar();
-      const FPoint& g = ev->getGlobalPos();
-      const FPoint& p = menubar->globalToLocalPos(g);
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = menubar->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
       setClickedWidget(menubar);
       FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
       mbar->mouse_down = true;
@@ -1534,7 +1521,8 @@ void FMenu::hide()
   if ( isVisible() )
   {
     FWindow::hide();
-    restoreVTerm (getGeometryGlobalShadow());
+    const FRect& t_geometry = getTermGeometryWithShadow();
+    restoreVTerm (t_geometry);
     updateTerminal();
     flush_out();
 
@@ -1555,11 +1543,11 @@ void FMenu::hide()
 //----------------------------------------------------------------------
 void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
 {
-  int old_width = width;
-  int old_height = height;
+  int old_width = getWidth();
+  int old_height = getHeight();
   FWidget::setGeometry (xx, yy, ww, hh, adjust);
 
-  if ( vwin && (width != old_width || height != old_height) )
+  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
     resizeArea (vwin);
 }
 
@@ -1604,23 +1592,33 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
+bool FMenu::setMenuWidget (bool on)
+{
+  if ( isMenuWidget() == on )
+    return true;
+
+  if ( on )
+    flags |= fc::menu_widget;
+  else
+    flags &= ~fc::menu_widget;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
 bool FMenu::setTransparentShadow (bool on)
 {
   if ( on )
   {
     flags |= fc::shadow;
     flags |= fc::trans_shadow;
-    shadow.setPoint(2,1);
-    adjustWidgetSizeShadow = getGeometry() + getShadow();
-    adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
+    setShadowSize (2,1);
   }
   else
   {
     flags &= ~fc::shadow;
     flags &= ~fc::trans_shadow;
-    shadow.setPoint(0,0);
-    adjustWidgetSizeShadow = getGeometry() + getShadow();
-    adjustWidgetSizeGlobalShadow = getGeometryGlobal() + getShadow();
+    setShadowSize (0,0);
   }
 
   resizeArea (vwin);

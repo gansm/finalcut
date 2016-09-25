@@ -21,10 +21,8 @@ FWindow::FWindow(FWidget* parent)
   , zoomed(false)
   , win_focus_widget(0)
   , normalGeometry()
-  , maxGeometry()
-  , minGeometry()
 {
-  window_object = true;
+  setWindowWidget();
 }
 
 //----------------------------------------------------------------------
@@ -79,6 +77,15 @@ void FWindow::onWindowRaised (FEvent*)
 void FWindow::onWindowLowered (FEvent*)
 { }
 
+//----------------------------------------------------------------------
+void FWindow::adjustSize()
+{
+  FWidget::adjustSize();
+
+  if ( zoomed )
+    setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
+}
+
 
 // public methods of FWindow
 //----------------------------------------------------------------------
@@ -106,31 +113,31 @@ void FWindow::hide()
 //----------------------------------------------------------------------
 void FWindow::setWidth (int w, bool adjust)
 {
-  int old_width = width;
+  int old_width = getWidth();
   FWidget::setWidth (w, adjust);
 
-  if ( vwin && width != old_width )
+  if ( vwin && getWidth() != old_width )
     resizeArea (vwin);
 }
 
 //----------------------------------------------------------------------
 void FWindow::setHeight (int h, bool adjust)
 {
-  int old_height = height;
+  int old_height = getHeight();
   FWidget::setHeight (h, adjust);
 
-  if ( vwin && height != old_height )
+  if ( vwin && getHeight() != old_height )
     resizeArea (vwin);
 }
 
 //----------------------------------------------------------------------
 void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 {
-  int old_width = width;
-  int old_height = height;
+  int old_width = getWidth();
+  int old_height = getHeight();
   FWidget::setGeometry (x, y, w, h, adjust);
 
-  if ( vwin && (width != old_width || height != old_height) )
+  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
     resizeArea (vwin);
 }
 
@@ -138,10 +145,10 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
   // returns the window object to the corresponding coordinates
-  if ( statusBar() && statusBar()->getGeometryGlobal().contains(x,y) )
+  if ( statusBar() && statusBar()->getTermGeometry().contains(x,y) )
     return statusBar();
 
-  if ( menuBar() && menuBar()->getGeometryGlobal().contains(x,y) )
+  if ( menuBar() && menuBar()->getTermGeometry().contains(x,y) )
     return menuBar();
 
   if ( window_list && ! window_list->empty() )
@@ -158,7 +165,7 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( ! w->isHiddenWindow()
-           && w->getGeometryGlobal().contains(x,y) )
+           && w->getTermGeometry().contains(x,y) )
           return w;
       }
     }
@@ -205,13 +212,13 @@ FWindow* FWindow::getWindowWidget (FWidget* obj)
   // returns the window object to the given widget obj
   FWidget* p_obj = obj->getParentWidget();
 
-  while ( ! obj->isWindow() && p_obj )
+  while ( ! obj->isWindowWidget() && p_obj )
   {
     obj = p_obj;
     p_obj = p_obj->getParentWidget();
   }
 
-  if ( obj->isWindow() )
+  if ( obj->isWindowWidget() )
     return static_cast<FWindow*>(obj);
   else
     return 0;
@@ -230,7 +237,7 @@ int FWindow::getWindowLayer (FWidget* obj)
   if ( window_list->empty() )
     return -1;
 
-  if ( ! obj->isWindow() )
+  if ( ! obj->isWindowWidget() )
   {
     if ( (window = getWindowWidget(obj)) == 0 )
       return -1;
@@ -301,14 +308,14 @@ bool FWindow::raiseWindow (FWidget* obj)
   if ( window_list->empty() )
     return false;
 
-  if ( ! obj->isWindow() )
+  if ( ! obj->isWindowWidget() )
     return false;
 
   if ( window_list->back() == obj )
     return false;
 
   if ( (window_list->back()->getFlags() & fc::modal) != 0
-     && ! obj->isMenu() )
+     && ! obj->isMenuWidget() )
     return false;
 
   iter = window_list->begin();
@@ -342,7 +349,7 @@ bool FWindow::lowerWindow (FWidget* obj)
   if ( window_list->empty() )
     return false;
 
-  if ( ! obj->isWindow() )
+  if ( ! obj->isWindowWidget() )
     return false;
 
   if ( window_list->front() == obj )
@@ -376,9 +383,9 @@ bool FWindow::zoomWindow()
   if ( zoomed )
   {
     zoomed = false;
-    FRect currentGeometry = getGeometryShadow();
+    FRect oldGeometry = getTermGeometryWithShadow();
     setGeometry (normalGeometry);
-    restoreVTerm (currentGeometry);
+    restoreVTerm (oldGeometry);
     redraw();
   }
   else
@@ -386,11 +393,33 @@ bool FWindow::zoomWindow()
     zoomed = true;
     // save the current geometry
     normalGeometry = getGeometry();
-    setGeometry (1, 1, getMaxWidth(), getMinHeight());
+    FRect oldGeometry = getTermGeometryWithShadow();
+    setGeometry (1, 1, getMaxWidth(), getMaxHeight());
+    restoreVTerm (oldGeometry);
     redraw();
   }
 
   return zoomed;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setWindowWidget (bool on)
+{
+  if ( isWindowWidget() == on )
+    return true;
+
+  if ( on )
+  {
+    flags |= fc::window_widget;
+    setTermOffset();
+  }
+  else
+  {
+    flags &= ~fc::window_widget;
+    setParentOffset();
+  }
+
+  return on;
 }
 
 //----------------------------------------------------------------------
@@ -500,7 +529,7 @@ void FWindow::switchToPrevWindow()
     {
       focus_widget->setFocus();
 
-      if ( ! focus_widget->isWindow() )
+      if ( ! focus_widget->isWindowWidget() )
         focus_widget->redraw();
     }
   }

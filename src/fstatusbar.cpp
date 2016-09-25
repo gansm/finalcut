@@ -192,32 +192,30 @@ FStatusBar::~FStatusBar()
 //----------------------------------------------------------------------
 void FStatusBar::init()
 {
-  xmin = ymin = 1;
-  xpos = 1;
-  ypos = getLineNumber();
+  FWidget* r = getRootWidget();
+  int w = r->getWidth();
+  int h = r->getHeight();
+  // initialize geometry values
+  setGeometry (1, h, w, 1, false);
   createArea (vstatusbar);
   vstatusbar->visible = true;
-  ignore_padding = true;
+  ignorePadding();
   mouse_down = false;
 
-  // initialize geometry values
-  setGeometry (1, ypos, getColumnNumber(), 1, false);
+
   setStatusBar(this);
 
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
 
-  foregroundColor = wc.statusbar_fg;
-  backgroundColor = wc.statusbar_bg;
+  setForegroundColor (wc.statusbar_fg);
+  setBackgroundColor (wc.statusbar_bg);
   unsetFocusable();
 }
 
 //----------------------------------------------------------------------
 void FStatusBar::draw()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
   drawKeys();
   drawMessage();
 }
@@ -226,15 +224,12 @@ void FStatusBar::draw()
 void FStatusBar::drawKeys()
 {
   std::vector<FStatusKey*>::const_iterator iter, end;
-  int screenWidth, lastLine;
+  int screenWidth;
 
   if ( ! vstatusbar )
     return;
 
   screenWidth = getColumnNumber();
-  lastLine = getLineNumber();
-  width = screenWidth;
-  ypos = lastLine;
   x = 1;
 
   if ( keylist.empty() )
@@ -244,7 +239,7 @@ void FStatusBar::drawKeys()
   }
 
   updateVTerm(false);
-  gotoxy (1, lastLine);
+  printPos (1, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -535,7 +530,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  int lastLine, screenWidth;
+  int screenWidth;
   short fg, bg;
   char* blank;
 
@@ -543,25 +538,17 @@ void FStatusBar::hide()
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
-  lastLine = getLineNumber();
   screenWidth = getColumnNumber();
+
+  if ( screenWidth < 0 )
+    return;
+
   blank = new char[screenWidth+1];
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-  gotoxy (1, lastLine);
+  printPos (1, 1);
   print (vstatusbar, blank);
   delete[] blank;
-}
-
-//----------------------------------------------------------------------
-void FStatusBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
-{
-  int old_width = width;
-  int old_height = height;
-  FWidget::setGeometry (xx, yy, ww, hh, adjust);
-
-  if ( vstatusbar && (width != old_width || height != old_height) )
-    resizeArea (vstatusbar);
 }
 
 //----------------------------------------------------------------------
@@ -588,7 +575,7 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::drawMessage()
 {
-  int  termWidth, lastLine, space_offset;
+  int  termWidth, space_offset;
   bool isLastActiveFocus, hasKeys;
 
   if ( ! (isVisible() && vstatusbar) )
@@ -599,7 +586,6 @@ void FStatusBar::drawMessage()
 
   x = x_msg;
   termWidth = getColumnNumber();
-  lastLine = getLineNumber();
   space_offset = 1;
   hasKeys = bool(! keylist.empty());
 
@@ -617,7 +603,7 @@ void FStatusBar::drawMessage()
 
   updateVTerm(false);
   setColor (wc.statusbar_fg, wc.statusbar_bg);
-  gotoxy (x, lastLine);
+  printPos (x, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -739,11 +725,7 @@ void FStatusBar::clear()
 //----------------------------------------------------------------------
 void FStatusBar::adjustSize()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
-  width = getColumnNumber();
-  ypos = getLineNumber();
+  setGeometry (1, getLineNumber(), getColumnNumber(), 1, false);
 }
 
 //----------------------------------------------------------------------

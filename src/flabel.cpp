@@ -64,13 +64,13 @@ void FLabel::init()
 
   if ( parent_widget )
   {
-    foregroundColor = parent_widget->getForegroundColor();
-    backgroundColor = parent_widget->getBackgroundColor();
+    setForegroundColor (parent_widget->getForegroundColor());
+    setBackgroundColor (parent_widget->getBackgroundColor());
   }
   else
   {
-    foregroundColor = wc.dialog_fg;
-    backgroundColor = wc.dialog_bg;
+    setForegroundColor (wc.dialog_fg);
+    setBackgroundColor (wc.dialog_bg);
   }
 }
 
@@ -153,14 +153,14 @@ int FLabel::getXOffset(int length)
       return 0;
 
     case fc::alignCenter:
-      if ( length < width )
-        return int((width - length) / 2);
+      if ( length < getWidth() )
+        return int((getWidth() - length) / 2);
       else
         return 0;
 
     case fc::alignRight:
-      if ( length < width )
-        return width - length;
+      if ( length < getWidth() )
+        return getWidth() - length;
       else
         return 0;
 
@@ -183,10 +183,10 @@ void FLabel::printLine ( wchar_t*& line
   for (int x=0; x < xoffset; x++)
     print (' ');
 
-  if ( length <= uInt(width) )
+  if ( length <= uInt(getWidth()) )
     to_char = int(length);
   else
-    to_char = width - 2;
+    to_char = getWidth() - 2;
 
   if ( hasReverseMode() )
     setReverse(true);
@@ -214,23 +214,23 @@ void FLabel::printLine ( wchar_t*& line
         unsetUnderline();
 
       if ( hasEmphasis() )
-        setColor (emphasis_color, backgroundColor);
+        setColor (emphasis_color, getBackgroundColor());
       else
-        setColor (foregroundColor, backgroundColor);
+        setColor();
     }
     else
       print ( line[z] );
   }
 
-  if ( length > uInt(width) )
+  if ( length > uInt(getWidth()) )
   {
-    setColor (ellipsis_color, backgroundColor);
+    setColor (ellipsis_color, getBackgroundColor());
     print ("..");
-    setColor (foregroundColor, backgroundColor);
+    setColor();
   }
   else
   {
-    for (int x=xoffset+to_char; x < width; x++)
+    for (int x=xoffset+to_char; x < getWidth(); x++)
       print (' ');
   }
 
@@ -260,19 +260,19 @@ void FLabel::draw()
   }
 
   if ( hasEmphasis() )
-    setColor (emphasis_color, backgroundColor);
+    setColor (emphasis_color, getBackgroundColor());
   else
-    setColor (foregroundColor, backgroundColor);
+    setColor();
 
   hotkeypos = -1;
 
-  if ( multiline && height > 1 )
+  if ( multiline && getHeight() > 1 )
   {
     uInt y = 0;
     uInt text_lines = uInt(multiline_text.size());
     bool hotkey_printed = false;
 
-    while ( y < text_lines && y < uInt(height) )
+    while ( y < text_lines && y < uInt(getHeight()) )
     {
       length = multiline_text[y].getLength();
       LabelText = new wchar_t[length+1]();
@@ -284,7 +284,7 @@ void FLabel::draw()
       else
         wcsncpy(dest, src, length);
 
-      gotoxy (xpos+xmin-1, ypos+ymin-1+int(y));
+      printPos (1, 1+int(y));
 
       if ( hotkeypos != -1 )
       {
@@ -314,7 +314,7 @@ void FLabel::draw()
     if ( hotkeypos != -1 )
       length--;
 
-    gotoxy (xpos+xmin-1, ypos+ymin-1);
+    printPos (1,1);
     xoffset = getXOffset (int(length));
     printLine (LabelText, length, hotkeypos, xoffset);
     delete[] LabelText;
@@ -337,6 +337,7 @@ void FLabel::draw()
 void FLabel::hide()
 {
   short fg, bg;
+  int size;
   char* blank;
   FWidget* parent_widget = getParentWidget();
 
@@ -354,9 +355,15 @@ void FLabel::hide()
   }
 
   setColor (fg, bg);
-  blank = new char[width+1];
-  memset(blank, ' ', uLong(width));
-  blank[width] = '\0';
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  memset(blank, ' ', uLong(size));
+  blank[getWidth()] = '\0';
+  printPos (1,1);
   print (blank);
   delete[] blank;
 }

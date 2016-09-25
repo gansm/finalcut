@@ -239,6 +239,7 @@ void Window::cb_createWindows (FWidget*, void*)
       x = dx + 5 + (n%3)*25 + int(n/3)*3;
       y = dy + 11 + int(n/3)*3;
       win->setGeometry (x, y, 20, 8);
+      win->setMinimumSize (20, 8);
       win->setResizeable();
       win->show();
 
@@ -305,7 +306,7 @@ void Window::cb_next (FWidget*, void*)
       } while (  ! next->isEnabled()
               || ! next->acceptFocus()
               || ! next->isVisible()
-              || ! next->isWindow() );
+              || ! next->isWindowWidget() );
 
       activateWindow(next);
       break;
@@ -328,7 +329,7 @@ void Window::cb_previous (FWidget*, void*)
   {
     --iter;
 
-    if ( (*iter)->isDialog()
+    if ( (*iter)->isDialogWidget()
        && static_cast<FWindow*>(*iter)->isActiveWindow() )
     {
       FDialog* prev;
@@ -345,7 +346,7 @@ void Window::cb_previous (FWidget*, void*)
       } while (  ! prev->isEnabled()
               || ! prev->acceptFocus()
               || ! prev->isVisible()
-              || ! prev->isWindow() );
+              || ! prev->isWindowWidget() );
 
       activateWindow(prev);
       break;

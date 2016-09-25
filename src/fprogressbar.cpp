@@ -12,7 +12,7 @@
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget(parent)
   , percentage(-1)
-  , BarLength(width)
+  , BarLength(getWidth())
 {
   unsetFocusable();
   setShadow();
@@ -37,7 +37,7 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  gotoxy (xpos+xmin+width-5, ypos+ymin-2);
+  printPos (getWidth() - 3, 0);
 
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
@@ -53,7 +53,7 @@ void FProgressbar::drawBar()
 {
   int i = 1;
   float length = float(BarLength*percentage)/100;
-  gotoxy (xpos+xmin-1, ypos+ymin-1);
+  printPos (1,1);
 
   if ( isMonochron() )
   {
@@ -195,19 +195,23 @@ void FProgressbar::hide()
 
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
-  size = width + s;
+  size = getWidth() + s;
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height+s; y++)
+  for (int y=0; y < getHeight()+s; y++)
   {
-    gotoxy (xpos+xmin-1, ypos+ymin-1+y);
+    printPos (1, 1 + y);
     print (blank);
   }
 
   delete[] blank;
-  gotoxy (xpos+xmin+width-5, ypos+ymin-2);
+  printPos (getWidth() - 4, 0);
   print ("     ");  // hide percentage
 }
 

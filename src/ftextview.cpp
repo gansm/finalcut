@@ -37,8 +37,8 @@ void FTextView::init()
 {
   nf_offset = isNewFont() ? 1 : 0;
 
-  foregroundColor = wc.dialog_fg;
-  backgroundColor = wc.dialog_bg;
+  setForegroundColor (wc.dialog_fg);
+  setBackgroundColor (wc.dialog_bg);
 
   VBar = new FScrollbar(fc::vertical, this);
   VBar->setMinimum(0);
@@ -66,7 +66,7 @@ void FTextView::init()
 void FTextView::draw()
 {
   updateVTerm(false);
-  setColor (foregroundColor, backgroundColor);
+  setColor();
 
   if ( isMonochron() )
     setReverse(true);
@@ -100,7 +100,7 @@ void FTextView::draw()
     }
   }
 
-  setCursorPos(1,1);
+  setCursorPos (getWidth(), getHeight());
   updateTerminal();
   flush_out();
 }
@@ -110,17 +110,17 @@ void FTextView::drawText()
 {
   uInt start, end;
 
-  if ( data.empty() || height < 4 || width < 5 )
+  if ( data.empty() || getHeight() < 4 || getWidth() < 5 )
     return;
 
   start = 0;
-  end = uInt(height+nf_offset-2);
+  end = uInt(getHeight() + nf_offset - 2);
 
   if ( end > getRows() )
     end = getRows();
 
   updateVTerm(false);
-  setColor (foregroundColor, backgroundColor);
+  setColor();
 
   if ( isMonochron() )
     setReverse(true);
@@ -130,9 +130,9 @@ void FTextView::drawText()
     uInt i, len;
     FString line;
     const wchar_t* line_str;
-    gotoxy (xpos+xmin, ypos+ymin-nf_offset+int(y));
+    printPos (2, 2 - nf_offset + int(y));
     line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                     , uInt(width - nf_offset - 2) );
+                                     , uInt(getWidth() - nf_offset - 2) );
     line_str = line.wc_str();
     len = line.getLength();
 
@@ -152,7 +152,7 @@ void FTextView::drawText()
         print ('.');
     }
 
-    for (; i < uInt(width - nf_offset - 2); i++)
+    for (; i < uInt(getWidth() - nf_offset - 2); i++)
       print (' ');
   }
 
@@ -173,25 +173,43 @@ void FTextView::processChanged()
 void FTextView::adjustSize()
 {
   FWidget::adjustSize();
+  int width     = getWidth();
+  int height    = getHeight();
+  int last_line = int(getRows());
+  int max_width = int(maxLineWidth);
 
-  VBar->setMaximum (int(getRows()) - height + 2 - nf_offset);
-  VBar->setPageSize (int(getRows()), height - 2 + nf_offset);
+  if ( xoffset > max_width - width - nf_offset - 1 )
+    xoffset = max_width - width - nf_offset - 1;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+
+  if ( yoffset > last_line - height - nf_offset + 2 )
+    yoffset = last_line - height - nf_offset + 2;
+
+  if ( yoffset < 0 )
+    yoffset = 0;
+
+  VBar->setMaximum (last_line - height + 2 - nf_offset);
+  VBar->setPageSize (last_line, height - 2 + nf_offset);
   VBar->setX (width);
   VBar->setHeight (height - 2 + nf_offset, false);
+  VBar->setValue (yoffset);
   VBar->resize();
 
-  HBar->setMaximum (int(maxLineWidth) - width + nf_offset + 2);
-  HBar->setPageSize (int(maxLineWidth), width - nf_offset - 2);
+  HBar->setMaximum (max_width - width + nf_offset + 2);
+  HBar->setPageSize (max_width, width - nf_offset - 2);
   HBar->setY (height);
   HBar->setWidth (width - 2, false);
+  HBar->setValue (xoffset);
   HBar->resize();
 
-  if ( int(getRows()) < height + nf_offset - 1 )
+  if ( last_line < height + nf_offset - 1 )
     VBar->hide();
   else
     VBar->setVisible();
 
-  if ( int(maxLineWidth) < width-nf_offset - 1 )
+  if ( max_width < width - nf_offset - 1 )
     HBar->hide();
   else
     HBar->setVisible();
@@ -222,14 +240,18 @@ void FTextView::hide()
 
   setColor (fg, bg);
   n = isNewFont() ? 1 : 0;
-  size = width + n;
+  size = getWidth() + n;
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height; y++)
+  for (int y=0; y < getHeight(); y++)
   {
-    gotoxy (xpos+xmin-1, ypos+ymin-1+y);
+    printPos (1, 1 + y);
     print (blank);
   }
 
@@ -253,14 +275,14 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_down:
-      if ( yoffset + height + nf_offset <= last_line + 1 )
+      if ( yoffset + getHeight() + nf_offset <= last_line + 1 )
         yoffset++;
 
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      if ( xoffset + width - nf_offset <= int(maxLineWidth) + 1 )
+      if ( xoffset + getWidth() - nf_offset <= int(maxLineWidth) + 1 )
         xoffset++;
 
       ev->accept();
@@ -274,7 +296,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_ppage:
-      yoffset -= height-2;
+      yoffset -= getHeight()-2;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -283,11 +305,11 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_npage:
-      if ( last_line >= height )
-        yoffset += height-2;
+      if ( last_line >= getHeight() )
+        yoffset += getHeight()-2;
 
-      if ( yoffset > last_line - height - nf_offset + 2 )
-        yoffset = last_line - height - nf_offset + 2;
+      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
+        yoffset = last_line - getHeight() - nf_offset + 2;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -301,8 +323,8 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_end:
-      if ( last_line >= height )
-        yoffset = last_line - height - nf_offset + 2;
+      if ( last_line >= getHeight() )
+        yoffset = last_line - getHeight() - nf_offset + 2;
 
       ev->accept();
       break;
@@ -373,7 +395,7 @@ void FTextView::onWheel (FWheelEvent* ev)
 
     case fc::WheelDown:
       {
-        int yoffset_end = last_line - height - nf_offset + 2;
+        int yoffset_end = last_line - getHeight() - nf_offset + 2;
 
         if ( yoffset_end < 0 )
           yoffset_end = 0;
@@ -436,7 +458,7 @@ void FTextView::cb_VBarChange (FWidget*, void*)
   switch ( scrollType )
   {
     case FScrollbar::scrollPageBackward:
-      distance = height+nf_offset-2;
+      distance = getHeight() + nf_offset - 2;
       // fall through
     case FScrollbar::scrollStepBackward:
       yoffset -= distance;
@@ -447,13 +469,13 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = height+nf_offset-2;
+      distance = getHeight() + nf_offset - 2;
       // fall through
     case FScrollbar::scrollStepForward:
       yoffset += distance;
 
-      if ( yoffset > last_line - height - nf_offset + 2 )
-        yoffset = last_line - height - nf_offset + 2;
+      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
+        yoffset = last_line - getHeight() - nf_offset + 2;
 
       break;
 
@@ -466,8 +488,8 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 
       yoffset = val;
 
-      if ( yoffset > last_line - height - nf_offset + 2 )
-        yoffset = last_line - height - nf_offset + 2;
+      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
+        yoffset = last_line - getHeight() - nf_offset + 2;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -516,13 +538,13 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 {
   int distance = 1;
   int xoffset_before = xoffset;
-  int xoffset_end = int(maxLineWidth) - width + nf_offset + 4;
+  int xoffset_end = int(maxLineWidth) - getWidth() + nf_offset + 4;
   int scrollType = HBar->getScrollType();
 
   switch ( scrollType )
   {
     case FScrollbar::scrollPageBackward:
-      distance = width - nf_offset - 4;
+      distance = getWidth() - nf_offset - 4;
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
@@ -533,13 +555,13 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = width - nf_offset - 4;
+      distance = getWidth() - nf_offset - 4;
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
 
-      if ( xoffset > int(maxLineWidth) - width + nf_offset + 4 )
-        xoffset = int(maxLineWidth) - width + nf_offset + 4;
+      if ( xoffset > int(maxLineWidth) - getWidth() + nf_offset + 4 )
+        xoffset = int(maxLineWidth) - getWidth() + nf_offset + 4;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -555,8 +577,8 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 
       xoffset = val;
 
-      if ( xoffset > int(maxLineWidth) - width + nf_offset + 4 )
-        xoffset = int(maxLineWidth) - width + nf_offset + 4;
+      if ( xoffset > int(maxLineWidth) - getWidth() + nf_offset + 4 )
+        xoffset = int(maxLineWidth) - getWidth() + nf_offset + 4;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -612,6 +634,8 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   FWidget::setGeometry(x, y, w, h, adjust);
+  int width  = getWidth();
+  int height = getHeight();
 
   if ( isNewFont() )
   {
@@ -623,6 +647,9 @@ void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
     VBar->setGeometry (width, 2, 1, height-2);
     HBar->setGeometry (2, height, width-2, 1);
   }
+
+  VBar->resize();
+  HBar->resize();
 }
 
 //----------------------------------------------------------------------
@@ -630,7 +657,7 @@ void FTextView::setPosition (int pos)
 {
   int last_line = int(getRows());
 
-  if ( pos < 0 || pos > last_line - height + 2 )
+  if ( pos < 0 || pos > last_line - getHeight() + 2 )
     return;
 
   yoffset = pos;
@@ -728,10 +755,10 @@ void FTextView::insert (const FString& str, int pos)
     {
       maxLineWidth = len;
 
-      if ( len > uInt(width-nf_offset-2) )
+      if ( len > uInt(getWidth() - nf_offset - 2) )
       {
-        HBar->setMaximum (int(maxLineWidth) - width + nf_offset + 2);
-        HBar->setPageSize (int(maxLineWidth), width - nf_offset - 2);
+        HBar->setMaximum (int(maxLineWidth) - getWidth() + nf_offset + 2);
+        HBar->setPageSize (int(maxLineWidth), getWidth() - nf_offset - 2);
         HBar->calculateSliderValues();
 
         if ( ! HBar->isVisible() )
@@ -741,14 +768,14 @@ void FTextView::insert (const FString& str, int pos)
   }
 
   data.insert (iter + pos, text_split.begin(), text_split.end());
-  VBar->setMaximum (int(getRows()) - height + 2 - nf_offset);
-  VBar->setPageSize (int(getRows()), height - 2 + nf_offset);
+  VBar->setMaximum (int(getRows()) - getHeight() + 2 - nf_offset);
+  VBar->setPageSize (int(getRows()), getHeight() - 2 + nf_offset);
   VBar->calculateSliderValues();
 
-  if ( ! VBar->isVisible() && int(getRows()) >= height + nf_offset - 1 )
+  if ( ! VBar->isVisible() && int(getRows()) >= getHeight() + nf_offset - 1 )
     VBar->setVisible();
 
-  if ( VBar->isVisible() && int(getRows()) < height + nf_offset - 1 )
+  if ( VBar->isVisible() && int(getRows()) < getHeight() + nf_offset - 1 )
     VBar->hide();
 
   processChanged();
@@ -795,15 +822,19 @@ void FTextView::clear()
   HBar->hide();
 
   // clear list from screen
-  setColor (foregroundColor, backgroundColor);
-  size = width - 2;
+  setColor();
+  size = getWidth() - 2;
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height+nf_offset-2; y++)
+  for (int y=0; y < getHeight() + nf_offset - 2; y++)
   {
-    gotoxy (xpos+xmin, ypos+ymin-nf_offset+y);
+    printPos (2, 2 - nf_offset + y);
     print (blank);
   }
 

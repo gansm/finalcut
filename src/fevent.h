@@ -119,16 +119,16 @@ class FMouseEvent : public FEvent   // mouse event
   ~FMouseEvent();
 
    const FPoint& getPos() const;
-   const FPoint& getGlobalPos() const;
+   const FPoint& getTermPos() const;
    int getX() const;
    int getY() const;
-   int getGlobalX() const;
-   int getGlobalY() const;
+   int getTermX() const;
+   int getTermY() const;
    int getButton() const;
 
  protected:
    FPoint p;
-   FPoint g;
+   FPoint tp;
    int b;
 };
 
@@ -150,16 +150,16 @@ class FWheelEvent : public FEvent   // wheel event
   ~FWheelEvent();
 
    const FPoint& getPos() const;
-   const FPoint& getGlobalPos() const;
+   const FPoint& getTermPos() const;
    int getX() const;
    int getY() const;
-   int getGlobalX() const;
-   int getGlobalY() const;
+   int getTermX() const;
+   int getTermY() const;
    int getWheel() const;
 
  protected:
    FPoint p;
-   FPoint g;
+   FPoint tp;
    int w;
 };
 

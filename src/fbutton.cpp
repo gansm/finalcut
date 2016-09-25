@@ -180,9 +180,9 @@ void FButton::draw()
       setColor ( parent_widget->getForegroundColor()
                , parent_widget->getBackgroundColor() );
 
-    for (int y=1; y <= height; y++)
+    for (int y=1; y <= getHeight(); y++)
     {
-      gotoxy (xpos+xmin-1, ypos+ymin-2+y);
+      printPos (1, y);
       print (' '); // clear one left █
     }
 
@@ -221,7 +221,7 @@ void FButton::draw()
   if ( hotkeypos != -1 )
     hotkey_offset = 1;
 
-  if ( (length - hotkey_offset + mono_offset - hotkey_offset) <= width )
+  if ( (length - hotkey_offset + mono_offset - hotkey_offset) <= getWidth() )
     margin = 1;
   else
     margin = 0;
@@ -233,11 +233,11 @@ void FButton::draw()
   {
     if ( margin == 1 )
     {
-      setColor (foregroundColor, button_bg);
+      setColor (getForegroundColor(), button_bg);
 
-      for (int y=0; y < height; y++)
+      for (int y=0; y < getHeight(); y++)
       {
-        gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
+        printPos (1+d, 1+y);
         print (space); // full block █
       }
     }
@@ -250,19 +250,17 @@ void FButton::draw()
     if ( parent_widget )
       setColor (button_bg, parent_widget->getBackgroundColor());
 
-    gotoxy (xpos+xmin-1+d, ypos+ymin-1);
-
-    for (int y=1; y <= height; y++)
+    for (int y=0; y < getHeight(); y++)
     {
-       // Cygwin terminal use IBM Codepage 850
+      printPos (1+d, 1+y);
+
+      // Cygwin terminal use IBM Codepage 850
       if ( isCygwinTerminal() )
         print (fc::FullBlock); // █
       else if ( isTeraTerm() )
         print (0xdb);
       else
         print (fc::RightHalfBlock); // ▐
-
-      gotoxy (xpos+xmin-1+d, ypos+ymin-1+y);
     }
   }
 
@@ -275,12 +273,12 @@ void FButton::draw()
       setColor ( parent_widget->getForegroundColor()
                , parent_widget->getBackgroundColor() );
 
-    for (int y=1; y <= height; y++)
+    for (int y=1; y <= getHeight(); y++)
     {
       if ( isMonochron() )
         setReverse(true);
 
-      gotoxy (xpos+xmin-1+width, ypos+ymin-2+y);
+      printPos (1+getWidth(), y);
       print (' '); // clear right
 
       if ( isMonochron() )
@@ -291,31 +289,29 @@ void FButton::draw()
   if ( hotkeypos != -1 )
     length--;
 
-  i = width - length - 1;
+  i = getWidth() - length - 1;
   i = int(i / 2);
 
-  if ( height > 1 )
-    j = int((height-1) / 2);
+  if ( getHeight() > 1 )
+    j = int((getHeight()-1) / 2);
   else
     j=0;
 
-  gotoxy (xpos+xmin-1+margin+d, ypos+ymin-1+j);
+  printPos (1+margin+d, 1+j);
   setColor (button_fg, button_bg);
 
   for (x=0; x < i; x++)
-    print (space); // █
+   print (space); // █
 
   if ( hotkeypos == -1 )
-    setCursorPos ( xpos+xmin-1+margin+i
-                 , ypos+ymin-1+j ); // first character
+    setCursorPos (1+margin+i, 1+j ); // first character
   else
-    setCursorPos ( xpos+xmin-1+margin+i+hotkeypos
-                 , ypos+ymin-1+j ); // hotkey
+    setCursorPos (1+margin+i+hotkeypos, 1+j ); // hotkey
 
   if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for (int z=0; x < i+length && z < width; z++,x++)
+  for (int z=0; x < i+length && z < getWidth(); z++,x++)
   {
     if ( (z == hotkeypos) && is_Active )
     {
@@ -346,23 +342,23 @@ void FButton::draw()
   if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     unsetBold();
 
-  for (x=i+length; x < width-1; x++)
+  for (x=i+length; x < getWidth()-1; x++)
     print (space); // █
 
-  if ( height > 1 )
+  if ( getHeight() > 1 )
   {
     for (i=0; i < j; i++)
     {
-      gotoxy (xpos+xmin+d, ypos+ymin-1+i);
+      printPos (2+d, 1+i);
 
-      for (int z=1; z < width; z++)
+      for (int z=1; z < getWidth(); z++)
         print (space); // █
     }
-    for (i=j+1; i < height; i++)
+    for (i=j+1; i < getHeight(); i++)
     {
-      gotoxy (xpos+xmin+d, ypos+ymin-1+i);
+      printPos (2+d, 1+i);
 
-      for (int z=1; z < width; z++)
+      for (int z=1; z < getWidth(); z++)
         print (space); // █
     }
   }
@@ -411,8 +407,8 @@ void FButton::updateButtonColor()
     }
     else
     {
-      button_fg = foregroundColor;
-      button_bg = backgroundColor;
+      button_fg = getForegroundColor();
+      button_bg = getBackgroundColor() ;
     }
   }
   else  // inactive
@@ -514,14 +510,18 @@ void FButton::hide()
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
   f = isFlat() ? 1 : 0;
-  size = width + s + (f << 1);
+  size = getWidth() + s + (f << 1);
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height+s+(f << 1); y++)
+  for (int y=0; y < getHeight()+s+(f << 1); y++)
   {
-    gotoxy (xpos+xmin-1-f, ypos+ymin-1+y-f);
+    printPos (1-f, 1+y-f);
     print (blank);
   }
 
@@ -679,9 +679,9 @@ void FButton::onMouseDown (FMouseEvent* ev)
       statusBar()->drawMessage();
   }
 
-  FPoint gPos = ev->getGlobalPos();
+  FPoint tPos = ev->getTermPos();
 
-  if ( getGeometryGlobal().contains(gPos) )
+  if ( getTermGeometry().contains(tPos) )
     setDown();
 }
 
@@ -695,7 +695,7 @@ void FButton::onMouseUp (FMouseEvent* ev)
   {
     setUp();
 
-    if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+    if ( getTermGeometry().contains(ev->getTermPos()) )
       processClick();
   }
 }
@@ -706,11 +706,11 @@ void FButton::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  FPoint gPos = ev->getGlobalPos();
+  FPoint tPos = ev->getTermPos();
 
   if ( click_animation )
   {
-    if ( getGeometryGlobal().contains(gPos) )
+    if ( getTermGeometry().contains(tPos) )
       setDown();
     else
       setUp();

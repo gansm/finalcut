@@ -22,7 +22,7 @@ FLineEdit::FLineEdit(FWidget* parent)
   , scrollRepeat(100)
   , insert_mode(true)
   , cursor_pos(0)
-  , offset(0)
+  , text_offset(0)
   , label_orientation(FLineEdit::label_left)
 {
   init();
@@ -39,7 +39,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
   , scrollRepeat(100)
   , insert_mode(true)
   , cursor_pos(0)
-  , offset(0)
+  , text_offset(0)
   , label_orientation(FLineEdit::label_left)
 {
   init();
@@ -80,19 +80,19 @@ void FLineEdit::init()
 
     if ( hasFocus() )
     {
-      foregroundColor = wc.inputfield_active_focus_fg;
-      backgroundColor = wc.inputfield_active_focus_bg;
+      setForegroundColor (wc.inputfield_active_focus_fg);
+      setBackgroundColor (wc.inputfield_active_focus_bg);
     }
     else
     {
-      foregroundColor = wc.inputfield_active_fg;
-      backgroundColor = wc.inputfield_active_bg;
+      setForegroundColor (wc.inputfield_active_fg);
+      setBackgroundColor (wc.inputfield_active_bg);
     }
   }
   else  // inactive
   {
-    foregroundColor = wc.inputfield_inactive_fg;
-    backgroundColor = wc.inputfield_inactive_bg;
+    setForegroundColor (wc.inputfield_inactive_fg);
+    setBackgroundColor (wc.inputfield_inactive_bg);
   }
 }
 
@@ -137,7 +137,7 @@ void FLineEdit::drawInputField()
   isShadow = ((flags & fc::shadow) != 0 );
 
   updateVTerm(false);
-  gotoxy (xpos+xmin-1, ypos+ymin-1);
+  printPos (1, 1);
 
   if ( isMonochron() )
   {
@@ -186,8 +186,8 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  setColor (foregroundColor, backgroundColor);
-  show_text = text.mid(uInt(1+offset), uInt(width-2));
+  setColor();
+  show_text = text.mid(uInt(1+text_offset), uInt(getWidth()-2));
 
   if ( isUTF8_linux_terminal() )
   {
@@ -203,7 +203,7 @@ void FLineEdit::drawInputField()
 
   x = int(show_text.getLength());
 
-  while ( x < width-1 )
+  while ( x < getWidth()-1 )
   {
     print (' ');
     x++;
@@ -224,7 +224,7 @@ void FLineEdit::drawInputField()
   updateVTerm(true);
 
   // set the cursor to the first pos.
-  setCursorPos (xpos+xmin+cursor_pos-offset, ypos+ymin-1);
+  setCursorPos (2+cursor_pos-text_offset, 1);
 
   if ( isCursorInside() && hasFocus() && isHiddenCursor() )
     showCursor();
@@ -266,11 +266,11 @@ void FLineEdit::adjustLabel()
   switch ( label_orientation )
   {
     case label_above:
-      label->setGeometry(xpos, ypos-1, label_length, 1);
+      label->setGeometry(getX(), getY()-1, label_length, 1);
       break;
 
     case label_left:
-      label->setGeometry(xpos-label_length, ypos, label_length, 1);
+      label->setGeometry(getX()-label_length, getY(), label_length, 1);
       break;
   }
 }
@@ -287,7 +287,7 @@ void FLineEdit::adjustSize()
 //----------------------------------------------------------------------
 void FLineEdit::hide()
 {
-  int s, size, lable_Length;
+  int s, size;
   short fg, bg;
   char* blank;
   FWidget* parent_widget = getParentWidget();
@@ -307,42 +307,25 @@ void FLineEdit::hide()
 
   setColor (fg, bg);
   s = hasShadow() ? 1 : 0;
-  size = width + s;
+  size = getWidth() + s;
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height+s; y++)
+  for (int y=0; y < getHeight()+s; y++)
   {
-    gotoxy (xpos+xmin-1, ypos+ymin-1+y);
+    printPos (1, 1+y);
     print (blank);
   }
 
   delete[] blank;
-  lable_Length = int(label_text.getLength());
 
-  if ( lable_Length > 0 )
-  {
-    assert (  label_orientation == label_above
-           || label_orientation == label_left );
-
-    switch ( label_orientation )
-    {
-      case label_above:
-        gotoxy (xpos+xmin-1, ypos+ymin-2);
-        break;
-
-      case label_left:
-        gotoxy (xpos+xmin-int(lable_Length)-1, ypos+ymin-1);
-        break;
-    }
-
-    blank = new char[lable_Length+1];
-    memset(blank, ' ', uLong(size));
-    blank[lable_Length] = '\0';
-    print (blank);
-    delete[] blank;
-  }
+  if ( label )
+    label->hide();
 }
 
 //----------------------------------------------------------------------
@@ -356,20 +339,20 @@ bool FLineEdit::setEnable (bool on)
 
     if ( hasFocus() )
     {
-      foregroundColor = wc.inputfield_active_focus_fg;
-      backgroundColor = wc.inputfield_active_focus_bg;
+      setForegroundColor (wc.inputfield_active_focus_fg);
+      setBackgroundColor (wc.inputfield_active_focus_bg);
     }
     else
     {
-      foregroundColor = wc.inputfield_active_fg;
-      backgroundColor = wc.inputfield_active_bg;
+      setForegroundColor (wc.inputfield_active_fg);
+      setBackgroundColor (wc.inputfield_active_bg);
     }
   }
   else
   {
     flags &= ~fc::active;
-    foregroundColor = wc.inputfield_inactive_fg;
-    backgroundColor = wc.inputfield_inactive_bg;
+    setForegroundColor (wc.inputfield_inactive_fg);
+    setBackgroundColor (wc.inputfield_inactive_bg);
   }
 
   return on;
@@ -386,8 +369,8 @@ bool FLineEdit::setFocus (bool on)
 
     if ( isEnabled() )
     {
-      foregroundColor = wc.inputfield_active_focus_fg;
-      backgroundColor = wc.inputfield_active_focus_bg;
+      setForegroundColor (wc.inputfield_active_focus_fg);
+      setBackgroundColor (wc.inputfield_active_focus_bg);
 
       if ( statusBar() )
       {
@@ -405,8 +388,8 @@ bool FLineEdit::setFocus (bool on)
 
     if ( isEnabled() )
     {
-      foregroundColor = wc.inputfield_active_fg;
-      backgroundColor = wc.inputfield_active_bg;
+      setForegroundColor (wc.inputfield_active_fg);
+      setBackgroundColor (wc.inputfield_active_bg);
 
       if ( statusBar() )
         statusBar()->clearMessage();
@@ -443,8 +426,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       if ( cursor_pos < 0 )
         cursor_pos=0;
 
-      if ( cursor_pos < offset )
-        offset--;
+      if ( cursor_pos < text_offset )
+        text_offset--;
 
       ev->accept();
       break;
@@ -455,22 +438,22 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       if ( cursor_pos >= len )
         cursor_pos=len;
 
-      if ( cursor_pos-offset >= width-2 && offset <= len-width+1 )
-        offset++;
+      if ( cursor_pos-text_offset >= getWidth()-2 && text_offset <= len-getWidth()+1 )
+        text_offset++;
 
       ev->accept();
       break;
 
     case fc::Fkey_home:
       cursor_pos=0;
-      offset=0;
+      text_offset=0;
       ev->accept();
       break;
 
     case fc::Fkey_end:
       cursor_pos=len;
-      if ( cursor_pos >= width-1 )
-        offset=len-width+2;
+      if ( cursor_pos >= getWidth()-1 )
+        text_offset=len-getWidth()+2;
       ev->accept();
       break;
 
@@ -487,8 +470,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       if ( cursor_pos < 0 )
         cursor_pos=0;
 
-      if ( offset > 0 && len-offset < width-1 )
-        offset--;
+      if ( text_offset > 0 && len-text_offset < getWidth()-1 )
+        text_offset--;
 
       ev->accept();
       break;
@@ -501,8 +484,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         processChanged();
         cursor_pos--;
 
-        if ( offset > 0 )
-          offset--;
+        if ( text_offset > 0 )
+          text_offset--;
       }
 
       ev->accept();
@@ -567,8 +550,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         }
         cursor_pos++;
 
-        if ( cursor_pos >= width-1 )
-          offset++;
+        if ( cursor_pos >= getWidth()-1 )
+          text_offset++;
 
         ev->accept();
       }
@@ -613,10 +596,10 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if ( mouse_x >= 2 && mouse_x <= width && mouse_y == 1 )
+  if ( mouse_x >= 2 && mouse_x <= getWidth() && mouse_y == 1 )
   {
     int len = int(text.getLength());
-    cursor_pos = offset + mouse_x - 2;
+    cursor_pos = text_offset + mouse_x - 2;
 
     if ( cursor_pos >= len )
       cursor_pos = len;
@@ -649,9 +632,9 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if ( mouse_x >= 2 && mouse_x <= width && mouse_y == 1 )
+  if ( mouse_x >= 2 && mouse_x <= getWidth() && mouse_y == 1 )
   {
-    cursor_pos = offset + mouse_x - 2;
+    cursor_pos = text_offset + mouse_x - 2;
 
     if ( cursor_pos >= len )
       cursor_pos=len;
@@ -664,30 +647,30 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   if ( mouse_x < 2 )
   {
     // drag left
-    if ( ! scrollTimer && offset > 0 )
+    if ( ! scrollTimer && text_offset > 0 )
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
       dragScroll = FLineEdit::scrollLeft;
     }
 
-    if ( offset == 0 )
+    if ( text_offset == 0 )
     {
       delOwnTimer();
       dragScroll = FLineEdit::noScroll;
     }
   }
-  else if ( mouse_x >= width )
+  else if ( mouse_x >= getWidth() )
   {
     // drag right
-    if ( ! scrollTimer && offset <= len-width+1 )
+    if ( ! scrollTimer && text_offset <= len-getWidth()+1 )
     {
       scrollTimer = true;
       addTimer(scrollRepeat);
       dragScroll = FLineEdit::scrollRight;
     }
 
-    if ( offset == len-width+2 )
+    if ( text_offset == len-getWidth()+2 )
     {
       delOwnTimer();
       dragScroll = FLineEdit::noScroll;
@@ -713,16 +696,16 @@ void FLineEdit::onTimer (FTimerEvent*)
       return;
 
     case FLineEdit::scrollLeft:
-      if ( offset == 0)
+      if ( text_offset == 0)
       {
         dragScroll = FLineEdit::noScroll;
         return;
       }
 
-      offset--;
+      text_offset--;
 
-      if ( offset < 0 )
-        offset = 0;
+      if ( text_offset < 0 )
+        text_offset = 0;
 
       cursor_pos--;
 
@@ -732,16 +715,16 @@ void FLineEdit::onTimer (FTimerEvent*)
       break;
 
     case FLineEdit::scrollRight:
-      if ( offset == len-width+2 )
+      if ( text_offset == len-getWidth()+2 )
       {
         dragScroll = FLineEdit::noScroll;
         return;
       }
 
-      offset++;
+      text_offset++;
 
-      if ( offset > len-width+2 )
-        offset = len-width+2;
+      if ( text_offset > len-getWidth()+2 )
+        text_offset = len-getWidth()+2;
 
       cursor_pos++;
 
@@ -857,7 +840,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FLineEdit::clearText()
 {
-  offset = 0;
+  text_offset = 0;
   cursor_pos = 0;
   text.clear();
 }
@@ -865,7 +848,7 @@ void FLineEdit::clearText()
 //----------------------------------------------------------------------
 void FLineEdit::setText (FString txt)
 {
-  offset = 0;
+  text_offset = 0;
   cursor_pos = 0;
 
   if ( txt )

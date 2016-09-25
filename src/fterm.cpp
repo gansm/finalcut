@@ -2374,14 +2374,14 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
         while ( iter != end )
         {
           term_area* win = (*iter)->getVWin();
-          const FRect& geometry = (*iter)->getGeometryGlobalShadow();
+          const FRect& geometry = (*iter)->getTermGeometryWithShadow();
 
           // window visible and contains current character
           if ( win && win->visible && geometry.contains(tx+x+1, ty+y+1) )
           {
             FOptiAttr::char_data* tmp;
-            int win_x = (*iter)->getGlobalX() - 1;
-            int win_y = (*iter)->getGlobalY() - 1;
+            int win_x = (*iter)->getTermX() - 1;
+            int win_y = (*iter)->getTermY() - 1;
             int line_len = win->width + win->right_shadow;
             tmp = &win->text[(ty+y-win_y) * line_len + (tx+x-win_x)];
 
@@ -2426,10 +2426,10 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
       menubar = reinterpret_cast<FWidget*>(FWidget::menuBar());
 
       if (  vmenubar && menubar
-         && menubar->getGeometryGlobal().contains(x+tx+1, y+ty+1) )
+         && menubar->getTermGeometry().contains(x+tx+1, y+ty+1) )
       {
-        int bar_x = menubar->getGlobalX() - 1;
-        int bar_y = menubar->getGlobalY() - 1;
+        int bar_x = menubar->getTermX() - 1;
+        int bar_y = menubar->getTermY() - 1;
 
         if ( vmenubar->visible )
           sc = &vmenubar->text[(y+ty-bar_y) * vmenubar->width + (x+tx-bar_x)];
@@ -2440,10 +2440,10 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
       statusbar = reinterpret_cast<FWidget*>(FWidget::statusBar());
 
       if (  vstatusbar && statusbar
-         && statusbar->getGeometryGlobal().contains(x+tx+1, y+ty+1) )
+         && statusbar->getTermGeometry().contains(x+tx+1, y+ty+1) )
       {
-        int bar_x = statusbar->getGlobalX() - 1;
-        int bar_y = statusbar->getGlobalY() - 1;
+        int bar_x = statusbar->getTermX() - 1;
+        int bar_y = statusbar->getTermY() - 1;
 
         if ( vstatusbar->visible )
           sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
@@ -2486,7 +2486,7 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
     while ( iter != end )
     {
       term_area* win = (*iter)->getVWin();
-      const FRect& geometry = (*iter)->getGeometryGlobalShadow();
+      const FRect& geometry = (*iter)->getTermGeometryWithShadow();
 
       if (  win && found
          && (*iter)->isVisible()
@@ -2494,8 +2494,8 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
          && geometry.contains(x,y) )
       {
         FOptiAttr::char_data* tmp;
-        int win_x = (*iter)->getGlobalX() - 1;
-        int win_y = (*iter)->getGlobalY() - 1;
+        int win_x = (*iter)->getTermX() - 1;
+        int win_y = (*iter)->getTermY() - 1;
         int line_len = win->width + win->right_shadow;
         tmp = &win->text[(y-win_y-1) * line_len + (x-win_x-1)];
 
@@ -2526,7 +2526,7 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
     menubar = 0;
 
   if (  area != vmenubar && menubar
-     && menubar->getGeometryGlobal().contains(x,y) )
+     && menubar->getTermGeometry().contains(x,y) )
   {
     is_covered = fully_covered;
   }
@@ -2540,7 +2540,7 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
     statusbar = 0;
 
   if (  area != vstatusbar && statusbar
-     && statusbar->getGeometryGlobal().contains(x,y) )
+     && statusbar->getTermGeometry().contains(x,y) )
   {
     is_covered = fully_covered;
   }
@@ -2568,8 +2568,8 @@ void FTerm::updateVTerm (FTerm::term_area* area)
   if ( ! area->visible )
     return;
 
-  ax  = area->widget->getGlobalX() - 1;
-  ay  = area->widget->getGlobalY() - 1;
+  ax  = area->widget->getTermX() - 1;
+  ay  = area->widget->getTermY() - 1;
   aw  = area->width;
   ah  = area->height;
   rsh = area->right_shadow;
@@ -2609,7 +2609,8 @@ void FTerm::updateVTerm (FTerm::term_area* area)
       {
         int gx, gy, line_len;
         FTerm::covered_state is_covered;
-        gx = ax + x;  // global position
+        // global terminal positions
+        gx = ax + x;
         gy = ay + y;
 
         if ( gx < 0 || gy < 0 )
@@ -2761,8 +2762,8 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
   if ( ! area )
     return;
 
-  dx = x - area->widget->getGlobalX();
-  dy = y - area->widget->getGlobalY();
+  dx = x - area->widget->getTermX();
+  dy = y - area->widget->getTermY();
 
   if ( x < 0 || y < 0 )
     return;
@@ -3071,14 +3072,14 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
       if ( obj && *iter != obj && significant_char )
       {
         term_area* win = (*iter)->getVWin();
-        const FRect& geometry = (*iter)->getGeometryGlobalShadow();
+        const FRect& geometry = (*iter)->getTermGeometryWithShadow();
 
         // window visible and contains current character
         if ( win && win->visible && geometry.contains(x+1,y+1) )
         {
           FOptiAttr::char_data* tmp;
-          int win_x = (*iter)->getGlobalX() - 1;
-          int win_y = (*iter)->getGlobalY() - 1;
+          int win_x = (*iter)->getTermX() - 1;
+          int win_y = (*iter)->getTermY() - 1;
           int line_len = win->width + win->right_shadow;
           tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
 
@@ -4107,6 +4108,7 @@ bool FTerm::hideCursor (bool on)
   {
     if ( vi )
       appendOutputBuffer (vi);
+
     hiddenCursor = true;  // global
   }
   else
@@ -4118,6 +4120,7 @@ bool FTerm::hideCursor (bool on)
 
     hiddenCursor = false;
   }
+
   flush_out();
 
   if ( ! hiddenCursor && linux_terminal )
@@ -4135,6 +4138,8 @@ bool FTerm::isCursorInside()
 
   int x = w->getCursorPos().getX();
   int y = w->getCursorPos().getY();
+  x += w->getTermX() - 1;
+  y += w->getTermY() - 1;
 
   if ( term->contains(x,y) )
     return true;
@@ -4573,8 +4578,8 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           nc.trans_shadow  = next_attribute.trans_shadow;
           nc.inherit_bg    = next_attribute.inherit_bg;
 
-          int ax = x - area_widget->getGlobalX();
-          int ay = y - area_widget->getGlobalY();
+          int ax = x - area_widget->getTermX();
+          int ay = y - area_widget->getTermY();
 
           if (  area
              && ax >= 0 && ay >= 0
@@ -4619,11 +4624,11 @@ int FTerm::print (FTerm::term_area* area, FString& s)
 
       rsh = area->right_shadow;
       bsh = area->bottom_shadow;
-      const FRect& area_geometry = area_widget->getGeometryGlobal();
+      const FRect& area_geometry = area_widget->getTermGeometry();
 
       if ( cursor->x_ref() > area_geometry.getX2()+rsh )
       {
-        cursor->x_ref() = short(area_widget->getGlobalX());
+        cursor->x_ref() = short(area_widget->getTermX());
         cursor->y_ref()++;
       }
 
@@ -4701,8 +4706,8 @@ int FTerm::print (FTerm::term_area* area, register int c)
   if ( ! area_widget )
     return -1;
 
-  ax = x - area_widget->getGlobalX();
-  ay = y - area_widget->getGlobalY();
+  ax = x - area_widget->getTermX();
+  ay = y - area_widget->getTermY();
 
   if (  ax >= 0 && ay >= 0
      && ax < area->width + area->right_shadow
@@ -4744,11 +4749,11 @@ int FTerm::print (FTerm::term_area* area, register int c)
   cursor->x_ref()++;
   rsh = area->right_shadow;
   bsh = area->bottom_shadow;
-  const FRect& area_geometry = area_widget->getGeometryGlobal();
+  const FRect& area_geometry = area_widget->getTermGeometry();
 
   if ( cursor->x_ref() > area_geometry.getX2()+rsh )
   {
-    cursor->x_ref() = short(area_widget->getGlobalX());
+    cursor->x_ref() = short(area_widget->getTermX());
     cursor->y_ref()++;
   }
 

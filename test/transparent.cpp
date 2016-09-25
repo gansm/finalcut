@@ -78,7 +78,7 @@ void Transparent::draw()
 
   for (int n=1; n <= getClientHeight(); n++)
   {
-    gotoxy(xpos+xmin, ypos+ymin+n);
+    printPos (2, 2+n);
     print(line);
   }
 
@@ -192,10 +192,10 @@ void MainWindow::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  setColor(foregroundColor, backgroundColor);
-  gotoxy(xpos+xmin, ypos+ymin+2);
+  setColor();
+  printPos (2,4);
   print(line1);
-  gotoxy(xpos+xmin, ypos+ymin+3);
+  printPos (2,5);
   print(line2);
 
   if ( isMonochron() )

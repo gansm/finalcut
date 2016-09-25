@@ -68,7 +68,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
 
   progressBar = new FProgressbar(this);
   progressBar->setGeometry(2, 3, 34, 1, false);
-  //progressBar->setPercentage(78);<
+  //progressBar->setPercentage(78);
 
   reset->addCallback
   (
@@ -211,8 +211,8 @@ void TextWindow::append (const FString& str)
 //----------------------------------------------------------------------
 void TextWindow::adjustSize()
 {
-  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
   FDialog::adjustSize();
+  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
 }
 
 
@@ -888,7 +888,7 @@ int main (int argc, char* argv[])
   app.setXTermTitle (title);
 
   //app.setEncoding("VT100");
-  //app.setTermGeometry(94,30);
+  //app.setTermSize(94,30);
   //app.setNewFont();
 
   MyDialog d(&app);

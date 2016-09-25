@@ -106,22 +106,16 @@ FFileDialog::~FFileDialog()  // destructor
 void FFileDialog::init()
 {
   FWidget* parent_widget;
-  int x, y;
-  height = 15;
-  width  = 42;
-
-  if ( width < 15 )
-    width = 15;
-
-  if ( width < 20 )
-    width = 20;
-
+  int x, y, w, h;
+  w = 42;
+  h = 15;
+  setGeometry(1, 1, w, h, false);
   parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
-    x = 1 + int((parent_widget->getWidth()-width)/2);
-    y = 1 + int((parent_widget->getHeight()-height)/3);
+    x = 1 + int((parent_widget->getWidth()-w)/2);
+    y = 1 + int((parent_widget->getHeight()-h)/3);
   }
   else
     x = y = 1;
@@ -153,7 +147,7 @@ void FFileDialog::init()
     open = new FButton("&Open",this);
 
   open->setGeometry(30, 10, 9, 1);
-  setGeometry (x, y, width, height);
+  setGeometry (x, y, getWidth(), getHeight());
 
   filename->addCallback
   (
@@ -488,10 +482,10 @@ void FFileDialog::adjustSize()
     h = 30;
 
   setHeight (h, false);
-  X = 1 + int((max_width-width)/2);
-  Y = 1 + int((max_height-height)/3);
+  X = 1 + int((max_width - getWidth()) / 2);
+  Y = 1 + int((max_height - getHeight()) / 3);
   setPos(X, Y, false);
-  filebrowser->setHeight(h-8, false);
+  filebrowser->setHeight (h-8, false);
   hidden->setY(h-4, false);
   cancel->setY(h-4, false);
   open->setY(h-4, false);

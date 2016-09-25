@@ -107,7 +107,7 @@ class FWidget : public FObject, public FTerm
    };
 
    typedef std::vector<callback_data> CallbackObjects;
-   CallbackObjects callbackObjects;
+   CallbackObjects callback_objects;
 
    struct member_callback_data
    {
@@ -118,7 +118,7 @@ class FWidget : public FObject, public FTerm
    };
 
    typedef std::vector<member_callback_data> MemberCallbackObjects;
-   MemberCallbackObjects memberCallbackObjects;
+   MemberCallbackObjects member_callback_objects;
 
    struct accelerator
    {
@@ -217,6 +217,44 @@ class FWidget : public FObject, public FTerm
    } wc;
    // widget_colors wc;
 
+   int     flags;
+   static  uInt modal_dialogs;
+
+ private:
+   bool    enable;
+   bool    visible;
+   bool    shown;
+   bool    focus;
+   bool    focusable;
+   bool    visibleCursor;
+   FPoint  widgetCursorPosition;
+
+   struct widget_size_hints
+   {
+     widget_size_hints()
+     : min_width  (INT_MIN)
+     , min_height (INT_MIN)
+     , max_width  (INT_MAX)
+     , max_height (INT_MAX)
+     { }
+    ~widget_size_hints()
+     { }
+     void setMinimum (int w, int h)
+     {
+       min_width = w;
+       min_height = h;
+     }
+     void setMaximum (int w, int h)
+     {
+       max_width = w;
+       max_height = h;
+     }
+     int min_width;
+     int min_height;
+     int max_width;
+     int max_height;
+   } size_hints;
+
    struct dbl_line_mask
    {
      dbl_line_mask() : top(), right(), bottom(), left()
@@ -229,52 +267,45 @@ class FWidget : public FObject, public FTerm
      std::vector<bool> left;
    } double_flatline_mask;
 
-   int    xpos;
-   int    ypos;
-   int    width;
-   int    height;
-   int    xmin;
-   int    ymin;
-   int    xmax;
-   int    ymax;
-   int    top_padding;
-   int    left_padding;
-   int    bottom_padding;
-   int    right_padding;
-   int    client_xmin;
-   int    client_ymin;
-   int    client_xmax;
-   int    client_ymax;
-   FPoint shadow;
-   FRect  adjustWidgetSizeShadow;
-   FRect  adjustWidgetSizeGlobalShadow;
-   bool   ignore_padding;
-   bool   window_object;
-   bool   dialog_object;
-   bool   menu_object;
-   int    flags;
-   short  foregroundColor;
-   short  backgroundColor;
-   static uInt modal_dialogs;
+   struct widget_padding
+   {
+     widget_padding() : top(0), left(0), bottom(0), right(0)
+     { }
+    ~widget_padding()
+     { }
+     int top;
+     int left;
+     int bottom;
+     int right;
+   } padding;
 
- private:
-   bool    enable;
-   bool    visible;
-   bool    shown;
-   bool    focus;
-   bool    focusable;
-   bool    visibleCursor;
-   FPoint  widgetCursorPosition;
-   FRect   widgetSize;
-   FRect   adjustWidgetSize;
-   FRect   adjustWidgetSizeGlobal;
-   FString statusbar_message;
+   bool    ignore_padding;
+
+   // widget size
+   FRect   wsize;
+   FRect   adjust_wsize;
+   FRect   adjust_wsize_term;
+   FRect   adjust_wsize_shadow;
+   FRect   adjust_wsize_term_shadow;
+   // widget offset
+   FRect   offset;
+   // offset of the widget client area
+   FRect   client_offset;
+   // widget shadow size (on the right and bottom side)
+   FPoint  wshadow;
+
+   // default widget foreground and background color
+   short   foreground_color;
+   short   background_color;
+
+   term_area* print_area;
+   FString    statusbar_message;
 
    static FStatusBar* statusbar;
-   static FMenuBar* menubar;
-   static FWidget* show_root_widget;
-   static FWidget* redraw_root_widget;
-   term_area* print_area;
+   static FMenuBar*   menubar;
+   static FWidget*    show_root_widget;
+   static FWidget*    redraw_root_widget;
+
    friend class FTerm;
    friend class FApplication;
    friend class FToggleButton;
@@ -335,9 +366,9 @@ class FWidget : public FObject, public FTerm
    int              numOfFocusableChildren();
    FWidget*         getParentWidget() const;
    bool             isRootWidget() const;
-   bool             isWindow() const;
-   bool             isDialog() const;
-   bool             isMenu() const;
+   bool             isWindowWidget() const;
+   bool             isDialogWidget() const;
+   bool             isMenuWidget() const;
    virtual bool     close();
 
    static FStatusBar* statusBar();
@@ -401,9 +432,9 @@ class FWidget : public FObject, public FTerm
    int              getX() const;
    int              getY() const;
    const FPoint     getPos() const;
-   int              getGlobalX() const;
-   int              getGlobalY() const;
-   const FPoint     getGlobalPos() const;
+   int              getTermX() const;
+   int              getTermY() const;
+   const FPoint     getTermPos() const;
    int              getWidth() const;
    int              getHeight() const;
    int              getTopPadding() const;
@@ -413,15 +444,16 @@ class FWidget : public FObject, public FTerm
    int              getClientWidth() const;
    int              getClientHeight() const;
    int              getMaxWidth() const;
-   int              getMinHeight() const;
+   int              getMaxHeight() const;
    const FPoint&    getShadow() const;
    const FRect&     getGeometry() const;
-   const FRect&     getGeometryShadow() const;
-   const FRect&     getGeometryGlobal() const;
-   const FRect&     getGeometryGlobalShadow() const;
-   FPoint           globalToLocalPos (const FPoint&);
+   const FRect&     getGeometryWithShadow();
+   const FRect&     getTermGeometry();
+   const FRect&     getTermGeometryWithShadow();
+   FPoint           termToWidgetPos (const FPoint&);
    void             setForegroundColor (short);
    void             setBackgroundColor (short);
+   void             setColor();
    void             setColor (short, short);
    void             setX (int, bool = true);
    void             setY (int, bool = true);
@@ -429,14 +461,22 @@ class FWidget : public FObject, public FTerm
    virtual void     setPos (int, int, bool = true);
    void             setWidth (int, bool = true);
    void             setHeight (int, bool = true);
+   void             setSize (int, int, bool = true);
    void             setTopPadding (int, bool = true);
    void             setLeftPadding (int, bool = true);
    void             setBottomPadding (int, bool = true);
    void             setRightPadding (int, bool = true);
-   void             getTermGeometry();
-   void             setTermGeometry (int, int);
+   void             setParentOffset();
+   void             setTermOffset();
+   void             setTermOffsetWithPadding();
+   void             getTermSize();
+   void             setTermSize (int, int);
    virtual void     setGeometry (const FRect&, bool = true);
    virtual void     setGeometry (int, int, int, int, bool = true);
+   void             setShadowSize (int, int);
+   void             setMinimumSize (int, int);
+   void             setMaximumSize (int, int);
+   void             setFixedSize (int, int);
    virtual void     move (const FPoint&);
    virtual void     move (int, int);
    int              getFlags() const;
@@ -447,8 +487,8 @@ class FWidget : public FObject, public FTerm
    bool             setCursorPos (register int, register int);
    void             unsetCursorPos();
 
-   static void      gotoxy (const FPoint&);
-   static void      gotoxy (register int, register int);
+   void             printPos (const FPoint&);
+   void             printPos (register int, register int);
 
    static void      setNormal();
 
@@ -541,6 +581,7 @@ class FWidget : public FObject, public FTerm
    void             setDoubleFlatLine (int, int, bool = true);
    void             unsetDoubleFlatLine (int, int);
    std::vector<bool>& doubleFlatLine_ref (int);
+   virtual void     drawBorder (int, int, int, int);
    virtual void     drawBorder();
 
    static void      quit();
@@ -602,16 +643,16 @@ inline bool FWidget::isShown() const
 { return shown; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isWindow() const
-{ return window_object; }
+inline bool FWidget::isWindowWidget() const
+{ return ((flags & fc::window_widget) != 0); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isDialog() const
-{ return dialog_object; }
+inline bool FWidget::isDialogWidget() const
+{ return ((flags & fc::dialog_widget) != 0); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isMenu() const
-{ return menu_object; }
+inline bool FWidget::isMenuWidget() const
+{ return ((flags & fc::menu_widget) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isEnabled() const
@@ -671,41 +712,41 @@ inline void FWidget::unsetFocusable()
 
 //----------------------------------------------------------------------
 inline short FWidget::getForegroundColor() const
-{ return foregroundColor; }
+{ return foreground_color; }
 
 //----------------------------------------------------------------------
 inline short FWidget::getBackgroundColor() const
-{ return backgroundColor; }
+{ return background_color; }
 
 //----------------------------------------------------------------------
-inline int FWidget::getX() const
-{ return xpos; }
+inline int FWidget::getX() const  // x-position relative to the widget
+{ return adjust_wsize.getX(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getY() const
-{ return ypos; }
+inline int FWidget::getY() const  // y-position relative to the widget
+{ return adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getPos() const
-{ return adjustWidgetSize.getPos(); }
+inline const FPoint FWidget::getPos() const  // position relative to the widget
+{ return adjust_wsize.getPos(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getGlobalX() const
-{ return xpos+xmin-1; }
+inline int FWidget::getTermX() const  // x-position on terminal
+{ return offset.getX1() + adjust_wsize.getX(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getGlobalY() const
-{ return ypos+ymin-1; }
+inline int FWidget::getTermY() const  // y-position on terminal
+{ return offset.getY1() + adjust_wsize.getY(); }
 
 //----------------------------------------------------------------------
-inline const FPoint FWidget::getGlobalPos() const
-{ return FPoint(xpos+xmin-1, ypos+ymin-1); }
+inline const FPoint FWidget::getTermPos() const  // position on terminal
+{ return FPoint(getTermX(), getTermY()); }
 
 //----------------------------------------------------------------------
-inline FPoint FWidget::globalToLocalPos (const FPoint& gPos)
+inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
 {
-  return FPoint ( gPos.getX() - xpos - xmin + 2
-                , gPos.getY() - ypos - ymin + 2 );
+  return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
+                , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
 }
 
 //----------------------------------------------------------------------
@@ -713,7 +754,7 @@ inline void FWidget::setForegroundColor (short color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
-    foregroundColor = color;
+    foreground_color = color;
 }
 
 //----------------------------------------------------------------------
@@ -721,7 +762,7 @@ inline void FWidget::setBackgroundColor (short color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
-    backgroundColor = color;
+    background_color = color;
 }
 
 //----------------------------------------------------------------------
@@ -730,63 +771,90 @@ inline void FWidget::setPos (const FPoint& p, bool adjust)
 
 //----------------------------------------------------------------------
 inline int FWidget::getWidth() const
-{ return width; }
+{ return adjust_wsize.getWidth(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getHeight() const
-{ return height; }
+{ return adjust_wsize.getHeight(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getTopPadding() const
-{ return top_padding; }
+{ return padding.top; }
 
 //----------------------------------------------------------------------
 inline int FWidget::getLeftPadding() const
-{ return left_padding; }
+{ return padding.left; }
 
 //----------------------------------------------------------------------
 inline int FWidget::getBottomPadding() const
-{ return bottom_padding; }
+{ return padding.bottom; }
 
 //----------------------------------------------------------------------
 inline int FWidget::getRightPadding() const
-{ return right_padding; }
+{ return padding.right; }
 
 //----------------------------------------------------------------------
 inline int FWidget::getClientWidth() const
-{ return client_xmax-client_xmin+1; }
+{ return client_offset.getWidth(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getClientHeight() const
-{ return client_ymax-client_ymin+1; }
+{ return client_offset.getHeight(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getMaxWidth() const
-{ return xmax-xmin+1; }
+{ return offset.getWidth(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getMinHeight() const
-{ return ymax-ymin+1; }
+inline int FWidget::getMaxHeight() const
+{ return offset.getHeight(); }
 
 //----------------------------------------------------------------------
 inline const FPoint& FWidget::getShadow() const
-{ return shadow; }
+{ return wshadow; }
 
 //----------------------------------------------------------------------
 inline const FRect& FWidget::getGeometry() const
-{ return adjustWidgetSize; }
+{ return adjust_wsize; }
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getGeometryShadow() const
-{ return adjustWidgetSizeShadow; }
+inline const FRect& FWidget::getGeometryWithShadow()
+{
+  adjust_wsize_shadow.setCoordinates
+  (
+    adjust_wsize.x1_ref(),
+    adjust_wsize.y1_ref(),
+    adjust_wsize.x2_ref() + wshadow.x_ref(),
+    adjust_wsize.y2_ref() + wshadow.y_ref()
+  );
+  return adjust_wsize_shadow;
+}
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getGeometryGlobal() const
-{ return adjustWidgetSizeGlobal; }
+inline const FRect& FWidget::getTermGeometry()
+{
+  adjust_wsize_term.setCoordinates
+  (
+    adjust_wsize.x1_ref() + offset.x1_ref(),
+    adjust_wsize.y1_ref() + offset.y1_ref(),
+    adjust_wsize.x2_ref() + offset.x1_ref(),
+    adjust_wsize.y2_ref() + offset.y1_ref()
+  );
+  return adjust_wsize_term;
+}
 
 //----------------------------------------------------------------------
-inline const FRect& FWidget::getGeometryGlobalShadow() const
-{ return adjustWidgetSizeGlobalShadow; }
+inline const FRect& FWidget::getTermGeometryWithShadow()
+{
+  adjust_wsize_term_shadow.setCoordinates
+  (
+    adjust_wsize.x1_ref() + offset.x1_ref(),
+    adjust_wsize.y1_ref() + offset.y1_ref(),
+    adjust_wsize.x2_ref() + offset.x1_ref() + wshadow.x_ref(),
+    adjust_wsize.y2_ref() + offset.y1_ref() + wshadow.y_ref()
+  );
+  return adjust_wsize_term_shadow;
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::setGeometry (const FRect& box, bool adjust)
@@ -796,6 +864,25 @@ inline void FWidget::setGeometry (const FRect& box, bool adjust)
               , box.getWidth()
               , box.getHeight()
               , adjust );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setShadowSize (int right, int bottom)
+{ wshadow.setPoint (right, bottom); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMinimumSize (int min_width, int min_height)
+{ size_hints.setMinimum (min_width, min_height); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMaximumSize (int max_width, int max_height)
+{ size_hints.setMaximum (max_width, max_height); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setFixedSize (int width, int height)
+{
+  size_hints.setMinimum (width, height);
+  size_hints.setMaximum (width, height);
 }
 
 //----------------------------------------------------------------------
@@ -819,12 +906,15 @@ inline void FWidget::unsetCursorPos()
 { widgetCursorPosition.setPoint(-1,-1); }
 
 //----------------------------------------------------------------------
-inline void FWidget::gotoxy (const FPoint& pos)
-{ gotoxy (pos.getX(), pos.getY()); }
+inline void FWidget::printPos (const FPoint& pos)
+{ printPos (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-inline void FWidget::gotoxy (register int x, register int y)
-{ cursor->setPoint(x,y); }
+inline void FWidget::printPos (register int x, register int y)
+{
+  cursor->setPoint ( offset.getX1() + adjust_wsize.getX() - 1 + x,
+                     offset.getY1() + adjust_wsize.getY() - 1 + y );
+}
 
 //----------------------------------------------------------------------
 inline void FWidget::setNormal()
@@ -1107,12 +1197,16 @@ inline bool FWidget::isInheritBackground()
 { return next_attribute.inherit_bg; }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine(int side)
+inline void FWidget::unsetDoubleFlatLine (int side)
 { setDoubleFlatLine(side, false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine(int side, int pos)
+inline void FWidget::unsetDoubleFlatLine (int side, int pos)
 { setDoubleFlatLine(side, pos, false); }
+
+//----------------------------------------------------------------------
+inline void FWidget::drawBorder()
+{ drawBorder (1, getWidth(), 1, getHeight()); }
 
 
 // NewFont elements

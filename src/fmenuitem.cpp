@@ -348,7 +348,7 @@ void FMenuItem::processClicked()
 //----------------------------------------------------------------------
 bool FMenuItem::isWindowsMenu (FWidget* w) const
 {
-  return ( ! w ) ? false : w->isDialog();
+  return ( ! w ) ? false : w->isDialogWidget();
 }
 
 //----------------------------------------------------------------------
@@ -463,7 +463,7 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 {
   if ( super_menu )
   {
-    const FPoint& g = ev->getGlobalPos();
+    const FPoint& t = ev->getTermPos();
     int b = ev->getButton();
 
     if ( isMenu(super_menu) )
@@ -472,8 +472,8 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 
       if ( smenu )
       {
-        const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        const FPoint& p2 = smenu->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
         smenu->onMouseDoubleClick(_ev);
         delete _ev;
       }
@@ -485,8 +485,8 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 
       if ( mbar )
       {
-        const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        const FPoint& p2 = mbar->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
         mbar->onMouseDoubleClick(_ev);
         delete _ev;
       }
@@ -498,8 +498,8 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 
       if ( dgl )
       {
-        const FPoint& p2 = dgl->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, g, b);
+        const FPoint& p2 = dgl->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
         dgl->onMouseDoubleClick(_ev);
         delete _ev;
       }
@@ -512,7 +512,7 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 {
   if ( super_menu )
   {
-    const FPoint& g = ev->getGlobalPos();
+    const FPoint& t = ev->getTermPos();
     int b = ev->getButton();
 
     if ( isMenu(super_menu) )
@@ -521,8 +521,8 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 
       if ( smenu )
       {
-        const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
+        const FPoint& p2 = smenu->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
         smenu->onMouseDown(_ev);
         delete _ev;
       }
@@ -534,8 +534,8 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 
       if ( mbar )
       {
-        const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
+        const FPoint& p2 = mbar->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
         mbar->onMouseDown(_ev);
         delete _ev;
       }
@@ -547,8 +547,8 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 
       if ( dgl )
       {
-        const FPoint& p2 = dgl->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, g, b);
+        const FPoint& p2 = dgl->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
         dgl->onMouseDown(_ev);
         delete _ev;
       }
@@ -561,7 +561,7 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 {
   if ( super_menu )
   {
-    const FPoint& g = ev->getGlobalPos();
+    const FPoint& t = ev->getTermPos();
     int b = ev->getButton();
 
     if ( isMenu(super_menu) )
@@ -570,8 +570,8 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 
       if ( smenu )
       {
-        const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
+        const FPoint& p2 = smenu->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
         smenu->onMouseUp(_ev);
         delete _ev;
       }
@@ -583,8 +583,8 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 
       if ( mbar )
       {
-        const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
+        const FPoint& p2 = mbar->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
         mbar->onMouseUp(_ev);
         delete _ev;
       }
@@ -596,8 +596,8 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 
       if ( dgl )
       {
-        const FPoint& p2 = dgl->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, g, b);
+        const FPoint& p2 = dgl->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
         dgl->onMouseUp(_ev);
         delete _ev;
       }
@@ -610,7 +610,7 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 {
   if ( super_menu )
   {
-    const FPoint& g = ev->getGlobalPos();
+    const FPoint& t = ev->getTermPos();
     int b = ev->getButton();
 
     if ( isMenu(super_menu) )
@@ -619,8 +619,8 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 
       if ( smenu )
       {
-        const FPoint& p2 = smenu->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
+        const FPoint& p2 = smenu->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
         smenu->onMouseMove(_ev);
         delete _ev;
       }
@@ -632,8 +632,8 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 
       if ( mbar )
       {
-        const FPoint& p2 = mbar->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
+        const FPoint& p2 = mbar->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
         mbar->onMouseMove(_ev);
         delete _ev;
       }
@@ -645,8 +645,8 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 
       if ( dgl )
       {
-        const FPoint& p2 = dgl->globalToLocalPos(g);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, g, b);
+        const FPoint& p2 = dgl->termToWidgetPos(t);
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
         dgl->onMouseMove(_ev);
         delete _ev;
       }

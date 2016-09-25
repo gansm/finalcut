@@ -117,6 +117,21 @@ void FRect::setRect (int x, int y, int width, int height)
 }
 
 //----------------------------------------------------------------------
+void FRect::setCoordinates (const FPoint& p1, const FPoint& p2)
+{
+  setCoordinates (p1.getX(), p1.getY(), p2.getX(), p2.getY());
+}
+
+//----------------------------------------------------------------------
+void FRect::setCoordinates (int x1, int y1, int x2, int y2)
+{
+  X1 = short(x1);
+  Y1 = short(y1);
+  X2 = short(x2);
+  Y2 = short(y2);
+}
+
+//----------------------------------------------------------------------
 void FRect::move (int dx, int dy)
 {
   X1 = short(X1 + dx);
@@ -172,6 +187,16 @@ FRect FRect::intersect (const FRect& r) const
   new_rect.X2 = std::min(X2, r.X2);
   new_rect.Y2 = std::min(Y2, r.Y2);
   return new_rect;
+}
+
+//----------------------------------------------------------------------
+FRect& FRect::operator = (const FRect& r)
+{
+  X1 = short(r.getX1());
+  Y1 = short(r.getY1());
+  X2 = short(r.getX2());
+  Y2 = short(r.getY2());
+  return *this;
 }
 
 //----------------------------------------------------------------------

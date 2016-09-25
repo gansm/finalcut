@@ -54,7 +54,7 @@ void FSwitch::drawCheckButton()
 
   wchar_t on[6] = L"  On ";
   wchar_t off[6] = L" Off ";
-  gotoxy (xpos+xmin-1+switch_offset_pos, ypos+ymin-1);
+  printPos (1 + switch_offset_pos, 1);
 
   if ( checked )
   {
@@ -98,8 +98,7 @@ void FSwitch::drawCheckButton()
     if ( isMonochron() )
       setReverse(false);
 
-    setCursorPos ( xpos + xmin + 1 + switch_offset_pos
-                 , ypos + ymin - 1 );
+    setCursorPos (3 + switch_offset_pos, 1);
   }
   else
   {
@@ -141,8 +140,7 @@ void FSwitch::drawCheckButton()
     if ( isMonochron() || getMaxColor() < 16 )
       setBold(false);
 
-    setCursorPos ( xpos + xmin + 5 + switch_offset_pos
-                 , ypos + ymin - 1 );
+    setCursorPos (7 + switch_offset_pos, 1);
   }
 }
 

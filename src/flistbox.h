@@ -43,6 +43,7 @@ class FListBoxItem
    FString text;
    fc::brackets_type brackets;
    bool selected;
+
  public:
    FListBoxItem ();
    explicit FListBoxItem (FString&);
@@ -50,10 +51,12 @@ class FListBoxItem
    explicit FListBoxItem (const char*);
    virtual ~FListBoxItem();
    virtual FString getText() const;
+
  protected:
    void setText (FString&);
    void setText (const std::string&);
    void setText (const char*);
+
  private:
    friend class FListBox;
 };

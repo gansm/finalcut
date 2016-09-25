@@ -54,16 +54,16 @@ FButtonGroup::~FButtonGroup()  // destructor
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  top_padding    = 1;
-  left_padding   = 1;
-  bottom_padding = 1;
-  right_padding  = 1;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1);
 
   if ( isEnabled() )
     flags |= fc::active;
 
-  foregroundColor = wc.label_fg;
-  backgroundColor = wc.label_bg;
+  setForegroundColor (wc.label_fg);
+  setBackgroundColor (wc.label_bg);
   buttonlist.clear();  // no buttons yet
 }
 
@@ -152,7 +152,7 @@ void FButtonGroup::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  setColor (foregroundColor, backgroundColor);
+  setColor();
 
   if ( border )
     drawBorder();
@@ -252,9 +252,9 @@ void FButtonGroup::drawLabel()
     length--;
 
   if ( border )
-    gotoxy (xpos+xmin, ypos+ymin-1);
+    printPos (2, 1);
   else
-    gotoxy (xpos+xmin-2, ypos+ymin-1);
+    printPos (0, 1);
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -319,14 +319,18 @@ void FButtonGroup::hide()
   }
 
   setColor (fg, bg);
-  size = width;
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < height; y++)
+  for (int y=0; y < getHeight(); y++)
   {
-    gotoxy (xpos+xmin-1, ypos+ymin-1+y);
+    printPos (1, 1+y);
     print (blank);
   }
 

@@ -85,19 +85,19 @@ void FToggleButton::init()
 
     if ( hasFocus() )
     {
-      foregroundColor = wc.toggle_button_active_focus_fg;
-      backgroundColor = wc.toggle_button_active_focus_bg;
+      setForegroundColor (wc.toggle_button_active_focus_fg);
+      setBackgroundColor (wc.toggle_button_active_focus_bg);
     }
     else
     {
-      foregroundColor = wc.toggle_button_active_fg;
-      backgroundColor = wc.toggle_button_active_bg;
+      setForegroundColor (wc.toggle_button_active_fg);
+      setBackgroundColor (wc.toggle_button_active_bg);
     }
   }
   else  // inactive
   {
-    foregroundColor = wc.label_inactive_fg;
-    backgroundColor = wc.label_inactive_bg;
+    setForegroundColor (wc.label_inactive_fg);
+    setBackgroundColor (wc.label_inactive_bg);
   }
 }
 
@@ -176,7 +176,7 @@ void FToggleButton::draw()
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
   {
-    setCursorPos (xpos+xmin, ypos+ymin-1);
+    setCursorPos (2, 1);
 
     if ( isCursorInside() && hasFocus() )
     {
@@ -232,7 +232,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != -1 )
     length--;
 
-  gotoxy (xpos+xmin-1+label_offset_pos, ypos+ymin-1);
+  printPos (1 + label_offset_pos, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -381,11 +381,15 @@ void FToggleButton::hide()
   }
 
   setColor (fg, bg);
-  size = width;
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
   blank = new char[size+1];
   memset(blank, ' ', uLong(size));
   blank[size] = '\0';
-  gotoxy (xpos+xmin-1, ypos+ymin-1);
+  printPos (1, 1);
   print (blank);
   delete[] blank;
 }
@@ -424,21 +428,21 @@ bool FToggleButton::setEnable (bool on)
 
     if ( hasFocus() )
     {
-      foregroundColor = wc.toggle_button_active_focus_fg;
-      backgroundColor = wc.toggle_button_active_focus_bg;
+      setForegroundColor (wc.toggle_button_active_focus_fg);
+      setBackgroundColor (wc.toggle_button_active_focus_bg);
     }
     else
     {
-      foregroundColor = wc.toggle_button_active_fg;
-      backgroundColor = wc.toggle_button_active_bg;
+      setForegroundColor (wc.toggle_button_active_fg);
+      setBackgroundColor (wc.toggle_button_active_bg);
     }
   }
   else
   {
     flags &= ~fc::active;
     delAccelerator();
-    foregroundColor = wc.toggle_button_inactive_fg;
-    backgroundColor = wc.toggle_button_inactive_bg;
+    setForegroundColor (wc.toggle_button_inactive_fg);
+    setBackgroundColor (wc.toggle_button_inactive_bg);
   }
 
   return on;
@@ -458,8 +462,8 @@ bool FToggleButton::setFocus (bool on)
       if ( isRadioButton()  )
         focus_inside_group = false;
 
-      foregroundColor = wc.toggle_button_active_focus_fg;
-      backgroundColor = wc.toggle_button_active_focus_bg;
+      setForegroundColor (wc.toggle_button_active_focus_fg);
+      setBackgroundColor (wc.toggle_button_active_focus_bg);
 
       if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
         showCursor();
@@ -480,8 +484,8 @@ bool FToggleButton::setFocus (bool on)
 
     if ( isEnabled() )
     {
-      foregroundColor = wc.toggle_button_active_fg;
-      backgroundColor = wc.toggle_button_active_bg;
+      setForegroundColor (wc.toggle_button_active_fg);
+      setBackgroundColor (wc.toggle_button_active_bg);
       hideCursor();
 
       if ( statusBar() )
@@ -525,7 +529,7 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+  if ( getTermGeometry().contains(ev->getTermPos()) )
   {
     if ( isRadioButton() )
     {

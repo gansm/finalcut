@@ -250,12 +250,10 @@ Calc::Calc (FWidget* parent)
     btn->setNoUnderline();
     btn->setText(button_text[key]);
     btn->setDoubleFlatLine(fc::top);
+    btn->setDoubleFlatLine(fc::bottom);
 
     if ( isNewFont() )
       btn->unsetClickAnimation();
-
-    if ( key <= Three )
-      btn->setDoubleFlatLine(fc::bottom);
 
     btn->addCallback
     (
@@ -318,7 +316,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  gotoxy (xpos+xmin+1, ypos+ymin+1);
+  printPos (3,3);
   print(display);
   print(L' ');
   setColor(wc.dialog_fg, wc.dialog_bg);
@@ -329,15 +327,15 @@ void Calc::drawDispay()
   if ( isNewFont() )
   {
     FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));
-    gotoxy (xpos+xmin+1, ypos+ymin);
-    print(bottom_line);
-    gotoxy (xpos+xmin+0, ypos+ymin+1);
+    printPos (3,2);
+    print (bottom_line);
+    printPos (2,3);
     print (wchar_t(fc::NF_rev_border_line_right));
-    gotoxy (xpos+xmin+34, ypos+ymin+1);
+    printPos (36,3);
     print (wchar_t(fc::NF_border_line_left));
     FString top_bottom_line_5(5, wchar_t(fc::NF_border_line_up_and_down));
     FString top_line_2(2, wchar_t(fc::NF_border_line_upper));
-    gotoxy (xpos+xmin+1, ypos+ymin+2);
+    printPos (3,4);
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -349,7 +347,7 @@ void Calc::drawDispay()
     FString separator = FString(wchar_t(fc::BoxDrawingsVerticalAndRight))
                       + FString(35, wchar_t(fc::BoxDrawingsHorizontal))
                       + FString(wchar_t(fc::BoxDrawingsVerticalAndLeft));
-    gotoxy (xpos+xmin-1, ypos+ymin+2);
+    printPos (1,4);
     print(separator);
   }
 
@@ -415,8 +413,8 @@ bool Calc::isOperatorKey(int key)
 //----------------------------------------------------------------------
 void Calc::setDisplay (lDouble d)
 {
-  char buffer[32];
-  snprintf (buffer, sizeof(buffer), "%31.11Lg", d);
+  char buffer[33];
+  snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
   input = buffer;
 }
 

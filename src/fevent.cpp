@@ -63,18 +63,18 @@ FMouseEvent::FMouseEvent ( int ev_type         // constructor
                          , int button )
   : FEvent(ev_type)
   , p(pos)
-  , g()
+  , tp()
   , b(button)
 { }
 
 //----------------------------------------------------------------------
 FMouseEvent::FMouseEvent ( int ev_type         // constructor
                          , const FPoint& pos
-                         , const FPoint& globalPos
+                         , const FPoint& termPos
                          , int button )
   : FEvent(ev_type)
   , p(pos)
-  , g(globalPos)
+  , tp(termPos)
   , b(button)
 { }
 
@@ -87,8 +87,8 @@ const FPoint& FMouseEvent::getPos() const
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FMouseEvent::getGlobalPos() const
-{ return g; }
+const FPoint& FMouseEvent::getTermPos() const
+{ return tp; }
 
 //----------------------------------------------------------------------
 int FMouseEvent::getX() const
@@ -99,12 +99,12 @@ int FMouseEvent::getY() const
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getGlobalX() const
-{ return g.getX(); }
+int FMouseEvent::getTermX() const
+{ return tp.getX(); }
 
 //----------------------------------------------------------------------
-int FMouseEvent::getGlobalY() const
-{ return g.getY(); }
+int FMouseEvent::getTermY() const
+{ return tp.getY(); }
 
 //----------------------------------------------------------------------
 int FMouseEvent::getButton() const
@@ -120,18 +120,18 @@ FWheelEvent::FWheelEvent ( int ev_type         // constructor
                          , int wheel )
   : FEvent(ev_type)
   , p(pos)
-  , g()
+  , tp()
   , w(wheel)
 { }
 
 //----------------------------------------------------------------------
 FWheelEvent::FWheelEvent ( int ev_type         // constructor
                          , const FPoint& pos
-                         , const FPoint& globalPos
+                         , const FPoint& termPos
                          , int wheel )
   : FEvent(ev_type)
   , p(pos)
-  , g(globalPos)
+  , tp(termPos)
   , w(wheel)
 { }
 
@@ -144,8 +144,8 @@ const FPoint& FWheelEvent::getPos() const
 { return p; }
 
 //----------------------------------------------------------------------
-const FPoint& FWheelEvent::getGlobalPos() const
-{ return g; }
+const FPoint& FWheelEvent::getTermPos() const
+{ return tp; }
 
 //----------------------------------------------------------------------
 int FWheelEvent::getX() const
@@ -156,12 +156,12 @@ int FWheelEvent::getY() const
 { return p.getY(); }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getGlobalX() const
-{ return g.getX(); }
+int FWheelEvent::getTermX() const
+{ return tp.getX(); }
 
 //----------------------------------------------------------------------
-int FWheelEvent::getGlobalY() const
-{ return g.getY(); }
+int FWheelEvent::getTermY() const
+{ return tp.getY(); }
 
 //----------------------------------------------------------------------
 int FWheelEvent::getWheel() const

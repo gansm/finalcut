@@ -41,14 +41,13 @@ FMenuBar::~FMenuBar()
 //----------------------------------------------------------------------
 void FMenuBar::init()
 {
-  xmin = ymin = 1;
-  xpos = 1;
-  ypos = 1;
+  FWidget* r = getRootWidget();
+  int w = r->getWidth();
+  // initialize geometry values
+  setGeometry (1, 1, w, 1, false);
   createArea (vmenubar);
   vmenubar->visible = true;
-  ignore_padding = true;
-  // initialize geometry values
-  setGeometry (1, 1, getColumnNumber(), 1, false);
+  ignorePadding();
   setMenuBar(this);
 
   if ( getRootWidget() )
@@ -56,8 +55,8 @@ void FMenuBar::init()
 
   addAccelerator (fc::Fkey_f10);
   addAccelerator (fc::Fckey_space);
-  foregroundColor = wc.menu_active_fg;
-  backgroundColor = wc.menu_active_bg;
+  setForegroundColor (wc.menu_active_fg);
+  setBackgroundColor (wc.menu_active_bg);
   unsetFocusable();
 }
 
@@ -312,9 +311,6 @@ int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
 //----------------------------------------------------------------------
 void FMenuBar::draw()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
   drawItems();
 }
 
@@ -325,14 +321,12 @@ void FMenuBar::drawItems()
   int screenWidth;
   int x = 1;
   screenWidth = getColumnNumber();
-  width = screenWidth;
-  ypos = 1;
 
   if ( itemlist.empty() )
     return;
 
   updateVTerm(false);
-  gotoxy (1,1);
+  printPos (1,1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -361,22 +355,23 @@ void FMenuBar::drawItems()
       {
         if ( isMonochron() )
           setReverse(false);
-        foregroundColor = wc.menu_active_focus_fg;
-        backgroundColor = wc.menu_active_focus_bg;
+
+        setForegroundColor (wc.menu_active_focus_fg);
+        setBackgroundColor (wc.menu_active_focus_bg);
       }
       else
       {
-        foregroundColor = wc.menu_active_fg;
-        backgroundColor = wc.menu_active_bg;
+        setForegroundColor (wc.menu_active_fg);
+        setBackgroundColor (wc.menu_active_bg);
       }
     }
     else
     {
-      foregroundColor = wc.menu_inactive_fg;
-      backgroundColor = wc.menu_inactive_bg;
+      setForegroundColor (wc.menu_inactive_fg);
+      setBackgroundColor (wc.menu_inactive_bg);
     }
 
-    setColor (foregroundColor, backgroundColor);
+    setColor();
 
     if ( x < screenWidth )
     {
@@ -431,7 +426,7 @@ void FMenuBar::drawItems()
         if ( ! is_noUnderline )
           unsetUnderline();
 
-        setColor (foregroundColor, backgroundColor);
+        setColor();
       }
       else
         print (vmenubar, item_text[z]);
@@ -441,12 +436,12 @@ void FMenuBar::drawItems()
     {
       if ( startpos < screenWidth )
       {
-        gotoxy(screenWidth-1,1);
+        printPos (screenWidth - 1, 1);
         print (vmenubar, "..");
       }
       else if ( startpos-1 <= screenWidth )
       {
-        gotoxy(screenWidth,1);
+        printPos (screenWidth, 1);
         print (vmenubar, ' ');
       }
     }
@@ -646,7 +641,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
             (*iter)->setSelected();
             (*iter)->setFocus();
 
-            if ( focused_widget && ! focused_widget->isWindow() )
+            if ( focused_widget && ! focused_widget->isWindowWidget() )
               focused_widget->redraw();
 
             (*iter)->openMenu();
@@ -800,7 +795,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
     mouse_x = ev->getX();
     mouse_y = ev->getY();
 
-    if ( getGeometryGlobal().contains(ev->getGlobalPos()) )
+    if ( getTermGeometry().contains(ev->getTermPos()) )
       mouse_over_menubar = true;
 
     while ( iter != end )
@@ -822,7 +817,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           (*iter)->setSelected();
           (*iter)->setFocus();
 
-          if ( focused_widget && ! focused_widget->isWindow() )
+          if ( focused_widget && ! focused_widget->isWindowWidget() )
             focused_widget->redraw();
 
           (*iter)->openMenu();
@@ -863,16 +858,16 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
         {
           // Mouse event handover to the menu
           FMenu* menu = getSelectedItem()->getMenu();
-          const FRect& menu_geometry = menu->getGeometryGlobal();
+          const FRect& menu_geometry = menu->getTermGeometry();
 
           if (  menu->count() > 0
-             && menu_geometry.contains(ev->getGlobalPos()) )
+             && menu_geometry.contains(ev->getTermPos()) )
           {
             FMouseEvent* _ev;
-            const FPoint& g = ev->getGlobalPos();
-            const FPoint& p = menu->globalToLocalPos(g);
+            const FPoint& t = ev->getTermPos();
+            const FPoint& p = menu->termToWidgetPos(t);
             int b = ev->getButton();
-            _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+            _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
             menu->mouse_down = true;
             setClickedWidget(menu);
             menu->onMouseMove(_ev);
@@ -921,10 +916,14 @@ void FMenuBar::hide()
   bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getColumnNumber();
+
+  if ( screenWidth < 0 )
+    return;
+
   blank = new char[screenWidth+1];
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-  gotoxy (1,1);
+  printPos (1,1);
   print (vmenubar, blank);
   delete[] blank;
 }
@@ -939,23 +938,8 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::adjustSize()
 {
-  xmin = ymin = 1;
-  height = 1;
-  xpos = 1;
-  width = getColumnNumber();
-  ypos = 1;
+  setGeometry (1, 1, getColumnNumber(), 1, false);
   adjustItems();
-}
-
-//----------------------------------------------------------------------
-void FMenuBar::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
-{
-  int old_width = width;
-  int old_height = height;
-  FWidget::setGeometry (xx, yy, ww, hh, adjust);
-
-  if ( vmenubar && (width != old_width || height != old_height) )
-    resizeArea (vmenubar);
 }
 
 //----------------------------------------------------------------------

@@ -1444,7 +1444,7 @@ void FApplication::processMouseEvent()
      && menuBar()->hasSelectedItem()
      && ! b_state.mouse_moved )
   {
-    if ( ! menuBar()->getGeometryGlobal().contains(*mouse) )
+    if ( ! menuBar()->getTermGeometry().contains(*mouse) )
     {
       if ( statusBar() )
         statusBar()->clearMessage();
@@ -1466,7 +1466,7 @@ void FApplication::processMouseEvent()
 
   if ( clicked_widget )
   {
-    FPoint localMousePos;
+    FPoint widgetMousePos;
     int key_state = 0;
 
     if ( b_state.shift_button == Pressed )
@@ -1478,14 +1478,14 @@ void FApplication::processMouseEvent()
     if ( b_state.control_button == Pressed )
       key_state |= fc::ControlButton;
 
-    localMousePos = clicked_widget->globalToLocalPos(*mouse);
+    widgetMousePos = clicked_widget->termToWidgetPos(*mouse);
 
     if ( b_state.mouse_moved )
     {
       if ( b_state.left_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1494,7 +1494,7 @@ void FApplication::processMouseEvent()
       if ( b_state.right_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1503,7 +1503,7 @@ void FApplication::processMouseEvent()
       if ( b_state.middle_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1514,7 +1514,7 @@ void FApplication::processMouseEvent()
       if ( b_state.left_button == DoubleClick )
       {
         FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
-                                  , localMousePos
+                                  , widgetMousePos
                                   , *mouse
                                   , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_dblclick_ev);
@@ -1522,7 +1522,7 @@ void FApplication::processMouseEvent()
       else if ( b_state.left_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1530,7 +1530,7 @@ void FApplication::processMouseEvent()
       else if ( b_state.left_button == Released )
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , localMousePos
+                            , widgetMousePos
                             , *mouse
                             , fc::LeftButton | key_state );
         FWidget* released_widget = clicked_widget;
@@ -1545,7 +1545,7 @@ void FApplication::processMouseEvent()
       if ( b_state.right_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1553,7 +1553,7 @@ void FApplication::processMouseEvent()
       else if ( b_state.right_button == Released )
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , localMousePos
+                            , widgetMousePos
                             , *mouse
                             , fc::RightButton | key_state );
         FWidget* released_widget = clicked_widget;
@@ -1568,7 +1568,7 @@ void FApplication::processMouseEvent()
       if ( b_state.middle_button == Pressed )
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , localMousePos
+                              , widgetMousePos
                               , *mouse
                               , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
@@ -1580,7 +1580,7 @@ void FApplication::processMouseEvent()
       else if ( b_state.middle_button == Released )
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , localMousePos
+                            , widgetMousePos
                             , *mouse
                             , fc::MiddleButton | key_state );
         FWidget* released_widget = clicked_widget;
@@ -1598,7 +1598,7 @@ void FApplication::processMouseEvent()
     if ( b_state.wheel_up == Pressed )
     {
       FWheelEvent wheel_ev ( fc::MouseWheel_Event
-                           , localMousePos
+                           , widgetMousePos
                            , *mouse
                            , fc::WheelUp );
       FWidget* scroll_over_widget = clicked_widget;
@@ -1609,7 +1609,7 @@ void FApplication::processMouseEvent()
     if ( b_state.wheel_down == Pressed )
     {
       FWheelEvent wheel_ev ( fc::MouseWheel_Event
-                           , localMousePos
+                           , widgetMousePos
                            , *mouse
                            , fc::WheelDown );
       FWidget* scroll_over_widget = clicked_widget;
@@ -1865,7 +1865,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
   if ( modal_dialogs > 0 )
   {
     FWidget* window;
-    if ( widget->isWindow() )
+    if ( widget->isWindowWidget() )
       window = widget;
     else
       window = FWindow::getWindowWidget(widget);
@@ -1873,7 +1873,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
     // block events for widgets in non modal windows
     if ( window
        && (window->getFlags() & fc::modal) == 0
-       && ! window->isMenu() )
+       && ! window->isMenuWidget() )
     {
       switch ( event->type() )
       {

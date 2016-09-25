@@ -46,45 +46,47 @@
 class FMenu : public FWindow, public FMenuList
 {
  private:
-   FMenuItem* item;
-   FWidget*   super_menu;
-   FMenu*     open_sub_menu;
-   uInt       maxItemWidth;
-   bool       mouse_down;
-   bool       has_checkable_items;
+   FMenuItem*   item;
+   FWidget*     super_menu;
+   FMenu*       open_sub_menu;
+   uInt         maxItemWidth;
+   bool         mouse_down;
+   bool         has_checkable_items;
 
  private:
    FMenu (const FMenu&);
    FMenu& operator = (const FMenu&);
-   void       init(FWidget*);
-   void       menu_dimension();
-   void       adjustItems();
-   int        adjustX(int);
-   bool       isWindowsMenu (FWidget*) const;
-   bool       isMenuBar (FWidget*) const;
-   bool       isMenu (FWidget*) const;
-   bool       isRadioMenuItem (FWidget*) const;
-   FWidget*   getSuperMenu() const;
-   void       setSuperMenu (FWidget*);
-   bool       isSubMenu() const;
-   void       openSubMenu (FMenu*);
-   void       hideSubMenus();
-   void       hideSuperMenus();
-   bool       containsMenuStructure (const FPoint&) const;
-   bool       containsMenuStructure (int, int) const;
-   FMenu*     superMenuAt (const FPoint&) const;
-   FMenu*     superMenuAt (int, int) const;
-   bool       selectNextItem();
-   bool       selectPrevItem();
-   void       keypressMenuBar (FKeyEvent*&);
-   bool       hotkeyMenu (FKeyEvent*&);
-   int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void       draw();
-   void       drawBorder();
-   void       drawMenuShadow();
-   void       drawItems();
-   void       drawSeparator(int);
-   void       processActivate();
+   void         init(FWidget*);
+   void         menu_dimension();
+   void         adjustItems();
+   int          adjustX(int);
+   bool         isWindowsMenu (FWidget*) const;
+   bool         isMenuBar (FWidget*) const;
+   bool         isMenu (FWidget*) const;
+   bool         isRadioMenuItem (FWidget*) const;
+   FWidget*     getSuperMenu() const;
+   void         setSuperMenu (FWidget*);
+   bool         isSubMenu() const;
+   void         openSubMenu (FMenu*);
+   void         hideSubMenus();
+   void         hideSuperMenus();
+   bool         containsMenuStructure (const FPoint&);
+   bool         containsMenuStructure (int, int);
+   FMenu*       superMenuAt (const FPoint&);
+   FMenu*       superMenuAt (int, int);
+   bool         selectNextItem();
+   bool         selectPrevItem();
+   void         keypressMenuBar (FKeyEvent*&);
+   bool         hotkeyMenu (FKeyEvent*&);
+   int          getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+   void         draw();
+   // make every drawBorder from FWidget available
+   using FWidget::drawBorder;
+   virtual void drawBorder();
+   void         drawMenuShadow();
+   void         drawItems();
+   void         drawSeparator(int);
+   void         processActivate();
 
  public:
    explicit FMenu (FWidget* = 0);  // constructor
@@ -115,6 +117,9 @@ class FMenu : public FWindow, public FMenuList
    void       setSelected();
    void       unsetSelected();
    bool       isSelected() const;
+   bool       setMenuWidget (bool);
+   bool       setMenuWidget();
+   bool       unsetMenuWidget();
    bool       hasHotkey() const;
    void       setMenu (FMenu*);
    bool       hasMenu() const;
@@ -148,11 +153,11 @@ inline void FMenu::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
 
 //----------------------------------------------------------------------
-inline bool FMenu::containsMenuStructure (const FPoint& p) const
+inline bool FMenu::containsMenuStructure (const FPoint& p)
 { return containsMenuStructure (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------
-inline FMenu* FMenu::superMenuAt (const FPoint& p) const
+inline FMenu* FMenu::superMenuAt (const FPoint& p)
 { return superMenuAt (p.getX(), p.getY()); }
 
 //----------------------------------------------------------------------
@@ -202,6 +207,13 @@ inline void FMenu::unsetSelected()
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const
 { return item->isSelected(); }
+//----------------------------------------------------------------------
+inline bool FMenu::setMenuWidget()
+{ return setMenuWidget(true); }
+
+//----------------------------------------------------------------------
+inline bool FMenu::unsetMenuWidget()
+{ return setMenuWidget(false); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasHotkey() const

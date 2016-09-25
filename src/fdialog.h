@@ -65,9 +65,14 @@ class FDialog : public FWindow
    FDialog (const FDialog&);
    FDialog& operator = (const FDialog&);
    void         init();
-   void         drawBorder();
+   // make every drawBorder from FWidget available
+   using FWidget::drawBorder;
+   virtual void drawBorder();
    void         drawTitleBar();
    void         leaveMenu();
+   void         openMenu();
+   void         selectFirstMenuItem();
+   void         setZoomItem();
    void         cb_zoom (FWidget*, void*);
    void         cb_close (FWidget*, void*);
    static void  addDialog (FWidget*);
@@ -104,26 +109,29 @@ class FDialog : public FWindow
    void     move (const FPoint&);
    void     move (int, int);
 
-   bool     setFocus(bool);
+   bool     setFocus (bool);
    bool     setFocus();
    bool     unsetFocus();
-   bool     setModal(bool);
+   bool     setDialogWidget (bool);
+   bool     setDialogWidget();
+   bool     unsetDialogWidget();
+   bool     setModal (bool);
    bool     setModal();
    bool     unsetModal();
    bool     isModal();
-   bool     setScrollable(bool);
+   bool     setScrollable (bool);
    bool     setScrollable();
    bool     unsetScrollable();
    bool     isScrollable();
-   bool     setResizeable(bool);
+   bool     setResizeable (bool);
    bool     setResizeable();
    bool     unsetResizeable();
    bool     isResizeable();
-   bool     setTransparentShadow(bool);
+   bool     setTransparentShadow (bool);
    bool     setTransparentShadow();
    bool     unsetTransparentShadow();
    bool     hasTransparentShadow();
-   bool     setShadow(bool);
+   bool     setShadow (bool);
    bool     setShadow();
    bool     unsetShadow();
    bool     hasShadow();
@@ -147,6 +155,14 @@ inline bool FDialog::setFocus()
 //----------------------------------------------------------------------
 inline bool FDialog::unsetFocus()
 { return setFocus(false); }
+
+//----------------------------------------------------------------------
+inline bool FDialog::setDialogWidget()
+{ return setDialogWidget(true); }
+
+//----------------------------------------------------------------------
+inline bool FDialog::unsetDialogWidget()
+{ return setDialogWidget(false); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setModal()

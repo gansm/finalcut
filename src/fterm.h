@@ -410,6 +410,8 @@ class FTerm
    static FString getAnswerbackMsg();
    static FString getSecDA();
 
+   static void    printPosTerm (const FPoint&);
+   static void    printPosTerm (register int, register int);
    int            printf (const wchar_t*, ...);
    int            printf (const char*, ...)
    #if defined(__clang__)
@@ -655,6 +657,14 @@ inline bool FTerm::unsetRawMode()
 //----------------------------------------------------------------------
 inline bool FTerm::setCookedMode()
 { return setRawMode(false); }
+
+//----------------------------------------------------------------------
+inline void FTerm::printPosTerm (const FPoint& pos)
+{ printPosTerm (pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline void FTerm::printPosTerm (register int x, register int y)
+{ cursor->setPoint(x,y); }
 
 
 #endif  // _FTERM_H

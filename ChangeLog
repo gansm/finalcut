@@ -1,3 +1,21 @@
+2016-09-25  Markus Gans  <guru.mail@muenster.de>
+	* Splitting gotoxy in printPos (local position) 
+	  and printPosTerm (global terminal position)
+	* Replacing the widget position variables by FRect objects
+	* Rename getGeometryShadow() to getGeometryWithShadow()
+	* Rename getGeometryGlobal() to getTermGeometry()
+	* Rename getGeometryGlobalShadow() to getTermGeometryWithShadow()
+	* Rename globalToLocalPos() to termToWidgetPos()
+	* Rename getGlobalX() to getTermX()
+	* Rename getGlobalY() to getTermY()
+	* Rename getGlobalPos() to getTermPos()
+	* setColor() without parameters sets the default widget colors
+	* New methods setMinimumSize(), setMaximumSize(), setFixedSize() 
+	  and setSize()
+
+2016-09-12  Markus Gans  <guru.mail@muenster.de>
+	* Activate the title bar menu with ctrl+^
+
 2016-09-11  Markus Gans  <guru.mail@muenster.de>
 	* New zoom interaction-elements to maximize a FDialog
 
@@ -346,7 +364,7 @@
 
 2015-08-08  Markus Gans  <guru.mail@muenster.de>
 	* Bug fix in FDialog (use GlobalPos to move)
-	* Don't check mouse click position on titlebar again 
+	* Don't check mouse click position on title bar again 
 	  while FDialog is in move
 
 2015-07-26  Markus Gans  <guru.mail@muenster.de>

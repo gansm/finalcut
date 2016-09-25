@@ -76,9 +76,6 @@ class FMenuBar : public FWindow, public FMenuList
    void       hide();
    void       resetMenu();
    void       adjustSize();
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void       setGeometry (int, int, int, int, bool = true);
    void       cb_item_deactivated (FWidget*, void*);
 
  private:

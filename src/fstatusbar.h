@@ -168,9 +168,6 @@ class FStatusBar : public FWindow
    void onMouseUp (FMouseEvent*);
    void onMouseMove (FMouseEvent*);
    void hide();
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool = true);
 
    uInt count() const;
    FStatusKey* key (int) const;

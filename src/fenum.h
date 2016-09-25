@@ -51,15 +51,18 @@ class fc
    // properties of a widget
    enum widget_flags
    {
-     shadow       = 0x00000001,
-     trans_shadow = 0x00000002,
-     active       = 0x00000004,
-     focus        = 0x00000008,
-     scrollable   = 0x00000010,
-     resizeable   = 0x00000020,
-     modal        = 0x00000040,
-     flat         = 0x00000080,
-     no_underline = 0x00000100
+     shadow        = 0x00000001,
+     trans_shadow  = 0x00000002,
+     active        = 0x00000004,
+     focus         = 0x00000008,
+     scrollable    = 0x00000010,
+     resizeable    = 0x00000020,
+     modal         = 0x00000040,
+     window_widget = 0x00000080,
+     dialog_widget = 0x00000100,
+     menu_widget   = 0x00000200,
+     flat          = 0x00000400,
+     no_underline  = 0x00000800
    };
 
    // internal character encoding

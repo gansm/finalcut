@@ -54,8 +54,8 @@ void FRadioButton::drawRadioButton()
   if ( ! isVisible() )
     return;
 
-  gotoxy (xpos+xmin-1, ypos+ymin-1);
-  setColor (foregroundColor, backgroundColor);
+  printPos (1,1);
+  setColor();
 
   if ( isMonochron() )
   {
