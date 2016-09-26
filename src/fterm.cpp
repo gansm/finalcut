@@ -34,7 +34,7 @@ uInt     FTerm::baudrate;
 uInt     FTerm::tabstop;
 uInt     FTerm::attr_without_color;
 bool     FTerm::resize_term;
-bool     FTerm::hiddenCursor;
+bool     FTerm::hidden_cursor;
 bool     FTerm::mouse_support;
 bool     FTerm::raw_mode;
 bool     FTerm::input_data_pending;
@@ -93,8 +93,8 @@ char                   FTerm::exit_message[8192] = "";
 fc::encoding           FTerm::Encoding;
 const FString*         FTerm::xterm_font         = 0;
 const FString*         FTerm::xterm_title        = 0;
-const FString*         FTerm::AnswerBack         = 0;
-const FString*         FTerm::Sec_DA             = 0;
+const FString*         FTerm::answer_back        = 0;
+const FString*         FTerm::sec_da             = 0;
 FOptiMove*             FTerm::opti_move          = 0;
 FOptiAttr*             FTerm::opti_attr          = 0;
 FTerm::modifier_key    FTerm::mod_key;
@@ -109,10 +109,9 @@ std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set       = 0;
 FOptiAttr::char_data   FTerm::term_attribute;
 FOptiAttr::char_data   FTerm::next_attribute;
-console_font_op        FTerm::screenFont;
-unimapdesc             FTerm::screenUnicodeMap;
-fc::console_cursor_style \
-                       FTerm::consoleCursorStyle;
+console_font_op        FTerm::screen_font;
+unimapdesc             FTerm::screen_unicode_map;
+fc::consoleCursorStyle FTerm::console_cursor_style;
 
 
 //----------------------------------------------------------------------
@@ -373,10 +372,10 @@ int FTerm::getScreenFont()
 
   if ( ret == 0 )
   {
-    screenFont.width = font.width;
-    screenFont.height = font.height;
-    screenFont.charcount = font.charcount;
-    screenFont.data = font.data;
+    screen_font.width = font.width;
+    screen_font.height = font.height;
+    screen_font.charcount = font.charcount;
+    screen_font.data = font.data;
     return 0;
   }
   else
@@ -484,8 +483,8 @@ int FTerm::getUnicodeMap()
 
     if ( ret == 0 )
     {
-      screenUnicodeMap.entry_ct = unimap.entry_ct;
-      screenUnicodeMap.entries = unimap.entries;
+      screen_unicode_map.entry_ct = unimap.entry_ct;
+      screen_unicode_map.entries = unimap.entries;
     }
     else
       return -1;
@@ -734,8 +733,8 @@ void FTerm::getModifierKey()
 void FTerm::init_console()
 {
   fd_tty = -1;
-  screenUnicodeMap.entries = 0;
-  screenFont.data = 0;
+  screen_unicode_map.entries = 0;
+  screen_font.data = 0;
 
   if ( openConsole() == 0 )
   {
@@ -785,15 +784,15 @@ uInt FTerm::getBaudRate (const struct termios* termios_p)
 //----------------------------------------------------------------------
 void FTerm::init_consoleCharMap()
 {
-  if ( screenUnicodeMap.entry_ct != 0 )
+  if ( screen_unicode_map.entry_ct != 0 )
   {
     for (int i=0; i <= lastCharItem; i++ )
     {
       bool found = false;
 
-      for (uInt n=0; n < screenUnicodeMap.entry_ct; n++)
+      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
       {
-        if ( character[i][fc::UTF8] == screenUnicodeMap.entries[n].unicode )
+        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
         {
           found = true;
           break;
@@ -928,9 +927,9 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
   char* new_termtype = current_termtype;
 
   // send ENQ and read the answerback message
-  AnswerBack = new FString(getAnswerbackMsg());
+  answer_back = new FString(getAnswerbackMsg());
 
-  if ( AnswerBack && *AnswerBack == FString("PuTTY") )
+  if ( answer_back && *answer_back == FString("PuTTY") )
   {
     putty_terminal = true;
 
@@ -960,36 +959,36 @@ char* FTerm::parseSecDA (char*& current_termtype)
     return new_termtype;
 
   // secondary device attributes (SEC_DA) <- decTerminalID string
-  Sec_DA = new FString(getSecDA());
+  sec_da = new FString(getSecDA());
 
-  if ( Sec_DA && Sec_DA->getLength() > 5 )
+  if ( sec_da && sec_da->getLength() > 5 )
   {
     uLong num_components;
 
     // remove the first 3 bytes ("\033[>")
-    FString temp = Sec_DA->right(Sec_DA->getLength() - 3);
+    FString temp = sec_da->right(sec_da->getLength() - 3);
     // remove the last byte ("c")
     temp.remove(temp.getLength()-1, 1);
     // split into components
-    std::vector<FString> Sec_DA_split = temp.split(';');
+    std::vector<FString> sec_da_split = temp.split(';');
 
-    num_components = Sec_DA_split.size();
+    num_components = sec_da_split.size();
 
     if ( num_components == 3 )
       sec_da_supported = true;
 
     if ( num_components >= 2 )
     {
-      FString* Sec_DA_components = &Sec_DA_split[0];
+      FString* sec_da_components = &sec_da_split[0];
 
-      if ( ! Sec_DA_components[0].isEmpty() )
+      if ( ! sec_da_components[0].isEmpty() )
       {
         int terminal_id_type, terminal_id_version;
 
         // Read the terminal type
         try
         {
-          terminal_id_type = Sec_DA_components[0].toInt();
+          terminal_id_type = sec_da_components[0].toInt();
         }
         catch (const std::exception&)
         {
@@ -999,8 +998,8 @@ char* FTerm::parseSecDA (char*& current_termtype)
         // Read the terminal (firmware) version
         try
         {
-          if ( Sec_DA_components[1] )
-            terminal_id_version = Sec_DA_components[1].toInt();
+          if ( sec_da_components[1] )
+            terminal_id_version = sec_da_components[1].toInt();
           else
             terminal_id_version = -1;
         }
@@ -1672,7 +1671,7 @@ void FTerm::init()
   NewFont                = \
   VGAFont                = \
   ascii_console          = \
-  hiddenCursor           = \
+  hidden_cursor          = \
   mouse_support          = \
   force_vt100            = \
   tera_terminal          = \
@@ -2114,11 +2113,11 @@ void FTerm::finish()
     setOldFont();
   else
   {
-    if ( screenFont.data != 0 )
-      delete[] screenFont.data;
+    if ( screen_font.data != 0 )
+      delete[] screen_font.data;
 
-    if ( screenUnicodeMap.entries != 0 )
-      delete[] screenUnicodeMap.entries;
+    if ( screen_unicode_map.entries != 0 )
+      delete[] screen_unicode_map.entries;
   }
 
   if ( encoding_set )
@@ -2130,11 +2129,11 @@ void FTerm::finish()
   if ( output_buffer )
     delete output_buffer;
 
-  if ( Sec_DA )
-    delete Sec_DA;
+  if ( sec_da )
+    delete sec_da;
 
-  if ( AnswerBack )
-    delete AnswerBack;
+  if ( answer_back )
+    delete answer_back;
 
   if ( xterm_title )
     delete xterm_title;
@@ -3295,23 +3294,23 @@ bool FTerm::setOldFont()
     {
       if ( isConsole() )
       {
-        if ( screenFont.data )
+        if ( screen_font.data )
         {
-          int ret = setScreenFont ( screenFont.data
-                                  , screenFont.charcount
-                                  , screenFont.width
-                                  , screenFont.height
+          int ret = setScreenFont ( screen_font.data
+                                  , screen_font.charcount
+                                  , screen_font.width
+                                  , screen_font.height
                                   , true );
-          delete[] screenFont.data;
+          delete[] screen_font.data;
 
           if ( ret == 0 )
             retval = true;
         }
 
-        if ( screenUnicodeMap.entries )
+        if ( screen_unicode_map.entries )
         {
-          setUnicodeMap (&screenUnicodeMap);
-          delete[] screenUnicodeMap.entries;
+          setUnicodeMap (&screen_unicode_map);
+          delete[] screen_unicode_map.entries;
         }
 
       }
@@ -3325,14 +3324,14 @@ bool FTerm::setOldFont()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setConsoleCursor (fc::console_cursor_style style)
+void FTerm::setConsoleCursor (fc::consoleCursorStyle style)
 {
   // Set cursor style in linux console
   if ( linux_terminal )
   {
-    consoleCursorStyle = style;
+    console_cursor_style = style;
 
-    if ( hiddenCursor )
+    if ( hidden_cursor )
       return;
 
     putstringf (CSI "?%dc", style);
@@ -3583,7 +3582,7 @@ void FTerm::updateTerminal (bool on)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setKDECursor (fc::kde_konsole_CursorShape style)
+void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 {
   // Set cursor style in KDE konsole
   if ( kde_konsole )
@@ -3658,7 +3657,7 @@ FString FTerm::getXTermTitle()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setXTermCursorStyle (fc::xterm_cursor_style style)
+void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
   if ( (xterm || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
@@ -4097,8 +4096,8 @@ bool FTerm::hideCursor (bool on)
 {
   char *vi, *vs, *ve;
 
-  if ( on == hiddenCursor )
-    return hiddenCursor;
+  if ( on == hidden_cursor )
+    return hidden_cursor;
 
   vi = tcap[t_cursor_invisible].string;
   vs = tcap[t_cursor_visible].string;
@@ -4109,7 +4108,7 @@ bool FTerm::hideCursor (bool on)
     if ( vi )
       appendOutputBuffer (vi);
 
-    hiddenCursor = true;  // global
+    hidden_cursor = true;  // global
   }
   else
   {
@@ -4118,15 +4117,15 @@ bool FTerm::hideCursor (bool on)
     else if ( vs )
       appendOutputBuffer (vs);
 
-    hiddenCursor = false;
+    hidden_cursor = false;
   }
 
   flush_out();
 
-  if ( ! hiddenCursor && linux_terminal )
-    setConsoleCursor (consoleCursorStyle);
+  if ( ! hidden_cursor && linux_terminal )
+    setConsoleCursor (console_cursor_style);
 
-  return hiddenCursor;
+  return hidden_cursor;
 }
 
 //----------------------------------------------------------------------
@@ -4334,7 +4333,7 @@ FString FTerm::getAnswerbackMsg()
 //----------------------------------------------------------------------
 FString FTerm::getSecDA()
 {
-  FString sec_da = "";
+  FString sec_da_str = "";
 
   if ( raw_mode )
   {
@@ -4365,12 +4364,12 @@ FString FTerm::getSecDA()
       if ( n > 0 )
       {
         temp[n] = '\0';
-        sec_da = temp;
+        sec_da_str = temp;
       }
     }
   }
 
-  return sec_da;
+  return sec_da_str;
 }
 
 //----------------------------------------------------------------------

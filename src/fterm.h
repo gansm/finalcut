@@ -104,7 +104,7 @@ class FTerm
    static std::map <uChar,uChar>* vt100_alt_char;
    static std::map <std::string,fc::encoding>* encoding_set;
 
-   static bool    hiddenCursor;
+   static bool    hidden_cursor;
    static bool    mouse_support;
    static bool    raw_mode;
    static bool    input_data_pending;
@@ -168,16 +168,16 @@ class FTerm
    static FOptiAttr::char_data term_attribute;
    static FOptiAttr::char_data next_attribute;
 
-   static fc::console_cursor_style consoleCursorStyle;
-   static struct console_font_op screenFont;
-   static struct unimapdesc      screenUnicodeMap;
+   static fc::consoleCursorStyle console_cursor_style;
+   static struct console_font_op screen_font;
+   static struct unimapdesc      screen_unicode_map;
 
    static FOptiMove*     opti_move;
    static FOptiAttr*     opti_attr;
    static const FString* xterm_font;
    static const FString* xterm_title;
-   static const FString* AnswerBack;
-   static const FString* Sec_DA;
+   static const FString* answer_back;
+   static const FString* sec_da;
 
    typedef struct
    {
@@ -336,7 +336,7 @@ class FTerm
    static bool    isNewFont();
    static bool    setOldFont();
    static bool    setCursorOptimisation (bool);
-   static void    setConsoleCursor (fc::console_cursor_style);
+   static void    setConsoleCursor (fc::consoleCursorStyle);
    static void    getTermSize();
    static void    setTermSize (int, int);
    void           createVTerm();
@@ -344,10 +344,10 @@ class FTerm
    static void    putVTerm();
    static void    updateTerminal();
    static void    updateTerminal (bool);
-   static void    setKDECursor (fc::kde_konsole_CursorShape);
+   static void    setKDECursor (fc::kdeKonsoleCursorShape);
    static FString getXTermFont();
    static FString getXTermTitle();
-   static void    setXTermCursorStyle (fc::xterm_cursor_style);
+   static void    setXTermCursorStyle (fc::xtermCursorStyle);
    static void    setXTermTitle (const FString&);
    static void    setXTermForeground (const FString&);
    static void    setXTermBackground (const FString&);
@@ -553,7 +553,7 @@ inline bool FTerm::isNewFont()
 
 //----------------------------------------------------------------------
 inline bool FTerm::isHiddenCursor()
-{ return hiddenCursor; }
+{ return hidden_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMonochron()

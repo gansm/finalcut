@@ -30,10 +30,10 @@ FMessageBox::FMessageBox(FWidget* parent)
   , text()
   , text_components(0)
   , text_split()
-  , maxLineWidth(0)
+  , max_line_width(0)
   , center_text(false)
   , emphasis_color(wc.dialog_emphasis_fg)
-  , numButtons(0)
+  , num_buttons(0)
   , text_num_lines(0)
   , button_digit()
   , button()
@@ -49,10 +49,10 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , text(mbox.text)
   , text_components(mbox.text_components)
   , text_split(mbox.text_split)
-  , maxLineWidth(mbox.maxLineWidth)
+  , max_line_width(mbox.max_line_width)
   , center_text(mbox.center_text)
   , emphasis_color(mbox.emphasis_color)
-  , numButtons(mbox.numButtons)
+  , num_buttons(mbox.num_buttons)
   , text_num_lines(mbox.text_num_lines)
   , button_digit()
   , button()
@@ -75,10 +75,10 @@ FMessageBox::FMessageBox ( const FString& caption
   , text(message)
   , text_components(0)
   , text_split()
-  , maxLineWidth(0)
+  , max_line_width(0)
   , center_text(false)
   , emphasis_color(wc.dialog_emphasis_fg)
-  , numButtons(0)
+  , num_buttons(0)
   , text_num_lines(0)
   , button_digit()
   , button()
@@ -90,7 +90,7 @@ FMessageBox::FMessageBox ( const FString& caption
 //----------------------------------------------------------------------
 FMessageBox::~FMessageBox()  // destructor
 {
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
     delete button[n];
 
   delete button_digit[2];
@@ -103,7 +103,7 @@ FMessageBox::~FMessageBox()  // destructor
 //----------------------------------------------------------------------
 void FMessageBox::init(int button0, int button1, int button2)
 {
-  msg_dimension();
+  calculateDimensions();
 
   if ( (button2 && ! button1) || (button1 && ! button0) )
   {
@@ -114,11 +114,11 @@ void FMessageBox::init(int button0, int button1, int button2)
     button0 = FMessageBox::Ok;
 
   if ( button1 == 0 && button2 == 0 )
-    numButtons = 1;
+    num_buttons = 1;
   else if ( button2 == 0 )
-    numButtons = 2;
+    num_buttons = 2;
   else
-    numButtons = 3;
+    num_buttons = 3;
 
   button_digit[0] = new int(button0);
   button_digit[1] = new int(button1);
@@ -186,7 +186,7 @@ void FMessageBox::init(int button0, int button1, int button2)
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::msg_dimension()
+void FMessageBox::calculateDimensions()
 {
   int x, y, w, h;
   int headline_height = 0;
@@ -194,7 +194,7 @@ void FMessageBox::msg_dimension()
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
   text_components = &text_split[0];
-  maxLineWidth = 0;
+  max_line_width = 0;
 
   if ( ! headline_text.isNull() )
     headline_height = 2;
@@ -203,12 +203,12 @@ void FMessageBox::msg_dimension()
   {
     uInt len = text_components[i].getLength();
 
-    if ( len > maxLineWidth )
-      maxLineWidth = len;
+    if ( len > max_line_width )
+      max_line_width = len;
   }
 
   h = int(text_num_lines) + 8 + headline_height;
-  w = int(maxLineWidth + 4);
+  w = int(max_line_width + 4);
 
   if ( w < 20 )
     w = 20;
@@ -231,7 +231,7 @@ void FMessageBox::draw()
 
   int head_offset = 0;
   int center_x = 0;
-  int msg_x = int((getWidth() - int(maxLineWidth)) / 2);  // center the whole block
+  int msg_x = int((getWidth() - int(max_line_width)) / 2);  // center the whole block
   updateVTerm(false);
 
   if ( isMonochron() )
@@ -243,7 +243,7 @@ void FMessageBox::draw()
     uInt headline_length = headline_text.getLength();
 
     if ( center_text )  // center one line
-      center_x = int((maxLineWidth - headline_length) / 2);
+      center_x = int((max_line_width - headline_length) / 2);
 
     printPos (1 + msg_x + center_x, 4);
     print (headline_text);
@@ -257,7 +257,7 @@ void FMessageBox::draw()
     uInt line_length = text_components[i].getLength();
 
     if ( center_text )  // center one line
-      center_x = int((maxLineWidth - line_length) / 2);
+      center_x = int((max_line_width - line_length) / 2);
 
     printPos (1 + msg_x + center_x, 4 + head_offset + i);
     print(text_components[i]);
@@ -274,7 +274,7 @@ void FMessageBox::resizeButtons()
 {
   uInt len[3], max_size;
 
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
   {
     len[n] = button[n]->getText().getLength();
 
@@ -282,21 +282,21 @@ void FMessageBox::resizeButtons()
       len[n]--;
   }
 
-  if ( numButtons == 1 )
+  if ( num_buttons == 1 )
     max_size = len[0];
   else
   {
-    assert ( numButtons > 1 );
+    assert ( num_buttons > 1 );
     max_size = std::max(len[0], len[1]);
 
-    if ( numButtons == 3 )
+    if ( num_buttons == 3 )
       max_size = std::max(max_size, len[2]);
   }
 
   if ( max_size < 7 )
     max_size = 7;
 
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
     button[n]->setWidth(int(max_size + 3), false);
 }
 
@@ -306,9 +306,9 @@ void FMessageBox::adjustButtons()
   int btn_width=0;
   int gap = 4;
 
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
   {
-    if ( n == numButtons-1 )
+    if ( n == num_buttons-1 )
       btn_width += button[n]->getWidth();
     else
       btn_width += button[n]->getWidth() + gap;
@@ -325,7 +325,7 @@ void FMessageBox::adjustButtons()
 
   int btn_x = int((getWidth()-btn_width) / 2);
 
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
   {
     if ( n == 0 )
       button[n]->setX(btn_x);
@@ -378,7 +378,7 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     return *this;
   else
   {
-    for (uInt n=0; n < numButtons; n++)
+    for (uInt n=0; n < num_buttons; n++)
       delete button[n];
 
     delete button_digit[2];
@@ -392,10 +392,10 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     text            = mbox.text;
     text_components = mbox.text_components;
     text_split      = mbox.text_split;
-    maxLineWidth    = mbox.maxLineWidth;
+    max_line_width  = mbox.max_line_width;
     center_text     = mbox.center_text;
     emphasis_color  = mbox.emphasis_color;
-    numButtons      = mbox.numButtons;
+    num_buttons     = mbox.num_buttons;
     text_num_lines  = mbox.text_num_lines;
 
     setTitlebarText (mbox.getTitlebarText());
@@ -414,13 +414,13 @@ void FMessageBox::setHeadline (const FString& headline)
   headline_text = headline;
   setHeight(getHeight() + 2, true);
 
-  for (uInt n=0; n < numButtons; n++)
+  for (uInt n=0; n < num_buttons; n++)
     button[n]->setY(getHeight()-4, false);
 
   uInt len = headline_text.getLength();
 
-  if ( len > maxLineWidth )
-    maxLineWidth = len;
+  if ( len > max_line_width )
+    max_line_width = len;
 
   if ( vwin && getHeight() != old_height )
     resizeArea (vwin);
@@ -444,7 +444,7 @@ void FMessageBox::setHeadline (const char* headline)
 void FMessageBox::setText (const FString& txt)
 {
   text = txt;
-  msg_dimension();
+  calculateDimensions();
   button[0]->setY(getHeight()-4, false);
 
   if ( *button_digit[1] != 0 )

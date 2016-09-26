@@ -29,14 +29,14 @@ typedef unsigned short uInt16;
 typedef unsigned int   uInt32;
 typedef u_int64_t      uInt64;
 
-typedef signed int   sInt;
-typedef signed long  sLong;
-typedef signed char  sInt8;
-typedef signed short sInt16;
-typedef signed int   sInt32;
-typedef int64_t      sInt64;
+typedef signed int     sInt;
+typedef signed long    sLong;
+typedef signed char    sInt8;
+typedef signed short   sInt16;
+typedef signed int     sInt32;
+typedef int64_t        sInt64;
 
-typedef long double  lDouble;
+typedef long double    lDouble;
 
 //----------------------------------------------------------------------
 // class FObject
@@ -57,11 +57,12 @@ class FObject
      timeval   timeout;
      FObject*  object;
    };
+
    typedef std::vector<timer_data> TimerList;
    static TimerList* timer_list;
 
  private:
-   FObject*     parentObj;
+   FObject*     parent_obj;
    object_list  children_list;
    bool         has_parent;
    static bool  modify_timer;
@@ -103,7 +104,7 @@ inline const char* FObject::getClassName() const
 
 //----------------------------------------------------------------------
 inline FObject* FObject::getParent() const
-{ return parentObj; }
+{ return parent_obj; }
 
 //----------------------------------------------------------------------
 inline bool FObject::hasParent() const
@@ -111,7 +112,7 @@ inline bool FObject::hasParent() const
 
 //----------------------------------------------------------------------
 inline void FObject::removeParent()
-{ parentObj = 0; }
+{ parent_obj = 0; }
 
 //----------------------------------------------------------------------
 inline FObject::object_list FObject::getChildren() const

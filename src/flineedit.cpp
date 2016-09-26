@@ -17,9 +17,9 @@ FLineEdit::FLineEdit(FWidget* parent)
   , text("")
   , label_text("")
   , label(new FLabel("", parent))
-  , dragScroll(FLineEdit::noScroll)
-  , scrollTimer(false)
-  , scrollRepeat(100)
+  , drag_scroll(FLineEdit::noScroll)
+  , scroll_timer(false)
+  , scroll_repeat(100)
   , insert_mode(true)
   , cursor_pos(0)
   , text_offset(0)
@@ -34,9 +34,9 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
   , text(txt)
   , label_text("")
   , label(new FLabel("", parent))
-  , dragScroll(FLineEdit::noScroll)
-  , scrollTimer(false)
-  , scrollRepeat(100)
+  , drag_scroll(FLineEdit::noScroll)
+  , scroll_timer(false)
+  , scroll_repeat(100)
   , insert_mode(true)
   , cursor_pos(0)
   , text_offset(0)
@@ -612,11 +612,11 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FLineEdit::onMouseUp (FMouseEvent*)
 {
-  if ( dragScroll != FLineEdit::noScroll )
+  if ( drag_scroll != FLineEdit::noScroll )
   {
     delOwnTimer();
-    dragScroll = FLineEdit::noScroll;
-    scrollTimer = false;
+    drag_scroll = FLineEdit::noScroll;
+    scroll_timer = false;
   }
 }
 
@@ -647,41 +647,41 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   if ( mouse_x < 2 )
   {
     // drag left
-    if ( ! scrollTimer && text_offset > 0 )
+    if ( ! scroll_timer && text_offset > 0 )
     {
-      scrollTimer = true;
-      addTimer(scrollRepeat);
-      dragScroll = FLineEdit::scrollLeft;
+      scroll_timer = true;
+      addTimer(scroll_repeat);
+      drag_scroll = FLineEdit::scrollLeft;
     }
 
     if ( text_offset == 0 )
     {
       delOwnTimer();
-      dragScroll = FLineEdit::noScroll;
+      drag_scroll = FLineEdit::noScroll;
     }
   }
   else if ( mouse_x >= getWidth() )
   {
     // drag right
-    if ( ! scrollTimer && text_offset <= len-getWidth()+1 )
+    if ( ! scroll_timer && text_offset <= len-getWidth()+1 )
     {
-      scrollTimer = true;
-      addTimer(scrollRepeat);
-      dragScroll = FLineEdit::scrollRight;
+      scroll_timer = true;
+      addTimer(scroll_repeat);
+      drag_scroll = FLineEdit::scrollRight;
     }
 
     if ( text_offset == len-getWidth()+2 )
     {
       delOwnTimer();
-      dragScroll = FLineEdit::noScroll;
+      drag_scroll = FLineEdit::noScroll;
     }
   }
   else
   {
     // no dragging
     delOwnTimer();
-    scrollTimer = false;
-    dragScroll = FLineEdit::noScroll;
+    scroll_timer = false;
+    drag_scroll = FLineEdit::noScroll;
   }
 }
 
@@ -690,7 +690,7 @@ void FLineEdit::onTimer (FTimerEvent*)
 {
   int len = int(text.getLength());
 
-  switch ( dragScroll )
+  switch ( drag_scroll )
   {
     case FLineEdit::noScroll:
       return;
@@ -698,7 +698,7 @@ void FLineEdit::onTimer (FTimerEvent*)
     case FLineEdit::scrollLeft:
       if ( text_offset == 0)
       {
-        dragScroll = FLineEdit::noScroll;
+        drag_scroll = FLineEdit::noScroll;
         return;
       }
 
@@ -717,7 +717,7 @@ void FLineEdit::onTimer (FTimerEvent*)
     case FLineEdit::scrollRight:
       if ( text_offset == len-getWidth()+2 )
       {
-        dragScroll = FLineEdit::noScroll;
+        drag_scroll = FLineEdit::noScroll;
         return;
       }
 

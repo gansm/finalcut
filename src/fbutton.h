@@ -37,16 +37,16 @@ class FButton : public FWidget
 {
  private:
    FString text;
-   bool  button_down;
-   bool  click_animation;
-   int   click_time;
-   short button_fg;
-   short button_bg;
-   short button_hotkey_fg;
-   short button_focus_fg;
-   short button_focus_bg;
-   short button_inactive_fg;
-   short button_inactive_bg;
+   bool    button_down;
+   bool    click_animation;
+   int     click_time;
+   short   button_fg;
+   short   button_bg;
+   short   button_hotkey_fg;
+   short   button_focus_fg;
+   short   button_focus_bg;
+   short   button_inactive_fg;
+   short   button_inactive_bg;
 
  private:
    FButton (const FButton&);

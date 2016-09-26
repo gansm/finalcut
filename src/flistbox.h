@@ -40,9 +40,9 @@
 class FListBoxItem
 {
  private:
-   FString text;
+   FString           text;
    fc::brackets_type brackets;
-   bool selected;
+   bool              selected;
 
  public:
    FListBoxItem ();
@@ -90,7 +90,7 @@ inline void FListBoxItem::setText (const char* txt)
 class FListBox : public FWidget
 {
  private:
-   enum drag_scroll
+   enum dragScroll
    {
      noScroll         = 0,
      scrollUp         = 1,
@@ -98,17 +98,18 @@ class FListBox : public FWidget
      scrollUpSelect   = 3,
      scrollDownSelect = 4
    };
+
    std::vector<FListBoxItem> data;
-   FScrollbar* VBar;
-   FScrollbar* HBar;
+   FScrollbar* vbar;
+   FScrollbar* hbar;
    FString     text;
    FString     inc_search;
-   bool        multiSelect;
-   bool        mouseSelect;
-   int         dragScroll;
-   bool        scrollTimer;
-   int         scrollRepeat;
-   int         scrollDistance;
+   bool        multi_select;
+   bool        mouse_select;
+   dragScroll  drag_scroll;
+   bool        scroll_timer;
+   int         scroll_repeat;
+   int         scroll_distance;
    int         current;
    int         last_current;
    int         secect_from_item;
@@ -116,7 +117,7 @@ class FListBox : public FWidget
    int         yoffset;
    int         last_yoffset;
    int         nf_offset;
-   int         maxLineWidth;
+   int         max_line_width;
 
  private:
    FListBox (const FListBox&);
@@ -232,7 +233,7 @@ inline bool FListBox::hasBrackets(int index) const
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool on)
-{ multiSelect = on; }
+{ multi_select = on; }
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection()
@@ -244,7 +245,7 @@ inline void FListBox::unsetMultiSelection()
 
 //----------------------------------------------------------------------
 inline bool FListBox::isMultiSelection() const
-{ return multiSelect; }
+{ return multi_select; }
 
 //----------------------------------------------------------------------
 inline bool FListBox::setEnable()

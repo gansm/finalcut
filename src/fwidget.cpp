@@ -39,8 +39,8 @@ FWidget::FWidget (FWidget* parent)
   , shown(false)
   , focus(false)
   , focusable(true)
-  , visibleCursor(false)
-  , widgetCursorPosition(-1,-1)
+  , visible_cursor(false)
+  , widget_cursor_position(-1,-1)
   , size_hints()
   , double_flatline_mask()
   , padding()
@@ -1929,7 +1929,7 @@ void FWidget::move (int x, int y)
 //----------------------------------------------------------------------
 bool FWidget::setCursor()
 {
-  FPoint* wcursor = &widgetCursorPosition;
+  FPoint* wcursor = &widget_cursor_position;
 
   if ( isCursorInside() )
   {
@@ -1944,7 +1944,7 @@ bool FWidget::setCursor()
 //----------------------------------------------------------------------
 bool FWidget::setCursorPos (register int x, register int y)
 {
-  widgetCursorPosition.setPoint(x,y);
+  widget_cursor_position.setPoint(x,y);
 
   if ( isCursorInside() )
     return true;

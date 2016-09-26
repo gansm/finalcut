@@ -48,7 +48,7 @@ FApplication::FApplication (int& _argc, char**& _argv)
   , dblclick_interval(500000)  // 500 ms
   , time_keypressed()
   , time_mousepressed()
-  , newMousePosition()
+  , new_mouse_position()
 {
   assert ( ! rootObj
          && "FApplication: There should be only one application object" );
@@ -844,7 +844,7 @@ void FApplication::getX11ButtonState (int button)
   {
     case button1_pressed:
     case button1_pressed_move:
-      if (  *mouse == newMousePosition
+      if (  *mouse == new_mouse_position
          && x11_button_state == all_buttons_released
          && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
       {
@@ -938,7 +938,7 @@ bool FApplication::parseX11Mouse()
 
   x = uChar(x11_mouse[1] - 0x20);
   y = uChar(x11_mouse[2] - 0x20);
-  newMousePosition.setPoint(x,y);
+  new_mouse_position.setPoint(x,y);
   // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1031,7 +1031,7 @@ bool FApplication::parseSGRMouse()
     y = uChar(10 * y + (*p - '0'));
   }
 
-  newMousePosition.setPoint(x,y);
+  new_mouse_position.setPoint(x,y);
   // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1057,7 +1057,7 @@ bool FApplication::parseSGRMouse()
     {
       case button1:
       case button1_move:
-        if (  *mouse == newMousePosition
+        if (  *mouse == new_mouse_position
            && (((x11_button_state & 0x80) >> 2) + 'M') == released
            && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
         {
@@ -1126,7 +1126,7 @@ bool FApplication::parseSGRMouse()
     }
   }
 
-  if (  *mouse == newMousePosition
+  if (  *mouse == new_mouse_position
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed
       && x11_button_state == uChar(((*p & 0x20) << 2) + button) )
@@ -1228,7 +1228,7 @@ bool FApplication::parseUrxvtMouse()
   if ( y > term->getHeight() )
     y = uChar(term->getHeight());
 
-  newMousePosition.setPoint(x,y);
+  new_mouse_position.setPoint(x,y);
   // fill bit field with 0
   memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1250,7 +1250,7 @@ bool FApplication::parseUrxvtMouse()
 
   getX11ButtonState (button & button_mask);
 
-  if (  *mouse == newMousePosition
+  if (  *mouse == new_mouse_position
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed
       && x11_button_state == uChar(button) )
@@ -1398,10 +1398,12 @@ void FApplication::processMouseEvent()
         || b_state.wheel_up == Pressed
         || b_state.wheel_down == Pressed ) )
   {
+    // determine the window object on the current click position
     FWidget* window = FWindow::getWindowWidgetAt (*mouse);
 
     if ( window )
     {
+      // determine the widget at the current click position
       FWidget* child = childWidgetAt (window, *mouse);
       clicked_widget = (child != 0) ? child : window;
     }

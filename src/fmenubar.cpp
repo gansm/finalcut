@@ -61,13 +61,13 @@ void FMenuBar::init()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::menu_dimension()
+void FMenuBar::calculateDimensions()
 {
   int item_X = 1;
   int item_Y = 1;
   std::vector<FMenuItem*>::const_iterator end, iter;
-  iter = itemlist.begin();
-  end = itemlist.end();
+  iter = item_list.begin();
+  end = item_list.end();
 
   // find the maximum item width
   while ( iter != end )
@@ -98,8 +98,8 @@ bool FMenuBar::isMenu (FMenuItem* mi) const
 bool FMenuBar::selectNextItem()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
-  iter = itemlist.begin();
-  end = itemlist.end();
+  iter = item_list.begin();
+  end = item_list.end();
 
   while ( iter != end )
   {
@@ -113,8 +113,8 @@ bool FMenuBar::selectNextItem()
       {
         ++next_element;
 
-        if ( next_element == itemlist.end() )
-          next_element = itemlist.begin();
+        if ( next_element == item_list.end() )
+          next_element = item_list.begin();
 
         next = static_cast<FMenuItem*>(*next_element);
       } while (  ! next->isEnabled()
@@ -161,8 +161,8 @@ bool FMenuBar::selectNextItem()
 bool FMenuBar::selectPrevItem()
 {
   std::vector<FMenuItem*>::const_iterator iter, begin;
-  iter = itemlist.end();
-  begin = itemlist.begin();
+  iter = item_list.end();
+  begin = item_list.begin();
 
   do
   {
@@ -176,8 +176,8 @@ bool FMenuBar::selectPrevItem()
 
       do
       {
-        if ( prev_element == itemlist.begin() )
-          prev_element = itemlist.end();
+        if ( prev_element == item_list.begin() )
+          prev_element = item_list.end();
 
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
@@ -225,8 +225,8 @@ bool FMenuBar::selectPrevItem()
 bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
-  iter = itemlist.begin();
-  end = itemlist.end();
+  iter = item_list.begin();
+  end = item_list.end();
 
   while ( iter != end )
   {
@@ -322,7 +322,7 @@ void FMenuBar::drawItems()
   int x = 1;
   screenWidth = getColumnNumber();
 
-  if ( itemlist.empty() )
+  if ( item_list.empty() )
     return;
 
   updateVTerm(false);
@@ -331,8 +331,8 @@ void FMenuBar::drawItems()
   if ( isMonochron() )
     setReverse(true);
 
-  iter = itemlist.begin();
-  end = itemlist.end();
+  iter = item_list.begin();
+  end = item_list.end();
 
   while ( iter != end )
   {
@@ -476,8 +476,8 @@ void FMenuBar::adjustItems()
   int item_X = 1;
   int item_Y = 1;
   std::vector<FMenuItem*>::const_iterator end, iter;
-  iter = itemlist.begin();
-  end = itemlist.end();
+  iter = item_list.begin();
+  end = item_list.end();
 
   while ( iter != end )
   {
@@ -592,7 +592,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   {
     mouse_down = false;
 
-    if ( ! itemlist.empty() && hasSelectedItem() )
+    if ( ! item_list.empty() && hasSelectedItem() )
       leaveMenuBar();
     else
       return;
@@ -611,14 +611,14 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
   if ( ! isActiveWindow() )
     setActiveWindow(this);
 
-  if ( ! itemlist.empty() )
+  if ( ! item_list.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     int mouse_x, mouse_y;
     bool focus_changed = false;
 
-    iter = itemlist.begin();
-    end = itemlist.end();
+    iter = item_list.begin();
+    end = item_list.end();
     mouse_x = ev->getX();
     mouse_y = ev->getY();
 
@@ -696,12 +696,12 @@ void FMenuBar::onMouseUp (FMouseEvent* ev)
   {
     mouse_down = false;
 
-    if ( ! itemlist.empty() )
+    if ( ! item_list.empty() )
     {
       int mouse_x, mouse_y;
       std::vector<FMenuItem*>::const_iterator iter, end;
-      iter = itemlist.begin();
-      end = itemlist.end();
+      iter = item_list.begin();
+      end = item_list.end();
       mouse_x = ev->getX();
       mouse_y = ev->getY();
 
@@ -784,14 +784,14 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
   if ( ! isActiveWindow() )
     setActiveWindow(this);
 
-  if ( mouse_down && ! itemlist.empty() )
+  if ( mouse_down && ! item_list.empty() )
   {
     std::vector<FMenuItem*>::const_iterator iter, end;
     int mouse_x, mouse_y;
     bool mouse_over_menubar = false;
     bool focus_changed = false;
-    iter = itemlist.begin();
-    end = itemlist.end();
+    iter = item_list.begin();
+    end = item_list.end();
     mouse_x = ev->getX();
     mouse_y = ev->getY();
 

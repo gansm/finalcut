@@ -375,10 +375,24 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     return;
 
   if ( ! (isEnabled() && accel_widget) )
+  {
+    // send click to the parent widget
+    if ( FWidget* parent = getParentWidget() )
+    {
+      int b = ev->getButton();
+      const FPoint& tp = ev->getTermPos();
+      const FPoint& p = parent->termToWidgetPos(tp);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev);
+      delete _ev;
+    }
+
     return;
+  }
 
   if ( ! accel_widget->hasFocus() )
   {
+    // focus the accelerator widget
     FWidget* focused_widget = getFocusWidget();
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);

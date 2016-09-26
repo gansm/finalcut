@@ -18,8 +18,8 @@ FDialog::FDialog(FWidget* parent)
   , result_code(FDialog::Reject)
   , zoom_button_pressed(false)
   , zoom_button_active(false)
-  , TitleBarClickPos()
-  , oldGeometry()
+  , titlebar_click_pos()
+  , old_geometry()
   , dialog_menu()
   , dgl_menuitem()
   , zoom_item()
@@ -35,8 +35,8 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , result_code(FDialog::Reject)
   , zoom_button_pressed(false)
   , zoom_button_active(false)
-  , TitleBarClickPos()
-  , oldGeometry()
+  , titlebar_click_pos()
+  , old_geometry()
   , dialog_menu()
   , dgl_menuitem()
   , zoom_item()
@@ -622,9 +622,9 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
     // click on titlebar or window: raise + activate
     if ( mouse_x >= 4 && mouse_x <= getWidth()-zoom_btn && mouse_y == 1 )
-      TitleBarClickPos.setPoint (ev->getTermX(), ev->getTermY());
+      titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
     else
-      TitleBarClickPos.setPoint (0,0);
+      titlebar_click_pos.setPoint (0,0);
 
     has_raised = raiseWindow();
 
@@ -679,8 +679,8 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  int titlebar_x = TitleBarClickPos.getX();
-  int titlebar_y = TitleBarClickPos.getY();
+  int titlebar_x = titlebar_click_pos.getX();
+  int titlebar_y = titlebar_click_pos.getY();
   int zoom_btn;
 
   if ( (flags & fc::resizeable) == 0 )
@@ -695,15 +695,15 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
 
-    if (  ! TitleBarClickPos.isNull()
+    if (  ! titlebar_click_pos.isNull()
        && titlebar_x > getTermX() + 3
        && titlebar_x < getTermX() + getWidth()
        && titlebar_y == getTermY() )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
-      FPoint deltaPos = ev->getTermPos() - TitleBarClickPos;
+      FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
       move (currentPos + deltaPos);
-      TitleBarClickPos = ev->getTermPos();
+      titlebar_click_pos = ev->getTermPos();
     }
 
     // click on titlebar menu button
@@ -750,12 +750,12 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
 
-    if ( ! TitleBarClickPos.isNull() )
+    if ( ! titlebar_click_pos.isNull() )
     {
       FPoint currentPos(getGeometry().getX(), getGeometry().getY());
-      FPoint deltaPos = ev->getTermPos() - TitleBarClickPos;
+      FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
       move (currentPos + deltaPos);
-      TitleBarClickPos = ev->getTermPos();
+      titlebar_click_pos = ev->getTermPos();
     }
 
     if ( dialog_menu->isVisible() && dialog_menu->isShown() )
@@ -1018,13 +1018,13 @@ void FDialog::move (int x, int y)
   const FPoint& shadow = getShadow();
   rsw = shadow.getX();  // right shadow width;
   bsh = shadow.getY();  // bottom shadow height
-  oldGeometry = getGeometryWithShadow();
+  old_geometry = getGeometryWithShadow();
 
   FWidget::move(x,y);
   setPos(x, y, false);
   putArea (getTermPos(), vwin);updateTerminal();
 
-  if ( getGeometry().overlap(oldGeometry) )
+  if ( getGeometry().overlap(old_geometry) )
   {
     // dx > 0 : move left
     // dx = 0 : move vertical

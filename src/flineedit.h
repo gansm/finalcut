@@ -40,18 +40,20 @@ class FLineEdit : public FWidget
    FString text;
    FString label_text;
    FLabel* label;
-   enum drag_scroll
+
+   enum dragScroll
    {
      noScroll    = 0,
      scrollLeft  = 1,
      scrollRight = 2
    };
-   int  dragScroll;
-   bool scrollTimer;
-   int  scrollRepeat;
-   bool insert_mode;
-   int  cursor_pos;
-   int  text_offset;
+
+   dragScroll drag_scroll;
+   bool       scroll_timer;
+   int        scroll_repeat;
+   bool       insert_mode;
+   int        cursor_pos;
+   int        text_offset;
 
  public:
    enum label_o
@@ -59,7 +61,7 @@ class FLineEdit : public FWidget
      label_above = 0,
      label_left = 1
    };
-   label_o label_orientation;
+   label_o    label_orientation;
 
  private:
    FLineEdit (const FLineEdit&);

@@ -41,10 +41,10 @@ class FToggleButton : public FWidget
    bool focus_inside_group;
 
  protected:
-   FString text;
-   bool checked;
-   int  label_offset_pos;
-   int  button_width;  // plus margin spaces
+   FString       text;
+   bool          checked;
+   int           label_offset_pos;
+   int           button_width;  // plus margin spaces
    FButtonGroup* button_group;
 
  private:

@@ -33,8 +33,8 @@
 class FMenuList
 {
  protected:
-   FMenuItem* selectedItem;
-   std::vector<FMenuItem*> itemlist;
+   FMenuItem*              selected_item;
+   std::vector<FMenuItem*> item_list;
 
  private:
    FMenuList (const FMenuList&);
@@ -71,34 +71,34 @@ inline const char* FMenuList::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FMenuList::count() const
-{ return uInt(itemlist.size()); }
+{ return uInt(item_list.size()); }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::item (int index) const
-{ return (index > 0) ? itemlist[uInt(index-1)] : 0; }
+{ return (index > 0) ? item_list[uInt(index-1)] : 0; }
 
 //----------------------------------------------------------------------
 inline void FMenuList::enableItem (int index)
-{ itemlist[uInt(index-1)]->setEnable(); }
+{ item_list[uInt(index-1)]->setEnable(); }
 
 //----------------------------------------------------------------------
 inline void FMenuList::disableItem (int index)
-{ itemlist[uInt(index-1)]->unsetEnable(); }
+{ item_list[uInt(index-1)]->unsetEnable(); }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const
-{ return (index > 0) ? itemlist[uInt(index-1)]->isSelected() : false; }
+{ return (index > 0) ? item_list[uInt(index-1)]->isSelected() : false; }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getSelectedItem() const
-{ return selectedItem; }
+{ return selected_item; }
 
 //----------------------------------------------------------------------
 inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
-{ selectedItem = menuitem; }
+{ selected_item = menuitem; }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::hasSelectedItem() const
-{ return selectedItem; }
+{ return selected_item; }
 
 #endif  // _FMENULIST_H

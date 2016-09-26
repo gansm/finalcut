@@ -63,16 +63,16 @@ class FMessageBox : public FDialog
    };
 
  private:
-   FString headline_text;
-   FString text;
+   FString  headline_text;
+   FString  text;
    FString* text_components;
    std::vector<FString> text_split;
-   uInt  maxLineWidth;
-   bool  center_text;
-   short emphasis_color;
-   uInt  numButtons;
-   uInt  text_num_lines;
-   int*  button_digit[3];
+   uInt     max_line_width;
+   bool     center_text;
+   short    emphasis_color;
+   uInt     num_buttons;
+   uInt     text_num_lines;
+   int*     button_digit[3];
    FButton* button[3];
 
  protected:
@@ -80,7 +80,7 @@ class FMessageBox : public FDialog
 
  private:
    void init(int, int, int);
-   void msg_dimension();
+   void calculateDimensions();
    virtual void draw();
    void resizeButtons();
    void adjustButtons();

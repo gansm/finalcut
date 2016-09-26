@@ -42,8 +42,8 @@ class FTextView : public FWidget
  private:
    typedef std::vector<FString> stringLines;
    stringLines data;
-   FScrollbar* VBar;
-   FScrollbar* HBar;
+   FScrollbar* vbar;
+   FScrollbar* hbar;
    int         xoffset;
    int         yoffset;
    int         nf_offset;

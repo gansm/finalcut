@@ -226,8 +226,8 @@ class FWidget : public FObject, public FTerm
    bool    shown;
    bool    focus;
    bool    focusable;
-   bool    visibleCursor;
-   FPoint  widgetCursorPosition;
+   bool    visible_cursor;
+   FPoint  widget_cursor_position;
 
    struct widget_size_hints
    {
@@ -660,7 +660,7 @@ inline bool FWidget::isEnabled() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool on)
-{ return visibleCursor = (on) ? true : false; }
+{ return visible_cursor = (on) ? true : false; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()
@@ -672,7 +672,7 @@ inline bool FWidget::unsetVisibleCursor()
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasVisibleCursor() const
-{ return visibleCursor; }
+{ return visible_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setFocus()
@@ -895,7 +895,7 @@ inline int FWidget::getFlags() const
 
 //----------------------------------------------------------------------
 inline FPoint FWidget::getCursorPos()
-{ return widgetCursorPosition; }
+{ return widget_cursor_position; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setCursorPos (const FPoint& pos)
@@ -903,7 +903,7 @@ inline bool FWidget::setCursorPos (const FPoint& pos)
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetCursorPos()
-{ widgetCursorPosition.setPoint(-1,-1); }
+{ widget_cursor_position.setPoint(-1,-1); }
 
 //----------------------------------------------------------------------
 inline void FWidget::printPos (const FPoint& pos)

@@ -78,9 +78,9 @@ class FOptiMove
 
  private:
    void calculateCharDuration();
-   int  cap_duration (char*&, int);
-   int  repeated_append (capability&, int, char*);
-   int  relative_move (char*&, int, int, int, int);
+   int  capDuration (char*&, int);
+   int  repeatedAppend (capability&, int, char*);
+   int  relativeMove (char*&, int, int, int, int);
    bool isTwoDirectionMove (int, int, int, int);
    bool isWideMove (int, int, int, int);
 

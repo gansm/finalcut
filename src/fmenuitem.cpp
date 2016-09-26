@@ -196,7 +196,7 @@ void FMenuItem::init (FWidget* parent)
 
       if ( menubar_ptr )
       {
-        menubar_ptr->menu_dimension();
+        menubar_ptr->calculateDimensions();
 
         if ( hotkey )  // Meta + hotkey
           menubar_ptr->addAccelerator (fc::Fmkey_meta + tolower(hotkey), this);
@@ -213,7 +213,7 @@ void FMenuItem::init (FWidget* parent)
       FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
 
       if ( menu_ptr )
-        menu_ptr->menu_dimension();
+        menu_ptr->calculateDimensions();
     }
   }
 
@@ -307,7 +307,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
     }
   }
 
-  winmenu->menu_dimension();
+  winmenu->calculateDimensions();
 }
 
 //----------------------------------------------------------------------
@@ -393,7 +393,7 @@ void FMenuItem::addAccelerator (int key, FWidget* obj)
     FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
 
     if ( menu_ptr )
-      menu_ptr->menu_dimension();
+      menu_ptr->calculateDimensions();
   }
 }
 
@@ -426,7 +426,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
     FMenu* menu_ptr = dynamic_cast<FMenu*>(super_menu);
 
     if ( menu_ptr )
-      menu_ptr->menu_dimension();
+      menu_ptr->calculateDimensions();
   }
 }
 
@@ -673,7 +673,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
             mbar->getSelectedItem()->unsetSelected();
 
           setSelected();
-          mbar->selectedItem = this;
+          mbar->selected_item = this;
           openMenu();
 
           focused_widget = static_cast<FWidget*>(ev->focusedWidget());
@@ -699,7 +699,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
         else
         {
           unsetSelected();
-          mbar->selectedItem = 0;
+          mbar->selected_item = 0;
           mbar->redraw();
           processClicked();
           mbar->drop_down = false;

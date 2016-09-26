@@ -15,14 +15,14 @@ FObject::TimerList* FObject::timer_list = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FObject::FObject (FObject* parent)
-  : parentObj(parent)
+  : parent_obj(parent)
   , children_list()
   , has_parent(false)
 {
   children_list.clear();         // no children yet
 
-  if ( parentObj )              // add object to parent
-    parentObj->addChild(this);
+  if ( parent_obj )              // add object to parent
+    parent_obj->addChild(this);
 
   if ( parent == 0 )
   {
@@ -36,10 +36,10 @@ FObject::FObject (FObject* parent)
 //----------------------------------------------------------------------
 FObject::~FObject()  // destructor
 {
-  if ( parentObj )
-    parentObj->delChild(this);
+  if ( parent_obj )
+    parent_obj->delChild(this);
 
-  parentObj = 0;
+  parent_obj = 0;
   delOwnTimer();  // delete all timers of this object
 
   if ( ! has_parent && timer_list )
@@ -70,10 +70,13 @@ FObject::~FObject()  // destructor
 //----------------------------------------------------------------------
 void FObject::addChild (FObject* obj)
 {
-  if ( obj->parentObj )
-    obj->parentObj->delChild(obj);
+  if ( ! obj )
+    return;
 
-  obj->parentObj = this;
+  if ( obj->parent_obj )
+    obj->parent_obj->delChild(obj);
+
+  obj->parent_obj = this;
 
   children_list.push_back(obj);
 }
@@ -81,6 +84,9 @@ void FObject::addChild (FObject* obj)
 //----------------------------------------------------------------------
 void FObject::delChild (FObject* obj)
 {
+  if ( ! obj )
+    return;
+
   if ( ! children_list.empty() )
   {
     obj->removeParent();

@@ -10,6 +10,55 @@
 #include "fstatusbar.h"
 #include "fstring.h"
 
+//----------------------------------------------------------------------
+// class smallWindow
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class smallWindow : public FDialog
+{
+ private:
+   FLabel* label;
+
+ private:
+   smallWindow (const smallWindow&);    // Disabled copy constructor
+   smallWindow& operator = (const smallWindow&); // and operator '='
+   void adjustSize();
+
+ public:
+   explicit smallWindow (FWidget* = 0);  // constructor
+  ~smallWindow();                        // destructor
+
+   void append (const FString&);
+};
+#pragma pack(pop)
+
+//----------------------------------------------------------------------
+smallWindow::smallWindow (FWidget* parent)
+  : FDialog(parent)
+  , label()
+{
+  FString label_text = "resize  \n"
+                       "corner \u25E2";
+  label = new FLabel (label_text, this);
+  label->setAlignment (fc::alignRight);
+  label->setForegroundColor (fc::DarkGray);
+  label->setGeometry (13, 4, 8, 2);
+}
+
+//----------------------------------------------------------------------
+smallWindow::~smallWindow()
+{ }
+
+//----------------------------------------------------------------------
+void smallWindow::adjustSize()
+{
+  FDialog::adjustSize();
+  label->setGeometry (1, getClientHeight() - 1, getClientWidth(), 2);
+}
+
 
 //----------------------------------------------------------------------
 // class Window
@@ -229,9 +278,9 @@ void Window::cb_createWindows (FWidget*, void*)
   {
     if ( ! (*iter)->is_open )
     {
-      int x,y,n;
+      int x, y, n;
       win_data* win_dat = *iter;
-      FDialog* win = new FDialog(this);
+      FDialog* win = new smallWindow(this);
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);

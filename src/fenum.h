@@ -166,6 +166,10 @@ class fc
      LowerHalfBlock                      = 0x2584,  // ▄
      LeftHalfBlock                       = 0x258c,  // ▌
      RightHalfBlock                      = 0x2590,  // ▐
+     BlackLowerLightTriangle             = 0x25E2,  // ◢
+     BlackLowerLeftTriangle              = 0x25E3,  // ◣
+     BlackUpperLeftTriangle              = 0x25E4,  // ◤
+     BlackUpperRightTriangle             = 0x25E5,  // ◥
      NF_rev_left_arrow2                  = 0x1ab4,  // ⊐
      NF_rev_right_arrow2                 = 0x1ab5,  // ►
      NF_radio_button3                    = 0x1ab7,  // )
@@ -906,7 +910,7 @@ class fc
    };
 
    // xterm cursor style
-   enum xterm_cursor_style
+   enum xtermCursorStyle
    {
      blinking_block         = 0,
      blinking_block_default = 1,
@@ -918,7 +922,7 @@ class fc
    };
 
    // linux console and framebuffer cursor style
-   enum console_cursor_style
+   enum consoleCursorStyle
    {
      default_cursor     = 0,
      invisible_cursor   = 1,
@@ -930,7 +934,7 @@ class fc
    };
 
    // KDE konsole cursor style
-   enum kde_konsole_CursorShape
+   enum kdeKonsoleCursorShape
    {
      BlockCursor     = 0,
      IBeamCursor     = 1,

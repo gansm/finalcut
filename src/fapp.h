@@ -108,7 +108,7 @@ class FApplication : public FWidget
    long            dblclick_interval;
    struct timeval  time_keypressed;
    struct timeval  time_mousepressed;
-   FPoint          newMousePosition;
+   FPoint          new_mouse_position;
    static FWidget* main_widget;
    static FWidget* active_window;
    static FWidget* focus_widget;

@@ -49,7 +49,7 @@ class FMenu : public FWindow, public FMenuList
    FMenuItem*   item;
    FWidget*     super_menu;
    FMenu*       open_sub_menu;
-   uInt         maxItemWidth;
+   uInt         max_item_width;
    bool         mouse_down;
    bool         has_checkable_items;
 
@@ -57,7 +57,7 @@ class FMenu : public FWindow, public FMenuList
    FMenu (const FMenu&);
    FMenu& operator = (const FMenu&);
    void         init(FWidget*);
-   void         menu_dimension();
+   void         calculateDimensions();
    void         adjustItems();
    int          adjustX(int);
    bool         isWindowsMenu (FWidget*) const;

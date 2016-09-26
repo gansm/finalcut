@@ -37,7 +37,7 @@ class FProgressbar : public FWidget
 {
  private:
    int  percentage;
-   int  BarLength;
+   int  bar_length;
 
  private:
    void drawPercentage();

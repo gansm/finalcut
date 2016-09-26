@@ -63,7 +63,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::cap_duration (char*& cap, int affcnt)
+int FOptiMove::capDuration (char*& cap, int affcnt)
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -111,7 +111,7 @@ void FOptiMove::set_cursor_home (char*& cap)
   if ( cap )
   {
     F_cursor_home.cap = cap;
-    F_cursor_home.duration = cap_duration(cap, 0);
+    F_cursor_home.duration = capDuration (cap, 0);
     F_cursor_home.length = int(strlen(cap));
   }
 }
@@ -122,7 +122,7 @@ void FOptiMove::set_cursor_to_ll (char*& cap)
   if ( cap )
   {
     F_cursor_to_ll.cap = cap;
-    F_cursor_to_ll.duration = cap_duration(cap, 0);
+    F_cursor_to_ll.duration = capDuration (cap, 0);
     F_cursor_to_ll.length = int(strlen(cap));
   }
 }
@@ -133,7 +133,7 @@ void FOptiMove::set_carriage_return (char*& cap)
   if ( cap )
   {
     F_carriage_return.cap = cap;
-    F_carriage_return.duration = cap_duration(cap, 0);
+    F_carriage_return.duration = capDuration (cap, 0);
     F_carriage_return.length = int(strlen(cap));
   }
 }
@@ -144,7 +144,7 @@ void FOptiMove::set_tabular (char*& cap)
   if ( cap )
   {
     F_tab.cap = cap;
-    F_tab.duration = cap_duration(cap, 0);
+    F_tab.duration = capDuration (cap, 0);
     F_tab.length = int(strlen(cap));
   }
 }
@@ -155,7 +155,7 @@ void FOptiMove::set_back_tab (char*& cap)
   if ( cap )
   {
     F_back_tab.cap = cap;
-    F_back_tab.duration = cap_duration(cap, 0);
+    F_back_tab.duration = capDuration (cap, 0);
     F_back_tab.length = int(strlen(cap));
   }
 }
@@ -166,7 +166,7 @@ void FOptiMove::set_cursor_up (char*& cap)
   if ( cap )
   {
     F_cursor_up.cap = cap;
-    F_cursor_up.duration = cap_duration(cap, 0);
+    F_cursor_up.duration = capDuration (cap, 0);
     F_cursor_up.length = int(strlen(cap));
   }
 }
@@ -177,7 +177,7 @@ void FOptiMove::set_cursor_down (char*& cap)
   if ( cap )
   {
     F_cursor_down.cap = cap;
-    F_cursor_down.duration = cap_duration(cap, 0);
+    F_cursor_down.duration = capDuration (cap, 0);
     F_cursor_down.length = int(strlen(cap));
   }
 }
@@ -188,7 +188,7 @@ void FOptiMove::set_cursor_left (char*& cap)
   if ( cap )
   {
     F_cursor_left.cap = cap;
-    F_cursor_left.duration = cap_duration(cap, 0);
+    F_cursor_left.duration = capDuration (cap, 0);
     F_cursor_left.length = int(strlen(cap));
   }
 }
@@ -199,7 +199,7 @@ void FOptiMove::set_cursor_right (char*& cap)
   if ( cap )
   {
     F_cursor_right.cap = cap;
-    F_cursor_right.duration = cap_duration(cap, 0);
+    F_cursor_right.duration = capDuration (cap, 0);
     F_cursor_right.length = int(strlen(cap));
   }
 }
@@ -211,7 +211,7 @@ void FOptiMove::set_cursor_address (char*& cap)
   {
     char* temp = tgoto(cap, 23, 23);
     F_cursor_address.cap = cap;
-    F_cursor_address.duration = cap_duration(temp, 1);
+    F_cursor_address.duration = capDuration (temp, 1);
     F_cursor_address.length = int(strlen(cap));
   }
 }
@@ -223,7 +223,7 @@ void FOptiMove::set_column_address (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_column_address.cap = cap;
-    F_column_address.duration = cap_duration(temp, 1);
+    F_column_address.duration = capDuration (temp, 1);
     F_column_address.length = int(strlen(cap));
   }
 }
@@ -235,7 +235,7 @@ void FOptiMove::set_row_address (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_row_address.cap = cap;
-    F_row_address.duration = cap_duration(temp, 1);
+    F_row_address.duration = capDuration (temp, 1);
     F_row_address.length = int(strlen(cap));
   }
 }
@@ -247,7 +247,7 @@ void FOptiMove::set_parm_up_cursor (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_parm_up_cursor.cap = cap;
-    F_parm_up_cursor.duration = cap_duration(temp, 1);
+    F_parm_up_cursor.duration = capDuration (temp, 1);
     F_parm_up_cursor.length = int(strlen(cap));
   }
 }
@@ -259,7 +259,7 @@ void FOptiMove::set_parm_down_cursor (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_parm_down_cursor.cap = cap;
-    F_parm_down_cursor.duration = cap_duration(temp, 1);
+    F_parm_down_cursor.duration = capDuration (temp, 1);
     F_parm_down_cursor.length = int(strlen(cap));
   }
 }
@@ -271,7 +271,7 @@ void FOptiMove::set_parm_left_cursor (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_parm_left_cursor.cap = cap;
-    F_parm_left_cursor.duration = cap_duration(temp, 1);
+    F_parm_left_cursor.duration = capDuration (temp, 1);
     F_parm_left_cursor.length = int(strlen(cap));
   }
 }
@@ -283,7 +283,7 @@ void FOptiMove::set_parm_right_cursor (char*& cap)
   {
     char* temp = tparm(cap, 23);
     F_parm_right_cursor.cap = cap;
-    F_parm_right_cursor.duration = cap_duration(temp, 1);
+    F_parm_right_cursor.duration = capDuration (temp, 1);
     F_parm_right_cursor.length = int(strlen(cap));
   }
 }
@@ -314,7 +314,7 @@ void FOptiMove::setTermSize (int w, int h)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeated_append (capability& o, int count, char* dst)
+int FOptiMove::repeatedAppend (capability& o, int count, char* dst)
 {
   register size_t src_len;
   register size_t dst_len;
@@ -346,9 +346,9 @@ int FOptiMove::repeated_append (capability& o, int count, char* dst)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::relative_move ( char*& move
-                             , int from_x, int from_y
-                             , int to_x, int to_y )
+int FOptiMove::relativeMove ( char*& move
+                            , int from_x, int from_y
+                            , int to_x, int to_y )
 {
   int num;
   int vtime = 0;
@@ -386,7 +386,7 @@ int FOptiMove::relative_move ( char*& move
         if ( move )
           move[0] = '\0';
 
-        vtime = repeated_append (F_cursor_down, num, move);
+        vtime = repeatedAppend (F_cursor_down, num, move);
       }
     }
     else // to_y < from_y
@@ -406,7 +406,7 @@ int FOptiMove::relative_move ( char*& move
         if ( move )
           move[0] = '\0';
 
-        vtime = repeated_append (F_cursor_up, num, move);
+        vtime = repeatedAppend (F_cursor_up, num, move);
       }
     }
 
@@ -457,7 +457,7 @@ int FOptiMove::relative_move ( char*& move
             if ( tab_pos > to_x )
               break;
 
-            htime_r += repeated_append (F_tab, 1, str);
+            htime_r += repeatedAppend (F_tab, 1, str);
 
             if ( htime_r >= LONG_DURATION )
               break;
@@ -468,7 +468,7 @@ int FOptiMove::relative_move ( char*& move
           num = to_x - pos;
         }
 
-        htime_r += repeated_append (F_cursor_right, num, str);
+        htime_r += repeatedAppend (F_cursor_right, num, str);
 
         if ( htime_r < htime )
         {
@@ -507,7 +507,7 @@ int FOptiMove::relative_move ( char*& move
             if ( tab_pos < to_x )
               break;
 
-            htime_l += repeated_append (F_back_tab, 1, str);
+            htime_l += repeatedAppend (F_back_tab, 1, str);
 
             if ( htime_l >= LONG_DURATION )
               break;
@@ -518,7 +518,7 @@ int FOptiMove::relative_move ( char*& move
           num = pos - to_x;
         }
 
-        htime_l += repeated_append (F_cursor_left, num, str);
+        htime_l += repeatedAppend (F_cursor_left, num, str);
 
         if ( htime_l < htime )
         {
@@ -592,7 +592,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   // Method 1: local movement
   if ( xold >= 0 && yold >= 0 )
   {
-    new_time = relative_move (null_ptr, xold, yold, xnew, ynew);
+    new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION && new_time < move_time )
     {
@@ -604,7 +604,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   // Method 2: carriage-return + local movement
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    new_time = relative_move (null_ptr, 0, yold, xnew, ynew);
+    new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
 
     if (  new_time < LONG_DURATION
        && F_carriage_return.duration + new_time < move_time )
@@ -617,7 +617,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   // Method 3: home-cursor + local movement
   if ( F_cursor_home.cap )
   {
-    new_time = relative_move (null_ptr, 0, 0, xnew, ynew);
+    new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
 
     if (  new_time < LONG_DURATION
        && F_cursor_home.duration + new_time < move_time )
@@ -630,7 +630,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
   // Method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    new_time = relative_move (null_ptr, 0, screen_height-1, xnew, ynew);
+    new_time = relativeMove (null_ptr, 0, screen_height-1, xnew, ynew);
 
     if (  new_time < LONG_DURATION
        && F_cursor_to_ll.duration + new_time < move_time )
@@ -646,7 +646,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
      && yold > 0
      && F_cursor_left.cap )
   {
-    new_time = relative_move (null_ptr, screen_width-1, yold-1, xnew, ynew);
+    new_time = relativeMove (null_ptr, screen_width-1, yold-1, xnew, ynew);
 
     if (  new_time < LONG_DURATION
        && F_carriage_return.cap
@@ -664,7 +664,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
     switch ( method )
     {
       case 1:
-        relative_move (move_ptr, xold, yold, xnew, ynew);
+        relativeMove (move_ptr, xold, yold, xnew, ynew);
         break;
 
       case 2:
@@ -672,20 +672,20 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
         {
           strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
           move_ptr += F_carriage_return.length;
-          relative_move (move_ptr, 0, yold, xnew, ynew);
+          relativeMove (move_ptr, 0, yold, xnew, ynew);
         }
         break;
 
       case 3:
         strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
         move_ptr += F_cursor_home.length;
-        relative_move (move_ptr, 0, 0, xnew, ynew);
+        relativeMove (move_ptr, 0, 0, xnew, ynew);
         break;
 
       case 4:
         strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
         move_ptr += F_cursor_to_ll.length;
-        relative_move (move_ptr, 0, screen_height-1, xnew, ynew);
+        relativeMove (move_ptr, 0, screen_height-1, xnew, ynew);
         break;
 
       case 5:
@@ -700,7 +700,7 @@ char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
                 , F_cursor_left.cap
                 , sizeof(move_buf) - strlen(move_ptr) - 1 );
         move_ptr += strlen(move_buf);
-        relative_move (move_ptr, screen_width-1, yold-1, xnew, ynew);
+        relativeMove (move_ptr, screen_width-1, yold-1, xnew, ynew);
         break;
 
       default:

@@ -57,6 +57,10 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x25bc, '.', 0x1f, 'v'},  // ▼  -  BlackDownPointingTriangle
   {0x25ba, '+', 0x10, '>'},  // ►  -  BlackRightPointingPointer
   {0x25c4, ',', 0x11, '<'},  // ◄  -  BlackLeftPointingPointer
+  {0x25E2,'\\', '\\','\\'},  // ◢  -  BlackLowerLightTriangle
+  {0x25E3, '/',  '/', '/'},  // ◣  -  BlackLowerLeftTriangle
+  {0x25E4,'\\', '\\','\\'},  // ◤  -  BlackUpperLeftTriangle
+  {0x25E5, '/',  '/', '/'},  // ◥  -  BlackUpperRightTriangle
   {0x1ab4,   0, 0xb4,   0},  // ⊐  -  NF_rev_left_arrow2
   {0x1ab5,   0, 0xb5,   0},  // ►  -  NF_rev_right_arrow2
   {0x1ab7,   0, 0xb7,   0},  // )  -  NF_radio_button3

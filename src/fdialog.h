@@ -54,8 +54,8 @@ class FDialog : public FWindow
    int          result_code;
    bool         zoom_button_pressed;
    bool         zoom_button_active;
-   FPoint       TitleBarClickPos;
-   FRect        oldGeometry;      // required by move()
+   FPoint       titlebar_click_pos;
+   FRect        old_geometry;     // required by move()
    FMenu*       dialog_menu;
    FMenuItem*   dgl_menuitem;
    FMenuItem*   zoom_item;

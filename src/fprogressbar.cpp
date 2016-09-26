@@ -12,7 +12,7 @@
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget(parent)
   , percentage(-1)
-  , BarLength(getWidth())
+  , bar_length(getWidth())
 {
   unsetFocusable();
   setShadow();
@@ -52,7 +52,7 @@ void FProgressbar::drawPercentage()
 void FProgressbar::drawBar()
 {
   int i = 1;
-  float length = float(BarLength*percentage)/100;
+  float length = float(bar_length * percentage) / 100;
   printPos (1,1);
 
   if ( isMonochron() )
@@ -110,7 +110,7 @@ void FProgressbar::drawBar()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( trunc(length) >= 1 && trunc(length) < BarLength )
+  if ( trunc(length) >= 1 && trunc(length) < bar_length )
   {
     if (  round(length) > trunc(length)
        || isCygwinTerminal()
@@ -138,12 +138,12 @@ void FProgressbar::drawBar()
 
   if ( getMaxColor() < 16 )
   {
-    for (; i < BarLength; i++)
+    for (; i < bar_length; i++)
       print (fc::MediumShade);  // ▒
   }
   else
   {
-    for (; i < BarLength; i++)
+    for (; i < bar_length; i++)
       print (' ');
   }
 
@@ -260,7 +260,7 @@ void FProgressbar::reset()
 void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   FWidget::setGeometry (x, y, w, h, adjust);
-  BarLength = w;
+  bar_length = w;
 }
 
 //----------------------------------------------------------------------

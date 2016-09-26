@@ -52,7 +52,7 @@ class FMenuBar : public FWindow, public FMenuList
    FMenuBar (const FMenuBar&);
    FMenuBar& operator = (const FMenuBar&);
    void       init();
-   void       menu_dimension();
+   void       calculateDimensions();
    bool       isMenu (FMenuItem*) const;
    bool       selectNextItem();
    bool       selectPrevItem();

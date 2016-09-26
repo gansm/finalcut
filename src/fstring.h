@@ -47,14 +47,14 @@ typedef unsigned short uInt16;
 typedef unsigned int   uInt32;
 typedef u_int64_t      uInt64;
 
-typedef signed int   sInt;
-typedef signed long  sLong;
-typedef signed char  sInt8;
-typedef signed short sInt16;
-typedef signed int   sInt32;
-typedef int64_t      sInt64;
+typedef signed int     sInt;
+typedef signed long    sLong;
+typedef signed char    sInt8;
+typedef signed short   sInt16;
+typedef signed int     sInt32;
+typedef int64_t        sInt64;
 
-typedef long double  lDouble;
+typedef long double    lDouble;
 
 
 //----------------------------------------------------------------------
