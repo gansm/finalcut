@@ -187,6 +187,7 @@ TextWindow::TextWindow (FWidget* parent)
   scrollText = new FTextView(this);
   scrollText->ignorePadding();
   scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
+  setMinimumSize (51, 6);
   scrollText->setFocus();
   scrollText->insert(" -----------------------------------------------\n"
                      " line 1\n"

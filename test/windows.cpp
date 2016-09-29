@@ -20,12 +20,18 @@
 class smallWindow : public FDialog
 {
  private:
-   FLabel* label;
+   FLabel* left_arrow;
+   FLabel* right_arrow;
+   FLabel* top_left_label;
+   FLabel* top_right_label;
+   FLabel* bottom_label;
 
  private:
    smallWindow (const smallWindow&);    // Disabled copy constructor
    smallWindow& operator = (const smallWindow&); // and operator '='
    void adjustSize();
+   void onShow (FShowEvent*);
+   void onTimer (FTimerEvent*);
 
  public:
    explicit smallWindow (FWidget* = 0);  // constructor
@@ -38,25 +44,94 @@ class smallWindow : public FDialog
 //----------------------------------------------------------------------
 smallWindow::smallWindow (FWidget* parent)
   : FDialog(parent)
-  , label()
+  , left_arrow()
+  , right_arrow()
+  , top_left_label()
+  , top_right_label()
+  , bottom_label()
 {
-  FString label_text = "resize  \n"
-                       "corner \u25E2";
-  label = new FLabel (label_text, this);
-  label->setAlignment (fc::alignRight);
-  label->setForegroundColor (fc::DarkGray);
-  label->setGeometry (13, 4, 8, 2);
+  left_arrow = new FLabel ("\u25b2", this);
+  left_arrow->setForegroundColor (wc.label_inactive_fg);
+  left_arrow->setEmphasis();
+  left_arrow->ignorePadding();
+  left_arrow->setGeometry (2, 2, 1, 1);
+
+  right_arrow = new FLabel ("\u25b2", this);
+  right_arrow->setForegroundColor (wc.label_inactive_fg);
+  right_arrow->setEmphasis();
+  right_arrow->ignorePadding();
+  right_arrow->setGeometry (getWidth() - 1, 2, 1, 1);
+
+  FString top_left_label_text = "menu";
+  top_left_label = new FLabel (top_left_label_text, this);
+  top_left_label->setForegroundColor (wc.label_inactive_fg);
+  top_left_label->setEmphasis();
+  top_left_label->setGeometry (1, 1, 6, 1);
+
+  FString top_right_label_text = "zoom";
+  top_right_label = new FLabel (top_right_label_text, this);
+  top_right_label->setAlignment (fc::alignRight);
+  top_right_label->setForegroundColor (wc.label_inactive_fg);
+  top_right_label->setEmphasis();
+  top_right_label->setGeometry (getClientWidth() - 5, 1, 6, 1);
+
+  FString bottom_label_text = "resize\n"
+                              "corner\n"
+                              "\u25bc";
+  bottom_label = new FLabel (bottom_label_text, this);
+  bottom_label->setAlignment (fc::alignRight);
+  bottom_label->setForegroundColor (wc.label_inactive_fg);
+  bottom_label->setEmphasis();
+  bottom_label->setGeometry (13, 3, 6, 3);
 }
 
 //----------------------------------------------------------------------
 smallWindow::~smallWindow()
-{ }
+{
+  delOwnTimer();
+}
 
 //----------------------------------------------------------------------
 void smallWindow::adjustSize()
 {
+  if ( isZoomed() )
+  {
+    top_right_label->setText("unzoom");
+    bottom_label->hide();
+  }
+  else
+  {
+    top_right_label->setText("zoom");
+    bottom_label->setVisible();
+  }
+
   FDialog::adjustSize();
-  label->setGeometry (1, getClientHeight() - 1, getClientWidth(), 2);
+  right_arrow->setGeometry (getWidth() - 1, 2, 1, 1);
+  top_right_label->setGeometry (getClientWidth() - 5, 1, 6, 1);
+  bottom_label->setGeometry (1, getClientHeight() - 2, getClientWidth(), 3);
+}
+
+//----------------------------------------------------------------------
+void smallWindow::onShow (FShowEvent*)
+{
+  addTimer(1000);
+}
+
+//----------------------------------------------------------------------
+void smallWindow::onTimer (FTimerEvent*)
+{
+  left_arrow->unsetEmphasis();
+  left_arrow->redraw();
+  right_arrow->unsetEmphasis();
+  right_arrow->redraw();
+  top_left_label->unsetEmphasis();
+  top_left_label->redraw();
+  top_right_label->unsetEmphasis();
+  top_right_label->redraw();
+  bottom_label->unsetEmphasis();
+  bottom_label->redraw();
+  updateTerminal();
+  delOwnTimer();
 }
 
 
@@ -72,7 +147,7 @@ class Window : public FDialog
  private:
    typedef struct
    {
-     bool is_open;
+     bool     is_open;
      FString* title;
      FDialog* dgl;
    }
@@ -433,7 +508,7 @@ void Window::adjustSize()
   if ( Y < 2)
     Y = 2;
 
-  setPos (X, Y, false);
+  move (X, Y);
   iter = begin = windows.begin();
 
   while ( iter != windows.end() )
@@ -444,7 +519,7 @@ void Window::adjustSize()
       n = int(std::distance(begin, iter));
       x = dx + 5 + (n%3)*25 + int(n/3)*3;
       y = dy + 11 + int(n/3)*3;
-      (*iter)->dgl->setPos (x, y, false);
+      (*iter)->dgl->move (x, y);
     }
 
     ++iter;

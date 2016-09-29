@@ -186,7 +186,7 @@ void FWidget::setColorTheme()
   wc.selected_list_fg                  = fc::Cyan;
   wc.selected_list_bg                  = fc::White;
   wc.dialog_fg                         = fc::Black;
-  wc.dialog_resize_fg                  = fc::Red;
+  wc.dialog_resize_fg                  = fc::Cyan;
   wc.dialog_emphasis_fg                = fc::Blue;
   wc.dialog_bg                         = fc::White;
   wc.error_box_fg                      = fc::White;
@@ -878,6 +878,7 @@ FWidget* FWidget::getRootWidget() const
     obj = p_obj;
     p_obj = p_obj->getParentWidget();
   }
+
   return obj;
 }
 
@@ -1694,10 +1695,8 @@ void FWidget::setSize (int width, int height, bool adjust)
   height = std::min (height, size_hints.max_height);
   height = std::max (height, size_hints.min_height);
 
-  if ( getWidth() == width && wsize.getWidth() == width  )
-    return;
-
-  if ( getHeight() == height && wsize.getHeight() == height )
+  if ( getWidth() == width && wsize.getWidth() == width
+     && getHeight() == height && wsize.getHeight() == height )
     return;
 
   if ( width < 1 )

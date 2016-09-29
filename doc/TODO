@@ -20,7 +20,6 @@ Missing Features
      └──► tmp
 ---------------------------------------
 
-- A possibility to change the window size dynamically with the mouse
 - Add a scrolling area with on-demand scroll bars for FButtonGroup
 - Adding for flexible layouts a FGrid widget container that organizes 
   its child widgets in rows and columns

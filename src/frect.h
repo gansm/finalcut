@@ -45,6 +45,10 @@ class FRect
    int     getX() const;
    int     getY() const;
    FPoint  getPos() const;
+   FPoint  getUpperLeftPos() const;
+   FPoint  getUpperRightPos() const;
+   FPoint  getLowerLeftPos() const;
+   FPoint  getLowerRightPos() const;
    int     getWidth() const;
    int     getHeight() const;
 
@@ -62,6 +66,7 @@ class FRect
    void    setPos (const FPoint&);
    void    setWidth (int);
    void    setHeight (int);
+   void    setSize (int, int);
    void    setRect (const FRect&);
    void    setRect (int, int, int, int);
    void    setCoordinates (const FPoint&, const FPoint&);
@@ -133,6 +138,22 @@ inline int FRect::getY() const
 //----------------------------------------------------------------------
 inline FPoint FRect::getPos() const
 { return FPoint(X1,Y1); }
+
+//----------------------------------------------------------------------
+inline FPoint FRect::getUpperLeftPos() const
+{ return FPoint(X1,Y1); }
+
+//----------------------------------------------------------------------
+inline FPoint FRect::getUpperRightPos() const
+{ return FPoint(X2,Y1); }
+
+//----------------------------------------------------------------------
+inline FPoint FRect::getLowerLeftPos() const
+{ return FPoint(X1,Y2); }
+
+//----------------------------------------------------------------------
+inline FPoint FRect::getLowerRightPos() const
+{ return FPoint(X2,Y2); }
 
 //----------------------------------------------------------------------
 inline int FRect::getWidth() const

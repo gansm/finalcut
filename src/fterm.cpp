@@ -2627,7 +2627,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
             // add the overlapping color to this character
             FOptiAttr::char_data ch, oc;
             memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
-            oc = getOverlappedCharacter (gx+1, gy+1, area->widget);
+            oc = getOverlappedCharacter (gx+1 - ol, gy+1, area->widget);
             ch.fg_color = oc.fg_color;
             ch.bg_color = oc.bg_color;
             ch.reverse  = false;
@@ -2646,7 +2646,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
           {
             // restore one character on vterm
             FOptiAttr::char_data ch;
-            ch = getCoveredCharacter (gx+1, gy+1, area->widget);
+            ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
             memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else   // not transparent
@@ -2655,7 +2655,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
             {
               // get covered character + add the current color
               FOptiAttr::char_data ch;
-              ch = getCoveredCharacter (gx+1, gy+1, area->widget);
+              ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.fg_color = ac->fg_color;
               ch.bg_color = ac->bg_color;
               ch.reverse  = false;
@@ -2675,7 +2675,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
               // add the covered background to this character
               FOptiAttr::char_data ch, cc;
               memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
-              cc = getCoveredCharacter (gx+1, gy+1, area->widget);
+              cc = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.bg_color = cc.bg_color;
               memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
             }
@@ -2694,6 +2694,9 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
       if ( _xmin < short(vterm->changes[ay+y].xmin) )
         vterm->changes[ay+y].xmin = uInt(_xmin);
+
+      if ( _xmax >= vterm->width )
+        _xmax = vterm->width - 1;
 
       if ( _xmax > short(vterm->changes[ay+y].xmax) )
         vterm->changes[ay+y].xmax = uInt(_xmax);

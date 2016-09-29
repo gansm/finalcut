@@ -72,6 +72,8 @@ class FTextView : public FWidget
 
    void        onKeyPress (FKeyEvent*);
    void        onMouseDown (FMouseEvent*);
+   void        onMouseUp (FMouseEvent*);
+   void        onMouseMove (FMouseEvent*);
    void        onWheel (FWheelEvent*);
    void        onFocusIn (FFocusEvent*);
    void        onFocusOut (FFocusEvent*);

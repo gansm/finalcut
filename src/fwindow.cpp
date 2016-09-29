@@ -131,6 +131,17 @@ void FWindow::setHeight (int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
+void FWindow::setSize (int w, int h, bool adjust)
+{
+  int old_width = getWidth();
+  int old_height = getHeight();
+  FWidget::setSize (w, h, adjust);
+
+  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
+    resizeArea (vwin);
+}
+
+//----------------------------------------------------------------------
 void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   int old_width = getWidth();

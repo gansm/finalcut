@@ -166,10 +166,6 @@ class fc
      LowerHalfBlock                      = 0x2584,  // ▄
      LeftHalfBlock                       = 0x258c,  // ▌
      RightHalfBlock                      = 0x2590,  // ▐
-     BlackLowerLightTriangle             = 0x25E2,  // ◢
-     BlackLowerLeftTriangle              = 0x25E3,  // ◣
-     BlackUpperLeftTriangle              = 0x25E4,  // ◤
-     BlackUpperRightTriangle             = 0x25E5,  // ◥
      NF_rev_left_arrow2                  = 0x1ab4,  // ⊐
      NF_rev_right_arrow2                 = 0x1ab5,  // ►
      NF_radio_button3                    = 0x1ab7,  // )

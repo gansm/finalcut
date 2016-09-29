@@ -55,6 +55,7 @@ class FDialog : public FWindow
    bool         zoom_button_pressed;
    bool         zoom_button_active;
    FPoint       titlebar_click_pos;
+   FPoint       resize_click_pos;
    FRect        old_geometry;     // required by move()
    FMenu*       dialog_menu;
    FMenuItem*   dgl_menuitem;
@@ -108,6 +109,7 @@ class FDialog : public FWindow
    int      exec();
    void     move (const FPoint&);
    void     move (int, int);
+   void     setSize (int, int, bool = true);
 
    bool     setFocus (bool);
    bool     setFocus();

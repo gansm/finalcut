@@ -426,6 +426,7 @@ class FWidget : public FObject, public FTerm
    bool             ignorePadding (bool);
    bool             ignorePadding();
    bool             acceptPadding();
+   bool             isPaddingIgnored();
 
    short            getForegroundColor() const;
    short            getBackgroundColor() const;
@@ -459,9 +460,9 @@ class FWidget : public FObject, public FTerm
    void             setY (int, bool = true);
    virtual void     setPos (const FPoint&, bool = true);
    virtual void     setPos (int, int, bool = true);
-   void             setWidth (int, bool = true);
-   void             setHeight (int, bool = true);
-   void             setSize (int, int, bool = true);
+   virtual void     setWidth (int, bool = true);
+   virtual void     setHeight (int, bool = true);
+   virtual void     setSize (int, int, bool = true);
    void             setTopPadding (int, bool = true);
    void             setLeftPadding (int, bool = true);
    void             setBottomPadding (int, bool = true);
@@ -701,6 +702,10 @@ inline bool FWidget::ignorePadding()
 //----------------------------------------------------------------------
 inline bool FWidget::acceptPadding()
 { return ignore_padding = false; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isPaddingIgnored()
+{ return ignore_padding; }
 
 //----------------------------------------------------------------------
 inline void FWidget::setFocusable()

@@ -690,7 +690,7 @@ void FLineEdit::onTimer (FTimerEvent*)
 {
   int len = int(text.getLength());
 
-  switch ( drag_scroll )
+  switch ( int(drag_scroll) )
   {
     case FLineEdit::noScroll:
       return;
@@ -730,6 +730,8 @@ void FLineEdit::onTimer (FTimerEvent*)
 
       if ( cursor_pos > len )
         cursor_pos = len;
+
+      break;
 
     default:
       break;

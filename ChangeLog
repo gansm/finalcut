@@ -1,3 +1,7 @@
+2016-09-28  Markus Gans  <guru.mail@muenster.de>
+	* The size is now dynamically changeable with the mouse 
+	  in a resizable window.
+
 2016-09-26  Markus Gans  <guru.mail@muenster.de>
 	* FLabel now transmits the Click events to the parent widget
 

@@ -1272,7 +1272,16 @@ FString FString::trim() const
 }
 
 //----------------------------------------------------------------------
-FString FString::left(uInt len) const
+FString FString::left (int len) const
+{
+  if ( len > 0)
+    return left (uInt(len));
+  else
+    return left (uInt(0));
+}
+
+//----------------------------------------------------------------------
+FString FString::left (uInt len) const
 {
   register wchar_t* p;
   FString s(string);
@@ -1290,7 +1299,16 @@ FString FString::left(uInt len) const
 }
 
 //----------------------------------------------------------------------
-FString FString::right(uInt len) const
+FString FString::right (int len) const
+{
+  if ( len > 0)
+    return right (uInt(len));
+  else
+    return right (uInt(0));
+}
+
+//----------------------------------------------------------------------
+FString FString::right (uInt len) const
 {
   register wchar_t* p;
   FString s(string);
@@ -1308,7 +1326,21 @@ FString FString::right(uInt len) const
 }
 
 //----------------------------------------------------------------------
-FString FString::mid(uInt pos, uInt len) const
+FString FString::mid (int pos, int len) const
+{
+  if ( pos > 0 )
+  {
+    if ( len > 0 )
+      return mid (uInt(pos), uInt(len));
+    else
+      return mid (uInt(pos), uInt(0));
+  }
+  else
+    return mid (uInt(0), uInt(0));
+}
+
+//----------------------------------------------------------------------
+FString FString::mid (uInt pos, uInt len) const
 {
   register wchar_t* p;
   register wchar_t* first;

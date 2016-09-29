@@ -138,9 +138,12 @@ class FString
    FString rtrim() const;
    FString trim()  const;
 
-   FString left(uInt) const;
-   FString right(uInt) const;
-   FString mid(uInt, uInt) const;
+   FString left (int) const;
+   FString left (uInt) const;
+   FString right (int) const;
+   FString right (uInt) const;
+   FString mid (int, int) const;
+   FString mid (uInt, uInt) const;
 
    std::vector<FString> split (const FString&);
    std::vector<FString> split (std::wstring&);

@@ -1,6 +1,7 @@
 // File: ftextview.cpp
 // Provides: class FTextView
 
+#include "fdialog.h"
 #include "fstatusbar.h"
 #include "ftextview.h"
 
@@ -65,13 +66,28 @@ void FTextView::init()
 //----------------------------------------------------------------------
 void FTextView::draw()
 {
+  FWidget* parent = getParentWidget();
+  bool is_text_dialog;
   updateVTerm(false);
   setColor();
 
   if ( isMonochron() )
     setReverse(true);
 
-  if ( ! isNewFont() )
+  if ( parent
+     && parent->isDialogWidget()
+     && isPaddingIgnored()
+     && getGeometry() == FRect ( 1
+                               , 2
+                               , parent->getWidth()
+                               , parent->getHeight()-1) )
+  {
+    is_text_dialog = true;
+  }
+  else
+    is_text_dialog = false;
+
+  if ( ! (is_text_dialog || isNewFont()) )
     drawBorder();
 
   if ( isMonochron() )
@@ -356,6 +372,9 @@ void FTextView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseDown (FMouseEvent* ev)
 {
+  FWidget* parent;
+  FDialog* dialog;
+
   if ( ev->getButton() != fc::LeftButton )
     return;
 
@@ -371,6 +390,73 @@ void FTextView::onMouseDown (FMouseEvent* ev)
 
     if ( statusBar() )
       statusBar()->drawMessage();
+  }
+
+  parent = getParentWidget();
+
+  if ( parent
+     && parent->isDialogWidget()
+     && (dialog = static_cast<FDialog*>(parent)) != 0
+     && dialog->isResizeable()
+     && ! dialog->isZoomed() )
+  {
+    int b = ev->getButton();
+    const FPoint& tp = ev->getTermPos();
+    const FPoint& p = parent->termToWidgetPos(tp);
+    parent->setFocus();
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+    FApplication::sendEvent (parent, _ev);
+    delete _ev;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTextView::onMouseUp (FMouseEvent* ev)
+{
+  FWidget* parent = getParentWidget();
+  FDialog* dialog;
+
+  if ( parent
+     && parent->isDialogWidget()
+     && (dialog = static_cast<FDialog*>(parent)) != 0
+     && dialog->isResizeable()
+     && ! dialog->isZoomed() )
+  {
+    int b = ev->getButton();
+    const FPoint& tp = ev->getTermPos();
+    const FPoint& p = parent->termToWidgetPos(tp);
+    parent->setFocus();
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
+    FApplication::sendEvent (parent, _ev);
+    delete _ev;
+  }
+
+  if ( vbar->isVisible() )
+    vbar->redraw();
+
+  if ( hbar->isVisible() )
+    hbar->redraw();
+}
+
+//----------------------------------------------------------------------
+void FTextView::onMouseMove (FMouseEvent* ev)
+{
+  FWidget* parent = getParentWidget();
+  FDialog* dialog;
+
+  if ( parent
+     && parent->isDialogWidget()
+     && (dialog = static_cast<FDialog*>(parent)) != 0
+     && dialog->isResizeable()
+     && ! dialog->isZoomed() )
+  {
+    int b = ev->getButton();
+    const FPoint& tp = ev->getTermPos();
+    const FPoint& p = parent->termToWidgetPos(tp);
+    parent->setFocus();
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
+    FApplication::sendEvent (parent, _ev);
+    delete _ev;
   }
 }
 
@@ -456,7 +542,7 @@ void FTextView::cb_VBarChange (FWidget*, void*)
   int yoffset_before = yoffset;
   scrollType = vbar->getScrollType();
 
-  switch ( scrollType )
+  switch ( int(scrollType) )
   {
     case FScrollbar::scrollPageBackward:
       distance = getHeight() + nf_offset - 2;

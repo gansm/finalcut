@@ -72,8 +72,9 @@ class FWindow : public FWidget
    const char*     getClassName() const;
    virtual void    show();
    virtual void    hide();
-   void            setWidth (int, bool = true);
-   void            setHeight (int, bool = true);
+   virtual void    setWidth (int, bool = true);
+   virtual void    setHeight (int, bool = true);
+   virtual void    setSize (int, int, bool = true);
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void            setGeometry (int, int, int, int, bool = true);

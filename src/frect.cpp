@@ -102,6 +102,13 @@ void FRect::setHeight (int h)
 }
 
 //----------------------------------------------------------------------
+void FRect::setSize (int w, int h)
+{
+  X2 = short(X1 + w - 1);
+  Y2 = short(Y1 + h - 1);
+}
+
+//----------------------------------------------------------------------
 void FRect::setRect (const FRect& r)
 {
   setRect (r.X1, r.Y1, r.X2-r.X1+1, r.Y2-r.Y1+1);

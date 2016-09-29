@@ -1257,7 +1257,7 @@ void FListBox::onTimer (FTimerEvent*)
   int current_before = current;
   int yoffset_before = yoffset;
 
-  switch ( drag_scroll )
+  switch ( int(drag_scroll) )
   {
     case FListBox::noScroll:
       return;
@@ -1300,6 +1300,8 @@ void FListBox::onTimer (FTimerEvent*)
 
       if ( yoffset > element_count - getHeight() + 2 )
         yoffset = element_count - getHeight() + 2;
+
+      break;
 
     default:
       break;
