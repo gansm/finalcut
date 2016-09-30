@@ -54,8 +54,11 @@ class FMenu : public FWindow, public FMenuList
    bool         has_checkable_items;
 
  private:
+   // Disable copy constructor
    FMenu (const FMenu&);
+   // Disable assignment operator (=)
    FMenu& operator = (const FMenu&);
+
    void         init(FWidget*);
    void         calculateDimensions();
    void         adjustItems();
@@ -89,18 +92,23 @@ class FMenu : public FWindow, public FMenuList
    void         processActivate();
 
  public:
-   explicit FMenu (FWidget* = 0);  // constructor
+   // Constructor
+   explicit FMenu (FWidget* = 0);
    FMenu (FString&, FWidget* = 0);
    FMenu (const std::string&, FWidget* = 0);
    FMenu (const char*, FWidget* = 0);
-   virtual ~FMenu();  // destructor
+   // Destructor
+   virtual ~FMenu();
+
    virtual const char* getClassName() const;
 
+   // Event handlers
    void       onKeyPress (FKeyEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
    void       onAccel (FAccelEvent*);
+
    void       show();
    void       hide();
    // make every setGeometry from FWidget available
@@ -130,6 +138,8 @@ class FMenu : public FWindow, public FMenuList
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
+
+   // Callback method
    void       cb_menuitem_toggled (FWidget*, void*);
 
  private:

@@ -37,29 +37,32 @@ class FMenuList
    std::vector<FMenuItem*> item_list;
 
  private:
+   // Disable copy constructor
    FMenuList (const FMenuList&);
+   // Disable assignment operator (=)
    FMenuList& operator = (const FMenuList&);
 
  public:
+   // Constructor
    explicit FMenuList();
+   // Destructor
    virtual ~FMenuList();
+
    virtual const char* getClassName() const;
-
-   uInt         count() const;
-   FMenuItem*   item (int) const;
-   void         enableItem (int);
-   void         disableItem (int);
-   bool         isSelected (int) const;
-   void         selectFirstItem();
-   void         unselectItem();
-   FMenuItem*   getSelectedItem() const;
-   void         setSelectedItem (FMenuItem*);
-   bool         hasSelectedItem() const;
-
-   virtual void insert (FMenuItem*);
-   virtual void remove (FMenuItem*);
-   void         remove (int);
-   void         clear();
+   uInt                count() const;
+   FMenuItem*          item (int) const;
+   void                enableItem (int);
+   void                disableItem (int);
+   bool                isSelected (int) const;
+   void                selectFirstItem();
+   void                unselectItem();
+   FMenuItem*          getSelectedItem() const;
+   void                setSelectedItem (FMenuItem*);
+   bool                hasSelectedItem() const;
+   virtual void        insert (FMenuItem*);
+   virtual void        remove (FMenuItem*);
+   void                remove (int);
+   void                clear();
 };
 #pragma pack(pop)
 

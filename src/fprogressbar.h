@@ -47,10 +47,12 @@ class FProgressbar : public FWidget
    virtual void draw();
 
  public:
-   explicit FProgressbar(FWidget* = 0);  // constructor
+   // Constructor
+   explicit FProgressbar(FWidget* = 0);
+   // Destructor
    virtual ~FProgressbar();
-   const char* getClassName() const;
 
+   const char* getClassName() const;
    void hide();
 
    int  getPercentage();

@@ -50,13 +50,17 @@ class FTextView : public FWidget
    uInt        maxLineWidth;
 
  private:
+   // Disable copy constructor
    FTextView (const FTextView&);
+   // Disable assignment operator (=)
    FTextView& operator = (const FTextView&);
 
    void        init();
    void        draw();
    void        drawText();
    void        processChanged();
+
+   // Callback methods
    void        cb_VBarChange (FWidget*, void*);
    void        cb_HBarChange (FWidget*, void*);
 
@@ -64,12 +68,15 @@ class FTextView : public FWidget
    void adjustSize();
 
  public:
-   explicit FTextView (FWidget* = 0);  // constructor
-  ~FTextView();  // destructor
-   const char* getClassName() const;
+   // Constructor
+   explicit FTextView (FWidget* = 0);
+   // Destructor
+  ~FTextView();
 
+   const char* getClassName() const;
    void        hide();
 
+   // Event handlers
    void        onKeyPress (FKeyEvent*);
    void        onMouseDown (FMouseEvent*);
    void        onMouseUp (FMouseEvent*);
@@ -77,6 +84,7 @@ class FTextView : public FWidget
    void        onWheel (FWheelEvent*);
    void        onFocusIn (FFocusEvent*);
    void        onFocusOut (FFocusEvent*);
+
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void        setGeometry (int, int, int, int, bool = true);

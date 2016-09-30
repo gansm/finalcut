@@ -53,21 +53,26 @@ class FWindow : public FWidget
    static FWindow* previous_widget;
 
  private:
+   // Disable copy constructor
    FWindow (const FWindow&);
+   // Disable assignment operator (=)
    FWindow& operator = (const FWindow&);
 
  protected:
- // Event handlers
+   // Event handlers
    bool            event (FEvent*);
    virtual void    onWindowActive (FEvent*);
    virtual void    onWindowInactive (FEvent*);
    virtual void    onWindowRaised (FEvent*);
    virtual void    onWindowLowered (FEvent*);
+
    virtual void    adjustSize();
 
  public:
-   explicit FWindow (FWidget* = 0);  // constructor
-  ~FWindow ();  // destructor
+   // Constructor
+   explicit FWindow (FWidget* = 0);
+   // Destructor
+  ~FWindow ();
 
    const char*     getClassName() const;
    virtual void    show();

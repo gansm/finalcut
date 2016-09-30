@@ -44,8 +44,11 @@ class FButtonGroup : public FWidget
    FButtonGroup::FButtonList buttonlist;
 
  private:
+   // Disable copy constructor
    FButtonGroup (const FButtonGroup&);
+   // Disable assignment operator (=)
    FButtonGroup& operator = (const FButtonGroup&);
+
    void init();
    bool isRadioButton(FToggleButton*) const;
    void directFocus();
@@ -57,36 +60,41 @@ class FButtonGroup : public FWidget
    void  drawLabel();
 
  public:
-   explicit FButtonGroup (FWidget* = 0);  // constructor
-   FButtonGroup (const FString&, FWidget* = 0);  // constructor
-   virtual ~FButtonGroup();  // destructor
-   const char* getClassName() const;
+   // Constructors
+   explicit FButtonGroup (FWidget* = 0);
+   FButtonGroup (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FButtonGroup();
 
-   void hide();
+   const char*    getClassName() const;
+   void           hide();
 
    FToggleButton* getFirstButton();
    FToggleButton* getLastButton();
-   bool hasFocusedButton();
-   bool hasCheckedButton();
-   void onMouseDown (FMouseEvent*);
-   void onAccel (FAccelEvent*);
-   void onFocusIn (FFocusEvent*);
-   void onFocusOut (FFocusEvent*);
+   bool           hasFocusedButton();
+   bool           hasCheckedButton();
 
-   void insert (FToggleButton*);
-   void remove (FToggleButton*);
+   // Event handlers
+   void           onMouseDown (FMouseEvent*);
+   void           onAccel (FAccelEvent*);
+   void           onFocusIn (FFocusEvent*);
+   void           onFocusOut (FFocusEvent*);
 
-   void cb_buttonToggled (FWidget*, void*);
+   void           insert (FToggleButton*);
+   void           remove (FToggleButton*);
 
-   bool setEnable(bool);
-   bool setEnable();
-   bool unsetEnable();
-   bool setDisable();
-   bool setBorder(bool);
-   bool setBorder();
-   bool unsetBorder();
-   void setText (const FString&);
-   FString& getText();
+   // Callback method
+   void           cb_buttonToggled (FWidget*, void*);
+
+   bool           setEnable(bool);
+   bool           setEnable();
+   bool           unsetEnable();
+   bool           setDisable();
+   bool           setBorder(bool);
+   bool           setBorder();
+   bool           unsetBorder();
+   void           setText (const FString&);
+   FString&       getText();
 };
 #pragma pack(pop)
 

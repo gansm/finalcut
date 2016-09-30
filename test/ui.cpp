@@ -22,18 +22,25 @@ class ProgressDialog : public FDialog
    FButton*      quit;
 
  private:
-   ProgressDialog (const ProgressDialog&);    // Disabled copy constructor
-   ProgressDialog& operator = (const ProgressDialog&); // and operator '='
+   // Disable copy constructor
+   ProgressDialog (const ProgressDialog&);
+   // Disable assignment operator (=)
+   ProgressDialog& operator = (const ProgressDialog&);
 
+   // Event handlers
    void onShow (FShowEvent*);
    void onTimer (FTimerEvent*);
+
+   // Callback methods
    void cb_reset_bar (FWidget*, void*);
    void cb_more_bar (FWidget*, void*);
    void cb_exit_bar (FWidget*, void*);
 
  public:
-   explicit ProgressDialog (FWidget* = 0);  // constructor
-  ~ProgressDialog();                        // destructor
+   // Constructor
+   explicit ProgressDialog (FWidget* = 0);
+   // Destructor
+  ~ProgressDialog();
 };
 #pragma pack(pop)
 
@@ -167,13 +174,18 @@ class TextWindow : public FDialog
    FTextView* scrollText;
 
  private:
-   TextWindow (const TextWindow&);    // Disabled copy constructor
-   TextWindow& operator = (const TextWindow&); // and operator '='
+   // Disable copy constructor
+   TextWindow (const TextWindow&);
+   // Disable assignment operator (=)
+   TextWindow& operator = (const TextWindow&);
+
    void adjustSize();
 
  public:
-   explicit TextWindow (FWidget* = 0);  // constructor
-  ~TextWindow();                        // destructor
+   // Constructor
+   explicit TextWindow (FWidget* = 0);
+   // Destructor
+  ~TextWindow();
 
    void append (const FString&);
 };
@@ -232,10 +244,15 @@ class MyDialog : public FDialog
    FString    clipboard;
 
  private:
-   MyDialog (const MyDialog&);    // Disabled copy constructor
-   MyDialog& operator = (const MyDialog&); // and operator '='
+   // Disable copy constructor
+   MyDialog (const MyDialog&);
+   // Disable assignment operator (=)
+   MyDialog& operator = (const MyDialog&);
 
+   // Event handlers
    void onClose (FCloseEvent*);
+
+   // Callback methods
    void cb_noFunctionMsg (FWidget*, void*);
    void cb_about (FWidget*, void*);
    void cb_terminfo (FWidget*, void*);
@@ -252,11 +269,14 @@ class MyDialog : public FDialog
    void cb_view (FWidget*, void*);
    void cb_setInput (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
+
    void adjustSize();
 
  public:
-   explicit MyDialog (FWidget* = 0);  // constructor
-  ~MyDialog();  // destructor
+   // Constructor
+   explicit MyDialog (FWidget* = 0);
+   // Destructor
+  ~MyDialog();
 };
 #pragma pack(pop)
 

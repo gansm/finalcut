@@ -45,20 +45,28 @@ class FSwitch : public FToggleButton
    bool button_pressed;
 
  private:
+   // Disable copy constructor
    FSwitch (const FSwitch&);
+   // Disable assignment operator (=)
    FSwitch& operator = (const FSwitch&);
+
    void draw();
    void drawCheckButton();
 
  public:
-   explicit FSwitch (FWidget* = 0);  // constructor
-   FSwitch (const FString&, FWidget* = 0);  // constructor
-   virtual ~FSwitch();  // destructor
+   // Constructors
+   explicit FSwitch (FWidget* = 0);
+   FSwitch (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FSwitch();
+
    const char* getClassName() const;
+   void setText (FString);
+
+   // Event handlers
    void onKeyPress (FKeyEvent*);
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
-   void setText (FString);
 };
 #pragma pack(pop)
 

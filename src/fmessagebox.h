@@ -84,18 +84,24 @@ class FMessageBox : public FDialog
    virtual void draw();
    void resizeButtons();
    void adjustButtons();
+
+   // Callback method
    void cb_processClick (FWidget*, void*);
 
  public:
+   // Constructors
    explicit FMessageBox (FWidget* = 0);
-   FMessageBox (const FMessageBox&);       // copy constructor
+   FMessageBox (const FMessageBox&);  // copy constructor
    FMessageBox ( const FString&, const FString&
                , int, int, int
                , FWidget* = 0 );
+   // Destructor
   ~FMessageBox();
-   FMessageBox& operator = (const FMessageBox&); // assignment
-   const char* getClassName() const;
 
+   // Assignment operator (=)
+   FMessageBox& operator = (const FMessageBox&);
+
+   const char* getClassName() const;
    const FString getTitlebarText() const;
    void  setTitlebarText (const FString&);
 

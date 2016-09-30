@@ -21,17 +21,27 @@
 class Menu : public FDialog
 {
  private:
-   Menu (const Menu&);    // Disabled copy constructor
-   Menu& operator = (const Menu&); // and operator '='
+   // Disable copy constructor
+   Menu (const Menu&);
+   // Disable assignment operator (=)
+   Menu& operator = (const Menu&);
+
    void defaultCallback (FMenuList*);
+
+   // Event handler
    void onClose (FCloseEvent*);
+
+   // Callback methods
    void cb_message (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
+
    void adjustSize();
 
  public:
-   explicit Menu (FWidget* = 0);  // constructor
-  ~Menu();  // destructor
+   // Constructor
+   explicit Menu (FWidget* = 0);
+   // Destructor
+  ~Menu();
 };
 #pragma pack(pop)
 

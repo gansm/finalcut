@@ -358,6 +358,30 @@ void FStatusBar::drawKeys()
 
 // public methods of FStatusBar
 //----------------------------------------------------------------------
+void FStatusBar::hide()
+{
+  int screenWidth;
+  short fg, bg;
+  char* blank;
+
+  FWindow::hide();
+  fg = wc.term_fg;
+  bg = wc.term_bg;
+  setColor (fg, bg);
+  screenWidth = getColumnNumber();
+
+  if ( screenWidth < 0 )
+    return;
+
+  blank = new char[screenWidth+1];
+  memset(blank, ' ', uLong(screenWidth));
+  blank[screenWidth] = '\0';
+  printPos (1, 1);
+  print (vstatusbar, blank);
+  delete[] blank;
+}
+//----------------------------------------------------------------------
+
 void FStatusBar::onMouseDown (FMouseEvent* ev)
 {
   if ( hasActivatedKey() )
@@ -525,30 +549,6 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
     if ( focus_changed )
       redraw();
   }
-}
-
-//----------------------------------------------------------------------
-void FStatusBar::hide()
-{
-  int screenWidth;
-  short fg, bg;
-  char* blank;
-
-  FWindow::hide();
-  fg = wc.term_fg;
-  bg = wc.term_bg;
-  setColor (fg, bg);
-  screenWidth = getColumnNumber();
-
-  if ( screenWidth < 0 )
-    return;
-
-  blank = new char[screenWidth+1];
-  memset(blank, ' ', uLong(screenWidth));
-  blank[screenWidth] = '\0';
-  printPos (1, 1);
-  print (vstatusbar, blank);
-  delete[] blank;
 }
 
 //----------------------------------------------------------------------

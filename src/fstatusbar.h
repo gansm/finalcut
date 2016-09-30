@@ -53,21 +53,28 @@ class FStatusKey : public FWidget
    FStatusBar* bar;
 
  private:
+   // Disable copy constructor
    FStatusKey (const FStatusKey&);
+   // Disable assignment operator (=)
    FStatusKey& operator = (const FStatusKey&);
+
    void init (FWidget*);
    void processActivate();
    FStatusBar* statusbar() const;
    void setStatusbar (FStatusBar*);
 
  public:
+   // Constructors
    explicit FStatusKey (FWidget* = 0);
    FStatusKey (int, FString&, FWidget* = 0);
    FStatusKey (int, const std::string&, FWidget* = 0);
    FStatusKey (int, const char*, FWidget* = 0);
+   // Destructor
    virtual ~FStatusKey();
 
+   // Event handler
    void onAccel (FAccelEvent*);
+
    void setActive();
    void unsetActive();
    bool isActivated() const;
@@ -153,21 +160,28 @@ class FStatusBar : public FWindow
    int     x_msg;
 
  private:
+   // Disable copy constructor
    FStatusBar (const FStatusBar&);
+   // Disable assignment operator (=)
    FStatusBar& operator = (const FStatusBar&);
+
    void init();
    void draw();
    void drawKeys();
 
  public:
-   explicit FStatusBar (FWidget* = 0);  // constructor
-   virtual ~FStatusBar();  // destructor
-   virtual const char* getClassName() const;
+   // Constructor
+   explicit FStatusBar (FWidget* = 0);
+   // Destructor
+   virtual ~FStatusBar();
 
+   virtual const char* getClassName() const;
+   void hide();
+
+   // Event handlers
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
    void onMouseMove (FMouseEvent*);
-   void hide();
 
    uInt count() const;
    FStatusKey* key (int) const;
@@ -189,6 +203,8 @@ class FStatusBar : public FWindow
    void clear();
 
    void adjustSize();
+
+   // Callback method
    void cb_statuskey_activated (FWidget*, void*);
 };
 #pragma pack(pop)

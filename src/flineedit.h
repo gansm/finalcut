@@ -64,8 +64,11 @@ class FLineEdit : public FWidget
    label_o    label_orientation;
 
  private:
+   // Disable copy constructor
    FLineEdit (const FLineEdit&);
+   // Disable assignment operator (=)
    FLineEdit& operator = (const FLineEdit&);
+
    void  init();
    bool  hasHotkey();
    void  draw();
@@ -78,11 +81,13 @@ class FLineEdit : public FWidget
    void adjustSize();
 
  public:
-   explicit FLineEdit (FWidget* = 0);  // constructor
-   FLineEdit (const FString&, FWidget* = 0);  // constructor
-   virtual ~FLineEdit();  // destructor
-   const char* getClassName() const;
+   // Constructor
+   explicit FLineEdit (FWidget* = 0);
+   FLineEdit (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FLineEdit();
 
+   const char* getClassName() const;
    void hide();
 
    bool setEnable(bool);
@@ -97,6 +102,7 @@ class FLineEdit : public FWidget
    bool unsetShadow();
    bool hasShadow();
 
+   // Event handlers
    void onKeyPress (FKeyEvent*);
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);

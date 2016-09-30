@@ -27,15 +27,24 @@ class watch : public FDialog
    FSwitch* seconds_sw;
 
  private:
-   watch (const watch&);             // Disabled copy constructor
-   watch& operator = (const watch&); // and operator '='
+   // Disable copy constructor
+   watch (const watch&);
+   // Disable assignment operator (=)
+   watch& operator = (const watch&);
 
  public:
-   explicit watch (FWidget* = 0);  // constructor
-  ~watch();  // destructor
+   // Constructor
+   explicit watch (FWidget* = 0);
+   // Destructor
+  ~watch();
+
    void printTime();
+
+   // Event handlers
    void onTimer (FTimerEvent*);
    void onClose (FCloseEvent*);
+
+   // Callback methods
    void cb_clock (FWidget*, void*);
    void cb_seconds (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);

@@ -109,6 +109,7 @@ class FApplication : public FWidget
    struct timeval  time_keypressed;
    struct timeval  time_mousepressed;
    FPoint          new_mouse_position;
+   static bool     move_size_mode;
    static FWidget* main_widget;
    static FWidget* active_window;
    static FWidget* focus_widget;
@@ -116,8 +117,10 @@ class FApplication : public FWidget
    static FWidget* open_menu;
 
  private:
-   FApplication (const FApplication&);             // Disabled copy constructor
-   FApplication& operator = (const FApplication&); // and operator '='
+   // Disable copy constructor
+   FApplication (const FApplication&);
+   // Disable assignment operator (=)
+   FApplication& operator = (const FApplication&);
 
    void    init();
    void    setExitMessage (std::string);
@@ -149,8 +152,10 @@ class FApplication : public FWidget
    friend  class FWindow;
 
  public:
-   FApplication (int&, char**& );  // constructor
-   virtual ~FApplication(); // destructor
+   // Constructor
+   FApplication (int&, char**& );
+   // Destructor
+   virtual ~FApplication();
 
    const char* getClassName()     const;
    int         argc()             const;

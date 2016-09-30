@@ -311,8 +311,11 @@ class FWidget : public FObject, public FTerm
    friend class FToggleButton;
 
  private:
+   // Disable copy constructor
    FWidget (const FWidget&);
+   // Disable assignment operator (=)
    FWidget& operator = (const FWidget&);
+
    void             init();
    void             finish();
    void             processDestroy();
@@ -326,7 +329,7 @@ class FWidget : public FObject, public FTerm
    void             adjustSizeGlobal();
    virtual void     setStatusBar (FStatusBar*);
    virtual void     setMenuBar (FMenuBar*);
- // Event handlers
+   // Event handlers
    bool             event (FEvent*);
    virtual void     onKeyPress (FKeyEvent*);
    virtual void     onKeyUp (FKeyEvent*);
@@ -343,13 +346,15 @@ class FWidget : public FObject, public FTerm
    virtual void     onShow (FShowEvent*);
    virtual void     onHide (FHideEvent*);
    virtual void     onClose (FCloseEvent*);
- // Change child focus
+   // Change child focus
    virtual bool     focusNextChild();
    virtual bool     focusPrevChild();
 
  public:
-   explicit FWidget (FWidget* = 0);  // constructor
-  ~FWidget();  // destructor
+   // Constructor
+   explicit FWidget (FWidget* = 0);
+   // Destructor
+  ~FWidget();
 
    const char*      getClassName() const;
    FWidget*         getRootWidget() const;
@@ -363,6 +368,8 @@ class FWidget : public FObject, public FTerm
    static void      setClickedWidget(FWidget*);
    static FWidget*  getOpenMenu();
    static void      setOpenMenu(FWidget*);
+   static bool      getMoveSizeMode();
+   static void      setMoveSizeMode (bool);
    int              numOfFocusableChildren();
    FWidget*         getParentWidget() const;
    bool             isRootWidget() const;

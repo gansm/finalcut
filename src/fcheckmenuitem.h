@@ -41,18 +41,24 @@
 class FCheckMenuItem : public FMenuItem
 {
  private:
+   // Disable copy constructor
    FCheckMenuItem (const FCheckMenuItem&);
+   // Disable assignment operator (=)
    FCheckMenuItem& operator = (const FCheckMenuItem&);
+
    void init (FWidget*);
    void processToggle();
    void processClicked();
 
  public:
+   // Constructor
    explicit FCheckMenuItem (FWidget* = 0);
    FCheckMenuItem (FString&, FWidget* = 0);
    FCheckMenuItem (const std::string&, FWidget* = 0);
    FCheckMenuItem (const char*, FWidget* = 0);
+   // Destructor
    virtual ~FCheckMenuItem();
+
    const char* getClassName() const;
 };
 #pragma pack(pop)

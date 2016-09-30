@@ -9,10 +9,14 @@
 class timer : public FWidget
 {
  public:
+   // Constructor
    explicit timer (FWidget* = 0);
+
  protected:
+   // Event handlers
    void onTimer (FTimerEvent*);
    void onAccel (FAccelEvent*);
+
    void draw();
 };
 

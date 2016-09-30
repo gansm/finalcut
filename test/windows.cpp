@@ -27,15 +27,22 @@ class smallWindow : public FDialog
    FLabel* bottom_label;
 
  private:
-   smallWindow (const smallWindow&);    // Disabled copy constructor
-   smallWindow& operator = (const smallWindow&); // and operator '='
+   // Disable copy constructor
+   smallWindow (const smallWindow&);
+   // Disable assignment operator (=)
+   smallWindow& operator = (const smallWindow&);
+
    void adjustSize();
+
+   // Event handlers
    void onShow (FShowEvent*);
    void onTimer (FTimerEvent*);
 
  public:
-   explicit smallWindow (FWidget* = 0);  // constructor
-  ~smallWindow();                        // destructor
+   // Constructor
+   explicit smallWindow (FWidget* = 0);
+   // Destructor
+  ~smallWindow();
 
    void append (const FString&);
 };
@@ -50,13 +57,26 @@ smallWindow::smallWindow (FWidget* parent)
   , top_right_label()
   , bottom_label()
 {
-  left_arrow = new FLabel ("\u25b2", this);
+  wchar_t arrow_up, arrow_down;
+
+  if ( isCygwinTerminal() )
+  {
+    arrow_up = L'^';
+    arrow_down = L'v';
+  }
+  else
+  {
+    arrow_up = fc::BlackUpPointingTriangle;
+    arrow_down = fc::BlackDownPointingTriangle;
+  }
+
+  left_arrow = new FLabel (arrow_up, this);
   left_arrow->setForegroundColor (wc.label_inactive_fg);
   left_arrow->setEmphasis();
   left_arrow->ignorePadding();
   left_arrow->setGeometry (2, 2, 1, 1);
 
-  right_arrow = new FLabel ("\u25b2", this);
+  right_arrow = new FLabel (arrow_up, this);
   right_arrow->setForegroundColor (wc.label_inactive_fg);
   right_arrow->setEmphasis();
   right_arrow->ignorePadding();
@@ -76,8 +96,8 @@ smallWindow::smallWindow (FWidget* parent)
   top_right_label->setGeometry (getClientWidth() - 5, 1, 6, 1);
 
   FString bottom_label_text = "resize\n"
-                              "corner\n"
-                              "\u25bc";
+                              "corner\n";
+  bottom_label_text += arrow_down;
   bottom_label = new FLabel (bottom_label_text, this);
   bottom_label->setAlignment (fc::alignRight);
   bottom_label->setForegroundColor (wc.label_inactive_fg);
@@ -155,21 +175,31 @@ class Window : public FDialog
    std::vector<win_data*> windows;
 
  private:
-   Window (const Window&);    // Disabled copy constructor
-   Window& operator = (const Window&); // and operator '='
+   // Disable copy constructor
+   Window (const Window&);
+   // Disable assignment operator (=)
+   Window& operator = (const Window&);
+
    void activateWindow (FDialog*);
+
+   // Event handlers
    void onClose (FCloseEvent*);
+
+   // Callback methods
    void cb_createWindows (FWidget*, void*);
    void cb_closeWindows (FWidget*, void*);
    void cb_next (FWidget*, void*);
    void cb_previous (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
    void cb_destroyWindow (FWidget*, void*);
+
    void adjustSize();
 
  public:
-   explicit Window (FWidget* = 0);  // constructor
-  ~Window();  // destructor
+   // Constructor
+   explicit Window (FWidget* = 0);
+   // Destructor
+  ~Window();
 };
 #pragma pack(pop)
 
@@ -489,6 +519,7 @@ void Window::cb_exitApp (FWidget*, void*)
 void Window::cb_destroyWindow (FWidget*, void* data_ptr)
 {
   win_data* win_dat = static_cast<win_data*>(data_ptr);
+
   if ( win_dat )
     win_dat->is_open = false;
 }

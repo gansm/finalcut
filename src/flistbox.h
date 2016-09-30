@@ -45,11 +45,14 @@ class FListBoxItem
    bool              selected;
 
  public:
+   // Constructors
    FListBoxItem ();
    explicit FListBoxItem (FString&);
    explicit FListBoxItem (const std::string&);
    explicit FListBoxItem (const char*);
+   // Destructor
    virtual ~FListBoxItem();
+
    virtual FString getText() const;
 
  protected:
@@ -120,8 +123,11 @@ class FListBox : public FWidget
    int         max_line_width;
 
  private:
+   // Disable copy constructor
    FListBox (const FListBox&);
+   // Disable assignment operator (=)
    FListBox& operator = (const FListBox&);
+
    void init();
    void draw();
    void drawLabel();
@@ -135,12 +141,15 @@ class FListBox : public FWidget
    void adjustSize();
 
  public:
-   explicit FListBox (FWidget* = 0);  // constructor
-  ~FListBox();  // destructor
-   const char* getClassName() const;
+   // Constructor
+   explicit FListBox (FWidget* = 0);
+   // Destructor
+  ~FListBox();
 
+   const char* getClassName() const;
    void hide();
 
+   // Event handlers
    void onKeyPress (FKeyEvent*);
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
@@ -151,18 +160,20 @@ class FListBox : public FWidget
    void onFocusIn (FFocusEvent*);
    void onFocusOut (FFocusEvent*);
 
+   // Callback methods
    void cb_VBarChange (FWidget*, void*);
    void cb_HBarChange (FWidget*, void*);
+
    uInt count() const;
-   FListBoxItem Item(int) const;
+   FListBoxItem Item (int) const;
    int  currentItem() const;
-   void setCurrentItem(int);
-   void selectItem(int);
-   void unselectItem(int);
-   bool isSelected(int) const;
-   void showInsideBrackets(int, fc::brackets_type);
-   void showNoBrackets(int);
-   bool hasBrackets(int) const;
+   void setCurrentItem (int);
+   void selectItem (int);
+   void unselectItem (int);
+   bool isSelected (int) const;
+   void showInsideBrackets (int, fc::brackets_type);
+   void showNoBrackets (int);
+   bool hasBrackets (int) const;
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool = true);
@@ -171,11 +182,11 @@ class FListBox : public FWidget
    void setMultiSelection ();
    void unsetMultiSelection ();
    bool isMultiSelection() const;
-   bool setEnable(bool);
+   bool setEnable (bool);
    bool setEnable();
    bool unsetEnable();
    bool setDisable();
-   bool setFocus(bool);
+   bool setFocus (bool);
    bool setFocus();
    bool unsetFocus();
 

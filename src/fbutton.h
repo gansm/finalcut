@@ -49,8 +49,11 @@ class FButton : public FWidget
    short   button_inactive_bg;
 
  private:
+   // Disable copy constructor
    FButton (const FButton&);
+   // Disable assignment operator (=)
    FButton& operator = (const FButton&);
+
    void         init();
    uChar        getHotkey();
    void         setHotkeyAccelerator();
@@ -61,9 +64,11 @@ class FButton : public FWidget
    friend class FDialog;
 
  public:
-   explicit FButton (FWidget* = 0);  // constructor
-   FButton (const FString&, FWidget* = 0);  // constructor
-   virtual ~FButton();  // destructor
+   // Constructors
+   explicit FButton (FWidget* = 0);
+   FButton (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FButton();
 
    const char*  getClassName() const;
    void         setForegroundColor (short);
@@ -75,6 +80,7 @@ class FButton : public FWidget
    void         setInactiveBackgroundColor (short);
    void         hide();
 
+   // Event handlers
    void         onKeyPress (FKeyEvent*);
    void         onMouseDown (FMouseEvent*);
    void         onMouseUp (FMouseEvent*);
@@ -87,7 +93,6 @@ class FButton : public FWidget
    bool         setNoUnderline(bool);
    bool         setNoUnderline();
    bool         unsetNoUnderline();
-
    bool         setEnable(bool);
    bool         setEnable();
    bool         unsetEnable();

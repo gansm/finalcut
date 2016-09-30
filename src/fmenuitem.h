@@ -58,15 +58,21 @@ class FMenuItem : public FWidget
    FDialog*   associated_window;
 
  private:
+   // Disable copy constructor
    FMenuItem (const FMenuItem&);
+   // Disable assignment operator (=)
    FMenuItem& operator = (const FMenuItem&);
+
    void       init (FWidget*);
    uChar      hotKey();
    void       processActivate();
    void       processDeactivate();
    void       createDialogList (FMenu*);
+
+   // Callback methods
    void       cb_switchToDialog (FWidget*, void*);
    void       cb_destroyDialog (FWidget*, void*);
+
    virtual void processClicked();
 
  protected:
@@ -77,6 +83,7 @@ class FMenuItem : public FWidget
    void       setSuperMenu (FWidget*);
 
  public:
+   // Constructor
    explicit FMenuItem (FWidget* = 0);
    FMenuItem (FString&, FWidget* = 0);
    FMenuItem (const std::string&, FWidget* = 0);
@@ -84,7 +91,9 @@ class FMenuItem : public FWidget
    FMenuItem (int, FString&, FWidget* = 0);
    FMenuItem (int, const std::string&, FWidget* = 0);
    FMenuItem (int, const char*, FWidget* = 0);
+   // Destructor
    virtual ~FMenuItem();
+
    const char* getClassName() const;
 
    // make every addAccelerator from FWidget available
@@ -93,6 +102,8 @@ class FMenuItem : public FWidget
    // make every delAccelerator from FWidget available
    using FWidget::delAccelerator;
    void       delAccelerator (FWidget*);
+
+   // Event handlers
    void       onKeyPress (FKeyEvent*);
    void       onMouseDoubleClick (FMouseEvent*);
    void       onMouseDown (FMouseEvent*);

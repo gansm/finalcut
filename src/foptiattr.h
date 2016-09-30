@@ -131,8 +131,11 @@ class FOptiAttr
    char_data off;
 
  private:
-   FOptiAttr (const FOptiAttr&);             // Disabled copy constructor
-   FOptiAttr& operator = (const FOptiAttr&); // and operator '='
+   // Disable copy constructor
+   FOptiAttr (const FOptiAttr&);
+   // Disable assignment operator (=)
+   FOptiAttr& operator = (const FOptiAttr&);
+
    bool  hasColor (char_data*&);
    bool  colorChange (char_data*&, char_data*&);
    void  resetColor (char_data*&);
@@ -183,8 +186,10 @@ class FOptiAttr
    bool  setTermDefaultColor (char_data*&);
 
  public:
-   explicit FOptiAttr();  // constructor
-  ~FOptiAttr();           // destructor
+   // Constructor
+   explicit FOptiAttr();
+   // Destructor
+  ~FOptiAttr();
 
    static short vga2ansi (register short);
 

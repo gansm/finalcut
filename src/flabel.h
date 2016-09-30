@@ -47,7 +47,9 @@ class FLabel : public FWidget
    FWidget* accel_widget;
 
  private:
+   // Disable copy constructor
    FLabel (const FLabel&);
+   // Disable assignment operator (=)
    FLabel& operator = (const FLabel&);
 
    void  init();
@@ -59,15 +61,22 @@ class FLabel : public FWidget
    void  draw();
 
  public:
-   explicit FLabel (FWidget* = 0);  // constructor
-   FLabel (const FString&, FWidget* = 0);  // constructor
-   virtual ~FLabel();  // destructor
-   const char* getClassName() const;
+   // Constructor
+   explicit FLabel (FWidget* = 0);
+   FLabel (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FLabel();
 
+   const char* getClassName() const;
    void hide();
+
+   // Event handlers
    void onMouseDown (FMouseEvent*);
    void onAccel (FAccelEvent*);
+
+   // Callback method
    void cb_accel_widget_destroyed (FWidget*, void*);
+
    void setAccelWidget (FWidget* = 0);
    FTerm* getAccelWidget();
    void setAlignment(uInt);

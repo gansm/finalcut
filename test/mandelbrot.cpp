@@ -18,8 +18,12 @@ class Mandelbrot : public FDialog
    void adjustSize();
 
  public:
-   explicit Mandelbrot (FWidget* = 0);  // constructor
-  ~Mandelbrot();  // destructor
+   // Constructor
+   explicit Mandelbrot (FWidget* = 0);
+   // Destructor
+  ~Mandelbrot();
+
+   // Callback methods
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
 };

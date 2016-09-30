@@ -48,8 +48,11 @@ class FToggleButton : public FWidget
    FButtonGroup* button_group;
 
  private:
+   // Disable copy constructor
    FToggleButton (const FToggleButton&);
+   // Disable assignment operator (=)
    FToggleButton& operator = (const FToggleButton&);
+
    void  init();
    friend class FButtonGroup;
    void setGroup (FButtonGroup*);
@@ -67,16 +70,19 @@ class FToggleButton : public FWidget
    virtual void onKeyPress (FKeyEvent*);
 
  public:
-   explicit FToggleButton (FWidget* = 0);  // constructor
-   FToggleButton (const FString&, FWidget* = 0);  // constructor
-   virtual ~FToggleButton();  // destructor
-   virtual const char* getClassName() const;
+   // Constructors
+   explicit FToggleButton (FWidget* = 0);
+   FToggleButton (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FToggleButton();
 
+   virtual const char* getClassName() const;
    void hide();
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void setGeometry (int, int, int, int, bool = true);
 
+   // Event handlers
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
    void onAccel (FAccelEvent*);
@@ -87,7 +93,6 @@ class FToggleButton : public FWidget
    bool setNoUnderline (bool);
    bool setNoUnderline();
    bool unsetNoUnderline();
-
    bool setEnable (bool);
    bool setEnable();
    bool unsetEnable();

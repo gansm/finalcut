@@ -29,14 +29,21 @@ class Transparent : public FDialog
    trans_type type;
 
  private:
-   Transparent (const Transparent&);    // Disabled copy constructor
-   Transparent& operator = (const Transparent&); // and operator '='
+   // Disable copy constructor
+   Transparent (const Transparent&);
+   // Disable assignment operator (=)
+   Transparent& operator = (const Transparent&);
+
    void draw();
+
+   // Event handlers
    void onKeyPress (FKeyEvent* ev);
 
  public:
-   explicit Transparent (FWidget* = 0, trans_type = transparent);  // constructor
-  ~Transparent();  // destructor
+   // Constructor
+   explicit Transparent (FWidget* = 0, trans_type = transparent);
+   // Destructor
+  ~Transparent();
 };
 #pragma pack(pop)
 
@@ -122,9 +129,14 @@ class MainWindow : public FDialog
    FString line2;
 
  private:
-   MainWindow (const MainWindow&);    // Disabled copy constructor
-   MainWindow& operator = (const MainWindow&); // and operator '='
+   // Disable copy constructor
+   MainWindow (const MainWindow&);
+   // Disable assignment operator (=)
+   MainWindow& operator = (const MainWindow&);
+
    void draw();
+
+   // Event handlers
    void onClose (FCloseEvent*);
    void onShow  (FShowEvent*);
    void onTimer (FTimerEvent*);
@@ -138,8 +150,10 @@ class MainWindow : public FDialog
    }
 
  public:
-   explicit MainWindow (FWidget* = 0);  // constructor
-  ~MainWindow();  // destructor
+   // Constructor
+   explicit MainWindow (FWidget* = 0);
+   // Destructor
+  ~MainWindow();
 };
 #pragma pack(pop)
 

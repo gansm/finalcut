@@ -85,8 +85,10 @@ class FOptiMove
    bool isWideMove (int, int, int, int);
 
  public:
-   explicit FOptiMove (int = 0);  // constructor
-  ~FOptiMove();                   // destructor
+   // Constructor
+   explicit FOptiMove (int = 0);
+   // Destructor
+  ~FOptiMove();
 
    void setBaudRate (int);
    void setTabStop (int);

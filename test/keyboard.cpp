@@ -9,10 +9,14 @@
 class keyboard : public FWidget
 {
  public:
+   // Constructor
    explicit keyboard (FWidget* = 0);
+
  protected:
+   // Event handlers
    void onKeyPress (FKeyEvent*);
    void onAccel (FAccelEvent*);
+
    void draw();
 };
 

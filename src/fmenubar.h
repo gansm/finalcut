@@ -49,8 +49,11 @@ class FMenuBar : public FWindow, public FMenuList
    bool   drop_down;
 
  private:
+   // Disable copy constructor
    FMenuBar (const FMenuBar&);
+   // Disable assignment operator (=)
    FMenuBar& operator = (const FMenuBar&);
+
    void       init();
    void       calculateDimensions();
    bool       isMenu (FMenuItem*) const;
@@ -64,18 +67,25 @@ class FMenuBar : public FWindow, public FMenuList
    void       leaveMenuBar();
 
  public:
-   explicit FMenuBar (FWidget* = 0);  // constructor
-   virtual ~FMenuBar();  // destructor
+   // Constructor
+   explicit FMenuBar (FWidget* = 0);
+   // Destructor
+   virtual ~FMenuBar();
+
    virtual const char* getClassName() const;
 
+   // Event handlers
    void       onKeyPress (FKeyEvent*);
    void       onMouseDown (FMouseEvent*);
    void       onMouseUp (FMouseEvent*);
    void       onMouseMove (FMouseEvent*);
    void       onAccel (FAccelEvent*);
+
    void       hide();
    void       resetMenu();
    void       adjustSize();
+
+   // Callback methods
    void       cb_item_deactivated (FWidget*, void*);
 
  private:

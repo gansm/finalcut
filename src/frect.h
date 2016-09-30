@@ -31,10 +31,13 @@ class FRect
    short Y2;
 
  public:
-   FRect ();  // constructor
-   FRect (int, int, int, int);  // constructor
-   FRect (const FPoint&, const FPoint&);  // constructor
-   virtual ~FRect();  // destructor
+   // Constructors
+   FRect ();
+   FRect (int, int, int, int);
+   FRect (const FPoint&, const FPoint&);
+   // Destructor
+   virtual ~FRect();
+
    virtual const char* getClassName();
 
    bool    isNull() const;

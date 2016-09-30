@@ -20,9 +20,10 @@ FDialog::FDialog(FWidget* parent)
   , zoom_button_active(false)
   , titlebar_click_pos()
   , resize_click_pos()
-  , old_geometry()
+  , save_geometry()
   , dialog_menu()
   , dgl_menuitem()
+  , move_size_item()
   , zoom_item()
   , close_item()
 {
@@ -38,9 +39,10 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , zoom_button_active(false)
   , titlebar_click_pos()
   , resize_click_pos()
-  , old_geometry()
+  , save_geometry()
   , dialog_menu()
   , dgl_menuitem()
+  , move_size_item()
   , zoom_item()
   , close_item()
 {
@@ -133,6 +135,16 @@ void FDialog::init()
     dgl_menuitem->unsetFocusable();
   }
 
+  move_size_item = new FMenuItem (dialog_menu);
+  move_size_item->setText ("&Move/Size");
+  move_size_item->setStatusbarMessage ("Move or change the size of the window");
+
+  move_size_item->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &FDialog::cb_move)
+  );
+
   zoom_item = new FMenuItem (dialog_menu);
   setZoomItem();
   zoom_item->setDisable();
@@ -161,10 +173,10 @@ void FDialog::drawBorder()
   int y1 = 2;
   int y2 = 1 + getHeight() - 1;
 
-  if ( resize_click_pos.isNull() || isZoomed() )
-    setColor();
-  else
+  if ( (getMoveSizeMode() || ! resize_click_pos.isNull()) && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
+  else
+    setColor();
 
   if ( isNewFont() )
   {
@@ -278,7 +290,7 @@ void FDialog::drawTitleBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  if ( (flags & fc::resizeable) == 0 )
+  if ( ! isResizeable() )
     zoom_btn = 0;
   else if ( isNewFont() )
     zoom_btn = 2;
@@ -312,7 +324,7 @@ void FDialog::drawTitleBar()
     unsetBold();
 
   // draw the zoom/unzoom button
-  if ( (flags & fc::resizeable) != 0 )
+  if ( isResizeable() )
   {
     if ( zoom_button_pressed )
       setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -457,14 +469,35 @@ void FDialog::setZoomItem()
   {
     zoom_item->setText ("&Unzoom");
     zoom_item->setStatusbarMessage ("Restore the window size");
+    move_size_item->setDisable();
   }
   else
   {
     zoom_item->setText ("&Zoom");
     zoom_item->setStatusbarMessage ("Enlarge the window to the entire desktop");
+    move_size_item->setEnable();
   }
 }
+#include "fmessagebox.h"
+//----------------------------------------------------------------------
+void FDialog::cb_move (FWidget*, void*)
+{
+  if ( isZoomed() )
+    return;
 
+  setMoveSizeMode(true);
+  save_geometry = getGeometry();
+
+  redraw();
+
+  // Tooltip
+  // ┌──────────────────────────┐
+  // │       Arrow keys: Move   │
+  // │Meta + Arrow keys: Resize │
+  // │            Enter: Done   │
+  // │              Esc: Cancel │
+  // └──────────────────────────┘
+}
 
 //----------------------------------------------------------------------
 void FDialog::cb_zoom (FWidget*, void*)
@@ -584,7 +617,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  // cancel resize
+  // cancel resize by mouse
   if ( ! resize_click_pos.isNull() )
   {
     resize_click_pos.setPoint (0,0);
@@ -599,6 +632,90 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     openMenu();
     // focus to the first enabled item
     selectFirstMenuItem();
+  }
+
+  if ( getMoveSizeMode() )
+  {
+    switch ( ev->key() )
+    {
+      case fc::Fkey_up:
+        move (getX(), getY() - 1);
+        redraw();
+        ev->accept();
+        break;
+
+      case fc::Fkey_down:
+        move (getX(), getY() + 1);
+        redraw();
+        ev->accept();
+        break;
+
+      case fc::Fkey_left:
+        move (getX() - 1, getY());
+        redraw();
+        ev->accept();
+        break;
+
+      case fc::Fkey_right:
+        move (getX() + 1, getY());
+        redraw();
+        ev->accept();
+        break;
+
+      case fc::Fmkey_up:
+        if ( isResizeable() )
+        {
+          setSize (getWidth(), getHeight() - 1);
+          ev->accept();
+        }
+        break;
+
+      case fc::Fmkey_down:
+        if ( isResizeable() && getHeight() + getY() <= getMaxHeight() )
+        {
+          setSize (getWidth(), getHeight() + 1);
+          ev->accept();
+        }
+        break;
+
+      case fc::Fmkey_left:
+        if ( isResizeable() )
+        {
+          setSize (getWidth() - 1, getHeight());
+          ev->accept();
+        }
+        break;
+
+      case fc::Fmkey_right:
+        if ( isResizeable() && getWidth() + getX() <= getMaxWidth() )
+        {
+          setSize (getWidth() + 1, getHeight());
+          ev->accept();
+        }
+        break;
+
+      case fc::Fkey_return:
+      case fc::Fkey_enter:
+        setMoveSizeMode(false);
+        redraw();
+        ev->accept();
+        break;
+
+      case fc::Fkey_escape:
+      case fc::Fkey_escape_mintty:
+        setMoveSizeMode(false);
+        move (save_geometry.getPos());
+
+        if ( isResizeable() )
+          setSize (save_geometry.getWidth(), save_geometry.getHeight());
+
+        redraw();
+        ev->accept();
+        return;
+
+      default:
+        break;
+    }
   }
 
   if ( this == getMainWidget() )
@@ -621,9 +738,9 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
-  int zoom_btn;
+  int zoom_btn;;
 
-  if ( (flags & fc::resizeable) == 0 )
+  if ( ! isResizeable() )
     zoom_btn = 0;
   else if ( isNewFont() )
     zoom_btn = 2;
@@ -732,7 +849,7 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 {
   int zoom_btn;
 
-  if ( (flags & fc::resizeable) == 0 )
+  if ( ! isResizeable() )
     zoom_btn = 0;
   else if ( isNewFont() )
     zoom_btn = 2;
@@ -831,7 +948,7 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 {
   int zoom_btn;
 
-  if ( (flags & fc::resizeable) == 0 )
+  if ( ! isResizeable() )
     zoom_btn = 0;
   else if ( isNewFont() )
     zoom_btn = 2;
@@ -916,16 +1033,14 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
   int x, y, mouse_x, mouse_y, zoom_btn;
-  bool is_resizeable;
 
   if ( ev->getButton() != fc::LeftButton )
     return;
 
   mouse_x = ev->getX();
   mouse_y = ev->getY();
-  is_resizeable = bool(flags & fc::resizeable);
 
-  if ( ! is_resizeable )
+  if ( ! isResizeable() )
     zoom_btn = 0;
   else if ( isNewFont() )
     zoom_btn = 2;
@@ -957,7 +1072,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
     else
       close();
   }
-  else if ( is_resizeable
+  else if ( isResizeable()
           && mouse_x >= 4
           && mouse_x <= getWidth() - zoom_btn
           && mouse_y == 1 )
@@ -1122,6 +1237,7 @@ void FDialog::move (const FPoint& pos)
 void FDialog::move (int x, int y)
 {
   int dx, dy, old_x, old_y, rsw, bsh, width, height;
+  FRect old_geometry;
 
   if ( getX() == x && getY() == y )
     return;
@@ -1130,7 +1246,7 @@ void FDialog::move (int x, int y)
   height = getHeight();
 
   // Avoid to move widget completely outside the terminal
-  if (  x+width < 1 || x > getColumnNumber() || y < 1 || y > getLineNumber() )
+  if (  x+width-1 < 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   if ( isZoomed() )

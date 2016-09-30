@@ -56,15 +56,19 @@ class FDialog : public FWindow
    bool         zoom_button_active;
    FPoint       titlebar_click_pos;
    FPoint       resize_click_pos;
-   FRect        old_geometry;     // required by move()
+   FRect        save_geometry;     // required by move/size by keyboard
    FMenu*       dialog_menu;
    FMenuItem*   dgl_menuitem;
+   FMenuItem*   move_size_item;
    FMenuItem*   zoom_item;
    FMenuItem*   close_item;
 
  private:
+   // Disable copy constructor
    FDialog (const FDialog&);
+   // Disable assignment operator (=)
    FDialog& operator = (const FDialog&);
+
    void         init();
    // make every drawBorder from FWidget available
    using FWidget::drawBorder;
@@ -74,8 +78,12 @@ class FDialog : public FWindow
    void         openMenu();
    void         selectFirstMenuItem();
    void         setZoomItem();
+
+   // Callback methods
+   void         cb_move (FWidget*, void*);
    void         cb_zoom (FWidget*, void*);
    void         cb_close (FWidget*, void*);
+
    static void  addDialog (FWidget*);
    static void  delDialog (FWidget*);
 
@@ -87,11 +95,15 @@ class FDialog : public FWindow
    virtual void onClose (FCloseEvent*);
 
  public:
-   explicit FDialog (FWidget* = 0);  // constructor
-   FDialog (const FString&, FWidget* = 0);  // constructor
-   virtual ~FDialog();  // destructor
+   // Constructors
+   explicit FDialog (FWidget* = 0);
+   FDialog (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FDialog();
+
    virtual const char* getClassName() const;
 
+   // Event handlers
    void     onKeyPress (FKeyEvent*);
    void     onMouseDown (FMouseEvent*);
    void     onMouseUp (FMouseEvent*);
@@ -102,6 +114,7 @@ class FDialog : public FWindow
    void     onWindowInactive (FEvent*);
    void     onWindowRaised (FEvent*);
    void     onWindowLowered (FEvent*);
+
    void     activateDialog();
    void     drawDialogShadow();
    void     show();

@@ -78,19 +78,20 @@ class FFileDialog : public FDialog
      Open = 0,
      Save = 1
    };
+
  private:
    DIR* directory_stream;
    std::vector<dir_entry> dir_entries;
 
-   FString    directory;
-   FString    filter_pattern;
-   FListBox*  filebrowser;
-   FLineEdit* filename;
-   FCheckBox* hidden;
-   FButton*   cancel;
-   FButton*   open;
-   DialogType dlg_type;
-   bool       show_hidden;
+   FString       directory;
+   FString       filter_pattern;
+   FListBox*     filebrowser;
+   FLineEdit*    filename;
+   FCheckBox*    hidden;
+   FButton*      cancel;
+   FButton*      open;
+   DialogType    dlg_type;
+   bool          show_hidden;
 
  private:
    void          init();
@@ -100,6 +101,8 @@ class FFileDialog : public FDialog
    int           numOfDirs();
    int           changeDir (const FString&);
    void          printPath (const FString&);
+
+   // Callback methods
    void          cb_processActivate (FWidget*, void*);
    void          cb_processRowChanged (FWidget*, void*);
    void          cb_processClicked (FWidget*, void*);
@@ -111,16 +114,22 @@ class FFileDialog : public FDialog
    void adjustSize();
 
  public:
+   // Constructors
    explicit FFileDialog (FWidget* = 0);
-   FFileDialog (const FFileDialog&);       // copy constructor
+   FFileDialog (const FFileDialog&);  // copy constructor
    FFileDialog ( const FString&
                , const FString&
                , DialogType = FFileDialog::Open
                , FWidget* = 0 );
+   // Destructor
   ~FFileDialog();
-   FFileDialog& operator = (const FFileDialog&); // assignment
+
+   // Assignment operator (=)
+   FFileDialog& operator = (const FFileDialog&);
+
    const char*   getClassName() const;
 
+   // Event handler
    void          onKeyPress (FKeyEvent*);
 
    const FString getPath() const;

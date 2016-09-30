@@ -164,7 +164,7 @@ class FTerm
    static bool    resize_term;
    static char    exit_message[8192];
 
-   static struct termios term_init;
+   static struct  termios term_init;
    static FOptiAttr::char_data term_attribute;
    static FOptiAttr::char_data next_attribute;
 
@@ -248,7 +248,9 @@ class FTerm
    term_area* vwin;              // virtual window
 
  private:
+   // Disable copy constructor
    FTerm (const FTerm&);
+   // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
    static void  outb_Attribute_Controller (int, int);
@@ -309,8 +311,10 @@ class FTerm
    FOptiAttr::char_data getOverlappedCharacter (int, int, FTerm*);
 
  public:
-   FTerm ();          // constructor
-   virtual ~FTerm();  // destructor
+   // Constructor
+   FTerm ();
+   // Destructor
+   virtual ~FTerm();
 
    virtual const char* getClassName() const;
    FTerm::term_area* getVWin() const;

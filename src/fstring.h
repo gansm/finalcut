@@ -82,13 +82,14 @@ class FString
    wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
 
  public:
-   FString ();                    // constructor
-   explicit FString (int);        // constructor
-   explicit FString (uInt);       // constructor
-   FString (int, wchar_t);        // constructor
-   FString (uInt, wchar_t);       // constructor
-   FString (int, char);           // constructor
-   FString (uInt, char);          // constructor
+   // Constructors
+   FString ();
+   explicit FString (int);
+   explicit FString (uInt);
+   FString (int, wchar_t);
+   FString (uInt, wchar_t);
+   FString (int, char);
+   FString (uInt, char);
    FString (const FString&);      // implicit conversion constructor
    FString (const std::wstring&); // implicit conversion constructor
    FString (const wchar_t*);      // implicit conversion constructor
@@ -96,7 +97,8 @@ class FString
    FString (const char*);         // implicit conversion constructor
    FString (const wchar_t);       // implicit conversion constructor
    FString (const char);          // implicit conversion constructor
-   virtual ~FString ();           // destructor
+   // Destructor
+   virtual ~FString ();
 
    bool isNull() const;
    bool isEmpty() const;

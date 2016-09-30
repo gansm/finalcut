@@ -1,3 +1,6 @@
+2016-09-30  Markus Gans  <guru.mail@muenster.de>
+	* Using arrow keys to move or to resize a window
+
 2016-09-28  Markus Gans  <guru.mail@muenster.de>
 	* The size is now dynamically changeable with the mouse 
 	  in a resizable window.

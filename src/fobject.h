@@ -69,8 +69,11 @@ class FObject
    friend class FApplication;
 
  public:
+   // Constructor
    explicit FObject (FObject* = 0);
+   // Destructor
    virtual ~FObject();
+
    virtual const char* getClassName() const;
 
    FObject*     getParent() const;
@@ -81,18 +84,23 @@ class FObject
    void         addChild (FObject*);
    void         delChild (FObject*);
    int          numOfChildren() const;
+   // Timer methods
    static void  getCurrentTime (timeval&);
    int          addTimer (int);
    bool         delTimer (int);
    bool         delOwnTimer();
    bool         delAllTimer();
+   // Event handler
    virtual bool event (FEvent*);
 
  protected:
+   // Event handler
    virtual void onTimer (FTimerEvent*);
 
  private:
+   // Disable copy constructor
    FObject (const FObject&);
+   // Disable assignment operator (=)
    FObject& operator = (const FObject&);
 };
 

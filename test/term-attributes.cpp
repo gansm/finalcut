@@ -22,16 +22,25 @@ class AttribDlg : public FDialog
    short bgcolor;
 
  private:
-   AttribDlg (const AttribDlg&);             // Disabled copy constructor
-   AttribDlg& operator = (const AttribDlg&); // and operator '='
+   // Disable copy constructor
+   AttribDlg (const AttribDlg&);
+   // Disable assignment operator (=)
+   AttribDlg& operator = (const AttribDlg&);
+
    void adjustSize();
 
  public:
-   explicit AttribDlg (FWidget* = 0);  // constructor
-  ~AttribDlg();                        // destructor
+   // Constructor
+   explicit AttribDlg (FWidget* = 0);
+   // Destructor
+  ~AttribDlg();
+
+   // Event handlers
    void onAccel (FAccelEvent*);
    void onWheel (FWheelEvent*);
    void onClose (FCloseEvent*);
+
+   // Callback methods
    void cb_next (FWidget* = 0, void* = 0);
    void cb_back (FWidget* = 0, void* = 0);
 };
@@ -173,9 +182,13 @@ class AttribDemo : public FWidget
    void draw();
 
  public:
-   explicit AttribDemo (FWidget* = 0);  // constructor
-  ~AttribDemo()                         // destructor
+   // Constructor
+   explicit AttribDemo (FWidget* = 0);
+   // Destructor
+  ~AttribDemo()
    { }
+
+   // Event handler
    void onWheel (FWheelEvent* ev)
    {
      AttribDlg* p = dynamic_cast<AttribDlg*>(getParentWidget());

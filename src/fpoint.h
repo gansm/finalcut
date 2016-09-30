@@ -25,9 +25,12 @@ class FPoint
    short ypos;
 
  public:
-   FPoint ();  // constructor
-   FPoint (int, int);  // constructor
-   virtual ~FPoint();  // destructor
+   // Constructors
+   FPoint ();
+   FPoint (int, int);
+   // Destructor
+   virtual ~FPoint();
+
    virtual const char* getClassName();
 
    bool    isNull() const;

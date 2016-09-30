@@ -22,6 +22,7 @@ FWidget* FApplication::open_menu      = 0;  // currently open menu
 FPoint*  FApplication::zero_point     = 0;  // zero point (x=0, y=0)
 int      FApplication::quit_code      = 0;
 bool     FApplication::quit_now       = false;
+bool     FApplication::move_size_mode = false; // move/size by keyboard
 std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 
 //----------------------------------------------------------------------
@@ -248,10 +249,15 @@ void FApplication::processKeyboardEvent()
   FWidget* widget = 0;
 
   if ( focus_widget )
-    widget = static_cast<FWidget*>(focus_widget);
+  {
+    if ( move_size_mode )
+      widget = FWindow::getWindowWidget(focus_widget);
+    else
+      widget = focus_widget;
+  }
   else
   {
-    widget = static_cast<FWidget*>(main_widget);
+    widget = main_widget;
 
     if ( widget->numOfChildren() >= 1 )
       widget->focusFirstChild();
@@ -436,7 +442,7 @@ void FApplication::processKeyboardEvent()
                   // windows keyboard accelerator
                   if ( ! accpt )
                   {
-                    FWidget* window = static_cast<FWidget*>(active_window);
+                    FWidget* window = active_window;
 
                     if ( window )
                       accpt = processAccelerator (window);
@@ -773,6 +779,8 @@ bool FApplication::processDialogSwitchAccelerator()
 
     if ( s > 0 && s >= n )
     {
+      // unset the move/size mode
+      setMoveSizeMode(false);
       FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
       sendEvent (dialog_list->at(n-1), &a_ev);
       return true;
@@ -802,6 +810,8 @@ bool FApplication::processAccelerator (FWidget*& widget)
 
       if ( iter->key == key )
       {
+        // unset the move/size mode
+        setMoveSizeMode(false);
         FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
         sendEvent (iter->object, &a_ev);
         accpt = a_ev.isAccepted();
@@ -1407,6 +1417,9 @@ void FApplication::processMouseEvent()
       FWidget* child = childWidgetAt (window, *mouse);
       clicked_widget = (child != 0) ? child : window;
     }
+
+    // unset the move/size mode
+    setMoveSizeMode(false);
   }
 
   // close the open menu

@@ -968,6 +968,18 @@ void FWidget::setOpenMenu(FWidget* obj)
 }
 
 //----------------------------------------------------------------------
+bool FWidget::getMoveSizeMode()
+{
+  return FApplication::move_size_mode;
+}
+
+//----------------------------------------------------------------------
+void FWidget::setMoveSizeMode (bool on)
+{
+  FApplication::move_size_mode = on;
+}
+
+//----------------------------------------------------------------------
 int FWidget::numOfFocusableChildren()
 {
   FObject::object_list children;
@@ -1918,7 +1930,7 @@ void FWidget::move (int x, int y)
     return;
 
   // Avoid to move widget completely outside the terminal
-  if ( x+getWidth() < 1 || x > term->getWidth() || y < 1 || y > term->getHeight() )
+  if ( x+getWidth()-1 < 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   wsize.setPos(x,y);

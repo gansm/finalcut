@@ -204,8 +204,10 @@ class FFocusEvent : public FEvent        // focus event
 class FAccelEvent : public FEvent    // focus event
 {
  private:
-   FAccelEvent (const FAccelEvent&);             // Disabled copy constructor
-   FAccelEvent& operator = (const FAccelEvent&); // and operator '='
+   // Disable copy constructor
+   FAccelEvent (const FAccelEvent&);
+   // Disable assignment operator (=)
+   FAccelEvent& operator = (const FAccelEvent&);
 
  public:
    FAccelEvent (int, void*);

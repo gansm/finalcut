@@ -41,16 +41,22 @@
 class FCheckBox : public FToggleButton
 {
  private:
+   // Disable copy constructor
    FCheckBox (const FCheckBox&);
+   // Disable assignment operator (=)
    FCheckBox& operator = (const FCheckBox&);
+
    void init();
    void draw();
    void drawCheckButton();
 
  public:
-   explicit FCheckBox (FWidget* = 0);  // constructor
-   FCheckBox (const FString&, FWidget* = 0);  // constructor
-   virtual ~FCheckBox();  // destructor
+   // Constructors
+   explicit FCheckBox (FWidget* = 0);
+   FCheckBox (const FString&, FWidget* = 0);
+   // Destructor
+   virtual ~FCheckBox();
+
    const char* getClassName() const;
 };
 #pragma pack(pop)

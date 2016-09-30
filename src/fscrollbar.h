@@ -69,7 +69,9 @@ class FScrollbar : public FWidget
    int   max_color;
 
  private:
+   // Disable copy constructor
    FScrollbar (const FScrollbar&);
+   // Disable assignment operator (=)
    FScrollbar& operator = (const FScrollbar&);
 
    void  init();
@@ -79,11 +81,15 @@ class FScrollbar : public FWidget
    void  processScroll();
 
  public:
-   explicit FScrollbar(FWidget* = 0);              // constructor
-   FScrollbar (int = fc::vertical, FWidget* = 0);  // constructor
+   // Constructors
+   explicit FScrollbar(FWidget* = 0);
+   FScrollbar (int = fc::vertical, FWidget* = 0);
+   // Destructor
    virtual ~FScrollbar();
+
    const char* getClassName() const;
 
+   // Event handlers
    void  onMouseDown (FMouseEvent*);
    void  onMouseUp (FMouseEvent*);
    void  onMouseMove (FMouseEvent*);

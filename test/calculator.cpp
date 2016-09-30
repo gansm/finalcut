@@ -25,11 +25,16 @@ const lDouble PI = 3.141592653589793238L;
 
 class Button : public FButton
 {
-private:
+ private:
    bool checked;
+
  public:
-   explicit Button (FWidget* = 0);  // constructor
+   // Constructor
+   explicit Button (FWidget* = 0);
+
    void setChecked(bool);
+
+   // Event handler
    void onKeyPress (FKeyEvent*);
 };
 #pragma pack(pop)
@@ -159,11 +164,17 @@ class Calc : public FDialog
    void adjustSize();
 
  public:
-   explicit Calc (FWidget* parent=0);  // constructor
-  ~Calc();  // destructor
+   // Constructor
+   explicit Calc (FWidget* parent=0);
+   // Destructor
+  ~Calc();
+
+   // Event handlers
    void onKeyPress (FKeyEvent*);
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
+
+   // Callback method
    void cb_buttonClicked (FWidget*, void*);
 };
 #pragma pack(pop)
