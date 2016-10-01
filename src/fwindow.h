@@ -1,5 +1,5 @@
 // File: fwindow.h
-// Provides: class FWindow.h
+// Provides: class FWindow
 //
 //  Inheritance diagram
 //  ═══════════════════
@@ -58,6 +58,8 @@ class FWindow : public FWidget
    // Disable assignment operator (=)
    FWindow& operator = (const FWindow&);
 
+   void            deleteFromAlwaysOnTopList (FWidget*);
+
  protected:
    // Event handlers
    bool            event (FEvent*);
@@ -94,6 +96,7 @@ class FWindow : public FWidget
    bool            raiseWindow ();
    static bool     lowerWindow (FWidget*);
    bool            lowerWindow ();
+   static void     alwaysOnTop();
    bool            zoomWindow ();
    bool            isZoomed() const;
    bool            setWindowWidget (bool);
@@ -110,6 +113,10 @@ class FWindow : public FWidget
    bool            deactivateWindow();
    bool            isActiveWindow() const;
    bool            isHiddenWindow() const;
+   bool            setAlwaysOnTop (bool);
+   bool            setAlwaysOnTop();
+   bool            unsetAlwaysOnTop();
+   bool            isAlwaysOnTop();
 };
 #pragma pack(pop)
 
@@ -154,6 +161,18 @@ inline bool FWindow::deactivateWindow()
 //----------------------------------------------------------------------
 inline bool FWindow::isActiveWindow() const
 { return window_active; }
+
+//----------------------------------------------------------------------
+inline bool FWindow::setAlwaysOnTop()
+{ return setAlwaysOnTop(true); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::unsetAlwaysOnTop()
+{ return setAlwaysOnTop(false); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::isAlwaysOnTop()
+{ return ((flags & fc::always_on_top) != 0); }
 
 
 #endif  // _FWINDOW_H

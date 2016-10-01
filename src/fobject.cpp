@@ -4,7 +4,7 @@
 #include "fobject.h"
 
 // static class attributes
-bool FObject::modify_timer;
+bool FObject::timer_modify_lock;
 FObject::TimerList* FObject::timer_list = 0;
 
 
@@ -26,7 +26,7 @@ FObject::FObject (FObject* parent)
 
   if ( parent == 0 )
   {
-    modify_timer = false;
+    timer_modify_lock = false;
     timer_list   = new TimerList();
   }
   else
@@ -141,7 +141,7 @@ int FObject::addTimer (int interval)
   timeval currentTime;
   int id = 1;
 
-  modify_timer = true;
+  timer_modify_lock = true;
 
   if ( ! timer_list )
     timer_list = new TimerList();
@@ -182,7 +182,7 @@ int FObject::addTimer (int interval)
     ++iter;
 
   timer_list->insert (iter, t);
-  modify_timer = false;
+  timer_modify_lock = false;
 
   return id;
 }
@@ -195,7 +195,7 @@ bool FObject::delTimer (int id)
   if ( id <= 0 || id > int(timer_list->size()) )
     return false;
 
-  modify_timer = true;
+  timer_modify_lock = true;
   iter = timer_list->begin();
   end  = timer_list->end();
 
@@ -205,11 +205,11 @@ bool FObject::delTimer (int id)
   if ( iter != end )
   {
     timer_list->erase(iter);
-    modify_timer = false;
+    timer_modify_lock = false;
     return true;
   }
 
-  modify_timer = false;
+  timer_modify_lock = false;
   return false;
 }
 
@@ -224,7 +224,7 @@ bool FObject::delOwnTimer()
   if ( timer_list->empty() )
     return false;
 
-  modify_timer = true;
+  timer_modify_lock = true;
   iter = timer_list->begin();
 
   while ( iter != timer_list->end() )
@@ -235,7 +235,7 @@ bool FObject::delOwnTimer()
       ++iter;
   }
 
-  modify_timer = false;
+  timer_modify_lock = false;
   return true;
 }
 
@@ -248,9 +248,9 @@ bool FObject::delAllTimer()
   if ( timer_list->empty() )
     return false;
 
-  modify_timer = true;
+  timer_modify_lock = true;
   timer_list->clear();
-  modify_timer = false;
+  timer_modify_lock = false;
   return true;
 }
 

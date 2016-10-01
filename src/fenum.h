@@ -61,8 +61,9 @@ class fc
      window_widget = 0x00000080,
      dialog_widget = 0x00000100,
      menu_widget   = 0x00000200,
-     flat          = 0x00000400,
-     no_underline  = 0x00000800
+     always_on_top = 0x00000400,
+     flat          = 0x00000800,
+     no_underline  = 0x00001000
    };
 
    // internal character encoding

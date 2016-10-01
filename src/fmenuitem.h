@@ -29,6 +29,7 @@
 
 #include "fwidget.h"
 
+// class forward declaration
 class FDialog;
 class FMenu;
 class FMenuList;

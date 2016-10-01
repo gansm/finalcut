@@ -24,7 +24,7 @@ static const char* button_text[] =
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FMessageBox::FMessageBox(FWidget* parent)
+FMessageBox::FMessageBox (FWidget* parent)
   : FDialog(parent)
   , headline_text()
   , text()

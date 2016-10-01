@@ -65,8 +65,7 @@ class FObject
    FObject*     parent_obj;
    object_list  children_list;
    bool         has_parent;
-   static bool  modify_timer;
-   friend class FApplication;
+   static bool  timer_modify_lock;
 
  public:
    // Constructor
@@ -90,6 +89,7 @@ class FObject
    bool         delTimer (int);
    bool         delOwnTimer();
    bool         delAllTimer();
+   bool         isTimerInUpdating() const;
    // Event handler
    virtual bool event (FEvent*);
 
@@ -133,6 +133,10 @@ inline bool FObject::hasChildren() const
 //----------------------------------------------------------------------
 inline int FObject::numOfChildren() const
 { return int(children_list.size()); }
+
+//----------------------------------------------------------------------
+inline bool FObject::isTimerInUpdating() const
+{ return timer_modify_lock; }
 
 
 //----------------------------------------------------------------------

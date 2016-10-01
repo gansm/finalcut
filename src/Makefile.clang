@@ -26,6 +26,7 @@ INCLUDE_HEADERS = \
 	fradiomenuitem.h \
 	fcheckmenuitem.h \
 	fmessagebox.h \
+	ftooltip.h \
 	fobject.h \
 	foptiattr.h \
 	foptimove.h \
@@ -77,6 +78,7 @@ OBJS = \
 	fdialog.o \
 	fwindow.o \
 	fmessagebox.o \
+	ftooltip.o \
 	ffiledialog.o \
 	ftextview.o \
 	fstatusbar.o \

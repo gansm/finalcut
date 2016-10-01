@@ -1,5 +1,5 @@
 // File: ffiledialog.h
-// Provides: class FFileDialog.h
+// Provides: class FFileDialog
 //
 //  Inheritance diagram
 //  ═══════════════════

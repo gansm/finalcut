@@ -30,6 +30,33 @@ FWindow::~FWindow()  // destructor
 {
   if ( previous_widget == this )
     previous_widget = 0;
+
+  if ( isAlwaysOnTop() )
+    deleteFromAlwaysOnTopList (this);
+}
+
+
+// private methods of FWindow
+//----------------------------------------------------------------------
+void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
+{
+  // delete the window object obj from the always-on-top list
+  if ( always_on_top_list && ! always_on_top_list->empty() )
+  {
+    widgetList::iterator iter;
+    iter = always_on_top_list->begin();
+
+    while ( iter != always_on_top_list->end() )
+    {
+      if ( *iter == obj )
+      {
+        always_on_top_list->erase (iter);
+        return;
+      }
+
+      ++iter;
+    }
+  }
 }
 
 
@@ -58,6 +85,7 @@ bool FWindow::event (FEvent* ev)
     default:
       return FWidget::event(ev);
   }
+
   return true;
 }
 
@@ -339,6 +367,7 @@ bool FWindow::raiseWindow (FWidget* obj)
       window_list->push_back (obj);
       FEvent ev(fc::WindowRaised_Event);
       FApplication::sendEvent(obj, &ev);
+      alwaysOnTop();
       return true;
     }
 
@@ -386,6 +415,24 @@ bool FWindow::lowerWindow (FWidget* obj)
   }
 
   return false;
+}
+
+//----------------------------------------------------------------------
+void FWindow::alwaysOnTop()
+{
+  // Raise all always-on-top windows
+  if ( always_on_top_list && ! always_on_top_list->empty() )
+  {
+    widgetList::iterator iter;
+    iter = always_on_top_list->begin();
+
+    while ( iter != always_on_top_list->end() )
+    {
+      delWindow (*iter);
+      addWindow (*iter);
+      ++iter;
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -581,4 +628,29 @@ bool FWindow::isHiddenWindow() const
     return ! area->visible;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setAlwaysOnTop (bool on)
+{
+  if ( isAlwaysOnTop() == on )
+    return true;
+
+  if ( on )
+  {
+    flags |= fc::always_on_top;
+
+    if ( always_on_top_list )
+    {
+      deleteFromAlwaysOnTopList (this);
+      always_on_top_list->push_back (this);
+    }
+  }
+  else
+  {
+    flags &= ~fc::always_on_top;
+    deleteFromAlwaysOnTopList (this);
+  }
+
+  return on;
 }

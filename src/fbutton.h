@@ -61,7 +61,6 @@ class FButton : public FWidget
    void         draw();
    void         updateButtonColor();
    void         processClick();
-   friend class FDialog;
 
  public:
    // Constructors

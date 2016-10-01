@@ -1,3 +1,7 @@
+2016-10-01  Markus Gans  <guru.mail@muenster.de>
+	* Add an always-on-top mode for window objects
+	* New FToolTip widget to show assisted information
+
 2016-09-30  Markus Gans  <guru.mail@muenster.de>
 	* Using arrow keys to move or to resize a window
 

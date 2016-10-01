@@ -30,6 +30,7 @@
 
 #include "fmenu.h"
 #include "fmenuitem.h"
+#include "ftooltip.h"
 #include "fwindow.h"
 
 
@@ -62,6 +63,7 @@ class FDialog : public FWindow
    FMenuItem*   move_size_item;
    FMenuItem*   zoom_item;
    FMenuItem*   close_item;
+   FToolTip*    tooltip;
 
  private:
    // Disable copy constructor
@@ -154,7 +156,8 @@ class FDialog : public FWindow
    void     setText (const FString&);
 
  private:
-   friend class FMenu;
+   // Friend function from FMenu
+   friend void FMenu::hideSuperMenus();
 };
 #pragma pack(pop)
 

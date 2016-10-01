@@ -38,6 +38,7 @@
 
 #include "fevent.h"
 #include "fwidget.h"
+#include "fwindow.h"
 
 
 //----------------------------------------------------------------------
@@ -109,7 +110,7 @@ class FApplication : public FWidget
    struct timeval  time_keypressed;
    struct timeval  time_mousepressed;
    FPoint          new_mouse_position;
-   static bool     move_size_mode;
+   static FWidget* move_size_widget;
    static FWidget* main_widget;
    static FWidget* active_window;
    static FWidget* focus_widget;
@@ -147,9 +148,21 @@ class FApplication : public FWidget
    void    processTerminalUpdate();
    void    processCloseWidget();
    bool    processNextEvent();
-   friend  class FDialog;
-   friend  class FWidget;
-   friend  class FWindow;
+
+   // Friend functions from FWidget
+   friend  FWidget* FWidget::getMainWidget();
+   friend  FWidget* FWidget::getFocusWidget() const;
+   friend  void     FWidget::setFocusWidget (FWidget*);
+   friend  FWidget* FWidget::getClickedWidget();
+   friend  void     FWidget::setClickedWidget (FWidget*);
+   friend  FWidget* FWidget::getMoveSizeWidget();
+   friend  void     FWidget::setMoveSizeWidget (FWidget*);
+   friend  FWidget* FWidget::getOpenMenu();
+   friend  void     FWidget::setOpenMenu (FWidget*);
+
+   // Friend functions from FWindow
+   friend  bool     FWindow::activateWindow (bool);
+   friend  FWindow* FWindow::getActiveWindow();
 
  public:
    // Constructor
@@ -162,7 +175,6 @@ class FApplication : public FWidget
    char**      argv()             const;
    FWidget*    mainWidget()       const;
    FWidget*    focusWidget()      const;
-   bool        unprocessedInput() const;
    static void print_cmd_Options();
    void        setMainWidget (FWidget*);
    int         exec(); // run
@@ -201,8 +213,5 @@ inline FWidget* FApplication::mainWidget() const
 inline FWidget* FApplication::focusWidget() const
 { return focus_widget; }
 
-//----------------------------------------------------------------------
-inline bool FApplication::unprocessedInput() const
-{ return input_data_pending; }
 
 #endif  // _FAPPLICATION_H

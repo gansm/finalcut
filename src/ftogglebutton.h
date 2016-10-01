@@ -1,5 +1,5 @@
 // File: ftogglebutton.h
-// Provides: class FToggleButton.h
+// Provides: class FToggleButton
 //
 //  Inheritance diagram
 //  ═══════════════════
@@ -26,6 +26,7 @@
 #include "fwidget.h"
 
 
+// class forward declaration
 class FButtonGroup;
 
 //----------------------------------------------------------------------

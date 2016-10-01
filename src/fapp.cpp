@@ -13,16 +13,17 @@ static FApplication* rootObj = 0;
 static bool app_exit_loop = false;
 
 // static attributes
-int      FApplication::loop_level     = 0;  // event loop level
-FWidget* FApplication::main_widget    = 0;  // main application widget
-FWidget* FApplication::active_window  = 0;  // the active window
-FWidget* FApplication::focus_widget   = 0;  // has keyboard input focus
-FWidget* FApplication::clicked_widget = 0;  // is focused by click
-FWidget* FApplication::open_menu      = 0;  // currently open menu
-FPoint*  FApplication::zero_point     = 0;  // zero point (x=0, y=0)
-int      FApplication::quit_code      = 0;
-bool     FApplication::quit_now       = false;
-bool     FApplication::move_size_mode = false; // move/size by keyboard
+int      FApplication::loop_level       = 0;  // event loop level
+FWidget* FApplication::main_widget      = 0;  // main application widget
+FWidget* FApplication::active_window    = 0;  // the active window
+FWidget* FApplication::focus_widget     = 0;  // has keyboard input focus
+FWidget* FApplication::clicked_widget   = 0;  // is focused by click
+FWidget* FApplication::open_menu        = 0;  // currently open menu
+FWidget* FApplication::move_size_widget = 0; // move/size by keyboard
+FPoint*  FApplication::zero_point       = 0;  // zero point (x=0, y=0)
+int      FApplication::quit_code        = 0;
+bool     FApplication::quit_now         = false;
+
 std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
 
 //----------------------------------------------------------------------
@@ -250,8 +251,8 @@ void FApplication::processKeyboardEvent()
 
   if ( focus_widget )
   {
-    if ( move_size_mode )
-      widget = FWindow::getWindowWidget(focus_widget);
+    if ( move_size_widget )
+      widget = move_size_widget;
     else
       widget = focus_widget;
   }
@@ -357,7 +358,7 @@ void FApplication::processKeyboardEvent()
                 for (; n < fifo_buf_size; n++)
                   fifo_buf[n-len] = '\0';
 
-                input_data_pending = bool(fifo_buf[0] != '\0');
+                unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
               }
               break;
@@ -386,7 +387,7 @@ void FApplication::processKeyboardEvent()
                 for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
                   fifo_buf[n-len] = '\0';
 
-                input_data_pending = bool(fifo_buf[0] != '\0');
+                unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
               }
               break;
@@ -415,7 +416,7 @@ void FApplication::processKeyboardEvent()
                 for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
                   fifo_buf[n-len] = '\0';
 
-                input_data_pending = bool(fifo_buf[0] != '\0');
+                unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
               }
               break;
@@ -484,7 +485,7 @@ void FApplication::processKeyboardEvent()
   {
     FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
     sendEvent (widget, &k_press_ev);
-    input_data_pending = false;
+    unprocessedInput() = false;
   }
 }
 
@@ -780,7 +781,7 @@ bool FApplication::processDialogSwitchAccelerator()
     if ( s > 0 && s >= n )
     {
       // unset the move/size mode
-      setMoveSizeMode(false);
+      move_size_widget = 0;
       FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
       sendEvent (dialog_list->at(n-1), &a_ev);
       return true;
@@ -811,7 +812,7 @@ bool FApplication::processAccelerator (FWidget*& widget)
       if ( iter->key == key )
       {
         // unset the move/size mode
-        setMoveSizeMode(false);
+        move_size_widget = 0;
         FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
         sendEvent (iter->object, &a_ev);
         accpt = a_ev.isAccepted();
@@ -1346,9 +1347,9 @@ bool FApplication::processGpmEvent()
     mouse->setPoint(gpm_ev.x, gpm_ev.y);
 
     if ( gpmEvent(false) == mouse_event )
-      input_data_pending = true;
+      unprocessedInput() = true;
     else
-      input_data_pending = false;
+      unprocessedInput() = false;
 
     GPM_DRAWPOINTER(&gpm_ev);
     gpmMouseEvent = false;
@@ -1419,7 +1420,12 @@ void FApplication::processMouseEvent()
     }
 
     // unset the move/size mode
-    setMoveSizeMode(false);
+    if ( move_size_widget )
+    {
+      FWidget* w = move_size_widget;
+      move_size_widget = 0;
+      w->redraw();
+    }
   }
 
   // close the open menu
@@ -1662,7 +1668,7 @@ int FApplication::processTimerEvent()
 
   getCurrentTime (currentTime);
 
-  if ( modify_timer )
+  if ( isTimerInUpdating() )
     return 0;
 
   if ( ! timer_list )
@@ -1705,7 +1711,7 @@ void FApplication::processTerminalUpdate()
 
   if ( terminal_update_pending )
   {
-    if ( ! input_data_pending )
+    if ( ! unprocessedInput() )
     {
       updateTerminal();
       terminal_update_pending = false;

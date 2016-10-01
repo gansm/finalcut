@@ -26,6 +26,7 @@
 #include "fwidget.h"
 
 
+// class forward declaration
 class FToggleButton;
 
 //----------------------------------------------------------------------

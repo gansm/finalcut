@@ -77,6 +77,7 @@
            reinterpret_cast<FWidget*>((i)) \
          , reinterpret_cast<FWidget::FMemberCallback>((h))
 
+// class forward declaration
 class FStatusBar;
 class FMenuBar;
 
@@ -93,6 +94,7 @@ class FWidget : public FObject, public FTerm
    typedef std::vector<FWidget*> widgetList;
    static widgetList* window_list;
    static widgetList* dialog_list;
+   static widgetList* always_on_top_list;
    static widgetList* close_widget;
 
    typedef void (*FCallback)(FWidget*, void*);
@@ -168,6 +170,8 @@ class FWidget : public FObject, public FTerm
      short error_box_fg;
      short error_box_emphasis_fg;
      short error_box_bg;
+     short tooltip_fg;
+     short tooltip_bg;
      short shadow_fg;
      short shadow_bg;
      short toggle_button_active_focus_fg;
@@ -363,13 +367,13 @@ class FWidget : public FObject, public FTerm
    static FWidget*  childWidgetAt (FWidget*, const FPoint&);
    static FWidget*  childWidgetAt (FWidget*, int, int);
    virtual FWidget* getFocusWidget() const;
-   virtual void     setFocusWidget(FWidget*);
+   virtual void     setFocusWidget (FWidget*);
    static FWidget*  getClickedWidget();
-   static void      setClickedWidget(FWidget*);
+   static void      setClickedWidget (FWidget*);
+   static FWidget*  getMoveSizeWidget();
+   static void      setMoveSizeWidget (FWidget*);
    static FWidget*  getOpenMenu();
-   static void      setOpenMenu(FWidget*);
-   static bool      getMoveSizeMode();
-   static void      setMoveSizeMode (bool);
+   static void      setOpenMenu (FWidget*);
    int              numOfFocusableChildren();
    FWidget*         getParentWidget() const;
    bool             isRootWidget() const;
@@ -1218,7 +1222,7 @@ inline void FWidget::unsetDoubleFlatLine (int side, int pos)
 
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()
-{ drawBorder (1, getWidth(), 1, getHeight()); }
+{ drawBorder (1, 1, getWidth(), getHeight()); }
 
 
 // NewFont elements

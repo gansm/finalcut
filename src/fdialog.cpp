@@ -12,7 +12,7 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FDialog::FDialog(FWidget* parent)
+FDialog::FDialog (FWidget* parent)
   : FWindow(parent)
   , tb_text()
   , result_code(FDialog::Reject)
@@ -26,6 +26,7 @@ FDialog::FDialog(FWidget* parent)
   , move_size_item()
   , zoom_item()
   , close_item()
+  , tooltip()
 {
   init();
 }
@@ -45,6 +46,7 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , move_size_item()
   , zoom_item()
   , close_item()
+  , tooltip(0)
 {
   init();
 }
@@ -103,6 +105,7 @@ void FDialog::init()
   createArea (vwin);
   addDialog(this);
   addWindow(this);
+  alwaysOnTop();
   setActiveWindow(this);
   setTransparentShadow();
 
@@ -173,7 +176,7 @@ void FDialog::drawBorder()
   int y1 = 2;
   int y2 = 1 + getHeight() - 1;
 
-  if ( (getMoveSizeMode() || ! resize_click_pos.isNull()) && ! isZoomed() )
+  if ( (getMoveSizeWidget() || ! resize_click_pos.isNull()) && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   else
     setColor();
@@ -203,29 +206,7 @@ void FDialog::drawBorder()
   }
   else
   {
-    printPos (x1, y1);
-    print (fc::BoxDrawingsDownAndRight); // ┌
-
-    for (int x=x1+1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
-
-    print (fc::BoxDrawingsDownAndLeft);  // ┐
-    printPos (x1, y2);
-    print (fc::BoxDrawingsUpAndRight);   // └
-
-    for (int x=x1+1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
-
-    print (fc::BoxDrawingsUpAndLeft);    // ┘
-
-    for (int y=y1+1; y < y2; y++)
-    {
-      printPos (x1, y);
-      print (fc::BoxDrawingsVertical);   // │
-      printPos (x2, y);
-      print (fc::BoxDrawingsVertical);   // │
-    }
-
+    FWidget::drawBorder(x1, y1, x2, y2);
   }
 }
 
@@ -478,25 +459,33 @@ void FDialog::setZoomItem()
     move_size_item->setEnable();
   }
 }
-#include "fmessagebox.h"
+
 //----------------------------------------------------------------------
 void FDialog::cb_move (FWidget*, void*)
 {
   if ( isZoomed() )
     return;
 
-  setMoveSizeMode(true);
+  setMoveSizeWidget(this);
   save_geometry = getGeometry();
-
   redraw();
+  tooltip = new FToolTip(this);
 
-  // Tooltip
-  // ┌──────────────────────────┐
-  // │       Arrow keys: Move   │
-  // │Meta + Arrow keys: Resize │
-  // │            Enter: Done   │
-  // │              Esc: Cancel │
-  // └──────────────────────────┘
+  if ( isResizeable() )
+  {
+    tooltip->setText ( "       Arrow keys: Move\n"
+                       "Meta + Arrow keys: Resize\n"
+                       "            Enter: Done\n"
+                       "              Esc: Cancel" );
+  }
+  else
+  {
+    tooltip->setText ( "Arrow keys: Move\n"
+                       "     Enter: Done\n"
+                       "       Esc: Cancel" );
+  }
+
+  tooltip->show();
 }
 
 //----------------------------------------------------------------------
@@ -575,6 +564,14 @@ void FDialog::drawDialogShadow()
 //----------------------------------------------------------------------
 void FDialog::draw()
 {
+  if ( tooltip && ! getMoveSizeWidget() )
+  {
+    if ( tooltip )
+      delete tooltip;
+
+    tooltip = 0;
+  }
+
   updateVTerm(false);
   // fill the background
   setColor();
@@ -634,7 +631,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     selectFirstMenuItem();
   }
 
-  if ( getMoveSizeMode() )
+  if ( getMoveSizeWidget() )
   {
     switch ( ev->key() )
     {
@@ -696,14 +693,24 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 
       case fc::Fkey_return:
       case fc::Fkey_enter:
-        setMoveSizeMode(false);
+        setMoveSizeWidget(0);
+
+        if ( tooltip )
+          delete tooltip;
+
+        tooltip = 0;
         redraw();
         ev->accept();
         break;
 
       case fc::Fkey_escape:
       case fc::Fkey_escape_mintty:
-        setMoveSizeMode(false);
+        setMoveSizeWidget(0);
+
+        if ( tooltip )
+          delete tooltip;
+
+        tooltip = 0;
         move (save_geometry.getPos());
 
         if ( isResizeable() )
@@ -1141,12 +1148,24 @@ void FDialog::onWindowInactive (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowRaised (FEvent*)
 {
-  widgetList::const_iterator iter, end;
-
   if ( ! (isVisible() && isShown()) )
     return;
 
   putArea (getTermPos(), vwin);
+
+  // handle always-on-top windows
+  if ( always_on_top_list && ! always_on_top_list->empty() )
+  {
+    widgetList::const_iterator iter, end;
+    iter = always_on_top_list->begin();
+    end  = always_on_top_list->end();
+
+    while ( iter != end )
+    {
+      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+      ++iter;
+    }
+  }
 
   if ( ! window_list )
     return;

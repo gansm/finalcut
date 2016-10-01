@@ -19,6 +19,7 @@ FWidget*               FWidget::show_root_widget   = 0;
 FWidget*               FWidget::redraw_root_widget = 0;
 FWidget::widgetList*   FWidget::window_list        = 0;
 FWidget::widgetList*   FWidget::dialog_list        = 0;
+FWidget::widgetList*   FWidget::always_on_top_list = 0;
 FWidget::widgetList*   FWidget::close_widget       = 0;
 FWidget::widget_colors FWidget::wc;
 
@@ -32,7 +33,7 @@ FWidget::FWidget (FWidget* parent)
   : FObject(parent)
   , callback_objects()
   , member_callback_objects()
-  , accelerator_list()
+  , accelerator_list(0)
   , flags(0)
   , enable(true)
   , visible(true)
@@ -120,9 +121,10 @@ FWidget::~FWidget()  // destructor
 //----------------------------------------------------------------------
 void FWidget::init()
 {
-  window_list  = new widgetList();
-  dialog_list  = new widgetList();
-  close_widget = new widgetList();
+  window_list        = new widgetList();
+  dialog_list        = new widgetList();
+  always_on_top_list = new widgetList();
+  close_widget       = new widgetList();
 
   // determine width and height of the terminal
   getTermSize();
@@ -165,6 +167,12 @@ void FWidget::finish()
     dialog_list = 0;
   }
 
+  if ( always_on_top_list )
+  {
+    delete always_on_top_list;
+    always_on_top_list = 0;
+  }
+
   if ( window_list )
   {
     delete window_list;
@@ -192,6 +200,8 @@ void FWidget::setColorTheme()
   wc.error_box_fg                      = fc::White;
   wc.error_box_emphasis_fg             = fc::Yellow;
   wc.error_box_bg                      = fc::LightRed;
+  wc.tooltip_fg                        = fc::Black;
+  wc.tooltip_bg                        = fc::Yellow;
   wc.shadow_fg                         = fc::Black;
   wc.shadow_bg                         = fc::LightGray; // only for transparent shadow
   wc.current_element_focus_fg          = fc::White;
@@ -283,6 +293,8 @@ void FWidget::setColorTheme()
     wc.error_box_fg                      = fc::Black;
     wc.error_box_emphasis_fg             = fc::Red;
     wc.error_box_bg                      = fc::LightGray;
+    wc.tooltip_fg                        = fc::LightGray;
+    wc.tooltip_bg                        = fc::Cyan;
     wc.shadow_fg                         = fc::Black;
     wc.shadow_bg                         = fc::LightGray; // only for transparent shadow
     wc.current_element_focus_fg          = fc::LightGray;
@@ -390,7 +402,12 @@ void FWidget::adjustSize()
     FWidget* p = getParentWidget();
 
     if ( isWindowWidget() )
-      offset = rootObject->client_offset;
+    {
+      if ( ignore_padding && ! isDialogWidget() )
+        setTermOffset();
+      else
+        offset = rootObject->client_offset;
+    }
     else if ( ignore_padding && p )
     {
       offset.setCoordinates ( p->getTermX() - 1
@@ -890,7 +907,7 @@ FWidget* FWidget::getMainWidget()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setMainWidget(FWidget* obj)
+void FWidget::setMainWidget (FWidget* obj)
 {
   FApplication* fapp = static_cast<FApplication*>(rootObject);
   fapp->setMainWidget(obj);
@@ -936,7 +953,7 @@ FWidget* FWidget::getFocusWidget() const
 }
 
 //----------------------------------------------------------------------
-void FWidget::setFocusWidget(FWidget* obj)
+void FWidget::setFocusWidget (FWidget* obj)
 {
   FApplication::focus_widget = obj;
 }
@@ -949,9 +966,21 @@ FWidget* FWidget::getClickedWidget()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setClickedWidget(FWidget* obj)
+void FWidget::setClickedWidget (FWidget* obj)
 {
   FApplication::clicked_widget = obj;
+}
+
+//----------------------------------------------------------------------
+FWidget* FWidget::getMoveSizeWidget()
+{
+  return FApplication::move_size_widget;
+}
+
+//----------------------------------------------------------------------
+void FWidget::setMoveSizeWidget (FWidget* obj)
+{
+  FApplication::move_size_widget = obj;
 }
 
 //----------------------------------------------------------------------
@@ -962,21 +991,9 @@ FWidget* FWidget::getOpenMenu()
 }
 
 //----------------------------------------------------------------------
-void FWidget::setOpenMenu(FWidget* obj)
+void FWidget::setOpenMenu (FWidget* obj)
 {
   FApplication::open_menu = obj;
-}
-
-//----------------------------------------------------------------------
-bool FWidget::getMoveSizeMode()
-{
-  return FApplication::move_size_mode;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setMoveSizeMode (bool on)
-{
-  FApplication::move_size_mode = on;
 }
 
 //----------------------------------------------------------------------
@@ -2353,7 +2370,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (int side)
 }
 
 //----------------------------------------------------------------------
-void FWidget::drawBorder (int x1, int x2, int y1, int y2)
+void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 {
   if ( x1 > x2 )
     std::swap (x1, x2);
@@ -2372,11 +2389,6 @@ void FWidget::drawBorder (int x1, int x2, int y1, int y2)
 
   if ( y2 > getHeight() )
     y2 = getHeight();
-
-  if ( FWidget* p = getParentWidget() )
-    setColor (wc.dialog_fg, p->getBackgroundColor());
-  else
-    setColor (wc.dialog_fg, wc.dialog_bg);
 
   if ( isNewFont() )
   {

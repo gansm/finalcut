@@ -27,7 +27,7 @@ static bool sortDirFirst (const dir_entry &lhs, const dir_entry &rhs)
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FFileDialog::FFileDialog(FWidget* parent)
+FFileDialog::FFileDialog (FWidget* parent)
   : FDialog(parent)
   , directory_stream(0)
   , dir_entries()

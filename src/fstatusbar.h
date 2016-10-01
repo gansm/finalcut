@@ -34,6 +34,7 @@
 #include "fwindow.h"
 
 
+// class forward declaration
 class FStatusBar;
 
 //----------------------------------------------------------------------

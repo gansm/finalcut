@@ -107,8 +107,8 @@ void FMenu::init(FWidget* parent)
   setMenuWidget();
   setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
-  setMenuWidget();
   addWindow(this);
+  alwaysOnTop();
   hide();
 
   setForegroundColor (wc.menu_active_fg);
@@ -595,38 +595,24 @@ void FMenu::draw()
   clearArea();
   drawBorder();
   drawItems();
+  drawMenuShadow();
 
   if ( isMonochron() )
     setReverse(false);
 
-  if ( (flags & fc::shadow) != 0 )
-  {
-    term_area* area = 0;
-    FWindow*   area_widget = getWindowWidget(this);
-    drawMenuShadow();
-
-    if ( area_widget )
-    {
-      area = area_widget->getVWin();
-
-      if ( area )
-        putArea (getTermX(), getTermY(), area);
-    }
-  }
-  else
-    updateVTerm(true);
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
 void FMenu::drawBorder()
 {
-  int x1 = 1;
-  int x2 = 1 + getWidth() - 1;
-  int y1 = 1;
-  int y2 = 1 + getHeight() - 1;
-
   if ( isNewFont() )
   {
+    int x1 = 1;
+    int x2 = 1 + getWidth() - 1;
+    int y1 = 1;
+    int y2 = 1 + getHeight() - 1;
+
     printPos (x1, y1);
     print (fc::NF_border_corner_upper_left); // ⎡
 
@@ -658,28 +644,7 @@ void FMenu::drawBorder()
   }
   else
   {
-    printPos (x1, y1);
-    print (fc::BoxDrawingsDownAndRight); // ┌
-
-    for (int x=x1+1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
-
-    print (fc::BoxDrawingsDownAndLeft);  // ┐
-    printPos (x1, y2);
-    print (fc::BoxDrawingsUpAndRight);   // └
-
-    for (int x=x1+1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
-
-    print (fc::BoxDrawingsUpAndLeft);    // ┘
-
-    for (int y=y1+1; y < y2; y++)
-    {
-      printPos (x1, y);
-      print (fc::BoxDrawingsVertical);   // │
-      printPos (x2, y);
-      print (fc::BoxDrawingsVertical);   // │
-    }
+    FWidget::drawBorder();
   }
 }
 

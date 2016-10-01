@@ -33,6 +33,7 @@ libfinal_la_SOURCES = \
 	fdialog.cpp \
 	fwindow.cpp \
 	fmessagebox.cpp \
+	ftooltip.cpp \
 	ffiledialog.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
@@ -73,6 +74,7 @@ finalcutinclude_HEADERS = \
 	fcheckmenuitem.h \
 	fmenulist.h \
 	fmessagebox.h \
+	ftooltip.h \
 	fobject.h \
 	fpoint.h \
 	foptiattr.h \

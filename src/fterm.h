@@ -88,6 +88,7 @@
 // parseKeyString return value
 #define NEED_MORE_DATA  -1
 
+// class forward declaration
 class FWidget;
 
 //----------------------------------------------------------------------
@@ -283,6 +284,7 @@ class FTerm
    static uInt  charEncode (uInt, fc::encoding);
    static uInt  cp437_to_unicode (uChar);
    static void  signal_handler (int);
+   // Friend classes
    friend class FWidget;
    friend class FApplication;
 
@@ -320,6 +322,7 @@ class FTerm
    FTerm::term_area* getVWin() const;
    static bool    isKeyTimeout (timeval*, register long);
    static int     parseKeyString (char*, int, timeval*);
+   bool&          unprocessedInput() const;
    int            getLineNumber();
    int            getColumnNumber();
    static FString getKeyName (int);
@@ -508,6 +511,10 @@ inline const char* FTerm::getClassName() const
 //----------------------------------------------------------------------
 inline FTerm::term_area* FTerm::getVWin() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline bool& FTerm::unprocessedInput() const
+{ return input_data_pending; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getLineNumber()
