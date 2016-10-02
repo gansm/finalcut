@@ -105,15 +105,18 @@ void Transparent::draw()
 //----------------------------------------------------------------------
 void Transparent::onKeyPress (FKeyEvent* ev)
 {
-  if ( ev && ev->key() == 'q' && getParentWidget() )
+  if ( ev )
   {
-    if ( getParentWidget()->close() )
-      ev->accept();
+    if ( ev->key() == 'q' && getParentWidget() )
+    {
+      if ( getParentWidget()->close() )
+        ev->accept();
+      else
+        ev->ignore();
+    }
     else
-      ev->ignore();
+      FDialog::onKeyPress(ev);
   }
-  else
-    FDialog::onKeyPress(ev);
 }
 
 
@@ -144,13 +147,16 @@ class MainWindow : public FDialog
    void onTimer (FTimerEvent*);
    void onKeyPress (FKeyEvent* ev)
    {
-     if ( ev && ev->key() == 'q' )
+     if ( ev )
      {
-       close();
-       ev->accept();
+       if ( ev->key() == 'q' )
+       {
+         close();
+         ev->accept();
+       }
+       else
+         FDialog::onKeyPress(ev);
      }
-     else
-       FDialog::onKeyPress(ev);
    }
 
  public:
