@@ -96,8 +96,7 @@ FWidget::~FWidget()  // destructor
   // unset the local window widget focus
   if ( focus )
   {
-    FWindow* window = FWindow::getWindowWidget(this);
-    if ( window )
+    if ( FWindow* window = FWindow::getWindowWidget(this) )
       window->setWindowFocusWidget(0);
   }
 
@@ -143,7 +142,7 @@ void FWidget::init()
 
   foreground_color = wc.term_fg;
   background_color = wc.term_bg;
-  setColor (foreground_color, background_color);
+  setColor();
   clearArea();
 
   accelerator_list = new Accelerators();
@@ -501,12 +500,6 @@ void FWidget::adjustSizeGlobal()
     getRootWidget()->adjustSizeGlobal();
     return;
   }
-
-  if ( menubar )
-    menubar->adjustSize();
-
-  if ( statusbar )
-    statusbar->adjustSize();
 
   if ( window_list && ! window_list->empty() )
   {
@@ -1230,6 +1223,7 @@ void FWidget::redraw()
   if ( isRootWidget() )
   {
     terminal_updates = false;
+    // clean desktop
     setColor (wc.term_fg, wc.term_bg);
     clearArea();
   }
@@ -1283,22 +1277,6 @@ void FWidget::redraw()
         ++iter;
       }
     }
-
-    if ( menubar && vmenubar )
-    {
-      int w = vmenubar->width;
-      int h = vmenubar->height;
-      std::fill_n (vmenubar->text, w * h, default_char);
-      menubar->redraw();
-    }
-
-    if ( statusbar && vstatusbar )
-    {
-      int w = vstatusbar->width;
-      int h = vstatusbar->height;
-      std::fill_n (vstatusbar->text, w * h, default_char);
-      statusbar->redraw();
-    }
   }
   else
   {
@@ -1344,23 +1322,6 @@ void FWidget::resize()
     closeConsole();
     resizeVTerm();
     resizeArea (vdesktop);
-
-    if ( menubar )
-    {
-      menubar->setGeometry(1, 1, getWidth(), 1, false);
-
-      if ( vmenubar )
-        resizeArea(vmenubar);
-    }
-
-    if ( statusbar )
-    {
-      statusbar->setGeometry(1, getHeight(), getWidth(), 1, false);
-
-      if ( vstatusbar )
-        resizeArea(vstatusbar);
-    }
-
     adjustSizeGlobal();
   }
   else

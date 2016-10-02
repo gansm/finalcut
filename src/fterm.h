@@ -243,8 +243,6 @@ class FTerm
 
    static term_area* vterm;      // virtual terminal
    static term_area* vdesktop;   // virtual desktop
-   static term_area* vmenubar;   // virtual menubar
-   static term_area* vstatusbar; // virtual statusbar
    static term_area* last_area;  // last used area
    term_area* vwin;              // virtual window
 
@@ -292,6 +290,7 @@ class FTerm
    static bool  charEncodable (uInt);
    void         createArea (FTerm::term_area*&); // reference to pointer
    void         resizeArea (FTerm::term_area*);
+   void         removeArea (FTerm::term_area*&); // reference to pointer
    void         restoreVTerm (const FRect&);
    void         restoreVTerm (int, int, int, int);
    FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*) const;

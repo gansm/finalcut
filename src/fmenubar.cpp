@@ -22,18 +22,9 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()
 {
-  if ( vmenubar != 0 )
-  {
-    if ( vmenubar->changes != 0 )
-      delete[] vmenubar->changes;
-
-    if ( vmenubar->text != 0 )
-      delete[] vmenubar->text;
-
-    delete vmenubar;
-  }
-
-  vmenubar = 0;
+  delWindow(this);
+  removeArea (vwin);
+  setMenuBar(0);
 }
 
 
@@ -45,10 +36,11 @@ void FMenuBar::init()
   int w = r->getWidth();
   // initialize geometry values
   setGeometry (1, 1, w, 1, false);
-  createArea (vmenubar);
-  vmenubar->visible = true;
-  ignorePadding();
+  createArea (vwin);
+  setAlwaysOnTop();
+  addWindow(this);
   setMenuBar(this);
+  ignorePadding();
 
   if ( getRootWidget() )
     getRootWidget()->setTopPadding(1, true);
@@ -376,7 +368,7 @@ void FMenuBar::drawItems()
     if ( x < screenWidth )
     {
       x++;
-      print (vmenubar, ' ');
+      print (' ');
     }
 
     txt = (*iter)->getText();
@@ -421,7 +413,7 @@ void FMenuBar::drawItems()
         if ( ! is_noUnderline )
           setUnderline();
 
-        print (vmenubar, item_text[z]);
+        print (item_text[z]);
 
         if ( ! is_noUnderline )
           unsetUnderline();
@@ -429,7 +421,7 @@ void FMenuBar::drawItems()
         setColor();
       }
       else
-        print (vmenubar, item_text[z]);
+        print (item_text[z]);
     }
 
     if ( x > screenWidth+1 )
@@ -437,19 +429,19 @@ void FMenuBar::drawItems()
       if ( startpos < screenWidth )
       {
         printPos (screenWidth - 1, 1);
-        print (vmenubar, "..");
+        print ("..");
       }
       else if ( startpos-1 <= screenWidth )
       {
         printPos (screenWidth, 1);
-        print (vmenubar, ' ');
+        print (' ');
       }
     }
 
     if ( x < screenWidth )
     {
       x++;
-      print (vmenubar, ' ');
+      print (' ');
     }
 
     setColor (wc.menu_active_fg, wc.menu_active_bg);
@@ -462,7 +454,7 @@ void FMenuBar::drawItems()
   }
 
   for (; x <= screenWidth; x++)
-    print (vmenubar, ' ');
+    print (' ');
 
   if ( isMonochron() )
     setReverse(false);
@@ -924,7 +916,7 @@ void FMenuBar::hide()
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   printPos (1,1);
-  print (vmenubar, blank);
+  print (blank);
   delete[] blank;
 }
 

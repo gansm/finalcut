@@ -14,7 +14,10 @@
 FToolTip::FToolTip (FWidget* parent)
   : FWindow(parent)
   , text()
+  , text_components(0)
+  , text_split()
   , max_line_width(0)
+  , text_num_lines(0)
 {
   init();
 }
@@ -23,7 +26,10 @@ FToolTip::FToolTip (FWidget* parent)
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , text(txt)
+  , text_components(0)
+  , text_split()
   , max_line_width(0)
+  , text_num_lines(0)
 {
   init();
 }
@@ -35,10 +41,9 @@ FToolTip::~FToolTip()  // destructor
 
   if ( ! fapp->isQuit() )
   {
-    FWidget* parent = getParentWidget();
     FWindow* parent_win = 0;
 
-    if ( parent )
+    if ( FWidget* parent = getParentWidget() )
       parent_win = getWindowWidget(parent);
 
     if ( parent_win )
@@ -55,16 +60,7 @@ FToolTip::~FToolTip()  // destructor
     restoreVTerm (t_geometry);
   }
 
-  if ( vwin != 0 )
-  {
-    if ( vwin->changes != 0 )
-      delete[] vwin->changes;
-
-    if ( vwin->text != 0 )
-      delete[] vwin->text;
-
-    delete vwin;
-  }
+  removeArea (vwin);
 }
 
 
@@ -79,11 +75,8 @@ void FToolTip::init()
   setMinimumSize (3, 3);
   createArea (vwin);
   addWindow(this);
-  alwaysOnTop();
-
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
-
   calculateDimensions();
 }
 

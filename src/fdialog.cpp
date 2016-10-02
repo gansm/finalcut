@@ -73,16 +73,7 @@ FDialog::~FDialog()  // destructor
     restoreVTerm (t_geometry);
   }
 
-  if ( vwin != 0 )
-  {
-    if ( vwin->changes != 0 )
-      delete[] vwin->changes;
-
-    if ( vwin->text != 0 )
-      delete[] vwin->text;
-
-    delete vwin;
-  }
+  removeArea (vwin);
 
   if ( isModal() )
     unsetModal();
@@ -105,10 +96,8 @@ void FDialog::init()
   createArea (vwin);
   addDialog(this);
   addWindow(this);
-  alwaysOnTop();
   setActiveWindow(this);
   setTransparentShadow();
-
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 

@@ -58,7 +58,8 @@ class FWindow : public FWidget
    // Disable assignment operator (=)
    FWindow& operator = (const FWindow&);
 
-   void            deleteFromAlwaysOnTopList (FWidget*);
+   static void     deleteFromAlwaysOnTopList (FWidget*);
+   static void     processAlwaysOnTop();
 
  protected:
    // Event handlers
@@ -96,7 +97,6 @@ class FWindow : public FWidget
    bool            raiseWindow ();
    static bool     lowerWindow (FWidget*);
    bool            lowerWindow ();
-   static void     alwaysOnTop();
    bool            zoomWindow ();
    bool            isZoomed() const;
    bool            setWindowWidget (bool);

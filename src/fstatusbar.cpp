@@ -158,18 +158,7 @@ FStatusBar::FStatusBar(FWidget* parent)
 //----------------------------------------------------------------------
 FStatusBar::~FStatusBar()
 {
-  if ( vstatusbar != 0 )
-  {
-    if ( vstatusbar->changes != 0 )
-      delete[] vstatusbar->changes;
-
-    if ( vstatusbar->text != 0 )
-      delete[] vstatusbar->text;
-
-    delete vstatusbar;
-  }
-
-  vstatusbar = 0;
+  delWindow(this);
 
   // delete all keys
   if ( ! keylist.empty() )
@@ -184,6 +173,8 @@ FStatusBar::~FStatusBar()
       iter = keylist.erase(iter);
     }
   }
+
+  removeArea (vwin);
   setStatusBar(0);
 }
 
@@ -197,13 +188,12 @@ void FStatusBar::init()
   int h = r->getHeight();
   // initialize geometry values
   setGeometry (1, h, w, 1, false);
-  createArea (vstatusbar);
-  vstatusbar->visible = true;
+  createArea (vwin);
+  setAlwaysOnTop();
+  addWindow(this);
+  setStatusBar(this);
   ignorePadding();
   mouse_down = false;
-
-
-  setStatusBar(this);
 
   if ( getRootWidget() )
     getRootWidget()->setBottomPadding(1, true);
@@ -225,9 +215,6 @@ void FStatusBar::drawKeys()
 {
   std::vector<FStatusKey*>::const_iterator iter, end;
   int screenWidth;
-
-  if ( ! vstatusbar )
-    return;
 
   screenWidth = getColumnNumber();
   x = 1;
@@ -262,27 +249,26 @@ void FStatusBar::drawKeys()
         setColor ( wc.statusbar_active_hotkey_fg
                  , wc.statusbar_active_hotkey_bg );
         x++;
-        print (vstatusbar, ' ');
+        print (' ');
         x += kname_len;
-        print (vstatusbar, getKeyName((*iter)->getKey()));
+        print (getKeyName((*iter)->getKey()));
         setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
         x++;
-        print (vstatusbar, '-');
+        print ('-');
         txt_length = int((*iter)->getText().getLength());
         x += txt_length;
 
         if ( x <= screenWidth )
         {
-          print (vstatusbar, (*iter)->getText());
+          print ((*iter)->getText());
           x++;
-          print (vstatusbar, fc::RightHalfBlock);  // ▌
+          print (fc::RightHalfBlock);  // ▌
         }
         else
         {
-          print ( vstatusbar
-                , (*iter)->getText()
+          print ( (*iter)->getText()
                           .left(uInt(txt_length+screenWidth-x-1)) );
-          print (vstatusbar, "..");
+          print ("..");
         }
 
         if ( isMonochron() )
@@ -295,23 +281,22 @@ void FStatusBar::drawKeys()
         // not active
         setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
         x++;
-        print (vstatusbar, ' ');
+        print (' ');
         x += kname_len;
-        print (vstatusbar, getKeyName((*iter)->getKey()));
+        print (getKeyName((*iter)->getKey()));
         setColor (wc.statusbar_fg, wc.statusbar_bg);
         x++;
-        print (vstatusbar, '-');
+        print ('-');
         txt_length = int((*iter)->getText().getLength());
         x += txt_length;
 
         if ( x-1 <= screenWidth )
-          print (vstatusbar, (*iter)->getText());
+          print ((*iter)->getText());
         else
         {
-          print ( vstatusbar
-                , (*iter)->getText()
+          print ( (*iter)->getText()
                           .left(uInt(txt_length+screenWidth-x-1)) );
-          print ( vstatusbar, ".." );
+          print ("..");
         }
 
         if (  iter+1 != keylist.end()
@@ -325,7 +310,7 @@ void FStatusBar::drawKeys()
 
           setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
           x++;
-          print (vstatusbar, fc::LeftHalfBlock);  // ▐
+          print (fc::LeftHalfBlock);  // ▐
 
           if ( isMonochron() )
             setReverse(true);
@@ -335,7 +320,7 @@ void FStatusBar::drawKeys()
           // not the last element
           setColor (wc.statusbar_separator_fg, wc.statusbar_bg);
           x++;
-          print (vstatusbar, fc::BoxDrawingsVertical);  // │
+          print (fc::BoxDrawingsVertical);  // │
         }
       }
     }
@@ -344,7 +329,7 @@ void FStatusBar::drawKeys()
       setColor (wc.statusbar_fg, wc.statusbar_bg);
 
       for (; x <= screenWidth; x++)
-        print (vstatusbar, ' ');
+        print (' ');
     }
     ++iter;
   }
@@ -377,7 +362,7 @@ void FStatusBar::hide()
   memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   printPos (1, 1);
-  print (vstatusbar, blank);
+  print (blank);
   delete[] blank;
 }
 //----------------------------------------------------------------------
@@ -578,7 +563,7 @@ void FStatusBar::drawMessage()
   int  termWidth, space_offset;
   bool isLastActiveFocus, hasKeys;
 
-  if ( ! (isVisible() && vstatusbar) )
+  if ( ! (isVisible() ) )
     return;
 
   if ( x < 0 || x_msg < 0 )
@@ -615,32 +600,31 @@ void FStatusBar::drawMessage()
       if ( ! isLastActiveFocus )
       {
         x++;
-        print (vstatusbar, ' ');
+        print (' ');
       }
 
       if ( hasKeys )
       {
         x += 2;
-        print (vstatusbar, fc::BoxDrawingsVertical);  // │
-        print (vstatusbar, ' ');
+        print (fc::BoxDrawingsVertical);  // │
+        print (' ');
       }
 
       int msg_length = int(getMessage().getLength());
       x += msg_length;
 
       if ( x-1 <= termWidth )
-        print (vstatusbar, getMessage());
+        print (getMessage());
       else
       {
-        print ( vstatusbar
-              , getMessage().left(uInt(msg_length+termWidth-x-1)) );
-        print (vstatusbar, "..");
+        print ( getMessage().left(uInt(msg_length+termWidth-x-1)) );
+        print ("..");
       }
     }
   }
 
   for (int i=x; i <= termWidth; i++)
-    print (vstatusbar, ' ');
+    print (' ');
 
   if ( isMonochron() )
     setReverse(false);

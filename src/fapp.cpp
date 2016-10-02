@@ -781,7 +781,13 @@ bool FApplication::processDialogSwitchAccelerator()
     if ( s > 0 && s >= n )
     {
       // unset the move/size mode
-      move_size_widget = 0;
+      if ( move_size_widget )
+      {
+        FWidget* w = move_size_widget;
+        move_size_widget = 0;
+        w->redraw();
+      }
+
       FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
       sendEvent (dialog_list->at(n-1), &a_ev);
       return true;
@@ -812,7 +818,13 @@ bool FApplication::processAccelerator (FWidget*& widget)
       if ( iter->key == key )
       {
         // unset the move/size mode
-        move_size_widget = 0;
+        if ( move_size_widget )
+        {
+          FWidget* w = move_size_widget;
+          move_size_widget = 0;
+          w->redraw();
+        }
+
         FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
         sendEvent (iter->object, &a_ev);
         accpt = a_ev.isAccepted();

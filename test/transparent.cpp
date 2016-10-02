@@ -112,6 +112,8 @@ void Transparent::onKeyPress (FKeyEvent* ev)
     else
       ev->ignore();
   }
+  else
+    FDialog::onKeyPress(ev);
 }
 
 
@@ -147,6 +149,8 @@ class MainWindow : public FDialog
        close();
        ev->accept();
      }
+     else
+       FDialog::onKeyPress(ev);
    }
 
  public:

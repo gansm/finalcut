@@ -108,7 +108,6 @@ void FMenu::init(FWidget* parent)
   setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
   addWindow(this);
-  alwaysOnTop();
   hide();
 
   setForegroundColor (wc.menu_active_fg);

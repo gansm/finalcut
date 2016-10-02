@@ -59,6 +59,27 @@ void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
   }
 }
 
+//----------------------------------------------------------------------
+void FWindow::processAlwaysOnTop()
+{
+  // Raise all always-on-top windows
+  if ( always_on_top_list && ! always_on_top_list->empty() )
+  {
+    widgetList::iterator iter;
+    iter = always_on_top_list->begin();
+
+    while ( iter != always_on_top_list->end() )
+    {
+      delWindow (*iter);
+
+      if ( window_list )
+        window_list->push_back(*iter);
+
+      ++iter;
+    }
+  }
+}
+
 
 // protected methods of FWindow
 //----------------------------------------------------------------------
@@ -221,6 +242,8 @@ void FWindow::addWindow (FWidget* obj)
   // add the window object obj to the window list
   if ( window_list )
     window_list->push_back(obj);
+
+  processAlwaysOnTop();
 }
 
 //----------------------------------------------------------------------
@@ -367,7 +390,7 @@ bool FWindow::raiseWindow (FWidget* obj)
       window_list->push_back (obj);
       FEvent ev(fc::WindowRaised_Event);
       FApplication::sendEvent(obj, &ev);
-      alwaysOnTop();
+      processAlwaysOnTop();
       return true;
     }
 
@@ -415,24 +438,6 @@ bool FWindow::lowerWindow (FWidget* obj)
   }
 
   return false;
-}
-
-//----------------------------------------------------------------------
-void FWindow::alwaysOnTop()
-{
-  // Raise all always-on-top windows
-  if ( always_on_top_list && ! always_on_top_list->empty() )
-  {
-    widgetList::iterator iter;
-    iter = always_on_top_list->begin();
-
-    while ( iter != always_on_top_list->end() )
-    {
-      delWindow (*iter);
-      addWindow (*iter);
-      ++iter;
-    }
-  }
 }
 
 //----------------------------------------------------------------------
@@ -565,8 +570,11 @@ void FWindow::switchToPrevWindow()
         --iter;
         FWindow* w = static_cast<FWindow*>(*iter);
 
-        if ( w && w != active_window
-           && ! (w->isHiddenWindow() || w->isActiveWindow()) )
+        if ( w
+           && w != active_window
+           && ! (w->isHiddenWindow() || w->isActiveWindow())
+           && w != static_cast<FWindow*>(statusBar())
+           && w != static_cast<FWindow*>(menuBar()) )
         {
           setActiveWindow(w);
           break;
@@ -599,13 +607,19 @@ bool FWindow::activatePrevWindow()
   // activate the previous window
   FWindow* w = previous_widget;
 
-  if ( w && ! (w->isHiddenWindow() || w->isActiveWindow()) )
+  if ( w )
   {
-    setActiveWindow(w);
-    return true;
+    if ( w->isActiveWindow() )
+      return true;
+
+    if ( w && ! w->isHiddenWindow() )
+    {
+      setActiveWindow(w);
+      return true;
+    }
   }
-  else
-    return false;
+
+  return false;
 }
 
 //----------------------------------------------------------------------

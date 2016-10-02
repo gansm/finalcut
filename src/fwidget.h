@@ -1235,6 +1235,7 @@ const wchar_t NF_Drive[5] =
   fc::NF_shadow_box_right,
   '\0'
 };
+
 const wchar_t NF_CD_ROM[5] =
 {
   fc::NF_shadow_box_left,
@@ -1243,6 +1244,7 @@ const wchar_t NF_CD_ROM[5] =
   fc::NF_shadow_box_right,
   '\0'
 };
+
 const wchar_t NF_Net_Drive[5] =
 {
   fc::NF_shadow_box_left,
@@ -1251,6 +1253,7 @@ const wchar_t NF_Net_Drive[5] =
   fc::NF_shadow_box_right,
   '\0'
 };
+
 const wchar_t CHECKBOX[4] =
 {
   fc::NF_shadow_box_left,
@@ -1258,6 +1261,7 @@ const wchar_t CHECKBOX[4] =
   fc::NF_shadow_box_right,
   '\0'
 };
+
 const wchar_t CHECKBOX_ON[4] =
 {
   fc::NF_shadow_box_left,
@@ -1265,6 +1269,7 @@ const wchar_t CHECKBOX_ON[4] =
   fc::NF_shadow_box_right,
   '\0'
 };
+
 const wchar_t RADIO_BUTTON[4] =
 {
   fc::NF_radio_button1,
@@ -1272,6 +1277,7 @@ const wchar_t RADIO_BUTTON[4] =
   fc::NF_radio_button3,
   '\0'
 };
+
 const wchar_t CHECKED_RADIO_BUTTON[4] =
 {
   fc::NF_radio_button1,

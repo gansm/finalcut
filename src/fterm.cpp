@@ -100,8 +100,6 @@ FOptiAttr*             FTerm::opti_attr          = 0;
 FTerm::modifier_key    FTerm::mod_key;
 FTerm::term_area*      FTerm::vterm              = 0;
 FTerm::term_area*      FTerm::vdesktop           = 0;
-FTerm::term_area*      FTerm::vmenubar           = 0;
-FTerm::term_area*      FTerm::vstatusbar         = 0;
 FTerm::term_area*      FTerm::last_area          = 0;
 std::queue<int>*       FTerm::output_buffer      = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char     = 0;
@@ -134,8 +132,6 @@ FTerm::FTerm()
     fd_tty      = -1;
     vterm       =  0;
     vdesktop    =  0;
-    vmenubar    =  0;
-    vstatusbar  =  0;
     last_area   =  0;
     x_term_pos  = -1;
     y_term_pos  = -1;
@@ -2141,33 +2137,8 @@ void FTerm::finish()
   if ( xterm_font )
     delete xterm_font;
 
-  if ( vdesktop != 0 )
-  {
-    if ( vdesktop->changes != 0 )
-      delete[] vdesktop->changes;
-
-    if ( vdesktop->text != 0 )
-      delete[] vdesktop->text;
-
-    delete vdesktop;
-  }
-
-  if ( vterm != 0 )
-  {
-    if ( vterm->changes != 0 )
-    {
-      delete[] vterm->changes;
-      vterm->changes = 0;
-    }
-
-    if ( vterm->text != 0 )
-    {
-      delete[] vterm->text;
-      vterm->text = 0;
-    }
-
-    delete vterm;
-  }
+  removeArea (vdesktop);
+  removeArea (vterm);
 }
 
 //----------------------------------------------------------------------
@@ -2265,8 +2236,10 @@ void FTerm::resizeArea (term_area* area)
   {
     if ( area->changes != 0 )
       delete[] area->changes;
+
     if ( area->text != 0 )
       delete[] area->text;
+
     area->changes = new line_changes[height + bsh];
     area->text    = new FOptiAttr::char_data[area_size];
   }
@@ -2274,6 +2247,7 @@ void FTerm::resizeArea (term_area* area)
   {
     if ( area->text != 0 )
       delete[] area->text;
+
     area->text = new FOptiAttr::char_data[area_size];
   }
   else
@@ -2311,6 +2285,29 @@ void FTerm::resizeArea (term_area* area)
   unchanged.trans_count = 0;
 
   std::fill_n (area->changes, height+bsh, unchanged);
+}
+
+//----------------------------------------------------------------------
+void FTerm::removeArea (term_area*& area)
+{
+  // remove the virtual window
+  if ( area != 0 )
+  {
+    if ( area->changes != 0 )
+    {
+      delete[] area->changes;
+      area->changes = 0;
+    }
+
+    if ( area->text != 0 )
+    {
+      delete[] area->text;
+      area->text = 0;
+    }
+
+    delete area;
+    area = 0;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -2420,34 +2417,6 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
         }
       }
 
-      // menubar is always on top
-      FWidget* menubar;
-      menubar = reinterpret_cast<FWidget*>(FWidget::menuBar());
-
-      if (  vmenubar && menubar
-         && menubar->getTermGeometry().contains(x+tx+1, y+ty+1) )
-      {
-        int bar_x = menubar->getTermX() - 1;
-        int bar_y = menubar->getTermY() - 1;
-
-        if ( vmenubar->visible )
-          sc = &vmenubar->text[(y+ty-bar_y) * vmenubar->width + (x+tx-bar_x)];
-      }
-
-      // statusbar is always on top
-      FWidget* statusbar;
-      statusbar = reinterpret_cast<FWidget*>(FWidget::statusBar());
-
-      if (  vstatusbar && statusbar
-         && statusbar->getTermGeometry().contains(x+tx+1, y+ty+1) )
-      {
-        int bar_x = statusbar->getTermX() - 1;
-        int bar_y = statusbar->getTermY() - 1;
-
-        if ( vstatusbar->visible )
-          sc = &vstatusbar->text[(y+ty-bar_y) * vstatusbar->width + (x+tx-bar_x)];
-      }
-
       memcpy (tc, sc, sizeof(FOptiAttr::char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
@@ -2514,34 +2483,6 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
 
       ++iter;
     }
-  }
-
-  // menubar is always on top
-  FWidget* menubar;
-
-  if ( vmenubar )
-    menubar = reinterpret_cast<FWidget*>(vmenubar->widget);
-  else
-    menubar = 0;
-
-  if (  area != vmenubar && menubar
-     && menubar->getTermGeometry().contains(x,y) )
-  {
-    is_covered = fully_covered;
-  }
-
-  // statusbar is always on top
-  FWidget* statusbar;
-
-  if ( vstatusbar )
-    statusbar = reinterpret_cast<FWidget*>(vstatusbar->widget);
-  else
-    statusbar = 0;
-
-  if (  area != vstatusbar && statusbar
-     && statusbar->getTermGeometry().contains(x,y) )
-  {
-    is_covered = fully_covered;
   }
 
   return is_covered;
@@ -2813,7 +2754,7 @@ void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 {
-  int aw, ah, rsh, bsh, y_end, length, ol, sbar;
+  int aw, ah, rsh, bsh, y_end, length, ol;
   FOptiAttr::char_data* tc; // terminal character
   FOptiAttr::char_data* ac; // area character
 
@@ -2830,7 +2771,6 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
   rsh  = area->right_shadow;
   bsh  = area->bottom_shadow;
   ol   = 0;  // outside left
-  sbar = 0;  // statusbar distance
 
   if ( ax < 0 )
   {
@@ -2838,11 +2778,8 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
     ax = 0;
   }
 
-  if ( vstatusbar && vstatusbar->widget && area != vstatusbar )
-    sbar = 1;
-
-  if ( ay + ah + bsh + sbar > vterm->height )
-    y_end = vterm->height - ay - sbar;
+  if ( ay + ah + bsh > vterm->height )
+    y_end = vterm->height - ay;
   else
     y_end = ah + bsh;
 
