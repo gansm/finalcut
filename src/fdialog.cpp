@@ -172,7 +172,7 @@ void FDialog::drawBorder()
 
   if ( isNewFont() )
   {
-    for (int y=y1; y <= y2; y++)
+    for (int y=y1; y < y2; y++)
     {
       printPos (x1, y);
       // border left ⎸
@@ -457,7 +457,6 @@ void FDialog::cb_move (FWidget*, void*)
 
   setMoveSizeWidget(this);
   save_geometry = getGeometry();
-  redraw();
   tooltip = new FToolTip(this);
 
   if ( isResizeable() )
@@ -571,6 +570,7 @@ void FDialog::draw()
   clearArea();
   drawBorder();
   drawTitleBar();
+  setCursorPos(2, getHeight() - 1);
 
   if ( (flags & fc::shadow) != 0 )
     drawDialogShadow();
@@ -626,25 +626,21 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     {
       case fc::Fkey_up:
         move (getX(), getY() - 1);
-        redraw();
         ev->accept();
         break;
 
       case fc::Fkey_down:
         move (getX(), getY() + 1);
-        redraw();
         ev->accept();
         break;
 
       case fc::Fkey_left:
         move (getX() - 1, getY());
-        redraw();
         ev->accept();
         break;
 
       case fc::Fkey_right:
         move (getX() + 1, getY());
-        redraw();
         ev->accept();
         break;
 
@@ -1192,19 +1188,6 @@ void FDialog::show()
 
   FWindow::show();
 
-  // set the cursor to the focus widget
-  FWidget* focus_widget = FWidget::getFocusWidget();
-
-  if (  focus_widget
-     && focus_widget->isVisible()
-     && focus_widget->hasVisibleCursor()
-     && focus_widget->isCursorInside() )
-  {
-    focus_widget->setCursor();
-    showCursor();
-    flush_out();
-  }
-
   if ( isModal() )
   {
     FApplication* fapp = static_cast<FApplication*>(getRootWidget());
@@ -1254,7 +1237,7 @@ void FDialog::move (int x, int y)
   height = getHeight();
 
   // Avoid to move widget completely outside the terminal
-  if (  x+width-1 < 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
+  if (  x+width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   if ( isZoomed() )
@@ -1289,20 +1272,20 @@ void FDialog::move (int x, int y)
       if ( dy > 0 )
         restoreVTerm (old_x+width+rsw-dx, old_y, dx, getHeight()+bsh-dy);
       else
-        restoreVTerm (old_x+width+rsw-dx, old_y+abs(dy), dx, height+bsh-abs(dy));
+        restoreVTerm (old_x+width+rsw-dx, old_y+std::abs(dy), dx, height+bsh-std::abs(dy));
     }
     else
     {
       if ( dy > 0 )
-        restoreVTerm (old_x, old_y, abs(dx), height+bsh-dy);
+        restoreVTerm (old_x, old_y, std::abs(dx), height+bsh-dy);
       else
-        restoreVTerm (old_x, old_y+abs(dy), abs(dx), height+bsh-abs(dy));
+        restoreVTerm (old_x, old_y+std::abs(dy), std::abs(dx), height+bsh-std::abs(dy));
     }
 
     if ( dy > 0 )
       restoreVTerm (old_x, old_y+height+bsh-dy, width+rsw, dy);
     else
-      restoreVTerm (old_x, old_y, width+rsw, abs(dy));
+      restoreVTerm (old_x, old_y, width+rsw, std::abs(dy));
   }
   else
   {
@@ -1338,9 +1321,7 @@ void FDialog::move (int x, int y)
      && focus_widget->hasVisibleCursor() )
   {
     FPoint cursor_pos = focus_widget->getCursorPos();
-
-    if ( ! focus_widget->setCursorPos(cursor_pos) )
-      hideCursor();
+    focus_widget->setCursorPos(cursor_pos);
   }
 
   updateTerminal();
@@ -1416,9 +1397,7 @@ void FDialog::setSize (int w, int h, bool adjust)
      && focus_widget->hasVisibleCursor() )
   {
     FPoint cursor_pos = focus_widget->getCursorPos();
-
-    if ( ! focus_widget->setCursorPos(cursor_pos) )
-      hideCursor();
+    focus_widget->setCursorPos(cursor_pos);
   }
 }
 

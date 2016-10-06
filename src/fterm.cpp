@@ -26,8 +26,6 @@ int (*FTerm::Fputchar)(int);
 int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
-int      FTerm::x_term_pos;
-int      FTerm::y_term_pos;
 int      FTerm::max_color;
 int      FTerm::stdin_status_flags;
 uInt     FTerm::baudrate;
@@ -85,6 +83,7 @@ char     FTerm::termtype[30] = "";
 char*    FTerm::term_name    = 0;
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
+FPoint*  FTerm::term_pos     = 0;
 FPoint*  FTerm::mouse        = 0;
 FPoint*  FTerm::cursor       = 0;
 FRect*   FTerm::term         = 0;
@@ -101,6 +100,7 @@ FTerm::modifier_key    FTerm::mod_key;
 FTerm::term_area*      FTerm::vterm              = 0;
 FTerm::term_area*      FTerm::vdesktop           = 0;
 FTerm::term_area*      FTerm::last_area          = 0;
+FTerm::term_area*      FTerm::active_area        = 0;
 std::queue<int>*       FTerm::output_buffer      = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char     = 0;
 std::map<std::string,fc::encoding>* \
@@ -133,14 +133,12 @@ FTerm::FTerm()
     vterm       =  0;
     vdesktop    =  0;
     last_area   =  0;
-    x_term_pos  = -1;
-    y_term_pos  = -1;
-
-    opti_move = new FOptiMove();
-    opti_attr = new FOptiAttr();
-    term      = new FRect(0,0,0,0);
-    mouse     = new FPoint(0,0);
-    cursor    = new FPoint(0,0);
+    opti_move   = new FOptiMove();
+    opti_attr   = new FOptiAttr();
+    term        = new FRect(0,0,0,0);
+    term_pos    = new FPoint(-1,-1);
+    mouse       = new FPoint(0,0);
+    cursor      = new FPoint(0,0);
 
     init();
   }
@@ -154,13 +152,14 @@ FTerm::~FTerm()  // destructor
     this->finish();
     delete cursor;
     delete mouse;
+    delete term_pos;
     delete term;
     delete opti_attr;
     delete opti_move;
 
     if ( exit_message[0] )
     {
-      fprintf (stderr, "Warning: %s\n", exit_message);
+      std::fprintf (stderr, "Warning: %s\n", exit_message);
     }
   }
 }
@@ -272,11 +271,11 @@ int FTerm::isConsole()
 void FTerm::identifyTermType()
 {
   // Import the untrusted environment variable TERM
-  const char* term_env = getenv(const_cast<char*>("TERM"));
+  const char* term_env = std::getenv(const_cast<char*>("TERM"));
 
   if ( term_env )
   {
-    strncpy (termtype, term_env, sizeof(termtype) - 1);
+    std::strncpy (termtype, term_env, sizeof(termtype) - 1);
     return;
   }
   else if ( term_name )
@@ -290,10 +289,10 @@ void FTerm::identifyTermType()
     // linux	tty1
     // vt100	ttys0
 
-    FILE *fp;
+    std::FILE *fp;
 
-    if (  (fp = fopen("/etc/ttytype", "r")) != 0
-       || (fp = fopen("/etc/ttys", "r"))    != 0 )
+    if (  (fp = std::fopen("/etc/ttytype", "r")) != 0
+       || (fp = std::fopen("/etc/ttys", "r"))    != 0 )
     {
       char* p;
       char* type;
@@ -301,7 +300,7 @@ void FTerm::identifyTermType()
       char  str[BUFSIZ];
 
       // get term basename
-      const char* term_basename = strrchr(term_name, '/');
+      const char* term_basename = std::strrchr(term_name, '/');
 
       if ( term_basename == 0 )
         term_basename = term_name;
@@ -316,7 +315,7 @@ void FTerm::identifyTermType()
 
         while ( *p )
         {
-          if ( isspace(uChar(*p)) )
+          if ( std::isspace(uChar(*p)) )
             *p = '\0';
           else if ( type == 0 )
             type = p;
@@ -326,20 +325,20 @@ void FTerm::identifyTermType()
           p++;
         }
 
-        if ( type != 0 && name != 0 && ! strcmp(name, term_basename) )
+        if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
         {
-          strncpy (termtype, type, sizeof(termtype) - 1);
-          fclose(fp);
+          std::strncpy (termtype, type, sizeof(termtype) - 1);
+          std::fclose(fp);
           return;
         }
       }
 
-      fclose(fp);
+      std::fclose(fp);
     }
   }
 
   // use vt100 if not found
-  strncpy (termtype, const_cast<char*>("vt100"), 6);
+  std::strncpy (termtype, const_cast<char*>("vt100"), 6);
 }
 
 //----------------------------------------------------------------------
@@ -416,9 +415,9 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
     }
 
     for (uInt i=0; i < count; i++)
-      memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
-             , &fontdata[i * font.height]
-             , font.height);
+      std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
+                  , &fontdata[i * font.height]
+                  , font.height);
   }
   // font operation
   ret = ioctl (fd_tty, KDFONTOP, &font);
@@ -575,7 +574,7 @@ int FTerm::parseKeyString ( char* buffer
                           , timeval* time_keypressed )
 {
   register uChar firstchar = uChar(buffer[0]);
-  register size_t buf_len = strlen(buffer);
+  register size_t buf_len = std::strlen(buffer);
   const long key_timeout = 100000;  // 100 ms
   int key, len, n;
 
@@ -600,9 +599,9 @@ int FTerm::parseKeyString ( char* buffer
     for (int i=0; Fkey[i].tname[0] != 0; i++)
     {
       char* k = Fkey[i].string;
-      len = (k) ? int(strlen(k)) : 0;
+      len = (k) ? int(std::strlen(k)) : 0;
 
-      if ( k && strncmp(k, buffer, uInt(len)) == 0 ) // found
+      if ( k && std::strncmp(k, buffer, uInt(len)) == 0 ) // found
       {
         n = len;
 
@@ -621,9 +620,9 @@ int FTerm::parseKeyString ( char* buffer
     for (int i=0; Fmetakey[i].string[0] != 0; i++)
     {
       char* kmeta = Fmetakey[i].string;  // The string is never null
-      len = int(strlen(kmeta));
+      len = int(std::strlen(kmeta));
 
-      if ( strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
+      if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
       {
         if ( len == 2 && (  buffer[1] == 'O'
                          || buffer[1] == '['
@@ -820,11 +819,12 @@ void FTerm::signal_handler (int signum)
     case SIGILL:
     case SIGSEGV:
       term_object->finish();
-      fflush (stderr); fflush (stdout);
-      fprintf ( stderr
-              , "\nProgram stopped: signal %d (%s)\n"
-              , signum
-              , strsignal(signum) );
+      std::fflush (stderr);
+      std::fflush (stdout);
+      std::fprintf ( stderr
+                   , "\nProgram stopped: signal %d (%s)\n"
+                   , signum
+                   , strsignal(signum) );
       std::terminate();
   }
 }
@@ -837,58 +837,58 @@ char* FTerm::init_256colorTerminal()
   char *s1, *s2, *s3, *s4, *s5, *s6;
 
   // Enable 256 color capabilities
-  s1 = getenv("COLORTERM");
-  s2 = getenv("VTE_VERSION");
-  s3 = getenv("XTERM_VERSION");
-  s4 = getenv("ROXTERM_ID");
-  s5 = getenv("KONSOLE_DBUS_SESSION");
-  s6 = getenv("KONSOLE_DCOP");
+  s1 = std::getenv("COLORTERM");
+  s2 = std::getenv("VTE_VERSION");
+  s3 = std::getenv("XTERM_VERSION");
+  s4 = std::getenv("ROXTERM_ID");
+  s5 = std::getenv("KONSOLE_DBUS_SESSION");
+  s6 = std::getenv("KONSOLE_DCOP");
 
   if ( s1 != 0 )
-    strncat (local256, s1, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s1, sizeof(local256) - std::strlen(local256) - 1);
 
   if ( s2 != 0 )
-    strncat (local256, s2, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s2, sizeof(local256) - std::strlen(local256) - 1);
 
   if ( s3 != 0 )
-    strncat (local256, s3, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s3, sizeof(local256) - std::strlen(local256) - 1);
 
   if ( s4 != 0 )
-    strncat (local256, s4, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s4, sizeof(local256) - std::strlen(local256) - 1);
 
   if ( s5 != 0 )
-    strncat (local256, s5, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s5, sizeof(local256) - std::strlen(local256) - 1);
 
   if ( s6 != 0 )
-    strncat (local256, s6, sizeof(local256) - strlen(local256) - 1);
+    std::strncat (local256, s6, sizeof(local256) - std::strlen(local256) - 1);
 
-  if ( strlen(local256) > 0 )
+  if ( std::strlen(local256) > 0 )
   {
-    if ( strncmp(termtype, "xterm", 5) == 0 )
+    if ( std::strncmp(termtype, "xterm", 5) == 0 )
       new_termtype = const_cast<char*>("xterm-256color");
 
-    if ( strncmp(termtype, "screen", 6) == 0 )
+    if ( std::strncmp(termtype, "screen", 6) == 0 )
     {
       new_termtype = const_cast<char*>("screen-256color");
       screen_terminal = true;
-      char* tmux = getenv("TMUX");
+      char* tmux = std::getenv("TMUX");
 
-      if ( tmux && strlen(tmux) != 0 )
+      if ( tmux && std::strlen(tmux) != 0 )
         tmux_terminal = true;
     }
 
-    if ( strncmp(termtype, "Eterm", 5) == 0 )
+    if ( std::strncmp(termtype, "Eterm", 5) == 0 )
       new_termtype = const_cast<char*>("Eterm-256color");
 
-    if ( strncmp(termtype, "mlterm", 6) == 0 )
+    if ( std::strncmp(termtype, "mlterm", 6) == 0 )
     {
       new_termtype = const_cast<char*>("mlterm-256color");
       mlterm_terminal = true;
     }
 
-    if ( strncmp(termtype, "rxvt", 4) != 0
+    if ( std::strncmp(termtype, "rxvt", 4) != 0
        && s1
-       && strncmp(s1, "rxvt-xpm", 8) == 0 )
+       && std::strncmp(s1, "rxvt-xpm", 8) == 0 )
     {
       new_termtype = const_cast<char*>("rxvt-256color");
       rxvt_terminal = true;
@@ -896,22 +896,20 @@ char* FTerm::init_256colorTerminal()
 
     color256 = true;
   }
-  else if ( strstr (termtype, "256color") )
+  else if ( std::strstr (termtype, "256color") )
     color256 = true;
   else
     color256 = false;
 
-  if ( (s5 && strlen(s5) > 0) || (s6 && strlen(s6) > 0) )
+  if ( (s5 && std::strlen(s5) > 0) || (s6 && std::strlen(s6) > 0) )
     kde_konsole = true;
 
-  if ( (s1 && strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
+  if ( (s1 && std::strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
   {
-    if ( color256 )
-      new_termtype = const_cast<char*>("gnome-256color");
-    else
-      new_termtype = const_cast<char*>("gnome");
-
     gnome_terminal = true;
+    // Each gnome-terminal should be able to use 256 colors
+    color256 = true;
+    new_termtype = const_cast<char*>("gnome-256color");
   }
 
   return new_termtype;
@@ -938,7 +936,7 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
     putty_terminal = false;
 
   if ( cygwin_terminal )
-    putchar (BS[0]);  // cygwin needs a backspace to delete the '♣' char
+    std::putchar (BS[0]);  // cygwin needs a backspace to delete the '♣' char
 
   return new_termtype;
 }
@@ -1021,12 +1019,10 @@ char* FTerm::parseSecDA (char*& current_termtype)
             }
             else if ( terminal_id_version > 1000 )
             {
-              gnome_terminal = true;  // vte / gnome terminal
-
-              if ( color256 )
-                new_termtype = const_cast<char*>("gnome-256color");
-              else
-                new_termtype = const_cast<char*>("gnome");
+              gnome_terminal = true;
+              // Each gnome-terminal should be able to use 256 colors
+              color256 = true;
+              new_termtype = const_cast<char*>("gnome-256color");
             }
             break;
 
@@ -1040,7 +1036,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             new_termtype = const_cast<char*>("xterm-256color");
             // application escape key mode
             putstring (CSI "?7727h");
-            fflush(stdout);
+            std::fflush(stdout);
             break;
 
           case 83:  // screen
@@ -1051,8 +1047,8 @@ char* FTerm::parseSecDA (char*& current_termtype)
             rxvt_terminal = true;
             force_vt100 = true;  // this rxvt terminal support on utf-8
 
-            if (  strncmp(termtype, "rxvt-", 5) != 0
-               || strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
+            if (  std::strncmp(termtype, "rxvt-", 5) != 0
+               || std::strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
               new_termtype = const_cast<char*>("rxvt-16color");
             break;
 
@@ -1060,7 +1056,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             rxvt_terminal = true;
             urxvt_terminal = true;
 
-            if ( strncmp(termtype, "rxvt-", 5) != 0 )
+            if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
             {
               if ( color256 )
                 new_termtype = const_cast<char*>("rxvt-256color");
@@ -1287,7 +1283,7 @@ void FTerm::init_termcaps()
         const_cast<char*>(CSI "5m");
 
     // set enter/exit alternative charset mode for rxvt terminal
-    if ( rxvt_terminal && strncmp(termtype, "rxvt-16color", 12) == 0 )
+    if ( rxvt_terminal && std::strncmp(termtype, "rxvt-16color", 12) == 0 )
     {
       tcap[t_enter_alt_charset_mode].string = \
         const_cast<char*>(ESC "(0");
@@ -1401,7 +1397,7 @@ void FTerm::init_termcaps()
 
     // test for standard ECMA-48 (ANSI X3.64) terminal
     if ( tcap[t_exit_underline_mode].string
-       && strncmp(tcap[t_exit_underline_mode].string, CSI "24m", 5) == 0 )
+       && std::strncmp(tcap[t_exit_underline_mode].string, CSI "24m", 5) == 0 )
     {
       // seems to be a ECMA-48 (ANSI X3.64) compatible terminal
       tcap[t_enter_dbl_underline_mode].string = \
@@ -1441,26 +1437,26 @@ void FTerm::init_termcaps()
       Fkey[i].string = tgetstr(Fkey[i].tname, &buffer);
 
       // fallback for rxvt with TERM=xterm
-      if ( strncmp(Fkey[i].tname, "khx", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "khx", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "7~");  // home key
 
-      if ( strncmp(Fkey[i].tname, "@7x", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "@7x", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "8~");  // end key
 
-      if ( strncmp(Fkey[i].tname, "k1x", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "k1x", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "11~");  // F1
 
-      if ( strncmp(Fkey[i].tname, "k2x", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "k2x", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "12~");  // F2
 
-      if ( strncmp(Fkey[i].tname, "k3x", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "k3x", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "13~");  // F3
 
-      if ( strncmp(Fkey[i].tname, "k4x", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "k4x", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "14~");  // F4
 
       // fallback for TERM=ansi
-      if ( strncmp(Fkey[i].tname, "@7X", 3) == 0 )
+      if ( std::strncmp(Fkey[i].tname, "@7X", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "K");  // end key
     }
 
@@ -1469,34 +1465,34 @@ void FTerm::init_termcaps()
     //      ..110380-using-arrow-keys-shell-scripts.html
     key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
 
-    if (  (key_up_string && (strcmp(key_up_string, CSI "A") == 0))
+    if (  (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
        || (  tcap[t_cursor_up].string
-          && (strcmp(tcap[t_cursor_up].string, CSI "A") == 0)) )
+          && (std::strcmp(tcap[t_cursor_up].string, CSI "A") == 0)) )
     {
       for (int i=0; Fkey[i].tname[0] != 0; i++)
       {
-        if ( strncmp(Fkey[i].tname, "kux", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "kux", 3) == 0 )
           Fkey[i].string = const_cast<char*>(CSI "A");  // key up
 
-        if ( strncmp(Fkey[i].tname, "kdx", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "kdx", 3) == 0 )
           Fkey[i].string = const_cast<char*>(CSI "B");  // key down
 
-        if ( strncmp(Fkey[i].tname, "krx", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "krx", 3) == 0 )
           Fkey[i].string = const_cast<char*>(CSI "C");  // key right
 
-        if ( strncmp(Fkey[i].tname, "klx", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "klx", 3) == 0 )
           Fkey[i].string = const_cast<char*>(CSI "D");  // key left
 
-        if ( strncmp(Fkey[i].tname, "k1X", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "k1X", 3) == 0 )
           Fkey[i].string = const_cast<char*>(ESC "OP");  // PF1
 
-        if ( strncmp(Fkey[i].tname, "k2X", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "k2X", 3) == 0 )
           Fkey[i].string = const_cast<char*>(ESC "OQ");  // PF2
 
-        if ( strncmp(Fkey[i].tname, "k3X", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "k3X", 3) == 0 )
           Fkey[i].string = const_cast<char*>(ESC "OR");  // PF3
 
-        if ( strncmp(Fkey[i].tname, "k4X", 3) == 0 )
+        if ( std::strncmp(Fkey[i].tname, "k4X", 3) == 0 )
           Fkey[i].string = const_cast<char*>(ESC "OS");  // PF4
       }
     }
@@ -1585,7 +1581,7 @@ void FTerm::init_encoding()
 {
   // detect encoding and set the Fputchar function pointer
 
-  if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
+  if ( isatty(stdout_no) && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     utf8_console = true;
     Encoding = fc::UTF8;
@@ -1595,7 +1591,7 @@ void FTerm::init_encoding()
     setUTF8(true);
   }
   else if (  isatty(stdout_no)
-          && (strlen(termtype) > 0)
+          && (std::strlen(termtype) > 0)
           && (tcap[t_exit_alt_charset_mode].string != 0) )
   {
     vt100_console = true;
@@ -1775,25 +1771,28 @@ void FTerm::init()
   // initialize 256 colors terminals
   new_termtype = init_256colorTerminal();
 
-  if ( strncmp(termtype, "cygwin", 6) == 0 )
+  if ( std::strncmp(termtype, "cygwin", 6) == 0 )
     cygwin_terminal = true;
   else
     cygwin_terminal = false;
 
-  if ( strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
     rxvt_terminal = true;
 
   // Test for Linux console
-  if (  strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+  if (  std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+     || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
     linux_terminal = true;
   else
     linux_terminal = false;
 
-  // terminal detection...
+  // start terminal detection...
   setRawMode();
 
+  // Identify the terminal via the answerback-message
   new_termtype = parseAnswerbackMsg (new_termtype);
+
+  // Identify the terminal via the secondary device attributes (SEC_DA)
   new_termtype = parseSecDA (new_termtype);
 
   unsetRawMode();
@@ -1803,8 +1802,8 @@ void FTerm::init()
   unsetNonBlockingInput();
 
   // Test if the terminal is a xterm
-  if (  strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-     || strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
+  if (  std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
+     || std::strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
     xterm = true;
   else
     xterm = false;
@@ -1813,7 +1812,7 @@ void FTerm::init()
   if ( new_termtype )
   {
     setenv(const_cast<char*>("TERM"), new_termtype, 1);
-    strncpy (termtype, new_termtype, strlen(new_termtype)+1);
+    std::strncpy (termtype, new_termtype, std::strlen(new_termtype)+1);
   }
 
   // Initializes variables for the current terminal
@@ -1821,37 +1820,37 @@ void FTerm::init()
   init_alt_charset();
 
   // init current locale
-  locale_name = setlocale(LC_ALL, "");
-  locale_name = setlocale(LC_NUMERIC, "");
+  locale_name = std::setlocale (LC_ALL, "");
+  locale_name = std::setlocale (LC_NUMERIC, "");
 
   // get XTERM_LOCALE
-  locale_xterm = getenv("XTERM_LOCALE");
+  locale_xterm = std::getenv("XTERM_LOCALE");
 
   // set LC_ALL to XTERM_LOCALE
   if ( locale_xterm )
-    locale_name = setlocale(LC_ALL, locale_xterm);
+    locale_name = std::setlocale (LC_ALL, locale_xterm);
 
   // TeraTerm can not show UTF-8 character
-  if ( tera_terminal && ! strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = setlocale(LC_ALL, "en_US");
+  if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "en_US");
 
   // if locale C => switch from 7bit ascii -> latin1
-  if ( isatty(stdout_no) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
-    locale_name = setlocale(LC_ALL, "en_US");
+  if ( isatty(stdout_no) && ! std::strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
+    locale_name = std::setlocale (LC_ALL, "en_US");
 
   // try to found a meaningful content for locale_name
   if ( locale_name )
-    locale_name = setlocale(LC_CTYPE, 0);
+    locale_name = std::setlocale (LC_CTYPE, 0);
   else
   {
-    locale_name = getenv("LC_ALL");
+    locale_name = std::getenv("LC_ALL");
 
     if ( ! locale_name )
     {
-      locale_name = getenv("LC_CTYPE");
+      locale_name = std::getenv("LC_CTYPE");
 
       if ( ! locale_name )
-        locale_name = getenv("LANG");
+        locale_name = std::getenv("LANG");
     }
   }
 
@@ -1878,28 +1877,28 @@ void FTerm::init()
   if ( tcap[t_keypad_xmit].string )
   {
     putstring (tcap[t_keypad_xmit].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // save current cursor position
   if ( tcap[t_save_cursor].string )
   {
     putstring (tcap[t_save_cursor].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // saves the screen and the cursor position
   if ( tcap[t_enter_ca_mode].string )
   {
     putstring (tcap[t_enter_ca_mode].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // enable alternate charset
   if ( tcap[t_enable_acs].string )
   {
     putstring (tcap[t_enable_acs].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   setXTermCursorStyle(fc::blinking_underline);
@@ -2014,14 +2013,14 @@ void FTerm::finish()
   if ( tcap[t_exit_attribute_mode].string )
   {
     putstring (tcap[t_exit_attribute_mode].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // turn off pc charset mode
   if ( tcap[t_exit_pc_charset_mode].string )
   {
     putstring (tcap[t_exit_pc_charset_mode].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // reset xterm color settings to default
@@ -2051,7 +2050,7 @@ void FTerm::finish()
   {
     //  normal escape key mode
     putstring (CSI "?7727l");
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   if ( linux_terminal )
@@ -2085,21 +2084,21 @@ void FTerm::finish()
   if ( tcap[t_exit_ca_mode].string )
   {
     putstring (tcap[t_exit_ca_mode].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // restore cursor to position of last save_cursor
   if ( tcap[t_restore_cursor].string )
   {
     putstring (tcap[t_restore_cursor].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   // leave 'keyboard_transmit' mode
   if ( tcap[t_keypad_local].string )
   {
     putstring (tcap[t_keypad_local].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 
   if ( linux_terminal && utf8_console )
@@ -2193,14 +2192,17 @@ void FTerm::createArea (term_area*& area)
   // initialize virtual window
   area = new term_area;
 
-  area->width         = -1;
-  area->height        = -1;
-  area->right_shadow  = 0;
-  area->bottom_shadow = 0;
-  area->changes       = 0;
-  area->text          = 0;
-  area->visible       = false;
-  area->widget        = static_cast<FWidget*>(this);
+  area->width                = -1;
+  area->height               = -1;
+  area->right_shadow         = 0;
+  area->bottom_shadow        = 0;
+  area->input_cursor_x       = -1;;
+  area->input_cursor_y       = -1;;
+  area->input_cursor_visible = false;
+  area->changes              = 0;
+  area->text                 = 0;
+  area->visible              = false;
+  area->widget               = static_cast<FWidget*>(this);
 
   resizeArea (area);
 }
@@ -2386,7 +2388,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
               if ( tmp->trans_shadow )  // transparent shadow
               {
                 // keep the current vterm character
-                memcpy (&s_ch, sc, sizeof(FOptiAttr::char_data));
+                std::memcpy (&s_ch, sc, sizeof(FOptiAttr::char_data));
                 s_ch.fg_color = tmp->fg_color;
                 s_ch.bg_color = tmp->bg_color;
                 s_ch.reverse  = false;
@@ -2404,7 +2406,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
               else if ( tmp->inherit_bg )
               {
                 // add the covered background to this character
-                memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
+                std::memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
                 i_ch.bg_color = sc->bg_color;  // last background color;
                 sc = &i_ch;
               }
@@ -2417,7 +2419,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
         }
       }
 
-      memcpy (tc, sc, sizeof(FOptiAttr::char_data));
+      std::memcpy (tc, sc, sizeof(FOptiAttr::char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
         vterm->changes[y+ty].xmin = uInt(x);
@@ -2429,7 +2431,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
 }
 
 //----------------------------------------------------------------------
-FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) const
+FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area)
 {
   bool found;
   FTerm::covered_state is_covered;
@@ -2489,6 +2491,15 @@ FTerm::covered_state FTerm::isCovered (int x, int y, FTerm::term_area* area) con
 }
 
 //----------------------------------------------------------------------
+void FTerm::updateVTerm (bool on)
+{
+  vterm_updates = on;
+
+  if ( on )
+    updateVTerm (last_area);
+}
+
+//----------------------------------------------------------------------
 void FTerm::updateVTerm (FTerm::term_area* area)
 {
   int ax, ay, aw, ah, rsh, bsh, y_end, ol;
@@ -2518,7 +2529,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
 
   if ( ax < 0 )
   {
-    ol = abs(ax);
+    ol = std::abs(ax);
     ax = 0;
   }
 
@@ -2567,7 +2578,7 @@ void FTerm::updateVTerm (FTerm::term_area* area)
           {
             // add the overlapping color to this character
             FOptiAttr::char_data ch, oc;
-            memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+            std::memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
             oc = getOverlappedCharacter (gx+1 - ol, gy+1, area->widget);
             ch.fg_color = oc.fg_color;
             ch.bg_color = oc.bg_color;
@@ -2581,14 +2592,14 @@ void FTerm::updateVTerm (FTerm::term_area* area)
                || ch.code == fc::FullBlock )
               ch.code = ' ';
 
-            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else if ( ac->transparent )   // transparent
           {
             // restore one character on vterm
             FOptiAttr::char_data ch;
             ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
-            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else   // not transparent
           {
@@ -2609,19 +2620,19 @@ void FTerm::updateVTerm (FTerm::term_area* area)
                  || ch.code == fc::FullBlock )
                 ch.code = ' ';
 
-              memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+              std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
             }
             else if ( ac->inherit_bg )
             {
               // add the covered background to this character
               FOptiAttr::char_data ch, cc;
-              memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+              std::memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
               cc = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.bg_color = cc.bg_color;
-              memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+              std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
             }
             else  // default
-              memcpy (tc, ac, sizeof(FOptiAttr::char_data));
+              std::memcpy (tc, ac, sizeof(FOptiAttr::char_data));
           }
 
           modified = true;
@@ -2646,20 +2657,83 @@ void FTerm::updateVTerm (FTerm::term_area* area)
       area->changes[y].xmax = 0;
     }
   }
+
+  updateVTermCursor(area);
 }
 
 //----------------------------------------------------------------------
-void FTerm::updateVTerm (bool on)
+bool FTerm::updateVTermCursor (FTerm::term_area* area)
 {
-  vterm_updates = on;
+  if ( ! area )
+    return false;
 
-  if ( on )
-    updateVTerm (last_area);
+  if ( area != active_area )
+    return false;
+
+  if ( ! area->visible )
+    return false;
+
+  if ( area->input_cursor_visible )
+  {
+    int cx, cy, ax, ay, x, y;
+    // cursor position
+    cx = area->input_cursor_x;
+    cy = area->input_cursor_y;
+    // widget position
+    ax  = area->widget->getTermX() - 1;
+    ay  = area->widget->getTermY() - 1;
+    // area position
+    x  = ax + cx - 1;
+    y  = ay + cy - 1;
+
+    if ( isInsideArea(cx, cy, area)
+       && isInsideTerminal(x+1, y+1)
+       && isCovered(x, y, area) == non_covered )
+    {
+      vterm->input_cursor_x = x;
+      vterm->input_cursor_y = y;
+      vterm->input_cursor_visible = true;
+      return true;
+    }
+  }
+
+  vterm->input_cursor_visible = false;
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isInsideArea (int x, int y, FTerm::term_area* area)
+{
+  // Check whether the coordinates are within the area
+  int ax, ay, aw, ah;
+  ax  = 0;
+  ay  = 0;
+  aw  = area->width;
+  ah  = area->height;
+  FRect area_geometry(ax, ay, aw, ah);
+
+  if ( area_geometry.contains(x,y) )
+    return true;
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
+void FTerm::setAreaCursor (int x, int y, bool visible, FTerm::term_area* area)
+{
+  if ( ! area )
+    return;
+
+  area->input_cursor_x = x;
+  area->input_cursor_y = y;
+  area->input_cursor_visible = visible;
+  updateVTerm (area);
 }
 
 //----------------------------------------------------------------------
 void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 {
+  // Copies a block from the virtual terminal position to the given area
   int y_end;
   int length;
   FOptiAttr::char_data* tc; // terminal character
@@ -2683,9 +2757,9 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 
   for (int y=0; y < y_end; y++)  // line loop
   {
-    ac = &area->text[y * area->width];
     tc = &vterm->text[(ay+y) * vterm->width + ax];
-    memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
+    ac = &area->text[y * area->width];
+    std::memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
@@ -2698,6 +2772,7 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
 {
+  // Copies a block from the virtual terminal rectangle to the given area
   int y_end, length, dx, dy;
   FOptiAttr::char_data* tc; // terminal character
   FOptiAttr::char_data* ac; // area character
@@ -2729,7 +2804,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
     int line_len = area->width + area->right_shadow;
     tc = &vterm->text[(y+_y-1) * vterm->width + x-1];
     ac = &area->text[(dy+_y) * line_len + dx];
-    memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
+    std::memcpy (ac, tc, sizeof(FOptiAttr::char_data) * unsigned(length));
 
     if ( short(area->changes[dy+_y].xmin) > dx )
       area->changes[dy+_y].xmin = uInt(dx);
@@ -2742,6 +2817,7 @@ void FTerm::getArea (int x, int y, int w, int h, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 {
+  // Copies the given area block to the virtual terminal position
   if ( ! area )
     return;
 
@@ -2754,6 +2830,7 @@ void FTerm::putArea (const FPoint& pos, FTerm::term_area* area)
 //----------------------------------------------------------------------
 void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 {
+  // Copies the given area block to the virtual terminal position
   int aw, ah, rsh, bsh, y_end, length, ol;
   FOptiAttr::char_data* tc; // terminal character
   FOptiAttr::char_data* ac; // area character
@@ -2774,7 +2851,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 
   if ( ax < 0 )
   {
-    ol = abs(ax);
+    ol = std::abs(ax);
     ax = 0;
   }
 
@@ -2800,7 +2877,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
       // Line has only covered characters
       tc = &vterm->text[(ay+y) * vterm->width + ax];
       ac = &area->text[y * line_len + ol];
-      memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
+      std::memcpy (tc, ac, sizeof(FOptiAttr::char_data) * unsigned(length));
     }
     else
     {
@@ -2815,7 +2892,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
           // restore one character on vterm
           FOptiAttr::char_data ch;
           ch = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
-          memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+          std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
         }
         else  // not transparent
         {
@@ -2836,19 +2913,19 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
                || ch.code == fc::FullBlock )
               ch.code = ' ';
 
-            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else if ( ac->inherit_bg )
           {
             // add the covered background to this character
             FOptiAttr::char_data ch, cc;
-            memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
+            std::memcpy (&ch, ac, sizeof(FOptiAttr::char_data));
             cc = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
             ch.bg_color = cc.bg_color;
-            memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
+            std::memcpy (tc, &ch, sizeof(FOptiAttr::char_data));
           }
           else  // default
-            memcpy (tc, ac, sizeof(FOptiAttr::char_data));
+            std::memcpy (tc, ac, sizeof(FOptiAttr::char_data));
         }
       }
     }
@@ -2865,7 +2942,7 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 void FTerm::clearArea()
 {
   term_area* area;
-  FWindow*   area_widget;
+  FWindow*   window;
   FWidget*   widget;
   FOptiAttr::char_data default_char;
   int  total_width;
@@ -2892,10 +2969,10 @@ void FTerm::clearArea()
   default_char.inherit_bg    = next_attribute.inherit_bg;
 
   widget = static_cast<FWidget*>(this);
-  area_widget = FWindow::getWindowWidget(widget);
+  window = FWindow::getWindowWidget(widget);
 
-  if ( area_widget )
-    area = area_widget->getVWin();
+  if ( window )
+    area = window->getVWin();
   else
     area = vdesktop;
 
@@ -3028,7 +3105,7 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
             if ( tmp->trans_shadow )  // transparent shadow
             {
               // keep the current vterm character
-              memcpy (&s_ch, cc, sizeof(FOptiAttr::char_data));
+              std::memcpy (&s_ch, cc, sizeof(FOptiAttr::char_data));
               s_ch.fg_color = tmp->fg_color;
               s_ch.bg_color = tmp->bg_color;
               s_ch.reverse  = false;
@@ -3038,7 +3115,7 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
             else if ( tmp->inherit_bg )
             {
               // add the covered background to this character
-              memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
+              std::memcpy (&i_ch, tmp, sizeof(FOptiAttr::char_data));
               i_ch.bg_color = cc->bg_color;  // last background color
               cc = &i_ch;
             }
@@ -3056,6 +3133,7 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
 
   return *cc;
 }
+
 
 // public methods of FTerm
 //----------------------------------------------------------------------
@@ -3080,7 +3158,7 @@ bool FTerm::setVGAFont()
     oscPrefix();
     putstring (OSC "50;vga" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
     NewFont = false;
     pc_charset_console = true;
     Encoding = fc::PC;
@@ -3149,7 +3227,7 @@ bool FTerm::setNewFont()
     oscPrefix();
     putstring (OSC "50;8x16graph" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
     pc_charset_console = true;
     Encoding = fc::PC;
 
@@ -3225,7 +3303,7 @@ bool FTerm::setOldFont()
       oscPostfix();
     }
 
-    fflush(stdout);
+    std::fflush(stdout);
     retval = true;
   }
   else if ( linux_terminal )
@@ -3275,7 +3353,7 @@ void FTerm::setConsoleCursor (fc::consoleCursorStyle style)
       return;
 
     putstringf (CSI "?%dc", style);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3294,10 +3372,10 @@ void FTerm::getTermSize()
   {
     char* str;
     term->setPos(1,1);
-    str = getenv("COLUMNS");
-    term->setWidth(str ? atoi(str) : 80);
-    str = getenv("LINES");
-    term->setHeight(str ? atoi(str) : 25);
+    str = std::getenv("COLUMNS");
+    term->setWidth(str ? std::atoi(str) : 80);
+    str = std::getenv("LINES");
+    term->setHeight(str ? std::atoi(str) : 25);
   }
   else
   {
@@ -3314,7 +3392,7 @@ void FTerm::setTermSize (int term_width, int term_height)
   if ( xterm )
   {
     putstringf (CSI "8;%d;%dt", term_height, term_width);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3323,14 +3401,17 @@ void FTerm::createVTerm()
 {
   // initialize virtual terminal
   vterm = new term_area;
-  vterm->width         = -1;
-  vterm->height        = -1;
-  vterm->right_shadow  = 0;
-  vterm->bottom_shadow = 0;
-  vterm->changes       = 0;
-  vterm->text          = 0;
-  vterm->visible       = true;
-  vterm->widget        = static_cast<FWidget*>(this);
+  vterm->width                = -1;
+  vterm->height               = -1;
+  vterm->right_shadow         = 0;
+  vterm->bottom_shadow        = 0;
+  vterm->input_cursor_x       = -1;;
+  vterm->input_cursor_y       = -1;;
+  vterm->input_cursor_visible = false;
+  vterm->changes              = 0;
+  vterm->text                 = 0;
+  vterm->visible              = true;
+  vterm->widget               = static_cast<FWidget*>(this);
 
   resizeVTerm();
 }
@@ -3418,11 +3499,18 @@ void FTerm::putVTerm()
 }
 
 //----------------------------------------------------------------------
+void FTerm::updateTerminal (bool on)
+{
+  stop_terminal_updates = bool(! on);
+
+  if ( on )
+    updateTerminal();
+}
+
+//----------------------------------------------------------------------
 void FTerm::updateTerminal()
 {
   term_area* vt;
-  FWidget* focus_widget;
-  FApplication* fapp;
   int term_width, term_height;
 
   if ( stop_terminal_updates
@@ -3461,13 +3549,13 @@ void FTerm::updateTerminal()
         FOptiAttr::char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
 
-        if (  x_term_pos == term_width
-           && y_term_pos == term_height )
+        if ( term_pos->getX() == term_width
+           && term_pos->getY() == term_height )
           appendLowerRight (print_char);
         else
           appendCharacter (print_char);
 
-        x_term_pos++;
+        term_pos->x_ref()++;
       }
 
       vt->changes[y].xmin = uInt(vt->width);
@@ -3475,50 +3563,61 @@ void FTerm::updateTerminal()
     }
 
     // cursor wrap
-    if ( x_term_pos > term_width )
+    if ( term_pos->getX() > term_width )
     {
-      if ( y_term_pos == term_height )
-        x_term_pos--;
+      if ( term_pos->getY() == term_height )
+        term_pos->x_ref()--;
       else
       {
         if ( eat_nl_glitch )
         {
-          x_term_pos = -1;
-          y_term_pos = -1;
+          term_pos->setPoint(-1,-1);
         }
         else if ( automatic_right_margin )
         {
-          x_term_pos = 0;
-          y_term_pos++;
+          term_pos->setX(0);
+          term_pos->y_ref()++;
         }
         else
-          x_term_pos--;
+          term_pos->x_ref()--;
       }
     }
   }
 
-  // set the cursor to the focus widget
-  fapp = static_cast<FApplication*>(term_object);
-  focus_widget = fapp->focusWidget();
-
-  if (  focus_widget
-     && focus_widget->isVisible()
-     && focus_widget->isCursorInside() )
-  {
-    focus_widget->setCursor();
-
-    if ( focus_widget->hasVisibleCursor() )
-      showCursor();
-  }
+  // sets the new input cursor position
+  updateTerminalCursor();
 }
 
 //----------------------------------------------------------------------
-void FTerm::updateTerminal (bool on)
+bool FTerm::updateTerminalCursor()
 {
-  stop_terminal_updates = bool(! on);
+  // updates the input cursor visibility and the position
+  if ( vterm && vterm->input_cursor_visible )
+  {
+    int x = vterm->input_cursor_x;
+    int y = vterm->input_cursor_y;
 
-  if ( on )
-    updateTerminal();
+    if ( isInsideTerminal(x+1, y+1) )
+    {
+      setTermXY (x,y);
+      showCursor();
+      return true;
+    }
+  }
+  else
+    hideCursor();
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isInsideTerminal (int x, int y)
+{
+  // Check whether the coordinates are within the virtual terminal
+  if ( term->contains(x,y) )
+    return true;
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------
@@ -3530,7 +3629,7 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
     oscPrefix();
     putstringf (OSC "50;CursorShape=%d" BEL, style);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3548,7 +3647,7 @@ FString FTerm::getXTermFont()
       oscPrefix();
       putstring (OSC "50;?" BEL);  // get font
       oscPostfix();
-      fflush(stdout);
+      std::fflush(stdout);
       usleep(150000);  // wait 150 ms
 
       // read the terminal answer
@@ -3579,7 +3678,7 @@ FString FTerm::getXTermTitle()
     int n;
     char temp[512] = {};
     putstring (CSI "21t");  // get title
-    fflush(stdout);
+    std::fflush(stdout);
     usleep(150000);  // wait 150 ms
 
     // read the terminal answer
@@ -3603,7 +3702,7 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
   if ( (xterm || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
   {
     putstringf (CSI "%d q", style);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3618,7 +3717,7 @@ void FTerm::setXTermTitle (const FString& title)
     oscPrefix();
     putstringf (OSC "0;%s" BEL, title.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3633,7 +3732,7 @@ void FTerm::setXTermForeground (const FString& fg)
     oscPrefix();
     putstringf (OSC "10;%s" BEL, fg.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3648,7 +3747,7 @@ void FTerm::setXTermBackground (const FString& bg)
     oscPrefix();
     putstringf (OSC "11;%s" BEL, bg.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3663,7 +3762,7 @@ void FTerm::setXTermCursorColor (const FString& cc)
     oscPrefix();
     putstringf (OSC "12;%s" BEL, cc.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3676,7 +3775,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
     oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3689,7 +3788,7 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
     oscPrefix();
     putstringf (OSC "14;%s" BEL, mbg.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3702,7 +3801,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
     oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3715,7 +3814,7 @@ void FTerm::resetXTermColors()
     oscPrefix();
     putstringf (OSC "104" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3728,7 +3827,7 @@ void FTerm::resetXTermForeground()
     oscPrefix();
     putstring (OSC "110" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3741,7 +3840,7 @@ void FTerm::resetXTermBackground()
     oscPrefix();
     putstring (OSC "111" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3754,7 +3853,7 @@ void FTerm::resetXTermCursorColor()
     oscPrefix();
     putstring (OSC "112" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3767,7 +3866,7 @@ void FTerm::resetXTermMouseForeground()
     oscPrefix();
     putstring (OSC "113" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3780,7 +3879,7 @@ void FTerm::resetXTermMouseBackground()
     oscPrefix();
     putstring (OSC "114" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3793,7 +3892,7 @@ void FTerm::resetXTermHighlightBackground()
     oscPrefix();
     putstringf (OSC "117" BEL);
     oscPostfix();
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -3835,7 +3934,7 @@ void FTerm::resetColorMap()
     ioctl (0, PIO_CMAP, &map);
   }*/
 
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -3876,7 +3975,7 @@ void FTerm::setPalette (short index, int r, int g, int b)
     ioctl (0, PIO_CMAP, &map); */
   }
 
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -3899,7 +3998,7 @@ void FTerm::xtermMouse (bool on)
                CSI "?1000l"   // disable x11 mouse tracking
                CSI "?1001r"); // restore old highlight mouse tracking
 
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 
@@ -3954,10 +4053,10 @@ bool FTerm::gpmMouse (bool on)
 void FTerm::setTermXY (register int x, register int y)
 {
   // sets the hardware cursor to the given (x,y) position
-  int term_width, term_height;
+  int term_x, term_y, term_width, term_height;
   char* move_str;
 
-  if ( x_term_pos == x && y_term_pos == y )
+  if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
 
   term_width = term->getWidth();
@@ -3969,14 +4068,17 @@ void FTerm::setTermXY (register int x, register int y)
     x %= term_width;
   }
 
-  if ( y_term_pos >= term_height )
-    y_term_pos = term_height - 1;
+  if ( term_pos->getY() >= term_height )
+    term_pos->setY(term_height - 1);
 
   if ( y >= term_height )
     y = term_height - 1;
 
+  term_x = term_pos->getX();
+  term_y = term_pos->getY();
+
   if ( cursor_optimisation )
-    move_str = opti_move->cursor_move (x_term_pos, y_term_pos, x, y);
+    move_str = opti_move->cursor_move (term_x, term_y, x, y);
   else
     move_str = tgoto(tcap[t_cursor_address].string, x, y);
 
@@ -3984,8 +4086,7 @@ void FTerm::setTermXY (register int x, register int y)
     appendOutputBuffer(move_str);
 
   flush_out();
-  x_term_pos = x;
-  y_term_pos = y;
+  term_pos->setPoint(x,y);
 }
 
 //----------------------------------------------------------------------
@@ -4005,7 +4106,7 @@ void FTerm::setBeep (int Hz, int ms)
   putstringf ( CSI "10;%d]"
                CSI "11;%d]"
              , Hz, ms );
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -4018,7 +4119,7 @@ void FTerm::resetBeep()
   // default duration:  125 ms
   putstring ( CSI "10;750]"
               CSI "11;125]" );
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -4027,7 +4128,7 @@ void FTerm::beep()
   if ( tcap[t_bell].string )
   {
     putstring (tcap[t_bell].string);
-    fflush(stdout);
+    std::fflush(stdout);
   }
 }
 
@@ -4066,24 +4167,6 @@ bool FTerm::hideCursor (bool on)
     setConsoleCursor (console_cursor_style);
 
   return hidden_cursor;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::isCursorInside()
-{
-  // Checked whether the cursor is within the visual terminal
-  FWidget* w;
-  w = static_cast<FWidget*>(this);
-
-  int x = w->getCursorPos().getX();
-  int y = w->getCursorPos().getY();
-  x += w->getTermX() - 1;
-  y += w->getTermY() - 1;
-
-  if ( term->contains(x,y) )
-    return true;
-  else
-    return false;
 }
 
 //----------------------------------------------------------------------
@@ -4178,7 +4261,7 @@ bool FTerm::setUTF8 (bool on) // UTF-8 (Unicode)
       putstring (ESC "%@");
   }
 
-  fflush(stdout);
+  std::fflush(stdout);
   return utf8_state;
 }
 
@@ -4188,7 +4271,7 @@ bool FTerm::setRawMode (bool on)
   if ( on == raw_mode )
     return raw_mode;
 
-  fflush(stdout);
+  std::fflush(stdout);
 
   if ( on )
   {
@@ -4251,8 +4334,8 @@ FString FTerm::getAnswerbackMsg()
     tv.tv_sec  = 0;
     tv.tv_usec = 150000;  // 150 ms
 
-    putchar (ENQ[0]);  // send enquiry character
-    fflush(stdout);
+    std::putchar (ENQ[0]);  // send enquiry character
+    std::fflush(stdout);
 
     // read the answerback message
     if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
@@ -4288,12 +4371,12 @@ FString FTerm::getSecDA()
     tv.tv_usec = 550000;  // 150 ms
 
     // get the secondary device attributes
-    putchar (SECDA[0]);
-    putchar (SECDA[1]);
-    putchar (SECDA[2]);
-    putchar (SECDA[3]);
+    std::putchar (SECDA[0]);
+    std::putchar (SECDA[1]);
+    std::putchar (SECDA[2]);
+    std::putchar (SECDA[3]);
 
-    fflush(stdout);
+    std::fflush(stdout);
     usleep(150000);  // min. wait time 150 ms (need for mintty)
 
     // read the answer
@@ -4321,7 +4404,7 @@ int FTerm::printf (const wchar_t* format, ...)
   va_list args;
 
   va_start (args, format);
-  vswprintf (buffer, buf_size, format, args);
+  std::vswprintf (buffer, buf_size, format, args);
   va_end (args);
 
   FString str(buffer);
@@ -4339,14 +4422,14 @@ int FTerm::printf (const char* format, ...)
 
   buffer = buf;
   va_start (args, format);
-  len = vsnprintf (buffer, sizeof(buf), format, args);
+  len = std::vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
   if ( len >= int(sizeof(buf)) )
   {
     buffer = new char[len+1]();
     va_start (args, format);
-    vsnprintf (buffer, uLong(len+1), format, args);
+    std::vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
   }
 
@@ -4432,10 +4515,10 @@ int FTerm::print (FString& s)
 
   if ( ! area )
   {
-    FWidget* area_widget = w->getRootWidget();
+    FWidget* root = w->getRootWidget();
     area = vdesktop;
 
-    if ( ! area_widget )
+    if ( ! root )
       return -1;
   }
 
@@ -4448,14 +4531,14 @@ int FTerm::print (FTerm::term_area* area, FString& s)
   assert ( ! s.isNull() );
   register int len = 0;
   const wchar_t* p;
-  FWidget* area_widget;
+  FWidget* window;
 
   if ( ! area )
     return -1;
 
-  area_widget = area->widget;
+  window = area->widget;
 
-  if ( ! area_widget )
+  if ( ! window )
     return -1;
 
   p = s.wc_str();
@@ -4517,8 +4600,8 @@ int FTerm::print (FTerm::term_area* area, FString& s)
           nc.trans_shadow  = next_attribute.trans_shadow;
           nc.inherit_bg    = next_attribute.inherit_bg;
 
-          int ax = x - area_widget->getTermX();
-          int ay = y - area_widget->getTermY();
+          int ax = x - window->getTermX();
+          int ay = y - window->getTermY();
 
           if (  area
              && ax >= 0 && ay >= 0
@@ -4547,7 +4630,7 @@ int FTerm::print (FTerm::term_area* area, FString& s)
               }
 
               // copy character to area
-              memcpy (ac, &nc, sizeof(nc));
+              std::memcpy (ac, &nc, sizeof(nc));
 
               if ( ax < short(area->changes[ay].xmin) )
                 area->changes[ay].xmin = uInt(ax);
@@ -4563,11 +4646,11 @@ int FTerm::print (FTerm::term_area* area, FString& s)
 
       rsh = area->right_shadow;
       bsh = area->bottom_shadow;
-      const FRect& area_geometry = area_widget->getTermGeometry();
+      const FRect& area_geometry = window->getTermGeometry();
 
       if ( cursor->x_ref() > area_geometry.getX2()+rsh )
       {
-        cursor->x_ref() = short(area_widget->getTermX());
+        cursor->x_ref() = short(window->getTermX());
         cursor->y_ref()++;
       }
 
@@ -4597,10 +4680,10 @@ int FTerm::print (register int c)
 
   if ( ! area )
   {
-    FWidget* area_widget = w->getRootWidget();
+    FWidget* root = w->getRootWidget();
     area = vdesktop;
 
-    if ( ! area_widget )
+    if ( ! root )
       return -1;
   }
 
@@ -4611,7 +4694,7 @@ int FTerm::print (register int c)
 int FTerm::print (FTerm::term_area* area, register int c)
 {
   FOptiAttr::char_data nc; // next character
-  FWidget* area_widget;
+  FWidget* window;
   int rsh, bsh, ax, ay;
   short x, y;
 
@@ -4640,13 +4723,13 @@ int FTerm::print (FTerm::term_area* area, register int c)
 
   x = short(cursor->getX());
   y = short(cursor->getY());
-  area_widget = area->widget;
+  window = area->widget;
 
-  if ( ! area_widget )
+  if ( ! window )
     return -1;
 
-  ax = x - area_widget->getTermX();
-  ay = y - area_widget->getTermY();
+  ax = x - window->getTermX();
+  ay = y - window->getTermY();
 
   if (  ax >= 0 && ay >= 0
      && ax < area->width + area->right_shadow
@@ -4675,7 +4758,7 @@ int FTerm::print (FTerm::term_area* area, register int c)
       }
 
       // copy character to area
-      memcpy (ac, &nc, sizeof(nc));
+      std::memcpy (ac, &nc, sizeof(nc));
 
       if ( ax < short(area->changes[ay].xmin) )
         area->changes[ay].xmin = uInt(ax);
@@ -4688,11 +4771,11 @@ int FTerm::print (FTerm::term_area* area, register int c)
   cursor->x_ref()++;
   rsh = area->right_shadow;
   bsh = area->bottom_shadow;
-  const FRect& area_geometry = area_widget->getTermGeometry();
+  const FRect& area_geometry = window->getTermGeometry();
 
   if ( cursor->x_ref() > area_geometry.getX2()+rsh )
   {
-    cursor->x_ref() = short(area_widget->getTermX());
+    cursor->x_ref() = short(window->getTermX());
     cursor->y_ref()++;
   }
 
@@ -4831,7 +4914,7 @@ int FTerm::appendLowerRight (FOptiAttr::char_data*& screen_char)
     y = term->getHeight() - 1;
     setTermXY (x, y);
     appendCharacter (screen_char);
-    x_term_pos++;
+    term_pos->x_ref()++;
 
     setTermXY (x, y);
     screen_char--;
@@ -4882,7 +4965,7 @@ int FTerm::appendOutputBuffer (int ch)
 {
   output_buffer->push(ch);
 
-  if ( output_buffer->size() >= 2048 )
+  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
     flush_out();
 
   return ch;
@@ -4897,7 +4980,7 @@ void FTerm::flush_out()
     output_buffer->pop();
   }
 
-  fflush(stdout);
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------
@@ -4910,22 +4993,22 @@ void FTerm::putstringf (const char* format, ...)
 
   buffer = buf;
   va_start (args, format);
-  vsnprintf (buffer, sizeof(buf), format, args);
+  std::vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
-  tputs (buffer, 1, putchar);
+  tputs (buffer, 1, std::putchar);
 }
 
 //----------------------------------------------------------------------
 inline void FTerm::putstring (const char* s, int affcnt)
 {
-  tputs (s, affcnt, putchar);
+  tputs (s, affcnt, std::putchar);
 }
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (register int c)
 {
-  if ( putchar(char(c)) == EOF )
+  if ( std::putchar(char(c)) == EOF )
     return 0;
   else
     return 1;
@@ -4937,31 +5020,31 @@ int FTerm::putchar_UTF8 (register int c)
   if (c < 0x80)
   {
     // 1 Byte (7-bit): 0xxxxxxx
-    putchar (c);
+    std::putchar (c);
     return 1;
   }
   else if (c < 0x800)
   {
     // 2 byte (11-bit): 110xxxxx 10xxxxxx
-    putchar (0xc0 | (c >> 6) );
-    putchar (0x80 | (c & 0x3f) );
+    std::putchar (0xc0 | (c >> 6) );
+    std::putchar (0x80 | (c & 0x3f) );
     return 2;
   }
   else if (c < 0x10000)
   {
     // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-    putchar (0xe0 | (c >> 12) );
-    putchar (0x80 | ((c >> 6) & 0x3f) );
-    putchar (0x80 | (c & 0x3f) );
+    std::putchar (0xe0 | (c >> 12) );
+    std::putchar (0x80 | ((c >> 6) & 0x3f) );
+    std::putchar (0x80 | (c & 0x3f) );
     return 3;
   }
   else if (c < 0x200000)
   {
     // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    putchar (0xf0 | (c >> 18) );
-    putchar (0x80 | ((c >> 12) & 0x3f) );
-    putchar (0x80 | ((c >> 6) & 0x3f) );
-    putchar (0x80 | (c & 0x3f));
+    std::putchar (0xf0 | (c >> 18) );
+    std::putchar (0x80 | ((c >> 12) & 0x3f) );
+    std::putchar (0x80 | ((c >> 6) & 0x3f) );
+    std::putchar (0x80 | (c & 0x3f));
     return 4;
   }
   else
@@ -4973,7 +5056,7 @@ int FTerm::UTF8decode(char* utf8)
 {
   register int ucs=0;
 
-  for (register int i=0; i < int(strlen(utf8)); ++i)
+  for (register int i=0; i < int(std::strlen(utf8)); ++i)
   {
     register uChar ch = uChar(utf8[i]);
 

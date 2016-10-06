@@ -2,7 +2,7 @@
 // Provides: class FOptiAttr
 
 #include "foptiattr.h"
-#include "string.h"
+#include <cstring>
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -228,7 +228,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
         char* sgr_49;
         char* op = F_orig_pair.cap;
 
-        if ( op && strncmp (op, CSI "39;49;25m", 11) == 0 )
+        if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
           sgr_49 = const_cast<char*>(CSI "49;25m");
         else
           sgr_49 = const_cast<char*>(CSI "49m");
@@ -377,19 +377,19 @@ bool FOptiAttr::caused_reset_attributes (char*& cap, uChar test)
 
   if ( cap )
   {
-    if ( (test & test_ansi_reset) && strncmp (cap, CSI "m", 3) == 0 )
+    if ( (test & test_ansi_reset) && std::strncmp (cap, CSI "m", 3) == 0 )
       return true;
 
-    if ( (test & test_adm3_reset) && strncmp (cap, ESC "G0", 3) == 0 )
+    if ( (test & test_adm3_reset) && std::strncmp (cap, ESC "G0", 3) == 0 )
       return true;
 
-    if ( (test & same_like_ue) && ue && strcmp (cap, ue) == 0 )
+    if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0 )
       return true;
 
-    if ( (test & same_like_se) && se && strcmp (cap, se) == 0 )
+    if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0 )
       return true;
 
-    if ( (test & same_like_me) && me && strcmp (cap, me) == 0 )
+    if ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 )
       return true;
   }
 
@@ -457,7 +457,7 @@ inline bool FOptiAttr::append_sequence (char*& seq)
 {
   if ( seq )
   {
-    strncat (attr_ptr, seq, sizeof(attr_buf) - strlen(attr_ptr) - 1 );
+    std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr) - 1 );
     return true;
   }
   else
@@ -469,7 +469,7 @@ inline bool FOptiAttr::replace_sequence (char*& seq)
 {
   if ( seq )
   {
-    strncpy (attr_ptr, seq, sizeof(attr_buf) - 1);
+    std::strncpy (attr_ptr, seq, sizeof(attr_buf) - 1);
     return true;
   }
   else
@@ -479,7 +479,7 @@ inline bool FOptiAttr::replace_sequence (char*& seq)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermBold (char_data*& term)
 {
-  if ( append_sequence(F_enter_bold_mode.cap) )
+  if ( term && append_sequence(F_enter_bold_mode.cap) )
     return (term->bold = true);
   else
     return false;
@@ -562,7 +562,7 @@ inline bool FOptiAttr::unsetTermItalic (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermUnderline (char_data*& term)
 {
-  if ( append_sequence(F_enter_underline_mode.cap) )
+  if ( term && append_sequence(F_enter_underline_mode.cap) )
     return (term->underline = true);
   else
     return false;
@@ -1530,7 +1530,7 @@ char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
       setTermDoubleUnderline(term);
   }
 
-  if ( fake_reverse )
+  if ( term && fake_reverse )
     term->reverse = true;
 
   return attr_buf;

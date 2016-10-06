@@ -104,12 +104,12 @@ void FButton::setHotkeyAccelerator()
 
   if ( hotkey )
   {
-    if ( isalpha(hotkey) || isdigit(hotkey) )
+    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey));
-      addAccelerator (toupper(hotkey));
+      addAccelerator (std::tolower(hotkey));
+      addAccelerator (std::toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
     }
     else
       addAccelerator (getHotkey());
@@ -137,7 +137,7 @@ void FButton::draw()
   FString txt;
   FWidget* parent_widget = getParentWidget();
   int active_focus;
-  int d, i, j, x, mono_offset, margin;
+  int d, i, j, x, mono_offset, mono_1st_char, margin;
   int length, hotkeypos, hotkey_offset, space;
   bool is_ActiveFocus, is_Active, is_Focus, is_Flat;
   bool is_NonFlatShadow, is_NoUnderline;
@@ -199,10 +199,14 @@ void FButton::draw()
     txt = "<" + txt + ">";
     length = int(txt.getLength());
     src = const_cast<wchar_t*>(txt.wc_str());
+    mono_1st_char = 1;
     mono_offset = 2;
   }
   else
+  {
+    mono_1st_char = 0;
     mono_offset = 0;
+  }
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -292,7 +296,7 @@ void FButton::draw()
   i = getWidth() - length - 1;
   i = int(i / 2);
 
-  if ( getHeight() > 1 )
+  if ( getHeight() >= 2 )
     j = int((getHeight()-1) / 2);
   else
     j=0;
@@ -304,7 +308,7 @@ void FButton::draw()
    print (space); // █
 
   if ( hotkeypos == -1 )
-    setCursorPos (1+margin+i, 1+j ); // first character
+    setCursorPos (1+margin+i+mono_1st_char, 1+j ); // first character
   else
     setCursorPos (1+margin+i+hotkeypos, 1+j ); // hotkey
 
@@ -345,7 +349,7 @@ void FButton::draw()
   for (x=i+length; x < getWidth()-1; x++)
     print (space); // █
 
-  if ( getHeight() > 1 )
+  if ( getHeight() >= 2 )
   {
     for (i=0; i < j; i++)
     {
@@ -516,7 +520,7 @@ void FButton::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight()+s+(f << 1); y++)

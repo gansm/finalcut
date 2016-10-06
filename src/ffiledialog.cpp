@@ -218,10 +218,10 @@ inline bool FFileDialog::pattern_match ( const char* pattern
   {
     search[0] = '.';
     search[1] = '\0';
-    strncat(search, pattern, sizeof(search) - strlen(search) - 1);
+    std::strncat(search, pattern, sizeof(search) - std::strlen(search) - 1);
   }
   else
-    strncpy(search, pattern, sizeof(search) - 1);
+    std::strncpy(search, pattern, sizeof(search) - 1);
 
   if ( fnmatch (search, fname, FNM_PERIOD) == 0 )
     return true;
@@ -243,7 +243,7 @@ void FFileDialog::clear()
 
   while ( iter != end )
   {
-    free ((*iter).name);
+    std::free ((*iter).name);
     ++iter;
   }
 
@@ -263,7 +263,7 @@ int FFileDialog::numOfDirs()
 
     while ( iter != end )
     {
-      if ( (*iter).type == DT_DIR && strcmp((*iter).name, ".") != 0 )
+      if ( (*iter).type == DT_DIR && std::strcmp((*iter).name, ".") != 0 )
         n++;
 
       ++iter;
@@ -313,7 +313,7 @@ int FFileDialog::changeDir (const FString& dirname)
 
           while ( iter != end )
           {
-            if ( strcmp((*iter).name, baseName) == 0 )
+            if ( std::strcmp((*iter).name, baseName) == 0 )
             {
               filebrowser->setCurrentItem(i);
               filename->setText(FString(baseName) + '/');
@@ -391,7 +391,7 @@ void FFileDialog::cb_processActivate (FWidget*, void*)
 
       while ( iter != end )
       {
-        if ( strcmp((*iter).name, input) == 0 && (*iter).type == DT_DIR )
+        if ( std::strcmp((*iter).name, input) == 0 && (*iter).type == DT_DIR )
         {
           found = true;
           changeDir(input);
@@ -644,7 +644,7 @@ int FFileDialog::readDir()
         continue;
       }
 
-      if ( dir[0] == '/' && dir[1] == '\0' && strcmp(next->d_name, "..") == 0  )
+      if ( dir[0] == '/' && dir[1] == '\0' && std::strcmp(next->d_name, "..") == 0  )
         continue;
 
       dir_entry entry;
@@ -655,8 +655,8 @@ int FFileDialog::readDir()
       {
         char resolved_path[MAXPATHLEN] = {};
         char symLink[MAXPATHLEN] = {};
-        strncpy(symLink, dir, sizeof(symLink) - 1);
-        strncat(symLink, next->d_name, sizeof(symLink) - strlen(symLink) - 1);
+        std::strncpy (symLink, dir, sizeof(symLink) - 1);
+        std::strncat (symLink, next->d_name, sizeof(symLink) - std::strlen(symLink) - 1);
 
         if ( realpath(symLink, resolved_path) != 0 )  // follow link
         {
@@ -675,7 +675,7 @@ int FFileDialog::readDir()
       else if ( pattern_match(filter, entry.name) )
         dir_entries.push_back (entry);
       else
-        free(entry.name);
+        std::free(entry.name);
     }
     else if (errno != 0)
     {
@@ -695,7 +695,7 @@ int FFileDialog::readDir()
     return -2;
   }
 
-  if ( strcmp((*dir_entries.begin()).name, "..") == 0 )
+  if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
     start=1;
   else
     start=0;

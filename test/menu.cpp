@@ -276,14 +276,14 @@ void Menu::adjustSize()
 
 int main (int argc, char* argv[])
 {
-  if ( argv[1] && (  strcmp(argv[1], "--help") == 0
-                  || strcmp(argv[1], "-h") == 0 ) )
+  if ( argv[1] && (  std::strcmp(argv[1], "--help") == 0
+                  || std::strcmp(argv[1], "-h") == 0 ) )
   {
     std::cout << "Generic options:" << std::endl
               << "  -h, --help                  "
               << "Display this help and exit" << std::endl;
     FApplication::print_cmd_Options();
-    exit(EXIT_SUCCESS);
+    std::exit(EXIT_SUCCESS);
   }
 
   FApplication app (argc, argv);

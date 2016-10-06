@@ -255,22 +255,22 @@ bool FMenu::isWindowsMenu (FWidget* w) const
 //----------------------------------------------------------------------
 bool FMenu::isMenuBar (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenuBar") ) == 0 );
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FMenu::isMenu (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FMenu") ) == 0 );
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FMenu") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FMenu::isRadioMenuItem (FWidget* w) const
 {
-  return bool ( strcmp ( w->getClassName()
-                       , const_cast<char*>("FRadioMenuItem") ) == 0 );
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FRadioMenuItem") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -516,9 +516,9 @@ bool FMenu::hotkeyMenu (FKeyEvent*& ev)
       int hotkey = (*iter)->getHotkey();
       int key = ev->key();
 
-      if ( isalpha(hotkey) || isdigit(hotkey) )
+      if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
       {
-        if ( tolower(hotkey) == key || toupper(hotkey) == key )
+        if ( std::tolower(hotkey) == key || std::toupper(hotkey) == key )
           found = true;
       }
       else if ( hotkey == key )
@@ -594,63 +594,12 @@ void FMenu::draw()
   clearArea();
   drawBorder();
   drawItems();
-  drawMenuShadow();
+  drawShadow();
 
   if ( isMonochron() )
     setReverse(false);
 
   updateVTerm(true);
-}
-
-//----------------------------------------------------------------------
-void FMenu::drawBorder()
-{
-  if ( isNewFont() )
-  {
-    int x1 = 1;
-    int x2 = 1 + getWidth() - 1;
-    int y1 = 1;
-    int y2 = 1 + getHeight() - 1;
-
-    printPos (x1, y1);
-    print (fc::NF_border_corner_upper_left); // ⎡
-
-    for (int x=x1+1; x < x2; x++)
-      print (fc::NF_border_line_upper); // ¯
-
-    print (fc::NF_rev_border_corner_upper_right); // ⎤
-
-    for (int y=y1+1; y <= y2; y++)
-    {
-      printPos (x1, y);
-      // border left ⎸
-      print (fc::NF_border_line_left);
-      printPos (x2, y);
-      // border right⎹
-      print (fc::NF_rev_border_line_right);
-    }
-
-    printPos (x1, y2);
-    // lower left corner border ⎣
-    print (fc::NF_border_corner_lower_left);
-
-    for (int x=1; x < getWidth()-1; x++) // low line _
-      print (fc::NF_border_line_bottom);
-
-    printPos (x2, y2);
-    // lower right corner border ⎦
-    print (fc::NF_rev_border_corner_lower_right);
-  }
-  else
-  {
-    FWidget::drawBorder();
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::drawMenuShadow()
-{
-  drawShadow();
 }
 
 //----------------------------------------------------------------------
@@ -770,13 +719,25 @@ void FMenu::drawItems()
 
       if ( hotkeypos == -1 )
       {
+        // set cursor to the first character
         if ( is_selected )
-          setCursorPos (1, 2 + y);  // first character
+        {
+          if ( is_checkable )
+            (*iter)->setCursorPos (3, 1);
+          else
+            (*iter)->setCursorPos (2, 1);
+        }
       }
       else
       {
         if ( is_selected )
-          setCursorPos (1 + hotkeypos, 2 + y);  // hotkey
+        {
+          // set cursor to the hotkey position
+          if ( is_checkable )
+            (*iter)->setCursorPos (3 + hotkeypos, 1);
+          else
+            (*iter)->setCursorPos (2 + hotkeypos, 1);
+        }
 
         txt_length--;
         to_char--;
@@ -784,7 +745,7 @@ void FMenu::drawItems()
 
       for (int z=0; z < to_char; z++)
       {
-        if ( ! iswprint(wint_t(item_text[z])) )
+        if ( ! std::iswprint(wint_t(item_text[z])) )
         {
           if ( ! isNewFont()
              && (  int(item_text[z]) < fc::NF_rev_left_arrow2
@@ -854,9 +815,6 @@ void FMenu::drawItems()
     ++iter;
     y++;
   }
-
-  if ( hasFocus() )
-    setCursor();
 }
 
 //----------------------------------------------------------------------
@@ -1464,19 +1422,6 @@ void FMenu::show()
     return;
 
   FWindow::show();
-
-  // set the cursor to the focus widget
-  FWidget* focus_widget = FWidget::getFocusWidget();
-
-  if (  focus_widget
-     && focus_widget->isVisible()
-     && focus_widget->hasVisibleCursor()
-     && focus_widget->isCursorInside() )
-  {
-    focus_widget->setCursor();
-    showCursor();
-    flush_out();
-  }
 }
 
 //----------------------------------------------------------------------

@@ -82,10 +82,6 @@ class FMenu : public FWindow, public FMenuList
    bool         hotkeyMenu (FKeyEvent*&);
    int          getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void         draw();
-   // make every drawBorder from FWidget available
-   using FWidget::drawBorder;
-   virtual void drawBorder();
-   void         drawMenuShadow();
    void         drawItems();
    void         drawSeparator(int);
    void         processActivate();

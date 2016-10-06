@@ -199,7 +199,7 @@ void FMenuItem::init (FWidget* parent)
         menubar_ptr->calculateDimensions();
 
         if ( hotkey )  // Meta + hotkey
-          menubar_ptr->addAccelerator (fc::Fmkey_meta + tolower(hotkey), this);
+          menubar_ptr->addAccelerator (fc::Fmkey_meta + std::tolower(hotkey), this);
       }
 
       this->addCallback
@@ -357,8 +357,8 @@ bool FMenuItem::isMenuBar (FWidget* w) const
   if ( ! w )
     return false;
   else
-    return bool( strcmp ( w->getClassName()
-                        , const_cast<char*>("FMenuBar") ) == 0 );
+    return bool( std::strcmp ( w->getClassName()
+                             , const_cast<char*>("FMenuBar") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -367,10 +367,10 @@ bool FMenuItem::isMenu (FWidget* w) const
   if ( ! w )
     return false;
 
-  bool m1 = ( strcmp ( w->getClassName()
-                     , const_cast<char*>("FMenu") ) == 0 );
-  bool m2 = ( strcmp ( w->getClassName()
-                     , const_cast<char*>("FDialogListMenu") ) == 0 );
+  bool m1 = ( std::strcmp ( w->getClassName()
+                          , const_cast<char*>("FMenu") ) == 0 );
+  bool m2 = ( std::strcmp ( w->getClassName()
+                          , const_cast<char*>("FDialogListMenu") ) == 0 );
   return bool( m1 || m2 );
 }
 
@@ -752,7 +752,7 @@ bool FMenuItem::setEnable (bool on)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator (fc::Fmkey_meta + tolower(hotkey), this);
+      super->addAccelerator (fc::Fmkey_meta + std::tolower(hotkey), this);
     }
   }
   else

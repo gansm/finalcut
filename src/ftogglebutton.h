@@ -87,7 +87,6 @@ class FToggleButton : public FWidget
    void onMouseDown (FMouseEvent*);
    void onMouseUp (FMouseEvent*);
    void onAccel (FAccelEvent*);
-   void onHide (FHideEvent*);
    void onFocusIn (FFocusEvent*);
    void onFocusOut (FFocusEvent*);
 

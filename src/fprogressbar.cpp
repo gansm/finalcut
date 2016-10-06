@@ -201,7 +201,7 @@ void FProgressbar::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight()+s; y++)

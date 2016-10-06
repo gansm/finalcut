@@ -24,8 +24,8 @@ FToggleButton::FToggleButton(FWidget* parent)
 {
   init();
 
-  if ( parent && strcmp ( parent->getClassName()
-                        , const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && std::strcmp ( parent->getClassName()
+                             , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
@@ -47,8 +47,8 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   init();
   setText(txt);
 
-  if ( parent && strcmp ( parent->getClassName()
-                        , const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && std::strcmp ( parent->getClassName()
+                             , const_cast<char*>("FButtonGroup") ) == 0 )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
@@ -64,9 +64,6 @@ FToggleButton::~FToggleButton()  // destructor
 
   if ( group() )
     group()->remove(this);
-
-  if ( hasFocus() )
-    hideCursor();
 }
 
 
@@ -142,12 +139,12 @@ void FToggleButton::setHotkeyAccelerator()
 
   if ( hotkey )
   {
-    if ( isalpha(hotkey) || isdigit(hotkey) )
+    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey));
-      addAccelerator (toupper(hotkey));
+      addAccelerator (std::tolower(hotkey));
+      addAccelerator (std::toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
     }
     else
       addAccelerator (getHotkey());
@@ -175,17 +172,7 @@ void FToggleButton::draw()
 
   // set the cursor to the button
   if ( isRadioButton() || isCheckboxButton() )
-  {
     setCursorPos (2, 1);
-
-    if ( isCursorInside() && hasFocus() )
-    {
-      if ( isHiddenCursor() )
-        showCursor();
-    }
-    else if ( ! isHiddenCursor() )
-      hideCursor();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -289,15 +276,15 @@ FButtonGroup* FToggleButton::group() const
 //----------------------------------------------------------------------
 bool FToggleButton::isRadioButton() const
 {
-  return ( strcmp ( getClassName()
-                  , const_cast<char*>("FRadioButton") ) == 0 );
+  return ( std::strcmp ( getClassName()
+                       , const_cast<char*>("FRadioButton") ) == 0 );
 }
 
 //----------------------------------------------------------------------
 bool FToggleButton::isCheckboxButton() const
 {
-  return ( strcmp ( getClassName()
-                  , const_cast<char*>("FCheckBox") ) == 0 );
+  return ( std::strcmp ( getClassName()
+                       , const_cast<char*>("FCheckBox") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -387,7 +374,7 @@ void FToggleButton::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
   printPos (1, 1);
   print (blank);
@@ -465,9 +452,6 @@ bool FToggleButton::setFocus (bool on)
       setForegroundColor (wc.toggle_button_active_focus_fg);
       setBackgroundColor (wc.toggle_button_active_focus_bg);
 
-      if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
-        showCursor();
-
       if ( statusBar() )
       {
         FString msg = getStatusbarMessage();
@@ -486,7 +470,6 @@ bool FToggleButton::setFocus (bool on)
     {
       setForegroundColor (wc.toggle_button_active_fg);
       setBackgroundColor (wc.toggle_button_active_bg);
-      hideCursor();
 
       if ( statusBar() )
         statusBar()->clearMessage();
@@ -594,18 +577,8 @@ void FToggleButton::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::onHide (FHideEvent*)
-{
-  if ( hasFocus() )
-    hideCursor();
-}
-
-//----------------------------------------------------------------------
 void FToggleButton::onFocusIn (FFocusEvent*)
 {
-  if ( isCursorInside() && (isRadioButton() || isCheckboxButton()) )
-    showCursor();
-
   if ( statusBar() )
     statusBar()->drawMessage();
 }
@@ -618,8 +591,6 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     statusBar()->clearMessage();
     statusBar()->drawMessage();
   }
-
-  hideCursor();
 
   if ( group() )
   {

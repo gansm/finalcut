@@ -58,9 +58,6 @@ FLineEdit::~FLineEdit()  // destructor
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
-
-  if ( hasFocus() )
-    hideCursor();
 }
 
 // private methods of FLineEdit
@@ -221,15 +218,10 @@ void FLineEdit::drawInputField()
   if ( isShadow )
     drawShadow ();
 
-  updateVTerm(true);
-
   // set the cursor to the first pos.
   setCursorPos (2+cursor_pos-text_offset, 1);
 
-  if ( isCursorInside() && hasFocus() && isHiddenCursor() )
-    showCursor();
-  else if ( ! isHiddenCursor() )
-    hideCursor();
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -313,7 +305,7 @@ void FLineEdit::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight()+s; y++)
@@ -781,17 +773,11 @@ void FLineEdit::onHide (FHideEvent*)
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
-
-  if ( hasFocus() )
-    hideCursor();
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::onFocusIn (FFocusEvent*)
 {
-  if ( isCursorInside() )
-    showCursor();
-
   if ( insert_mode )
   {
     setXTermCursorStyle(fc::blinking_underline);
@@ -835,8 +821,6 @@ void FLineEdit::onFocusOut (FFocusEvent*)
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
-
-  hideCursor();
 }
 
 //----------------------------------------------------------------------

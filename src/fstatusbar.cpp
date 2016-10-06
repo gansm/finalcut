@@ -73,8 +73,8 @@ void FStatusKey::init (FWidget* parent)
 {
   setGeometry (1,1,1,1);
 
-  if ( parent && strcmp ( parent->getClassName()
-                        , const_cast<char*>("FStatusBar") ) == 0 )
+  if ( parent && std::strcmp ( parent->getClassName()
+                             , const_cast<char*>("FStatusBar") ) == 0 )
   {
     setStatusbar( static_cast<FStatusBar*>(parent) );
 
@@ -359,7 +359,7 @@ void FStatusBar::hide()
     return;
 
   blank = new char[screenWidth+1];
-  memset(blank, ' ', uLong(screenWidth));
+  std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   printPos (1, 1);
   print (blank);
@@ -733,7 +733,4 @@ void FStatusBar::cb_statuskey_activated (FWidget* widget, void*)
 
   if ( isVisible() && isShown() )
     redraw();
-
-  if ( ! isHiddenCursor() )
-    hideCursor();
 }

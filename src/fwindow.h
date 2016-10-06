@@ -78,6 +78,9 @@ class FWindow : public FWidget
   ~FWindow ();
 
    const char*     getClassName() const;
+   // make every drawBorder from FWidget available
+   using FWidget::drawBorder;
+   virtual void    drawBorder();
    virtual void    show();
    virtual void    hide();
    virtual void    setWidth (int, bool = true);

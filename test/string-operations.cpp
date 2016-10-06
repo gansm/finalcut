@@ -14,12 +14,12 @@ int main (int, char**)
   printf ("----------------[ terminal ]-------------------\n");
 
   // init current locale
-  printf ("    Locale: %s\n", setlocale(LC_CTYPE, "") );
+  printf ("    Locale: %s\n", std::setlocale(LC_CTYPE, "") );
 
-  if ( isatty(1) && ! strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
+  if ( isatty(1) && ! std::strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
   {
     // locale C -> switch from 7bit ascii -> latin1
-    setlocale(LC_ALL, "en_US");
+    std::setlocale(LC_ALL, "en_US");
   }
 
   printf ("   Codeset: %s\n", nl_langinfo(CODESET));
@@ -155,7 +155,7 @@ int main (int, char**)
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
 
-  setlocale(LC_NUMERIC, "C");
+  std::setlocale(LC_NUMERIC, "C");
 
   try
   {
@@ -185,7 +185,7 @@ int main (int, char**)
   std::cout << " setNumber:  "
             << num3 << " (long double)" << std::endl;
 
-  setlocale (LC_NUMERIC, "");
+  std::setlocale (LC_NUMERIC, "");
   FString fnum1, fnum2;
 #if defined(__LP64__) || defined(_LP64)
   // 64-bit architecture

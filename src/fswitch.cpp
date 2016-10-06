@@ -62,7 +62,7 @@ void FSwitch::drawCheckButton()
     {
       if ( isMonochron() )
       {
-        wcsncpy ( on, L" <On>", 6);
+        std::wcsncpy ( on, L" <On>", 6);
         setBold(true);
       }
       else if ( getMaxColor() < 16 )
@@ -113,7 +113,7 @@ void FSwitch::drawCheckButton()
     {
       if ( isMonochron() )
       {
-        wcsncpy ( off, L"<Off>", 6);
+        std::wcsncpy ( off, L"<Off>", 6);
         setBold(true);
       }
       else if ( getMaxColor() < 16 )

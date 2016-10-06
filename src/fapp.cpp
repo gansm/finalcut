@@ -19,7 +19,7 @@ FWidget* FApplication::active_window    = 0;  // the active window
 FWidget* FApplication::focus_widget     = 0;  // has keyboard input focus
 FWidget* FApplication::clicked_widget   = 0;  // is focused by click
 FWidget* FApplication::open_menu        = 0;  // currently open menu
-FWidget* FApplication::move_size_widget = 0; // move/size by keyboard
+FWidget* FApplication::move_size_widget = 0;  // move/size by keyboard
 FPoint*  FApplication::zero_point       = 0;  // zero point (x=0, y=0)
 int      FApplication::quit_code        = 0;
 bool     FApplication::quit_now         = false;
@@ -101,7 +101,7 @@ void FApplication::init()
   std::fill_n (sgr_mouse, sizeof(sgr_mouse), '\0');
   std::fill_n (urxvt_mouse, sizeof(urxvt_mouse), '\0');
   // init bit field with 0
-  memset(&b_state, 0x00, sizeof(b_state));
+  std::memset(&b_state, 0x00, sizeof(b_state));
   // interpret the command line options
   cmd_options();
 }
@@ -110,10 +110,10 @@ void FApplication::init()
 void FApplication::setExitMessage (std::string message)
 {
   quit_now = true;
-  snprintf ( FTerm::exit_message
-           , sizeof(FTerm::exit_message)
-           , "%s"
-           ,message.c_str() );
+  std::snprintf ( FTerm::exit_message
+                , sizeof(FTerm::exit_message)
+                , "%s"
+                , message.c_str() );
 }
 
 //----------------------------------------------------------------------
@@ -141,7 +141,7 @@ void FApplication::cmd_options ()
 
     if ( c == 0 )
     {
-      if ( strcmp(long_options[idx].name, "encoding") == 0 )
+      if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
       {
         FString encoding(optarg);
         encoding = encoding.toUpper();
@@ -158,10 +158,10 @@ void FApplication::cmd_options ()
                          + std::string(encoding.c_str()) );
       }
 
-      if ( strcmp(long_options[idx].name, "no-optimize-cursor")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-optimize-cursor")  == 0 )
         setCursorOptimisation (false);
 
-      if ( strcmp(long_options[idx].name, "vgafont")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
       {
         bool ret = setVGAFont();
 
@@ -169,7 +169,7 @@ void FApplication::cmd_options ()
           setExitMessage ("VGAfont is not supported by this terminal");
       }
 
-      if ( strcmp(long_options[idx].name, "newfont")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
       {
         bool ret = setNewFont();
 
@@ -366,7 +366,7 @@ void FApplication::processKeyboardEvent()
             case fc::Fkey_extended_mouse:
               {
                 int n = 3;
-                int len = int(strlen(fifo_buf));
+                int len = int(std::strlen(fifo_buf));
 
                 while ( n < len && n < fifo_buf_size )
                 {
@@ -395,7 +395,7 @@ void FApplication::processKeyboardEvent()
             case fc::Fkey_urxvt_mouse:
               {
                 int n = 2;
-                int len = int(strlen(fifo_buf));
+                int len = int(std::strlen(fifo_buf));
 
                 while ( n < len && n < fifo_buf_size )
                 {
@@ -435,10 +435,8 @@ void FApplication::processKeyboardEvent()
                    && ! k_press_ev.isAccepted()
                    && ! k_down_ev.isAccepted() )
                 {
-                  bool accpt = false;
                   // switch to a specific dialog with Meta + 1..9
-                  if ( ! accpt )
-                    accpt = processDialogSwitchAccelerator();
+                  bool accpt = processDialogSwitchAccelerator();
 
                   // windows keyboard accelerator
                   if ( ! accpt )
@@ -455,7 +453,7 @@ void FApplication::processKeyboardEvent()
                     FWidget* root_widget = getRootWidget();
 
                     if ( root_widget )
-                      accpt = processAccelerator (root_widget);
+                      processAccelerator (root_widget);
                   }
                 }
               }
@@ -464,7 +462,7 @@ void FApplication::processKeyboardEvent()
           } // end of switch
         }
 
-        fifo_offset = int(strlen(fifo_buf));
+        fifo_offset = int(std::strlen(fifo_buf));
       }
 
       // send key up event
@@ -963,7 +961,7 @@ bool FApplication::parseX11Mouse()
   y = uChar(x11_mouse[2] - 0x20);
   new_mouse_position.setPoint(x,y);
   // fill bit field with 0
-  memset(&b_state, 0x00, sizeof(b_state));
+  std::memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (x11_mouse[0] & key_shift) == key_shift )
     b_state.shift_button = Pressed;
@@ -1056,7 +1054,7 @@ bool FApplication::parseSGRMouse()
 
   new_mouse_position.setPoint(x,y);
   // fill bit field with 0
-  memset(&b_state, 0x00, sizeof(b_state));
+  std::memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (button & key_shift) == key_shift )
     b_state.shift_button = Pressed;
@@ -1253,7 +1251,7 @@ bool FApplication::parseUrxvtMouse()
 
   new_mouse_position.setPoint(x,y);
   // fill bit field with 0
-  memset(&b_state, 0x00, sizeof(b_state));
+  std::memset(&b_state, 0x00, sizeof(b_state));
 
   if ( (button & key_shift) == key_shift )
     b_state.shift_button = Pressed;
@@ -1292,7 +1290,7 @@ bool FApplication::parseUrxvtMouse()
 bool FApplication::processGpmEvent()
 {
   // fill bit field with 0
-  memset(&b_state, 0x00, sizeof(b_state));
+  std::memset(&b_state, 0x00, sizeof(b_state));
 
   if ( Gpm_GetEvent(&gpm_ev) == 1 )
   {
@@ -1786,12 +1784,12 @@ bool FApplication::processNextEvent()
 //----------------------------------------------------------------------
 void FApplication::print_cmd_Options ()
 {
-  ::printf("\nFinalCut Options:\n"
+  std::printf ( "\nFinalCut Options:\n"
     "  --encoding <name>           Sets the character encoding mode\n"
     "                              {UTF8, VT100, PC, ASCII}\n"
     "  --no-optimized-cursor       No cursor optimisation\n"
     "  --vgafont                   Set the standard vga 8x16 font\n"
-    "  --newfont                   Enables the graphical font\n");
+    "  --newfont                   Enables the graphical font\n" );
 }
 
 //----------------------------------------------------------------------
@@ -1806,25 +1804,11 @@ void FApplication::setMainWidget (FWidget* widget)
 //----------------------------------------------------------------------
 int FApplication::exec() // run
 {
-  FWidget* widget;
-
   if ( quit_now )
     return EXIT_FAILURE;
 
   quit_now = false;
   quit_code = 0;
-
-  // set the cursor to the focus widget
-  widget = getFocusWidget();
-
-  if (  widget
-     && widget->isVisible()
-     && widget->hasVisibleCursor() )
-  {
-    widget->setCursor();
-    showCursor();
-    flush_out();
-  }
 
   enter_loop();
   return quit_code;

@@ -39,7 +39,7 @@ timer::timer (FWidget* parent)
 //----------------------------------------------------------------------
 void timer::onTimer (FTimerEvent* ev)
 {
-  ::printf("timer event, id %d\n\r", ev->timerId() );
+  std::printf("timer event, id %d\n\r", ev->timerId() );
 }
 
 //----------------------------------------------------------------------

@@ -1,4 +1,7 @@
 2016-10-02  Markus Gans  <guru.mail@muenster.de>
+	* The input cursor is now controlled by the virtual terminal
+
+2016-10-02  Markus Gans  <guru.mail@muenster.de>
 	* FStatusBar and FMenuBar use now the always-on-top 
 	  window option
 

@@ -73,8 +73,8 @@ bool FButtonGroup::isRadioButton(FToggleButton* button) const
   if ( ! button )
     return false;
 
-  return bool ( strcmp ( button->getClassName()
-                       , const_cast<char*>("FRadioButton") ) == 0 );
+  return bool ( std::strcmp ( button->getClassName()
+                            , const_cast<char*>("FRadioButton") ) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -197,12 +197,12 @@ void FButtonGroup::setHotkeyAccelerator()
 
   if ( hotkey )
   {
-    if ( isalpha(hotkey) || isdigit(hotkey) )
+    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey));
-      addAccelerator (toupper(hotkey));
+      addAccelerator (std::tolower(hotkey));
+      addAccelerator (std::toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
     }
     else
       addAccelerator (getHotkey());
@@ -325,7 +325,7 @@ void FButtonGroup::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight(); y++)

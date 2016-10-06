@@ -227,7 +227,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
       int hotkey = (*iter)->getHotkey();
       int key = ev->key();
 
-      if ( fc::Fmkey_meta + tolower(hotkey) == key )
+      if ( fc::Fmkey_meta + std::tolower(hotkey) == key )
       {
         FMenuItem* sel_item = getSelectedItem();
 
@@ -397,7 +397,7 @@ void FMenuBar::drawItems()
       if ( startpos > screenWidth-z )
         break;
 
-      if ( ! iswprint(wint_t(item_text[z])) )
+      if ( ! std::iswprint(wint_t(item_text[z])) )
       {
         if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
                               || int(item_text[z]) > fc::NF_check_mark ) )
@@ -913,7 +913,7 @@ void FMenuBar::hide()
     return;
 
   blank = new char[screenWidth+1];
-  memset(blank, ' ', uLong(screenWidth));
+  std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   printPos (1,1);
   print (blank);

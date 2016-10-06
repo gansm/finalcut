@@ -126,7 +126,7 @@ void FTextView::drawText()
 {
   uInt start, end;
 
-  if ( data.empty() || getHeight() < 4 || getWidth() < 5 )
+  if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
     return;
 
   start = 0;
@@ -158,8 +158,8 @@ void FTextView::drawText()
       bool utf8 = (Encoding == fc::UTF8) ? true : false;
 
       // only printable and 1 column per character
-      if (  (  (utf8 && iswprint(wint_t(ch)))
-            || (!utf8 && ch < 256 && isprint(ch)) )
+      if (  (  (utf8 && std::iswprint(wint_t(ch)))
+            || (!utf8 && ch < 256 && std::isprint(ch)) )
          && wcwidth(ch) == 1 )
       {
         print (ch);
@@ -194,7 +194,7 @@ void FTextView::adjustSize()
   int last_line = int(getRows());
   int max_width = int(maxLineWidth);
 
-  if ( xoffset > max_width - width - nf_offset - 1 )
+  if ( xoffset >= max_width - width - nf_offset )
     xoffset = max_width - width - nf_offset - 1;
 
   if ( xoffset < 0 )
@@ -262,7 +262,7 @@ void FTextView::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight(); y++)
@@ -916,7 +916,7 @@ void FTextView::clear()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight() + nf_offset - 2; y++)

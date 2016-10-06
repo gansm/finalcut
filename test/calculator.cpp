@@ -235,7 +235,7 @@ Calc::Calc (FWidget* parent)
     L"&="
   };
 
-  setlocale(LC_NUMERIC, "C");
+  std::setlocale(LC_NUMERIC, "C");
   setText ("calculator");
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // press 'q' to quit
@@ -425,7 +425,7 @@ bool Calc::isOperatorKey(int key)
 void Calc::setDisplay (lDouble d)
 {
   char buffer[33];
-  snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
+  std::snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
   input = buffer;
 }
 
@@ -450,10 +450,10 @@ void Calc::calcInfixOperator()
   switch ( infix_operator )
   {
     case '*':
-      if ( fabs(a) > LDBL_EPSILON )  // a != 0.0L
+      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
       {
         // ln(a * b) = ln(a) + ln(b)
-        if ( log(abs(a)) + log(abs(b)) <= log(LDBL_MAX) )
+        if ( std::log(std::abs(a)) + std::log(std::abs(b)) <= std::log(LDBL_MAX) )
           a *= b;
         else
           error = true;
@@ -463,16 +463,16 @@ void Calc::calcInfixOperator()
       break;
 
     case '/':
-      if ( fabs(b) > LDBL_EPSILON )  // b != 0.0L
+      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
         a /= b;
       else
         error = true;
       break;
 
     case '+':
-      if ( fabs(a) > LDBL_EPSILON )  // a != 0.0L
+      if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
       {
-        if ( log(abs(a)) + log(abs(1 + b/a)) <= log(LDBL_MAX) )
+        if ( std::log(std::abs(a)) + std::log(std::abs(1 + b/a)) <= std::log(LDBL_MAX) )
           a += b;
         else
           error = true;
@@ -482,9 +482,9 @@ void Calc::calcInfixOperator()
       break;
 
     case '-':
-      if ( fabs(b) > LDBL_EPSILON )  // b != 0.0L
+      if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
       {
-        if ( log(abs(a)) + log(abs(1 - b/a)) <= log(LDBL_MAX) )
+        if ( std::log(std::abs(a)) + std::log(std::abs(1 - b/a)) <= std::log(LDBL_MAX) )
           a -= b;
         else
           error = true;
@@ -494,7 +494,7 @@ void Calc::calcInfixOperator()
       break;
 
     case '^':
-      a = pow(a, b);
+      a = std::pow(a, b);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;
@@ -523,7 +523,7 @@ void Calc::onKeyPress (FKeyEvent* ev)
         else
           input = input.left(input.getLength() - 1);
 
-        a = atof(input.c_str());
+        a = std::atof(input.c_str());
         drawDispay();
         updateTerminal();
       }
@@ -541,6 +541,7 @@ void Calc::onKeyPress (FKeyEvent* ev)
       break;
 
     default:
+      FDialog::onKeyPress(ev);
       break;
   }
 }
@@ -586,7 +587,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
         {
-          *x = log(*x + sqrt((*x) * (*x) + 1));
+          *x = std::log(*x + std::sqrt((*x) * (*x) + 1));
 
           if ( errno == EDOM || errno == ERANGE )
             error = true;
@@ -595,16 +596,16 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
             error = true;
         }
         else
-          *x = sinh(*x);
+          *x = std::sinh(*x);
       }
       else
       {
         if ( arcus_mode )
-          *x = asin(*x) * 180.0L/PI;
-        else if ( fabs(fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 = 0
+          *x = std::asin(*x) * 180.0L/PI;
+        else if ( std::fabs(std::fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 = 0
           *x = 0.0L;
         else
-          *x = sin(*x * PI/180.0L);
+          *x = std::sin(*x * PI/180.0L);
       }
 
       if ( errno == EDOM )
@@ -622,7 +623,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       {
         if ( arcus_mode )
         {
-          *x = log(*x + sqrt((*x) * (*x) - 1));
+          *x = std::log(*x + std::sqrt((*x) * (*x) - 1));
 
           if ( errno == EDOM || errno == ERANGE )
             error = true;
@@ -631,16 +632,16 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
             error = true;
         }
         else
-          *x = cosh(*x);
+          *x = std::cosh(*x);
       }
       else
       {
         if ( arcus_mode )
-          *x = acos(*x) * 180.0L/PI;
-        else if ( fabs(fmod(*x - 90.0L,180.0L)) < LDBL_EPSILON )  // (x - 90)/180 == 0
+          *x = std::acos(*x) * 180.0L/PI;
+        else if ( std::fabs(std::fmod(*x - 90.0L,180.0L)) < LDBL_EPSILON )  // (x - 90)/180 == 0
           *x = 0.0L;
         else
-          *x = cos(*x * PI/180.0L);
+          *x = std::cos(*x * PI/180.0L);
       }
 
       if ( errno == EDOM )
@@ -659,7 +660,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
         if ( arcus_mode )
           if ( *x < 1 )
           {
-            *x = 0.5L * log((1+(*x))/(1-(*x)));
+            *x = 0.5L * std::log((1+(*x))/(1-(*x)));
 
             if ( errno == EDOM || errno == ERANGE )
               error = true;
@@ -667,21 +668,21 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
           else
             error = true;
         else
-          *x = tanh(*x);
+          *x = std::tanh(*x);
       }
       else
       {
         if ( arcus_mode )
-          *x = atan(*x) * 180.0L/PI;
+          *x = std::atan(*x) * 180.0L/PI;
         else
           // Test if (x/180) != 0 and x/90 == 0
-          if ( fabs(fmod(*x,180.0L)) > LDBL_EPSILON
-             && fabs(fmod(*x,90.0L)) < LDBL_EPSILON )
+          if ( std::fabs(std::fmod(*x,180.0L)) > LDBL_EPSILON
+             && std::fabs(std::fmod(*x,90.0L)) < LDBL_EPSILON )
             error = true;
-          else if ( fabs(fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 == 0
+          else if ( std::fabs(std::fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 == 0
             *x = 0.0L;
           else
-            *x = tan(*x * PI/180.0L);
+            *x = std::tan(*x * PI/180.0L);
       }
 
       if ( errno == EDOM )
@@ -695,7 +696,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Reciprocal:  // 1/x
-      if ( fabs(*x) < LDBL_EPSILON )  // x == 0
+      if ( std::fabs(*x) < LDBL_EPSILON )  // x == 0
         error = true;
       else
       {
@@ -717,7 +718,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Natural_logarithm:  // ln
-      *x = log(*x);
+      *x = std::log(*x);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;
@@ -726,7 +727,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Powers_of_e:  // eˣ
-      *x = exp(*x);
+      *x = std::exp(*x);
 
       if ( errno == ERANGE )
         error = true;
@@ -743,7 +744,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Square_root:  // sqrt
-      *x = sqrt(*x);
+      *x = std::sqrt(*x);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;
@@ -760,7 +761,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Common_logarithm:  // lg
-      *x = log10(*x);
+      *x = std::log10(*x);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;
@@ -769,7 +770,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
       break;
 
     case Powers_of_ten:  // 10ˣ
-      *x = pow(10,*x);
+      *x = std::pow(10,*x);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;

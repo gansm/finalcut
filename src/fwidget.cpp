@@ -373,11 +373,11 @@ FTerm::term_area* FWidget::getPrintArea()
     return print_area;
   else
   {
-    FWidget* area_widget = FWindow::getWindowWidget(this);
+    FWidget* window = FWindow::getWindowWidget(this);
 
-    if ( area_widget )
+    if ( window )
     {
-      term_area* area = area_widget->getVWin();
+      term_area* area = window->getVWin();
 
       if ( area )
       {
@@ -449,7 +449,7 @@ void FWidget::adjustSize()
     if ( getWidth() < size_hints.min_width )
       adjust_wsize.setWidth(size_hints.min_width);
 
-    if ( getWidth() < 1 )
+    if ( getWidth() <= 0 )
       adjust_wsize.setWidth(1);
 
     // reduce the height if not enough space
@@ -459,7 +459,7 @@ void FWidget::adjustSize()
     if ( getHeight() < size_hints.min_height )
       adjust_wsize.setWidth(size_hints.min_height);
 
-    if ( getHeight() < 1 )
+    if ( getHeight() <= 0 )
       adjust_wsize.setHeight(1);
   }
 
@@ -852,10 +852,12 @@ bool FWidget::focusPrevChild()
           {
             if ( prev == this )
               return false;
+
             prev->setFocus();
             FFocusEvent in (fc::FocusIn_Event);
             in.setFocusType(fc::FocusPreviousWidget);
             FApplication::sendEvent(prev, &in);
+
             if ( in.isAccepted() )
             {
               this->draw();
@@ -1908,7 +1910,7 @@ void FWidget::move (int x, int y)
     return;
 
   // Avoid to move widget completely outside the terminal
-  if ( x+getWidth()-1 < 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
+  if ( x+getWidth() <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   wsize.setPos(x,y);
@@ -1916,29 +1918,28 @@ void FWidget::move (int x, int y)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursor()
-{
-  FPoint* wcursor = &widget_cursor_position;
-
-  if ( isCursorInside() )
-  {
-    setTermXY ( getTermX() + wcursor->getX() - 2
-              , getTermY() + wcursor->getY() - 2 );
-    return true;
-  }
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
 bool FWidget::setCursorPos (register int x, register int y)
 {
   widget_cursor_position.setPoint(x,y);
 
-  if ( isCursorInside() )
-    return true;
-  else
-    return false;
+  if ( (flags & fc::focus) != 0 && ! isWindowWidget() )
+  {
+    FWidget* window = FWindow::getWindowWidget(this);
+
+    if ( window )
+    {
+      if ( term_area* area = window->getVWin() )
+      {
+        setAreaCursor ( getTermX() - window->getTermX() + x
+                      , getTermY() - window->getTermY() + y
+                      , visible_cursor
+                      , area );
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -2070,7 +2071,7 @@ void FWidget::clearShadow()
   else if ( FWidget* p = getParentWidget() )
     setColor (wc.shadow_fg, p->getBackgroundColor());
 
-  if ( x2 < offset.getX2() + 1 )
+  if ( x2 <= offset.getX2() )
   {
     for (int i=0; i < getHeight(); i++)
     {
@@ -2079,7 +2080,7 @@ void FWidget::clearShadow()
     }
   }
 
-  if ( y2 < offset.getY2() + 1 )
+  if ( y2 <= offset.getY2() )
   {
     printPos (x1+1, y2+1);
 

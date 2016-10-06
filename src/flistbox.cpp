@@ -141,7 +141,7 @@ void FListBox::draw()
     setReverse(true);
 
   if ( isNewFont() )
-    drawBorder (1, getWidth() - 1, 1, getHeight());
+    drawBorder (1, 1, getWidth() - 1, getHeight());
   else
     drawBorder();
 
@@ -220,7 +220,7 @@ void FListBox::drawList()
   uInt start, end, inc_len;
   bool isFocus;
 
-  if ( data.empty() || getHeight() < 4 || getWidth() < 5 )
+  if ( data.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
   isFocus = ((flags & fc::focus) != 0);
@@ -466,12 +466,6 @@ void FListBox::drawList()
 
   unsetBold();
   updateVTerm(true);
-  updateTerminal();
-  flush_out();
-
-  if ( hasFocus() )
-    setCursor();
-
   last_yoffset = yoffset;
   last_current = current;
 }

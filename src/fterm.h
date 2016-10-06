@@ -88,6 +88,9 @@
 // parseKeyString return value
 #define NEED_MORE_DATA  -1
 
+// Buffer size for character output on the terminal
+#define TERMINAL_OUTPUT_BUFFER_SIZE  32768
+
 // class forward declaration
 class FWidget;
 
@@ -151,17 +154,16 @@ class FTerm
    static char*   locale_name;
    static char*   locale_xterm;
    static uChar   x11_button_state;
-   static FRect*  term;
-   static FPoint* mouse;
-   static FPoint* cursor;
+   static FRect*  term;      // current terminal geometry
+   static FPoint* term_pos;  // terminal cursor position
+   static FPoint* mouse;     // mouse click position
+   static FPoint* cursor;    // virtual print cursor
    static int     stdin_status_flags;
    static int     stdin_no;
    static int     stdout_no;
    static int     max_color;
    static int     fd_tty;
    static uInt    baudrate;
-   static int     x_term_pos;
-   static int     y_term_pos;
    static bool    resize_term;
    static char    exit_message[8192];
 
@@ -235,16 +237,20 @@ class FTerm
      int height;
      int right_shadow;
      int bottom_shadow;
+     int input_cursor_x;
+     int input_cursor_y;
+     int input_cursor_visible;
      FWidget* widget;
      line_changes* changes;
      FOptiAttr::char_data* text;
      bool visible;
    } term_area;
 
-   static term_area* vterm;      // virtual terminal
-   static term_area* vdesktop;   // virtual desktop
-   static term_area* last_area;  // last used area
-   term_area* vwin;              // virtual window
+   static term_area* vterm;        // virtual terminal
+   static term_area* vdesktop;     // virtual desktop
+   static term_area* last_area;    // last used area
+   static term_area* active_area;  // active area
+   term_area* vwin;                // virtual window
 
  private:
    // Disable copy constructor
@@ -293,10 +299,14 @@ class FTerm
    void         removeArea (FTerm::term_area*&); // reference to pointer
    void         restoreVTerm (const FRect&);
    void         restoreVTerm (int, int, int, int);
-   FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*) const;
-   FTerm::covered_state isCovered (int, int, FTerm::term_area*) const;
-   void         updateVTerm (FTerm::term_area*);
+   static FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*);
+   static FTerm::covered_state isCovered (int, int, FTerm::term_area*);
    void         updateVTerm (bool);
+   void         updateVTerm (FTerm::term_area*);
+   static bool  updateVTermCursor (FTerm::term_area*);
+   static bool  isInsideArea (int, int, FTerm::term_area*);
+   void         setAreaCursor (const FPoint&, bool, FTerm::term_area*);
+   void         setAreaCursor (int, int, bool, FTerm::term_area*);
    void         getArea (const FPoint&, FTerm::term_area*);
    void         getArea (int, int, FTerm::term_area*);
    void         getArea (const FRect&, FTerm::term_area*);
@@ -348,8 +358,10 @@ class FTerm
    void           createVTerm();
    static void    resizeVTerm();
    static void    putVTerm();
-   static void    updateTerminal();
    static void    updateTerminal (bool);
+   static void    updateTerminal();
+   static bool    updateTerminalCursor();
+   static bool    isInsideTerminal (int, int);
    static void    setKDECursor (fc::kdeKonsoleCursorShape);
    static FString getXTermFont();
    static FString getXTermTitle();
@@ -393,7 +405,6 @@ class FTerm
    static bool    hideCursor();
    static bool    showCursor();
    static bool    isHiddenCursor();
-   bool           isCursorInside();
 
    static void         setEncoding (std::string);
    static std::string  getEncoding();
@@ -466,8 +477,14 @@ class FTerm
 // FTerm inline functions
 //----------------------------------------------------------------------
 inline FTerm::covered_state FTerm::isCovered ( const FPoint& pos
-                                             , FTerm::term_area* area) const
+                                             , FTerm::term_area* area)
 { return isCovered (pos.getX(), pos.getY(), area); }
+
+//----------------------------------------------------------------------
+inline void FTerm::setAreaCursor ( const FPoint& pos
+                                 , bool visible
+                                 , FTerm::term_area* area)
+{ setAreaCursor (pos.getX(), pos.getY(), visible, area); }
 
 //----------------------------------------------------------------------
 inline void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)

@@ -160,11 +160,11 @@ inline FPoint FRect::getLowerRightPos() const
 
 //----------------------------------------------------------------------
 inline int FRect::getWidth() const
-{ return X2 - X1 + 1; }
+{ return short(X2 - X1 + 1); }
 
 //----------------------------------------------------------------------
 inline int FRect::getHeight() const
-{ return Y2 - Y1 + 1; }
+{ return short(Y2 - Y1 + 1); }
 
 //----------------------------------------------------------------------
 inline short& FRect::x1_ref()

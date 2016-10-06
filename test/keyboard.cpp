@@ -34,7 +34,7 @@ keyboard::keyboard (FWidget* parent)
 void keyboard::onKeyPress (FKeyEvent* ev)
 {
   int key_id = ev->key();
-  ::printf("Key %s (id %d)\n\r", getKeyName(key_id).c_str(), key_id);
+  std::printf("Key %s (id %d)\n\r", getKeyName(key_id).c_str(), key_id);
 }
 
 //----------------------------------------------------------------------

@@ -58,16 +58,17 @@ void Mandelbrot::draw()
 
   xoffset = 2;
   yoffset = 2;
+  current_line = 0;
   Cols  = getClientWidth();
   Lines = getClientHeight();
-  current_line = 1;
 
   dX = (x_max - x_min) / (Cols - 1);
   dY = (y_max - y_min) / Lines;
 
-  for (y0=y_min; y0 < y_max && current_line <= Lines; y0+=dY)
+  for (y0=y_min; y0 < y_max && current_line < Lines; y0+=dY)
   {
-    printPos (xoffset, yoffset+current_line);
+    current_line++;
+    printPos (xoffset, yoffset + current_line);
 
     for (x0=x_min; x0 < x_max; x0+=dX)
     {
@@ -90,8 +91,6 @@ void Mandelbrot::draw()
 
       print(' ');
     }
-
-    current_line++;
   }
 
   updateVTerm(true);

@@ -117,11 +117,11 @@ watch::~watch()
 void watch::printTime()
 {
   FString str;
-  struct tm* now;
-  time_t t;
+  std::tm* now;
+  std::time_t t;
 
-  t = time(0);  // get current time
-  now = localtime(&t);
+  t = std::time(0);  // get current time
+  now = std::localtime(&t);
 
   if ( sec )
     str.sprintf("%02d:%02d:%02d", now->tm_hour, now->tm_min, now->tm_sec);

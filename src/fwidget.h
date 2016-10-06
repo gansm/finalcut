@@ -419,11 +419,13 @@ class FWidget : public FObject, public FTerm
    virtual bool     setDisable();
    bool             isEnabled() const;
 
+   // input cursor visibility for the widget
    virtual bool     setVisibleCursor(bool);
    virtual bool     setVisibleCursor();
    virtual bool     unsetVisibleCursor();
    bool             hasVisibleCursor() const;
 
+   // widget focusing
    virtual bool     focusFirstChild();
    virtual bool     focusLastChild();
    virtual bool     setFocus (bool);
@@ -434,13 +436,17 @@ class FWidget : public FObject, public FTerm
    void             setFocusable();
    void             unsetFocusable();
 
+   // ignore padding from the parent widget
    bool             ignorePadding (bool);
    bool             ignorePadding();
    bool             acceptPadding();
    bool             isPaddingIgnored();
 
+   // get the primary widget colors
    short            getForegroundColor() const;
    short            getBackgroundColor() const;
+
+   // positioning
    int              getX() const;
    int              getY() const;
    const FPoint     getPos() const;
@@ -493,7 +499,6 @@ class FWidget : public FObject, public FTerm
    virtual void     move (int, int);
    int              getFlags() const;
 
-   bool             setCursor();
    FPoint           getCursorPos();
    bool             setCursorPos (const FPoint&);
    bool             setCursorPos (register int, register int);

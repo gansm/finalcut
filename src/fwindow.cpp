@@ -138,6 +138,51 @@ void FWindow::adjustSize()
 
 // public methods of FWindow
 //----------------------------------------------------------------------
+void FWindow::drawBorder()
+{
+  if ( isNewFont() )
+  {
+    int x1 = 1;
+    int x2 = 1 + getWidth() - 1;
+    int y1 = 1;
+    int y2 = 1 + getHeight() - 1;
+
+    printPos (x1, y1);
+    print (fc::NF_border_corner_upper_left); // ⎡
+
+    for (int x=x1+1; x < x2; x++)
+      print (fc::NF_border_line_upper); // ¯
+
+    print (fc::NF_rev_border_corner_upper_right); // ⎤
+
+    for (int y=y1+1; y < y2; y++)
+    {
+      printPos (x1, y);
+      // border left ⎸
+      print (fc::NF_border_line_left);
+      printPos (x2, y);
+      // border right⎹
+      print (fc::NF_rev_border_line_right);
+    }
+
+    printPos (x1, y2);
+    // lower left corner border ⎣
+    print (fc::NF_border_corner_lower_left);
+
+    for (int x=2; x < getWidth(); x++) // low line _
+      print (fc::NF_border_line_bottom);
+
+    printPos (x2, y2);
+    // lower right corner border ⎦
+    print (fc::NF_rev_border_corner_lower_right);
+  }
+  else
+  {
+    FWidget::drawBorder();
+  }
+}
+
+//----------------------------------------------------------------------
 void FWindow::show()
 {
   term_area* area = getVWin();
@@ -627,7 +672,10 @@ bool FWindow::activateWindow (bool on)
 {
   // activate/deactivate this window
   if ( on )
+  {
     FApplication::active_window = this;
+    active_area = getVWin();
+  }
 
   return window_active = (on) ? true : false;
 }

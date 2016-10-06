@@ -130,12 +130,12 @@ void FLabel::setHotkeyAccelerator()
 
   if ( hotkey )
   {
-    if ( isalpha(hotkey) || isdigit(hotkey) )
+    if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (tolower(hotkey));
-      addAccelerator (toupper(hotkey));
+      addAccelerator (std::tolower(hotkey));
+      addAccelerator (std::toupper(hotkey));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
     }
     else
       addAccelerator (getHotkey());
@@ -193,7 +193,7 @@ void FLabel::printLine ( wchar_t*& line
 
   for (int z=0; z < to_char; z++)
   {
-    if ( ! iswprint(wint_t(line[z])) )
+    if ( ! std::iswprint(wint_t(line[z])) )
     {
       if ( ! isNewFont() && (  int(line[z]) < fc::NF_rev_left_arrow2
                             || int(line[z]) > fc::NF_check_mark ) )
@@ -266,7 +266,7 @@ void FLabel::draw()
 
   hotkeypos = -1;
 
-  if ( multiline && getHeight() > 1 )
+  if ( multiline && getHeight() >= 2 )
   {
     uInt y = 0;
     uInt text_lines = uInt(multiline_text.size());
@@ -282,7 +282,7 @@ void FLabel::draw()
       if ( ! hotkey_printed )
         hotkeypos = getHotkeyPos(src, dest, length);
       else
-        wcsncpy(dest, src, length);
+        std::wcsncpy(dest, src, length);
 
       printPos (1, 1+int(y));
 
@@ -361,7 +361,7 @@ void FLabel::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', uLong(size));
   blank[getWidth()] = '\0';
   printPos (1,1);
   print (blank);
