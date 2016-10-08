@@ -591,7 +591,7 @@ void FMenu::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  clearArea();
+  clearArea (vwin);
   drawBorder();
   drawItems();
   drawShadow();

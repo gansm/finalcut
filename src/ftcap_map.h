@@ -60,6 +60,8 @@ static tcap_map tcap[] =
   { 0, "RI" },  // parm_right_cursor      -> move #1 characters to the right (P*)
   { 0, "sc" },  // save_cursor            -> save current cursor position (P)
   { 0, "rc" },  // restore_cursor         -> restore cursor to save_cursor
+  { 0, "sf" },  // scroll_forward         -> scroll text up (P)
+  { 0, "sr" },  // scroll_reverse         -> scroll text down (P)
   { 0, "ti" },  // enter_ca_mode          -> string to start programs using cup
   { 0, "te" },  // exit_ca_mode           -> strings to end programs using cup
   { 0, "eA" },  // enable_acs             -> enable alternate char set
@@ -151,6 +153,8 @@ enum termcaps
   t_parm_right_cursor,
   t_save_cursor,
   t_restore_cursor,
+  t_scroll_forward,
+  t_scroll_reverse,
   t_enter_ca_mode,
   t_exit_ca_mode,
   t_enable_acs,

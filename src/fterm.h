@@ -313,7 +313,9 @@ class FTerm
    void         getArea (int, int, int, int, FTerm::term_area*);
    void         putArea (const FPoint&, FTerm::term_area*);
    void         putArea (int, int, FTerm::term_area*);
-   void         clearArea();
+   static void  scrollAreaForward (FTerm::term_area*);
+   static void  scrollAreaReverse (FTerm::term_area*);
+   void         clearArea (FTerm::term_area*);
    FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
    FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
    FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
@@ -413,6 +415,9 @@ class FTerm
    static bool    setNonBlockingInput();
    static bool    unsetNonBlockingInput();
 
+   static bool    scrollTermForward();
+   static bool    scrollTermReverse();
+
    static bool    setUTF8 (bool);
    static bool    setUTF8();
    static bool    unsetUTF8();
@@ -424,6 +429,7 @@ class FTerm
    static bool    unsetRawMode();
    static bool    setCookedMode();
    static bool    isRaw();
+
    static FString getAnswerbackMsg();
    static FString getSecDA();
 

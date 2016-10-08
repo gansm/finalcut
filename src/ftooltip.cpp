@@ -130,7 +130,7 @@ void FToolTip::draw()
   if ( getMaxColor() < 16 )
     setBold();
 
-  clearArea();
+  clearArea (vwin);
   drawBorder();
 
   for (int i=0; i < int(text_num_lines); i++)

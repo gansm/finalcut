@@ -506,6 +506,7 @@ class FWidget : public FObject, public FTerm
 
    void             printPos (const FPoint&);
    void             printPos (register int, register int);
+   FPoint           getPrintPos() const;
 
    static void      setNormal();
 
@@ -935,6 +936,15 @@ inline void FWidget::printPos (register int x, register int y)
 {
   cursor->setPoint ( offset.getX1() + adjust_wsize.getX() - 1 + x,
                      offset.getY1() + adjust_wsize.getY() - 1 + y );
+}
+
+//----------------------------------------------------------------------
+inline FPoint FWidget::getPrintPos() const
+{
+  int cx = cursor->getX();
+  int cy = cursor->getY();
+  return FPoint ( cx - offset.getX1() - adjust_wsize.getX() + 1
+                , cy - offset.getY1() - adjust_wsize.getY() + 1 );
 }
 
 //----------------------------------------------------------------------

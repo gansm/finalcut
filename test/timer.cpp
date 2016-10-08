@@ -39,7 +39,24 @@ timer::timer (FWidget* parent)
 //----------------------------------------------------------------------
 void timer::onTimer (FTimerEvent* ev)
 {
-  std::printf("timer event, id %d\n\r", ev->timerId() );
+  bool is_last_line = false;
+  int timer_id = ev->timerId();
+
+  if ( getPrintPos().getY() == getLineNumber() )
+    is_last_line = true;
+
+  setColor (short(1 + timer_id), fc::Default);
+  printf ("timer event, id %d\n", timer_id );
+
+  if ( is_last_line )
+  {
+    scrollAreaForward (vdesktop);
+
+    if ( ! scrollTermForward() )
+      putArea (getTermPos(), vdesktop);
+  }
+
+  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -54,12 +71,12 @@ void timer::draw()
 {
   setNormal();
   setColor (fc::Default, fc::Default);
-  clearArea();
+  clearArea (vdesktop);
   printPosTerm (1,1);
   print ("---------------\n");
   print ("Press Q to quit\n");
   print ("---------------\n");
-  setCursorPos (1,4);
+  setAreaCursor (1, 4, true, vdesktop);
 }
 
 

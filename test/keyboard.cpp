@@ -34,7 +34,23 @@ keyboard::keyboard (FWidget* parent)
 void keyboard::onKeyPress (FKeyEvent* ev)
 {
   int key_id = ev->key();
-  std::printf("Key %s (id %d)\n\r", getKeyName(key_id).c_str(), key_id);
+  bool is_last_line = false;
+
+  if ( getPrintPos().getY() == getLineNumber() )
+    is_last_line = true;
+
+  printf ("Key %s (id %d)\n", getKeyName(key_id).c_str(), key_id);
+
+
+  if ( is_last_line )
+  {
+    scrollAreaForward (vdesktop);
+
+    if ( ! scrollTermForward() )
+      putArea (getTermPos(), vdesktop);
+  }
+
+  setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -49,12 +65,12 @@ void keyboard::draw()
 {
   setNormal();
   setColor(fc::Default, fc::Default);
-  clearArea();
+  clearArea (vdesktop);
   printPosTerm (1,1);
   print ("---------------\n");
   print ("Press Q to quit\n");
   print ("---------------\n");
-  setCursorPos (1,5);
+  setAreaCursor (1, 4, true, vdesktop);
 }
 
 //----------------------------------------------------------------------

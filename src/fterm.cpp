@@ -1752,6 +1752,7 @@ void FTerm::init()
   // create virtual desktop area
   createArea (vdesktop);
   vdesktop->visible = true;
+  active_area = vdesktop;
 
   // make stdin non-blocking
   setNonBlockingInput();
@@ -2683,8 +2684,8 @@ bool FTerm::updateVTermCursor (FTerm::term_area* area)
     ax  = area->widget->getTermX() - 1;
     ay  = area->widget->getTermY() - 1;
     // area position
-    x  = ax + cx - 1;
-    y  = ay + cy - 1;
+    x  = ax + cx;
+    y  = ay + cy;
 
     if ( isInsideArea(cx, cy, area)
        && isInsideTerminal(x+1, y+1)
@@ -2724,8 +2725,8 @@ void FTerm::setAreaCursor (int x, int y, bool visible, FTerm::term_area* area)
   if ( ! area )
     return;
 
-  area->input_cursor_x = x;
-  area->input_cursor_y = y;
+  area->input_cursor_x = x - 1;
+  area->input_cursor_y = y - 1;
   area->input_cursor_visible = visible;
   updateVTerm (area);
 }
@@ -2939,42 +2940,97 @@ void FTerm::putArea (int ax, int ay, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-void FTerm::clearArea()
+void FTerm::scrollAreaForward (FTerm::term_area* area)
 {
-  term_area* area;
-  FWindow*   window;
-  FWidget*   widget;
-  FOptiAttr::char_data default_char;
+  int total_width;
+  int length;
+  int y_max;
+  FOptiAttr::char_data nc;  // next character
+  FOptiAttr::char_data* lc; // last character
+  FOptiAttr::char_data* sc; // source character
+  FOptiAttr::char_data* dc; // destination character
+
+  if ( ! area )
+    return;
+
+  if ( area->height <= 1 )
+    return;
+
+  length = area->width;
+  total_width = area->width + area->right_shadow;
+  y_max = area->height - 1;
+
+  for (int y=0; y < y_max; y++)
+  {
+    int pos1 = y * total_width;
+    int pos2 = (y+1) * total_width;
+    sc = &area->text[pos2];
+    dc = &area->text[pos1];
+    std::memcpy (dc, sc, sizeof(FOptiAttr::char_data) * unsigned(length));
+    area->changes[y].xmin = 0;
+    area->changes[y].xmax = uInt(area->width - 1);
+  }
+
+  // insert a new line below
+  lc = &area->text[(y_max * total_width) - area->right_shadow - 1];
+  std::memcpy (&nc, lc, sizeof(FOptiAttr::char_data));
+  nc.code = ' ';
+  dc = &area->text[y_max * total_width];
+  std::fill_n (dc, area->width, nc);
+  area->changes[y_max].xmin = 0;
+  area->changes[y_max].xmax = uInt(area->width - 1);
+}
+
+//----------------------------------------------------------------------
+void FTerm::scrollAreaReverse (FTerm::term_area* area)
+{
+  int total_width;
+  int length;
+  FOptiAttr::char_data nc;  // next character
+  FOptiAttr::char_data* lc; // last character
+  FOptiAttr::char_data* sc; // source character
+  FOptiAttr::char_data* dc; // destination character
+
+  if ( ! area )
+    return;
+
+  if ( area->height <= 1 )
+    return;
+
+  length = area->width;
+  total_width = area->width + area->right_shadow;
+
+  for (int y=area->height-1; y > 0; y--)
+  {
+    int pos1 = (y-1) * total_width;
+    int pos2 = y * total_width;
+    sc = &area->text[pos1];
+    dc = &area->text[pos2];
+    std::memcpy (dc, sc, sizeof(FOptiAttr::char_data) * unsigned(length));
+    area->changes[y].xmin = 0;
+    area->changes[y].xmax = uInt(area->width - 1);
+  }
+
+  // insert a new line above
+  lc = &area->text[total_width];
+  std::memcpy (&nc, lc, sizeof(FOptiAttr::char_data));
+  nc.code = ' ';
+  dc = &area->text[0];
+  std::fill_n (dc, area->width, nc);
+  area->changes[0].xmin = 0;
+  area->changes[0].xmax = uInt(area->width - 1);
+}
+
+//----------------------------------------------------------------------
+void FTerm::clearArea (FTerm::term_area* area)
+{
+  FOptiAttr::char_data nc;  // next character
   int  total_width;
   uInt w;
 
-  default_char.code          = ' ';
-  default_char.fg_color      = next_attribute.fg_color;
-  default_char.bg_color      = next_attribute.bg_color;
-  default_char.bold          = next_attribute.bold;
-  default_char.dim           = next_attribute.dim;
-  default_char.italic        = next_attribute.italic;
-  default_char.underline     = next_attribute.underline;
-  default_char.blink         = next_attribute.blink;
-  default_char.reverse       = next_attribute.reverse;
-  default_char.standout      = next_attribute.standout;
-  default_char.invisible     = next_attribute.invisible;
-  default_char.protect       = next_attribute.protect;
-  default_char.crossed_out   = next_attribute.crossed_out;
-  default_char.dbl_underline = next_attribute.dbl_underline;
-  default_char.alt_charset   = next_attribute.alt_charset;
-  default_char.pc_charset    = next_attribute.pc_charset;
-  default_char.transparent   = next_attribute.transparent;
-  default_char.trans_shadow  = next_attribute.trans_shadow;
-  default_char.inherit_bg    = next_attribute.inherit_bg;
-
-  widget = static_cast<FWidget*>(this);
-  window = FWindow::getWindowWidget(widget);
-
-  if ( window )
-    area = window->getVWin();
-  else
-    area = vdesktop;
+  // clear with the current attributes and space characters
+  std::memcpy (&nc, &next_attribute, sizeof(FOptiAttr::char_data));
+  nc.code = ' ';
 
   if ( ! area )
     return;
@@ -2985,17 +3041,17 @@ void FTerm::clearArea()
   if ( area->right_shadow == 0 )
   {
     int area_size = area->width * area->height;
-    std::fill_n (area->text, area_size, default_char);
+    std::fill_n (area->text, area_size, nc);
   }
   else
   {
-    FOptiAttr::char_data t_char = default_char;
+    FOptiAttr::char_data t_char = nc;
     t_char.transparent = true;
 
     for (int y=0; y < area->height; y++)
     {
       int pos = y * total_width;
-      std::fill_n (&area->text[pos], total_width, default_char);
+      std::fill_n (&area->text[pos], total_width, nc);
       std::fill_n (&area->text[pos+area->width], area->right_shadow, t_char);
     }
 
@@ -3012,9 +3068,9 @@ void FTerm::clearArea()
     area->changes[i].xmin = 0;
     area->changes[i].xmax = w - 1;
 
-    if (  default_char.transparent
-       || default_char.trans_shadow
-       || default_char.inherit_bg )
+    if (  nc.transparent
+       || nc.trans_shadow
+       || nc.inherit_bg )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
       area->changes[i].trans_count = uInt(area->right_shadow);
@@ -4240,6 +4296,32 @@ bool FTerm::setNonBlockingInput (bool on)
   }
 
   return non_blocking_stdin;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::scrollTermForward()
+{
+  if ( tcap[t_scroll_forward].string )
+  {
+    putstring (tcap[t_scroll_forward].string);
+    std::fflush(stdout);
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::scrollTermReverse()
+{
+  if ( tcap[t_scroll_reverse].string )
+  {
+    putstring (tcap[t_scroll_reverse].string);
+    std::fflush(stdout);
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------

@@ -143,7 +143,7 @@ void FWidget::init()
   foreground_color = wc.term_fg;
   background_color = wc.term_bg;
   setColor();
-  clearArea();
+  clearArea(vdesktop);
 
   accelerator_list = new Accelerators();
 }
@@ -369,28 +369,30 @@ void FWidget::setColorTheme()
 //----------------------------------------------------------------------
 FTerm::term_area* FWidget::getPrintArea()
 {
+  // returns the print area of this object
   if ( print_area )
     return print_area;
   else
   {
-    FWidget* window = FWindow::getWindowWidget(this);
+    FWidget* obj = static_cast<FWidget*>(this);
+    FWidget* p_obj = static_cast<FWidget*>(obj->getParent());
 
-    if ( window )
+    while ( ! obj->vwin && p_obj )
     {
-      term_area* area = window->getVWin();
-
-      if ( area )
-      {
-        print_area = area;
-        return area;
-      }
-      else
-        return 0;
+      obj = p_obj;
+      p_obj = static_cast<FWidget*>(p_obj->getParent());
     }
-    else
-      return 0;
+
+    if ( obj->vwin )
+    {
+      print_area = obj->vwin;
+      return print_area;
+    }
   }
+
+  return vdesktop;
 }
+
 
 // protected methods of FWidget
 //----------------------------------------------------------------------
@@ -1227,7 +1229,7 @@ void FWidget::redraw()
     terminal_updates = false;
     // clean desktop
     setColor (wc.term_fg, wc.term_bg);
-    clearArea();
+    clearArea (vdesktop);
   }
   else if ( ! visible )
     return;
