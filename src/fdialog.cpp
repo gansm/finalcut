@@ -64,16 +64,7 @@ FDialog::~FDialog()  // destructor
   if ( ! is_quit )
     switchToPrevWindow();
 
-  delWindow(this);
   delDialog(this);
-
-  if ( ! is_quit )
-  {
-    const FRect& t_geometry = getTermGeometryWithShadow();
-    restoreVTerm (t_geometry);
-  }
-
-  removeArea (vwin);
 
   if ( isModal() )
     unsetModal();
@@ -93,9 +84,7 @@ void FDialog::init()
   // initialize geometry values
   setGeometry (1, 1, 10, 10, false);
   setMinimumSize (15, 4);
-  createArea (vwin);
   addDialog(this);
-  addWindow(this);
   setActiveWindow(this);
   setTransparentShadow();
   setForegroundColor (wc.dialog_fg);
@@ -461,10 +450,16 @@ void FDialog::cb_move (FWidget*, void*)
 
   if ( isResizeable() )
   {
-    tooltip->setText ( "       Arrow keys: Move\n"
-                       "Meta + Arrow keys: Resize\n"
-                       "            Enter: Done\n"
-                       "              Esc: Cancel" );
+    if ( isLinuxTerm() )
+      tooltip->setText ( "        Arrow keys: Move\n"
+                         "Shift + Arrow keys: Resize\n"
+                         "             Enter: Done\n"
+                         "               Esc: Cancel" );
+    else
+      tooltip->setText ( "       Arrow keys: Move\n"
+                         "Meta + Arrow keys: Resize\n"
+                         "            Enter: Done\n"
+                         "              Esc: Cancel" );
   }
   else
   {
@@ -645,6 +640,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
         break;
 
       case fc::Fmkey_up:
+      case fc::Fkey_sr:
         if ( isResizeable() )
         {
           setSize (getWidth(), getHeight() - 1);
@@ -653,6 +649,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
         break;
 
       case fc::Fmkey_down:
+      case fc::Fkey_sf:
         if ( isResizeable() && getHeight() + getY() <= getMaxHeight() )
         {
           setSize (getWidth(), getHeight() + 1);
@@ -661,6 +658,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
         break;
 
       case fc::Fmkey_left:
+      case fc::Fkey_sleft:
         if ( isResizeable() )
         {
           setSize (getWidth() - 1, getHeight());
@@ -669,6 +667,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
         break;
 
       case fc::Fmkey_right:
+      case fc::Fkey_sright:
         if ( isResizeable() && getWidth() + getX() <= getMaxWidth() )
         {
           setSize (getWidth() + 1, getHeight());
@@ -1486,48 +1485,6 @@ bool FDialog::setModal (bool on)
   return on;
 }
 
-//----------------------------------------------------------------------
-bool FDialog::setTransparentShadow (bool on)
-{
-  if ( on )
-  {
-    flags |= fc::shadow;
-    flags |= fc::trans_shadow;
-    setShadowSize (2,1);
-  }
-  else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (0,0);
-  }
-
-  resizeArea (vwin);
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FDialog::setShadow (bool on)
-{
-  if ( isMonochron() )
-    return false;
-
-  if ( on )
-  {
-    flags |= fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (1,1);
-  }
-  else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (0,0);
-  }
-
-  resizeArea (vwin);
-  return on;
-}
 
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool on)
@@ -1543,16 +1500,12 @@ bool FDialog::setScrollable (bool on)
 //----------------------------------------------------------------------
 bool FDialog::setResizeable (bool on)
 {
+  FWindow::setResizeable (on);
+
   if ( on )
-  {
-    flags |= fc::resizeable;
     zoom_item->setEnable();
-  }
   else
-  {
-    flags &= ~fc::resizeable;
     zoom_item->setDisable();
-  }
 
   return on;
 }

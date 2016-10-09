@@ -116,6 +116,19 @@ class FWindow : public FWidget
    bool            deactivateWindow();
    bool            isActiveWindow() const;
    bool            isHiddenWindow() const;
+   bool            setResizeable (bool);
+   bool            setResizeable();
+   bool            unsetResizeable();
+   bool            isResizeable();
+   bool            setTransparentShadow (bool);
+   bool            setTransparentShadow();
+   bool            unsetTransparentShadow();
+   bool            hasTransparentShadow();
+   bool            setShadow (bool);
+   bool            setShadow();
+   bool            unsetShadow();
+   bool            hasShadow();
+   virtual void    setShadowSize (int, int);
    bool            setAlwaysOnTop (bool);
    bool            setAlwaysOnTop();
    bool            unsetAlwaysOnTop();
@@ -164,6 +177,42 @@ inline bool FWindow::deactivateWindow()
 //----------------------------------------------------------------------
 inline bool FWindow::isActiveWindow() const
 { return window_active; }
+
+//----------------------------------------------------------------------
+inline bool FWindow::setResizeable()
+{ return setResizeable(true); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::unsetResizeable()
+{ return setResizeable(false); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::isResizeable()
+{ return ((flags & fc::resizeable) != 0); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::setTransparentShadow()
+{ return setTransparentShadow(true); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::unsetTransparentShadow()
+{ return setTransparentShadow(false); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::hasTransparentShadow()
+{ return ((flags & fc::trans_shadow) != 0); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::setShadow()
+{ return setShadow(true); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::unsetShadow()
+{ return setShadow(false); }
+
+//----------------------------------------------------------------------
+inline bool FWindow::hasShadow()
+{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline bool FWindow::setAlwaysOnTop()

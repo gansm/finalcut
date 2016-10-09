@@ -491,7 +491,7 @@ class FWidget : public FObject, public FTerm
    void             setTermSize (int, int);
    virtual void     setGeometry (const FRect&, bool = true);
    virtual void     setGeometry (int, int, int, int, bool = true);
-   void             setShadowSize (int, int);
+   virtual void     setShadowSize (int, int);
    void             setMinimumSize (int, int);
    void             setMaximumSize (int, int);
    void             setFixedSize (int, int);

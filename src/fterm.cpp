@@ -47,7 +47,7 @@ bool     FTerm::automatic_left_margin;
 bool     FTerm::automatic_right_margin;
 bool     FTerm::eat_nl_glitch;
 bool     FTerm::ansi_default_color;
-bool     FTerm::xterm;
+bool     FTerm::xterm_terminal;
 bool     FTerm::rxvt_terminal;
 bool     FTerm::urxvt_terminal;
 bool     FTerm::mlterm_terminal;
@@ -1071,6 +1071,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
       }
     }
   }
+
   return new_termtype;
 }
 
@@ -1621,7 +1622,7 @@ void FTerm::init_encoding()
       utf8_linux_terminal = true;
       setUTF8(false);
     }
-    else if ( xterm && utf8_console )
+    else if ( xterm_terminal && utf8_console )
     {
       Fputchar = &FTerm::putchar_UTF8;  // function pointer
     }
@@ -1747,10 +1748,11 @@ void FTerm::init()
   init_console();
 
   // create virtual terminal
-  createVTerm();
+  createVTerm (*term);
 
   // create virtual desktop area
-  createArea (vdesktop);
+  FPoint shadow_size(0,0);
+  createArea (*term, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
 
@@ -1805,9 +1807,9 @@ void FTerm::init()
   // Test if the terminal is a xterm
   if (  std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
      || std::strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
-    xterm = true;
+    xterm_terminal = true;
   else
-    xterm = false;
+    xterm_terminal = false;
 
   // set the new environment variable TERM
   if ( new_termtype )
@@ -1920,7 +1922,7 @@ void FTerm::init()
   setRawMode();
   hideCursor();
 
-  if ( (xterm || urxvt_terminal) && ! rxvt_terminal )
+  if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
   {
     setNonBlockingInput();
     xterm_font  = new FString(getXTermFont());
@@ -2004,7 +2006,7 @@ void FTerm::finish()
   signal(SIGQUIT,  SIG_DFL); // Quit from keyboard (Ctrl-\)
   signal(SIGTERM,  SIG_DFL); // Termination signal
 
-  if ( xterm_title && xterm && ! rxvt_terminal )
+  if ( xterm_title && xterm_terminal && ! rxvt_terminal )
     setXTermTitle (*xterm_title);
 
   showCursor();
@@ -2188,7 +2190,17 @@ bool FTerm::charEncodable (uInt c)
 }
 
 //----------------------------------------------------------------------
-void FTerm::createArea (term_area*& area)
+void FTerm::createArea (const FRect& r, const FPoint& p, FTerm::term_area*& area)
+{
+  createArea ( r.getWidth()
+             , r.getHeight()
+             , p.getX()
+             , p.getY()
+             , area );
+}
+
+//----------------------------------------------------------------------
+void FTerm::createArea (int width, int height, int rsw, int bsh, term_area*& area)
 {
   // initialize virtual window
   area = new term_area;
@@ -2205,35 +2217,30 @@ void FTerm::createArea (term_area*& area)
   area->visible              = false;
   area->widget               = static_cast<FWidget*>(this);
 
-  resizeArea (area);
+  resizeArea (width, height, rsw, bsh, area);
 }
 
 //----------------------------------------------------------------------
-void FTerm::resizeArea (term_area* area)
+void FTerm::resizeArea (const FRect& r, const FPoint& p, FTerm::term_area* area)
 {
-  int area_size, width, height, rsw, bsh;
+  resizeArea ( r.getWidth()
+             , r.getHeight()
+             , p.getX()
+             , p.getY()
+             , area );
+}
+
+//----------------------------------------------------------------------
+void FTerm::resizeArea (int width, int height, int rsw, int bsh, term_area* area)
+{
+  int area_size;
   FOptiAttr::char_data default_char;
   line_changes unchanged;
 
   if ( ! area )
     return;
 
-  if ( term_object == this )
-  {
-    rsw = bsh = 0;  // no shadow
-    width = getColumnNumber();
-    height = getLineNumber();
-    area_size = width * height;
-  }
-  else
-  {
-    FWidget* w = static_cast<FWidget*>(this);
-    rsw = w->getShadow().getX();  // right shadow width;
-    bsh = w->getShadow().getY();  // bottom shadow height
-    width = w->getWidth();
-    height = w->getHeight();
-    area_size = (width+rsw) * (height+bsh);
-  }
+  area_size = (width+rsw) * (height+bsh);
 
   if ( area->height + area->bottom_shadow != height + bsh )
   {
@@ -2355,7 +2362,7 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
   if ( h < 0 )
     return;
 
-  widget = static_cast<FWidget*>(this);
+  widget = static_cast<FWidget*>(vterm->widget);
 
   for (register int ty=0; ty < h; ty++)
   {
@@ -2429,6 +2436,13 @@ void FTerm::restoreVTerm (int x, int y, int w, int h)
         vterm->changes[y+ty].xmax = uInt(x+w-1);
     }
   }
+}
+
+//----------------------------------------------------------------------
+FTerm::covered_state FTerm::isCovered ( const FPoint& pos
+                                      , FTerm::term_area* area)
+{
+  return isCovered (pos.getX(), pos.getY(), area);
 }
 
 //----------------------------------------------------------------------
@@ -2720,6 +2734,14 @@ bool FTerm::isInsideArea (int x, int y, FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
+void FTerm::setAreaCursor ( const FPoint& pos
+                          , bool visible
+                          , FTerm::term_area* area )
+{
+  setAreaCursor (pos.getX(), pos.getY(), visible, area);
+}
+
+//----------------------------------------------------------------------
 void FTerm::setAreaCursor (int x, int y, bool visible, FTerm::term_area* area)
 {
   if ( ! area )
@@ -2729,6 +2751,12 @@ void FTerm::setAreaCursor (int x, int y, bool visible, FTerm::term_area* area)
   area->input_cursor_y = y - 1;
   area->input_cursor_visible = visible;
   updateVTerm (area);
+}
+
+//----------------------------------------------------------------------
+void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
+{
+  return getArea (pos.getX(), pos.getY(), area);
 }
 
 //----------------------------------------------------------------------
@@ -2768,6 +2796,16 @@ void FTerm::getArea (int ax, int ay, FTerm::term_area* area)
     if ( short(area->changes[y].xmax) < length-1 )
       area->changes[y].xmax = uInt(length-1);
   }
+}
+
+//----------------------------------------------------------------------
+void FTerm::getArea (const FRect& box, FTerm::term_area* area)
+{
+  getArea ( box.getX()
+          , box.getY()
+          , box.getWidth()
+          , box.getHeight()
+          , area );
 }
 
 //----------------------------------------------------------------------
@@ -3090,6 +3128,14 @@ void FTerm::clearArea (FTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
+FOptiAttr::char_data FTerm::getCharacter ( int type
+                                         , const FPoint& pos
+                                         , FTerm* obj )
+{
+  return getCharacter (type, pos.getX(), pos.getY(), obj);
+}
+
+//----------------------------------------------------------------------
 FOptiAttr::char_data FTerm::getCharacter ( int char_type
                                          , int x
                                          , int y
@@ -3190,6 +3236,36 @@ FOptiAttr::char_data FTerm::getCharacter ( int char_type
   return *cc;
 }
 
+//----------------------------------------------------------------------
+FOptiAttr::char_data FTerm::getCoveredCharacter ( int x
+                                                , int y
+                                                , FTerm* obj)
+{
+  return getCharacter (covered_character, x, y, obj);
+}
+
+//----------------------------------------------------------------------
+FOptiAttr::char_data FTerm::getCoveredCharacter ( const FPoint& pos
+                                                , FTerm* obj )
+{
+  return getCharacter (covered_character, pos.getX(), pos.getY(), obj);
+}
+
+//----------------------------------------------------------------------
+FOptiAttr::char_data FTerm::getOverlappedCharacter ( int x
+                                                   , int y
+                                                   , FTerm* obj)
+{
+  return getCharacter (overlapped_character, x, y, obj);
+}
+
+//----------------------------------------------------------------------
+FOptiAttr::char_data FTerm::getOverlappedCharacter ( const FPoint& pos
+                                                     , FTerm* obj )
+{
+  return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj);
+}
+
 
 // public methods of FTerm
 //----------------------------------------------------------------------
@@ -3208,7 +3284,7 @@ bool FTerm::setVGAFont()
 
   VGAFont = true;
 
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     // Set font in xterm to vga
     oscPrefix();
@@ -3219,7 +3295,7 @@ bool FTerm::setVGAFont()
     pc_charset_console = true;
     Encoding = fc::PC;
 
-    if ( xterm && utf8_console )
+    if ( xterm_terminal && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
@@ -3276,7 +3352,7 @@ bool FTerm::setNewFont()
      || mintty_terminal )
     return false;
 
-  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
@@ -3287,7 +3363,7 @@ bool FTerm::setNewFont()
     pc_charset_console = true;
     Encoding = fc::PC;
 
-   if ( xterm && utf8_console )
+   if ( xterm_terminal && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
@@ -3342,7 +3418,7 @@ bool FTerm::setOldFont()
   NewFont = \
   VGAFont = false;
 
-  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
     {
@@ -3445,7 +3521,7 @@ void FTerm::getTermSize()
 void FTerm::setTermSize (int term_width, int term_height)
 {
   // Set xterm size to {term_width} x {term_height}
-  if ( xterm )
+  if ( xterm_terminal )
   {
     putstringf (CSI "8;%d;%dt", term_height, term_width);
     std::fflush(stdout);
@@ -3453,93 +3529,31 @@ void FTerm::setTermSize (int term_width, int term_height)
 }
 
 //----------------------------------------------------------------------
-void FTerm::createVTerm()
+void FTerm::createVTerm (const FRect& r)
 {
   // initialize virtual terminal
-  vterm = new term_area;
-  vterm->width                = -1;
-  vterm->height               = -1;
-  vterm->right_shadow         = 0;
-  vterm->bottom_shadow        = 0;
-  vterm->input_cursor_x       = -1;;
-  vterm->input_cursor_y       = -1;;
-  vterm->input_cursor_visible = false;
-  vterm->changes              = 0;
-  vterm->text                 = 0;
-  vterm->visible              = true;
-  vterm->widget               = static_cast<FWidget*>(this);
-
-  resizeVTerm();
+  const FPoint shadow(0,0);
+  createArea (r, shadow, vterm);
 }
 
 //----------------------------------------------------------------------
-void FTerm::resizeVTerm()
+void FTerm::createVTerm (int width, int height)
 {
-  FOptiAttr::char_data default_char;
-  line_changes unchanged;
-  int term_width, term_height, vterm_size;
+  // initialize virtual terminal
+  createArea (width, height, 0, 0, vterm);
+}
 
-  term_width  = term->getWidth();
-  term_height = term->getHeight();
-  vterm_size  = term_width * term_height;
+//----------------------------------------------------------------------
+void FTerm::resizeVTerm (const FRect& r)
+{
+  const FPoint shadow(0,0);
+  resizeArea (r, shadow, vterm);
+}
 
-  if ( vterm->height != term_height )
-  {
-    if ( vterm->changes != 0 )
-    {
-      delete[] vterm->changes;
-      vterm->changes = 0;
-    }
-
-    if ( vterm->text != 0 )
-    {
-      delete[] vterm->text;
-      vterm->text = 0;
-    }
-
-    vterm->changes = new line_changes[term_height];
-    vterm->text    = new FOptiAttr::char_data[vterm_size];
-  }
-  else if ( vterm->width != term_width )
-  {
-    if ( vterm->text != 0 )
-    {
-      delete[] vterm->text;
-      vterm->text = 0;
-    }
-
-    vterm->text = new FOptiAttr::char_data[vterm_size];
-  }
-  else
-    return;
-
-  vterm->width  = term_width;
-  vterm->height = term_height;
-
-  default_char.code          = ' ';
-  default_char.fg_color      = fc::Default;
-  default_char.bg_color      = fc::Default;
-  default_char.bold          = 0;
-  default_char.dim           = 0;
-  default_char.italic        = 0;
-  default_char.underline     = 0;
-  default_char.blink         = 0;
-  default_char.reverse       = 0;
-  default_char.standout      = 0;
-  default_char.invisible     = 0;
-  default_char.protect       = 0;
-  default_char.crossed_out   = 0;
-  default_char.dbl_underline = 0;
-  default_char.alt_charset   = 0;
-  default_char.pc_charset    = 0;
-  default_char.transparent   = 0;
-  default_char.trans_shadow  = 0;
-
-  std::fill_n (vterm->text, vterm_size, default_char);
-  unchanged.xmin = uInt(term_width);
-  unchanged.xmax = 0;
-  unchanged.trans_count = 0;
-  std::fill_n (vterm->changes, term_height, unchanged);
+//----------------------------------------------------------------------
+void FTerm::resizeVTerm (int width, int height)
+{
+  resizeArea (width, height, 0, 0, vterm);
 }
 
 //----------------------------------------------------------------------
@@ -3586,8 +3600,8 @@ void FTerm::updateTerminal()
   }
 
   vt = vterm;
-  term_width = term->getWidth() - 1;
-  term_height = term->getHeight() - 1;
+  term_width = vt->width - 1;
+  term_height = vt->height - 1;
 
   for (register uInt y=0; y < uInt(vt->height); y++)
   {
@@ -3694,7 +3708,7 @@ FString FTerm::getXTermFont()
 {
   FString font("");
 
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     if ( raw_mode && non_blocking_stdin )
     {
@@ -3755,7 +3769,7 @@ FString FTerm::getXTermTitle()
 void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
-  if ( (xterm || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
+  if ( (xterm_terminal || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
   {
     putstringf (CSI "%d q", style);
     std::fflush(stdout);
@@ -3766,7 +3780,7 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 void FTerm::setXTermTitle (const FString& title)
 {
   // Set the xterm title
-  if ( xterm || screen_terminal
+  if ( xterm_terminal || screen_terminal
      || mintty_terminal || putty_terminal
      || osc_support )
   {
@@ -3781,7 +3795,7 @@ void FTerm::setXTermTitle (const FString& title)
 void FTerm::setXTermForeground (const FString& fg)
 {
   // Set the VT100 text foreground color
-  if ( xterm || screen_terminal
+  if ( xterm_terminal || screen_terminal
      || mintty_terminal || mlterm_terminal
      || osc_support )
   {
@@ -3796,7 +3810,7 @@ void FTerm::setXTermForeground (const FString& fg)
 void FTerm::setXTermBackground (const FString& bg)
 {
   // Set the VT100 text background color
-  if ( xterm || screen_terminal
+  if ( xterm_terminal || screen_terminal
      || mintty_terminal || mlterm_terminal
      || osc_support )
   {
@@ -3811,7 +3825,7 @@ void FTerm::setXTermBackground (const FString& bg)
 void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
-  if ( xterm || screen_terminal
+  if ( xterm_terminal || screen_terminal
      || mintty_terminal || urxvt_terminal
      || osc_support )
   {
@@ -3826,7 +3840,7 @@ void FTerm::setXTermCursorColor (const FString& cc)
 void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
-  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
   {
     oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
@@ -3839,7 +3853,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 void FTerm::setXTermMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstringf (OSC "14;%s" BEL, mbg.c_str());
@@ -3852,7 +3866,7 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
 void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
-  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
   {
     oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
@@ -3865,7 +3879,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstringf (OSC "104" BEL);
@@ -3878,7 +3892,7 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstring (OSC "110" BEL);
@@ -3891,7 +3905,7 @@ void FTerm::resetXTermForeground()
 void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstring (OSC "111" BEL);
@@ -3904,7 +3918,7 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstring (OSC "112" BEL);
@@ -3917,7 +3931,7 @@ void FTerm::resetXTermCursorColor()
 void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstring (OSC "113" BEL);
@@ -3930,7 +3944,7 @@ void FTerm::resetXTermMouseForeground()
 void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
-  if ( xterm || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || osc_support )
   {
     oscPrefix();
     putstring (OSC "114" BEL);
@@ -3943,7 +3957,7 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
-  if ( xterm || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
   {
     oscPrefix();
     putstringf (OSC "117" BEL);
@@ -4251,7 +4265,7 @@ void FTerm::setEncoding (std::string enc)
 
       case fc::VT100:
       case fc::PC:
-        if ( xterm && utf8_console )
+        if ( xterm_terminal && utf8_console )
           Fputchar = &FTerm::putchar_UTF8;
         // fall through
       case fc::ASCII:
@@ -4938,7 +4952,7 @@ inline void FTerm::charsetChanges (FOptiAttr::char_data*& next_char)
     {
       next_char->pc_charset = true;
 
-      if ( xterm && utf8_console && ch < 0x20 )  // Character 0x00..0x1f
+      if ( xterm_terminal && utf8_console && ch < 0x20 )  // Character 0x00..0x1f
         next_char->code = int(charEncode(code, fc::ASCII));
     }
   }

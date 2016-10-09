@@ -126,7 +126,7 @@ class FTerm
    static bool    ascii_console;
    static bool    color256;
    static bool    monochron;
-   static bool    xterm;
+   static bool    xterm_terminal;
    static bool    rxvt_terminal;
    static bool    urxvt_terminal;
    static bool    mlterm_terminal;
@@ -294,34 +294,36 @@ class FTerm
 
  protected:
    static bool  charEncodable (uInt);
-   void         createArea (FTerm::term_area*&); // reference to pointer
-   void         resizeArea (FTerm::term_area*);
-   void         removeArea (FTerm::term_area*&); // reference to pointer
-   void         restoreVTerm (const FRect&);
-   void         restoreVTerm (int, int, int, int);
+   void         createArea (const FRect&, const FPoint&, FTerm::term_area*&);
+   void         createArea (int, int, int, int, FTerm::term_area*&);
+   static void  resizeArea (const FRect&, const FPoint&, FTerm::term_area*);
+   static void  resizeArea (int, int, int, int, FTerm::term_area*);
+   static void  removeArea (FTerm::term_area*&);
+   static void  restoreVTerm (const FRect&);
+   static void  restoreVTerm (int, int, int, int);
    static FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*);
    static FTerm::covered_state isCovered (int, int, FTerm::term_area*);
-   void         updateVTerm (bool);
-   void         updateVTerm (FTerm::term_area*);
+   static void  updateVTerm (bool);
+   static void  updateVTerm (FTerm::term_area*);
    static bool  updateVTermCursor (FTerm::term_area*);
    static bool  isInsideArea (int, int, FTerm::term_area*);
-   void         setAreaCursor (const FPoint&, bool, FTerm::term_area*);
-   void         setAreaCursor (int, int, bool, FTerm::term_area*);
-   void         getArea (const FPoint&, FTerm::term_area*);
-   void         getArea (int, int, FTerm::term_area*);
-   void         getArea (const FRect&, FTerm::term_area*);
-   void         getArea (int, int, int, int, FTerm::term_area*);
-   void         putArea (const FPoint&, FTerm::term_area*);
-   void         putArea (int, int, FTerm::term_area*);
+   static void  setAreaCursor (const FPoint&, bool, FTerm::term_area*);
+   static void  setAreaCursor (int, int, bool, FTerm::term_area*);
+   static void  getArea (const FPoint&, FTerm::term_area*);
+   static void  getArea (int, int, FTerm::term_area*);
+   static void  getArea (const FRect&, FTerm::term_area*);
+   static void  getArea (int, int, int, int, FTerm::term_area*);
+   static void  putArea (const FPoint&, FTerm::term_area*);
+   static void  putArea (int, int, FTerm::term_area*);
    static void  scrollAreaForward (FTerm::term_area*);
    static void  scrollAreaReverse (FTerm::term_area*);
-   void         clearArea (FTerm::term_area*);
-   FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
-   FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
-   FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
-   FOptiAttr::char_data getCoveredCharacter (int, int, FTerm*);
-   FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FTerm*);
-   FOptiAttr::char_data getOverlappedCharacter (int, int, FTerm*);
+   static void  clearArea (FTerm::term_area*);
+   static FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
+   static FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
+   static FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
+   static FOptiAttr::char_data getCoveredCharacter (int, int, FTerm*);
+   static FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FTerm*);
+   static FOptiAttr::char_data getOverlappedCharacter (int, int, FTerm*);
 
  public:
    // Constructor
@@ -346,9 +348,20 @@ class FTerm
    static bool    hasVT100();
    static bool    hasASCII();
    static bool    isMonochron();
-   static bool    isCygwinTerminal();
-   static bool    isTeraTerm();
+   static bool    isXTerminal();
+   static bool    isRxvtTerminal();
    static bool    isUrxvtTerminal();
+   static bool    isMltermTerminal();
+   static bool    isPuttyTerminal();
+   static bool    isKdeTerminal();
+   static bool    isGnomeTerminal();
+   static bool    isKtermTerminal();
+   static bool    isTeraTerm();
+   static bool    isCygwinTerminal();
+   static bool    isMinttyTerm();
+   static bool    isLinuxTerm();
+   static bool    isScreenTerm();
+   static bool    isTmuxTerm();
    static bool    setVGAFont();
    static bool    setNewFont();
    static bool    isNewFont();
@@ -357,8 +370,10 @@ class FTerm
    static void    setConsoleCursor (fc::consoleCursorStyle);
    static void    getTermSize();
    static void    setTermSize (int, int);
-   void           createVTerm();
-   static void    resizeVTerm();
+   void           createVTerm (const FRect&);
+   void           createVTerm (int, int);
+   static void    resizeVTerm (const FRect&);
+   static void    resizeVTerm (int, int);
    static void    putVTerm();
    static void    updateTerminal (bool);
    static void    updateTerminal();
@@ -482,51 +497,6 @@ class FTerm
 
 // FTerm inline functions
 //----------------------------------------------------------------------
-inline FTerm::covered_state FTerm::isCovered ( const FPoint& pos
-                                             , FTerm::term_area* area)
-{ return isCovered (pos.getX(), pos.getY(), area); }
-
-//----------------------------------------------------------------------
-inline void FTerm::setAreaCursor ( const FPoint& pos
-                                 , bool visible
-                                 , FTerm::term_area* area)
-{ setAreaCursor (pos.getX(), pos.getY(), visible, area); }
-
-//----------------------------------------------------------------------
-inline void FTerm::getArea (const FPoint& pos, FTerm::term_area* area)
-{ return getArea (pos.getX(), pos.getY(), area); }
-
-//----------------------------------------------------------------------
-inline void FTerm::getArea (const FRect& box, FTerm::term_area* area)
-{
-  getArea ( box.getX()
-          , box.getY()
-          , box.getWidth()
-          , box.getHeight()
-          , area );
-}
-
-//----------------------------------------------------------------------
-inline FOptiAttr::char_data FTerm::getCharacter (int type, const FPoint& pos, FTerm* obj)
-{ return getCharacter (type, pos.getX(), pos.getY(), obj); }
-
-//----------------------------------------------------------------------
-inline FOptiAttr::char_data FTerm::getCoveredCharacter (int x, int y, FTerm* obj)
-{ return getCharacter (covered_character, x, y, obj); }
-
-//----------------------------------------------------------------------
-inline FOptiAttr::char_data FTerm::getCoveredCharacter (const FPoint& pos, FTerm* obj)
-{ return getCharacter (covered_character, pos.getX(), pos.getY(), obj); }
-
-//----------------------------------------------------------------------
-inline FOptiAttr::char_data FTerm::getOverlappedCharacter (int x, int y, FTerm* obj)
-{ return getCharacter (overlapped_character, x, y, obj); }
-
-//----------------------------------------------------------------------
-inline FOptiAttr::char_data FTerm::getOverlappedCharacter (const FPoint& pos, FTerm* obj)
-{ return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj); }
-
-//----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
 
@@ -593,16 +563,60 @@ inline bool FTerm::isMonochron()
 { return monochron; }
 
 //----------------------------------------------------------------------
-inline bool FTerm::isCygwinTerminal()
-{ return cygwin_terminal; }
+inline bool FTerm::isXTerminal()
+{ return xterm_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isRxvtTerminal()
+{ return rxvt_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isUrxvtTerminal()
+{ return urxvt_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isMltermTerminal()
+{ return mlterm_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isPuttyTerminal()
+{ return putty_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isKdeTerminal()
+{ return kde_konsole; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isGnomeTerminal()
+{ return gnome_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isKtermTerminal()
+{ return kterm_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isTeraTerm()
 { return tera_terminal; }
 
 //----------------------------------------------------------------------
-inline bool FTerm::isUrxvtTerminal()
-{ return urxvt_terminal; }
+inline bool FTerm::isCygwinTerminal()
+{ return cygwin_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isMinttyTerm()
+{ return mintty_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isLinuxTerm()
+{ return linux_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isScreenTerm()
+{ return screen_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isTmuxTerm()
+{ return tmux_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)

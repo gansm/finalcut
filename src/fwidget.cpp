@@ -53,9 +53,9 @@ FWidget::FWidget (FWidget* parent)
   , adjust_wsize_term_shadow()
   , offset()
   , client_offset()
-  , wshadow()
-  , foreground_color()
-  , background_color()
+  , wshadow(0,0)
+  , foreground_color(fc::Default)
+  , background_color(fc::Default)
   , print_area(0)
   , statusbar_message()
 {
@@ -137,13 +137,13 @@ void FWidget::init()
   double_flatline_mask.bottom.resize (uLong(getWidth()), false);
   double_flatline_mask.left.resize (uLong(getHeight()), false);
 
-  // default widget colors
+  // Initialize default widget colors
   setColorTheme();
 
   foreground_color = wc.term_fg;
   background_color = wc.term_bg;
   setColor();
-  clearArea(vdesktop);
+  clearArea (vdesktop);
 
   accelerator_list = new Accelerators();
 }
@@ -1323,9 +1323,10 @@ void FWidget::resize()
   if ( isRootWidget() && openConsole() == 0 )
   {
     getTermSize();
+    const FRect& term_geometry = getGeometry();
     closeConsole();
-    resizeVTerm();
-    resizeArea (vdesktop);
+    resizeVTerm (term_geometry);
+    resizeArea (term_geometry, getShadow(), vdesktop);
     adjustSizeGlobal();
   }
   else
@@ -1851,7 +1852,7 @@ void FWidget::getTermSize()
 void FWidget::setTermSize (int w, int h)
 {
   // Set xterm size to w x h
-  if ( xterm )
+  if ( xterm_terminal )
   {
     rootObject->wsize.setRect(1, 1, w, h);
     rootObject->adjust_wsize = rootObject->wsize;

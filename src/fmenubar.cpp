@@ -22,8 +22,6 @@ FMenuBar::FMenuBar(FWidget* parent)
 //----------------------------------------------------------------------
 FMenuBar::~FMenuBar()
 {
-  delWindow(this);
-  removeArea (vwin);
   setMenuBar(0);
 }
 
@@ -36,9 +34,7 @@ void FMenuBar::init()
   int w = r->getWidth();
   // initialize geometry values
   setGeometry (1, 1, w, 1, false);
-  createArea (vwin);
   setAlwaysOnTop();
-  addWindow(this);
   setMenuBar(this);
   ignorePadding();
 

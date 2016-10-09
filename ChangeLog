@@ -1,3 +1,6 @@
+2016-10-09  Markus Gans  <guru.mail@muenster.de>
+	* Remove some duplicate code
+
 2016-10-08  Markus Gans  <guru.mail@muenster.de>
 	* Add the possibility to scroll text up and down 
 	  in a virtual window

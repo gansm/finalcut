@@ -410,7 +410,6 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
 //----------------------------------------------------------------------
 void FMessageBox::setHeadline (const FString& headline)
 {
-  int old_height = getHeight();
   headline_text = headline;
   setHeight(getHeight() + 2, true);
 
@@ -421,9 +420,6 @@ void FMessageBox::setHeadline (const FString& headline)
 
   if ( len > max_line_width )
     max_line_width = len;
-
-  if ( vwin && getHeight() != old_height )
-    resizeArea (vwin);
 }
 
 //----------------------------------------------------------------------

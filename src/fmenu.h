@@ -106,9 +106,6 @@ class FMenu : public FWindow, public FMenuList
 
    void       show();
    void       hide();
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void       setGeometry (int, int, int, int, bool = true);
    void       setStatusbarMessage (FString);
    FMenuItem* getItem() const;
    FString    getText() const;
@@ -126,10 +123,6 @@ class FMenu : public FWindow, public FMenuList
    bool       hasHotkey() const;
    void       setMenu (FMenu*);
    bool       hasMenu() const;
-   bool       setTransparentShadow (bool);
-   bool       setTransparentShadow();
-   bool       unsetTransparentShadow();
-   bool       hasTransparentShadow();
    void       setText (FString&);
    void       setText (const std::string&);
    void       setText (const char*);
@@ -231,18 +224,6 @@ inline void FMenu::setMenu (FMenu* m)
 //----------------------------------------------------------------------
 inline bool FMenu::hasMenu() const
 { return item->hasMenu(); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::setTransparentShadow()
-{ return setTransparentShadow(true); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::unsetTransparentShadow()
-{ return setTransparentShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FMenu::hasTransparentShadow()
-{ return ((flags & fc::trans_shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setText (FString& txt)

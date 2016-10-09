@@ -51,16 +51,6 @@ FToolTip::~FToolTip()  // destructor
     else
       switchToPrevWindow();
   }
-
-  delWindow(this);
-
-  if ( ! fapp->isQuit() )
-  {
-    const FRect& t_geometry = getTermGeometryWithShadow();
-    restoreVTerm (t_geometry);
-  }
-
-  removeArea (vwin);
 }
 
 
@@ -73,8 +63,6 @@ void FToolTip::init()
   // initialize geometry values
   setGeometry (1, 1, 3, 3, false);
   setMinimumSize (3, 3);
-  createArea (vwin);
-  addWindow(this);
   setForegroundColor (wc.tooltip_fg);
   setBackgroundColor (wc.tooltip_bg);
   calculateDimensions();

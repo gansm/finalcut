@@ -23,16 +23,30 @@ FWindow::FWindow(FWidget* parent)
   , normalGeometry()
 {
   setWindowWidget();
+  createArea (getGeometry(), getShadow(), vwin);
+  addWindow (this);
 }
 
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
+  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+
   if ( previous_widget == this )
     previous_widget = 0;
 
   if ( isAlwaysOnTop() )
     deleteFromAlwaysOnTopList (this);
+
+  delWindow (this);
+
+  if ( ! fapp->isQuit() )
+  {
+    const FRect& t_geometry = getTermGeometryWithShadow();
+    restoreVTerm (t_geometry);
+  }
+
+  removeArea (vwin);
 }
 
 
@@ -211,7 +225,7 @@ void FWindow::setWidth (int w, bool adjust)
   FWidget::setWidth (w, adjust);
 
   if ( vwin && getWidth() != old_width )
-    resizeArea (vwin);
+    resizeArea (getGeometry(), getShadow(), vwin);
 }
 
 //----------------------------------------------------------------------
@@ -221,7 +235,7 @@ void FWindow::setHeight (int h, bool adjust)
   FWidget::setHeight (h, adjust);
 
   if ( vwin && getHeight() != old_height )
-    resizeArea (vwin);
+    resizeArea (getGeometry(), getShadow(), vwin);
 }
 
 //----------------------------------------------------------------------
@@ -232,7 +246,7 @@ void FWindow::setSize (int w, int h, bool adjust)
   FWidget::setSize (w, h, adjust);
 
   if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
-    resizeArea (vwin);
+    resizeArea (getGeometry(), getShadow(), vwin);
 }
 
 //----------------------------------------------------------------------
@@ -243,7 +257,7 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
   FWidget::setGeometry (x, y, w, h, adjust);
 
   if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
-    resizeArea (vwin);
+    resizeArea (getGeometry(), getShadow(), vwin);
 }
 
 //----------------------------------------------------------------------
@@ -690,6 +704,72 @@ bool FWindow::isHiddenWindow() const
     return ! area->visible;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setResizeable (bool on)
+{
+  if ( on )
+    flags |= fc::resizeable;
+  else
+    flags &= ~fc::resizeable;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setTransparentShadow (bool on)
+{
+  if ( on )
+  {
+    flags |= fc::shadow;
+    flags |= fc::trans_shadow;
+    setShadowSize (2,1);
+  }
+  else
+  {
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (0,0);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setShadow (bool on)
+{
+  if ( isMonochron() )
+    return false;
+
+  if ( on )
+  {
+    flags |= fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (1,1);
+  }
+  else
+  {
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (0,0);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FWindow::setShadowSize (int right, int bottom)
+{
+  int old_right, old_bottom, new_right, new_bottom;
+  old_right = getShadow().getX();
+  old_bottom = getShadow().getY();
+  FWidget::setShadowSize (right, bottom);
+  new_right = getShadow().getX();
+  new_bottom = getShadow().getY();
+
+  if ( vwin && (new_right != old_right || new_bottom != old_bottom) )
+    resizeArea (getGeometry(), getShadow(), vwin);
 }
 
 //----------------------------------------------------------------------

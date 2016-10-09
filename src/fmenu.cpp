@@ -73,25 +73,6 @@ FMenu::~FMenu()
 
   if ( ! fapp->isQuit() )
     switchToPrevWindow();
-
-  delWindow(this);
-
-  if ( ! fapp->isQuit() )
-  {
-    const FRect& t_geometry = getTermGeometryWithShadow();
-    restoreVTerm (t_geometry);
-  }
-
-  if ( vwin != 0 )
-  {
-    if ( vwin->changes != 0 )
-      delete[] vwin->changes;
-
-    if ( vwin->text != 0 )
-      delete[] vwin->text;
-
-    delete vwin;
-  }
 }
 
 
@@ -103,11 +84,9 @@ void FMenu::init(FWidget* parent)
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1);
-  createArea (vwin);
-  setMenuWidget();
   setGeometry (1, 1, 10, 2, false);  // initialize geometry values
   setTransparentShadow();
-  addWindow(this);
+  setMenuWidget();
   hide();
 
   setForegroundColor (wc.menu_active_fg);
@@ -1450,17 +1429,6 @@ void FMenu::hide()
 }
 
 //----------------------------------------------------------------------
-void FMenu::setGeometry (int xx, int yy, int ww, int hh, bool adjust)
-{
-  int old_width = getWidth();
-  int old_height = getHeight();
-  FWidget::setGeometry (xx, yy, ww, hh, adjust);
-
-  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
-    resizeArea (vwin);
-}
-
-//----------------------------------------------------------------------
 void FMenu::setStatusbarMessage(FString msg)
 {
   FWidget::setStatusbarMessage(msg);
@@ -1511,25 +1479,5 @@ bool FMenu::setMenuWidget (bool on)
   else
     flags &= ~fc::menu_widget;
 
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FMenu::setTransparentShadow (bool on)
-{
-  if ( on )
-  {
-    flags |= fc::shadow;
-    flags |= fc::trans_shadow;
-    setShadowSize (2,1);
-  }
-  else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (0,0);
-  }
-
-  resizeArea (vwin);
   return on;
 }

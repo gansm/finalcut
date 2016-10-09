@@ -136,22 +136,13 @@ class FDialog : public FWindow
    bool     setModal();
    bool     unsetModal();
    bool     isModal();
+   bool     setResizeable (bool);
+   // make every setResizeable from FWindow available
+   using FWindow::setResizeable;
    bool     setScrollable (bool);
    bool     setScrollable();
    bool     unsetScrollable();
    bool     isScrollable();
-   bool     setResizeable (bool);
-   bool     setResizeable();
-   bool     unsetResizeable();
-   bool     isResizeable();
-   bool     setTransparentShadow (bool);
-   bool     setTransparentShadow();
-   bool     unsetTransparentShadow();
-   bool     hasTransparentShadow();
-   bool     setShadow (bool);
-   bool     setShadow();
-   bool     unsetShadow();
-   bool     hasShadow();
    FString  getText() const;
    void     setText (const FString&);
 
@@ -205,42 +196,6 @@ inline bool FDialog::unsetScrollable()
 //----------------------------------------------------------------------
 inline bool FDialog::isScrollable()
 { return ((flags & fc::scrollable) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setResizeable()
-{ return setResizeable(true); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::unsetResizeable()
-{ return setResizeable(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::isResizeable()
-{ return ((flags & fc::resizeable) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setTransparentShadow()
-{ return setTransparentShadow(true); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::unsetTransparentShadow()
-{ return setTransparentShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::hasTransparentShadow()
-{ return ((flags & fc::trans_shadow) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setShadow()
-{ return setShadow(true); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::unsetShadow()
-{ return setShadow(false); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::hasShadow()
-{ return ((flags & fc::shadow) != 0); }
 
 //----------------------------------------------------------------------
 inline FString FDialog::getText() const

@@ -158,8 +158,6 @@ FStatusBar::FStatusBar(FWidget* parent)
 //----------------------------------------------------------------------
 FStatusBar::~FStatusBar()
 {
-  delWindow(this);
-
   // delete all keys
   if ( ! keylist.empty() )
   {
@@ -174,7 +172,6 @@ FStatusBar::~FStatusBar()
     }
   }
 
-  removeArea (vwin);
   setStatusBar(0);
 }
 
@@ -188,9 +185,7 @@ void FStatusBar::init()
   int h = r->getHeight();
   // initialize geometry values
   setGeometry (1, h, w, 1, false);
-  createArea (vwin);
   setAlwaysOnTop();
-  addWindow(this);
   setStatusBar(this);
   ignorePadding();
   mouse_down = false;
