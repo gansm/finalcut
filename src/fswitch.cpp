@@ -54,7 +54,7 @@ void FSwitch::drawCheckButton()
 
   wchar_t on[6] = L"  On ";
   wchar_t off[6] = L" Off ";
-  printPos (1 + switch_offset_pos, 1);
+  setPrintPos (1 + switch_offset_pos, 1);
 
   if ( checked )
   {

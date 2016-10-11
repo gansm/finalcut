@@ -595,28 +595,27 @@ void FMenu::drawItems()
 
   while ( iter != end )
   {
-    wchar_t* src;
-    wchar_t* dest;
-    wchar_t* item_text;
-    FString txt;
-    uInt txt_length;
-    int  hotkeypos, to_char;
-    int  accel_key      = (*iter)->accel_key;
-    bool has_menu       = (*iter)->hasMenu();
-    bool is_enabled     = (*iter)->isEnabled();
-    bool is_checked     = (*iter)->isChecked();
-    bool is_checkable   = (*iter)->checkable;
-    bool is_radio_btn   = (*iter)->radio_button;
-    bool is_selected    = (*iter)->isSelected();
-    bool is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
-    bool is_separator   = (*iter)->isSeparator();
-
-    if ( is_separator )
+    if ( (*iter)->isSeparator() )
     {
       drawSeparator(y);
     }
     else
     {
+      wchar_t* src;
+      wchar_t* dest;
+      wchar_t* item_text;
+      FString txt;
+      uInt txt_length;
+      int  hotkeypos, to_char;
+      int  accel_key      = (*iter)->accel_key;
+      bool has_menu       = (*iter)->hasMenu();
+      bool is_enabled     = (*iter)->isEnabled();
+      bool is_checked     = (*iter)->isChecked();
+      bool is_checkable   = (*iter)->checkable;
+      bool is_radio_btn   = (*iter)->radio_button;
+      bool is_selected    = (*iter)->isSelected();
+      bool is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
+
       if ( is_enabled )
       {
         if ( is_selected )
@@ -645,7 +644,7 @@ void FMenu::drawItems()
           setReverse(true);
       }
 
-      printPos (2, 2 + y);
+      setPrintPos (2, 2 + y);
       setColor();
 
       if ( has_checkable_items )
@@ -799,7 +798,7 @@ void FMenu::drawItems()
 //----------------------------------------------------------------------
 inline void FMenu::drawSeparator(int y)
 {
-  printPos (1, 2 + y);
+  setPrintPos (1, 2 + y);
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
@@ -1001,7 +1000,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
   if ( mouse_down )
     return;
 
-  if ( ! isActiveWindow() )
+  if ( ! isWindowActive() )
     setActiveWindow(this);
 
   mouse_down = true;
@@ -1190,7 +1189,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( ! isActiveWindow() )
+  if ( ! isWindowActive() )
     setActiveWindow(this);
 
   if ( mouse_down && ! item_list.empty() )

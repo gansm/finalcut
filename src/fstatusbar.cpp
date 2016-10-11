@@ -221,7 +221,7 @@ void FStatusBar::drawKeys()
   }
 
   updateVTerm(false);
-  printPos (1, 1);
+  setPrintPos (1, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -356,7 +356,7 @@ void FStatusBar::hide()
   blank = new char[screenWidth+1];
   std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-  printPos (1, 1);
+  setPrintPos (1, 1);
   print (blank);
   delete[] blank;
 }
@@ -583,7 +583,7 @@ void FStatusBar::drawMessage()
 
   updateVTerm(false);
   setColor (wc.statusbar_fg, wc.statusbar_bg);
-  printPos (x, 1);
+  setPrintPos (x, 1);
 
   if ( isMonochron() )
     setReverse(true);

@@ -151,7 +151,7 @@ void FListBox::draw()
 
     for (int y=2; y < getHeight(); y++)
     {
-      printPos (getWidth(),y);
+      setPrintPos (getWidth(),y);
       print (' '); // clear right side of the scrollbar
     }
   }
@@ -196,7 +196,7 @@ void FListBox::drawLabel()
 
   txt = " " + text + " ";
   length = txt.getLength();
-  printPos (2, 1);
+  setPrintPos (2, 1);
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -246,7 +246,7 @@ void FListBox::drawList()
 
   for (uInt y=start; y < end; y++)
   {
-    printPos (2, 2 + int(y));
+    setPrintPos (2, 2 + int(y));
     bool serach_mark = false;
     bool lineHasBrackets = hasBrackets(int(y) + yoffset + 1);
     bool isLineSelected = isSelected(int(y) + yoffset + 1);
@@ -599,7 +599,7 @@ void FListBox::hide()
 
   for (int y=0; y < getHeight(); y++)
   {
-    printPos (1, 1 + y);
+    setPrintPos (1, 1 + y);
     print (blank);
   }
 
@@ -1792,7 +1792,7 @@ void FListBox::clear()
 
   for (int y=0; y < getHeight()-2; y++)
   {
-    printPos (2, 2 + y);
+    setPrintPos (2, 2 + y);
     print (blank);
   }
 

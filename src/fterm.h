@@ -21,13 +21,8 @@
 //           :       ▕▁▁▁▁▁▁▁▁▏
 //           :
 //           :      *▕▔▔▔▔▔▔▔▏
-//           :- - - -▕ FRect ▏
-//           :       ▕▁▁▁▁▁▁▁▏
-//           :
-//           :      *▕▔▔▔▔▔▔▔▔▔▏
-//           └- - - -▕ FWidget ▏
-//                   ▕▁▁▁▁▁▁▁▁▁▏
-//
+//           └- - - -▕ FRect ▏
+//                   ▕▁▁▁▁▁▁▁▏
 
 #ifndef _FTERM_H
 #define _FTERM_H
@@ -38,16 +33,17 @@
   #include <gpm.h>
 #endif
 
-#include <linux/fb.h> // Linux framebuffer console
+#include <linux/fb.h>       // Linux framebuffer console
+#include <linux/keyboard.h> // need for gpm keyboard modifiers
 
-#include <sys/io.h>
+#include <sys/io.h>         // <asm/io.h> is deprecated, use <sys/io.h> instead
 #include <sys/ioctl.h>
 #include <sys/kd.h>
-#include <sys/stat.h> // <asm/io.h> is deprecated, use <sys/io.h> instead
+#include <sys/stat.h>       
 
 #include <fcntl.h>
 #include <langinfo.h>
-#include <term.h> // termcap
+#include <term.h>           // termcap
 #include <termios.h>
 #include <unistd.h>
 
@@ -63,6 +59,7 @@
 #include "fpoint.h"
 #include "frect.h"
 #include "fstring.h"
+#include "ftermcap.h"
 
 
 #ifdef F_HAVE_LIBGPM
@@ -88,11 +85,6 @@
 // parseKeyString return value
 #define NEED_MORE_DATA  -1
 
-// Buffer size for character output on the terminal
-#define TERMINAL_OUTPUT_BUFFER_SIZE  32768
-
-// class forward declaration
-class FWidget;
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -104,16 +96,13 @@ class FWidget;
 class FTerm
 {
  private:
-   static std::queue<int>* output_buffer;
    static std::map <uChar,uChar>* vt100_alt_char;
    static std::map <std::string,fc::encoding>* encoding_set;
+   static FTermcap::tcap_map* tcap;
 
-   static bool    hidden_cursor;
    static bool    mouse_support;
    static bool    raw_mode;
    static bool    input_data_pending;
-   static bool    terminal_update_pending;
-   static bool    force_terminal_update;
    static bool    non_blocking_stdin;
    static bool    gpm_mouse_enabled;
    static bool    pc_charset_console;
@@ -140,9 +129,6 @@ class FTerm
    static bool    linux_terminal;
    static bool    screen_terminal;
    static bool    tmux_terminal;
-   static bool    terminal_updates;
-   static bool    stop_terminal_updates;
-   static bool    vterm_updates;
    static bool    background_color_erase;
    static bool    automatic_left_margin;
    static bool    automatic_right_margin;
@@ -155,9 +141,8 @@ class FTerm
    static char*   locale_xterm;
    static uChar   x11_button_state;
    static FRect*  term;      // current terminal geometry
-   static FPoint* term_pos;  // terminal cursor position
    static FPoint* mouse;     // mouse click position
-   static FPoint* cursor;    // virtual print cursor
+
    static int     stdin_status_flags;
    static int     stdin_no;
    static int     stdout_no;
@@ -168,8 +153,6 @@ class FTerm
    static char    exit_message[8192];
 
    static struct  termios term_init;
-   static FOptiAttr::char_data term_attribute;
-   static FOptiAttr::char_data next_attribute;
 
    static fc::consoleCursorStyle console_cursor_style;
    static struct console_font_op screen_font;
@@ -203,19 +186,6 @@ class FTerm
      uChar        : 4;  // padding bits
    } mod_key;
 
-   enum covered_state
-   {
-     non_covered,
-     half_covered,
-     fully_covered
-   };
-
-   enum character_type
-   {
-     overlapped_character,
-     covered_character
-   };
-
  protected:
    static bool NewFont;
    static bool VGAFont;
@@ -223,34 +193,6 @@ class FTerm
    static uInt tabstop;
    static uInt attr_without_color;
    static fc::encoding Encoding;
-
-   typedef struct
-   {
-     uInt xmin;
-     uInt xmax;
-     uInt trans_count;
-   } line_changes;
-
-   typedef struct
-   {
-     int width;
-     int height;
-     int right_shadow;
-     int bottom_shadow;
-     int input_cursor_x;
-     int input_cursor_y;
-     int input_cursor_visible;
-     FWidget* widget;
-     line_changes* changes;
-     FOptiAttr::char_data* text;
-     bool visible;
-   } term_area;
-
-   static term_area* vterm;        // virtual terminal
-   static term_area* vdesktop;     // virtual desktop
-   static term_area* last_area;    // last used area
-   static term_area* active_area;  // active area
-   term_area* vwin;                // virtual window
 
  private:
    // Disable copy constructor
@@ -269,7 +211,7 @@ class FTerm
    static int   setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int   setUnicodeMap (struct unimapdesc*);
    static int   getUnicodeMap ();
-   static int   setLightBackgroundColors (bool);
+   static int   setBlinkAsIntensity (bool);
    static void  init_console();
    static uInt  getBaudRate (const struct termios*);
    static void  init_consoleCharMap();
@@ -288,42 +230,14 @@ class FTerm
    static uInt  charEncode (uInt, fc::encoding);
    static uInt  cp437_to_unicode (uChar);
    static void  signal_handler (int);
+
    // Friend classes
    friend class FWidget;
+   friend class FVTerm;
    friend class FApplication;
 
  protected:
    static bool  charEncodable (uInt);
-   void         createArea (const FRect&, const FPoint&, FTerm::term_area*&);
-   void         createArea (int, int, int, int, FTerm::term_area*&);
-   static void  resizeArea (const FRect&, const FPoint&, FTerm::term_area*);
-   static void  resizeArea (int, int, int, int, FTerm::term_area*);
-   static void  removeArea (FTerm::term_area*&);
-   static void  restoreVTerm (const FRect&);
-   static void  restoreVTerm (int, int, int, int);
-   static FTerm::covered_state isCovered (const FPoint&, FTerm::term_area*);
-   static FTerm::covered_state isCovered (int, int, FTerm::term_area*);
-   static void  updateVTerm (bool);
-   static void  updateVTerm (FTerm::term_area*);
-   static bool  updateVTermCursor (FTerm::term_area*);
-   static bool  isInsideArea (int, int, FTerm::term_area*);
-   static void  setAreaCursor (const FPoint&, bool, FTerm::term_area*);
-   static void  setAreaCursor (int, int, bool, FTerm::term_area*);
-   static void  getArea (const FPoint&, FTerm::term_area*);
-   static void  getArea (int, int, FTerm::term_area*);
-   static void  getArea (const FRect&, FTerm::term_area*);
-   static void  getArea (int, int, int, int, FTerm::term_area*);
-   static void  putArea (const FPoint&, FTerm::term_area*);
-   static void  putArea (int, int, FTerm::term_area*);
-   static void  scrollAreaForward (FTerm::term_area*);
-   static void  scrollAreaReverse (FTerm::term_area*);
-   static void  clearArea (FTerm::term_area*);
-   static FOptiAttr::char_data getCharacter (int, const FPoint&, FTerm*);
-   static FOptiAttr::char_data getCharacter (int, int, int, FTerm*);
-   static FOptiAttr::char_data getCoveredCharacter (const FPoint&, FTerm*);
-   static FOptiAttr::char_data getCoveredCharacter (int, int, FTerm*);
-   static FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FTerm*);
-   static FOptiAttr::char_data getOverlappedCharacter (int, int, FTerm*);
 
  public:
    // Constructor
@@ -332,12 +246,11 @@ class FTerm
    virtual ~FTerm();
 
    virtual const char* getClassName() const;
-   FTerm::term_area* getVWin() const;
    static bool    isKeyTimeout (timeval*, register long);
    static int     parseKeyString (char*, int, timeval*);
-   bool&          unprocessedInput() const;
-   int            getLineNumber();
-   int            getColumnNumber();
+   static bool&   unprocessedInput();
+   static int     getLineNumber();
+   static int     getColumnNumber();
    static FString getKeyName (int);
    static void    getModifierKey();
 
@@ -367,18 +280,12 @@ class FTerm
    static bool    isNewFont();
    static bool    setOldFont();
    static bool    setCursorOptimisation (bool);
-   static void    setConsoleCursor (fc::consoleCursorStyle);
+   static void    setConsoleCursor (fc::consoleCursorStyle, bool);
+   static char*   moveCursor (int, int, int, int);
+   static char*   enableCursor();
+   static char*   disableCursor();
    static void    getTermSize();
    static void    setTermSize (int, int);
-   void           createVTerm (const FRect&);
-   void           createVTerm (int, int);
-   static void    resizeVTerm (const FRect&);
-   static void    resizeVTerm (int, int);
-   static void    putVTerm();
-   static void    updateTerminal (bool);
-   static void    updateTerminal();
-   static bool    updateTerminalCursor();
-   static bool    isInsideTerminal (int, int);
    static void    setKDECursor (fc::kdeKonsoleCursorShape);
    static FString getXTermFont();
    static FString getXTermTitle();
@@ -400,8 +307,6 @@ class FTerm
    static void    saveColorMap();
    static void    resetColorMap();
    static void    setPalette (short, int, int, int);
-   static short   getTermForegroundColor();
-   static short   getTermBackgroundColor();
    static int     getMaxColor();
    static void    xtermMouse (bool);
    static void    enableXTermMouse();
@@ -413,15 +318,9 @@ class FTerm
    static bool    disableGpmMouse();
 #endif  // F_HAVE_LIBGPM
 
-   static void    setTermXY (register int, register int);
    static void    setBeep (int, int);
    static void    resetBeep();
    static void    beep();
-
-   static bool    hideCursor (bool);
-   static bool    hideCursor();
-   static bool    showCursor();
-   static bool    isHiddenCursor();
 
    static void         setEncoding (std::string);
    static std::string  getEncoding();
@@ -448,37 +347,6 @@ class FTerm
    static FString getAnswerbackMsg();
    static FString getSecDA();
 
-   static void    printPosTerm (const FPoint&);
-   static void    printPosTerm (register int, register int);
-   int            printf (const wchar_t*, ...);
-   int            printf (const char*, ...)
-   #if defined(__clang__)
-     __attribute__((__format__ (__printf__, 2, 3)))
-   #elif defined(__GNUC__)
-     __attribute__ ((format (printf, 2, 3)))
-   #endif
-                  ;
-   int            print (const std::wstring&);
-   int            print (FTerm::term_area*, const std::wstring&);
-   int            print (const wchar_t*);
-   int            print (FTerm::term_area*, const wchar_t*);
-   int            print (const char*);
-   int            print (FTerm::term_area*, const char*);
-   int            print (const std::string&);
-   int            print (FTerm::term_area*, const std::string&);
-   int            print (FString&);
-   int            print (FTerm::term_area*, FString&);
-   int            print (int);
-   int            print (FTerm::term_area*, int);
-   static void    newFontChanges (FOptiAttr::char_data*&);
-   static void    charsetChanges (FOptiAttr::char_data*&);
-   static void    appendCharacter (FOptiAttr::char_data*&);
-   static void    appendAttributes (FOptiAttr::char_data*&);
-   static int     appendLowerRight (FOptiAttr::char_data*&);
-   static void    appendOutputBuffer (std::string&);
-   static void    appendOutputBuffer (const char*);
-   static int     appendOutputBuffer (int);
-   static void    flush_out();
    static int     (*Fputchar)(int); // function pointer -> static function
    static void    putstringf (const char*, ...)
    #if defined(__clang__)
@@ -499,32 +367,6 @@ class FTerm
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
-
-//----------------------------------------------------------------------
-inline FTerm::term_area* FTerm::getVWin() const
-{ return vwin; }
-
-//----------------------------------------------------------------------
-inline bool& FTerm::unprocessedInput() const
-{ return input_data_pending; }
-
-//----------------------------------------------------------------------
-inline int FTerm::getLineNumber()
-{
-  if ( term->getHeight() == 0 )
-    getTermSize();
-
-  return term->getHeight();
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::getColumnNumber()
-{
-  if ( term->getWidth() == 0 )
-    getTermSize();
-
-  return term->getWidth();
-}
 
 //----------------------------------------------------------------------
 inline char* FTerm::getTermType()
@@ -553,10 +395,6 @@ inline bool FTerm::hasASCII()
 //----------------------------------------------------------------------
 inline bool FTerm::isNewFont()
 { return NewFont; }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isHiddenCursor()
-{ return hidden_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMonochron()
@@ -620,22 +458,11 @@ inline bool FTerm::isTmuxTerm()
 
 //----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)
-{
-  cursor_optimisation = on;
-  return cursor_optimisation;
-}
+{ return cursor_optimisation = (on) ? true : false; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
 { return raw_mode; }
-
-//----------------------------------------------------------------------
-inline short FTerm::getTermForegroundColor()
-{ return next_attribute.fg_color; }
-
-//----------------------------------------------------------------------
-inline short FTerm::getTermBackgroundColor()
-{ return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getMaxColor()
@@ -649,7 +476,6 @@ inline void FTerm::enableXTermMouse()
 inline void FTerm::disableXTermMouse()
 { xtermMouse(false); }
 
-
 #ifdef F_HAVE_LIBGPM
 //----------------------------------------------------------------------
 inline bool FTerm::enableGpmMouse()
@@ -658,16 +484,7 @@ inline bool FTerm::enableGpmMouse()
 //----------------------------------------------------------------------
 inline bool FTerm::disableGpmMouse()
 { return gpmMouse(false); }
-
 #endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
-inline bool FTerm::hideCursor()
-{ return hideCursor(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::showCursor()
-{ return hideCursor(false); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setNonBlockingInput()
@@ -704,14 +521,6 @@ inline bool FTerm::unsetRawMode()
 //----------------------------------------------------------------------
 inline bool FTerm::setCookedMode()
 { return setRawMode(false); }
-
-//----------------------------------------------------------------------
-inline void FTerm::printPosTerm (const FPoint& pos)
-{ printPosTerm (pos.getX(), pos.getY()); }
-
-//----------------------------------------------------------------------
-inline void FTerm::printPosTerm (register int x, register int y)
-{ cursor->setPoint(x,y); }
 
 
 #endif  // _FTERM_H

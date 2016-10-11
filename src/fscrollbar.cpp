@@ -571,7 +571,7 @@ void FScrollbar::drawBar()
 
       for (z=1; z <= slider_pos; z++)
       {
-        printPos (1, 1 + z);
+        setPrintPos (1, 1 + z);
 
         if ( isNewFont() )
           print (fc::NF_border_line_left); // ⎸
@@ -589,7 +589,7 @@ void FScrollbar::drawBar()
 
       for (z=1; z <= slider_length; z++)
       {
-        printPos (1, 1 + slider_pos + z);
+        setPrintPos (1, 1 + slider_pos + z);
 
         if ( isNewFont() )
           print (' ');
@@ -604,7 +604,7 @@ void FScrollbar::drawBar()
 
       for (z=slider_pos+slider_length+1; z <= bar_length; z++)
       {
-        printPos (1, 1 + z);
+        setPrintPos (1, 1 + z);
 
         if ( isNewFont() )
           print (fc::NF_border_line_left); // ⎸
@@ -621,9 +621,9 @@ void FScrollbar::drawBar()
       z = 0;
 
       if ( isNewFont() )
-        printPos (3 + z, 1);
+        setPrintPos (3 + z, 1);
       else
-        printPos (2 + z, 1);
+        setPrintPos (2 + z, 1);
 
       for (; z < slider_pos; z++)
       {
@@ -678,13 +678,13 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
-    printPos (1,1);
+    setPrintPos (1,1);
 
     if ( bar_orientation == fc::vertical )
     {
       print (fc::NF_rev_up_arrow1);
       print (fc::NF_rev_up_arrow2);
-      printPos (1, length);
+      setPrintPos (1, length);
       print (fc::NF_rev_down_arrow1);
       print (fc::NF_rev_down_arrow2);
     }
@@ -692,14 +692,14 @@ void FScrollbar::drawButtons()
     {
       print (fc::NF_rev_left_arrow1);
       print (fc::NF_rev_left_arrow2);
-      printPos (length-1, 1);
+      setPrintPos (length-1, 1);
       print (fc::NF_rev_right_arrow1);
       print (fc::NF_rev_right_arrow2);
     }
   }
   else
   {
-    printPos (1,1);
+    setPrintPos (1,1);
 
     if ( isMonochron() )
       setReverse(true);
@@ -711,7 +711,7 @@ void FScrollbar::drawButtons()
       else
         print (fc::BlackUpPointingTriangle); // ▲
 
-      printPos (1, length);
+      setPrintPos (1, length);
 
       if ( isCygwinTerminal() )
         print ('v');
@@ -721,7 +721,7 @@ void FScrollbar::drawButtons()
     else // horizontal
     {
       print (fc::BlackLeftPointingPointer); // ◄
-      printPos (length, 1);
+      setPrintPos (length, 1);
       print (fc::BlackRightPointingPointer); // ►
     }
 

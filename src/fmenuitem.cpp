@@ -853,32 +853,32 @@ void FMenuItem::openMenu()
   FMenu* dd_menu;  // Drop-down menu
   FMenu* open_menu;
 
-  if ( hasMenu() )
+  if ( ! hasMenu() )
+    return;
+
+  dd_menu = getMenu();  // Drop-down menu
+
+  if ( dd_menu->isVisible() )
+    return;
+
+  open_menu = static_cast<FMenu*>(getOpenMenu());
+
+  if ( open_menu && open_menu != dd_menu )
   {
-    dd_menu = getMenu();
-
-    if ( dd_menu->isVisible() )
-      return;
-
-    open_menu = static_cast<FMenu*>(getOpenMenu());
-
-    if ( open_menu && open_menu != dd_menu )
-    {
-      open_menu->hide();
-      open_menu->hideSubMenus();
-    }
-
-    if ( dialog_index )
-      createDialogList (dd_menu);
-
-    setOpenMenu(dd_menu);
-    dd_menu->setVisible();
-    dd_menu->show();
-    dd_menu->raiseWindow(dd_menu);
-    dd_menu->redraw();
-    updateTerminal();
-    flush_out();
+    open_menu->hide();
+    open_menu->hideSubMenus();
   }
+
+  if ( dialog_index )
+    createDialogList (dd_menu);
+
+  setOpenMenu(dd_menu);
+  dd_menu->setVisible();
+  dd_menu->show();
+  dd_menu->raiseWindow(dd_menu);
+  dd_menu->redraw();
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------

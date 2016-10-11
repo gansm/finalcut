@@ -11,6 +11,11 @@
 //      │           │
 //      └─────┬─────┘
 //            │
+//       ▕▔▔▔▔▔▔▔▔▏
+//       ▕ FVTerm ▏
+//       ▕▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
 //       ▕▔▔▔▔▔▔▔▔▔▏ 1      1▕▔▔▔▔▔▔▔▔▔▔▔▔▏
 //       ▕ FWidget ▏-┬- - - -▕ FStatusBar ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
@@ -66,7 +71,7 @@
 #ifndef _FWIDGET_H
 #define _FWIDGET_H
 
-#include "fterm.h"
+#include "fvterm.h"
 
 
 // Callback macros
@@ -88,7 +93,7 @@ class FMenuBar;
 #pragma pack(push)
 #pragma pack(1)
 
-class FWidget : public FObject, public FTerm
+class FWidget : public FVTerm
 {
  public:
    typedef std::vector<FWidget*> widgetList;
@@ -302,7 +307,6 @@ class FWidget : public FObject, public FTerm
    short   foreground_color;
    short   background_color;
 
-   term_area* print_area;
    FString    statusbar_message;
 
    static FStatusBar* statusbar;
@@ -310,7 +314,6 @@ class FWidget : public FObject, public FTerm
    static FWidget*    show_root_widget;
    static FWidget*    redraw_root_widget;
 
-   friend class FTerm;
    friend class FApplication;
    friend class FToggleButton;
 
@@ -325,8 +328,6 @@ class FWidget : public FObject, public FTerm
    void             processDestroy();
    virtual void     draw();
    static void      setColorTheme();
-   term_area*       getPrintArea();
-   void             setPrintArea (term_area*);
 
  protected:
    virtual void     adjustSize();
@@ -504,8 +505,8 @@ class FWidget : public FObject, public FTerm
    bool             setCursorPos (register int, register int);
    void             unsetCursorPos();
 
-   void             printPos (const FPoint&);
-   void             printPos (register int, register int);
+   void             setPrintPos (const FPoint&);
+   void             setPrintPos (register int, register int);
    FPoint           getPrintPos() const;
 
    static void      setNormal();
@@ -611,10 +612,6 @@ class FWidget : public FObject, public FTerm
 //----------------------------------------------------------------------
 inline void FWidget::processDestroy()
 { emitCallback("destroy"); }
-
-//----------------------------------------------------------------------
-inline void FWidget::setPrintArea (term_area* area)
-{ print_area = area; }
 
 //----------------------------------------------------------------------
 inline const char* FWidget::getClassName() const
@@ -928,24 +925,8 @@ inline void FWidget::unsetCursorPos()
 { widget_cursor_position.setPoint(-1,-1); }
 
 //----------------------------------------------------------------------
-inline void FWidget::printPos (const FPoint& pos)
-{ printPos (pos.getX(), pos.getY()); }
-
-//----------------------------------------------------------------------
-inline void FWidget::printPos (register int x, register int y)
-{
-  cursor->setPoint ( offset.getX1() + adjust_wsize.getX() - 1 + x,
-                     offset.getY1() + adjust_wsize.getY() - 1 + y );
-}
-
-//----------------------------------------------------------------------
-inline FPoint FWidget::getPrintPos() const
-{
-  int cx = cursor->getX();
-  int cy = cursor->getY();
-  return FPoint ( cx - offset.getX1() - adjust_wsize.getX() + 1
-                , cy - offset.getY1() - adjust_wsize.getY() + 1 );
-}
+inline void FWidget::setPrintPos (const FPoint& pos)
+{ setPrintPos (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setNormal()

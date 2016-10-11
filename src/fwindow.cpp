@@ -9,11 +9,12 @@
 // static attributes
 FWindow* FWindow::previous_widget = 0;
 
+
 //----------------------------------------------------------------------
 // class FWindow
 //----------------------------------------------------------------------
 
-// constructors and destructor
+// constructor and destructor
 //----------------------------------------------------------------------
 FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
@@ -161,7 +162,7 @@ void FWindow::drawBorder()
     int y1 = 1;
     int y2 = 1 + getHeight() - 1;
 
-    printPos (x1, y1);
+    setPrintPos (x1, y1);
     print (fc::NF_border_corner_upper_left); // ⎡
 
     for (int x=x1+1; x < x2; x++)
@@ -171,22 +172,22 @@ void FWindow::drawBorder()
 
     for (int y=y1+1; y < y2; y++)
     {
-      printPos (x1, y);
+      setPrintPos (x1, y);
       // border left ⎸
       print (fc::NF_border_line_left);
-      printPos (x2, y);
+      setPrintPos (x2, y);
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
 
-    printPos (x1, y2);
+    setPrintPos (x1, y2);
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
     for (int x=2; x < getWidth(); x++) // low line _
       print (fc::NF_border_line_bottom);
 
-    printPos (x2, y2);
+    setPrintPos (x2, y2);
     // lower right corner border ⎦
     print (fc::NF_rev_border_corner_lower_right);
   }
@@ -283,7 +284,7 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
       {
         FWindow* w = static_cast<FWindow*>(*iter);
 
-        if ( ! w->isHiddenWindow()
+        if ( ! w->isWindowHidden()
            && w->getTermGeometry().contains(x,y) )
           return w;
       }
@@ -571,7 +572,7 @@ void FWindow::setActiveWindow (FWindow* window)
   {
     if ( *iter == window )
     {
-      if ( ! window->isActiveWindow() )
+      if ( ! window->isWindowActive() )
       {
         window->activateWindow();
         FEvent ev(fc::WindowActive_Event);
@@ -582,7 +583,7 @@ void FWindow::setActiveWindow (FWindow* window)
     {
       FWindow* w = static_cast<FWindow*>(*iter);
 
-      if ( w->isActiveWindow() )
+      if ( w->isWindowActive() )
       {
         w->deactivateWindow();
         FEvent ev(fc::WindowInactive_Event);
@@ -631,7 +632,7 @@ void FWindow::switchToPrevWindow()
 
         if ( w
            && w != active_window
-           && ! (w->isHiddenWindow() || w->isActiveWindow())
+           && ! (w->isWindowHidden() || w->isWindowActive())
            && w != static_cast<FWindow*>(statusBar())
            && w != static_cast<FWindow*>(menuBar()) )
         {
@@ -647,7 +648,7 @@ void FWindow::switchToPrevWindow()
   {
     FWidget* focus_widget = active_window->getWindowFocusWidget();
 
-    if ( ! active_window->isActiveWindow() )
+    if ( ! active_window->isWindowActive() )
       setActiveWindow(active_window);
 
     if ( focus_widget )
@@ -668,10 +669,10 @@ bool FWindow::activatePrevWindow()
 
   if ( w )
   {
-    if ( w->isActiveWindow() )
+    if ( w->isWindowActive() )
       return true;
 
-    if ( w && ! w->isHiddenWindow() )
+    if ( w && ! w->isWindowHidden() )
     {
       setActiveWindow(w);
       return true;
@@ -695,7 +696,7 @@ bool FWindow::activateWindow (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FWindow::isHiddenWindow() const
+bool FWindow::isWindowHidden() const
 {
   // returns the window hidden state
   term_area* area = getVWin();

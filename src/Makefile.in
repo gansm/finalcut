@@ -134,8 +134,9 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	flabel.lo flistbox.lo fmenu.lo fdialoglistmenu.lo fmenubar.lo \
 	fmenuitem.lo fradiomenuitem.lo fcheckmenuitem.lo fmenulist.lo \
 	fdialog.lo fwindow.lo fmessagebox.lo ftooltip.lo \
-	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fevent.lo \
-	foptiattr.lo foptimove.lo fapp.lo fwidget.lo fobject.lo
+	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fvterm.lo \
+	fevent.lo foptiattr.lo foptimove.lo fapp.lo fwidget.lo \
+	fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -402,6 +403,7 @@ libfinal_la_SOURCES = \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	fterm.cpp \
+	fvterm.cpp \
 	fevent.cpp \
 	foptiattr.cpp \
 	foptimove.cpp \
@@ -449,6 +451,7 @@ finalcutinclude_HEADERS = \
 	fstring.h \
 	ftcap_map.h \
 	fterm.h \
+	fvterm.cpp \
 	ftextview.h \
 	ftogglebutton.h \
 	fwidget.h \
@@ -566,6 +569,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftextview.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftogglebutton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftooltip.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fvterm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fwidget.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fwindow.Plo@am__quote@
 

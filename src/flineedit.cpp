@@ -53,7 +53,7 @@ FLineEdit::~FLineEdit()  // destructor
   {
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor);
+    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
 
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
@@ -134,7 +134,7 @@ void FLineEdit::drawInputField()
   isShadow = ((flags & fc::shadow) != 0 );
 
   updateVTerm(false);
-  printPos (1, 1);
+  setPrintPos (1, 1);
 
   if ( isMonochron() )
   {
@@ -310,7 +310,7 @@ void FLineEdit::hide()
 
   for (int y=0; y < getHeight()+s; y++)
   {
-    printPos (1, 1+y);
+    setPrintPos (1, 1+y);
     print (blank);
   }
 
@@ -490,7 +490,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       {
         setXTermCursorStyle(fc::blinking_underline);
         setKDECursor(fc::UnderlineCursor);
-        setConsoleCursor(fc::underscore_cursor);
+        setConsoleCursor(fc::underscore_cursor, isCursorHidden());
 
         if ( isUrxvtTerminal() )
           setXTermCursorColor("rgb:ffff/ffff/ffff");
@@ -499,7 +499,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       {
         setXTermCursorStyle(fc::steady_block);
         setKDECursor(fc::BlockCursor);
-        setConsoleCursor(fc::full_block_cursor);
+        setConsoleCursor(fc::full_block_cursor, isCursorHidden());
 
         if ( isUrxvtTerminal() )
           setXTermCursorColor("rgb:eeee/0000/0000");
@@ -769,7 +769,7 @@ void FLineEdit::onHide (FHideEvent*)
   {
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor);
+    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
@@ -782,7 +782,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   {
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor);
+    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
   }
@@ -790,7 +790,7 @@ void FLineEdit::onFocusIn (FFocusEvent*)
   {
     setXTermCursorStyle(fc::steady_block);
     setKDECursor(fc::BlockCursor);
-    setConsoleCursor(fc::full_block_cursor);
+    setConsoleCursor(fc::full_block_cursor, isCursorHidden());
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:0000/0000/0000");
   }
@@ -816,7 +816,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   {
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor);
+    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
 
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");

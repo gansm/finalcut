@@ -36,7 +36,6 @@ FApplication::FApplication (int& _argc, char**& _argv)
   : FWidget(0)
   , app_argc(_argc)
   , app_argv(_argv)
-  , skipped_terminal_update(0)
   , key(0)
 #ifdef F_HAVE_LIBGPM
   , gpm_ev()
@@ -89,9 +88,11 @@ void FApplication::init()
   time_mousepressed.tv_sec = 0;
   time_mousepressed.tv_usec = 0;
   x11_button_state = 0x23;
+
 #ifdef F_HAVE_LIBGPM
   gpm_ev.x = -1;
 #endif
+
   zero_point = new FPoint(0,0);
   event_queue = new std::deque<eventPair>;
   // init arrays with '\0'
@@ -276,6 +277,7 @@ void FApplication::processKeyboardEvent()
   flush_out();
 
 #ifdef F_HAVE_LIBGPM
+
   if ( gpm_mouse_enabled )
   {
     gpmMouseEvent = false;
@@ -296,8 +298,11 @@ void FApplication::processKeyboardEvent()
   }
   else
     isKeyPressed = KeyPressed();
+
 #else  // without gpm
+
   isKeyPressed = KeyPressed();
+
 #endif  // F_HAVE_LIBGPM
 
   if ( isKeyPressed )
@@ -1605,7 +1610,7 @@ void FApplication::processMouseEvent()
         sendEvent (clicked_widget, &m_down_ev);
 
         // gnome-terminal sends no released on middle click
-        if ( gnome_terminal )
+        if ( isGnomeTerminal() )
           clicked_widget = 0;
       }
       else if ( b_state.middle_button == Released )
@@ -1712,32 +1717,6 @@ int FApplication::processTimerEvent()
   }
 
   return activated;
-}
-
-//----------------------------------------------------------------------
-void FApplication::processTerminalUpdate()
-{
-  const int max_skip = 8;
-
-  if ( terminal_update_pending )
-  {
-    if ( ! unprocessedInput() )
-    {
-      updateTerminal();
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else if ( skipped_terminal_update > max_skip )
-    {
-      force_terminal_update = true;
-      updateTerminal();
-      force_terminal_update = false;
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else
-      skipped_terminal_update++;
-  }
 }
 
 //----------------------------------------------------------------------

@@ -85,7 +85,7 @@ void Transparent::draw()
 
   for (int n=1; n <= getClientHeight(); n++)
   {
-    printPos (2, 2+n);
+    setPrintPos (2, 2+n);
     print(line);
   }
 
@@ -217,9 +217,9 @@ void MainWindow::draw()
     setReverse(true);
 
   setColor();
-  printPos (2,4);
+  setPrintPos (2,4);
   print(line1);
-  printPos (2,5);
+  setPrintPos (2,5);
   print(line2);
 
   if ( isMonochron() )

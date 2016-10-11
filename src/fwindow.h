@@ -11,6 +11,11 @@
 //      │           │
 //      └─────┬─────┘
 //            │
+//       ▕▔▔▔▔▔▔▔▔▏
+//       ▕ FVTerm ▏
+//       ▕▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
 //       ▕▔▔▔▔▔▔▔▔▔▏
 //       ▕ FWidget ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏
@@ -114,10 +119,10 @@ class FWindow : public FWidget
    bool            activateWindow (bool);
    bool            activateWindow();
    bool            deactivateWindow();
-   bool            isActiveWindow() const;
-   bool            isHiddenWindow() const;
-   bool            setResizeable (bool);
-   bool            setResizeable();
+   bool            isWindowActive() const;
+   bool            isWindowHidden() const;
+   virtual bool    setResizeable (bool);
+   virtual bool    setResizeable();
    bool            unsetResizeable();
    bool            isResizeable();
    bool            setTransparentShadow (bool);
@@ -175,7 +180,7 @@ inline bool FWindow::deactivateWindow()
 { return activateWindow(false); }
 
 //----------------------------------------------------------------------
-inline bool FWindow::isActiveWindow() const
+inline bool FWindow::isWindowActive() const
 { return window_active; }
 
 //----------------------------------------------------------------------

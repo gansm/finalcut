@@ -314,7 +314,7 @@ void FMenuBar::drawItems()
     return;
 
   updateVTerm(false);
-  printPos (1,1);
+  setPrintPos (1,1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -424,12 +424,12 @@ void FMenuBar::drawItems()
     {
       if ( startpos < screenWidth )
       {
-        printPos (screenWidth - 1, 1);
+        setPrintPos (screenWidth - 1, 1);
         print ("..");
       }
       else if ( startpos-1 <= screenWidth )
       {
-        printPos (screenWidth, 1);
+        setPrintPos (screenWidth, 1);
         print (' ');
       }
     }
@@ -596,7 +596,7 @@ void FMenuBar::onMouseDown (FMouseEvent* ev)
 
   mouse_down = true;
 
-  if ( ! isActiveWindow() )
+  if ( ! isWindowActive() )
     setActiveWindow(this);
 
   if ( ! item_list.empty() )
@@ -769,7 +769,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( ! isActiveWindow() )
+  if ( ! isWindowActive() )
     setActiveWindow(this);
 
   if ( mouse_down && ! item_list.empty() )
@@ -911,7 +911,7 @@ void FMenuBar::hide()
   blank = new char[screenWidth+1];
   std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
-  printPos (1,1);
+  setPrintPos (1,1);
   print (blank);
   delete[] blank;
 }

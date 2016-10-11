@@ -284,7 +284,7 @@ void FLabel::draw()
       else
         std::wcsncpy(dest, src, length);
 
-      printPos (1, 1+int(y));
+      setPrintPos (1, 1+int(y));
 
       if ( hotkeypos != -1 )
       {
@@ -314,7 +314,7 @@ void FLabel::draw()
     if ( hotkeypos != -1 )
       length--;
 
-    printPos (1,1);
+    setPrintPos (1,1);
     xoffset = getXOffset (int(length));
     printLine (LabelText, length, hotkeypos, xoffset);
     delete[] LabelText;
@@ -363,7 +363,7 @@ void FLabel::hide()
   blank = new char[size+1];
   std::memset(blank, ' ', uLong(size));
   blank[getWidth()] = '\0';
-  printPos (1,1);
+  setPrintPos (1,1);
   print (blank);
   delete[] blank;
 }

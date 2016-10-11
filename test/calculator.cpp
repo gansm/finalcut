@@ -327,7 +327,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  printPos (3,3);
+  setPrintPos (3,3);
   print(display);
   print(L' ');
   setColor(wc.dialog_fg, wc.dialog_bg);
@@ -338,15 +338,15 @@ void Calc::drawDispay()
   if ( isNewFont() )
   {
     FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));
-    printPos (3,2);
+    setPrintPos (3,2);
     print (bottom_line);
-    printPos (2,3);
+    setPrintPos (2,3);
     print (wchar_t(fc::NF_rev_border_line_right));
-    printPos (36,3);
+    setPrintPos (36,3);
     print (wchar_t(fc::NF_border_line_left));
     FString top_bottom_line_5(5, wchar_t(fc::NF_border_line_up_and_down));
     FString top_line_2(2, wchar_t(fc::NF_border_line_upper));
-    printPos (3,4);
+    setPrintPos (3,4);
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -358,7 +358,7 @@ void Calc::drawDispay()
     FString separator = FString(wchar_t(fc::BoxDrawingsVerticalAndRight))
                       + FString(35, wchar_t(fc::BoxDrawingsHorizontal))
                       + FString(wchar_t(fc::BoxDrawingsVerticalAndLeft));
-    printPos (1,4);
+    setPrintPos (1,4);
     print(separator);
   }
 

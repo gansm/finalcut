@@ -1,3 +1,6 @@
+2016-10-11  Markus Gans  <guru.mail@muenster.de>
+	* Separate the virtual terminal into a own class vterm
+
 2016-10-09  Markus Gans  <guru.mail@muenster.de>
 	* Remove some duplicate code
 

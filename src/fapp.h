@@ -11,6 +11,11 @@
 //      │           │
 //      └─────┬─────┘
 //            │
+//       ▕▔▔▔▔▔▔▔▔▏
+//       ▕ FVTerm ▏
+//       ▕▁▁▁▁▁▁▁▁▏
+//            ▲
+//            │
 //       ▕▔▔▔▔▔▔▔▔▔▏
 //       ▕ FWidget ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏
@@ -31,8 +36,6 @@
 #ifndef _FAPPLICATION_H
 #define _FAPPLICATION_H
 
-#include <linux/keyboard.h> // need for gpm keyboard modifiers
-#include <sys/time.h>       // need for gettimeofday
 #include <getopt.h>
 #include <deque>
 
@@ -62,7 +65,6 @@ class FApplication : public FWidget
    static int      loop_level;
    static bool     process_timer_event;
    static FPoint*  zero_point;
-   int             skipped_terminal_update;
    int             key;
    char            k_buf[1024];
    char            x11_mouse[4];
@@ -70,6 +72,7 @@ class FApplication : public FWidget
    char            urxvt_mouse[13];
 
 #ifdef F_HAVE_LIBGPM
+
    Gpm_Event gpm_ev;
    bool gpmMouseEvent;
    enum gpmEventType
@@ -78,6 +81,7 @@ class FApplication : public FWidget
      keyboard_event = 1,
      mouse_event    = 2
    };
+
 #endif
 
    enum btn_state
@@ -138,14 +142,15 @@ class FApplication : public FWidget
    bool    parseUrxvtMouse();
 
 #ifdef F_HAVE_LIBGPM
+
    int     gpmEvent (bool = true);
    bool    processGpmEvent();
+
 #endif
 
    void    processMouseEvent();
    void    processResizeEvent();
    int     processTimerEvent();
-   void    processTerminalUpdate();
    void    processCloseWidget();
    bool    processNextEvent();
 

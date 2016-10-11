@@ -112,8 +112,8 @@ class FOptiMove
    void set_auto_left_margin (bool&);
    void set_eat_newline_glitch (bool&);
 
-   char* cursor_move (int, int, int, int);
-   void printDurations();
+   char* moveCursor (int, int, int, int);
+   void  printDurations();
 };
 #pragma pack(pop)
 

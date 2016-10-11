@@ -245,7 +245,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - headline_length) / 2);
 
-    printPos (1 + msg_x + center_x, 4);
+    setPrintPos (1 + msg_x + center_x, 4);
     print (headline_text);
     head_offset = 2;
   }
@@ -259,7 +259,7 @@ void FMessageBox::draw()
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_length) / 2);
 
-    printPos (1 + msg_x + center_x, 4 + head_offset + i);
+    setPrintPos (1 + msg_x + center_x, 4 + head_offset + i);
     print(text_components[i]);
   }
 

@@ -182,7 +182,7 @@ void FButton::draw()
 
     for (int y=1; y <= getHeight(); y++)
     {
-      printPos (1, y);
+      setPrintPos (1, y);
       print (' '); // clear one left █
     }
 
@@ -241,7 +241,7 @@ void FButton::draw()
 
       for (int y=0; y < getHeight(); y++)
       {
-        printPos (1+d, 1+y);
+        setPrintPos (1+d, 1+y);
         print (space); // full block █
       }
     }
@@ -256,7 +256,7 @@ void FButton::draw()
 
     for (int y=0; y < getHeight(); y++)
     {
-      printPos (1+d, 1+y);
+      setPrintPos (1+d, 1+y);
 
       // Cygwin terminal use IBM Codepage 850
       if ( isCygwinTerminal() )
@@ -282,7 +282,7 @@ void FButton::draw()
       if ( isMonochron() )
         setReverse(true);
 
-      printPos (1+getWidth(), y);
+      setPrintPos (1+getWidth(), y);
       print (' '); // clear right
 
       if ( isMonochron() )
@@ -301,7 +301,7 @@ void FButton::draw()
   else
     j=0;
 
-  printPos (1+margin+d, 1+j);
+  setPrintPos (1+margin+d, 1+j);
   setColor (button_fg, button_bg);
 
   for (x=0; x < i; x++)
@@ -353,14 +353,14 @@ void FButton::draw()
   {
     for (i=0; i < j; i++)
     {
-      printPos (2+d, 1+i);
+      setPrintPos (2+d, 1+i);
 
       for (int z=1; z < getWidth(); z++)
         print (space); // █
     }
     for (i=j+1; i < getHeight(); i++)
     {
-      printPos (2+d, 1+i);
+      setPrintPos (2+d, 1+i);
 
       for (int z=1; z < getWidth(); z++)
         print (space); // █
@@ -525,7 +525,7 @@ void FButton::hide()
 
   for (int y=0; y < getHeight()+s+(f << 1); y++)
   {
-    printPos (1-f, 1+y-f);
+    setPrintPos (1-f, 1+y-f);
     print (blank);
   }
 

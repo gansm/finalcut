@@ -219,7 +219,7 @@ void FToggleButton::drawLabel()
   if ( hotkeypos != -1 )
     length--;
 
-  printPos (1 + label_offset_pos, 1);
+  setPrintPos (1 + label_offset_pos, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -376,7 +376,7 @@ void FToggleButton::hide()
   blank = new char[size+1];
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
-  printPos (1, 1);
+  setPrintPos (1, 1);
   print (blank);
   delete[] blank;
 }

@@ -123,7 +123,7 @@ void FToolTip::draw()
 
   for (int i=0; i < int(text_num_lines); i++)
   {
-    printPos (3, 2 + i);
+    setPrintPos (3, 2 + i);
     print(text_components[i]);
   }
 

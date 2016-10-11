@@ -37,7 +37,7 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  printPos (getWidth() - 3, 0);
+  setPrintPos (getWidth() - 3, 0);
 
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
@@ -53,7 +53,7 @@ void FProgressbar::drawBar()
 {
   int i = 1;
   float length = float(bar_length * percentage) / 100;
-  printPos (1,1);
+  setPrintPos (1,1);
 
   if ( isMonochron() )
   {
@@ -206,12 +206,12 @@ void FProgressbar::hide()
 
   for (int y=0; y < getHeight()+s; y++)
   {
-    printPos (1, 1 + y);
+    setPrintPos (1, 1 + y);
     print (blank);
   }
 
   delete[] blank;
-  printPos (getWidth() - 4, 0);
+  setPrintPos (getWidth() - 4, 0);
   print ("     ");  // hide percentage
 }
 

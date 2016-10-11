@@ -146,7 +146,7 @@ void FTextView::drawText()
     uInt i, len;
     FString line;
     const wchar_t* line_str;
-    printPos (2, 2 - nf_offset + int(y));
+    setPrintPos (2, 2 - nf_offset + int(y));
     line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
                                      , uInt(getWidth() - nf_offset - 2) );
     line_str = line.wc_str();
@@ -267,7 +267,7 @@ void FTextView::hide()
 
   for (int y=0; y < getHeight(); y++)
   {
-    printPos (1, 1 + y);
+    setPrintPos (1, 1 + y);
     print (blank);
   }
 
@@ -921,7 +921,7 @@ void FTextView::clear()
 
   for (int y=0; y < getHeight() + nf_offset - 2; y++)
   {
-    printPos (2, 2 - nf_offset + y);
+    setPrintPos (2, 2 - nf_offset + y);
     print (blank);
   }
 

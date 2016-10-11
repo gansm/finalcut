@@ -163,22 +163,22 @@ void FDialog::drawBorder()
   {
     for (int y=y1; y < y2; y++)
     {
-      printPos (x1, y);
+      setPrintPos (x1, y);
       // border left ⎸
       print (fc::NF_border_line_left);
-      printPos (x2, y);
+      setPrintPos (x2, y);
       // border right⎹
       print (fc::NF_rev_border_line_right);
     }
 
-    printPos (x1, y2);
+    setPrintPos (x1, y2);
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
     for (int x=1; x < getWidth()-1; x++) // low line _
       print (fc::NF_border_line_bottom);
 
-    printPos (x2, y2);
+    setPrintPos (x2, y2);
     // lower right corner border ⎦
     print (fc::NF_rev_border_corner_lower_right);
   }
@@ -195,7 +195,7 @@ void FDialog::drawTitleBar()
   const int menu_btn = 3;
 
   // draw the title button
-  printPos (1, 1);
+  setPrintPos (1, 1);
 
   if ( dialog_menu && dialog_menu->isVisible() )
     setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
@@ -204,7 +204,7 @@ void FDialog::drawTitleBar()
 
   if ( isMonochron() )
   {
-    if ( isActiveWindow() )
+    if ( isWindowActive() )
       setReverse(false);
     else
       setReverse(true);
@@ -244,7 +244,7 @@ void FDialog::drawTitleBar()
   if ( getMaxColor() < 16 )
     setBold();
 
-  if ( isActiveWindow() || (dialog_menu && dialog_menu->isVisible()) )
+  if ( isWindowActive() || (dialog_menu && dialog_menu->isVisible()) )
     setColor (wc.titlebar_active_fg, wc.titlebar_active_bg);
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
@@ -352,7 +352,7 @@ void FDialog::drawTitleBar()
     setReverse(false);
 
 /* print the number of window in stack */
-//printPos (getWidth()-2, 1);
+//setPrintPos (getWidth()-2, 1);
 //printf ("(%d)", getWindowLayer(this));
 
 }
@@ -538,7 +538,7 @@ void FDialog::drawDialogShadow()
     return;
 
   drawShadow();
-  printPos (1, 1+getHeight());
+  setPrintPos (1, 1+getHeight());
   setTransparent();
   print(' ');
   unsetTransparent();
@@ -757,7 +757,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 
     has_raised = raiseWindow();
 
-    if ( ! isActiveWindow() )
+    if ( ! isWindowActive() )
       activateDialog();
 
     if ( has_raised )
@@ -815,7 +815,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     // click on titlebar: just activate
     if ( mouse_x >= 4 && mouse_x <= getWidth() && mouse_y == 1 )
     {
-      if ( ! isActiveWindow() )
+      if ( ! isWindowActive() )
         activateDialog();
     }
   }
@@ -827,7 +827,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     {
       bool has_lowered = lowerWindow();
 
-      if ( ! isActiveWindow() )
+      if ( ! isWindowActive() )
         activateDialog();
       else if ( has_lowered )
         updateTerminal();
@@ -1077,7 +1077,7 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onAccel (FAccelEvent*)
 {
-  if ( ! (isHiddenWindow() || isActiveWindow()) )
+  if ( ! (isWindowHidden() || isWindowActive()) )
   {
     bool has_raised = raiseWindow();
     activateDialog();

@@ -562,7 +562,7 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
 }
 
 //----------------------------------------------------------------------
-char* FOptiMove::cursor_move (int xold, int yold, int xnew, int ynew)
+char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
   char  null_result[sizeof(move_buf)];
   char* null_ptr = null_result;

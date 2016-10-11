@@ -38,6 +38,7 @@ libfinal_la_SOURCES = \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	fterm.cpp \
+	fvterm.cpp \
 	fevent.cpp \
 	foptiattr.cpp \
 	foptimove.cpp \
@@ -87,6 +88,7 @@ finalcutinclude_HEADERS = \
 	fstring.h \
 	ftcap_map.h \
 	fterm.h \
+	fvterm.cpp \
 	ftextview.h \
 	ftogglebutton.h \
 	fwidget.h \

@@ -38,6 +38,7 @@ INCLUDE_HEADERS = \
 	fstatusbar.h \
 	fstring.h \
 	fterm.h \
+	fvterm.h \
 	ftextview.h \
 	ftogglebutton.h \
 	fwidget.h \
@@ -83,6 +84,7 @@ OBJS = \
 	ftextview.o \
 	fstatusbar.o \
 	fterm.o \
+	fvterm.o \
 	fevent.o \
 	foptiattr.o \
 	foptimove.o \

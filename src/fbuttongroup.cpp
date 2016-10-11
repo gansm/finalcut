@@ -252,9 +252,9 @@ void FButtonGroup::drawLabel()
     length--;
 
   if ( border )
-    printPos (2, 1);
+    setPrintPos (2, 1);
   else
-    printPos (0, 1);
+    setPrintPos (0, 1);
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -330,7 +330,7 @@ void FButtonGroup::hide()
 
   for (int y=0; y < getHeight(); y++)
   {
-    printPos (1, 1+y);
+    setPrintPos (1, 1+y);
     print (blank);
   }
 

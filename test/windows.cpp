@@ -339,7 +339,7 @@ Window::~Window()
 //----------------------------------------------------------------------
 void Window::activateWindow (FDialog* win)
 {
-  if ( win && ! win->isHiddenWindow() && ! win->isActiveWindow() )
+  if ( win && ! win->isWindowHidden() && ! win->isWindowActive() )
   {
     bool has_raised = FWindow::raiseWindow(win);
     win->activateDialog();
@@ -443,7 +443,7 @@ void Window::cb_next (FWidget*, void*)
 
   while ( iter != dialog_list->end() )
   {
-    if ( static_cast<FWindow*>(*iter)->isActiveWindow() )
+    if ( static_cast<FWindow*>(*iter)->isWindowActive() )
     {
       FDialog* next;
       widgetList::const_iterator next_element;
@@ -484,7 +484,7 @@ void Window::cb_previous (FWidget*, void*)
     --iter;
 
     if ( (*iter)->isDialogWidget()
-       && static_cast<FWindow*>(*iter)->isActiveWindow() )
+       && static_cast<FWindow*>(*iter)->isWindowActive() )
     {
       FDialog* prev;
       widgetList::const_iterator prev_element;

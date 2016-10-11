@@ -231,7 +231,7 @@ void AttribDemo::printAltCharset()
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
 
-  printPos (1,1);
+  setPrintPos (1,1);
   print("alternate charset: ");
 
   if ( parent->bgcolor == fc::Default )
@@ -262,7 +262,7 @@ void AttribDemo::draw()
 
   for (int y=0; y < getParentWidget()->getHeight()-7; y++)
   {
-    printPos (1, 2+y);
+    setPrintPos (1, 2+y);
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);
@@ -366,7 +366,7 @@ void AttribDemo::draw()
   if ( ! isMonochron() )
     setColor(wc.label_fg, wc.label_bg);
 
-  printPos (1, 15);
+  setPrintPos (1, 15);
   short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
@@ -375,7 +375,7 @@ void AttribDemo::draw()
   else
     printf ( " %d", bg);
 
-  printPos (16, 17);
+  setPrintPos (16, 17);
   print ("Change background color ->");
   updateVTerm(true);
 }
