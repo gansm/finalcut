@@ -2103,7 +2103,7 @@ void FTerm::finish()
 }
 
 //----------------------------------------------------------------------
-inline uInt FTerm::charEncode (uInt c)
+uInt FTerm::charEncode (uInt c)
 {
   return charEncode (c, Encoding);
 }
