@@ -1,3 +1,6 @@
+2016-10-13  Markus Gans  <guru.mail@muenster.de>
+	* Reduces in the code the number of friend classes
+
 2016-10-11  Markus Gans  <guru.mail@muenster.de>
 	* Separate the virtual terminal into a own class vterm
 

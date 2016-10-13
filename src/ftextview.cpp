@@ -823,7 +823,7 @@ void FTextView::insert (const FString& str, int pos)
   if ( str.isEmpty() )
     s = "\n";
   else
-    s = FString(str).rtrim().expandTabs(tabstop);
+    s = FString(str).rtrim().expandTabs(getTabstop());
 
   iter = data.begin();
   text_split = s.split("\r\n");

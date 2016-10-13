@@ -11,9 +11,9 @@ static FVTerm* init_object = 0;
 
 // static class attributes
 bool                 FVTerm::hidden_cursor;
+bool                 FVTerm::terminal_update_complete;
 bool                 FVTerm::terminal_update_pending;
 bool                 FVTerm::force_terminal_update;
-bool                 FVTerm::terminal_updates;
 bool                 FVTerm::stop_terminal_updates;
 bool                 FVTerm::vterm_updates;
 int                  FVTerm::skipped_terminal_update = 0;
@@ -40,7 +40,7 @@ FVTerm::FVTerm (FVTerm* parent)
   , print_area(0)
   , vwin(0)
 {
-  terminal_updates = false;
+  terminal_update_complete = false;
   vterm_updates    = true;
   
   if ( ! parent )
@@ -103,11 +103,12 @@ void FVTerm::init()
   tcap = FTermcap().getTermcapMap();
 
   // create virtual terminal
-  createVTerm (*term);
+  FRect term_geometry (1, 1, getColumnNumber(), getLineNumber());
+  createVTerm (term_geometry);
 
   // create virtual desktop area
   FPoint shadow_size(0,0);
-  createArea (*term, shadow_size, vdesktop);
+  createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
 
@@ -1251,6 +1252,18 @@ FOptiAttr::char_data FVTerm::getOverlappedCharacter ( const FPoint& pos
 }
 
 //----------------------------------------------------------------------
+void FVTerm::startTerminalUpdate()
+{
+  terminal_update_complete = false;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::finishTerminalUpdate()
+{
+  terminal_update_complete = true;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::setTermXY (register int x, register int y)
 {
   // sets the hardware cursor to the given (x,y) position
@@ -1260,8 +1273,8 @@ void FVTerm::setTermXY (register int x, register int y)
   if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
 
-  term_width = term->getWidth();
-  term_height = term->getHeight();
+  term_width = getColumnNumber();
+  term_height = getLineNumber();
 
   if ( x >= term_width )
   {
@@ -1315,7 +1328,7 @@ bool FVTerm::hideCursor (bool on)
   flush_out();
 
   if ( ! hidden_cursor && isLinuxTerm() )
-    setConsoleCursor (console_cursor_style, false);
+    setConsoleCursor (getConsoleCursor(), false);
 
   return hidden_cursor;
 }
@@ -1381,10 +1394,10 @@ void FVTerm::updateTerminal()
 
   if ( ! force_terminal_update )
   {
-    if ( ! terminal_updates )
+    if ( ! terminal_update_complete )
       return;
 
-    if ( input_data_pending )
+    if ( isInputDataPending() )
     {
       terminal_update_pending = true;
       return;
@@ -1431,11 +1444,11 @@ void FVTerm::updateTerminal()
         term_pos->x_ref()--;
       else
       {
-        if ( eat_nl_glitch )
+        if ( FTermcap::eat_nl_glitch )
         {
           term_pos->setPoint(-1,-1);
         }
-        else if ( automatic_right_margin )
+        else if ( FTermcap::automatic_right_margin )
         {
           term_pos->setX(0);
           term_pos->y_ref()++;
@@ -1502,7 +1515,9 @@ void FVTerm::processTerminalUpdate()
 bool FVTerm::isInsideTerminal (int x, int y)
 {
   // Check whether the coordinates are within the virtual terminal
-  if ( term->contains(x,y) )
+  FRect term_geometry (1, 1, getColumnNumber(), getLineNumber());
+
+  if ( term_geometry.contains(x,y) )
     return true;
   else
     return false;
@@ -1650,6 +1665,7 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
   assert ( ! s.isNull() );
   register int len = 0;
   const wchar_t* p;
+  uInt tabstop = getTabstop();
   FWidget* window;
 
   if ( ! area )
@@ -1975,7 +1991,7 @@ inline void FVTerm::charsetChanges (FOptiAttr::char_data*& next_char)
     {
       next_char->pc_charset = true;
 
-      if ( isXTerminal() && utf8_console && ch < 0x20 )  // Character 0x00..0x1f
+      if ( isXTerminal() && hasUTF8() && ch < 0x20 )  // Character 0x00..0x1f
         next_char->code = int(charEncode(code, fc::ASCII));
     }
   }
@@ -1998,7 +2014,7 @@ inline void FVTerm::appendAttributes (FOptiAttr::char_data*& next_attr)
   FOptiAttr::char_data* term_attr = &term_attribute;
 
   // generate attribute string for the next character
-  attr_str = opti_attr->change_attribute (term_attr, next_attr);
+  attr_str = changeAttribute (term_attr, next_attr);
 
   if ( attr_str )
     appendOutputBuffer (attr_str);
@@ -2010,7 +2026,7 @@ int FVTerm::appendLowerRight (FOptiAttr::char_data*& screen_char)
   char* SA = tcap[fc::t_enter_am_mode].string;
   char* RA = tcap[fc::t_exit_am_mode].string;
 
-  if ( ! automatic_right_margin )
+  if ( ! FTermcap::automatic_right_margin )
   {
     appendCharacter (screen_char);
   }
@@ -2029,8 +2045,8 @@ int FVTerm::appendLowerRight (FOptiAttr::char_data*& screen_char)
     char* ip = tcap[fc::t_insert_padding].string;
     char* ic = tcap[fc::t_insert_character].string;
 
-    x = term->getWidth() - 2;
-    y = term->getHeight() - 1;
+    x = getColumnNumber() - 2;
+    y = getLineNumber() - 1;
     setTermXY (x, y);
     appendCharacter (screen_char);
     term_pos->x_ref()++;

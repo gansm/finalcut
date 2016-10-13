@@ -1325,7 +1325,7 @@ void FOptiAttr::init()
 }
 
 //----------------------------------------------------------------------
-char* FOptiAttr::change_attribute (char_data*& term, char_data*& next)
+char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
 {
   fake_reverse = false;
   attr_buf[0] = '\0';

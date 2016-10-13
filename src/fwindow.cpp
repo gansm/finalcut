@@ -7,7 +7,7 @@
 #include "fwindow.h"
 
 // static attributes
-FWindow* FWindow::previous_widget = 0;
+FWindow* FWindow::previous_window = 0;
 
 
 //----------------------------------------------------------------------
@@ -33,8 +33,8 @@ FWindow::~FWindow()  // destructor
 {
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
-  if ( previous_widget == this )
-    previous_widget = 0;
+  if ( previous_window == this )
+    previous_window = 0;
 
   if ( isAlwaysOnTop() )
     deleteFromAlwaysOnTopList (this);
@@ -665,7 +665,7 @@ void FWindow::switchToPrevWindow()
 bool FWindow::activatePrevWindow()
 {
   // activate the previous window
-  FWindow* w = previous_widget;
+  FWindow* w = previous_window;
 
   if ( w )
   {

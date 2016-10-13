@@ -129,28 +129,17 @@ class FTerm
    static bool    linux_terminal;
    static bool    screen_terminal;
    static bool    tmux_terminal;
-   static bool    background_color_erase;
-   static bool    automatic_left_margin;
-   static bool    automatic_right_margin;
-   static bool    eat_nl_glitch;
-   static bool    ansi_default_color;
-   static bool    osc_support;
    static char    termtype[30];
    static char*   term_name;
    static char*   locale_name;
    static char*   locale_xterm;
-   static uChar   x11_button_state;
    static FRect*  term;      // current terminal geometry
    static FPoint* mouse;     // mouse click position
 
    static int     stdin_status_flags;
-   static int     stdin_no;
-   static int     stdout_no;
-   static int     max_color;
    static int     fd_tty;
    static uInt    baudrate;
    static bool    resize_term;
-   static char    exit_message[8192];
 
    static struct  termios term_init;
 
@@ -177,6 +166,15 @@ class FTerm
      dacreg d[16];
    } map;
 
+ protected:
+   static int          stdin_no;
+   static int          stdout_no;
+   static bool         NewFont;
+   static bool         VGAFont;
+   static bool         cursor_optimisation;
+   static fc::encoding Encoding;
+   static char         exit_message[8192];
+
    static struct modifier_key // bit field
    {
      uChar shift  : 1;  // 0..1
@@ -186,58 +184,62 @@ class FTerm
      uChar        : 4;  // padding bits
    } mod_key;
 
- protected:
-   static bool NewFont;
-   static bool VGAFont;
-   static bool cursor_optimisation;
-   static uInt tabstop;
-   static uInt attr_without_color;
-   static fc::encoding Encoding;
-
  private:
    // Disable copy constructor
    FTerm (const FTerm&);
    // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
-   static void  outb_Attribute_Controller (int, int);
-   static int   inb_Attribute_Controller (int);
-   static int   getFramebuffer_bpp();
-   static int   openConsole();
-   static int   closeConsole();
-   static int   isConsole();
-   static void  identifyTermType();
-   static int   getScreenFont();
-   static int   setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
-   static int   setUnicodeMap (struct unimapdesc*);
-   static int   getUnicodeMap ();
-   static int   setBlinkAsIntensity (bool);
-   static void  init_console();
-   static uInt  getBaudRate (const struct termios*);
-   static void  init_consoleCharMap();
-   static char* init_256colorTerminal();
-   static char* parseAnswerbackMsg (char*&);
-   static char* parseSecDA (char*&);
-   static void  oscPrefix();
-   static void  oscPostfix();
-   static void  init_alt_charset();
-   static void  init_pc_charset();
-   static void  init_termcaps();
-   static void  init_encoding();
-   void         init();
-   void         finish();
-   static uInt  charEncode (uInt);
-   static uInt  charEncode (uInt, fc::encoding);
-   static uInt  cp437_to_unicode (uChar);
-   static void  signal_handler (int);
-
-   // Friend classes
-   friend class FWidget;
-   friend class FVTerm;
-   friend class FApplication;
+   static void          outb_Attribute_Controller (int, int);
+   static int           inb_Attribute_Controller (int);
+   static int           getFramebuffer_bpp();
+   static int           openConsole();
+   static int           closeConsole();
+   static int           isConsole();
+   static void          identifyTermType();
+   static int           getScreenFont();
+   static int           setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
+   static int           setUnicodeMap (struct unimapdesc*);
+   static int           getUnicodeMap ();
+   static int           setBlinkAsIntensity (bool);
+   static void          init_console();
+   static uInt          getBaudRate (const struct termios*);
+   static char*         init_256colorTerminal();
+   static char*         parseAnswerbackMsg (char*&);
+   static char*         parseSecDA (char*&);
+   static void          oscPrefix();
+   static void          oscPostfix();
+   static void          init_alt_charset();
+   static void          init_pc_charset();
+   static void          init_termcaps();
+   static void          init_encoding();
+   void                 init();
+   void                 finish();
+   static uInt          cp437_to_unicode (uChar);
+   static void          signal_handler (int);
 
  protected:
-   static bool  charEncodable (uInt);
+   static void          init_consoleCharMap();
+   static bool          charEncodable (uInt);
+   static uInt          charEncode (uInt);
+   static uInt          charEncode (uInt, fc::encoding);
+   static char*         changeAttribute ( FOptiAttr::char_data*&
+                                        , FOptiAttr::char_data*& );
+   static bool          hasChangedTermSize();
+   static void          changeTermSizeFinished();
+   static void          xtermMouse (bool);
+   static void          enableXTermMouse();
+   static void          disableXTermMouse();
+
+#ifdef F_HAVE_LIBGPM
+   static bool          gpmMouse (bool);
+   static bool          enableGpmMouse();
+   static bool          disableGpmMouse();
+   static bool          isGpmMouseEnabled();
+#endif  // F_HAVE_LIBGPM
+   static FPoint&       getMousePos();
+   static void          setMousePos (FPoint&);
+   static void          setMousePos (short, short);
 
  public:
    // Constructor
@@ -245,125 +247,164 @@ class FTerm
    // Destructor
    virtual ~FTerm();
 
-   virtual const char* getClassName() const;
-   static bool    isKeyTimeout (timeval*, register long);
-   static int     parseKeyString (char*, int, timeval*);
-   static bool&   unprocessedInput();
-   static int     getLineNumber();
-   static int     getColumnNumber();
-   static FString getKeyName (int);
-   static void    getModifierKey();
+   virtual const char*  getClassName() const;
+   static bool          isKeyTimeout (timeval*, register long);
+   static int           parseKeyString (char*, int, timeval*);
+   static bool&         unprocessedInput();
+   static int           getLineNumber();
+   static int           getColumnNumber();
+   static FString       getKeyName (int);
+   static modifier_key& getModifierKey();
+   static char*         getTermType();
+   static char*         getTermName();
+   static uInt          getTabstop();
+   static bool          hasPCcharset();
+   static bool          hasUTF8();
+   static bool          hasVT100();
+   static bool          hasASCII();
+   static bool          isMonochron();
+   static bool          isXTerminal();
+   static bool          isRxvtTerminal();
+   static bool          isUrxvtTerminal();
+   static bool          isMltermTerminal();
+   static bool          isPuttyTerminal();
+   static bool          isKdeTerminal();
+   static bool          isGnomeTerminal();
+   static bool          isKtermTerminal();
+   static bool          isTeraTerm();
+   static bool          isCygwinTerminal();
+   static bool          isMinttyTerm();
+   static bool          isLinuxTerm();
+   static bool          isScreenTerm();
+   static bool          isTmuxTerm();
+   static bool          isInputDataPending();
+   static bool          setVGAFont();
+   static bool          setNewFont();
+   static bool          isNewFont();
+   static bool          setOldFont();
+   static bool          setCursorOptimisation (bool);
+   static fc::consoleCursorStyle getConsoleCursor();
+   static void          setConsoleCursor (fc::consoleCursorStyle, bool);
+   static char*         moveCursor (int, int, int, int);
+   static char*         enableCursor();
+   static char*         disableCursor();
+   static void          detectTermSize();
+   static void          setTermSize (int, int);
+   static void          setKDECursor (fc::kdeKonsoleCursorShape);
+   static const FString getXTermFont();
+   static const FString getXTermTitle();
+   static void          setXTermCursorStyle (fc::xtermCursorStyle);
+   static void          setXTermTitle (const FString&);
+   static void          setXTermForeground (const FString&);
+   static void          setXTermBackground (const FString&);
+   static void          setXTermCursorColor (const FString&);
+   static void          setXTermMouseForeground (const FString&);
+   static void          setXTermMouseBackground (const FString&);
+   static void          setXTermHighlightBackground (const FString&);
+   static void          resetXTermColors();
+   static void          resetXTermForeground();
+   static void          resetXTermBackground();
+   static void          resetXTermCursorColor();
+   static void          resetXTermMouseForeground();
+   static void          resetXTermMouseBackground();
+   static void          resetXTermHighlightBackground();
+   static void          saveColorMap();
+   static void          resetColorMap();
+   static void          setPalette (short, int, int, int);
+   static int           getMaxColor();
+   static void          setBeep (int, int);
+   static void          resetBeep();
+   static void          beep();
 
-   static char*   getTermType();
-   static char*   getTermName();
-   static bool    hasPCcharset();
-   static bool    hasUTF8();
-   static bool    hasVT100();
-   static bool    hasASCII();
-   static bool    isMonochron();
-   static bool    isXTerminal();
-   static bool    isRxvtTerminal();
-   static bool    isUrxvtTerminal();
-   static bool    isMltermTerminal();
-   static bool    isPuttyTerminal();
-   static bool    isKdeTerminal();
-   static bool    isGnomeTerminal();
-   static bool    isKtermTerminal();
-   static bool    isTeraTerm();
-   static bool    isCygwinTerminal();
-   static bool    isMinttyTerm();
-   static bool    isLinuxTerm();
-   static bool    isScreenTerm();
-   static bool    isTmuxTerm();
-   static bool    setVGAFont();
-   static bool    setNewFont();
-   static bool    isNewFont();
-   static bool    setOldFont();
-   static bool    setCursorOptimisation (bool);
-   static void    setConsoleCursor (fc::consoleCursorStyle, bool);
-   static char*   moveCursor (int, int, int, int);
-   static char*   enableCursor();
-   static char*   disableCursor();
-   static void    getTermSize();
-   static void    setTermSize (int, int);
-   static void    setKDECursor (fc::kdeKonsoleCursorShape);
-   static FString getXTermFont();
-   static FString getXTermTitle();
-   static void    setXTermCursorStyle (fc::xtermCursorStyle);
-   static void    setXTermTitle (const FString&);
-   static void    setXTermForeground (const FString&);
-   static void    setXTermBackground (const FString&);
-   static void    setXTermCursorColor (const FString&);
-   static void    setXTermMouseForeground (const FString&);
-   static void    setXTermMouseBackground (const FString&);
-   static void    setXTermHighlightBackground (const FString&);
-   static void    resetXTermColors();
-   static void    resetXTermForeground();
-   static void    resetXTermBackground();
-   static void    resetXTermCursorColor();
-   static void    resetXTermMouseForeground();
-   static void    resetXTermMouseBackground();
-   static void    resetXTermHighlightBackground();
-   static void    saveColorMap();
-   static void    resetColorMap();
-   static void    setPalette (short, int, int, int);
-   static int     getMaxColor();
-   static void    xtermMouse (bool);
-   static void    enableXTermMouse();
-   static void    disableXTermMouse();
+   static void          setEncoding (std::string);
+   static std::string   getEncoding();
 
-#ifdef F_HAVE_LIBGPM
-   static bool    gpmMouse (bool);
-   static bool    enableGpmMouse();
-   static bool    disableGpmMouse();
-#endif  // F_HAVE_LIBGPM
+   static bool          setNonBlockingInput (bool);
+   static bool          setNonBlockingInput();
+   static bool          unsetNonBlockingInput();
 
-   static void    setBeep (int, int);
-   static void    resetBeep();
-   static void    beep();
+   static bool          scrollTermForward();
+   static bool          scrollTermReverse();
 
-   static void         setEncoding (std::string);
-   static std::string  getEncoding();
+   static bool          setUTF8 (bool);
+   static bool          setUTF8();
+   static bool          unsetUTF8();
+   static bool          isUTF8();
+   static bool          isUTF8_linux_terminal();
 
-   static bool    setNonBlockingInput (bool);
-   static bool    setNonBlockingInput();
-   static bool    unsetNonBlockingInput();
+   static bool          setRawMode (bool);
+   static bool          setRawMode();
+   static bool          unsetRawMode();
+   static bool          setCookedMode();
+   static bool          isRaw();
 
-   static bool    scrollTermForward();
-   static bool    scrollTermReverse();
+   static const FString getAnswerbackMsg();
+   static const FString getSecDA();
 
-   static bool    setUTF8 (bool);
-   static bool    setUTF8();
-   static bool    unsetUTF8();
-   static bool    isUTF8();
-   static bool    isUTF8_linux_terminal();
-
-   static bool    setRawMode (bool);
-   static bool    setRawMode();
-   static bool    unsetRawMode();
-   static bool    setCookedMode();
-   static bool    isRaw();
-
-   static FString getAnswerbackMsg();
-   static FString getSecDA();
-
-   static int     (*Fputchar)(int); // function pointer -> static function
-   static void    putstringf (const char*, ...)
+   // function pointer -> static function
+   static int           (*Fputchar)(int);
+   static void          putstringf (const char*, ...)
    #if defined(__clang__)
      __attribute__((__format__ (__printf__, 1, 2)))
    #elif defined(__GNUC__)
      __attribute__ ((format (printf, 1, 2)))
    #endif
-                  ;
-   static void    putstring (const char*, int = 1);
-   static int     putchar_ASCII (register int);
-   static int     putchar_UTF8  (register int);
-   static int     UTF8decode (char*);
+                        ;
+   static void          putstring (const char*, int = 1);
+   static int           putchar_ASCII (register int);
+   static int           putchar_UTF8  (register int);
+   static int           UTF8decode (char*);
 };
 
 #pragma pack(pop)
 
 // FTerm inline functions
+//----------------------------------------------------------------------
+inline bool FTerm::hasChangedTermSize()
+{ return resize_term; }
+
+//----------------------------------------------------------------------
+inline void FTerm::changeTermSizeFinished()
+{ resize_term = false; }
+
+//----------------------------------------------------------------------
+inline void FTerm::enableXTermMouse()
+{ xtermMouse(true); }
+
+//----------------------------------------------------------------------
+inline void FTerm::disableXTermMouse()
+{ xtermMouse(false); }
+
+#ifdef F_HAVE_LIBGPM
+//----------------------------------------------------------------------
+inline bool FTerm::enableGpmMouse()
+{ return gpmMouse(true); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::disableGpmMouse()
+{ return gpmMouse(false); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isGpmMouseEnabled()
+{ return gpm_mouse_enabled; }
+#endif  // F_HAVE_LIBGPM
+
+//----------------------------------------------------------------------
+inline FPoint& FTerm::getMousePos()
+{ return *mouse; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setMousePos (FPoint& m)
+{ *mouse = m; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setMousePos (short x, short y)
+{ mouse->setPoint (x, y); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::setNonBlockingInput()
+{ return setNonBlockingInput(true); }
+
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
@@ -375,6 +416,10 @@ inline char* FTerm::getTermType()
 //----------------------------------------------------------------------
 inline char* FTerm::getTermName()
 { return term_name; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getTabstop()
+{ return FTermcap::tabstop; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::hasPCcharset()
@@ -457,6 +502,10 @@ inline bool FTerm::isTmuxTerm()
 { return tmux_terminal; }
 
 //----------------------------------------------------------------------
+inline bool FTerm::isInputDataPending()
+{ return input_data_pending; }
+
+//----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)
 { return cursor_optimisation = (on) ? true : false; }
 
@@ -466,29 +515,7 @@ inline bool FTerm::isRaw()
 
 //----------------------------------------------------------------------
 inline int FTerm::getMaxColor()
-{ return max_color; }
-
-//----------------------------------------------------------------------
-inline void FTerm::enableXTermMouse()
-{ xtermMouse(true); }
-
-//----------------------------------------------------------------------
-inline void FTerm::disableXTermMouse()
-{ xtermMouse(false); }
-
-#ifdef F_HAVE_LIBGPM
-//----------------------------------------------------------------------
-inline bool FTerm::enableGpmMouse()
-{ return gpmMouse(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::disableGpmMouse()
-{ return gpmMouse(false); }
-#endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
-inline bool FTerm::setNonBlockingInput()
-{ return setNonBlockingInput(true); }
+{ return FTermcap::max_color; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::unsetNonBlockingInput()

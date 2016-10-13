@@ -234,7 +234,7 @@ class FOptiAttr
    void  set_orig_orig_colors (char*&);
    void  init();
 
-   char* change_attribute (char_data*&, char_data*&);
+   char* changeAttribute (char_data*&, char_data*&);
 
    friend bool operator == (const char_data&, const char_data&);
    friend bool operator != (const char_data&, const char_data&);

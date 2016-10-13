@@ -58,8 +58,6 @@ FWidget::FWidget (FWidget* parent)
   , background_color(fc::Default)
   , statusbar_message()
 {
-  resize_term = false;
-
   if ( ! parent )
   {
     assert ( ! rootObject
@@ -125,10 +123,10 @@ void FWidget::init()
   close_widget       = new widgetList();
 
   // determine width and height of the terminal
-  getTermSize();
-  wsize.setRect(1, 1, term->getWidth(), term->getHeight());
+  detectTermSize();
+  wsize.setRect(1, 1, getColumnNumber(), getLineNumber());
   adjust_wsize = wsize;
-  offset.setRect(0, 0, term->getWidth(), term->getHeight());
+  offset.setRect(0, 0, getColumnNumber(), getLineNumber());
   client_offset = offset;
 
   double_flatline_mask.top.resize (uLong(getWidth()), false);
@@ -270,13 +268,13 @@ void FWidget::setColorTheme()
   wc.progressbar_fg                    = fc::DarkGray;
   wc.progressbar_bg                    = fc::LightBlue;
 
-  if ( kde_konsole )
+  if ( isKdeTerminal() )
     wc.term_bg = fc::SteelBlue3;
 
-  if ( tera_terminal )
+  if ( isTeraTerm() )
     wc.term_bg = fc::LightBlue;
 
-  if ( max_color < 16 )  // for 8 color mode
+  if ( getMaxColor() < 16 )  // for 8 color mode
   {
     wc.term_fg                           = fc::Black;
     wc.term_bg                           = fc::Blue;
@@ -1198,7 +1196,7 @@ void FWidget::redraw()
 
   if ( isRootWidget() )
   {
-    terminal_updates = false;
+    startTerminalUpdate();
     // clean desktop
     setColor (wc.term_fg, wc.term_bg);
     clearArea (vdesktop);
@@ -1279,7 +1277,7 @@ void FWidget::redraw()
   }
 
   if ( isRootWidget() )
-    terminal_updates = true;
+    finishTerminalUpdate();
 
   if ( redraw_root_widget == this )
   {
@@ -1292,11 +1290,10 @@ void FWidget::redraw()
 //----------------------------------------------------------------------
 void FWidget::resize()
 {
-  if ( isRootWidget() && openConsole() == 0 )
+  if ( isRootWidget() )
   {
-    getTermSize();
+    detectTermSize();
     const FRect& term_geometry = getGeometry();
-    closeConsole();
     resizeVTerm (term_geometry);
     resizeArea (term_geometry, getShadow(), vdesktop);
     adjustSizeGlobal();
@@ -1317,12 +1314,14 @@ void FWidget::show()
   if ( ! visible )
     return;
 
-  if ( getMainWidget() == this && ! (NewFont || VGAFont) )
+  // Important: Do not use setNewFont() or setVGAFont() after
+  //            the console character mapping has been initialized
+  if ( getMainWidget() == this )
     init_consoleCharMap();
 
   if ( ! show_root_widget )
   {
-    terminal_updates = false;
+    startTerminalUpdate();
     show_root_widget = this;
   }
 
@@ -1348,7 +1347,7 @@ void FWidget::show()
 
   if ( show_root_widget && show_root_widget == this )
   {
-    terminal_updates = true;
+    finishTerminalUpdate();
     updateTerminal();
     flush_out();
     show_root_widget = 0;
@@ -1534,16 +1533,7 @@ bool FWidget::setFocus (bool on)
 void FWidget::setColor ()
 {
   // Changes colors to the widget default colors
-  next_attribute.fg_color = foreground_color;
-  next_attribute.bg_color = background_color;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setColor (register short fg, register short bg)
-{
-  // Changes colors
-  next_attribute.fg_color = fg;
-  next_attribute.bg_color = bg;
+  setColor (foreground_color, background_color);
 }
 
 //----------------------------------------------------------------------
@@ -1799,24 +1789,18 @@ void FWidget::setTermOffsetWithPadding()
 }
 
 //----------------------------------------------------------------------
-void FWidget::getTermSize()
+void FWidget::detectTermSize()
 {
   FWidget* r = rootObject;
-
-  if ( openConsole() == 0 )
-  {
-    FTerm::getTermSize();
-    closeConsole();
-  }
-
-  r->adjust_wsize.setRect (1, 1, term->getWidth(), term->getHeight());
-  r->offset.setRect (0, 0, term->getWidth(), term->getHeight());
+  FTerm::detectTermSize();
+  r->adjust_wsize.setRect (1, 1, getColumnNumber(), getLineNumber());
+  r->offset.setRect (0, 0, getColumnNumber(), getLineNumber());
   r->client_offset.setCoordinates
   (
     r->padding.left,
     r->padding.top,
-    term->getWidth() - 1 - r->padding.right,
-    term->getHeight() - 1 - r->padding.bottom
+    getColumnNumber() - 1 - r->padding.right,
+    getLineNumber() - 1 - r->padding.bottom
   );
 }
 
@@ -1829,7 +1813,7 @@ void FWidget::setTermSize (int w, int h)
     rootObject->wsize.setRect(1, 1, w, h);
     rootObject->adjust_wsize = rootObject->wsize;
     FTerm::setTermSize (w, h);  // w = columns / h = lines
-    getTermSize();
+    detectTermSize();
   }
 }
 

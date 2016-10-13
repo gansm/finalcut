@@ -28,7 +28,17 @@ class FTermcap
      char  tname[3];
    }
    tcap_map;
-  
+
+   static bool background_color_erase;
+   static bool automatic_left_margin;
+   static bool automatic_right_margin;
+   static bool eat_nl_glitch;
+   static bool ansi_default_color;
+   static bool osc_support;
+   static int  max_color;
+   static uInt tabstop;
+   static uInt attr_without_color;
+
  private:
    static tcap_map* tcap;
 

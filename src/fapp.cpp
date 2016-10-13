@@ -21,6 +21,7 @@ FWidget* FApplication::clicked_widget   = 0;  // is focused by click
 FWidget* FApplication::open_menu        = 0;  // currently open menu
 FWidget* FApplication::move_size_widget = 0;  // move/size by keyboard
 FPoint*  FApplication::zero_point       = 0;  // zero point (x=0, y=0)
+uChar    FApplication::x11_button_state = 0x03;
 int      FApplication::quit_code        = 0;
 bool     FApplication::quit_now         = false;
 
@@ -278,7 +279,7 @@ void FApplication::processKeyboardEvent()
 
 #ifdef F_HAVE_LIBGPM
 
-  if ( gpm_mouse_enabled )
+  if ( isGpmMouseEnabled() )
   {
     gpmMouseEvent = false;
     int type = gpmEvent();
@@ -496,8 +497,7 @@ void FApplication::processKeyboardEvent()
 int FApplication::modifierKeyCorrection (int& key_id)
 {
   // get the current modifier key state
-  getModifierKey();
-  modifier_key& m = mod_key;
+  FTerm::modifier_key& m = getModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
   {
@@ -845,6 +845,7 @@ bool FApplication::processAccelerator (FWidget*& widget)
 void FApplication::getX11ButtonState (int button)
 {
   // get the x11 and urxvt mouse button state
+  const FPoint& mouse_position = getMousePos();
 
   enum btn_states
   {
@@ -870,7 +871,7 @@ void FApplication::getX11ButtonState (int button)
   {
     case button1_pressed:
     case button1_pressed_move:
-      if (  *mouse == new_mouse_position
+      if ( mouse_position == new_mouse_position
          && x11_button_state == all_buttons_released
          && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
       {
@@ -942,6 +943,7 @@ void FApplication::getX11ButtonState (int button)
 //----------------------------------------------------------------------
 bool FApplication::parseX11Mouse()
 {
+  const FPoint& mouse_position = getMousePos();
   uChar x, y;
 
   enum x11_btn_states
@@ -979,15 +981,15 @@ bool FApplication::parseX11Mouse()
 
   if (  (x11_mouse[0] & button_mask) >= button1_pressed_move
      && (x11_mouse[0] & button_mask) <= button3_pressed_move
-     && *mouse != *zero_point )
+     && mouse_position != *zero_point )
   {
     b_state.mouse_moved = true;
   }
 
   getX11ButtonState (x11_mouse[0] & button_mask);
 
-  if (  uChar(x11_mouse[1]) == mouse->getX() + 0x20
-     && uChar(x11_mouse[2]) == mouse->getY() + 0x20
+  if (  uChar(x11_mouse[1]) == mouse_position.getX() + 0x20
+     && uChar(x11_mouse[2]) == mouse_position.getY() + 0x20
      && b_state.wheel_up != Pressed
      && b_state.wheel_down != Pressed
      && uChar(x11_mouse[0]) == x11_button_state )
@@ -995,7 +997,7 @@ bool FApplication::parseX11Mouse()
     return false;
   }
 
-  mouse->setPoint(x,y);
+  setMousePos (x, y);
   x11_button_state = uChar(x11_mouse[0]);
   x11_mouse[0] = '\0';
   return true;
@@ -1004,6 +1006,7 @@ bool FApplication::parseX11Mouse()
 //----------------------------------------------------------------------
 bool FApplication::parseSGRMouse()
 {
+  const FPoint& mouse_position = getMousePos();
   register char* p;
   int button;
   uChar x, y;
@@ -1026,6 +1029,7 @@ bool FApplication::parseSGRMouse()
     pressed         = 'M',
     released        = 'm'
   };
+
   x = 0;
   y = 0;
   button = 0;
@@ -1072,7 +1076,7 @@ bool FApplication::parseSGRMouse()
 
   if (  (button & button_mask) >= button1_move
      && (button & button_mask) <= button3_move
-     && *mouse != *zero_point )
+     && mouse_position != *zero_point )
   {
     b_state.mouse_moved = true;
   }
@@ -1083,7 +1087,7 @@ bool FApplication::parseSGRMouse()
     {
       case button1:
       case button1_move:
-        if (  *mouse == new_mouse_position
+        if ( mouse_position == new_mouse_position
            && (((x11_button_state & 0x80) >> 2) + 'M') == released
            && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
         {
@@ -1152,7 +1156,7 @@ bool FApplication::parseSGRMouse()
     }
   }
 
-  if (  *mouse == new_mouse_position
+  if ( mouse_position == new_mouse_position
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed
       && x11_button_state == uChar(((*p & 0x20) << 2) + button) )
@@ -1160,7 +1164,7 @@ bool FApplication::parseSGRMouse()
     return false;
   }
 
-  mouse->setPoint(x,y);
+  setMousePos (x, y);
   x11_button_state = uChar(((*p & 0x20) << 2) + button);
   sgr_mouse[0] = '\0';
   return true;
@@ -1169,6 +1173,7 @@ bool FApplication::parseSGRMouse()
 //----------------------------------------------------------------------
 bool FApplication::parseUrxvtMouse()
 {
+  const FPoint& mouse_position = getMousePos();
   register char* p;
   register bool x_neg;
   register bool y_neg;
@@ -1248,11 +1253,11 @@ bool FApplication::parseUrxvtMouse()
   if ( y_neg || y == 0 )
     y = 1;
 
-  if ( x > term->getWidth() )
-    x = uChar(term->getWidth());
+  if ( x > getColumnNumber() )
+    x = uChar(getColumnNumber());
 
-  if ( y > term->getHeight() )
-    y = uChar(term->getHeight());
+  if ( y > getLineNumber() )
+    y = uChar(getLineNumber());
 
   new_mouse_position.setPoint(x,y);
   // fill bit field with 0
@@ -1269,14 +1274,14 @@ bool FApplication::parseUrxvtMouse()
 
   if (  (button & button_mask) >= button1_pressed_move
      && (button & button_mask) <= button3_pressed_move
-     && *mouse != *zero_point )
+     && mouse_position != *zero_point )
   {
     b_state.mouse_moved = true;
   }
 
   getX11ButtonState (button & button_mask);
 
-  if (  *mouse == new_mouse_position
+  if ( mouse_position == new_mouse_position
       && b_state.wheel_up != Pressed
       && b_state.wheel_down != Pressed
       && x11_button_state == uChar(button) )
@@ -1284,7 +1289,7 @@ bool FApplication::parseUrxvtMouse()
     return false;
   }
 
-  mouse->setPoint(x,y);
+  setMousePos (x, y);
   x11_button_state = uChar(button);
   urxvt_mouse[0] = '\0';
   return true;
@@ -1359,7 +1364,7 @@ bool FApplication::processGpmEvent()
         break;
     }
 
-    mouse->setPoint(gpm_ev.x, gpm_ev.y);
+    setMousePos (gpm_ev.x, gpm_ev.y);
 
     if ( gpmEvent(false) == mouse_event )
       unprocessedInput() = true;
@@ -1416,6 +1421,8 @@ void FApplication::processMouseEvent()
   if ( ! Event )
     return;
 
+  const FPoint& mouse_position = getMousePos();
+
   if (  ! clicked_widget
      && (  b_state.left_button == Pressed
         || b_state.left_button == DoubleClick
@@ -1425,12 +1432,12 @@ void FApplication::processMouseEvent()
         || b_state.wheel_down == Pressed ) )
   {
     // determine the window object on the current click position
-    FWidget* window = FWindow::getWindowWidgetAt (*mouse);
+    FWidget* window = FWindow::getWindowWidgetAt (mouse_position);
 
     if ( window )
     {
       // determine the widget at the current click position
-      FWidget* child = childWidgetAt (window, *mouse);
+      FWidget* child = childWidgetAt (window, mouse_position);
       clicked_widget = (child != 0) ? child : window;
     }
 
@@ -1448,7 +1455,7 @@ void FApplication::processMouseEvent()
   {
     FMenu* menu = static_cast<FMenu*>(open_menu);
 
-    if ( ! menu->containsMenuStructure(*mouse) )
+    if ( ! menu->containsMenuStructure(mouse_position) )
     {
       bool is_window_menu;
       FWidget* super = menu->getSuperMenu();
@@ -1480,7 +1487,7 @@ void FApplication::processMouseEvent()
      && menuBar()->hasSelectedItem()
      && ! b_state.mouse_moved )
   {
-    if ( ! menuBar()->getTermGeometry().contains(*mouse) )
+    if ( ! menuBar()->getTermGeometry().contains(mouse_position) )
     {
       if ( statusBar() )
         statusBar()->clearMessage();
@@ -1514,7 +1521,7 @@ void FApplication::processMouseEvent()
     if ( b_state.control_button == Pressed )
       key_state |= fc::ControlButton;
 
-    widgetMousePos = clicked_widget->termToWidgetPos(*mouse);
+    widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
 
     if ( b_state.mouse_moved )
     {
@@ -1522,7 +1529,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
@@ -1531,7 +1538,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
@@ -1540,7 +1547,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseMove_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
@@ -1551,7 +1558,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
                                   , widgetMousePos
-                                  , *mouse
+                                  , mouse_position
                                   , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_dblclick_ev);
       }
@@ -1559,7 +1566,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::LeftButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
@@ -1567,7 +1574,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , widgetMousePos
-                            , *mouse
+                            , mouse_position
                             , fc::LeftButton | key_state );
         FWidget* released_widget = clicked_widget;
 
@@ -1582,7 +1589,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::RightButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
       }
@@ -1590,7 +1597,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , widgetMousePos
-                            , *mouse
+                            , mouse_position
                             , fc::RightButton | key_state );
         FWidget* released_widget = clicked_widget;
 
@@ -1605,7 +1612,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_down_ev ( fc::MouseDown_Event
                               , widgetMousePos
-                              , *mouse
+                              , mouse_position
                               , fc::MiddleButton | key_state );
         sendEvent (clicked_widget, &m_down_ev);
 
@@ -1617,7 +1624,7 @@ void FApplication::processMouseEvent()
       {
         FMouseEvent m_up_ev ( fc::MouseUp_Event
                             , widgetMousePos
-                            , *mouse
+                            , mouse_position
                             , fc::MiddleButton | key_state );
         FWidget* released_widget = clicked_widget;
 
@@ -1635,7 +1642,7 @@ void FApplication::processMouseEvent()
     {
       FWheelEvent wheel_ev ( fc::MouseWheel_Event
                            , widgetMousePos
-                           , *mouse
+                           , mouse_position
                            , fc::WheelUp );
       FWidget* scroll_over_widget = clicked_widget;
       clicked_widget = 0;
@@ -1646,7 +1653,7 @@ void FApplication::processMouseEvent()
     {
       FWheelEvent wheel_ev ( fc::MouseWheel_Event
                            , widgetMousePos
-                           , *mouse
+                           , mouse_position
                            , fc::WheelDown );
       FWidget* scroll_over_widget = clicked_widget;
       clicked_widget = 0;
@@ -1656,7 +1663,7 @@ void FApplication::processMouseEvent()
   }
 
 #ifdef F_HAVE_LIBGPM
-  if ( gpm_mouse_enabled && gpm_ev.x != -1 )
+  if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
     GPM_DRAWPOINTER(&gpm_ev);
 #endif
 }
@@ -1664,13 +1671,13 @@ void FApplication::processMouseEvent()
 //----------------------------------------------------------------------
 void FApplication::processResizeEvent()
 {
-  if ( resize_term )
+  if ( hasChangedTermSize() )
   {
     FResizeEvent r_ev(fc::Resize_Event);
     sendEvent(rootObj, &r_ev);
 
     if ( r_ev.isAccepted() )
-      resize_term = false;
+      changeTermSizeFinished();
   }
 }
 
@@ -1899,7 +1906,12 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
     return false;
 
   // sends event event directly to receiver
-  return widget->event(event);
+  FApplication* w = static_cast<FApplication*>(widget);
+
+  if ( w )
+    return w->event(event);  // access to a protected base class member
+  else
+    return false;
 }
 
 //----------------------------------------------------------------------

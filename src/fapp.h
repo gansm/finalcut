@@ -65,11 +65,13 @@ class FApplication : public FWidget
    static int      loop_level;
    static bool     process_timer_event;
    static FPoint*  zero_point;
+   static uChar    x11_button_state;
    int             key;
    char            k_buf[1024];
    char            x11_mouse[4];
    char            sgr_mouse[13];
    char            urxvt_mouse[13];
+   
 
 #ifdef F_HAVE_LIBGPM
 

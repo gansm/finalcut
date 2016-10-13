@@ -55,7 +55,7 @@ class FWindow : public FWidget
    FRect    normalGeometry;
 
  protected:
-   static FWindow* previous_widget;
+   static FWindow* previous_window;
 
  private:
    // Disable copy constructor

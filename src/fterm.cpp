@@ -23,11 +23,8 @@ int (*FTerm::Fputchar)(int);
 int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
-int      FTerm::max_color;
 int      FTerm::stdin_status_flags;
 uInt     FTerm::baudrate;
-uInt     FTerm::tabstop;
-uInt     FTerm::attr_without_color;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
 bool     FTerm::raw_mode;
@@ -36,11 +33,6 @@ bool     FTerm::non_blocking_stdin;
 bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
 bool     FTerm::monochron;
-bool     FTerm::background_color_erase;
-bool     FTerm::automatic_left_margin;
-bool     FTerm::automatic_right_margin;
-bool     FTerm::eat_nl_glitch;
-bool     FTerm::ansi_default_color;
 bool     FTerm::xterm_terminal;
 bool     FTerm::rxvt_terminal;
 bool     FTerm::urxvt_terminal;
@@ -66,8 +58,6 @@ bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
 bool     FTerm::cursor_optimisation;
-bool     FTerm::osc_support;
-uChar    FTerm::x11_button_state;
 termios  FTerm::term_init;
 char     FTerm::termtype[30] = "";
 char*    FTerm::term_name    = 0;
@@ -76,20 +66,29 @@ char*    FTerm::locale_xterm = 0;
 FPoint*  FTerm::mouse        = 0;
 FRect*   FTerm::term         = 0;
 
-char                   FTerm::exit_message[8192] = "";
+char                   FTerm::exit_message[8192]        = "";
 fc::encoding           FTerm::Encoding;
-const FString*         FTerm::xterm_font         = 0;
-const FString*         FTerm::xterm_title        = 0;
-const FString*         FTerm::answer_back        = 0;
-const FString*         FTerm::sec_da             = 0;
-FOptiMove*             FTerm::opti_move          = 0;
-FOptiAttr*             FTerm::opti_attr          = 0;
+const FString*         FTerm::xterm_font                = 0;
+const FString*         FTerm::xterm_title               = 0;
+const FString*         FTerm::answer_back               = 0;
+const FString*         FTerm::sec_da                    = 0;
+FOptiMove*             FTerm::opti_move                 = 0;
+FOptiAttr*             FTerm::opti_attr                 = 0;
 FTerm::modifier_key    FTerm::mod_key;
-std::map<uChar,uChar>* FTerm::vt100_alt_char     = 0;
+std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
-                       FTerm::encoding_set       = 0;
-FTermcap::tcap_map*    FTermcap::tcap            = 0;
-FTermcap::tcap_map*    FTerm::tcap               = term_caps;
+                       FTerm::encoding_set              = 0;
+FTermcap::tcap_map*    FTerm::tcap                      = term_caps;
+FTermcap::tcap_map*    FTermcap::tcap                   = 0;
+bool                   FTermcap::background_color_erase = false;
+bool                   FTermcap::automatic_left_margin  = false;
+bool                   FTermcap::automatic_right_margin = false;
+bool                   FTermcap::eat_nl_glitch          = false;
+bool                   FTermcap::ansi_default_color     = false;
+bool                   FTermcap::osc_support            = false;
+int                    FTermcap::max_color              = 1;
+uInt                   FTermcap::tabstop                = 8;
+uInt                   FTermcap::attr_without_color     = 0;
 console_font_op        FTerm::screen_font;
 unimapdesc             FTerm::screen_unicode_map;
 fc::consoleCursorStyle FTerm::console_cursor_style;
@@ -104,6 +103,8 @@ fc::consoleCursorStyle FTerm::console_cursor_style;
 FTerm::FTerm()
   : map()
 {
+  resize_term = false;
+
   if ( ! term_initialized )
   {
     init();
@@ -660,7 +661,7 @@ bool& FTerm::unprocessedInput()
 int FTerm::getLineNumber()
 {
   if ( term->getHeight() == 0 )
-    getTermSize();
+    detectTermSize();
 
   return term->getHeight();
 }
@@ -669,7 +670,7 @@ int FTerm::getLineNumber()
 int FTerm::getColumnNumber()
 {
   if ( term->getWidth() == 0 )
-    getTermSize();
+    detectTermSize();
 
   return term->getWidth();
 }
@@ -688,7 +689,7 @@ FString FTerm::getKeyName (int keynum)
 }
 
 //----------------------------------------------------------------------
-void FTerm::getModifierKey()
+FTerm::modifier_key& FTerm::getModifierKey()
 {
   char subcode = 6;
   // fill bit field with 0
@@ -709,11 +710,14 @@ void FTerm::getModifierKey()
     if ( subcode & (1 << KG_ALT) )
       mod_key.alt = true;
   }
+
+  return mod_key;
 }
 
 //----------------------------------------------------------------------
 void FTerm::init_console()
 {
+  // initialize terminal and Linux console
   fd_tty = -1;
   screen_unicode_map.entries = 0;
   screen_font.data = 0;
@@ -726,7 +730,7 @@ void FTerm::init_console()
       getScreenFont();
     }
 
-    getTermSize();
+    detectTermSize();
     closeConsole();
   }
   else
@@ -761,30 +765,6 @@ uInt FTerm::getBaudRate (const struct termios* termios_p)
   ospeed[B230400] = 230400;  // 230,400 baud
 
   return ospeed[cfgetospeed(termios_p)];
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_consoleCharMap()
-{
-  if ( screen_unicode_map.entry_ct != 0 )
-  {
-    for (int i=0; i <= lastCharItem; i++ )
-    {
-      bool found = false;
-
-      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
-      {
-        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
-        {
-          found = true;
-          break;
-        }
-      }
-
-      if ( ! found )
-        character[i][fc::PC] = character[i][fc::ASCII];
-    }
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1221,48 +1201,48 @@ void FTerm::init_termcaps()
     char* key_up_string;
 
     // screen erased with the background color
-    background_color_erase = tgetflag(const_cast<char*>("ut"));
+    FTermcap::background_color_erase = tgetflag(const_cast<char*>("ut"));
 
     // t_cursor_left wraps from column 0 to last column
-    automatic_left_margin = tgetflag(const_cast<char*>("bw"));
+    FTermcap::automatic_left_margin = tgetflag(const_cast<char*>("bw"));
 
     // terminal has auto-matic margins
-    automatic_right_margin = tgetflag(const_cast<char*>("am"));
+    FTermcap::automatic_right_margin = tgetflag(const_cast<char*>("am"));
 
     // newline ignored after 80 cols
-    eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
+    FTermcap::eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
 
     // terminal supports ANSI set default fg and bg color
-    ansi_default_color = tgetflag(const_cast<char*>("AX"));
+    FTermcap::ansi_default_color = tgetflag(const_cast<char*>("AX"));
 
     // terminal supports operating system commands (OSC)
     // OSC = Esc + ']'
-    osc_support = tgetflag(const_cast<char*>("XT"));
+    FTermcap::osc_support = tgetflag(const_cast<char*>("XT"));
 
     if ( isTeraTerm() )
-      eat_nl_glitch = true;
+      FTermcap::eat_nl_glitch = true;
 
     // maximum number of colors on screen
-    max_color = tgetnum(const_cast<char*>("Co"));
+    FTermcap::max_color = tgetnum(const_cast<char*>("Co"));
 
-    if ( max_color < 0 )
-      max_color = 1;
+    if ( FTermcap::max_color < 0 )
+      FTermcap::max_color = 1;
 
-    if ( max_color < 8 )
+    if ( FTermcap::max_color < 8 )
       monochron = true;
     else
       monochron = false;
 
-    tabstop = uInt(tgetnum(const_cast<char*>("it")));
-    attr_without_color = uInt(tgetnum(const_cast<char*>("NC")));
+    FTermcap::tabstop = uInt(tgetnum(const_cast<char*>("it")));
+    FTermcap::attr_without_color = uInt(tgetnum(const_cast<char*>("NC")));
 
     // gnome-terminal has NC=16 however, it can use the dim attribute
     if ( gnome_terminal )
-      attr_without_color = 0;
+      FTermcap::attr_without_color = 0;
 
     // PuTTY has NC=22 however, it can show underline and reverse
     if ( putty_terminal )
-      attr_without_color = 16;
+      FTermcap::attr_without_color = 16;
 
     // read termcap output strings
     for (int i=0; tcap[i].tname[0] != 0; i++)
@@ -1508,7 +1488,7 @@ void FTerm::init_termcaps()
   }
 
   // duration precalculation of the cursor movement strings
-  opti_move->setTabStop(int(tabstop));
+  opti_move->setTabStop(int(FTermcap::tabstop));
   opti_move->set_cursor_home (tcap[fc::t_cursor_home].string);
   opti_move->set_cursor_to_ll (tcap[fc::t_cursor_to_ll].string);
   opti_move->set_carriage_return (tcap[fc::t_carriage_return].string);
@@ -1525,12 +1505,12 @@ void FTerm::init_termcaps()
   opti_move->set_parm_down_cursor (tcap[fc::t_parm_down_cursor].string);
   opti_move->set_parm_left_cursor (tcap[fc::t_parm_left_cursor].string);
   opti_move->set_parm_right_cursor (tcap[fc::t_parm_right_cursor].string);
-  opti_move->set_auto_left_margin (automatic_left_margin);
-  opti_move->set_eat_newline_glitch (eat_nl_glitch);
+  opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
+  opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
   //opti_move->printDurations();
 
   // attribute settings
-  opti_attr->setNoColorVideo (int(attr_without_color));
+  opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
   opti_attr->set_enter_bold_mode (tcap[fc::t_enter_bold_mode].string);
   opti_attr->set_exit_bold_mode (tcap[fc::t_exit_bold_mode].string);
   opti_attr->set_enter_dim_mode (tcap[fc::t_enter_dim_mode].string);
@@ -1566,9 +1546,9 @@ void FTerm::init_termcaps()
   opti_attr->set_term_color_pair (tcap[fc::t_set_color_pair].string);
   opti_attr->set_orig_pair (tcap[fc::t_orig_pair].string);
   opti_attr->set_orig_orig_colors (tcap[fc::t_orig_colors].string);
-  opti_attr->setMaxColor (max_color);
+  opti_attr->setMaxColor (FTermcap::max_color);
 
-  if ( ansi_default_color )
+  if ( FTermcap::ansi_default_color )
     opti_attr->setDefaultColorSupport();
 
   if ( cygwin_terminal )
@@ -1642,8 +1622,6 @@ void FTerm::init()
   char* new_termtype = 0;
   term_initialized = true;
   init_term_object = this;
-  x11_button_state = 0x03;
-  max_color   =  1;
   fd_tty      = -1;
   opti_move   = new FOptiMove();
   opti_attr   = new FOptiAttr();
@@ -1681,8 +1659,7 @@ void FTerm::init()
   mlterm_terminal        = \
   mintty_terminal        = \
   screen_terminal        = \
-  tmux_terminal          = \
-  background_color_erase = false;
+  tmux_terminal          = false;
 
   // Preset to true
   cursor_optimisation    = true;
@@ -1882,33 +1859,33 @@ void FTerm::init()
     unsetNonBlockingInput();
   }
 
-  if ( (max_color == 8)
+  if ( (FTermcap::max_color == 8)
      && (  linux_terminal
         || cygwin_terminal
         || putty_terminal
         || tera_terminal
         || rxvt_terminal) )
   {
-    max_color = 16;
+    FTermcap::max_color = 16;
   }
 
   if ( linux_terminal && openConsole() == 0 )
   {
     if ( isConsole() )
       if ( setBlinkAsIntensity(true) != 0 )
-        max_color = 8;
+        FTermcap::max_color = 8;
 
     closeConsole();
     setConsoleCursor(fc::underscore_cursor, true);
   }
 
   if ( linux_terminal && getFramebuffer_bpp() >= 4 )
-    max_color = 16;
+    FTermcap::max_color = 16;
 
   if ( kde_konsole )
     setKDECursor(fc::UnderlineCursor);
 
-  if (  max_color >= 16
+  if ( FTermcap::max_color >= 16
      && ! cygwin_terminal
      && ! kde_konsole
      && ! tera_terminal )
@@ -1987,7 +1964,7 @@ void FTerm::finish()
   resetXTermHighlightBackground();
   setXTermCursorStyle(fc::steady_block);
 
-  if ( max_color >= 16 && ! (kde_konsole || tera_terminal) )
+  if ( FTermcap::max_color >= 16 && ! (kde_konsole || tera_terminal) )
   {
     // reset screen settings
     setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
@@ -2019,7 +1996,7 @@ void FTerm::finish()
   resetBeep();
 
   if (  linux_terminal
-     && background_color_erase
+     && FTermcap::background_color_erase
      && tcap[fc::t_clear_screen].string )
   {
     int rows = term->getHeight();
@@ -2103,6 +2080,59 @@ void FTerm::finish()
 }
 
 //----------------------------------------------------------------------
+uInt FTerm::cp437_to_unicode (uChar c)
+{
+  register uInt ucs = uInt(c);
+
+  for (register uInt i=0; i <= lastCP437Item; i++)
+  {
+    if ( cp437_to_ucs[i][0] == c ) // found
+    {
+      ucs = cp437_to_ucs[i][1];
+      break;
+    }
+  }
+
+  return ucs;
+}
+
+
+// protected methods of FTerm
+//----------------------------------------------------------------------
+void FTerm::init_consoleCharMap()
+{
+  if ( NewFont || VGAFont )
+    return;
+
+  if ( screen_unicode_map.entry_ct != 0 )
+  {
+    for (int i=0; i <= lastCharItem; i++ )
+    {
+      bool found = false;
+
+      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
+      {
+        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if ( ! found )
+        character[i][fc::PC] = character[i][fc::ASCII];
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+bool FTerm::charEncodable (uInt c)
+{
+  uInt ch = charEncode(c);
+  return bool(ch > 0 && ch != c);
+}
+
+//----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c)
 {
   return charEncode (c, Encoding);
@@ -2124,29 +2154,82 @@ uInt FTerm::charEncode (uInt c, fc::encoding enc)
 }
 
 //----------------------------------------------------------------------
-uInt FTerm::cp437_to_unicode (uChar c)
+char* FTerm::changeAttribute ( FOptiAttr::char_data*& term_attr
+                             , FOptiAttr::char_data*& next_attr )
 {
-  register uInt ucs = uInt(c);
+  return opti_attr->changeAttribute (term_attr, next_attr);
+}
 
-  for (register uInt i=0; i <= lastCP437Item; i++)
+//----------------------------------------------------------------------
+void FTerm::xtermMouse (bool on)
+{
+  // activate/deactivate the xterm mouse support
+  if ( ! mouse_support )
+    return;
+
+  if ( on )
+    putstring (CSI "?1001s"   // save old highlight mouse tracking
+               CSI "?1000h"   // enable x11 mouse tracking
+               CSI "?1002h"   // enable cell motion mouse tracking
+               CSI "?1015h"   // enable urxvt mouse mode
+               CSI "?1006h"); // enable SGR mouse mode
+  else
+    putstring (CSI "?1006l"   // disable SGR mouse mode
+               CSI "?1015l"   // disable urxvt mouse mode
+               CSI "?1002l"   // disable cell motion mouse tracking
+               CSI "?1000l"   // disable x11 mouse tracking
+               CSI "?1001r"); // restore old highlight mouse tracking
+
+  std::fflush(stdout);
+}
+
+
+#ifdef F_HAVE_LIBGPM
+//----------------------------------------------------------------------
+bool FTerm::gpmMouse (bool on)
+{
+  // activate/deactivate the gpm mouse support
+  if ( ! linux_terminal )
+    return false;
+
+  if ( openConsole() == 0 )
   {
-    if ( cp437_to_ucs[i][0] == c ) // found
-    {
-      ucs = cp437_to_ucs[i][1];
-      break;
-    }
+    if ( ! isConsole() )
+      return false;
+
+    closeConsole();
   }
 
-  return ucs;
-}
+  if ( on )
+  {
+    Gpm_Connect conn;
+    conn.eventMask   = uInt16(~GPM_MOVE);
+    conn.defaultMask = GPM_MOVE;
+    conn.maxMod      = uInt16(~0);
+    conn.minMod      = 0;
+    Gpm_Open(&conn, 0);
 
-// protected methods of FTerm
-//----------------------------------------------------------------------
-bool FTerm::charEncodable (uInt c)
-{
-  uInt ch = charEncode(c);
-  return bool(ch > 0 && ch != c);
+    switch ( gpm_fd )
+    {
+      case -1:
+        return false;
+
+      case -2:
+        Gpm_Close();
+        return false;
+
+      default:
+        break;
+    }
+  }
+  else
+  {
+    Gpm_Close();
+  }
+
+  return on;
 }
+#endif  // F_HAVE_LIBGPM
 
 
 // public methods of FTerm
@@ -2166,7 +2249,7 @@ bool FTerm::setVGAFont()
 
   VGAFont = true;
 
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     // Set font in xterm to vga
     oscPrefix();
@@ -2204,7 +2287,7 @@ bool FTerm::setVGAFont()
       else
         VGAFont = false;
 
-      getTermSize();
+      detectTermSize();
       closeConsole();
     }
     else
@@ -2234,7 +2317,8 @@ bool FTerm::setNewFont()
      || mintty_terminal )
     return false;
 
-  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
@@ -2274,7 +2358,7 @@ bool FTerm::setNewFont()
         setUnicodeMap(&unimap);
       }
 
-      getTermSize();
+      detectTermSize();
       closeConsole();
     }
 
@@ -2300,7 +2384,8 @@ bool FTerm::setOldFont()
   NewFont = \
   VGAFont = false;
 
-  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
     {
@@ -2347,12 +2432,18 @@ bool FTerm::setOldFont()
 
       }
 
-      getTermSize();
+      detectTermSize();
       closeConsole();
     }
   }
 
   return retval;
+}
+
+//----------------------------------------------------------------------
+fc::consoleCursorStyle FTerm::getConsoleCursor()
+{
+  return console_cursor_style;
 }
 
 //----------------------------------------------------------------------
@@ -2407,13 +2498,19 @@ char* FTerm::disableCursor()
 }
 
 //----------------------------------------------------------------------
-void FTerm::getTermSize()
+void FTerm::detectTermSize()
 {
   struct winsize win_size;
+  bool close_after_detect = false;
   int ret;
 
-  if ( fd_tty < 0 )
-    return;
+  if ( fd_tty < 0 )  // console is already closed
+  {
+    if ( openConsole() != 0 )
+      return;
+
+    close_after_detect = true;
+  }
 
   ret = ioctl (fd_tty, TIOCGWINSZ, &win_size);
 
@@ -2432,6 +2529,9 @@ void FTerm::getTermSize()
   }
 
   opti_move->setTermSize (term->getWidth(), term->getHeight());
+
+  if ( close_after_detect )
+    closeConsole();
 }
 
 //----------------------------------------------------------------------
@@ -2459,11 +2559,11 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getXTermFont()
+const FString FTerm::getXTermFont()
 {
   FString font("");
 
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     if ( raw_mode && non_blocking_stdin )
     {
@@ -2491,7 +2591,7 @@ FString FTerm::getXTermFont()
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getXTermTitle()
+const FString FTerm::getXTermTitle()
 {
   FString title("");
 
@@ -2537,7 +2637,7 @@ void FTerm::setXTermTitle (const FString& title)
   // Set the xterm title
   if ( xterm_terminal || screen_terminal
      || mintty_terminal || putty_terminal
-     || osc_support )
+     || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "0;%s" BEL, title.c_str());
@@ -2552,7 +2652,7 @@ void FTerm::setXTermForeground (const FString& fg)
   // Set the VT100 text foreground color
   if ( xterm_terminal || screen_terminal
      || mintty_terminal || mlterm_terminal
-     || osc_support )
+     || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "10;%s" BEL, fg.c_str());
@@ -2567,7 +2667,7 @@ void FTerm::setXTermBackground (const FString& bg)
   // Set the VT100 text background color
   if ( xterm_terminal || screen_terminal
      || mintty_terminal || mlterm_terminal
-     || osc_support )
+     || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "11;%s" BEL, bg.c_str());
@@ -2582,7 +2682,7 @@ void FTerm::setXTermCursorColor (const FString& cc)
   // Set the text cursor color
   if ( xterm_terminal || screen_terminal
      || mintty_terminal || urxvt_terminal
-     || osc_support )
+     || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "12;%s" BEL, cc.c_str());
@@ -2595,7 +2695,8 @@ void FTerm::setXTermCursorColor (const FString& cc)
 void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
-  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
@@ -2608,7 +2709,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 void FTerm::setXTermMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "14;%s" BEL, mbg.c_str());
@@ -2621,7 +2722,8 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
 void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
-  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
@@ -2634,7 +2736,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "104" BEL);
@@ -2647,7 +2749,7 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "110" BEL);
@@ -2660,7 +2762,7 @@ void FTerm::resetXTermForeground()
 void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "111" BEL);
@@ -2673,7 +2775,7 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "112" BEL);
@@ -2686,7 +2788,7 @@ void FTerm::resetXTermCursorColor()
 void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "113" BEL);
@@ -2699,7 +2801,7 @@ void FTerm::resetXTermMouseForeground()
 void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
-  if ( xterm_terminal || screen_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "114" BEL);
@@ -2712,7 +2814,8 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
-  if ( xterm_terminal || screen_terminal || urxvt_terminal || osc_support )
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "117" BEL);
@@ -2802,77 +2905,6 @@ void FTerm::setPalette (short index, int r, int g, int b)
 
   std::fflush(stdout);
 }
-
-//----------------------------------------------------------------------
-void FTerm::xtermMouse (bool on)
-{
-  // activate/deactivate the xterm mouse support
-  if ( ! mouse_support )
-    return;
-
-  if ( on )
-    putstring (CSI "?1001s"   // save old highlight mouse tracking
-               CSI "?1000h"   // enable x11 mouse tracking
-               CSI "?1002h"   // enable cell motion mouse tracking
-               CSI "?1015h"   // enable urxvt mouse mode
-               CSI "?1006h"); // enable SGR mouse mode
-  else
-    putstring (CSI "?1006l"   // disable SGR mouse mode
-               CSI "?1015l"   // disable urxvt mouse mode
-               CSI "?1002l"   // disable cell motion mouse tracking
-               CSI "?1000l"   // disable x11 mouse tracking
-               CSI "?1001r"); // restore old highlight mouse tracking
-
-  std::fflush(stdout);
-}
-
-
-#ifdef F_HAVE_LIBGPM
-//----------------------------------------------------------------------
-bool FTerm::gpmMouse (bool on)
-{
-  // activate/deactivate the gpm mouse support
-  if ( ! linux_terminal )
-    return false;
-
-  if ( openConsole() == 0 )
-  {
-    if ( ! isConsole() )
-      return false;
-
-    closeConsole();
-  }
-
-  if ( on )
-  {
-    Gpm_Connect conn;
-    conn.eventMask   = uInt16(~GPM_MOVE);
-    conn.defaultMask = GPM_MOVE;
-    conn.maxMod      = uInt16(~0);
-    conn.minMod      = 0;
-    Gpm_Open(&conn, 0);
-
-    switch ( gpm_fd )
-    {
-      case -1:
-        return false;
-
-      case -2:
-        Gpm_Close();
-        return false;
-
-      default:
-        break;
-    }
-  }
-  else
-  {
-    Gpm_Close();
-  }
-
-  return on;
-}
-#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 void FTerm::setBeep (int Hz, int ms)
@@ -3092,7 +3124,7 @@ bool FTerm::setRawMode (bool on)
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getAnswerbackMsg()
+const FString FTerm::getAnswerbackMsg()
 {
   FString answerback = "";
 
@@ -3128,7 +3160,7 @@ FString FTerm::getAnswerbackMsg()
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getSecDA()
+const FString FTerm::getSecDA()
 {
   FString sec_da_str = "";
 
