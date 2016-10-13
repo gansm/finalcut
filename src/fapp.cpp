@@ -1907,11 +1907,7 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
 
   // sends event event directly to receiver
   FApplication* w = static_cast<FApplication*>(widget);
-
-  if ( w )
-    return w->event(event);  // access to a protected base class member
-  else
-    return false;
+  return w->event(event);  // access to a protected base class member
 }
 
 //----------------------------------------------------------------------
