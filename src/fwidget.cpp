@@ -1293,7 +1293,9 @@ void FWidget::resize()
   if ( isRootWidget() )
   {
     detectTermSize();
-    const FRect& term_geometry = getGeometry();
+    FRect term_geometry = getTermGeometry();
+    term_geometry.move(-1,-1);
+
     resizeVTerm (term_geometry);
     resizeArea (term_geometry, getShadow(), vdesktop);
     adjustSizeGlobal();
@@ -1584,17 +1586,10 @@ void FWidget::setPos (int x, int y, bool adjust)
 
     if ( y < 1 )
       y = 1;
+  }
 
-    wsize.setX(x);
-    wsize.setY(y);
-    adjust_wsize.setX(x);
-    adjust_wsize.setY(y);
-  }
-  else
-  {
-    wsize.setPos(x,y);
-    adjust_wsize.setPos(x,y);
-  }
+  wsize.setPos(x,y);
+  adjust_wsize.setPos(x,y);
 
   if ( adjust )
     adjustSize();
@@ -1863,17 +1858,10 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::move (int x, int y)
+void FWidget::move (int dx, int dy)
 {
-  if ( adjust_wsize.getX() == x && adjust_wsize.getY() == y )
-    return;
-
-  // Avoid to move widget completely outside the terminal
-  if ( x+getWidth() <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
-    return;
-
-  wsize.setPos(x,y);
-  adjust_wsize.setPos(x,y);
+  wsize.move(dx,dy);
+  adjust_wsize.move(dx,dy);
 }
 
 //----------------------------------------------------------------------

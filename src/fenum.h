@@ -967,7 +967,7 @@ class fc
      CurlyBrackets  = 3,  // { }
      AngleBrackets  = 4   // < >
    };
-   
+
    enum termcaps
    {
      t_bell,

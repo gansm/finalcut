@@ -475,8 +475,8 @@ class FWidget : public FVTerm
    void             setColor();
    // make every setColor from FVTerm available
    using FVTerm::setColor;
-   void             setX (int, bool = true);
-   void             setY (int, bool = true);
+   virtual void     setX (int, bool = true);
+   virtual void     setY (int, bool = true);
    virtual void     setPos (const FPoint&, bool = true);
    virtual void     setPos (int, int, bool = true);
    virtual void     setWidth (int, bool = true);

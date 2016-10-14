@@ -84,6 +84,8 @@ class FVTerm : public FObject, public FTerm
 
    typedef struct
    {
+     int x_offset;
+     int y_offset;
      int width;
      int height;
      int right_shadow;
@@ -106,9 +108,9 @@ class FVTerm : public FObject, public FTerm
 
  protected:
    void         createArea (const FRect&, const FPoint&, FVTerm::term_area*&);
-   void         createArea (int, int, int, int, FVTerm::term_area*&);
+   void         createArea (int, int, int, int, int, int, FVTerm::term_area*&);
    static void  resizeArea (const FRect&, const FPoint&, FVTerm::term_area*);
-   static void  resizeArea (int, int, int, int, FVTerm::term_area*);
+   static void  resizeArea (int, int, int, int, int, int, FVTerm::term_area*);
    static void  removeArea (FVTerm::term_area*&);
    static void  restoreVTerm (const FRect&);
    static void  restoreVTerm (int, int, int, int);
@@ -129,8 +131,8 @@ class FVTerm : public FObject, public FTerm
    static void  scrollAreaForward (FVTerm::term_area*);
    static void  scrollAreaReverse (FVTerm::term_area*);
    static void  clearArea (FVTerm::term_area*);
-   static FOptiAttr::char_data getCharacter (int, const FPoint&, FVTerm*);
-   static FOptiAttr::char_data getCharacter (int, int, int, FVTerm*);
+   static FOptiAttr::char_data getCharacter (character_type, const FPoint&, FVTerm*);
+   static FOptiAttr::char_data getCharacter (character_type, int, int, FVTerm*);
    static FOptiAttr::char_data getCoveredCharacter (const FPoint&, FVTerm*);
    static FOptiAttr::char_data getCoveredCharacter (int, int, FVTerm*);
    static FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FVTerm*);

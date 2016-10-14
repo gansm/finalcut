@@ -24,7 +24,9 @@ FWindow::FWindow(FWidget* parent)
   , normalGeometry()
 {
   setWindowWidget();
-  createArea (getGeometry(), getShadow(), vwin);
+  FRect geometry = getTermGeometry();
+  geometry.move(-1,-1);
+  createArea (geometry, getShadow(), vwin);
   addWindow (this);
 }
 
@@ -144,10 +146,20 @@ void FWindow::onWindowLowered (FEvent*)
 //----------------------------------------------------------------------
 void FWindow::adjustSize()
 {
+  int old_x = getX();
+  int old_y = getY();
   FWidget::adjustSize();
 
   if ( zoomed )
     setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
+  else if ( vwin )
+  {
+    if ( getX() != old_x )
+      vwin->x_offset = getTermX() - 1;
+
+    if ( getY() != old_y )
+      vwin->y_offset = getTermY() - 1;
+  }
 }
 
 
@@ -200,10 +212,8 @@ void FWindow::drawBorder()
 //----------------------------------------------------------------------
 void FWindow::show()
 {
-  term_area* area = getVWin();
-
-  if ( area )
-    area->visible = true;
+  if ( vwin )
+    vwin->visible = true;
 
   FWidget::show();
 }
@@ -211,12 +221,46 @@ void FWindow::show()
 //----------------------------------------------------------------------
 void FWindow::hide()
 {
-  term_area* area = getVWin();
-
-  if ( area )
-    area->visible = false;
+  if ( vwin )
+    vwin->visible = false;
 
   FWidget::hide();
+}
+
+//----------------------------------------------------------------------
+void FWindow::setX (int x, bool adjust)
+{
+  FWidget::setX (x, adjust);
+
+  if ( vwin )
+    vwin->x_offset = getTermX() - 1;
+}
+
+//----------------------------------------------------------------------
+void FWindow::setY (int y, bool adjust)
+{
+  if ( y < 1 )
+    y = 1;
+
+  FWidget::setY (y, adjust);
+
+  if ( vwin )
+    vwin->y_offset = getTermY() - 1;
+}
+
+//----------------------------------------------------------------------
+void FWindow::setPos (int x, int y, bool adjust)
+{
+  if ( y < 1 )
+    y = 1;
+
+  FWidget::setPos (x, y, adjust);
+
+  if ( vwin )
+  {
+    vwin->x_offset = getTermX() - 1;
+    vwin->y_offset = getTermY() - 1;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -226,7 +270,11 @@ void FWindow::setWidth (int w, bool adjust)
   FWidget::setWidth (w, adjust);
 
   if ( vwin && getWidth() != old_width )
-    resizeArea (getGeometry(), getShadow(), vwin);
+  {
+    FRect geometry = getTermGeometry();
+    geometry.move(-1,-1);
+    resizeArea (geometry, getShadow(), vwin);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -236,7 +284,11 @@ void FWindow::setHeight (int h, bool adjust)
   FWidget::setHeight (h, adjust);
 
   if ( vwin && getHeight() != old_height )
-    resizeArea (getGeometry(), getShadow(), vwin);
+  {
+    FRect geometry = getTermGeometry();
+    geometry.move(-1,-1);
+    resizeArea (geometry, getShadow(), vwin);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -247,18 +299,55 @@ void FWindow::setSize (int w, int h, bool adjust)
   FWidget::setSize (w, h, adjust);
 
   if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
-    resizeArea (getGeometry(), getShadow(), vwin);
+  {
+    FRect geometry = getTermGeometry();
+    geometry.move(-1,-1);
+    resizeArea (geometry, getShadow(), vwin);
+  }
 }
 
 //----------------------------------------------------------------------
 void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  int old_x = getX();
+  int old_y = getY();
   int old_width = getWidth();
   int old_height = getHeight();
+
+  if ( y < 1 )
+    y = 1;
+
   FWidget::setGeometry (x, y, w, h, adjust);
 
-  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
-    resizeArea (getGeometry(), getShadow(), vwin);
+  if ( vwin )
+  {
+    if ( getWidth() != old_width || getHeight() != old_height )
+    {
+      FRect geometry = getTermGeometry();
+      geometry.move(-1,-1);
+      resizeArea (geometry, getShadow(), vwin);
+    }
+    else
+    {
+      if ( getX() != old_x )
+        vwin->x_offset = getTermX() - 1;
+
+      if ( getY() != old_y )
+        vwin->y_offset = getTermY() - 1;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FWindow::move (int dx, int dy)
+{
+  FWidget::move (dx,dy);
+
+  if ( vwin )
+  {
+    vwin->x_offset = getTermX() - 1;
+    vwin->y_offset = getTermY() - 1;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -699,10 +788,8 @@ bool FWindow::activateWindow (bool on)
 bool FWindow::isWindowHidden() const
 {
   // returns the window hidden state
-  term_area* area = getVWin();
-
-  if ( area )
-    return ! area->visible;
+  if ( vwin )
+    return ! vwin->visible;
   else
     return false;
 }
@@ -770,7 +857,11 @@ void FWindow::setShadowSize (int right, int bottom)
   new_bottom = getShadow().getY();
 
   if ( vwin && (new_right != old_right || new_bottom != old_bottom) )
-    resizeArea (getGeometry(), getShadow(), vwin);
+  {
+    FRect geometry = getTermGeometry();
+    geometry.move(-1,-1);
+    resizeArea (geometry, getShadow(), vwin);
+  }
 }
 
 //----------------------------------------------------------------------

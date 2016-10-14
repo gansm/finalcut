@@ -2068,13 +2068,13 @@ void FTerm::finish()
 
   if ( mouse )
     delete mouse;
-  
+
   if ( term )
     delete term;
-  
+
   if ( opti_attr )
     delete opti_attr;
-  
+
   if ( opti_move )
     delete opti_move;
 }
@@ -2490,7 +2490,7 @@ char* FTerm::enableCursor()
 char* FTerm::disableCursor()
 {
   char*& vi = tcap[fc::t_cursor_invisible].string;
-  
+
   if ( vi )
     return vi;
 

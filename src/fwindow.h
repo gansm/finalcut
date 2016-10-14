@@ -88,12 +88,20 @@ class FWindow : public FWidget
    virtual void    drawBorder();
    virtual void    show();
    virtual void    hide();
+   virtual void    setX (int, bool = true);
+   virtual void    setY (int, bool = true);
+   virtual void    setPos (int, int, bool = true);
+   // make every setPos from FWidget available
+   using FWidget::setPos;
    virtual void    setWidth (int, bool = true);
    virtual void    setHeight (int, bool = true);
    virtual void    setSize (int, int, bool = true);
    // make every setGeometry from FWidget available
    using FWidget::setGeometry;
    void            setGeometry (int, int, int, int, bool = true);
+   virtual void    move (int, int);
+   // make every move from FWidget available
+   using FWidget::move;
    static FWindow* getWindowWidgetAt (const FPoint&);
    static FWindow* getWindowWidgetAt (int, int);
    static void     addWindow (FWidget*);

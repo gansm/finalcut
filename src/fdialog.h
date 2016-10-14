@@ -127,8 +127,12 @@ class FDialog : public FWindow
    void     show();
    void     hide();
    int      exec();
-   void     move (const FPoint&);
+   void     setPos (int, int, bool = true);
+   // make every setPos from FWindow available
+   using FWindow::setPos;
    void     move (int, int);
+   // make every move from FWindow available
+   using FWindow::move;
    void     setSize (int, int, bool = true);
 
    bool     setFocus (bool);

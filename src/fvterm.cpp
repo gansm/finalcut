@@ -42,7 +42,7 @@ FVTerm::FVTerm (FVTerm* parent)
 {
   terminal_update_complete = false;
   vterm_updates    = true;
-  
+
   if ( ! parent )
   {
     init();
@@ -103,7 +103,7 @@ void FVTerm::init()
   tcap = FTermcap().getTermcapMap();
 
   // create virtual terminal
-  FRect term_geometry (1, 1, getColumnNumber(), getLineNumber());
+  FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
   createVTerm (term_geometry);
 
   // create virtual desktop area
@@ -168,7 +168,9 @@ void FVTerm::createArea ( const FRect& r
                         , const FPoint& p
                         , FVTerm::term_area*& area )
 {
-  createArea ( r.getWidth()
+  createArea ( r.getX()
+             , r.getY()
+             , r.getWidth()
              , r.getHeight()
              , p.getX()
              , p.getY()
@@ -176,26 +178,29 @@ void FVTerm::createArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::createArea ( int width, int height
+void FVTerm::createArea ( int x_offset, int y_offset
+                        , int width, int height
                         , int rsw, int bsh
                         , term_area*& area )
 {
   // initialize virtual window
   area = new term_area;
 
+  area->x_offset             = 0;
+  area->y_offset             = 0;
   area->width                = -1;
   area->height               = -1;
   area->right_shadow         = 0;
   area->bottom_shadow        = 0;
-  area->input_cursor_x       = -1;;
-  area->input_cursor_y       = -1;;
+  area->input_cursor_x       = -1;
+  area->input_cursor_y       = -1;
   area->input_cursor_visible = false;
   area->changes              = 0;
   area->text                 = 0;
   area->visible              = false;
   area->widget               = static_cast<FWidget*>(this);
 
-  resizeArea (width, height, rsw, bsh, area);
+  resizeArea (x_offset, y_offset, width, height, rsw, bsh, area);
 }
 
 //----------------------------------------------------------------------
@@ -203,7 +208,9 @@ void FVTerm::resizeArea ( const FRect& r
                         , const FPoint& p
                         , FVTerm::term_area* area )
 {
-  resizeArea ( r.getWidth()
+  resizeArea ( r.getX()
+             , r.getY()
+             , r.getWidth()
              , r.getHeight()
              , p.getX()
              , p.getY()
@@ -211,7 +218,8 @@ void FVTerm::resizeArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::resizeArea ( int width, int height
+void FVTerm::resizeArea ( int x_offset, int y_offset
+                        , int width, int height
                         , int rsw, int bsh
                         , term_area* area )
 {
@@ -245,6 +253,8 @@ void FVTerm::resizeArea ( int width, int height
   else
     return;
 
+  area->x_offset = x_offset;
+  area->y_offset = y_offset;
   area->width = width;
   area->height = height;
   area->right_shadow = rsw;
@@ -362,14 +372,17 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
         while ( iter != end )
         {
           term_area* win = (*iter)->getVWin();
-          const FRect& geometry = (*iter)->getTermGeometryWithShadow();
+          int win_x = win->x_offset;
+          int win_y = win->y_offset;
+          FRect geometry ( win_x
+                         , win_y
+                         , win->width + win->right_shadow
+                         , win->height + win->bottom_shadow );
 
           // window visible and contains current character
-          if ( win && win->visible && geometry.contains(tx+x+1, ty+y+1) )
+          if ( win && win->visible && geometry.contains(tx+x, ty+y) )
           {
             FOptiAttr::char_data* tmp;
-            int win_x = (*iter)->getTermX() - 1;
-            int win_y = (*iter)->getTermY() - 1;
             int line_len = win->width + win->right_shadow;
             tmp = &win->text[(ty+y-win_y) * line_len + (tx+x-win_x)];
 
@@ -440,8 +453,6 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 
   is_covered = non_covered;
   found = bool(area == vdesktop);
-  x++;
-  y++;
 
   w = static_cast<FWidget*>(area->widget);
 
@@ -454,18 +465,20 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
     while ( iter != end )
     {
       term_area* win = (*iter)->getVWin();
-      const FRect& geometry = (*iter)->getTermGeometryWithShadow();
+      int win_x = win->x_offset;
+      int win_y = win->y_offset;
+      FRect geometry ( win_x
+                     , win_y
+                     , win->width + win->right_shadow
+                     , win->height + win->bottom_shadow );
 
       if (  win && found
-         && (*iter)->isVisible()
-         && (*iter)->isShown()
+         && win->visible
          && geometry.contains(x,y) )
       {
         FOptiAttr::char_data* tmp;
-        int win_x = (*iter)->getTermX() - 1;
-        int win_y = (*iter)->getTermY() - 1;
         int line_len = win->width + win->right_shadow;
-        tmp = &win->text[(y-win_y-1) * line_len + (x-win_x-1)];
+        tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
 
         if ( tmp->trans_shadow )
         {
@@ -517,8 +530,8 @@ void FVTerm::updateVTerm (FVTerm::term_area* area)
   if ( ! area->visible )
     return;
 
-  ax  = area->widget->getTermX() - 1;
-  ay  = area->widget->getTermY() - 1;
+  ax  = area->x_offset;
+  ay  = area->y_offset;
   aw  = area->width;
   ah  = area->height;
   rsh = area->right_shadow;
@@ -674,18 +687,18 @@ bool FVTerm::updateVTermCursor (FVTerm::term_area* area)
   if ( area->input_cursor_visible )
   {
     int cx, cy, ax, ay, x, y;
-    // cursor position
-    cx = area->input_cursor_x;
-    cy = area->input_cursor_y;
-    // widget position
+    // area offset
     ax  = area->widget->getTermX() - 1;
     ay  = area->widget->getTermY() - 1;
-    // area position
+    // area cursor position
+    cx = area->input_cursor_x;
+    cy = area->input_cursor_y;
+    // terminal position
     x  = ax + cx;
     y  = ay + cy;
 
     if ( isInsideArea(cx, cy, area)
-       && isInsideTerminal(x+1, y+1)
+       && isInsideTerminal(x, y)
        && isCovered(x, y, area) == non_covered )
     {
       vterm->input_cursor_x = x;
@@ -1113,7 +1126,7 @@ void FVTerm::clearArea (FVTerm::term_area* area)
 }
 
 //----------------------------------------------------------------------
-FOptiAttr::char_data FVTerm::getCharacter ( int type
+FOptiAttr::char_data FVTerm::getCharacter ( character_type type
                                           , const FPoint& pos
                                           , FVTerm* obj )
 {
@@ -1121,7 +1134,7 @@ FOptiAttr::char_data FVTerm::getCharacter ( int type
 }
 
 //----------------------------------------------------------------------
-FOptiAttr::char_data FVTerm::getCharacter ( int char_type
+FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
                                           , int x
                                           , int y
                                           , FVTerm* obj )
@@ -1175,14 +1188,17 @@ FOptiAttr::char_data FVTerm::getCharacter ( int char_type
       if ( obj && *iter != obj && significant_char )
       {
         term_area* win = (*iter)->getVWin();
-        const FRect& geometry = (*iter)->getTermGeometryWithShadow();
+        int win_x = win->x_offset;
+        int win_y = win->y_offset;
+        FRect geometry ( win_x
+                       , win_y
+                       , win->width + win->right_shadow
+                       , win->height + win->bottom_shadow );
 
         // window visible and contains current character
-        if ( win && win->visible && geometry.contains(x+1,y+1) )
+        if ( win && win->visible && geometry.contains(x,y) )
         {
           FOptiAttr::char_data* tmp;
-          int win_x = (*iter)->getTermX() - 1;
-          int win_y = (*iter)->getTermY() - 1;
           int line_len = win->width + win->right_shadow;
           tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
 
@@ -1290,7 +1306,7 @@ void FVTerm::setTermXY (register int x, register int y)
 
   term_x = term_pos->getX();
   term_y = term_pos->getY();
-    
+
   move_str = moveCursor (term_x, term_y, x, y);
 
   if ( move_str )
@@ -1345,7 +1361,7 @@ void FVTerm::createVTerm (const FRect& r)
 void FVTerm::createVTerm (int width, int height)
 {
   // initialize virtual terminal
-  createArea (width, height, 0, 0, vterm);
+  createArea (0, 0, width, height, 0, 0, vterm);
 }
 
 //----------------------------------------------------------------------
@@ -1358,7 +1374,7 @@ void FVTerm::resizeVTerm (const FRect& r)
 //----------------------------------------------------------------------
 void FVTerm::resizeVTerm (int width, int height)
 {
-  resizeArea (width, height, 0, 0, vterm);
+  resizeArea (0, 0, width, height, 0, 0, vterm);
 }
 
 //----------------------------------------------------------------------
@@ -1472,7 +1488,7 @@ bool FVTerm::updateTerminalCursor()
     int x = vterm->input_cursor_x;
     int y = vterm->input_cursor_y;
 
-    if ( isInsideTerminal(x+1, y+1) )
+    if ( isInsideTerminal(x, y) )
     {
       setTermXY (x,y);
       showCursor();
@@ -1515,7 +1531,7 @@ void FVTerm::processTerminalUpdate()
 bool FVTerm::isInsideTerminal (int x, int y)
 {
   // Check whether the coordinates are within the virtual terminal
-  FRect term_geometry (1, 1, getColumnNumber(), getLineNumber());
+  FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
 
   if ( term_geometry.contains(x,y) )
     return true;
@@ -1642,17 +1658,13 @@ int FVTerm::print (FVTerm::term_area* area, const std::string& s)
 int FVTerm::print (FString& s)
 {
   assert ( ! s.isNull() );
-  term_area* area;
-  FWidget* w;
-  w = static_cast<FWidget*>(this);
-  area = w->getPrintArea();
+  term_area* area = getPrintArea();
 
   if ( ! area )
   {
-    FWidget* root = w->getRootWidget();
-    area = vdesktop;
-
-    if ( ! root )
+    if ( vdesktop )
+      area = vdesktop;
+    else
       return -1;
   }
 
@@ -1666,14 +1678,8 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
   register int len = 0;
   const wchar_t* p;
   uInt tabstop = getTabstop();
-  FWidget* window;
 
   if ( ! area )
-    return -1;
-
-  window = area->widget;
-
-  if ( ! window )
     return -1;
 
   p = s.wc_str();
@@ -1682,7 +1688,13 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
   {
     while ( *p )
     {
-      int rsh, bsh;
+      int x_offset, y_offset, width, height, rsh, bsh;
+      x_offset = area->x_offset;
+      y_offset = area->y_offset;
+      width    = area->width;
+      height   = area->height;
+      rsh      = area->right_shadow;
+      bsh      = area->bottom_shadow;
 
       switch ( *p )
       {
@@ -1711,8 +1723,8 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
 
         default:
         {
-          short x = short(cursor->getX());
-          short y = short(cursor->getY());
+          short x = short(cursor->getX() - 1);
+          short y = short(cursor->getY() - 1);
 
           FOptiAttr::char_data  nc; // next character
           nc.code          = *p;
@@ -1735,8 +1747,8 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
           nc.trans_shadow  = next_attribute.trans_shadow;
           nc.inherit_bg    = next_attribute.inherit_bg;
 
-          int ax = x - window->getTermX();
-          int ay = y - window->getTermY();
+          int ax = x - x_offset;
+          int ay = y - y_offset;
 
           if (  area
              && ax >= 0 && ay >= 0
@@ -1779,17 +1791,13 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
         }
       }
 
-      rsh = area->right_shadow;
-      bsh = area->bottom_shadow;
-      const FRect& area_geometry = window->getTermGeometry();
-
-      if ( cursor->x_ref() > area_geometry.getX2()+rsh )
+      if ( cursor->x_ref() > x_offset + width + rsh )
       {
-        cursor->x_ref() = short(window->getTermX());
+        cursor->x_ref() = short(x_offset + 1);
         cursor->y_ref()++;
       }
 
-      if ( cursor->y_ref() > area_geometry.getY2()+bsh )
+      if ( cursor->y_ref() > y_offset + height + bsh )
       {
         cursor->y_ref()--;
         break;
@@ -1808,17 +1816,13 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
 //----------------------------------------------------------------------
 int FVTerm::print (register int c)
 {
-  term_area* area;
-  FWidget* w;
-  w = static_cast<FWidget*>(this);
-  area = w->getPrintArea();
+  term_area* area = getPrintArea();
 
   if ( ! area )
   {
-    FWidget* root = w->getRootWidget();
-    area = vdesktop;
-
-    if ( ! root )
+    if ( vdesktop )
+      area = vdesktop;
+    else
       return -1;
   }
 
@@ -1829,12 +1833,18 @@ int FVTerm::print (register int c)
 int FVTerm::print (FVTerm::term_area* area, register int c)
 {
   FOptiAttr::char_data nc; // next character
-  FWidget* window;
-  int rsh, bsh, ax, ay;
+  int x_offset, y_offset, width, height, rsh, bsh, ax, ay;
   short x, y;
 
   if ( ! area )
     return -1;
+
+  x_offset = area->x_offset;
+  y_offset = area->y_offset;
+  width    = area->width;
+  height   = area->height;
+  rsh      = area->right_shadow;
+  bsh      = area->bottom_shadow;
 
   nc.code          = c;
   nc.fg_color      = next_attribute.fg_color;
@@ -1856,15 +1866,10 @@ int FVTerm::print (FVTerm::term_area* area, register int c)
   nc.trans_shadow  = next_attribute.trans_shadow;
   nc.inherit_bg    = next_attribute.inherit_bg;
 
-  x = short(cursor->getX());
-  y = short(cursor->getY());
-  window = area->widget;
-
-  if ( ! window )
-    return -1;
-
-  ax = x - window->getTermX();
-  ay = y - window->getTermY();
+  x = short(cursor->getX() - 1);
+  y = short(cursor->getY() - 1);
+  ax = x - x_offset;
+  ay = y - y_offset;
 
   if (  ax >= 0 && ay >= 0
      && ax < area->width + area->right_shadow
@@ -1904,17 +1909,14 @@ int FVTerm::print (FVTerm::term_area* area, register int c)
   }
 
   cursor->x_ref()++;
-  rsh = area->right_shadow;
-  bsh = area->bottom_shadow;
-  const FRect& area_geometry = window->getTermGeometry();
 
-  if ( cursor->x_ref() > area_geometry.getX2()+rsh )
+  if ( cursor->x_ref() > x_offset + width + rsh )
   {
-    cursor->x_ref() = short(window->getTermX());
+    cursor->x_ref() = short(x_offset + 1);
     cursor->y_ref()++;
   }
 
-  if ( cursor->y_ref() > area_geometry.getY2()+bsh )
+  if ( cursor->y_ref() > y_offset + height + bsh )
   {
     cursor->y_ref()--;
     updateVTerm (area);

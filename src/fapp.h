@@ -71,7 +71,7 @@ class FApplication : public FWidget
    char            x11_mouse[4];
    char            sgr_mouse[13];
    char            urxvt_mouse[13];
-   
+
 
 #ifdef F_HAVE_LIBGPM
 

@@ -1,3 +1,7 @@
+2016-10-14  Markus Gans  <guru.mail@muenster.de>
+	* Virtual windows can now store their own offset information
+	* Correct implementation of the move() method
+
 2016-10-13  Markus Gans  <guru.mail@muenster.de>
 	* Reduces in the code the number of friend classes
 

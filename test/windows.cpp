@@ -539,7 +539,7 @@ void Window::adjustSize()
   if ( Y < 2)
     Y = 2;
 
-  move (X, Y);
+  setPos (X, Y);
   iter = begin = windows.begin();
 
   while ( iter != windows.end() )
@@ -550,7 +550,7 @@ void Window::adjustSize()
       n = int(std::distance(begin, iter));
       x = dx + 5 + (n%3)*25 + int(n/3)*3;
       y = dy + 11 + int(n/3)*3;
-      (*iter)->dgl->move (x, y);
+      (*iter)->dgl->setPos (x, y);
     }
 
     ++iter;

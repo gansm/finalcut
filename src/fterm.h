@@ -39,7 +39,7 @@
 #include <sys/io.h>         // <asm/io.h> is deprecated, use <sys/io.h> instead
 #include <sys/ioctl.h>
 #include <sys/kd.h>
-#include <sys/stat.h>       
+#include <sys/stat.h>
 
 #include <fcntl.h>
 #include <langinfo.h>

@@ -199,7 +199,7 @@ void FMenu::adjustItems()
       menu_Y = (*iter)->getTermY() - 2;
 
       // set sub-menu position
-      menu->move (menu_X, menu_Y);
+      menu->setPos (menu_X, menu_Y);
 
       // call sub-menu adjustItems()
       if ( menu->count() > 0 )

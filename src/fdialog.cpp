@@ -107,7 +107,7 @@ void FDialog::init()
   accelerator_list = new Accelerators();
   // Add the dialog menu
   dialog_menu = new FMenu ("-", this);
-  dialog_menu->move (getX(), getY()+1);
+  dialog_menu->setPos (getX(), getY()+1);
   dgl_menuitem = dialog_menu->getItem();
 
   if ( dgl_menuitem )
@@ -154,7 +154,8 @@ void FDialog::drawBorder()
   int y1 = 2;
   int y2 = 1 + getHeight() - 1;
 
-  if ( (getMoveSizeWidget() || ! resize_click_pos.isNull()) && ! isZoomed() )
+  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isNull())
+       && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   else
     setColor();
@@ -392,7 +393,7 @@ void FDialog::openMenu()
   else
   {
     setOpenMenu(dialog_menu);
-    dialog_menu->move (getX(), getY()+1);
+    dialog_menu->setPos (getX(), getY()+1);
     dialog_menu->setVisible();
     drawTitleBar();
     dialog_menu->show();
@@ -445,6 +446,7 @@ void FDialog::cb_move (FWidget*, void*)
     return;
 
   setMoveSizeWidget(this);
+  drawBorder();
   save_geometry = getGeometry();
   tooltip = new FToolTip(this);
 
@@ -620,22 +622,22 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     switch ( ev->key() )
     {
       case fc::Fkey_up:
-        move (getX(), getY() - 1);
+        move (0, -1);
         ev->accept();
         break;
 
       case fc::Fkey_down:
-        move (getX(), getY() + 1);
+        move (0, 1);
         ev->accept();
         break;
 
       case fc::Fkey_left:
-        move (getX() - 1, getY());
+        move (-1, 0);
         ev->accept();
         break;
 
       case fc::Fkey_right:
-        move (getX() + 1, getY());
+        move (1, 0);
         ev->accept();
         break;
 
@@ -695,7 +697,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
           delete tooltip;
 
         tooltip = 0;
-        move (save_geometry.getPos());
+        setPos (save_geometry.getPos());
 
         if ( isResizeable() )
           setSize (save_geometry.getWidth(), save_geometry.getHeight());
@@ -859,9 +861,8 @@ void FDialog::onMouseUp (FMouseEvent* ev)
        && titlebar_x < getTermX() + getWidth()
        && titlebar_y == getTermY() )
     {
-      FPoint currentPos(getGeometry().getX(), getGeometry().getY());
       FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
-      move (currentPos + deltaPos);
+      move (deltaPos);
       titlebar_click_pos = ev->getTermPos();
     }
 
@@ -953,9 +954,8 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 
     if ( ! titlebar_click_pos.isNull() )
     {
-      FPoint currentPos(getGeometry().getX(), getGeometry().getY());
       FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
-      move (currentPos + deltaPos);
+      move (deltaPos);
       titlebar_click_pos = ev->getTermPos();
     }
 
@@ -1218,13 +1218,7 @@ int FDialog::exec()
 }
 
 //----------------------------------------------------------------------
-void FDialog::move (const FPoint& pos)
-{
-  move ( pos.getX(), pos.getY() );
-}
-
-//----------------------------------------------------------------------
-void FDialog::move (int x, int y)
+void FDialog::setPos (int x, int y, bool)
 {
   int dx, dy, old_x, old_y, rsw, bsh, width, height;
   FRect old_geometry;
@@ -1252,8 +1246,7 @@ void FDialog::move (int x, int y)
   old_geometry = getTermGeometryWithShadow();
 
   // move to the new position
-  FWidget::move(x,y);
-  setPos(x, y, false);
+  FWindow::setPos(x, y, false);
   putArea (getTermPos(), vwin);
 
   // restoring the non-covered terminal areas
@@ -1311,7 +1304,7 @@ void FDialog::move (int x, int y)
     }
   }
 
-  FWidget::adjustSize();
+  FWindow::adjustSize();
 
   // set the cursor to the focus widget
   FWidget* focus_widget = FWidget::getFocusWidget();
@@ -1324,6 +1317,12 @@ void FDialog::move (int x, int y)
   }
 
   updateTerminal();
+}
+
+//----------------------------------------------------------------------
+void FDialog::move (int dx, int dy)
+{
+  setPos (getX() + dx, getY() + dy);
 }
 
 //----------------------------------------------------------------------

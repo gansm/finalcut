@@ -53,7 +53,7 @@ class FTermcap
    {
      return tcap;
    }
-  
+
    void setTermcapMap (tcap_map* t)
    {
      tcap = t;

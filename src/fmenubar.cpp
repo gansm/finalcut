@@ -477,7 +477,7 @@ void FMenuBar::adjustItems()
       FMenu* menu = (*iter)->getMenu();
 
       // set menu position
-      menu->move (menu->adjustX(item_X), item_Y);
+      menu->setPos (menu->adjustX(item_X), item_Y);
 
       // call menu adjustItems()
       menu->adjustItems();
