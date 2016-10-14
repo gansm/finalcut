@@ -372,6 +372,13 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
         while ( iter != end )
         {
           term_area* win = (*iter)->getVWin();
+
+          if ( ! win )
+            break;
+
+          if ( ! win->visible )
+            break;
+
           int win_x = win->x_offset;
           int win_y = win->y_offset;
           FRect geometry ( win_x
@@ -380,7 +387,7 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
                          , win->height + win->bottom_shadow );
 
           // window visible and contains current character
-          if ( win && win->visible && geometry.contains(tx+x, ty+y) )
+          if ( geometry.contains(tx+x, ty+y) )
           {
             FOptiAttr::char_data* tmp;
             int line_len = win->width + win->right_shadow;
@@ -465,6 +472,13 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
     while ( iter != end )
     {
       term_area* win = (*iter)->getVWin();
+      
+      if ( ! win )
+        break;
+
+      if ( ! win->visible )
+        break;
+
       int win_x = win->x_offset;
       int win_y = win->y_offset;
       FRect geometry ( win_x
@@ -472,9 +486,7 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
                      , win->width + win->right_shadow
                      , win->height + win->bottom_shadow );
 
-      if (  win && found
-         && win->visible
-         && geometry.contains(x,y) )
+      if ( found && geometry.contains(x,y) )
       {
         FOptiAttr::char_data* tmp;
         int line_len = win->width + win->right_shadow;
@@ -1188,6 +1200,13 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
       if ( obj && *iter != obj && significant_char )
       {
         term_area* win = (*iter)->getVWin();
+
+        if ( ! win )
+          break;
+
+        if ( ! win->visible )
+          break;
+
         int win_x = win->x_offset;
         int win_y = win->y_offset;
         FRect geometry ( win_x
@@ -1196,7 +1215,7 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
                        , win->height + win->bottom_shadow );
 
         // window visible and contains current character
-        if ( win && win->visible && geometry.contains(x,y) )
+        if ( geometry.contains(x,y) )
         {
           FOptiAttr::char_data* tmp;
           int line_len = win->width + win->right_shadow;
