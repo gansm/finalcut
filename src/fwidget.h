@@ -508,7 +508,7 @@ class FWidget : public FVTerm
 
    void             setPrintPos (const FPoint&);
    void             setPrintPos (register int, register int);
-   FPoint           getPrintPos() const;
+   FPoint           getPrintPos();
 
    void             drawShadow();
    void             clearShadow();

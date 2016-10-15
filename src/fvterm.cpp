@@ -19,7 +19,6 @@ bool                 FVTerm::vterm_updates;
 int                  FVTerm::skipped_terminal_update = 0;
 std::queue<int>*     FVTerm::output_buffer           = 0;
 FPoint*              FVTerm::term_pos                = 0;
-FPoint*              FVTerm::cursor                  = 0;
 FVTerm::term_area*   FVTerm::vterm                   = 0;
 FVTerm::term_area*   FVTerm::vdesktop                = 0;
 FVTerm::term_area*   FVTerm::last_area               = 0;
@@ -66,7 +65,6 @@ void FVTerm::init()
   vdesktop      =  0;
   last_area     =  0;
   term_pos      = new FPoint(-1,-1);
-  cursor        = new FPoint(0,0);
   output_buffer = new std::queue<int>;
 
   // Preset to false
@@ -129,9 +127,6 @@ void FVTerm::finish()
   removeArea (vdesktop);
   removeArea (vterm);
 
-  if ( cursor )
-    delete cursor;
-
   if ( term_pos )
     delete term_pos;
 }
@@ -192,6 +187,8 @@ void FVTerm::createArea ( int x_offset, int y_offset
   area->height               = -1;
   area->right_shadow         = 0;
   area->bottom_shadow        = 0;
+  area->cursor_x             = 0;
+  area->cursor_y             = 0;
   area->input_cursor_x       = -1;
   area->input_cursor_y       = -1;
   area->input_cursor_visible = false;
@@ -369,15 +366,15 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
         iter = widget->window_list->begin();
         end  = widget->window_list->end();
 
-        while ( iter != end )
+        for (; iter != end; ++iter)
         {
           term_area* win = (*iter)->getVWin();
 
           if ( ! win )
-            break;
+            continue;
 
           if ( ! win->visible )
-            break;
+            continue;
 
           int win_x = win->x_offset;
           int win_y = win->y_offset;
@@ -424,8 +421,6 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
                 sc = tmp;
             }
           }
-
-          ++iter;
         }
       }
 
@@ -469,15 +464,15 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
     iter = w->window_list->begin();
     end  = w->window_list->end();
 
-    while ( iter != end )
+    for (; iter != end; ++iter)
     {
       term_area* win = (*iter)->getVWin();
-      
+
       if ( ! win )
-        break;
+        continue;
 
       if ( ! win->visible )
-        break;
+        continue;
 
       int win_x = win->x_offset;
       int win_y = win->y_offset;
@@ -505,8 +500,6 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 
       if ( area == win )
         found = true;
-
-      ++iter;
     }
   }
 
@@ -700,8 +693,8 @@ bool FVTerm::updateVTermCursor (FVTerm::term_area* area)
   {
     int cx, cy, ax, ay, x, y;
     // area offset
-    ax  = area->widget->getTermX() - 1;
-    ay  = area->widget->getTermY() - 1;
+    ax  = area->x_offset;
+    ay  = area->y_offset;
     // area cursor position
     cx = area->input_cursor_x;
     cy = area->input_cursor_y;
@@ -829,8 +822,8 @@ void FVTerm::getArea (int x, int y, int w, int h, FVTerm::term_area* area)
   if ( ! area )
     return;
 
-  dx = x - area->widget->getTermX();
-  dy = y - area->widget->getTermY();
+  dx = x - area->x_offset + 1;
+  dy = y - area->y_offset + 1;
 
   if ( x < 0 || y < 0 )
     return;
@@ -990,6 +983,7 @@ void FVTerm::putArea (int ax, int ay, FVTerm::term_area* area)
 //----------------------------------------------------------------------
 void FVTerm::scrollAreaForward (FVTerm::term_area* area)
 {
+  // Scrolls the entire area up line down
   int total_width;
   int length;
   int y_max;
@@ -1032,6 +1026,7 @@ void FVTerm::scrollAreaForward (FVTerm::term_area* area)
 //----------------------------------------------------------------------
 void FVTerm::scrollAreaReverse (FVTerm::term_area* area)
 {
+  // Scrolls the entire area one line down
   int total_width;
   int length;
   FOptiAttr::char_data nc;  // next character
@@ -1072,11 +1067,12 @@ void FVTerm::scrollAreaReverse (FVTerm::term_area* area)
 //----------------------------------------------------------------------
 void FVTerm::clearArea (FVTerm::term_area* area)
 {
+  // clear the area with the current attributes
   FOptiAttr::char_data nc;  // next character
   int  total_width;
   uInt w;
 
-  // clear with the current attributes and space characters
+  // current attributes with a space character
   std::memcpy (&nc, &next_attribute, sizeof(FOptiAttr::char_data));
   nc.code = ' ';
 
@@ -1142,6 +1138,7 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type type
                                           , const FPoint& pos
                                           , FVTerm* obj )
 {
+  // Gets the overlapped or the covered character for a given position
   return getCharacter (type, pos.getX(), pos.getY(), obj);
 }
 
@@ -1151,8 +1148,8 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
                                           , int y
                                           , FVTerm* obj )
 {
-  // get the overlapped or the covered character for a position
-  int xx,yy;
+  // Gets the overlapped or the covered character for the position (x,y)
+  int xx, yy;
   FOptiAttr::char_data* cc;   // covered character
   FOptiAttr::char_data  s_ch; // shadow character
   FOptiAttr::char_data  i_ch; // inherit background character
@@ -1186,7 +1183,7 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
     iter = w->window_list->begin();
     end  = w->window_list->end();
 
-    while ( iter != end )
+    for (; iter != end; ++iter)
     {
       bool significant_char;
 
@@ -1202,10 +1199,10 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
         term_area* win = (*iter)->getVWin();
 
         if ( ! win )
-          break;
+          continue;
 
         if ( ! win->visible )
-          break;
+          continue;
 
         int win_x = win->x_offset;
         int win_y = win->y_offset;
@@ -1248,8 +1245,6 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
       }
       else if ( char_type == covered_character )
         break;
-
-      ++iter;
     }
   }
 
@@ -1257,18 +1252,28 @@ FOptiAttr::char_data FVTerm::getCharacter ( character_type char_type
 }
 
 //----------------------------------------------------------------------
+FOptiAttr::char_data FVTerm::getCoveredCharacter ( const FPoint& pos
+                                                 , FVTerm* obj )
+{
+  // Gets the covered character for a given position
+  return getCharacter (covered_character, pos.getX(), pos.getY(), obj);
+}
+
+//----------------------------------------------------------------------
 FOptiAttr::char_data FVTerm::getCoveredCharacter ( int x
                                                  , int y
                                                  , FVTerm* obj)
 {
+  // Gets the covered character for the position (x,y)
   return getCharacter (covered_character, x, y, obj);
 }
 
 //----------------------------------------------------------------------
-FOptiAttr::char_data FVTerm::getCoveredCharacter ( const FPoint& pos
-                                                 , FVTerm* obj )
+FOptiAttr::char_data FVTerm::getOverlappedCharacter ( const FPoint& pos
+                                                    , FVTerm* obj )
 {
-  return getCharacter (covered_character, pos.getX(), pos.getY(), obj);
+  // Gets the overlapped character for a given position
+  return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj);
 }
 
 //----------------------------------------------------------------------
@@ -1276,32 +1281,28 @@ FOptiAttr::char_data FVTerm::getOverlappedCharacter ( int x
                                                     , int y
                                                     , FVTerm* obj)
 {
+  // Gets the overlapped character for the position (x,y)
   return getCharacter (overlapped_character, x, y, obj);
-}
-
-//----------------------------------------------------------------------
-FOptiAttr::char_data FVTerm::getOverlappedCharacter ( const FPoint& pos
-                                                    , FVTerm* obj )
-{
-  return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj);
 }
 
 //----------------------------------------------------------------------
 void FVTerm::startTerminalUpdate()
 {
+  // Pauses the terminal updates for the printing phase
   terminal_update_complete = false;
 }
 
 //----------------------------------------------------------------------
 void FVTerm::finishTerminalUpdate()
 {
+  // After the printing phase is completed, the terminal will be updated
   terminal_update_complete = true;
 }
 
 //----------------------------------------------------------------------
 void FVTerm::setTermXY (register int x, register int y)
 {
-  // sets the hardware cursor to the given (x,y) position
+  // Sets the hardware cursor to the given (x,y) position
   int term_x, term_y, term_width, term_height;
   char* move_str;
 
@@ -1338,6 +1339,7 @@ void FVTerm::setTermXY (register int x, register int y)
 //----------------------------------------------------------------------
 bool FVTerm::hideCursor (bool on)
 {
+  // Hides or shows the input cursor on the terminal
   if ( on == hidden_cursor )
     return hidden_cursor;
 
@@ -1420,6 +1422,7 @@ void FVTerm::updateTerminal (bool on)
 //----------------------------------------------------------------------
 void FVTerm::updateTerminal()
 {
+  // Updates pending changes to the terminal
   term_area* vt;
   int term_width, term_height;
 
@@ -1501,7 +1504,7 @@ void FVTerm::updateTerminal()
 //----------------------------------------------------------------------
 bool FVTerm::updateTerminalCursor()
 {
-  // updates the input cursor visibility and the position
+  // Updates the input cursor visibility and the position
   if ( vterm && vterm->input_cursor_visible )
   {
     int x = vterm->input_cursor_x;
@@ -1523,6 +1526,7 @@ bool FVTerm::updateTerminalCursor()
 //----------------------------------------------------------------------
 void FVTerm::processTerminalUpdate()
 {
+  // Retains terminal updates if there are unprocessed inputs
   const int max_skip = 8;
 
   if ( terminal_update_pending )
@@ -1559,9 +1563,27 @@ bool FVTerm::isInsideTerminal (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FPoint* FVTerm::getPrintPos() const
+void FVTerm::setPrintCursor (register int x, register int y)
 {
-  return cursor;
+  term_area* win = getPrintArea();
+
+  if ( win )
+  {
+    win->cursor_x = x - win->x_offset;
+    win->cursor_y = y - win->y_offset;
+  }
+}
+
+//----------------------------------------------------------------------
+FPoint FVTerm::getPrintCursor()
+{
+  term_area* win = getPrintArea();
+
+  if ( win )
+    return FPoint ( win->x_offset + win->cursor_x
+                  , win->y_offset + win->cursor_y );
+
+  return FPoint(0,0);
 }
 
 //----------------------------------------------------------------------
@@ -1707,9 +1729,7 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
   {
     while ( *p )
     {
-      int x_offset, y_offset, width, height, rsh, bsh;
-      x_offset = area->x_offset;
-      y_offset = area->y_offset;
+      int width, height, rsh, bsh;
       width    = area->width;
       height   = area->height;
       rsh      = area->right_shadow;
@@ -1718,22 +1738,22 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
       switch ( *p )
       {
         case '\n':
-          cursor->y_ref()++;
+          area->cursor_y++;
 
         case '\r':
-          cursor->x_ref() = 1;
+          area->cursor_x = 1;
           break;
 
         case '\t':
-          cursor->x_ref() = short ( uInt(cursor->x_ref())
-                                  + tabstop
-                                  - uInt(cursor->x_ref())
-                                  + 1
-                                  % tabstop );
+          area->cursor_x = short ( uInt(area->cursor_x)
+                                 + tabstop
+                                 - uInt(area->cursor_x)
+                                 + 1
+                                 % tabstop );
           break;
 
         case '\b':
-          cursor->x_ref()--;
+          area->cursor_x--;
           break;
 
         case '\a':
@@ -1742,8 +1762,8 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
 
         default:
         {
-          short x = short(cursor->getX() - 1);
-          short y = short(cursor->getY() - 1);
+          int ax = area->cursor_x - 1;
+          int ay = area->cursor_y - 1;
 
           FOptiAttr::char_data  nc; // next character
           nc.code          = *p;
@@ -1765,9 +1785,6 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
           nc.transparent   = next_attribute.transparent;
           nc.trans_shadow  = next_attribute.trans_shadow;
           nc.inherit_bg    = next_attribute.inherit_bg;
-
-          int ax = x - x_offset;
-          int ay = y - y_offset;
 
           if (  area
              && ax >= 0 && ay >= 0
@@ -1806,19 +1823,19 @@ int FVTerm::print (FVTerm::term_area* area, FString& s)
             }
           }
 
-          cursor->x_ref()++;
+          area->cursor_x++;
         }
       }
 
-      if ( cursor->x_ref() > x_offset + width + rsh )
+      if ( area->cursor_x > width + rsh )
       {
-        cursor->x_ref() = short(x_offset + 1);
-        cursor->y_ref()++;
+        area->cursor_x = 1;
+        area->cursor_y++;
       }
 
-      if ( cursor->y_ref() > y_offset + height + bsh )
+      if ( area->cursor_y > height + bsh )
       {
-        cursor->y_ref()--;
+        area->cursor_y--;
         break;
       }
 
@@ -1852,18 +1869,17 @@ int FVTerm::print (register int c)
 int FVTerm::print (FVTerm::term_area* area, register int c)
 {
   FOptiAttr::char_data nc; // next character
-  int x_offset, y_offset, width, height, rsh, bsh, ax, ay;
-  short x, y;
+  int width, height, rsh, bsh, ax, ay;
 
   if ( ! area )
     return -1;
 
-  x_offset = area->x_offset;
-  y_offset = area->y_offset;
   width    = area->width;
   height   = area->height;
   rsh      = area->right_shadow;
   bsh      = area->bottom_shadow;
+  ax       = area->cursor_x - 1;
+  ay       = area->cursor_y - 1;
 
   nc.code          = c;
   nc.fg_color      = next_attribute.fg_color;
@@ -1884,11 +1900,6 @@ int FVTerm::print (FVTerm::term_area* area, register int c)
   nc.transparent   = next_attribute.transparent;
   nc.trans_shadow  = next_attribute.trans_shadow;
   nc.inherit_bg    = next_attribute.inherit_bg;
-
-  x = short(cursor->getX() - 1);
-  y = short(cursor->getY() - 1);
-  ax = x - x_offset;
-  ay = y - y_offset;
 
   if (  ax >= 0 && ay >= 0
      && ax < area->width + area->right_shadow
@@ -1927,17 +1938,17 @@ int FVTerm::print (FVTerm::term_area* area, register int c)
     }
   }
 
-  cursor->x_ref()++;
+  area->cursor_x++;
 
-  if ( cursor->x_ref() > x_offset + width + rsh )
+  if ( area->cursor_x > width + rsh )
   {
-    cursor->x_ref() = short(x_offset + 1);
-    cursor->y_ref()++;
+    area->cursor_x = 1;
+    area->cursor_y++;
   }
 
-  if ( cursor->y_ref() > y_offset + height + bsh )
+  if ( area->cursor_y > height + bsh )
   {
-    cursor->y_ref()--;
+    area->cursor_y--;
     updateVTerm (area);
     return -1;
   }

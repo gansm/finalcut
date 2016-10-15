@@ -1,3 +1,6 @@
+2016-10-15  Markus Gans  <guru.mail@muenster.de>
+	* Each virtual window gets its own virtual print cursor
+
 2016-10-14  Markus Gans  <guru.mail@muenster.de>
 	* Virtual windows can now store their own offset information
 	* Correct implementation of the move() method

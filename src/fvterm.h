@@ -50,7 +50,6 @@ class FVTerm : public FObject, public FTerm
    static FOptiAttr::char_data term_attribute;
    static FOptiAttr::char_data next_attribute;
    static FPoint*              term_pos;  // terminal cursor position
-   static FPoint*              cursor;    // virtual print cursor
    static FTermcap::tcap_map*  tcap;
 
    static bool  hidden_cursor;
@@ -90,6 +89,8 @@ class FVTerm : public FObject, public FTerm
      int height;
      int right_shadow;
      int bottom_shadow;
+     int cursor_x;
+     int cursor_y;
      int input_cursor_x;
      int input_cursor_y;
      int input_cursor_visible;
@@ -182,7 +183,8 @@ class FVTerm : public FObject, public FTerm
 
    void                setPrintCursor (const FPoint&);
    void                setPrintCursor (register int, register int);
-   FPoint*             getPrintPos() const;
+   FPoint              getPrintCursor();
+
    int                 printf (const wchar_t*, ...);
    int                 printf (const char*, ...)
    #if defined(__clang__)
@@ -335,10 +337,6 @@ inline FVTerm::term_area* FVTerm::getVWin() const
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintCursor (const FPoint& pos)
 { setPrintCursor (pos.getX(), pos.getY()); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setPrintCursor (register int x, register int y)
-{ cursor->setPoint(x,y); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setColor (register short fg, register short bg)

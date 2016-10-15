@@ -1867,6 +1867,7 @@ void FWidget::move (int dx, int dy)
 //----------------------------------------------------------------------
 bool FWidget::setCursorPos (register int x, register int y)
 {
+  // sets the input cursor position
   widget_cursor_position.setPoint(x,y);
 
   if ( (flags & fc::focus) != 0 && ! isWindowWidget() )
@@ -1892,18 +1893,19 @@ bool FWidget::setCursorPos (register int x, register int y)
 //----------------------------------------------------------------------
 void FWidget::setPrintPos (register int x, register int y)
 {
-  setPrintCursor ( offset.getX1() + adjust_wsize.getX() - 1 + x,
-                   offset.getY1() + adjust_wsize.getY() - 1 + y );
+  setPrintCursor ( offset.getX1() + getX() + x - 1,
+                   offset.getY1() + getY() + y - 1 );
 }
 
 //----------------------------------------------------------------------
-FPoint FWidget::getPrintPos() const
+FPoint FWidget::getPrintPos()
 {
-  const FPoint* cur = FVTerm::getPrintPos();
-  int cx = cur->getX();
-  int cy = cur->getY();
-  return FPoint ( cx - offset.getX1() - adjust_wsize.getX() + 1
-                , cy - offset.getY1() - adjust_wsize.getY() + 1 );
+  const FPoint cur = getPrintCursor();
+  int cx = cur.getX();
+  int cy = cur.getY();
+  return FPoint ( cx - offset.getX1() - getX() + 1
+                , cy - offset.getY1() - getY() + 1 );
+
 }
 
 //----------------------------------------------------------------------
