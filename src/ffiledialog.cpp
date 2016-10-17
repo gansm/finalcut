@@ -253,21 +253,20 @@ void FFileDialog::clear()
 //----------------------------------------------------------------------
 int FFileDialog::numOfDirs()
 {
+  if ( dir_entries.empty() )
+    return 0;
+
   int n = 0;
+  std::vector<dir_entry>::const_iterator iter, end;
+  iter = dir_entries.begin();
+  end = dir_entries.end();
 
-  if ( ! dir_entries.empty() )
+  while ( iter != end )
   {
-    std::vector<dir_entry>::const_iterator iter, end;
-    iter = dir_entries.begin();
-    end = dir_entries.end();
+    if ( (*iter).type == DT_DIR && std::strcmp((*iter).name, ".") != 0 )
+      n++;
 
-    while ( iter != end )
-    {
-      if ( (*iter).type == DT_DIR && std::strcmp((*iter).name, ".") != 0 )
-        n++;
-
-      ++iter;
-    }
+    ++iter;
   }
 
   return n;
@@ -499,7 +498,9 @@ void FFileDialog::adjustSize()
 FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 {
   if ( &fdlg == this )
+  {
     return *this;
+  }
   else
   {
     delete open;

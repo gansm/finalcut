@@ -48,15 +48,15 @@ void FCheckMenuItem::init (FWidget* parent)
 {
   checkable = true;
 
-  if ( parent )
-  {
-    if ( isMenu(parent) ) // Parent is menu
-    {
-      FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+  if ( ! parent )
+    return;
 
-      if ( menu_ptr )
-        menu_ptr->has_checkable_items = true;
-    }
+  if ( isMenu(parent) ) // Parent is menu
+  {
+    FMenu* menu_ptr = dynamic_cast<FMenu*>(parent);
+
+    if ( menu_ptr )
+      menu_ptr->has_checkable_items = true;
   }
 }
 

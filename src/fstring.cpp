@@ -146,16 +146,16 @@ FString::FString (const std::string& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! s.empty() )
-  {
-    const wchar_t* wc_string;
-    wc_string = c_to_wc_str(s.c_str());
+  if ( s.empty() )
+    return;
 
-    if ( wc_string )
-    {
-      _replace( wc_string );
-      delete[] wc_string;
-    }
+  const wchar_t* wc_string;
+  wc_string = c_to_wc_str(s.c_str());
+
+  if ( wc_string )
+  {
+    _replace( wc_string );
+    delete[] wc_string;
   }
 }
 
@@ -217,13 +217,13 @@ FString::~FString()  // destructor
 //----------------------------------------------------------------------
 inline void FString::initLength (uInt len)
 {
-  if ( len > 0 )
-  {
-    length  = len;
-    bufsize = FWDBUFFER + len + 1;
-    string  = new wchar_t[bufsize]();
-    std::wmemset (string, L'\0', bufsize);
-  }
+  if ( len == 0 )
+    return;
+
+  length  = len;
+  bufsize = FWDBUFFER + len + 1;
+  string  = new wchar_t[bufsize]();
+  std::wmemset (string, L'\0', bufsize);
 }
 
 //----------------------------------------------------------------------

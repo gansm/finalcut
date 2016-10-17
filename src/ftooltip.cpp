@@ -39,18 +39,18 @@ FToolTip::~FToolTip()  // destructor
 {
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
-  if ( ! fapp->isQuit() )
-  {
-    FWindow* parent_win = 0;
+  if ( fapp->isQuit() )
+    return;
 
-    if ( FWidget* parent = getParentWidget() )
-      parent_win = getWindowWidget(parent);
+  FWindow* parent_win = 0;
 
-    if ( parent_win )
-      setActiveWindow (parent_win);
-    else
-      switchToPrevWindow();
-  }
+  if ( FWidget* parent = getParentWidget() )
+    parent_win = getWindowWidget(parent);
+
+  if ( parent_win )
+    setActiveWindow (parent_win);
+  else
+    switchToPrevWindow();
 }
 
 

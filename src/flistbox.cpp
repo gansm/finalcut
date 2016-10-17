@@ -594,7 +594,7 @@ void FListBox::hide()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight(); y++)
@@ -612,23 +612,23 @@ void FListBox::showInsideBrackets ( int index
 {
   data[uInt(index-1)].brackets = b;
 
-  if ( b != fc::NoBrackets )
+  if ( b == fc::NoBrackets )
+  return;
+
+  int len = int(data[uInt(index-1)].getText().getLength() + 2);
+
+  if ( len > max_line_width )
   {
-    int len = int(data[uInt(index-1)].getText().getLength() + 2);
+    max_line_width = len;
 
-    if ( len > max_line_width )
+    if ( len >= getWidth() - nf_offset - 3 )
     {
-      max_line_width = len;
+      hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
+      hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+      hbar->setValue (xoffset);
 
-      if ( len >= getWidth() - nf_offset - 3 )
-      {
-        hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-        hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
-        hbar->setValue (xoffset);
-
-        if ( ! hbar->isVisible() )
-          hbar->setVisible();
-      }
+      if ( ! hbar->isVisible() )
+        hbar->setVisible();
     }
   }
 }
@@ -1787,7 +1787,7 @@ void FListBox::clear()
     return;
 
   blank = new char[size+1];
-  memset(blank, ' ', uLong(size));
+  std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
   for (int y=0; y < getHeight()-2; y++)

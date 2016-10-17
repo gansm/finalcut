@@ -1,3 +1,6 @@
+2016-10-17  Markus Gans  <guru.mail@muenster.de>
+	* Refactor the VGA attribute controller access code
+
 2016-10-15  Markus Gans  <guru.mail@muenster.de>
 	* Each virtual window gets its own virtual print cursor
 

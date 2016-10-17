@@ -69,38 +69,36 @@ int FOptiMove::capDuration (char*& cap, int affcnt)
   // cap    - the term capability
   // affcnt - the number of lines affected
 
-  if ( cap )
-  {
-    const char* p;
-    float ms = 0;
-
-    for (p=cap; *p; p++)
-    {
-      // check for delay with padding character
-      if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
-      {
-        float num=0;
-
-        for (p += 2; *p != '>'; p++)
-        {
-          if ( std::isdigit(uChar(*p)) )
-            num = num * 10 + float(*p - '0');
-          else if ( *p == '*' )
-            num *= float(affcnt);
-          else if ( *p == '.' && *++p != '>' && std::isdigit(uChar(*p)) )
-            num += float((*p - '0') / 10.0);
-        }
-
-        ms += num * 10;
-      }
-      else
-        ms += float(char_duration);
-    }
-
-    return int(ms);
-  }
-  else
+  if ( ! cap )
     return LONG_DURATION;
+
+  const char* p;
+  float ms = 0;
+
+  for (p=cap; *p; p++)
+  {
+    // check for delay with padding character
+    if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
+    {
+      float num=0;
+
+      for (p += 2; *p != '>'; p++)
+      {
+        if ( std::isdigit(uChar(*p)) )
+          num = num * 10 + float(*p - '0');
+        else if ( *p == '*' )
+          num *= float(affcnt);
+        else if ( *p == '.' && *++p != '>' && std::isdigit(uChar(*p)) )
+          num += float((*p - '0') / 10.0);
+      }
+
+      ms += num * 10;
+    }
+    else
+      ms += float(char_duration);
+  }
+
+  return int(ms);
 }
 
 

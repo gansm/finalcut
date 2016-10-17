@@ -736,30 +736,30 @@ void FLineEdit::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FLineEdit::onAccel (FAccelEvent* ev)
 {
-  if ( isEnabled() )
+  if ( ! isEnabled() )
+    return;
+
+  if ( ! hasFocus() )
   {
-    if ( ! hasFocus() )
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    redraw();
+
+    if ( statusBar() )
     {
-      FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
-      setFocus();
-
-      if ( focused_widget )
-        focused_widget->redraw();
-
-      redraw();
-
-      if ( statusBar() )
-      {
-        statusBar()->drawMessage();
-        updateTerminal();
-        flush_out();
-      }
+      statusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
     }
-
-    ev->accept();
   }
+
+  ev->accept();
 }
 
 //----------------------------------------------------------------------

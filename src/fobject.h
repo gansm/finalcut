@@ -90,11 +90,10 @@ class FObject
    bool         delOwnTimer();
    bool         delAllTimer();
    bool         isTimerInUpdating() const;
-   // Event handler
-   virtual bool event (FEvent*);
 
  protected:
    // Event handler
+   virtual bool event (FEvent*);
    virtual void onTimer (FTimerEvent*);
 
  private:

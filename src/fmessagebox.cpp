@@ -375,7 +375,9 @@ void FMessageBox::adjustSize()
 FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
 {
   if ( &mbox == this )
+  {
     return *this;
+  }
   else
   {
     for (uInt n=0; n < num_buttons; n++)

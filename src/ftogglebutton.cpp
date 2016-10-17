@@ -485,24 +485,24 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( ! hasFocus() )
+  if ( hasFocus() )
+    return;
+
+  FWidget* focused_widget = getFocusWidget();
+  FFocusEvent out (fc::FocusOut_Event);
+  FApplication::queueEvent(focused_widget, &out);
+  setFocus();
+
+  if ( focused_widget )
+    focused_widget->redraw();
+
+  redraw();
+
+  if ( statusBar() )
   {
-    FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    redraw();
-
-    if ( statusBar() )
-    {
-      statusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
-    }
+    statusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
   }
 }
 
@@ -512,68 +512,69 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  if ( getTermGeometry().contains(ev->getTermPos()) )
+  if ( ! getTermGeometry().contains(ev->getTermPos()) )
+    return;
+
+  if ( isRadioButton() )
   {
-    if ( isRadioButton() )
+    if ( ! checked )
     {
-      if ( ! checked )
-      {
-        checked = true;
-        processToggle();
-      }
-    }
-    else
-    {
-      checked = not checked;
+      checked = true;
       processToggle();
     }
-    redraw();
-    processClick();
   }
+  else
+  {
+    checked = not checked;
+    processToggle();
+  }
+
+  redraw();
+  processClick();
 }
 
 //----------------------------------------------------------------------
 void FToggleButton::onAccel (FAccelEvent* ev)
 {
-  if ( isEnabled() )
+  if ( ! isEnabled() )
+    return;
+
+  if ( ! hasFocus() )
   {
-    if ( ! hasFocus() )
-    {
-      FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
-      setFocus();
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
 
-      if ( focused_widget )
-        focused_widget->redraw();
-    }
+    if ( focused_widget )
+      focused_widget->redraw();
+  }
 
-    if ( isRadioButton() )
+  if ( isRadioButton() )
+  {
+    if ( ! checked )
     {
-      if ( ! checked )
-      {
-        checked = true;
-        processToggle();
-      }
-    }
-    else
-    {
-      checked = not checked;
+      checked = true;
       processToggle();
     }
-
-    redraw();
-
-    if ( statusBar() )
-    {
-      statusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
-    }
-
-    processClick();
-    ev->accept();
   }
+  else
+  {
+    checked = not checked;
+    processToggle();
+  }
+
+  redraw();
+
+  if ( statusBar() )
+  {
+    statusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
+  }
+
+  processClick();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------
@@ -592,35 +593,35 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     statusBar()->drawMessage();
   }
 
-  if ( group() )
+  if ( ! group() )
+    return;
+
+  if ( ! focus_inside_group && isRadioButton()  )
   {
-    if ( ! focus_inside_group && isRadioButton()  )
-    {
-      focus_inside_group = true;
-      out_ev->ignore();
+    focus_inside_group = true;
+    out_ev->ignore();
 
-      if ( out_ev->getFocusType() == fc::FocusNextWidget )
-        group()->focusNextChild();
-
-      if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
-        group()->focusPrevChild();
-
-      redraw();
-    }
-    else if (  this == group()->getLastButton()
-       && out_ev->getFocusType() == fc::FocusNextWidget )
-    {
-      out_ev->ignore();
+    if ( out_ev->getFocusType() == fc::FocusNextWidget )
       group()->focusNextChild();
-      redraw();
-    }
-    else if (  this == group()->getFirstButton()
-            && out_ev->getFocusType() == fc::FocusPreviousWidget )
-    {
-      out_ev->ignore();
+
+    if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
       group()->focusPrevChild();
-      redraw();
-    }
+
+    redraw();
+  }
+  else if (  this == group()->getLastButton()
+     && out_ev->getFocusType() == fc::FocusNextWidget )
+  {
+    out_ev->ignore();
+    group()->focusNextChild();
+    redraw();
+  }
+  else if (  this == group()->getFirstButton()
+          && out_ev->getFocusType() == fc::FocusPreviousWidget )
+  {
+    out_ev->ignore();
+    group()->focusPrevChild();
+    redraw();
   }
 }
 

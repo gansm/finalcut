@@ -122,23 +122,23 @@ void ProgressDialog::onTimer (FTimerEvent*)
   progressBar->setPercentage(++p);
   flush_out();
 
-  if ( p == 100 )
-  {
-    delOwnTimer();
-    activateWindow();
-    raiseWindow();
-    reset->setEnable();
-    reset->setFocus();
-    more->setEnable();
-    quit->setEnable();
-    redraw();
+  if ( p != 100 )
+    return;
 
-    if ( statusBar() )
-      statusBar()->drawMessage();
+  delOwnTimer();
+  activateWindow();
+  raiseWindow();
+  reset->setEnable();
+  reset->setFocus();
+  more->setEnable();
+  quit->setEnable();
+  redraw();
 
-    updateTerminal();
-    flush_out();
-  }
+  if ( statusBar() )
+    statusBar()->drawMessage();
+
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------

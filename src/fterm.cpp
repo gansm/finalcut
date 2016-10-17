@@ -101,14 +101,12 @@ fc::consoleCursorStyle FTerm::console_cursor_style;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTerm::FTerm()
-  : map()
+  : color_map()
 {
   resize_term = false;
 
   if ( ! term_initialized )
-  {
     init();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -125,29 +123,98 @@ FTerm::~FTerm()  // destructor
   }
 }
 
+
 // private methods of FTerm
 //----------------------------------------------------------------------
-void FTerm::outb_Attribute_Controller (int index, int data)
+inline uInt16 FTerm::getInputStatusRegisterOne()
 {
-  inb (AttrC_DataSwitch);
-  outb (index & 0x1F, AttrC_Index);
-  outb (uChar(data), AttrC_DataW);
-  inb (AttrC_DataSwitch);
-  outb (uChar((index & 0x1F) | 0x20), AttrC_Index);
-  outb (uChar(data), AttrC_DataW);
+  // Gets the VGA input-status-register-1
+  uInt16 misc_read = 0x3cc;  // Miscellaneous output (read port)
+  uInt16 io_base = (inb(misc_read) & 0x01) ? 0x3d0 : 0x3b0;
+  // 0x3ba : Input status 1 MDA (read port)
+  // 0x3da : Input status 1 CGA (read port)
+  return io_base + 0x0a;
 }
 
 //----------------------------------------------------------------------
-int FTerm::inb_Attribute_Controller (int index)
+uChar FTerm::readAttributeController (uChar index)
 {
-  int res;
-  inb (AttrC_DataSwitch);
-  outb (index & 0x1F, AttrC_Index);
-  res = inb (AttrC_DataR);
-  inb (AttrC_DataSwitch);
-  outb (uChar((index & 0x1F) | 0x20), AttrC_Index);
-  inb (AttrC_DataR);
+  // Reads a byte from the attribute controller from a given index
+  uChar res;
+  uInt16 attrib_cntlr_write = 0x3c0; // Attribute controller (write port)
+  uInt16 attrib_cntlr_read  = 0x3c1; // Attribute controller (read port)
+  uInt16 input_status_1 = getInputStatusRegisterOne();
+
+  inb (input_status_1);  // switch to index mode
+  outb (index & 0x1f, attrib_cntlr_write);
+  res = inb (attrib_cntlr_read);
+
+  inb (input_status_1);  // switch to data mode
+  index = (index & 0x1f) | 0x20; // set bit 5 (enable display)
+  outb (index, attrib_cntlr_write);
+  inb (attrib_cntlr_read);
   return res;
+}
+
+//----------------------------------------------------------------------
+void FTerm::writeAttributeController (uChar index, uChar data)
+{
+  // Writes a byte from the attribute controller from a given index
+  uInt16 attrib_cntlr_write = 0x3c0;  // Attribute controller (write port)
+  uInt16 input_status_1 = getInputStatusRegisterOne();
+
+  inb (input_status_1);  // switch to index mode
+  outb (index & 0x1f, attrib_cntlr_write);
+  outb (data, attrib_cntlr_write);
+
+  inb (input_status_1);  // switch to data mode
+  index = (index & 0x1f) | 0x20; // set bit 5 (enable display)
+  outb (index, attrib_cntlr_write);
+  outb (data, attrib_cntlr_write);
+}
+
+//----------------------------------------------------------------------
+inline uChar FTerm::getAttributeMode()
+{
+  // Gets the attribute mode value from the vga attribute controller
+  uChar attrib_mode = 0x10;
+  return readAttributeController(attrib_mode);
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::setAttributeMode(uChar data)
+{
+  // Sets the attribute mode value from the vga attribute controller
+  uChar attrib_mode = 0x10;
+  writeAttributeController (attrib_mode, data);
+}
+
+//----------------------------------------------------------------------
+int FTerm::setBlinkAsIntensity (bool on)
+{
+  // Uses blink-bit as background intensity.
+  // That permits 16 colors for background
+
+  if ( getuid() != 0 ) // Direct hardware access requires root privileges
+    return -2;
+
+  if ( fd_tty < 0 )
+    return -1;
+
+  // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
+  if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
+    return -1;  // error on KDENABIO
+
+  if ( on )
+    setAttributeMode (getAttributeMode() & 0xF7);  // clear bit 3
+  else
+    setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
+
+  // Disable access to VGA I/O ports
+  if ( ioctl(fd_tty, KDDISABIO, 0) < 0 )
+    return -1;  // error on KDDISABIO
+
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -183,6 +250,7 @@ int FTerm::getFramebuffer_bpp ()
       ::close(fd);
     }
   }
+
   return -1;
 }
 
@@ -313,7 +381,7 @@ int FTerm::getScreenFont()
     return -1;
 
   // initialize unused padding bytes in struct
-  memset(&font, 0, sizeof(console_font_op));
+  std::memset (&font, 0, sizeof(console_font_op));
 
   font.op = KD_FONT_OP_GET;
   font.flags = 0;
@@ -350,7 +418,7 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
     return -1;
 
   // initialize unused padding bytes in struct
-  memset(&font, 0x00, sizeof(console_font_op));
+  std::memset (&font, 0x00, sizeof(console_font_op));
 
   font.op = KD_FONT_OP_SET;
   font.flags = 0;
@@ -445,6 +513,7 @@ int FTerm::getUnicodeMap()
     else
       return -1;
   }
+
   return 0;
 }
 
@@ -481,34 +550,6 @@ int FTerm::setUnicodeMap (struct unimapdesc* unimap)
     return 0;
   else
     return -1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::setBlinkAsIntensity (bool on)
-{
-  // Uses blink-bit as background intensity.
-  // That permits 16 colors for background
-
-  if ( getuid() != 0 ) // Direct hardware access requires root privileges
-    return -2;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
-  if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
-    return -1;  // error on KDENABIO
-
-  if ( on )
-    outb_Attribute_Controller (0x10, inb_Attribute_Controller(0x10) & 0xF7);
-  else
-    outb_Attribute_Controller (0x10, inb_Attribute_Controller(0x10) | 0x08);
-
-  // Disable access to VGA I/O ports
-  if ( ioctl(fd_tty, KDDISABIO, 0) < 0 )
-    return -1;  // error on KDDISABIO
-
-  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -693,7 +734,7 @@ FTerm::modifier_key& FTerm::getModifierKey()
 {
   char subcode = 6;
   // fill bit field with 0
-  memset (&mod_key, 0x00, sizeof(mod_key));
+  std::memset (&mod_key, 0x00, sizeof(mod_key));
 
   // TIOCLINUX, subcode=6
   if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
@@ -2827,7 +2868,7 @@ void FTerm::resetXTermHighlightBackground()
 //----------------------------------------------------------------------
 void FTerm::saveColorMap()
 {
- // ioctl (0, GIO_CMAP, &map);
+ // ioctl (0, GIO_CMAP, &color_map);
 }
 
 //----------------------------------------------------------------------
@@ -2855,11 +2896,11 @@ void FTerm::resetColorMap()
     };
     for (int x=0; x<16; x++)
     {
-      map.d[x].red = CurrentColors[x].red;
-      map.d[x].green = CurrentColors[x].green;
-      map.d[x].blue = CurrentColors[x].blue;
+      color_map.d[x].red = CurrentColors[x].red;
+      color_map.d[x].green = CurrentColors[x].green;
+      color_map.d[x].blue = CurrentColors[x].blue;
     }
-    ioctl (0, PIO_CMAP, &map);
+    ioctl (0, PIO_CMAP, &color_map);
   }*/
 
   std::fflush(stdout);
@@ -2957,31 +2998,31 @@ void FTerm::setEncoding (std::string enc)
   // available encodings: "UTF8", "VT100", "PC" and "ASCII"
   it = encoding_set->find(enc);
 
-  if ( it != encoding_set->end() )  // found
+  if ( it == encoding_set->end() )  // not found
+    return;
+
+  Encoding = it->second;
+
+  assert (  Encoding == fc::UTF8
+         || Encoding == fc::VT100
+         || Encoding == fc::PC
+         || Encoding == fc::ASCII );
+
+  // set the new Fputchar function pointer
+  switch ( int(Encoding) )
   {
-    Encoding = it->second;
+    case fc::UTF8:
+      Fputchar = &FTerm::putchar_UTF8;
+      break;
 
-    assert (  Encoding == fc::UTF8
-           || Encoding == fc::VT100
-           || Encoding == fc::PC
-           || Encoding == fc::ASCII );
-
-    // set the new Fputchar function pointer
-    switch ( int(Encoding) )
-    {
-      case fc::UTF8:
+    case fc::VT100:
+    case fc::PC:
+      if ( xterm_terminal && utf8_console )
         Fputchar = &FTerm::putchar_UTF8;
-        break;
-
-      case fc::VT100:
-      case fc::PC:
-        if ( xterm_terminal && utf8_console )
-          Fputchar = &FTerm::putchar_UTF8;
-        // fall through
-      case fc::ASCII:
-      default:
-        Fputchar = &FTerm::putchar_ASCII;
-    }
+      // fall through
+    case fc::ASCII:
+    default:
+      Fputchar = &FTerm::putchar_ASCII;
   }
 }
 

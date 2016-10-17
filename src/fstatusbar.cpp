@@ -92,20 +92,20 @@ void FStatusKey::processActivate()
 //----------------------------------------------------------------------
 void FStatusKey::onAccel (FAccelEvent* ev)
 {
-  if ( ! isActivated() )
-  {
-    setActive();
+  if ( isActivated() )
+    return;
 
-    if ( statusbar() )
-      statusbar()->redraw();
+  setActive();
 
-    ev->accept();
-    // unset after get back from callback
-    unsetActive();
+  if ( statusbar() )
+    statusbar()->redraw();
 
-    if ( statusbar() )
-      statusbar()->redraw();
-  }
+  ev->accept();
+  // unset after get back from callback
+  unsetActive();
+
+  if ( statusbar() )
+    statusbar()->redraw();
 }
 
 //----------------------------------------------------------------------

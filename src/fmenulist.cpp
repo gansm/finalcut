@@ -18,16 +18,16 @@ FMenuList::FMenuList()
 FMenuList::~FMenuList()  // destructor
 {
   // delete all items
-  if ( ! item_list.empty() )
-  {
-    std::vector<FMenuItem*>::iterator iter;
-    iter = item_list.begin();
+  if ( item_list.empty() )
+    return;
 
-    while ( iter != item_list.end() )
-    {
-      (*iter)->setSuperMenu(0);
-      iter = item_list.erase(iter);
-    }
+  std::vector<FMenuItem*>::iterator iter;
+  iter = item_list.begin();
+
+  while ( iter != item_list.end() )
+  {
+    (*iter)->setSuperMenu(0);
+    iter = item_list.erase(iter);
   }
 }
 

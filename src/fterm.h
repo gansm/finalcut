@@ -75,13 +75,6 @@
 #define OSC    ESC "]"    // Operating system command (7-bit)
 #define SECDA  ESC "[>c"  // Secondary Device Attributes
 
-// VGA I/O-ports
-#define VideoIOBase ( (inb(0x3CC) & 0x01) ? 0x3D0 : 0x3B0 )
-#define AttrC_Index  0x3C0  // Attribute controller index
-#define AttrC_DataW  0x3C0  // Attribute controller dataW
-#define AttrC_DataR  0x3C1  // Attribute controller dataR
-#define AttrC_DataSwitch (VideoIOBase+0x0A) // Attribute controller data switch
-
 // parseKeyString return value
 #define NEED_MORE_DATA  -1
 
@@ -164,7 +157,7 @@ class FTerm
    struct
    {
      dacreg d[16];
-   } map;
+   } color_map;
 
  protected:
    static int          stdin_no;
@@ -190,8 +183,12 @@ class FTerm
    // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
-   static void          outb_Attribute_Controller (int, int);
-   static int           inb_Attribute_Controller (int);
+   static uInt16        getInputStatusRegisterOne();
+   static uChar         readAttributeController (uChar);
+   static void          writeAttributeController (uChar, uChar);
+   static uChar         getAttributeMode();
+   static void          setAttributeMode (uChar);
+   static int           setBlinkAsIntensity (bool);
    static int           getFramebuffer_bpp();
    static int           openConsole();
    static int           closeConsole();
@@ -201,7 +198,6 @@ class FTerm
    static int           setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int           setUnicodeMap (struct unimapdesc*);
    static int           getUnicodeMap ();
-   static int           setBlinkAsIntensity (bool);
    static void          init_console();
    static uInt          getBaudRate (const struct termios*);
    static char*         init_256colorTerminal();

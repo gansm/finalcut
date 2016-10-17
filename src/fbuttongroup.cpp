@@ -418,19 +418,19 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getFirstButton()
 {
-  if ( ! buttonlist.empty() )
+  if ( buttonlist.empty() )
+    return 0;
+
+  FButtonGroup::FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
   {
-    FButtonGroup::FButtonList::const_iterator iter, end;
-    iter = buttonlist.begin();
-    end = buttonlist.end();
+    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
+      return (*iter);
 
-    while ( iter != end )
-    {
-      if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-        return (*iter);
-
-      ++iter;
-    }
+    ++iter;
   }
 
   return 0;
@@ -439,21 +439,21 @@ FToggleButton* FButtonGroup::getFirstButton()
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getLastButton()
 {
-  if ( ! buttonlist.empty() )
+  if ( buttonlist.empty() )
+    return 0;
+
+  FButtonGroup::FButtonList::const_iterator iter, begin;
+  begin = buttonlist.begin();
+  iter = buttonlist.end();
+
+  do
   {
-    FButtonGroup::FButtonList::const_iterator iter, begin;
-    begin = buttonlist.begin();
-    iter = buttonlist.end();
+    --iter;
 
-    do
-    {
-      --iter;
-
-      if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-        return (*iter);
-    }
-    while ( iter != begin );
+    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
+      return (*iter);
   }
+  while ( iter != begin );
 
   return 0;
 }
@@ -461,19 +461,19 @@ FToggleButton* FButtonGroup::getLastButton()
 //----------------------------------------------------------------------
 bool FButtonGroup::hasFocusedButton()
 {
-  if ( ! buttonlist.empty() )
+  if ( buttonlist.empty() )
+    return false;
+
+  FButtonGroup::FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
   {
-    FButtonGroup::FButtonList::const_iterator iter, end;
-    iter = buttonlist.begin();
-    end = buttonlist.end();
+    if ( (*iter)->hasFocus() )
+      return true;
 
-    while ( iter != end )
-    {
-      if ( (*iter)->hasFocus() )
-        return true;
-
-      ++iter;
-    }
+    ++iter;
   }
 
   return false;
@@ -482,19 +482,19 @@ bool FButtonGroup::hasFocusedButton()
 //----------------------------------------------------------------------
 bool FButtonGroup::hasCheckedButton()
 {
-  if ( ! buttonlist.empty() )
+  if ( buttonlist.empty() )
+    return false;
+
+  FButtonGroup::FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
   {
-    FButtonGroup::FButtonList::const_iterator iter, end;
-    iter = buttonlist.begin();
-    end = buttonlist.end();
+    if ( (*iter)->isChecked() )
+      return true;
 
-    while ( iter != end )
-    {
-      if ( (*iter)->isChecked() )
-        return true;
-
-      ++iter;
-    }
+    ++iter;
   }
 
   return false;

@@ -433,27 +433,27 @@ void FMenuItem::delAccelerator (FWidget* obj)
 //----------------------------------------------------------------------
 void FMenuItem::onKeyPress (FKeyEvent* ev)
 {
-  if ( super_menu )
+  if ( ! super_menu )
+    return;
+
+  if ( isMenu(super_menu) )
   {
-    if ( isMenu(super_menu) )
+    FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+
+    if ( smenu )
+      smenu->onKeyPress(ev);
+  }
+
+  if ( isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+    if ( mbar )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
+      if ( mbar->hotkeyMenu(ev) )
+        return;
 
-      if ( smenu )
-        smenu->onKeyPress(ev);
-    }
-
-    if ( isMenuBar(super_menu) )
-    {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        if ( mbar->hotkeyMenu(ev) )
-          return;
-
-        mbar->onKeyPress(ev);
-      }
+      mbar->onKeyPress(ev);
     }
   }
 }
@@ -461,48 +461,48 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 {
-  if ( super_menu )
+  if ( ! super_menu )
+    return;
+
+  const FPoint& t = ev->getTermPos();
+  int b = ev->getButton();
+
+  if ( isMenu(super_menu) )
   {
-    const FPoint& t = ev->getTermPos();
-    int b = ev->getButton();
+    FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
 
-    if ( isMenu(super_menu) )
+    if ( smenu )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
-
-      if ( smenu )
-      {
-        const FPoint& p2 = smenu->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-        smenu->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = smenu->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+      smenu->onMouseDoubleClick(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isMenuBar(super_menu) )
+  if ( isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+    if ( mbar )
     {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        const FPoint& p2 = mbar->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-        mbar->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = mbar->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+      mbar->onMouseDoubleClick(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isWindowsMenu(super_menu) )
+  if ( isWindowsMenu(super_menu) )
+  {
+    FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
+    if ( dgl )
     {
-      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
-
-      if ( dgl )
-      {
-        const FPoint& p2 = dgl->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-        dgl->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = dgl->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+      dgl->onMouseDoubleClick(_ev);
+      delete _ev;
     }
   }
 }
@@ -510,48 +510,48 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onMouseDown (FMouseEvent* ev)
 {
-  if ( super_menu )
+  if ( ! super_menu )
+    return;
+
+  const FPoint& t = ev->getTermPos();
+  int b = ev->getButton();
+
+  if ( isMenu(super_menu) )
   {
-    const FPoint& t = ev->getTermPos();
-    int b = ev->getButton();
+    FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
 
-    if ( isMenu(super_menu) )
+    if ( smenu )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
-
-      if ( smenu )
-      {
-        const FPoint& p2 = smenu->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-        smenu->onMouseDown(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = smenu->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+      smenu->onMouseDown(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isMenuBar(super_menu) )
+  if ( isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+    if ( mbar )
     {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        const FPoint& p2 = mbar->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-        mbar->onMouseDown(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = mbar->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+      mbar->onMouseDown(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isWindowsMenu(super_menu) )
+  if ( isWindowsMenu(super_menu) )
+  {
+    FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
+    if ( dgl )
     {
-      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
-
-      if ( dgl )
-      {
-        const FPoint& p2 = dgl->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-        dgl->onMouseDown(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = dgl->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+      dgl->onMouseDown(_ev);
+      delete _ev;
     }
   }
 }
@@ -559,48 +559,48 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onMouseUp (FMouseEvent* ev)
 {
-  if ( super_menu )
+  if ( ! super_menu )
+    return;
+
+  const FPoint& t = ev->getTermPos();
+  int b = ev->getButton();
+
+  if ( isMenu(super_menu) )
   {
-    const FPoint& t = ev->getTermPos();
-    int b = ev->getButton();
+    FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
 
-    if ( isMenu(super_menu) )
+    if ( smenu )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
-
-      if ( smenu )
-      {
-        const FPoint& p2 = smenu->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-        smenu->onMouseUp(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = smenu->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+      smenu->onMouseUp(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isMenuBar(super_menu) )
+  if ( isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+    if ( mbar )
     {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        const FPoint& p2 = mbar->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-        mbar->onMouseUp(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = mbar->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+      mbar->onMouseUp(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isWindowsMenu(super_menu) )
+  if ( isWindowsMenu(super_menu) )
+  {
+    FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
+    if ( dgl )
     {
-      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
-
-      if ( dgl )
-      {
-        const FPoint& p2 = dgl->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-        dgl->onMouseUp(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = dgl->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+      dgl->onMouseUp(_ev);
+      delete _ev;
     }
   }
 }
@@ -608,48 +608,48 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onMouseMove (FMouseEvent* ev)
 {
-  if ( super_menu )
+  if ( ! super_menu )
+    return;
+
+  const FPoint& t = ev->getTermPos();
+  int b = ev->getButton();
+
+  if ( isMenu(super_menu) )
   {
-    const FPoint& t = ev->getTermPos();
-    int b = ev->getButton();
+    FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
 
-    if ( isMenu(super_menu) )
+    if ( smenu )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(super_menu);
-
-      if ( smenu )
-      {
-        const FPoint& p2 = smenu->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-        smenu->onMouseMove(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = smenu->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+      smenu->onMouseMove(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isMenuBar(super_menu) )
+  if ( isMenuBar(super_menu) )
+  {
+    FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+    if ( mbar )
     {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        const FPoint& p2 = mbar->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-        mbar->onMouseMove(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = mbar->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+      mbar->onMouseMove(_ev);
+      delete _ev;
     }
+  }
 
-    if ( isWindowsMenu(super_menu) )
+  if ( isWindowsMenu(super_menu) )
+  {
+    FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
+
+    if ( dgl )
     {
-      FDialog* dgl = dynamic_cast<FDialog*>(super_menu);
-
-      if ( dgl )
-      {
-        const FPoint& p2 = dgl->termToWidgetPos(t);
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-        dgl->onMouseMove(_ev);
-        delete _ev;
-      }
+      const FPoint& p2 = dgl->termToWidgetPos(t);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+      dgl->onMouseMove(_ev);
+      delete _ev;
     }
   }
 }
@@ -657,59 +657,60 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenuItem::onAccel (FAccelEvent* ev)
 {
-  if ( isEnabled() && ! isSelected() )
+  if ( ! isEnabled() || isSelected() )
+    return;
+
+  if ( ! super_menu || ! isMenuBar(super_menu) )
   {
-    if ( super_menu && isMenuBar(super_menu) )
-    {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
-
-      if ( mbar )
-      {
-        if ( menu )
-        {
-          FWidget* focused_widget;
-
-          if ( mbar->getSelectedItem() )
-            mbar->getSelectedItem()->unsetSelected();
-
-          setSelected();
-          mbar->selected_item = this;
-          openMenu();
-
-          focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-          FFocusEvent out (fc::FocusOut_Event);
-          FApplication::queueEvent(focused_widget, &out);
-          menu->unselectItem();
-          menu->selectFirstItem();
-
-          if ( menu->getSelectedItem() )
-            menu->getSelectedItem()->setFocus();
-
-          if ( focused_widget )
-            focused_widget->redraw();
-
-          menu->redraw();
-
-          if ( statusBar() )
-            statusBar()->drawMessage();
-
-          mbar->redraw();
-          mbar->drop_down = true;
-        }
-        else
-        {
-          unsetSelected();
-          mbar->selected_item = 0;
-          mbar->redraw();
-          processClicked();
-          mbar->drop_down = false;
-        }
-        ev->accept();
-      }
-    }
-    else
-      processClicked();
+    processClicked();
+    return;
   }
+
+  FMenuBar* mbar = dynamic_cast<FMenuBar*>(super_menu);
+
+  if ( ! mbar )
+    return;
+
+  if ( menu )
+  {
+    FWidget* focused_widget;
+
+    if ( mbar->getSelectedItem() )
+      mbar->getSelectedItem()->unsetSelected();
+
+    setSelected();
+    mbar->selected_item = this;
+    openMenu();
+
+    focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    menu->unselectItem();
+    menu->selectFirstItem();
+
+    if ( menu->getSelectedItem() )
+      menu->getSelectedItem()->setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    menu->redraw();
+
+    if ( statusBar() )
+      statusBar()->drawMessage();
+
+    mbar->redraw();
+    mbar->drop_down = true;
+  }
+  else
+  {
+    unsetSelected();
+    mbar->selected_item = 0;
+    mbar->redraw();
+    processClicked();
+    mbar->drop_down = false;
+  }
+  ev->accept();
 }
 
 //----------------------------------------------------------------------

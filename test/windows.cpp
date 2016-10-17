@@ -339,16 +339,16 @@ Window::~Window()
 //----------------------------------------------------------------------
 void Window::activateWindow (FDialog* win)
 {
-  if ( win && ! win->isWindowHidden() && ! win->isWindowActive() )
-  {
-    bool has_raised = FWindow::raiseWindow(win);
-    win->activateDialog();
+  if ( ! win || win->isWindowHidden() || win->isWindowActive() )
+    return;
 
-    if ( has_raised )
-      win->redraw();
+  bool has_raised = FWindow::raiseWindow(win);
+  win->activateDialog();
 
-    updateTerminal();
-  }
+  if ( has_raised )
+    win->redraw();
+
+  updateTerminal();
 }
 
 //----------------------------------------------------------------------

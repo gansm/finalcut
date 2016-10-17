@@ -731,35 +731,35 @@ void FButton::onTimer (FTimerEvent* ev)
 //----------------------------------------------------------------------
 void FButton::onAccel (FAccelEvent* ev)
 {
-  if ( isEnabled() )
+  if ( ! isEnabled() )
+    return;
+
+  if ( ! hasFocus() )
   {
-    if ( ! hasFocus() )
-    {
-      FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
-      setFocus();
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
 
-      if ( focused_widget )
-        focused_widget->redraw();
-
-      if ( click_animation )
-        setDown();
-      else
-        redraw();
-
-      if ( statusBar() )
-        statusBar()->drawMessage();
-    }
-    else if ( click_animation )
-      setDown();
+    if ( focused_widget )
+      focused_widget->redraw();
 
     if ( click_animation )
-      addTimer(click_time);
+      setDown();
+    else
+      redraw();
 
-    processClick();
-    ev->accept();
+    if ( statusBar() )
+      statusBar()->drawMessage();
   }
+  else if ( click_animation )
+    setDown();
+
+  if ( click_animation )
+    addTimer(click_time);
+
+  processClick();
+  ev->accept();
 }
 
 //----------------------------------------------------------------------

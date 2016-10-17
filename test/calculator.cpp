@@ -48,25 +48,25 @@ Button::Button (FWidget* parent)
 //----------------------------------------------------------------------
 void Button::setChecked (bool on)
 {
-  if ( checked != on )
+  if ( checked == on )
+    return;
+
+  checked = on;
+
+  if ( checked )
   {
-    checked = on;
-
-    if ( checked )
-    {
-      setBackgroundColor(fc::Cyan);
-      setFocusForegroundColor(fc::White);
-      setFocusBackgroundColor(fc::Cyan);
-    }
-    else
-    {
-      setBackgroundColor(wc.button_active_bg);
-      setFocusForegroundColor(wc.button_active_focus_fg);
-      setFocusBackgroundColor(wc.button_active_focus_bg);
-    }
-
-    redraw();
+    setBackgroundColor(fc::Cyan);
+    setFocusForegroundColor(fc::White);
+    setFocusBackgroundColor(fc::Cyan);
   }
+  else
+  {
+    setBackgroundColor(wc.button_active_bg);
+    setFocusForegroundColor(wc.button_active_focus_fg);
+    setFocusBackgroundColor(wc.button_active_focus_bg);
+  }
+
+  redraw();
 }
 
 //----------------------------------------------------------------------

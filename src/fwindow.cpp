@@ -58,21 +58,21 @@ FWindow::~FWindow()  // destructor
 void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
 {
   // delete the window object obj from the always-on-top list
-  if ( always_on_top_list && ! always_on_top_list->empty() )
+  if ( ! always_on_top_list || always_on_top_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = always_on_top_list->begin();
+
+  while ( iter != always_on_top_list->end() )
   {
-    widgetList::iterator iter;
-    iter = always_on_top_list->begin();
-
-    while ( iter != always_on_top_list->end() )
+    if ( *iter == obj )
     {
-      if ( *iter == obj )
-      {
-        always_on_top_list->erase (iter);
-        return;
-      }
-
-      ++iter;
+      always_on_top_list->erase (iter);
+      return;
     }
+
+    ++iter;
   }
 }
 
@@ -80,20 +80,20 @@ void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
 void FWindow::processAlwaysOnTop()
 {
   // Raise all always-on-top windows
-  if ( always_on_top_list && ! always_on_top_list->empty() )
+  if ( ! always_on_top_list || always_on_top_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = always_on_top_list->begin();
+
+  while ( iter != always_on_top_list->end() )
   {
-    widgetList::iterator iter;
-    iter = always_on_top_list->begin();
+    delWindow (*iter);
 
-    while ( iter != always_on_top_list->end() )
-    {
-      delWindow (*iter);
+    if ( window_list )
+      window_list->push_back(*iter);
 
-      if ( window_list )
-        window_list->push_back(*iter);
-
-      ++iter;
-    }
+    ++iter;
   }
 }
 
@@ -319,22 +319,22 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 
   FWidget::setGeometry (x, y, w, h, adjust);
 
-  if ( vwin )
-  {
-    if ( getWidth() != old_width || getHeight() != old_height )
-    {
-      FRect geometry = getTermGeometry();
-      geometry.move(-1,-1);
-      resizeArea (geometry, getShadow(), vwin);
-    }
-    else
-    {
-      if ( getX() != old_x )
-        vwin->x_offset = getTermX() - 1;
+  if ( ! vwin )
+    return;
 
-      if ( getY() != old_y )
-        vwin->y_offset = getTermY() - 1;
-    }
+  if ( getWidth() != old_width || getHeight() != old_height )
+  {
+    FRect geometry = getTermGeometry();
+    geometry.move(-1,-1);
+    resizeArea (geometry, getShadow(), vwin);
+  }
+  else
+  {
+    if ( getX() != old_x )
+      vwin->x_offset = getTermX() - 1;
+
+    if ( getY() != old_y )
+      vwin->y_offset = getTermY() - 1;
   }
 }
 
@@ -354,12 +354,6 @@ void FWindow::move (int dx, int dy)
 FWindow* FWindow::getWindowWidgetAt (int x, int y)
 {
   // returns the window object to the corresponding coordinates
-  if ( statusBar() && statusBar()->getTermGeometry().contains(x,y) )
-    return statusBar();
-
-  if ( menuBar() && menuBar()->getTermGeometry().contains(x,y) )
-    return menuBar();
-
   if ( window_list && ! window_list->empty() )
   {
     widgetList::const_iterator iter, begin;
@@ -761,7 +755,7 @@ bool FWindow::activatePrevWindow()
     if ( w->isWindowActive() )
       return true;
 
-    if ( w && ! w->isWindowHidden() )
+    if ( ! w->isWindowHidden() )
     {
       setActiveWindow(w);
       return true;

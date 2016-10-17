@@ -95,18 +95,6 @@ void FObject::delChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
-bool FObject::event (FEvent* ev)
-{
-  if ( ev->type() == fc::Timer_Event )
-  {
-    onTimer ( static_cast<FTimerEvent*>(ev) );
-    return true;
-  }
-
-  return false;
-}
-
-//----------------------------------------------------------------------
 void FObject::getCurrentTime (timeval &time)
 {
   gettimeofday(&time, 0);
@@ -255,6 +243,18 @@ bool FObject::delAllTimer()
 }
 
 // protected methods of FObject
+//----------------------------------------------------------------------
+bool FObject::event (FEvent* ev)
+{
+  if ( ev->type() == fc::Timer_Event )
+  {
+    onTimer ( static_cast<FTimerEvent*>(ev) );
+    return true;
+  }
+
+  return false;
+}
+
 //----------------------------------------------------------------------
 void FObject::onTimer (FTimerEvent*)
 { }
