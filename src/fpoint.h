@@ -20,29 +20,16 @@
 
 class FPoint
 {
- private:
-   short xpos;
-   short ypos;
-
  public:
    // Constructors
    FPoint ();
    FPoint (int, int);
+
    // Destructor
    virtual ~FPoint();
 
-   virtual const char* getClassName();
-
-   bool    isNull() const;
-   int     getX() const;
-   int     getY() const;
-   short&  x_ref();
-   short&  y_ref();
-   void    setX (int);
-   void    setY (int);
-   void    setPoint (int, int);
-
-   FPoint& operator = (const FPoint&);
+   // Overloaded operators
+   FPoint& operator =  (const FPoint&);
    FPoint& operator += (const FPoint&);
    FPoint& operator -= (const FPoint&);
 
@@ -51,6 +38,26 @@ class FPoint
    friend inline FPoint operator +  (const FPoint&, const FPoint&);
    friend inline FPoint operator -  (const FPoint&, const FPoint&);
    friend inline FPoint operator -  (const FPoint&);
+
+   // Accessors
+   virtual const char* getClassName();
+   int     getX() const;
+   int     getY() const;
+   void    setX (int);
+   void    setY (int);
+   void    setPoint (int, int);
+
+   // Inquiry
+   bool    isNull() const;
+
+   // Point references
+   short&  x_ref();
+   short&  y_ref();
+
+ private:
+   // Data Members
+   short xpos;
+   short ypos;
 };
 #pragma pack(pop)
 
@@ -67,26 +74,6 @@ inline FPoint::FPoint (int x, int y)
   : xpos(short(x))
   , ypos(short(y))
 { }
-
-//----------------------------------------------------------------------
-inline const char* FPoint::getClassName()
-{ return "FPoint"; }
-
-//----------------------------------------------------------------------
-inline int FPoint::getX() const
-{ return xpos; }
-
-//----------------------------------------------------------------------
-inline int FPoint::getY() const
-{ return ypos; }
-
-//----------------------------------------------------------------------
-inline short& FPoint::x_ref()
-{ return xpos; }
-
-//----------------------------------------------------------------------
-inline short& FPoint::y_ref()
-{ return ypos; }
 
 //----------------------------------------------------------------------
 inline bool operator == (const FPoint& p1, const FPoint& p2)
@@ -107,5 +94,25 @@ inline FPoint operator - (const FPoint& p1, const FPoint& p2)
 //----------------------------------------------------------------------
 inline FPoint operator - (const FPoint& p)
 { return FPoint(-p.xpos, -p.ypos); }
+
+//----------------------------------------------------------------------
+inline const char* FPoint::getClassName()
+{ return "FPoint"; }
+
+//----------------------------------------------------------------------
+inline int FPoint::getX() const
+{ return xpos; }
+
+//----------------------------------------------------------------------
+inline int FPoint::getY() const
+{ return ypos; }
+
+//----------------------------------------------------------------------
+inline short& FPoint::x_ref()
+{ return xpos; }
+
+//----------------------------------------------------------------------
+inline short& FPoint::y_ref()
+{ return ypos; }
 
 #endif  // _FPOINT_H

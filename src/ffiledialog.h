@@ -57,17 +57,6 @@
 #include "fterm.h"
 
 
-#pragma pack(push)
-#pragma pack(1)
-
-struct dir_entry
-{
-  char* name;
-  uChar type;
-};
-#pragma pack(pop)
-
-
 //----------------------------------------------------------------------
 // class FFileDialog
 //----------------------------------------------------------------------
@@ -78,27 +67,67 @@ struct dir_entry
 class FFileDialog : public FDialog
 {
  public:
+   // Enumeration
    enum DialogType
    {
      Open = 0,
      Save = 1
    };
 
- private:
-   DIR* directory_stream;
-   std::vector<dir_entry> dir_entries;
+   // Constructors
+   explicit FFileDialog (FWidget* = 0);
+   FFileDialog (const FFileDialog&);  // copy constructor
+   FFileDialog ( const FString&
+               , const FString&
+               , DialogType = FFileDialog::Open
+               , FWidget* = 0 );
+   // Destructor
+  ~FFileDialog();
 
-   FString       directory;
-   FString       filter_pattern;
-   FListBox*     filebrowser;
-   FLineEdit*    filename;
-   FCheckBox*    hidden;
-   FButton*      cancel;
-   FButton*      open;
-   DialogType    dlg_type;
-   bool          show_hidden;
+   // Assignment operator (=)
+   FFileDialog& operator = (const FFileDialog&);
+
+   // Accessors
+   const char*   getClassName() const;
+   const FString getPath() const;
+   const FString getFilter() const;
+   const FString getSelectedFile() const;
+   bool          getShowHiddenFiles();
+
+   // Mutators
+   void          setPath (const FString&);
+   void          setFilter (const FString&);
+   bool          setShowHiddenFiles(bool);
+   bool          setShowHiddenFiles();
+   bool          unsetShowHiddenFiles();
+
+   // Event handler
+   void          onKeyPress (FKeyEvent*);
+
+   // Methods
+   int           readDir();
+   static FString fileOpenChooser ( FWidget*
+                                  , const FString& = FString()
+                                  , const FString& = FString() );
+   static FString fileSaveChooser ( FWidget*
+                                  , const FString& = FString()
+                                  , const FString& = FString() );
+
+ protected:
+   // Method
+   void adjustSize();
 
  private:
+   // Typedef
+   struct dir_entry
+   {
+     char* name;
+     uChar type;
+   };
+
+   typedef std::vector<dir_entry> dirEntries;
+
+   // Method
    void          init();
    static char*  getHomeDir();
    inline bool   pattern_match (const char*, const char*);
@@ -115,45 +144,24 @@ class FFileDialog : public FDialog
    void          cb_processOpen (FWidget*, void*);
    void          cb_processShowHidden (FWidget*, void*);
 
- protected:
-   void adjustSize();
+   // Data Members
+   DIR*          directory_stream;
+   dirEntries    dir_entries;
+   FString       directory;
+   FString       filter_pattern;
+   FListBox*     filebrowser;
+   FLineEdit*    filename;
+   FCheckBox*    hidden;
+   FButton*      cancel;
+   FButton*      open;
+   DialogType    dlg_type;
+   bool          show_hidden;
 
- public:
-   // Constructors
-   explicit FFileDialog (FWidget* = 0);
-   FFileDialog (const FFileDialog&);  // copy constructor
-   FFileDialog ( const FString&
-               , const FString&
-               , DialogType = FFileDialog::Open
-               , FWidget* = 0 );
-   // Destructor
-  ~FFileDialog();
-
-   // Assignment operator (=)
-   FFileDialog& operator = (const FFileDialog&);
-
-   const char*   getClassName() const;
-
-   // Event handler
-   void          onKeyPress (FKeyEvent*);
-
-   const FString getPath() const;
-   void          setPath (const FString&);
-   const FString getFilter() const;
-   void          setFilter (const FString&);
-   const FString getSelectedFile() const;
-   int           readDir();
-   bool          setShowHiddenFiles(bool);
-   bool          setShowHiddenFiles();
-   bool          unsetShowHiddenFiles();
-   bool          getShowHiddenFiles();
-
-   static FString fileOpenChooser ( FWidget*
-                                  , const FString& = FString()
-                                  , const FString& = FString() );
-   static FString fileSaveChooser ( FWidget*
-                                  , const FString& = FString()
-                                  , const FString& = FString() );
+   // Friend functions
+   friend bool sortByName ( const FFileDialog::dir_entry&
+                          , const FFileDialog::dir_entry& );
+   friend bool sortDirFirst ( const FFileDialog::dir_entry&
+                            , const FFileDialog::dir_entry& );
 };
 #pragma pack(pop)
 

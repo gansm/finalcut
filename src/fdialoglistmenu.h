@@ -52,24 +52,28 @@
 
 class FDialogListMenu : public FMenu
 {
- private:
-   // Disable copy constructor
-   FDialogListMenu (const FDialogListMenu&);
-   // Disable assignment operator (=)
-   FDialogListMenu& operator = (const FDialogListMenu&);
-
-   void init();
-
  public:
    // Constructors
    explicit FDialogListMenu (FWidget* = 0);
    FDialogListMenu (FString&, FWidget* = 0);
    FDialogListMenu (const std::string&, FWidget* = 0);
    FDialogListMenu (const char*, FWidget* = 0);
+
    // Destructor
    virtual ~FDialogListMenu();
 
+   // Accessors
    virtual const char* getClassName() const;
+
+ private:
+   // Disable copy constructor
+   FDialogListMenu (const FDialogListMenu&);
+
+   // Disable assignment operator (=)
+   FDialogListMenu& operator = (const FDialogListMenu&);
+
+   // Method
+   void init();
 };
 #pragma pack(pop)
 

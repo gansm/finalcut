@@ -24,23 +24,25 @@
 
 class FRect
 {
- private:
-   short X1;
-   short Y1;
-   short X2;
-   short Y2;
-
  public:
    // Constructors
    FRect ();
    FRect (int, int, int, int);
    FRect (const FPoint&, const FPoint&);
+
    // Destructor
    virtual ~FRect();
 
-   virtual const char* getClassName();
+   // Overloaded operators
+   FRect& operator = (const FRect&);
 
-   bool    isNull() const;
+   friend FRect operator +  (const FRect&, const FPoint&);
+   friend FRect operator -  (const FRect&, const FPoint&);
+   friend bool  operator == (const FRect&, const FRect&);
+   friend bool  operator != (const FRect&, const FRect&);
+
+   // Accessors
+   virtual const char* getClassName();
    int     getX1() const;
    int     getY1() const;
    int     getX2() const;
@@ -55,10 +57,7 @@ class FRect
    int     getWidth() const;
    int     getHeight() const;
 
-   short&  x1_ref();
-   short&  y1_ref();
-   short&  x2_ref();
-   short&  y2_ref();
+   // Mutators
    void    setX1 (int);
    void    setY1 (int);
    void    setX2 (int);
@@ -75,6 +74,16 @@ class FRect
    void    setCoordinates (const FPoint&, const FPoint&);
    void    setCoordinates (int, int, int, int);
 
+   // Inquiry
+   bool    isNull() const;
+
+   // Coordinate references
+   short&  x1_ref();
+   short&  y1_ref();
+   short&  x2_ref();
+   short&  y2_ref();
+
+   // Methods
    void    move (int, int);
    void    move (const FPoint&);
    bool    contains (int, int) const;
@@ -83,12 +92,12 @@ class FRect
    bool    overlap  (const FRect&) const;
    FRect   intersect (const FRect&) const;
 
-   FRect& operator = (const FRect&);
-
-   friend FRect operator + (const FRect&, const FPoint&);
-   friend FRect operator - (const FRect&, const FPoint&);
-   friend bool operator == (const FRect&, const FRect&);
-   friend bool operator != (const FRect&, const FRect&);
+ private:
+   // Data Members
+   short X1;
+   short Y1;
+   short X2;
+   short Y2;
 };
 #pragma pack(pop)
 

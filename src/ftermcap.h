@@ -15,13 +15,13 @@
 //----------------------------------------------------------------------
 // class FTermcap
 //----------------------------------------------------------------------
-
 #pragma pack(push)
 #pragma pack(1)
 
 class FTermcap
 {
  public:
+   // Typedef
    typedef struct
    {
      char* string;
@@ -29,6 +29,27 @@ class FTermcap
    }
    tcap_map;
 
+   // Constructors
+   FTermcap()
+   { }
+
+   // Destructor
+  ~FTermcap()
+   { }
+
+   // Accessor
+   tcap_map* getTermcapMap()
+   {
+     return tcap;
+   }
+
+   // Mutator
+   void setTermcapMap (tcap_map* t)
+   {
+     tcap = t;
+   }
+
+   // Data Members
    static bool background_color_erase;
    static bool automatic_left_margin;
    static bool automatic_right_margin;
@@ -40,24 +61,8 @@ class FTermcap
    static uInt attr_without_color;
 
  private:
+   // Data Members
    static tcap_map* tcap;
-
- public:
-   FTermcap()
-   { }
-
-  ~FTermcap()
-   { }
-
-   tcap_map* getTermcapMap()
-   {
-     return tcap;
-   }
-
-   void setTermcapMap (tcap_map* t)
-   {
-     tcap = t;
-   }
 };
 #pragma pack(pop)
 

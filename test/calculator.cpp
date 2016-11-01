@@ -25,17 +25,19 @@ const lDouble PI = 3.141592653589793238L;
 
 class Button : public FButton
 {
- private:
-   bool checked;
-
  public:
    // Constructor
    explicit Button (FWidget* = 0);
 
+   // Method
    void setChecked(bool);
 
    // Event handler
    void onKeyPress (FKeyEvent*);
+
+ private:
+   // Data Member
+   bool checked;
 };
 #pragma pack(pop)
 
@@ -91,7 +93,34 @@ void Button::onKeyPress (FKeyEvent* ev)
 
 class Calc : public FDialog
 {
+ public:
+   // Constructor
+   explicit Calc (FWidget* parent=0);
+
+   // Destructor
+  ~Calc();
+
+   // Event handlers
+   void onKeyPress (FKeyEvent*);
+   void onAccel (FAccelEvent*);
+   void onClose (FCloseEvent*);
+
+   // Callback method
+   void cb_buttonClicked (FWidget*, void*);
+
  private:
+   // Methods
+   void drawDispay();
+   virtual void draw();
+   bool isDataEntryKey(int);
+   bool isOperatorKey(int);
+   void setDisplay (lDouble);
+   void setInfixOperator(char);
+   void clearInfixOperator();
+   void calcInfixOperator();
+   void adjustSize();
+
+   // Data Members
    bool error;
    bool arcus_mode;
    bool hyperbolic_mode;
@@ -151,31 +180,6 @@ class Calc : public FDialog
 
    std::stack<stack_data> bracket_stack;
    std::map<Calc::button, Button*> calculator_buttons;
-
- private:
-   void drawDispay();
-   virtual void draw();
-   bool isDataEntryKey(int);
-   bool isOperatorKey(int);
-   void setDisplay (lDouble);
-   void setInfixOperator(char);
-   void clearInfixOperator();
-   void calcInfixOperator();
-   void adjustSize();
-
- public:
-   // Constructor
-   explicit Calc (FWidget* parent=0);
-   // Destructor
-  ~Calc();
-
-   // Event handlers
-   void onKeyPress (FKeyEvent*);
-   void onAccel (FAccelEvent*);
-   void onClose (FCloseEvent*);
-
-   // Callback method
-   void cb_buttonClicked (FWidget*, void*);
 };
 #pragma pack(pop)
 

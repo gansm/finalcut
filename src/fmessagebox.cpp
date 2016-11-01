@@ -99,9 +99,198 @@ FMessageBox::~FMessageBox()  // destructor
 }
 
 
+// public methods of FMessageBox
+//----------------------------------------------------------------------
+FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
+{
+  if ( &mbox == this )
+  {
+    return *this;
+  }
+  else
+  {
+    for (uInt n=0; n < num_buttons; n++)
+      delete button[n];
+
+    delete button_digit[2];
+    delete button_digit[1];
+    delete button_digit[0];
+
+    if ( mbox.getParentWidget() )
+      mbox.getParentWidget()->addChild (this);
+
+    headline_text   = mbox.headline_text;
+    text            = mbox.text;
+    text_components = mbox.text_components;
+    text_split      = mbox.text_split;
+    max_line_width  = mbox.max_line_width;
+    center_text     = mbox.center_text;
+    emphasis_color  = mbox.emphasis_color;
+    num_buttons     = mbox.num_buttons;
+    text_num_lines  = mbox.text_num_lines;
+
+    setTitlebarText (mbox.getTitlebarText());
+    init ( *mbox.button_digit[0]
+         , *mbox.button_digit[1]
+         , *mbox.button_digit[2] );
+
+    return *this;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setHeadline (const FString& headline)
+{
+  headline_text = headline;
+  setHeight(getHeight() + 2, true);
+
+  for (uInt n=0; n < num_buttons; n++)
+    button[n]->setY(getHeight()-4, false);
+
+  uInt len = headline_text.getLength();
+
+  if ( len > max_line_width )
+    max_line_width = len;
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setHeadline (const std::string& headline)
+{
+  FString headline_txt(headline);
+  setHeadline( headline_txt );
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setHeadline (const char* headline)
+{
+  FString headline_txt(headline);
+  setHeadline( headline_txt );
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setText (const FString& txt)
+{
+  text = txt;
+  calculateDimensions();
+  button[0]->setY(getHeight()-4, false);
+
+  if ( *button_digit[1] != 0 )
+    button[1]->setY(getHeight()-4, false);
+
+  if ( *button_digit[2] != 0 )
+    button[2]->setY(getHeight()-4, false);
+
+  adjustButtons();
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setText (const std::string& txt)
+{
+  FString message_text(txt);
+  setText( message_text );
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::setText (const char* txt)
+{
+  FString message_text(txt);
+  setText( message_text );
+}
+
+//----------------------------------------------------------------------
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , const FString& message
+                      , int button0
+                      , int button1
+                      , int button2 )
+{
+  int reply;
+  FMessageBox* mbox = new FMessageBox ( caption, message
+                                      , button0, button1, button2
+                                      , parent );
+  reply = mbox->exec();
+  delete mbox;
+  return reply;
+}
+
+//----------------------------------------------------------------------
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , int num
+                      , int button0
+                      , int button1
+                      , int button2 )
+{
+  int reply;
+  FMessageBox* mbox = new FMessageBox ( caption
+                                      , FString().setNumber(num)
+                                      , button0, button1, button2
+                                      , parent );
+  reply = mbox->exec();
+  delete mbox;
+  return reply;
+}
+
+//----------------------------------------------------------------------
+int FMessageBox::error ( FWidget* parent
+                       , const FString& message
+                       , int button0
+                       , int button1
+                       , int button2 )
+{
+  int reply;
+  const FString caption = "Error message";
+  FMessageBox* mbox = new FMessageBox ( caption, message
+                                      , button0, button1, button2
+                                      , parent );
+  mbox->beep();
+  mbox->setHeadline("Warning:");
+  mbox->setCenterText();
+  mbox->setForegroundColor(mbox->wc.error_box_fg);
+  mbox->setBackgroundColor(mbox->wc.error_box_bg);
+  mbox->emphasis_color  = mbox->wc.error_box_emphasis_fg;
+  reply = mbox->exec();
+  delete mbox;
+  return reply;
+}
+
+
+// protected methods of FMessageBox
+//----------------------------------------------------------------------
+void FMessageBox::adjustSize()
+{
+  int X, Y, max_width, max_height;
+  FWidget* root_widget = getRootWidget();
+
+  if ( root_widget )
+  {
+    max_width = root_widget->getClientWidth();
+    max_height = root_widget->getClientHeight();
+  }
+  else
+  {
+    max_width = 80;
+    max_height = 24;
+  }
+
+  X = 1 + int((max_width-getWidth())/2);
+  Y = 1 + int((max_height-getHeight())/3);
+  setPos(X, Y, false);
+  FDialog::adjustSize();
+}
+
+//----------------------------------------------------------------------
+void FMessageBox::cb_processClick (FWidget*, void* data_ptr)
+{
+  int* reply = static_cast<int*>(data_ptr);
+  done (*reply);
+}
+
+
 // private methods of FMessageBox
 //----------------------------------------------------------------------
-void FMessageBox::init(int button0, int button1, int button2)
+void FMessageBox::init (int button0, int button1, int button2)
 {
   calculateDimensions();
 
@@ -335,193 +524,4 @@ void FMessageBox::adjustButtons()
       button[n]->setX( btn_x + int(n) * (btn_size + gap) );
     }
   }
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::cb_processClick (FWidget*, void* data_ptr)
-{
-  int* reply = static_cast<int*>(data_ptr);
-  done (*reply);
-}
-
-
-// protected methods of FMessageBox
-//----------------------------------------------------------------------
-void FMessageBox::adjustSize()
-{
-  int X, Y, max_width, max_height;
-  FWidget* root_widget = getRootWidget();
-
-  if ( root_widget )
-  {
-    max_width = root_widget->getClientWidth();
-    max_height = root_widget->getClientHeight();
-  }
-  else
-  {
-    max_width = 80;
-    max_height = 24;
-  }
-
-  X = 1 + int((max_width-getWidth())/2);
-  Y = 1 + int((max_height-getHeight())/3);
-  setPos(X, Y, false);
-  FDialog::adjustSize();
-}
-
-
-// public methods of FMessageBox
-//----------------------------------------------------------------------
-FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
-{
-  if ( &mbox == this )
-  {
-    return *this;
-  }
-  else
-  {
-    for (uInt n=0; n < num_buttons; n++)
-      delete button[n];
-
-    delete button_digit[2];
-    delete button_digit[1];
-    delete button_digit[0];
-
-    if ( mbox.getParentWidget() )
-      mbox.getParentWidget()->addChild (this);
-
-    headline_text   = mbox.headline_text;
-    text            = mbox.text;
-    text_components = mbox.text_components;
-    text_split      = mbox.text_split;
-    max_line_width  = mbox.max_line_width;
-    center_text     = mbox.center_text;
-    emphasis_color  = mbox.emphasis_color;
-    num_buttons     = mbox.num_buttons;
-    text_num_lines  = mbox.text_num_lines;
-
-    setTitlebarText (mbox.getTitlebarText());
-    init ( *mbox.button_digit[0]
-         , *mbox.button_digit[1]
-         , *mbox.button_digit[2] );
-
-    return *this;
-  }
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setHeadline (const FString& headline)
-{
-  headline_text = headline;
-  setHeight(getHeight() + 2, true);
-
-  for (uInt n=0; n < num_buttons; n++)
-    button[n]->setY(getHeight()-4, false);
-
-  uInt len = headline_text.getLength();
-
-  if ( len > max_line_width )
-    max_line_width = len;
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setHeadline (const std::string& headline)
-{
-  FString headline_txt(headline);
-  setHeadline( headline_txt );
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setHeadline (const char* headline)
-{
-  FString headline_txt(headline);
-  setHeadline( headline_txt );
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setText (const FString& txt)
-{
-  text = txt;
-  calculateDimensions();
-  button[0]->setY(getHeight()-4, false);
-
-  if ( *button_digit[1] != 0 )
-    button[1]->setY(getHeight()-4, false);
-
-  if ( *button_digit[2] != 0 )
-    button[2]->setY(getHeight()-4, false);
-
-  adjustButtons();
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setText (const std::string& txt)
-{
-  FString message_text(txt);
-  setText( message_text );
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setText (const char* txt)
-{
-  FString message_text(txt);
-  setText( message_text );
-}
-
-//----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent
-                      , const FString& caption
-                      , const FString& message
-                      , int button0
-                      , int button1
-                      , int button2 )
-{
-  int reply;
-  FMessageBox* mbox = new FMessageBox ( caption, message
-                                      , button0, button1, button2
-                                      , parent );
-  reply = mbox->exec();
-  delete mbox;
-  return reply;
-}
-
-//----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent
-                      , const FString& caption
-                      , int num
-                      , int button0
-                      , int button1
-                      , int button2 )
-{
-  int reply;
-  FMessageBox* mbox = new FMessageBox ( caption
-                                      , FString().setNumber(num)
-                                      , button0, button1, button2
-                                      , parent );
-  reply = mbox->exec();
-  delete mbox;
-  return reply;
-}
-
-//----------------------------------------------------------------------
-int FMessageBox::error ( FWidget* parent
-                       , const FString& message
-                       , int button0
-                       , int button1
-                       , int button2 )
-{
-  int reply;
-  const FString caption = "Error message";
-  FMessageBox* mbox = new FMessageBox ( caption, message
-                                      , button0, button1, button2
-                                      , parent );
-  mbox->beep();
-  mbox->setHeadline("Warning:");
-  mbox->setCenterText();
-  mbox->setForegroundColor(mbox->wc.error_box_fg);
-  mbox->setBackgroundColor(mbox->wc.error_box_bg);
-  mbox->emphasis_color  = mbox->wc.error_box_emphasis_fg;
-  reply = mbox->exec();
-  delete mbox;
-  return reply;
 }

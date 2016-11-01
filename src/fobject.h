@@ -48,8 +48,6 @@ typedef long double    lDouble;
 class FObject
 {
  public:
-   typedef std::list<FObject*> object_list;
-
    struct timer_data
    {
      int       id;
@@ -58,38 +56,41 @@ class FObject
      FObject*  object;
    };
 
+   // Typedef
+   typedef std::list<FObject*> object_list;
    typedef std::vector<timer_data> TimerList;
-   static TimerList* timer_list;
 
- private:
-   FObject*     parent_obj;
-   object_list  children_list;
-   bool         has_parent;
-   static bool  timer_modify_lock;
-
- public:
    // Constructor
    explicit FObject (FObject* = 0);
+
    // Destructor
    virtual ~FObject();
 
+   // Accessors
    virtual const char* getClassName() const;
+   FObject*            getParent() const;
+   object_list         getChildren() const;
+   int                 numOfChildren() const;
 
-   FObject*     getParent() const;
-   bool         hasParent() const;
-   void         removeParent();
-   object_list  getChildren() const;
-   bool         hasChildren() const;
-   void         addChild (FObject*);
-   void         delChild (FObject*);
-   int          numOfChildren() const;
+   // Inquiries
+   bool                hasParent() const;
+   bool                hasChildren() const;
+   bool                isTimerInUpdating() const;
+
+   // Methods
+   void                removeParent();
+   void                addChild (FObject*);
+   void                delChild (FObject*);
+
    // Timer methods
-   static void  getCurrentTime (timeval&);
-   int          addTimer (int);
-   bool         delTimer (int);
-   bool         delOwnTimer();
-   bool         delAllTimer();
-   bool         isTimerInUpdating() const;
+   static void         getCurrentTime (timeval&);
+   int                 addTimer (int);
+   bool                delTimer (int);
+   bool                delOwnTimer();
+   bool                delAllTimer();
+
+   // Data Members
+   static TimerList* timer_list;
 
  protected:
    // Event handler
@@ -99,8 +100,15 @@ class FObject
  private:
    // Disable copy constructor
    FObject (const FObject&);
+
    // Disable assignment operator (=)
    FObject& operator = (const FObject&);
+
+   // Data Members
+   FObject*     parent_obj;
+   object_list  children_list;
+   bool         has_parent;
+   static bool  timer_modify_lock;
 };
 
 #pragma pack(pop)
@@ -114,28 +122,28 @@ inline FObject* FObject::getParent() const
 { return parent_obj; }
 
 //----------------------------------------------------------------------
-inline bool FObject::hasParent() const
-{ return has_parent; }
-
-//----------------------------------------------------------------------
-inline void FObject::removeParent()
-{ parent_obj = 0; }
-
-//----------------------------------------------------------------------
 inline FObject::object_list FObject::getChildren() const
 { return children_list; }
-
-//----------------------------------------------------------------------
-inline bool FObject::hasChildren() const
-{ return bool( ! children_list.empty() ); }
 
 //----------------------------------------------------------------------
 inline int FObject::numOfChildren() const
 { return int(children_list.size()); }
 
 //----------------------------------------------------------------------
+inline bool FObject::hasParent() const
+{ return has_parent; }
+
+//----------------------------------------------------------------------
+inline bool FObject::hasChildren() const
+{ return bool( ! children_list.empty() ); }
+
+//----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
+
+//----------------------------------------------------------------------
+inline void FObject::removeParent()
+{ parent_obj = 0; }
 
 
 //----------------------------------------------------------------------

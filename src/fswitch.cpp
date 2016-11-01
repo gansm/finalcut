@@ -33,6 +33,66 @@ FSwitch::~FSwitch()  // destructor
 { }
 
 
+// public methods of FSwitch
+//----------------------------------------------------------------------
+void FSwitch::setText (FString txt)
+{
+  FToggleButton::setText(txt);
+  switch_offset_pos = int(txt.getLength()) + 1;
+}
+
+//----------------------------------------------------------------------
+void FSwitch::onKeyPress (FKeyEvent* ev)
+{
+  switch ( ev->key() )
+  {
+    case fc::Fkey_home:
+    case fc::Fkey_left:
+      setChecked();
+      ev->accept();
+      break;
+
+    case fc::Fkey_end:
+    case fc::Fkey_right:
+      unsetChecked();
+      ev->accept();
+      break;
+
+    default:
+      break;
+  }
+
+  if ( ev->isAccepted() )
+    draw();
+  else
+    FToggleButton::onKeyPress(ev);
+}
+
+//----------------------------------------------------------------------
+void FSwitch::onMouseDown (FMouseEvent* ev)
+{
+  FToggleButton::onMouseDown(ev);
+
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  button_pressed = true;
+  draw();
+}
+
+//----------------------------------------------------------------------
+void FSwitch::onMouseUp (FMouseEvent* ev)
+{
+  FToggleButton::onMouseUp(ev);
+
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  button_pressed = false;
+  draw();
+}
+
+
 // private methods of FSwitch
 //----------------------------------------------------------------------
 void FSwitch::draw()
@@ -142,63 +202,4 @@ void FSwitch::drawCheckButton()
 
     setCursorPos (7 + switch_offset_pos, 1);
   }
-}
-
-// public methods of FSwitch
-//----------------------------------------------------------------------
-void FSwitch::setText (FString txt)
-{
-  FToggleButton::setText(txt);
-  switch_offset_pos = int(txt.getLength()) + 1;
-}
-
-//----------------------------------------------------------------------
-void FSwitch::onKeyPress (FKeyEvent* ev)
-{
-  switch ( ev->key() )
-  {
-    case fc::Fkey_home:
-    case fc::Fkey_left:
-      setChecked();
-      ev->accept();
-      break;
-
-    case fc::Fkey_end:
-    case fc::Fkey_right:
-      unsetChecked();
-      ev->accept();
-      break;
-
-    default:
-      break;
-  }
-
-  if ( ev->isAccepted() )
-    draw();
-  else
-    FToggleButton::onKeyPress(ev);
-}
-
-//----------------------------------------------------------------------
-void FSwitch::onMouseDown (FMouseEvent* ev)
-{
-  FToggleButton::onMouseDown(ev);
-
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  button_pressed = true;
-  draw();
-}
-
-//----------------------------------------------------------------------
-void FSwitch::onMouseUp (FMouseEvent* ev)
-{
-  FToggleButton::onMouseUp(ev);
-
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  button_pressed = false;
-  draw();
 }

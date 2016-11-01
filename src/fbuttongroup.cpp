@@ -36,7 +36,7 @@ FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButtonGroup::~FButtonGroup()  // destructor
 {
-  FButtonGroup::FButtonList::iterator iter;
+  FButtonList::iterator iter;
 
   if ( buttonlist.empty() )
     return;
@@ -50,121 +50,354 @@ FButtonGroup::~FButtonGroup()  // destructor
   }
 }
 
-// private methods of FButtonGroup
+
+// public methods of FButtonGroup
 //----------------------------------------------------------------------
-void FButtonGroup::init()
+FToggleButton* FButtonGroup::getFirstButton()
 {
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1);
+  if ( buttonlist.empty() )
+    return 0;
+
+  FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
+      return (*iter);
+
+    ++iter;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+FToggleButton* FButtonGroup::getLastButton()
+{
+  if ( buttonlist.empty() )
+    return 0;
+
+  FButtonList::const_iterator iter, begin;
+  begin = buttonlist.begin();
+  iter = buttonlist.end();
+
+  do
+  {
+    --iter;
+
+    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
+      return (*iter);
+  }
+  while ( iter != begin );
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+bool FButtonGroup::setEnable (bool on)
+{
+  FWidget::setEnable(on);
+
+  if ( on )
+  {
+    flags |= fc::active;
+    setHotkeyAccelerator();
+  }
+  else
+  {
+    flags &= ~fc::active;
+    delAccelerator();
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButtonGroup::setBorder(bool on)
+{
+  if ( on )
+    border = true;
+  else
+    border = false;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::setText (const FString& txt)
+{
+  text = txt;
 
   if ( isEnabled() )
-    flags |= fc::active;
-
-  setForegroundColor (wc.label_fg);
-  setBackgroundColor (wc.label_bg);
-  buttonlist.clear();  // no buttons yet
+  {
+    delAccelerator();
+    setHotkeyAccelerator();
+  }
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton(FToggleButton* button) const
+bool FButtonGroup::hasFocusedButton()
 {
-  if ( ! button )
+  if ( buttonlist.empty() )
     return false;
 
-  return bool ( std::strcmp ( button->getClassName()
-                            , const_cast<char*>("FRadioButton") ) == 0 );
+  FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
+  {
+    if ( (*iter)->hasFocus() )
+      return true;
+
+    ++iter;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::directFocus()
+bool FButtonGroup::hasCheckedButton()
 {
-  if ( ! hasFocusedButton() )
+  if ( buttonlist.empty() )
+    return false;
+
+  FButtonList::const_iterator iter, end;
+  iter = buttonlist.begin();
+  end = buttonlist.end();
+
+  while ( iter != end )
   {
-    bool found_checked = false;
+    if ( (*iter)->isChecked() )
+      return true;
 
-    if ( hasCheckedButton() && ! buttonlist.empty() )
+    ++iter;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::hide()
+{
+  int size;
+  short fg, bg;
+  char* blank;
+  FWidget::hide();
+  FWidget* parent_widget = getParentWidget();
+
+  if ( ! buttonlist.empty() )
+  {
+    FButtonList::const_iterator iter, end;
+    iter = buttonlist.begin();
+    end = buttonlist.end();
+
+    while ( iter != end )
     {
-      FButtonGroup::FButtonList::const_iterator iter, end;
-      iter = buttonlist.begin();
-      end = buttonlist.end();
-
-      while ( iter != end )
-      {
-        if ( (*iter)->isChecked() )
-        {
-          if ( isRadioButton(*iter) )
-          {
-            found_checked = true;
-            FWidget* focused_widget = getFocusWidget();
-            FFocusEvent out (fc::FocusOut_Event);
-            FApplication::queueEvent(focused_widget, &out);
-            (*iter)->setFocus();
-
-            if ( focused_widget )
-              focused_widget->redraw();
-
-            focused_widget = getFocusWidget();
-
-            if ( focused_widget )
-              focused_widget->redraw();
-          }
-
-          break;
-        }
-
-        ++iter;
-      }
-    }
-
-    if ( ! found_checked )
-    {
-      FWidget* focused_widget = getFocusWidget();
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
-      focusFirstChild();
-
-      if ( focused_widget )
-        focused_widget->redraw();
-
-      focused_widget = getFocusWidget();
-
-      if ( focused_widget )
-        focused_widget->redraw();
+      (*iter)->hide();
+      ++iter;
     }
   }
 
-  if ( statusBar() )
+  if ( parent_widget )
   {
-    statusBar()->drawMessage();
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  std::memset(blank, ' ', uLong(size));
+  blank[size] = '\0';
+
+  for (int y=0; y < getHeight(); y++)
+  {
+    setPrintPos (1, 1+y);
+    print (blank);
+  }
+
+  delete[] blank;
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::insert (FToggleButton* button)
+{
+  if ( ! button )
+    return;
+
+  if ( button->getGroup() )
+    button->getGroup()->remove(button);
+
+  // setChecked the first FRadioButton
+  if ( buttonlist.size() == 1 && isRadioButton(*buttonlist.begin()) )
+    (*buttonlist.begin())->setChecked();
+
+  button->setGroup(this);
+  buttonlist.push_back(button);
+
+  button->addCallback
+  (
+    "toggled",
+    _METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
+  );
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::remove (FToggleButton* button)
+{
+  FButtonList::iterator iter;
+
+  if ( ! button || buttonlist.empty() )
+    return;
+
+  iter = buttonlist.begin();
+
+  while ( iter != buttonlist.end() )
+  {
+    if ( (*iter) == button )
+    {
+      iter = buttonlist.erase(iter);
+      button->setGroup(0);
+      button->delCallback(this);
+      break;
+    }
+    else
+      ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  directFocus();
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::onAccel (FAccelEvent*)
+{
+  directFocus();
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
+{
+  if ( hasCheckedButton() && ! buttonlist.empty() )
+  {
+    FButtonList::const_iterator iter, end;
+    iter = buttonlist.begin();
+    end = buttonlist.end();
+
+    while ( iter != end )
+    {
+      if ( (*iter)->isChecked() )
+      {
+        if ( isRadioButton(*iter) )
+        {
+          in_ev->ignore();
+          FWidget* prev_element = getFocusWidget();
+          (*iter)->setFocus();
+
+          if ( prev_element )
+            prev_element->redraw();
+
+          (*iter)->redraw();
+        }
+
+        break;
+      }
+
+      ++iter;
+    }
+  }
+
+  if ( in_ev->isAccepted() )
+  {
+    if ( in_ev->getFocusType() == fc::FocusNextWidget )
+    {
+      in_ev->ignore();
+      FWidget* prev_element = getFocusWidget();
+      focusFirstChild();
+
+      if ( prev_element )
+        prev_element->redraw();
+
+      if ( getFocusWidget() )
+        getFocusWidget()->redraw();
+    }
+    else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
+    {
+      in_ev->ignore();
+      FWidget* prev_element = getFocusWidget();
+      focusLastChild();
+
+      if ( prev_element )
+        prev_element->redraw();
+
+      if ( getFocusWidget() )
+        getFocusWidget()->redraw();
+    }
+  }
+
+  if ( getStatusBar() )
+  {
+    getStatusBar()->drawMessage();
     updateTerminal();
     flush_out();
   }
 }
 
-// protected methods of FButtonGroup
 //----------------------------------------------------------------------
-void FButtonGroup::draw()
+void FButtonGroup::onFocusOut (FFocusEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 {
-  updateVTerm(false);
+  FToggleButton* button = static_cast<FToggleButton*>(widget);
+  FButtonList::const_iterator iter, end;
 
-  if ( isMonochron() )
-    setReverse(true);
+  if ( ! button->isChecked() )
+    return;
 
-  setColor();
+  if ( buttonlist.empty() )
+    return;
 
-  if ( border )
-    drawBorder();
+  iter = buttonlist.begin();
+  end = buttonlist.end();
 
-  drawLabel();
+  while ( iter != end )
+  {
+    if (  (*iter) != button
+       && (*iter)->isChecked()
+       && isRadioButton(*iter) )
+    {
+      (*iter)->unsetChecked();
 
-  if ( isMonochron() )
-    setReverse(false);
+      if ( (*iter)->isVisible() && (*iter)->isShown() )
+        (*iter)->redraw();
+    }
 
-  updateVTerm(true);
+    ++iter;
+  }
 }
 
+
+// protected methods of FButtonGroup
 //----------------------------------------------------------------------
 uChar FButtonGroup::getHotkey()
 {
@@ -209,6 +442,27 @@ void FButtonGroup::setHotkeyAccelerator()
   }
   else
     delAccelerator();
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::draw()
+{
+  updateVTerm(false);
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor();
+
+  if ( border )
+    drawBorder();
+
+  drawLabel();
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -284,347 +538,96 @@ void FButtonGroup::drawLabel()
   delete[] LabelText;
 }
 
-// public methods of FButtonGroup
+
+// private methods of FButtonGroup
 //----------------------------------------------------------------------
-void FButtonGroup::hide()
-{
-  int size;
-  short fg, bg;
-  char* blank;
-  FWidget::hide();
-  FWidget* parent_widget = getParentWidget();
-
-  if ( ! buttonlist.empty() )
-  {
-    FButtonGroup::FButtonList::const_iterator iter, end;
-    iter = buttonlist.begin();
-    end = buttonlist.end();
-
-    while ( iter != end )
-    {
-      (*iter)->hide();
-      ++iter;
-    }
-  }
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size < 0 )
-    return;
-
-  blank = new char[size+1];
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y=0; y < getHeight(); y++)
-  {
-    setPrintPos (1, 1+y);
-    print (blank);
-  }
-
-  delete[] blank;
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::insert (FToggleButton* button)
+bool FButtonGroup::isRadioButton(FToggleButton* button) const
 {
   if ( ! button )
-    return;
-
-  if ( button->group() )
-    button->group()->remove(button);
-
-  // setChecked the first FRadioButton
-  if ( buttonlist.size() == 1 && isRadioButton(*buttonlist.begin()) )
-    (*buttonlist.begin())->setChecked();
-
-  button->setGroup(this);
-  buttonlist.push_back(button);
-
-  button->addCallback
-  (
-    "toggled",
-    _METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
-  );
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::remove (FToggleButton* button)
-{
-  FButtonGroup::FButtonList::iterator iter;
-
-  if ( ! button || buttonlist.empty() )
-    return;
-
-  iter = buttonlist.begin();
-
-  while ( iter != buttonlist.end() )
-  {
-    if ( (*iter) == button )
-    {
-      iter = buttonlist.erase(iter);
-      button->setGroup(0);
-      button->delCallback(this);
-      break;
-    }
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
-{
-  FToggleButton* button = static_cast<FToggleButton*>(widget);
-  FButtonGroup::FButtonList::const_iterator iter, end;
-
-  if ( ! button->isChecked() )
-    return;
-
-  if ( buttonlist.empty() )
-    return;
-
-  iter = buttonlist.begin();
-  end = buttonlist.end();
-
-  while ( iter != end )
-  {
-    if (  (*iter) != button
-       && (*iter)->isChecked()
-       && isRadioButton(*iter) )
-    {
-      (*iter)->unsetChecked();
-
-      if ( (*iter)->isVisible() && (*iter)->isShown() )
-        (*iter)->redraw();
-    }
-
-    ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getFirstButton()
-{
-  if ( buttonlist.empty() )
-    return 0;
-
-  FButtonGroup::FButtonList::const_iterator iter, end;
-  iter = buttonlist.begin();
-  end = buttonlist.end();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-      return (*iter);
-
-    ++iter;
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getLastButton()
-{
-  if ( buttonlist.empty() )
-    return 0;
-
-  FButtonGroup::FButtonList::const_iterator iter, begin;
-  begin = buttonlist.begin();
-  iter = buttonlist.end();
-
-  do
-  {
-    --iter;
-
-    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-      return (*iter);
-  }
-  while ( iter != begin );
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
-bool FButtonGroup::hasFocusedButton()
-{
-  if ( buttonlist.empty() )
     return false;
 
-  FButtonGroup::FButtonList::const_iterator iter, end;
-  iter = buttonlist.begin();
-  end = buttonlist.end();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->hasFocus() )
-      return true;
-
-    ++iter;
-  }
-
-  return false;
+  return bool ( std::strcmp ( button->getClassName()
+                            , const_cast<char*>("FRadioButton") ) == 0 );
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasCheckedButton()
+void FButtonGroup::init()
 {
-  if ( buttonlist.empty() )
-    return false;
-
-  FButtonGroup::FButtonList::const_iterator iter, end;
-  iter = buttonlist.begin();
-  end = buttonlist.end();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->isChecked() )
-      return true;
-
-    ++iter;
-  }
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::onMouseDown (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  directFocus();
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::onAccel (FAccelEvent*)
-{
-  directFocus();
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
-{
-  if ( hasCheckedButton() && ! buttonlist.empty() )
-  {
-    FButtonGroup::FButtonList::const_iterator iter, end;
-    iter = buttonlist.begin();
-    end = buttonlist.end();
-
-    while ( iter != end )
-    {
-      if ( (*iter)->isChecked() )
-      {
-        if ( isRadioButton(*iter) )
-        {
-          in_ev->ignore();
-          FWidget* prev_element = getFocusWidget();
-          (*iter)->setFocus();
-
-          if ( prev_element )
-            prev_element->redraw();
-
-          (*iter)->redraw();
-        }
-
-        break;
-      }
-
-      ++iter;
-    }
-  }
-
-  if ( in_ev->isAccepted() )
-  {
-    if ( in_ev->getFocusType() == fc::FocusNextWidget )
-    {
-      in_ev->ignore();
-      FWidget* prev_element = getFocusWidget();
-      focusFirstChild();
-
-      if ( prev_element )
-        prev_element->redraw();
-
-      if ( getFocusWidget() )
-        getFocusWidget()->redraw();
-    }
-    else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
-    {
-      in_ev->ignore();
-      FWidget* prev_element = getFocusWidget();
-      focusLastChild();
-
-      if ( prev_element )
-        prev_element->redraw();
-
-      if ( getFocusWidget() )
-        getFocusWidget()->redraw();
-    }
-  }
-
-  if ( statusBar() )
-  {
-    statusBar()->drawMessage();
-    updateTerminal();
-    flush_out();
-  }
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::onFocusOut (FFocusEvent*)
-{ }
-
-//----------------------------------------------------------------------
-bool FButtonGroup::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
-  {
-    flags |= fc::active;
-    setHotkeyAccelerator();
-  }
-  else
-  {
-    flags &= ~fc::active;
-    delAccelerator();
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButtonGroup::setBorder(bool on)
-{
-  if ( on )
-    border = true;
-  else
-    border = false;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::setText (const FString& txt)
-{
-  text = txt;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1);
 
   if ( isEnabled() )
+    flags |= fc::active;
+
+  setForegroundColor (wc.label_fg);
+  setBackgroundColor (wc.label_bg);
+  buttonlist.clear();  // no buttons yet
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::directFocus()
+{
+  if ( ! hasFocusedButton() )
   {
-    delAccelerator();
-    setHotkeyAccelerator();
+    bool found_checked = false;
+
+    if ( hasCheckedButton() && ! buttonlist.empty() )
+    {
+      FButtonList::const_iterator iter, end;
+      iter = buttonlist.begin();
+      end = buttonlist.end();
+
+      while ( iter != end )
+      {
+        if ( (*iter)->isChecked() )
+        {
+          if ( isRadioButton(*iter) )
+          {
+            found_checked = true;
+            FWidget* focused_widget = getFocusWidget();
+            FFocusEvent out (fc::FocusOut_Event);
+            FApplication::queueEvent(focused_widget, &out);
+            (*iter)->setFocus();
+
+            if ( focused_widget )
+              focused_widget->redraw();
+
+            focused_widget = getFocusWidget();
+
+            if ( focused_widget )
+              focused_widget->redraw();
+          }
+
+          break;
+        }
+
+        ++iter;
+      }
+    }
+
+    if ( ! found_checked )
+    {
+      FWidget* focused_widget = getFocusWidget();
+      FFocusEvent out (fc::FocusOut_Event);
+      FApplication::queueEvent(focused_widget, &out);
+      focusFirstChild();
+
+      if ( focused_widget )
+        focused_widget->redraw();
+
+      focused_widget = getFocusWidget();
+
+      if ( focused_widget )
+        focused_widget->redraw();
+    }
+  }
+
+  if ( getStatusBar() )
+  {
+    getStatusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
   }
 }

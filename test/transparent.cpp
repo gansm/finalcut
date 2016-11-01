@@ -18,6 +18,7 @@
 class Transparent : public FDialog
 {
  public:
+   // Typedef and Enumeration
    typedef enum ttype
    {
      transparent        = 0,
@@ -25,25 +26,28 @@ class Transparent : public FDialog
      inherit_background = 2
    } trans_type;
 
- private:
-   trans_type type;
+ public:
+   // Constructor
+   explicit Transparent (FWidget* = 0, trans_type = transparent);
+
+   // Destructor
+  ~Transparent();
 
  private:
    // Disable copy constructor
    Transparent (const Transparent&);
+
    // Disable assignment operator (=)
    Transparent& operator = (const Transparent&);
 
+   // Method
    void draw();
 
    // Event handlers
    void onKeyPress (FKeyEvent* ev);
 
- public:
-   // Constructor
-   explicit Transparent (FWidget* = 0, trans_type = transparent);
-   // Destructor
-  ~Transparent();
+   // Data Members
+   trans_type type;
 };
 #pragma pack(pop)
 

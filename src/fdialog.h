@@ -49,113 +49,122 @@
 class FDialog : public FWindow
 {
  public:
+    // Using-declaration
+   using FWindow::setResizeable;
+   using FWindow::move;
+   using FWindow::setPos;
+
+   // Enumeration
    enum DialogCode
    {
      Reject = 0,
      Accept = 1
    };
 
- private:
-   FString      tb_text;          // title bar text
-   int          result_code;
-   bool         zoom_button_pressed;
-   bool         zoom_button_active;
-   FPoint       titlebar_click_pos;
-   FPoint       resize_click_pos;
-   FRect        save_geometry;     // required by move/size by keyboard
-   FMenu*       dialog_menu;
-   FMenuItem*   dgl_menuitem;
-   FMenuItem*   move_size_item;
-   FMenuItem*   zoom_item;
-   FMenuItem*   close_item;
-   FToolTip*    tooltip;
-
- private:
-   // Disable copy constructor
-   FDialog (const FDialog&);
-   // Disable assignment operator (=)
-   FDialog& operator = (const FDialog&);
-
-   void         init();
-   // make every drawBorder from FWidget available
-   using FWidget::drawBorder;
-   virtual void drawBorder();
-   void         drawTitleBar();
-   void         leaveMenu();
-   void         openMenu();
-   void         selectFirstMenuItem();
-   void         setZoomItem();
-
-   // Callback methods
-   void         cb_move (FWidget*, void*);
-   void         cb_zoom (FWidget*, void*);
-   void         cb_close (FWidget*, void*);
-
-   static void  addDialog (FWidget*);
-   static void  delDialog (FWidget*);
-
- protected:
-   virtual void done (int);
-   virtual void draw();
-   virtual void onShow (FShowEvent*);
-   virtual void onHide (FHideEvent*);
-   virtual void onClose (FCloseEvent*);
-
- public:
    // Constructors
    explicit FDialog (FWidget* = 0);
    FDialog (const FString&, FWidget* = 0);
+
    // Destructor
    virtual ~FDialog();
 
+   // Accessors
    virtual const char* getClassName() const;
+   FString             getText() const;
+
+   // Mutators
+   bool                setFocus (bool);
+   bool                setFocus();
+   bool                unsetFocus();
+   bool                setDialogWidget (bool);
+   bool                setDialogWidget();
+   bool                unsetDialogWidget();
+   bool                setModal (bool);
+   bool                setModal();
+   bool                unsetModal();
+   bool                setResizeable (bool);
+   bool                setScrollable (bool);
+   bool                setScrollable();
+   bool                unsetScrollable();
+   void                setText (const FString&);
+
+   // Inquiries
+   bool                isModal();
+   bool                isScrollable();
+
+   // Methods
+   void                show();
+   void                hide();
+   int                 exec();
+   void                setPos (int, int, bool = true);
+   void                move (int, int);
+   void                setSize (int, int, bool = true);
+   void                activateDialog();
 
    // Event handlers
-   void     onKeyPress (FKeyEvent*);
-   void     onMouseDown (FMouseEvent*);
-   void     onMouseUp (FMouseEvent*);
-   void     onMouseMove (FMouseEvent*);
-   void     onMouseDoubleClick (FMouseEvent*);
-   void     onAccel (FAccelEvent*);
-   void     onWindowActive (FEvent*);
-   void     onWindowInactive (FEvent*);
-   void     onWindowRaised (FEvent*);
-   void     onWindowLowered (FEvent*);
+   void                onKeyPress (FKeyEvent*);
+   void                onMouseDown (FMouseEvent*);
+   void                onMouseUp (FMouseEvent*);
+   void                onMouseMove (FMouseEvent*);
+   void                onMouseDoubleClick (FMouseEvent*);
+   void                onAccel (FAccelEvent*);
+   void                onWindowActive (FEvent*);
+   void                onWindowInactive (FEvent*);
+   void                onWindowRaised (FEvent*);
+   void                onWindowLowered (FEvent*);
 
-   void     activateDialog();
-   void     drawDialogShadow();
-   void     show();
-   void     hide();
-   int      exec();
-   void     setPos (int, int, bool = true);
-   // make every setPos from FWindow available
-   using FWindow::setPos;
-   void     move (int, int);
-   // make every move from FWindow available
-   using FWindow::move;
-   void     setSize (int, int, bool = true);
+ protected:
+   // Methods
+   virtual void        done (int);
+   virtual void        draw();
+   void                drawDialogShadow();
 
-   bool     setFocus (bool);
-   bool     setFocus();
-   bool     unsetFocus();
-   bool     setDialogWidget (bool);
-   bool     setDialogWidget();
-   bool     unsetDialogWidget();
-   bool     setModal (bool);
-   bool     setModal();
-   bool     unsetModal();
-   bool     isModal();
-   bool     setResizeable (bool);
-   // make every setResizeable from FWindow available
-   using FWindow::setResizeable;
-   bool     setScrollable (bool);
-   bool     setScrollable();
-   bool     unsetScrollable();
-   bool     isScrollable();
-   FString  getText() const;
-   void     setText (const FString&);
+   // Event handlers
+   virtual void        onShow (FShowEvent*);
+   virtual void        onHide (FHideEvent*);
+   virtual void        onClose (FCloseEvent*);
 
  private:
+   // Using-declaration
+   using FWidget::drawBorder;
+
+   // Disable copy constructor
+   FDialog (const FDialog&);
+
+   // Disable assignment operator (=)
+   FDialog& operator = (const FDialog&);
+
+   // Methods
+   void                init();
+   virtual void        drawBorder();
+   void                drawTitleBar();
+   void                leaveMenu();
+   void                openMenu();
+   void                selectFirstMenuItem();
+   void                setZoomItem();
+   static void         addDialog (FWidget*);
+   static void         delDialog (FWidget*);
+
+   // Callback methods
+   void                cb_move (FWidget*, void*);
+   void                cb_zoom (FWidget*, void*);
+   void                cb_close (FWidget*, void*);
+
+   // Data Members
+   FString             tb_text;        // title bar text
+   int                 result_code;
+   bool                zoom_button_pressed;
+   bool                zoom_button_active;
+   FPoint              titlebar_click_pos;
+   FPoint              resize_click_pos;
+   FRect               save_geometry;  // required by keyboard move/size
+   FMenu*              dialog_menu;
+   FMenuItem*          dgl_menuitem;
+   FMenuItem*          move_size_item;
+   FMenuItem*          zoom_item;
+   FMenuItem*          close_item;
+   FToolTip*           tooltip;
+
    // Friend function from FMenu
    friend void FMenu::hideSuperMenus();
 };
@@ -165,6 +174,10 @@ class FDialog : public FWindow
 //----------------------------------------------------------------------
 inline const char* FDialog::getClassName() const
 { return "FDialog"; }
+
+//----------------------------------------------------------------------
+inline FString FDialog::getText() const
+{ return tb_text; }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setFocus()
@@ -191,10 +204,6 @@ inline bool FDialog::unsetModal()
 { return setModal(false); }
 
 //----------------------------------------------------------------------
-inline bool FDialog::isModal()
-{ return ((flags & fc::modal) != 0); }
-
-//----------------------------------------------------------------------
 inline bool FDialog::setScrollable()
 { return setScrollable(true); }
 
@@ -203,16 +212,17 @@ inline bool FDialog::unsetScrollable()
 { return setScrollable(false); }
 
 //----------------------------------------------------------------------
+inline void FDialog::setText (const FString& txt)
+{ tb_text = txt; }
+
+//----------------------------------------------------------------------
+inline bool FDialog::isModal()
+{ return ((flags & fc::modal) != 0); }
+
+//----------------------------------------------------------------------
 inline bool FDialog::isScrollable()
 { return ((flags & fc::scrollable) != 0); }
 
-//----------------------------------------------------------------------
-inline FString FDialog::getText() const
-{ return tb_text; }
-
-//----------------------------------------------------------------------
-inline void FDialog::setText (const FString& txt)
-{ tb_text = txt; }
 
 
 #endif  // _FDIALOG_H

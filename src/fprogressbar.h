@@ -40,40 +40,47 @@
 
 class FProgressbar : public FWidget
 {
- private:
-   int  percentage;
-   int  bar_length;
-
- private:
-   void drawPercentage();
-   void drawBar();
-
- protected:
-   virtual void draw();
-
  public:
+   // Using-declarations
+   using FWidget::setGeometry;
+
    // Constructor
    explicit FProgressbar(FWidget* = 0);
+
    // Destructor
    virtual ~FProgressbar();
 
-   const char* getClassName() const;
-   void hide();
+   // Accessors
+   const char*  getClassName() const;
+   int          getPercentage();
 
-   int  getPercentage();
-   void setPercentage (int);
-   void reset();
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool = true);
-   bool setEnable (bool);
-   bool setEnable();
-   bool unsetEnable();
-   bool setDisable();
-   bool setShadow (bool);
-   bool setShadow();
-   bool unsetShadow();
-   bool hasShadow();
+   // Mutators
+   void         setPercentage (int);
+   void         setGeometry (int, int, int, int, bool = true);
+   bool         setEnable (bool);
+   bool         setEnable();
+   bool         unsetEnable();
+   bool         setDisable();
+   bool         setShadow (bool);
+   bool         setShadow();
+   bool         unsetShadow();
+
+   // Inquiries
+   bool         hasShadow();
+
+   // Methods
+   void         hide();
+   void         reset();
+
+ private:
+   // Methods
+   virtual void draw();
+   void         drawPercentage();
+   void         drawBar();
+
+   // Data Members
+   int          percentage;
+   int          bar_length;
 };
 #pragma pack(pop)
 

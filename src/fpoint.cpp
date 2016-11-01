@@ -13,9 +13,27 @@ FPoint::~FPoint()  // destructor
 
 // public methods of FPoint
 //----------------------------------------------------------------------
-bool FPoint::isNull() const
+FPoint& FPoint::operator = (const FPoint& p)
 {
-  return xpos == 0 && ypos == 0;
+  xpos = p.xpos;
+  ypos = p.ypos;
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FPoint& FPoint::operator += (const FPoint& p)
+{
+  xpos = short(xpos + p.xpos);
+  ypos = short(ypos + p.ypos);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FPoint& FPoint::operator -= (const FPoint& p)
+{
+  xpos = short(xpos - p.xpos);
+  ypos = short(ypos - p.ypos);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -38,25 +56,7 @@ void FPoint::setPoint (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FPoint& FPoint::operator = (const FPoint& p)
+bool FPoint::isNull() const
 {
-  xpos = p.xpos;
-  ypos = p.ypos;
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FPoint& FPoint::operator += (const FPoint& p)
-{
-  xpos = short(xpos + p.xpos);
-  ypos = short(ypos + p.ypos);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FPoint& FPoint::operator -= (const FPoint& p)
-{
-  xpos = short(xpos - p.xpos);
-  ypos = short(ypos - p.ypos);
-  return *this;
+  return xpos == 0 && ypos == 0;
 }

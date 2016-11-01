@@ -41,6 +41,10 @@
 class FScrollbar : public FWidget
 {
  public:
+   // Using-declarations
+   using FWidget::setGeometry;
+
+   // Enumeration
    enum sType
    {
      noScroll           = 0,
@@ -53,7 +57,57 @@ class FScrollbar : public FWidget
      scrollWheelDown    = 7
    };
 
+   // Constructors
+   explicit FScrollbar(FWidget* = 0);
+   FScrollbar (int = fc::vertical, FWidget* = 0);
+
+   // Destructor
+   virtual ~FScrollbar();
+
+   // Accessors
+   const char* getClassName() const;
+   int   getValue() const;
+   sType getScrollType() const;
+
+   // Mutators
+   void  setMinimum (int);
+   void  setMaximum (int);
+   void  setRange (int, int);
+   void  setValue (int);
+   void  setSteps (float);
+   void  setPageSize (int, int);
+   void  setOrientation (int);
+   void  setGeometry (int, int, int, int, bool = true);
+
+   // Methods
+   void  resize();
+   void  redraw();
+   void  calculateSliderValues();
+   void  drawButtons();
+   void  drawBar();
+
+   // Event handlers
+   void  onMouseDown (FMouseEvent*);
+   void  onMouseUp (FMouseEvent*);
+   void  onMouseMove (FMouseEvent*);
+   void  onWheel (FWheelEvent*);
+   void  onTimer (FTimerEvent*);
+
  private:
+   // Disable copy constructor
+   FScrollbar (const FScrollbar&);
+
+   // Disable assignment operator (=)
+   FScrollbar& operator = (const FScrollbar&);
+
+   // Methods
+   void  init();
+   void  draw();
+   sType getClickedScrollType (int, int);
+   void  processMiddleButton (int, int);
+   void  processScroll();
+
+   // Data Members
    sType scroll_type;
    bool  threshold_reached;
    int   threshold_time;
@@ -72,52 +126,6 @@ class FScrollbar : public FWidget
    int   length;
    int   bar_orientation;
    int   max_color;
-
- private:
-   // Disable copy constructor
-   FScrollbar (const FScrollbar&);
-   // Disable assignment operator (=)
-   FScrollbar& operator = (const FScrollbar&);
-
-   void  init();
-   void  draw();
-   sType getClickedScrollType (int, int);
-   void  processMiddleButton (int, int);
-   void  processScroll();
-
- public:
-   // Constructors
-   explicit FScrollbar(FWidget* = 0);
-   FScrollbar (int = fc::vertical, FWidget* = 0);
-   // Destructor
-   virtual ~FScrollbar();
-
-   const char* getClassName() const;
-
-   // Event handlers
-   void  onMouseDown (FMouseEvent*);
-   void  onMouseUp (FMouseEvent*);
-   void  onMouseMove (FMouseEvent*);
-   void  onWheel (FWheelEvent*);
-   void  onTimer (FTimerEvent*);
-
-   void  resize();
-   void  redraw();
-   void  setMinimum (int);
-   void  setMaximum (int);
-   void  setRange (int, int);
-   void  setValue (int);
-   int   getValue() const;
-   void  setSteps (float);
-   void  setPageSize (int, int);
-   void  calculateSliderValues();
-   void  setOrientation (int);
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void  setGeometry (int, int, int, int, bool = true);
-   void  drawButtons();
-   void  drawBar();
-   sType getScrollType() const;
 };
 #pragma pack(pop)
 

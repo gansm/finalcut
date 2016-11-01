@@ -15,11 +15,11 @@
 
 class ProgressDialog : public FDialog
 {
- private:
-   FProgressbar* progressBar;
-   FButton*      reset;
-   FButton*      more;
-   FButton*      quit;
+ public:
+   // Constructor
+   explicit ProgressDialog (FWidget* = 0);
+   // Destructor
+  ~ProgressDialog();
 
  private:
    // Disable copy constructor
@@ -36,11 +36,11 @@ class ProgressDialog : public FDialog
    void cb_more_bar (FWidget*, void*);
    void cb_exit_bar (FWidget*, void*);
 
- public:
-   // Constructor
-   explicit ProgressDialog (FWidget* = 0);
-   // Destructor
-  ~ProgressDialog();
+   // Data Members
+   FProgressbar* progressBar;
+   FButton*      reset;
+   FButton*      more;
+   FButton*      quit;
 };
 #pragma pack(pop)
 
@@ -134,8 +134,8 @@ void ProgressDialog::onTimer (FTimerEvent*)
   quit->setEnable();
   redraw();
 
-  if ( statusBar() )
-    statusBar()->drawMessage();
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
 
   updateTerminal();
   flush_out();
@@ -170,8 +170,13 @@ void ProgressDialog::cb_exit_bar (FWidget*, void*)
 
 class TextWindow : public FDialog
 {
- private:
-   FTextView* scrollText;
+ public:
+   // Constructor
+   explicit TextWindow (FWidget* = 0);
+   // Destructor
+  ~TextWindow();
+
+   void append (const FString&);
 
  private:
    // Disable copy constructor
@@ -181,13 +186,8 @@ class TextWindow : public FDialog
 
    void adjustSize();
 
- public:
-   // Constructor
-   explicit TextWindow (FWidget* = 0);
-   // Destructor
-  ~TextWindow();
-
-   void append (const FString&);
+   // Data Members
+   FTextView* scrollText;
 };
 #pragma pack(pop)
 
@@ -238,10 +238,11 @@ void TextWindow::adjustSize()
 
 class MyDialog : public FDialog
 {
- private:
-   FLineEdit* myLineEdit;
-   FListBox*  myList;
-   FString    clipboard;
+ public:
+   // Constructor
+   explicit MyDialog (FWidget* = 0);
+   // Destructor
+  ~MyDialog();
 
  private:
    // Disable copy constructor
@@ -272,11 +273,10 @@ class MyDialog : public FDialog
 
    void adjustSize();
 
- public:
-   // Constructor
-   explicit MyDialog (FWidget* = 0);
-   // Destructor
-  ~MyDialog();
+    // Data Members
+   FLineEdit* myLineEdit;
+   FListBox*  myList;
+   FString    clipboard;
 };
 #pragma pack(pop)
 
@@ -518,7 +518,7 @@ MyDialog::MyDialog (FWidget* parent)
 
   FLabel* sum_count = new FLabel (this);
   sum_count->setGeometry(29, 5, 5, 3);
-  sum_count->setNumber (myList->count());
+  sum_count->setNumber (myList->getCount());
 
   // Statusbar at the bottom
   FStatusBar* statusbar = new FStatusBar (this);
@@ -790,7 +790,7 @@ void MyDialog::cb_updateNumber (FWidget* widget, void* data_ptr)
   FListBox* list = static_cast<FListBox*>(widget);
   FLabel* num = static_cast<FLabel*>(data_ptr);
   int select_num = 0;
-  uInt end = list->count();
+  uInt end = list->getCount();
 
   for (uInt n=1; n <= end; n++)
     if ( list->isSelected(int(n)) )
@@ -858,7 +858,7 @@ void MyDialog::cb_setInput (FWidget* widget, void* data_ptr)
 {
   FListBox* ListBox = static_cast<FListBox*>(widget);
   FLineEdit* lineedit = static_cast<FLineEdit*>(data_ptr);
-  lineedit->setText( ListBox->Item(ListBox->currentItem()).getText() );
+  lineedit->setText( ListBox->getItem(ListBox->currentItem()).getText() );
   lineedit->redraw();
 }
 

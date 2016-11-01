@@ -242,6 +242,7 @@ bool FObject::delAllTimer()
   return true;
 }
 
+
 // protected methods of FObject
 //----------------------------------------------------------------------
 bool FObject::event (FEvent* ev)

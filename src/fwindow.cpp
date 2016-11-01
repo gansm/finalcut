@@ -53,23 +53,78 @@ FWindow::~FWindow()  // destructor
 }
 
 
-// private methods of FWindow
+// public methods of FWindow
 //----------------------------------------------------------------------
-void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
+FWindow* FWindow::getActiveWindow()
 {
-  // delete the window object obj from the always-on-top list
-  if ( ! always_on_top_list || always_on_top_list->empty() )
+  // returns the active FWindow object
+  FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
+  return active_window;
+}
+
+//----------------------------------------------------------------------
+FWidget* FWindow::getWindowFocusWidget() const
+{
+  // returns the focused widget of this window
+  return win_focus_widget;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setWindowWidget (bool on)
+{
+  if ( isWindowWidget() == on )
+    return true;
+
+  if ( on )
+  {
+    flags |= fc::window_widget;
+    setTermOffset();
+  }
+  else
+  {
+    flags &= ~fc::window_widget;
+    setParentOffset();
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FWindow::setActiveWindow (FWindow* window)
+{
+  // activate FWindow object window
+  widgetList::const_iterator iter, end;
+
+  if ( ! window_list )
     return;
 
-  widgetList::iterator iter;
-  iter = always_on_top_list->begin();
+  if ( window_list->empty() )
+    return;
 
-  while ( iter != always_on_top_list->end() )
+  iter = window_list->begin();
+  end  = window_list->end();
+
+  while ( iter != end )
   {
-    if ( *iter == obj )
+    if ( *iter == window )
     {
-      always_on_top_list->erase (iter);
-      return;
+      if ( ! window->isWindowActive() )
+      {
+        window->activateWindow();
+        FEvent ev(fc::WindowActive_Event);
+        FApplication::sendEvent(window, &ev);
+      }
+    }
+    else
+    {
+      FWindow* w = static_cast<FWindow*>(*iter);
+
+      if ( w->isWindowActive() )
+      {
+        w->deactivateWindow();
+        FEvent ev(fc::WindowInactive_Event);
+        FApplication::sendEvent(*iter, &ev);
+      }
     }
 
     ++iter;
@@ -77,93 +132,112 @@ void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWindow::processAlwaysOnTop()
+void FWindow::setWindowFocusWidget (FWidget* obj)
 {
-  // Raise all always-on-top windows
-  if ( ! always_on_top_list || always_on_top_list->empty() )
-    return;
-
-  widgetList::iterator iter;
-  iter = always_on_top_list->begin();
-
-  while ( iter != always_on_top_list->end() )
-  {
-    delWindow (*iter);
-
-    if ( window_list )
-      window_list->push_back(*iter);
-
-    ++iter;
-  }
-}
-
-
-// protected methods of FWindow
-//----------------------------------------------------------------------
-bool FWindow::event (FEvent* ev)
-{
-  switch ( ev->type() )
-  {
-    case fc::WindowActive_Event:
-      onWindowActive (ev);
-      break;
-
-    case fc::WindowInactive_Event:
-      onWindowInactive (ev);
-      break;
-
-    case fc::WindowRaised_Event:
-      onWindowRaised (ev);
-      break;
-
-    case fc::WindowLowered_Event:
-      onWindowLowered (ev);
-      break;
-
-    default:
-      return FWidget::event(ev);
-  }
-
-  return true;
+  // set focus widget of this window
+  win_focus_widget = obj;
 }
 
 //----------------------------------------------------------------------
-void FWindow::onWindowActive (FEvent*)
-{ }
-
-//----------------------------------------------------------------------
-void FWindow::onWindowInactive (FEvent*)
-{ }
-
-//----------------------------------------------------------------------
-void FWindow::onWindowRaised (FEvent*)
-{ }
-
-//----------------------------------------------------------------------
-void FWindow::onWindowLowered (FEvent*)
-{ }
-
-//----------------------------------------------------------------------
-void FWindow::adjustSize()
+bool FWindow::activateWindow (bool on)
 {
-  int old_x = getX();
-  int old_y = getY();
-  FWidget::adjustSize();
-
-  if ( zoomed )
-    setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
-  else if ( vwin )
+  // activate/deactivate this window
+  if ( on )
   {
-    if ( getX() != old_x )
-      vwin->x_offset = getTermX() - 1;
-
-    if ( getY() != old_y )
-      vwin->y_offset = getTermY() - 1;
+    FApplication::active_window = this;
+    active_area = getVWin();
   }
+
+  return window_active = (on) ? true : false;
 }
 
+//----------------------------------------------------------------------
+bool FWindow::setResizeable (bool on)
+{
+  if ( on )
+    flags |= fc::resizeable;
+  else
+    flags &= ~fc::resizeable;
 
-// public methods of FWindow
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setTransparentShadow (bool on)
+{
+  if ( on )
+  {
+    flags |= fc::shadow;
+    flags |= fc::trans_shadow;
+    setShadowSize (2,1);
+  }
+  else
+  {
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (0,0);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setShadow (bool on)
+{
+  if ( isMonochron() )
+    return false;
+
+  if ( on )
+  {
+    flags |= fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (1,1);
+  }
+  else
+  {
+    flags &= ~fc::shadow;
+    flags &= ~fc::trans_shadow;
+    setShadowSize (0,0);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::setAlwaysOnTop (bool on)
+{
+  if ( isAlwaysOnTop() == on )
+    return true;
+
+  if ( on )
+  {
+    flags |= fc::always_on_top;
+
+    if ( always_on_top_list )
+    {
+      deleteFromAlwaysOnTopList (this);
+      always_on_top_list->push_back (this);
+    }
+  }
+  else
+  {
+    flags &= ~fc::always_on_top;
+    deleteFromAlwaysOnTopList (this);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FWindow::isWindowHidden() const
+{
+  // returns the window hidden state
+  if ( vwin )
+    return ! vwin->visible;
+  else
+    return false;
+}
+
 //----------------------------------------------------------------------
 void FWindow::drawBorder()
 {
@@ -609,90 +683,6 @@ bool FWindow::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::setWindowWidget (bool on)
-{
-  if ( isWindowWidget() == on )
-    return true;
-
-  if ( on )
-  {
-    flags |= fc::window_widget;
-    setTermOffset();
-  }
-  else
-  {
-    flags &= ~fc::window_widget;
-    setParentOffset();
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-FWindow* FWindow::getActiveWindow()
-{
-  // returns the active FWindow object
-  FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
-  return active_window;
-}
-
-//----------------------------------------------------------------------
-void FWindow::setActiveWindow (FWindow* window)
-{
-  // activate FWindow object window
-  widgetList::const_iterator iter, end;
-
-  if ( ! window_list )
-    return;
-
-  if ( window_list->empty() )
-    return;
-
-  iter = window_list->begin();
-  end  = window_list->end();
-
-  while ( iter != end )
-  {
-    if ( *iter == window )
-    {
-      if ( ! window->isWindowActive() )
-      {
-        window->activateWindow();
-        FEvent ev(fc::WindowActive_Event);
-        FApplication::sendEvent(window, &ev);
-      }
-    }
-    else
-    {
-      FWindow* w = static_cast<FWindow*>(*iter);
-
-      if ( w->isWindowActive() )
-      {
-        w->deactivateWindow();
-        FEvent ev(fc::WindowInactive_Event);
-        FApplication::sendEvent(*iter, &ev);
-      }
-    }
-
-    ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-FWidget* FWindow::getWindowFocusWidget() const
-{
-  // returns the focused widget of this window
-  return win_focus_widget;
-}
-
-//----------------------------------------------------------------------
-void FWindow::setWindowFocusWidget (FWidget* obj)
-{
-  // set focus widget of this window
-  win_focus_widget = obj;
-}
-
-//----------------------------------------------------------------------
 void FWindow::switchToPrevWindow()
 {
   // switch to previous window
@@ -716,8 +706,8 @@ void FWindow::switchToPrevWindow()
         if ( w
            && w != active_window
            && ! (w->isWindowHidden() || w->isWindowActive())
-           && w != static_cast<FWindow*>(statusBar())
-           && w != static_cast<FWindow*>(menuBar()) )
+           && w != static_cast<FWindow*>(getStatusBar())
+           && w != static_cast<FWindow*>(getMenuBar()) )
         {
           setActiveWindow(w);
           break;
@@ -766,81 +756,6 @@ bool FWindow::activatePrevWindow()
 }
 
 //----------------------------------------------------------------------
-bool FWindow::activateWindow (bool on)
-{
-  // activate/deactivate this window
-  if ( on )
-  {
-    FApplication::active_window = this;
-    active_area = getVWin();
-  }
-
-  return window_active = (on) ? true : false;
-}
-
-//----------------------------------------------------------------------
-bool FWindow::isWindowHidden() const
-{
-  // returns the window hidden state
-  if ( vwin )
-    return ! vwin->visible;
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
-bool FWindow::setResizeable (bool on)
-{
-  if ( on )
-    flags |= fc::resizeable;
-  else
-    flags &= ~fc::resizeable;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FWindow::setTransparentShadow (bool on)
-{
-  if ( on )
-  {
-    flags |= fc::shadow;
-    flags |= fc::trans_shadow;
-    setShadowSize (2,1);
-  }
-  else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (0,0);
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FWindow::setShadow (bool on)
-{
-  if ( isMonochron() )
-    return false;
-
-  if ( on )
-  {
-    flags |= fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (1,1);
-  }
-  else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
-    setShadowSize (0,0);
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
 void FWindow::setShadowSize (int right, int bottom)
 {
   int old_right, old_bottom, new_right, new_bottom;
@@ -858,27 +773,112 @@ void FWindow::setShadowSize (int right, int bottom)
   }
 }
 
+
+// protected methods of FWindow
 //----------------------------------------------------------------------
-bool FWindow::setAlwaysOnTop (bool on)
+void FWindow::adjustSize()
 {
-  if ( isAlwaysOnTop() == on )
-    return true;
+  int old_x = getX();
+  int old_y = getY();
+  FWidget::adjustSize();
 
-  if ( on )
+  if ( zoomed )
+    setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
+  else if ( vwin )
   {
-    flags |= fc::always_on_top;
+    if ( getX() != old_x )
+      vwin->x_offset = getTermX() - 1;
 
-    if ( always_on_top_list )
+    if ( getY() != old_y )
+      vwin->y_offset = getTermY() - 1;
+  }
+}
+
+//----------------------------------------------------------------------
+bool FWindow::event (FEvent* ev)
+{
+  switch ( ev->type() )
+  {
+    case fc::WindowActive_Event:
+      onWindowActive (ev);
+      break;
+
+    case fc::WindowInactive_Event:
+      onWindowInactive (ev);
+      break;
+
+    case fc::WindowRaised_Event:
+      onWindowRaised (ev);
+      break;
+
+    case fc::WindowLowered_Event:
+      onWindowLowered (ev);
+      break;
+
+    default:
+      return FWidget::event(ev);
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+void FWindow::onWindowActive (FEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FWindow::onWindowInactive (FEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FWindow::onWindowRaised (FEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FWindow::onWindowLowered (FEvent*)
+{ }
+
+
+// private methods of FWindow
+//----------------------------------------------------------------------
+void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
+{
+  // delete the window object obj from the always-on-top list
+  if ( ! always_on_top_list || always_on_top_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = always_on_top_list->begin();
+
+  while ( iter != always_on_top_list->end() )
+  {
+    if ( *iter == obj )
     {
-      deleteFromAlwaysOnTopList (this);
-      always_on_top_list->push_back (this);
+      always_on_top_list->erase (iter);
+      return;
     }
-  }
-  else
-  {
-    flags &= ~fc::always_on_top;
-    deleteFromAlwaysOnTopList (this);
-  }
 
-  return on;
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FWindow::processAlwaysOnTop()
+{
+  // Raise all always-on-top windows
+  if ( ! always_on_top_list || always_on_top_list->empty() )
+    return;
+
+  widgetList::iterator iter;
+  iter = always_on_top_list->begin();
+
+  while ( iter != always_on_top_list->end() )
+  {
+    delWindow (*iter);
+
+    if ( window_list )
+      window_list->push_back(*iter);
+
+    ++iter;
+  }
 }

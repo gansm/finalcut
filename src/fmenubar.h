@@ -49,53 +49,60 @@
 
 class FMenuBar : public FWindow, public FMenuList
 {
- private:
-   bool   mouse_down;
-   bool   drop_down;
+ public:
+   // Constructor
+   explicit FMenuBar (FWidget* = 0);
+
+   // Destructor
+   virtual ~FMenuBar();
+
+   // Accessors
+   virtual const char* getClassName() const;
+
+   // Methods
+   void                hide();
+   void                resetMenu();
+   void                adjustSize();
+
+   // Event handlers
+   void                onKeyPress (FKeyEvent*);
+   void                onMouseDown (FMouseEvent*);
+   void                onMouseUp (FMouseEvent*);
+   void                onMouseMove (FMouseEvent*);
+   void                onAccel (FAccelEvent*);
+
+   // Callback methods
+   void                cb_item_deactivated (FWidget*, void*);
 
  private:
    // Disable copy constructor
    FMenuBar (const FMenuBar&);
+
    // Disable assignment operator (=)
-   FMenuBar& operator = (const FMenuBar&);
+   FMenuBar& operator  = (const FMenuBar&);
 
-   void       init();
-   void       calculateDimensions();
-   bool       isMenu (FMenuItem*) const;
-   bool       selectNextItem();
-   bool       selectPrevItem();
-   bool       hotkeyMenu (FKeyEvent*&);
-   int        getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void       draw();
-   void       drawItems();
-   void       adjustItems();
-   void       leaveMenuBar();
+   // Inquiry
+   bool                isMenu (FMenuItem*) const;
 
- public:
-   // Constructor
-   explicit FMenuBar (FWidget* = 0);
-   // Destructor
-   virtual ~FMenuBar();
+   // Methods
+   void                init();
+   void                calculateDimensions();
+   bool                selectNextItem();
+   bool                selectPrevItem();
+   bool                hotkeyMenu (FKeyEvent*&);
+   int                 getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+   void                draw();
+   void                drawItems();
+   void                adjustItems();
+   void                leaveMenuBar();
 
-   virtual const char* getClassName() const;
-
-   // Event handlers
-   void       onKeyPress (FKeyEvent*);
-   void       onMouseDown (FMouseEvent*);
-   void       onMouseUp (FMouseEvent*);
-   void       onMouseMove (FMouseEvent*);
-   void       onAccel (FAccelEvent*);
-
-   void       hide();
-   void       resetMenu();
-   void       adjustSize();
-
-   // Callback methods
-   void       cb_item_deactivated (FWidget*, void*);
-
- private:
+   // Friend classes
    friend class FMenu;
    friend class FMenuItem;
+
+   // Data Members
+   bool   mouse_down;
+   bool   drop_down;
 };
 #pragma pack(pop)
 
@@ -104,5 +111,9 @@ class FMenuBar : public FWindow, public FMenuList
 //----------------------------------------------------------------------
 inline const char* FMenuBar::getClassName() const
 { return "FMenuBar"; }
+
+//----------------------------------------------------------------------
+inline bool FMenuBar::isMenu (FMenuItem* mi) const
+{ return mi->hasMenu(); }
 
 #endif  // _FMENUBAR_H

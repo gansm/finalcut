@@ -51,6 +51,208 @@ FLabel::~FLabel() // destructor
 }
 
 
+// public methods of FLabel
+//----------------------------------------------------------------------
+void FLabel::setAccelWidget (FWidget* widget)
+{
+  if ( widget )
+    accel_widget = widget;
+
+  accel_widget->addCallback
+  (
+    "destroy",
+    _METHOD_CALLBACK (this, &FLabel::cb_accel_widget_destroyed)
+  );
+}
+
+//----------------------------------------------------------------------
+void FLabel::setAlignment (uInt align)
+{
+  if (  align != fc::alignLeft
+     && align != fc::alignCenter
+     && align != fc::alignRight )
+    alignment = fc::alignLeft;
+  else
+    alignment = align;
+}
+
+//----------------------------------------------------------------------
+bool FLabel::setEmphasis (bool on)
+{
+  if ( emphasis != on )
+    emphasis = on;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FLabel::setReverseMode (bool on)
+{
+  if ( reverse_mode != on )
+    reverse_mode = on;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FLabel::setEnable (bool on)
+{
+  FWidget::setEnable(on);
+
+  if ( on )
+  {
+    flags |= fc::active;
+    setHotkeyAccelerator();
+  }
+  else
+  {
+    flags &= ~fc::active;
+    delAccelerator();
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FLabel::setNumber (long num)
+{
+  setText(FString().setNumber(num));
+}
+
+//----------------------------------------------------------------------
+void FLabel::setText (const FString& txt)
+{
+  text = txt;
+  multiline_text = text.split("\r\n");
+
+  if ( int(multiline_text.size()) > 1 )
+    multiline = true;
+  else
+    multiline = false;
+
+  if ( isEnabled() )
+  {
+    delAccelerator();
+    setHotkeyAccelerator();
+  }
+}
+
+//----------------------------------------------------------------------
+void FLabel::hide()
+{
+  short fg, bg;
+  int size;
+  char* blank;
+  FWidget* parent_widget = getParentWidget();
+
+  FWidget::hide();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  std::memset(blank, ' ', uLong(size));
+  blank[getWidth()] = '\0';
+  setPrintPos (1,1);
+  print (blank);
+  delete[] blank;
+}
+
+//----------------------------------------------------------------------
+void FLabel::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( ! (isEnabled() && accel_widget) )
+  {
+    // send click to the parent widget
+    if ( FWidget* parent = getParentWidget() )
+    {
+      int b = ev->getButton();
+      const FPoint& tp = ev->getTermPos();
+      const FPoint& p = parent->termToWidgetPos(tp);
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev);
+      delete _ev;
+    }
+
+    return;
+  }
+
+  if ( ! accel_widget->hasFocus() )
+  {
+    // focus the accelerator widget
+    FWidget* focused_widget = getFocusWidget();
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    accel_widget->setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    accel_widget->redraw();
+
+    if ( getStatusBar() )
+    {
+      accel_widget->getStatusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FLabel::onAccel (FAccelEvent* ev)
+{
+  if ( ! (isEnabled() && accel_widget) )
+    return;
+
+  if ( ! accel_widget->hasFocus() )
+  {
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    accel_widget->setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    accel_widget->redraw();
+
+    if ( getStatusBar() )
+    {
+      accel_widget->getStatusBar()->drawMessage();
+      updateTerminal();
+      flush_out();
+    }
+  }
+
+  ev->accept();
+}
+
+//----------------------------------------------------------------------
+void FLabel::cb_accel_widget_destroyed (FWidget*, void*)
+{
+  accel_widget = 0;
+  delAccelerator();
+}
+
+
 // private methods of FLabel
 //----------------------------------------------------------------------
 void FLabel::init()
@@ -329,206 +531,4 @@ void FLabel::draw()
   }
 
   updateVTerm(true);
-}
-
-
-// public methods of FLabel
-//----------------------------------------------------------------------
-void FLabel::hide()
-{
-  short fg, bg;
-  int size;
-  char* blank;
-  FWidget* parent_widget = getParentWidget();
-
-  FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size < 0 )
-    return;
-
-  blank = new char[size+1];
-  std::memset(blank, ' ', uLong(size));
-  blank[getWidth()] = '\0';
-  setPrintPos (1,1);
-  print (blank);
-  delete[] blank;
-}
-
-//----------------------------------------------------------------------
-void FLabel::onMouseDown (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( ! (isEnabled() && accel_widget) )
-  {
-    // send click to the parent widget
-    if ( FWidget* parent = getParentWidget() )
-    {
-      int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev);
-      delete _ev;
-    }
-
-    return;
-  }
-
-  if ( ! accel_widget->hasFocus() )
-  {
-    // focus the accelerator widget
-    FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    accel_widget->setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    accel_widget->redraw();
-
-    if ( statusBar() )
-    {
-      accel_widget->statusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FLabel::onAccel (FAccelEvent* ev)
-{
-  if ( ! (isEnabled() && accel_widget) )
-    return;
-
-  if ( ! accel_widget->hasFocus() )
-  {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    accel_widget->setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    accel_widget->redraw();
-
-    if ( statusBar() )
-    {
-      accel_widget->statusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
-    }
-  }
-
-  ev->accept();
-}
-
-//----------------------------------------------------------------------
-void FLabel::cb_accel_widget_destroyed (FWidget*, void*)
-{
-  accel_widget = 0;
-  delAccelerator();
-}
-
-//----------------------------------------------------------------------
-void FLabel::setAccelWidget (FWidget* widget)
-{
-  if ( widget )
-    accel_widget = widget;
-
-  accel_widget->addCallback
-  (
-    "destroy",
-    _METHOD_CALLBACK (this, &FLabel::cb_accel_widget_destroyed)
-  );
-}
-
-//----------------------------------------------------------------------
-void FLabel::setAlignment (uInt align)
-{
-  if (  align != fc::alignLeft
-     && align != fc::alignCenter
-     && align != fc::alignRight )
-    alignment = fc::alignLeft;
-  else
-    alignment = align;
-}
-
-//----------------------------------------------------------------------
-bool FLabel::setEmphasis (bool on)
-{
-  if ( emphasis != on )
-    emphasis = on;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FLabel::setReverseMode (bool on)
-{
-  if ( reverse_mode != on )
-    reverse_mode = on;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FLabel::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
-  {
-    flags |= fc::active;
-    setHotkeyAccelerator();
-  }
-  else
-  {
-    flags &= ~fc::active;
-    delAccelerator();
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-void FLabel::setNumber (long num)
-{
-  setText(FString().setNumber(num));
-}
-
-//----------------------------------------------------------------------
-void FLabel::setText (const FString& txt)
-{
-  text = txt;
-  multiline_text = text.split("\r\n");
-
-  if ( int(multiline_text.size()) > 1 )
-    multiline = true;
-  else
-    multiline = false;
-
-  if ( isEnabled() )
-  {
-    delAccelerator();
-    setHotkeyAccelerator();
-  }
 }

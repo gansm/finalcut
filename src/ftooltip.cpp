@@ -54,6 +54,73 @@ FToolTip::~FToolTip()  // destructor
 }
 
 
+// public methods of FToolTip
+//----------------------------------------------------------------------
+void FToolTip::setText (const FString& txt)
+{
+  text = txt;
+  calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::setText (const std::string& txt)
+{
+  FString message_text(txt);
+  setText (message_text);
+}
+
+//----------------------------------------------------------------------
+void FToolTip::setText (const char* txt)
+{
+  FString message_text(txt);
+  setText (message_text);
+}
+
+//----------------------------------------------------------------------
+void FToolTip::draw()
+{
+  updateVTerm(false);
+  setColor();
+
+  if ( getMaxColor() < 16 )
+    setBold();
+
+  clearArea (vwin);
+  drawBorder();
+
+  for (int i=0; i < int(text_num_lines); i++)
+  {
+    setPrintPos (3, 2 + i);
+    print(text_components[i]);
+  }
+
+  unsetBold();
+  updateVTerm(true);
+}
+
+//----------------------------------------------------------------------
+void FToolTip::show()
+{
+  if ( ! isVisible() )
+    return;
+
+  FWindow::show();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::hide()
+{
+  FWindow::hide();
+}
+
+//----------------------------------------------------------------------
+void FToolTip::onMouseDown (FMouseEvent*)
+{
+  setClickedWidget(0);
+  close();
+}
+
+
 // private methods of FToolTip
 //----------------------------------------------------------------------
 void FToolTip::init()
@@ -105,71 +172,4 @@ void FToolTip::adjustSize()
 {
   calculateDimensions();
   FWindow::adjustSize();
-}
-
-
-// public methods of FToolTip
-//----------------------------------------------------------------------
-void FToolTip::draw()
-{
-  updateVTerm(false);
-  setColor();
-
-  if ( getMaxColor() < 16 )
-    setBold();
-
-  clearArea (vwin);
-  drawBorder();
-
-  for (int i=0; i < int(text_num_lines); i++)
-  {
-    setPrintPos (3, 2 + i);
-    print(text_components[i]);
-  }
-
-  unsetBold();
-  updateVTerm(true);
-}
-
-//----------------------------------------------------------------------
-void FToolTip::show()
-{
-  if ( ! isVisible() )
-    return;
-
-  FWindow::show();
-}
-
-//----------------------------------------------------------------------
-void FToolTip::hide()
-{
-  FWindow::hide();
-}
-
-//----------------------------------------------------------------------
-void FToolTip::onMouseDown (FMouseEvent*)
-{
-  setClickedWidget(0);
-  close();
-}
-
-//----------------------------------------------------------------------
-void FToolTip::setText (const FString& txt)
-{
-  text = txt;
-  calculateDimensions();
-}
-
-//----------------------------------------------------------------------
-void FToolTip::setText (const std::string& txt)
-{
-  FString message_text(txt);
-  setText( message_text );
-}
-
-//----------------------------------------------------------------------
-void FToolTip::setText (const char* txt)
-{
-  FString message_text(txt);
-  setText( message_text );
 }

@@ -76,7 +76,697 @@ FMenu::~FMenu()
 }
 
 
+// public methods of FMenu
+//----------------------------------------------------------------------
+bool FMenu::setMenuWidget (bool on)
+{
+  if ( isMenuWidget() == on )
+    return true;
+
+  if ( on )
+    flags |= fc::menu_widget;
+  else
+    flags &= ~fc::menu_widget;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FMenu::setStatusbarMessage(FString msg)
+{
+  FWidget::setStatusbarMessage(msg);
+
+  if ( item )
+    item->setStatusbarMessage(msg);
+}
+
+//----------------------------------------------------------------------
+void FMenu::show()
+{
+  if ( ! isVisible() )
+    return;
+
+  FWindow::show();
+}
+
+//----------------------------------------------------------------------
+void FMenu::hide()
+{
+  if ( isVisible() )
+  {
+    FWindow::hide();
+    const FRect& t_geometry = getTermGeometryWithShadow();
+    restoreVTerm (t_geometry);
+    updateTerminal();
+    flush_out();
+
+    if ( ! isSubMenu() )
+    {
+      FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+
+      if ( open_menu && open_menu != this )
+        open_menu->hide();
+
+      setOpenMenu(0);
+    }
+
+    mouse_down = false;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::onKeyPress (FKeyEvent* ev)
+{
+  FWidget* menubar;
+
+  // looking for menu hotkey
+  if ( hotkeyMenu(ev) )
+    return;
+
+  // looking for menu bar hotkey
+  menubar = getMenuBar();
+
+  if ( menubar )
+  {
+    FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
+
+    if ( mbar->hotkeyMenu(ev) )
+      return;
+  }
+
+  switch ( ev->key() )
+  {
+    case fc::Fkey_return:
+    case fc::Fkey_enter:
+      if ( hasSelectedItem() )
+      {
+        FMenuItem* sel_item = getSelectedItem();
+
+        if ( sel_item->hasMenu() )
+          openSubMenu (sel_item->getMenu());
+        else
+        {
+          unselectItem();
+          hide();
+          hideSuperMenus();
+          sel_item->processClicked();
+        }
+      }
+      break;
+
+    case fc::Fkey_up:
+      selectPrevItem();
+      break;
+
+    case fc::Fkey_down:
+      selectNextItem();
+      break;
+
+    case fc::Fkey_left:
+      if ( isSubMenu() )
+      {
+        FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
+        hideSubMenus();
+        hide();
+
+        if ( smenu->getSelectedItem() )
+          smenu->getSelectedItem()->setFocus();
+
+        smenu->redraw();
+
+        if ( getStatusBar() )
+          getStatusBar()->drawMessage();
+
+        updateTerminal();
+        flush_out();
+      }
+      else
+        keypressMenuBar(ev);  // select previous menu
+      break;
+
+    case fc::Fkey_right:
+      if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
+      {
+        FMenu* sub_menu = getSelectedItem()->getMenu();
+
+        if ( ! sub_menu->isVisible() )
+          openSubMenu (sub_menu);
+        else
+          keypressMenuBar(ev);  // select next menu
+      }
+      else
+        keypressMenuBar(ev);  // select next menu
+      break;
+
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
+      unselectItem();
+      hideSubMenus();
+      hide();
+
+      if ( isSubMenu() )
+      {
+        FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
+
+        if ( smenu->getSelectedItem() )
+          smenu->getSelectedItem()->setFocus();
+
+        smenu->redraw();
+      }
+      else
+      {
+        FWidget* super = getSuperMenu();
+        hideSuperMenus();
+
+        if ( getStatusBar() )
+          getStatusBar()->clearMessage();
+
+        if ( ! (super && isWindowsMenu(super)) )
+          switchToPrevWindow();
+      }
+
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+
+      updateTerminal();
+      flush_out();
+      break;
+
+    case fc::Fmkey_1:
+    case fc::Fmkey_2:
+    case fc::Fmkey_3:
+    case fc::Fmkey_4:
+    case fc::Fmkey_5:
+    case fc::Fmkey_6:
+    case fc::Fmkey_7:
+    case fc::Fmkey_8:
+    case fc::Fmkey_9:
+      // do nothing:
+      //   handle the dialog switch accelerator in FApplication
+      return;
+
+    default:
+      break;
+  }
+
+  // always accept key event -> no forwarding to the parent widget
+  ev->accept();
+}
+
+//----------------------------------------------------------------------
+void FMenu::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+  {
+    if ( open_sub_menu )
+    {
+      // close open sub menu
+      open_sub_menu->hideSubMenus();
+      open_sub_menu->hide();
+      open_sub_menu = 0;
+
+      if ( getSelectedItem() )
+        getSelectedItem()->setFocus();
+
+      redraw();
+
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+
+      updateTerminal();
+      flush_out();
+    }
+
+    return;
+  }
+
+  if ( mouse_down )
+    return;
+
+  if ( ! isWindowActive() )
+    setActiveWindow(this);
+
+  mouse_down = true;
+
+  if ( ! item_list.empty() )
+  {
+    std::vector<FMenuItem*>::const_iterator iter, end;
+    FMenu* show_sub_menu = 0;
+    bool focus_changed = false;
+    FPoint mouse_pos;
+
+    iter = item_list.begin();
+    end = item_list.end();
+    mouse_pos = ev->getPos();
+    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+
+    while ( iter != end )
+    {
+      int x1, x2, y, mouse_x, mouse_y;
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth();
+      y  = (*iter)->getY();
+      mouse_x = mouse_pos.getX();
+      mouse_y = mouse_pos.getY();
+
+      if (  mouse_x >= x1
+         && mouse_x < x2
+         && mouse_y == y )
+      {
+        // Mouse pointer over item
+        if ( hasSelectedItem() )
+        {
+          FMenuItem* sel_item = getSelectedItem();
+          if (  sel_item
+             && sel_item->hasMenu()
+             && sel_item->getMenu() == open_sub_menu )
+          {
+            if ( sel_item != *iter )
+              hideSubMenus();
+            else
+            {
+              open_sub_menu->unselectItem();
+              raiseWindow (open_sub_menu);
+              open_sub_menu->redraw();
+              sel_item->setFocus();
+
+              if ( getStatusBar() )
+                getStatusBar()->drawMessage();
+
+              updateTerminal();
+              flush_out();
+            }
+          }
+        }
+
+        if ( ! (*iter)->isSelected() )
+        {
+          unselectItem();
+          FWidget* focused_widget = getFocusWidget();
+          FFocusEvent out (fc::FocusOut_Event);
+          FApplication::queueEvent(focused_widget, &out);
+          (*iter)->setSelected();
+          setSelectedItem(*iter);
+          (*iter)->setFocus();
+
+          if ( focused_widget )
+            focused_widget->redraw();
+
+          if ( getStatusBar() )
+            getStatusBar()->drawMessage();
+
+          if ( (*iter)->hasMenu() )
+          {
+            FMenu* sub_menu = (*iter)->getMenu();
+            if ( ! sub_menu->isVisible() )
+              show_sub_menu = sub_menu;
+          }
+
+          focus_changed = true;
+        }
+      }
+
+      ++iter;
+    }
+
+    if ( focus_changed )
+      redraw();
+
+    if ( show_sub_menu )
+    {
+      // open sub menu
+      show_sub_menu->setVisible();
+      show_sub_menu->show();
+      open_sub_menu = show_sub_menu;
+      raiseWindow (show_sub_menu);
+      show_sub_menu->redraw();
+      updateTerminal();
+      flush_out();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::onMouseUp (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( mouse_down )
+  {
+    mouse_down = false;
+
+    if ( ! item_list.empty() )
+    {
+      std::vector<FMenuItem*>::const_iterator iter, end;
+      FPoint mouse_pos;
+      iter = item_list.begin();
+      end = item_list.end();
+      mouse_pos = ev->getPos();
+      mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+
+      while ( iter != end )
+      {
+        int x1, x2, y;
+        x1 = (*iter)->getX();
+        x2 = (*iter)->getX() + (*iter)->getWidth();
+        y  = (*iter)->getY();
+
+        if ( (*iter)->isSelected() )
+        {
+          int mouse_x = mouse_pos.getX();
+          int mouse_y = mouse_pos.getY();
+
+          if (  mouse_x >= x1
+             && mouse_x < x2
+             && mouse_y == y )
+          {
+            // Mouse pointer over item
+            if ( (*iter)->hasMenu() )
+            {
+              FMenu* sub_menu = (*iter)->getMenu();
+              if ( ! sub_menu->isVisible() )
+                openSubMenu (sub_menu);
+              else if ( open_sub_menu )
+              {
+                open_sub_menu->selectFirstItem();
+
+                if ( open_sub_menu->hasSelectedItem() )
+                  open_sub_menu->getSelectedItem()->setFocus();
+
+                open_sub_menu->redraw();
+
+                if ( getStatusBar() )
+                  getStatusBar()->drawMessage();
+
+                updateTerminal();
+                flush_out();
+              }
+
+              return;
+            }
+            else
+            {
+              unselectItem();
+              hide();
+              hideSuperMenus();
+              (*iter)->processClicked();
+            }
+          }
+        }
+
+        ++iter;
+      }
+
+      // Click on a non-FMenuItem (border or separator line)
+      unselectItem();
+      hide();
+      hideSuperMenus();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::onMouseMove (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( ! isWindowActive() )
+    setActiveWindow(this);
+
+  if ( mouse_down && ! item_list.empty() )
+  {
+    std::vector<FMenuItem*>::const_iterator iter, end;
+    FMenu* smenu = 0;
+    bool focus_changed = false;
+    bool mouse_over_menu = false;
+    bool mouse_over_submenu = false;
+    bool mouse_over_supermenu = false;
+    bool mouse_over_menubar = false;
+    bool hide_sub_menu = false;
+    FMenu* show_sub_menu = 0;
+    FPoint mouse_pos;
+
+    iter = item_list.begin();
+    end = item_list.end();
+    mouse_pos = ev->getPos();
+    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+
+    if ( getTermGeometry().contains(ev->getTermPos()) )
+      mouse_over_menu = true;
+
+    if ( open_sub_menu )
+    {
+      const FRect& submenu_geometry = open_sub_menu->getTermGeometry();
+      if ( submenu_geometry.contains(ev->getTermPos()) )
+        mouse_over_submenu = true;
+    }
+
+    if ( isSubMenu() )
+    {
+      smenu = superMenuAt (ev->getTermPos());
+
+      if ( smenu )
+        mouse_over_supermenu = true;
+    }
+
+    if (  getMenuBar()
+       && isMenuBar(getMenuBar())
+       && getMenuBar()->getTermGeometry().contains(ev->getTermPos()) )
+    {
+      mouse_over_menubar = true;
+    }
+
+    while ( iter != end )
+    {
+      int x1, x2, y, mouse_x, mouse_y;
+      x1 = (*iter)->getX();
+      x2 = (*iter)->getX() + (*iter)->getWidth();
+      y  = (*iter)->getY();
+      mouse_x = mouse_pos.getX();
+      mouse_y = mouse_pos.getY();
+
+      if (  mouse_x >= x1
+         && mouse_x < x2
+         && mouse_y == y )
+      {
+        if (    (*iter)->isEnabled()
+           && ! (*iter)->isSelected()
+           && ! (*iter)->isSeparator() )
+        {
+          // Mouse pointer over item
+          FWidget* focused_widget = getFocusWidget();
+          FFocusEvent out (fc::FocusOut_Event);
+          FApplication::queueEvent(focused_widget, &out);
+          (*iter)->setSelected();
+          setSelectedItem(*iter);
+          (*iter)->setFocus();
+
+          if ( focused_widget )
+            focused_widget->redraw();
+
+          if ( getStatusBar() )
+            getStatusBar()->drawMessage();
+
+          // sub menu handling
+          if ( (*iter)->hasMenu() )
+          {
+            FMenu* sub_menu = (*iter)->getMenu();
+
+            if ( ! sub_menu->isVisible() )
+              show_sub_menu = sub_menu;
+          }
+          else if ( open_sub_menu )
+            hide_sub_menu = true;
+
+          focus_changed = true;
+        }
+      }
+      else
+      {
+        if ( mouse_over_menu
+         && (*iter)->isEnabled()
+         && (*iter)->isSelected()
+         && ! mouse_over_submenu )
+        {
+          // Unselect selected item without mouse focus
+          (*iter)->unsetSelected();
+
+          if ( getSelectedItem() == *iter )
+            setSelectedItem(0);
+
+          focus_changed = true;
+        }
+      }
+
+      ++iter;
+    }
+
+    if ( mouse_over_submenu )
+    {
+      // Mouse event handover to sub-menu
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = open_sub_menu->termToWidgetPos(t);
+      int b = ev->getButton();
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      open_sub_menu->mouse_down = true;
+      setClickedWidget(open_sub_menu);
+      open_sub_menu->onMouseMove(_ev);
+      delete _ev;
+      return;
+    }
+    else if ( ! mouse_over_menu && mouse_over_supermenu )
+    {
+      // Mouse event handover to super-menu
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = smenu->termToWidgetPos(t);
+      int b = ev->getButton();
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      smenu->mouse_down = true;
+      setClickedWidget(smenu);
+      smenu->onMouseMove(_ev);
+      delete _ev;
+      return;
+    }
+    else if ( mouse_over_menubar )
+    {
+      // Mouse event handover to the menu bar
+      FWidget* menubar = getMenuBar();
+      const FPoint& t = ev->getTermPos();
+      const FPoint& p = menubar->termToWidgetPos(t);
+      int b = ev->getButton();
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      setClickedWidget(menubar);
+      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
+      mbar->mouse_down = true;
+      mbar->onMouseMove(_ev);
+      delete _ev;
+      return;
+    }
+    else if ( ! hasSelectedItem() && mouse_over_menu )
+    {
+      // Mouse is over border or separator
+      if ( getStatusBar() )
+      {
+        FString msg = getStatusbarMessage();
+        FString curMsg = getStatusBar()->getMessage();
+
+        if ( curMsg != msg )
+        if ( curMsg != msg )
+        {
+          getStatusBar()->setMessage(msg);
+          getStatusBar()->drawMessage();
+        }
+      }
+
+      if ( open_sub_menu )
+        hide_sub_menu = true;
+    }
+
+    if ( focus_changed )
+      redraw();
+
+    if ( show_sub_menu )
+    {
+      // close open sub menu
+      if ( open_sub_menu )
+      {
+        open_sub_menu->hideSubMenus();
+        open_sub_menu->hide();
+      }
+
+      // open sub menu
+      show_sub_menu->setVisible();
+      show_sub_menu->show();
+      open_sub_menu = show_sub_menu;
+      raiseWindow (show_sub_menu);
+      show_sub_menu->redraw();
+      updateTerminal();
+      flush_out();
+    }
+    else if ( hide_sub_menu )
+    {
+      open_sub_menu->hideSubMenus();
+      open_sub_menu->hide();
+      open_sub_menu = 0;
+      updateTerminal();
+      flush_out();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::cb_menuitem_toggled (FWidget* widget, void*)
+{
+  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+  std::vector<FMenuItem*>::const_iterator iter, end;
+
+  if ( ! has_checkable_items )
+    return;
+
+  if ( ! menuitem->isChecked() )
+    return;
+
+  if ( item_list.empty() )
+    return;
+
+  iter = item_list.begin();
+  end = item_list.end();
+
+  while ( iter != end )
+  {
+    if (  (*iter) != menuitem
+       && (*iter)->isChecked()
+       && isRadioMenuItem(*iter) )
+    {
+      (*iter)->unsetChecked();
+    }
+
+    ++iter;
+  }
+}
+
+
 // private methods of FMenu
+//----------------------------------------------------------------------
+bool FMenu::isWindowsMenu (FWidget* w) const
+{
+  return w->isDialogWidget();
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isMenuBar (FWidget* w) const
+{
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FMenuBar") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isMenu (FWidget* w) const
+{
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FMenu") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isRadioMenuItem (FWidget* w) const
+{
+  return bool ( std::strcmp ( w->getClassName()
+                            , const_cast<char*>("FRadioMenuItem") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FMenu::isSubMenu() const
+{
+  FWidget* super = getSuperMenu();
+
+  if ( super && isMenu(super) )
+    return true;
+  else
+    return false;
+}
+
 //----------------------------------------------------------------------
 void FMenu::init(FWidget* parent)
 {
@@ -156,7 +846,7 @@ void FMenu::calculateDimensions()
   adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry (adjust_X, getY(), int(max_item_width + 2), int(count() + 2));
+  setGeometry (adjust_X, getY(), int(max_item_width + 2), int(getCount() + 2));
 
   // set geometry of all items
   iter = item_list.begin();
@@ -202,7 +892,7 @@ void FMenu::adjustItems()
       menu->setPos (menu_X, menu_Y);
 
       // call sub-menu adjustItems()
-      if ( menu->count() > 0 )
+      if ( menu->getCount() > 0 )
         menu->adjustItems();
     }
 
@@ -226,44 +916,6 @@ int FMenu::adjustX (int x_pos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isWindowsMenu (FWidget* w) const
-{
-  return w->isDialogWidget();
-}
-
-//----------------------------------------------------------------------
-bool FMenu::isMenuBar (FWidget* w) const
-{
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FMenuBar") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FMenu::isMenu (FWidget* w) const
-{
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FMenu") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FMenu::isRadioMenuItem (FWidget* w) const
-{
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FRadioMenuItem") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FMenu::isSubMenu() const
-{
-  FWidget* super = getSuperMenu();
-
-  if ( super && isMenu(super) )
-    return true;
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
 void FMenu::openSubMenu (FMenu* sub_menu)
 {
   if ( sub_menu->isVisible() )
@@ -281,8 +933,8 @@ void FMenu::openSubMenu (FMenu* sub_menu)
   raiseWindow (sub_menu);
   sub_menu->redraw();
 
-  if ( statusBar() )
-    statusBar()->drawMessage();
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
 
   updateTerminal();
   flush_out();
@@ -406,8 +1058,8 @@ bool FMenu::selectNextItem()
       redraw();
       next->setFocus();
 
-      if ( statusBar() )
-        statusBar()->drawMessage();
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
 
       updateTerminal();
       flush_out();
@@ -457,8 +1109,8 @@ bool FMenu::selectPrevItem()
       setSelectedItem(prev);
       prev->setFocus();
 
-      if ( statusBar() )
-        statusBar()->drawMessage();
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
 
       redraw();
       updateTerminal();
@@ -474,7 +1126,7 @@ bool FMenu::selectPrevItem()
 //----------------------------------------------------------------------
 void FMenu::keypressMenuBar (FKeyEvent*& ev)
 {
-  FMenuBar* mbar = menuBar();
+  FMenuBar* mbar = getMenuBar();
 
   if ( mbar )
     mbar->onKeyPress(ev);
@@ -827,656 +1479,4 @@ inline void FMenu::drawSeparator(int y)
 void FMenu::processActivate()
 {
   emitCallback("activate");
-}
-
-
-// public methods of FMenu
-//----------------------------------------------------------------------
-void FMenu::onKeyPress (FKeyEvent* ev)
-{
-  FWidget* menubar;
-
-  // looking for menu hotkey
-  if ( hotkeyMenu(ev) )
-    return;
-
-  // looking for menu bar hotkey
-  menubar = menuBar();
-
-  if ( menubar )
-  {
-    FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
-
-    if ( mbar->hotkeyMenu(ev) )
-      return;
-  }
-
-  switch ( ev->key() )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      if ( hasSelectedItem() )
-      {
-        FMenuItem* sel_item = getSelectedItem();
-
-        if ( sel_item->hasMenu() )
-          openSubMenu (sel_item->getMenu());
-        else
-        {
-          unselectItem();
-          hide();
-          hideSuperMenus();
-          sel_item->processClicked();
-        }
-      }
-      break;
-
-    case fc::Fkey_up:
-      selectPrevItem();
-      break;
-
-    case fc::Fkey_down:
-      selectNextItem();
-      break;
-
-    case fc::Fkey_left:
-      if ( isSubMenu() )
-      {
-        FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
-        hideSubMenus();
-        hide();
-
-        if ( smenu->getSelectedItem() )
-          smenu->getSelectedItem()->setFocus();
-
-        smenu->redraw();
-
-        if ( statusBar() )
-          statusBar()->drawMessage();
-
-        updateTerminal();
-        flush_out();
-      }
-      else
-        keypressMenuBar(ev);  // select previous menu
-      break;
-
-    case fc::Fkey_right:
-      if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
-      {
-        FMenu* sub_menu = getSelectedItem()->getMenu();
-
-        if ( ! sub_menu->isVisible() )
-          openSubMenu (sub_menu);
-        else
-          keypressMenuBar(ev);  // select next menu
-      }
-      else
-        keypressMenuBar(ev);  // select next menu
-      break;
-
-    case fc::Fkey_escape:
-    case fc::Fkey_escape_mintty:
-      unselectItem();
-      hideSubMenus();
-      hide();
-
-      if ( isSubMenu() )
-      {
-        FMenu* smenu = reinterpret_cast<FMenu*>(getSuperMenu());
-
-        if ( smenu->getSelectedItem() )
-          smenu->getSelectedItem()->setFocus();
-
-        smenu->redraw();
-      }
-      else
-      {
-        FWidget* super = getSuperMenu();
-        hideSuperMenus();
-
-        if ( statusBar() )
-          statusBar()->clearMessage();
-
-        if ( ! (super && isWindowsMenu(super)) )
-          switchToPrevWindow();
-      }
-
-      if ( statusBar() )
-        statusBar()->drawMessage();
-
-      updateTerminal();
-      flush_out();
-      break;
-
-    case fc::Fmkey_1:
-    case fc::Fmkey_2:
-    case fc::Fmkey_3:
-    case fc::Fmkey_4:
-    case fc::Fmkey_5:
-    case fc::Fmkey_6:
-    case fc::Fmkey_7:
-    case fc::Fmkey_8:
-    case fc::Fmkey_9:
-      // do nothing:
-      //   handle the dialog switch accelerator in FApplication
-      return;
-
-    default:
-      break;
-  }
-
-  // always accept key event -> no forwarding to the parent widget
-  ev->accept();
-}
-
-//----------------------------------------------------------------------
-void FMenu::onMouseDown (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-  {
-    if ( open_sub_menu )
-    {
-      // close open sub menu
-      open_sub_menu->hideSubMenus();
-      open_sub_menu->hide();
-      open_sub_menu = 0;
-
-      if ( getSelectedItem() )
-        getSelectedItem()->setFocus();
-
-      redraw();
-
-      if ( statusBar() )
-        statusBar()->drawMessage();
-
-      updateTerminal();
-      flush_out();
-    }
-
-    return;
-  }
-
-  if ( mouse_down )
-    return;
-
-  if ( ! isWindowActive() )
-    setActiveWindow(this);
-
-  mouse_down = true;
-
-  if ( ! item_list.empty() )
-  {
-    std::vector<FMenuItem*>::const_iterator iter, end;
-    FMenu* show_sub_menu = 0;
-    bool focus_changed = false;
-    FPoint mouse_pos;
-
-    iter = item_list.begin();
-    end = item_list.end();
-    mouse_pos = ev->getPos();
-    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
-
-    while ( iter != end )
-    {
-      int x1, x2, y, mouse_x, mouse_y;
-      x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth();
-      y  = (*iter)->getY();
-      mouse_x = mouse_pos.getX();
-      mouse_y = mouse_pos.getY();
-
-      if (  mouse_x >= x1
-         && mouse_x < x2
-         && mouse_y == y )
-      {
-        // Mouse pointer over item
-        if ( hasSelectedItem() )
-        {
-          FMenuItem* sel_item = getSelectedItem();
-          if (  sel_item
-             && sel_item->hasMenu()
-             && sel_item->getMenu() == open_sub_menu )
-          {
-            if ( sel_item != *iter )
-              hideSubMenus();
-            else
-            {
-              open_sub_menu->unselectItem();
-              raiseWindow (open_sub_menu);
-              open_sub_menu->redraw();
-              sel_item->setFocus();
-
-              if ( statusBar() )
-                statusBar()->drawMessage();
-
-              updateTerminal();
-              flush_out();
-            }
-          }
-        }
-
-        if ( ! (*iter)->isSelected() )
-        {
-          unselectItem();
-          FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (fc::FocusOut_Event);
-          FApplication::queueEvent(focused_widget, &out);
-          (*iter)->setSelected();
-          setSelectedItem(*iter);
-          (*iter)->setFocus();
-
-          if ( focused_widget )
-            focused_widget->redraw();
-
-          if ( statusBar() )
-            statusBar()->drawMessage();
-
-          if ( (*iter)->hasMenu() )
-          {
-            FMenu* sub_menu = (*iter)->getMenu();
-            if ( ! sub_menu->isVisible() )
-              show_sub_menu = sub_menu;
-          }
-
-          focus_changed = true;
-        }
-      }
-
-      ++iter;
-    }
-
-    if ( focus_changed )
-      redraw();
-
-    if ( show_sub_menu )
-    {
-      // open sub menu
-      show_sub_menu->setVisible();
-      show_sub_menu->show();
-      open_sub_menu = show_sub_menu;
-      raiseWindow (show_sub_menu);
-      show_sub_menu->redraw();
-      updateTerminal();
-      flush_out();
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::onMouseUp (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( mouse_down )
-  {
-    mouse_down = false;
-
-    if ( ! item_list.empty() )
-    {
-      std::vector<FMenuItem*>::const_iterator iter, end;
-      FPoint mouse_pos;
-      iter = item_list.begin();
-      end = item_list.end();
-      mouse_pos = ev->getPos();
-      mouse_pos -= FPoint(getRightPadding(),getTopPadding());
-
-      while ( iter != end )
-      {
-        int x1, x2, y;
-        x1 = (*iter)->getX();
-        x2 = (*iter)->getX() + (*iter)->getWidth();
-        y  = (*iter)->getY();
-
-        if ( (*iter)->isSelected() )
-        {
-          int mouse_x = mouse_pos.getX();
-          int mouse_y = mouse_pos.getY();
-
-          if (  mouse_x >= x1
-             && mouse_x < x2
-             && mouse_y == y )
-          {
-            // Mouse pointer over item
-            if ( (*iter)->hasMenu() )
-            {
-              FMenu* sub_menu = (*iter)->getMenu();
-              if ( ! sub_menu->isVisible() )
-                openSubMenu (sub_menu);
-              else if ( open_sub_menu )
-              {
-                open_sub_menu->selectFirstItem();
-
-                if ( open_sub_menu->hasSelectedItem() )
-                  open_sub_menu->getSelectedItem()->setFocus();
-
-                open_sub_menu->redraw();
-
-                if ( statusBar() )
-                  statusBar()->drawMessage();
-
-                updateTerminal();
-                flush_out();
-              }
-
-              return;
-            }
-            else
-            {
-              unselectItem();
-              hide();
-              hideSuperMenus();
-              (*iter)->processClicked();
-            }
-          }
-        }
-
-        ++iter;
-      }
-
-      // Click on a non-FMenuItem (border or separator line)
-      unselectItem();
-      hide();
-      hideSuperMenus();
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::onMouseMove (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( ! isWindowActive() )
-    setActiveWindow(this);
-
-  if ( mouse_down && ! item_list.empty() )
-  {
-    std::vector<FMenuItem*>::const_iterator iter, end;
-    FMenu* smenu = 0;
-    bool focus_changed = false;
-    bool mouse_over_menu = false;
-    bool mouse_over_submenu = false;
-    bool mouse_over_supermenu = false;
-    bool mouse_over_menubar = false;
-    bool hide_sub_menu = false;
-    FMenu* show_sub_menu = 0;
-    FPoint mouse_pos;
-
-    iter = item_list.begin();
-    end = item_list.end();
-    mouse_pos = ev->getPos();
-    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
-
-    if ( getTermGeometry().contains(ev->getTermPos()) )
-      mouse_over_menu = true;
-
-    if ( open_sub_menu )
-    {
-      const FRect& submenu_geometry = open_sub_menu->getTermGeometry();
-      if ( submenu_geometry.contains(ev->getTermPos()) )
-        mouse_over_submenu = true;
-    }
-
-    if ( isSubMenu() )
-    {
-      smenu = superMenuAt (ev->getTermPos());
-
-      if ( smenu )
-        mouse_over_supermenu = true;
-    }
-
-    if (  menuBar()
-       && isMenuBar(menuBar())
-       && menuBar()->getTermGeometry().contains(ev->getTermPos()) )
-    {
-      mouse_over_menubar = true;
-    }
-
-    while ( iter != end )
-    {
-      int x1, x2, y, mouse_x, mouse_y;
-      x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth();
-      y  = (*iter)->getY();
-      mouse_x = mouse_pos.getX();
-      mouse_y = mouse_pos.getY();
-
-      if (  mouse_x >= x1
-         && mouse_x < x2
-         && mouse_y == y )
-      {
-        if (    (*iter)->isEnabled()
-           && ! (*iter)->isSelected()
-           && ! (*iter)->isSeparator() )
-        {
-          // Mouse pointer over item
-          FWidget* focused_widget = getFocusWidget();
-          FFocusEvent out (fc::FocusOut_Event);
-          FApplication::queueEvent(focused_widget, &out);
-          (*iter)->setSelected();
-          setSelectedItem(*iter);
-          (*iter)->setFocus();
-
-          if ( focused_widget )
-            focused_widget->redraw();
-
-          if ( statusBar() )
-            statusBar()->drawMessage();
-
-          // sub menu handling
-          if ( (*iter)->hasMenu() )
-          {
-            FMenu* sub_menu = (*iter)->getMenu();
-
-            if ( ! sub_menu->isVisible() )
-              show_sub_menu = sub_menu;
-          }
-          else if ( open_sub_menu )
-            hide_sub_menu = true;
-
-          focus_changed = true;
-        }
-      }
-      else
-      {
-        if ( mouse_over_menu
-         && (*iter)->isEnabled()
-         && (*iter)->isSelected()
-         && ! mouse_over_submenu )
-        {
-          // Unselect selected item without mouse focus
-          (*iter)->unsetSelected();
-
-          if ( getSelectedItem() == *iter )
-            setSelectedItem(0);
-
-          focus_changed = true;
-        }
-      }
-
-      ++iter;
-    }
-
-    if ( mouse_over_submenu )
-    {
-      // Mouse event handover to sub-menu
-      const FPoint& t = ev->getTermPos();
-      const FPoint& p = open_sub_menu->termToWidgetPos(t);
-      int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      open_sub_menu->mouse_down = true;
-      setClickedWidget(open_sub_menu);
-      open_sub_menu->onMouseMove(_ev);
-      delete _ev;
-      return;
-    }
-    else if ( ! mouse_over_menu && mouse_over_supermenu )
-    {
-      // Mouse event handover to super-menu
-      const FPoint& t = ev->getTermPos();
-      const FPoint& p = smenu->termToWidgetPos(t);
-      int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      smenu->mouse_down = true;
-      setClickedWidget(smenu);
-      smenu->onMouseMove(_ev);
-      delete _ev;
-      return;
-    }
-    else if ( mouse_over_menubar )
-    {
-      // Mouse event handover to the menu bar
-      FWidget* menubar = menuBar();
-      const FPoint& t = ev->getTermPos();
-      const FPoint& p = menubar->termToWidgetPos(t);
-      int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      setClickedWidget(menubar);
-      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
-      mbar->mouse_down = true;
-      mbar->onMouseMove(_ev);
-      delete _ev;
-      return;
-    }
-    else if ( ! hasSelectedItem() && mouse_over_menu )
-    {
-      // Mouse is over border or separator
-      if ( statusBar() )
-      {
-        FString msg = getStatusbarMessage();
-        FString curMsg = statusBar()->getMessage();
-
-        if ( curMsg != msg )
-        if ( curMsg != msg )
-        {
-          statusBar()->setMessage(msg);
-          statusBar()->drawMessage();
-        }
-      }
-
-      if ( open_sub_menu )
-        hide_sub_menu = true;
-    }
-
-    if ( focus_changed )
-      redraw();
-
-    if ( show_sub_menu )
-    {
-      // close open sub menu
-      if ( open_sub_menu )
-      {
-        open_sub_menu->hideSubMenus();
-        open_sub_menu->hide();
-      }
-
-      // open sub menu
-      show_sub_menu->setVisible();
-      show_sub_menu->show();
-      open_sub_menu = show_sub_menu;
-      raiseWindow (show_sub_menu);
-      show_sub_menu->redraw();
-      updateTerminal();
-      flush_out();
-    }
-    else if ( hide_sub_menu )
-    {
-      open_sub_menu->hideSubMenus();
-      open_sub_menu->hide();
-      open_sub_menu = 0;
-      updateTerminal();
-      flush_out();
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::show()
-{
-  if ( ! isVisible() )
-    return;
-
-  FWindow::show();
-}
-
-//----------------------------------------------------------------------
-void FMenu::hide()
-{
-  if ( isVisible() )
-  {
-    FWindow::hide();
-    const FRect& t_geometry = getTermGeometryWithShadow();
-    restoreVTerm (t_geometry);
-    updateTerminal();
-    flush_out();
-
-    if ( ! isSubMenu() )
-    {
-      FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
-
-      if ( open_menu && open_menu != this )
-        open_menu->hide();
-
-      setOpenMenu(0);
-    }
-
-    mouse_down = false;
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenu::setStatusbarMessage(FString msg)
-{
-  FWidget::setStatusbarMessage(msg);
-
-  if ( item )
-    item->setStatusbarMessage(msg);
-}
-
-//----------------------------------------------------------------------
-void FMenu::cb_menuitem_toggled (FWidget* widget, void*)
-{
-  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
-  std::vector<FMenuItem*>::const_iterator iter, end;
-
-  if ( ! has_checkable_items )
-    return;
-
-  if ( ! menuitem->isChecked() )
-    return;
-
-  if ( item_list.empty() )
-    return;
-
-  iter = item_list.begin();
-  end = item_list.end();
-
-  while ( iter != end )
-  {
-    if (  (*iter) != menuitem
-       && (*iter)->isChecked()
-       && isRadioMenuItem(*iter) )
-    {
-      (*iter)->unsetChecked();
-    }
-
-    ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-bool FMenu::setMenuWidget (bool on)
-{
-  if ( isMenuWidget() == on )
-    return true;
-
-  if ( on )
-    flags |= fc::menu_widget;
-  else
-    flags &= ~fc::menu_widget;
-
-  return on;
 }

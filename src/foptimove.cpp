@@ -45,64 +45,32 @@ FOptiMove::~FOptiMove() // destructor
 { }
 
 
-// private methods of FApplication
-//----------------------------------------------------------------------
-void FOptiMove::calculateCharDuration()
-{
-  if ( baudrate != 0 )
-  {
-    const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
-    char_duration = (baudbyte * 1000 * 10)
-                    / (baudrate > 0 ? baudrate : 9600); // milliseconds
-
-    if ( char_duration <= 0 )
-      char_duration = 1;
-  }
-  else
-    char_duration = 1;
-}
-
-//----------------------------------------------------------------------
-int FOptiMove::capDuration (char*& cap, int affcnt)
-{
-  // calculate the duration in milliseconds of a given operation
-  // cap    - the term capability
-  // affcnt - the number of lines affected
-
-  if ( ! cap )
-    return LONG_DURATION;
-
-  const char* p;
-  float ms = 0;
-
-  for (p=cap; *p; p++)
-  {
-    // check for delay with padding character
-    if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
-    {
-      float num=0;
-
-      for (p += 2; *p != '>'; p++)
-      {
-        if ( std::isdigit(uChar(*p)) )
-          num = num * 10 + float(*p - '0');
-        else if ( *p == '*' )
-          num *= float(affcnt);
-        else if ( *p == '.' && *++p != '>' && std::isdigit(uChar(*p)) )
-          num += float((*p - '0') / 10.0);
-      }
-
-      ms += num * 10;
-    }
-    else
-      ms += float(char_duration);
-  }
-
-  return int(ms);
-}
-
-
 // public methods of FOptiMove
+//----------------------------------------------------------------------
+void FOptiMove::setBaudRate (int baud)
+{
+  assert ( baud >= 0 );
+
+  baudrate = baud;
+  calculateCharDuration();
+}
+
+//----------------------------------------------------------------------
+void FOptiMove::setTabStop (int t)
+{
+  assert ( t > 0 );
+  tabstop = t;
+}
+
+//----------------------------------------------------------------------
+void FOptiMove::setTermSize (int w, int h)
+{
+  assert ( w > 0 );
+  assert ( h > 0 );
+  screen_width = w;
+  screen_height = h;
+}
+
 //----------------------------------------------------------------------
 void FOptiMove::set_cursor_home (char*& cap)
 {
@@ -287,28 +255,236 @@ void FOptiMove::set_parm_right_cursor (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setBaudRate (int baud)
+char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
-  assert ( baud >= 0 );
+  char  null_result[sizeof(move_buf)];
+  char* null_ptr = null_result;
+  char* move_ptr = move_buf;
+  char* move_xy;
+  int   method = 0;
+  int   new_time;
+  int   move_time = LONG_DURATION;
 
-  baudrate = baud;
-  calculateCharDuration();
+  // Method 0: direct cursor addressing
+  move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
+  if ( move_xy )
+  {
+    method = 0;
+    std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
+    move_time = F_cursor_address.duration;
+
+    if (  xold < 0
+       || yold < 0
+       || isTwoDirectionMove (xold, yold, xnew, ynew)
+       || isWideMove (xold, yold, xnew, ynew) )
+    {
+      return ( move_time < LONG_DURATION ) ? move_buf : 0;
+    }
+  }
+
+  // Method 1: local movement
+  if ( xold >= 0 && yold >= 0 )
+  {
+    new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
+
+    if ( new_time < LONG_DURATION && new_time < move_time )
+    {
+      method = 1;
+      move_time = new_time;
+    }
+  }
+
+  // Method 2: carriage-return + local movement
+  if ( yold >= 0 && F_carriage_return.cap )
+  {
+    new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
+
+    if (  new_time < LONG_DURATION
+       && F_carriage_return.duration + new_time < move_time )
+    {
+      method = 2;
+      move_time = F_carriage_return.duration + new_time;
+    }
+  }
+
+  // Method 3: home-cursor + local movement
+  if ( F_cursor_home.cap )
+  {
+    new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
+
+    if (  new_time < LONG_DURATION
+       && F_cursor_home.duration + new_time < move_time )
+    {
+      method = 3;
+      move_time = F_cursor_home.duration + new_time;
+    }
+  }
+
+  // Method 4: home-down + local movement
+  if ( F_cursor_to_ll.cap )
+  {
+    new_time = relativeMove (null_ptr, 0, screen_height-1, xnew, ynew);
+
+    if (  new_time < LONG_DURATION
+       && F_cursor_to_ll.duration + new_time < move_time )
+    {
+      method = 4;
+      move_time = F_cursor_to_ll.duration + new_time;
+    }
+  }
+
+  // Method 5: left margin for wrap to right-hand side
+  if (  automatic_left_margin
+     && ! eat_nl_glitch
+     && yold > 0
+     && F_cursor_left.cap )
+  {
+    new_time = relativeMove (null_ptr, screen_width-1, yold-1, xnew, ynew);
+
+    if (  new_time < LONG_DURATION
+       && F_carriage_return.cap
+       && F_carriage_return.duration
+        + F_cursor_left.duration + new_time < move_time )
+    {
+      method = 5;
+      move_time = F_carriage_return.duration
+                + F_cursor_left.duration + new_time;
+    }
+  }
+
+  if ( method )
+  {
+    switch ( method )
+    {
+      case 1:
+        relativeMove (move_ptr, xold, yold, xnew, ynew);
+        break;
+
+      case 2:
+        if ( F_carriage_return.cap )
+        {
+          std::strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
+          move_ptr += F_carriage_return.length;
+          relativeMove (move_ptr, 0, yold, xnew, ynew);
+        }
+        break;
+
+      case 3:
+        std::strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
+        move_ptr += F_cursor_home.length;
+        relativeMove (move_ptr, 0, 0, xnew, ynew);
+        break;
+
+      case 4:
+        std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
+        move_ptr += F_cursor_to_ll.length;
+        relativeMove (move_ptr, 0, screen_height-1, xnew, ynew);
+        break;
+
+      case 5:
+        move_buf[0] = '\0';
+
+        if ( xold >= 0 )
+          std::strncat ( move_ptr
+                       , F_carriage_return.cap
+                       , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+
+        std::strncat ( move_ptr
+                     , F_cursor_left.cap
+                     , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+        move_ptr += std::strlen(move_buf);
+        relativeMove (move_ptr, screen_width-1, yold-1, xnew, ynew);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if ( move_time < LONG_DURATION )
+    return move_buf;
+  else
+    return 0;
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setTabStop (int t)
+void FOptiMove::printDurations()
 {
-  assert ( t > 0 );
-  tabstop = t;
+  std::printf ("            speed: %d baud\n", baudrate);
+  std::printf ("    char_duration: %d ms\n", char_duration);
+  std::printf ("      cursor_home: %d ms\n", F_cursor_home.duration);
+  std::printf ("     cursor_to_ll: %d ms\n", F_cursor_to_ll.duration);
+  std::printf ("  carriage_return: %d ms\n", F_carriage_return.duration);
+  std::printf ("              tab: %d ms\n", F_tab.duration);
+  std::printf ("         back_tab: %d ms\n", F_back_tab.duration);
+  std::printf ("        cursor_up: %d ms\n", F_cursor_up.duration);
+  std::printf ("      cursor_down: %d ms\n", F_cursor_down.duration);
+  std::printf ("      cursor_left: %d ms\n", F_cursor_left.duration);
+  std::printf ("     cursor_right: %d ms\n", F_cursor_right.duration);
+  std::printf ("   cursor_address: %d ms\n", F_cursor_address.duration);
+  std::printf ("   column_address: %d ms\n", F_column_address.duration);
+  std::printf ("      row_address: %d ms\n", F_row_address.duration);
+  std::printf ("   parm_up_cursor: %d ms\n", F_parm_up_cursor.duration);
+  std::printf (" parm_down_cursor: %d ms\n", F_parm_down_cursor.duration);
+  std::printf (" parm_left_cursor: %d ms\n", F_parm_left_cursor.duration);
+  std::printf ("parm_right_cursor: %d ms\n", F_parm_right_cursor.duration);
+}
+
+
+// private methods of FApplication
+//----------------------------------------------------------------------
+void FOptiMove::calculateCharDuration()
+{
+  if ( baudrate != 0 )
+  {
+    const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
+    char_duration = (baudbyte * 1000 * 10)
+                    / (baudrate > 0 ? baudrate : 9600); // milliseconds
+
+    if ( char_duration <= 0 )
+      char_duration = 1;
+  }
+  else
+    char_duration = 1;
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setTermSize (int w, int h)
+int FOptiMove::capDuration (char*& cap, int affcnt)
 {
-  assert ( w > 0 );
-  assert ( h > 0 );
-  screen_width = w;
-  screen_height = h;
+  // calculate the duration in milliseconds of a given operation
+  // cap    - the term capability
+  // affcnt - the number of lines affected
+
+  if ( ! cap )
+    return LONG_DURATION;
+
+  const char* p;
+  float ms = 0;
+
+  for (p=cap; *p; p++)
+  {
+    // check for delay with padding character
+    if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
+    {
+      float num=0;
+
+      for (p += 2; *p != '>'; p++)
+      {
+        if ( std::isdigit(uChar(*p)) )
+          num = num * 10 + float(*p - '0');
+        else if ( *p == '*' )
+          num *= float(affcnt);
+        else if ( *p == '.' && *++p != '>' && std::isdigit(uChar(*p)) )
+          num += float((*p - '0') / 10.0);
+      }
+
+      ms += num * 10;
+    }
+    else
+      ms += float(char_duration);
+  }
+
+  return int(ms);
 }
 
 //----------------------------------------------------------------------
@@ -557,180 +733,4 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
   return bool (  (xnew > MOVE_LIMIT)
               && (xnew < screen_width - 1 - MOVE_LIMIT)
               && (std::abs(xnew-xold) + std::abs(ynew-yold) > MOVE_LIMIT) );
-}
-
-//----------------------------------------------------------------------
-char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
-{
-  char  null_result[sizeof(move_buf)];
-  char* null_ptr = null_result;
-  char* move_ptr = move_buf;
-  char* move_xy;
-  int   method = 0;
-  int   new_time;
-  int   move_time = LONG_DURATION;
-
-  // Method 0: direct cursor addressing
-  move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
-  if ( move_xy )
-  {
-    method = 0;
-    std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
-    move_time = F_cursor_address.duration;
-
-    if (  xold < 0
-       || yold < 0
-       || isTwoDirectionMove (xold, yold, xnew, ynew)
-       || isWideMove (xold, yold, xnew, ynew) )
-    {
-      return ( move_time < LONG_DURATION ) ? move_buf : 0;
-    }
-  }
-
-  // Method 1: local movement
-  if ( xold >= 0 && yold >= 0 )
-  {
-    new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
-
-    if ( new_time < LONG_DURATION && new_time < move_time )
-    {
-      method = 1;
-      move_time = new_time;
-    }
-  }
-
-  // Method 2: carriage-return + local movement
-  if ( yold >= 0 && F_carriage_return.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
-
-    if (  new_time < LONG_DURATION
-       && F_carriage_return.duration + new_time < move_time )
-    {
-      method = 2;
-      move_time = F_carriage_return.duration + new_time;
-    }
-  }
-
-  // Method 3: home-cursor + local movement
-  if ( F_cursor_home.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
-
-    if (  new_time < LONG_DURATION
-       && F_cursor_home.duration + new_time < move_time )
-    {
-      method = 3;
-      move_time = F_cursor_home.duration + new_time;
-    }
-  }
-
-  // Method 4: home-down + local movement
-  if ( F_cursor_to_ll.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, screen_height-1, xnew, ynew);
-
-    if (  new_time < LONG_DURATION
-       && F_cursor_to_ll.duration + new_time < move_time )
-    {
-      method = 4;
-      move_time = F_cursor_to_ll.duration + new_time;
-    }
-  }
-
-  // Method 5: left margin for wrap to right-hand side
-  if (  automatic_left_margin
-     && ! eat_nl_glitch
-     && yold > 0
-     && F_cursor_left.cap )
-  {
-    new_time = relativeMove (null_ptr, screen_width-1, yold-1, xnew, ynew);
-
-    if (  new_time < LONG_DURATION
-       && F_carriage_return.cap
-       && F_carriage_return.duration
-        + F_cursor_left.duration + new_time < move_time )
-    {
-      method = 5;
-      move_time = F_carriage_return.duration
-                + F_cursor_left.duration + new_time;
-    }
-  }
-
-  if ( method )
-  {
-    switch ( method )
-    {
-      case 1:
-        relativeMove (move_ptr, xold, yold, xnew, ynew);
-        break;
-
-      case 2:
-        if ( F_carriage_return.cap )
-        {
-          std::strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
-          move_ptr += F_carriage_return.length;
-          relativeMove (move_ptr, 0, yold, xnew, ynew);
-        }
-        break;
-
-      case 3:
-        std::strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
-        move_ptr += F_cursor_home.length;
-        relativeMove (move_ptr, 0, 0, xnew, ynew);
-        break;
-
-      case 4:
-        std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
-        move_ptr += F_cursor_to_ll.length;
-        relativeMove (move_ptr, 0, screen_height-1, xnew, ynew);
-        break;
-
-      case 5:
-        move_buf[0] = '\0';
-
-        if ( xold >= 0 )
-          std::strncat ( move_ptr
-                       , F_carriage_return.cap
-                       , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
-
-        std::strncat ( move_ptr
-                     , F_cursor_left.cap
-                     , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
-        move_ptr += std::strlen(move_buf);
-        relativeMove (move_ptr, screen_width-1, yold-1, xnew, ynew);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  if ( move_time < LONG_DURATION )
-    return move_buf;
-  else
-    return 0;
-}
-
-//----------------------------------------------------------------------
-void FOptiMove::printDurations()
-{
-  std::printf ("            speed: %d baud\n", baudrate);
-  std::printf ("    char_duration: %d ms\n", char_duration);
-  std::printf ("      cursor_home: %d ms\n", F_cursor_home.duration);
-  std::printf ("     cursor_to_ll: %d ms\n", F_cursor_to_ll.duration);
-  std::printf ("  carriage_return: %d ms\n", F_carriage_return.duration);
-  std::printf ("              tab: %d ms\n", F_tab.duration);
-  std::printf ("         back_tab: %d ms\n", F_back_tab.duration);
-  std::printf ("        cursor_up: %d ms\n", F_cursor_up.duration);
-  std::printf ("      cursor_down: %d ms\n", F_cursor_down.duration);
-  std::printf ("      cursor_left: %d ms\n", F_cursor_left.duration);
-  std::printf ("     cursor_right: %d ms\n", F_cursor_right.duration);
-  std::printf ("   cursor_address: %d ms\n", F_cursor_address.duration);
-  std::printf ("   column_address: %d ms\n", F_column_address.duration);
-  std::printf ("      row_address: %d ms\n", F_row_address.duration);
-  std::printf ("   parm_up_cursor: %d ms\n", F_parm_up_cursor.duration);
-  std::printf (" parm_down_cursor: %d ms\n", F_parm_down_cursor.duration);
-  std::printf (" parm_left_cursor: %d ms\n", F_parm_left_cursor.duration);
-  std::printf ("parm_right_cursor: %d ms\n", F_parm_right_cursor.duration);
 }

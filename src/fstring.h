@@ -17,12 +17,12 @@
 #include <stdint.h>
 
 #include <cassert>
-#include <cerrno>  // for read errno
+#include <cerrno>   // for read errno
 #include <cfloat>
 #include <climits>
 #include <cmath>
-#include <cstdarg> // need for va_list, va_start and va_end
-#include <cstdio>  // need for vsprintf
+#include <cstdarg>  // need for va_list, va_start and va_end
+#include <cstdio>   // need for vsprintf
 #include <cstring>
 #include <cwchar>
 #include <cwctype>
@@ -33,11 +33,6 @@
 #include <string>
 #include <vector>
 
-
-#define FWDBUFFER 15
-#define INPBUFFER 200
-#define CHAR_SIZE (sizeof(wchar_t))  // bytes per character
-#define bad_alloc_str ("not enough memory to alloc a new string")
 
 typedef unsigned char  uChar;
 typedef unsigned int   uInt;
@@ -64,24 +59,9 @@ typedef long double    lDouble;
 class FString
 {
  public:
+   // Typedef
    typedef const wchar_t* iterator;
 
- private:
-   wchar_t*      string;
-   uInt          length;
-   uInt          bufsize;
-   mutable char* c_string;
-
- private:
-   void initLength (uInt);
-   void _replace (const wchar_t*);
-   void _insert (uInt, uInt, const wchar_t*);
-   void _remove (uInt, uInt);
-   char* wc_to_c_str (const wchar_t*) const;
-   wchar_t* c_to_wc_str (const char*) const;
-   wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
-
- public:
    // Constructors
    FString ();
    explicit FString (int);
@@ -90,25 +70,119 @@ class FString
    FString (uInt, wchar_t);
    FString (int, char);
    FString (uInt, char);
-   FString (const FString&);      // implicit conversion constructor
+   FString (const FString&);      // implicit conversion copy constructor
    FString (const std::wstring&); // implicit conversion constructor
    FString (const wchar_t*);      // implicit conversion constructor
    FString (const std::string&);  // implicit conversion constructor
    FString (const char*);         // implicit conversion constructor
    FString (const wchar_t);       // implicit conversion constructor
    FString (const char);          // implicit conversion constructor
+
    // Destructor
    virtual ~FString ();
 
+   // Overloaded operators
+   FString& operator = (const FString&);
+   FString& operator = (const std::wstring&);
+   const FString& operator = (const wchar_t*);
+   FString& operator = (const std::string&);
+   const FString& operator = (const char*);
+   const FString& operator = (const wchar_t);
+   const FString& operator = (const char);
+
+   const FString& operator += (const FString&);
+   const FString& operator += (const std::wstring&);
+   const FString& operator += (const wchar_t*);
+   const FString& operator += (const std::string&);
+   const FString& operator += (const char*);
+   const FString& operator += (const wchar_t);
+   const FString& operator += (const char);
+
+   const FString operator + (const FString&);
+   const FString operator + (const std::wstring&);
+   const FString operator + (const wchar_t*);
+   const FString operator + (const std::string&);
+   const FString operator + (const char*);
+   const FString operator + (const wchar_t);
+   const FString operator + (const char);
+
+   wchar_t& operator [] (int);
+   wchar_t& operator [] (uInt);
+   const FString operator () (uInt, uInt);
+
+   bool operator <  (const FString&) const;
+   bool operator <  (const std::wstring&) const;
+   bool operator <  (const wchar_t*) const;
+   bool operator <  (const std::string&) const;
+   bool operator <  (const char*) const;
+   bool operator <  (const wchar_t) const;
+   bool operator <  (const char) const;
+   bool operator <= (const FString&) const;
+   bool operator <= (const std::wstring&) const;
+   bool operator <= (const wchar_t*) const;
+   bool operator <= (const std::string&) const;
+   bool operator <= (const char*) const;
+   bool operator <= (const wchar_t) const;
+   bool operator <= (const char) const;
+   bool operator == (const FString&) const;
+   bool operator == (const std::wstring&) const;
+   bool operator == (const wchar_t*) const;
+   bool operator == (const std::string&) const;
+   bool operator == (const char*) const;
+   bool operator == (const wchar_t) const;
+   bool operator == (const char) const;
+   bool operator != (const FString&) const;
+   bool operator != (const std::wstring&) const;
+   bool operator != (const wchar_t*) const;
+   bool operator != (const std::string&) const;
+   bool operator != (const char*) const;
+   bool operator != (const wchar_t) const;
+   bool operator != (const char) const;
+   bool operator >= (const FString&) const;
+   bool operator >= (const std::wstring&) const;
+   bool operator >= (const wchar_t*) const;
+   bool operator >= (const std::string&) const;
+   bool operator >= (const char*) const;
+   bool operator >= (const wchar_t) const;
+   bool operator >= (const char) const;
+   bool operator >  (const FString&) const;
+   bool operator >  (const std::wstring&) const;
+   bool operator >  (const wchar_t*) const;
+   bool operator >  (const std::string&) const;
+   bool operator >  (const char*) const;
+   bool operator >  (const wchar_t) const;
+   bool operator >  (const char) const;
+
+   operator const char* () const { return c_str(); }
+
+   // Non-member operators
+   friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
+   friend std::istream&  operator >> (std::istream& instr, FString& s);
+   friend std::wostream& operator << (std::wostream& outstr, const FString& s);
+   friend std::wistream& operator >> (std::wistream& instr, FString& s);
+
+   friend const FString operator + (const FString&, const FString&);
+   friend const FString operator + (const FString&, const wchar_t);
+   friend const FString operator + (const std::wstring&, const FString&);
+   friend const FString operator + (const wchar_t*, const FString&);
+   friend const FString operator + (const std::string&, const FString&);
+   friend const FString operator + (const char*, const FString&);
+   friend const FString operator + (const wchar_t, const FString&);
+   friend const FString operator + (const char, const FString&);
+   friend const FString operator + (const wchar_t, const std::wstring&);
+
+   // inquiries
    bool isNull() const;
    bool isEmpty() const;
+
+   // Methods
    uInt getLength() const;
    uInt getUTF8length() const;
 
    iterator begin() const;
-   iterator end() const;
-   wchar_t front() const;
-   wchar_t back() const;
+   iterator end()   const;
+   wchar_t  front() const;
+   wchar_t  back()  const;
 
    FString& sprintf (const wchar_t*, ...);
    FString& sprintf (const char*, ...)
@@ -174,94 +248,6 @@ class FString
    FString& setFormatedNumber (uInt,   char = nl_langinfo(THOUSEP)[0]);
    FString& setFormatedNumber (long,   char = nl_langinfo(THOUSEP)[0]);
    FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
-
-   friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
-   friend std::istream&  operator >> (std::istream& instr, FString& s);
-   friend std::wostream& operator << (std::wostream& outstr, const FString& s);
-   friend std::wistream& operator >> (std::wistream& instr, FString& s);
-
-   FString& operator = (const FString&);
-   FString& operator = (const std::wstring&);
-   const FString& operator = (const wchar_t*);
-   FString& operator = (const std::string&);
-   const FString& operator = (const char*);
-   const FString& operator = (const wchar_t);
-   const FString& operator = (const char);
-
-   const FString& operator += (const FString&);
-   const FString& operator += (const std::wstring&);
-   const FString& operator += (const wchar_t*);
-   const FString& operator += (const std::string&);
-   const FString& operator += (const char*);
-   const FString& operator += (const wchar_t);
-   const FString& operator += (const char);
-
-   const FString operator + (const FString&);
-   const FString operator + (const std::wstring&);
-   const FString operator + (const wchar_t*);
-   const FString operator + (const std::string&);
-   const FString operator + (const char*);
-   const FString operator + (const wchar_t);
-   const FString operator + (const char);
-
-   friend const FString operator + (const FString&, const FString&);
-   friend const FString operator + (const FString&, const wchar_t);
-   friend const FString operator + (const std::wstring&, const FString&);
-   friend const FString operator + (const wchar_t*, const FString&);
-   friend const FString operator + (const std::string&, const FString&);
-   friend const FString operator + (const char*, const FString&);
-   friend const FString operator + (const wchar_t, const FString&);
-   friend const FString operator + (const char, const FString&);
-   friend const FString operator + (const wchar_t, const std::wstring&);
-
-   wchar_t& operator [] (int);
-   wchar_t& operator [] (uInt);
-   const FString operator () (uInt, uInt);
-
-   bool operator <  (const FString&) const;
-   bool operator <  (const std::wstring&) const;
-   bool operator <  (const wchar_t*) const;
-   bool operator <  (const std::string&) const;
-   bool operator <  (const char*) const;
-   bool operator <  (const wchar_t) const;
-   bool operator <  (const char) const;
-   bool operator <= (const FString&) const;
-   bool operator <= (const std::wstring&) const;
-   bool operator <= (const wchar_t*) const;
-   bool operator <= (const std::string&) const;
-   bool operator <= (const char*) const;
-   bool operator <= (const wchar_t) const;
-   bool operator <= (const char) const;
-   bool operator == (const FString&) const;
-   bool operator == (const std::wstring&) const;
-   bool operator == (const wchar_t*) const;
-   bool operator == (const std::string&) const;
-   bool operator == (const char*) const;
-   bool operator == (const wchar_t) const;
-   bool operator == (const char) const;
-   bool operator != (const FString&) const;
-   bool operator != (const std::wstring&) const;
-   bool operator != (const wchar_t*) const;
-   bool operator != (const std::string&) const;
-   bool operator != (const char*) const;
-   bool operator != (const wchar_t) const;
-   bool operator != (const char) const;
-   bool operator >= (const FString&) const;
-   bool operator >= (const std::wstring&) const;
-   bool operator >= (const wchar_t*) const;
-   bool operator >= (const std::string&) const;
-   bool operator >= (const char*) const;
-   bool operator >= (const wchar_t) const;
-   bool operator >= (const char) const;
-   bool operator >  (const FString&) const;
-   bool operator >  (const std::wstring&) const;
-   bool operator >  (const wchar_t*) const;
-   bool operator >  (const std::string&) const;
-   bool operator >  (const char*) const;
-   bool operator >  (const wchar_t) const;
-   bool operator >  (const char) const;
-
-   operator const char* () const { return c_str(); }
 
    const FString& insert (const FString&, uInt);
    const FString& insert (const wchar_t*, uInt);
@@ -329,11 +315,33 @@ class FString
    const FString& overwrite (const wchar_t, uInt);
 
    const FString& remove (uInt, uInt);
-   bool includes (const FString&);
-   bool includes (const wchar_t*);
-   bool includes (const char*);
-   bool includes (const wchar_t);
-   bool includes (const char);
+   bool  includes (const FString&);
+   bool  includes (const wchar_t*);
+   bool  includes (const char*);
+   bool  includes (const wchar_t);
+   bool  includes (const char);
+
+ private:
+   // Constants
+   static const uInt  FWDBUFFER = 15;
+   static const uInt  INPBUFFER = 200;
+   static const uInt  CHAR_SIZE = sizeof(wchar_t); // bytes per character
+   static const char* bad_alloc_str;
+
+   // Methods
+   void     initLength (uInt);
+   void     _replace (const wchar_t*);
+   void     _insert (uInt, uInt, const wchar_t*);
+   void     _remove (uInt, uInt);
+   char*    wc_to_c_str (const wchar_t*) const;
+   wchar_t* c_to_wc_str (const char*) const;
+   wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
+
+   // Data Members
+   wchar_t*      string;
+   uInt          length;
+   uInt          bufsize;
+   mutable char* c_string;
 };
 
 

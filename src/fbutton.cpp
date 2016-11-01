@@ -56,6 +56,368 @@ FButton::~FButton()  // destructor
 }
 
 
+// public methods of FButton
+//----------------------------------------------------------------------
+void FButton::setForegroundColor (short color)
+{
+  FWidget::setForegroundColor(color);
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setBackgroundColor (short color)
+{
+  FWidget::setBackgroundColor(color);
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setHotkeyForegroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    button_hotkey_fg = color;
+}
+
+void FButton::setFocusForegroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    button_focus_fg = color;
+
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setFocusBackgroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    button_focus_bg = color;
+
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setInactiveForegroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    button_inactive_fg = color;
+
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+void FButton::setInactiveBackgroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    button_inactive_bg = color;
+
+  updateButtonColor();
+}
+
+//----------------------------------------------------------------------
+bool FButton::setNoUnderline (bool on)
+{
+  if ( on )
+    flags |= fc::no_underline;
+  else
+    flags &= ~fc::no_underline;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButton::setEnable (bool on)
+{
+  FWidget::setEnable(on);
+
+  if ( on )
+  {
+    flags |= fc::active;
+    setHotkeyAccelerator();
+  }
+  else
+  {
+    flags &= ~fc::active;
+    delAccelerator();
+  }
+
+  updateButtonColor();
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButton::setFocus (bool on)
+{
+  FWidget::setFocus(on);
+
+  if ( on )
+  {
+    flags |= fc::focus;
+
+    if ( isEnabled() )
+    {
+      if ( getStatusBar() )
+      {
+        FString msg = getStatusbarMessage();
+        FString curMsg = getStatusBar()->getMessage();
+
+        if ( curMsg != msg )
+          getStatusBar()->setMessage(msg);
+      }
+    }
+  }
+  else
+  {
+    flags &= ~fc::focus;
+
+    if ( isEnabled() && getStatusBar() )
+      getStatusBar()->clearMessage();
+  }
+
+  updateButtonColor();
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButton::setFlat (bool on)
+{
+  if ( on )
+    flags |= fc::flat;
+  else
+    flags &= ~fc::flat;
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButton::setShadow (bool on)
+{
+  if ( on
+     && (Encoding != fc::VT100 || isTeraTerm() )
+     && Encoding != fc::ASCII )
+    flags |= fc::shadow;
+  else
+    flags &= ~fc::shadow;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FButton::setDown (bool on)
+{
+  if ( button_down != on )
+  {
+    button_down = on;
+    redraw();
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+void FButton::setText (const FString& txt)
+{
+  if ( txt )
+    text = txt;
+  else
+    text = "";
+
+  detectHotkey();
+}
+
+//----------------------------------------------------------------------
+void FButton::hide()
+{
+  int s, f, size;
+  short fg, bg;
+  char* blank;
+  FWidget* parent_widget = getParentWidget();
+  FWidget::hide();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  s = hasShadow() ? 1 : 0;
+  f = isFlat() ? 1 : 0;
+  size = getWidth() + s + (f << 1);
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  std::memset(blank, ' ', uLong(size));
+  blank[size] = '\0';
+
+  for (int y=0; y < getHeight()+s+(f << 1); y++)
+  {
+    setPrintPos (1-f, 1+y-f);
+    print (blank);
+  }
+
+  delete[] blank;
+}
+
+//----------------------------------------------------------------------
+void FButton::onKeyPress (FKeyEvent* ev)
+{
+  int key;
+
+  if ( ! isEnabled() )
+    return;
+
+  key = ev->key();
+
+  switch ( key )
+  {
+    case fc::Fkey_return:
+    case fc::Fkey_enter:
+    case fc::Fkey_space:
+      if ( click_animation )
+      {
+        setDown();
+        addTimer(click_time);
+      }
+      processClick();
+      ev->accept();
+      break;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FButton::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+  {
+    setUp();
+    return;
+  }
+
+  if ( ! hasFocus() )
+  {
+    FWidget* focused_widget = getFocusWidget();
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+  }
+
+  FPoint tPos = ev->getTermPos();
+
+  if ( getTermGeometry().contains(tPos) )
+    setDown();
+}
+
+//----------------------------------------------------------------------
+void FButton::onMouseUp (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( button_down )
+  {
+    setUp();
+
+    if ( getTermGeometry().contains(ev->getTermPos()) )
+      processClick();
+  }
+}
+
+//----------------------------------------------------------------------
+void FButton::onMouseMove (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  FPoint tPos = ev->getTermPos();
+
+  if ( click_animation )
+  {
+    if ( getTermGeometry().contains(tPos) )
+      setDown();
+    else
+      setUp();
+  }
+}
+
+//----------------------------------------------------------------------
+void FButton::onTimer (FTimerEvent* ev)
+{
+  delTimer(ev->timerId());
+  setUp();
+}
+
+//----------------------------------------------------------------------
+void FButton::onAccel (FAccelEvent* ev)
+{
+  if ( ! isEnabled() )
+    return;
+
+  if ( ! hasFocus() )
+  {
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+
+    if ( click_animation )
+      setDown();
+    else
+      redraw();
+
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+  }
+  else if ( click_animation )
+    setDown();
+
+  if ( click_animation )
+    addTimer(click_time);
+
+  processClick();
+  ev->accept();
+}
+
+//----------------------------------------------------------------------
+void FButton::onFocusIn (FFocusEvent*)
+{
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
+void FButton::onFocusOut (FFocusEvent*)
+{
+  if ( getStatusBar() )
+  {
+    getStatusBar()->clearMessage();
+    getStatusBar()->drawMessage();
+  }
+}
+
+
 // private methods of FButton
 //----------------------------------------------------------------------
 void FButton::init()
@@ -386,15 +748,15 @@ void FButton::draw()
   updateVTerm(true);
   delete[] ButtonText;
 
-  if ( is_Focus && statusBar() )
+  if ( is_Focus && getStatusBar() )
   {
     FString msg = getStatusbarMessage();
-    FString curMsg = statusBar()->getMessage();
+    FString curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
-      statusBar()->setMessage(msg);
-      statusBar()->drawMessage();
+      getStatusBar()->setMessage(msg);
+      getStatusBar()->drawMessage();
     }
   }
 }
@@ -426,366 +788,4 @@ void FButton::updateButtonColor()
 void FButton::processClick()
 {
   emitCallback("clicked");
-}
-
-
-// public methods of FButton
-//----------------------------------------------------------------------
-void FButton::setForegroundColor (short color)
-{
-  FWidget::setForegroundColor(color);
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::setBackgroundColor (short color)
-{
-  FWidget::setBackgroundColor(color);
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::setHotkeyForegroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    button_hotkey_fg = color;
-}
-
-void FButton::setFocusForegroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    button_focus_fg = color;
-
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::setFocusBackgroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    button_focus_bg = color;
-
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::setInactiveForegroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    button_inactive_fg = color;
-
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::setInactiveBackgroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    button_inactive_bg = color;
-
-  updateButtonColor();
-}
-
-//----------------------------------------------------------------------
-void FButton::hide()
-{
-  int s, f, size;
-  short fg, bg;
-  char* blank;
-  FWidget* parent_widget = getParentWidget();
-  FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  s = hasShadow() ? 1 : 0;
-  f = isFlat() ? 1 : 0;
-  size = getWidth() + s + (f << 1);
-
-  if ( size < 0 )
-    return;
-
-  blank = new char[size+1];
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y=0; y < getHeight()+s+(f << 1); y++)
-  {
-    setPrintPos (1-f, 1+y-f);
-    print (blank);
-  }
-
-  delete[] blank;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setNoUnderline (bool on)
-{
-  if ( on )
-    flags |= fc::no_underline;
-  else
-    flags &= ~fc::no_underline;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
-  {
-    flags |= fc::active;
-    setHotkeyAccelerator();
-  }
-  else
-  {
-    flags &= ~fc::active;
-    delAccelerator();
-  }
-
-  updateButtonColor();
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setFocus (bool on)
-{
-  FWidget::setFocus(on);
-
-  if ( on )
-  {
-    flags |= fc::focus;
-
-    if ( isEnabled() )
-    {
-      if ( statusBar() )
-      {
-        FString msg = getStatusbarMessage();
-        FString curMsg = statusBar()->getMessage();
-
-        if ( curMsg != msg )
-          statusBar()->setMessage(msg);
-      }
-    }
-  }
-  else
-  {
-    flags &= ~fc::focus;
-
-    if ( isEnabled() && statusBar() )
-      statusBar()->clearMessage();
-  }
-
-  updateButtonColor();
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setFlat (bool on)
-{
-  if ( on )
-    flags |= fc::flat;
-  else
-    flags &= ~fc::flat;
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setShadow (bool on)
-{
-  if ( on
-     && (Encoding != fc::VT100 || isTeraTerm() )
-     && Encoding != fc::ASCII )
-    flags |= fc::shadow;
-  else
-    flags &= ~fc::shadow;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButton::setDown (bool on)
-{
-  if ( button_down != on )
-  {
-    button_down = on;
-    redraw();
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-void FButton::onKeyPress (FKeyEvent* ev)
-{
-  int key;
-
-  if ( ! isEnabled() )
-    return;
-
-  key = ev->key();
-
-  switch ( key )
-  {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-    case fc::Fkey_space:
-      if ( click_animation )
-      {
-        setDown();
-        addTimer(click_time);
-      }
-      processClick();
-      ev->accept();
-      break;
-
-    default:
-      break;
-  }
-}
-
-//----------------------------------------------------------------------
-void FButton::onMouseDown (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-  {
-    setUp();
-    return;
-  }
-
-  if ( ! hasFocus() )
-  {
-    FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( statusBar() )
-      statusBar()->drawMessage();
-  }
-
-  FPoint tPos = ev->getTermPos();
-
-  if ( getTermGeometry().contains(tPos) )
-    setDown();
-}
-
-//----------------------------------------------------------------------
-void FButton::onMouseUp (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( button_down )
-  {
-    setUp();
-
-    if ( getTermGeometry().contains(ev->getTermPos()) )
-      processClick();
-  }
-}
-
-//----------------------------------------------------------------------
-void FButton::onMouseMove (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  FPoint tPos = ev->getTermPos();
-
-  if ( click_animation )
-  {
-    if ( getTermGeometry().contains(tPos) )
-      setDown();
-    else
-      setUp();
-  }
-}
-
-//----------------------------------------------------------------------
-void FButton::onTimer (FTimerEvent* ev)
-{
-  delTimer(ev->timerId());
-  setUp();
-}
-
-//----------------------------------------------------------------------
-void FButton::onAccel (FAccelEvent* ev)
-{
-  if ( ! isEnabled() )
-    return;
-
-  if ( ! hasFocus() )
-  {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( click_animation )
-      setDown();
-    else
-      redraw();
-
-    if ( statusBar() )
-      statusBar()->drawMessage();
-  }
-  else if ( click_animation )
-    setDown();
-
-  if ( click_animation )
-    addTimer(click_time);
-
-  processClick();
-  ev->accept();
-}
-
-//----------------------------------------------------------------------
-void FButton::onFocusIn (FFocusEvent*)
-{
-  if ( statusBar() )
-    statusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FButton::onFocusOut (FFocusEvent*)
-{
-  if ( statusBar() )
-  {
-    statusBar()->clearMessage();
-    statusBar()->drawMessage();
-  }
-}
-
-//----------------------------------------------------------------------
-void FButton::setText (const FString& txt)
-{
-  if ( txt )
-    text = txt;
-  else
-    text = "";
-
-  detectHotkey();
 }

@@ -25,7 +25,7 @@ uChar    FApplication::x11_button_state = 0x03;
 int      FApplication::quit_code        = 0;
 bool     FApplication::quit_now         = false;
 
-std::deque<FApplication::eventPair>* FApplication::event_queue = 0;
+FApplication::eventQueue* FApplication::event_queue = 0;
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -79,6 +79,217 @@ FApplication::~FApplication() // destructor
 }
 
 
+// public methods of FApplication
+//----------------------------------------------------------------------
+void FApplication::setMainWidget (FWidget* widget)
+{
+  main_widget = widget;
+
+  if ( widget && ! getFocusWidget() )
+    rootObj->focusFirstChild();
+}
+
+//----------------------------------------------------------------------
+bool FApplication::isQuit()
+{
+  if ( rootObj )
+    return quit_now;
+  else
+    return true;
+}
+
+//----------------------------------------------------------------------
+int FApplication::exec()  // run
+{
+  if ( quit_now )
+    return EXIT_FAILURE;
+
+  quit_now = false;
+  quit_code = 0;
+
+  enter_loop();
+  return quit_code;
+}
+
+//----------------------------------------------------------------------
+int FApplication::enter_loop()  // event loop
+{
+  bool old_app_exit_loop;
+  loop_level++;
+  quit_now = false;
+
+  old_app_exit_loop = app_exit_loop;
+  app_exit_loop = false;
+
+  while ( ! (quit_now || app_exit_loop) )
+    processNextEvent();
+
+  app_exit_loop = old_app_exit_loop;
+  loop_level--;
+  return 0;
+}
+
+//----------------------------------------------------------------------
+void FApplication::exit_loop()
+{
+  app_exit_loop = true;
+}
+
+//----------------------------------------------------------------------
+void FApplication::exit (int retcode)
+{
+  if ( ! rootObj )  // no global app object
+    return;
+
+  if ( quit_now ) // don't overwrite quit code
+    return;
+
+  quit_now  = true;
+  quit_code = retcode;
+}
+
+//----------------------------------------------------------------------
+void FApplication::quit()
+{
+  FApplication::exit(0);
+}
+
+//----------------------------------------------------------------------
+bool FApplication::sendEvent(FObject* receiver, FEvent* event)
+{
+  FWidget* widget;
+
+  if ( quit_now || app_exit_loop )
+    return false;
+
+  if ( ! receiver )
+    return false;
+
+  widget = static_cast<FWidget*>(receiver);
+
+  if ( modal_dialogs > 0 )
+  {
+    FWidget* window;
+    if ( widget->isWindowWidget() )
+      window = widget;
+    else
+      window = FWindow::getWindowWidget(widget);
+
+    // block events for widgets in non modal windows
+    if ( window
+       && (window->getFlags() & fc::modal) == 0
+       && ! window->isMenuWidget() )
+    {
+      switch ( event->type() )
+      {
+        case fc::KeyPress_Event:
+        case fc::KeyUp_Event:
+        case fc::KeyDown_Event:
+        case fc::MouseDown_Event:
+        case fc::MouseUp_Event:
+        case fc::MouseDoubleClick_Event:
+        case fc::MouseWheel_Event:
+        case fc::MouseMove_Event:
+        case fc::FocusIn_Event:
+        case fc::FocusOut_Event:
+        case fc::Accelerator_Event:
+          return false;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  // throw away mouse events to disabled widgets
+  if (  event->type() >= fc::MouseDown_Event
+     && event->type() <= fc::MouseMove_Event
+     && ! widget->isEnabled() )
+    return false;
+
+  // sends event event directly to receiver
+  FApplication* w = static_cast<FApplication*>(widget);
+  return w->event(event);  // access to a protected base class member
+}
+
+//----------------------------------------------------------------------
+void FApplication::queueEvent (FObject* receiver, FEvent* event)
+{
+  if ( ! receiver )
+    return;
+
+  // queue this event
+  eventPair Event (receiver, event);
+  event_queue->push_back(Event);
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendQueuedEvents()
+{
+  eventQueue* events;
+
+  if ( ! eventInQueue() )
+    return;
+
+  events = event_queue;
+
+  while ( ! eventInQueue() )
+  {
+    sendEvent(events->front().first, events->front().second);
+    events->pop_front();
+  }
+}
+
+//----------------------------------------------------------------------
+bool FApplication::eventInQueue()
+{
+  if ( rootObj )
+    return ( ! event_queue->empty() );
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
+bool FApplication::removeQueuedEvent(FObject* receiver)
+{
+  bool retval;
+  eventQueue::iterator iter;
+
+  if ( ! eventInQueue() )
+    return false;
+
+  if ( ! receiver )
+    return false;
+
+  retval = false;
+  iter = event_queue->begin();
+
+  while ( iter != event_queue->end() )
+  {
+    if ( iter->first == receiver )
+    {
+      iter = event_queue->erase(iter);
+      retval = true;
+    }
+    else
+      ++iter;
+  }
+
+  return retval;
+}
+
+//----------------------------------------------------------------------
+void FApplication::print_cmd_Options ()
+{
+  std::printf ( "\nFinalCut Options:\n"
+    "  --encoding <name>           Sets the character encoding mode\n"
+    "                              {UTF8, VT100, PC, ASCII}\n"
+    "  --no-optimized-cursor       No cursor optimisation\n"
+    "  --vgafont                   Set the standard vga 8x16 font\n"
+    "  --newfont                   Enables the graphical font\n" );
+}
+
+
 // private methods of FApplication
 //----------------------------------------------------------------------
 void FApplication::init()
@@ -95,7 +306,7 @@ void FApplication::init()
 #endif
 
   zero_point = new FPoint(0,0);
-  event_queue = new std::deque<eventPair>;
+  event_queue = new eventQueue;
   // init arrays with '\0'
   std::fill_n (k_buf, sizeof(k_buf), '\0');
   std::fill_n (fifo_buf, fifo_buf_size, '\0');
@@ -1474,8 +1685,8 @@ void FApplication::processMouseEvent()
       if ( ! (clicked_widget || is_window_menu) )
         FWindow::switchToPrevWindow();
 
-      if ( statusBar() )
-        statusBar()->drawMessage();
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
 
       updateTerminal();
       flush_out();
@@ -1483,24 +1694,24 @@ void FApplication::processMouseEvent()
   }
 
   // unselected menu bar item
-  if (  ! open_menu && menuBar()
-     && menuBar()->hasSelectedItem()
+  if (  ! open_menu && getMenuBar()
+     && getMenuBar()->hasSelectedItem()
      && ! b_state.mouse_moved )
   {
-    if ( ! menuBar()->getTermGeometry().contains(mouse_position) )
+    if ( ! getMenuBar()->getTermGeometry().contains(mouse_position) )
     {
-      if ( statusBar() )
-        statusBar()->clearMessage();
+      if ( getStatusBar() )
+        getStatusBar()->clearMessage();
 
-      menuBar()->resetMenu();
-      menuBar()->redraw();
+      getMenuBar()->resetMenu();
+      getMenuBar()->redraw();
 
       // No widget was been clicked
       if ( ! clicked_widget )
         FWindow::switchToPrevWindow();
 
-      if ( statusBar() )
-        statusBar()->drawMessage();
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
 
       updateTerminal();
       flush_out();
@@ -1763,215 +1974,4 @@ bool FApplication::processNextEvent()
   num_events += processTimerEvent();
 
   return (num_events > 0);
-}
-
-
-// public methods of FApplication
-//----------------------------------------------------------------------
-void FApplication::print_cmd_Options ()
-{
-  std::printf ( "\nFinalCut Options:\n"
-    "  --encoding <name>           Sets the character encoding mode\n"
-    "                              {UTF8, VT100, PC, ASCII}\n"
-    "  --no-optimized-cursor       No cursor optimisation\n"
-    "  --vgafont                   Set the standard vga 8x16 font\n"
-    "  --newfont                   Enables the graphical font\n" );
-}
-
-//----------------------------------------------------------------------
-void FApplication::setMainWidget (FWidget* widget)
-{
-  main_widget = widget;
-
-  if ( widget && ! getFocusWidget() )
-    rootObj->focusFirstChild();
-}
-
-//----------------------------------------------------------------------
-int FApplication::exec() // run
-{
-  if ( quit_now )
-    return EXIT_FAILURE;
-
-  quit_now = false;
-  quit_code = 0;
-
-  enter_loop();
-  return quit_code;
-}
-
-//----------------------------------------------------------------------
-int FApplication::enter_loop() // event loop
-{
-  bool old_app_exit_loop;
-  loop_level++;
-  quit_now = false;
-
-  old_app_exit_loop = app_exit_loop;
-  app_exit_loop = false;
-
-  while ( ! (quit_now || app_exit_loop) )
-    processNextEvent();
-
-  app_exit_loop = old_app_exit_loop;
-  loop_level--;
-  return 0;
-}
-
-//----------------------------------------------------------------------
-void FApplication::exit_loop()
-{
-  app_exit_loop = true;
-}
-
-//----------------------------------------------------------------------
-void FApplication::exit (int retcode)
-{
-  if ( ! rootObj )  // no global app object
-    return;
-
-  if ( quit_now ) // don't overwrite quit code
-    return;
-
-  quit_now  = true;
-  quit_code = retcode;
-}
-
-//----------------------------------------------------------------------
-void FApplication::quit()
-{
-  FApplication::exit(0);
-}
-
-//----------------------------------------------------------------------
-bool FApplication::isQuit()
-{
-  if ( rootObj )
-    return quit_now;
-  else
-    return true;
-}
-
-//----------------------------------------------------------------------
-bool FApplication::sendEvent(FObject* receiver, FEvent* event)
-{
-  FWidget* widget;
-
-  if ( quit_now || app_exit_loop )
-    return false;
-
-  if ( ! receiver )
-    return false;
-
-  widget = static_cast<FWidget*>(receiver);
-
-  if ( modal_dialogs > 0 )
-  {
-    FWidget* window;
-    if ( widget->isWindowWidget() )
-      window = widget;
-    else
-      window = FWindow::getWindowWidget(widget);
-
-    // block events for widgets in non modal windows
-    if ( window
-       && (window->getFlags() & fc::modal) == 0
-       && ! window->isMenuWidget() )
-    {
-      switch ( event->type() )
-      {
-        case fc::KeyPress_Event:
-        case fc::KeyUp_Event:
-        case fc::KeyDown_Event:
-        case fc::MouseDown_Event:
-        case fc::MouseUp_Event:
-        case fc::MouseDoubleClick_Event:
-        case fc::MouseWheel_Event:
-        case fc::MouseMove_Event:
-        case fc::FocusIn_Event:
-        case fc::FocusOut_Event:
-        case fc::Accelerator_Event:
-          return false;
-
-        default:
-          break;
-      }
-    }
-  }
-
-  // throw away mouse events to disabled widgets
-  if (  event->type() >= fc::MouseDown_Event
-     && event->type() <= fc::MouseMove_Event
-     && ! widget->isEnabled() )
-    return false;
-
-  // sends event event directly to receiver
-  FApplication* w = static_cast<FApplication*>(widget);
-  return w->event(event);  // access to a protected base class member
-}
-
-//----------------------------------------------------------------------
-void FApplication::queueEvent (FObject* receiver, FEvent* event)
-{
-  if ( ! receiver )
-    return;
-
-  // queue this event
-  eventPair Event (receiver, event);
-  event_queue->push_back(Event);
-}
-
-//----------------------------------------------------------------------
-void FApplication::sendQueuedEvents()
-{
-  std::deque<eventPair>* events;
-
-  if ( ! eventInQueue() )
-    return;
-
-  events = event_queue;
-
-  while ( ! eventInQueue() )
-  {
-    sendEvent(events->front().first, events->front().second);
-    events->pop_front();
-  }
-}
-
-//----------------------------------------------------------------------
-bool FApplication::eventInQueue()
-{
-  if ( rootObj )
-    return ( ! event_queue->empty() );
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
-bool FApplication::removeQueuedEvent(FObject* receiver)
-{
-  bool retval;
-  std::deque<eventPair>::iterator iter;
-
-  if ( ! eventInQueue() )
-    return false;
-
-  if ( ! receiver )
-    return false;
-
-  retval = false;
-  iter = event_queue->begin();
-
-  while ( iter != event_queue->end() )
-  {
-    if ( iter->first == receiver )
-    {
-      iter = event_queue->erase(iter);
-      retval = true;
-    }
-    else
-      ++iter;
-  }
-
-  return retval;
 }

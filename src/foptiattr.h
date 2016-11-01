@@ -20,6 +20,8 @@
 #define ESC  "\033"   // Escape
 #define CSI  ESC "["  // Control sequence introducer (7-bit)
 
+typedef unsigned char uChar;
+
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -30,79 +32,8 @@
 
 class FOptiAttr
 {
- private:
-   typedef unsigned char uChar;
-
-   enum init_reset_tests
-   {
-     no_test         = 0x00,
-     test_ansi_reset = 0x01,  // ANSI X3.64 terminal
-     test_adm3_reset = 0x02,  // Lear Siegler ADM-3 terminal
-     same_like_ue    = 0x04,
-     same_like_se    = 0x08,
-     same_like_me    = 0x10,
-     all_tests       = 0x1f
-   };
-
-   enum default_color
-   {
-     Default   = -1,
-     Black     = 0,
-     LightGray = 7
-   };
-
-   typedef struct
-   {
-     char* cap;
-     bool  caused_reset;
-   } capability;
-
-   capability F_enter_bold_mode;
-   capability F_exit_bold_mode;
-   capability F_enter_dim_mode;
-   capability F_exit_dim_mode;
-   capability F_enter_italics_mode;
-   capability F_exit_italics_mode;
-   capability F_enter_underline_mode;
-   capability F_exit_underline_mode;
-   capability F_enter_blink_mode;
-   capability F_exit_blink_mode;
-   capability F_enter_reverse_mode;
-   capability F_exit_reverse_mode;
-   capability F_enter_standout_mode;
-   capability F_exit_standout_mode;
-   capability F_enter_secure_mode;
-   capability F_exit_secure_mode;
-   capability F_enter_protected_mode;
-   capability F_exit_protected_mode;
-   capability F_enter_crossed_out_mode;
-   capability F_exit_crossed_out_mode;
-   capability F_enter_dbl_underline_mode;
-   capability F_exit_dbl_underline_mode;
-   capability F_set_attributes;
-   capability F_exit_attribute_mode;
-   capability F_enter_alt_charset_mode;
-   capability F_exit_alt_charset_mode;
-   capability F_enter_pc_charset_mode;
-   capability F_exit_pc_charset_mode;
-   capability F_set_a_foreground;
-   capability F_set_a_background;
-   capability F_set_foreground;
-   capability F_set_background;
-   capability F_set_color_pair;
-   capability F_orig_pair;
-   capability F_orig_colors;
-
-   int        max_color;
-   int        attr_without_color;
-   bool       ansi_default_color;
-   bool       monochron;
-   bool       fake_reverse;
-   bool       cygwin_terminal;
-   char       attr_buf[8192];
-   char*      attr_ptr;
-
  public:
+   // Typedef
    typedef struct
    {
      int   code;      // character code
@@ -126,73 +57,17 @@ class FOptiAttr
      uChar inherit_bg    : 1;  // inherit background
    } char_data;
 
- private:
-   char_data on;
-   char_data off;
-
- private:
-   // Disable copy constructor
-   FOptiAttr (const FOptiAttr&);
-   // Disable assignment operator (=)
-   FOptiAttr& operator = (const FOptiAttr&);
-
-   bool  hasColor (char_data*&);
-   bool  colorChange (char_data*&, char_data*&);
-   void  resetColor (char_data*&);
-   void  prevent_no_color_video_attributes (char_data*&);
-   void  change_color (char_data*&, char_data*&);
-   bool  hasAttribute (char_data*&);
-   bool  hasNoAttribute (char_data*&);
-   void  resetAttribute (char_data*&);
-   void  reset (char_data*&);
-   bool  caused_reset_attributes (char*&, uChar = all_tests);
-   void  detectSwitchOn (char_data*&, char_data*&);
-   void  detectSwitchOff (char_data*&, char_data*&);
-   bool  switchOn();
-   bool  switchOff();
-   bool  append_sequence (char*&);
-   bool  replace_sequence (char*&);
-   bool  setTermBold (char_data*&);
-   bool  unsetTermBold (char_data*&);
-   bool  setTermDim (char_data*&);
-   bool  unsetTermDim (char_data*&);
-   bool  setTermItalic (char_data*&);
-   bool  unsetTermItalic (char_data*&);
-   bool  setTermUnderline (char_data*&);
-   bool  unsetTermUnderline (char_data*&);
-   bool  setTermBlink (char_data*&);
-   bool  unsetTermBlink (char_data*&);
-   bool  setTermReverse (char_data*&);
-   bool  unsetTermReverse (char_data*&);
-   bool  setTermStandout (char_data*&);
-   bool  unsetTermStandout (char_data*&);
-   bool  setTermInvisible (char_data*&);
-   bool  unsetTermInvisible (char_data*&);
-   bool  setTermProtected (char_data*&);
-   bool  unsetTermProtected (char_data*&);
-   bool  setTermCrossedOut (char_data*&);
-   bool  unsetTermCrossedOut (char_data*&);
-   bool  setTermDoubleUnderline (char_data*&);
-   bool  unsetTermDoubleUnderline (char_data*&);
-   bool  setTermAttributes ( char_data*&
-                           , bool, bool, bool
-                           , bool, bool, bool
-                           , bool, bool, bool );
-   bool  unsetTermAttributes (char_data*&);
-   bool  setTermAltCharset (char_data*&);
-   bool  unsetTermAltCharset (char_data*&);
-   bool  setTermPCcharset (char_data*&);
-   bool  unsetTermPCcharset (char_data*&);
-   bool  setTermDefaultColor (char_data*&);
-
- public:
    // Constructor
    explicit FOptiAttr();
+
    // Destructor
   ~FOptiAttr();
 
-   static short vga2ansi (register short);
+   // Friend operator functions
+   friend bool operator == (const char_data&, const char_data&);
+   friend bool operator != (const char_data&, const char_data&);
 
+   // Mutators
    void  setMaxColor (int&);
    void  setNoColorVideo (int);
    void  setDefaultColorSupport();
@@ -232,37 +107,153 @@ class FOptiAttr
    void  set_term_color_pair (char*&);
    void  set_orig_pair (char*&);
    void  set_orig_orig_colors (char*&);
-   void  init();
 
-   char* changeAttribute (char_data*&, char_data*&);
+   // Methods
+   void         init();
+   static short vga2ansi (register short);
+   char*        changeAttribute (char_data*&, char_data*&);
 
-   friend bool operator == (const char_data&, const char_data&);
-   friend bool operator != (const char_data&, const char_data&);
+ private:
+   // Typedefs and Enumerations
+   typedef unsigned char uChar;
+
+   typedef struct
+   {
+     char* cap;
+     bool  caused_reset;
+   } capability;
+
+   enum init_reset_tests
+   {
+     no_test         = 0x00,
+     test_ansi_reset = 0x01,  // ANSI X3.64 terminal
+     test_adm3_reset = 0x02,  // Lear Siegler ADM-3 terminal
+     same_like_ue    = 0x04,
+     same_like_se    = 0x08,
+     same_like_me    = 0x10,
+     all_tests       = 0x1f
+   };
+
+   enum default_color
+   {
+     Default   = -1,
+     Black     = 0,
+     LightGray = 7
+   };
+
+   // Disable copy constructor
+   FOptiAttr (const FOptiAttr&);
+
+   // Disable assignment operator (=)
+   FOptiAttr& operator = (const FOptiAttr&);
+
+   // Mutators
+   bool  setTermBold (char_data*&);
+   bool  unsetTermBold (char_data*&);
+   bool  setTermDim (char_data*&);
+   bool  unsetTermDim (char_data*&);
+   bool  setTermItalic (char_data*&);
+   bool  unsetTermItalic (char_data*&);
+   bool  setTermUnderline (char_data*&);
+   bool  unsetTermUnderline (char_data*&);
+   bool  setTermBlink (char_data*&);
+   bool  unsetTermBlink (char_data*&);
+   bool  setTermReverse (char_data*&);
+   bool  unsetTermReverse (char_data*&);
+   bool  setTermStandout (char_data*&);
+   bool  unsetTermStandout (char_data*&);
+   bool  setTermInvisible (char_data*&);
+   bool  unsetTermInvisible (char_data*&);
+   bool  setTermProtected (char_data*&);
+   bool  unsetTermProtected (char_data*&);
+   bool  setTermCrossedOut (char_data*&);
+   bool  unsetTermCrossedOut (char_data*&);
+   bool  setTermDoubleUnderline (char_data*&);
+   bool  unsetTermDoubleUnderline (char_data*&);
+   bool  setTermAttributes ( char_data*&
+                           , bool, bool, bool
+                           , bool, bool, bool
+                           , bool, bool, bool );
+   bool  unsetTermAttributes (char_data*&);
+   bool  setTermAltCharset (char_data*&);
+   bool  unsetTermAltCharset (char_data*&);
+   bool  setTermPCcharset (char_data*&);
+   bool  unsetTermPCcharset (char_data*&);
+   bool  setTermDefaultColor (char_data*&);
+
+   // Inquiries
+   bool  hasColor (char_data*&);
+   bool  hasAttribute (char_data*&);
+   bool  hasNoAttribute (char_data*&);
+
+   // Methods
+   bool  colorChange (char_data*&, char_data*&);
+   void  resetColor (char_data*&);
+   void  prevent_no_color_video_attributes (char_data*&);
+   void  change_color (char_data*&, char_data*&);
+   void  resetAttribute (char_data*&);
+   void  reset (char_data*&);
+   bool  caused_reset_attributes (char*&, uChar = all_tests);
+   void  detectSwitchOn (char_data*&, char_data*&);
+   void  detectSwitchOff (char_data*&, char_data*&);
+   bool  switchOn();
+   bool  switchOff();
+   bool  append_sequence (char*&);
+   bool  replace_sequence (char*&);
+
+   // Data Members
+   capability F_enter_bold_mode;
+   capability F_exit_bold_mode;
+   capability F_enter_dim_mode;
+   capability F_exit_dim_mode;
+   capability F_enter_italics_mode;
+   capability F_exit_italics_mode;
+   capability F_enter_underline_mode;
+   capability F_exit_underline_mode;
+   capability F_enter_blink_mode;
+   capability F_exit_blink_mode;
+   capability F_enter_reverse_mode;
+   capability F_exit_reverse_mode;
+   capability F_enter_standout_mode;
+   capability F_exit_standout_mode;
+   capability F_enter_secure_mode;
+   capability F_exit_secure_mode;
+   capability F_enter_protected_mode;
+   capability F_exit_protected_mode;
+   capability F_enter_crossed_out_mode;
+   capability F_exit_crossed_out_mode;
+   capability F_enter_dbl_underline_mode;
+   capability F_exit_dbl_underline_mode;
+   capability F_set_attributes;
+   capability F_exit_attribute_mode;
+   capability F_enter_alt_charset_mode;
+   capability F_exit_alt_charset_mode;
+   capability F_enter_pc_charset_mode;
+   capability F_exit_pc_charset_mode;
+   capability F_set_a_foreground;
+   capability F_set_a_background;
+   capability F_set_foreground;
+   capability F_set_background;
+   capability F_set_color_pair;
+   capability F_orig_pair;
+   capability F_orig_colors;
+
+   char_data  on;
+   char_data  off;
+
+   int        max_color;
+   int        attr_without_color;
+   bool       ansi_default_color;
+   bool       monochron;
+   bool       fake_reverse;
+   bool       cygwin_terminal;
+   char       attr_buf[8192];
+   char*      attr_ptr;
 };
 #pragma pack(pop)
 
 
 // FOptiAttr inline functions
-//----------------------------------------------------------------------
-inline void FOptiAttr::setMaxColor (int& c)
-{ max_color = c; }
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::setNoColorVideo (int attr)
-{ attr_without_color = attr; }
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::setDefaultColorSupport()
-{ ansi_default_color = true; }
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::setCygwinTerminal()
-{ cygwin_terminal = true; }
-
-//----------------------------------------------------------------------
-inline bool FOptiAttr::hasNoAttribute (char_data*& attr)
-{ return ! hasAttribute(attr); }
-
 //----------------------------------------------------------------------
 inline bool operator == ( const FOptiAttr::char_data& lhs,
                           const FOptiAttr::char_data& rhs )
@@ -293,5 +284,24 @@ inline bool operator != ( const FOptiAttr::char_data& lhs,
                           const FOptiAttr::char_data& rhs )
 { return ! ( lhs == rhs ); }
 
+//----------------------------------------------------------------------
+inline void FOptiAttr::setMaxColor (int& c)
+{ max_color = c; }
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setNoColorVideo (int attr)
+{ attr_without_color = attr; }
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setDefaultColorSupport()
+{ ansi_default_color = true; }
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::setCygwinTerminal()
+{ cygwin_terminal = true; }
+
+//----------------------------------------------------------------------
+inline bool FOptiAttr::hasNoAttribute (char_data*& attr)
+{ return ! hasAttribute(attr); }
 
 #endif  // _FOPTIATTR_H

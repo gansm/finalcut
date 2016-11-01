@@ -43,75 +43,97 @@ class FButtonGroup;
 
 class FToggleButton : public FWidget
 {
- private:
-   bool focus_inside_group;
+ public:
+   // Using-declaration
+   using FWidget::setGeometry;
+
+   // Constructors
+   explicit FToggleButton (FWidget* = 0);
+   FToggleButton (const FString&, FWidget* = 0);
+
+   // Destructor
+   virtual ~FToggleButton();
+
+   // Accessors
+   virtual const char* getClassName() const;
+   FString&      getText();
+
+   // Mutators
+   void          setGeometry (int, int, int, int, bool = true);
+   bool          setNoUnderline (bool);
+   bool          setNoUnderline();
+   bool          unsetNoUnderline();
+   bool          setEnable (bool);
+   bool          setEnable();
+   bool          unsetEnable();
+   bool          setDisable();
+   bool          setFocus (bool);
+   bool          setFocus();
+   bool          unsetFocus();
+   bool          setChecked (bool);
+   bool          setChecked();
+   bool          unsetChecked();
+   virtual void  setText (const FString);
+
+   // Inquiries
+   bool          isChecked();
+
+   // Methods
+   void          hide();
+
+   // Event handlers
+   void          onMouseDown (FMouseEvent*);
+   void          onMouseUp (FMouseEvent*);
+   void          onAccel (FAccelEvent*);
+   void          onFocusIn (FFocusEvent*);
+   void          onFocusOut (FFocusEvent*);
 
  protected:
-   FString       text;
+   // Accessor
+   uChar         getHotkey();
+   FButtonGroup* getGroup() const;
+
+   // Mutator
+   void          setHotkeyAccelerator();
+
+   // Inquiries
+   bool          isRadioButton() const;
+   bool          isCheckboxButton() const;
+
+   // Methods
+   virtual void  draw();
+   void          drawLabel();
+   void          processClick();
+   void          processToggle();
+
+   // Event handler
+   virtual void onKeyPress (FKeyEvent*);
+
+   // Data Members
    bool          checked;
    int           label_offset_pos;
    int           button_width;  // plus margin spaces
-   FButtonGroup* button_group;
 
  private:
    // Disable copy constructor
    FToggleButton (const FToggleButton&);
+
    // Disable assignment operator (=)
    FToggleButton& operator = (const FToggleButton&);
 
-   void  init();
+   // Mutator
+   void          setGroup (FButtonGroup*);
+
+   // Methods
+   void          init();
+
+   // Friend classes
    friend class FButtonGroup;
-   void setGroup (FButtonGroup*);
 
- protected:
-   virtual void draw();
-   uChar getHotkey();
-   void  setHotkeyAccelerator();
-   void  drawLabel();
-   void  processClick();
-   void  processToggle();
-   FButtonGroup* group() const;
-   bool  isRadioButton() const;
-   bool  isCheckboxButton() const;
-   virtual void onKeyPress (FKeyEvent*);
-
- public:
-   // Constructors
-   explicit FToggleButton (FWidget* = 0);
-   FToggleButton (const FString&, FWidget* = 0);
-   // Destructor
-   virtual ~FToggleButton();
-
-   virtual const char* getClassName() const;
-   void hide();
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool = true);
-
-   // Event handlers
-   void onMouseDown (FMouseEvent*);
-   void onMouseUp (FMouseEvent*);
-   void onAccel (FAccelEvent*);
-   void onFocusIn (FFocusEvent*);
-   void onFocusOut (FFocusEvent*);
-
-   bool setNoUnderline (bool);
-   bool setNoUnderline();
-   bool unsetNoUnderline();
-   bool setEnable (bool);
-   bool setEnable();
-   bool unsetEnable();
-   bool setDisable();
-   bool setFocus (bool);
-   bool setFocus();
-   bool unsetFocus();
-   bool setChecked (bool);
-   bool setChecked();
-   bool unsetChecked();
-   bool isChecked();
-
-   virtual void setText (const FString);
-   FString& getText();
+   // Data Members
+   FButtonGroup* button_group;
+   bool          focus_inside_group;
+   FString       text;
 };
 #pragma pack(pop)
 
@@ -120,6 +142,10 @@ class FToggleButton : public FWidget
 //----------------------------------------------------------------------
 inline const char* FToggleButton::getClassName() const
 { return "FToggleButton"; }
+
+//----------------------------------------------------------------------
+inline FString& FToggleButton::getText()
+{ return text; }
 
 //----------------------------------------------------------------------
 inline bool FToggleButton::setNoUnderline()
@@ -162,7 +188,7 @@ inline bool FToggleButton::isChecked()
 { return checked; }
 
 //----------------------------------------------------------------------
-inline FString& FToggleButton::getText()
-{ return text; }
+inline FButtonGroup* FToggleButton::getGroup() const
+{ return button_group; }
 
 #endif  // _FTOGGLEBUTTON_H

@@ -17,27 +17,14 @@
 
 class watch : public FDialog
 {
- private:
-   bool sec;
-
- private:
-   FLabel* time_label;
-   FLabel* time_str;
-   FSwitch* clock_sw;
-   FSwitch* seconds_sw;
-
- private:
-   // Disable copy constructor
-   watch (const watch&);
-   // Disable assignment operator (=)
-   watch& operator = (const watch&);
-
  public:
    // Constructor
    explicit watch (FWidget* = 0);
+
    // Destructor
   ~watch();
 
+   // Method
    void printTime();
 
    // Event handlers
@@ -50,7 +37,22 @@ class watch : public FDialog
    void cb_exitApp (FWidget*, void*);
 
  protected:
+   // Method
    void adjustSize();
+
+ private:
+   // Disable copy constructor
+   watch (const watch&);
+
+   // Disable assignment operator (=)
+   watch& operator = (const watch&);
+
+   // Data Members
+   bool     sec;
+   FLabel*  time_label;
+   FLabel*  time_str;
+   FSwitch* clock_sw;
+   FSwitch* seconds_sw;
 };
 #pragma pack(pop)
 

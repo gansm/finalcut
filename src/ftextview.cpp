@@ -32,207 +32,94 @@ FTextView::~FTextView()  // destructor
   delete hbar;
 }
 
-// private methods of FTextView
+
+// public methods of FTextView
 //----------------------------------------------------------------------
-void FTextView::init()
+FString FTextView::getText() const
 {
-  nf_offset = isNewFont() ? 1 : 0;
+  uInt len, rows, idx;
 
-  setForegroundColor (wc.dialog_fg);
-  setBackgroundColor (wc.dialog_bg);
+  if ( data.empty() )
+    return FString("");
 
-  vbar = new FScrollbar(fc::vertical, this);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  len = 0;
+  rows = getRows();
 
-  hbar = new FScrollbar(fc::horizontal, this);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
+  for (uInt i=0 ; i < rows; i++)
+    len += data[i].getLength() + 1;
 
-  vbar->addCallback
-  (
-    "change-value",
-    _METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
-  );
-  hbar->addCallback
-  (
-    "change-value",
-    _METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
-  );
-}
+  FString s(len + 1);
+  idx = 0;
 
-//----------------------------------------------------------------------
-void FTextView::draw()
-{
-  FWidget* parent = getParentWidget();
-  bool is_text_dialog;
-  updateVTerm(false);
-  setColor();
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  if ( parent
-     && parent->isDialogWidget()
-     && isPaddingIgnored()
-     && getGeometry() == FRect ( 1
-                               , 2
-                               , parent->getWidth()
-                               , parent->getHeight()-1) )
+  for (uInt i=0 ; i < rows; i++)
   {
-    is_text_dialog = true;
-  }
-  else
-    is_text_dialog = false;
+    const wchar_t* p = data[i].wc_str();
 
-  if ( ! (is_text_dialog || isNewFont()) )
-    drawBorder();
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
-
-  updateVTerm(true);
-  drawText();
-
-  if ( hasFocus() && statusBar() )
-  {
-    FString msg = getStatusbarMessage();
-    FString curMsg = statusBar()->getMessage();
-
-    if ( curMsg != msg )
+    if ( p )
     {
-      updateVTerm(false);
-      statusBar()->setMessage(msg);
-      statusBar()->drawMessage();
-      updateVTerm(true);
+      while ( (s[idx++] = *p++) != 0 );
+      s[idx-1] = '\n';
+    }
+    else
+    {
+      s[idx++] = '\n';
     }
   }
 
-  setCursorPos (getWidth(), getHeight());
-  updateTerminal();
+  s[idx-1] = 0;
+  return s;
+}
+
+//----------------------------------------------------------------------
+void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
+{
+  FWidget::setGeometry(x, y, w, h, adjust);
+  int width  = getWidth();
+  int height = getHeight();
+
+  if ( isNewFont() )
+  {
+    vbar->setGeometry (width, 1, 2, height-1);
+    hbar->setGeometry (1, height, width-2, 1);
+  }
+  else
+  {
+    vbar->setGeometry (width, 2, 1, height-2);
+    hbar->setGeometry (2, height, width-2, 1);
+  }
+
+  vbar->resize();
+  hbar->resize();
+}
+
+//----------------------------------------------------------------------
+void FTextView::setPosition (int pos)
+{
+  int last_line = int(getRows());
+
+  if ( pos < 0 || pos > last_line - getHeight() + 2 )
+    return;
+
+  yoffset = pos;
+
+  if ( isVisible() )
+    drawText();
+
+  vbar->setValue (yoffset);
+
+  if ( vbar->isVisible() )
+    vbar->drawBar();
+
   flush_out();
 }
 
 //----------------------------------------------------------------------
-void FTextView::drawText()
+void FTextView::setText (const FString& str)
 {
-  uInt start, end;
-
-  if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
-    return;
-
-  start = 0;
-  end = uInt(getHeight() + nf_offset - 2);
-
-  if ( end > getRows() )
-    end = getRows();
-
-  updateVTerm(false);
-  setColor();
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  for (uInt y=start; y < end; y++)
-  {
-    uInt i, len;
-    FString line;
-    const wchar_t* line_str;
-    setPrintPos (2, 2 - nf_offset + int(y));
-    line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                     , uInt(getWidth() - nf_offset - 2) );
-    line_str = line.wc_str();
-    len = line.getLength();
-
-    for (i=0; i < len; i++)
-    {
-      wchar_t ch = line_str[i];
-      bool utf8 = (Encoding == fc::UTF8) ? true : false;
-
-      // only printable and 1 column per character
-      if (  (  (utf8 && std::iswprint(wint_t(ch)))
-            || (!utf8 && ch < 256 && std::isprint(ch)) )
-         && wcwidth(ch) == 1 )
-      {
-        print (ch);
-      }
-      else
-        print ('.');
-    }
-
-    for (; i < uInt(getWidth() - nf_offset - 2); i++)
-      print (' ');
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-
-  updateVTerm(true);
+  clear();
+  insert(str, -1);
 }
 
-//----------------------------------------------------------------------
-void FTextView::processChanged()
-{
-  emitCallback("changed");
-}
-
-// protected methods of FTextView
-//----------------------------------------------------------------------
-void FTextView::adjustSize()
-{
-  FWidget::adjustSize();
-  int width     = getWidth();
-  int height    = getHeight();
-  int last_line = int(getRows());
-  int max_width = int(maxLineWidth);
-
-  if ( xoffset >= max_width - width - nf_offset )
-    xoffset = max_width - width - nf_offset - 1;
-
-  if ( xoffset < 0 )
-    xoffset = 0;
-
-  if ( yoffset > last_line - height - nf_offset + 2 )
-    yoffset = last_line - height - nf_offset + 2;
-
-  if ( yoffset < 0 )
-    yoffset = 0;
-
-  vbar->setMaximum (last_line - height + 2 - nf_offset);
-  vbar->setPageSize (last_line, height - 2 + nf_offset);
-  vbar->setX (width);
-  vbar->setHeight (height - 2 + nf_offset, false);
-  vbar->setValue (yoffset);
-  vbar->resize();
-
-  hbar->setMaximum (max_width - width + nf_offset + 2);
-  hbar->setPageSize (max_width, width - nf_offset - 2);
-  hbar->setY (height);
-  hbar->setWidth (width - 2, false);
-  hbar->setValue (xoffset);
-  hbar->resize();
-
-  if ( last_line < height + nf_offset - 1 )
-    vbar->hide();
-  else
-    vbar->setVisible();
-
-  if ( max_width < width - nf_offset - 1 )
-    hbar->hide();
-  else
-    hbar->setVisible();
-}
-
-
-// public methods of FTextView
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
@@ -273,6 +160,132 @@ void FTextView::hide()
 
   delete[] blank;
   flush_out();
+}
+
+//----------------------------------------------------------------------
+void FTextView::append (const FString& str)
+{
+  insert(str, -1);
+}
+
+//----------------------------------------------------------------------
+void FTextView::insert (const FString& str, int pos)
+{
+  stringLines::iterator iter;
+  stringLines text_split;
+  FString s;
+  uLong end;
+
+  if ( pos < 0 || pos >= int(getRows()) )
+    pos = int(getRows());
+
+  if ( str.isEmpty() )
+    s = "\n";
+  else
+    s = FString(str).rtrim().expandTabs(getTabstop());
+
+  iter = data.begin();
+  text_split = s.split("\r\n");
+  end = text_split.size();
+
+  for (uInt i=0; i < end; i++)
+  {
+    uInt len;
+    text_split[i] = text_split[i].removeBackspaces()
+                                 .removeDel()
+                                 .replaceControlCodes()
+                                 .rtrim();
+    len = text_split[i].getLength();
+
+    if ( len > maxLineWidth )
+    {
+      maxLineWidth = len;
+
+      if ( len > uInt(getWidth() - nf_offset - 2) )
+      {
+        hbar->setMaximum (int(maxLineWidth) - getWidth() + nf_offset + 2);
+        hbar->setPageSize (int(maxLineWidth), getWidth() - nf_offset - 2);
+        hbar->calculateSliderValues();
+
+        if ( ! hbar->isVisible() )
+          hbar->setVisible();
+      }
+    }
+  }
+
+  data.insert (iter + pos, text_split.begin(), text_split.end());
+  vbar->setMaximum (int(getRows()) - getHeight() + 2 - nf_offset);
+  vbar->setPageSize (int(getRows()), getHeight() - 2 + nf_offset);
+  vbar->calculateSliderValues();
+
+  if ( ! vbar->isVisible() && int(getRows()) >= getHeight() + nf_offset - 1 )
+    vbar->setVisible();
+
+  if ( vbar->isVisible() && int(getRows()) < getHeight() + nf_offset - 1 )
+    vbar->hide();
+
+  processChanged();
+}
+
+//----------------------------------------------------------------------
+void FTextView::replaceRange (const FString& str, int start, int end)
+{
+  stringLines::iterator iter;
+
+  if ( start > end )
+    return;
+
+  if ( start < 0 || start >= int(getRows()) )
+    return;
+
+  if ( end < 0 || end >= int(getRows()) )
+    return;
+
+  iter = data.begin();
+  data.erase (iter+start, iter+end+1);
+
+  if ( ! str.isNull() )
+    insert(str, start);
+}
+
+//----------------------------------------------------------------------
+void FTextView::clear()
+{
+  int size;
+  char* blank;
+
+  data.clear();
+  xoffset = 0;
+  yoffset = 0;
+  maxLineWidth = 0;
+
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
+
+  // clear list from screen
+  setColor();
+  size = getWidth() - 2;
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  std::memset(blank, ' ', uLong(size));
+  blank[size] = '\0';
+
+  for (int y=0; y < getHeight() + nf_offset - 2; y++)
+  {
+    setPrintPos (2, 2 - nf_offset + y);
+    print (blank);
+  }
+
+  delete[] blank;
+  processChanged();
 }
 
 //----------------------------------------------------------------------
@@ -388,8 +401,8 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     if ( focused_widget )
       focused_widget->redraw();
 
-    if ( statusBar() )
-      statusBar()->drawMessage();
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
   }
 
   parent = getParentWidget();
@@ -519,18 +532,219 @@ void FTextView::onWheel (FWheelEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onFocusIn (FFocusEvent*)
 {
-  if ( statusBar() )
-    statusBar()->drawMessage();
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
 }
 
 //----------------------------------------------------------------------
 void FTextView::onFocusOut (FFocusEvent*)
 {
-  if ( statusBar() )
+  if ( getStatusBar() )
   {
-    statusBar()->clearMessage();
-    statusBar()->drawMessage();
+    getStatusBar()->clearMessage();
+    getStatusBar()->drawMessage();
   }
+}
+
+
+// protected methods of FTextView
+//----------------------------------------------------------------------
+void FTextView::adjustSize()
+{
+  FWidget::adjustSize();
+  int width     = getWidth();
+  int height    = getHeight();
+  int last_line = int(getRows());
+  int max_width = int(maxLineWidth);
+
+  if ( xoffset >= max_width - width - nf_offset )
+    xoffset = max_width - width - nf_offset - 1;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+
+  if ( yoffset > last_line - height - nf_offset + 2 )
+    yoffset = last_line - height - nf_offset + 2;
+
+  if ( yoffset < 0 )
+    yoffset = 0;
+
+  vbar->setMaximum (last_line - height + 2 - nf_offset);
+  vbar->setPageSize (last_line, height - 2 + nf_offset);
+  vbar->setX (width);
+  vbar->setHeight (height - 2 + nf_offset, false);
+  vbar->setValue (yoffset);
+  vbar->resize();
+
+  hbar->setMaximum (max_width - width + nf_offset + 2);
+  hbar->setPageSize (max_width, width - nf_offset - 2);
+  hbar->setY (height);
+  hbar->setWidth (width - 2, false);
+  hbar->setValue (xoffset);
+  hbar->resize();
+
+  if ( last_line < height + nf_offset - 1 )
+    vbar->hide();
+  else
+    vbar->setVisible();
+
+  if ( max_width < width - nf_offset - 1 )
+    hbar->hide();
+  else
+    hbar->setVisible();
+}
+
+
+// private methods of FTextView
+//----------------------------------------------------------------------
+void FTextView::init()
+{
+  nf_offset = isNewFont() ? 1 : 0;
+
+  setForegroundColor (wc.dialog_fg);
+  setBackgroundColor (wc.dialog_bg);
+
+  vbar = new FScrollbar(fc::vertical, this);
+  vbar->setMinimum(0);
+  vbar->setValue(0);
+  vbar->hide();
+
+  hbar = new FScrollbar(fc::horizontal, this);
+  hbar->setMinimum(0);
+  hbar->setValue(0);
+  hbar->hide();
+
+  vbar->addCallback
+  (
+    "change-value",
+    _METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
+  );
+  hbar->addCallback
+  (
+    "change-value",
+    _METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
+  );
+}
+
+//----------------------------------------------------------------------
+void FTextView::draw()
+{
+  FWidget* parent = getParentWidget();
+  bool is_text_dialog;
+  updateVTerm(false);
+  setColor();
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  if ( parent
+     && parent->isDialogWidget()
+     && isPaddingIgnored()
+     && getGeometry() == FRect ( 1
+                               , 2
+                               , parent->getWidth()
+                               , parent->getHeight() - 1) )
+  {
+    is_text_dialog = true;
+  }
+  else
+    is_text_dialog = false;
+
+  if ( ! (is_text_dialog || isNewFont()) )
+    drawBorder();
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  if ( vbar->isVisible() )
+    vbar->redraw();
+
+  if ( hbar->isVisible() )
+    hbar->redraw();
+
+  updateVTerm(true);
+  drawText();
+
+  if ( hasFocus() && getStatusBar() )
+  {
+    FString msg = getStatusbarMessage();
+    FString curMsg = getStatusBar()->getMessage();
+
+    if ( curMsg != msg )
+    {
+      updateVTerm(false);
+      getStatusBar()->setMessage(msg);
+      getStatusBar()->drawMessage();
+      updateVTerm(true);
+    }
+  }
+
+  setCursorPos (getWidth(), getHeight());
+  updateTerminal();
+  flush_out();
+}
+
+//----------------------------------------------------------------------
+void FTextView::drawText()
+{
+  uInt start, end;
+
+  if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
+    return;
+
+  start = 0;
+  end = uInt(getHeight() + nf_offset - 2);
+
+  if ( end > getRows() )
+    end = getRows();
+
+  updateVTerm(false);
+  setColor();
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  for (uInt y=start; y < end; y++)
+  {
+    uInt i, len;
+    FString line;
+    const wchar_t* line_str;
+    setPrintPos (2, 2 - nf_offset + int(y));
+    line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
+                                     , uInt(getWidth() - nf_offset - 2) );
+    line_str = line.wc_str();
+    len = line.getLength();
+
+    for (i=0; i < len; i++)
+    {
+      wchar_t ch = line_str[i];
+      bool utf8 = (Encoding == fc::UTF8) ? true : false;
+
+      // only printable and 1 column per character
+      if (  (  (utf8 && std::iswprint(wint_t(ch)))
+            || (!utf8 && ch < 256 && std::isprint(ch)) )
+         && wcwidth(ch) == 1 )
+      {
+        print (ch);
+      }
+      else
+        print ('.');
+    }
+
+    for (; i < uInt(getWidth() - nf_offset - 2); i++)
+      print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  updateVTerm(true);
+}
+
+//----------------------------------------------------------------------
+void FTextView::processChanged()
+{
+  emitCallback("changed");
 }
 
 //----------------------------------------------------------------------
@@ -715,216 +929,4 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 
     updateTerminal();
   }
-}
-
-//----------------------------------------------------------------------
-void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
-{
-  FWidget::setGeometry(x, y, w, h, adjust);
-  int width  = getWidth();
-  int height = getHeight();
-
-  if ( isNewFont() )
-  {
-    vbar->setGeometry (width, 1, 2, height-1);
-    hbar->setGeometry (1, height, width-2, 1);
-  }
-  else
-  {
-    vbar->setGeometry (width, 2, 1, height-2);
-    hbar->setGeometry (2, height, width-2, 1);
-  }
-
-  vbar->resize();
-  hbar->resize();
-}
-
-//----------------------------------------------------------------------
-void FTextView::setPosition (int pos)
-{
-  int last_line = int(getRows());
-
-  if ( pos < 0 || pos > last_line - getHeight() + 2 )
-    return;
-
-  yoffset = pos;
-
-  if ( isVisible() )
-    drawText();
-
-  vbar->setValue (yoffset);
-
-  if ( vbar->isVisible() )
-    vbar->drawBar();
-
-  flush_out();
-}
-
-//----------------------------------------------------------------------
-void FTextView::setText (const FString& str)
-{
-  clear();
-  insert(str, -1);
-}
-
-//----------------------------------------------------------------------
-FString FTextView::getText() const
-{
-  uInt len, rows, idx;
-
-  if ( data.empty() )
-    return FString("");
-
-  len = 0;
-  rows = getRows();
-
-  for (uInt i=0 ; i < rows; i++)
-    len += data[i].getLength() + 1;
-
-  FString s(len + 1);
-  idx = 0;
-
-  for (uInt i=0 ; i < rows; i++)
-  {
-    const wchar_t* p = data[i].wc_str();
-
-    if ( p )
-    {
-      while ( (s[idx++] = *p++) != 0 );
-      s[idx-1] = '\n';
-    }
-    else
-    {
-      s[idx++] = '\n';
-    }
-  }
-
-  s[idx-1] = 0;
-  return s;
-}
-
-//----------------------------------------------------------------------
-void FTextView::append (const FString& str)
-{
-  insert(str, -1);
-}
-
-//----------------------------------------------------------------------
-void FTextView::insert (const FString& str, int pos)
-{
-  stringLines::iterator iter;
-  stringLines text_split;
-  FString s;
-  uLong end;
-
-  if ( pos < 0 || pos >= int(getRows()) )
-    pos = int(getRows());
-
-  if ( str.isEmpty() )
-    s = "\n";
-  else
-    s = FString(str).rtrim().expandTabs(getTabstop());
-
-  iter = data.begin();
-  text_split = s.split("\r\n");
-  end = text_split.size();
-
-  for (uInt i=0; i < end; i++)
-  {
-    uInt len;
-    text_split[i] = text_split[i].removeBackspaces()
-                                 .removeDel()
-                                 .replaceControlCodes()
-                                 .rtrim();
-    len = text_split[i].getLength();
-
-    if ( len > maxLineWidth )
-    {
-      maxLineWidth = len;
-
-      if ( len > uInt(getWidth() - nf_offset - 2) )
-      {
-        hbar->setMaximum (int(maxLineWidth) - getWidth() + nf_offset + 2);
-        hbar->setPageSize (int(maxLineWidth), getWidth() - nf_offset - 2);
-        hbar->calculateSliderValues();
-
-        if ( ! hbar->isVisible() )
-          hbar->setVisible();
-      }
-    }
-  }
-
-  data.insert (iter + pos, text_split.begin(), text_split.end());
-  vbar->setMaximum (int(getRows()) - getHeight() + 2 - nf_offset);
-  vbar->setPageSize (int(getRows()), getHeight() - 2 + nf_offset);
-  vbar->calculateSliderValues();
-
-  if ( ! vbar->isVisible() && int(getRows()) >= getHeight() + nf_offset - 1 )
-    vbar->setVisible();
-
-  if ( vbar->isVisible() && int(getRows()) < getHeight() + nf_offset - 1 )
-    vbar->hide();
-
-  processChanged();
-}
-
-//----------------------------------------------------------------------
-void FTextView::replaceRange (const FString& str, int start, int end)
-{
-  stringLines::iterator iter;
-
-  if ( start > end )
-    return;
-
-  if ( start < 0 || start >= int(getRows()) )
-    return;
-
-  if ( end < 0 || end >= int(getRows()) )
-    return;
-
-  iter = data.begin();
-  data.erase (iter+start, iter+end+1);
-
-  if ( ! str.isNull() )
-    insert(str, start);
-}
-
-//----------------------------------------------------------------------
-void FTextView::clear()
-{
-  int size;
-  char* blank;
-
-  data.clear();
-  xoffset = 0;
-  yoffset = 0;
-  maxLineWidth = 0;
-
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
-
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
-
-  // clear list from screen
-  setColor();
-  size = getWidth() - 2;
-
-  if ( size < 0 )
-    return;
-
-  blank = new char[size+1];
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y=0; y < getHeight() + nf_offset - 2; y++)
-  {
-    setPrintPos (2, 2 - nf_offset + y);
-    print (blank);
-  }
-
-  delete[] blank;
-  processChanged();
 }

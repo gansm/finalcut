@@ -96,25 +96,188 @@ class FMenuBar;
 class FWidget : public FVTerm
 {
  public:
-   typedef std::vector<FWidget*> widgetList;
-   static widgetList* window_list;
-   static widgetList* dialog_list;
-   static widgetList* always_on_top_list;
-   static widgetList* close_widget;
+    // Using-declaration
+   using FVTerm::setColor;
 
+   struct accelerator
+   {
+     int key;
+     FWidget* object;
+   };
+
+   // Typedefs
+   typedef std::vector<FWidget*> widgetList;
    typedef void (*FCallback)(FWidget*, void*);
    typedef void (FWidget::*FMemberCallback)(FWidget*, void*);
    typedef void* data_ptr;
+   typedef std::vector<accelerator> Accelerators;
 
+   // Constructor
+   explicit FWidget (FWidget* = 0);
+
+   // Destructor
+  ~FWidget();
+
+   // Accessors
+   const char*        getClassName() const;
+   FWidget*           getRootWidget() const;
+   FWidget*           getParentWidget() const;
+   static FWidget*    getMainWidget();
+   virtual FWidget*   getFocusWidget() const;
+   static FWidget*    getClickedWidget();
+   static FWidget*    getMoveSizeWidget();
+   static FWidget*    getOpenMenu();
+   static FMenuBar*   getMenuBar();
+   static FStatusBar* getStatusBar();
+   FString            getStatusbarMessage() const;
+   short              getForegroundColor() const;  // get the primary
+   short              getBackgroundColor() const;  // widget colors
+   int                getX() const;  // positioning
+   int                getY() const;
+   const FPoint       getPos() const;
+   int                getTermX() const;
+   int                getTermY() const;
+   const FPoint       getTermPos() const;
+   int                getWidth() const;
+   int                getHeight() const;
+   int                getTopPadding() const;
+   int                getLeftPadding() const;
+   int                getBottomPadding() const;
+   int                getRightPadding() const;
+   int                getClientWidth() const;
+   int                getClientHeight() const;
+   int                getMaxWidth() const;
+   int                getMaxHeight() const;
+   const FPoint&      getShadow() const;
+   const FRect&       getGeometry() const;
+   const FRect&       getGeometryWithShadow();
+   const FRect&       getTermGeometry();
+   const FRect&       getTermGeometryWithShadow();
+   int                getFlags() const;
+   FPoint             getCursorPos();
+   FPoint             getPrintPos();
+   std::vector<bool>& doubleFlatLine_ref (fc::sides);
+
+   // Mutators
+   static void        setMainWidget (FWidget*);
+   virtual void       setFocusWidget (FWidget*);
+   static void        setClickedWidget (FWidget*);
+   static void        setMoveSizeWidget (FWidget*);
+   static void        setOpenMenu (FWidget*);
+   virtual void       setStatusbarMessage (FString);
+   bool               setVisible();
+   virtual bool       setEnable (bool);
+   virtual bool       setEnable();
+   virtual bool       unsetEnable();
+   virtual bool       setDisable();
+   virtual bool       setVisibleCursor (bool);  // input cursor visibility
+   virtual bool       setVisibleCursor();       // for the widget
+   virtual bool       unsetVisibleCursor();
+   virtual bool       setFocus (bool);
+   virtual bool       setFocus();
+   virtual bool       unsetFocus();
+   void               setFocusable();
+   void               unsetFocusable();
+   bool               ignorePadding (bool);    // ignore padding from
+   bool               ignorePadding();         // the parent widget
+   bool               acceptPadding();
+   void               setForegroundColor (short);
+   void               setBackgroundColor (short);
+   void               setColor();
+   virtual void       setX (int, bool = true);  // positioning
+   virtual void       setY (int, bool = true);
+   virtual void       setPos (const FPoint&, bool = true);
+   virtual void       setPos (int, int, bool = true);
+   virtual void       setWidth (int, bool = true);
+   virtual void       setHeight (int, bool = true);
+   virtual void       setSize (int, int, bool = true);
+   void               setTopPadding (int, bool = true);
+   void               setLeftPadding (int, bool = true);
+   void               setBottomPadding (int, bool = true);
+   void               setRightPadding (int, bool = true);
+   void               setParentOffset();
+   void               setTermOffset();
+   void               setTermOffsetWithPadding();
+   void               setTermSize (int, int);
+   virtual void       setGeometry (const FRect&, bool = true);
+   virtual void       setGeometry (int, int, int, int, bool = true);
+   virtual void       setShadowSize (int, int);
+   void               setMinimumSize (int, int);
+   void               setMaximumSize (int, int);
+   void               setFixedSize (int, int);
+   bool               setCursorPos (const FPoint&);
+   bool               setCursorPos (register int, register int);
+   void               unsetCursorPos();
+   void               setPrintPos (const FPoint&);
+   void               setPrintPos (register int, register int);
+   void               setDoubleFlatLine (fc::sides, bool = true);
+   void               unsetDoubleFlatLine (fc::sides);
+   void               setDoubleFlatLine (fc::sides, int, bool = true);
+   void               unsetDoubleFlatLine (fc::sides, int);
+
+   // Inquiries
+   bool               isRootWidget() const;
+   bool               isWindowWidget() const;
+   bool               isDialogWidget() const;
+   bool               isMenuWidget() const;
+   bool               isVisible() const;
+   bool               isShown() const;
+   bool               isEnabled() const;
+   bool               hasVisibleCursor() const;
+   bool               hasFocus() const;
+   bool               acceptFocus() const;  // is focusable
+   bool               isPaddingIgnored();
+
+   // Methods
+   static FWidget*    childWidgetAt (FWidget*, const FPoint&);
+   static FWidget*    childWidgetAt (FWidget*, int, int);
+   int                numOfFocusableChildren();
+   virtual bool       close();
+   void               clearStatusbarMessage();
+   void               addCallback ( FString
+                                  , FCallback
+                                  , void* = null );
+   void               addCallback ( FString
+                                  , FWidget*
+                                  , FMemberCallback
+                                  , void* = null );
+   void               delCallback (FCallback);
+   void               delCallback (FWidget*);
+   void               delCallbacks();
+   void               emitCallback (FString);
+   void               addAccelerator (int);
+   virtual void       addAccelerator (int, FWidget*);
+   void               delAccelerator ();
+   virtual void       delAccelerator (FWidget*);
+   virtual void       redraw();
+   virtual void       resize();
+   virtual void       show();
+   virtual void       hide();
+   virtual bool       focusFirstChild();  // widget focusing
+   virtual bool       focusLastChild();
+   FPoint             termToWidgetPos (const FPoint&);
+   void               detectTermSize();
+   virtual void       move (const FPoint&);
+   virtual void       move (int, int);
+   void               drawShadow();
+   void               clearShadow();
+   void               drawFlatBorder();
+   void               clearFlatBorder();
+   virtual void       drawBorder (int, int, int, int);
+   virtual void       drawBorder();
+   static void        quit();
+
+   // Data Members
+   static widgetList* window_list;
+   Accelerators*      accelerator_list;
+
+ protected:
    struct callback_data
    {
      FString   cb_signal;
      FCallback cb_handler;
      data_ptr  data;
    };
-
-   typedef std::vector<callback_data> CallbackObjects;
-   CallbackObjects callback_objects;
 
    struct member_callback_data
    {
@@ -124,19 +287,39 @@ class FWidget : public FVTerm
      data_ptr        data;
    };
 
+   // Typedefs
+   typedef std::vector<callback_data> CallbackObjects;
    typedef std::vector<member_callback_data> MemberCallbackObjects;
-   MemberCallbackObjects member_callback_objects;
 
-   struct accelerator
-   {
-     int key;
-     FWidget* object;
-   };
+   // Mutators
+   virtual void       setStatusBar (FStatusBar*);
+   virtual void       setMenuBar (FMenuBar*);
 
-   typedef std::vector<accelerator> Accelerators;
-   Accelerators* accelerator_list;
+   // Methods
+   virtual void       adjustSize();
+   void               adjustSizeGlobal();
+   virtual bool       focusNextChild();  // Change child
+   virtual bool       focusPrevChild();  // focus
 
- protected:
+   // Event handlers
+   bool               event (FEvent*);
+   virtual void       onKeyPress (FKeyEvent*);
+   virtual void       onKeyUp (FKeyEvent*);
+   virtual void       onKeyDown (FKeyEvent*);
+   virtual void       onMouseDown (FMouseEvent*);
+   virtual void       onMouseUp (FMouseEvent*);
+   virtual void       onMouseDoubleClick (FMouseEvent*);
+   virtual void       onWheel (FWheelEvent*);
+   virtual void       onMouseMove (FMouseEvent*);
+   virtual void       onFocusIn (FFocusEvent*);
+   virtual void       onFocusOut (FFocusEvent*);
+   virtual void       onAccel (FAccelEvent*);
+   virtual void       onResize (FResizeEvent*);
+   virtual void       onShow (FShowEvent*);
+   virtual void       onHide (FHideEvent*);
+   virtual void       onClose (FCloseEvent*);
+
+   // Data Members
    static struct widget_colors
    {
      short term_fg;
@@ -226,17 +409,36 @@ class FWidget : public FVTerm
    } wc;
    // widget_colors wc;
 
-   int     flags;
-   static  uInt modal_dialogs;
+   int                   flags;
+   static uInt           modal_dialogs;
+   static widgetList*    dialog_list;
+   static widgetList*    always_on_top_list;
+   static widgetList*    close_widget;
+   CallbackObjects       callback_objects;
+   MemberCallbackObjects member_callback_objects;
 
  private:
-   bool    enable;
-   bool    visible;
-   bool    shown;
-   bool    focus;
-   bool    focusable;
-   bool    visible_cursor;
-   FPoint  widget_cursor_position;
+   // Disable copy constructor
+   FWidget (const FWidget&);
+
+   // Disable assignment operator (=)
+   FWidget& operator = (const FWidget&);
+
+   // Methods
+   void               init();
+   void               finish();
+   void               processDestroy();
+   virtual void       draw();
+   static void        setColorTheme();
+
+   // Data Members
+   bool               enable;
+   bool               visible;
+   bool               shown;
+   bool               focus;
+   bool               focusable;
+   bool               visible_cursor;
+   FPoint             widget_cursor_position;
 
    struct widget_size_hints
    {
@@ -288,365 +490,49 @@ class FWidget : public FVTerm
      int right;
    } padding;
 
-   bool    ignore_padding;
+   bool               ignore_padding;
 
    // widget size
-   FRect   wsize;
-   FRect   adjust_wsize;
-   FRect   adjust_wsize_term;
-   FRect   adjust_wsize_shadow;
-   FRect   adjust_wsize_term_shadow;
+   FRect              wsize;
+   FRect              adjust_wsize;
+   FRect              adjust_wsize_term;
+   FRect              adjust_wsize_shadow;
+   FRect              adjust_wsize_term_shadow;
    // widget offset
-   FRect   offset;
+   FRect              offset;
    // offset of the widget client area
-   FRect   client_offset;
+   FRect              client_offset;
    // widget shadow size (on the right and bottom side)
-   FPoint  wshadow;
+   FPoint             wshadow;
 
    // default widget foreground and background color
-   short   foreground_color;
-   short   background_color;
+   short              foreground_color;
+   short              background_color;
 
-   FString    statusbar_message;
-
+   FString            statusbar_message;
    static FStatusBar* statusbar;
    static FMenuBar*   menubar;
    static FWidget*    show_root_widget;
    static FWidget*    redraw_root_widget;
 
-   // Friend classes
+   // Friend class
    friend class FToggleButton;
-
- private:
-   // Disable copy constructor
-   FWidget (const FWidget&);
-   // Disable assignment operator (=)
-   FWidget& operator = (const FWidget&);
-
-   void             init();
-   void             finish();
-   void             processDestroy();
-   virtual void     draw();
-   static void      setColorTheme();
-
- protected:
-   virtual void     adjustSize();
-   void             adjustSizeGlobal();
-   virtual void     setStatusBar (FStatusBar*);
-   virtual void     setMenuBar (FMenuBar*);
-   // Event handlers
-   bool             event (FEvent*);
-   virtual void     onKeyPress (FKeyEvent*);
-   virtual void     onKeyUp (FKeyEvent*);
-   virtual void     onKeyDown (FKeyEvent*);
-   virtual void     onMouseDown (FMouseEvent*);
-   virtual void     onMouseUp (FMouseEvent*);
-   virtual void     onMouseDoubleClick (FMouseEvent*);
-   virtual void     onWheel (FWheelEvent*);
-   virtual void     onMouseMove (FMouseEvent*);
-   virtual void     onFocusIn (FFocusEvent*);
-   virtual void     onFocusOut (FFocusEvent*);
-   virtual void     onAccel (FAccelEvent*);
-   virtual void     onResize (FResizeEvent*);
-   virtual void     onShow (FShowEvent*);
-   virtual void     onHide (FHideEvent*);
-   virtual void     onClose (FCloseEvent*);
-   // Change child focus
-   virtual bool     focusNextChild();
-   virtual bool     focusPrevChild();
-
- public:
-   // Constructor
-   explicit FWidget (FWidget* = 0);
-   // Destructor
-  ~FWidget();
-
-   const char*      getClassName() const;
-   FWidget*         getRootWidget() const;
-   static FWidget*  getMainWidget();
-   static void      setMainWidget (FWidget*);
-   static FWidget*  childWidgetAt (FWidget*, const FPoint&);
-   static FWidget*  childWidgetAt (FWidget*, int, int);
-   virtual FWidget* getFocusWidget() const;
-   virtual void     setFocusWidget (FWidget*);
-   static FWidget*  getClickedWidget();
-   static void      setClickedWidget (FWidget*);
-   static FWidget*  getMoveSizeWidget();
-   static void      setMoveSizeWidget (FWidget*);
-   static FWidget*  getOpenMenu();
-   static void      setOpenMenu (FWidget*);
-   int              numOfFocusableChildren();
-   FWidget*         getParentWidget() const;
-   bool             isRootWidget() const;
-   bool             isWindowWidget() const;
-   bool             isDialogWidget() const;
-   bool             isMenuWidget() const;
-   virtual bool     close();
-
-   static FStatusBar* statusBar();
-   static FMenuBar* menuBar();
-   virtual void     setStatusbarMessage (FString);
-   void             clearStatusbarMessage();
-   FString          getStatusbarMessage();
-
-   void             addCallback ( FString
-                                , FCallback
-                                , void* = null );
-   void             addCallback ( FString
-                                , FWidget*
-                                , FMemberCallback
-                                , void* = null );
-   void             delCallback (FCallback);
-   void             delCallback (FWidget*);
-   void             delCallbacks();
-   void             emitCallback (FString);
-
-   void             addAccelerator (int);
-   virtual void     addAccelerator (int, FWidget*);
-   void             delAccelerator ();
-   virtual void     delAccelerator (FWidget*);
-
-   virtual void     redraw();
-   virtual void     resize();
-   virtual void     show();
-   virtual void     hide();
-   bool             setVisible();
-   bool             isVisible() const;
-   bool             isShown() const;
-
-   virtual bool     setEnable(bool);
-   virtual bool     setEnable();
-   virtual bool     unsetEnable();
-   virtual bool     setDisable();
-   bool             isEnabled() const;
-
-   // input cursor visibility for the widget
-   virtual bool     setVisibleCursor(bool);
-   virtual bool     setVisibleCursor();
-   virtual bool     unsetVisibleCursor();
-   bool             hasVisibleCursor() const;
-
-   // widget focusing
-   virtual bool     focusFirstChild();
-   virtual bool     focusLastChild();
-   virtual bool     setFocus (bool);
-   virtual bool     setFocus();
-   virtual bool     unsetFocus();
-   bool             hasFocus() const;
-   bool             acceptFocus() const;
-   void             setFocusable();
-   void             unsetFocusable();
-
-   // ignore padding from the parent widget
-   bool             ignorePadding (bool);
-   bool             ignorePadding();
-   bool             acceptPadding();
-   bool             isPaddingIgnored();
-
-   // get the primary widget colors
-   short            getForegroundColor() const;
-   short            getBackgroundColor() const;
-
-   // positioning
-   int              getX() const;
-   int              getY() const;
-   const FPoint     getPos() const;
-   int              getTermX() const;
-   int              getTermY() const;
-   const FPoint     getTermPos() const;
-   int              getWidth() const;
-   int              getHeight() const;
-   int              getTopPadding() const;
-   int              getLeftPadding() const;
-   int              getBottomPadding() const;
-   int              getRightPadding() const;
-   int              getClientWidth() const;
-   int              getClientHeight() const;
-   int              getMaxWidth() const;
-   int              getMaxHeight() const;
-   const FPoint&    getShadow() const;
-   const FRect&     getGeometry() const;
-   const FRect&     getGeometryWithShadow();
-   const FRect&     getTermGeometry();
-   const FRect&     getTermGeometryWithShadow();
-   FPoint           termToWidgetPos (const FPoint&);
-   void             setForegroundColor (short);
-   void             setBackgroundColor (short);
-   void             setColor();
-   // make every setColor from FVTerm available
-   using FVTerm::setColor;
-   virtual void     setX (int, bool = true);
-   virtual void     setY (int, bool = true);
-   virtual void     setPos (const FPoint&, bool = true);
-   virtual void     setPos (int, int, bool = true);
-   virtual void     setWidth (int, bool = true);
-   virtual void     setHeight (int, bool = true);
-   virtual void     setSize (int, int, bool = true);
-   void             setTopPadding (int, bool = true);
-   void             setLeftPadding (int, bool = true);
-   void             setBottomPadding (int, bool = true);
-   void             setRightPadding (int, bool = true);
-   void             setParentOffset();
-   void             setTermOffset();
-   void             setTermOffsetWithPadding();
-   void             detectTermSize();
-   void             setTermSize (int, int);
-   virtual void     setGeometry (const FRect&, bool = true);
-   virtual void     setGeometry (int, int, int, int, bool = true);
-   virtual void     setShadowSize (int, int);
-   void             setMinimumSize (int, int);
-   void             setMaximumSize (int, int);
-   void             setFixedSize (int, int);
-   virtual void     move (const FPoint&);
-   virtual void     move (int, int);
-   int              getFlags() const;
-
-   FPoint           getCursorPos();
-   bool             setCursorPos (const FPoint&);
-   bool             setCursorPos (register int, register int);
-   void             unsetCursorPos();
-
-   void             setPrintPos (const FPoint&);
-   void             setPrintPos (register int, register int);
-   FPoint           getPrintPos();
-
-   void             drawShadow();
-   void             clearShadow();
-   void             drawFlatBorder();
-   void             clearFlatBorder();
-   void             setDoubleFlatLine (int, bool = true);
-   void             unsetDoubleFlatLine (int);
-   void             setDoubleFlatLine (int, int, bool = true);
-   void             unsetDoubleFlatLine (int, int);
-   std::vector<bool>& doubleFlatLine_ref (int);
-   virtual void     drawBorder (int, int, int, int);
-   virtual void     drawBorder();
-
-   static void      quit();
 };
 
 #pragma pack(pop)
 
 // FWidget inline functions
 //----------------------------------------------------------------------
-inline void FWidget::processDestroy()
-{ emitCallback("destroy"); }
-
-//----------------------------------------------------------------------
 inline const char* FWidget::getClassName() const
 { return "FWidget"; }
-
-//----------------------------------------------------------------------
-inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
-{ return childWidgetAt (p, pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline FWidget* FWidget::getParentWidget() const
 { return static_cast<FWidget*>(getParent()); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::isRootWidget() const
-{ return (! hasParent()); }
-
-//----------------------------------------------------------------------
-inline void FWidget::clearStatusbarMessage()
-{ statusbar_message.clear(); }
-
-//----------------------------------------------------------------------
-inline FString FWidget::getStatusbarMessage()
+inline FString FWidget::getStatusbarMessage() const
 { return statusbar_message; }
-
-//----------------------------------------------------------------------
-inline void FWidget::addAccelerator (int key)
-{ addAccelerator (key, this); }
-
-//----------------------------------------------------------------------
-inline void FWidget::delAccelerator()
-{ delAccelerator(this); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setVisible()
-{ return visible = true; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isVisible() const
-{ return visible; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isShown() const
-{ return shown; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isWindowWidget() const
-{ return ((flags & fc::window_widget) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isDialogWidget() const
-{ return ((flags & fc::dialog_widget) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isMenuWidget() const
-{ return ((flags & fc::menu_widget) != 0); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isEnabled() const
-{ return enable; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor (bool on)
-{ return visible_cursor = (on) ? true : false; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor()
-{ return setVisibleCursor(true); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::unsetVisibleCursor()
-{ return setVisibleCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::hasVisibleCursor() const
-{ return visible_cursor; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::unsetFocus()
-{ return setFocus(false); }
-
-//----------------------------------------------------------------------
-inline bool FWidget::hasFocus() const
-{ return focus; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::acceptFocus() const
-{ return focusable; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::ignorePadding (bool on)
-{ return ignore_padding = on; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::ignorePadding()
-{ return ignore_padding = true; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::acceptPadding()
-{ return ignore_padding = false; }
-
-//----------------------------------------------------------------------
-inline bool FWidget::isPaddingIgnored()
-{ return ignore_padding; }
-
-//----------------------------------------------------------------------
-inline void FWidget::setFocusable()
-{ focusable = true; }
-
-//----------------------------------------------------------------------
-inline void FWidget::unsetFocusable()
-{ focusable = false; }
 
 //----------------------------------------------------------------------
 inline short FWidget::getForegroundColor() const
@@ -679,33 +565,6 @@ inline int FWidget::getTermY() const  // y-position on terminal
 //----------------------------------------------------------------------
 inline const FPoint FWidget::getTermPos() const  // position on terminal
 { return FPoint(getTermX(), getTermY()); }
-
-//----------------------------------------------------------------------
-inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
-{
-  return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
-                , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::setForegroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    foreground_color = color;
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::setBackgroundColor (short color)
-{
-  // valid colors -1..254
-  if ( color == fc::Default || color >> 8 == 0 )
-    background_color = color;
-}
-
-//----------------------------------------------------------------------
-inline void FWidget::setPos (const FPoint& p, bool adjust)
-{ setPos (p.getX(), p.getY(), adjust); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getWidth() const
@@ -795,6 +654,94 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
 }
 
 //----------------------------------------------------------------------
+inline int FWidget::getFlags() const
+{ return flags; }
+
+//----------------------------------------------------------------------
+inline FPoint FWidget::getCursorPos()
+{ return widget_cursor_position; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setVisible()
+{ return visible = true; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setEnable (bool on)
+{ return enable = (on) ? true : false; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setEnable()
+{ return setEnable(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetEnable()
+{ return setEnable(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setDisable()
+{ return setEnable(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setVisibleCursor (bool on)
+{ return visible_cursor = (on) ? true : false; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setVisibleCursor()
+{ return setVisibleCursor(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetVisibleCursor()
+{ return setVisibleCursor(false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::setFocus()
+{ return setFocus(true); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::unsetFocus()
+{ return setFocus(false); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setFocusable()
+{ focusable = true; }
+
+//----------------------------------------------------------------------
+inline void FWidget::unsetFocusable()
+{ focusable = false; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::ignorePadding (bool on)
+{ return ignore_padding = on; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::ignorePadding()
+{ return ignore_padding = true; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::acceptPadding()
+{ return ignore_padding = false; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setForegroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    foreground_color = color;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setBackgroundColor (short color)
+{
+  // valid colors -1..254
+  if ( color == fc::Default || color >> 8 == 0 )
+    background_color = color;
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::setPos (const FPoint& p, bool adjust)
+{ setPos (p.getX(), p.getY(), adjust); }
+
+//----------------------------------------------------------------------
 inline void FWidget::setGeometry (const FRect& box, bool adjust)
 {
   setGeometry ( box.getX()
@@ -824,18 +771,6 @@ inline void FWidget::setFixedSize (int width, int height)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::move (const FPoint& pos)
-{ move( pos.getX(), pos.getY() ); }
-
-//----------------------------------------------------------------------
-inline int FWidget::getFlags() const
-{ return flags; }
-
-//----------------------------------------------------------------------
-inline FPoint FWidget::getCursorPos()
-{ return widget_cursor_position; }
-
-//----------------------------------------------------------------------
 inline bool FWidget::setCursorPos (const FPoint& pos)
 { return setCursorPos (pos.getX(), pos.getY()); }
 
@@ -848,19 +783,94 @@ inline void FWidget::setPrintPos (const FPoint& pos)
 { setPrintPos (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (int side)
+inline void FWidget::unsetDoubleFlatLine (fc::sides side)
 { setDoubleFlatLine(side, false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::unsetDoubleFlatLine (int side, int pos)
+inline void FWidget::unsetDoubleFlatLine (fc::sides side, int pos)
 { setDoubleFlatLine(side, pos, false); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isRootWidget() const
+{ return (! hasParent()); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isVisible() const
+{ return visible; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isShown() const
+{ return shown; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isWindowWidget() const
+{ return ((flags & fc::window_widget) != 0); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isDialogWidget() const
+{ return ((flags & fc::dialog_widget) != 0); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isMenuWidget() const
+{ return ((flags & fc::menu_widget) != 0); }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isEnabled() const
+{ return enable; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::hasVisibleCursor() const
+{ return visible_cursor; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::hasFocus() const
+{ return focus; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::acceptFocus() const  // is focusable
+{ return focusable; }
+
+//----------------------------------------------------------------------
+inline bool FWidget::isPaddingIgnored()
+{ return ignore_padding; }
+
+//----------------------------------------------------------------------
+inline FWidget* FWidget::childWidgetAt (FWidget* p, const FPoint& pos)
+{ return childWidgetAt (p, pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline void FWidget::clearStatusbarMessage()
+{ statusbar_message.clear(); }
+
+//----------------------------------------------------------------------
+inline void FWidget::addAccelerator (int key)
+{ addAccelerator (key, this); }
+
+//----------------------------------------------------------------------
+inline void FWidget::delAccelerator()
+{ delAccelerator(this); }
+
+//----------------------------------------------------------------------
+inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
+{
+  return FPoint ( tPos.getX() + 1 - offset.getX1() - adjust_wsize.getX()
+                , tPos.getY() + 1 - offset.getY1() - adjust_wsize.getY() );
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::move (const FPoint& pos)
+{ move( pos.getX(), pos.getY() ); }
 
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()
 { drawBorder (1, 1, getWidth(), getHeight()); }
 
+//----------------------------------------------------------------------
+inline void FWidget::processDestroy()
+{ emitCallback("destroy"); }
 
-// NewFont elements
+
+// Non-member elements for NewFont
 //----------------------------------------------------------------------
 const wchar_t NF_Drive[5] =
 {

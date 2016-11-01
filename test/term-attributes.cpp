@@ -14,24 +14,10 @@
 
 class AttribDlg : public FDialog
 {
- private:
-   FButton* next_button;
-   FButton* back_button;
-
- public:
-   short bgcolor;
-
- private:
-   // Disable copy constructor
-   AttribDlg (const AttribDlg&);
-   // Disable assignment operator (=)
-   AttribDlg& operator = (const AttribDlg&);
-
-   void adjustSize();
-
  public:
    // Constructor
    explicit AttribDlg (FWidget* = 0);
+
    // Destructor
   ~AttribDlg();
 
@@ -43,15 +29,32 @@ class AttribDlg : public FDialog
    // Callback methods
    void cb_next (FWidget* = 0, void* = 0);
    void cb_back (FWidget* = 0, void* = 0);
+
+   // Data Members
+   short bgcolor;
+
+ private:
+   // Disable copy constructor
+   AttribDlg (const AttribDlg&);
+   // Disable assignment operator (=)
+   AttribDlg& operator = (const AttribDlg&);
+
+   // Method
+   void adjustSize();
+
+   // Data Members
+   FButton* next_button;
+   FButton* back_button;
+
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 AttribDlg::AttribDlg (FWidget* parent)
   : FDialog(parent)
+  , bgcolor(wc.label_bg)
   , next_button()
   , back_button()
-  , bgcolor(wc.label_bg)
 {
   resetXTermForeground();
   resetXTermBackground();
@@ -173,17 +176,10 @@ void AttribDlg::adjustSize()
 
 class AttribDemo : public FWidget
 {
- private:
-   int colors;
-
- private:
-   void printColorLine();
-   void printAltCharset();
-   void draw();
-
  public:
    // Constructor
    explicit AttribDemo (FWidget* = 0);
+
    // Destructor
   ~AttribDemo()
    { }
@@ -192,9 +188,19 @@ class AttribDemo : public FWidget
    void onWheel (FWheelEvent* ev)
    {
      AttribDlg* p = dynamic_cast<AttribDlg*>(getParentWidget());
+
      if ( p )
        p->onWheel(ev);
    }
+
+ private:
+   // Methods
+   void printColorLine();
+   void printAltCharset();
+   void draw();
+
+   // Data Member
+   int colors;
 };
 #pragma pack(pop)
 

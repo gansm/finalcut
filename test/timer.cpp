@@ -13,11 +13,12 @@ class timer : public FWidget
    explicit timer (FWidget* = 0);
 
  protected:
+   // Method
+   void draw();
+
    // Event handlers
    void onTimer (FTimerEvent*);
    void onAccel (FAccelEvent*);
-
-   void draw();
 };
 
 //----------------------------------------------------------------------
@@ -34,6 +35,19 @@ timer::timer (FWidget* parent)
   resetXTermBackground();
   wc.term_fg = fc::Default;
   wc.term_bg = fc::Default;
+}
+
+//----------------------------------------------------------------------
+void timer::draw()
+{
+  setNormal();
+  setColor (fc::Default, fc::Default);
+  clearArea (vdesktop);
+  setPrintPos (1,1);
+  print ("---------------\n");
+  print ("Press Q to quit\n");
+  print ("---------------\n");
+  setAreaCursor (1, 4, true, vdesktop);
 }
 
 //----------------------------------------------------------------------
@@ -64,19 +78,6 @@ void timer::onAccel (FAccelEvent* ev)
 {
   quit();
   ev->accept();
-}
-
-//----------------------------------------------------------------------
-void timer::draw()
-{
-  setNormal();
-  setColor (fc::Default, fc::Default);
-  clearArea (vdesktop);
-  setPrintPos (1,1);
-  print ("---------------\n");
-  print ("Press Q to quit\n");
-  print ("---------------\n");
-  setAreaCursor (1, 4, true, vdesktop);
 }
 
 

@@ -44,20 +44,17 @@
 
 class FListBoxItem
 {
- private:
-   FString           text;
-   fc::brackets_type brackets;
-   bool              selected;
-
  public:
    // Constructors
    FListBoxItem ();
    explicit FListBoxItem (FString&);
    explicit FListBoxItem (const std::string&);
    explicit FListBoxItem (const char*);
+
    // Destructor
    virtual ~FListBoxItem();
 
+   // Accessors
    virtual FString getText() const;
 
  protected:
@@ -66,9 +63,16 @@ class FListBoxItem
    void setText (const char*);
 
  private:
+   // Friend classes
    friend class FListBox;
+
+   // Data Members
+   FString           text;
+   fc::brackets_type brackets;
+   bool              selected;
 };
 #pragma pack(pop)
+
 
 // FListBoxItem inline functions
 //----------------------------------------------------------------------
@@ -97,7 +101,83 @@ inline void FListBoxItem::setText (const char* txt)
 
 class FListBox : public FWidget
 {
+ public:
+   // Using-declaration
+   using FWidget::setGeometry;
+
+   // Constructor
+   explicit FListBox (FWidget* = 0);
+
+   // Destructor
+  ~FListBox();
+
+   // Accessors
+   const char*  getClassName() const;
+   uInt         getCount() const;
+   FListBoxItem getItem (int) const;
+   int          currentItem() const;
+   FString&     getText();
+
+   // Mutators
+   void         setCurrentItem (int);
+   void         selectItem (int);
+   void         unselectItem (int);
+   void         showInsideBrackets (int, fc::brackets_type);
+   void         showNoBrackets (int);
+   void         setGeometry (int, int, int, int, bool = true);
+   void         setMultiSelection (bool);
+   void         setMultiSelection ();
+   void         unsetMultiSelection ();
+   bool         setEnable (bool);
+   bool         setEnable();
+   bool         unsetEnable();
+   bool         setDisable();
+   bool         setFocus (bool);
+   bool         setFocus();
+   bool         unsetFocus();
+   void         setText (const FString);
+
+   // Inquiries
+   bool         isSelected (int) const;
+   bool         isMultiSelection() const;
+   bool         hasBrackets (int) const;
+
+   // Methods
+   void         hide();
+   void         insert ( FString
+                       , fc::brackets_type = fc::NoBrackets
+                       , bool = false );
+   void         insert ( long
+                       , fc::brackets_type = fc::NoBrackets
+                       , bool = false );
+   void         remove (int);
+   void         clear();
+
+   // Event handlers
+   void         onKeyPress (FKeyEvent*);
+   void         onMouseDown (FMouseEvent*);
+   void         onMouseUp (FMouseEvent*);
+   void         onMouseMove (FMouseEvent*);
+   void         onMouseDoubleClick (FMouseEvent*);
+   void         onWheel (FWheelEvent*);
+   void         onTimer (FTimerEvent*);
+   void         onFocusIn (FFocusEvent*);
+   void         onFocusOut (FFocusEvent*);
+
+   // Callback methods
+   void         cb_VBarChange (FWidget*, void*);
+   void         cb_HBarChange (FWidget*, void*);
+
+ protected:
+   // Methods
+   void adjustYOffset();
+   void adjustSize();
+
  private:
+   // Typedef
+   typedef std::vector<FListBoxItem> listBoxItem;
+
+   // Enumeration
    enum dragScroll
    {
      noScroll         = 0,
@@ -107,7 +187,23 @@ class FListBox : public FWidget
      scrollDownSelect = 4
    };
 
-   std::vector<FListBoxItem> data;
+   // Disable copy constructor
+   FListBox (const FListBox&);
+
+   // Disable assignment operator (=)
+   FListBox& operator = (const FListBox&);
+
+   // Methods
+   void        init();
+   void        draw();
+   void        drawLabel();
+   void        drawList();
+   void        processClick();
+   void        processSelect();
+   void        processChanged();
+
+   // Data Members
+   listBoxItem data;
    FScrollbar* vbar;
    FScrollbar* hbar;
    FString     text;
@@ -126,86 +222,6 @@ class FListBox : public FWidget
    int         last_yoffset;
    int         nf_offset;
    int         max_line_width;
-
- private:
-   // Disable copy constructor
-   FListBox (const FListBox&);
-   // Disable assignment operator (=)
-   FListBox& operator = (const FListBox&);
-
-   void init();
-   void draw();
-   void drawLabel();
-   void drawList();
-   void processClick();
-   void processSelect();
-   void processChanged();
-
- protected:
-   void adjustYOffset();
-   void adjustSize();
-
- public:
-   // Constructor
-   explicit FListBox (FWidget* = 0);
-   // Destructor
-  ~FListBox();
-
-   const char* getClassName() const;
-   void hide();
-
-   // Event handlers
-   void onKeyPress (FKeyEvent*);
-   void onMouseDown (FMouseEvent*);
-   void onMouseUp (FMouseEvent*);
-   void onMouseMove (FMouseEvent*);
-   void onMouseDoubleClick (FMouseEvent*);
-   void onWheel (FWheelEvent*);
-   void onTimer (FTimerEvent*);
-   void onFocusIn (FFocusEvent*);
-   void onFocusOut (FFocusEvent*);
-
-   // Callback methods
-   void cb_VBarChange (FWidget*, void*);
-   void cb_HBarChange (FWidget*, void*);
-
-   uInt count() const;
-   FListBoxItem Item (int) const;
-   int  currentItem() const;
-   void setCurrentItem (int);
-   void selectItem (int);
-   void unselectItem (int);
-   bool isSelected (int) const;
-   void showInsideBrackets (int, fc::brackets_type);
-   void showNoBrackets (int);
-   bool hasBrackets (int) const;
-   // make every setGeometry from FWidget available
-   using FWidget::setGeometry;
-   void setGeometry (int, int, int, int, bool = true);
-
-   void setMultiSelection (bool);
-   void setMultiSelection ();
-   void unsetMultiSelection ();
-   bool isMultiSelection() const;
-   bool setEnable (bool);
-   bool setEnable();
-   bool unsetEnable();
-   bool setDisable();
-   bool setFocus (bool);
-   bool setFocus();
-   bool unsetFocus();
-
-   void insert ( FString
-               , fc::brackets_type = fc::NoBrackets
-               , bool = false );
-   void insert ( long
-               , fc::brackets_type = fc::NoBrackets
-               , bool = false );
-   void remove ( int);
-   void clear();
-
-   void setText (const FString);
-   FString& getText();
 };
 #pragma pack(pop)
 
@@ -216,16 +232,20 @@ inline const char* FListBox::getClassName() const
 { return "FListBox"; }
 
 //----------------------------------------------------------------------
-inline uInt FListBox::count() const
+inline uInt FListBox::getCount() const
 { return uInt(data.size()); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem FListBox::Item(int index) const
+inline FListBoxItem FListBox::getItem (int index) const
 { return data[uInt(index-1)]; }
 
 //----------------------------------------------------------------------
 inline int FListBox::currentItem() const
 { return current; }
+
+//----------------------------------------------------------------------
+inline FString& FListBox::getText()
+{ return text; }
 
 //----------------------------------------------------------------------
 inline void FListBox::selectItem (int index)
@@ -236,16 +256,8 @@ inline void FListBox::unselectItem (int index)
 { data[uInt(index-1)].selected = false; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected(int index) const
-{ return data[uInt(index-1)].selected; }
-
-//----------------------------------------------------------------------
 inline void FListBox::showNoBrackets(int index)
 { data[uInt(index-1)].brackets = fc::NoBrackets; }
-
-//----------------------------------------------------------------------
-inline bool FListBox::hasBrackets(int index) const
-{ return bool(data[uInt(index-1)].brackets > 0); }
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection (bool on)
@@ -258,10 +270,6 @@ inline void FListBox::setMultiSelection()
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()
 { setMultiSelection(false); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::isMultiSelection() const
-{ return multi_select; }
 
 //----------------------------------------------------------------------
 inline bool FListBox::setEnable()
@@ -284,7 +292,15 @@ inline bool FListBox::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline FString& FListBox::getText()
-{ return text; }
+inline bool FListBox::isSelected(int index) const
+{ return data[uInt(index-1)].selected; }
+
+//----------------------------------------------------------------------
+inline bool FListBox::isMultiSelection() const
+{ return multi_select; }
+
+//----------------------------------------------------------------------
+inline bool FListBox::hasBrackets(int index) const
+{ return bool(data[uInt(index-1)].brackets > 0); }
 
 #endif  // _FLISTBOX_H

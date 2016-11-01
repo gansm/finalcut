@@ -17,13 +17,13 @@ FLineEdit::FLineEdit(FWidget* parent)
   , text("")
   , label_text("")
   , label(new FLabel("", parent))
+  , label_orientation(FLineEdit::label_left)
   , drag_scroll(FLineEdit::noScroll)
   , scroll_timer(false)
   , scroll_repeat(100)
   , insert_mode(true)
   , cursor_pos(0)
   , text_offset(0)
-  , label_orientation(FLineEdit::label_left)
 {
   init();
 }
@@ -34,13 +34,13 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
   , text(txt)
   , label_text("")
   , label(new FLabel("", parent))
+  , label_orientation(FLineEdit::label_left)
   , drag_scroll(FLineEdit::noScroll)
   , scroll_timer(false)
   , scroll_repeat(100)
   , insert_mode(true)
   , cursor_pos(0)
   , text_offset(0)
-  , label_orientation(FLineEdit::label_left)
 {
   init();
   setText(txt);
@@ -60,18 +60,14 @@ FLineEdit::~FLineEdit()  // destructor
   }
 }
 
-// private methods of FLineEdit
+
+// public methods of FLineEdit
 //----------------------------------------------------------------------
-void FLineEdit::init()
+bool FLineEdit::setEnable (bool on)
 {
-  label->setAccelWidget(this);
-  setVisibleCursor();
-  setShadow();
+  FWidget::setEnable(on);
 
-  if ( hasFocus() )
-    flags |= fc::focus;
-
-  if ( isEnabled() )
+  if ( on )
   {
     flags |= fc::active;
 
@@ -86,196 +82,97 @@ void FLineEdit::init()
       setBackgroundColor (wc.inputfield_active_bg);
     }
   }
-  else  // inactive
+  else
   {
+    flags &= ~fc::active;
     setForegroundColor (wc.inputfield_inactive_fg);
     setBackgroundColor (wc.inputfield_inactive_bg);
   }
+
+  return on;
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::hasHotkey()
+bool FLineEdit::setFocus (bool on)
 {
-  if ( label_text.isEmpty() )
-    return 0;
+  FWidget::setFocus(on);
 
-  return label_text.includes('&');
-}
-
-//----------------------------------------------------------------------
-void FLineEdit::draw()
-{
-  bool isFocus;
-  drawInputField();
-  isFocus = ((flags & fc::focus) != 0);
-
-  if ( isFocus && statusBar() )
+  if ( on )
   {
-    FString msg = getStatusbarMessage();
-    FString curMsg = statusBar()->getMessage();
+    flags |= fc::focus;
 
-    if ( curMsg != msg )
+    if ( isEnabled() )
     {
-      statusBar()->setMessage(msg);
-      statusBar()->drawMessage();
+      setForegroundColor (wc.inputfield_active_focus_fg);
+      setBackgroundColor (wc.inputfield_active_focus_bg);
+
+      if ( getStatusBar() )
+      {
+        FString msg = getStatusbarMessage();
+        FString curMsg = getStatusBar()->getMessage();
+
+        if ( curMsg != msg )
+          getStatusBar()->setMessage(msg);
+      }
     }
   }
+  else
+  {
+    flags &= ~fc::focus;
+
+    if ( isEnabled() )
+    {
+      setForegroundColor (wc.inputfield_active_fg);
+      setBackgroundColor (wc.inputfield_active_bg);
+
+      if ( getStatusBar() )
+        getStatusBar()->clearMessage();
+    }
+  }
+
+  return on;
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::drawInputField()
+bool FLineEdit::setShadow (bool on)
 {
-  bool isActiveFocus, isActive, isShadow;
-  int x;
-  FString show_text;
-  int active_focus = fc::active + fc::focus;
-  isActiveFocus = ((flags & active_focus) == active_focus);
-  isActive = ((flags & fc::active) != 0);
-  isShadow = ((flags & fc::shadow) != 0 );
+  if (  on
+     && (Encoding != fc::VT100 || isTeraTerm() )
+     && Encoding != fc::ASCII )
+    flags |= fc::shadow;
+  else
+    flags &= ~fc::shadow;
 
-  updateVTerm(false);
-  setPrintPos (1, 1);
-
-  if ( isMonochron() )
-  {
-    setReverse(true);
-    print (' ');
-
-    if ( isActiveFocus )
-      setReverse(false);
-    else
-      setUnderline(true);
-  }
-  else if ( isActiveFocus )
-  {
-    setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-  else if ( isActive )
-  {
-    setColor (wc.inputfield_active_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-  else // isInactive
-  {
-    setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-
-  if ( isActiveFocus && getMaxColor() < 16 )
-    setBold();
-
-  setColor();
-  show_text = text.mid(uInt(1+text_offset), uInt(getWidth()-2));
-
-  if ( isUTF8_linux_terminal() )
-  {
-    setUTF8(true);
-
-    if ( show_text )
-      print (show_text);
-
-    setUTF8(false);
-  }
-  else if ( show_text )
-    print (show_text);
-
-  x = int(show_text.getLength());
-
-  while ( x < getWidth()-1 )
-  {
-    print (' ');
-    x++;
-  }
-
-  if ( isActiveFocus && getMaxColor() < 16 )
-    unsetBold();
-
-  if ( isMonochron() )
-  {
-    setReverse(false);
-    setUnderline(false);
-  }
-
-  if ( isShadow )
-    drawShadow ();
-
-  // set the cursor to the first pos.
-  setCursorPos (2+cursor_pos-text_offset, 1);
-
-  updateVTerm(true);
+  return on;
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::processActivate()
+void FLineEdit::setText (FString txt)
 {
-  if ( ! hasFocus() )
-  {
-    setFocus();
-    redraw();
-  }
+  text_offset = 0;
+  cursor_pos = 0;
 
-  emitCallback("activate");
+  if ( txt )
+    text = txt;
+  else
+    text = "";
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::processChanged()
+void FLineEdit::setLabelText (FString ltxt)
 {
-  emitCallback("changed");
-}
-
-
-// protected methods of FListBox
-//----------------------------------------------------------------------
-void FLineEdit::adjustLabel()
-{
-  int label_length = int(label_text.getLength());
-
-  if ( hasHotkey() )
-    label_length--;
-
-  assert (  label_orientation == label_above
-         || label_orientation == label_left );
-
-  switch ( label_orientation )
-  {
-    case label_above:
-      label->setGeometry(getX(), getY()-1, label_length, 1);
-      break;
-
-    case label_left:
-      label->setGeometry(getX()-label_length, getY(), label_length, 1);
-      break;
-  }
-}
-
-//----------------------------------------------------------------------
-void FLineEdit::adjustSize()
-{
-  FWidget::adjustSize();
+  label_text = ltxt;
+  label->setText(label_text);
   adjustLabel();
 }
 
+//----------------------------------------------------------------------
+void FLineEdit::setLabelOrientation(label_o o)
+{
+  label_orientation = o;
+  adjustLabel();
+}
 
-// public methods of FLineEdit
 //----------------------------------------------------------------------
 void FLineEdit::hide()
 {
@@ -321,87 +218,11 @@ void FLineEdit::hide()
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setEnable (bool on)
+void FLineEdit::clearText()
 {
-  FWidget::setEnable(on);
-
-  if ( on )
-  {
-    flags |= fc::active;
-
-    if ( hasFocus() )
-    {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
-    }
-    else
-    {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
-    }
-  }
-  else
-  {
-    flags &= ~fc::active;
-    setForegroundColor (wc.inputfield_inactive_fg);
-    setBackgroundColor (wc.inputfield_inactive_bg);
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FLineEdit::setFocus (bool on)
-{
-  FWidget::setFocus(on);
-
-  if ( on )
-  {
-    flags |= fc::focus;
-
-    if ( isEnabled() )
-    {
-      setForegroundColor (wc.inputfield_active_focus_fg);
-      setBackgroundColor (wc.inputfield_active_focus_bg);
-
-      if ( statusBar() )
-      {
-        FString msg = getStatusbarMessage();
-        FString curMsg = statusBar()->getMessage();
-
-        if ( curMsg != msg )
-          statusBar()->setMessage(msg);
-      }
-    }
-  }
-  else
-  {
-    flags &= ~fc::focus;
-
-    if ( isEnabled() )
-    {
-      setForegroundColor (wc.inputfield_active_fg);
-      setBackgroundColor (wc.inputfield_active_bg);
-
-      if ( statusBar() )
-        statusBar()->clearMessage();
-    }
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FLineEdit::setShadow (bool on)
-{
-  if (  on
-     && (Encoding != fc::VT100 || isTeraTerm() )
-     && Encoding != fc::ASCII )
-    flags |= fc::shadow;
-  else
-    flags &= ~fc::shadow;
-
-  return on;
+  text_offset = 0;
+  cursor_pos = 0;
+  text.clear();
 }
 
 //----------------------------------------------------------------------
@@ -581,8 +402,8 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 
     redraw();
 
-    if ( statusBar() )
-      statusBar()->drawMessage();
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
   }
 
   mouse_x = ev->getX();
@@ -751,9 +572,9 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 
     redraw();
 
-    if ( statusBar() )
+    if ( getStatusBar() )
     {
-      statusBar()->drawMessage();
+      getStatusBar()->drawMessage();
       updateTerminal();
       flush_out();
     }
@@ -795,9 +616,9 @@ void FLineEdit::onFocusIn (FFocusEvent*)
       setXTermCursorColor("rgb:0000/0000/0000");
   }
 
-  if ( statusBar() )
+  if ( getStatusBar() )
   {
-    statusBar()->drawMessage();
+    getStatusBar()->drawMessage();
     updateTerminal();
     flush_out();
   }
@@ -806,10 +627,10 @@ void FLineEdit::onFocusIn (FFocusEvent*)
 //----------------------------------------------------------------------
 void FLineEdit::onFocusOut (FFocusEvent*)
 {
-  if ( statusBar() )
+  if ( getStatusBar() )
   {
-    statusBar()->clearMessage();
-    statusBar()->drawMessage();
+    getStatusBar()->clearMessage();
+    getStatusBar()->drawMessage();
   }
 
   if ( ! insert_mode )
@@ -823,37 +644,217 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 }
 
+
+// protected methods of FListBox
 //----------------------------------------------------------------------
-void FLineEdit::clearText()
+void FLineEdit::adjustLabel()
 {
-  text_offset = 0;
-  cursor_pos = 0;
-  text.clear();
+  int label_length = int(label_text.getLength());
+
+  if ( hasHotkey() )
+    label_length--;
+
+  assert (  label_orientation == label_above
+         || label_orientation == label_left );
+
+  switch ( label_orientation )
+  {
+    case label_above:
+      label->setGeometry(getX(), getY()-1, label_length, 1);
+      break;
+
+    case label_left:
+      label->setGeometry(getX()-label_length, getY(), label_length, 1);
+      break;
+  }
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setText (FString txt)
+void FLineEdit::adjustSize()
 {
-  text_offset = 0;
-  cursor_pos = 0;
-
-  if ( txt )
-    text = txt;
-  else
-    text = "";
-}
-
-//----------------------------------------------------------------------
-void FLineEdit::setLabelText (FString ltxt)
-{
-  label_text = ltxt;
-  label->setText(label_text);
+  FWidget::adjustSize();
   adjustLabel();
 }
 
+
+// private methods of FLineEdit
 //----------------------------------------------------------------------
-void FLineEdit::setLabelOrientation(label_o o)
+void FLineEdit::init()
 {
-  label_orientation = o;
-  adjustLabel();
+  label->setAccelWidget(this);
+  setVisibleCursor();
+  setShadow();
+
+  if ( hasFocus() )
+    flags |= fc::focus;
+
+  if ( isEnabled() )
+  {
+    flags |= fc::active;
+
+    if ( hasFocus() )
+    {
+      setForegroundColor (wc.inputfield_active_focus_fg);
+      setBackgroundColor (wc.inputfield_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc.inputfield_active_fg);
+      setBackgroundColor (wc.inputfield_active_bg);
+    }
+  }
+  else  // inactive
+  {
+    setForegroundColor (wc.inputfield_inactive_fg);
+    setBackgroundColor (wc.inputfield_inactive_bg);
+  }
+}
+
+//----------------------------------------------------------------------
+bool FLineEdit::hasHotkey()
+{
+  if ( label_text.isEmpty() )
+    return 0;
+
+  return label_text.includes('&');
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::draw()
+{
+  bool isFocus;
+  drawInputField();
+  isFocus = ((flags & fc::focus) != 0);
+
+  if ( isFocus && getStatusBar() )
+  {
+    FString msg = getStatusbarMessage();
+    FString curMsg = getStatusBar()->getMessage();
+
+    if ( curMsg != msg )
+    {
+      getStatusBar()->setMessage(msg);
+      getStatusBar()->drawMessage();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::drawInputField()
+{
+  bool isActiveFocus, isActive, isShadow;
+  int x;
+  FString show_text;
+  int active_focus = fc::active + fc::focus;
+  isActiveFocus = ((flags & active_focus) == active_focus);
+  isActive = ((flags & fc::active) != 0);
+  isShadow = ((flags & fc::shadow) != 0 );
+
+  updateVTerm(false);
+  setPrintPos (1, 1);
+
+  if ( isMonochron() )
+  {
+    setReverse(true);
+    print (' ');
+
+    if ( isActiveFocus )
+      setReverse(false);
+    else
+      setUnderline(true);
+  }
+  else if ( isActiveFocus )
+  {
+    setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
+
+    if ( isCygwinTerminal() )  // IBM Codepage 850
+      print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
+    else
+      print (fc::RightHalfBlock); // ▐
+  }
+  else if ( isActive )
+  {
+    setColor (wc.inputfield_active_bg, wc.dialog_bg);
+
+    if ( isCygwinTerminal() )  // IBM Codepage 850
+      print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
+    else
+      print (fc::RightHalfBlock); // ▐
+  }
+  else // isInactive
+  {
+    setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
+
+    if ( isCygwinTerminal() )  // IBM Codepage 850
+      print (fc::FullBlock); // █
+    else if ( isTeraTerm() )
+        print (0xdb);
+    else
+      print (fc::RightHalfBlock); // ▐
+  }
+
+  if ( isActiveFocus && getMaxColor() < 16 )
+    setBold();
+
+  setColor();
+  show_text = text.mid(uInt(1+text_offset), uInt(getWidth()-2));
+
+  if ( isUTF8_linux_terminal() )
+  {
+    setUTF8(true);
+
+    if ( show_text )
+      print (show_text);
+
+    setUTF8(false);
+  }
+  else if ( show_text )
+    print (show_text);
+
+  x = int(show_text.getLength());
+
+  while ( x < getWidth()-1 )
+  {
+    print (' ');
+    x++;
+  }
+
+  if ( isActiveFocus && getMaxColor() < 16 )
+    unsetBold();
+
+  if ( isMonochron() )
+  {
+    setReverse(false);
+    setUnderline(false);
+  }
+
+  if ( isShadow )
+    drawShadow ();
+
+  // set the cursor to the first pos.
+  setCursorPos (2+cursor_pos-text_offset, 1);
+
+  updateVTerm(true);
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::processActivate()
+{
+  if ( ! hasFocus() )
+  {
+    setFocus();
+    redraw();
+  }
+
+  emitCallback("activate");
+}
+
+//----------------------------------------------------------------------
+void FLineEdit::processChanged()
+{
+  emitCallback("changed");
 }

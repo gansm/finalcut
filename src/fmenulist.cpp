@@ -34,6 +34,50 @@ FMenuList::~FMenuList()  // destructor
 
 // public methods of FMenuList
 //----------------------------------------------------------------------
+void FMenuList::insert (FMenuItem* i)
+{
+  item_list.push_back(i);
+}
+
+//----------------------------------------------------------------------
+void FMenuList::remove (FMenuItem* i)
+{
+  std::vector<FMenuItem*>::iterator iter;
+
+  if ( item_list.empty() )
+    return;
+
+  iter = item_list.begin();
+
+  while ( iter != item_list.end() )
+  {
+    if ( (*iter) == i )
+    {
+      iter = item_list.erase(iter);
+      i->setSuperMenu(0);
+      break;
+    }
+    else
+      ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenuList::remove (int pos)
+{
+  if ( int(getCount()) < pos )
+    return;
+
+  item_list.erase (item_list.begin() + pos - 1);
+}
+
+//----------------------------------------------------------------------
+void FMenuList::clear()
+{
+  item_list.clear();
+}
+
+//----------------------------------------------------------------------
 void FMenuList::selectFirstItem()
 {
   std::vector<FMenuItem*>::const_iterator iter, end;
@@ -67,48 +111,4 @@ void FMenuList::unselectItem()
     getSelectedItem()->unsetSelected();
 
   setSelectedItem(0);
-}
-
-//----------------------------------------------------------------------
-void FMenuList::insert (FMenuItem* i)
-{
-  item_list.push_back(i);
-}
-
-//----------------------------------------------------------------------
-void FMenuList::remove (FMenuItem* i)
-{
-  std::vector<FMenuItem*>::iterator iter;
-
-  if ( item_list.empty() )
-    return;
-
-  iter = item_list.begin();
-
-  while ( iter != item_list.end() )
-  {
-    if ( (*iter) == i )
-    {
-      iter = item_list.erase(iter);
-      i->setSuperMenu(0);
-      break;
-    }
-    else
-      ++iter;
-  }
-}
-
-//----------------------------------------------------------------------
-void FMenuList::remove (int pos)
-{
-  if ( int(count()) < pos )
-    return;
-
-  item_list.erase (item_list.begin() + pos - 1);
-}
-
-//----------------------------------------------------------------------
-void FMenuList::clear()
-{
-  item_list.clear();
 }

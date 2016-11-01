@@ -45,40 +45,52 @@
 
 class FToolTip : public FWindow
 {
- private:
-   FString  text;
-   FString* text_components;
-   std::vector<FString> text_split;
-   uInt     max_line_width;
-   uInt     text_num_lines;
-
- private:
-   // Disable copy constructor
-   FToolTip (const FToolTip&);
-   // Disable assignment operator (=)
-   FToolTip& operator = (const FToolTip&);
-
-   void            init();
-   void            calculateDimensions();
-   virtual void    adjustSize();
-
  public:
    // Constructor
    explicit FToolTip (FWidget* = 0);
    FToolTip (const FString&, FWidget* = 0);
+
    // Destructor
    virtual ~FToolTip ();
 
+   // Accessors
    const char*   getClassName() const;
-   virtual void  draw();
-   void          show();
-   void          hide();
-   // Event handler
-   void          onMouseDown (FMouseEvent*);
    const FString getText() const;
+
+   // Mutators
    void          setText (const FString&);
    void          setText (const std::string&);
    void          setText (const char*);
+
+   // Methods
+   virtual void  draw();
+   void          show();
+   void          hide();
+
+   // Event handler
+   void          onMouseDown (FMouseEvent*);
+
+ private:
+   // Typedef
+   typedef std::vector<FString> textLines;
+
+   // Disable copy constructor
+   FToolTip (const FToolTip&);
+
+   // Disable assignment operator (=)
+   FToolTip& operator = (const FToolTip&);
+
+   // Methods
+   void          init();
+   void          calculateDimensions();
+   virtual void  adjustSize();
+
+   // Data Members
+   FString       text;
+   FString*      text_components;
+   textLines     text_split;
+   uInt          max_line_width;
+   uInt          text_num_lines;
 };
 #pragma pack(pop)
 

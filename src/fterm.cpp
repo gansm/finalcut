@@ -78,8 +78,7 @@ FTerm::modifier_key    FTerm::mod_key;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set              = 0;
-FTermcap::tcap_map*    FTerm::tcap                      = term_caps;
-FTermcap::tcap_map*    FTermcap::tcap                   = 0;
+FTerm::termcap_map*    FTerm::tcap                      = term_caps;
 bool                   FTermcap::background_color_erase = false;
 bool                   FTermcap::automatic_left_margin  = false;
 bool                   FTermcap::automatic_right_margin = false;
@@ -122,6 +121,1426 @@ FTerm::~FTerm()  // destructor
     }
   }
 }
+
+
+// public methods of FTerm
+//----------------------------------------------------------------------
+int FTerm::getLineNumber()
+{
+  if ( term->getHeight() == 0 )
+    detectTermSize();
+
+  return term->getHeight();
+}
+
+//----------------------------------------------------------------------
+int FTerm::getColumnNumber()
+{
+  if ( term->getWidth() == 0 )
+    detectTermSize();
+
+  return term->getWidth();
+}
+
+//----------------------------------------------------------------------
+FString FTerm::getKeyName (int keynum)
+{
+  for (int i=0; FkeyName[i].string[0] != 0; i++)
+    if ( FkeyName[i].num && FkeyName[i].num == keynum )
+      return FString(FkeyName[i].string);
+
+  if ( keynum > 32 && keynum < 127 )
+    return FString(char(keynum));
+
+  return FString("");
+}
+
+//----------------------------------------------------------------------
+FTerm::modifier_key& FTerm::getModifierKey()
+{
+  char subcode = 6;
+  // fill bit field with 0
+  std::memset (&mod_key, 0x00, sizeof(mod_key));
+
+  // TIOCLINUX, subcode=6
+  if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
+  {
+    if ( subcode & (1 << KG_SHIFT) )
+      mod_key.shift = true;
+
+    if ( subcode & (1 << KG_ALTGR) )
+      mod_key.alt_gr = true;
+
+    if ( subcode & (1 << KG_CTRL) )
+      mod_key.ctrl = true;
+
+    if ( subcode & (1 << KG_ALT) )
+      mod_key.alt = true;
+  }
+
+  return mod_key;
+}
+
+//----------------------------------------------------------------------
+fc::consoleCursorStyle FTerm::getConsoleCursor()
+{
+  return console_cursor_style;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isKeyTimeout (timeval* time, register long timeout)
+{
+  register long diff_usec;
+  struct timeval now;
+  struct timeval diff;
+
+  FObject::getCurrentTime(now);
+  diff.tv_sec = now.tv_sec - time->tv_sec;
+  diff.tv_usec = now.tv_usec - time->tv_usec;
+
+  if ( diff.tv_usec < 0 )
+  {
+    diff.tv_sec--;
+    diff.tv_usec += 1000000;
+  }
+
+  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  return (diff_usec > timeout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
+{
+  // Set cursor style in linux console
+  if ( ! linux_terminal )
+    return;
+
+  console_cursor_style = style;
+
+  if ( hidden )
+    return;
+
+  putstringf (CSI "?%dc", style);
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setRawMode (bool on)
+{
+  if ( on == raw_mode )
+    return raw_mode;
+
+  std::fflush(stdout);
+
+  if ( on )
+  {
+    // Info under: man 3 termios
+    struct termios t;
+    tcgetattr (stdin_no, &t);
+
+    /* set + unset flags for raw mode */
+    // input mode
+    t.c_iflag &= uInt(~(IGNBRK | BRKINT | PARMRK | ISTRIP
+                      | INLCR | IGNCR | ICRNL | IXON));
+    // output mode
+    t.c_oflag &= uInt(~OPOST);
+
+    // local mode
+#if DEBUG
+    // Exit with ctrl-c only if compiled with "DEBUG" option
+    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN));
+#else
+    // Plus disable signals.
+    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN | ISIG));
+#endif
+
+    // control mode
+    t.c_cflag &= uInt(~(CSIZE | PARENB));
+    t.c_cflag |= uInt(CS8);
+
+    // defines the terminal special characters for noncanonical read
+    t.c_cc[VTIME] = 0; // Timeout in deciseconds
+    t.c_cc[VMIN]  = 1; // Minimum number of characters
+
+    // set the new termios settings
+    tcsetattr (stdin_no, TCSAFLUSH, &t);
+    raw_mode = true;
+  }
+  else
+  {
+    // restore termios settings
+    tcsetattr (stdin_no, TCSAFLUSH, &term_init);
+    raw_mode = false;
+  }
+
+  return raw_mode;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setUTF8 (bool on) // UTF-8 (Unicode)
+{
+  if ( on == utf8_state )
+    return utf8_state;
+
+  if ( on )
+    utf8_state = true;
+  else
+    utf8_state = false;
+
+  if ( linux_terminal )
+  {
+    if ( on )
+      putstring (ESC "%G");
+    else
+      putstring (ESC "%@");
+  }
+
+  std::fflush(stdout);
+  return utf8_state;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setNonBlockingInput (bool on)
+{
+  if ( on == non_blocking_stdin )
+    return non_blocking_stdin;
+
+  if ( on )  // make stdin non-blocking
+  {
+    stdin_status_flags |= O_NONBLOCK;
+
+    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = true;
+  }
+  else
+  {
+    stdin_status_flags &= ~O_NONBLOCK;
+
+    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+      non_blocking_stdin = false;
+  }
+
+  return non_blocking_stdin;
+}
+
+//----------------------------------------------------------------------
+int FTerm::parseKeyString ( char* buffer
+                          , int buf_size
+                          , timeval* time_keypressed )
+{
+  register uChar firstchar = uChar(buffer[0]);
+  register size_t buf_len = std::strlen(buffer);
+  const long key_timeout = 100000;  // 100 ms
+  int key, len, n;
+
+  if ( firstchar == ESC[0] )
+  {
+    // x11 mouse tracking
+    if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
+      return fc::Fkey_mouse;
+
+    // SGR mouse tracking
+    if (  buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
+       && (buffer[buf_len-1] == 'M' || buffer[buf_len-1] == 'm') )
+     return fc::Fkey_extended_mouse;
+
+    // urxvt mouse tracking
+    if (  buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
+       && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
+       && buffer[buf_len-1] == 'M' )
+     return fc::Fkey_urxvt_mouse;
+
+    // look for termcap keys
+    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    {
+      char* k = Fkey[i].string;
+      len = (k) ? int(std::strlen(k)) : 0;
+
+      if ( k && std::strncmp(k, buffer, uInt(len)) == 0 ) // found
+      {
+        n = len;
+
+        for (; n < buf_size; n++)   // Remove founded entry
+          buffer[n-len] = buffer[n];
+
+        for (; n-len < len; n++)    // Fill rest with '\0'
+          buffer[n-len] = '\0';
+
+        input_data_pending = bool(buffer[0] != '\0');
+        return Fkey[i].num;
+      }
+    }
+
+    // look for meta keys
+    for (int i=0; Fmetakey[i].string[0] != 0; i++)
+    {
+      char* kmeta = Fmetakey[i].string;  // The string is never null
+      len = int(std::strlen(kmeta));
+
+      if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
+      {
+        if ( len == 2 && (  buffer[1] == 'O'
+                         || buffer[1] == '['
+                         || buffer[1] == ']') )
+        {
+          if ( ! isKeyTimeout(time_keypressed, key_timeout) )
+            return NEED_MORE_DATA;
+        }
+        n = len;
+
+        for (; n < buf_size; n++)    // Remove founded entry
+          buffer[n-len] = buffer[n];
+
+        for (; n-len < len; n++)     // Fill rest with '\0'
+          buffer[n-len] = '\0';
+
+        input_data_pending = bool(buffer[0] != '\0');
+        return Fmetakey[i].num;
+      }
+    }
+
+    if ( ! isKeyTimeout(time_keypressed, key_timeout) )
+      return NEED_MORE_DATA;
+  }
+
+  // look for utf-8 character
+
+  len = 1;
+
+  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
+  {
+    char utf8char[4] = {};  // init array with '\0'
+
+    if ((firstchar & 0xe0) == 0xc0)
+      len = 2;
+    else if ((firstchar & 0xf0) == 0xe0)
+      len = 3;
+    else if ((firstchar & 0xf8) == 0xf0)
+      len = 4;
+
+    for (n=0; n < len ; n++)
+      utf8char[n] = char(buffer[n] & 0xff);
+
+    key = UTF8decode(utf8char);
+  }
+  else
+    key = uChar(buffer[0] & 0xff);
+
+  n = len;
+
+  for (; n < buf_size; n++)  // remove the key from the buffer front
+    buffer[n-len] = buffer[n];
+
+  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
+    buffer[n] = '\0';
+
+  input_data_pending = bool(buffer[0] != '\0');
+
+  if ( key == 0 )  // Ctrl+Space or Ctrl+@
+    key = fc::Fckey_space;
+
+  return int(key == 127 ? fc::Fkey_backspace : key);
+}
+
+//----------------------------------------------------------------------
+bool& FTerm::unprocessedInput()
+{
+  return input_data_pending;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setVGAFont()
+{
+  if ( VGAFont )
+    return VGAFont;
+
+  if ( gnome_terminal
+     || kde_konsole
+     || putty_terminal
+     || tera_terminal
+     || cygwin_terminal
+     || mintty_terminal )
+    return false;
+
+  VGAFont = true;
+
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    // Set font in xterm to vga
+    oscPrefix();
+    putstring (OSC "50;vga" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+    NewFont = false;
+    pc_charset_console = true;
+    Encoding = fc::PC;
+
+    if ( xterm_terminal && utf8_console )
+      Fputchar = &FTerm::putchar_UTF8;
+    else
+      Fputchar = &FTerm::putchar_ASCII;
+  }
+  else if ( linux_terminal )
+  {
+    if ( openConsole() == 0 )
+    {
+      if ( isConsole() )
+      {
+        // standard vga font 8x16
+        int ret = setScreenFont(__8x16std, 256, 8, 16);
+
+        if ( ret != 0 )
+          VGAFont = false;
+
+        // unicode character mapping
+        struct unimapdesc unimap;
+        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs)
+                                / sizeof(unipair) );
+        unimap.entries = &unicode_cp437_pairs[0];
+        setUnicodeMap(&unimap);
+      }
+      else
+        VGAFont = false;
+
+      detectTermSize();
+      closeConsole();
+    }
+    else
+      VGAFont = false;
+
+    pc_charset_console = true;
+    Encoding = fc::PC;
+    Fputchar = &FTerm::putchar_ASCII;
+  }
+  else
+    VGAFont = false;
+
+  return VGAFont;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setNewFont()
+{
+  if ( NewFont )
+    return true;
+
+  if ( gnome_terminal
+     || kde_konsole
+     || putty_terminal
+     || tera_terminal
+     || cygwin_terminal
+     || mintty_terminal )
+    return false;
+
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
+  {
+    NewFont = true;
+    // Set font in xterm to 8x16graph
+    oscPrefix();
+    putstring (OSC "50;8x16graph" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+    pc_charset_console = true;
+    Encoding = fc::PC;
+
+   if ( xterm_terminal && utf8_console )
+      Fputchar = &FTerm::putchar_UTF8;
+    else
+      Fputchar = &FTerm::putchar_ASCII;
+  }
+  else if ( linux_terminal )
+  {
+    NewFont = true;
+
+    if ( openConsole() == 0 )
+    {
+      if ( isConsole() )
+      {
+        struct unimapdesc unimap;
+        int ret;
+
+        // Set the graphical font 8x16
+        ret = setScreenFont(__8x16graph, 256, 8, 16);
+
+        if ( ret != 0 )
+          NewFont = false;
+
+        // unicode character mapping
+        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs)
+                                 / sizeof(unipair) );
+        unimap.entries = &unicode_cp437_pairs[0];
+        setUnicodeMap(&unimap);
+      }
+
+      detectTermSize();
+      closeConsole();
+    }
+
+    pc_charset_console = true;
+    Encoding = fc::PC;
+    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+  }
+  else
+    NewFont = false;
+
+  return NewFont;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setOldFont()
+{
+  bool retval;
+
+  if ( ! (NewFont || VGAFont) )
+    return false;
+
+  retval  = \
+  NewFont = \
+  VGAFont = false;
+
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
+  {
+    if ( xterm_font && xterm_font->getLength() > 2 )
+    {
+      // restore saved xterm font
+      oscPrefix();
+      putstringf (OSC "50;%s" BEL, xterm_font->c_str() );
+      oscPostfix();
+    }
+    else
+    {
+      // Set font in xterm to vga
+      oscPrefix();
+      putstring (OSC "50;vga" BEL);
+      oscPostfix();
+    }
+
+    std::fflush(stdout);
+    retval = true;
+  }
+  else if ( linux_terminal )
+  {
+    if ( openConsole() == 0 )
+    {
+      if ( isConsole() )
+      {
+        if ( screen_font.data )
+        {
+          int ret = setScreenFont ( screen_font.data
+                                  , screen_font.charcount
+                                  , screen_font.width
+                                  , screen_font.height
+                                  , true );
+          delete[] screen_font.data;
+
+          if ( ret == 0 )
+            retval = true;
+        }
+
+        if ( screen_unicode_map.entries )
+        {
+          setUnicodeMap (&screen_unicode_map);
+          delete[] screen_unicode_map.entries;
+        }
+
+      }
+
+      detectTermSize();
+      closeConsole();
+    }
+  }
+
+  return retval;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
+{
+  // returns the cursor move string
+  if ( cursor_optimisation )
+    return opti_move->moveCursor (xold, yold, xnew, ynew);
+  else
+    return tgoto(tcap[fc::t_cursor_address].string, xnew, ynew);
+}
+
+//----------------------------------------------------------------------
+char* FTerm::enableCursor()
+{
+  char*& vs = tcap[fc::t_cursor_visible].string;
+  char*& ve = tcap[fc::t_cursor_normal].string;
+
+  if ( ve )
+    return ve;
+  else if ( vs )
+    return vs;
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::disableCursor()
+{
+  char*& vi = tcap[fc::t_cursor_invisible].string;
+
+  if ( vi )
+    return vi;
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+void FTerm::detectTermSize()
+{
+  struct winsize win_size;
+  bool close_after_detect = false;
+  int ret;
+
+  if ( fd_tty < 0 )  // console is already closed
+  {
+    if ( openConsole() != 0 )
+      return;
+
+    close_after_detect = true;
+  }
+
+  ret = ioctl (fd_tty, TIOCGWINSZ, &win_size);
+
+  if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
+  {
+    char* str;
+    term->setPos(1,1);
+    str = std::getenv("COLUMNS");
+    term->setWidth(str ? std::atoi(str) : 80);
+    str = std::getenv("LINES");
+    term->setHeight(str ? std::atoi(str) : 25);
+  }
+  else
+  {
+    term->setRect(1, 1, win_size.ws_col, win_size.ws_row);
+  }
+
+  opti_move->setTermSize (term->getWidth(), term->getHeight());
+
+  if ( close_after_detect )
+    closeConsole();
+}
+
+//----------------------------------------------------------------------
+void FTerm::setTermSize (int term_width, int term_height)
+{
+  // Set xterm size to {term_width} x {term_height}
+  if ( xterm_terminal )
+  {
+    putstringf (CSI "8;%d;%dt", term_height, term_width);
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
+{
+  // Set cursor style in KDE konsole
+  if ( kde_konsole )
+  {
+    oscPrefix();
+    putstringf (OSC "50;CursorShape=%d" BEL, style);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+const FString FTerm::getXTermFont()
+{
+  FString font("");
+
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    if ( raw_mode && non_blocking_stdin )
+    {
+      int n;
+      char temp[150] = {};
+      oscPrefix();
+      putstring (OSC "50;?" BEL);  // get font
+      oscPostfix();
+      std::fflush(stdout);
+      usleep(150000);  // wait 150 ms
+
+      // read the terminal answer
+      n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
+      // BEL + '\0' = string terminator
+      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+      {
+        temp[n-1] = '\0';
+        font = static_cast<char*>(temp + 5);
+      }
+    }
+  }
+
+  return font;
+}
+
+//----------------------------------------------------------------------
+const FString FTerm::getXTermTitle()
+{
+  FString title("");
+
+  if ( kde_konsole )
+    return title;
+
+  if ( raw_mode && non_blocking_stdin )
+  {
+    int n;
+    char temp[512] = {};
+    putstring (CSI "21t");  // get title
+    std::fflush(stdout);
+    usleep(150000);  // wait 150 ms
+
+    // read the terminal answer
+    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
+    // Esc + \ = OSC string terminator
+    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
+    {
+      temp[n-2] = '\0';
+      title = static_cast<char*>(temp + 3);
+    }
+  }
+
+  return title;
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
+{
+  // Set the xterm cursor style
+  if ( (xterm_terminal || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
+  {
+    putstringf (CSI "%d q", style);
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermTitle (const FString& title)
+{
+  // Set the xterm title
+  if ( xterm_terminal || screen_terminal
+     || mintty_terminal || putty_terminal
+     || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "0;%s" BEL, title.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermForeground (const FString& fg)
+{
+  // Set the VT100 text foreground color
+  if ( xterm_terminal || screen_terminal
+     || mintty_terminal || mlterm_terminal
+     || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "10;%s" BEL, fg.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermBackground (const FString& bg)
+{
+  // Set the VT100 text background color
+  if ( xterm_terminal || screen_terminal
+     || mintty_terminal || mlterm_terminal
+     || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "11;%s" BEL, bg.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermCursorColor (const FString& cc)
+{
+  // Set the text cursor color
+  if ( xterm_terminal || screen_terminal
+     || mintty_terminal || urxvt_terminal
+     || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "12;%s" BEL, cc.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermMouseForeground (const FString& mfg)
+{
+  // Set the mouse foreground color
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "13;%s" BEL, mfg.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermMouseBackground (const FString& mbg)
+{
+  // Set the mouse background color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "14;%s" BEL, mbg.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermHighlightBackground (const FString& hbg)
+{
+  // Set the highlight background color
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "17;%s" BEL, hbg.c_str());
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermColors()
+{
+  // Reset the entire color table
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "104" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermForeground()
+{
+  // Reset the VT100 text foreground color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstring (OSC "110" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermBackground()
+{
+  // Reset the VT100 text background color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstring (OSC "111" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermCursorColor()
+{
+  // Reset the text cursor color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstring (OSC "112" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermMouseForeground()
+{
+  // Reset the mouse foreground color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstring (OSC "113" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermMouseBackground()
+{
+  // Reset the mouse background color
+  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstring (OSC "114" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermHighlightBackground()
+{
+  // Reset the highlight background color
+  if ( xterm_terminal || screen_terminal
+     || urxvt_terminal || FTermcap::osc_support )
+  {
+    oscPrefix();
+    putstringf (OSC "117" BEL);
+    oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::saveColorMap()
+{
+ // ioctl (0, GIO_CMAP, &color_map);
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetColorMap()
+{
+  char*& op = tcap[fc::t_orig_pair].string;
+  char*& oc = tcap[fc::t_orig_colors].string;
+
+  if ( op )
+    putstring (op);
+  else if ( oc )
+    putstring (oc);
+/*else
+  {
+    dacreg CurrentColors[16] =
+    {
+      {0x00, 0x00, 0x00}, {0xAA, 0x00, 0x00},
+      {0x00, 0xAA, 0x00}, {0xAA, 0x55, 0x00},
+      {0x00, 0x00, 0xAA}, {0xAA, 0x00, 0xAA},
+      {0x00, 0xAA, 0xAA}, {0xAA, 0xAA, 0xAA},
+      {0x55, 0x55, 0x55}, {0xFF, 0x55, 0x55},
+      {0x55, 0xFF, 0x55}, {0xFF, 0xFF, 0x55},
+      {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
+      {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
+    };
+    for (int x=0; x<16; x++)
+    {
+      color_map.d[x].red = CurrentColors[x].red;
+      color_map.d[x].green = CurrentColors[x].green;
+      color_map.d[x].blue = CurrentColors[x].blue;
+    }
+    ioctl (0, PIO_CMAP, &color_map);
+  }*/
+
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::setPalette (short index, int r, int g, int b)
+{
+  char*& Ic = tcap[fc::t_initialize_color].string;
+  char*& Ip = tcap[fc::t_initialize_pair].string;
+
+  index = FOptiAttr::vga2ansi(index);
+
+  if ( Ic || Ip )
+  {
+    int rr, gg, bb;
+    const char* color_str = "";
+
+    rr = (r * 1001) / 256;
+    gg = (g * 1001) / 256;
+    bb = (b * 1001) / 256;
+
+    if ( Ic )
+      color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
+    else if ( Ip )
+      color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
+
+    putstring (color_str);
+  }
+  else if ( linux_terminal )
+  {
+/*  // direct vga-register set
+    if (  r>=0 && r<256
+       && g>=0 && g<256
+       && b>=0 && b<256 )
+    {
+      map.d[index].red = r;
+      map.d[index].green = g;
+      map.d[index].blue = b;
+    }
+    ioctl (0, PIO_CMAP, &map); */
+  }
+
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::setBeep (int Hz, int ms)
+{
+  if ( ! linux_terminal )
+    return;
+
+  // range for frequency: 21-32766
+  if ( Hz < 21 || Hz > 32766 )
+    return;
+
+  // range for duration:  0-1999
+  if ( ms < 0 || ms > 1999 )
+    return;
+
+  putstringf ( CSI "10;%d]"
+               CSI "11;%d]"
+             , Hz, ms );
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetBeep()
+{
+  if ( ! linux_terminal )
+    return;
+
+  // default frequency: 750 Hz
+  // default duration:  125 ms
+  putstring ( CSI "10;750]"
+              CSI "11;125]" );
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
+void FTerm::beep()
+{
+  if ( tcap[fc::t_bell].string )
+  {
+    putstring (tcap[fc::t_bell].string);
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::setEncoding (std::string enc)
+{
+  std::map<std::string,fc::encoding>::const_iterator it;
+
+  // available encodings: "UTF8", "VT100", "PC" and "ASCII"
+  it = encoding_set->find(enc);
+
+  if ( it == encoding_set->end() )  // not found
+    return;
+
+  Encoding = it->second;
+
+  assert (  Encoding == fc::UTF8
+         || Encoding == fc::VT100
+         || Encoding == fc::PC
+         || Encoding == fc::ASCII );
+
+  // set the new Fputchar function pointer
+  switch ( int(Encoding) )
+  {
+    case fc::UTF8:
+      Fputchar = &FTerm::putchar_UTF8;
+      break;
+
+    case fc::VT100:
+    case fc::PC:
+      if ( xterm_terminal && utf8_console )
+        Fputchar = &FTerm::putchar_UTF8;
+      // fall through
+    case fc::ASCII:
+    default:
+      Fputchar = &FTerm::putchar_ASCII;
+  }
+}
+
+//----------------------------------------------------------------------
+std::string FTerm::getEncoding()
+{
+  std::map<std::string,fc::encoding>::const_iterator it, end;
+  end = encoding_set->end();
+
+  for (it = encoding_set->begin(); it != end; ++it )
+    if ( it->second == Encoding )
+      return it->first;
+
+  return "";
+}
+
+//----------------------------------------------------------------------
+bool FTerm::scrollTermForward()
+{
+  if ( tcap[fc::t_scroll_forward].string )
+  {
+    putstring (tcap[fc::t_scroll_forward].string);
+    std::fflush(stdout);
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::scrollTermReverse()
+{
+  if ( tcap[fc::t_scroll_reverse].string )
+  {
+    putstring (tcap[fc::t_scroll_reverse].string);
+    std::fflush(stdout);
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+const FString FTerm::getAnswerbackMsg()
+{
+  FString answerback = "";
+
+  if ( raw_mode )
+  {
+    ssize_t n;
+    fd_set ifds;
+    struct timeval tv;
+    char temp[10] = {};
+
+    FD_ZERO(&ifds);
+    FD_SET(stdin_no, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 150000;  // 150 ms
+
+    std::putchar (ENQ[0]);  // send enquiry character
+    std::fflush(stdout);
+
+    // read the answerback message
+    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
+    {
+      n = read(fileno(stdin), &temp, sizeof(temp)-1);
+
+      if ( n > 0 )
+      {
+        temp[n] = '\0';
+        answerback = temp;
+      }
+    }
+  }
+
+  return answerback;
+}
+
+//----------------------------------------------------------------------
+const FString FTerm::getSecDA()
+{
+  FString sec_da_str = "";
+
+  if ( raw_mode )
+  {
+    ssize_t n;
+    fd_set ifds;
+    struct timeval tv;
+    char temp[16] = {};
+
+    FD_ZERO(&ifds);
+    FD_SET(stdin_no, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 550000;  // 150 ms
+
+    // get the secondary device attributes
+    std::putchar (SECDA[0]);
+    std::putchar (SECDA[1]);
+    std::putchar (SECDA[2]);
+    std::putchar (SECDA[3]);
+
+    std::fflush(stdout);
+    usleep(150000);  // min. wait time 150 ms (need for mintty)
+
+    // read the answer
+    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0 )
+    {
+      n = read(fileno(stdin), &temp, sizeof(temp)-1);
+
+      if ( n > 0 )
+      {
+        temp[n] = '\0';
+        sec_da_str = temp;
+      }
+    }
+  }
+
+  return sec_da_str;
+}
+
+//----------------------------------------------------------------------
+void FTerm::putstringf (const char* format, ...)
+{
+  assert ( format != 0 );
+  char  buf[512];
+  char* buffer;
+  va_list args;
+
+  buffer = buf;
+  va_start (args, format);
+  std::vsnprintf (buffer, sizeof(buf), format, args);
+  va_end (args);
+
+  tputs (buffer, 1, std::putchar);
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::putstring (const char* s, int affcnt)
+{
+  tputs (s, affcnt, std::putchar);
+}
+
+//----------------------------------------------------------------------
+int FTerm::putchar_ASCII (register int c)
+{
+  if ( std::putchar(char(c)) == EOF )
+    return 0;
+  else
+    return 1;
+}
+
+//----------------------------------------------------------------------
+int FTerm::putchar_UTF8 (register int c)
+{
+  if (c < 0x80)
+  {
+    // 1 Byte (7-bit): 0xxxxxxx
+    std::putchar (c);
+    return 1;
+  }
+  else if (c < 0x800)
+  {
+    // 2 byte (11-bit): 110xxxxx 10xxxxxx
+    std::putchar (0xc0 | (c >> 6) );
+    std::putchar (0x80 | (c & 0x3f) );
+    return 2;
+  }
+  else if (c < 0x10000)
+  {
+    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
+    std::putchar (0xe0 | (c >> 12) );
+    std::putchar (0x80 | ((c >> 6) & 0x3f) );
+    std::putchar (0x80 | (c & 0x3f) );
+    return 3;
+  }
+  else if (c < 0x200000)
+  {
+    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    std::putchar (0xf0 | (c >> 18) );
+    std::putchar (0x80 | ((c >> 12) & 0x3f) );
+    std::putchar (0x80 | ((c >> 6) & 0x3f) );
+    std::putchar (0x80 | (c & 0x3f));
+    return 4;
+  }
+  else
+    return EOF;
+}
+
+//----------------------------------------------------------------------
+int FTerm::UTF8decode(char* utf8)
+{
+  register int ucs=0;
+
+  for (register int i=0; i < int(std::strlen(utf8)); ++i)
+  {
+    register uChar ch = uChar(utf8[i]);
+
+    if ((ch & 0xc0) == 0x80)
+    {
+      // byte 2..4 = 10xxxxxx
+      ucs = (ucs << 6) | (ch & 0x3f);
+    }
+    else if (ch < 128)
+    {
+      // byte 1 = 0xxxxxxx (1 byte mapping)
+      ucs = ch & 0xff;
+    }
+    else if ((ch & 0xe0) == 0xc0)
+    {
+      // byte 1 = 110xxxxx (2 byte mapping)
+      ucs = ch & 0x1f;
+    }
+    else if ((ch & 0xf0) == 0xe0)
+    {
+      // byte 1 = 1110xxxx (3 byte mapping)
+      ucs = ch & 0x0f;
+    }
+    else if ((ch & 0xf8) == 0xf0)
+    {
+      // byte 1 = 11110xxx (4 byte mapping)
+      ucs = ch & 0x07;
+    }
+    else
+    {
+      // error
+      ucs = EOF;
+    }
+  }
+
+  return ucs;
+}
+
+
+// protected methods of FTerm
+//----------------------------------------------------------------------
+void FTerm::init_consoleCharMap()
+{
+  if ( NewFont || VGAFont )
+    return;
+
+  if ( screen_unicode_map.entry_ct != 0 )
+  {
+    for (int i=0; i <= lastCharItem; i++ )
+    {
+      bool found = false;
+
+      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
+      {
+        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if ( ! found )
+        character[i][fc::PC] = character[i][fc::ASCII];
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+bool FTerm::charEncodable (uInt c)
+{
+  uInt ch = charEncode(c);
+  return bool(ch > 0 && ch != c);
+}
+
+//----------------------------------------------------------------------
+uInt FTerm::charEncode (uInt c)
+{
+  return charEncode (c, Encoding);
+}
+
+//----------------------------------------------------------------------
+uInt FTerm::charEncode (uInt c, fc::encoding enc)
+{
+  for (uInt i=0; i <= uInt(lastCharItem); i++)
+  {
+    if ( character[i][0] == c )
+    {
+      c = character[i][enc];
+      break;
+    }
+  }
+
+  return c;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::changeAttribute ( char_data*& term_attr
+                             , char_data*& next_attr )
+{
+  return opti_attr->changeAttribute (term_attr, next_attr);
+}
+
+//----------------------------------------------------------------------
+void FTerm::xtermMouse (bool on)
+{
+  // activate/deactivate the xterm mouse support
+  if ( ! mouse_support )
+    return;
+
+  if ( on )
+    putstring (CSI "?1001s"   // save old highlight mouse tracking
+               CSI "?1000h"   // enable x11 mouse tracking
+               CSI "?1002h"   // enable cell motion mouse tracking
+               CSI "?1015h"   // enable urxvt mouse mode
+               CSI "?1006h"); // enable SGR mouse mode
+  else
+    putstring (CSI "?1006l"   // disable SGR mouse mode
+               CSI "?1015l"   // disable urxvt mouse mode
+               CSI "?1002l"   // disable cell motion mouse tracking
+               CSI "?1000l"   // disable x11 mouse tracking
+               CSI "?1001r"); // restore old highlight mouse tracking
+
+  std::fflush(stdout);
+}
+
+
+#ifdef F_HAVE_LIBGPM
+//----------------------------------------------------------------------
+bool FTerm::gpmMouse (bool on)
+{
+  // activate/deactivate the gpm mouse support
+  if ( ! linux_terminal )
+    return false;
+
+  if ( openConsole() == 0 )
+  {
+    if ( ! isConsole() )
+      return false;
+
+    closeConsole();
+  }
+
+  if ( on )
+  {
+    Gpm_Connect conn;
+    conn.eventMask   = uInt16(~GPM_MOVE);
+    conn.defaultMask = GPM_MOVE;
+    conn.maxMod      = uInt16(~0);
+    conn.minMod      = 0;
+    Gpm_Open(&conn, 0);
+
+    switch ( gpm_fd )
+    {
+      case -1:
+        return false;
+
+      case -2:
+        Gpm_Close();
+        return false;
+
+      default:
+        break;
+    }
+  }
+  else
+  {
+    Gpm_Close();
+  }
+
+  return on;
+}
+#endif  // F_HAVE_LIBGPM
 
 
 // private methods of FTerm
@@ -553,209 +1972,6 @@ int FTerm::setUnicodeMap (struct unimapdesc* unimap)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isKeyTimeout (timeval* time, register long timeout)
-{
-  register long diff_usec;
-  struct timeval now;
-  struct timeval diff;
-
-  FObject::getCurrentTime(now);
-  diff.tv_sec = now.tv_sec - time->tv_sec;
-  diff.tv_usec = now.tv_usec - time->tv_usec;
-
-  if ( diff.tv_usec < 0 )
-  {
-    diff.tv_sec--;
-    diff.tv_usec += 1000000;
-  }
-
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
-  return (diff_usec > timeout);
-}
-
-//----------------------------------------------------------------------
-int FTerm::parseKeyString ( char* buffer
-                          , int buf_size
-                          , timeval* time_keypressed )
-{
-  register uChar firstchar = uChar(buffer[0]);
-  register size_t buf_len = std::strlen(buffer);
-  const long key_timeout = 100000;  // 100 ms
-  int key, len, n;
-
-  if ( firstchar == ESC[0] )
-  {
-    // x11 mouse tracking
-    if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
-      return fc::Fkey_mouse;
-
-    // SGR mouse tracking
-    if (  buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-       && (buffer[buf_len-1] == 'M' || buffer[buf_len-1] == 'm') )
-     return fc::Fkey_extended_mouse;
-
-    // urxvt mouse tracking
-    if (  buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
-       && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-       && buffer[buf_len-1] == 'M' )
-     return fc::Fkey_urxvt_mouse;
-
-    // look for termcap keys
-    for (int i=0; Fkey[i].tname[0] != 0; i++)
-    {
-      char* k = Fkey[i].string;
-      len = (k) ? int(std::strlen(k)) : 0;
-
-      if ( k && std::strncmp(k, buffer, uInt(len)) == 0 ) // found
-      {
-        n = len;
-
-        for (; n < buf_size; n++)   // Remove founded entry
-          buffer[n-len] = buffer[n];
-
-        for (; n-len < len; n++)    // Fill rest with '\0'
-          buffer[n-len] = '\0';
-
-        input_data_pending = bool(buffer[0] != '\0');
-        return Fkey[i].num;
-      }
-    }
-
-    // look for meta keys
-    for (int i=0; Fmetakey[i].string[0] != 0; i++)
-    {
-      char* kmeta = Fmetakey[i].string;  // The string is never null
-      len = int(std::strlen(kmeta));
-
-      if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 ) // found
-      {
-        if ( len == 2 && (  buffer[1] == 'O'
-                         || buffer[1] == '['
-                         || buffer[1] == ']') )
-        {
-          if ( ! isKeyTimeout(time_keypressed, key_timeout) )
-            return NEED_MORE_DATA;
-        }
-        n = len;
-
-        for (; n < buf_size; n++)    // Remove founded entry
-          buffer[n-len] = buffer[n];
-
-        for (; n-len < len; n++)     // Fill rest with '\0'
-          buffer[n-len] = '\0';
-
-        input_data_pending = bool(buffer[0] != '\0');
-        return Fmetakey[i].num;
-      }
-    }
-
-    if ( ! isKeyTimeout(time_keypressed, key_timeout) )
-      return NEED_MORE_DATA;
-  }
-
-  // look for utf-8 character
-
-  len = 1;
-
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
-  {
-    char utf8char[4] = {};  // init array with '\0'
-
-    if ((firstchar & 0xe0) == 0xc0)
-      len = 2;
-    else if ((firstchar & 0xf0) == 0xe0)
-      len = 3;
-    else if ((firstchar & 0xf8) == 0xf0)
-      len = 4;
-
-    for (n=0; n < len ; n++)
-      utf8char[n] = char(buffer[n] & 0xff);
-
-    key = UTF8decode(utf8char);
-  }
-  else
-    key = uChar(buffer[0] & 0xff);
-
-  n = len;
-
-  for (; n < buf_size; n++)  // remove the key from the buffer front
-    buffer[n-len] = buffer[n];
-
-  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
-    buffer[n] = '\0';
-
-  input_data_pending = bool(buffer[0] != '\0');
-
-  if ( key == 0 )  // Ctrl+Space or Ctrl+@
-    key = fc::Fckey_space;
-
-  return int(key == 127 ? fc::Fkey_backspace : key);
-}
-
-//----------------------------------------------------------------------
-bool& FTerm::unprocessedInput()
-{
-  return input_data_pending;
-}
-
-//----------------------------------------------------------------------
-int FTerm::getLineNumber()
-{
-  if ( term->getHeight() == 0 )
-    detectTermSize();
-
-  return term->getHeight();
-}
-
-//----------------------------------------------------------------------
-int FTerm::getColumnNumber()
-{
-  if ( term->getWidth() == 0 )
-    detectTermSize();
-
-  return term->getWidth();
-}
-
-//----------------------------------------------------------------------
-FString FTerm::getKeyName (int keynum)
-{
-  for (int i=0; FkeyName[i].string[0] != 0; i++)
-    if ( FkeyName[i].num && FkeyName[i].num == keynum )
-      return FString(FkeyName[i].string);
-
-  if ( keynum > 32 && keynum < 127 )
-    return FString(char(keynum));
-
-  return FString("");
-}
-
-//----------------------------------------------------------------------
-FTerm::modifier_key& FTerm::getModifierKey()
-{
-  char subcode = 6;
-  // fill bit field with 0
-  std::memset (&mod_key, 0x00, sizeof(mod_key));
-
-  // TIOCLINUX, subcode=6
-  if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
-  {
-    if ( subcode & (1 << KG_SHIFT) )
-      mod_key.shift = true;
-
-    if ( subcode & (1 << KG_ALTGR) )
-      mod_key.alt_gr = true;
-
-    if ( subcode & (1 << KG_CTRL) )
-      mod_key.ctrl = true;
-
-    if ( subcode & (1 << KG_ALT) )
-      mod_key.alt = true;
-  }
-
-  return mod_key;
-}
-
-//----------------------------------------------------------------------
 void FTerm::init_console()
 {
   // initialize terminal and Linux console
@@ -806,35 +2022,6 @@ uInt FTerm::getBaudRate (const struct termios* termios_p)
   ospeed[B230400] = 230400;  // 230,400 baud
 
   return ospeed[cfgetospeed(termios_p)];
-}
-
-//----------------------------------------------------------------------
-void FTerm::signal_handler (int signum)
-{
-  switch (signum)
-  {
-    case SIGWINCH:
-      if ( resize_term )
-        break;
-      // initialize a resize event to the root element
-      resize_term = true;
-      break;
-
-    case SIGTERM:
-    case SIGQUIT:
-    case SIGINT:
-    case SIGABRT:
-    case SIGILL:
-    case SIGSEGV:
-      init_term_object->finish();
-      std::fflush (stderr);
-      std::fflush (stdout);
-      std::fprintf ( stderr
-                   , "\nProgram stopped: signal %d (%s)\n"
-                   , signum
-                   , strsignal(signum) );
-      std::terminate();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -2137,1218 +3324,31 @@ uInt FTerm::cp437_to_unicode (uChar c)
   return ucs;
 }
 
-
-// protected methods of FTerm
 //----------------------------------------------------------------------
-void FTerm::init_consoleCharMap()
+void FTerm::signal_handler (int signum)
 {
-  if ( NewFont || VGAFont )
-    return;
-
-  if ( screen_unicode_map.entry_ct != 0 )
+  switch (signum)
   {
-    for (int i=0; i <= lastCharItem; i++ )
-    {
-      bool found = false;
-
-      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
-      {
-        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
-        {
-          found = true;
-          break;
-        }
-      }
-
-      if ( ! found )
-        character[i][fc::PC] = character[i][fc::ASCII];
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-bool FTerm::charEncodable (uInt c)
-{
-  uInt ch = charEncode(c);
-  return bool(ch > 0 && ch != c);
-}
-
-//----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c)
-{
-  return charEncode (c, Encoding);
-}
-
-//----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c, fc::encoding enc)
-{
-  for (uInt i=0; i <= uInt(lastCharItem); i++)
-  {
-    if ( character[i][0] == c )
-    {
-      c = character[i][enc];
-      break;
-    }
-  }
-
-  return c;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::changeAttribute ( FOptiAttr::char_data*& term_attr
-                             , FOptiAttr::char_data*& next_attr )
-{
-  return opti_attr->changeAttribute (term_attr, next_attr);
-}
-
-//----------------------------------------------------------------------
-void FTerm::xtermMouse (bool on)
-{
-  // activate/deactivate the xterm mouse support
-  if ( ! mouse_support )
-    return;
-
-  if ( on )
-    putstring (CSI "?1001s"   // save old highlight mouse tracking
-               CSI "?1000h"   // enable x11 mouse tracking
-               CSI "?1002h"   // enable cell motion mouse tracking
-               CSI "?1015h"   // enable urxvt mouse mode
-               CSI "?1006h"); // enable SGR mouse mode
-  else
-    putstring (CSI "?1006l"   // disable SGR mouse mode
-               CSI "?1015l"   // disable urxvt mouse mode
-               CSI "?1002l"   // disable cell motion mouse tracking
-               CSI "?1000l"   // disable x11 mouse tracking
-               CSI "?1001r"); // restore old highlight mouse tracking
-
-  std::fflush(stdout);
-}
-
-
-#ifdef F_HAVE_LIBGPM
-//----------------------------------------------------------------------
-bool FTerm::gpmMouse (bool on)
-{
-  // activate/deactivate the gpm mouse support
-  if ( ! linux_terminal )
-    return false;
-
-  if ( openConsole() == 0 )
-  {
-    if ( ! isConsole() )
-      return false;
-
-    closeConsole();
-  }
-
-  if ( on )
-  {
-    Gpm_Connect conn;
-    conn.eventMask   = uInt16(~GPM_MOVE);
-    conn.defaultMask = GPM_MOVE;
-    conn.maxMod      = uInt16(~0);
-    conn.minMod      = 0;
-    Gpm_Open(&conn, 0);
-
-    switch ( gpm_fd )
-    {
-      case -1:
-        return false;
-
-      case -2:
-        Gpm_Close();
-        return false;
-
-      default:
+    case SIGWINCH:
+      if ( resize_term )
         break;
-    }
-  }
-  else
-  {
-    Gpm_Close();
-  }
-
-  return on;
-}
-#endif  // F_HAVE_LIBGPM
-
-
-// public methods of FTerm
-//----------------------------------------------------------------------
-bool FTerm::setVGAFont()
-{
-  if ( VGAFont )
-    return VGAFont;
-
-  if ( gnome_terminal
-     || kde_konsole
-     || putty_terminal
-     || tera_terminal
-     || cygwin_terminal
-     || mintty_terminal )
-    return false;
-
-  VGAFont = true;
-
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    // Set font in xterm to vga
-    oscPrefix();
-    putstring (OSC "50;vga" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-    NewFont = false;
-    pc_charset_console = true;
-    Encoding = fc::PC;
-
-    if ( xterm_terminal && utf8_console )
-      Fputchar = &FTerm::putchar_UTF8;
-    else
-      Fputchar = &FTerm::putchar_ASCII;
-  }
-  else if ( linux_terminal )
-  {
-    if ( openConsole() == 0 )
-    {
-      if ( isConsole() )
-      {
-        // standard vga font 8x16
-        int ret = setScreenFont(__8x16std, 256, 8, 16);
-
-        if ( ret != 0 )
-          VGAFont = false;
-
-        // unicode character mapping
-        struct unimapdesc unimap;
-        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs)
-                                / sizeof(unipair) );
-        unimap.entries = &unicode_cp437_pairs[0];
-        setUnicodeMap(&unimap);
-      }
-      else
-        VGAFont = false;
-
-      detectTermSize();
-      closeConsole();
-    }
-    else
-      VGAFont = false;
-
-    pc_charset_console = true;
-    Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_ASCII;
-  }
-  else
-    VGAFont = false;
-
-  return VGAFont;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setNewFont()
-{
-  if ( NewFont )
-    return true;
-
-  if ( gnome_terminal
-     || kde_konsole
-     || putty_terminal
-     || tera_terminal
-     || cygwin_terminal
-     || mintty_terminal )
-    return false;
-
-  if ( xterm_terminal || screen_terminal
-     || urxvt_terminal || FTermcap::osc_support )
-  {
-    NewFont = true;
-    // Set font in xterm to 8x16graph
-    oscPrefix();
-    putstring (OSC "50;8x16graph" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-    pc_charset_console = true;
-    Encoding = fc::PC;
-
-   if ( xterm_terminal && utf8_console )
-      Fputchar = &FTerm::putchar_UTF8;
-    else
-      Fputchar = &FTerm::putchar_ASCII;
-  }
-  else if ( linux_terminal )
-  {
-    NewFont = true;
-
-    if ( openConsole() == 0 )
-    {
-      if ( isConsole() )
-      {
-        struct unimapdesc unimap;
-        int ret;
-
-        // Set the graphical font 8x16
-        ret = setScreenFont(__8x16graph, 256, 8, 16);
-
-        if ( ret != 0 )
-          NewFont = false;
-
-        // unicode character mapping
-        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs)
-                                 / sizeof(unipair) );
-        unimap.entries = &unicode_cp437_pairs[0];
-        setUnicodeMap(&unimap);
-      }
-
-      detectTermSize();
-      closeConsole();
-    }
-
-    pc_charset_console = true;
-    Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
-  }
-  else
-    NewFont = false;
-
-  return NewFont;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setOldFont()
-{
-  bool retval;
-
-  if ( ! (NewFont || VGAFont) )
-    return false;
-
-  retval  = \
-  NewFont = \
-  VGAFont = false;
-
-  if ( xterm_terminal || screen_terminal
-     || urxvt_terminal || FTermcap::osc_support )
-  {
-    if ( xterm_font && xterm_font->getLength() > 2 )
-    {
-      // restore saved xterm font
-      oscPrefix();
-      putstringf (OSC "50;%s" BEL, xterm_font->c_str() );
-      oscPostfix();
-    }
-    else
-    {
-      // Set font in xterm to vga
-      oscPrefix();
-      putstring (OSC "50;vga" BEL);
-      oscPostfix();
-    }
-
-    std::fflush(stdout);
-    retval = true;
-  }
-  else if ( linux_terminal )
-  {
-    if ( openConsole() == 0 )
-    {
-      if ( isConsole() )
-      {
-        if ( screen_font.data )
-        {
-          int ret = setScreenFont ( screen_font.data
-                                  , screen_font.charcount
-                                  , screen_font.width
-                                  , screen_font.height
-                                  , true );
-          delete[] screen_font.data;
-
-          if ( ret == 0 )
-            retval = true;
-        }
-
-        if ( screen_unicode_map.entries )
-        {
-          setUnicodeMap (&screen_unicode_map);
-          delete[] screen_unicode_map.entries;
-        }
-
-      }
-
-      detectTermSize();
-      closeConsole();
-    }
-  }
-
-  return retval;
-}
-
-//----------------------------------------------------------------------
-fc::consoleCursorStyle FTerm::getConsoleCursor()
-{
-  return console_cursor_style;
-}
-
-//----------------------------------------------------------------------
-void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
-{
-  // Set cursor style in linux console
-  if ( ! linux_terminal )
-    return;
-
-  console_cursor_style = style;
-
-  if ( hidden )
-    return;
-
-  putstringf (CSI "?%dc", style);
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
-{
-  // returns the cursor move string
-  if ( cursor_optimisation )
-    return opti_move->moveCursor (xold, yold, xnew, ynew);
-  else
-    return tgoto(tcap[fc::t_cursor_address].string, xnew, ynew);
-}
-
-//----------------------------------------------------------------------
-char* FTerm::enableCursor()
-{
-  char*& vs = tcap[fc::t_cursor_visible].string;
-  char*& ve = tcap[fc::t_cursor_normal].string;
-
-  if ( ve )
-    return ve;
-  else if ( vs )
-    return vs;
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::disableCursor()
-{
-  char*& vi = tcap[fc::t_cursor_invisible].string;
-
-  if ( vi )
-    return vi;
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
-void FTerm::detectTermSize()
-{
-  struct winsize win_size;
-  bool close_after_detect = false;
-  int ret;
-
-  if ( fd_tty < 0 )  // console is already closed
-  {
-    if ( openConsole() != 0 )
-      return;
-
-    close_after_detect = true;
-  }
-
-  ret = ioctl (fd_tty, TIOCGWINSZ, &win_size);
-
-  if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
-  {
-    char* str;
-    term->setPos(1,1);
-    str = std::getenv("COLUMNS");
-    term->setWidth(str ? std::atoi(str) : 80);
-    str = std::getenv("LINES");
-    term->setHeight(str ? std::atoi(str) : 25);
-  }
-  else
-  {
-    term->setRect(1, 1, win_size.ws_col, win_size.ws_row);
-  }
-
-  opti_move->setTermSize (term->getWidth(), term->getHeight());
-
-  if ( close_after_detect )
-    closeConsole();
-}
-
-//----------------------------------------------------------------------
-void FTerm::setTermSize (int term_width, int term_height)
-{
-  // Set xterm size to {term_width} x {term_height}
-  if ( xterm_terminal )
-  {
-    putstringf (CSI "8;%d;%dt", term_height, term_width);
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
-{
-  // Set cursor style in KDE konsole
-  if ( kde_konsole )
-  {
-    oscPrefix();
-    putstringf (OSC "50;CursorShape=%d" BEL, style);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-const FString FTerm::getXTermFont()
-{
-  FString font("");
-
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    if ( raw_mode && non_blocking_stdin )
-    {
-      int n;
-      char temp[150] = {};
-      oscPrefix();
-      putstring (OSC "50;?" BEL);  // get font
-      oscPostfix();
-      std::fflush(stdout);
-      usleep(150000);  // wait 150 ms
-
-      // read the terminal answer
-      n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-      // BEL + '\0' = string terminator
-      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
-      {
-        temp[n-1] = '\0';
-        font = static_cast<char*>(temp + 5);
-      }
-    }
-  }
-
-  return font;
-}
-
-//----------------------------------------------------------------------
-const FString FTerm::getXTermTitle()
-{
-  FString title("");
-
-  if ( kde_konsole )
-    return title;
-
-  if ( raw_mode && non_blocking_stdin )
-  {
-    int n;
-    char temp[512] = {};
-    putstring (CSI "21t");  // get title
-    std::fflush(stdout);
-    usleep(150000);  // wait 150 ms
-
-    // read the terminal answer
-    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-    // Esc + \ = OSC string terminator
-    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
-    {
-      temp[n-2] = '\0';
-      title = static_cast<char*>(temp + 3);
-    }
-  }
-
-  return title;
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
-{
-  // Set the xterm cursor style
-  if ( (xterm_terminal || mintty_terminal) && ! (gnome_terminal || kde_konsole) )
-  {
-    putstringf (CSI "%d q", style);
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermTitle (const FString& title)
-{
-  // Set the xterm title
-  if ( xterm_terminal || screen_terminal
-     || mintty_terminal || putty_terminal
-     || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "0;%s" BEL, title.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermForeground (const FString& fg)
-{
-  // Set the VT100 text foreground color
-  if ( xterm_terminal || screen_terminal
-     || mintty_terminal || mlterm_terminal
-     || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "10;%s" BEL, fg.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermBackground (const FString& bg)
-{
-  // Set the VT100 text background color
-  if ( xterm_terminal || screen_terminal
-     || mintty_terminal || mlterm_terminal
-     || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "11;%s" BEL, bg.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermCursorColor (const FString& cc)
-{
-  // Set the text cursor color
-  if ( xterm_terminal || screen_terminal
-     || mintty_terminal || urxvt_terminal
-     || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "12;%s" BEL, cc.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermMouseForeground (const FString& mfg)
-{
-  // Set the mouse foreground color
-  if ( xterm_terminal || screen_terminal
-     || urxvt_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "13;%s" BEL, mfg.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermMouseBackground (const FString& mbg)
-{
-  // Set the mouse background color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "14;%s" BEL, mbg.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermHighlightBackground (const FString& hbg)
-{
-  // Set the highlight background color
-  if ( xterm_terminal || screen_terminal
-     || urxvt_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "17;%s" BEL, hbg.c_str());
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermColors()
-{
-  // Reset the entire color table
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "104" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermForeground()
-{
-  // Reset the VT100 text foreground color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstring (OSC "110" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermBackground()
-{
-  // Reset the VT100 text background color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstring (OSC "111" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermCursorColor()
-{
-  // Reset the text cursor color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstring (OSC "112" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermMouseForeground()
-{
-  // Reset the mouse foreground color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstring (OSC "113" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermMouseBackground()
-{
-  // Reset the mouse background color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstring (OSC "114" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetXTermHighlightBackground()
-{
-  // Reset the highlight background color
-  if ( xterm_terminal || screen_terminal
-     || urxvt_terminal || FTermcap::osc_support )
-  {
-    oscPrefix();
-    putstringf (OSC "117" BEL);
-    oscPostfix();
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::saveColorMap()
-{
- // ioctl (0, GIO_CMAP, &color_map);
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetColorMap()
-{
-  char*& op = tcap[fc::t_orig_pair].string;
-  char*& oc = tcap[fc::t_orig_colors].string;
-
-  if ( op )
-    putstring (op);
-  else if ( oc )
-    putstring (oc);
-/*else
-  {
-    dacreg CurrentColors[16] =
-    {
-      {0x00, 0x00, 0x00}, {0xAA, 0x00, 0x00},
-      {0x00, 0xAA, 0x00}, {0xAA, 0x55, 0x00},
-      {0x00, 0x00, 0xAA}, {0xAA, 0x00, 0xAA},
-      {0x00, 0xAA, 0xAA}, {0xAA, 0xAA, 0xAA},
-      {0x55, 0x55, 0x55}, {0xFF, 0x55, 0x55},
-      {0x55, 0xFF, 0x55}, {0xFF, 0xFF, 0x55},
-      {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
-      {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
-    };
-    for (int x=0; x<16; x++)
-    {
-      color_map.d[x].red = CurrentColors[x].red;
-      color_map.d[x].green = CurrentColors[x].green;
-      color_map.d[x].blue = CurrentColors[x].blue;
-    }
-    ioctl (0, PIO_CMAP, &color_map);
-  }*/
-
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-void FTerm::setPalette (short index, int r, int g, int b)
-{
-  char*& Ic = tcap[fc::t_initialize_color].string;
-  char*& Ip = tcap[fc::t_initialize_pair].string;
-
-  index = FOptiAttr::vga2ansi(index);
-
-  if ( Ic || Ip )
-  {
-    int rr, gg, bb;
-    const char* color_str = "";
-
-    rr = (r * 1001) / 256;
-    gg = (g * 1001) / 256;
-    bb = (b * 1001) / 256;
-
-    if ( Ic )
-      color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
-    else if ( Ip )
-      color_str = tparm(Ip, index, 0, 0, 0, rr, gg, bb, 0, 0);
-
-    putstring (color_str);
-  }
-  else if ( linux_terminal )
-  {
-/*  // direct vga-register set
-    if (  r>=0 && r<256
-       && g>=0 && g<256
-       && b>=0 && b<256 )
-    {
-      map.d[index].red = r;
-      map.d[index].green = g;
-      map.d[index].blue = b;
-    }
-    ioctl (0, PIO_CMAP, &map); */
-  }
-
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-void FTerm::setBeep (int Hz, int ms)
-{
-  if ( ! linux_terminal )
-    return;
-
-  // range for frequency: 21-32766
-  if ( Hz < 21 || Hz > 32766 )
-    return;
-
-  // range for duration:  0-1999
-  if ( ms < 0 || ms > 1999 )
-    return;
-
-  putstringf ( CSI "10;%d]"
-               CSI "11;%d]"
-             , Hz, ms );
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-void FTerm::resetBeep()
-{
-  if ( ! linux_terminal )
-    return;
-
-  // default frequency: 750 Hz
-  // default duration:  125 ms
-  putstring ( CSI "10;750]"
-              CSI "11;125]" );
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
-void FTerm::beep()
-{
-  if ( tcap[fc::t_bell].string )
-  {
-    putstring (tcap[fc::t_bell].string);
-    std::fflush(stdout);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::setEncoding (std::string enc)
-{
-  std::map<std::string,fc::encoding>::const_iterator it;
-
-  // available encodings: "UTF8", "VT100", "PC" and "ASCII"
-  it = encoding_set->find(enc);
-
-  if ( it == encoding_set->end() )  // not found
-    return;
-
-  Encoding = it->second;
-
-  assert (  Encoding == fc::UTF8
-         || Encoding == fc::VT100
-         || Encoding == fc::PC
-         || Encoding == fc::ASCII );
-
-  // set the new Fputchar function pointer
-  switch ( int(Encoding) )
-  {
-    case fc::UTF8:
-      Fputchar = &FTerm::putchar_UTF8;
+      // initialize a resize event to the root element
+      resize_term = true;
       break;
 
-    case fc::VT100:
-    case fc::PC:
-      if ( xterm_terminal && utf8_console )
-        Fputchar = &FTerm::putchar_UTF8;
-      // fall through
-    case fc::ASCII:
-    default:
-      Fputchar = &FTerm::putchar_ASCII;
+    case SIGTERM:
+    case SIGQUIT:
+    case SIGINT:
+    case SIGABRT:
+    case SIGILL:
+    case SIGSEGV:
+      init_term_object->finish();
+      std::fflush (stderr);
+      std::fflush (stdout);
+      std::fprintf ( stderr
+                   , "\nProgram stopped: signal %d (%s)\n"
+                   , signum
+                   , strsignal(signum) );
+      std::terminate();
   }
-}
-
-//----------------------------------------------------------------------
-std::string FTerm::getEncoding()
-{
-  std::map<std::string,fc::encoding>::const_iterator it, end;
-  end = encoding_set->end();
-
-  for (it = encoding_set->begin(); it != end; ++it )
-    if ( it->second == Encoding )
-      return it->first;
-
-  return "";
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setNonBlockingInput (bool on)
-{
-  if ( on == non_blocking_stdin )
-    return non_blocking_stdin;
-
-  if ( on )  // make stdin non-blocking
-  {
-    stdin_status_flags |= O_NONBLOCK;
-
-    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = true;
-  }
-  else
-  {
-    stdin_status_flags &= ~O_NONBLOCK;
-
-    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = false;
-  }
-
-  return non_blocking_stdin;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::scrollTermForward()
-{
-  if ( tcap[fc::t_scroll_forward].string )
-  {
-    putstring (tcap[fc::t_scroll_forward].string);
-    std::fflush(stdout);
-    return true;
-  }
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::scrollTermReverse()
-{
-  if ( tcap[fc::t_scroll_reverse].string )
-  {
-    putstring (tcap[fc::t_scroll_reverse].string);
-    std::fflush(stdout);
-    return true;
-  }
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setUTF8 (bool on) // UTF-8 (Unicode)
-{
-  if ( on == utf8_state )
-    return utf8_state;
-
-  if ( on )
-    utf8_state = true;
-  else
-    utf8_state = false;
-
-  if ( linux_terminal )
-  {
-    if ( on )
-      putstring (ESC "%G");
-    else
-      putstring (ESC "%@");
-  }
-
-  std::fflush(stdout);
-  return utf8_state;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setRawMode (bool on)
-{
-  if ( on == raw_mode )
-    return raw_mode;
-
-  std::fflush(stdout);
-
-  if ( on )
-  {
-    // Info under: man 3 termios
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-
-    /* set + unset flags for raw mode */
-    // input mode
-    t.c_iflag &= uInt(~(IGNBRK | BRKINT | PARMRK | ISTRIP
-                      | INLCR | IGNCR | ICRNL | IXON));
-    // output mode
-    t.c_oflag &= uInt(~OPOST);
-
-    // local mode
-#if DEBUG
-    // Exit with ctrl-c only if compiled with "DEBUG" option
-    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN));
-#else
-    // Plus disable signals.
-    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN | ISIG));
-#endif
-
-    // control mode
-    t.c_cflag &= uInt(~(CSIZE | PARENB));
-    t.c_cflag |= uInt(CS8);
-
-    // defines the terminal special characters for noncanonical read
-    t.c_cc[VTIME] = 0; // Timeout in deciseconds
-    t.c_cc[VMIN]  = 1; // Minimum number of characters
-
-    // set the new termios settings
-    tcsetattr (stdin_no, TCSAFLUSH, &t);
-    raw_mode = true;
-  }
-  else
-  {
-    // restore termios settings
-    tcsetattr (stdin_no, TCSAFLUSH, &term_init);
-    raw_mode = false;
-  }
-
-  return raw_mode;
-}
-
-//----------------------------------------------------------------------
-const FString FTerm::getAnswerbackMsg()
-{
-  FString answerback = "";
-
-  if ( raw_mode )
-  {
-    ssize_t n;
-    fd_set ifds;
-    struct timeval tv;
-    char temp[10] = {};
-
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 150000;  // 150 ms
-
-    std::putchar (ENQ[0]);  // send enquiry character
-    std::fflush(stdout);
-
-    // read the answerback message
-    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
-    {
-      n = read(fileno(stdin), &temp, sizeof(temp)-1);
-
-      if ( n > 0 )
-      {
-        temp[n] = '\0';
-        answerback = temp;
-      }
-    }
-  }
-
-  return answerback;
-}
-
-//----------------------------------------------------------------------
-const FString FTerm::getSecDA()
-{
-  FString sec_da_str = "";
-
-  if ( raw_mode )
-  {
-    ssize_t n;
-    fd_set ifds;
-    struct timeval tv;
-    char temp[16] = {};
-
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 550000;  // 150 ms
-
-    // get the secondary device attributes
-    std::putchar (SECDA[0]);
-    std::putchar (SECDA[1]);
-    std::putchar (SECDA[2]);
-    std::putchar (SECDA[3]);
-
-    std::fflush(stdout);
-    usleep(150000);  // min. wait time 150 ms (need for mintty)
-
-    // read the answer
-    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0 )
-    {
-      n = read(fileno(stdin), &temp, sizeof(temp)-1);
-
-      if ( n > 0 )
-      {
-        temp[n] = '\0';
-        sec_da_str = temp;
-      }
-    }
-  }
-
-  return sec_da_str;
-}
-
-//----------------------------------------------------------------------
-void FTerm::putstringf (const char* format, ...)
-{
-  assert ( format != 0 );
-  char  buf[512];
-  char* buffer;
-  va_list args;
-
-  buffer = buf;
-  va_start (args, format);
-  std::vsnprintf (buffer, sizeof(buf), format, args);
-  va_end (args);
-
-  tputs (buffer, 1, std::putchar);
-}
-//----------------------------------------------------------------------
-inline void FTerm::putstring (const char* s, int affcnt)
-{
-  tputs (s, affcnt, std::putchar);
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar_ASCII (register int c)
-{
-  if ( std::putchar(char(c)) == EOF )
-    return 0;
-  else
-    return 1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::putchar_UTF8 (register int c)
-{
-  if (c < 0x80)
-  {
-    // 1 Byte (7-bit): 0xxxxxxx
-    std::putchar (c);
-    return 1;
-  }
-  else if (c < 0x800)
-  {
-    // 2 byte (11-bit): 110xxxxx 10xxxxxx
-    std::putchar (0xc0 | (c >> 6) );
-    std::putchar (0x80 | (c & 0x3f) );
-    return 2;
-  }
-  else if (c < 0x10000)
-  {
-    // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
-    std::putchar (0xe0 | (c >> 12) );
-    std::putchar (0x80 | ((c >> 6) & 0x3f) );
-    std::putchar (0x80 | (c & 0x3f) );
-    return 3;
-  }
-  else if (c < 0x200000)
-  {
-    // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    std::putchar (0xf0 | (c >> 18) );
-    std::putchar (0x80 | ((c >> 12) & 0x3f) );
-    std::putchar (0x80 | ((c >> 6) & 0x3f) );
-    std::putchar (0x80 | (c & 0x3f));
-    return 4;
-  }
-  else
-    return EOF;
-}
-
-//----------------------------------------------------------------------
-int FTerm::UTF8decode(char* utf8)
-{
-  register int ucs=0;
-
-  for (register int i=0; i < int(std::strlen(utf8)); ++i)
-  {
-    register uChar ch = uChar(utf8[i]);
-
-    if ((ch & 0xc0) == 0x80)
-    {
-      // byte 2..4 = 10xxxxxx
-      ucs = (ucs << 6) | (ch & 0x3f);
-    }
-    else if (ch < 128)
-    {
-      // byte 1 = 0xxxxxxx (1 byte mapping)
-      ucs = ch & 0xff;
-    }
-    else if ((ch & 0xe0) == 0xc0)
-    {
-      // byte 1 = 110xxxxx (2 byte mapping)
-      ucs = ch & 0x1f;
-    }
-    else if ((ch & 0xf0) == 0xe0)
-    {
-      // byte 1 = 1110xxxx (3 byte mapping)
-      ucs = ch & 0x0f;
-    }
-    else if ((ch & 0xf8) == 0xf0)
-    {
-      // byte 1 = 11110xxx (4 byte mapping)
-      ucs = ch & 0x07;
-    }
-    else
-    {
-      // error
-      ucs = EOF;
-    }
-  }
-
-  return ucs;
 }

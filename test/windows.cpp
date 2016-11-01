@@ -19,32 +19,33 @@
 
 class smallWindow : public FDialog
 {
- private:
-   FLabel* left_arrow;
-   FLabel* right_arrow;
-   FLabel* top_left_label;
-   FLabel* top_right_label;
-   FLabel* bottom_label;
+ public:
+   // Constructor
+   explicit smallWindow (FWidget* = 0);
+
+   // Destructor
+  ~smallWindow();
 
  private:
    // Disable copy constructor
    smallWindow (const smallWindow&);
+
    // Disable assignment operator (=)
    smallWindow& operator = (const smallWindow&);
 
+   // Method
    void adjustSize();
 
    // Event handlers
    void onShow (FShowEvent*);
    void onTimer (FTimerEvent*);
 
- public:
-   // Constructor
-   explicit smallWindow (FWidget* = 0);
-   // Destructor
-  ~smallWindow();
-
-   void append (const FString&);
+   // Data Members
+   FLabel* left_arrow;
+   FLabel* right_arrow;
+   FLabel* top_left_label;
+   FLabel* top_right_label;
+   FLabel* bottom_label;
 };
 #pragma pack(pop)
 
@@ -164,7 +165,15 @@ void smallWindow::onTimer (FTimerEvent*)
 
 class Window : public FDialog
 {
+ public:
+   // Constructor
+   explicit Window (FWidget* = 0);
+
+   // Destructor
+  ~Window();
+
  private:
+   // Typedef
    typedef struct
    {
      bool     is_open;
@@ -172,15 +181,16 @@ class Window : public FDialog
      FDialog* dgl;
    }
    win_data;
-   std::vector<win_data*> windows;
 
- private:
    // Disable copy constructor
    Window (const Window&);
+
    // Disable assignment operator (=)
    Window& operator = (const Window&);
 
+   // Method
    void activateWindow (FDialog*);
+   void adjustSize();
 
    // Event handlers
    void onClose (FCloseEvent*);
@@ -193,13 +203,8 @@ class Window : public FDialog
    void cb_exitApp (FWidget*, void*);
    void cb_destroyWindow (FWidget*, void*);
 
-   void adjustSize();
-
- public:
-   // Constructor
-   explicit Window (FWidget* = 0);
-   // Destructor
-  ~Window();
+   // Data Members
+   std::vector<win_data*> windows;
 };
 #pragma pack(pop)
 
@@ -349,6 +354,41 @@ void Window::activateWindow (FDialog* win)
     win->redraw();
 
   updateTerminal();
+}
+
+//----------------------------------------------------------------------
+void Window::adjustSize()
+{
+  int w,h,X,Y,dx,dy;
+  std::vector<win_data*>::const_iterator iter, begin;
+  w  = getRootWidget()->getWidth();
+  h  = getRootWidget()->getHeight();
+  X  = int(1 + (w - 40) / 2);
+  Y  = int(1 + (h - 22) / 2);
+  dx = (w > 80) ? (w - 80) / 2 : 0;
+  dy = (h > 24) ? (h - 24) / 2 : 0;
+
+  if ( Y < 2)
+    Y = 2;
+
+  setPos (X, Y);
+  iter = begin = windows.begin();
+
+  while ( iter != windows.end() )
+  {
+    if ( (*iter)->is_open )
+    {
+      int x,y,n;
+      n = int(std::distance(begin, iter));
+      x = dx + 5 + (n%3)*25 + int(n/3)*3;
+      y = dy + 11 + int(n/3)*3;
+      (*iter)->dgl->setPos (x, y);
+    }
+
+    ++iter;
+  }
+
+  FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -524,40 +564,6 @@ void Window::cb_destroyWindow (FWidget*, void* data_ptr)
     win_dat->is_open = false;
 }
 
-//----------------------------------------------------------------------
-void Window::adjustSize()
-{
-  int w,h,X,Y,dx,dy;
-  std::vector<win_data*>::const_iterator iter, begin;
-  w  = getRootWidget()->getWidth();
-  h  = getRootWidget()->getHeight();
-  X  = int(1 + (w - 40) / 2);
-  Y  = int(1 + (h - 22) / 2);
-  dx = (w > 80) ? (w - 80) / 2 : 0;
-  dy = (h > 24) ? (h - 24) / 2 : 0;
-
-  if ( Y < 2)
-    Y = 2;
-
-  setPos (X, Y);
-  iter = begin = windows.begin();
-
-  while ( iter != windows.end() )
-  {
-    if ( (*iter)->is_open )
-    {
-      int x,y,n;
-      n = int(std::distance(begin, iter));
-      x = dx + 5 + (n%3)*25 + int(n/3)*3;
-      y = dy + 11 + int(n/3)*3;
-      (*iter)->dgl->setPos (x, y);
-    }
-
-    ++iter;
-  }
-
-  FDialog::adjustSize();
-}
 
 //----------------------------------------------------------------------
 //                               main part

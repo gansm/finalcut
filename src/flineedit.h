@@ -41,11 +41,65 @@
 
 class FLineEdit : public FWidget
 {
- private:
-   FString text;
-   FString label_text;
-   FLabel* label;
+ public:
+   // Enumeration
+   enum label_o
+   {
+     label_above = 0,
+     label_left = 1
+   };
 
+   // Constructor
+   explicit FLineEdit (FWidget* = 0);
+   FLineEdit (const FString&, FWidget* = 0);
+
+   // Destructor
+   virtual ~FLineEdit();
+
+   // Accessors
+   const char* getClassName() const;
+   FString     getText() const;
+   int         getLabelOrientation();
+
+   // Mutators
+   void        setText (FString);
+   void        setLabelText (FString);
+   void        setLabelOrientation(label_o);
+   bool        setEnable(bool);
+   bool        setEnable();
+   bool        unsetEnable();
+   bool        setDisable();
+   bool        setFocus(bool);
+   bool        setFocus();
+   bool        unsetFocus();
+   bool        setShadow(bool);
+   bool        setShadow();
+   bool        unsetShadow();
+
+   // Inquiry
+   bool        hasShadow();
+
+   // Methods
+   void        hide();
+   void        clearText();
+
+   // Event handlers
+   void        onKeyPress (FKeyEvent*);
+   void        onMouseDown (FMouseEvent*);
+   void        onMouseUp (FMouseEvent*);
+   void        onMouseMove (FMouseEvent*);
+   void        onTimer (FTimerEvent*);
+   void        onAccel (FAccelEvent*);
+   void        onHide (FHideEvent*);
+   void        onFocusIn (FFocusEvent*);
+   void        onFocusOut (FFocusEvent*);
+
+ protected:
+   void        adjustLabel();
+   void        adjustSize();
+
+ private:
+   // Enumeration
    enum dragScroll
    {
      noScroll    = 0,
@@ -53,77 +107,31 @@ class FLineEdit : public FWidget
      scrollRight = 2
    };
 
-   dragScroll drag_scroll;
-   bool       scroll_timer;
-   int        scroll_repeat;
-   bool       insert_mode;
-   int        cursor_pos;
-   int        text_offset;
-
- public:
-   enum label_o
-   {
-     label_above = 0,
-     label_left = 1
-   };
-   label_o    label_orientation;
-
- private:
    // Disable copy constructor
    FLineEdit (const FLineEdit&);
+
    // Disable assignment operator (=)
    FLineEdit& operator = (const FLineEdit&);
 
-   void  init();
-   bool  hasHotkey();
-   void  draw();
-   void  drawInputField();
-   void  processActivate();
-   void  processChanged();
+   // Methods
+   void        init();
+   bool        hasHotkey();
+   void        draw();
+   void        drawInputField();
+   void        processActivate();
+   void        processChanged();
 
- protected:
-   void adjustLabel();
-   void adjustSize();
-
- public:
-   // Constructor
-   explicit FLineEdit (FWidget* = 0);
-   FLineEdit (const FString&, FWidget* = 0);
-   // Destructor
-   virtual ~FLineEdit();
-
-   const char* getClassName() const;
-   void hide();
-
-   bool setEnable(bool);
-   bool setEnable();
-   bool unsetEnable();
-   bool setDisable();
-   bool setFocus(bool);
-   bool setFocus();
-   bool unsetFocus();
-   bool setShadow(bool);
-   bool setShadow();
-   bool unsetShadow();
-   bool hasShadow();
-
-   // Event handlers
-   void onKeyPress (FKeyEvent*);
-   void onMouseDown (FMouseEvent*);
-   void onMouseUp (FMouseEvent*);
-   void onMouseMove (FMouseEvent*);
-   void onTimer (FTimerEvent*);
-   void onAccel (FAccelEvent*);
-   void onHide (FHideEvent*);
-   void onFocusIn (FFocusEvent*);
-   void onFocusOut (FFocusEvent*);
-
-   void clearText();
-   void setText (FString);
-   FString getText() const;
-   void setLabelText (FString);
-   void setLabelOrientation(label_o);
-   int  getLabelOrientation();
+   // Data Members
+   FString     text;
+   FString     label_text;
+   FLabel*     label;
+   label_o     label_orientation;
+   dragScroll  drag_scroll;
+   bool        scroll_timer;
+   int         scroll_repeat;
+   bool        insert_mode;
+   int         cursor_pos;
+   int         text_offset;
 };
 #pragma pack(pop)
 
@@ -132,6 +140,14 @@ class FLineEdit : public FWidget
 //----------------------------------------------------------------------
 inline const char* FLineEdit::getClassName() const
 { return "FLineEdit"; }
+
+//----------------------------------------------------------------------
+inline FString FLineEdit::getText() const
+{ return text; }
+
+//----------------------------------------------------------------------
+inline int FLineEdit::getLabelOrientation()
+{ return int(label_orientation); }
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::setEnable()
@@ -164,13 +180,5 @@ inline bool FLineEdit::unsetShadow()
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
 { return ((flags & fc::shadow) != 0); }
-
-//----------------------------------------------------------------------
-inline FString FLineEdit::getText() const
-{ return text; }
-
-//----------------------------------------------------------------------
-inline int FLineEdit::getLabelOrientation()
-{ return int(label_orientation); }
 
 #endif  // _FLINEEDIT_H

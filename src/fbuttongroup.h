@@ -43,55 +43,21 @@ class FToggleButton;
 
 class FButtonGroup : public FWidget
 {
- private:
-   FString text;
-   bool border;
-   typedef std::vector<FToggleButton*> FButtonList;
-   FButtonGroup::FButtonList buttonlist;
-
- private:
-   // Disable copy constructor
-   FButtonGroup (const FButtonGroup&);
-   // Disable assignment operator (=)
-   FButtonGroup& operator = (const FButtonGroup&);
-
-   void init();
-   bool isRadioButton(FToggleButton*) const;
-   void directFocus();
-
- protected:
-   virtual void draw();
-   uChar getHotkey();
-   void  setHotkeyAccelerator();
-   void  drawLabel();
-
  public:
    // Constructors
    explicit FButtonGroup (FWidget* = 0);
    FButtonGroup (const FString&, FWidget* = 0);
+
    // Destructor
    virtual ~FButtonGroup();
 
+   // Accessor
    const char*    getClassName() const;
-   void           hide();
-
    FToggleButton* getFirstButton();
    FToggleButton* getLastButton();
-   bool           hasFocusedButton();
-   bool           hasCheckedButton();
+   FString&       getText();
 
-   // Event handlers
-   void           onMouseDown (FMouseEvent*);
-   void           onAccel (FAccelEvent*);
-   void           onFocusIn (FFocusEvent*);
-   void           onFocusOut (FFocusEvent*);
-
-   void           insert (FToggleButton*);
-   void           remove (FToggleButton*);
-
-   // Callback method
-   void           cb_buttonToggled (FWidget*, void*);
-
+   // Mutator
    bool           setEnable(bool);
    bool           setEnable();
    bool           unsetEnable();
@@ -100,7 +66,57 @@ class FButtonGroup : public FWidget
    bool           setBorder();
    bool           unsetBorder();
    void           setText (const FString&);
-   FString&       getText();
+
+   // Inquiries
+   bool           hasFocusedButton();
+   bool           hasCheckedButton();
+
+   // Methods
+   void           hide();
+   void           insert (FToggleButton*);
+   void           remove (FToggleButton*);
+
+   // Event handlers
+   void           onMouseDown (FMouseEvent*);
+   void           onAccel (FAccelEvent*);
+   void           onFocusIn (FFocusEvent*);
+   void           onFocusOut (FFocusEvent*);
+
+   // Callback method
+   void           cb_buttonToggled (FWidget*, void*);
+
+ protected:
+   // Accessor
+   uChar          getHotkey();
+
+   // Mutator
+   void           setHotkeyAccelerator();
+
+   // Methods
+   virtual void   draw();
+   void           drawLabel();
+
+ private:
+   // Typedef
+   typedef std::vector<FToggleButton*> FButtonList;
+
+   // Disable copy constructor
+   FButtonGroup (const FButtonGroup&);
+
+   // Disable assignment operator (=)
+   FButtonGroup& operator = (const FButtonGroup&);
+
+   // Inquiries
+   bool isRadioButton(FToggleButton*) const;
+
+   // Methods
+   void init();
+   void directFocus();
+
+   // Data Members
+   FString     text;
+   bool        border;
+   FButtonList buttonlist;
 };
 #pragma pack(pop)
 

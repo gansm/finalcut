@@ -1,0 +1,38 @@
+============
+Coding style
+============
+
+Formatting
+----------
+* A new line should begin after 72 (max. 80) characters
+* Use 2 spaces indent. Do not use tabs!
+* Leave a space after the keywords if, switch, while, do, for, and return
+* Use one blank line before and afte a for, if, switch, 
+  while, do..while code block
+* In parameter lists, leave a space after each comma
+
+Class declaration order
+-----------------------
+The declaration section order is:
+
+  * public:
+  * protected:
+  * private:
+
+Each declaration section should be in the following order:
+
+  * Using-declarations (using std::string;)
+  * Typedefs and Enumerations
+  * Constants (static const data members)
+  * Constructors
+  * Destructor
+  * Overloaded operators (=, +, -, +=. ...)
+  * Accessors (getXY)
+  * Mutators  (setXY)
+  * Inquiries (isXY)
+  * Methods, including static methods
+  * Event handler methods
+  * Callback methods
+  * Data Members (except static const data members)
+
+

@@ -20,13 +20,23 @@
 
 class Menu : public FDialog
 {
+ public:
+   // Constructor
+   explicit Menu (FWidget* = 0);
+
+   // Destructor
+  ~Menu();
+
  private:
    // Disable copy constructor
    Menu (const Menu&);
+
    // Disable assignment operator (=)
    Menu& operator = (const Menu&);
 
+   // Methods
    void defaultCallback (FMenuList*);
+   void adjustSize();
 
    // Event handler
    void onClose (FCloseEvent*);
@@ -34,14 +44,6 @@ class Menu : public FDialog
    // Callback methods
    void cb_message (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
-
-   void adjustSize();
-
- public:
-   // Constructor
-   explicit Menu (FWidget* = 0);
-   // Destructor
-  ~Menu();
 };
 #pragma pack(pop)
 
@@ -204,9 +206,9 @@ Menu::~Menu()
 //----------------------------------------------------------------------
 void Menu::defaultCallback (FMenuList* mb)
 {
-  for (uInt i=1; i <= mb->count(); i++)
+  for (uInt i=1; i <= mb->getCount(); i++)
   {
-    FMenuItem* item = mb->item(int(i));
+    FMenuItem* item = mb->getItem(int(i));
 
     if (  item
        && item->isEnabled()
@@ -227,6 +229,16 @@ void Menu::defaultCallback (FMenuList* mb)
         defaultCallback (item->getMenu());
     }
   }
+}
+
+//----------------------------------------------------------------------
+void Menu::adjustSize()
+{
+  int pw = getParentWidget()->getWidth();
+  int ph = getParentWidget()->getHeight();
+  setX (1 + (pw - getWidth()) / 2, false);
+  setY (1 + (ph - getHeight()) / 4, false);
+  FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -257,16 +269,6 @@ void Menu::cb_message (FWidget* widget, void*)
 void Menu::cb_exitApp (FWidget*, void*)
 {
   close();
-}
-
-//----------------------------------------------------------------------
-void Menu::adjustSize()
-{
-  int pw = getParentWidget()->getWidth();
-  int ph = getParentWidget()->getHeight();
-  setX (1 + (pw - getWidth()) / 2, false);
-  setY (1 + (ph - getHeight()) / 4, false);
-  FDialog::adjustSize();
 }
 
 

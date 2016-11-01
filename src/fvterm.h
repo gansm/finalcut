@@ -28,10 +28,6 @@
 
 #include "fterm.h"
 
-
-// Buffer size for character output on the terminal
-#define TERMINAL_OUTPUT_BUFFER_SIZE  32768
-
 // class forward declaration
 class FWidget;
 
@@ -45,41 +41,16 @@ class FWidget;
 
 class FVTerm : public FObject, public FTerm
 {
- private:
-   static std::queue<int>*     output_buffer;
-   static FOptiAttr::char_data term_attribute;
-   static FOptiAttr::char_data next_attribute;
-   static FPoint*              term_pos;  // terminal cursor position
-   static FTermcap::tcap_map*  tcap;
-
-   static bool  hidden_cursor;
-   static bool  terminal_update_complete;
-   static bool  terminal_update_pending;
-   static bool  force_terminal_update;
-   static bool  stop_terminal_updates;
-   static bool  vterm_updates;
-   static int   skipped_terminal_update;
-
-   enum covered_state
-   {
-     non_covered,
-     half_covered,
-     fully_covered
-   };
-
-   enum character_type
-   {
-     overlapped_character,
-     covered_character
-   };
-
- protected:
+ public:
+   // Typedefs and Enumeration
    typedef struct
    {
      uInt xmin;
      uInt xmax;
      uInt trans_count;
    } line_changes;
+
+   typedef FOptiAttr::char_data  char_data;
 
    typedef struct
    {
@@ -96,80 +67,123 @@ class FVTerm : public FObject, public FTerm
      int input_cursor_visible;
      FWidget* widget;
      line_changes* changes;
-     FOptiAttr::char_data* text;
+     char_data* text;
      bool visible;
    } term_area;
 
-   static term_area* vterm;        // virtual terminal
-   static term_area* vdesktop;     // virtual desktop
-   static term_area* last_area;    // last used area
-   static term_area* active_area;  // active area
-   term_area* print_area;          // print area for this object
-   term_area* vwin;                // virtual window
+   enum covered_state
+   {
+     non_covered,
+     half_covered,
+     fully_covered
+   };
 
- protected:
-   void         createArea (const FRect&, const FPoint&, FVTerm::term_area*&);
-   void         createArea (int, int, int, int, int, int, FVTerm::term_area*&);
-   static void  resizeArea (const FRect&, const FPoint&, FVTerm::term_area*);
-   static void  resizeArea (int, int, int, int, int, int, FVTerm::term_area*);
-   static void  removeArea (FVTerm::term_area*&);
-   static void  restoreVTerm (const FRect&);
-   static void  restoreVTerm (int, int, int, int);
-   static FVTerm::covered_state isCovered (const FPoint&, FVTerm::term_area*);
-   static FVTerm::covered_state isCovered (int, int, FVTerm::term_area*);
-   static void  updateVTerm (bool);
-   static void  updateVTerm (FVTerm::term_area*);
-   static bool  updateVTermCursor (FVTerm::term_area*);
-   static bool  isInsideArea (int, int, FVTerm::term_area*);
-   static void  setAreaCursor (const FPoint&, bool, FVTerm::term_area*);
-   static void  setAreaCursor (int, int, bool, FVTerm::term_area*);
-   static void  getArea (const FPoint&, FVTerm::term_area*);
-   static void  getArea (int, int, FVTerm::term_area*);
-   static void  getArea (const FRect&, FVTerm::term_area*);
-   static void  getArea (int, int, int, int, FVTerm::term_area*);
-   static void  putArea (const FPoint&, FVTerm::term_area*);
-   static void  putArea (int, int, FVTerm::term_area*);
-   static void  scrollAreaForward (FVTerm::term_area*);
-   static void  scrollAreaReverse (FVTerm::term_area*);
-   static void  clearArea (FVTerm::term_area*);
-   static FOptiAttr::char_data getCharacter (character_type, const FPoint&, FVTerm*);
-   static FOptiAttr::char_data getCharacter (character_type, int, int, FVTerm*);
-   static FOptiAttr::char_data getCoveredCharacter (const FPoint&, FVTerm*);
-   static FOptiAttr::char_data getCoveredCharacter (int, int, FVTerm*);
-   static FOptiAttr::char_data getOverlappedCharacter (const FPoint&, FVTerm*);
-   static FOptiAttr::char_data getOverlappedCharacter (int, int, FVTerm*);
-   static void  startTerminalUpdate();
-   static void  finishTerminalUpdate();
-
- private:
-   // Disable copy constructor
-   FVTerm (const FVTerm&);
-   // Disable assignment operator (=)
-   FVTerm& operator = (const FVTerm&);
-
-   void                init();
-   void                finish();
-   term_area*          getPrintArea();
-   void                setPrintArea (term_area*);
-
- public:
    // Constructor
    explicit FVTerm (FVTerm* = 0);
+
    // Destructor
   ~FVTerm();
 
+   // Accessors
    virtual const char* getClassName() const;
+   static short        getTermForegroundColor();
+   static short        getTermBackgroundColor();
+   term_area*          getVWin() const;
+   FPoint              getPrintCursor();
 
+   // Mutators
    static void         setTermXY (register int, register int);
-
    static bool         hideCursor (bool);
    static bool         hideCursor();
    static bool         showCursor();
-   static bool         isCursorHidden();
+   void                setPrintCursor (const FPoint&);
+   void                setPrintCursor (register int, register int);
+   void                setColor (short, short);
+   static void         setNormal();
 
-   static short        getTermForegroundColor();
-   static short        getTermBackgroundColor();
-   FVTerm::term_area*  getVWin() const;
+   static bool         setBold (register bool);
+   static bool         setBold();
+   static bool         unsetBold();
+
+   static bool         setDim (register bool);
+   static bool         setDim();
+   static bool         unsetDim();
+
+   static bool         setItalic (register bool);
+   static bool         setItalic();
+   static bool         unsetItalic();
+
+   static bool         setUnderline (register bool);
+   static bool         setUnderline();
+   static bool         unsetUnderline();
+
+   static bool         setBlink (register bool);
+   static bool         setBlink();
+   static bool         unsetBlink();
+
+   static bool         setReverse (register bool);
+   static bool         setReverse();
+   static bool         unsetReverse();
+
+   static bool         setStandout (register bool);
+   static bool         setStandout();
+   static bool         unsetStandout();
+
+   static bool         setInvisible (register bool);
+   static bool         setInvisible();
+   static bool         unsetInvisible();
+
+   static bool         setProtected (register bool);
+   static bool         setProtected();
+   static bool         unsetProtected();
+
+   static bool         setCrossedOut (register bool);
+   static bool         setCrossedOut();
+   static bool         unsetCrossedOut();
+
+   static bool         setDoubleUnderline (register bool);
+   static bool         setDoubleUnderline();
+   static bool         unsetDoubleUnderline();
+
+   static bool         setAltCharset (register bool);
+   static bool         setAltCharset();
+   static bool         unsetAltCharset();
+
+   static bool         setPCcharset (register bool);
+   static bool         setPCcharset();
+   static bool         unsetPCcharset();
+
+   static bool         setTransparent (register bool);
+   static bool         setTransparent();
+   static bool         unsetTransparent();
+
+   static bool         setTransShadow (register bool);
+   static bool         setTransShadow();
+   static bool         unsetTransShadow();
+
+   static bool         setInheritBackground (register bool);
+   static bool         setInheritBackground();
+   static bool         unsetInheritBackground();
+
+   // Inquiries
+   static bool         isCursorHidden();
+   static bool         isBold();
+   static bool         isDim();
+   static bool         isItalic();
+   static bool         isUnderline();
+   static bool         isBlink();
+   static bool         isReverse();
+   static bool         isStandout();
+   static bool         isInvisible();
+   static bool         isProtected();
+   static bool         isCrossedOut();
+   static bool         isDoubleUnderline();
+   static bool         isAltCharset();
+   static bool         isPCcharset();
+   static bool         isTransparent();
+   static bool         isTransShadow();
+   static bool         isInheritBackground();
+
    void                createVTerm (const FRect&);
    void                createVTerm (int, int);
    static void         resizeVTerm (const FRect&);
@@ -181,10 +195,6 @@ class FVTerm : public FObject, public FTerm
    static void         processTerminalUpdate();
    static bool         isInsideTerminal (int, int);
 
-   void                setPrintCursor (const FPoint&);
-   void                setPrintCursor (register int, register int);
-   FPoint              getPrintCursor();
-
    int                 printf (const wchar_t*, ...);
    int                 printf (const char*, ...)
    #if defined(__clang__)
@@ -194,133 +204,151 @@ class FVTerm : public FObject, public FTerm
    #endif
                        ;
    int                 print (const std::wstring&);
-   int                 print (FVTerm::term_area*, const std::wstring&);
+   int                 print (term_area*, const std::wstring&);
    int                 print (const wchar_t*);
-   int                 print (FVTerm::term_area*, const wchar_t*);
+   int                 print (term_area*, const wchar_t*);
    int                 print (const char*);
-   int                 print (FVTerm::term_area*, const char*);
+   int                 print (term_area*, const char*);
    int                 print (const std::string&);
-   int                 print (FVTerm::term_area*, const std::string&);
+   int                 print (term_area*, const std::string&);
    int                 print (FString&);
-   int                 print (FVTerm::term_area*, FString&);
+   int                 print (term_area*, FString&);
    int                 print (int);
-   int                 print (FVTerm::term_area*, int);
-   static void         newFontChanges (FOptiAttr::char_data*&);
-   static void         charsetChanges (FOptiAttr::char_data*&);
-   static void         appendCharacter (FOptiAttr::char_data*&);
-   static void         appendAttributes (FOptiAttr::char_data*&);
-   static int          appendLowerRight (FOptiAttr::char_data*&);
+   int                 print (term_area*, int);
+   static void         newFontChanges (char_data*&);
+   static void         charsetChanges (char_data*&);
+   static void         appendCharacter (char_data*&);
+   static void         appendAttributes (char_data*&);
+   static int          appendLowerRight (char_data*&);
    static void         appendOutputBuffer (std::string&);
    static void         appendOutputBuffer (const char*);
    static int          appendOutputBuffer (int);
    static void         flush_out();
 
-   void                setColor (short, short);
-   static void         setNormal();
+ protected:
+   // Enumeration
+   enum character_type
+   {
+     overlapped_character,
+     covered_character
+   };
 
-   static bool         setBold (register bool);
-   static bool         setBold();
-   static bool         unsetBold();
-   static bool         isBold();
+   // Methods
+   void                 createArea ( const FRect&
+                                   , const FPoint&
+                                   , term_area*& );
 
-   static bool         setDim (register bool);
-   static bool         setDim();
-   static bool         unsetDim();
-   static bool         isDim();
+   void                 createArea ( int, int, int, int
+                                   , int, int
+                                   , term_area*& );
 
-   static bool         setItalic (register bool);
-   static bool         setItalic();
-   static bool         unsetItalic();
-   static bool         isItalic();
+   static void          resizeArea ( const FRect&
+                                   , const FPoint&
+                                   , term_area* );
 
-   static bool         setUnderline (register bool);
-   static bool         setUnderline();
-   static bool         unsetUnderline();
-   static bool         isUnderline();
+   static void          resizeArea ( int, int, int, int
+                                   , int, int
+                                   , term_area* );
 
-   static bool         setBlink (register bool);
-   static bool         setBlink();
-   static bool         unsetBlink();
-   static bool         isBlink();
+   static void          removeArea (term_area*&);
+   static void          restoreVTerm (const FRect&);
+   static void          restoreVTerm (int, int, int, int);
 
-   static bool         setReverse (register bool);
-   static bool         setReverse();
-   static bool         unsetReverse();
-   static bool         isReverse();
+   static covered_state isCovered ( const FPoint&
+                                  , term_area* );
 
-   static bool         setStandout (register bool);
-   static bool         setStandout();
-   static bool         unsetStandout();
-   static bool         isStandout();
+   static covered_state isCovered ( int, int
+                                  , term_area* );
 
-   static bool         setInvisible (register bool);
-   static bool         setInvisible();
-   static bool         unsetInvisible();
-   static bool         isInvisible();
+   static void          updateVTerm (bool);
+   static void          updateVTerm (term_area*);
+   static bool          updateVTermCursor (term_area*);
+   static bool          isInsideArea (int, int, term_area*);
 
-   static bool         setProtected (register bool);
-   static bool         setProtected();
-   static bool         unsetProtected();
-   static bool         isProtected();
+   static void          setAreaCursor ( const FPoint&
+                                      , bool, term_area* );
 
-   static bool         setCrossedOut (register bool);
-   static bool         setCrossedOut();
-   static bool         unsetCrossedOut();
-   static bool         isCrossedOut();
+   static void          setAreaCursor ( int, int
+                                      , bool, term_area*);
 
-   static bool         setDoubleUnderline (register bool);
-   static bool         setDoubleUnderline();
-   static bool         unsetDoubleUnderline();
-   static bool         isDoubleUnderline();
+   static void          getArea (const FPoint&, term_area*);
+   static void          getArea (int, int, term_area*);
+   static void          getArea (const FRect&, term_area*);
+   static void          getArea (int, int, int, int, term_area*);
+   static void          putArea (const FPoint&, term_area*);
+   static void          putArea (int, int, term_area*);
+   static void          scrollAreaForward (term_area*);
+   static void          scrollAreaReverse (term_area*);
+   static void          clearArea (term_area*);
 
-   static bool         setAltCharset (register bool);
-   static bool         setAltCharset();
-   static bool         unsetAltCharset();
-   static bool         isAltCharset();
+   static char_data     getCharacter ( character_type
+                                     , const FPoint&
+                                     , FVTerm* );
 
-   static bool         setPCcharset (register bool);
-   static bool         setPCcharset();
-   static bool         unsetPCcharset();
-   static bool         isPCcharset();
+   static char_data     getCharacter ( character_type
+                                     , int
+                                     , int, FVTerm* );
 
-   static bool         setTransparent (register bool);
-   static bool         setTransparent();
-   static bool         unsetTransparent();
-   static bool         isTransparent();
+   static char_data     getCoveredCharacter (const FPoint&, FVTerm*);
+   static char_data     getCoveredCharacter (int, int, FVTerm*);
+   static char_data     getOverlappedCharacter (const FPoint&, FVTerm*);
+   static char_data     getOverlappedCharacter (int, int, FVTerm*);
+   static void          startTerminalUpdate();
+   static void          finishTerminalUpdate();
 
-   static bool         setTransShadow (register bool);
-   static bool         setTransShadow();
-   static bool         unsetTransShadow();
-   static bool         isTransShadow();
+   // Data Members
+   static        term_area* vterm;        // virtual terminal
+   static        term_area* vdesktop;     // virtual desktop
+   static        term_area* last_area;    // last used area
+   static        term_area* active_area;  // active area
+   term_area*    print_area;              // print area for this object
+   term_area*    vwin;                    // virtual window
 
-   static bool         setInheritBackground (register bool);
-   static bool         setInheritBackground();
-   static bool         unsetInheritBackground();
-   static bool         isInheritBackground();
+ private:
+   // Typedef
+   typedef FTermcap::tcap_map termcap_map;
+
+   // Constants
+   static const uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+   // Buffer size for character output on the terminal
+
+   // Disable copy constructor
+   FVTerm (const FVTerm&);
+
+   // Disable assignment operator (=)
+   FVTerm& operator = (const FVTerm&);
+
+   // Accessor
+   term_area*              getPrintArea();
+
+   // Mutators
+   void                    setPrintArea (term_area*);
+
+   // Methods
+   void                    init();
+   void                    finish();
+
+   // Data Members
+   static std::queue<int>* output_buffer;
+   static char_data        term_attribute;
+   static char_data        next_attribute;
+   static FPoint*          term_pos;  // terminal cursor position
+   static termcap_map*     tcap;
+   static bool             hidden_cursor;
+   static bool             terminal_update_complete;
+   static bool             terminal_update_pending;
+   static bool             force_terminal_update;
+   static bool             stop_terminal_updates;
+   static bool             vterm_updates;
+   static int              skipped_terminal_update;
 };
 
 #pragma pack(pop)
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-inline void FVTerm::setPrintArea (term_area* area)
-{ print_area = area; }
-
-//----------------------------------------------------------------------
 inline const char* FVTerm::getClassName() const
 { return "FVTerm"; }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::hideCursor()
-{ return hideCursor(true); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::showCursor()
-{ return hideCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCursorHidden()
-{ return hidden_cursor; }
 
 //----------------------------------------------------------------------
 inline short FVTerm::getTermForegroundColor()
@@ -333,6 +361,14 @@ inline short FVTerm::getTermBackgroundColor()
 //----------------------------------------------------------------------
 inline FVTerm::term_area* FVTerm::getVWin() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hideCursor()
+{ return hideCursor(true); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::showCursor()
+{ return hideCursor(false); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintCursor (const FPoint& pos)
@@ -384,10 +420,6 @@ inline bool FVTerm::unsetBold()
 { return setBold(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isBold()
-{ return next_attribute.bold; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setDim (register bool on)
 { return (next_attribute.dim = on); }
 
@@ -398,10 +430,6 @@ inline bool FVTerm::setDim()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetDim()
 { return setDim(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isDim()
-{ return next_attribute.dim; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setItalic (register bool on)
@@ -416,10 +444,6 @@ inline bool FVTerm::unsetItalic()
 { return setItalic(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isItalic()
-{ return next_attribute.italic; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setUnderline (register bool on)
 { return (next_attribute.underline = on); }
 
@@ -430,10 +454,6 @@ inline bool FVTerm::setUnderline()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetUnderline()
 { return setUnderline(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isUnderline()
-{ return next_attribute.underline; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBlink (register bool on)
@@ -448,10 +468,6 @@ inline bool FVTerm::unsetBlink()
 { return setBlink(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isBlink()
-{ return next_attribute.blink; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setReverse (register bool on)
 { return (next_attribute.reverse = on); }
 
@@ -462,10 +478,6 @@ inline bool FVTerm::setReverse()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetReverse()
 { return setReverse(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isReverse()
-{ return next_attribute.reverse; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setStandout (register bool on)
@@ -480,10 +492,6 @@ inline bool FVTerm::unsetStandout()
 { return setStandout(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isStandout()
-{ return next_attribute.standout; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setInvisible (register bool on)
 { return (next_attribute.invisible = on); }
 
@@ -494,10 +502,6 @@ inline bool FVTerm::setInvisible()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetInvisible()
 { return setInvisible(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isInvisible()
-{ return next_attribute.invisible; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setProtected (register bool on)
@@ -512,10 +516,6 @@ inline bool FVTerm::unsetProtected()
 { return setProtected(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isProtected()
-{ return next_attribute.protect; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setCrossedOut (register bool on)
 { return (next_attribute.crossed_out = on); }
 
@@ -526,10 +526,6 @@ inline bool FVTerm::setCrossedOut()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetCrossedOut()
 { return setCrossedOut(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isCrossedOut()
-{ return next_attribute.crossed_out; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDoubleUnderline (register bool on)
@@ -544,10 +540,6 @@ inline bool FVTerm::unsetDoubleUnderline()
 { return setDoubleUnderline(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isDoubleUnderline()
-{ return next_attribute.dbl_underline; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setAltCharset (register bool on)
 { return (next_attribute.alt_charset = on); }
 
@@ -558,10 +550,6 @@ inline bool FVTerm::setAltCharset()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetAltCharset()
 { return setAltCharset(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isAltCharset()
-{ return next_attribute.alt_charset; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setPCcharset (register bool on)
@@ -576,10 +564,6 @@ inline bool FVTerm::unsetPCcharset()
 { return setPCcharset(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isPCcharset()
-{ return next_attribute.pc_charset; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setTransparent (register bool on)
 { return (next_attribute.transparent = on); }
 
@@ -590,10 +574,6 @@ inline bool FVTerm::setTransparent()
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetTransparent()
 { return setTransparent(false); }
-
-//----------------------------------------------------------------------
-inline bool FVTerm::isTransparent()
-{ return next_attribute.transparent; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransShadow (register bool on)
@@ -608,10 +588,6 @@ inline bool FVTerm::unsetTransShadow()
 { return setTransShadow(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isTransShadow()
-{ return next_attribute.trans_shadow; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground (register bool on)
 { return (next_attribute.inherit_bg = on); }
 
@@ -624,7 +600,75 @@ inline bool FVTerm::unsetInheritBackground()
 { return setInheritBackground(false); }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::isCursorHidden()
+{ return hidden_cursor; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isBold()
+{ return next_attribute.bold; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isDim()
+{ return next_attribute.dim; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isItalic()
+{ return next_attribute.italic; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isUnderline()
+{ return next_attribute.underline; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isBlink()
+{ return next_attribute.blink; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isReverse()
+{ return next_attribute.reverse; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isStandout()
+{ return next_attribute.standout; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isInvisible()
+{ return next_attribute.invisible; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isProtected()
+{ return next_attribute.protect; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isCrossedOut()
+{ return next_attribute.crossed_out; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isDoubleUnderline()
+{ return next_attribute.dbl_underline; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isAltCharset()
+{ return next_attribute.alt_charset; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isPCcharset()
+{ return next_attribute.pc_charset; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTransparent()
+{ return next_attribute.transparent; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTransShadow()
+{ return next_attribute.trans_shadow; }
+
+//----------------------------------------------------------------------
 inline bool FVTerm::isInheritBackground()
 { return next_attribute.inherit_bg; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setPrintArea (term_area* area)
+{ print_area = area; }
 
 #endif  // _FVTERM_H

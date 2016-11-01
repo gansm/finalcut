@@ -15,12 +15,12 @@
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton(FWidget* parent)
   : FWidget(parent)
-  , focus_inside_group(true)
-  , text()
   , checked(false)
   , label_offset_pos(0)
   , button_width(0)
   , button_group(0)
+  , focus_inside_group(true)
+  , text()
 {
   init();
 
@@ -29,20 +29,20 @@ FToggleButton::FToggleButton(FWidget* parent)
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
-    if ( group() )
-      group()->insert(this);  // insert into button group
+    if ( getGroup() )
+      getGroup()->insert(this);  // insert into button group
   }
 }
 
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   : FWidget(parent)
-  , focus_inside_group(true)
-  , text()
   , checked(false)
   , label_offset_pos(0)
   , button_width(0)
   , button_group(0)
+  , focus_inside_group(true)
+  , text()
 {
   init();
   setText(txt);
@@ -52,8 +52,8 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
-    if ( group() )
-      group()->insert( this );  // insert into button group
+    if ( getGroup() )
+      getGroup()->insert( this );  // insert into button group
   }
 }
 
@@ -62,23 +62,43 @@ FToggleButton::~FToggleButton()  // destructor
 {
   delAccelerator();
 
-  if ( group() )
-    group()->remove(this);
+  if ( getGroup() )
+    getGroup()->remove(this);
 }
 
 
-// private methods of FToggleButton
+// public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::init()
+void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 {
-  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
+  int min_width = button_width + int(text.getLength());
 
-  if ( hasFocus() )
-    flags = fc::focus;
+  if ( w < min_width )
+    w = min_width;
 
-  if ( isEnabled() )
+  FWidget::setGeometry(x, y, w, h, adjust);
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::setNoUnderline (bool on)
+{
+  if ( on )
+    flags |= fc::no_underline;
+  else
+    flags &= ~fc::no_underline;
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::setEnable (bool on)
+{
+  FWidget::setEnable(on);
+
+  if ( on )
   {
     flags |= fc::active;
+    setHotkeyAccelerator();
 
     if ( hasFocus() )
     {
@@ -91,17 +111,265 @@ void FToggleButton::init()
       setBackgroundColor (wc.toggle_button_active_bg);
     }
   }
-  else  // inactive
+  else
   {
-    setForegroundColor (wc.label_inactive_fg);
-    setBackgroundColor (wc.label_inactive_bg);
+    flags &= ~fc::active;
+    delAccelerator();
+    setForegroundColor (wc.toggle_button_inactive_fg);
+    setBackgroundColor (wc.toggle_button_inactive_bg);
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::setFocus (bool on)
+{
+  FWidget::setFocus(on);
+
+  if ( on )
+  {
+    flags |= fc::focus;
+
+    if ( isEnabled() )
+    {
+      if ( isRadioButton()  )
+        focus_inside_group = false;
+
+      setForegroundColor (wc.toggle_button_active_focus_fg);
+      setBackgroundColor (wc.toggle_button_active_focus_bg);
+
+      if ( getStatusBar() )
+      {
+        FString msg = getStatusbarMessage();
+        FString curMsg = getStatusBar()->getMessage();
+
+        if ( curMsg != msg )
+          getStatusBar()->setMessage(msg);
+      }
+    }
+  }
+  else
+  {
+    flags &= ~fc::focus;
+
+    if ( isEnabled() )
+    {
+      setForegroundColor (wc.toggle_button_active_fg);
+      setBackgroundColor (wc.toggle_button_active_bg);
+
+      if ( getStatusBar() )
+        getStatusBar()->clearMessage();
+    }
+  }
+
+  return on;
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::setChecked (bool on)
+{
+  if ( checked != on )
+  {
+    checked = on;
+    processToggle();
+  }
+
+  return checked;
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::setText (FString txt)
+{
+  text = txt;
+  setWidth(button_width + int(text.getLength()));
+
+  if ( isEnabled() )
+  {
+    delAccelerator();
+    setHotkeyAccelerator();
   }
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setGroup (FButtonGroup* btngroup)
+void FToggleButton::hide()
 {
-  button_group = btngroup;
+  int size;
+  short fg, bg;
+  char* blank;
+  FWidget* parent_widget = getParentWidget();
+
+  FWidget::hide();
+
+  if ( parent_widget )
+  {
+    fg = parent_widget->getForegroundColor();
+    bg = parent_widget->getBackgroundColor();
+  }
+  else
+  {
+    fg = wc.dialog_fg;
+    bg = wc.dialog_bg;
+  }
+
+  setColor (fg, bg);
+  size = getWidth();
+
+  if ( size < 0 )
+    return;
+
+  blank = new char[size+1];
+  std::memset(blank, ' ', uLong(size));
+  blank[size] = '\0';
+  setPrintPos (1, 1);
+  print (blank);
+  delete[] blank;
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::onMouseDown (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( hasFocus() )
+    return;
+
+  FWidget* focused_widget = getFocusWidget();
+  FFocusEvent out (fc::FocusOut_Event);
+  FApplication::queueEvent(focused_widget, &out);
+  setFocus();
+
+  if ( focused_widget )
+    focused_widget->redraw();
+
+  redraw();
+
+  if ( getStatusBar() )
+  {
+    getStatusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::onMouseUp (FMouseEvent* ev)
+{
+  if ( ev->getButton() != fc::LeftButton )
+    return;
+
+  if ( ! getTermGeometry().contains(ev->getTermPos()) )
+    return;
+
+  if ( isRadioButton() )
+  {
+    if ( ! checked )
+    {
+      checked = true;
+      processToggle();
+    }
+  }
+  else
+  {
+    checked = not checked;
+    processToggle();
+  }
+
+  redraw();
+  processClick();
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::onAccel (FAccelEvent* ev)
+{
+  if ( ! isEnabled() )
+    return;
+
+  if ( ! hasFocus() )
+  {
+    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    FFocusEvent out (fc::FocusOut_Event);
+    FApplication::queueEvent(focused_widget, &out);
+    setFocus();
+
+    if ( focused_widget )
+      focused_widget->redraw();
+  }
+
+  if ( isRadioButton() )
+  {
+    if ( ! checked )
+    {
+      checked = true;
+      processToggle();
+    }
+  }
+  else
+  {
+    checked = not checked;
+    processToggle();
+  }
+
+  redraw();
+
+  if ( getStatusBar() )
+  {
+    getStatusBar()->drawMessage();
+    updateTerminal();
+    flush_out();
+  }
+
+  processClick();
+  ev->accept();
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::onFocusIn (FFocusEvent*)
+{
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::onFocusOut (FFocusEvent* out_ev)
+{
+  if ( getStatusBar() )
+  {
+    getStatusBar()->clearMessage();
+    getStatusBar()->drawMessage();
+  }
+
+  if ( ! getGroup() )
+    return;
+
+  if ( ! focus_inside_group && isRadioButton()  )
+  {
+    focus_inside_group = true;
+    out_ev->ignore();
+
+    if ( out_ev->getFocusType() == fc::FocusNextWidget )
+      getGroup()->focusNextChild();
+
+    if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
+      getGroup()->focusPrevChild();
+
+    redraw();
+  }
+  else if (  this == getGroup()->getLastButton()
+     && out_ev->getFocusType() == fc::FocusNextWidget )
+  {
+    out_ev->ignore();
+    getGroup()->focusNextChild();
+    redraw();
+  }
+  else if (  this == getGroup()->getFirstButton()
+          && out_ev->getFocusType() == fc::FocusPreviousWidget )
+  {
+    out_ev->ignore();
+    getGroup()->focusPrevChild();
+    redraw();
+  }
 }
 
 
@@ -154,19 +422,33 @@ void FToggleButton::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
+bool FToggleButton::isRadioButton() const
+{
+  return ( std::strcmp ( getClassName()
+                       , const_cast<char*>("FRadioButton") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+bool FToggleButton::isCheckboxButton() const
+{
+  return ( std::strcmp ( getClassName()
+                       , const_cast<char*>("FCheckBox") ) == 0 );
+}
+
+//----------------------------------------------------------------------
 void FToggleButton::draw()
 {
   bool isFocus = ((flags & fc::focus) != 0);
 
-  if ( isFocus && statusBar() )
+  if ( isFocus && getStatusBar() )
   {
     FString msg = getStatusbarMessage();
-    FString curMsg = statusBar()->getMessage();
+    FString curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
-      statusBar()->setMessage(msg);
-      statusBar()->drawMessage();
+      getStatusBar()->setMessage(msg);
+      getStatusBar()->drawMessage();
     }
   }
 
@@ -268,26 +550,6 @@ void FToggleButton::processToggle()
 }
 
 //----------------------------------------------------------------------
-FButtonGroup* FToggleButton::group() const
-{
-  return button_group;
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::isRadioButton() const
-{
-  return ( std::strcmp ( getClassName()
-                       , const_cast<char*>("FRadioButton") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::isCheckboxButton() const
-{
-  return ( std::strcmp ( getClassName()
-                       , const_cast<char*>("FCheckBox") ) == 0 );
-}
-
-//----------------------------------------------------------------------
 void FToggleButton::onKeyPress (FKeyEvent* ev)
 {
   int key;
@@ -345,73 +607,24 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
 }
 
 
-// public methods of FToggleButton
+// private methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::hide()
+void FToggleButton::setGroup (FButtonGroup* btngroup)
 {
-  int size;
-  short fg, bg;
-  char* blank;
-  FWidget* parent_widget = getParentWidget();
-
-  FWidget::hide();
-
-  if ( parent_widget )
-  {
-    fg = parent_widget->getForegroundColor();
-    bg = parent_widget->getBackgroundColor();
-  }
-  else
-  {
-    fg = wc.dialog_fg;
-    bg = wc.dialog_bg;
-  }
-
-  setColor (fg, bg);
-  size = getWidth();
-
-  if ( size < 0 )
-    return;
-
-  blank = new char[size+1];
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-  setPrintPos (1, 1);
-  print (blank);
-  delete[] blank;
+  button_group = btngroup;
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
+void FToggleButton::init()
 {
-  int min_width = button_width + int(text.getLength());
+  setGeometry (1, 1, 4, 1, false);  // initialize geometry values
 
-  if ( w < min_width )
-    w = min_width;
+  if ( hasFocus() )
+    flags = fc::focus;
 
-  FWidget::setGeometry(x, y, w, h, adjust);
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::setNoUnderline (bool on)
-{
-  if ( on )
-    flags |= fc::no_underline;
-  else
-    flags &= ~fc::no_underline;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
+  if ( isEnabled() )
   {
     flags |= fc::active;
-    setHotkeyAccelerator();
 
     if ( hasFocus() )
     {
@@ -424,228 +637,9 @@ bool FToggleButton::setEnable (bool on)
       setBackgroundColor (wc.toggle_button_active_bg);
     }
   }
-  else
+  else  // inactive
   {
-    flags &= ~fc::active;
-    delAccelerator();
-    setForegroundColor (wc.toggle_button_inactive_fg);
-    setBackgroundColor (wc.toggle_button_inactive_bg);
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::setFocus (bool on)
-{
-  FWidget::setFocus(on);
-
-  if ( on )
-  {
-    flags |= fc::focus;
-
-    if ( isEnabled() )
-    {
-      if ( isRadioButton()  )
-        focus_inside_group = false;
-
-      setForegroundColor (wc.toggle_button_active_focus_fg);
-      setBackgroundColor (wc.toggle_button_active_focus_bg);
-
-      if ( statusBar() )
-      {
-        FString msg = getStatusbarMessage();
-        FString curMsg = statusBar()->getMessage();
-
-        if ( curMsg != msg )
-          statusBar()->setMessage(msg);
-      }
-    }
-  }
-  else
-  {
-    flags &= ~fc::focus;
-
-    if ( isEnabled() )
-    {
-      setForegroundColor (wc.toggle_button_active_fg);
-      setBackgroundColor (wc.toggle_button_active_bg);
-
-      if ( statusBar() )
-        statusBar()->clearMessage();
-    }
-  }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::onMouseDown (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( hasFocus() )
-    return;
-
-  FWidget* focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
-  setFocus();
-
-  if ( focused_widget )
-    focused_widget->redraw();
-
-  redraw();
-
-  if ( statusBar() )
-  {
-    statusBar()->drawMessage();
-    updateTerminal();
-    flush_out();
-  }
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::onMouseUp (FMouseEvent* ev)
-{
-  if ( ev->getButton() != fc::LeftButton )
-    return;
-
-  if ( ! getTermGeometry().contains(ev->getTermPos()) )
-    return;
-
-  if ( isRadioButton() )
-  {
-    if ( ! checked )
-    {
-      checked = true;
-      processToggle();
-    }
-  }
-  else
-  {
-    checked = not checked;
-    processToggle();
-  }
-
-  redraw();
-  processClick();
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::onAccel (FAccelEvent* ev)
-{
-  if ( ! isEnabled() )
-    return;
-
-  if ( ! hasFocus() )
-  {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-  }
-
-  if ( isRadioButton() )
-  {
-    if ( ! checked )
-    {
-      checked = true;
-      processToggle();
-    }
-  }
-  else
-  {
-    checked = not checked;
-    processToggle();
-  }
-
-  redraw();
-
-  if ( statusBar() )
-  {
-    statusBar()->drawMessage();
-    updateTerminal();
-    flush_out();
-  }
-
-  processClick();
-  ev->accept();
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::onFocusIn (FFocusEvent*)
-{
-  if ( statusBar() )
-    statusBar()->drawMessage();
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::onFocusOut (FFocusEvent* out_ev)
-{
-  if ( statusBar() )
-  {
-    statusBar()->clearMessage();
-    statusBar()->drawMessage();
-  }
-
-  if ( ! group() )
-    return;
-
-  if ( ! focus_inside_group && isRadioButton()  )
-  {
-    focus_inside_group = true;
-    out_ev->ignore();
-
-    if ( out_ev->getFocusType() == fc::FocusNextWidget )
-      group()->focusNextChild();
-
-    if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
-      group()->focusPrevChild();
-
-    redraw();
-  }
-  else if (  this == group()->getLastButton()
-     && out_ev->getFocusType() == fc::FocusNextWidget )
-  {
-    out_ev->ignore();
-    group()->focusNextChild();
-    redraw();
-  }
-  else if (  this == group()->getFirstButton()
-          && out_ev->getFocusType() == fc::FocusPreviousWidget )
-  {
-    out_ev->ignore();
-    group()->focusPrevChild();
-    redraw();
-  }
-}
-
-//----------------------------------------------------------------------
-bool FToggleButton::setChecked (bool on)
-{
-  if ( checked != on )
-  {
-    checked = on;
-    processToggle();
-  }
-
-  return checked;
-}
-
-//----------------------------------------------------------------------
-void FToggleButton::setText (FString txt)
-{
-  text = txt;
-  setWidth(button_width + int(text.getLength()));
-
-  if ( isEnabled() )
-  {
-    delAccelerator();
-    setHotkeyAccelerator();
+    setForegroundColor (wc.label_inactive_fg);
+    setBackgroundColor (wc.label_inactive_bg);
   }
 }
