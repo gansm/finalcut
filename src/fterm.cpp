@@ -2963,7 +2963,13 @@ void FTerm::init()
   // Test if the terminal is a xterm
   if (  std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
      || std::strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
+  {
     xterm_terminal = true;
+
+    // Each xterm should be able to use at least 16 colors
+    if ( ! new_termtype && std::strlen(termtype) == 5 )
+      new_termtype = const_cast<char*>("xterm-16color");    
+  }
   else
     xterm_terminal = false;
 

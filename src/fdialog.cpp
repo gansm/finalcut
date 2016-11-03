@@ -1462,7 +1462,15 @@ void FDialog::cb_move (FWidget*, void*)
     return;
 
   setMoveSizeWidget(this);
+
+  if ( isMonochron() )
+      setReverse(true);
+
   drawBorder();
+
+  if ( isMonochron() )
+      setReverse(false);
+
   save_geometry = getGeometry();
   tooltip = new FToolTip(this);
 
