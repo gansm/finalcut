@@ -279,7 +279,7 @@ class FVTerm : public FObject, public FTerm
    static void          putArea (int, int, term_area*);
    static void          scrollAreaForward (term_area*);
    static void          scrollAreaReverse (term_area*);
-   static void          clearArea (term_area*);
+   static void          clearArea (term_area*, int = ' ');
 
    static char_data     getCharacter ( character_type
                                      , const FPoint&

@@ -168,6 +168,7 @@ class FTerm
    static void          setKDECursor (fc::kdeKonsoleCursorShape);
    static const FString getXTermFont();
    static const FString getXTermTitle();
+   static const FString getXTermColorName (int);
    static void          setXTermCursorStyle (fc::xtermCursorStyle);
    static void          setXTermTitle (const FString&);
    static void          setXTermForeground (const FString&);
@@ -201,6 +202,7 @@ class FTerm
 
    // function pointer -> static function
    static int           (*Fputchar)(int);
+  
    static void          putstringf (const char*, ...)
    #if defined(__clang__)
      __attribute__((__format__ (__printf__, 1, 2)))
@@ -267,6 +269,9 @@ class FTerm
    // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
+   // Inquiries
+   static int           isConsole();
+
    // Methods
    static uInt16        getInputStatusRegisterOne();
    static uChar         readAttributeController (uChar);
@@ -277,7 +282,6 @@ class FTerm
    static int           getFramebuffer_bpp();
    static int           openConsole();
    static int           closeConsole();
-   static int           isConsole();
    static void          identifyTermType();
    static int           getScreenFont();
    static int           setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
@@ -296,6 +300,7 @@ class FTerm
    static void          init_encoding();
    void                 init();
    void                 finish();
+   static void          setXTermColors();
    static uInt          cp437_to_unicode (uChar);
    static void          signal_handler (int);
 

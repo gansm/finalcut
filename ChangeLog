@@ -1,3 +1,8 @@
+2016-11-05  Markus Gans  <guru.mail@muenster.de>
+	* Determine xterm maximum number of colors via OSC 4
+	* The method clearArea can now fill the background 
+	  with certain character
+
 2016-11-03  Markus Gans  <guru.mail@muenster.de>
 	* xterm should be able to use at least 16 colors
 

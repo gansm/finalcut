@@ -121,18 +121,20 @@ bool FVTerm::hideCursor (bool on)
     char* hide_str = disableCursor();
 
     if ( hide_str )
+    {
       appendOutputBuffer (hide_str);
-
-    hidden_cursor = true;  // global
+      hidden_cursor = true;  // global
+    }
   }
   else
   {
     char* show_str = enableCursor();
 
     if ( show_str )
+    {
       appendOutputBuffer (show_str);
-
-    hidden_cursor = false;
+      hidden_cursor = false;
+    }
   }
 
   flush_out();
@@ -1160,6 +1162,7 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
                    || s_ch.code == fc::UpperHalfBlock
                    || s_ch.code == fc::LeftHalfBlock
                    || s_ch.code == fc::RightHalfBlock
+                   || s_ch.code == fc::MediumShade
                    || s_ch.code == fc::FullBlock )
                   s_ch.code = ' ';
 
@@ -1360,6 +1363,7 @@ void FVTerm::updateVTerm (term_area* area)
                || ch.code == fc::UpperHalfBlock
                || ch.code == fc::LeftHalfBlock
                || ch.code == fc::RightHalfBlock
+               || ch.code == fc::MediumShade
                || ch.code == fc::FullBlock )
               ch.code = ' ';
 
@@ -1388,6 +1392,7 @@ void FVTerm::updateVTerm (term_area* area)
                  || ch.code == fc::UpperHalfBlock
                  || ch.code == fc::LeftHalfBlock
                  || ch.code == fc::RightHalfBlock
+                 || ch.code == fc::MediumShade
                  || ch.code == fc::FullBlock )
                 ch.code = ' ';
 
@@ -1707,6 +1712,7 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
                || ch.code == fc::UpperHalfBlock
                || ch.code == fc::LeftHalfBlock
                || ch.code == fc::RightHalfBlock
+               || ch.code == fc::MediumShade
                || ch.code == fc::FullBlock )
               ch.code = ' ';
 
@@ -1820,7 +1826,7 @@ void FVTerm::scrollAreaReverse (term_area* area)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearArea (term_area* area)
+void FVTerm::clearArea (term_area* area, int fillchar)
 {
   // clear the area with the current attributes
   char_data nc;  // next character
@@ -1829,7 +1835,7 @@ void FVTerm::clearArea (term_area* area)
 
   // current attributes with a space character
   std::memcpy (&nc, &next_attribute, sizeof(char_data));
-  nc.code = ' ';
+  nc.code = fillchar;
 
   if ( ! area )
     return;

@@ -79,7 +79,11 @@ void Transparent::draw()
   }
   else if ( type == inherit_background )
   {
-    setColor(fc::Blue, fc::Black);
+    if ( getMaxColor() > 8 )
+      setColor(fc::Blue, fc::Black);
+    else
+      setColor(fc::Green, fc::Black);
+
     setInheritBackground();
   }
   else

@@ -814,6 +814,39 @@ const FString FTerm::getXTermTitle()
 }
 
 //----------------------------------------------------------------------
+const FString FTerm::getXTermColorName (int color)
+{
+  FString color_str("");
+
+  if ( raw_mode && non_blocking_stdin )
+  {
+    int n;
+    int c = color;
+    int digits = 0;
+
+    while ( c /= 10 )
+      digits++;
+
+    char temp[512] = {};
+    putstringf (OSC "4;%d;?" BEL, color);  // get color
+    std::fflush(stdout);
+    usleep(150000);  // wait 150 ms
+
+    // read the terminal answer
+    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
+
+    // BEL + '\0' = string terminator
+    if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+    {
+      temp[n-1] = '\0';
+      color_str = static_cast<char*>(temp + 6 + digits);
+    }
+  }
+
+  return color_str;
+}
+
+//----------------------------------------------------------------------
 void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
@@ -1545,6 +1578,16 @@ bool FTerm::gpmMouse (bool on)
 
 // private methods of FTerm
 //----------------------------------------------------------------------
+int FTerm::isConsole()
+{
+  char arg = 0;
+  // get keyboard type an compare
+  return (  isatty (fd_tty)
+         && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
+         && ((arg == KB_101) || (arg == KB_84)) );
+}
+
+//----------------------------------------------------------------------
 inline uInt16 FTerm::getInputStatusRegisterOne()
 {
   // Gets the VGA input-status-register-1
@@ -1703,16 +1746,6 @@ int FTerm::closeConsole()
     return 0;
   else
     return -1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::isConsole()
-{
-  char arg = 0;
-  // get keyboard type an compare
-  return (  isatty (fd_tty)
-         && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
-         && ((arg == KB_101) || (arg == KB_84)) );
 }
 
 //----------------------------------------------------------------------
@@ -2954,6 +2987,22 @@ void FTerm::init()
   // Identify the terminal via the secondary device attributes (SEC_DA)
   new_termtype = parseSecDA (new_termtype);
 
+  if ( ! color256 && getXTermColorName(0) != "" )
+  {
+    if ( getXTermColorName(256) != "" )
+    {
+      new_termtype = const_cast<char*>("xterm-256color");
+    }
+    else if ( FTermcap::max_color < 88 && getXTermColorName(87) != "" )
+    {
+      new_termtype = const_cast<char*>("xterm-88color");
+    }
+    else if ( FTermcap::max_color < 16 && getXTermColorName(15) != "" )
+    {
+      new_termtype = const_cast<char*>("xterm-16color");
+    }
+  }
+
   unsetRawMode();
   // ...end of terminal detection
 
@@ -2968,7 +3017,7 @@ void FTerm::init()
 
     // Each xterm should be able to use at least 16 colors
     if ( ! new_termtype && std::strlen(termtype) == 5 )
-      new_termtype = const_cast<char*>("xterm-16color");    
+      new_termtype = const_cast<char*>("xterm-16color");
   }
   else
     xterm_terminal = false;
@@ -3069,19 +3118,7 @@ void FTerm::init()
   }
 
   setXTermCursorStyle(fc::blinking_underline);
-  setXTermMouseBackground("rgb:ffff/ffff/ffff");
-  setXTermMouseForeground ("rgb:0000/0000/0000");
-
-  if ( ! gnome_terminal )
-    setXTermCursorColor("rgb:ffff/ffff/ffff");
-
-  if ( ! (mintty_terminal || rxvt_terminal || screen_terminal) )
-  {
-    // mintty and rxvt can't reset these settings
-    setXTermBackground("rgb:8080/a4a4/ecec");
-    setXTermForeground("rgb:0000/0000/0000");
-    setXTermHighlightBackground("rgb:8686/8686/8686");
-  }
+  setXTermColors();
 
   setRawMode();
 
@@ -3311,6 +3348,24 @@ void FTerm::finish()
 
   if ( opti_move )
     delete opti_move;
+}
+
+//----------------------------------------------------------------------
+void FTerm::setXTermColors()
+{
+  setXTermMouseBackground("rgb:ffff/ffff/ffff");
+  setXTermMouseForeground ("rgb:0000/0000/0000");
+
+  if ( ! gnome_terminal )
+    setXTermCursorColor("rgb:ffff/ffff/ffff");
+
+  if ( ! (mintty_terminal || rxvt_terminal || screen_terminal) )
+  {
+    // mintty and rxvt can't reset these settings
+    setXTermBackground("rgb:8080/a4a4/ecec");
+    setXTermForeground("rgb:0000/0000/0000");
+    setXTermHighlightBackground("rgb:8686/8686/8686");
+  }
 }
 
 //----------------------------------------------------------------------

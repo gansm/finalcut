@@ -243,7 +243,7 @@ Calc::Calc (FWidget* parent)
   setText ("calculator");
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // press 'q' to quit
-  setShadow();
+  //setShadow();
 
   for (int key=0; key < Calc::NUM_OF_BUTTONS; key++)
   {
@@ -372,6 +372,10 @@ void Calc::drawDispay()
 //----------------------------------------------------------------------
 void Calc::draw()
 {
+  setBold();
+  setColor (fc::Blue, fc::Cyan);
+  clearArea (vdesktop, fc::MediumShade);
+  unsetBold();
   FDialog::draw();
   drawDispay();
 }
