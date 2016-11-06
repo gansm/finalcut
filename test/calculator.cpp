@@ -243,7 +243,6 @@ Calc::Calc (FWidget* parent)
   setText ("calculator");
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // press 'q' to quit
-  //setShadow();
 
   for (int key=0; key < Calc::NUM_OF_BUTTONS; key++)
   {

@@ -58,6 +58,7 @@ bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
 bool     FTerm::cursor_optimisation;
+bool     FTerm::xterm_default_colors;
 termios  FTerm::term_init;
 char     FTerm::termtype[30] = "";
 char*    FTerm::term_name    = 0;
@@ -959,6 +960,25 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 }
 
 //----------------------------------------------------------------------
+void FTerm::setXTermDefaults()
+{
+  setXTermMouseBackground("rgb:ffff/ffff/ffff");
+  setXTermMouseForeground ("rgb:0000/0000/0000");
+
+  if ( ! gnome_terminal )
+    setXTermCursorColor("rgb:ffff/ffff/ffff");
+
+  if ( xterm_default_colors
+     && ! (mintty_terminal || rxvt_terminal || screen_terminal) )
+  {
+    // mintty and rxvt can't reset these settings
+    setXTermBackground("rgb:8080/a4a4/ecec");
+    setXTermForeground("rgb:0000/0000/0000");
+    setXTermHighlightBackground("rgb:8686/8686/8686");
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
@@ -1047,6 +1067,22 @@ void FTerm::resetXTermHighlightBackground()
     putstringf (OSC "117" BEL);
     oscPostfix();
     std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetXTermDefaults()
+{
+  setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
+  resetXTermMouseForeground();
+  resetXTermMouseBackground();
+  resetXTermCursorColor();
+
+  if ( xterm_default_colors )
+  {
+    resetXTermForeground();
+    resetXTermBackground();
+    resetXTermHighlightBackground();
   }
 }
 
@@ -2900,27 +2936,28 @@ void FTerm::init()
   (*encoding_set)["ASCII"] = fc::ASCII;
 
   // Preset to false
-  utf8_console           = \
-  utf8_input             = \
-  utf8_state             = \
-  utf8_linux_terminal    = \
-  pc_charset_console     = \
-  vt100_console          = \
-  NewFont                = \
-  VGAFont                = \
-  ascii_console          = \
-  mouse_support          = \
-  force_vt100            = \
-  tera_terminal          = \
-  kterm_terminal         = \
-  gnome_terminal         = \
-  kde_konsole            = \
-  rxvt_terminal          = \
-  urxvt_terminal         = \
-  mlterm_terminal        = \
-  mintty_terminal        = \
-  screen_terminal        = \
-  tmux_terminal          = false;
+  utf8_console         = \
+  utf8_input           = \
+  utf8_state           = \
+  utf8_linux_terminal  = \
+  pc_charset_console   = \
+  vt100_console        = \
+  NewFont              = \
+  VGAFont              = \
+  ascii_console        = \
+  mouse_support        = \
+  force_vt100          = \
+  tera_terminal        = \
+  kterm_terminal       = \
+  gnome_terminal       = \
+  kde_konsole          = \
+  rxvt_terminal        = \
+  urxvt_terminal       = \
+  mlterm_terminal      = \
+  mintty_terminal      = \
+  screen_terminal      = \
+  tmux_terminal        = \
+  xterm_default_colors = false;
 
   // Preset to true
   cursor_optimisation    = true;
@@ -3117,9 +3154,6 @@ void FTerm::init()
     std::fflush(stdout);
   }
 
-  setXTermCursorStyle(fc::blinking_underline);
-  setXTermColors();
-
   setRawMode();
 
   if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
@@ -3225,14 +3259,10 @@ void FTerm::finish()
     std::fflush(stdout);
   }
 
-  // reset xterm color settings to default
-  setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
-  resetXTermMouseForeground();
-  resetXTermMouseBackground();
-  resetXTermCursorColor();
-  resetXTermForeground();
-  resetXTermBackground();
-  resetXTermHighlightBackground();
+  // reset xterm color settings to default values
+  resetXTermDefaults();
+
+  // set xterm full block cursor
   setXTermCursorStyle(fc::steady_block);
 
   if ( FTermcap::max_color >= 16 && ! (kde_konsole || tera_terminal) )
@@ -3348,24 +3378,6 @@ void FTerm::finish()
 
   if ( opti_move )
     delete opti_move;
-}
-
-//----------------------------------------------------------------------
-void FTerm::setXTermColors()
-{
-  setXTermMouseBackground("rgb:ffff/ffff/ffff");
-  setXTermMouseForeground ("rgb:0000/0000/0000");
-
-  if ( ! gnome_terminal )
-    setXTermCursorColor("rgb:ffff/ffff/ffff");
-
-  if ( ! (mintty_terminal || rxvt_terminal || screen_terminal) )
-  {
-    // mintty and rxvt can't reset these settings
-    setXTermBackground("rgb:8080/a4a4/ecec");
-    setXTermForeground("rgb:0000/0000/0000");
-    setXTermHighlightBackground("rgb:8686/8686/8686");
-  }
 }
 
 //----------------------------------------------------------------------

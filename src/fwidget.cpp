@@ -1092,7 +1092,13 @@ void FWidget::show()
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
   if ( getMainWidget() == this )
+  {
     init_consoleCharMap();
+    // set xterm underline cursor
+    setXTermCursorStyle(fc::blinking_underline);
+    // set xterm color settings to defaults
+    setXTermDefaults();
+  }
 
   if ( ! show_root_widget )
   {

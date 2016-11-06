@@ -906,6 +906,7 @@ int main (int argc, char* argv[])
   }
 
   FApplication app(argc, argv);
+  app.setXTermDefaultColors(true);
   app.setXTermTitle (title);
 
   //app.setEncoding("VT100");

@@ -142,6 +142,7 @@ class FTerm
 
    // Mutators
    static bool          setCursorOptimisation (bool);
+   static void          setXTermDefaultColors (bool);
    static void          setConsoleCursor (fc::consoleCursorStyle, bool);
    static bool          setRawMode (bool);
    static bool          setRawMode();
@@ -177,6 +178,7 @@ class FTerm
    static void          setXTermMouseForeground (const FString&);
    static void          setXTermMouseBackground (const FString&);
    static void          setXTermHighlightBackground (const FString&);
+   static void          setXTermDefaults();
    static void          resetXTermColors();
    static void          resetXTermForeground();
    static void          resetXTermBackground();
@@ -184,6 +186,7 @@ class FTerm
    static void          resetXTermMouseForeground();
    static void          resetXTermMouseBackground();
    static void          resetXTermHighlightBackground();
+   static void          resetXTermDefaults();
    static void          saveColorMap();
    static void          resetColorMap();
    static void          setPalette (short, int, int, int);
@@ -248,6 +251,7 @@ class FTerm
    static bool         NewFont;
    static bool         VGAFont;
    static bool         cursor_optimisation;
+   static bool         xterm_default_colors;
    static fc::encoding Encoding;
    static char         exit_message[8192];
 
@@ -300,7 +304,6 @@ class FTerm
    static void          init_encoding();
    void                 init();
    void                 finish();
-   static void          setXTermColors();
    static uInt          cp437_to_unicode (uChar);
    static void          signal_handler (int);
 
@@ -491,6 +494,10 @@ inline bool FTerm::isUTF8_linux_terminal()
 //----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)
 { return cursor_optimisation = (on) ? true : false; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setXTermDefaultColors (bool on)
+{ xterm_default_colors = on; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setRawMode()

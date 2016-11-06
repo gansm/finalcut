@@ -1,3 +1,6 @@
+2016-11-06  Markus Gans  <guru.mail@muenster.de>
+	* The use of xterm default colors now is configurable
+
 2016-11-05  Markus Gans  <guru.mail@muenster.de>
 	* Determine xterm maximum number of colors via OSC 4
 	* The method clearArea can now fill the background 
