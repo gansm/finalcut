@@ -592,6 +592,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
         {
           // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
+          (*iter)->unsetFocus();
 
           if ( getSelectedItem() == *iter )
             setSelectedItem(0);
@@ -1055,12 +1056,12 @@ bool FMenu::selectNextItem()
       unselectItem();
       next->setSelected();
       setSelectedItem(next);
-      redraw();
       next->setFocus();
 
       if ( getStatusBar() )
         getStatusBar()->drawMessage();
 
+      redraw();
       updateTerminal();
       flush_out();
       break;

@@ -690,7 +690,7 @@ long FString::toLong() const
     p++;
   }
 
-  while ( std::isdigit(*p) )
+  while ( std::iswdigit(*p) )
   {
     register uChar d = uChar((*p) - L'0');
 
@@ -704,7 +704,7 @@ long FString::toLong() const
     p++;
   }
 
-  if ( ! std::isdigit(*p) )
+  if ( *p != L'\0' && ! std::iswdigit(*p) )
     throw std::invalid_argument ("no valid number");
 
   return num;
@@ -736,7 +736,7 @@ uLong FString::toULong() const
     p++;
   }
 
-  while ( std::isdigit(*p) )
+  while ( std::iswdigit(*p) )
   {
     register uChar d = uChar((*p) - L'0');
 
@@ -750,7 +750,7 @@ uLong FString::toULong() const
     p++;
   }
 
-  if ( ! std::isdigit(*p) )
+  if ( *p != L'\0' && ! std::iswdigit(*p) )
     throw std::invalid_argument ("no valid number");
 
   return num;

@@ -205,7 +205,7 @@ class FTerm
 
    // function pointer -> static function
    static int           (*Fputchar)(int);
-  
+
    static void          putstringf (const char*, ...)
    #if defined(__clang__)
      __attribute__((__format__ (__printf__, 1, 2)))
@@ -313,6 +313,7 @@ class FTerm
    static FTermcap::tcap_map* tcap;
 
    static bool    mouse_support;
+   static bool    terminal_detection;
    static bool    raw_mode;
    static bool    input_data_pending;
    static bool    non_blocking_stdin;

@@ -27,6 +27,7 @@ int      FTerm::stdin_status_flags;
 uInt     FTerm::baudrate;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
+bool     FTerm::terminal_detection;
 bool     FTerm::raw_mode;
 bool     FTerm::input_data_pending;
 bool     FTerm::non_blocking_stdin;
@@ -2265,7 +2266,6 @@ char* FTerm::parseSecDA (char*& current_termtype)
         {
           terminal_id_version = -1;
         }
-
         switch ( terminal_id_type )
         {
           case 0: // DEC VT100
@@ -2520,7 +2520,8 @@ void FTerm::init_termcaps()
       FTermcap::eat_nl_glitch = true;
 
     // maximum number of colors on screen
-    FTermcap::max_color = tgetnum(const_cast<char*>("Co"));
+    FTermcap::max_color = std::max( FTermcap::max_color
+                                  , tgetnum(const_cast<char*>("Co")) );
 
     if ( FTermcap::max_color < 0 )
       FTermcap::max_color = 1;
@@ -2577,10 +2578,21 @@ void FTerm::init_termcaps()
     // set ansi foreground and background color
     if ( linux_terminal || cygwin_terminal )
     {
-      tcap[fc::t_set_a_foreground].string = \
-        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
-      tcap[fc::t_set_a_background].string = \
-        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+      if ( FTermcap::max_color > 8 )
+      {
+        tcap[fc::t_set_a_foreground].string = \
+          const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        tcap[fc::t_set_a_background].string = \
+          const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+      }
+      else
+      {
+        tcap[fc::t_set_a_foreground].string = \
+          const_cast<char*>(CSI "3%p1%dm");
+        tcap[fc::t_set_a_background].string = \
+          const_cast<char*>(CSI "4%p1%dm");
+      }
+
       tcap[fc::t_orig_pair].string = \
         const_cast<char*>(CSI "39;49;25m");
     }
@@ -2946,6 +2958,7 @@ void FTerm::init()
   VGAFont              = \
   ascii_console        = \
   mouse_support        = \
+
   force_vt100          = \
   tera_terminal        = \
   kterm_terminal       = \
@@ -2960,7 +2973,8 @@ void FTerm::init()
   xterm_default_colors = false;
 
   // Preset to true
-  cursor_optimisation    = true;
+  cursor_optimisation  = \
+  terminal_detection   = true;
 
   // assertion: programm start in cooked mode
   raw_mode                = \
@@ -3015,33 +3029,61 @@ void FTerm::init()
   else
     linux_terminal = false;
 
-  // start terminal detection...
-  setRawMode();
-
-  // Identify the terminal via the answerback-message
-  new_termtype = parseAnswerbackMsg (new_termtype);
-
-  // Identify the terminal via the secondary device attributes (SEC_DA)
-  new_termtype = parseSecDA (new_termtype);
-
-  if ( ! color256 && getXTermColorName(0) != "" )
+  // terminal detection
+  if ( terminal_detection )
   {
-    if ( getXTermColorName(256) != "" )
-    {
-      new_termtype = const_cast<char*>("xterm-256color");
-    }
-    else if ( FTermcap::max_color < 88 && getXTermColorName(87) != "" )
-    {
-      new_termtype = const_cast<char*>("xterm-88color");
-    }
-    else if ( FTermcap::max_color < 16 && getXTermColorName(15) != "" )
-    {
-      new_termtype = const_cast<char*>("xterm-16color");
-    }
-  }
+    setRawMode();
 
-  unsetRawMode();
-  // ...end of terminal detection
+    // Identify the terminal via the answerback-message
+    new_termtype = parseAnswerbackMsg (new_termtype);
+
+    // Identify the terminal via the secondary device attributes (SEC_DA)
+    new_termtype = parseSecDA (new_termtype);
+
+    // Determine xterm maximum number of colors via OSC 4
+    if ( ! color256 && ! tera_terminal && getXTermColorName(0) != "" )
+    {
+      if ( getXTermColorName(256) != "" )
+      {
+        new_termtype = const_cast<char*>("xterm-256color");
+      }
+      else if ( getXTermColorName(87) != "" )
+      {
+        new_termtype = const_cast<char*>("xterm-88color");
+      }
+      else if ( getXTermColorName(15) != "" )
+      {
+        new_termtype = const_cast<char*>("xterm-16color");
+      }
+    }
+
+    if (  cygwin_terminal
+       || putty_terminal
+       || tera_terminal
+       || rxvt_terminal )
+    {
+      FTermcap::max_color = 16;
+    }
+
+    if ( linux_terminal && openConsole() == 0 )
+    {
+      if ( isConsole() )
+      {
+        if ( setBlinkAsIntensity(true) == 0 )
+          FTermcap::max_color = 16;
+        else
+          FTermcap::max_color = 8;
+      }
+
+      closeConsole();
+      setConsoleCursor(fc::underscore_cursor, true);
+    }
+
+    if ( linux_terminal && getFramebuffer_bpp() >= 4 )
+      FTermcap::max_color = 16;
+
+    unsetRawMode();
+  }
 
   // stop non-blocking stdin
   unsetNonBlockingInput();
@@ -3083,11 +3125,7 @@ void FTerm::init()
 
   // TeraTerm can not show UTF-8 character
   if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "en_US");
-
-  // if locale C => switch from 7bit ascii -> latin1
-  if ( isatty(stdout_no) && ! std::strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
-    locale_name = std::setlocale (LC_ALL, "en_US");
+    locale_name = std::setlocale (LC_ALL, "C");
 
   // try to found a meaningful content for locale_name
   if ( locale_name )
@@ -3163,29 +3201,6 @@ void FTerm::init()
     xterm_title = new FString(getXTermTitle());
     unsetNonBlockingInput();
   }
-
-  if ( (FTermcap::max_color == 8)
-     && (  linux_terminal
-        || cygwin_terminal
-        || putty_terminal
-        || tera_terminal
-        || rxvt_terminal) )
-  {
-    FTermcap::max_color = 16;
-  }
-
-  if ( linux_terminal && openConsole() == 0 )
-  {
-    if ( isConsole() )
-      if ( setBlinkAsIntensity(true) != 0 )
-        FTermcap::max_color = 8;
-
-    closeConsole();
-    setConsoleCursor(fc::underscore_cursor, true);
-  }
-
-  if ( linux_terminal && getFramebuffer_bpp() >= 4 )
-    FTermcap::max_color = 16;
 
   if ( kde_konsole )
     setKDECursor(fc::UnderlineCursor);

@@ -79,6 +79,7 @@ void FButton::setHotkeyForegroundColor (short color)
     button_hotkey_fg = color;
 }
 
+//----------------------------------------------------------------------
 void FButton::setFocusForegroundColor (short color)
 {
   // valid colors -1..254

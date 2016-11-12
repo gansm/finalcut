@@ -22,6 +22,8 @@ FWidget::widgetList*   FWidget::dialog_list        = 0;
 FWidget::widgetList*   FWidget::always_on_top_list = 0;
 FWidget::widgetList*   FWidget::close_widget       = 0;
 FWidget::widget_colors FWidget::wc;
+bool                   FWidget::hideable;
+
 
 //----------------------------------------------------------------------
 // class FWidget
@@ -40,7 +42,7 @@ FWidget::FWidget (FWidget* parent)
   , shown(false)
   , focus(false)
   , focusable(true)
-  , visible_cursor(false)
+  , visible_cursor(true)
   , widget_cursor_position(-1,-1)
   , size_hints()
   , double_flatline_mask()
@@ -72,6 +74,7 @@ FWidget::FWidget (FWidget* parent)
   }
   else
   {
+    visible_cursor = ! hideable;
     offset = parent->client_offset;
     double_flatline_mask.top.resize (uLong(getWidth()), false);
     double_flatline_mask.right.resize (uLong(getHeight()), false);
@@ -2123,6 +2126,15 @@ void FWidget::init()
   dialog_list        = new widgetList();
   always_on_top_list = new widgetList();
   close_widget       = new widgetList();
+
+  char* cursor_off_str = disableCursor();
+
+  if ( cursor_off_str && std::strlen(cursor_off_str ) > 0 )
+    hideable = true;
+  else
+    hideable = false;
+
+  visible_cursor = ! hideable;
 
   // determine width and height of the terminal
   detectTermSize();

@@ -514,6 +514,7 @@ class FWidget : public FVTerm
    static FMenuBar*   menubar;
    static FWidget*    show_root_widget;
    static FWidget*    redraw_root_widget;
+   static bool        hideable;
 
    // Friend class
    friend class FToggleButton;
@@ -683,7 +684,7 @@ inline bool FWidget::setDisable()
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool on)
-{ return visible_cursor = (on) ? true : false; }
+{ return visible_cursor = (on) ? true : ((hideable) ? false : true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()
@@ -776,7 +777,7 @@ inline bool FWidget::setCursorPos (const FPoint& pos)
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetCursorPos()
-{ widget_cursor_position.setPoint(-1,-1); }
+{ setCursorPos(-1,-1); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setPrintPos (const FPoint& pos)

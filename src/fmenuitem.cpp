@@ -271,6 +271,7 @@ void FMenuItem::setSelected()
 void FMenuItem::unsetSelected()
 {
   selected = false;
+  unsetCursorPos();
   processDeactivate();
 }
 

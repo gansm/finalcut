@@ -1,5 +1,11 @@
+2016-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Better support for Linux terminals with 8 colors
+	* Optimized input cursor positioning for terminals without hidden cursor
+	* Switch locale name from "en_US" to "C"
+	* Fix FString toLong()
+
 2016-11-06  Markus Gans  <guru.mail@muenster.de>
-	* The use of xterm default colors now is configurable
+	* The adjustment of xterm default colors now is configurable
 
 2016-11-05  Markus Gans  <guru.mail@muenster.de>
 	* Determine xterm maximum number of colors via OSC 4
