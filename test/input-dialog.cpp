@@ -58,12 +58,12 @@ int main (int argc, char* argv[])
   FLineEdit* st_field    = new FLineEdit(&dgl);
   FLineEdit* c_field     = new FLineEdit(&dgl);
 
-  name_field->setLabelText(L"&Name:");
-  email_field->setLabelText(L"&Email:");
-  org_field->setLabelText(L"Or&ganization:");
-  city_field->setLabelText(L"&City:");
-  st_field->setLabelText(L"&State:");
-  c_field->setLabelText(L"&Country:");
+  name_field->setLabelText(L"&Name");
+  email_field->setLabelText(L"&Email");
+  org_field->setLabelText(L"Or&ganization");
+  city_field->setLabelText(L"&City");
+  st_field->setLabelText(L"&State");
+  c_field->setLabelText(L"&Country");
 
   name_field->setGeometry(15, 1, 19, 1);
   email_field->setGeometry(15, 3, 19, 1);

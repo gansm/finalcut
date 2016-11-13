@@ -687,9 +687,15 @@ void FStatusBar::drawKeys()
           if ( isMonochron() )
             setReverse(false);
 
-          setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
+          if ( no_half_block_character )
+            print (' ');
+          else
+          {
+            setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
+            print (fc::LeftHalfBlock);  // ▐
+          }
+
           x++;
-          print (fc::LeftHalfBlock);  // ▐
 
           if ( isMonochron() )
             setReverse(true);

@@ -596,40 +596,19 @@ void FButton::draw()
   if ( isMonochron() && (is_Active || is_Focus) )
     setReverse(false);
 
-  if ( is_Flat )
+  if ( margin == 1 )
   {
-    if ( margin == 1 )
-    {
-      setColor (getForegroundColor(), button_bg);
-
-      for (int y=0; y < getHeight(); y++)
-      {
-        setPrintPos (1+d, 1+y);
-        print (space); // full block █
-      }
-    }
-
-    if ( ! button_down )
-      drawFlatBorder();
-  }
-  else if ( ! isMonochron() )
-  {
-    if ( parent_widget )
-      setColor (button_bg, parent_widget->getBackgroundColor());
+    setColor (getForegroundColor(), button_bg);
 
     for (int y=0; y < getHeight(); y++)
     {
       setPrintPos (1+d, 1+y);
-
-      // Cygwin terminal use IBM Codepage 850
-      if ( isCygwinTerminal() )
-        print (fc::FullBlock); // █
-      else if ( isTeraTerm() )
-        print (0xdb);
-      else
-        print (fc::RightHalfBlock); // ▐
+      print (space); // full block █
     }
   }
+
+  if ( is_Flat && ! button_down )
+    drawFlatBorder();
 
   if (  ! button_down
      && ! isNewFont()

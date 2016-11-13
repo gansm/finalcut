@@ -185,53 +185,9 @@ void FProgressbar::drawPercentage()
 //----------------------------------------------------------------------
 void FProgressbar::drawBar()
 {
-  int i = 1;
+  int i = 0;
   float length = float(bar_length * percentage) / 100;
   setPrintPos (1,1);
-
-  if ( isMonochron() )
-  {
-    if ( round(length) >= 1)
-    {
-      setReverse(false);
-      print (' ');
-      setReverse(true);
-    }
-    else
-      print (fc::MediumShade);  // ▒
-  }
-  else if ( getMaxColor() < 16 )
-  {
-    setColor ( wc.progressbar_bg
-             , wc.progressbar_fg );
-
-    if ( round(length) >= 1)
-      print (' ');
-    else
-      print (fc::MediumShade);
-  }
-
-  if ( getParentWidget() )
-  {
-    if ( round(length) >= 1)
-      setColor ( wc.progressbar_fg
-               , getParentWidget()->getBackgroundColor() );
-    else
-      setColor ( wc.progressbar_bg
-               , getParentWidget()->getBackgroundColor() );
-  }
-
-  if ( ! isMonochron() &&  getMaxColor() >= 16 )
-  {
-    // Cygwin terminal use IBM Codepage 850
-    if ( isCygwinTerminal() )
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
 
@@ -244,7 +200,7 @@ void FProgressbar::drawBar()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( trunc(length) >= 1 && trunc(length) < bar_length )
+  if ( percentage > 0.0f && trunc(length) < bar_length )
   {
     if (  round(length) > trunc(length)
        || isCygwinTerminal()

@@ -467,7 +467,7 @@ MyDialog::MyDialog (FWidget* parent)
   myLineEdit = new FLineEdit (this);
   myLineEdit->setGeometry(22, 1, 10, 1);
   myLineEdit->setText (FString("EnTry").toLower());
-  myLineEdit->setLabelText (L"&Input:");
+  myLineEdit->setLabelText (L"&Input");
   myLineEdit->setStatusbarMessage ("Press Enter to set the title");
 
   // Buttons

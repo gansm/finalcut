@@ -489,7 +489,7 @@ void FFileDialog::init()
     FDialog::setText("Open file");
 
   filename = new FLineEdit(this);
-  filename->setLabelText("File&name:");
+  filename->setLabelText("File&name");
   filename->setText(filter_pattern);
   filename->setGeometry(11, 1, 28, 1);
   filename->setFocus();

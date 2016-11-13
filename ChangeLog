@@ -1,3 +1,7 @@
+2016-11-13  Markus Gans  <guru.mail@muenster.de>
+	* Do not draw shadows on a linux console if not 
+	  all characters are available
+
 2016-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Better support for Linux terminals with 8 colors
 	* Optimized input cursor positioning for terminals without hidden cursor

@@ -664,7 +664,7 @@ void FLineEdit::adjustLabel()
       break;
 
     case label_left:
-      label->setGeometry(getX()-label_length, getY(), label_length, 1);
+      label->setGeometry(getX()-label_length-1, getY(), label_length, 1);
       break;
   }
 }
@@ -742,12 +742,11 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  bool isActiveFocus, isActive, isShadow;
+  bool isActiveFocus, isShadow;
   int x;
   FString show_text;
   int active_focus = fc::active + fc::focus;
   isActiveFocus = ((flags & active_focus) == active_focus);
-  isActive = ((flags & fc::active) != 0);
   isShadow = ((flags & fc::shadow) != 0 );
 
   updateVTerm(false);
@@ -763,44 +762,15 @@ void FLineEdit::drawInputField()
     else
       setUnderline(true);
   }
-  else if ( isActiveFocus )
+  else
   {
-    setColor (wc.inputfield_active_focus_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-  else if ( isActive )
-  {
-    setColor (wc.inputfield_active_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
-  }
-  else // isInactive
-  {
-    setColor (wc.inputfield_inactive_bg, wc.dialog_bg);
-
-    if ( isCygwinTerminal() )  // IBM Codepage 850
-      print (fc::FullBlock); // █
-    else if ( isTeraTerm() )
-        print (0xdb);
-    else
-      print (fc::RightHalfBlock); // ▐
+    setColor();
+    print (' ');
   }
 
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  setColor();
   show_text = text.mid(uInt(1+text_offset), uInt(getWidth()-2));
 
   if ( isUTF8_linux_terminal() )

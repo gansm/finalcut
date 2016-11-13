@@ -58,6 +58,8 @@ bool     FTerm::vt100_console;
 bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
+bool     FTerm::no_shadow_character;
+bool     FTerm::no_half_block_character;
 bool     FTerm::cursor_optimisation;
 bool     FTerm::xterm_default_colors;
 termios  FTerm::term_init;
@@ -1482,6 +1484,8 @@ int FTerm::UTF8decode(char* utf8)
 //----------------------------------------------------------------------
 void FTerm::init_consoleCharMap()
 {
+  uInt c1, c2, c3, c4, c5;
+
   if ( NewFont || VGAFont )
     return;
 
@@ -1503,6 +1507,26 @@ void FTerm::init_consoleCharMap()
       if ( ! found )
         character[i][fc::PC] = character[i][fc::ASCII];
     }
+  }
+
+  c1 = fc::UpperHalfBlock;
+  c2 = fc::LowerHalfBlock;
+  c3 = fc::FullBlock;
+
+  if (  charEncode(c1, fc::PC) == charEncode(c1, fc::ASCII)
+     || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
+     || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
+  {
+     no_shadow_character = true;
+  }
+
+  c4 = fc::RightHalfBlock;
+  c5 = fc::LeftHalfBlock;
+
+  if (  charEncode(c4, fc::PC) == charEncode(c4, fc::ASCII)
+     || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
+  {
+     no_half_block_character = true;
   }
 }
 
@@ -2948,29 +2972,30 @@ void FTerm::init()
   (*encoding_set)["ASCII"] = fc::ASCII;
 
   // Preset to false
-  utf8_console         = \
-  utf8_input           = \
-  utf8_state           = \
-  utf8_linux_terminal  = \
-  pc_charset_console   = \
-  vt100_console        = \
-  NewFont              = \
-  VGAFont              = \
-  ascii_console        = \
-  mouse_support        = \
-
-  force_vt100          = \
-  tera_terminal        = \
-  kterm_terminal       = \
-  gnome_terminal       = \
-  kde_konsole          = \
-  rxvt_terminal        = \
-  urxvt_terminal       = \
-  mlterm_terminal      = \
-  mintty_terminal      = \
-  screen_terminal      = \
-  tmux_terminal        = \
-  xterm_default_colors = false;
+  utf8_console            = \
+  utf8_input              = \
+  utf8_state              = \
+  utf8_linux_terminal     = \
+  pc_charset_console      = \
+  vt100_console           = \
+  NewFont                 = \
+  VGAFont                 = \
+  no_shadow_character     = \
+  no_half_block_character = \
+  ascii_console           = \
+  mouse_support           = \
+  force_vt100             = \
+  tera_terminal           = \
+  kterm_terminal          = \
+  gnome_terminal          = \
+  kde_konsole             = \
+  rxvt_terminal           = \
+  urxvt_terminal          = \
+  mlterm_terminal         = \
+  mintty_terminal         = \
+  screen_terminal         = \
+  tmux_terminal           = \
+  xterm_default_colors    = false;
 
   // Preset to true
   cursor_optimisation  = \

@@ -250,6 +250,8 @@ class FTerm
    static int          stdout_no;
    static bool         NewFont;
    static bool         VGAFont;
+   static bool         no_shadow_character;
+   static bool         no_half_block_character;
    static bool         cursor_optimisation;
    static bool         xterm_default_colors;
    static fc::encoding Encoding;

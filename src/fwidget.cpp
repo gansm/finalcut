@@ -1092,13 +1092,15 @@ void FWidget::show()
   if ( ! visible )
     return;
 
-  // Important: Do not use setNewFont() or setVGAFont() after
-  //            the console character mapping has been initialized
   if ( getMainWidget() == this )
   {
+    // Important: Do not use setNewFont() or setVGAFont() after
+    //            the console character mapping has been initialized
     init_consoleCharMap();
+
     // set xterm underline cursor
     setXTermCursorStyle(fc::blinking_underline);
+
     // set xterm color settings to defaults
     setXTermDefaults();
   }
@@ -1326,6 +1328,10 @@ void FWidget::drawShadow()
   {
     // non-transparent shadow
     int block;
+
+    if ( no_shadow_character )
+      return;
+
     setPrintPos (x2+1, y1);
 
     if ( isWindowWidget() )
@@ -1335,7 +1341,6 @@ void FWidget::drawShadow()
     }
     else if ( FWidget* p = getParentWidget() )
       setColor (wc.shadow_fg, p->getBackgroundColor());
-
 
     if ( isTeraTerm() )
     {
