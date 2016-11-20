@@ -129,6 +129,14 @@ FTerm::~FTerm()  // destructor
 
 // public methods of FTerm
 //----------------------------------------------------------------------
+termios FTerm::getTTY()
+{
+  struct termios t;
+  tcgetattr (stdin_no, &t);
+  return t;
+}
+
+//----------------------------------------------------------------------
 int FTerm::getLineNumber()
 {
   if ( term->getHeight() == 0 )
@@ -229,12 +237,37 @@ void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
 }
 
 //----------------------------------------------------------------------
+void FTerm::setTTY (termios& t)
+{
+  tcsetattr (stdin_no, TCSADRAIN, &t);
+}
+
+//----------------------------------------------------------------------
+void FTerm::noHardwareEcho()
+{
+  // Info under: man 3 termios
+  struct termios t;
+  tcgetattr (stdin_no, &t);
+
+  // local mode
+  t.c_lflag &= uInt(~(ECHO | ECHONL));
+
+  // input mode
+  t.c_iflag &= uInt(~(ICRNL | INLCR | IGNCR));
+
+  // output mode
+  t.c_oflag &= uInt(~ONLCR);
+
+  // set the new termios settings
+  setTTY (t);
+}
+
+//----------------------------------------------------------------------
 bool FTerm::setRawMode (bool on)
 {
+  // set + unset flags for raw mode
   if ( on == raw_mode )
     return raw_mode;
-
-  std::fflush(stdout);
 
   if ( on )
   {
@@ -242,38 +275,38 @@ bool FTerm::setRawMode (bool on)
     struct termios t;
     tcgetattr (stdin_no, &t);
 
-    /* set + unset flags for raw mode */
-    // input mode
-    t.c_iflag &= uInt(~(IGNBRK | BRKINT | PARMRK | ISTRIP
-                      | INLCR | IGNCR | ICRNL | IXON));
-    // output mode
-    t.c_oflag &= uInt(~OPOST);
-
     // local mode
 #if DEBUG
     // Exit with ctrl-c only if compiled with "DEBUG" option
-    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN));
+    t.c_lflag &= uInt(~(ICANON | IEXTEN));
 #else
-    // Plus disable signals.
-    t.c_lflag &= uInt(~(ECHO | ECHONL | ICANON | IEXTEN | ISIG));
+    t.c_lflag &= uInt(~(ICANON | ISIG | IEXTEN));
 #endif
 
-    // control mode
-    t.c_cflag &= uInt(~(CSIZE | PARENB));
-    t.c_cflag |= uInt(CS8);
+    // input mode
+    t.c_iflag &= uInt(~(IXON | BRKINT | PARMRK));
 
     // defines the terminal special characters for noncanonical read
     t.c_cc[VTIME] = 0; // Timeout in deciseconds
     t.c_cc[VMIN]  = 1; // Minimum number of characters
 
     // set the new termios settings
-    tcsetattr (stdin_no, TCSAFLUSH, &t);
+    setTTY (t);
     raw_mode = true;
   }
   else
   {
-    // restore termios settings
-    tcsetattr (stdin_no, TCSAFLUSH, &term_init);
+    struct termios t;
+    tcgetattr (stdin_no, &t);
+
+    // local mode
+    t.c_lflag |= uInt(ISIG | ICANON | (term_init.c_lflag & IEXTEN));
+
+    // input mode
+    t.c_iflag |= uInt(IXON | BRKINT | PARMRK);
+
+    // set the new termios settings
+    setTTY (t);
     raw_mode = false;
   }
 
@@ -328,7 +361,7 @@ bool FTerm::setNonBlockingInput (bool on)
 }
 
 //----------------------------------------------------------------------
-int FTerm::parseKeyString ( char* buffer
+int FTerm::parseKeyString ( char buffer[]
                           , int buf_size
                           , timeval* time_keypressed )
 {
@@ -762,24 +795,32 @@ const FString FTerm::getXTermFont()
 
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
-    if ( raw_mode && non_blocking_stdin )
+    fd_set ifds;
+    struct timeval tv;
+    char temp[150] = {};
+
+    oscPrefix();
+    putstring (OSC "50;?" BEL);  // get font
+    oscPostfix();
+    std::fflush(stdout);
+
+    FD_ZERO(&ifds);
+    FD_SET(stdin_no, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 150000;  // 150 ms
+
+    // read the terminal answer
+    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
     {
-      int n;
-      char temp[150] = {};
-      oscPrefix();
-      putstring (OSC "50;?" BEL);  // get font
-      oscPostfix();
-      std::fflush(stdout);
-      usleep(150000);  // wait 150 ms
-
-      // read the terminal answer
-      n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-      // BEL + '\0' = string terminator
-      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+      if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
       {
-        temp[n-1] = '\0';
-        font = static_cast<char*>(temp + 5);
+        size_t n = std::strlen(temp);
+
+        // BEL + '\0' = string terminator
+        if ( n >= 5 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+          temp[n-1] = '\0';
+
+        font = temp;
       }
     }
   }
@@ -795,22 +836,30 @@ const FString FTerm::getXTermTitle()
   if ( kde_konsole )
     return title;
 
-  if ( raw_mode && non_blocking_stdin )
+  fd_set ifds;
+  struct timeval tv;
+  char temp[512] = {};
+
+  putstring (CSI "21t");  // get title
+  std::fflush(stdout);
+
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 150000;  // 150 ms
+
+  // read the terminal answer
+  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
   {
-    int n;
-    char temp[512] = {};
-    putstring (CSI "21t");  // get title
-    std::fflush(stdout);
-    usleep(150000);  // wait 150 ms
-
-    // read the terminal answer
-    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-    // Esc + \ = OSC string terminator
-    if ( n >= 5 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
+    if ( std::scanf("\033]l%[^\n]s", temp) == 1 )
     {
-      temp[n-2] = '\0';
-      title = static_cast<char*>(temp + 3);
+      size_t n = std::strlen(temp);
+
+      // Esc + \ = OSC string terminator
+      if ( n >= 4 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
+        temp[n-2] = '\0';
+
+      title = temp;
     }
   }
 
@@ -822,28 +871,39 @@ const FString FTerm::getXTermColorName (int color)
 {
   FString color_str("");
 
-  if ( raw_mode && non_blocking_stdin )
+  fd_set ifds;
+  struct timeval tv;
+  int c = color;
+  int digits = 0;
+
+  while ( c /= 10 )
+    digits++;
+
+  char temp[512] = {};
+  putstringf (OSC "4;%d;?" BEL, color);  // get color
+  std::fflush(stdout);
+
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 150000;  // 150 ms
+
+  // read the terminal answer
+  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
   {
-    int n;
-    int c = color;
-    int digits = 0;
-
-    while ( c /= 10 )
-      digits++;
-
-    char temp[512] = {};
-    putstringf (OSC "4;%d;?" BEL, color);  // get color
-    std::fflush(stdout);
-    usleep(150000);  // wait 150 ms
-
-    // read the terminal answer
-    n = int(read(fileno(stdin), &temp, sizeof(temp)-1));
-
-    // BEL + '\0' = string terminator
-    if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+    if ( std::scanf("\033]4;%d;%[^\n]s", &color, temp) == 2 )
     {
-      temp[n-1] = '\0';
-      color_str = static_cast<char*>(temp + 6 + digits);
+      size_t n = std::strlen(temp);
+
+      // BEL + '\0' = string terminator
+      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
+        temp[n-1] = '\0';
+
+      // Esc + \ = OSC string terminator (mintty)
+      if ( n >= 6 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
+        temp[n-2] = '\0';
+
+      color_str = temp;
     }
   }
 
@@ -1294,33 +1354,22 @@ const FString FTerm::getAnswerbackMsg()
 {
   FString answerback = "";
 
-  if ( raw_mode )
-  {
-    ssize_t n;
-    fd_set ifds;
-    struct timeval tv;
-    char temp[10] = {};
+  fd_set ifds;
+  struct timeval tv;
+  char temp[10] = {};
 
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 150000;  // 150 ms
+  std::putchar (ENQ[0]);  // send enquiry character
+  std::fflush(stdout);
 
-    std::putchar (ENQ[0]);  // send enquiry character
-    std::fflush(stdout);
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 150000;  // 150 ms
 
-    // read the answerback message
-    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
-    {
-      n = read(fileno(stdin), &temp, sizeof(temp)-1);
-
-      if ( n > 0 )
-      {
-        temp[n] = '\0';
-        answerback = temp;
-      }
-    }
-  }
+  // read the answerback message
+  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
+    if ( std::fgets (temp, sizeof(temp)-1, stdin) != 0 )
+      answerback = temp;
 
   return answerback;
 }
@@ -1330,39 +1379,23 @@ const FString FTerm::getSecDA()
 {
   FString sec_da_str = "";
 
-  if ( raw_mode )
-  {
-    ssize_t n;
-    fd_set ifds;
-    struct timeval tv;
-    char temp[16] = {};
+  int a=0, b=0, c=0;
+  fd_set ifds;
+  struct timeval tv;
 
-    FD_ZERO(&ifds);
-    FD_SET(stdin_no, &ifds);
-    tv.tv_sec  = 0;
-    tv.tv_usec = 550000;  // 150 ms
+  // get the secondary device attributes
+  putstring (SECDA);
+  std::fflush(stdout);
 
-    // get the secondary device attributes
-    std::putchar (SECDA[0]);
-    std::putchar (SECDA[1]);
-    std::putchar (SECDA[2]);
-    std::putchar (SECDA[3]);
+  FD_ZERO(&ifds);
+  FD_SET(stdin_no, &ifds);
+  tv.tv_sec  = 0;
+  tv.tv_usec = 600000;;  // 600 ms
 
-    std::fflush(stdout);
-    usleep(150000);  // min. wait time 150 ms (need for mintty)
-
-    // read the answer
-    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0 )
-    {
-      n = read(fileno(stdin), &temp, sizeof(temp)-1);
-
-      if ( n > 0 )
-      {
-        temp[n] = '\0';
-        sec_da_str = temp;
-      }
-    }
-  }
+  // read the answer
+  if ( select (stdin_no+1, &ifds, 0, 0, &tv) == 1 )
+    if ( std::scanf("\033[>%d;%d;%dc", &a, &b, &c) == 3 )
+      sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
   return sec_da_str;
 }
@@ -1436,7 +1469,7 @@ int FTerm::putchar_UTF8 (register int c)
 }
 
 //----------------------------------------------------------------------
-int FTerm::UTF8decode(char* utf8)
+int FTerm::UTF8decode (const char utf8[])
 {
   register int ucs=0;
 
@@ -1884,6 +1917,20 @@ void FTerm::identifyTermType()
 }
 
 //----------------------------------------------------------------------
+void FTerm::storeTTYsettings()
+{
+  // store termios settings
+  term_init = getTTY();
+}
+
+//----------------------------------------------------------------------
+void FTerm::restoreTTYsettings()
+{
+  // restore termios settings
+  setTTY (term_init);
+}
+
+//----------------------------------------------------------------------
 int FTerm::getScreenFont()
 {
   struct console_font_op font;
@@ -2224,8 +2271,9 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
   else
     putty_terminal = false;
 
+  // cygwin needs a backspace to delete the '♣' char
   if ( cygwin_terminal )
-    std::putchar (BS[0]);  // cygwin needs a backspace to delete the '♣' char
+    putstring (BS " " BS);
 
   return new_termtype;
 }
@@ -2998,8 +3046,8 @@ void FTerm::init()
   xterm_default_colors    = false;
 
   // Preset to true
-  cursor_optimisation  = \
-  terminal_detection   = true;
+  cursor_optimisation     = \
+  terminal_detection      = true;
 
   // assertion: programm start in cooked mode
   raw_mode                = \
@@ -3021,11 +3069,8 @@ void FTerm::init()
   // initialize terminal and Linux console
   init_console();
 
-  // make stdin non-blocking
-  setNonBlockingInput();
-
   // save termios settings
-  tcgetattr (stdin_no, &term_init);
+  storeTTYsettings();
 
   // get output baud rate
   baudrate = getBaudRate(&term_init);
@@ -3057,7 +3102,13 @@ void FTerm::init()
   // terminal detection
   if ( terminal_detection )
   {
-    setRawMode();
+    struct termios t;
+    tcgetattr (STDIN_FILENO, &t);
+    t.c_lflag &= uInt(~(ICANON | ECHO));
+    t.c_cc[VTIME] = 1; // Timeout in deciseconds
+    t.c_cc[VMIN]  = 0; // Minimum number of characters
+    tcsetattr (STDIN_FILENO, TCSANOW, &t);
+
 
     // Identify the terminal via the answerback-message
     new_termtype = parseAnswerbackMsg (new_termtype);
@@ -3066,7 +3117,11 @@ void FTerm::init()
     new_termtype = parseSecDA (new_termtype);
 
     // Determine xterm maximum number of colors via OSC 4
-    if ( ! color256 && ! tera_terminal && getXTermColorName(0) != "" )
+    if ( ! color256
+       && ! cygwin_terminal
+       && ! tera_terminal
+       && ! linux_terminal
+       && getXTermColorName(0) != "" )
     {
       if ( getXTermColorName(256) != "" )
       {
@@ -3107,11 +3162,9 @@ void FTerm::init()
     if ( linux_terminal && getFramebuffer_bpp() >= 4 )
       FTermcap::max_color = 16;
 
-    unsetRawMode();
+    t.c_lflag |= uInt(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSADRAIN, &t);
   }
-
-  // stop non-blocking stdin
-  unsetNonBlockingInput();
 
   // Test if the terminal is a xterm
   if (  std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
@@ -3217,14 +3270,18 @@ void FTerm::init()
     std::fflush(stdout);
   }
 
-  setRawMode();
-
   if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
   {
-    setNonBlockingInput();
+    struct termios t;
+    tcgetattr (STDIN_FILENO, &t);
+    t.c_lflag &= uInt(~(ICANON | ECHO));
+    tcsetattr (STDIN_FILENO, TCSANOW, &t);
+
     xterm_font  = new FString(getXTermFont());
     xterm_title = new FString(getXTermTitle());
-    unsetNonBlockingInput();
+
+    t.c_lflag |= uInt(ICANON | ECHO);
+    tcsetattr (STDIN_FILENO, TCSADRAIN, &t);
   }
 
   if ( kde_konsole )
@@ -3266,6 +3323,12 @@ void FTerm::init()
   signal(SIGILL,   FTerm::signal_handler); // Illegal Instruction
   signal(SIGSEGV,  FTerm::signal_handler); // Invalid memory reference
   signal(SIGWINCH, FTerm::signal_handler); // Window resize signal
+
+  // turn off hardware echo
+  noHardwareEcho();
+
+  // switch to the raw mode
+  setRawMode();
 }
 
 //----------------------------------------------------------------------
@@ -3283,7 +3346,8 @@ void FTerm::finish()
   if ( xterm_title && xterm_terminal && ! rxvt_terminal )
     setXTermTitle (*xterm_title);
 
-  setCookedMode(); // leave raw mode
+  // restore the saved termios settings
+  restoreTTYsettings();
 
   // turn off all attributes
   if ( tcap[fc::t_exit_attribute_mode].string )

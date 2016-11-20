@@ -103,6 +103,7 @@ class FTerm
 
    // Accessors
    virtual const char*  getClassName() const;
+   static termios       getTTY();
    static int           getLineNumber();
    static int           getColumnNumber();
    static FString       getKeyName (int);
@@ -144,6 +145,8 @@ class FTerm
    static bool          setCursorOptimisation (bool);
    static void          setXTermDefaultColors (bool);
    static void          setConsoleCursor (fc::consoleCursorStyle, bool);
+   static void          setTTY (termios&);
+   static void          noHardwareEcho();
    static bool          setRawMode (bool);
    static bool          setRawMode();
    static bool          unsetRawMode();
@@ -156,7 +159,7 @@ class FTerm
    static bool          unsetNonBlockingInput();
 
    // Methods
-   static int           parseKeyString (char*, int, timeval*);
+   static int           parseKeyString (char[], int, timeval*);
    static bool&         unprocessedInput();
    static bool          setVGAFont();
    static bool          setNewFont();
@@ -216,7 +219,7 @@ class FTerm
    static void          putstring (const char*, int = 1);
    static int           putchar_ASCII (register int);
    static int           putchar_UTF8  (register int);
-   static int           UTF8decode (char*);
+   static int           UTF8decode (const char[]);
 
  protected:
    // Typedefs
@@ -246,20 +249,21 @@ class FTerm
    static void          setMousePos (short, short);
 
    // Data Members
-   static int          stdin_no;
-   static int          stdout_no;
-   static bool         NewFont;
-   static bool         VGAFont;
-   static bool         no_shadow_character;
-   static bool         no_half_block_character;
-   static bool         cursor_optimisation;
-   static bool         xterm_default_colors;
-   static fc::encoding Encoding;
-   static char         exit_message[8192];
+   static int           stdin_no;
+   static int           stdout_no;
+   static bool          NewFont;
+   static bool          VGAFont;
+   static bool          no_shadow_character;
+   static bool          no_half_block_character;
+   static bool          cursor_optimisation;
+   static bool          xterm_default_colors;
+   static fc::encoding  Encoding;
+   static char          exit_message[8192];
 
  private:
    // Typedefs
-   typedef FTermcap::tcap_map    termcap_map;
+   typedef FTermcap::tcap_map termcap_map;
+
    typedef struct
    {
      uChar red;
@@ -289,6 +293,8 @@ class FTerm
    static int           openConsole();
    static int           closeConsole();
    static void          identifyTermType();
+   static void          storeTTYsettings();
+   static void          restoreTTYsettings();
    static int           getScreenFont();
    static int           setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int           setUnicodeMap (struct unimapdesc*);

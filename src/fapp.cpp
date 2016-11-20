@@ -33,7 +33,7 @@ FApplication::eventQueue* FApplication::event_queue = 0;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication (int& _argc, char**& _argv)
+FApplication::FApplication (int& _argc, char* _argv[])
   : FWidget(0)
   , app_argc(_argc)
   , app_argv(_argv)
@@ -59,8 +59,8 @@ FApplication::FApplication (int& _argc, char**& _argv)
   if ( ! (_argc && _argv) )
   {
     static char* empty = const_cast<char*>("");
-    _argc = 0;
-    _argv = static_cast<char**>(&empty);
+    app_argc = 0;
+    app_argv = static_cast<char**>(&empty);
   }
 
   init();

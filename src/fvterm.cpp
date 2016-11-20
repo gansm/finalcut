@@ -550,7 +550,8 @@ int FVTerm::print (term_area* area, FString& s)
           nc.inherit_bg    = next_attribute.inherit_bg;
 
           if (  area
-             && ax >= 0 && ay >= 0
+             && area->cursor_x > 0
+             && area->cursor_y > 0
              && ax < area->width + area->right_shadow
              && ay < area->height + area->bottom_shadow )
           {
@@ -664,7 +665,8 @@ int FVTerm::print (term_area* area, register int c)
   nc.trans_shadow  = next_attribute.trans_shadow;
   nc.inherit_bg    = next_attribute.inherit_bg;
 
-  if (  ax >= 0 && ay >= 0
+  if (  area->cursor_x > 0
+     && area->cursor_y > 0
      && ax < area->width + area->right_shadow
      && ay < area->height + area->bottom_shadow )
   {

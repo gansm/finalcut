@@ -55,7 +55,7 @@ class FApplication : public FWidget
 {
  public:
    // Constructor
-   FApplication (int&, char**& );
+   FApplication (int&, char*[]);
 
    // Destructor
    virtual ~FApplication();
