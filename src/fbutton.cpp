@@ -647,7 +647,7 @@ void FButton::draw()
   setColor (button_fg, button_bg);
 
   for (x=0; x < i; x++)
-   print (space); // █
+    print (space); // █
 
   if ( hotkeypos == -1 )
     setCursorPos (1+margin+i+mono_1st_char, 1+j ); // first character

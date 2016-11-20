@@ -2667,6 +2667,13 @@ void FTerm::init_termcaps()
 
       tcap[fc::t_orig_pair].string = \
         const_cast<char*>(CSI "39;49;25m");
+
+      // avoid dim + underline
+      tcap[fc::t_enter_dim_mode].string       = 0;
+      tcap[fc::t_exit_dim_mode].string        = 0;
+      tcap[fc::t_enter_underline_mode].string = 0;
+      tcap[fc::t_exit_underline_mode].string  = 0;
+      FTermcap::attr_without_color            = 18;
     }
     else if ( rxvt_terminal && ! urxvt_terminal )
     {

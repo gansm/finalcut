@@ -72,7 +72,10 @@ void FRadioButton::drawRadioButton()
     else
     {
       print ('(');
-      print (fc::Bullet);  // Bullet ●
+      if ( isCygwinTerminal() )
+        print (0x04);
+      else
+        print (fc::Bullet);  // Bullet ●
       print (')');
     }
   }

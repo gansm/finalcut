@@ -513,6 +513,14 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
     return 0;
 
+  if ( cygwin_terminal && (term->fg_color > 7 || term->bg_color > 7) )
+  {
+    // reset blink and bold mode from colors > 7
+    char* rst = const_cast<char*>(CSI "m");
+    append_sequence (rst);
+    reset(term);
+  }
+
   if ( hasNoAttribute(next) )
   {
     if ( off.pc_charset )
@@ -607,7 +615,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
           setTermReverse(term);
 
         if ( next->standout )
-         setTermStandout(term);
+          setTermStandout(term);
       }
     }
   }
@@ -1346,36 +1354,11 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     short ansi_fg = vga2ansi(fg);
     short ansi_bg = vga2ansi(bg);
 
-    if ( cygwin_terminal )
-    {
-      // reset blink and bold mode from colors > 7
-      char* rst = const_cast<char*>(CSI "m");
-      append_sequence (rst);
-      reset(term);
+    if ( term->fg_color != fg && (color_str = tparm(AF, ansi_fg)) )
+      append_sequence (color_str);
 
-      if ( ansi_fg != Default )
-      {
-        color_str = tparm(AF, ansi_fg);
-
-        if ( color_str )
-          append_sequence (color_str);
-      }
-
-      if ( ansi_bg != Default )
-      {
-        color_str = tparm(AB, ansi_bg);
-        if ( color_str )
-          append_sequence (color_str);
-      }
-    }
-    else
-    {
-      if ( term->fg_color != fg && (color_str = tparm(AF, ansi_fg)) )
-        append_sequence (color_str);
-
-      if ( term->bg_color != bg && (color_str = tparm(AB, ansi_bg)) )
-        append_sequence (color_str);
-    }
+    if ( term->bg_color != bg && (color_str = tparm(AB, ansi_bg)) )
+      append_sequence (color_str);
   }
   else if ( Sf && Sb )
   {

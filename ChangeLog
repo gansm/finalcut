@@ -1,4 +1,5 @@
 2016-11-20  Markus Gans  <guru.mail@muenster.de>
+	* Increase speed on cygwin terminals
 	* Improve tty settings
 
 2016-11-13  Markus Gans  <guru.mail@muenster.de>

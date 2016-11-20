@@ -213,6 +213,7 @@ Window::Window (FWidget* parent)
   : FDialog(parent)
   , windows()
 {
+  FString drop_down_symbol;
   // menu bar
   FMenuBar* Menubar = new FMenuBar (this);
 
@@ -221,7 +222,11 @@ Window::Window (FWidget* parent)
   File->setStatusbarMessage ("File management commands");
 
   // dialog list menu item
-  FString drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
+  if ( isCygwinTerminal() )
+    drop_down_symbol = 'v';
+  else
+    drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
+
   FDialogListMenu* DglList = new FDialogListMenu (drop_down_symbol, Menubar);
   DglList->setStatusbarMessage ("List of all the active dialogs");
 

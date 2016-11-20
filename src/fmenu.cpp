@@ -1310,6 +1310,8 @@ void FMenu::drawItems()
             {
               if ( isNewFont() )
                 print (fc::NF_Bullet); // NF_Bullet ●
+              else if ( isCygwinTerminal() )
+                print (0x04);
               else
                 print (fc::Bullet);    // Bullet ●
             }
