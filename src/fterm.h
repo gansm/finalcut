@@ -86,6 +86,9 @@
 class FTerm
 {
  public:
+   // Typedefs
+   typedef FOptiAttr::char_data  char_data;
+
    static struct modifier_key // bit field
    {
      uChar shift  : 1;  // 0..1
@@ -116,6 +119,7 @@ class FTerm
 
    // Inquiries
    static bool          isKeyTimeout (timeval*, register long);
+   static bool          isNormal (char_data*&);
    static bool          isRaw();
    static bool          hasPCcharset();
    static bool          hasUTF8();
@@ -165,6 +169,7 @@ class FTerm
    static bool          setNewFont();
    static bool          setOldFont();
    static char*         moveCursor (int, int, int, int);
+   static void          printMoveDurations();
    static char*         enableCursor();
    static char*         disableCursor();
    static void          detectTermSize();
@@ -222,9 +227,6 @@ class FTerm
    static int           UTF8decode (const char[]);
 
  protected:
-   // Typedefs
-   typedef FOptiAttr::char_data  char_data;
-
    // Methods
    static void          init_consoleCharMap();
    static bool          charEncodable (uInt);

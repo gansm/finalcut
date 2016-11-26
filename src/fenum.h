@@ -972,6 +972,8 @@ class fc
    {
      t_bell,
      t_clear_screen,
+     t_clr_eos,
+     t_clr_eol,
      t_cursor_home,
      t_cursor_to_ll,
      t_carriage_return,

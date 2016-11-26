@@ -108,6 +108,9 @@ class FOptiAttr
    void  set_orig_pair (char*&);
    void  set_orig_orig_colors (char*&);
 
+   // Inquiry
+   bool isNormal (char_data*&);
+
    // Methods
    void         init();
    static short vga2ansi (register short);
@@ -299,6 +302,12 @@ inline void FOptiAttr::setDefaultColorSupport()
 //----------------------------------------------------------------------
 inline void FOptiAttr::setCygwinTerminal()
 { cygwin_terminal = true; }
+
+//----------------------------------------------------------------------
+inline bool FOptiAttr::isNormal (char_data*& ch)
+{
+  return hasNoAttribute(ch) && ! hasColor(ch);
+}
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::hasNoAttribute (char_data*& attr)

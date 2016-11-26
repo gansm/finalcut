@@ -6,7 +6,7 @@
 #include "flabel.h"
 
 // function prototype
-void cb_quit (FWidget*, void* data_ptr);
+void cb_quit (FWidget*, void*);
 
 //----------------------------------------------------------------------
 // callback function

@@ -267,6 +267,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 
   // Method 0: direct cursor addressing
   move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
+
   if ( move_xy )
   {
     method = 0;
@@ -275,7 +276,6 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 
     if (  xold < 0
        || yold < 0
-       || isTwoDirectionMove (xold, yold, xnew, ynew)
        || isWideMove (xold, yold, xnew, ynew) )
     {
       return ( move_time < LONG_DURATION ) ? move_buf : 0;
@@ -410,24 +410,24 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 void FOptiMove::printDurations()
 {
-  std::printf ("            speed: %d baud\n", baudrate);
-  std::printf ("    char_duration: %d ms\n", char_duration);
-  std::printf ("      cursor_home: %d ms\n", F_cursor_home.duration);
-  std::printf ("     cursor_to_ll: %d ms\n", F_cursor_to_ll.duration);
-  std::printf ("  carriage_return: %d ms\n", F_carriage_return.duration);
-  std::printf ("              tab: %d ms\n", F_tab.duration);
-  std::printf ("         back_tab: %d ms\n", F_back_tab.duration);
-  std::printf ("        cursor_up: %d ms\n", F_cursor_up.duration);
-  std::printf ("      cursor_down: %d ms\n", F_cursor_down.duration);
-  std::printf ("      cursor_left: %d ms\n", F_cursor_left.duration);
-  std::printf ("     cursor_right: %d ms\n", F_cursor_right.duration);
-  std::printf ("   cursor_address: %d ms\n", F_cursor_address.duration);
-  std::printf ("   column_address: %d ms\n", F_column_address.duration);
-  std::printf ("      row_address: %d ms\n", F_row_address.duration);
-  std::printf ("   parm_up_cursor: %d ms\n", F_parm_up_cursor.duration);
-  std::printf (" parm_down_cursor: %d ms\n", F_parm_down_cursor.duration);
-  std::printf (" parm_left_cursor: %d ms\n", F_parm_left_cursor.duration);
-  std::printf ("parm_right_cursor: %d ms\n", F_parm_right_cursor.duration);
+  std::printf ("            speed: %d baud\r\n", baudrate);
+  std::printf ("    char_duration: %d ms\r\n", char_duration);
+  std::printf ("      cursor_home: %d ms\r\n", F_cursor_home.duration);
+  std::printf ("     cursor_to_ll: %d ms\r\n", F_cursor_to_ll.duration);
+  std::printf ("  carriage_return: %d ms\r\n", F_carriage_return.duration);
+  std::printf ("              tab: %d ms\r\n", F_tab.duration);
+  std::printf ("         back_tab: %d ms\r\n", F_back_tab.duration);
+  std::printf ("        cursor_up: %d ms\r\n", F_cursor_up.duration);
+  std::printf ("      cursor_down: %d ms\r\n", F_cursor_down.duration);
+  std::printf ("      cursor_left: %d ms\r\n", F_cursor_left.duration);
+  std::printf ("     cursor_right: %d ms\r\n", F_cursor_right.duration);
+  std::printf ("   cursor_address: %d ms\r\n", F_cursor_address.duration);
+  std::printf ("   column_address: %d ms\r\n", F_column_address.duration);
+  std::printf ("      row_address: %d ms\r\n", F_row_address.duration);
+  std::printf ("   parm_up_cursor: %d ms\r\n", F_parm_up_cursor.duration);
+  std::printf (" parm_down_cursor: %d ms\r\n", F_parm_down_cursor.duration);
+  std::printf (" parm_left_cursor: %d ms\r\n", F_parm_left_cursor.duration);
+  std::printf ("parm_right_cursor: %d ms\r\n", F_parm_right_cursor.duration);
 }
 
 
@@ -716,14 +716,6 @@ int FOptiMove::relativeMove ( char*& move
   }
 
   return (vtime + htime);
-}
-
-//----------------------------------------------------------------------
-inline bool FOptiMove::isTwoDirectionMove ( int xold, int yold
-                                          , int xnew, int ynew )
-{
-  return bool (  (xold != xnew || ! F_row_address.cap)
-              && (yold != ynew || ! F_column_address.cap) );
 }
 
 //----------------------------------------------------------------------

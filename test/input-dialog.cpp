@@ -9,8 +9,8 @@
 #include "fradiobutton.h"
 
 // function prototypes
-void cb_quit (FWidget*, void* data_ptr);
-void cb_publish (FWidget* widget, void* data_ptr);
+void cb_quit (FWidget*, void*);
+void cb_publish (FWidget*, void*);
 
 //----------------------------------------------------------------------
 // callback functions

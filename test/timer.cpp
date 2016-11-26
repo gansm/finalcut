@@ -41,7 +41,6 @@ timer::timer (FWidget* parent)
 void timer::draw()
 {
   setNormal();
-  setColor (fc::Default, fc::Default);
   clearArea (vdesktop);
   setPrintPos (1,1);
   print ("---------------\n");

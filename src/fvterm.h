@@ -93,6 +93,7 @@ class FVTerm : public FObject, public FTerm
 
    // Mutators
    static void         setTermXY (register int, register int);
+   static void         clearTerm();
    static bool         hideCursor (bool);
    static bool         hideCursor();
    static bool         showCursor();

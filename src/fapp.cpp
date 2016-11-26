@@ -473,7 +473,7 @@ void FApplication::processKeyboardEvent()
   {
     widget = main_widget;
 
-    if ( widget->numOfChildren() >= 1 )
+    if ( widget && widget->numOfChildren() >= 1 )
       widget->focusFirstChild();
   }
 

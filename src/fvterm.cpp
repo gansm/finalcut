@@ -110,6 +110,60 @@ void FVTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
+void FVTerm::clearTerm()
+{
+  // Clear the physical terminal and put cursor at home
+  char*& cl = tcap[fc::t_clear_screen].string;
+  char*& cd = tcap[fc::t_clr_eos].string;
+  char*& cb = tcap[fc::t_clr_eol].string;
+  bool ut = FTermcap::background_color_erase;
+  char_data* next = &next_attribute;
+  bool normal = isNormal(next);
+  appendAttributes(next);
+
+  if ( (! cl && ! cd && ! cb)
+      || (normal && ! ut ) )
+  {
+    int term_width = getColumnNumber();
+
+    for (int i=0; i < getLineNumber(); i++)
+    {
+      setTermXY (0,i);
+      FString blank_line(term_width, ' ');
+      appendOutputBuffer (blank_line.c_str());
+      term_pos->setPoint(term_width,i);
+    }
+
+    setTermXY (0,0);
+  }
+  else if ( cl )
+  {
+    appendOutputBuffer (cl);
+    term_pos->setPoint(0,0);
+  }
+  else if ( cd )
+  {
+    setTermXY (0, 0);
+    appendOutputBuffer (cd);
+    term_pos->setPoint(-1,-1);
+  }
+  else if ( cb )
+  {
+    term_pos->setPoint(-1,-1);
+
+    for (int i=0; i < getLineNumber(); i++)
+    {
+      setTermXY (0,i);
+      appendOutputBuffer (cb);
+    }
+
+    setTermXY (0,0);
+  }
+
+  flush_out();
+}
+
+//----------------------------------------------------------------------
 bool FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
@@ -250,7 +304,7 @@ void FVTerm::updateTerminal()
         print_char = &vt->text[y * uInt(vt->width) + x];
 
         if ( term_pos->getX() == term_width
-           && term_pos->getY() == term_height )
+            && term_pos->getY() == term_height )
           appendLowerRight (print_char);
         else
           appendCharacter (print_char);
@@ -1849,6 +1903,13 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   {
     int area_size = area->width * area->height;
     std::fill_n (area->text, area_size, nc);
+
+    if ( area == vdesktop )
+    {
+      std::fill_n (vterm->text, area_size, nc);
+      clearTerm();
+      return;
+    }
   }
   else
   {
@@ -2153,6 +2214,11 @@ void FVTerm::finish()
 {
   // Show the input cursor
   showCursor();
+
+  // Clear the terminal
+  setNormal();
+  clearTerm();
+  flush_out();
 
   if ( output_buffer )
     delete output_buffer;

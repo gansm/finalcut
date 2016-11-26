@@ -221,6 +221,12 @@ bool FTerm::isKeyTimeout (timeval* time, register long timeout)
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isNormal (char_data*& ch)
+{
+  return opti_attr->isNormal(ch);
+}
+
+//----------------------------------------------------------------------
 void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
 {
   // Set cursor style in linux console
@@ -700,6 +706,12 @@ char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   else
     return tgoto(tcap[fc::t_cursor_address].string, xnew, ynew);
+}
+
+//----------------------------------------------------------------------
+void FTerm::printMoveDurations()
+{
+  opti_move->printDurations();
 }
 
 //----------------------------------------------------------------------
@@ -2895,7 +2907,6 @@ void FTerm::init_termcaps()
   opti_move->set_parm_right_cursor (tcap[fc::t_parm_right_cursor].string);
   opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
   opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
-  //opti_move->printDurations();
 
   // attribute settings
   opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
@@ -3110,11 +3121,11 @@ void FTerm::init()
   if ( terminal_detection )
   {
     struct termios t;
-    tcgetattr (STDIN_FILENO, &t);
+    tcgetattr (stdin_no, &t);
     t.c_lflag &= uInt(~(ICANON | ECHO));
     t.c_cc[VTIME] = 1; // Timeout in deciseconds
     t.c_cc[VMIN]  = 0; // Minimum number of characters
-    tcsetattr (STDIN_FILENO, TCSANOW, &t);
+    tcsetattr (stdin_no, TCSANOW, &t);
 
 
     // Identify the terminal via the answerback-message
@@ -3170,7 +3181,7 @@ void FTerm::init()
       FTermcap::max_color = 16;
 
     t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSADRAIN, &t);
+    tcsetattr(stdin_no, TCSADRAIN, &t);
   }
 
   // Test if the terminal is a xterm
@@ -3280,15 +3291,15 @@ void FTerm::init()
   if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
   {
     struct termios t;
-    tcgetattr (STDIN_FILENO, &t);
+    tcgetattr (stdin_no, &t);
     t.c_lflag &= uInt(~(ICANON | ECHO));
-    tcsetattr (STDIN_FILENO, TCSANOW, &t);
+    tcsetattr (stdin_no, TCSANOW, &t);
 
     xterm_font  = new FString(getXTermFont());
     xterm_title = new FString(getXTermTitle());
 
     t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr (STDIN_FILENO, TCSADRAIN, &t);
+    tcsetattr (stdin_no, TCSADRAIN, &t);
   }
 
   if ( kde_konsole )
@@ -3406,14 +3417,6 @@ void FTerm::finish()
     setKDECursor(fc::BlockCursor);
 
   resetBeep();
-
-  if (  linux_terminal
-     && FTermcap::background_color_erase
-     && tcap[fc::t_clear_screen].string )
-  {
-    int rows = term->getHeight();
-    putstring (tcap[fc::t_clear_screen].string, rows);
-  }
 
   if ( mouse_support )
     disableXTermMouse();
