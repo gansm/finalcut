@@ -9,7 +9,7 @@
 static FVTerm* terminal;
 
 // function prototype
-void keyPressed();
+bool keyPressed();
 void term_boundaries (int&, int&);
 void move (int, int, int, int);
 
@@ -17,18 +17,25 @@ void move (int, int, int, int);
 //----------------------------------------------------------------------
 // functions
 //----------------------------------------------------------------------
-void keyPressed()
+bool keyPressed()
 {
   // Waiting for keypress
   struct termios save, t;
+  bool ret;
   std::cout << "\nPress any key to continue...";
   fflush(stdout);
   tcgetattr (STDIN_FILENO, &save);
   t = save;
   t.c_lflag &= uInt(~(ICANON | ECHO));
   tcsetattr (STDIN_FILENO, TCSANOW, &t);
-  getchar();
+
+  if ( std::getchar() != EOF )
+    ret = true;
+  else
+    ret = false;
+  
   tcsetattr (STDIN_FILENO, TCSADRAIN, &save);
+  return ret;
 }
 
 //----------------------------------------------------------------------
