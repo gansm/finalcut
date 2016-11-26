@@ -371,7 +371,7 @@ void FApplication::cmd_options ()
                          + std::string(encoding.c_str()) );
       }
 
-      if ( std::strcmp(long_options[idx].name, "no-optimize-cursor")  == 0 )
+      if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
         setCursorOptimisation (false);
 
       if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )

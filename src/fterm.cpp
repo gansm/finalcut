@@ -35,6 +35,7 @@ bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
 bool     FTerm::monochron;
 bool     FTerm::xterm_terminal;
+bool     FTerm::ansi_terminal;
 bool     FTerm::rxvt_terminal;
 bool     FTerm::urxvt_terminal;
 bool     FTerm::mlterm_terminal;
@@ -3055,6 +3056,7 @@ void FTerm::init()
   kterm_terminal          = \
   gnome_terminal          = \
   kde_konsole             = \
+  ansi_terminal           = \
   rxvt_terminal           = \
   urxvt_terminal          = \
   mlterm_terminal         = \
@@ -3109,6 +3111,12 @@ void FTerm::init()
 
   if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
     rxvt_terminal = true;
+
+  if ( std::strncmp(termtype, "ansi", 4) == 0 )
+  {
+    terminal_detection = false;
+    ansi_terminal = true;
+  }
 
   // Test for Linux console
   if (  std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0

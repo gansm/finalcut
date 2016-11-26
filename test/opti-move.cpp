@@ -149,7 +149,6 @@ int main (int argc, char* argv[])
   std::cout << "escape sequence          ";
   std::cout << "Length\r\n";
   std::cout << line;
-  std::cout << "\r\n";
 
   move (5, 12, 0, 0);
   move (5, ymax, 5, 0);

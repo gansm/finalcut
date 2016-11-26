@@ -1103,6 +1103,11 @@ void FWidget::show()
 
     // set xterm color settings to defaults
     setXTermDefaults();
+
+    // draw the vdesktop
+    FWidget* r = getRootWidget();
+    setColor(r->getForegroundColor(), r->getBackgroundColor());
+    clearArea (vdesktop);
   }
 
   if ( ! show_root_widget )
@@ -2158,8 +2163,6 @@ void FWidget::init()
 
   foreground_color = wc.term_fg;
   background_color = wc.term_bg;
-  setColor();
-  clearArea (vdesktop);
 
   accelerator_list = new Accelerators();
 }

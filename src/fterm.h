@@ -127,6 +127,7 @@ class FTerm
    static bool          hasASCII();
    static bool          isMonochron();
    static bool          isXTerminal();
+   static bool          isAnsiTerminal();
    static bool          isRxvtTerminal();
    static bool          isUrxvtTerminal();
    static bool          isMltermTerminal();
@@ -339,6 +340,7 @@ class FTerm
    static bool    color256;
    static bool    monochron;
    static bool    xterm_terminal;
+   static bool    ansi_terminal;
    static bool    rxvt_terminal;
    static bool    urxvt_terminal;
    static bool    mlterm_terminal;
@@ -433,6 +435,10 @@ inline bool FTerm::isMonochron()
 //----------------------------------------------------------------------
 inline bool FTerm::isXTerminal()
 { return xterm_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isAnsiTerminal()
+{ return ansi_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRxvtTerminal()

@@ -110,9 +110,9 @@ void FVTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearTerm()
+void FVTerm::clearTerm (int fillchar)
 {
-  // Clear the physical terminal and put cursor at home
+  // Clear the real terminal and put cursor at home
   char*& cl = tcap[fc::t_clear_screen].string;
   char*& cd = tcap[fc::t_clr_eos].string;
   char*& cb = tcap[fc::t_clr_eol].string;
@@ -121,15 +121,15 @@ void FVTerm::clearTerm()
   bool normal = isNormal(next);
   appendAttributes(next);
 
-  if ( (! cl && ! cd && ! cb)
-      || (normal && ! ut ) )
+  if ( ! ( (cl || cd || cb) && (normal || ut) )
+      || fillchar != ' ' )
   {
     int term_width = getColumnNumber();
 
     for (int i=0; i < getLineNumber(); i++)
     {
       setTermXY (0,i);
-      FString blank_line(term_width, ' ');
+      FString blank_line(term_width, wchar_t(fillchar));
       appendOutputBuffer (blank_line.c_str());
       term_pos->setPoint(term_width,i);
     }
@@ -1907,7 +1907,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     if ( area == vdesktop )
     {
       std::fill_n (vterm->text, area_size, nc);
-      clearTerm();
+      clearTerm (fillchar);
       return;
     }
   }

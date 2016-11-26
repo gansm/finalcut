@@ -40,8 +40,6 @@ timer::timer (FWidget* parent)
 //----------------------------------------------------------------------
 void timer::draw()
 {
-  setNormal();
-  clearArea (vdesktop);
   setPrintPos (1,1);
   print ("---------------\n");
   print ("Press Q to quit\n");
@@ -86,6 +84,8 @@ void timer::onAccel (FAccelEvent* ev)
 int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
+  app.setForegroundColor(fc::Default);
+  app.setBackgroundColor(fc::Default);
   timer t(&app);
   t.addAccelerator('q');
   app.setMainWidget(&t);

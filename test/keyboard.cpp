@@ -63,8 +63,6 @@ void keyboard::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void keyboard::draw()
 {
-  setNormal();
-  clearArea (vdesktop);
   setPrintPos (1,1);
   print ("---------------\n");
   print ("Press Q to quit\n");
@@ -78,6 +76,8 @@ void keyboard::draw()
 int main (int argc, char* argv[])
 {
   FApplication app(argc, argv);
+  app.setForegroundColor(fc::Default);
+  app.setBackgroundColor(fc::Default);
   keyboard key(&app);
   key.addAccelerator('q');
   app.setMainWidget(&key);
