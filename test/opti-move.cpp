@@ -1,7 +1,9 @@
 // File: opti-move.cpp
 
 #include <iomanip>
-#include "final.h"
+#include "fapp.h"
+#include "fvterm.h"
+
 
 // global FVTerm object
 static FVTerm* terminal;

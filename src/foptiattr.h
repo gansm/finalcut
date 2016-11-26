@@ -109,7 +109,7 @@ class FOptiAttr
    void  set_orig_orig_colors (char*&);
 
    // Inquiry
-   bool isNormal (char_data*&);
+   static bool  isNormal (char_data*&);
 
    // Methods
    void         init();
@@ -185,9 +185,9 @@ class FOptiAttr
    bool  setTermDefaultColor (char_data*&);
 
    // Inquiries
-   bool  hasColor (char_data*&);
-   bool  hasAttribute (char_data*&);
-   bool  hasNoAttribute (char_data*&);
+   static bool  hasColor (char_data*&);
+   static bool  hasAttribute (char_data*&);
+   static bool  hasNoAttribute (char_data*&);
 
    // Methods
    bool  colorChange (char_data*&, char_data*&);
@@ -302,15 +302,5 @@ inline void FOptiAttr::setDefaultColorSupport()
 //----------------------------------------------------------------------
 inline void FOptiAttr::setCygwinTerminal()
 { cygwin_terminal = true; }
-
-//----------------------------------------------------------------------
-inline bool FOptiAttr::isNormal (char_data*& ch)
-{
-  return hasNoAttribute(ch) && ! hasColor(ch);
-}
-
-//----------------------------------------------------------------------
-inline bool FOptiAttr::hasNoAttribute (char_data*& attr)
-{ return ! hasAttribute(attr); }
 
 #endif  // _FOPTIATTR_H

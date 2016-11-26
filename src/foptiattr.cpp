@@ -416,6 +416,12 @@ void FOptiAttr::set_orig_orig_colors (char*& cap)
 }
 
 //----------------------------------------------------------------------
+bool FOptiAttr::isNormal (char_data*& ch)
+{
+  return hasNoAttribute(ch) && ! hasColor(ch);
+}
+
+//----------------------------------------------------------------------
 void FOptiAttr::init()
 {
   if ( max_color < 8 )
@@ -1133,7 +1139,7 @@ bool FOptiAttr::setTermDefaultColor (char_data*& term)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::hasColor (char_data*& attr)
+bool FOptiAttr::hasColor (char_data*& attr)
 {
   if ( attr && attr->fg_color < 0 && attr->bg_color < 0 )
     return false;
@@ -1142,7 +1148,7 @@ inline bool FOptiAttr::hasColor (char_data*& attr)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::hasAttribute (char_data*& attr)
+bool FOptiAttr::hasAttribute (char_data*& attr)
 {
   if ( attr )
   {
@@ -1163,6 +1169,10 @@ inline bool FOptiAttr::hasAttribute (char_data*& attr)
 
   return false;
 }
+
+//----------------------------------------------------------------------
+bool FOptiAttr::hasNoAttribute (char_data*& attr)
+{ return ! hasAttribute(attr); }
 
 //----------------------------------------------------------------------
 inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
