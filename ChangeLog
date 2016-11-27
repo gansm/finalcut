@@ -1,3 +1,7 @@
+2016-11-27  Markus Gans  <guru.mail@muenster.de>
+	* Some minor bug fixes
+	* Version 0.3.0
+
 2016-11-26  Markus Gans  <guru.mail@muenster.de>
 	* Improvements for ansi terminal emulators
 	* Add the opti-move test program

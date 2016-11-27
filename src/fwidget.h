@@ -514,6 +514,7 @@ class FWidget : public FVTerm
    static FMenuBar*   menubar;
    static FWidget*    show_root_widget;
    static FWidget*    redraw_root_widget;
+   static bool        init_desktop;
    static bool        hideable;
 
    // Friend class

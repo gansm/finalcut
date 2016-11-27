@@ -1035,10 +1035,6 @@ void FDialog::drawDialogShadow()
     return;
 
   drawShadow();
-  setPrintPos (1, 1+getHeight());
-  setTransparent();
-  print(' ');
-  unsetTransparent();
 }
 
 //----------------------------------------------------------------------

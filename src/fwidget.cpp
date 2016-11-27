@@ -22,6 +22,7 @@ FWidget::widgetList*   FWidget::dialog_list        = 0;
 FWidget::widgetList*   FWidget::always_on_top_list = 0;
 FWidget::widgetList*   FWidget::close_widget       = 0;
 FWidget::widget_colors FWidget::wc;
+bool                   FWidget::init_desktop;
 bool                   FWidget::hideable;
 
 
@@ -1092,7 +1093,7 @@ void FWidget::show()
   if ( ! visible )
     return;
 
-  if ( getMainWidget() == this )
+  if ( ! init_desktop )
   {
     // Important: Do not use setNewFont() or setVGAFont() after
     //            the console character mapping has been initialized
@@ -1108,6 +1109,7 @@ void FWidget::show()
     FWidget* r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
     clearArea (vdesktop);
+    init_desktop = true;
   }
 
   if ( ! show_root_widget )
@@ -2163,6 +2165,7 @@ void FWidget::init()
 
   foreground_color = wc.term_fg;
   background_color = wc.term_bg;
+  init_desktop = false;
 
   accelerator_list = new Accelerators();
 }

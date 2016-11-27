@@ -33,7 +33,7 @@ bool keyPressed()
     ret = true;
   else
     ret = false;
-  
+
   tcsetattr (STDIN_FILENO, TCSADRAIN, &save);
   return ret;
 }

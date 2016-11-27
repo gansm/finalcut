@@ -129,9 +129,12 @@ void FVTerm::clearTerm (int fillchar)
     for (int i=0; i < getLineNumber(); i++)
     {
       setTermXY (0,i);
-      FString blank_line(term_width, wchar_t(fillchar));
-      appendOutputBuffer (blank_line.c_str());
-      term_pos->setPoint(term_width,i);
+      next->code = fillchar;
+
+      for (int n=0; n < term_width; n++)
+        appendCharacter(next);
+
+      term_pos->setPoint(term_width+1, i);
     }
 
     setTermXY (0,0);
