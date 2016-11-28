@@ -1,3 +1,7 @@
+2016-11-29  Markus Gans  <guru.mail@muenster.de>
+	* Restore the xterm window title and font 
+	  only if it could be read before
+
 2016-11-27  Markus Gans  <guru.mail@muenster.de>
 	* Some minor bug fixes
 	* Version 0.3.0

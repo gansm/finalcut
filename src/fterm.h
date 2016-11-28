@@ -176,8 +176,8 @@ class FTerm
    static void          detectTermSize();
    static void          setTermSize (int, int);
    static void          setKDECursor (fc::kdeKonsoleCursorShape);
-   static const FString getXTermFont();
-   static const FString getXTermTitle();
+   static FString*      getXTermFont();
+   static FString*      getXTermTitle();
    static const FString getXTermColorName (int);
    static void          setXTermCursorStyle (fc::xtermCursorStyle);
    static void          setXTermTitle (const FString&);

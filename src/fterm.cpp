@@ -802,10 +802,8 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getXTermFont()
+FString* FTerm::getXTermFont()
 {
-  FString font("");
-
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     fd_set ifds;
@@ -833,21 +831,19 @@ const FString FTerm::getXTermFont()
         if ( n >= 5 && temp[n-1] == BEL[0] && temp[n] == '\0' )
           temp[n-1] = '\0';
 
-        font = temp;
+        return new FString(temp);
       }
     }
   }
 
-  return font;
+  return 0;
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getXTermTitle()
+FString* FTerm::getXTermTitle()
 {
-  FString title("");
-
   if ( kde_konsole )
-    return title;
+    return 0;
 
   fd_set ifds;
   struct timeval tv;
@@ -869,14 +865,18 @@ const FString FTerm::getXTermTitle()
       size_t n = std::strlen(temp);
 
       // Esc + \ = OSC string terminator
-      if ( n >= 4 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
-        temp[n-2] = '\0';
+      if ( n >= 2 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
+      {
+        if ( n < 4 )
+          return 0;
 
-      title = temp;
+        temp[n-2] = '\0';
+        return new FString(temp);
+      }
     }
   }
 
-  return title;
+  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -913,7 +913,7 @@ const FString FTerm::getXTermColorName (int color)
         temp[n-1] = '\0';
 
       // Esc + \ = OSC string terminator (mintty)
-      if ( n >= 6 && temp[n-1] == '\\' && temp[n-2] == ESC[0] )
+      if ( n >= 6 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
         temp[n-2] = '\0';
 
       color_str = temp;
@@ -3303,8 +3303,8 @@ void FTerm::init()
     t.c_lflag &= uInt(~(ICANON | ECHO));
     tcsetattr (stdin_no, TCSANOW, &t);
 
-    xterm_font  = new FString(getXTermFont());
-    xterm_title = new FString(getXTermTitle());
+    xterm_font  = getXTermFont();
+    xterm_title = getXTermTitle();
 
     t.c_lflag |= uInt(ICANON | ECHO);
     tcsetattr (stdin_no, TCSADRAIN, &t);
