@@ -18,6 +18,7 @@
 #include <term.h>  // need for tparm
 
 #include <cctype>
+#include <climits>
 #include <cstdio>  // need for printf
 #include <cstdlib>
 #include <cstring>
@@ -43,22 +44,24 @@ class FOptiMove
    void  setBaudRate (int);
    void  setTabStop (int);
    void  setTermSize (int, int);
-   void  set_cursor_home (char*&);
-   void  set_cursor_to_ll (char*&);
-   void  set_carriage_return (char*&);
-   void  set_tabular (char*&);
-   void  set_back_tab (char*&);
-   void  set_cursor_up (char*&);
-   void  set_cursor_down (char*&);
-   void  set_cursor_left (char*&);
-   void  set_cursor_right (char*&);
-   void  set_cursor_address (char*&);
-   void  set_column_address (char*&);
-   void  set_row_address (char*&);
-   void  set_parm_up_cursor (char*&);
-   void  set_parm_down_cursor (char*&);
-   void  set_parm_left_cursor (char*&);
-   void  set_parm_right_cursor (char*&);
+   int   set_cursor_home (char*&);
+   int   set_cursor_to_ll (char*&);
+   int   set_carriage_return (char*&);
+   int   set_tabular (char*&);
+   int   set_back_tab (char*&);
+   int   set_cursor_up (char*&);
+   int   set_cursor_down (char*&);
+   int   set_cursor_left (char*&);
+   int   set_cursor_right (char*&);
+   int   set_cursor_address (char*&);
+   int   set_column_address (char*&);
+   int   set_row_address (char*&);
+   int   set_parm_up_cursor (char*&);
+   int   set_parm_down_cursor (char*&);
+   int   set_parm_left_cursor (char*&);
+   int   set_parm_right_cursor (char*&);
+   int   set_clr_bol (char*&);
+   int   set_clr_eol (char*&);
    void  set_auto_left_margin (bool&);
    void  set_eat_newline_glitch (bool&);
 
@@ -79,7 +82,7 @@ class FOptiMove
    } capability;
 
    // Constants
-   static const int LONG_DURATION = 9999999;
+   static const int LONG_DURATION = INT_MAX;
    // value for a long capability waiting time
    static const int MOVE_LIMIT = 7;
    // maximum character distance to avoid direct cursor addressing
@@ -87,9 +90,9 @@ class FOptiMove
    // Methods
    void calculateCharDuration();
    int  capDuration (char*&, int);
+   int  capDurationToLength (int);
    int  repeatedAppend (capability&, int, char*);
    int  relativeMove (char*&, int, int, int, int);
-   bool isTwoDirectionMove (int, int, int, int);
    bool isWideMove (int, int, int, int);
 
    // Data Members
@@ -109,6 +112,8 @@ class FOptiMove
    capability F_parm_down_cursor;
    capability F_parm_left_cursor;
    capability F_parm_right_cursor;
+   capability F_clr_bol;
+   capability F_clr_eol;
 
    bool       automatic_left_margin;
    bool       eat_nl_glitch;

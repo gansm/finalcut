@@ -32,9 +32,9 @@
      inkscape:window-height="1116"
      id="namedview28"
      showgrid="false"
-     inkscape:zoom="1.3630812"
-     inkscape:cx="431.06797"
-     inkscape:cy="137.50611"
+     inkscape:zoom="1.2"
+     inkscape:cx="341.2437"
+     inkscape:cy="2.4584348"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
@@ -289,7 +289,7 @@
      style="fill:url(#linearGradient3792);fill-opacity:1;stroke:#000000;stroke-width:0.70560002;stroke-opacity:1"
      inkscape:connector-curvature="0" /><text
      xml:space="preserve"
-     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#083c99;fill-opacity:1;fill-rule:evenodd;stroke:#00173d;font-family:Sans;-inkscape-font-specification:Adobe Helvetica Bold;stroke-opacity:1"
+     style="font-size:95.99999989px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:middle;fill:#083c99;fill-opacity:1;fill-rule:evenodd;stroke:#00173d;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold;stroke-opacity:1"
      x="471.83469"
      y="91.775856"
      id="text3011-4-6"
@@ -298,6 +298,6 @@
        sodipodi:role="line"
        x="471.83469"
        y="91.775856"
-       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#083c99;fill-opacity:1;font-family:Sans;-inkscape-font-specification:Adobe Helvetica Bold;stroke:#00173d;stroke-opacity:1"
+       style="font-size:95.99999989px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr;text-anchor:middle;fill:#083c99;fill-opacity:1;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold;stroke:#00173d;stroke-opacity:1"
        id="tspan3015-7-2">The Final Cut</tspan></text>
 </svg>

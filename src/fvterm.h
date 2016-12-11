@@ -192,6 +192,7 @@ class FVTerm : public FObject, public FTerm
    static void         putVTerm();
    static void         updateTerminal (bool);
    static void         updateTerminal();
+   static void         updateTerminalLine (uInt);
    static bool         updateTerminalCursor();
    static void         processTerminalUpdate();
    static bool         isInsideTerminal (int, int);

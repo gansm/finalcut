@@ -15,6 +15,7 @@ static FTermcap::tcap_map term_caps[] =
   { 0, "cl" },  // clear_screen           -> clear screen and home cursor (P*)
   { 0, "cd" },  // clr_eos                -> clear to end of screen (P*)
   { 0, "ce" },  // clr_eol                -> clear to end of line (P)
+  { 0, "cb" },  // clr_bol                -> Clear to beginning of line
   { 0, "ho" },  // cursor_home            -> home cursor (if no cup)
   { 0, "ll" },  // cursor_to_ll           -> last line, first column (if no cup)
   { 0, "cr" },  // carriage_return        -> carriage return (P*)

@@ -540,6 +540,7 @@ bool FMenuBar::selectNextItem()
       if ( next == *iter )
         return false;
 
+      updateTerminal(false);
       unselectItem();
       next->setSelected();
       setSelectedItem(next);
@@ -563,6 +564,7 @@ bool FMenuBar::selectNextItem()
         getStatusBar()->drawMessage();
 
       redraw();
+      updateTerminal(true);
       break;
     }
 
@@ -605,6 +607,7 @@ bool FMenuBar::selectPrevItem()
       if ( prev == *iter )
         return false;
 
+      updateTerminal(false);
       unselectItem();
       prev->setSelected();
       prev->setFocus();
@@ -628,6 +631,7 @@ bool FMenuBar::selectPrevItem()
 
       setSelectedItem(prev);
       redraw();
+      updateTerminal(true);
       break;
     }
   }

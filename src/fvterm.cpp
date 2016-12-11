@@ -124,19 +124,14 @@ void FVTerm::clearTerm (int fillchar)
   if ( ! ( (cl || cd || cb) && (normal || ut) )
       || fillchar != ' ' )
   {
-    int term_width = getColumnNumber();
-
-    for (int i=0; i < getLineNumber(); i++)
+    for (int i=0; i < vdesktop->height; i++)
     {
-      setTermXY (0,i);
-      next->code = fillchar;
-
-      for (int n=0; n < term_width; n++)
-        appendCharacter(next);
-
-      term_pos->setPoint(term_width+1, i);
+      vdesktop->changes[i].xmin = 0;
+      vdesktop->changes[i].xmax = vdesktop->width - 1;
+      vdesktop->changes[i].trans_count = 0;
     }
 
+    updateVTerm (vdesktop);
     setTermXY (0,0);
   }
   else if ( cl )
@@ -267,8 +262,6 @@ void FVTerm::updateTerminal (bool on)
 void FVTerm::updateTerminal()
 {
   // Updates pending changes to the terminal
-  term_area* vt;
-  int term_width, term_height;
 
   if ( stop_terminal_updates
      || static_cast<FApplication*>(init_object)->isQuit() )
@@ -286,22 +279,116 @@ void FVTerm::updateTerminal()
     }
   }
 
-  vt = vterm;
-  term_width = vt->width - 1;
-  term_height = vt->height - 1;
+  for (register uInt y=0; y < uInt(vterm->height); y++)
+    updateTerminalLine (y);
 
-  for (register uInt y=0; y < uInt(vt->height); y++)
+  // sets the new input cursor position
+  updateTerminalCursor();
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateTerminalLine (uInt y)
+{
+  term_area* vt = vterm;
+  uInt& xmin = vt->changes[y].xmin;
+  uInt& xmax = vt->changes[y].xmax;
+  int term_width = vt->width - 1;
+  int term_height = vt->height - 1;
+
+  if ( xmin <= xmax )
   {
-    uInt change_xmax = vt->changes[y].xmax;
+    bool is_eol_clean = false;
+    bool draw_leading_ws = false;
+    bool draw_tailing_ws = false;
+    char*& ce = tcap[fc::t_clr_eol].string;
+    char*& cb = tcap[fc::t_clr_bol].string;
+    bool ut = FTermcap::background_color_erase;
+    char_data* first_char = &vt->text[y * uInt(vt->width)];
+    char_data* last_char  = &vt->text[(y+1) * uInt(vt->width) - 1];
+    char_data* min_char   = &vt->text[y * uInt(vt->width) + xmin];
 
-    if ( vt->changes[y].xmin <= vt->changes[y].xmax )
+    // Is the line from xmin to the end of the line blank?
+    if ( min_char->code == ' ' )
     {
-      uInt change_xmin = vt->changes[y].xmin;
-      setTermXY (int(change_xmin), int(y));
+      uInt beginning_whitespace = 1;
+      bool normal = isNormal(min_char);
 
-      for ( register uInt x=change_xmin;
-            x <= change_xmax;
-            x++ )
+      for (register uInt x=xmin+1; x < uInt(vt->width); x++)
+      {
+        if ( *min_char == vt->text[y * uInt(vt->width) + x] )
+          beginning_whitespace++;
+        else
+          break;
+      }
+
+      if ( beginning_whitespace == uInt(vt->width) - xmin
+          && ce && (ut || normal)
+          && clr_eol_length < int(beginning_whitespace) )
+        is_eol_clean = true;
+    }
+
+    // leading whitespace
+    if ( ! is_eol_clean && first_char->code == ' ' )
+    {
+      uInt leading_whitespace = 1;
+      bool normal = isNormal(first_char);
+
+      for (register uInt x=1; x < uInt(vt->width); x++)
+      {
+        if ( *first_char == vt->text[y * uInt(vt->width) + x] )
+          leading_whitespace++;
+        else
+          break;
+      }
+
+      if ( leading_whitespace > xmin
+          && cb && (ut || normal)
+          && clr_bol_length < int(leading_whitespace) )
+      {
+        draw_leading_ws = true;
+        xmin = leading_whitespace - 1;
+      }
+    }
+
+    // tailing whitespace
+    if ( ! is_eol_clean && last_char->code == ' ' )
+    {
+      uInt tailing_whitespace = 1;
+      bool normal = isNormal(last_char);
+
+      for (register uInt x=uInt(vt->width)-1; x >  0 ; x--)
+      {
+        if ( *last_char == vt->text[y * uInt(vt->width) + x] )
+          tailing_whitespace++;
+        else
+          break;
+      }
+
+      if ( tailing_whitespace > uInt(vt->width) - xmax
+          && ce && (ut || normal)
+          && clr_bol_length < int(tailing_whitespace) )
+      {
+        draw_tailing_ws = true;
+        xmax = uInt(vt->width) - tailing_whitespace;
+      }
+    }
+
+    setTermXY (int(xmin), int(y));
+
+    if ( is_eol_clean )
+    {
+      appendAttributes (min_char);
+      appendOutputBuffer (ce);
+    }
+    else
+    {
+      if ( draw_leading_ws )
+      {
+        appendAttributes (first_char);
+        appendOutputBuffer (cb);
+      }
+
+      for (register uInt x=xmin; x <= xmax; x++)
       {
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
@@ -315,34 +402,38 @@ void FVTerm::updateTerminal()
         term_pos->x_ref()++;
       }
 
-      vt->changes[y].xmin = uInt(vt->width);
-      vt->changes[y].xmax = 0;
-    }
-
-    // cursor wrap
-    if ( term_pos->getX() > term_width )
-    {
-      if ( term_pos->getY() == term_height )
-        term_pos->x_ref()--;
-      else
+      if ( draw_tailing_ws )
       {
-        if ( FTermcap::eat_nl_glitch )
-        {
-          term_pos->setPoint(-1,-1);
-        }
-        else if ( FTermcap::automatic_right_margin )
-        {
-          term_pos->setX(0);
-          term_pos->y_ref()++;
-        }
-        else
-          term_pos->x_ref()--;
+        appendAttributes (last_char);
+        appendOutputBuffer (ce);
       }
     }
+
+    // Reset line changes
+    xmin = uInt(vt->width);
+    xmax = 0;
   }
 
-  // sets the new input cursor position
-  updateTerminalCursor();
+  // cursor wrap
+  if ( term_pos->getX() > term_width )
+  {
+    if ( term_pos->getY() == term_height )
+      term_pos->x_ref()--;
+    else
+    {
+      if ( FTermcap::eat_nl_glitch )
+      {
+        term_pos->setPoint(-1,-1);
+      }
+      else if ( FTermcap::automatic_right_margin )
+      {
+        term_pos->setX(0);
+        term_pos->y_ref()++;
+      }
+      else
+        term_pos->x_ref()--;
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1338,7 +1429,6 @@ void FVTerm::updateVTerm (term_area* area)
   int ax, ay, aw, ah, rsh, bsh, y_end, ol;
   char_data* tc; // terminal character
   char_data* ac; // area character
-  bool modified = false;
 
   if ( ! vterm_updates )
   {
@@ -1379,6 +1469,7 @@ void FVTerm::updateVTerm (term_area* area)
     if ( line_xmin <= line_xmax )
     {
       int _xmin, _xmax;
+      bool modified = false;
 
       if ( ax == 0 )
         line_xmin = ol;
@@ -1403,6 +1494,7 @@ void FVTerm::updateVTerm (term_area* area)
         line_len = aw + rsh;
         ac = &area->text[y * line_len + x];
         tc = &vterm->text[gy * vterm->width + gx - ol];
+
         is_covered = isCovered(gx-ol, gy, area);  // get covered state
 
         if ( is_covered != fully_covered )

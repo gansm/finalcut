@@ -974,6 +974,7 @@ class fc
      t_clear_screen,
      t_clr_eos,
      t_clr_eol,
+     t_clr_bol,
      t_cursor_home,
      t_cursor_to_ll,
      t_carriage_return,

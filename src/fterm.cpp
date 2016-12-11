@@ -24,6 +24,8 @@ int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
 int      FTerm::stdin_status_flags;
+int      FTerm::clr_bol_length;
+int      FTerm::clr_eol_length;
 uInt     FTerm::baudrate;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
@@ -2660,6 +2662,10 @@ void FTerm::init_termcaps()
       tcap[fc::t_exit_underline_mode].string = \
         const_cast<char*>(CSI "24m");
 
+    // set background color erase for cygwin terminal
+    if ( cygwin_terminal )
+      FTermcap::background_color_erase = true;
+
     // set ansi foreground and background color
     if ( linux_terminal || cygwin_terminal )
     {
@@ -2908,6 +2914,8 @@ void FTerm::init_termcaps()
   opti_move->set_parm_right_cursor (tcap[fc::t_parm_right_cursor].string);
   opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
   opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
+  clr_bol_length = opti_move->set_clr_bol (tcap[fc::t_clr_bol].string);
+  clr_eol_length = opti_move->set_clr_eol (tcap[fc::t_clr_eol].string);
 
   // attribute settings
   opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
