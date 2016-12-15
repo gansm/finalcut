@@ -127,7 +127,7 @@ void FVTerm::clearTerm (int fillchar)
     for (int i=0; i < vdesktop->height; i++)
     {
       vdesktop->changes[i].xmin = 0;
-      vdesktop->changes[i].xmax = vdesktop->width - 1;
+      vdesktop->changes[i].xmax = uInt(vdesktop->width) - 1;
       vdesktop->changes[i].trans_count = 0;
     }
 
@@ -289,6 +289,7 @@ void FVTerm::updateTerminal()
 //----------------------------------------------------------------------
 void FVTerm::updateTerminalLine (uInt y)
 {
+  // Updates pending changes from line y to the terminal
   term_area* vt = vterm;
   uInt& xmin = vt->changes[y].xmin;
   uInt& xmax = vt->changes[y].xmax;
@@ -302,18 +303,20 @@ void FVTerm::updateTerminalLine (uInt y)
     bool draw_tailing_ws = false;
     char*& ce = tcap[fc::t_clr_eol].string;
     char*& cb = tcap[fc::t_clr_bol].string;
+    char*& ec = tcap[fc::t_erase_chars].string;
+    char*& rp = tcap[fc::t_repeat_char].string;
     bool ut = FTermcap::background_color_erase;
     char_data* first_char = &vt->text[y * uInt(vt->width)];
     char_data* last_char  = &vt->text[(y+1) * uInt(vt->width) - 1];
     char_data* min_char   = &vt->text[y * uInt(vt->width) + xmin];
 
     // Is the line from xmin to the end of the line blank?
-    if ( min_char->code == ' ' )
+    if ( ce && min_char->code == ' ' )
     {
       uInt beginning_whitespace = 1;
       bool normal = isNormal(min_char);
 
-      for (register uInt x=xmin+1; x < uInt(vt->width); x++)
+      for (uInt x=xmin+1; x < uInt(vt->width); x++)
       {
         if ( *min_char == vt->text[y * uInt(vt->width) + x] )
           beginning_whitespace++;
@@ -322,54 +325,57 @@ void FVTerm::updateTerminalLine (uInt y)
       }
 
       if ( beginning_whitespace == uInt(vt->width) - xmin
-          && ce && (ut || normal)
+          && (ut || normal)
           && clr_eol_length < int(beginning_whitespace) )
         is_eol_clean = true;
     }
 
-    // leading whitespace
-    if ( ! is_eol_clean && first_char->code == ' ' )
+    if ( ! is_eol_clean )
     {
-      uInt leading_whitespace = 1;
-      bool normal = isNormal(first_char);
-
-      for (register uInt x=1; x < uInt(vt->width); x++)
+      // leading whitespace
+      if ( cb && first_char->code == ' ' )
       {
-        if ( *first_char == vt->text[y * uInt(vt->width) + x] )
-          leading_whitespace++;
-        else
-          break;
+        uInt leading_whitespace = 1;
+        bool normal = isNormal(first_char);
+
+        for (uInt x=1; x < uInt(vt->width); x++)
+        {
+          if ( *first_char == vt->text[y * uInt(vt->width) + x] )
+            leading_whitespace++;
+          else
+            break;
+        }
+
+        if ( leading_whitespace > xmin
+            && (ut || normal)
+            && clr_bol_length < int(leading_whitespace) )
+        {
+          draw_leading_ws = true;
+          xmin = leading_whitespace - 1;
+        }
       }
 
-      if ( leading_whitespace > xmin
-          && cb && (ut || normal)
-          && clr_bol_length < int(leading_whitespace) )
+      // tailing whitespace
+      if ( ce && last_char->code == ' ' )
       {
-        draw_leading_ws = true;
-        xmin = leading_whitespace - 1;
-      }
-    }
+        uInt tailing_whitespace = 1;
+        bool normal = isNormal(last_char);
 
-    // tailing whitespace
-    if ( ! is_eol_clean && last_char->code == ' ' )
-    {
-      uInt tailing_whitespace = 1;
-      bool normal = isNormal(last_char);
+        for (uInt x=uInt(vt->width)-1; x >  0 ; x--)
+        {
+          if ( *last_char == vt->text[y * uInt(vt->width) + x] )
+            tailing_whitespace++;
+          else
+            break;
+        }
 
-      for (register uInt x=uInt(vt->width)-1; x >  0 ; x--)
-      {
-        if ( *last_char == vt->text[y * uInt(vt->width) + x] )
-          tailing_whitespace++;
-        else
-          break;
-      }
-
-      if ( tailing_whitespace > uInt(vt->width) - xmax
-          && ce && (ut || normal)
-          && clr_bol_length < int(tailing_whitespace) )
-      {
-        draw_tailing_ws = true;
-        xmax = uInt(vt->width) - tailing_whitespace;
+        if ( tailing_whitespace > uInt(vt->width) - xmax
+            && (ut || normal)
+            && clr_bol_length < int(tailing_whitespace) )
+        {
+          draw_tailing_ws = true;
+          xmax = uInt(vt->width) - tailing_whitespace;
+        }
       }
     }
 
@@ -388,18 +394,78 @@ void FVTerm::updateTerminalLine (uInt y)
         appendOutputBuffer (cb);
       }
 
-      for (register uInt x=xmin; x <= xmax; x++)
+      for (uInt x=xmin; x <= xmax; x++)
       {
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
 
-        if ( term_pos->getX() == term_width
-            && term_pos->getY() == term_height )
-          appendLowerRight (print_char);
+        // Erase a number of characters to draw simple whitespaces
+        if ( ec && print_char->code == ' ' )
+        {
+          uInt whitespace = 1;
+          bool normal = isNormal(print_char);
+
+          for (uInt i=x+1; i <= xmax; i++)
+          {
+            if ( *print_char == vt->text[y * uInt(vt->width) + i] )
+              whitespace++;
+            else
+              break;
+          }
+
+          if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
+              && (ut || normal) )
+          {
+            appendAttributes (print_char);
+            appendOutputBuffer (tparm(ec, whitespace));
+
+            if ( x + whitespace - 1 < xmax || draw_tailing_ws )
+              setTermXY (int(x + whitespace), int(y));
+            else
+              break;
+
+            x = x + whitespace - 1;
+          }
+          else
+          {
+            x--;
+
+            for (uInt i=0; i < whitespace; i++, x++)
+              appendCharacter (print_char);
+          }
+        }
+        else if ( rp )  // Repeat one character n-fold
+        {
+          uInt repetitions = 1;
+
+          for (uInt i=x+1; i <= xmax; i++)
+          {
+            if ( *print_char == vt->text[y * uInt(vt->width) + i] )
+              repetitions++;
+            else
+              break;
+          }
+
+          if ( repetitions > uInt(repeat_char_length)
+              && print_char->code < 128 )
+          {
+            newFontChanges (print_char);
+            charsetChanges (print_char);
+            appendAttributes (print_char);
+            appendOutputBuffer (tparm(rp, print_char->code, repetitions));
+            term_pos->x_ref() += short(repetitions);
+            x = x + repetitions - 1;
+          }
+          else
+          {
+            x--;
+
+            for (uInt i=0; i < repetitions; i++, x++)
+              appendCharacter (print_char);
+          }
+        }
         else
           appendCharacter (print_char);
-
-        term_pos->x_ref()++;
       }
 
       if ( draw_tailing_ws )
@@ -945,6 +1011,21 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::appendCharacter (char_data*& next_char)
 {
+  int term_width = vterm->width - 1;
+  int term_height = vterm->height - 1;
+
+  if ( term_pos->getX() == term_width
+      && term_pos->getY() == term_height )
+    appendLowerRight (next_char);
+  else
+    appendChar (next_char);
+
+  term_pos->x_ref()++;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendChar (char_data*& next_char)
+{
   newFontChanges (next_char);
   charsetChanges (next_char);
 
@@ -973,12 +1054,12 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
 
   if ( ! FTermcap::automatic_right_margin )
   {
-    appendCharacter (screen_char);
+    appendChar (screen_char);
   }
   else if ( SA && RA )
   {
     appendOutputBuffer (RA);
-    appendCharacter (screen_char);
+    appendChar (screen_char);
     appendOutputBuffer (SA);
   }
   else
@@ -993,7 +1074,7 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
     x = getColumnNumber() - 2;
     y = getLineNumber() - 1;
     setTermXY (x, y);
-    appendCharacter (screen_char);
+    appendChar (screen_char);
     term_pos->x_ref()++;
 
     setTermXY (x, y);
@@ -1002,12 +1083,12 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
     if ( IC )
     {
       appendOutputBuffer (tparm(IC, 1));
-      appendCharacter (screen_char);
+      appendChar (screen_char);
     }
     else if ( im && ei )
     {
       appendOutputBuffer (im);
-      appendCharacter (screen_char);
+      appendChar (screen_char);
 
       if ( ip )
         appendOutputBuffer (ip);
@@ -1017,7 +1098,7 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
     else if ( ic )
     {
       appendOutputBuffer (ic);
-      appendCharacter (screen_char);
+      appendChar (screen_char);
 
       if ( ip )
         appendOutputBuffer (ip);

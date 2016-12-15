@@ -60,6 +60,8 @@ class FOptiMove
    int   set_parm_down_cursor (char*&);
    int   set_parm_left_cursor (char*&);
    int   set_parm_right_cursor (char*&);
+   int   set_erase_chars (char*&);
+   int   set_repeat_char (char*&);
    int   set_clr_bol (char*&);
    int   set_clr_eol (char*&);
    void  set_auto_left_margin (bool&);
@@ -112,6 +114,8 @@ class FOptiMove
    capability F_parm_down_cursor;
    capability F_parm_left_cursor;
    capability F_parm_right_cursor;
+   capability F_erase_chars;
+   capability F_repeat_char;
    capability F_clr_bol;
    capability F_clr_eol;
 

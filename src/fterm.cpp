@@ -24,8 +24,11 @@ int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
 int      FTerm::stdin_status_flags;
+int      FTerm::erase_ch_length;
+int      FTerm::repeat_char_length;
 int      FTerm::clr_bol_length;
 int      FTerm::clr_eol_length;
+int      FTerm::cursor_addres_lengths;
 uInt     FTerm::baudrate;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
@@ -2905,7 +2908,7 @@ void FTerm::init_termcaps()
   opti_move->set_cursor_down (tcap[fc::t_cursor_down].string);
   opti_move->set_cursor_left (tcap[fc::t_cursor_left].string);
   opti_move->set_cursor_right (tcap[fc::t_cursor_right].string);
-  opti_move->set_cursor_address (tcap[fc::t_cursor_address].string);
+  cursor_addres_lengths = opti_move->set_cursor_address (tcap[fc::t_cursor_address].string);
   opti_move->set_column_address (tcap[fc::t_column_address].string);
   opti_move->set_row_address (tcap[fc::t_row_address].string);
   opti_move->set_parm_up_cursor (tcap[fc::t_parm_up_cursor].string);
@@ -2914,6 +2917,8 @@ void FTerm::init_termcaps()
   opti_move->set_parm_right_cursor (tcap[fc::t_parm_right_cursor].string);
   opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
   opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
+  erase_ch_length = opti_move->set_erase_chars (tcap[fc::t_erase_chars].string);
+  repeat_char_length = opti_move->set_repeat_char (tcap[fc::t_repeat_char].string);
   clr_bol_length = opti_move->set_clr_bol (tcap[fc::t_clr_bol].string);
   clr_eol_length = opti_move->set_clr_eol (tcap[fc::t_clr_eol].string);
 
@@ -3106,11 +3111,8 @@ void FTerm::init()
   if ( isatty(stdout_no) )
     opti_move->setBaudRate(int(baudrate));
 
-  // detect the type of the terminal
+  // get the set type of the terminal
   identifyTermType();
-
-  // initialize 256 colors terminals
-  new_termtype = init_256colorTerminal();
 
   if ( std::strncmp(termtype, "cygwin", 6) == 0 )
     cygwin_terminal = true;
@@ -3143,6 +3145,8 @@ void FTerm::init()
     t.c_cc[VMIN]  = 0; // Minimum number of characters
     tcsetattr (stdin_no, TCSANOW, &t);
 
+    // initialize 256 colors terminals
+    new_termtype = init_256colorTerminal();
 
     // Identify the terminal via the answerback-message
     new_termtype = parseAnswerbackMsg (new_termtype);

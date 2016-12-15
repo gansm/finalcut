@@ -971,6 +971,7 @@ class fc
    enum termcaps
    {
      t_bell,
+     t_erase_chars,
      t_clear_screen,
      t_clr_eos,
      t_clr_eol,
@@ -983,6 +984,7 @@ class fc
      t_insert_padding,
      t_insert_character,
      t_parm_ich,
+     t_repeat_char,
      t_initialize_color,
      t_initialize_pair,
      t_set_a_foreground,

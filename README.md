@@ -79,24 +79,28 @@ printf(...)
               ║   │                                          resizeVTerm()║
               ╚═══▼═══════════════════════════════════════════════════════╝
                   │
-                  │    putVTerm()      ┌───────────────┐
-                  └───────────────────►│ output_buffer │
-                    updateTerminal()   └───────┬───────┘
-                                               │
-                                               │ flush_out() 
-                                               │     +
-                                               │ Fputchar(char)
-                                               │
-                                               ▼
-                                       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-                                       ▌               ▐
-                                       ▌    screen     ▐
-                                       ▌ ───────────── ▐
-                                       ▌ real terminal ▐
-                                       ▌               ▐
-                                       ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
-                                              ███
-                                           ▀▀▀▀▀▀▀▀▀
+                  │    putVTerm()
+                  └──────────────────► updateTerminalLine(y)
+                    updateTerminal()             │
+                                                 ▼
+                                         ┌───────────────┐
+                                         │ output_buffer │
+                                         └───────────────┘
+                                                 │
+                                                 │ flush_out() 
+                                                 │     +
+                                                 │ Fputchar(char)
+                                                 │
+                                                 ▼
+                                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                                         ▌               ▐
+                                         ▌    screen     ▐
+                                         ▌ ───────────── ▐
+                                         ▌ real terminal ▐
+                                         ▌               ▐
+                                         ▀▀▀▀▀▀▀███▀▀▀▀▀▀▀
+                                                ███
+                                             ▀▀▀▀▀▀▀▀▀
 </pre>
 
 

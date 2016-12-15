@@ -220,6 +220,7 @@ class FVTerm : public FObject, public FTerm
    static void         newFontChanges (char_data*&);
    static void         charsetChanges (char_data*&);
    static void         appendCharacter (char_data*&);
+   static void         appendChar (char_data*&);
    static void         appendAttributes (char_data*&);
    static int          appendLowerRight (char_data*&);
    static void         appendOutputBuffer (std::string&);

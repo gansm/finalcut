@@ -254,8 +254,11 @@ class FTerm
    // Data Members
    static int           stdin_no;
    static int           stdout_no;
+   static int           erase_ch_length;
+   static int           repeat_char_length;
    static int           clr_bol_length;
    static int           clr_eol_length;
+   static int           cursor_addres_lengths;
    static bool          NewFont;
    static bool          VGAFont;
    static bool          no_shadow_character;

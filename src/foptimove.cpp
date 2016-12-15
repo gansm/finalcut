@@ -27,6 +27,8 @@ FOptiMove::FOptiMove (int baud)
   , F_parm_down_cursor()
   , F_parm_left_cursor()
   , F_parm_right_cursor()
+  , F_erase_chars()
+  , F_repeat_char()
   , F_clr_bol()
   , F_clr_eol()
   , automatic_left_margin(false)
@@ -318,6 +320,38 @@ int FOptiMove::set_parm_right_cursor (char*& cap)
     F_parm_right_cursor.duration = LONG_DURATION;
 
   return F_parm_right_cursor.length;
+}
+
+//----------------------------------------------------------------------
+int FOptiMove::set_erase_chars (char*& cap)
+{
+  if ( cap )
+  {
+    char* temp = tparm(cap, 23);
+    F_erase_chars.cap = cap;
+    F_erase_chars.duration = capDuration (temp, 1);
+    F_erase_chars.length = capDurationToLength (F_erase_chars.duration);
+  }
+  else
+    F_erase_chars.duration = LONG_DURATION;
+
+  return F_erase_chars.length;
+}
+
+//----------------------------------------------------------------------
+int FOptiMove::set_repeat_char (char*& cap)
+{
+  if ( cap )
+  {
+    char* temp = tparm(cap, ' ', 23);
+    F_repeat_char.cap = cap;
+    F_repeat_char.duration = capDuration (temp, 1);
+    F_repeat_char.length = capDurationToLength (F_repeat_char.duration);
+  }
+  else
+    F_repeat_char.duration = LONG_DURATION;
+
+  return F_repeat_char.length;
 }
 
 //----------------------------------------------------------------------

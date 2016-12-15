@@ -12,6 +12,7 @@ static FTermcap::tcap_map term_caps[] =
  // |    |      // variable name          -> description
  //-----------------------------------------------------------------------------
   { 0, "bl" },  // bell                   -> audible signal (bell) (P)
+  { 0, "ec" },  // erase_chars            -> erase #1 characters (P)
   { 0, "cl" },  // clear_screen           -> clear screen and home cursor (P*)
   { 0, "cd" },  // clr_eos                -> clear to end of screen (P*)
   { 0, "ce" },  // clr_eol                -> clear to end of line (P)
@@ -24,6 +25,7 @@ static FTermcap::tcap_map term_caps[] =
   { 0, "ip" },  // insert_padding         -> insert padding after inserted character
   { 0, "ic" },  // insert_character       -> insert character (P)
   { 0, "IC" },  // parm_ich               -> insert #1 characters (P*)
+  { 0, "rp" },  // repeat_char            -> repeat char #1 #2 times (P*)
   { 0, "Ic" },  // initialize_color       -> initialize color #1 to (#2,#3,#4)
   { 0, "Ip" },  // initialize_pair        -> Initialize color pair #1 to
                 //                           fg=(#2,#3,#4), bg=(#5,#6,#7)

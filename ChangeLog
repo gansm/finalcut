@@ -1,3 +1,7 @@
+2016-12-15  Markus Gans  <guru.mail@muenster.de>
+	* Reduce the character output by using character erase 
+	  and character repeat
+
 2016-12-11  Markus Gans  <guru.mail@muenster.de>
 	* Accelerates text line drawing by clear with CSI sequences 
 	  to begin or to end of the current line.
