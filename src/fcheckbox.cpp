@@ -40,10 +40,8 @@ void FCheckBox::init()
 //----------------------------------------------------------------------
 void FCheckBox::draw()
 {
-  updateVTerm(false);
   drawCheckButton();
   drawLabel();
-  updateVTerm(true);
   FToggleButton::draw();
 }
 

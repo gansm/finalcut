@@ -136,9 +136,9 @@ bool FLineEdit::setFocus (bool on)
 //----------------------------------------------------------------------
 bool FLineEdit::setShadow (bool on)
 {
-  if (  on
-     && (Encoding != fc::VT100 || isTeraTerm() )
-     && Encoding != fc::ASCII )
+  if ( on
+      && (Encoding != fc::VT100 || isTeraTerm() )
+      && Encoding != fc::ASCII )
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
@@ -373,9 +373,9 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
   }
   // end of switch
 
-  if (  ev->isAccepted()
-     && key != fc::Fkey_return
-     && key != fc::Fkey_enter )
+  if ( ev->isAccepted()
+      && key != fc::Fkey_return
+      && key != fc::Fkey_enter )
   {
     drawInputField();
     updateTerminal();
@@ -654,8 +654,8 @@ void FLineEdit::adjustLabel()
   if ( hasHotkey() )
     label_length--;
 
-  assert (  label_orientation == label_above
-         || label_orientation == label_left );
+  assert ( label_orientation == label_above
+          || label_orientation == label_left );
 
   switch ( label_orientation )
   {
@@ -748,8 +748,6 @@ void FLineEdit::drawInputField()
   int active_focus = fc::active + fc::focus;
   isActiveFocus = ((flags & active_focus) == active_focus);
   isShadow = ((flags & fc::shadow) != 0 );
-
-  updateVTerm(false);
   setPrintPos (1, 1);
 
   if ( isMonochron() )
@@ -807,8 +805,6 @@ void FLineEdit::drawInputField()
 
   // set the cursor to the first pos.
   setCursorPos (2+cursor_pos-text_offset, 1);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

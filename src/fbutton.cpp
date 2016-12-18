@@ -197,8 +197,8 @@ bool FButton::setFlat (bool on)
 bool FButton::setShadow (bool on)
 {
   if ( on
-     && (Encoding != fc::VT100 || isTeraTerm() )
-     && Encoding != fc::ASCII )
+      && (Encoding != fc::VT100 || isTeraTerm() )
+      && Encoding != fc::ASCII )
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
@@ -526,7 +526,6 @@ void FButton::draw()
   is_Flat = isFlat();
   is_NonFlatShadow = ((flags & (fc::shadow+fc::flat)) == fc::shadow);
   is_NoUnderline = ((flags & fc::no_underline) != 0);
-  updateVTerm(false);
 
   if ( isMonochron() )
     setReverse(true);
@@ -610,9 +609,9 @@ void FButton::draw()
   if ( is_Flat && ! button_down )
     drawFlatBorder();
 
-  if (  ! button_down
-     && ! isNewFont()
-     && (is_Flat || ! hasShadow() || isMonochron()) )
+  if ( ! button_down
+      && ! isNewFont()
+      && (is_Flat || ! hasShadow() || isMonochron()) )
   {
     // clear the right █ from button down
     if ( parent_widget )
@@ -725,7 +724,6 @@ void FButton::draw()
   if ( isMonochron() )
     setReverse(false);
 
-  updateVTerm(true);
   delete[] ButtonText;
 
   if ( is_Focus && getStatusBar() )

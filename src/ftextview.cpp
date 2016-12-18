@@ -408,10 +408,10 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   parent = getParentWidget();
 
   if ( parent
-     && parent->isDialogWidget()
-     && (dialog = static_cast<FDialog*>(parent)) != 0
-     && dialog->isResizeable()
-     && ! dialog->isZoomed() )
+      && parent->isDialogWidget()
+      && (dialog = static_cast<FDialog*>(parent)) != 0
+      && dialog->isResizeable()
+      && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
     const FPoint& tp = ev->getTermPos();
@@ -430,10 +430,10 @@ void FTextView::onMouseUp (FMouseEvent* ev)
   FDialog* dialog;
 
   if ( parent
-     && parent->isDialogWidget()
-     && (dialog = static_cast<FDialog*>(parent)) != 0
-     && dialog->isResizeable()
-     && ! dialog->isZoomed() )
+      && parent->isDialogWidget()
+      && (dialog = static_cast<FDialog*>(parent)) != 0
+      && dialog->isResizeable()
+      && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
     const FPoint& tp = ev->getTermPos();
@@ -458,10 +458,10 @@ void FTextView::onMouseMove (FMouseEvent* ev)
   FDialog* dialog;
 
   if ( parent
-     && parent->isDialogWidget()
-     && (dialog = static_cast<FDialog*>(parent)) != 0
-     && dialog->isResizeable()
-     && ! dialog->isZoomed() )
+      && parent->isDialogWidget()
+      && (dialog = static_cast<FDialog*>(parent)) != 0
+      && dialog->isResizeable()
+      && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
     const FPoint& tp = ev->getTermPos();
@@ -631,19 +631,18 @@ void FTextView::draw()
 {
   FWidget* parent = getParentWidget();
   bool is_text_dialog;
-  updateVTerm(false);
   setColor();
 
   if ( isMonochron() )
     setReverse(true);
 
   if ( parent
-     && parent->isDialogWidget()
-     && isPaddingIgnored()
-     && getGeometry() == FRect ( 1
-                               , 2
-                               , parent->getWidth()
-                               , parent->getHeight() - 1) )
+      && parent->isDialogWidget()
+      && isPaddingIgnored()
+      && getGeometry() == FRect ( 1
+                                , 2
+                                , parent->getWidth()
+                                , parent->getHeight() - 1) )
   {
     is_text_dialog = true;
   }
@@ -662,7 +661,6 @@ void FTextView::draw()
   if ( hbar->isVisible() )
     hbar->redraw();
 
-  updateVTerm(true);
   drawText();
 
   if ( hasFocus() && getStatusBar() )
@@ -672,10 +670,8 @@ void FTextView::draw()
 
     if ( curMsg != msg )
     {
-      updateVTerm(false);
       getStatusBar()->setMessage(msg);
       getStatusBar()->drawMessage();
-      updateVTerm(true);
     }
   }
 
@@ -698,7 +694,6 @@ void FTextView::drawText()
   if ( end > getRows() )
     end = getRows();
 
-  updateVTerm(false);
   setColor();
 
   if ( isMonochron() )
@@ -721,9 +716,9 @@ void FTextView::drawText()
       bool utf8 = (Encoding == fc::UTF8) ? true : false;
 
       // only printable and 1 column per character
-      if (  (  (utf8 && std::iswprint(wint_t(ch)))
+      if ( ( (utf8 && std::iswprint(wint_t(ch)))
             || (!utf8 && ch < 256 && std::isprint(ch)) )
-         && wcwidth(ch) == 1 )
+          && wcwidth(ch) == 1 )
       {
         print (ch);
       }
@@ -737,8 +732,6 @@ void FTextView::drawText()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -822,8 +815,8 @@ void FTextView::cb_VBarChange (FWidget*, void*)
     updateTerminal();
   }
 
-  if (  scrollType >= FScrollbar::scrollStepBackward
-     && scrollType <= FScrollbar::scrollPageForward )
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollPageForward )
   {
     vbar->setValue (yoffset);
 
@@ -919,8 +912,8 @@ void FTextView::cb_HBarChange (FWidget*, void*)
     updateTerminal();
   }
 
-  if (  scrollType >= FScrollbar::scrollStepBackward
-     && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollWheelDown )
   {
     hbar->setValue (xoffset);
 

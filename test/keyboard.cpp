@@ -41,14 +41,8 @@ void keyboard::onKeyPress (FKeyEvent* ev)
 
   printf ("Key %s (id %d)\n", getKeyName(key_id).c_str(), key_id);
 
-
   if ( is_last_line )
-  {
     scrollAreaForward (vdesktop);
-
-    if ( ! scrollTermForward() )
-      putArea (getTermPos(), vdesktop);
-  }
 
   setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
 }

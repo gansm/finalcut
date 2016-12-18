@@ -328,9 +328,9 @@ void FMenuItem::delAccelerator (FWidget* obj)
 {
   FWidget* root = getRootWidget();
 
-  if (  root
-     && root->accelerator_list
-     && ! root->accelerator_list->empty() )
+  if ( root
+      && root->accelerator_list
+      && ! root->accelerator_list->empty() )
   {
     FWidget::Accelerators::iterator iter;
     iter = root->accelerator_list->begin();

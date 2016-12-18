@@ -261,8 +261,6 @@ void AttribDemo::printAltCharset()
 //----------------------------------------------------------------------
 void AttribDemo::draw()
 {
-  updateVTerm(false);
-
   // test alternate character set
   printAltCharset();
 
@@ -383,7 +381,6 @@ void AttribDemo::draw()
 
   setPrintPos (16, 17);
   print ("Change background color ->");
-  updateVTerm(true);
 }
 
 

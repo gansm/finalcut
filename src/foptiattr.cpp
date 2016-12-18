@@ -1179,9 +1179,9 @@ inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
 {
   if ( term && next )
   {
-    return bool (  fake_reverse
-                || term->fg_color != next->fg_color
-                || term->bg_color != next->bg_color );
+    return bool ( fake_reverse
+                 || term->fg_color != next->fg_color
+                 || term->bg_color != next->bg_color );
   }
 
   return false;
@@ -1315,8 +1315,8 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   {
     if ( ansi_default_color )
     {
-      if (  fg == Default && term->fg_color != Default
-         && bg == Default && term->bg_color != Default )
+      if ( fg == Default && term->fg_color != Default
+          && bg == Default && term->bg_color != Default )
       {
         setTermDefaultColor(term);
       }

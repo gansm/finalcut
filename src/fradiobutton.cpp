@@ -41,10 +41,8 @@ void FRadioButton::init()
 //----------------------------------------------------------------------
 void FRadioButton::draw()
 {
-  updateVTerm(false);
   drawRadioButton();
   drawLabel();
-  updateVTerm(true);
   FToggleButton::draw();
 }
 

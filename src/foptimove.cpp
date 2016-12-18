@@ -404,9 +404,9 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
     std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
     move_time = F_cursor_address.duration;
 
-    if (  xold < 0
-       || yold < 0
-       || isWideMove (xold, yold, xnew, ynew) )
+    if ( xold < 0
+        || yold < 0
+        || isWideMove (xold, yold, xnew, ynew) )
     {
       return ( move_time < LONG_DURATION ) ? move_buf : 0;
     }
@@ -429,8 +429,8 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   {
     new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
 
-    if (  new_time < LONG_DURATION
-       && F_carriage_return.duration + new_time < move_time )
+    if ( new_time < LONG_DURATION
+        && F_carriage_return.duration + new_time < move_time )
     {
       method = 2;
       move_time = F_carriage_return.duration + new_time;
@@ -442,8 +442,8 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   {
     new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
 
-    if (  new_time < LONG_DURATION
-       && F_cursor_home.duration + new_time < move_time )
+    if ( new_time < LONG_DURATION
+        && F_cursor_home.duration + new_time < move_time )
     {
       method = 3;
       move_time = F_cursor_home.duration + new_time;
@@ -455,8 +455,8 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   {
     new_time = relativeMove (null_ptr, 0, screen_height-1, xnew, ynew);
 
-    if (  new_time < LONG_DURATION
-       && F_cursor_to_ll.duration + new_time < move_time )
+    if ( new_time < LONG_DURATION
+        && F_cursor_to_ll.duration + new_time < move_time )
     {
       method = 4;
       move_time = F_cursor_to_ll.duration + new_time;
@@ -464,17 +464,17 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   }
 
   // Method 5: left margin for wrap to right-hand side
-  if (  automatic_left_margin
-     && ! eat_nl_glitch
-     && yold > 0
-     && F_cursor_left.cap )
+  if ( automatic_left_margin
+      && ! eat_nl_glitch
+      && yold > 0
+      && F_cursor_left.cap )
   {
     new_time = relativeMove (null_ptr, screen_width-1, yold-1, xnew, ynew);
 
-    if (  new_time < LONG_DURATION
-       && F_carriage_return.cap
-       && F_carriage_return.duration
-        + F_cursor_left.duration + new_time < move_time )
+    if ( new_time < LONG_DURATION
+        && F_carriage_return.cap
+        && F_carriage_return.duration
+         + F_cursor_left.duration + new_time < move_time )
     {
       method = 5;
       move_time = F_carriage_return.duration
@@ -861,7 +861,7 @@ int FOptiMove::relativeMove ( char*& move
 inline bool FOptiMove::isWideMove ( int xold, int yold
                                   , int xnew, int ynew )
 {
-  return bool (  (xnew > MOVE_LIMIT)
-              && (xnew < screen_width - 1 - MOVE_LIMIT)
-              && (std::abs(xnew-xold) + std::abs(ynew-yold) > MOVE_LIMIT) );
+  return bool ( (xnew > MOVE_LIMIT)
+               && (xnew < screen_width - 1 - MOVE_LIMIT)
+               && (std::abs(xnew-xold) + std::abs(ynew-yold) > MOVE_LIMIT) );
 }

@@ -382,9 +382,9 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 
   while ( iter != end )
   {
-    if (  (*iter) != button
-       && (*iter)->isChecked()
-       && isRadioButton(*iter) )
+    if ( (*iter) != button
+        && (*iter)->isChecked()
+        && isRadioButton(*iter) )
     {
       (*iter)->unsetChecked();
 
@@ -447,8 +447,6 @@ void FButtonGroup::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 void FButtonGroup::draw()
 {
-  updateVTerm(false);
-
   if ( isMonochron() )
     setReverse(true);
 
@@ -461,8 +459,6 @@ void FButtonGroup::draw()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

@@ -68,6 +68,7 @@ class FVTerm : public FObject, public FTerm
      FWidget* widget;
      line_changes* changes;
      char_data* text;
+     bool has_changes;
      bool visible;
    } term_area;
 
@@ -263,7 +264,7 @@ class FVTerm : public FObject, public FTerm
    static covered_state isCovered ( int, int
                                   , term_area* );
 
-   static void          updateVTerm (bool);
+   static void          updateVTerm();
    static void          updateVTerm (term_area*);
    static bool          updateVTermCursor (term_area*);
    static bool          isInsideArea (int, int, term_area*);
@@ -302,7 +303,6 @@ class FVTerm : public FObject, public FTerm
    // Data Members
    static        term_area* vterm;        // virtual terminal
    static        term_area* vdesktop;     // virtual desktop
-   static        term_area* last_area;    // last used area
    static        term_area* active_area;  // active area
    term_area*    print_area;              // print area for this object
    term_area*    vwin;                    // virtual window
@@ -342,7 +342,6 @@ class FVTerm : public FObject, public FTerm
    static bool             terminal_update_pending;
    static bool             force_terminal_update;
    static bool             stop_terminal_updates;
-   static bool             vterm_updates;
    static int              skipped_terminal_update;
 };
 
@@ -404,7 +403,8 @@ inline void FVTerm::setNormal()
   next_attribute.pc_charset    = \
   next_attribute.transparent   = \
   next_attribute.trans_shadow  = \
-  next_attribute.inherit_bg    = false;
+  next_attribute.inherit_bg    = \
+  next_attribute.no_changes    = false;
 
   next_attribute.fg_color      = fc::Default;
   next_attribute.bg_color      = fc::Default;

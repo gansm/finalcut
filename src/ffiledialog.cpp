@@ -260,10 +260,10 @@ int FFileDialog::readDir()
       if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
         continue;
 
-      if (  ! show_hidden
-         && next->d_name[0] == '.'
-         && next->d_name[1] != '\0'
-         && next->d_name[1] != '.' )
+      if ( ! show_hidden
+          && next->d_name[0] == '.'
+          && next->d_name[1] != '\0'
+          && next->d_name[1] != '.' )
       {
         continue;
       }
@@ -721,8 +721,8 @@ void FFileDialog::printPath (const FString& txt)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processActivate (FWidget*, void*)
 {
-  if (  filename->getText().includes('*')
-     || filename->getText().includes('?') )
+  if ( filename->getText().includes('*')
+      || filename->getText().includes('?') )
   {
     setFilter(filename->getText());
     readDir();
@@ -734,9 +734,9 @@ void FFileDialog::cb_processActivate (FWidget*, void*)
     readDir();
     filebrowser->redraw();
   }
-  else if (  filename->getText().trim() == FString("..")
-          || filename->getText().includes('/')
-          || filename->getText().includes('~') )
+  else if ( filename->getText().trim() == FString("..")
+           || filename->getText().includes('/')
+           || filename->getText().includes('~') )
   {
     changeDir(filename->getText().trim());
   }

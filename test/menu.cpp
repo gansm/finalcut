@@ -210,12 +210,12 @@ void Menu::defaultCallback (FMenuList* mb)
   {
     FMenuItem* item = mb->getItem(int(i));
 
-    if (  item
-       && item->isEnabled()
-       && item->acceptFocus()
-       && item->isVisible()
-       && ! item->isSeparator()
-       && item->getText() != "&Quit" )
+    if ( item
+        && item->isEnabled()
+        && item->acceptFocus()
+        && item->isVisible()
+        && ! item->isSeparator()
+        && item->getText() != "&Quit" )
     {
       // Add the callback function
       item->addCallback
@@ -278,8 +278,8 @@ void Menu::cb_exitApp (FWidget*, void*)
 
 int main (int argc, char* argv[])
 {
-  if ( argv[1] && (  std::strcmp(argv[1], "--help") == 0
-                  || std::strcmp(argv[1], "-h") == 0 ) )
+  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                   || std::strcmp(argv[1], "-h") == 0 ) )
   {
     std::cout << "Generic options:" << std::endl
               << "  -h, --help                  "

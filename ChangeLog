@@ -1,3 +1,9 @@
+2016-12-18  Markus Gans  <guru.mail@muenster.de>
+	* Only perform VTerm updates on terminal updates
+	* Skipping the print of characters without changes
+	* Combined scrollAreaForward and scrollAreaReverse 
+	  with terminal scroll sequences
+
 2016-12-15  Markus Gans  <guru.mail@muenster.de>
 	* Reduce the character output by using character erase 
 	  and character repeat

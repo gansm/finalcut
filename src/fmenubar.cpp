@@ -532,10 +532,10 @@ bool FMenuBar::selectNextItem()
           next_element = item_list.begin();
 
         next = static_cast<FMenuItem*>(*next_element);
-      } while (  ! next->isEnabled()
-              || ! next->acceptFocus()
-              || ! next->isVisible()
-              || next->isSeparator() );
+      } while ( ! next->isEnabled()
+               || ! next->acceptFocus()
+               || ! next->isVisible()
+               || next->isSeparator() );
 
       if ( next == *iter )
         return false;
@@ -599,10 +599,10 @@ bool FMenuBar::selectPrevItem()
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
       }
-      while (  ! prev->isEnabled()
-            || ! prev->acceptFocus()
-            || ! prev->isVisible()
-            || prev->isSeparator() );
+      while ( ! prev->isEnabled()
+             || ! prev->acceptFocus()
+             || ! prev->isVisible()
+             || prev->isSeparator() );
 
       if ( prev == *iter )
         return false;
@@ -744,7 +744,6 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  updateVTerm(false);
   setPrintPos (1,1);
 
   if ( isMonochron() )
@@ -826,8 +825,9 @@ void FMenuBar::drawItems()
 
       if ( ! std::iswprint(wint_t(item_text[z])) )
       {
-        if ( ! isNewFont() && (  int(item_text[z]) < fc::NF_rev_left_arrow2
-                              || int(item_text[z]) > fc::NF_check_mark ) )
+        if ( ! isNewFont()
+            && ( int(item_text[z]) < fc::NF_rev_left_arrow2
+                || int(item_text[z]) > fc::NF_check_mark ) )
         {
           item_text[z] = L' ';
         }
@@ -885,8 +885,6 @@ void FMenuBar::drawItems()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

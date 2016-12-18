@@ -502,10 +502,10 @@ void Window::cb_next (FWidget*, void*)
           next_element = dialog_list->begin();
 
         next = static_cast<FDialog*>(*next_element);
-      } while (  ! next->isEnabled()
-              || ! next->acceptFocus()
-              || ! next->isVisible()
-              || ! next->isWindowWidget() );
+      } while ( ! next->isEnabled()
+               || ! next->acceptFocus()
+               || ! next->isVisible()
+               || ! next->isWindowWidget() );
 
       activateWindow(next);
       break;
@@ -529,7 +529,7 @@ void Window::cb_previous (FWidget*, void*)
     --iter;
 
     if ( (*iter)->isDialogWidget()
-       && static_cast<FWindow*>(*iter)->isWindowActive() )
+        && static_cast<FWindow*>(*iter)->isWindowActive() )
     {
       FDialog* prev;
       widgetList::const_iterator prev_element;
@@ -542,10 +542,10 @@ void Window::cb_previous (FWidget*, void*)
 
         --prev_element;
         prev = static_cast<FDialog*>(*prev_element);
-      } while (  ! prev->isEnabled()
-              || ! prev->acceptFocus()
-              || ! prev->isVisible()
-              || ! prev->isWindowWidget() );
+      } while ( ! prev->isEnabled()
+               || ! prev->acceptFocus()
+               || ! prev->isVisible()
+               || ! prev->isWindowWidget() );
 
       activateWindow(prev);
       break;
@@ -576,8 +576,8 @@ void Window::cb_destroyWindow (FWidget*, void* data_ptr)
 
 int main (int argc, char* argv[])
 {
-  if ( argv[1] && (  std::strcmp(argv[1], "--help") == 0
-                  || std::strcmp(argv[1], "-h") == 0 ) )
+  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                   || std::strcmp(argv[1], "-h") == 0 ) )
   {
     std::cout << "Generic options:" << std::endl
               << "  -h, --help                  "

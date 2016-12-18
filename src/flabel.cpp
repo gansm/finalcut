@@ -68,9 +68,9 @@ void FLabel::setAccelWidget (FWidget* widget)
 //----------------------------------------------------------------------
 void FLabel::setAlignment (uInt align)
 {
-  if (  align != fc::alignLeft
-     && align != fc::alignCenter
-     && align != fc::alignRight )
+  if ( align != fc::alignLeft
+      && align != fc::alignCenter
+      && align != fc::alignRight )
     alignment = fc::alignLeft;
   else
     alignment = align;
@@ -397,8 +397,8 @@ void FLabel::printLine ( wchar_t*& line
   {
     if ( ! std::iswprint(wint_t(line[z])) )
     {
-      if ( ! isNewFont() && (  int(line[z]) < fc::NF_rev_left_arrow2
-                            || int(line[z]) > fc::NF_check_mark ) )
+      if ( ! isNewFont() && ( int(line[z]) < fc::NF_rev_left_arrow2
+                             || int(line[z]) > fc::NF_check_mark ) )
       {
         line[z] = L' ';
       }
@@ -451,8 +451,6 @@ void FLabel::draw()
 
   if ( text.isNull() || text.isEmpty() )
     return;
-
-  updateVTerm(false);
 
   if ( isMonochron() )
   {
@@ -529,6 +527,4 @@ void FLabel::draw()
     if ( hasEmphasis() )
       setBold(false);
   }
-
-  updateVTerm(true);
 }

@@ -259,7 +259,6 @@ void FStatusBar::drawMessage()
   if ( isLastActiveFocus )
     space_offset = 0;
 
-  updateVTerm(false);
   setColor (wc.statusbar_fg, wc.statusbar_bg);
   setPrintPos (x, 1);
 
@@ -301,8 +300,6 @@ void FStatusBar::drawMessage()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------
@@ -416,10 +413,10 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
       mouse_x = ev->getX();
       mouse_y = ev->getY();
 
-      if (  mouse_x >= x1
-         && mouse_x <= x2
-         && mouse_y == 1
-         && ! (*iter)->hasMouseFocus() )
+      if ( mouse_x >= x1
+          && mouse_x <= x2
+          && mouse_y == 1
+          && ! (*iter)->hasMouseFocus() )
       {
         (*iter)->setMouseFocus();
         redraw();
@@ -508,9 +505,9 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
       mouse_x = ev->getX();
       mouse_y = ev->getY();
 
-      if (  mouse_x >= x1
-         && mouse_x <= x2
-         && mouse_y == 1 )
+      if ( mouse_x >= x1
+          && mouse_x <= x2
+          && mouse_y == 1 )
       {
         if ( ! (*iter)->hasMouseFocus() )
         {
@@ -604,7 +601,6 @@ void FStatusBar::drawKeys()
     return;
   }
 
-  updateVTerm(false);
   setPrintPos (1, 1);
 
   if ( isMonochron() )
@@ -678,10 +674,10 @@ void FStatusBar::drawKeys()
           print ("..");
         }
 
-        if (  iter+1 != key_list.end()
-           && ( (*(iter+1))->isActivated() || (*(iter+1))->hasMouseFocus() )
-           && x + int(getKeyName((*(iter+1))->getKey()).getLength()) + 3
-              < screenWidth )
+        if ( iter+1 != key_list.end()
+            && ( (*(iter+1))->isActivated() || (*(iter+1))->hasMouseFocus() )
+            && x + int(getKeyName((*(iter+1))->getKey()).getLength()) + 3
+             < screenWidth )
         {
           // next element is active
           if ( isMonochron() )
@@ -721,6 +717,5 @@ void FStatusBar::drawKeys()
   if ( isMonochron() )
     setReverse(false);
 
-  updateVTerm(true);
   x_msg = x;
 }

@@ -289,7 +289,6 @@ void FScrollbar::drawBar()
   if ( slider_pos != current_slider_pos )
   {
     int z;
-    updateVTerm(false);
 
     if ( bar_orientation == fc::vertical )
     {
@@ -392,8 +391,6 @@ void FScrollbar::drawBar()
 
     if ( isMonochron() )
       setReverse(false);
-
-    updateVTerm(true);
   }
 }
 
@@ -402,8 +399,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x, mouse_y;
 
-  if (  ev->getButton() != fc::LeftButton
-     && ev->getButton() != fc::MiddleButton )
+  if ( ev->getButton() != fc::LeftButton
+      && ev->getButton() != fc::MiddleButton )
     return;
 
   if ( min == max )
@@ -443,8 +440,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   if ( slider_click_pos > 0 )
     scroll_type = FScrollbar::scrollJump;
 
-  if (  scroll_type == FScrollbar::scrollPageBackward
-     || scroll_type == FScrollbar::scrollPageForward )
+  if ( scroll_type == FScrollbar::scrollPageBackward
+      || scroll_type == FScrollbar::scrollPageForward )
   {
     if ( bar_orientation == fc::vertical )
       slider_click_stop_pos = mouse_y - 2;
@@ -457,8 +454,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   else
     slider_click_stop_pos = -1;
 
-  if (  scroll_type >= FScrollbar::scrollStepBackward
-     && scroll_type <= FScrollbar::scrollPageForward )
+  if ( scroll_type >= FScrollbar::scrollStepBackward
+      && scroll_type <= FScrollbar::scrollPageForward )
   {
     processScroll();
     threshold_reached = false;
@@ -469,8 +466,8 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FScrollbar::onMouseUp (FMouseEvent* ev)
 {
-  if (  ev->getButton() != fc::LeftButton
-     && ev->getButton() != fc::MiddleButton )
+  if ( ev->getButton() != fc::LeftButton
+      && ev->getButton() != fc::MiddleButton )
     return;
 
   slider_click_pos = -1;
@@ -487,8 +484,8 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 {
   int mouse_x, mouse_y, new_scroll_type;
 
-  if (  ev->getButton() != fc::LeftButton
-     && ev->getButton() != fc::MiddleButton )
+  if ( ev->getButton() != fc::LeftButton
+      && ev->getButton() != fc::MiddleButton )
     return;
 
   mouse_x = ev->getX();
@@ -531,8 +528,8 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     }
   }
 
-  if (  mouse_x < 1 || mouse_x > getWidth()
-     || mouse_y < 1 || mouse_y > getHeight() )
+  if ( mouse_x < 1 || mouse_x > getWidth()
+      || mouse_y < 1 || mouse_y > getHeight() )
   {
     delOwnTimer();
   }
@@ -579,10 +576,10 @@ void FScrollbar::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
-  if (  (  scroll_type == FScrollbar::scrollPageBackward
+  if ( ( scroll_type == FScrollbar::scrollPageBackward
         && slider_pos < slider_click_stop_pos )
-     || (  scroll_type == FScrollbar::scrollPageForward
-        && slider_pos+slider_length > slider_click_stop_pos ) )
+      || ( scroll_type == FScrollbar::scrollPageForward
+          && slider_pos+slider_length > slider_click_stop_pos ) )
   {
     delOwnTimer();
     return;
@@ -604,11 +601,9 @@ void FScrollbar::init()
 //----------------------------------------------------------------------
 void FScrollbar::draw()
 {
-  updateVTerm(false);
   drawButtons();
   current_slider_pos = -1;
   drawBar();
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

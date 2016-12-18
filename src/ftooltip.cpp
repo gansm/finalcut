@@ -79,7 +79,6 @@ void FToolTip::setText (const char* txt)
 //----------------------------------------------------------------------
 void FToolTip::draw()
 {
-  updateVTerm(false);
   setColor();
 
   if ( getMaxColor() < 16 )
@@ -95,7 +94,6 @@ void FToolTip::draw()
   }
 
   unsetBold();
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

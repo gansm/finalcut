@@ -97,10 +97,8 @@ void FSwitch::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FSwitch::draw()
 {
-  updateVTerm(false);
   drawLabel();
   drawCheckButton();
-  updateVTerm(true);
   FToggleButton::draw();
   updateTerminal();
   flush_out();

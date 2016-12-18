@@ -895,8 +895,8 @@ int main (int argc, char* argv[])
   FString ver = F_VERSION;  // library version
   FString title = "The FINAL CUT " + ver + " (C) 2016 by Markus Gans";
 
-  if ( argv[1] && (  std::strcmp(argv[1], "--help") == 0
-                  || std::strcmp(argv[1], "-h") == 0 ) )
+  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                   || std::strcmp(argv[1], "-h") == 0 ) )
   {
     std::cout << "Generic options:" << std::endl
               << "  -h, --help                  "

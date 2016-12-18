@@ -537,9 +537,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
           for (uInt i=0; i < end; i++)
           {
-            if (  ! inc_found
-               && inc_search.toLower()
-                  == data[i].getText().left(inc_len+1).toLower() )
+            if ( ! inc_found
+                && inc_search.toLower()
+                == data[i].getText().left(inc_len+1).toLower() )
             {
               setCurrentItem(int(i+1));
               inc_found = true;
@@ -624,9 +624,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
         for (uInt i=0; i < end; i++)
         {
-          if (  ! inc_found
-             && inc_search.toLower()
-             == data[i].getText().left(inc_len).toLower() )
+          if ( ! inc_found
+              && inc_search.toLower()
+              == data[i].getText().left(inc_len).toLower() )
           {
             setCurrentItem(int(i+1));
             inc_found = true;
@@ -683,8 +683,8 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 {
   int yoffset_before, mouse_x, mouse_y;
 
-  if (  ev->getButton() != fc::LeftButton
-     && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != fc::LeftButton
+      && ev->getButton() != fc::RightButton )
   {
     return;
   }
@@ -710,8 +710,8 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if (  mouse_x > 1 && mouse_x < getWidth()
-     && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < getWidth()
+      && mouse_y > 1 && mouse_y < getHeight() )
   {
     current = yoffset + mouse_y - 1;
 
@@ -768,8 +768,8 @@ void FListBox::onMouseUp (FMouseEvent* ev)
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
 
-    if (  mouse_x > 1 && mouse_x < getWidth()
-       && mouse_y > 1 && mouse_y < getHeight() )
+    if ( mouse_x > 1 && mouse_x < getWidth()
+        && mouse_y > 1 && mouse_y < getHeight() )
     {
       processChanged();
 
@@ -784,8 +784,8 @@ void FListBox::onMouseMove (FMouseEvent* ev)
 {
   int current_before, yoffset_before, mouse_x, mouse_y;
 
-  if (  ev->getButton() != fc::LeftButton
-     && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != fc::LeftButton
+      && ev->getButton() != fc::RightButton )
   {
     return;
   }
@@ -798,8 +798,8 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if (  mouse_x > 1 && mouse_x < getWidth()
-     && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < getWidth()
+      && mouse_y > 1 && mouse_y < getHeight() )
   {
     current = yoffset + mouse_y - 1;
 
@@ -809,9 +809,9 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     inc_search.clear();
 
     // handle multiple selections
-    if (  ev->getButton() == fc::RightButton
-       && isMultiSelection()
-       && current_before != current )
+    if ( ev->getButton() == fc::RightButton
+        && isMultiSelection()
+        && current_before != current )
     {
       int from, to;
 
@@ -859,7 +859,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   {
     // drag up
     if ( drag_scroll != FListBox::noScroll
-       && scroll_distance < getHeight()-2 )
+        && scroll_distance < getHeight()-2 )
       scroll_distance++;
 
     if ( ! scroll_timer && current > 1 )
@@ -883,7 +883,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   {
     // drag down
     if ( drag_scroll != FListBox::noScroll
-       && scroll_distance < getHeight()-2 )
+        && scroll_distance < getHeight()-2 )
       scroll_distance++;
 
     if ( ! scroll_timer && current < int(getCount()) )
@@ -924,8 +924,8 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if (  mouse_x > 1 && mouse_x < getWidth()
-     && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < getWidth()
+      && mouse_y > 1 && mouse_y < getHeight() )
   {
     if ( yoffset + mouse_y - 1 > int(getCount()) )
       return;
@@ -1242,8 +1242,8 @@ void FListBox::cb_VBarChange (FWidget*, void*)
   if ( isVisible() )
     drawList();
 
-  if (  scrollType >= FScrollbar::scrollStepBackward
-     && scrollType <= FScrollbar::scrollPageForward )
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollPageForward )
   {
     vbar->setValue (yoffset);
 
@@ -1340,8 +1340,8 @@ void FListBox::cb_HBarChange (FWidget*, void*)
     flush_out();
   }
 
-  if (  scrollType >= FScrollbar::scrollStepBackward
-     && scrollType <= FScrollbar::scrollWheelDown )
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollWheelDown )
   {
     hbar->setValue (xoffset);
 
@@ -1453,7 +1453,6 @@ void FListBox::draw()
   if ( current < 1 )
     current = 1;
 
-  updateVTerm(false);
   setColor();
 
   if ( isMonochron() )
@@ -1479,8 +1478,6 @@ void FListBox::draw()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 
   if ( vbar->isVisible() )
     vbar->redraw();
@@ -1550,9 +1547,9 @@ void FListBox::drawList()
   if ( end > getCount() )
     end = getCount();
 
-  if (  last_yoffset >= 0
-     && last_yoffset == yoffset
-     && last_current != current )
+  if ( last_yoffset >= 0
+      && last_yoffset == yoffset
+      && last_current != current )
   {
     // speed up: redraw only the changed rows
     uInt last_pos = uInt(current - yoffset) - 1;
@@ -1560,8 +1557,6 @@ void FListBox::drawList()
     start = std::min(last_pos, current_pos);
     end = std::max(last_pos, current_pos)+1;
   }
-
-  updateVTerm(false);
 
   for (uInt y=start; y < end; y++)
   {
@@ -1784,7 +1779,6 @@ void FListBox::drawList()
     setReverse(false);
 
   unsetBold();
-  updateVTerm(true);
   last_yoffset = yoffset;
   last_current = current;
 }

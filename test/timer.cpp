@@ -60,12 +60,7 @@ void timer::onTimer (FTimerEvent* ev)
   printf ("timer event, id %d\n", timer_id );
 
   if ( is_last_line )
-  {
     scrollAreaForward (vdesktop);
-
-    if ( ! scrollTermForward() )
-      putArea (getTermPos(), vdesktop);
-  }
 
   setAreaCursor (1, getPrintPos().getY(), true, vdesktop);
 }

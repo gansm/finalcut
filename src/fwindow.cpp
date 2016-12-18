@@ -442,7 +442,7 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( ! w->isWindowHidden()
-           && w->getTermGeometry().contains(x,y) )
+            && w->getTermGeometry().contains(x,y) )
           return w;
       }
     }
@@ -594,7 +594,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     return false;
 
   if ( (window_list->back()->getFlags() & fc::modal) != 0
-     && ! obj->isMenuWidget() )
+      && ! obj->isMenuWidget() )
     return false;
 
   iter = window_list->begin();
@@ -704,10 +704,10 @@ void FWindow::switchToPrevWindow()
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( w
-           && w != active_window
-           && ! (w->isWindowHidden() || w->isWindowActive())
-           && w != static_cast<FWindow*>(getStatusBar())
-           && w != static_cast<FWindow*>(getMenuBar()) )
+            && w != active_window
+            && ! (w->isWindowHidden() || w->isWindowActive())
+            && w != static_cast<FWindow*>(getStatusBar())
+            && w != static_cast<FWindow*>(getMenuBar()) )
         {
           setActiveWindow(w);
           break;

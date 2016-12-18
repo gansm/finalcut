@@ -421,7 +421,6 @@ void FMessageBox::draw()
   int head_offset = 0;
   int center_x = 0;
   int msg_x = int((getWidth() - int(max_line_width)) / 2);  // center the whole block
-  updateVTerm(false);
 
   if ( isMonochron() )
     setReverse(true);
@@ -454,8 +453,6 @@ void FMessageBox::draw()
 
   if ( isMonochron() )
     setReverse(false);
-
-  updateVTerm(true);
 }
 
 //----------------------------------------------------------------------

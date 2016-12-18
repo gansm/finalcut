@@ -64,7 +64,7 @@ FWidget::FWidget (FWidget* parent)
   if ( ! parent )
   {
     assert ( ! rootObject
-           && "FTerm: There should be only one root object" );
+            && "FTerm: There should be only one root object" );
 
     rootObject = this;
     show_root_widget = 0;
@@ -200,10 +200,10 @@ FPoint FWidget::getPrintPos()
 //----------------------------------------------------------------------
 std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 {
-  assert (  side == fc::top
-         || side == fc::right
-         || side == fc::bottom
-         || side == fc::left );
+  assert ( side == fc::top
+          || side == fc::right
+          || side == fc::bottom
+          || side == fc::left );
 
   switch ( side )
   {
@@ -280,7 +280,7 @@ bool FWidget::setFocus (bool on)
       FWidget::getFocusWidget()->unsetFocus();
 
     if ( (!isDialogWidget() && focusable_children == 0)
-       || (isDialogWidget() && focusable_children == 1) )
+        || (isDialogWidget() && focusable_children == 1) )
     {
       FWidget::setFocusWidget(this);
     }
@@ -347,8 +347,8 @@ void FWidget::setY (int y, bool adjust)
 //----------------------------------------------------------------------
 void FWidget::setPos (int x, int y, bool adjust)
 {
-  if (  getX() == x && wsize.getX() == x
-     && getY() == y && wsize.getY() == y )
+  if ( getX() == x && wsize.getX() == x
+      && getY() == y && wsize.getY() == y )
   {
     return;
   }
@@ -422,7 +422,7 @@ void FWidget::setSize (int width, int height, bool adjust)
   height = std::max (height, size_hints.min_height);
 
   if ( getWidth() == width && wsize.getWidth() == width
-     && getHeight() == height && wsize.getHeight() == height )
+      && getHeight() == height && wsize.getHeight() == height )
     return;
 
   if ( width < 1 )
@@ -653,10 +653,10 @@ void FWidget::setDoubleFlatLine (fc::sides side, bool bit)
 {
   uLong length;
 
-  assert (  side == fc::top
-         || side == fc::right
-         || side == fc::bottom
-         || side == fc::left );
+  assert ( side == fc::top
+          || side == fc::right
+          || side == fc::bottom
+          || side == fc::left );
 
   switch ( side )
   {
@@ -687,10 +687,10 @@ void FWidget::setDoubleFlatLine (fc::sides side, int pos, bool bit)
 {
   uLong length, index;
 
-  assert (  side == fc::top
-         || side == fc::right
-         || side == fc::bottom
-         || side == fc::left );
+  assert ( side == fc::top
+          || side == fc::right
+          || side == fc::bottom
+          || side == fc::left );
 
   assert ( pos >= 1 );
 
@@ -748,10 +748,10 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
     {
       FWidget* widget = static_cast<FWidget*>(*iter);
 
-      if (  widget->isEnabled()
-         && widget->isVisible()
-         && ! widget->isWindowWidget()
-         && widget->getTermGeometry().contains(x,y) )
+      if ( widget->isEnabled()
+          && widget->isVisible()
+          && ! widget->isWindowWidget()
+          && widget->getTermGeometry().contains(x,y) )
       {
         FWidget* child = childWidgetAt(widget, x, y);
         return (child != 0) ? child : widget;
@@ -948,9 +948,9 @@ void FWidget::delAccelerator (FWidget* obj)
   if ( ! widget || widget == statusbar || widget == menubar )
     widget = getRootWidget();
 
-  if (  widget
-     && widget->accelerator_list
-     && ! widget->accelerator_list->empty() )
+  if ( widget
+      && widget->accelerator_list
+      && ! widget->accelerator_list->empty() )
   {
     FWidget::Accelerators::iterator iter;
     iter = widget->accelerator_list->begin();
@@ -1159,8 +1159,8 @@ void FWidget::hide()
     shown = false;
 
     if ( ! isDialogWidget()
-       && FWidget::getFocusWidget() == this
-       && ! focusPrevChild() )
+        && FWidget::getFocusWidget() == this
+        && ! focusPrevChild() )
     {
       if ( FWidget::getFocusWidget() )
         FWidget::getFocusWidget()->unsetFocus();
@@ -1190,9 +1190,9 @@ bool FWidget::focusFirstChild()
   {
     FWidget* widget = static_cast<FWidget*>(*iter);
 
-    if (  widget->isEnabled()
-       && widget->acceptFocus()
-       && ! widget->isMenuWidget() )
+    if ( widget->isEnabled()
+        && widget->acceptFocus()
+        && ! widget->isMenuWidget() )
     {
       widget->setFocus();
 
@@ -1233,9 +1233,9 @@ bool FWidget::focusLastChild()
     --iter;
     FWidget* widget = static_cast<FWidget*>(*iter);
 
-    if (  widget->isEnabled()
-       && widget->acceptFocus()
-       && ! widget->isMenuWidget() )
+    if ( widget->isEnabled()
+        && widget->acceptFocus()
+        && ! widget->isMenuWidget() )
     {
       widget->setFocus();
 
@@ -1285,8 +1285,8 @@ void FWidget::drawShadow()
   if ( isMonochron() && ! trans_shadow )
     return;
 
-  if (  (Encoding == fc::VT100 && ! (trans_shadow || isTeraTerm()) )
-     || (Encoding == fc::ASCII && ! trans_shadow) )
+  if ( (Encoding == fc::VT100 && ! (trans_shadow || isTeraTerm()) )
+      || (Encoding == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();
     return;
@@ -1828,10 +1828,10 @@ bool FWidget::focusNextChild()
               next_element = children.begin();
 
             next = static_cast<FWidget*>(*next_element);
-          } while (  ! next->isEnabled()
-                  || ! next->acceptFocus()
-                  || ! next->isVisible()
-                  || next->isWindowWidget() );
+          } while ( ! next->isEnabled()
+                   || ! next->acceptFocus()
+                   || ! next->isVisible()
+                   || next->isWindowWidget() );
 
           FFocusEvent out (fc::FocusOut_Event);
           out.setFocusType(fc::FocusNextWidget);
@@ -1901,10 +1901,10 @@ bool FWidget::focusPrevChild()
 
             --prev_element;
             prev = static_cast<FWidget*>(*prev_element);
-          } while (  ! prev->isEnabled()
-                  || ! prev->acceptFocus()
-                  || ! prev->isVisible()
-                  || prev->isWindowWidget() );
+          } while ( ! prev->isEnabled()
+                   || ! prev->acceptFocus()
+                   || ! prev->isVisible()
+                   || prev->isWindowWidget() );
 
           FFocusEvent out (fc::FocusOut_Event);
           out.setFocusType(fc::FocusPreviousWidget);
@@ -1965,11 +1965,11 @@ bool FWidget::event (FEvent* ev)
 
           if ( ! kev->isAccepted() )
           {
-            if (  kev->key() == fc::Fkey_right
-               || kev->key() == fc::Fkey_down )
+            if ( kev->key() == fc::Fkey_right
+                || kev->key() == fc::Fkey_down )
               accpt_focus = focusNextChild();
-            else if (  kev->key() == fc::Fkey_left
-                    || kev->key() == fc::Fkey_up )
+            else if ( kev->key() == fc::Fkey_left
+                     || kev->key() == fc::Fkey_up )
               accpt_focus = focusPrevChild();
 
             if ( accpt_focus )

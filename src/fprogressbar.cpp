@@ -37,15 +37,12 @@ void FProgressbar::setPercentage (int percentage_value)
   else
     percentage = percentage_value;
 
-  updateVTerm(false);
-
   if ( isVisible() )
   {
     drawPercentage();
     drawBar();
   }
 
-  updateVTerm(true);
   updateTerminal();
 }
 
@@ -72,9 +69,9 @@ bool FProgressbar::setEnable (bool on)
 //----------------------------------------------------------------------
 bool FProgressbar::setShadow (bool on)
 {
-  if (  on
-     && (Encoding != fc::VT100 || isTeraTerm() )
-     && Encoding != fc::ASCII )
+  if ( on
+      && (Encoding != fc::VT100 || isTeraTerm() )
+      && Encoding != fc::ASCII )
     flags |= fc::shadow;
   else
     flags &= ~fc::shadow;
@@ -128,7 +125,6 @@ void FProgressbar::hide()
 //----------------------------------------------------------------------
 void FProgressbar::reset()
 {
-  updateVTerm(false);
   percentage = -1;
 
   if ( isVisible() )
@@ -137,7 +133,6 @@ void FProgressbar::reset()
     drawBar();
   }
 
-  updateVTerm(true);
   updateTerminal();
 }
 
@@ -146,14 +141,12 @@ void FProgressbar::reset()
 //----------------------------------------------------------------------
 void FProgressbar::draw()
 {
-  updateVTerm(false);
   drawPercentage();
   drawBar();
 
   if ( (flags & fc::shadow) != 0 )
     drawShadow ();
 
-  updateVTerm(true);
   flush_out();
 }
 
@@ -202,9 +195,9 @@ void FProgressbar::drawBar()
 
   if ( percentage > 0.0f && trunc(length) < bar_length )
   {
-    if (  round(length) > trunc(length)
-       || isCygwinTerminal()
-       || getMaxColor() < 16 )
+    if ( round(length) > trunc(length)
+        || isCygwinTerminal()
+        || getMaxColor() < 16 )
     {
       if ( isMonochron() )
       {

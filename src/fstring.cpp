@@ -694,8 +694,8 @@ long FString::toLong() const
   {
     register uChar d = uChar((*p) - L'0');
 
-    if (  num > tenth_limit
-       || (num == tenth_limit && d > tenth_limit_digit) )
+    if ( num > tenth_limit
+        || (num == tenth_limit && d > tenth_limit_digit) )
     {
       throw std::overflow_error ("overflow");
     }
@@ -740,8 +740,8 @@ uLong FString::toULong() const
   {
     register uChar d = uChar((*p) - L'0');
 
-    if (  num > tenth_limit
-       || (num == tenth_limit && d > tenth_limit_digit) )
+    if ( num > tenth_limit
+        || (num == tenth_limit && d > tenth_limit_digit) )
     {
       throw std::overflow_error ("overflow");
     }
