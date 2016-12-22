@@ -16973,13 +16973,12 @@ ac_config_files="$ac_config_files Makefile src/Makefile src/fonts/Makefile doc/M
 
 # Check whether --with-gpm was given.
 if test "${with_gpm+set}" = set; then :
-  withval=$with_gpm;
+  withval=$with_gpm; with_gpm=no
 else
   with_gpm=yes
 fi
 
-
-if test "x$with_gpm" != "xno"
+if test "x$with_gpm" = "xyes"
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgpm" >&5
 $as_echo_n "checking for main in -lgpm... " >&6; }
@@ -17012,11 +17011,11 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gpm_main" >&5
 $as_echo "$ac_cv_lib_gpm_main" >&6; }
 if test "x$ac_cv_lib_gpm_main" = xyes; then :
-  LIBS="$LIBS -lgpm"
-fi
-
 
 $as_echo "#define HAVE_LIBGPM 1" >>confdefs.h
+
+                LIBS="$LIBS -lgpm"
+fi
 
 fi
 

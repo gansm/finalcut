@@ -1,6 +1,7 @@
 2016-12-22  Markus Gans  <guru.mail@muenster.de>
 	* VTerm marks printed characters for a correct determination 
 	  of unchanged characters
+	* Correct gpm detection in configure script
 
 2016-12-18  Markus Gans  <guru.mail@muenster.de>
 	* Only perform VTerm updates on terminal updates

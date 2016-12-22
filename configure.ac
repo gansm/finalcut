@@ -59,15 +59,14 @@ AC_CONFIG_FILES([Makefile src/Makefile src/fonts/Makefile doc/Makefile test/Make
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
             [AS_HELP_STRING([--without-gpm], [Disable GPM mouse support])],
-            [],
+            [with_gpm=no],
             [with_gpm=yes])
-
-if test "x$with_gpm" != "xno"
+if test "x$with_gpm" = "xyes"
 then
   AC_CHECK_LIB([gpm],
                [main],
-               [LIBS="$LIBS -lgpm"])
-  AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
+               [AC_DEFINE([HAVE_LIBGPM], 1, [Define to 1 if GPM mouse is enabled])
+                LIBS="$LIBS -lgpm"])
 fi
 
 # profiling
