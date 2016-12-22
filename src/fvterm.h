@@ -94,7 +94,7 @@ class FVTerm : public FObject, public FTerm
 
    // Mutators
    static void         setTermXY (register int, register int);
-   static void         clearTerm (int = ' ');
+   static bool         clearTerm (int = ' ');
    static bool         hideCursor (bool);
    static bool         hideCursor();
    static bool         showCursor();
@@ -330,6 +330,8 @@ class FVTerm : public FObject, public FTerm
    // Methods
    void                    init();
    void                    finish();
+   static void             markAsPrinted (uInt, uInt);
+   static void             markAsPrinted (uInt, uInt, uInt);
 
    // Data Members
    static std::queue<int>* output_buffer;

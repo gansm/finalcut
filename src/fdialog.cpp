@@ -958,12 +958,6 @@ void FDialog::onWindowRaised (FEvent*)
       ++iter;
     }
   }
-
-  if ( ! window_list )
-    return;
-
-  if ( window_list->empty() )
-    return;
 }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,7 @@
+2016-12-22  Markus Gans  <guru.mail@muenster.de>
+	* VTerm marks printed characters for a correct determination 
+	  of unchanged characters
+
 2016-12-18  Markus Gans  <guru.mail@muenster.de>
 	* Only perform VTerm updates on terminal updates
 	* Skipping the print of characters without changes

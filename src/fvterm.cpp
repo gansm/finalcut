@@ -107,7 +107,7 @@ void FVTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::clearTerm (int fillchar)
+bool FVTerm::clearTerm (int fillchar)
 {
   // Clear the real terminal and put cursor at home
   char*& cl = tcap[fc::t_clear_screen].string;
@@ -121,17 +121,10 @@ void FVTerm::clearTerm (int fillchar)
   if ( ! ( (cl || cd || cb) && (normal || ut) )
       || fillchar != ' ' )
   {
-    for (int i=0; i < vdesktop->height; i++)
-    {
-      vdesktop->changes[i].xmin = 0;
-      vdesktop->changes[i].xmax = uInt(vdesktop->width) - 1;
-      vdesktop->changes[i].trans_count = 0;
-    }
-
-    vdesktop->has_changes = true;
-    setTermXY (0,0);
+    return false;
   }
-  else if ( cl )
+
+  if ( cl )
   {
     appendOutputBuffer (cl);
     term_pos->setPoint(0,0);
@@ -148,7 +141,7 @@ void FVTerm::clearTerm (int fillchar)
 
     for (int i=0; i < getLineNumber(); i++)
     {
-      setTermXY (0,i);
+      setTermXY (0, i);
       appendOutputBuffer (cb);
     }
 
@@ -156,6 +149,7 @@ void FVTerm::clearTerm (int fillchar)
   }
 
   flush_out();
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -391,6 +385,7 @@ void FVTerm::updateTerminalLine (uInt y)
     {
       appendAttributes (min_char);
       appendOutputBuffer (ce);
+      markAsPrinted (xmin, uInt(vt->width - 1), y);
     }
     else
     {
@@ -398,17 +393,18 @@ void FVTerm::updateTerminalLine (uInt y)
       {
         appendAttributes (first_char);
         appendOutputBuffer (cb);
+        markAsPrinted (0, xmin, y);
       }
 
       for (uInt x=xmin; x <= xmax; x++)
       {
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
+        print_char->printed = true;
 
         // skip character with no changes
-        if ( ! terminal_update_pending
-            && print_char->no_changes
-            && ! print_char->restored )
+       if ( ! terminal_update_pending
+            && print_char->no_changes )
         {
           uInt count = 1;
 
@@ -416,7 +412,7 @@ void FVTerm::updateTerminalLine (uInt y)
           {
             char_data* ch = &vt->text[y * uInt(vt->width) + i];
 
-            if ( ch->no_changes && ! ch->restored )
+            if ( ch->no_changes )
               count++;
             else
               break;
@@ -446,25 +442,37 @@ void FVTerm::updateTerminalLine (uInt y)
               break;
           }
 
-          if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
-              && (ut || normal) )
+          if ( whitespace == 1 )
           {
-            appendAttributes (print_char);
-            appendOutputBuffer (tparm(ec, whitespace));
-
-            if ( x + whitespace - 1 < xmax || draw_tailing_ws )
-              setTermXY (int(x + whitespace), int(y));
-            else
-              break;
-
-            x = x + whitespace - 1;
+            appendCharacter (print_char);
+            markAsPrinted (x, y);
           }
           else
           {
-            x--;
+            uInt start_pos = x;
 
-            for (uInt i=0; i < whitespace; i++, x++)
-              appendCharacter (print_char);
+            if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
+                && (ut || normal) )
+            {
+              appendAttributes (print_char);
+              appendOutputBuffer (tparm(ec, whitespace));
+
+              if ( x + whitespace - 1 < xmax || draw_tailing_ws )
+                setTermXY (int(x + whitespace), int(y));
+              else
+                break;
+
+              x = x + whitespace - 1;
+            }
+            else
+            {
+              x--;
+
+              for (uInt i=0; i < whitespace; i++, x++)
+                appendCharacter (print_char);
+            }
+
+            markAsPrinted (start_pos, x, y);
           }
         }
         else if ( rp )  // Repeat one character n-fold
@@ -481,32 +489,48 @@ void FVTerm::updateTerminalLine (uInt y)
               break;
           }
 
-          if ( repetitions > uInt(repeat_char_length)
-              && print_char->code < 128 )
+          if ( repetitions == 1 )
           {
-            newFontChanges (print_char);
-            charsetChanges (print_char);
-            appendAttributes (print_char);
-            appendOutputBuffer (tparm(rp, print_char->code, repetitions));
-            term_pos->x_ref() += short(repetitions);
-            x = x + repetitions - 1;
+            appendCharacter (print_char);
+            markAsPrinted (x, y);
           }
           else
           {
-            x--;
+            uInt start_pos = x;
 
-            for (uInt i=0; i < repetitions; i++, x++)
-              appendCharacter (print_char);
+            if ( repetitions > uInt(repeat_char_length)
+                && print_char->code < 128 )
+            {
+              newFontChanges (print_char);
+              charsetChanges (print_char);
+              appendAttributes (print_char);
+              appendOutputBuffer (tparm(rp, print_char->code, repetitions));
+              term_pos->x_ref() += short(repetitions);
+              x = x + repetitions - 1;
+            }
+            else
+            {
+              x--;
+
+              for (uInt i=0; i < repetitions; i++, x++)
+                appendCharacter (print_char);
+            }
+
+            markAsPrinted (start_pos, x, y);
           }
         }
-        else
+        else  // General character output
+        {
           appendCharacter (print_char);
+          markAsPrinted (x, y);
+        }
       }
 
       if ( draw_tailing_ws )
       {
         appendAttributes (last_char);
         appendOutputBuffer (ce);
+        markAsPrinted (xmax+1, uInt(vt->width - 1), y);
       }
     }
 
@@ -801,7 +825,7 @@ int FVTerm::print (term_area* area, FString& s)
           nc.trans_shadow  = next_attribute.trans_shadow;
           nc.inherit_bg    = next_attribute.inherit_bg;
           nc.no_changes    = false;
-          nc.restored      = false;
+          nc.printed       = false;
 
           if ( area
               && area->cursor_x > 0
@@ -917,7 +941,7 @@ int FVTerm::print (term_area* area, register int c)
   nc.trans_shadow  = next_attribute.trans_shadow;
   nc.inherit_bg    = next_attribute.inherit_bg;
   nc.no_changes    = false;
-  nc.restored      = false;
+  nc.printed       = false;
 
   if ( area->cursor_x > 0
       && area->cursor_y > 0
@@ -1455,7 +1479,6 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
         }
       }
 
-      sc->restored = true;
       std::memcpy (tc, sc, sizeof(char_data));
 
       if ( short(vterm->changes[y+ty].xmin) > x )
@@ -1541,7 +1564,7 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 //----------------------------------------------------------------------
 void FVTerm::updateVTerm()
 {
-  // Update data on VTerm
+  // Updates the character data from all areas to VTerm
 
   if ( vdesktop && vdesktop->has_changes )
   {
@@ -1667,7 +1690,7 @@ void FVTerm::updateVTerm (term_area* area)
                 || ch.code == fc::FullBlock )
               ch.code = ' ';
 
-            ch.no_changes = bool(! tc->restored && *tc == ch);
+            ch.no_changes = bool(tc->printed && *tc == ch);
             std::memcpy (tc, &ch, sizeof(char_data));
           }
           else if ( ac->transparent )   // transparent
@@ -1675,7 +1698,7 @@ void FVTerm::updateVTerm (term_area* area)
             // restore one character on vterm
             char_data ch;
             ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
-            ch.no_changes = bool(! tc->restored && *tc == ch);
+            ch.no_changes = bool(tc->printed && *tc == ch);
             std::memcpy (tc, &ch, sizeof(char_data));
           }
           else  // not transparent
@@ -1698,7 +1721,7 @@ void FVTerm::updateVTerm (term_area* area)
                   || ch.code == fc::FullBlock )
                 ch.code = ' ';
 
-              ch.no_changes = bool(! tc->restored && *tc == ch);
+              ch.no_changes = bool(tc->printed && *tc == ch);
               std::memcpy (tc, &ch, sizeof(char_data));
             }
             else if ( ac->inherit_bg )
@@ -1708,12 +1731,12 @@ void FVTerm::updateVTerm (term_area* area)
               std::memcpy (&ch, ac, sizeof(char_data));
               cc = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.bg_color = cc.bg_color;
-              ch.no_changes = bool(*tc == ch);
+              ch.no_changes = bool(tc->printed && *tc == ch);
               std::memcpy (tc, &ch, sizeof(char_data));
             }
             else  // default
             {
-              if ( ! tc->restored && *tc == *ac )
+              if ( tc->printed && *tc == *ac )
               {
                 std::memcpy (tc, ac, sizeof(char_data));
                 tc->no_changes = true;
@@ -1731,7 +1754,6 @@ void FVTerm::updateVTerm (term_area* area)
         else if ( ! modified )
           line_xmin++;  // don't update covered character
 
-        tc->restored = false;
       }
 
       _xmin = ax + line_xmin - ol;
@@ -2204,8 +2226,23 @@ void FVTerm::clearArea (term_area* area, int fillchar)
 
     if ( area == vdesktop )
     {
-      std::fill_n (vterm->text, area_size, nc);
-      clearTerm (fillchar);
+      if ( clearTerm (fillchar) )
+      {
+        nc.printed = true;
+        std::fill_n (vterm->text, area_size, nc);
+      }
+      else
+      {
+        for (int i=0; i < vdesktop->height; i++)
+        {
+          vdesktop->changes[i].xmin = 0;
+          vdesktop->changes[i].xmax = uInt(vdesktop->width) - 1;
+          vdesktop->changes[i].trans_count = 0;
+        }
+
+        vdesktop->has_changes = true;
+      }
+
       return;
     }
   }
@@ -2217,10 +2254,13 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     for (int y=0; y < area->height; y++)
     {
       int pos = y * total_width;
+      // area
       std::fill_n (&area->text[pos], total_width, nc);
+      // right shadow
       std::fill_n (&area->text[pos+area->width], area->right_shadow, t_char);
     }
 
+    // bottom shadow
     for (int y=0; y < area->bottom_shadow; y++)
     {
       int pos = total_width * (y + area->height);
@@ -2230,7 +2270,6 @@ void FVTerm::clearArea (term_area* area, int fillchar)
 
   for (int i=0; i < area->height; i++)
   {
-
     area->changes[i].xmin = 0;
     area->changes[i].xmax = w - 1;
 
@@ -2486,7 +2525,7 @@ void FVTerm::init()
   term_attribute.trans_shadow  = \
   term_attribute.inherit_bg    = \
   term_attribute.no_changes    = \
-  term_attribute.restored      = false;
+  term_attribute.printed       = false;
 
   // next_attribute contains the state of the next printed character
   std::memcpy (&next_attribute, &term_attribute, sizeof(char_data));
@@ -2528,4 +2567,21 @@ void FVTerm::finish()
 
   if ( term_pos )
     delete term_pos;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::markAsPrinted (uInt pos, uInt line)
+{
+  // Marks a character as printed
+
+  vterm->text[line * uInt(vterm->width) + pos].printed = true;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
+{
+  // Marks characters in the specified range [from .. to] as printed
+
+  for (uInt x=from; x <= to; x++)
+    vterm->text[line * uInt(vterm->width) + x].printed = true;
 }

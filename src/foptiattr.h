@@ -56,7 +56,7 @@ class FOptiAttr
      uChar trans_shadow  : 1;  // transparent shadow
      uChar inherit_bg    : 1;  // inherit background
      uChar no_changes    : 1;  // no changes required
-     uChar restored      : 1;  // restored VTerm character
+     uChar printed       : 1;  // is printed to VTerm
      uChar               : 6;  // padding bits
    } char_data;
 
