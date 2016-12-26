@@ -403,8 +403,7 @@ void FVTerm::updateTerminalLine (uInt y)
         print_char->printed = true;
 
         // skip character with no changes
-       if ( ! terminal_update_pending
-            && print_char->no_changes )
+       if ( print_char->no_changes )
         {
           uInt count = 1;
 

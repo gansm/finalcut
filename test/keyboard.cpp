@@ -39,7 +39,8 @@ void keyboard::onKeyPress (FKeyEvent* ev)
   if ( getPrintPos().getY() == getLineNumber() )
     is_last_line = true;
 
-  printf ("Key %s (id %d)\n", getKeyName(key_id).c_str(), key_id);
+  print() << "Key " << getKeyName(key_id).c_str()
+          << " (id " << key_id << ")\n";
 
   if ( is_last_line )
     scrollAreaForward (vdesktop);
@@ -58,9 +59,9 @@ void keyboard::onAccel (FAccelEvent* ev)
 void keyboard::draw()
 {
   setPrintPos (1,1);
-  print ("---------------\n");
-  print ("Press Q to quit\n");
-  print ("---------------\n");
+  print() << "---------------\n"
+          << "Press Q to quit\n"
+          << "---------------\n";
   setAreaCursor (1, 4, true, vdesktop);
 }
 

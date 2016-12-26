@@ -41,9 +41,9 @@ timer::timer (FWidget* parent)
 void timer::draw()
 {
   setPrintPos (1,1);
-  print ("---------------\n");
-  print ("Press Q to quit\n");
-  print ("---------------\n");
+  print() << "---------------\n"
+          << "Press Q to quit\n"
+          << "---------------\n";
   setAreaCursor (1, 4, true, vdesktop);
 }
 
@@ -57,7 +57,7 @@ void timer::onTimer (FTimerEvent* ev)
     is_last_line = true;
 
   setColor (short(1 + timer_id), fc::Default);
-  printf ("timer event, id %d\n", timer_id );
+  print() << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
     scrollAreaForward (vdesktop);

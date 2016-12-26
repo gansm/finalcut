@@ -27,6 +27,7 @@
 #define _FVTERM_H
 
 #include "fterm.h"
+#include <sstream>  // std::stringstream
 
 // class forward declaration
 class FWidget;
@@ -84,6 +85,9 @@ class FVTerm : public FObject, public FTerm
 
    // Destructor
   ~FVTerm();
+
+   // Overloaded operators
+   template<class type> FVTerm& operator << (const type&);
 
    // Accessors
    virtual const char* getClassName() const;
@@ -218,6 +222,7 @@ class FVTerm : public FObject, public FTerm
    int                 print (term_area*, FString&);
    int                 print (int);
    int                 print (term_area*, int);
+   FVTerm&             print();
    static void         newFontChanges (char_data*&);
    static void         charsetChanges (char_data*&);
    static void         appendCharacter (char_data*&);
@@ -350,6 +355,16 @@ class FVTerm : public FObject, public FTerm
 #pragma pack(pop)
 
 // FVTerm inline functions
+//----------------------------------------------------------------------
+template<class type>
+inline FVTerm& FVTerm::operator << (const type& s)
+{
+  std::ostringstream outstream;
+  outstream << s;
+  print (outstream.str());
+  return *this;
+}
+
 //----------------------------------------------------------------------
 inline const char* FVTerm::getClassName() const
 { return "FVTerm"; }
@@ -671,6 +686,10 @@ inline bool FVTerm::isTransShadow()
 //----------------------------------------------------------------------
 inline bool FVTerm::isInheritBackground()
 { return next_attribute.inherit_bg; }
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::print()
+{ return *this; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)
