@@ -1327,6 +1327,18 @@ void FTerm::setEncoding (std::string enc)
     default:
       Fputchar = &FTerm::putchar_ASCII;
   }
+
+  if ( linux_terminal )
+  {
+    if ( Encoding == fc::VT100 || Encoding == fc::PC )
+    {
+      char* empty = 0;
+      opti_move->set_tabular (empty);
+    }
+    else
+      opti_move->set_tabular (tcap[fc::t_tab].string);
+  }
+
 }
 
 //----------------------------------------------------------------------
@@ -3031,6 +3043,13 @@ void FTerm::init_encoding()
     Encoding = fc::VT100;
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
+
+  if ( linux_terminal
+      && (Encoding == fc::VT100 || Encoding == fc::PC) )
+  {
+    char* empty = 0;
+    opti_move->set_tabular (empty);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -3278,7 +3297,7 @@ void FTerm::init()
 #endif
 
   // xterm mouse support
-  if ( tcap[fc::t_key_mouse].string != 0 )
+  if ( tcap[fc::t_key_mouse].string != 0 && ! linux_terminal )
   {
     mouse_support = true;
     enableXTermMouse();

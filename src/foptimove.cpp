@@ -85,7 +85,11 @@ int FOptiMove::set_cursor_home (char*& cap)
     F_cursor_home.length = capDurationToLength (F_cursor_home.duration);
   }
   else
-    F_cursor_home.duration = LONG_DURATION;
+  {
+    F_cursor_home.cap = 0;
+    F_cursor_home.duration = \
+    F_cursor_home.length   = LONG_DURATION;
+  }
 
   return F_cursor_home.length;
 }
@@ -100,7 +104,11 @@ int FOptiMove::set_cursor_to_ll (char*& cap)
     F_cursor_to_ll.length = capDurationToLength (F_cursor_to_ll.duration);
   }
   else
-    F_cursor_to_ll.duration = LONG_DURATION;
+  {
+    F_cursor_to_ll.cap = 0;
+    F_cursor_to_ll.duration = \
+    F_cursor_to_ll.length   = LONG_DURATION;
+  }
 
   return F_cursor_to_ll.length;
 }
@@ -115,7 +123,11 @@ int FOptiMove::set_carriage_return (char*& cap)
     F_carriage_return.length = capDurationToLength (F_carriage_return.duration);
   }
   else
-    F_carriage_return.duration = LONG_DURATION;
+  {
+    F_carriage_return.cap = 0;
+    F_carriage_return.duration = \
+    F_carriage_return.length   = LONG_DURATION;
+  }
 
   return F_carriage_return.length;
 }
@@ -130,7 +142,11 @@ int FOptiMove::set_tabular (char*& cap)
     F_tab.length = capDurationToLength (F_tab.duration);
   }
   else
-    F_tab.duration = LONG_DURATION;
+  {
+    F_tab.cap = 0;
+    F_tab.duration = \
+    F_tab.length   = LONG_DURATION;
+  }
 
   return F_tab.length;
 }
@@ -145,7 +161,11 @@ int FOptiMove::set_back_tab (char*& cap)
     F_back_tab.length = capDurationToLength (F_back_tab.duration);
   }
   else
-    F_back_tab.duration = LONG_DURATION;
+  {
+    F_back_tab.cap = 0;
+    F_back_tab.duration = \
+    F_back_tab.length   = LONG_DURATION;
+  }
 
   return F_back_tab.length;
 }
@@ -160,7 +180,11 @@ int FOptiMove::set_cursor_up (char*& cap)
     F_cursor_up.length = capDurationToLength (F_cursor_up.duration);
   }
   else
-    F_cursor_up.duration = LONG_DURATION;
+  {
+    F_cursor_up.cap = 0;
+    F_cursor_up.duration = \
+    F_cursor_up.length   = LONG_DURATION;
+  }
 
   return F_cursor_up.length;
 }
@@ -175,7 +199,11 @@ int FOptiMove::set_cursor_down (char*& cap)
     F_cursor_down.length = capDurationToLength (F_cursor_down.duration);
   }
   else
-    F_cursor_down.duration = LONG_DURATION;
+  {
+    F_cursor_down.cap = 0;
+    F_cursor_down.duration = \
+    F_cursor_down.length   = LONG_DURATION;
+  }
 
   return F_cursor_down.length;
 }
@@ -190,7 +218,11 @@ int FOptiMove::set_cursor_left (char*& cap)
     F_cursor_left.length = capDurationToLength (F_cursor_left.duration);
   }
   else
-    F_cursor_left.duration = LONG_DURATION;
+  {
+    F_cursor_left.cap = 0;
+    F_cursor_left.duration = \
+    F_cursor_left.length   = LONG_DURATION;
+  }
 
   return F_cursor_left.length;
 }
@@ -205,7 +237,11 @@ int FOptiMove::set_cursor_right (char*& cap)
     F_cursor_right.length = capDurationToLength (F_cursor_right.duration);
   }
   else
-    F_cursor_right.duration = LONG_DURATION;
+  {
+    F_cursor_right.cap = 0;
+    F_cursor_right.duration = \
+    F_cursor_right.length   = LONG_DURATION;
+  }
 
   return F_cursor_right.length;
 }
@@ -221,7 +257,11 @@ int FOptiMove::set_cursor_address (char*& cap)
     F_cursor_address.length = capDurationToLength (F_cursor_address.duration);
   }
   else
-    F_cursor_address.duration = LONG_DURATION;
+  {
+    F_cursor_address.cap = 0;
+    F_cursor_address.duration = \
+    F_cursor_address.length   = LONG_DURATION;
+  }
 
   return F_cursor_address.length;
 }
@@ -237,7 +277,11 @@ int FOptiMove::set_column_address (char*& cap)
     F_column_address.length = capDurationToLength (F_column_address.duration);
   }
   else
-    F_column_address.duration = LONG_DURATION;
+  {
+    F_column_address.cap = 0;
+    F_column_address.duration = \
+    F_column_address.length   = LONG_DURATION;
+  }
 
   return F_column_address.length;
 }
@@ -253,7 +297,11 @@ int FOptiMove::set_row_address (char*& cap)
     F_row_address.length = capDurationToLength (F_row_address.duration);
   }
   else
-    F_row_address.duration = LONG_DURATION;
+  {
+    F_row_address.cap = 0;
+    F_row_address.duration = \
+    F_row_address.length   = LONG_DURATION;
+  }
 
   return F_row_address.length;
 }
@@ -269,7 +317,11 @@ int FOptiMove::set_parm_up_cursor (char*& cap)
     F_parm_up_cursor.length = capDurationToLength (F_parm_up_cursor.duration);
   }
   else
-    F_parm_up_cursor.duration = LONG_DURATION;
+  {
+    F_parm_up_cursor.cap = 0;
+    F_parm_up_cursor.duration = \
+    F_parm_up_cursor.length   = LONG_DURATION;
+  }
 
   return F_parm_up_cursor.length;
 }
@@ -285,7 +337,11 @@ int FOptiMove::set_parm_down_cursor (char*& cap)
     F_parm_down_cursor.length = capDurationToLength (F_parm_down_cursor.duration);
   }
   else
-    F_parm_down_cursor.duration = LONG_DURATION;
+  {
+    F_parm_down_cursor.cap = 0;
+    F_parm_down_cursor.duration = \
+    F_parm_down_cursor.length   = LONG_DURATION;
+  }
 
   return F_parm_down_cursor.length;
 }
@@ -301,7 +357,11 @@ int FOptiMove::set_parm_left_cursor (char*& cap)
     F_parm_left_cursor.length = capDurationToLength (F_parm_left_cursor.duration);
   }
   else
-    F_parm_left_cursor.duration = LONG_DURATION;
+  {
+    F_parm_left_cursor.cap = 0;
+    F_parm_left_cursor.duration = \
+    F_parm_left_cursor.length   = LONG_DURATION;
+  }
 
   return F_parm_left_cursor.length;
 }
@@ -317,7 +377,11 @@ int FOptiMove::set_parm_right_cursor (char*& cap)
     F_parm_right_cursor.length = capDurationToLength (F_parm_right_cursor.duration);
   }
   else
-    F_parm_right_cursor.duration = LONG_DURATION;
+  {
+    F_parm_right_cursor.cap = 0;
+    F_parm_right_cursor.duration = \
+    F_parm_right_cursor.length   = LONG_DURATION;
+  }
 
   return F_parm_right_cursor.length;
 }
@@ -333,7 +397,11 @@ int FOptiMove::set_erase_chars (char*& cap)
     F_erase_chars.length = capDurationToLength (F_erase_chars.duration);
   }
   else
-    F_erase_chars.duration = LONG_DURATION;
+  {
+    F_erase_chars.cap = 0;
+    F_erase_chars.duration = \
+    F_erase_chars.length   = LONG_DURATION;
+  }
 
   return F_erase_chars.length;
 }
@@ -349,7 +417,11 @@ int FOptiMove::set_repeat_char (char*& cap)
     F_repeat_char.length = capDurationToLength (F_repeat_char.duration);
   }
   else
-    F_repeat_char.duration = LONG_DURATION;
+  {
+    F_repeat_char.cap = 0;
+    F_repeat_char.duration = \
+    F_repeat_char.length   = LONG_DURATION;
+  }
 
   return F_repeat_char.length;
 }
@@ -364,7 +436,11 @@ int FOptiMove::set_clr_bol (char*& cap)
     F_clr_bol.length = capDurationToLength (F_clr_bol.duration);
   }
   else
-    F_clr_bol.duration = LONG_DURATION;
+  {
+    F_clr_bol.cap = 0;
+    F_clr_bol.duration = \
+    F_clr_bol.length   = LONG_DURATION;
+  }
 
   return F_clr_bol.length;
 }
@@ -379,7 +455,11 @@ int FOptiMove::set_clr_eol (char*& cap)
     F_clr_eol.length = capDurationToLength (F_clr_eol.duration);
   }
   else
-    F_clr_eol.duration = LONG_DURATION;
+  {
+    F_clr_eol.cap = 0;
+    F_clr_eol.duration = \
+    F_clr_eol.length   = LONG_DURATION;
+  }
 
   return F_clr_eol.length;
 }

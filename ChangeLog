@@ -1,3 +1,7 @@
+2016-12-27  Markus Gans  <guru.mail@muenster.de>
+	* Avoid non-working tab-cursor-movements on Linux terminals
+	  with activated PC or VT100 encoding
+
 2016-12-26  Markus Gans  <guru.mail@muenster.de>
 	* Add the ability to stream text into a widget's virtual window
 	  with print() << '#' << 5; or *this << ...
@@ -39,7 +43,7 @@
 	* Improve tty settings
 
 2016-11-13  Markus Gans  <guru.mail@muenster.de>
-	* Do not draw shadows on a linux console if not 
+	* Do not draw shadows on a Linux console if not 
 	  all characters are available
 
 2016-11-12  Markus Gans  <guru.mail@muenster.de>
@@ -154,7 +158,7 @@
 	* An incorrect parameter can now return an error message 
 	  on program exit
 	* Termcap S2 and S3 fallback only for the vte/gnome-terminal 
-	  and the linux terminal
+	  and the Linux terminal
 
 2016-08-27  Markus Gans  <guru.mail@muenster.de>
 	* A new inherit background option for characters
@@ -204,7 +208,7 @@
 	* Improved window focus behavior
 
 2016-07-23  Markus Gans  <guru.mail@muenster.de>
-	* Add a modifier key correction for the linux tty
+	* Add a modifier key correction for the Linux tty
 	* Support to read meta+enter from keyboard
 
 2016-07-16  Markus Gans  <guru.mail@muenster.de>
