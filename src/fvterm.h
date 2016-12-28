@@ -98,7 +98,6 @@ class FVTerm : public FObject, public FTerm
 
    // Mutators
    static void         setTermXY (register int, register int);
-   static bool         clearTerm (int = ' ');
    static bool         hideCursor (bool);
    static bool         hideCursor();
    static bool         showCursor();
@@ -190,6 +189,8 @@ class FVTerm : public FObject, public FTerm
    static bool         isTransShadow();
    static bool         isInheritBackground();
 
+   // Methods
+   void                clearArea (int = ' ');
    void                createVTerm (const FRect&);
    void                createVTerm (int, int);
    static void         resizeVTerm (const FRect&);
@@ -197,10 +198,6 @@ class FVTerm : public FObject, public FTerm
    static void         putVTerm();
    static void         updateTerminal (bool);
    static void         updateTerminal();
-   static void         updateTerminalLine (uInt);
-   static bool         updateTerminalCursor();
-   static void         processTerminalUpdate();
-   static bool         isInsideTerminal (int, int);
 
    int                 printf (const wchar_t*, ...);
    int                 printf (const char*, ...)
@@ -223,16 +220,6 @@ class FVTerm : public FObject, public FTerm
    int                 print (int);
    int                 print (term_area*, int);
    FVTerm&             print();
-   static void         newFontChanges (char_data*&);
-   static void         charsetChanges (char_data*&);
-   static void         appendCharacter (char_data*&);
-   static void         appendChar (char_data*&);
-   static void         appendAttributes (char_data*&);
-   static int          appendLowerRight (char_data*&);
-   static void         appendOutputBuffer (std::string&);
-   static void         appendOutputBuffer (const char*);
-   static int          appendOutputBuffer (int);
-   static void         flush_out();
 
  protected:
    // Enumeration
@@ -302,8 +289,10 @@ class FVTerm : public FObject, public FTerm
    static char_data     getCoveredCharacter (int, int, FVTerm*);
    static char_data     getOverlappedCharacter (const FPoint&, FVTerm*);
    static char_data     getOverlappedCharacter (int, int, FVTerm*);
+   static void          processTerminalUpdate();
    static void          startTerminalUpdate();
    static void          finishTerminalUpdate();
+   static void          flush_out();
 
    // Data Members
    static        term_area* vterm;        // virtual terminal
@@ -335,8 +324,21 @@ class FVTerm : public FObject, public FTerm
    // Methods
    void                    init();
    void                    finish();
+   static bool             clearTerm (int = ' ');
+   static void             updateTerminalLine (uInt);
+   static bool             updateTerminalCursor();
+   static bool             isInsideTerminal (int, int);
    static void             markAsPrinted (uInt, uInt);
    static void             markAsPrinted (uInt, uInt, uInt);
+   static void             newFontChanges (char_data*&);
+   static void             charsetChanges (char_data*&);
+   static void             appendCharacter (char_data*&);
+   static void             appendChar (char_data*&);
+   static void             appendAttributes (char_data*&);
+   static int              appendLowerRight (char_data*&);
+   static void             appendOutputBuffer (std::string&);
+   static void             appendOutputBuffer (const char*);
+   static int              appendOutputBuffer (int);
 
    // Data Members
    static std::queue<int>* output_buffer;

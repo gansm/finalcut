@@ -1007,7 +1007,7 @@ void FDialog::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  clearArea (vwin);
+  clearArea();
   drawBorder();
   drawTitleBar();
   setCursorPos(2, getHeight() - 1);

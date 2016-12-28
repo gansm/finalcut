@@ -107,52 +107,6 @@ void FVTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::clearTerm (int fillchar)
-{
-  // Clear the real terminal and put cursor at home
-  char*& cl = tcap[fc::t_clear_screen].string;
-  char*& cd = tcap[fc::t_clr_eos].string;
-  char*& cb = tcap[fc::t_clr_eol].string;
-  bool ut = FTermcap::background_color_erase;
-  char_data* next = &next_attribute;
-  bool normal = isNormal(next);
-  appendAttributes(next);
-
-  if ( ! ( (cl || cd || cb) && (normal || ut) )
-      || fillchar != ' ' )
-  {
-    return false;
-  }
-
-  if ( cl )
-  {
-    appendOutputBuffer (cl);
-    term_pos->setPoint(0,0);
-  }
-  else if ( cd )
-  {
-    setTermXY (0, 0);
-    appendOutputBuffer (cd);
-    term_pos->setPoint(-1,-1);
-  }
-  else if ( cb )
-  {
-    term_pos->setPoint(-1,-1);
-
-    for (int i=0; i < getLineNumber(); i++)
-    {
-      setTermXY (0, i);
-      appendOutputBuffer (cb);
-    }
-
-    setTermXY (0,0);
-  }
-
-  flush_out();
-  return true;
-}
-
-//----------------------------------------------------------------------
 bool FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
@@ -198,6 +152,12 @@ void FVTerm::setPrintCursor (register int x, register int y)
     win->cursor_x = x - win->x_offset;
     win->cursor_y = y - win->y_offset;
   }
+}
+
+//----------------------------------------------------------------------
+void FVTerm::clearArea (int fillchar)
+{
+  clearArea (vwin, fillchar);
 }
 
 //----------------------------------------------------------------------
@@ -278,347 +238,6 @@ void FVTerm::updateTerminal()
 
   // sets the new input cursor position
   updateTerminalCursor();
-}
-
-//----------------------------------------------------------------------
-void FVTerm::updateTerminalLine (uInt y)
-{
-  // Updates pending changes from line y to the terminal
-  term_area* vt = vterm;
-  uInt& xmin = vt->changes[y].xmin;
-  uInt& xmax = vt->changes[y].xmax;
-  int term_width = vt->width - 1;
-  int term_height = vt->height - 1;
-
-  if ( xmin <= xmax )
-  {
-    bool is_eol_clean = false;
-    bool draw_leading_ws = false;
-    bool draw_tailing_ws = false;
-    char*& ce = tcap[fc::t_clr_eol].string;
-    char*& cb = tcap[fc::t_clr_bol].string;
-    char*& ec = tcap[fc::t_erase_chars].string;
-    char*& rp = tcap[fc::t_repeat_char].string;
-    bool ut = FTermcap::background_color_erase;
-    char_data* first_char = &vt->text[y * uInt(vt->width)];
-    char_data* last_char  = &vt->text[(y+1) * uInt(vt->width) - 1];
-    char_data* min_char   = &vt->text[y * uInt(vt->width) + xmin];
-
-    // Is the line from xmin to the end of the line blank?
-    if ( ce && min_char->code == ' ' )
-    {
-      uInt beginning_whitespace = 1;
-      bool normal = isNormal(min_char);
-
-      for (uInt x=xmin+1; x < uInt(vt->width); x++)
-      {
-        char_data* ch = &vt->text[y * uInt(vt->width) + x];
-
-        if ( *min_char == *ch )
-          beginning_whitespace++;
-        else
-          break;
-      }
-
-      if ( beginning_whitespace == uInt(vt->width) - xmin
-          && (ut || normal)
-          && clr_eol_length < int(beginning_whitespace) )
-        is_eol_clean = true;
-    }
-
-    if ( ! is_eol_clean )
-    {
-      // leading whitespace
-      if ( cb && first_char->code == ' ' )
-      {
-        uInt leading_whitespace = 1;
-        bool normal = isNormal(first_char);
-
-        for (uInt x=1; x < uInt(vt->width); x++)
-        {
-          char_data* ch = &vt->text[y * uInt(vt->width) + x];
-
-          if ( *first_char == *ch )
-            leading_whitespace++;
-          else
-            break;
-        }
-
-        if ( leading_whitespace > xmin
-            && (ut || normal)
-            && clr_bol_length < int(leading_whitespace) )
-        {
-          draw_leading_ws = true;
-          xmin = leading_whitespace - 1;
-        }
-      }
-
-      // tailing whitespace
-      if ( ce && last_char->code == ' ' )
-      {
-        uInt tailing_whitespace = 1;
-        bool normal = isNormal(last_char);
-
-        for (uInt x=uInt(vt->width)-1; x >  0 ; x--)
-        {
-          char_data* ch = &vt->text[y * uInt(vt->width) + x];
-
-          if ( *last_char == *ch )
-            tailing_whitespace++;
-          else
-            break;
-        }
-
-        if ( tailing_whitespace > uInt(vt->width) - xmax
-            && (ut || normal)
-            && clr_bol_length < int(tailing_whitespace) )
-        {
-          draw_tailing_ws = true;
-          xmax = uInt(vt->width) - tailing_whitespace;
-        }
-      }
-    }
-
-    setTermXY (int(xmin), int(y));
-
-    if ( is_eol_clean )
-    {
-      appendAttributes (min_char);
-      appendOutputBuffer (ce);
-      markAsPrinted (xmin, uInt(vt->width - 1), y);
-    }
-    else
-    {
-      if ( draw_leading_ws )
-      {
-        appendAttributes (first_char);
-        appendOutputBuffer (cb);
-        markAsPrinted (0, xmin, y);
-      }
-
-      for (uInt x=xmin; x <= xmax; x++)
-      {
-        char_data* print_char;
-        print_char = &vt->text[y * uInt(vt->width) + x];
-        print_char->printed = true;
-
-        // skip character with no changes
-       if ( print_char->no_changes )
-        {
-          uInt count = 1;
-
-          for (uInt i=x+1; i <= xmax; i++)
-          {
-            char_data* ch = &vt->text[y * uInt(vt->width) + i];
-
-            if ( ch->no_changes )
-              count++;
-            else
-              break;
-          }
-
-          if ( count > uInt(cursor_addres_lengths) )
-          {
-            setTermXY (int(x + count), int(y));
-            x = x + count - 1;
-            continue;
-          }
-        }
-
-        // Erase a number of characters to draw simple whitespaces
-        if ( ec && print_char->code == ' ' )
-        {
-          uInt whitespace = 1;
-          bool normal = isNormal(print_char);
-
-          for (uInt i=x+1; i <= xmax; i++)
-          {
-            char_data* ch = &vt->text[y * uInt(vt->width) + i];
-
-            if ( *print_char == *ch )
-              whitespace++;
-            else
-              break;
-          }
-
-          if ( whitespace == 1 )
-          {
-            appendCharacter (print_char);
-            markAsPrinted (x, y);
-          }
-          else
-          {
-            uInt start_pos = x;
-
-            if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
-                && (ut || normal) )
-            {
-              appendAttributes (print_char);
-              appendOutputBuffer (tparm(ec, whitespace));
-
-              if ( x + whitespace - 1 < xmax || draw_tailing_ws )
-                setTermXY (int(x + whitespace), int(y));
-              else
-                break;
-
-              x = x + whitespace - 1;
-            }
-            else
-            {
-              x--;
-
-              for (uInt i=0; i < whitespace; i++, x++)
-                appendCharacter (print_char);
-            }
-
-            markAsPrinted (start_pos, x, y);
-          }
-        }
-        else if ( rp )  // Repeat one character n-fold
-        {
-          uInt repetitions = 1;
-
-          for (uInt i=x+1; i <= xmax; i++)
-          {
-            char_data* ch = &vt->text[y * uInt(vt->width) + i];
-
-            if ( *print_char == *ch )
-              repetitions++;
-            else
-              break;
-          }
-
-          if ( repetitions == 1 )
-          {
-            appendCharacter (print_char);
-            markAsPrinted (x, y);
-          }
-          else
-          {
-            uInt start_pos = x;
-
-            if ( repetitions > uInt(repeat_char_length)
-                && print_char->code < 128 )
-            {
-              newFontChanges (print_char);
-              charsetChanges (print_char);
-              appendAttributes (print_char);
-              appendOutputBuffer (tparm(rp, print_char->code, repetitions));
-              term_pos->x_ref() += short(repetitions);
-              x = x + repetitions - 1;
-            }
-            else
-            {
-              x--;
-
-              for (uInt i=0; i < repetitions; i++, x++)
-                appendCharacter (print_char);
-            }
-
-            markAsPrinted (start_pos, x, y);
-          }
-        }
-        else  // General character output
-        {
-          appendCharacter (print_char);
-          markAsPrinted (x, y);
-        }
-      }
-
-      if ( draw_tailing_ws )
-      {
-        appendAttributes (last_char);
-        appendOutputBuffer (ce);
-        markAsPrinted (xmax+1, uInt(vt->width - 1), y);
-      }
-    }
-
-    // Reset line changes
-    xmin = uInt(vt->width);
-    xmax = 0;
-  }
-
-  // cursor wrap
-  if ( term_pos->getX() > term_width )
-  {
-    if ( term_pos->getY() == term_height )
-      term_pos->x_ref()--;
-    else
-    {
-      if ( FTermcap::eat_nl_glitch )
-      {
-        term_pos->setPoint(-1,-1);
-      }
-      else if ( FTermcap::automatic_right_margin )
-      {
-        term_pos->setX(0);
-        term_pos->y_ref()++;
-      }
-      else
-        term_pos->x_ref()--;
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-bool FVTerm::updateTerminalCursor()
-{
-  // Updates the input cursor visibility and the position
-  if ( vterm && vterm->input_cursor_visible )
-  {
-    int x = vterm->input_cursor_x;
-    int y = vterm->input_cursor_y;
-
-    if ( isInsideTerminal(x, y) )
-    {
-      setTermXY (x,y);
-      showCursor();
-      return true;
-    }
-  }
-  else
-    hideCursor();
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::processTerminalUpdate()
-{
-  // Retains terminal updates if there are unprocessed inputs
-  static const int max_skip = 8;
-
-  if ( terminal_update_pending )
-  {
-    if ( ! unprocessedInput() )
-    {
-      updateTerminal();
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else if ( skipped_terminal_update > max_skip )
-    {
-      force_terminal_update = true;
-      updateTerminal();
-      force_terminal_update = false;
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else
-      skipped_terminal_update++;
-  }
-}
-
-//----------------------------------------------------------------------
-bool FVTerm::isInsideTerminal (int x, int y)
-{
-  // Check whether the coordinates are within the virtual terminal
-  FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
-
-  if ( term_geometry.contains(x,y) )
-    return true;
-  else
-    return false;
 }
 
 //----------------------------------------------------------------------
@@ -996,214 +615,6 @@ int FVTerm::print (term_area* area, register int c)
   }
 
   return 1;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::newFontChanges (char_data*& next_char)
-{
-  // NewFont special cases
-  if ( NewFont )
-  {
-    switch ( next_char->code )
-    {
-      case fc::LowerHalfBlock:
-        next_char->code = fc::UpperHalfBlock;
-        // fall through
-      case fc::NF_rev_left_arrow2:
-      case fc::NF_rev_right_arrow2:
-      case fc::NF_rev_border_corner_upper_right:
-      case fc::NF_rev_border_line_right:
-      case fc::NF_rev_border_line_vertical_left:
-      case fc::NF_rev_border_corner_lower_right:
-      case fc::NF_rev_up_arrow2:
-      case fc::NF_rev_down_arrow2:
-      case fc::NF_rev_up_arrow1:
-      case fc::NF_rev_down_arrow1:
-      case fc::NF_rev_left_arrow1:
-      case fc::NF_rev_right_arrow1:
-      case fc::NF_rev_menu_button1:
-      case fc::NF_rev_menu_button2:
-      case fc::NF_rev_up_pointing_triangle1:
-      case fc::NF_rev_down_pointing_triangle1:
-      case fc::NF_rev_up_pointing_triangle2:
-      case fc::NF_rev_down_pointing_triangle2:
-      case fc::NF_rev_menu_button3:
-      case fc::NF_rev_border_line_right_and_left:
-        // swap foreground and background color
-        std::swap (next_char->fg_color, next_char->bg_color);
-        break;
-
-      default:
-        break;
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::charsetChanges (char_data*& next_char)
-{
-  if ( Encoding == fc::UTF8 )
-    return;
-
-  uInt code = uInt(next_char->code);
-  uInt ch = charEncode(code);
-
-  if ( ch != code )
-  {
-    if ( ch == 0 )
-    {
-      next_char->code = int(charEncode(code, fc::ASCII));
-      return;
-    }
-
-    next_char->code = int(ch);
-
-    if ( Encoding == fc::VT100 )
-      next_char->alt_charset = true;
-    else if ( Encoding == fc::PC )
-    {
-      next_char->pc_charset = true;
-
-      if ( isXTerminal() && hasUTF8() && ch < 0x20 )  // Character 0x00..0x1f
-        next_char->code = int(charEncode(code, fc::ASCII));
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendCharacter (char_data*& next_char)
-{
-  int term_width = vterm->width - 1;
-  int term_height = vterm->height - 1;
-
-  if ( term_pos->getX() == term_width
-      && term_pos->getY() == term_height )
-    appendLowerRight (next_char);
-  else
-    appendChar (next_char);
-
-  term_pos->x_ref()++;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendChar (char_data*& next_char)
-{
-  newFontChanges (next_char);
-  charsetChanges (next_char);
-
-  appendAttributes (next_char);
-  appendOutputBuffer (next_char->code);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendAttributes (char_data*& next_attr)
-{
-  char* attr_str;
-  char_data* term_attr = &term_attribute;
-
-  // generate attribute string for the next character
-  attr_str = changeAttribute (term_attr, next_attr);
-
-  if ( attr_str )
-    appendOutputBuffer (attr_str);
-}
-
-//----------------------------------------------------------------------
-int FVTerm::appendLowerRight (char_data*& screen_char)
-{
-  char* SA = tcap[fc::t_enter_am_mode].string;
-  char* RA = tcap[fc::t_exit_am_mode].string;
-
-  if ( ! FTermcap::automatic_right_margin )
-  {
-    appendChar (screen_char);
-  }
-  else if ( SA && RA )
-  {
-    appendOutputBuffer (RA);
-    appendChar (screen_char);
-    appendOutputBuffer (SA);
-  }
-  else
-  {
-    int x, y;
-    char* IC = tcap[fc::t_parm_ich].string;
-    char* im = tcap[fc::t_enter_insert_mode].string;
-    char* ei = tcap[fc::t_exit_insert_mode].string;
-    char* ip = tcap[fc::t_insert_padding].string;
-    char* ic = tcap[fc::t_insert_character].string;
-
-    x = getColumnNumber() - 2;
-    y = getLineNumber() - 1;
-    setTermXY (x, y);
-    appendChar (screen_char);
-    term_pos->x_ref()++;
-
-    setTermXY (x, y);
-    screen_char--;
-
-    if ( IC )
-    {
-      appendOutputBuffer (tparm(IC, 1));
-      appendChar (screen_char);
-    }
-    else if ( im && ei )
-    {
-      appendOutputBuffer (im);
-      appendChar (screen_char);
-
-      if ( ip )
-        appendOutputBuffer (ip);
-
-      appendOutputBuffer (ei);
-    }
-    else if ( ic )
-    {
-      appendOutputBuffer (ic);
-      appendChar (screen_char);
-
-      if ( ip )
-        appendOutputBuffer (ip);
-    }
-  }
-
-  return screen_char->code;
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (std::string& s)
-{
-  const char* c_string = s.c_str();
-  tputs (c_string, 1, appendOutputBuffer);
-}
-
-//----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const char* s)
-{
-  tputs (s, 1, appendOutputBuffer);
-}
-
-//----------------------------------------------------------------------
-int FVTerm::appendOutputBuffer (int ch)
-{
-  output_buffer->push(ch);
-
-  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
-    flush_out();
-
-  return ch;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::flush_out()
-{
-  while ( ! output_buffer->empty() )
-  {
-    Fputchar (output_buffer->front());
-    output_buffer->pop();
-  }
-
-  std::fflush(stdout);
 }
 
 
@@ -2446,6 +1857,33 @@ FVTerm::char_data FVTerm::getOverlappedCharacter ( int x
 }
 
 //----------------------------------------------------------------------
+void FVTerm::processTerminalUpdate()
+{
+  // Retains terminal updates if there are unprocessed inputs
+  static const int max_skip = 8;
+
+  if ( terminal_update_pending )
+  {
+    if ( ! unprocessedInput() )
+    {
+      updateTerminal();
+      terminal_update_pending = false;
+      skipped_terminal_update = 0;
+    }
+    else if ( skipped_terminal_update > max_skip )
+    {
+      force_terminal_update = true;
+      updateTerminal();
+      force_terminal_update = false;
+      terminal_update_pending = false;
+      skipped_terminal_update = 0;
+    }
+    else
+      skipped_terminal_update++;
+  }
+}
+
+//----------------------------------------------------------------------
 void FVTerm::startTerminalUpdate()
 {
   // Pauses the terminal updates for the printing phase
@@ -2457,6 +1895,18 @@ void FVTerm::finishTerminalUpdate()
 {
   // After the printing phase is completed, the terminal will be updated
   terminal_update_complete = true;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::flush_out()
+{
+  while ( ! output_buffer->empty() )
+  {
+    Fputchar (output_buffer->front());
+    output_buffer->pop();
+  }
+
+  std::fflush(stdout);
 }
 
 
@@ -2569,6 +2019,366 @@ void FVTerm::finish()
 }
 
 //----------------------------------------------------------------------
+bool FVTerm::clearTerm (int fillchar)
+{
+  // Clear the real terminal and put cursor at home
+  char*& cl = tcap[fc::t_clear_screen].string;
+  char*& cd = tcap[fc::t_clr_eos].string;
+  char*& cb = tcap[fc::t_clr_eol].string;
+  bool ut = FTermcap::background_color_erase;
+  char_data* next = &next_attribute;
+  bool normal = isNormal(next);
+  appendAttributes(next);
+
+  if ( ! ( (cl || cd || cb) && (normal || ut) )
+      || fillchar != ' ' )
+  {
+    return false;
+  }
+
+  if ( cl )
+  {
+    appendOutputBuffer (cl);
+    term_pos->setPoint(0,0);
+  }
+  else if ( cd )
+  {
+    setTermXY (0, 0);
+    appendOutputBuffer (cd);
+    term_pos->setPoint(-1,-1);
+  }
+  else if ( cb )
+  {
+    term_pos->setPoint(-1,-1);
+
+    for (int i=0; i < getLineNumber(); i++)
+    {
+      setTermXY (0, i);
+      appendOutputBuffer (cb);
+    }
+
+    setTermXY (0,0);
+  }
+
+  flush_out();
+  return true;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateTerminalLine (uInt y)
+{
+  // Updates pending changes from line y to the terminal
+  term_area* vt = vterm;
+  uInt& xmin = vt->changes[y].xmin;
+  uInt& xmax = vt->changes[y].xmax;
+  int term_width = vt->width - 1;
+  int term_height = vt->height - 1;
+
+  if ( xmin <= xmax )
+  {
+    bool is_eol_clean = false;
+    bool draw_leading_ws = false;
+    bool draw_tailing_ws = false;
+    char*& ce = tcap[fc::t_clr_eol].string;
+    char*& cb = tcap[fc::t_clr_bol].string;
+    char*& ec = tcap[fc::t_erase_chars].string;
+    char*& rp = tcap[fc::t_repeat_char].string;
+    bool ut = FTermcap::background_color_erase;
+    char_data* first_char = &vt->text[y * uInt(vt->width)];
+    char_data* last_char  = &vt->text[(y+1) * uInt(vt->width) - 1];
+    char_data* min_char   = &vt->text[y * uInt(vt->width) + xmin];
+
+    // Is the line from xmin to the end of the line blank?
+    if ( ce && min_char->code == ' ' )
+    {
+      uInt beginning_whitespace = 1;
+      bool normal = isNormal(min_char);
+
+      for (uInt x=xmin+1; x < uInt(vt->width); x++)
+      {
+        char_data* ch = &vt->text[y * uInt(vt->width) + x];
+
+        if ( *min_char == *ch )
+          beginning_whitespace++;
+        else
+          break;
+      }
+
+      if ( beginning_whitespace == uInt(vt->width) - xmin
+          && (ut || normal)
+          && clr_eol_length < int(beginning_whitespace) )
+        is_eol_clean = true;
+    }
+
+    if ( ! is_eol_clean )
+    {
+      // leading whitespace
+      if ( cb && first_char->code == ' ' )
+      {
+        uInt leading_whitespace = 1;
+        bool normal = isNormal(first_char);
+
+        for (uInt x=1; x < uInt(vt->width); x++)
+        {
+          char_data* ch = &vt->text[y * uInt(vt->width) + x];
+
+          if ( *first_char == *ch )
+            leading_whitespace++;
+          else
+            break;
+        }
+
+        if ( leading_whitespace > xmin
+            && (ut || normal)
+            && clr_bol_length < int(leading_whitespace) )
+        {
+          draw_leading_ws = true;
+          xmin = leading_whitespace - 1;
+        }
+      }
+
+      // tailing whitespace
+      if ( ce && last_char->code == ' ' )
+      {
+        uInt tailing_whitespace = 1;
+        bool normal = isNormal(last_char);
+
+        for (uInt x=uInt(vt->width)-1; x >  0 ; x--)
+        {
+          char_data* ch = &vt->text[y * uInt(vt->width) + x];
+
+          if ( *last_char == *ch )
+            tailing_whitespace++;
+          else
+            break;
+        }
+
+        if ( tailing_whitespace > uInt(vt->width) - xmax
+            && (ut || normal)
+            && clr_bol_length < int(tailing_whitespace) )
+        {
+          draw_tailing_ws = true;
+          xmax = uInt(vt->width) - tailing_whitespace;
+        }
+      }
+    }
+
+    setTermXY (int(xmin), int(y));
+
+    if ( is_eol_clean )
+    {
+      appendAttributes (min_char);
+      appendOutputBuffer (ce);
+      markAsPrinted (xmin, uInt(vt->width - 1), y);
+    }
+    else
+    {
+      if ( draw_leading_ws )
+      {
+        appendAttributes (first_char);
+        appendOutputBuffer (cb);
+        markAsPrinted (0, xmin, y);
+      }
+
+      for (uInt x=xmin; x <= xmax; x++)
+      {
+        char_data* print_char;
+        print_char = &vt->text[y * uInt(vt->width) + x];
+        print_char->printed = true;
+
+        // skip character with no changes
+       if ( print_char->no_changes )
+        {
+          uInt count = 1;
+
+          for (uInt i=x+1; i <= xmax; i++)
+          {
+            char_data* ch = &vt->text[y * uInt(vt->width) + i];
+
+            if ( ch->no_changes )
+              count++;
+            else
+              break;
+          }
+
+          if ( count > uInt(cursor_addres_lengths) )
+          {
+            setTermXY (int(x + count), int(y));
+            x = x + count - 1;
+            continue;
+          }
+        }
+
+        // Erase a number of characters to draw simple whitespaces
+        if ( ec && print_char->code == ' ' )
+        {
+          uInt whitespace = 1;
+          bool normal = isNormal(print_char);
+
+          for (uInt i=x+1; i <= xmax; i++)
+          {
+            char_data* ch = &vt->text[y * uInt(vt->width) + i];
+
+            if ( *print_char == *ch )
+              whitespace++;
+            else
+              break;
+          }
+
+          if ( whitespace == 1 )
+          {
+            appendCharacter (print_char);
+            markAsPrinted (x, y);
+          }
+          else
+          {
+            uInt start_pos = x;
+
+            if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
+                && (ut || normal) )
+            {
+              appendAttributes (print_char);
+              appendOutputBuffer (tparm(ec, whitespace));
+
+              if ( x + whitespace - 1 < xmax || draw_tailing_ws )
+                setTermXY (int(x + whitespace), int(y));
+              else
+                break;
+
+              x = x + whitespace - 1;
+            }
+            else
+            {
+              x--;
+
+              for (uInt i=0; i < whitespace; i++, x++)
+                appendCharacter (print_char);
+            }
+
+            markAsPrinted (start_pos, x, y);
+          }
+        }
+        else if ( rp )  // Repeat one character n-fold
+        {
+          uInt repetitions = 1;
+
+          for (uInt i=x+1; i <= xmax; i++)
+          {
+            char_data* ch = &vt->text[y * uInt(vt->width) + i];
+
+            if ( *print_char == *ch )
+              repetitions++;
+            else
+              break;
+          }
+
+          if ( repetitions == 1 )
+          {
+            appendCharacter (print_char);
+            markAsPrinted (x, y);
+          }
+          else
+          {
+            uInt start_pos = x;
+
+            if ( repetitions > uInt(repeat_char_length)
+                && print_char->code < 128 )
+            {
+              newFontChanges (print_char);
+              charsetChanges (print_char);
+              appendAttributes (print_char);
+              appendOutputBuffer (tparm(rp, print_char->code, repetitions));
+              term_pos->x_ref() += short(repetitions);
+              x = x + repetitions - 1;
+            }
+            else
+            {
+              x--;
+
+              for (uInt i=0; i < repetitions; i++, x++)
+                appendCharacter (print_char);
+            }
+
+            markAsPrinted (start_pos, x, y);
+          }
+        }
+        else  // General character output
+        {
+          appendCharacter (print_char);
+          markAsPrinted (x, y);
+        }
+      }
+
+      if ( draw_tailing_ws )
+      {
+        appendAttributes (last_char);
+        appendOutputBuffer (ce);
+        markAsPrinted (xmax+1, uInt(vt->width - 1), y);
+      }
+    }
+
+    // Reset line changes
+    xmin = uInt(vt->width);
+    xmax = 0;
+  }
+
+  // cursor wrap
+  if ( term_pos->getX() > term_width )
+  {
+    if ( term_pos->getY() == term_height )
+      term_pos->x_ref()--;
+    else
+    {
+      if ( FTermcap::eat_nl_glitch )
+      {
+        term_pos->setPoint(-1,-1);
+      }
+      else if ( FTermcap::automatic_right_margin )
+      {
+        term_pos->setX(0);
+        term_pos->y_ref()++;
+      }
+      else
+        term_pos->x_ref()--;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+bool FVTerm::updateTerminalCursor()
+{
+  // Updates the input cursor visibility and the position
+  if ( vterm && vterm->input_cursor_visible )
+  {
+    int x = vterm->input_cursor_x;
+    int y = vterm->input_cursor_y;
+
+    if ( isInsideTerminal(x, y) )
+    {
+      setTermXY (x,y);
+      showCursor();
+      return true;
+    }
+  }
+  else
+    hideCursor();
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool FVTerm::isInsideTerminal (int x, int y)
+{
+  // Check whether the coordinates are within the virtual terminal
+  FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
+
+  if ( term_geometry.contains(x,y) )
+    return true;
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
 inline void FVTerm::markAsPrinted (uInt pos, uInt line)
 {
   // Marks a character as printed
@@ -2583,4 +2393,200 @@ inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
 
   for (uInt x=from; x <= to; x++)
     vterm->text[line * uInt(vterm->width) + x].printed = true;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::newFontChanges (char_data*& next_char)
+{
+  // NewFont special cases
+  if ( NewFont )
+  {
+    switch ( next_char->code )
+    {
+      case fc::LowerHalfBlock:
+        next_char->code = fc::UpperHalfBlock;
+        // fall through
+      case fc::NF_rev_left_arrow2:
+      case fc::NF_rev_right_arrow2:
+      case fc::NF_rev_border_corner_upper_right:
+      case fc::NF_rev_border_line_right:
+      case fc::NF_rev_border_line_vertical_left:
+      case fc::NF_rev_border_corner_lower_right:
+      case fc::NF_rev_up_arrow2:
+      case fc::NF_rev_down_arrow2:
+      case fc::NF_rev_up_arrow1:
+      case fc::NF_rev_down_arrow1:
+      case fc::NF_rev_left_arrow1:
+      case fc::NF_rev_right_arrow1:
+      case fc::NF_rev_menu_button1:
+      case fc::NF_rev_menu_button2:
+      case fc::NF_rev_up_pointing_triangle1:
+      case fc::NF_rev_down_pointing_triangle1:
+      case fc::NF_rev_up_pointing_triangle2:
+      case fc::NF_rev_down_pointing_triangle2:
+      case fc::NF_rev_menu_button3:
+      case fc::NF_rev_border_line_right_and_left:
+        // swap foreground and background color
+        std::swap (next_char->fg_color, next_char->bg_color);
+        break;
+
+      default:
+        break;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::charsetChanges (char_data*& next_char)
+{
+  if ( Encoding == fc::UTF8 )
+    return;
+
+  uInt code = uInt(next_char->code);
+  uInt ch = charEncode(code);
+
+  if ( ch != code )
+  {
+    if ( ch == 0 )
+    {
+      next_char->code = int(charEncode(code, fc::ASCII));
+      return;
+    }
+
+    next_char->code = int(ch);
+
+    if ( Encoding == fc::VT100 )
+      next_char->alt_charset = true;
+    else if ( Encoding == fc::PC )
+    {
+      next_char->pc_charset = true;
+
+      if ( isXTerminal() && hasUTF8() && ch < 0x20 )  // Character 0x00..0x1f
+        next_char->code = int(charEncode(code, fc::ASCII));
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendCharacter (char_data*& next_char)
+{
+  int term_width = vterm->width - 1;
+  int term_height = vterm->height - 1;
+
+  if ( term_pos->getX() == term_width
+      && term_pos->getY() == term_height )
+    appendLowerRight (next_char);
+  else
+    appendChar (next_char);
+
+  term_pos->x_ref()++;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendChar (char_data*& next_char)
+{
+  newFontChanges (next_char);
+  charsetChanges (next_char);
+
+  appendAttributes (next_char);
+  appendOutputBuffer (next_char->code);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendAttributes (char_data*& next_attr)
+{
+  char* attr_str;
+  char_data* term_attr = &term_attribute;
+
+  // generate attribute string for the next character
+  attr_str = changeAttribute (term_attr, next_attr);
+
+  if ( attr_str )
+    appendOutputBuffer (attr_str);
+}
+
+//----------------------------------------------------------------------
+int FVTerm::appendLowerRight (char_data*& screen_char)
+{
+  char* SA = tcap[fc::t_enter_am_mode].string;
+  char* RA = tcap[fc::t_exit_am_mode].string;
+
+  if ( ! FTermcap::automatic_right_margin )
+  {
+    appendChar (screen_char);
+  }
+  else if ( SA && RA )
+  {
+    appendOutputBuffer (RA);
+    appendChar (screen_char);
+    appendOutputBuffer (SA);
+  }
+  else
+  {
+    int x, y;
+    char* IC = tcap[fc::t_parm_ich].string;
+    char* im = tcap[fc::t_enter_insert_mode].string;
+    char* ei = tcap[fc::t_exit_insert_mode].string;
+    char* ip = tcap[fc::t_insert_padding].string;
+    char* ic = tcap[fc::t_insert_character].string;
+
+    x = getColumnNumber() - 2;
+    y = getLineNumber() - 1;
+    setTermXY (x, y);
+    appendChar (screen_char);
+    term_pos->x_ref()++;
+
+    setTermXY (x, y);
+    screen_char--;
+
+    if ( IC )
+    {
+      appendOutputBuffer (tparm(IC, 1));
+      appendChar (screen_char);
+    }
+    else if ( im && ei )
+    {
+      appendOutputBuffer (im);
+      appendChar (screen_char);
+
+      if ( ip )
+        appendOutputBuffer (ip);
+
+      appendOutputBuffer (ei);
+    }
+    else if ( ic )
+    {
+      appendOutputBuffer (ic);
+      appendChar (screen_char);
+
+      if ( ip )
+        appendOutputBuffer (ip);
+    }
+  }
+
+  return screen_char->code;
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendOutputBuffer (std::string& s)
+{
+  const char* c_string = s.c_str();
+  tputs (c_string, 1, appendOutputBuffer);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::appendOutputBuffer (const char* s)
+{
+  tputs (s, 1, appendOutputBuffer);
+}
+
+//----------------------------------------------------------------------
+int FVTerm::appendOutputBuffer (int ch)
+{
+  output_buffer->push(ch);
+
+  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
+    flush_out();
+
+  return ch;
 }

@@ -138,7 +138,7 @@ int main (int argc, char* argv[])
 
   terminal->setTermXY(0,0);
   terminal->setNormal();
-  terminal->clearTerm();
+  terminal->clearArea();
 
   std::cout << "Terminal: " << terminal->getTermType() << "\r\n";
   std::cout << " Columns: 0.." << xmax << "\r\n";
