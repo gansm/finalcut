@@ -190,7 +190,7 @@ class FVTerm : public FObject, public FTerm
    static bool         isInheritBackground();
 
    // Methods
-   void                clearArea (int = ' ');
+   virtual void        clearArea (int = ' ');
    void                createVTerm (const FRect&);
    void                createVTerm (int, int);
    static void         resizeVTerm (const FRect&);
@@ -228,6 +228,9 @@ class FVTerm : public FObject, public FTerm
      overlapped_character,
      covered_character
    };
+
+   // Accessor
+   virtual term_area*   getPrintArea();
 
    // Methods
    void                 createArea ( const FRect&
@@ -314,9 +317,6 @@ class FVTerm : public FObject, public FTerm
 
    // Disable assignment operator (=)
    FVTerm& operator = (const FVTerm&);
-
-   // Accessor
-   term_area*              getPrintArea();
 
    // Mutators
    void                    setPrintArea (term_area*);

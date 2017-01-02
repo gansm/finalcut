@@ -387,10 +387,10 @@ int FVTerm::print (term_area* area, FString& s)
     while ( *p )
     {
       int width, height, rsh, bsh;
-      width    = area->width;
-      height   = area->height;
-      rsh      = area->right_shadow;
-      bsh      = area->bottom_shadow;
+      width  = area->width;
+      height = area->height;
+      rsh    = area->right_shadow;
+      bsh    = area->bottom_shadow;
 
       switch ( *p )
       {
@@ -532,12 +532,12 @@ int FVTerm::print (term_area* area, register int c)
   if ( ! area )
     return -1;
 
-  width    = area->width;
-  height   = area->height;
-  rsh      = area->right_shadow;
-  bsh      = area->bottom_shadow;
-  ax       = area->cursor_x - 1;
-  ay       = area->cursor_y - 1;
+  width  = area->width;
+  height = area->height;
+  rsh    = area->right_shadow;
+  bsh    = area->bottom_shadow;
+  ax     = area->cursor_x - 1;
+  ay     = area->cursor_y - 1;
 
   nc.code          = c;
   nc.fg_color      = next_attribute.fg_color;
@@ -620,6 +620,34 @@ int FVTerm::print (term_area* area, register int c)
 
 // protected methods of FVTerm
 //----------------------------------------------------------------------
+FVTerm::term_area* FVTerm::getPrintArea()
+{
+  // returns the print area of this object
+
+  if ( print_area )
+    return print_area;
+  else
+  {
+    FVTerm* obj = static_cast<FVTerm*>(this);
+    FVTerm* p_obj = static_cast<FVTerm*>(obj->getParent());
+
+    while ( ! obj->vwin && p_obj )
+    {
+      obj = p_obj;
+      p_obj = static_cast<FVTerm*>(p_obj->getParent());
+    }
+
+    if ( obj->vwin )
+    {
+      print_area = obj->vwin;
+      return print_area;
+    }
+  }
+
+  return vdesktop;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::createArea ( const FRect& r
                         , const FPoint& p
                         , term_area*& area )
@@ -640,6 +668,7 @@ void FVTerm::createArea ( int x_offset, int y_offset
                         , term_area*& area )
 {
   // initialize virtual window
+
   area = new term_area;
 
   area->x_offset             = 0;
@@ -1911,33 +1940,6 @@ void FVTerm::flush_out()
 
 
 // private methods of FVTerm
-//----------------------------------------------------------------------
-FVTerm::term_area* FVTerm::getPrintArea()
-{
-  // returns the print area of this object
-  if ( print_area )
-    return print_area;
-  else
-  {
-    FVTerm* obj = static_cast<FVTerm*>(this);
-    FVTerm* p_obj = static_cast<FVTerm*>(obj->getParent());
-
-    while ( ! obj->vwin && p_obj )
-    {
-      obj = p_obj;
-      p_obj = static_cast<FVTerm*>(p_obj->getParent());
-    }
-
-    if ( obj->vwin )
-    {
-      print_area = obj->vwin;
-      return print_area;
-    }
-  }
-
-  return vdesktop;
-}
-
 //----------------------------------------------------------------------
 void FVTerm::init()
 {

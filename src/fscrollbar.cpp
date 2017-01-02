@@ -216,7 +216,7 @@ void FScrollbar::calculateSliderValues()
   }
 
   slider_pos = int( round ( float((bar_length - slider_length) * val)
-                         / float(max - min) ) );
+                           / float(max - min) ) );
 
   if ( slider_pos < 0 )
     slider_pos = 0;
@@ -581,6 +581,14 @@ void FScrollbar::onTimer (FTimerEvent*)
       || ( scroll_type == FScrollbar::scrollPageForward
           && slider_pos+slider_length > slider_click_stop_pos ) )
   {
+    // Scroll to the end
+    if ( scroll_type == FScrollbar::scrollPageForward
+        && slider_pos+slider_length > slider_click_stop_pos )
+    {
+      setValue(max);
+      processScroll();
+    }
+
     delOwnTimer();
     return;
   }
@@ -691,7 +699,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       if ( y >1 && y < getHeight() )
       {
         new_val = int( round ( float(max - min) * (y - 2.0 - (slider_length/2))
-                             / float(bar_length - slider_length) ) );
+                              / float(bar_length - slider_length) ) );
       }
       else
         return;
@@ -703,7 +711,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       if ( x > 1+nf && x < getWidth()-nf )
       {
         new_val = int( round ( float(max - min) * (x - 2.0 - nf - (slider_length/2))
-                             / float(bar_length - slider_length) ) );
+                              / float(bar_length - slider_length) ) );
       }
       else
         return;

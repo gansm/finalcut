@@ -133,10 +133,10 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	ftogglebutton.lo fradiobutton.lo fcheckbox.lo fswitch.lo \
 	flabel.lo flistbox.lo fmenu.lo fdialoglistmenu.lo fmenubar.lo \
 	fmenuitem.lo fradiomenuitem.lo fcheckmenuitem.lo fmenulist.lo \
-	fdialog.lo fwindow.lo fmessagebox.lo ftooltip.lo \
-	ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo fvterm.lo \
-	fevent.lo foptiattr.lo foptimove.lo fapp.lo fwidget.lo \
-	fobject.lo
+	fdialog.lo fscrollview.lo fwindow.lo fmessagebox.lo \
+	ftooltip.lo ffiledialog.lo ftextview.lo fstatusbar.lo fterm.lo \
+	fvterm.lo fevent.lo foptiattr.lo foptimove.lo fapp.lo \
+	fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -396,6 +396,7 @@ libfinal_la_SOURCES = \
 	fcheckmenuitem.cpp \
 	fmenulist.cpp \
 	fdialog.cpp \
+	fscrollview.cpp \
 	fwindow.cpp \
 	fmessagebox.cpp \
 	ftooltip.cpp \
@@ -447,6 +448,7 @@ finalcutinclude_HEADERS = \
 	fradiobutton.h \
 	frect.h \
 	fscrollbar.h \
+	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
 	ftcap_map.h \
@@ -562,6 +564,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fradiomenuitem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/frect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fscrollbar.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fscrollview.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstatusbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fswitch.Plo@am__quote@

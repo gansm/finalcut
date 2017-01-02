@@ -30,6 +30,7 @@ test/opti-move
 test/hello
 test/watch
 test/menu
+test/scrollview
 test/windows
 test/term-attributes
 test/transparent

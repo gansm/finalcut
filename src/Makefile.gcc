@@ -35,6 +35,7 @@ INCLUDE_HEADERS = \
 	fradiobutton.h \
 	frect.h \
 	fscrollbar.h \
+	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
 	fterm.h \
@@ -77,6 +78,7 @@ OBJS = \
 	fcheckmenuitem.o \
 	fmenulist.o \
 	fdialog.o \
+	fscrollview.o \
 	fwindow.o \
 	fmessagebox.o \
 	ftooltip.o \

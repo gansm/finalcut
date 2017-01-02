@@ -20,7 +20,7 @@ class Mandelbrot : public FDialog
    // Destructor
   ~Mandelbrot();
 
-   // Callback methods
+   // Event handlers
    void onAccel (FAccelEvent*);
    void onClose (FCloseEvent*);
 

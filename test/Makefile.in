@@ -86,8 +86,8 @@ noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
 	opti-move$(EXEEXT) string-operations$(EXEEXT) \
 	mandelbrot$(EXEEXT) calculator$(EXEEXT) watch$(EXEEXT) \
 	term-attributes$(EXEEXT) transparent$(EXEEXT) \
-	keyboard$(EXEEXT) timer$(EXEEXT) windows$(EXEEXT) \
-	menu$(EXEEXT) ui$(EXEEXT)
+	keyboard$(EXEEXT) timer$(EXEEXT) scrollview$(EXEEXT) \
+	windows$(EXEEXT) menu$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -131,6 +131,9 @@ menu_LDADD = $(LDADD)
 am_opti_move_OBJECTS = opti-move.$(OBJEXT)
 opti_move_OBJECTS = $(am_opti_move_OBJECTS)
 opti_move_LDADD = $(LDADD)
+am_scrollview_OBJECTS = scrollview.$(OBJEXT)
+scrollview_OBJECTS = $(am_scrollview_OBJECTS)
+scrollview_LDADD = $(LDADD)
 am_string_operations_OBJECTS = string-operations.$(OBJEXT)
 string_operations_OBJECTS = $(am_string_operations_OBJECTS)
 string_operations_LDADD = $(LDADD)
@@ -189,15 +192,17 @@ am__v_CXXLD_1 =
 SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) $(hello_SOURCES) \
 	$(input_dialog_SOURCES) $(keyboard_SOURCES) \
 	$(mandelbrot_SOURCES) $(menu_SOURCES) $(opti_move_SOURCES) \
-	$(string_operations_SOURCES) $(term_attributes_SOURCES) \
-	$(timer_SOURCES) $(transparent_SOURCES) $(ui_SOURCES) \
-	$(watch_SOURCES) $(windows_SOURCES)
+	$(scrollview_SOURCES) $(string_operations_SOURCES) \
+	$(term_attributes_SOURCES) $(timer_SOURCES) \
+	$(transparent_SOURCES) $(ui_SOURCES) $(watch_SOURCES) \
+	$(windows_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(dialog_SOURCES) \
 	$(hello_SOURCES) $(input_dialog_SOURCES) $(keyboard_SOURCES) \
 	$(mandelbrot_SOURCES) $(menu_SOURCES) $(opti_move_SOURCES) \
-	$(string_operations_SOURCES) $(term_attributes_SOURCES) \
-	$(timer_SOURCES) $(transparent_SOURCES) $(ui_SOURCES) \
-	$(watch_SOURCES) $(windows_SOURCES)
+	$(scrollview_SOURCES) $(string_operations_SOURCES) \
+	$(term_attributes_SOURCES) $(timer_SOURCES) \
+	$(transparent_SOURCES) $(ui_SOURCES) $(watch_SOURCES) \
+	$(windows_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -358,6 +363,7 @@ term_attributes_SOURCES = term-attributes.cpp
 transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
+scrollview_SOURCES = scrollview.cpp
 windows_SOURCES = windows.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
@@ -437,6 +443,10 @@ opti-move$(EXEEXT): $(opti_move_OBJECTS) $(opti_move_DEPENDENCIES) $(EXTRA_opti_
 	@rm -f opti-move$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(opti_move_OBJECTS) $(opti_move_LDADD) $(LIBS)
 
+scrollview$(EXEEXT): $(scrollview_OBJECTS) $(scrollview_DEPENDENCIES) $(EXTRA_scrollview_DEPENDENCIES) 
+	@rm -f scrollview$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(scrollview_OBJECTS) $(scrollview_LDADD) $(LIBS)
+
 string-operations$(EXEEXT): $(string_operations_OBJECTS) $(string_operations_DEPENDENCIES) $(EXTRA_string_operations_DEPENDENCIES) 
 	@rm -f string-operations$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(string_operations_OBJECTS) $(string_operations_LDADD) $(LIBS)
@@ -479,6 +489,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mandelbrot.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opti-move.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scrollview.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string-operations.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/term-attributes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@

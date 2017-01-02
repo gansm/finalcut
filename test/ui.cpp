@@ -648,7 +648,7 @@ void MyDialog::cb_about (FWidget*, void*)
   FMessageBox info ( "About"
                    , line + L" The Final Cut " + line + "\n\n"
                      L"Version " + libver + "\n\n"
-                     L"(c) 2016 by Markus Gans"
+                     L"(c) 2017 by Markus Gans"
                    , FMessageBox::Ok, 0, 0, this );
   info.setCenterText();
   info.show();
@@ -893,7 +893,7 @@ void MyDialog::adjustSize()
 int main (int argc, char* argv[])
 {
   FString ver = F_VERSION;  // library version
-  FString title = "The FINAL CUT " + ver + " (C) 2016 by Markus Gans";
+  FString title = "The FINAL CUT " + ver + " (C) 2017 by Markus Gans";
 
   if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
                    || std::strcmp(argv[1], "-h") == 0 ) )

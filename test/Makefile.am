@@ -18,6 +18,7 @@ noinst_PROGRAMS = \
 	transparent \
 	keyboard \
 	timer \
+	scrollview \
 	windows \
 	menu \
 	ui
@@ -34,6 +35,7 @@ term_attributes_SOURCES = term-attributes.cpp
 transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp
 timer_SOURCES = timer.cpp
+scrollview_SOURCES = scrollview.cpp
 windows_SOURCES = windows.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp

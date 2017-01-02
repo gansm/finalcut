@@ -31,6 +31,7 @@ libfinal_la_SOURCES = \
 	fcheckmenuitem.cpp \
 	fmenulist.cpp \
 	fdialog.cpp \
+	fscrollview.cpp \
 	fwindow.cpp \
 	fmessagebox.cpp \
 	ftooltip.cpp \
@@ -84,6 +85,7 @@ finalcutinclude_HEADERS = \
 	fradiobutton.h \
 	frect.h \
 	fscrollbar.h \
+	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
 	ftcap_map.h \

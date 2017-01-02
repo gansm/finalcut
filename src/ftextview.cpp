@@ -494,7 +494,7 @@ void FTextView::onWheel (FWheelEvent* ev)
 
     case fc::WheelDown:
       {
-        int yoffset_end = last_line - getHeight() - nf_offset + 2;
+        int yoffset_end = last_line - getClientHeight();
 
         if ( yoffset_end < 0 )
           yoffset_end = 0;
@@ -599,8 +599,6 @@ void FTextView::adjustSize()
 //----------------------------------------------------------------------
 void FTextView::init()
 {
-  nf_offset = isNewFont() ? 1 : 0;
-
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
@@ -624,6 +622,12 @@ void FTextView::init()
     "change-value",
     _METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
   );
+
+  nf_offset = isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1 + nf_offset);
 }
 
 //----------------------------------------------------------------------
@@ -747,12 +751,16 @@ void FTextView::cb_VBarChange (FWidget*, void*)
   int distance = 1;
   int last_line = int(getRows());
   int yoffset_before = yoffset;
+  int yoffset_end = last_line - getClientHeight();
   scrollType = vbar->getScrollType();
 
   switch ( int(scrollType) )
   {
+    case FScrollbar::noScroll:
+      break;
+
     case FScrollbar::scrollPageBackward:
-      distance = getHeight() + nf_offset - 2;
+      distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepBackward:
       yoffset -= distance;
@@ -763,13 +771,16 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getHeight() + nf_offset - 2;
+      distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepForward:
       yoffset += distance;
 
-      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
-        yoffset = last_line - getHeight() - nf_offset + 2;
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
+
+      if ( yoffset < 0 )
+        yoffset = 0;
 
       break;
 
@@ -782,8 +793,8 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 
       yoffset = val;
 
-      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
-        yoffset = last_line - getHeight() - nf_offset + 2;
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -804,9 +815,6 @@ void FTextView::cb_VBarChange (FWidget*, void*)
       onWheel(&wheel_ev);
       break;
     }
-
-    default:
-      break;
   }
 
   if ( isVisible() )
@@ -830,15 +838,19 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 //----------------------------------------------------------------------
 void FTextView::cb_HBarChange (FWidget*, void*)
 {
+  FScrollbar::sType scrollType;
   int distance = 1;
   int xoffset_before = xoffset;
-  int xoffset_end = int(maxLineWidth) - getWidth() + nf_offset + 4;
-  int scrollType = hbar->getScrollType();
+  int xoffset_end = int(maxLineWidth) - getClientWidth();
+  scrollType = hbar->getScrollType();
 
   switch ( scrollType )
   {
+    case FScrollbar::noScroll:
+      break;
+
     case FScrollbar::scrollPageBackward:
-      distance = getWidth() - nf_offset - 4;
+      distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
@@ -849,13 +861,13 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getWidth() - nf_offset - 4;
+      distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
 
-      if ( xoffset > int(maxLineWidth) - getWidth() + nf_offset + 4 )
-        xoffset = int(maxLineWidth) - getWidth() + nf_offset + 4;
+      if ( xoffset > int(maxLineWidth) - getClientWidth() )
+        xoffset = int(maxLineWidth) - getClientWidth();
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -871,8 +883,8 @@ void FTextView::cb_HBarChange (FWidget*, void*)
 
       xoffset = val;
 
-      if ( xoffset > int(maxLineWidth) - getWidth() + nf_offset + 4 )
-        xoffset = int(maxLineWidth) - getWidth() + nf_offset + 4;
+      if ( xoffset > int(maxLineWidth) - getClientWidth() )
+        xoffset = int(maxLineWidth) - getClientWidth();
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -900,9 +912,6 @@ void FTextView::cb_HBarChange (FWidget*, void*)
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
 
-      break;
-
-    default:
       break;
   }
 

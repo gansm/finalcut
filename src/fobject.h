@@ -58,7 +58,6 @@ class FObject
 
    // Typedef
    typedef std::list<FObject*> object_list;
-   typedef std::vector<timer_data> TimerList;
 
    // Constructor
    explicit FObject (FObject* = 0);
@@ -89,13 +88,16 @@ class FObject
    bool                delOwnTimer();
    bool                delAllTimer();
 
-   // Data Members
-   static TimerList* timer_list;
-
  protected:
+   // Typedef
+   typedef std::vector<timer_data> TimerList;
+
    // Event handler
    virtual bool event (FEvent*);
    virtual void onTimer (FTimerEvent*);
+
+   // Data Members
+   static TimerList* timer_list;
 
  private:
    // Disable copy constructor

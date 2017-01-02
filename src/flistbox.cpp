@@ -386,9 +386,12 @@ void FListBox::clear()
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   int element_count = int(getCount());
+  int padding_space = 2; // 1 leading space + 1 tailing space
   int current_before = current;
   int xoffset_before = xoffset;
+  int xoffset_end = max_line_width - getClientWidth() + padding_space;
   int yoffset_before = yoffset;
+  int yoffset_end = element_count - getClientHeight();
   int key = ev->key();
 
   switch ( key )
@@ -419,7 +422,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       if ( current > element_count )
         current = element_count;
 
-      if ( current - yoffset >= getHeight() - 1 )
+      if ( current - yoffset > getClientHeight() )
         yoffset++;
 
       inc_search.clear();
@@ -439,8 +442,8 @@ void FListBox::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_right:
       xoffset++;
 
-      if ( xoffset > max_line_width - getWidth() + nf_offset + 4 )
-        xoffset = max_line_width - getWidth() + nf_offset + 4;
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -450,14 +453,14 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_ppage:
-      current -= getHeight()-3;
+      current -= getClientHeight() - 1;
 
       if ( current < 1 )
         current=1;
 
       if ( current <= yoffset )
       {
-        yoffset -= getHeight()-3;
+        yoffset -= getClientHeight() - 1;
 
         if ( yoffset < 0 )
           yoffset=0;
@@ -468,17 +471,17 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_npage:
-      current += getHeight()-3;
+      current += getClientHeight() - 1;
 
       if ( current > element_count )
         current = element_count;
 
-      if ( current - yoffset >= getHeight() - 1 )
+      if ( current - yoffset > getClientHeight() )
       {
-        yoffset += getHeight()-3;
+        yoffset += getClientHeight() - 1;
 
-        if ( yoffset > element_count - getHeight() + 2 )
-          yoffset = element_count - getHeight() + 2;
+        if ( yoffset > yoffset_end )
+          yoffset = yoffset_end;
       }
 
       inc_search.clear();
@@ -495,8 +498,8 @@ void FListBox::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_end:
       current = element_count;
 
-      if ( current >= getHeight() - 1 )
-        yoffset = element_count - getHeight() + 2;
+      if ( current > getClientHeight() )
+        yoffset = yoffset_end;
 
       inc_search.clear();
       ev->accept();
@@ -859,7 +862,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   {
     // drag up
     if ( drag_scroll != FListBox::noScroll
-        && scroll_distance < getHeight()-2 )
+        && scroll_distance < getClientHeight() )
       scroll_distance++;
 
     if ( ! scroll_timer && current > 1 )
@@ -883,7 +886,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   {
     // drag down
     if ( drag_scroll != FListBox::noScroll
-        && scroll_distance < getHeight()-2 )
+        && scroll_distance < getClientHeight() )
       scroll_distance++;
 
     if ( ! scroll_timer && current < int(getCount()) )
@@ -940,6 +943,7 @@ void FListBox::onTimer (FTimerEvent*)
   int element_count = int(getCount());
   int current_before = current;
   int yoffset_before = yoffset;
+  int yoffset_end = element_count - getClientHeight();
 
   switch ( int(drag_scroll) )
   {
@@ -979,11 +983,11 @@ void FListBox::onTimer (FTimerEvent*)
       if ( current > element_count )
         current = element_count;
 
-      if ( current - yoffset >= getHeight() - 1 )
+      if ( current - yoffset > getClientHeight() )
         yoffset += scroll_distance;
 
-      if ( yoffset > element_count - getHeight() + 2 )
-        yoffset = element_count - getHeight() + 2;
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
 
       break;
 
@@ -1047,7 +1051,7 @@ void FListBox::onWheel (FWheelEvent* ev)
   element_count = int(getCount());
   current_before = current;
   yoffset_before = yoffset;
-  yoffset_end = element_count - getHeight() + 2;
+  yoffset_end = element_count - getClientHeight();
 
   if ( yoffset_end < 0 )
     yoffset_end = 0;
@@ -1153,15 +1157,20 @@ void FListBox::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FListBox::cb_VBarChange (FWidget*, void*)
 {
+  FScrollbar::sType scrollType;
   int distance = 1;
   int element_count = int(getCount());
   int yoffset_before = yoffset;
-  int scrollType = vbar->getScrollType();
+  int yoffset_end = element_count - getClientHeight();
+  scrollType = vbar->getScrollType();
 
   switch ( scrollType )
   {
+    case FScrollbar::noScroll:
+      break;
+
     case FScrollbar::scrollPageBackward:
-      distance = getHeight()-2;
+      distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepBackward:
       current -= distance;
@@ -1178,7 +1187,7 @@ void FListBox::cb_VBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getHeight()-2;
+      distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepForward:
       current += distance;
@@ -1186,11 +1195,11 @@ void FListBox::cb_VBarChange (FWidget*, void*)
       if ( current > element_count )
         current = element_count;
 
-      if ( current - yoffset >= getHeight() - 1 )
+      if ( current - yoffset > getClientHeight() )
         yoffset += distance;
 
-      if ( yoffset > element_count - getHeight() + 2 )
-        yoffset = element_count - getHeight() + 2;
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
 
       break;
 
@@ -1204,8 +1213,8 @@ void FListBox::cb_VBarChange (FWidget*, void*)
       int c = current - yoffset;
       yoffset = val;
 
-      if ( yoffset > element_count - getHeight() + 2 )
-        yoffset = element_count - getHeight() + 2;
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -1234,9 +1243,6 @@ void FListBox::cb_VBarChange (FWidget*, void*)
       onWheel(&wheel_ev);
     }
     break;
-
-    default:
-      break;
   }
 
   if ( isVisible() )
@@ -1258,15 +1264,20 @@ void FListBox::cb_VBarChange (FWidget*, void*)
 //----------------------------------------------------------------------
 void FListBox::cb_HBarChange (FWidget*, void*)
 {
+  FScrollbar::sType scrollType;
   int distance = 1;
+  int padding_space = 2; // 1 leading space + 1 tailing space
   int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getWidth() + nf_offset + 4;
-  int scrollType = hbar->getScrollType();
+  int xoffset_end = max_line_width - getClientWidth() + padding_space;
+  scrollType = hbar->getScrollType();
 
   switch ( scrollType )
   {
+    case FScrollbar::noScroll:
+      break;
+
     case FScrollbar::scrollPageBackward:
-      distance = getWidth() - nf_offset - 4;
+      distance = getClientWidth() - padding_space;
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
@@ -1276,13 +1287,13 @@ void FListBox::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getWidth() - nf_offset - 4;
+      distance = getClientWidth() - padding_space;
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
 
-      if ( xoffset > max_line_width - getWidth() + nf_offset + 4 )
-        xoffset = max_line_width - getWidth() + nf_offset + 4;
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -1298,8 +1309,8 @@ void FListBox::cb_HBarChange (FWidget*, void*)
 
       xoffset = val;
 
-      if ( xoffset > max_line_width - getWidth() + nf_offset + 4 )
-        xoffset = max_line_width - getWidth() + nf_offset + 4;
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -1327,9 +1338,6 @@ void FListBox::cb_HBarChange (FWidget*, void*)
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
 
-      break;
-
-    default:
       break;
   }
 
@@ -1360,8 +1368,8 @@ void FListBox::adjustYOffset()
 {
   int element_count = int(getCount());
 
-  if ( yoffset > element_count - getHeight() + 2 )
-    yoffset = element_count - getHeight() + 2;
+  if ( yoffset > element_count - getClientHeight() )
+    yoffset = element_count - getClientHeight();
 
   if ( yoffset < 0 )
     yoffset = 0;
@@ -1369,36 +1377,36 @@ void FListBox::adjustYOffset()
   if ( current < yoffset )
     current = yoffset;
 
-  if ( current >= yoffset + getHeight() - 1 )
-    yoffset = current - getHeight() + 2;
+  if ( yoffset < current - getClientHeight() )
+    yoffset = current - getClientHeight();
 }
 
 //----------------------------------------------------------------------
 void FListBox::adjustSize()
 {
   int element_count;
-  adjustYOffset();
   FWidget::adjustSize();
+  adjustYOffset();
 
   element_count = int(getCount());
-  vbar->setMaximum(element_count - getHeight() + 2);
-  vbar->setPageSize(element_count, getHeight() - 2);
+  vbar->setMaximum(element_count - getClientHeight());
+  vbar->setPageSize(element_count, getClientHeight());
   vbar->setX(getWidth());
-  vbar->setHeight (getHeight()-2, false);
+  vbar->setHeight (getClientHeight(), false);
   vbar->resize();
 
-  hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-  hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+  hbar->setMaximum(max_line_width - getClientWidth() + 2);
+  hbar->setPageSize(max_line_width, getClientWidth() - 2);
   hbar->setY(getHeight());
-  hbar->setWidth (getWidth()-2, false);
+  hbar->setWidth (getClientWidth(), false);
   hbar->resize();
 
-  if ( element_count < getHeight() - 1 )
+  if ( element_count <= getClientHeight() )
     vbar->hide();
   else
     vbar->setVisible();
 
-  if ( max_line_width < getWidth() - nf_offset - 3 )
+  if ( max_line_width < getClientWidth() - 1 )
     hbar->hide();
   else
     hbar->setVisible();
@@ -1414,8 +1422,6 @@ void FListBox::init()
 
   if ( isEnabled() )
     flags |= fc::active;
-
-  nf_offset = isNewFont() ? 1 : 0;
 
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
@@ -1443,6 +1449,12 @@ void FListBox::init()
     "change-value",
     _METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
   );
+
+  nf_offset = isNewFont() ? 1 : 0;
+  setTopPadding(1);
+  setLeftPadding(1);
+  setBottomPadding(1);
+  setRightPadding(1 + nf_offset);
 }
 
 //----------------------------------------------------------------------
@@ -1519,11 +1531,11 @@ void FListBox::drawLabel()
   else
     setColor(wc.label_inactive_fg, wc.label_inactive_bg);
 
-  if ( length <= uInt(getWidth()-2) )
+  if ( length <= uInt(getClientWidth()) )
     print (txt);
   else
   {
-    print (text.left(uInt(getWidth()-4)));
+    print (text.left(uInt(getClientWidth()-2)));
     setColor (wc.label_ellipsis_fg, wc.label_bg);
     print("..");
   }
