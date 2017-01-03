@@ -1,5 +1,6 @@
 2017-01-03  Markus Gans  <guru.mail@muenster.de>
 	* FScrollView now has on-demand scroll bars
+	* Arrow keys support for FScrollView viewport scrolling
 
 2017-01-02  Markus Gans  <guru.mail@muenster.de>
 	* The new FScrollView widget provides a scrollable viewport 

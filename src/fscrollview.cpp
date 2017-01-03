@@ -256,11 +256,109 @@ void FScrollView::draw()
 }
 
 //----------------------------------------------------------------------
+void FScrollView::onKeyPress (FKeyEvent* ev)
+{
+  int    key = ev->key();
+  bool   hasChanges = false;
+  short& xoffset = scroll_offset.x_ref();
+  short& yoffset = scroll_offset.y_ref();
+  short  xoffset_before = xoffset;
+  short  yoffset_before = yoffset;
+  short  xoffset_end = short(getScrollWidth() - getClientWidth());
+  short  yoffset_end = short(getScrollHeight() - getClientHeight());
+
+  switch ( key )
+  {
+    case fc::Fkey_up:
+      if ( yoffset > 0 )
+        yoffset--;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_down:
+      if ( yoffset < yoffset_end )
+        yoffset++;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_left:
+      if ( xoffset > 0 )
+        xoffset--;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_right:
+      if ( xoffset < xoffset_end )
+        xoffset++;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_ppage:
+      yoffset -= getClientHeight();
+
+      if ( yoffset < 0 )
+        yoffset = 0;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_npage:
+      yoffset += getClientHeight();
+
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
+
+      ev->accept();
+      break;
+
+    case fc::Fkey_home:
+      yoffset = 0;
+      ev->accept();
+      break;
+
+    case fc::Fkey_end:
+      yoffset = yoffset_end;
+      ev->accept();
+      break;
+
+    default:
+      break;
+  }
+
+  if ( ev->isAccepted() )
+  {
+    if ( isVisible() && viewport
+        && (xoffset_before != xoffset || yoffset_before != yoffset) )
+    {
+      viewport->has_changes = true;
+      copy2area();
+      hasChanges = true;
+      vbar->setValue (yoffset);
+      hbar->setValue (xoffset);
+
+      if ( vbar->isVisible() )
+        vbar->drawBar();
+
+      if ( hbar->isVisible() )
+        hbar->drawBar();
+    }
+
+    if ( hasChanges )
+      updateTerminal();
+  }
+}
+
+//----------------------------------------------------------------------
 void FScrollView::onWheel (FWheelEvent* ev)
 {
-  int yoffset = scroll_offset.getY();
-  int yoffset_before = yoffset;
-  int wheel = ev->getWheel();
+  bool   hasChanges = false;
+  short& yoffset = scroll_offset.y_ref();
+  short  yoffset_before = yoffset;
+  int    wheel = ev->getWheel();
 
   switch ( wheel )
   {
@@ -277,7 +375,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
 
     case fc::WheelDown:
       {
-        int yoffset_end = getScrollHeight() - getClientHeight();
+        short yoffset_end = short(getScrollHeight() - getClientHeight());
 
         if ( yoffset_end < 0 )
           yoffset_end = 0;
@@ -296,22 +394,19 @@ void FScrollView::onWheel (FWheelEvent* ev)
       break;
   }
 
-  scroll_offset.setY (yoffset);
-
-  if ( isVisible() )
+  if ( isVisible() && viewport && yoffset_before != yoffset )
   {
-    if ( viewport && yoffset_before != yoffset )
-      viewport->has_changes = true;
-
+    viewport->has_changes = true;
     copy2area();
+    hasChanges = true;
+    vbar->setValue (yoffset);
+
+    if ( vbar->isVisible() )
+      vbar->drawBar();
   }
 
-  vbar->setValue (yoffset);
-
-  if ( vbar->isVisible() && yoffset_before != yoffset )
-    vbar->drawBar();
-
-  updateTerminal();
+  if ( hasChanges )
+    updateTerminal();
 }
 
 
@@ -513,11 +608,11 @@ void FScrollView::setVerticalScrollBarVisibility()
 void FScrollView::cb_VBarChange (FWidget*, void*)
 {
   FScrollbar::sType scrollType;
-  bool hasChanges = false;
-  int  distance = 1;
-  int  yoffset = scroll_offset.getY();
-  int  yoffset_before = yoffset;
-  int  yoffset_end = getScrollHeight() - getClientHeight();
+  bool   hasChanges = false;
+  short  distance = 1;
+  short& yoffset = scroll_offset.y_ref();
+  short  yoffset_before = yoffset;
+  short  yoffset_end = short(getScrollHeight() - getClientHeight());
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -526,7 +621,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientHeight();
+      distance = short(getClientHeight());
       // fall through
     case FScrollbar::scrollStepBackward:
       yoffset -= distance;
@@ -537,7 +632,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientHeight();
+      distance = short(getClientHeight());
       // fall through
     case FScrollbar::scrollStepForward:
       yoffset += distance;
@@ -549,7 +644,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
 
     case FScrollbar::scrollJump:
     {
-      int val = vbar->getValue();
+      short val = short(vbar->getValue());
 
       if ( yoffset == val )
         break;
@@ -591,24 +686,20 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
       break;
   }
 
-  scroll_offset.setY (yoffset);
-
-  if ( isVisible() )
+  if ( isVisible() && viewport && yoffset_before != yoffset )
   {
-    if ( viewport && yoffset_before != yoffset )
-      viewport->has_changes = true;
-
+    viewport->has_changes = true;
     copy2area();
     hasChanges = true;
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown )
+      && scrollType <= FScrollbar::scrollWheelDown
+      && hasChanges )
   {
     vbar->setValue (yoffset);
-    hasChanges = true;
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( vbar->isVisible() )
       vbar->drawBar();
   }
 
@@ -620,11 +711,11 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
 void FScrollView::cb_HBarChange (FWidget*, void*)
 {
   FScrollbar::sType scrollType;
-  bool hasChanges = false;
-  int  distance = 1;
-  int  xoffset = scroll_offset.getX();
-  int  xoffset_before = xoffset;
-  int  xoffset_end = getScrollWidth() - getClientWidth();
+  bool   hasChanges = false;
+  short  distance = 1;
+  short& xoffset = scroll_offset.x_ref();
+  short  xoffset_before = xoffset;
+  short  xoffset_end = short(getScrollWidth() - getClientWidth());
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -633,7 +724,7 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientWidth();
+      distance = short(getClientWidth());
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
@@ -644,7 +735,7 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientWidth();
+      distance = short(getClientWidth());
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;
@@ -659,7 +750,7 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
 
     case FScrollbar::scrollJump:
     {
-      int val = hbar->getValue();
+      short val = short(hbar->getValue());
 
       if ( xoffset == val )
         break;
@@ -698,24 +789,20 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
       break;
   }
 
-  scroll_offset.setX (xoffset);
-
-  if ( isVisible() )
+  if ( isVisible() && viewport && xoffset_before != xoffset )
   {
-    if ( viewport && xoffset_before != xoffset )
-      viewport->has_changes = true;
-
+    viewport->has_changes = true;
     copy2area();
     hasChanges = true;
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown )
+      && scrollType <= FScrollbar::scrollWheelDown
+      && hasChanges )
   {
     hbar->setValue (xoffset);
-    hasChanges = true;
 
-    if ( hbar->isVisible() && xoffset_before != xoffset )
+    if ( hbar->isVisible() )
       hbar->drawBar();
   }
 

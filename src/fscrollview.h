@@ -79,6 +79,7 @@ class FScrollView : public FWidget
    virtual void      draw();
 
    // Event handlers
+   void              onKeyPress (FKeyEvent*);
    void              onWheel (FWheelEvent*);
 
  protected:
