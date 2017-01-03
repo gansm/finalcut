@@ -18,7 +18,9 @@ FScrollView::FScrollView (FWidget* parent)
   , vbar(0)
   , hbar(0)
   , nf_offset(0)
-  , own_print_area(false)
+  , use_own_print_area(false)
+  , vMode(fc::Auto)
+  , hMode(fc::Auto)
 {
   init();
 }
@@ -39,7 +41,7 @@ void FScrollView::setScrollWidth (int width)
   if ( width < getClientWidth() )
     width = getClientWidth();
 
-  if ( scroll_size.getWidth() == width )
+  if ( getScrollWidth() == width )
     return;
 
   if ( viewport )
@@ -52,9 +54,7 @@ void FScrollView::setScrollWidth (int width)
   hbar->setMaximum (width - getClientWidth());
   hbar->setPageSize (width, getClientWidth());
   hbar->calculateSliderValues();
-
-  if ( ! hbar->isVisible() )
-    hbar->setVisible();
+  setHorizontalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -63,7 +63,7 @@ void FScrollView::setScrollHeight (int height)
   if ( height < getClientHeight() )
     height = getClientHeight();
 
-  if ( scroll_size.getHeight() == height )
+  if ( getScrollHeight() == height )
     return;
 
   if ( viewport )
@@ -76,9 +76,7 @@ void FScrollView::setScrollHeight (int height)
   vbar->setMaximum (height - getClientHeight());
   vbar->setPageSize (height, getClientHeight());
   vbar->calculateSliderValues();
-
-  if ( ! vbar->isVisible()  )
-    vbar->setVisible();
+  setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -90,8 +88,7 @@ void FScrollView::setScrollSize (int width, int height)
   if ( height < getClientHeight() )
     height = getClientHeight();
 
-  if ( scroll_size.getWidth() == width
-      && scroll_size.getHeight() == height )
+  if ( getScrollWidth() == width && getScrollHeight() == height )
     return;
 
   if ( viewport )
@@ -104,30 +101,46 @@ void FScrollView::setScrollSize (int width, int height)
   hbar->setMaximum (width - getClientWidth());
   hbar->setPageSize (width, getClientWidth());
   hbar->calculateSliderValues();
-
-  if ( ! hbar->isVisible() )
-    hbar->setVisible();
+  setHorizontalScrollBarVisibility();
 
   vbar->setMaximum (height - getClientHeight());
   vbar->setPageSize (height, getClientHeight());
   vbar->calculateSliderValues();
-
-  if ( ! vbar->isVisible()  )
-    vbar->setVisible();
+  setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
 void FScrollView::setX (int x, bool adjust)
 {
   FWidget::setX (x, adjust);
-  scroll_size.setX (getTermX() - 1);
+
+  if ( ! adjust )
+  {
+    scroll_size.setX (getTermX() - 1);
+
+    if ( viewport )
+    {
+      viewport->x_offset = scroll_size.getX();
+      viewport->y_offset = scroll_size.getY();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
 void FScrollView::setY (int y, bool adjust)
 {
   FWidget::setY (y, adjust);
-  scroll_size.setY (getTermY() - 1);
+
+  if ( ! adjust )
+  {
+    scroll_size.setY (getTermY() - 1);
+
+    if ( viewport )
+    {
+      viewport->x_offset = scroll_size.getX();
+      viewport->y_offset = scroll_size.getY();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -135,6 +148,15 @@ void FScrollView::setPos (int x, int y, bool adjust)
 {
   FWidget::setPos (x, y, adjust);
   scroll_size.setPos (getTermX() - 1, getTermY() - 1);
+
+  if ( ! adjust )
+  {
+    if ( viewport )
+    {
+      viewport->x_offset = scroll_size.getX();
+      viewport->y_offset = scroll_size.getY();
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -143,7 +165,7 @@ void FScrollView::setWidth (int w, bool adjust)
   FWidget::setWidth (w, adjust);
   calculateScrollbarPos();
 
-  if ( scroll_size.getWidth() < getClientWidth() )
+  if ( getScrollWidth() < getClientWidth() )
     setScrollWidth (getClientWidth());
 }
 
@@ -153,7 +175,7 @@ void FScrollView::setHeight (int h, bool adjust)
   FWidget::setHeight (h, adjust);
   calculateScrollbarPos();
 
-  if ( scroll_size.getHeight() < getClientHeight() )
+  if ( getScrollHeight() < getClientHeight() )
     setScrollHeight (getClientHeight());
 }
 
@@ -163,8 +185,8 @@ void FScrollView::setSize (int w, int h, bool adjust)
   FWidget::setSize (w, h, adjust);
   calculateScrollbarPos();
 
-  if ( scroll_size.getWidth() < getClientWidth()
-      || scroll_size.getHeight() < getClientHeight() )
+  if ( getScrollWidth() < getClientWidth()
+      || getScrollHeight() < getClientHeight() )
     setScrollSize (getClientWidth(), getClientHeight());
 }
 
@@ -175,9 +197,30 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
   scroll_size.setPos (getTermX() - 1, getTermY() - 1);
   calculateScrollbarPos();
 
-  if ( scroll_size.getWidth() < getClientWidth()
-      || scroll_size.getHeight() < getClientHeight() )
+  if ( getScrollWidth() < getClientWidth()
+      || getScrollHeight() < getClientHeight() )
+  {
     setScrollSize (getClientWidth(), getClientHeight());
+  }
+  else if ( ! adjust && viewport )
+  {
+    viewport->x_offset = scroll_size.getX();
+    viewport->y_offset = scroll_size.getY();
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setHorizontalScrollBarMode (fc::scrollBarMode mode)
+{
+  hMode = mode;
+  setHorizontalScrollBarVisibility();
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setVerticalScrollBarMode (fc::scrollBarMode mode)
+{
+  vMode = mode;
+  setVerticalScrollBarVisibility();
 }
 
 //----------------------------------------------------------------------
@@ -190,7 +233,7 @@ void FScrollView::clearArea (int fillchar)
 //----------------------------------------------------------------------
 void FScrollView::draw()
 {
-  own_print_area = true;
+  use_own_print_area = true;
 
   if ( FWidget* p = getParentWidget() )
     setColor (p->getForegroundColor(), p->getBackgroundColor());
@@ -202,7 +245,7 @@ void FScrollView::draw()
   else
     drawBorder();
 
-  own_print_area = false;
+  use_own_print_area = false;
   copy2area();
 
   if ( vbar->isVisible() )
@@ -210,7 +253,6 @@ void FScrollView::draw()
 
   if ( hbar->isVisible() )
     hbar->redraw();
-
 }
 
 //----------------------------------------------------------------------
@@ -235,7 +277,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
 
     case fc::WheelDown:
       {
-        int yoffset_end = scroll_size.getHeight() - getClientHeight();
+        int yoffset_end = getScrollHeight() - getClientHeight();
 
         if ( yoffset_end < 0 )
           yoffset_end = 0;
@@ -279,7 +321,7 @@ FVTerm::term_area* FScrollView::getPrintArea()
 {
   // returns the viewport print area
 
-  if ( viewport && ! own_print_area )
+  if ( viewport && ! use_own_print_area )
     return viewport;
   else
     return FVTerm::getPrintArea();
@@ -294,19 +336,30 @@ void FScrollView::adjustSize()
   int xoffset = scroll_offset.getX();
   int yoffset = scroll_offset.getY();
 
-  hbar->setMaximum (scroll_size.getWidth() - getClientWidth());
-  hbar->setPageSize (scroll_size.getWidth(), getClientWidth());
+  scroll_size.setPos (getTermX() - 1, getTermY() - 1);
+
+  if ( viewport )
+  {
+    viewport->x_offset = scroll_size.getX();
+    viewport->y_offset = scroll_size.getY();
+  }
+
+  hbar->setMaximum (getScrollWidth() - getClientWidth());
+  hbar->setPageSize (getScrollWidth(), getClientWidth());
   hbar->setY (height);
   hbar->setWidth (width - 2, false);
   hbar->setValue (xoffset);
   hbar->resize();
+  setHorizontalScrollBarVisibility();
 
-  vbar->setMaximum (scroll_size.getHeight() - getClientHeight());
-  vbar->setPageSize (scroll_size.getHeight(), getClientHeight());
+  vbar->setMaximum (getScrollHeight() - getClientHeight());
+  vbar->setPageSize (getScrollHeight(), getClientHeight());
   vbar->setX (width);
   vbar->setHeight (height - 2, false);
   vbar->setValue (yoffset);
   vbar->resize();
+  setVerticalScrollBarVisibility();
+
 }
 
 //----------------------------------------------------------------------
@@ -413,6 +466,50 @@ void FScrollView::calculateScrollbarPos()
 }
 
 //----------------------------------------------------------------------
+void FScrollView::setHorizontalScrollBarVisibility()
+{
+  switch ( hMode )
+  {
+    case fc::Auto:
+      if ( getScrollWidth() > getClientWidth() )
+        hbar->setVisible();
+      else
+        hbar->hide();
+      break;
+
+    case fc::Hidden:
+      hbar->hide();
+      break;
+
+    case fc::Scroll:
+      hbar->setVisible();
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setVerticalScrollBarVisibility()
+{
+  switch ( vMode )
+  {
+    case fc::Auto:
+      if ( getScrollHeight() > getClientHeight() )
+        vbar->setVisible();
+      else
+        vbar->hide();
+      break;
+
+    case fc::Hidden:
+      vbar->hide();
+      break;
+
+    case fc::Scroll:
+      vbar->setVisible();
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
 void FScrollView::cb_VBarChange (FWidget*, void*)
 {
   FScrollbar::sType scrollType;
@@ -420,7 +517,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
   int  distance = 1;
   int  yoffset = scroll_offset.getY();
   int  yoffset_before = yoffset;
-  int  yoffset_end = scroll_size.getHeight() - getClientHeight();
+  int  yoffset_end = getScrollHeight() - getClientHeight();
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -527,7 +624,7 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
   int  distance = 1;
   int  xoffset = scroll_offset.getX();
   int  xoffset_before = xoffset;
-  int  xoffset_end = scroll_size.getWidth() - getClientWidth();
+  int  xoffset_end = getScrollWidth() - getClientWidth();
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )

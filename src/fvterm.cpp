@@ -1652,7 +1652,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   std::memcpy (&nc, &next_attribute, sizeof(char_data));
   nc.code = fillchar;
 
-  if ( ! area )
+  if ( ! (area && area->text) )
     return;
 
   total_width = area->width + area->right_shadow;

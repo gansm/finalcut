@@ -54,41 +54,43 @@ class FScrollView : public FWidget
    virtual ~FScrollView();
 
    // Accessors
-   const char*  getClassName() const;
-   int          getScrollWidth();
-   int          getScrollHeight();
+   const char*       getClassName() const;
+   int               getScrollWidth();
+   int               getScrollHeight();
 
    // Mutator
-   void         setScrollWidth (int);
-   void         setScrollHeight (int);
-   void         setScrollSize (int, int);
-   void         setScrollOffset (FPoint);
-   void         setScrollOffset (int, int);
-   virtual void setX (int, bool = true);
-   virtual void setY (int, bool = true);
-   virtual void setPos (int, int, bool = true);
-   virtual void setWidth (int, bool = true);
-   virtual void setHeight (int, bool = true);
-   virtual void setSize (int, int, bool = true);
-   void         setGeometry (int, int, int, int, bool = true);
+   void              setScrollWidth (int);
+   void              setScrollHeight (int);
+   void              setScrollSize (int, int);
+   void              setScrollOffset (FPoint);
+   void              setScrollOffset (int, int);
+   virtual void      setX (int, bool = true);
+   virtual void      setY (int, bool = true);
+   virtual void      setPos (int, int, bool = true);
+   virtual void      setWidth (int, bool = true);
+   virtual void      setHeight (int, bool = true);
+   virtual void      setSize (int, int, bool = true);
+   void              setGeometry (int, int, int, int, bool = true);
+   void              setHorizontalScrollBarMode (fc::scrollBarMode);
+   void              setVerticalScrollBarMode (fc::scrollBarMode);
 
    // Method
-   virtual void clearArea (int = ' ');
-   virtual void draw();
+   virtual void      clearArea (int = ' ');
+   virtual void      draw();
 
    // Event handlers
-   void        onWheel (FWheelEvent*);
+   void              onWheel (FWheelEvent*);
 
  protected:
    // Using-declaration
    using FVTerm::clearArea;
 
    // Accessor
-   term_area*   getPrintArea();
+   term_area*        getPrintArea();
 
    // Method
-   void         adjustSize();
-   void         copy2area();
+   void              adjustSize();
+   void              copy2area();
 
  private:
    // Disable copy constructor
@@ -98,21 +100,25 @@ class FScrollView : public FWidget
    FScrollView& operator = (const FScrollView&);
 
    // Methods
-   void        init();
-   void        calculateScrollbarPos();
+   void              init();
+   void              calculateScrollbarPos();
+   void              setHorizontalScrollBarVisibility();
+   void              setVerticalScrollBarVisibility();
 
    // Callback methods
-   void        cb_VBarChange (FWidget*, void*);
-   void        cb_HBarChange (FWidget*, void*);
+   void              cb_VBarChange (FWidget*, void*);
+   void              cb_HBarChange (FWidget*, void*);
 
    // Data Members
-   FRect       scroll_size;
-   FPoint      scroll_offset;
-   term_area*  viewport;  // virtual scroll content
-   FScrollbar* vbar;
-   FScrollbar* hbar;
-   int         nf_offset;
-   bool        own_print_area;
+   FRect             scroll_size;
+   FPoint            scroll_offset;
+   term_area*        viewport;  // virtual scroll content
+   FScrollbar*       vbar;
+   FScrollbar*       hbar;
+   int               nf_offset;
+   bool              use_own_print_area;
+   fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
+   fc::scrollBarMode hMode;
 };
 #pragma pack(pop)
 

@@ -906,6 +906,14 @@ class fc
      FocusDefiniteWidget = 0x03
    };
 
+   // scroll bar visibility mode
+   enum scrollBarMode
+   {
+     Auto   = 0,  // Shows a scroll bar when area is larger than viewport
+     Hidden = 1,  // Never shows a scroll bar
+     Scroll = 2   // Always shows a scroll bar
+   };
+
    // xterm cursor style
    enum xtermCursorStyle
    {
