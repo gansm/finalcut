@@ -1,3 +1,6 @@
+2017-01-07  Markus Gans  <guru.mail@muenster.de>
+	* Add scrollTo and scrollBy methods to FScrollView
+
 2017-01-03  Markus Gans  <guru.mail@muenster.de>
 	* FScrollView now has on-demand scroll bars
 	* Arrow keys support for FScrollView viewport scrolling

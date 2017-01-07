@@ -45,6 +45,7 @@ class FScrollView : public FWidget
  public:
    // Using-declaration
    using FWidget::setGeometry;
+   using FWidget::setPrintPos;
    using FWidget::setPos;
 
    // Constructor
@@ -55,15 +56,16 @@ class FScrollView : public FWidget
 
    // Accessors
    const char*       getClassName() const;
-   int               getScrollWidth();
-   int               getScrollHeight();
+   int               getScrollWidth() const;
+   int               getScrollHeight() const;
+   const FPoint      getScrollPos() const;
+   int               getScrollX() const;
+   int               getScrollY() const;
 
    // Mutator
    void              setScrollWidth (int);
    void              setScrollHeight (int);
    void              setScrollSize (int, int);
-   void              setScrollOffset (FPoint);
-   void              setScrollOffset (int, int);
    virtual void      setX (int, bool = true);
    virtual void      setY (int, bool = true);
    virtual void      setPos (int, int, bool = true);
@@ -71,11 +73,17 @@ class FScrollView : public FWidget
    virtual void      setHeight (int, bool = true);
    virtual void      setSize (int, int, bool = true);
    void              setGeometry (int, int, int, int, bool = true);
+   void              setPrintPos (register int, register int);
    void              setHorizontalScrollBarMode (fc::scrollBarMode);
    void              setVerticalScrollBarMode (fc::scrollBarMode);
 
    // Method
    virtual void      clearArea (int = ' ');
+   void              scrollToX (int);
+   void              scrollToY (int);
+   void              scrollTo (FPoint);
+   void              scrollTo (int, int);
+   void              scrollBy (int, int);
    virtual void      draw();
 
    // Event handlers
@@ -105,6 +113,10 @@ class FScrollView : public FWidget
    void              calculateScrollbarPos();
    void              setHorizontalScrollBarVisibility();
    void              setVerticalScrollBarVisibility();
+   void              redrawHBar();
+   void              redrawVBar();
+   void              drawHBar();
+   void              drawVBar();
 
    // Callback methods
    void              cb_VBarChange (FWidget*, void*);
@@ -130,19 +142,28 @@ inline const char* FScrollView::getClassName() const
 { return "FScrollView"; }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollWidth()
+inline int FScrollView::getScrollWidth() const
 { return scroll_size.getWidth(); }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollHeight()
+inline int FScrollView::getScrollHeight() const
 { return scroll_size.getHeight(); }
 
 //----------------------------------------------------------------------
-inline void FScrollView::setScrollOffset (FPoint pos)
-{ scroll_offset = pos; }
+inline const FPoint FScrollView::getScrollPos() const
+{ return scroll_offset; }
 
 //----------------------------------------------------------------------
-inline void FScrollView::setScrollOffset (int x, int y)
-{ scroll_offset.setPoint (x, y); }
+inline int FScrollView::getScrollX() const
+{ return scroll_offset.getX(); }
+
+//----------------------------------------------------------------------
+inline int FScrollView::getScrollY() const
+{ return scroll_offset.getY(); }
+
+//----------------------------------------------------------------------
+inline void FScrollView::scrollTo (FPoint pos)
+{ scrollTo(pos.getX(), pos.getY()); }
+
 
 #endif  // _FSCROLLVIEW_H

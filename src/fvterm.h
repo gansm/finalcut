@@ -302,6 +302,7 @@ class FVTerm : public FObject, public FTerm
    static        term_area* vdesktop;     // virtual desktop
    static        term_area* active_area;  // active area
    term_area*    print_area;              // print area for this object
+   term_area*    child_print_area;        // print area for children
    term_area*    vwin;                    // virtual window
 
  private:

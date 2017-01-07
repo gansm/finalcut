@@ -36,6 +36,7 @@ FVTerm::char_data    FVTerm::next_attribute;
 FVTerm::FVTerm (FVTerm* parent)
   : FObject(parent)
   , print_area(0)
+  , child_print_area(0)
   , vwin(0)
 {
   terminal_update_complete = false;
@@ -631,7 +632,7 @@ FVTerm::term_area* FVTerm::getPrintArea()
     FVTerm* obj = static_cast<FVTerm*>(this);
     FVTerm* p_obj = static_cast<FVTerm*>(obj->getParent());
 
-    while ( ! obj->vwin && p_obj )
+    while ( ! obj->vwin && ! obj->child_print_area && p_obj )
     {
       obj = p_obj;
       p_obj = static_cast<FVTerm*>(p_obj->getParent());
@@ -640,6 +641,11 @@ FVTerm::term_area* FVTerm::getPrintArea()
     if ( obj->vwin )
     {
       print_area = obj->vwin;
+      return print_area;
+    }
+    else if ( obj->child_print_area )
+    {
+      print_area = obj->child_print_area;
       return print_area;
     }
   }

@@ -31,6 +31,7 @@ FScrollView::~FScrollView() // destructor
   delete vbar;
   delete hbar;
   removeArea (viewport);
+  child_print_area = viewport = 0;
 }
 
 
@@ -49,6 +50,7 @@ void FScrollView::setScrollWidth (int width)
     FPoint no_shadow(0,0);
     scroll_size.setWidth (width);
     resizeArea (scroll_size, no_shadow, viewport);
+    child_print_area = viewport;
   }
 
   hbar->setMaximum (width - getClientWidth());
@@ -71,6 +73,7 @@ void FScrollView::setScrollHeight (int height)
     FPoint no_shadow(0,0);
     scroll_size.setHeight (height);
     resizeArea (scroll_size, no_shadow, viewport);
+    child_print_area = viewport;
   }
 
   vbar->setMaximum (height - getClientHeight());
@@ -96,6 +99,7 @@ void FScrollView::setScrollSize (int width, int height)
     FPoint no_shadow(0,0);
     scroll_size.setSize (width, height);
     resizeArea (scroll_size, no_shadow, viewport);
+    child_print_area = viewport;
   }
 
   hbar->setMaximum (width - getClientWidth());
@@ -116,7 +120,7 @@ void FScrollView::setX (int x, bool adjust)
 
   if ( ! adjust )
   {
-    scroll_size.setX (getTermX() - 1);
+    scroll_size.setX (getTermX() + getLeftPadding() - 1);
 
     if ( viewport )
     {
@@ -133,7 +137,7 @@ void FScrollView::setY (int y, bool adjust)
 
   if ( ! adjust )
   {
-    scroll_size.setY (getTermY() - 1);
+    scroll_size.setY (getTermY() + getTopPadding() - 1);
 
     if ( viewport )
     {
@@ -147,7 +151,8 @@ void FScrollView::setY (int y, bool adjust)
 void FScrollView::setPos (int x, int y, bool adjust)
 {
   FWidget::setPos (x, y, adjust);
-  scroll_size.setPos (getTermX() - 1, getTermY() - 1);
+  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
+                     , getTermY() + getTopPadding() - 1 );
 
   if ( ! adjust )
   {
@@ -194,7 +199,8 @@ void FScrollView::setSize (int w, int h, bool adjust)
 void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   FWidget::setGeometry (x, y, w, h, adjust);
-  scroll_size.setPos (getTermX() - 1, getTermY() - 1);
+  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
+                     , getTermY() + getTopPadding() - 1 );
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getClientWidth()
@@ -207,6 +213,12 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
     viewport->x_offset = scroll_size.getX();
     viewport->y_offset = scroll_size.getY();
   }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setPrintPos (register int x, register int y)
+{
+  FWidget::setPrintPos (x + getLeftPadding(), y + getTopPadding());
 }
 
 //----------------------------------------------------------------------
@@ -231,6 +243,59 @@ void FScrollView::clearArea (int fillchar)
 }
 
 //----------------------------------------------------------------------
+void FScrollView::scrollToX (int x)
+{
+  scrollTo (x, scroll_offset.getY());
+}
+
+//----------------------------------------------------------------------
+void FScrollView::scrollToY (int y)
+{
+  scrollTo (scroll_offset.getX(), y);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::scrollTo (int x, int y)
+{
+  short& xoffset = scroll_offset.x_ref();
+  short& yoffset = scroll_offset.y_ref();
+  short  xoffset_end = short(getScrollWidth() - getClientWidth());
+  short  yoffset_end = short(getScrollHeight() - getClientHeight());
+
+  if ( xoffset == short(x) && yoffset == short(y) )
+    return;
+
+  xoffset = short(x);
+  yoffset = short(y);
+
+  if ( yoffset < 0 )
+    yoffset = 0;
+
+  if ( yoffset > yoffset_end )
+    yoffset = yoffset_end;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+
+  if ( xoffset > xoffset_end )
+    xoffset = xoffset_end;
+
+  hbar->setValue (xoffset);
+  vbar->setValue (yoffset);
+  drawHBar();
+  drawVBar();
+  viewport->has_changes = true;
+  copy2area();
+  updateTerminal();
+}
+
+//----------------------------------------------------------------------
+void FScrollView::scrollBy (int dx, int dy)
+{
+  scrollTo (getScrollX() + dx, getScrollY() + dy);
+}
+
+//----------------------------------------------------------------------
 void FScrollView::draw()
 {
   use_own_print_area = true;
@@ -247,12 +312,8 @@ void FScrollView::draw()
 
   use_own_print_area = false;
   copy2area();
-
-  if ( vbar->isVisible() )
-    vbar->redraw();
-
-  if ( hbar->isVisible() )
-    hbar->redraw();
+  redrawVBar();
+  redrawHBar();
 }
 
 //----------------------------------------------------------------------
@@ -339,12 +400,8 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
       hasChanges = true;
       vbar->setValue (yoffset);
       hbar->setValue (xoffset);
-
-      if ( vbar->isVisible() )
-        vbar->drawBar();
-
-      if ( hbar->isVisible() )
-        hbar->drawBar();
+      drawVBar();
+      drawHBar();
     }
 
     if ( hasChanges )
@@ -400,9 +457,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
     copy2area();
     hasChanges = true;
     vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() )
-      vbar->drawBar();
+    drawVBar();
   }
 
   if ( hasChanges )
@@ -414,12 +469,17 @@ void FScrollView::onWheel (FWheelEvent* ev)
 //----------------------------------------------------------------------
 FVTerm::term_area* FScrollView::getPrintArea()
 {
-  // returns the viewport print area
+  // returns print area or viewport
 
-  if ( viewport && ! use_own_print_area )
-    return viewport;
+  if ( use_own_print_area || ! viewport )
+  {
+    child_print_area = 0;
+    term_area* area = FVTerm::getPrintArea();
+    child_print_area = viewport;
+    return area;
+  }
   else
-    return FVTerm::getPrintArea();
+    return viewport;
 }
 
 //----------------------------------------------------------------------
@@ -431,7 +491,8 @@ void FScrollView::adjustSize()
   int xoffset = scroll_offset.getX();
   int yoffset = scroll_offset.getY();
 
-  scroll_size.setPos (getTermX() - 1, getTermY() - 1);
+  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
+                     , getTermY() + getTopPadding() - 1 );
 
   if ( viewport )
   {
@@ -534,8 +595,11 @@ void FScrollView::init()
   setRightPadding(1 + nf_offset);
 
   FPoint no_shadow(0,0);
-  scroll_size.setRect (0, 0, getClientWidth(), getClientHeight());
+  scroll_size.setRect (1, 1, getClientWidth(), getClientHeight());
   createArea (scroll_size, no_shadow, viewport);
+
+  if ( viewport )
+    child_print_area = viewport;
 }
 
 //----------------------------------------------------------------------
@@ -698,9 +762,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
       && hasChanges )
   {
     vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() )
-      vbar->drawBar();
+    drawVBar();
   }
 
   if ( hasChanges )
@@ -801,11 +863,53 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
       && hasChanges )
   {
     hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() )
-      hbar->drawBar();
+    drawHBar();
   }
 
   if ( hasChanges )
     updateTerminal();
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::redrawHBar()
+{
+  child_print_area = 0;
+
+  if ( hbar->isVisible() )
+    hbar->redraw();
+
+  child_print_area = viewport;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::redrawVBar()
+{
+  child_print_area = 0;
+
+  if ( vbar->isVisible() )
+    vbar->redraw();
+
+  child_print_area = viewport;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::drawHBar()
+{
+  child_print_area = 0;
+
+  if ( hbar->isVisible() )
+    hbar->drawBar();
+
+  child_print_area = viewport;
+}
+
+//----------------------------------------------------------------------
+inline void FScrollView::drawVBar()
+{
+  child_print_area = 0;
+
+  if ( vbar->isVisible() )
+    vbar->drawBar();
+
+  child_print_area = viewport;
 }
