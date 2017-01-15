@@ -307,7 +307,7 @@ void FWindow::setX (int x, bool adjust)
   FWidget::setX (x, adjust);
 
   if ( vwin )
-    vwin->x_offset = getTermX() - 1;
+    vwin->offset_top = getTermX() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -319,7 +319,7 @@ void FWindow::setY (int y, bool adjust)
   FWidget::setY (y, adjust);
 
   if ( vwin )
-    vwin->y_offset = getTermY() - 1;
+    vwin->offset_left = getTermY() - 1;
 }
 
 //----------------------------------------------------------------------
@@ -332,8 +332,8 @@ void FWindow::setPos (int x, int y, bool adjust)
 
   if ( vwin )
   {
-    vwin->x_offset = getTermX() - 1;
-    vwin->y_offset = getTermY() - 1;
+    vwin->offset_top = getTermX() - 1;
+    vwin->offset_left = getTermY() - 1;
   }
 }
 
@@ -405,10 +405,10 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
   else
   {
     if ( getX() != old_x )
-      vwin->x_offset = getTermX() - 1;
+      vwin->offset_top = getTermX() - 1;
 
     if ( getY() != old_y )
-      vwin->y_offset = getTermY() - 1;
+      vwin->offset_left = getTermY() - 1;
   }
 }
 
@@ -419,8 +419,8 @@ void FWindow::move (int dx, int dy)
 
   if ( vwin )
   {
-    vwin->x_offset = getTermX() - 1;
-    vwin->y_offset = getTermY() - 1;
+    vwin->offset_top = getTermX() - 1;
+    vwin->offset_left = getTermY() - 1;
   }
 }
 
@@ -787,10 +787,10 @@ void FWindow::adjustSize()
   else if ( vwin )
   {
     if ( getX() != old_x )
-      vwin->x_offset = getTermX() - 1;
+      vwin->offset_top = getTermX() - 1;
 
     if ( getY() != old_y )
-      vwin->y_offset = getTermY() - 1;
+      vwin->offset_left = getTermY() - 1;
   }
 }
 

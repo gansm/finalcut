@@ -633,7 +633,7 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
     {
       stype = FScrollbar::scrollPageForward;  // after slider
     }
-    else if (  y == getHeight() )
+    else if ( y == getHeight() )
     {
       stype = FScrollbar::scrollStepForward; // increment button
     }

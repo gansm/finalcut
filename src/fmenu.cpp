@@ -1045,10 +1045,10 @@ bool FMenu::selectNextItem()
           next_element = item_list.begin();
         next = static_cast<FMenuItem*>(*next_element);
       }
-      while (  ! next->isEnabled()
-            || ! next->acceptFocus()
-            || ! next->isVisible()
-            || next->isSeparator() );
+      while (   ! next->isEnabled()
+             || ! next->acceptFocus()
+             || ! next->isVisible()
+             || next->isSeparator() );
 
       if ( next == *iter )
         return false;
@@ -1097,10 +1097,10 @@ bool FMenu::selectPrevItem()
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
       }
-      while (  ! prev->isEnabled()
-            || ! prev->acceptFocus()
-            || ! prev->isVisible()
-            || prev->isSeparator() );
+      while (   ! prev->isEnabled()
+             || ! prev->acceptFocus()
+             || ! prev->isVisible()
+             || prev->isSeparator() );
 
       if ( prev == *iter )
         return false;

@@ -879,8 +879,9 @@ void FWidget::delCallback (FWidget* cb_instance)
 inline void FWidget::delCallbacks()
 {
   // delete all callbacks from this widget
+
   member_callback_objects.clear();  // member function pointer
-  callback_objects.clear();        // function pointer
+  callback_objects.clear();         // function pointer
 }
 
 //----------------------------------------------------------------------
@@ -1828,7 +1829,7 @@ bool FWidget::focusNextChild()
               next_element = children.begin();
 
             next = static_cast<FWidget*>(*next_element);
-          } while ( ! next->isEnabled()
+          } while (   ! next->isEnabled()
                    || ! next->acceptFocus()
                    || ! next->isVisible()
                    || next->isWindowWidget() );
@@ -1901,7 +1902,7 @@ bool FWidget::focusPrevChild()
 
             --prev_element;
             prev = static_cast<FWidget*>(*prev_element);
-          } while ( ! prev->isEnabled()
+          } while (   ! prev->isEnabled()
                    || ! prev->acceptFocus()
                    || ! prev->isVisible()
                    || prev->isWindowWidget() );
@@ -2141,7 +2142,7 @@ void FWidget::init()
 
   char* cursor_off_str = disableCursor();
 
-  if ( cursor_off_str && std::strlen(cursor_off_str ) > 0 )
+  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
     hideable = true;
   else
     hideable = false;

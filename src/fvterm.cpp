@@ -64,8 +64,8 @@ FPoint FVTerm::getPrintCursor()
   term_area* win = getPrintArea();
 
   if ( win )
-    return FPoint ( win->x_offset + win->cursor_x
-                  , win->y_offset + win->cursor_y );
+    return FPoint ( win->offset_top + win->cursor_x
+                  , win->offset_left + win->cursor_y );
 
   return FPoint(0,0);
 }
@@ -150,8 +150,22 @@ void FVTerm::setPrintCursor (register int x, register int y)
 
   if ( win )
   {
-    win->cursor_x = x - win->x_offset;
-    win->cursor_y = y - win->y_offset;
+    win->cursor_x = x - win->offset_top;
+    win->cursor_y = y - win->offset_left;
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTerm::setPreprocessingHandler ( FVTerm* instance
+                                     , FPreprocessingHandler handler )
+{
+  if ( ! print_area )
+    FVTerm::getPrintArea();
+
+  if ( print_area )
+  {
+    print_area->pre_proc_instance = instance;
+    print_area->pre_proc = handler;
   }
 }
 
@@ -668,7 +682,7 @@ void FVTerm::createArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::createArea ( int x_offset, int y_offset
+void FVTerm::createArea ( int offset_top, int offset_left
                         , int width, int height
                         , int rsw, int bsh
                         , term_area*& area )
@@ -677,8 +691,8 @@ void FVTerm::createArea ( int x_offset, int y_offset
 
   area = new term_area;
 
-  area->x_offset             = 0;
-  area->y_offset             = 0;
+  area->offset_top           = 0;
+  area->offset_left          = 0;
   area->width                = -1;
   area->height               = -1;
   area->right_shadow         = 0;
@@ -693,8 +707,10 @@ void FVTerm::createArea ( int x_offset, int y_offset
   area->text                 = 0;
   area->visible              = false;
   area->widget               = static_cast<FWidget*>(this);
+  area->pre_proc_instance    = 0;
+  area->pre_proc             = 0;
 
-  resizeArea (x_offset, y_offset, width, height, rsw, bsh, area);
+  resizeArea (offset_top, offset_left, width, height, rsw, bsh, area);
 }
 
 //----------------------------------------------------------------------
@@ -712,7 +728,7 @@ void FVTerm::resizeArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::resizeArea ( int x_offset, int y_offset
+void FVTerm::resizeArea ( int offset_top, int offset_left
                         , int width, int height
                         , int rsw, int bsh
                         , term_area* area )
@@ -747,8 +763,8 @@ void FVTerm::resizeArea ( int x_offset, int y_offset
   else
     return;
 
-  area->x_offset = x_offset;
-  area->y_offset = y_offset;
+  area->offset_top = offset_top;
+  area->offset_left = offset_left;
   area->width = width;
   area->height = height;
   area->right_shadow = rsw;
@@ -875,8 +891,8 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
           if ( ! win->visible )
             continue;
 
-          int win_x = win->x_offset;
-          int win_y = win->y_offset;
+          int win_x = win->offset_top;
+          int win_y = win->offset_left;
           FRect geometry ( win_x
                          , win_y
                          , win->width + win->right_shadow
@@ -974,8 +990,8 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
       if ( ! win->visible )
         continue;
 
-      int win_x = win->x_offset;
-      int win_y = win->y_offset;
+      int win_x = win->offset_top;
+      int win_y = win->offset_left;
       FRect geometry ( win_x
                      , win_y
                      , win->width + win->right_shadow
@@ -1041,6 +1057,13 @@ void FVTerm::updateVTerm()
       updateVTerm(win);
       win->has_changes = false;
     }
+    else if ( win->pre_proc_instance
+             && win->pre_proc_instance->child_print_area
+             && win->pre_proc_instance->child_print_area->has_changes )
+    {
+      updateVTerm(win);
+      win->pre_proc_instance->child_print_area->has_changes = false;
+    }
   }
 }
 
@@ -1059,8 +1082,12 @@ void FVTerm::updateVTerm (term_area* area)
   if ( ! area->visible )
     return;
 
-  ax  = area->x_offset;
-  ay  = area->y_offset;
+  // Call preprocessing handler
+  if ( area->pre_proc_instance && area->pre_proc )
+    (area->pre_proc_instance->*area->pre_proc)();
+
+  ax  = area->offset_top;
+  ay  = area->offset_left;
   aw  = area->width;
   ah  = area->height;
   rsh = area->right_shadow;
@@ -1237,8 +1264,8 @@ bool FVTerm::updateVTermCursor (term_area* area)
   {
     int cx, cy, ax, ay, x, y;
     // area offset
-    ax  = area->x_offset;
-    ay  = area->y_offset;
+    ax  = area->offset_top;
+    ay  = area->offset_left;
     // area cursor position
     cx = area->input_cursor_x;
     cy = area->input_cursor_y;
@@ -1365,8 +1392,8 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
   if ( ! area )
     return;
 
-  dx = x - area->x_offset + 1;
-  dy = y - area->y_offset + 1;
+  dx = x - area->offset_top + 1;
+  dy = y - area->offset_left + 1;
 
   if ( x < 0 || y < 0 )
     return;
@@ -1810,8 +1837,8 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
         if ( ! win->visible )
           continue;
 
-        int win_x = win->x_offset;
-        int win_y = win->y_offset;
+        int win_x = win->offset_top;
+        int win_y = win->offset_left;
         FRect geometry ( win_x
                        , win_y
                        , win->width + win->right_shadow
@@ -1897,25 +1924,25 @@ void FVTerm::processTerminalUpdate()
   // Retains terminal updates if there are unprocessed inputs
   static const int max_skip = 8;
 
-  if ( terminal_update_pending )
+  if ( ! terminal_update_pending )
+    return;
+
+  if ( ! unprocessedInput() )
   {
-    if ( ! unprocessedInput() )
-    {
-      updateTerminal();
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else if ( skipped_terminal_update > max_skip )
-    {
-      force_terminal_update = true;
-      updateTerminal();
-      force_terminal_update = false;
-      terminal_update_pending = false;
-      skipped_terminal_update = 0;
-    }
-    else
-      skipped_terminal_update++;
+    updateTerminal();
+    terminal_update_pending = false;
+    skipped_terminal_update = 0;
   }
+  else if ( skipped_terminal_update > max_skip )
+  {
+    force_terminal_update = true;
+    updateTerminal();
+    force_terminal_update = false;
+    terminal_update_pending = false;
+    skipped_terminal_update = 0;
+  }
+  else
+    skipped_terminal_update++;
 }
 
 //----------------------------------------------------------------------

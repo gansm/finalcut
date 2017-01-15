@@ -50,6 +50,10 @@ void FScrollView::setScrollWidth (int width)
     FPoint no_shadow(0,0);
     scroll_size.setWidth (width);
     resizeArea (scroll_size, no_shadow, viewport);
+    setPreprocessingHandler
+    (
+      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+    );
     child_print_area = viewport;
   }
 
@@ -73,6 +77,10 @@ void FScrollView::setScrollHeight (int height)
     FPoint no_shadow(0,0);
     scroll_size.setHeight (height);
     resizeArea (scroll_size, no_shadow, viewport);
+    setPreprocessingHandler
+    (
+      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+    );
     child_print_area = viewport;
   }
 
@@ -99,6 +107,10 @@ void FScrollView::setScrollSize (int width, int height)
     FPoint no_shadow(0,0);
     scroll_size.setSize (width, height);
     resizeArea (scroll_size, no_shadow, viewport);
+    setPreprocessingHandler
+    (
+      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+    );
     child_print_area = viewport;
   }
 
@@ -124,8 +136,8 @@ void FScrollView::setX (int x, bool adjust)
 
     if ( viewport )
     {
-      viewport->x_offset = scroll_size.getX();
-      viewport->y_offset = scroll_size.getY();
+      viewport->offset_top = scroll_size.getX();
+      viewport->offset_left = scroll_size.getY();
     }
   }
 }
@@ -141,8 +153,8 @@ void FScrollView::setY (int y, bool adjust)
 
     if ( viewport )
     {
-      viewport->x_offset = scroll_size.getX();
-      viewport->y_offset = scroll_size.getY();
+      viewport->offset_top = scroll_size.getX();
+      viewport->offset_left = scroll_size.getY();
     }
   }
 }
@@ -158,8 +170,8 @@ void FScrollView::setPos (int x, int y, bool adjust)
   {
     if ( viewport )
     {
-      viewport->x_offset = scroll_size.getX();
-      viewport->y_offset = scroll_size.getY();
+      viewport->offset_top = scroll_size.getX();
+      viewport->offset_left = scroll_size.getY();
     }
   }
 }
@@ -210,8 +222,8 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
   }
   else if ( ! adjust && viewport )
   {
-    viewport->x_offset = scroll_size.getX();
-    viewport->y_offset = scroll_size.getY();
+    viewport->offset_top = scroll_size.getX();
+    viewport->offset_left = scroll_size.getY();
   }
 }
 
@@ -303,7 +315,7 @@ void FScrollView::draw()
   if ( FWidget* p = getParentWidget() )
     setColor (p->getForegroundColor(), p->getBackgroundColor());
   else
-    setColor (wc.dialog_fg, wc.dialog_bg);
+    setColor();
 
   if ( isNewFont() )
     drawBorder (1, 1, getWidth() - 1, getHeight());
@@ -496,8 +508,8 @@ void FScrollView::adjustSize()
 
   if ( viewport )
   {
-    viewport->x_offset = scroll_size.getX();
-    viewport->y_offset = scroll_size.getY();
+    viewport->offset_top = scroll_size.getX();
+    viewport->offset_left = scroll_size.getY();
   }
 
   hbar->setMaximum (getScrollWidth() - getClientWidth());
@@ -536,8 +548,8 @@ void FScrollView::copy2area()
   if ( ! viewport->has_changes )
     return;
 
-  ax = getTermX() - print_area->x_offset;
-  ay = getTermY() - print_area->y_offset;
+  ax = getTermX() - print_area->offset_top;
+  ay = getTermY() - print_area->offset_left;
   dx = scroll_offset.getX();
   dy = scroll_offset.getY();
   y_end = getClientHeight();
@@ -567,6 +579,9 @@ void FScrollView::copy2area()
 //----------------------------------------------------------------------
 void FScrollView::init()
 {
+  setForegroundColor (wc.dialog_fg);
+  setBackgroundColor (wc.dialog_bg);
+
   vbar = new FScrollbar(fc::vertical, this);
   vbar->setMinimum(0);
   vbar->setValue(0);
@@ -582,6 +597,7 @@ void FScrollView::init()
     "change-value",
     _METHOD_CALLBACK (this, &FScrollView::cb_VBarChange)
   );
+
   hbar->addCallback
   (
     "change-value",
@@ -597,6 +613,10 @@ void FScrollView::init()
   FPoint no_shadow(0,0);
   scroll_size.setRect (1, 1, getClientWidth(), getClientHeight());
   createArea (scroll_size, no_shadow, viewport);
+  setPreprocessingHandler
+  (
+    _PREPROC_HANDLER (this, &FScrollView::copy2area)
+  );
 
   if ( viewport )
     child_print_area = viewport;

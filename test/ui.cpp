@@ -351,58 +351,69 @@ MyDialog::MyDialog (FWidget* parent)
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_view)
   );
+
   Quit->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
+
   Cut->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_cutClipboard)
   );
+
   Copy->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_copyClipboard)
   );
+
   Paste->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_pasteClipboard)
   );
+
   Clear->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_clearInput)
   );
+
   Env->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_terminfo)
   );
+
   Drive->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_drives)
   );
+
   Help->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
+
   File1->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_view),
     dynamic_cast<FWidget::data_ptr>(File1)
   );
+
   File2->addCallback
   (
     "clicked",
     _METHOD_CALLBACK (this, &MyDialog::cb_view),
     dynamic_cast<FWidget::data_ptr>(File2)
   );
+
   File3->addCallback
   (
     "clicked",

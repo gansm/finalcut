@@ -97,8 +97,8 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
           redraw();
           drop_down = true;
         }
-        else if (  ev->key() == fc::Fkey_return
-                || ev->key() == fc::Fkey_enter )
+        else if ( ev->key() == fc::Fkey_return
+                 || ev->key() == fc::Fkey_enter )
         {
           unselectItem();
           redraw();
@@ -345,9 +345,9 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       x1 = (*iter)->getX();
       x2 = (*iter)->getX() + (*iter)->getWidth();
 
-      if (  mouse_x >= x1
-         && mouse_x < x2
-         && mouse_y == 1 )
+      if ( mouse_x >= x1
+          && mouse_x < x2
+          && mouse_y == 1 )
       {
         // Mouse pointer over item
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
@@ -382,9 +382,9 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       }
       else
       {
-        if (  mouse_over_menubar
-           && (*iter)->isEnabled()
-           && (*iter)->isSelected() )
+        if ( mouse_over_menubar
+            && (*iter)->isEnabled()
+            && (*iter)->isSelected() )
         {
           // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
@@ -401,8 +401,8 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           FMenu* menu = getSelectedItem()->getMenu();
           const FRect& menu_geometry = menu->getTermGeometry();
 
-          if (  menu->getCount() > 0
-             && menu_geometry.contains(ev->getTermPos()) )
+          if ( menu->getCount() > 0
+              && menu_geometry.contains(ev->getTermPos()) )
           {
             FMouseEvent* _ev;
             const FPoint& t = ev->getTermPos();

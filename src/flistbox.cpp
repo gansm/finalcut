@@ -996,8 +996,8 @@ void FListBox::onTimer (FTimerEvent*)
   }
 
   // handle multiple selections
-  if (  drag_scroll == FListBox::scrollUpSelect
-     || drag_scroll == FListBox::scrollDownSelect )
+  if ( drag_scroll == FListBox::scrollUpSelect
+      || drag_scroll == FListBox::scrollDownSelect )
   {
     if ( isMultiSelection() && current_before != current )
     {

@@ -29,9 +29,13 @@
 #include "fterm.h"
 #include <sstream>  // std::stringstream
 
+// Preprocessing handler macro
+#define _PREPROC_HANDLER(i,h) \
+           reinterpret_cast<FVTerm*>((i)) \
+         , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
+
 // class forward declaration
 class FWidget;
-
 
 //----------------------------------------------------------------------
 // class FVTerm
@@ -46,29 +50,32 @@ class FVTerm : public FObject, public FTerm
    // Typedefs and Enumeration
    typedef struct
    {
-     uInt xmin;
-     uInt xmax;
-     uInt trans_count;
+     uInt xmin;           // X-position with the first change
+     uInt xmax;           // X-position with the last change
+     uInt trans_count;    // Number of transparent characters
    } line_changes;
 
    typedef FOptiAttr::char_data  char_data;
+   typedef void (FVTerm::*FPreprocessingHandler)();
 
    typedef struct
    {
-     int x_offset;
-     int y_offset;
-     int width;
-     int height;
-     int right_shadow;
-     int bottom_shadow;
-     int cursor_x;
-     int cursor_y;
-     int input_cursor_x;
-     int input_cursor_y;
-     int input_cursor_visible;
-     FWidget* widget;
+     int offset_top;      // Distance from top of the terminal
+     int offset_left;     // Distance from left terminal side
+     int width;           // Window width
+     int height;          // Window height
+     int right_shadow;    // Right window shadow
+     int bottom_shadow;   // Bottom window shadow
+     int cursor_x;        // X-position for the next write operation
+     int cursor_y;        // Y-position for the next write operation
+     int input_cursor_x;  // X-position input cursor
+     int input_cursor_y;  // Y-position input cursor
+     FWidget* widget;     // Widget that owns this term_area
+     FVTerm* pre_proc_instance;
+     FPreprocessingHandler pre_proc;
      line_changes* changes;
-     char_data* text;
+     char_data* text;     // Text data for the output
+     bool input_cursor_visible;
      bool has_changes;
      bool visible;
    } term_area;
@@ -169,6 +176,9 @@ class FVTerm : public FObject, public FTerm
    static bool         setInheritBackground (register bool);
    static bool         setInheritBackground();
    static bool         unsetInheritBackground();
+
+   void                setPreprocessingHandler ( FVTerm*
+                                               , FPreprocessingHandler );
 
    // Inquiries
    static bool         isCursorHidden();

@@ -250,8 +250,8 @@ void FStatusBar::drawMessage()
   if ( hasKeys )
   {
     std::vector<FStatusKey*>::const_iterator iter = key_list.end();
-    isLastActiveFocus = bool(  (*(iter-1))->isActivated()
-                            || (*(iter-1))->hasMouseFocus() );
+    isLastActiveFocus = bool ( (*(iter-1))->isActivated()
+                              || (*(iter-1))->hasMouseFocus() );
   }
   else
     isLastActiveFocus = false;

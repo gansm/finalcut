@@ -359,10 +359,10 @@ void FApplication::cmd_options ()
         FString encoding(optarg);
         encoding = encoding.toUpper();
 
-        if (  encoding.includes("UTF8")
-           || encoding.includes("VT100")
-           || encoding.includes("PC")
-           || encoding.includes("ASCII") )
+        if ( encoding.includes("UTF8")
+            || encoding.includes("VT100")
+            || encoding.includes("PC")
+            || encoding.includes("ASCII") )
         {
           setEncoding(encoding.c_str());
         }

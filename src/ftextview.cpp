@@ -617,6 +617,7 @@ void FTextView::init()
     "change-value",
     _METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
   );
+
   hbar->addCallback
   (
     "change-value",

@@ -201,7 +201,7 @@ void FDialog::setPos (int x, int y, bool)
   height = getHeight();
 
   // Avoid to move widget completely outside the terminal
-  if (  x+width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
+  if ( x+width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   if ( isZoomed() )
