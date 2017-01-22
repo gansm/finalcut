@@ -1,3 +1,7 @@
+2017-01-22  Markus Gans  <guru.mail@muenster.de>
+	* A FScrollView object can now have client widgets 
+	  on the scrolling area
+
 2017-01-15  Markus Gans  <guru.mail@muenster.de>
 	* Virtual window gets a preprocessing handler. This allows 
 	  a preprocessing method to be called before the vterm is updated.

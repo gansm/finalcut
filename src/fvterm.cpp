@@ -733,6 +733,12 @@ void FVTerm::resizeArea ( int offset_top, int offset_left
                         , int rsw, int bsh
                         , term_area* area )
 {
+  assert ( offset_top >= 0 );
+  assert ( offset_left >= 0 );
+  assert ( width > 0 );
+  assert ( height > 0 );
+  assert ( rsw >= 0 );
+  assert ( bsh >= 0 );
   int area_size;
   char_data default_char;
   line_changes unchanged;

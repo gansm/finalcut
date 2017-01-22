@@ -242,6 +242,11 @@ class FVTerm : public FObject, public FTerm
    // Accessor
    virtual term_area*   getPrintArea();
 
+   // Inquiries
+   bool                 hasPrintArea() const;
+   bool                 hasChildPrintArea() const;
+   bool                 isVirtualWindow() const;
+
    // Methods
    void                 createArea ( const FRect&
                                    , const FPoint&
@@ -703,6 +708,18 @@ inline bool FVTerm::isInheritBackground()
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
 { return *this; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasPrintArea() const
+{ return print_area; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasChildPrintArea() const
+{ return child_print_area; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isVirtualWindow() const
+{ return vwin; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

@@ -427,6 +427,7 @@ class FWidget : public FVTerm
    // Methods
    void               init();
    void               finish();
+   void               insufficientSpaceAdjust();
    void               processDestroy();
    virtual void       draw();
    static void        setColorTheme();

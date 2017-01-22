@@ -23,20 +23,87 @@ class scrollview : public FScrollView
    // Destructor
   ~scrollview  ();
 
+   // Mutator
+   void setScrollSize (int, int);
+
  private:
-   // Methods
+   // Method
    void draw();
+
+   // Callback methods
+   void cb_go_east (FWidget*, void*);
+   void cb_go_south (FWidget*, void*);
+   void cb_go_west (FWidget*, void*);
+   void cb_go_north (FWidget*, void*);
+
+   // Data Members
+   FButton* go_east;
+   FButton* go_south;
+   FButton* go_west;
+   FButton* go_north;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 scrollview::scrollview (FWidget* parent)
   : FScrollView(parent)
-{ }
+{
+  go_east = new FButton(wchar_t(fc::BlackRightPointingPointer) , this);
+  go_east->setGeometry (1, 1, 5, 1);
+
+  go_south = new FButton(wchar_t(fc::BlackDownPointingTriangle) , this);
+  go_south->setGeometry (getScrollWidth() - 5, 1, 5, 1);
+
+  go_west = new FButton(wchar_t(fc::BlackLeftPointingPointer) , this);
+  go_west->setGeometry (getScrollWidth() - 5, getScrollHeight() - 2, 5, 1);
+
+  go_north = new FButton(wchar_t(fc::BlackUpPointingTriangle) , this);
+  go_north->setGeometry (1, getScrollHeight() - 2, 5, 1);
+
+
+  if ( isCygwinTerminal() )
+  {
+    go_south->setText ('v');
+    go_north->setText ('^');
+  }
+
+  go_east->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &scrollview::cb_go_east)
+  );
+
+  go_south->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &scrollview::cb_go_south)
+  );
+
+  go_west->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &scrollview::cb_go_west)
+  );
+
+  go_north->addCallback
+  (
+    "clicked",
+    _METHOD_CALLBACK (this, &scrollview::cb_go_north)
+  );
+}
 
 //----------------------------------------------------------------------
 scrollview::~scrollview()
 { }
+
+//----------------------------------------------------------------------
+void scrollview::setScrollSize (int width, int height)
+{
+  FScrollView::setScrollSize (width, height);
+  go_south->setPos (width - 5, 1);
+  go_west->setPos (width - 5, height - 1);
+  go_north->setPos (1, height - 1);
+}
 
 //----------------------------------------------------------------------
 void scrollview::draw()
@@ -53,6 +120,41 @@ void scrollview::draw()
   }
 
   FScrollView::draw();
+}
+
+//----------------------------------------------------------------------
+void scrollview::cb_go_east (FWidget*, void*)
+{
+  scrollToX (getScrollWidth() - getViewportWidth() + 1);
+  go_south->setFocus();
+  go_east->redraw();
+  go_south->redraw();
+}
+
+//----------------------------------------------------------------------
+void scrollview::cb_go_south (FWidget*, void*)
+{
+  scrollToY (getScrollHeight() - getViewportHeight() + 1);
+  go_west->setFocus();
+  go_south->redraw();
+  go_west->redraw();
+}
+
+//----------------------------------------------------------------------
+void scrollview::cb_go_west (FWidget*, void*)
+{
+  scrollToX (1);
+  go_north->setFocus();
+  go_west->redraw();
+  go_north->redraw();}
+
+//----------------------------------------------------------------------
+void scrollview::cb_go_north (FWidget*, void*)
+{
+  scrollToY (1);
+  go_east->setFocus();
+  go_north->redraw();
+  go_east->redraw();
 }
 
 
@@ -91,7 +193,7 @@ scrollviewdemo::scrollviewdemo (FWidget* parent)
   // The scrolling viewport widget
   scrollview* sview = new scrollview (this);
   sview->setGeometry(3, 2, 44, 12);
-  sview->setScrollSize(88, 24);
+  sview->setScrollSize(188, 124);
 
   // Quit button
   FButton* button = new FButton("&Quit", this);

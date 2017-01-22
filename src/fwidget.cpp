@@ -451,7 +451,7 @@ void FWidget::setTopPadding (int top, bool adjust)
   if ( padding.top == top )
     return;
 
-  (top < 0) ? padding.top = 0 : padding.top = top;
+  padding.top = top;
 
   if ( adjust )
   {
@@ -472,7 +472,7 @@ void FWidget::setLeftPadding (int left, bool adjust)
   if ( padding.left == left )
     return;
 
-  (left < 0) ? padding.left = 0 : padding.left = left;
+  padding.left = left;
 
   if ( adjust )
   {
@@ -493,7 +493,7 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
   if ( padding.bottom == bottom )
     return;
 
-  (bottom < 0) ? padding.bottom = 0 : padding.bottom = bottom;
+  padding.bottom = bottom;
 
   if ( adjust )
   {
@@ -514,7 +514,7 @@ void FWidget::setRightPadding (int right, bool adjust)
   if ( padding.right == right )
     return;
 
-  (right < 0) ? padding.right = 0 : padding.right = right;
+  padding.right = right;
 
   if ( adjust )
   {
@@ -1697,48 +1697,9 @@ void FWidget::adjustSize()
     adjust_wsize = wsize;
   }
 
-  if ( ! isWindowWidget() )
-  {
-    // move left if not enough space
-    while ( getTermX()+getWidth()-padding.right > offset.getX2()+2 )
-    {
-      adjust_wsize.x1_ref()--;
-      adjust_wsize.x2_ref()--;
-
-      if ( adjust_wsize.x1_ref() < 1 )
-        adjust_wsize.x1_ref() = 1;
-    }
-
-    // move up if not enough space
-    while ( getTermY()+getHeight()-padding.bottom > offset.getY2()+2 )
-    {
-      adjust_wsize.y1_ref()--;
-      adjust_wsize.y2_ref()--;
-
-      if ( adjust_wsize.y1_ref() < 1 )
-        adjust_wsize.y1_ref() = 1;
-    }
-
-    // reduce the width if not enough space
-    while ( offset.getX1()+getWidth()-1 > offset.getX2() )
-      adjust_wsize.x2_ref()--;
-
-    if ( getWidth() < size_hints.min_width )
-      adjust_wsize.setWidth(size_hints.min_width);
-
-    if ( getWidth() <= 0 )
-      adjust_wsize.setWidth(1);
-
-    // reduce the height if not enough space
-    while ( offset.getY1()+getHeight()-1 > offset.getY2() )
-      adjust_wsize.y2_ref()--;
-
-    if ( getHeight() < size_hints.min_height )
-      adjust_wsize.setWidth(size_hints.min_height);
-
-    if ( getHeight() <= 0 )
-      adjust_wsize.setHeight(1);
-  }
+  // Move and shrink in case of lack of space
+  if ( ! hasChildPrintArea() )
+    insufficientSpaceAdjust();
 
   client_offset.setCoordinates
   (
@@ -2200,6 +2161,55 @@ void FWidget::finish()
     delete window_list;
     window_list = 0;
   }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::insufficientSpaceAdjust()
+{
+  // Move and shrink widget if there is not enough space available
+
+  if ( isWindowWidget() )
+    return;
+
+  // move left if not enough space
+  while ( getTermX()+getWidth()-padding.right > offset.getX2()+2 )
+  {
+    adjust_wsize.x1_ref()--;
+    adjust_wsize.x2_ref()--;
+
+    if ( adjust_wsize.x1_ref() < 1 )
+      adjust_wsize.x1_ref() = 1;
+  }
+
+  // move up if not enough space
+  while ( getTermY()+getHeight()-padding.bottom > offset.getY2()+2 )
+  {
+    adjust_wsize.y1_ref()--;
+    adjust_wsize.y2_ref()--;
+
+    if ( adjust_wsize.y1_ref() < 1 )
+      adjust_wsize.y1_ref() = 1;
+  }
+
+  // reduce the width if not enough space
+  while ( offset.getX1()+getWidth()-1 > offset.getX2() )
+    adjust_wsize.x2_ref()--;
+
+  if ( getWidth() < size_hints.min_width )
+    adjust_wsize.setWidth(size_hints.min_width);
+
+  if ( getWidth() <= 0 )
+    adjust_wsize.setWidth(1);
+
+  // reduce the height if not enough space
+  while ( offset.getY1()+getHeight()-1 > offset.getY2() )
+    adjust_wsize.y2_ref()--;
+
+  if ( getHeight() < size_hints.min_height )
+    adjust_wsize.setWidth(size_hints.min_height);
+
+  if ( getHeight() <= 0 )
+    adjust_wsize.setHeight(1);
 }
 
 //----------------------------------------------------------------------

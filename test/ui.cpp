@@ -250,6 +250,9 @@ class MyDialog : public FDialog
    // Disable assignment operator (=)
    MyDialog& operator = (const MyDialog&);
 
+   // Method
+   void adjustSize();
+
    // Event handlers
    void onClose (FCloseEvent*);
 
@@ -271,9 +274,7 @@ class MyDialog : public FDialog
    void cb_setInput (FWidget*, void*);
    void cb_exitApp (FWidget*, void*);
 
-   void adjustSize();
-
-    // Data Members
+   // Data Members
    FLineEdit* myLineEdit;
    FListBox*  myList;
    FString    clipboard;
@@ -627,6 +628,24 @@ MyDialog::~MyDialog()
 { }
 
 //----------------------------------------------------------------------
+void MyDialog::adjustSize()
+{
+  int h = getParentWidget()->getHeight() - 4;
+  setHeight (h, false);
+  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+
+  if ( X < 1 )
+    X = 1;
+
+  setX (X, false);
+
+  if ( myList )
+    myList->setHeight (getHeight() - 3, false);
+
+  FDialog::adjustSize();
+}
+
+//----------------------------------------------------------------------
 void MyDialog::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit"
@@ -879,23 +898,6 @@ void MyDialog::cb_exitApp (FWidget*, void*)
   close();
 }
 
-//----------------------------------------------------------------------
-void MyDialog::adjustSize()
-{
-  int h = getParentWidget()->getHeight() - 4;
-  setHeight (h, false);
-  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
-
-  if ( X < 1 )
-    X = 1;
-
-  setX (X, false);
-
-  if ( myList )
-    myList->setHeight (getHeight() - 3, false);
-
-  FDialog::adjustSize();
-}
 
 //----------------------------------------------------------------------
 //                               main part

@@ -232,7 +232,8 @@ bool FWindow::setAlwaysOnTop (bool on)
 bool FWindow::isWindowHidden() const
 {
   // returns the window hidden state
-  if ( vwin )
+
+  if ( isVirtualWindow() )
     return ! vwin->visible;
   else
     return false;
@@ -286,7 +287,7 @@ void FWindow::drawBorder()
 //----------------------------------------------------------------------
 void FWindow::show()
 {
-  if ( vwin )
+  if ( isVirtualWindow() )
     vwin->visible = true;
 
   FWidget::show();
@@ -295,7 +296,7 @@ void FWindow::show()
 //----------------------------------------------------------------------
 void FWindow::hide()
 {
-  if ( vwin )
+  if ( isVirtualWindow() )
     vwin->visible = false;
 
   FWidget::hide();
@@ -306,7 +307,7 @@ void FWindow::setX (int x, bool adjust)
 {
   FWidget::setX (x, adjust);
 
-  if ( vwin )
+  if ( isVirtualWindow() )
     vwin->offset_top = getTermX() - 1;
 }
 
@@ -318,7 +319,7 @@ void FWindow::setY (int y, bool adjust)
 
   FWidget::setY (y, adjust);
 
-  if ( vwin )
+  if ( isVirtualWindow() )
     vwin->offset_left = getTermY() - 1;
 }
 
@@ -330,7 +331,7 @@ void FWindow::setPos (int x, int y, bool adjust)
 
   FWidget::setPos (x, y, adjust);
 
-  if ( vwin )
+  if ( isVirtualWindow() )
   {
     vwin->offset_top = getTermX() - 1;
     vwin->offset_left = getTermY() - 1;
@@ -343,7 +344,7 @@ void FWindow::setWidth (int w, bool adjust)
   int old_width = getWidth();
   FWidget::setWidth (w, adjust);
 
-  if ( vwin && getWidth() != old_width )
+  if ( isVirtualWindow() && getWidth() != old_width )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1,-1);
@@ -357,7 +358,7 @@ void FWindow::setHeight (int h, bool adjust)
   int old_height = getHeight();
   FWidget::setHeight (h, adjust);
 
-  if ( vwin && getHeight() != old_height )
+  if ( isVirtualWindow() && getHeight() != old_height )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1,-1);
@@ -372,7 +373,7 @@ void FWindow::setSize (int w, int h, bool adjust)
   int old_height = getHeight();
   FWidget::setSize (w, h, adjust);
 
-  if ( vwin && (getWidth() != old_width || getHeight() != old_height) )
+  if ( isVirtualWindow() && (getWidth() != old_width || getHeight() != old_height) )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1,-1);
@@ -393,7 +394,7 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 
   FWidget::setGeometry (x, y, w, h, adjust);
 
-  if ( ! vwin )
+  if ( ! isVirtualWindow() )
     return;
 
   if ( getWidth() != old_width || getHeight() != old_height )
@@ -417,7 +418,7 @@ void FWindow::move (int dx, int dy)
 {
   FWidget::move (dx,dy);
 
-  if ( vwin )
+  if ( isVirtualWindow() )
   {
     vwin->offset_top = getTermX() - 1;
     vwin->offset_left = getTermY() - 1;
@@ -765,7 +766,7 @@ void FWindow::setShadowSize (int right, int bottom)
   new_right = getShadow().getX();
   new_bottom = getShadow().getY();
 
-  if ( vwin && (new_right != old_right || new_bottom != old_bottom) )
+  if ( isVirtualWindow() && (new_right != old_right || new_bottom != old_bottom) )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1,-1);
@@ -784,7 +785,7 @@ void FWindow::adjustSize()
 
   if ( zoomed )
     setGeometry (1, 1, getMaxWidth(), getMaxHeight(), false);
-  else if ( vwin )
+  else if ( isVirtualWindow() )
   {
     if ( getX() != old_x )
       vwin->offset_top = getTermX() - 1;

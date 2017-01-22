@@ -56,6 +56,8 @@ class FScrollView : public FWidget
 
    // Accessors
    const char*       getClassName() const;
+   int               getViewportWidth() const;
+   int               getViewportHeight() const;
    int               getScrollWidth() const;
    int               getScrollHeight() const;
    const FPoint      getScrollPos() const;
@@ -63,9 +65,9 @@ class FScrollView : public FWidget
    int               getScrollY() const;
 
    // Mutator
-   void              setScrollWidth (int);
-   void              setScrollHeight (int);
-   void              setScrollSize (int, int);
+   virtual void      setScrollWidth (int);
+   virtual void      setScrollHeight (int);
+   virtual void      setScrollSize (int, int);
    virtual void      setX (int, bool = true);
    virtual void      setY (int, bool = true);
    virtual void      setPos (int, int, bool = true);
@@ -102,6 +104,10 @@ class FScrollView : public FWidget
    void              copy2area();
 
  private:
+   // Constants
+   static const int vertical_border_spacing = 2;
+   static const int horizontal_border_spacing = 2;
+
    // Disable copy constructor
    FScrollView (const FScrollView&);
 
@@ -140,6 +146,14 @@ class FScrollView : public FWidget
 //----------------------------------------------------------------------
 inline const char* FScrollView::getClassName() const
 { return "FScrollView"; }
+
+//----------------------------------------------------------------------
+inline int FScrollView::getViewportWidth() const
+{ return getWidth() - vertical_border_spacing - nf_offset; }
+
+//----------------------------------------------------------------------
+inline int FScrollView::getViewportHeight() const
+{ return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollWidth() const
