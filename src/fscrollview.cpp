@@ -520,12 +520,12 @@ void FScrollView::onChildFocusChanged (FFocusEvent*)
 
     if ( wx > vx )
       x = widget_geometry.getX2() - viewport_geometry.getWidth() + 3;
-    else if ( wx < vx )
+    else
       x = wx;
 
     if ( wy > vy )
       y = widget_geometry.getY2() - viewport_geometry.getHeight() + 3;
-    else if ( wy < vy )
+    else
       y = wy;
 
     scrollTo (x, y);
