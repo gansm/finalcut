@@ -199,9 +199,15 @@ bool FButton::setShadow (bool on)
   if ( on
       && (Encoding != fc::VT100 || isTeraTerm() )
       && Encoding != fc::ASCII )
+  {
     flags |= fc::shadow;
+    setShadowSize(1,1);
+  }
   else
+  {
     flags &= ~fc::shadow;
+    setShadowSize(0,0);
+  }
 
   return on;
 }

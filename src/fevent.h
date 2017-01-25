@@ -53,7 +53,7 @@
 #ifndef _FEVENT_H
 #define _FEVENT_H
 
-#include "fenum.h"
+#include "fc.h"
 #include "fpoint.h"
 
 

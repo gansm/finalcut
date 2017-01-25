@@ -1,4 +1,4 @@
-// File: fenum.h
+// File: fc.h
 // Provides: class fc
 //
 //  Standalone class
@@ -8,8 +8,8 @@
 //  ▕   fc   ▏
 //  ▕▁▁▁▁▁▁▁▁▏
 
-#ifndef _FENUM_H
-#define _FENUM_H
+#ifndef _FC_H
+#define _FC_H
 
 
 //----------------------------------------------------------------------
@@ -25,27 +25,28 @@ class fc
    // event types
    enum events
    {
-     None_Event,              // invalid event
-     KeyPress_Event,          // key pressed
-     KeyUp_Event,             // key released
-     KeyDown_Event,           // key pressed
-     MouseDown_Event,         // mouse button pressed
-     MouseUp_Event,           // mouse button released
-     MouseDoubleClick_Event,  // mouse button double click
-     MouseWheel_Event,        // mouse wheel rolled
-     MouseMove_Event,         // mouse move
-     FocusIn_Event,           // focus in
-     FocusOut_Event,          // focus out
-     WindowActive_Event,      // activate window
-     WindowInactive_Event,    // deactivate window
-     WindowRaised_Event,      // raise window
-     WindowLowered_Event,     // lower window
-     Accelerator_Event,       // keyboard accelerator
-     Resize_Event,            // terminal resize
-     Show_Event,              // widget is shown
-     Hide_Event,              // widget is hidden
-     Close_Event,             // widget close
-     Timer_Event              // timer event occur
+     None_Event,               // invalid event
+     KeyPress_Event,           // key pressed
+     KeyUp_Event,              // key released
+     KeyDown_Event,            // key pressed
+     MouseDown_Event,          // mouse button pressed
+     MouseUp_Event,            // mouse button released
+     MouseDoubleClick_Event,   // mouse button double click
+     MouseWheel_Event,         // mouse wheel rolled
+     MouseMove_Event,          // mouse move
+     FocusIn_Event,            // focus in
+     FocusOut_Event,           // focus out
+     ChildFocusChanged_Event,  // child focus changed
+     WindowActive_Event,       // activate window
+     WindowInactive_Event,     // deactivate window
+     WindowRaised_Event,       // raise window
+     WindowLowered_Event,      // lower window
+     Accelerator_Event,        // keyboard accelerator
+     Resize_Event,             // terminal resize
+     Show_Event,               // widget is shown
+     Hide_Event,               // widget is hidden
+     Close_Event,              // widget close
+     Timer_Event               // timer event occur
    };
 
    // properties of a widget
@@ -1065,4 +1066,4 @@ class fc
 
 #pragma pack(pop)
 
-#endif  // _FENUM_H
+#endif  // _FC_H

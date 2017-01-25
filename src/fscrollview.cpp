@@ -12,8 +12,8 @@
 //----------------------------------------------------------------------
 FScrollView::FScrollView (FWidget* parent)
   : FWidget(parent)
-  , scroll_size(1,1,1,1)
-  , scroll_offset()
+  , scroll_geometry(1,1,1,1)
+  , viewport_geometry()
   , viewport(0)
   , vbar(0)
   , hbar(0)
@@ -48,8 +48,8 @@ void FScrollView::setScrollWidth (int width)
   if ( viewport )
   {
     FPoint no_shadow(0,0);
-    scroll_size.setWidth (width);
-    resizeArea (scroll_size, no_shadow, viewport);
+    scroll_geometry.setWidth (width);
+    resizeArea (scroll_geometry, no_shadow, viewport);
     setPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -75,8 +75,8 @@ void FScrollView::setScrollHeight (int height)
   if ( viewport )
   {
     FPoint no_shadow(0,0);
-    scroll_size.setHeight (height);
-    resizeArea (scroll_size, no_shadow, viewport);
+    scroll_geometry.setHeight (height);
+    resizeArea (scroll_geometry, no_shadow, viewport);
     setPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -105,8 +105,8 @@ void FScrollView::setScrollSize (int width, int height)
   if ( viewport )
   {
     FPoint no_shadow(0,0);
-    scroll_size.setSize (width, height);
-    resizeArea (scroll_size, no_shadow, viewport);
+    scroll_geometry.setSize (width, height);
+    resizeArea (scroll_geometry, no_shadow, viewport);
     setPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -137,12 +137,12 @@ void FScrollView::setX (int x, bool adjust)
 
   if ( ! adjust )
   {
-    scroll_size.setX (getTermX() + getLeftPadding() - 1);
+    scroll_geometry.setX (getTermX() + getLeftPadding() - 1);
 
     if ( viewport )
     {
-      viewport->offset_top = scroll_size.getX();
-      viewport->offset_left = scroll_size.getY();
+      viewport->offset_top = scroll_geometry.getX();
+      viewport->offset_left = scroll_geometry.getY();
     }
   }
 }
@@ -154,12 +154,12 @@ void FScrollView::setY (int y, bool adjust)
 
   if ( ! adjust )
   {
-    scroll_size.setY (getTermY() + getTopPadding() - 1);
+    scroll_geometry.setY (getTermY() + getTopPadding() - 1);
 
     if ( viewport )
     {
-      viewport->offset_top = scroll_size.getX();
-      viewport->offset_left = scroll_size.getY();
+      viewport->offset_top = scroll_geometry.getX();
+      viewport->offset_left = scroll_geometry.getY();
     }
   }
 }
@@ -168,15 +168,15 @@ void FScrollView::setY (int y, bool adjust)
 void FScrollView::setPos (int x, int y, bool adjust)
 {
   FWidget::setPos (x, y, adjust);
-  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
+  scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                      , getTermY() + getTopPadding() - 1 );
 
   if ( ! adjust )
   {
     if ( viewport )
     {
-      viewport->offset_top = scroll_size.getX();
-      viewport->offset_left = scroll_size.getY();
+      viewport->offset_top = scroll_geometry.getX();
+      viewport->offset_left = scroll_geometry.getY();
     }
   }
 }
@@ -185,6 +185,7 @@ void FScrollView::setPos (int x, int y, bool adjust)
 void FScrollView::setWidth (int w, bool adjust)
 {
   FWidget::setWidth (w, adjust);
+  viewport_geometry.setWidth(w);
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth() )
@@ -195,6 +196,7 @@ void FScrollView::setWidth (int w, bool adjust)
 void FScrollView::setHeight (int h, bool adjust)
 {
   FWidget::setHeight (h, adjust);
+  viewport_geometry.setHeight(h);
   calculateScrollbarPos();
 
   if ( getScrollHeight() < getViewportHeight() )
@@ -205,6 +207,7 @@ void FScrollView::setHeight (int h, bool adjust)
 void FScrollView::setSize (int w, int h, bool adjust)
 {
   FWidget::setSize (w, h, adjust);
+  viewport_geometry.setSize(w, h);
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth()
@@ -216,8 +219,9 @@ void FScrollView::setSize (int w, int h, bool adjust)
 void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   FWidget::setGeometry (x, y, w, h, adjust);
-  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
-                     , getTermY() + getTopPadding() - 1 );
+  scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
+                         , getTermY() + getTopPadding() - 1 );
+  viewport_geometry.setSize(w, h);
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth()
@@ -227,8 +231,8 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
   }
   else if ( ! adjust && viewport )
   {
-    viewport->offset_top = scroll_size.getX();
-    viewport->offset_left = scroll_size.getY();
+    viewport->offset_top = scroll_geometry.getX();
+    viewport->offset_left = scroll_geometry.getY();
   }
 }
 
@@ -262,20 +266,20 @@ void FScrollView::clearArea (int fillchar)
 //----------------------------------------------------------------------
 void FScrollView::scrollToX (int x)
 {
-  scrollTo (x, scroll_offset.getY() + 1);
+  scrollTo (x, viewport_geometry.getY() + 1);
 }
 
 //----------------------------------------------------------------------
 void FScrollView::scrollToY (int y)
 {
-  scrollTo (scroll_offset.getX() + 1, y);
+  scrollTo (viewport_geometry.getX() + 1, y);
 }
 
 //----------------------------------------------------------------------
 void FScrollView::scrollTo (int x, int y)
 {
-  short& xoffset = scroll_offset.x_ref();
-  short& yoffset = scroll_offset.y_ref();
+  short& xoffset = viewport_geometry.x1_ref();
+  short& yoffset = viewport_geometry.y1_ref();
   short  xoffset_end = short(getScrollWidth() - getViewportWidth());
   short  yoffset_end = short(getScrollHeight() - getViewportHeight());
   x--;
@@ -344,8 +348,8 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
 {
   int    key = ev->key();
   bool   hasChanges = false;
-  short& xoffset = scroll_offset.x_ref();
-  short& yoffset = scroll_offset.y_ref();
+  short& xoffset = viewport_geometry.x1_ref();
+  short& yoffset = viewport_geometry.y1_ref();
   short  xoffset_before = xoffset;
   short  yoffset_before = yoffset;
   short  xoffset_end = short(getScrollWidth() - getViewportWidth());
@@ -440,7 +444,7 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
 void FScrollView::onWheel (FWheelEvent* ev)
 {
   bool   hasChanges = false;
-  short& yoffset = scroll_offset.y_ref();
+  short& yoffset = viewport_geometry.y1_ref();
   short  yoffset_before = yoffset;
   int    wheel = ev->getWheel();
 
@@ -493,6 +497,41 @@ void FScrollView::onWheel (FWheelEvent* ev)
     updateTerminal();
 }
 
+//----------------------------------------------------------------------
+void FScrollView::onChildFocusChanged (FFocusEvent*)
+{
+  // Scrolls the viewport so that the focused widget is visible
+
+  FRect widget_geometry;
+  FWidget* focus_widget = FWidget::getFocusWidget();
+
+  if ( ! focus_widget )
+    return;
+
+  widget_geometry = focus_widget->getGeometryWithShadow();
+
+  if ( ! viewport_geometry.contains(widget_geometry) )
+  {
+    int x, y;
+    int vx = viewport_geometry.getX();
+    int vy = viewport_geometry.getY();
+    int wx = widget_geometry.getX();
+    int wy = widget_geometry.getY();
+
+    if ( wx > vx )
+      x = widget_geometry.getX2() - viewport_geometry.getWidth() + 3;
+    else if ( wx < vx )
+      x = wx;
+
+    if ( wy > vy )
+      y = widget_geometry.getY2() - viewport_geometry.getHeight() + 3;
+    else if ( wy < vy )
+      y = wy;
+
+    scrollTo (x, y);
+  }
+}
+
 
 // protected methods of FScrollView
 //----------------------------------------------------------------------
@@ -517,16 +556,16 @@ void FScrollView::adjustSize()
   FWidget::adjustSize();
   int width   = getWidth();
   int height  = getHeight();
-  int xoffset = scroll_offset.getX();
-  int yoffset = scroll_offset.getY();
+  int xoffset = viewport_geometry.getX();
+  int yoffset = viewport_geometry.getY();
 
-  scroll_size.setPos ( getTermX() + getLeftPadding() - 1
-                     , getTermY() + getTopPadding() - 1 );
+  scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
+                         , getTermY() + getTopPadding() - 1 );
 
   if ( viewport )
   {
-    viewport->offset_top = scroll_size.getX();
-    viewport->offset_left = scroll_size.getY();
+    viewport->offset_top = scroll_geometry.getX();
+    viewport->offset_left = scroll_geometry.getY();
   }
 
   hbar->setMaximum (getScrollWidth() - getViewportWidth());
@@ -566,8 +605,8 @@ void FScrollView::copy2area()
 
   ax = getTermX() - print_area->offset_top;
   ay = getTermY() - print_area->offset_left;
-  dx = scroll_offset.getX();
-  dy = scroll_offset.getY();
+  dx = viewport_geometry.getX();
+  dy = viewport_geometry.getY();
   y_end = getViewportHeight();
   x_end = getViewportWidth();
 
@@ -636,8 +675,8 @@ void FScrollView::init()
   if ( h < 1 )
     h = 1;
 
-  scroll_size.setRect (0, 0, w, h);
-  createArea (scroll_size, no_shadow, viewport);
+  scroll_geometry.setRect (0, 0, w, h);
+  createArea (scroll_geometry, no_shadow, viewport);
   setPreprocessingHandler
   (
     _PREPROC_HANDLER (this, &FScrollView::copy2area)
@@ -718,7 +757,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
   FScrollbar::sType scrollType;
   bool   hasChanges = false;
   short  distance = 1;
-  short& yoffset = scroll_offset.y_ref();
+  short& yoffset = viewport_geometry.y1_ref();
   short  yoffset_before = yoffset;
   short  yoffset_end = short(getScrollHeight() - getViewportHeight());
   scrollType = vbar->getScrollType();
@@ -821,7 +860,7 @@ void FScrollView::cb_HBarChange (FWidget*, void*)
   FScrollbar::sType scrollType;
   bool   hasChanges = false;
   short  distance = 1;
-  short& xoffset = scroll_offset.x_ref();
+  short& xoffset = viewport_geometry.x1_ref();
   short  xoffset_before = xoffset;
   short  xoffset_end = short(getScrollWidth() - getViewportWidth());
   scrollType = hbar->getScrollType();

@@ -91,6 +91,7 @@ class FScrollView : public FWidget
    // Event handlers
    void              onKeyPress (FKeyEvent*);
    void              onWheel (FWheelEvent*);
+   void              onChildFocusChanged (FFocusEvent*);
 
  protected:
    // Using-declaration
@@ -129,8 +130,8 @@ class FScrollView : public FWidget
    void              cb_HBarChange (FWidget*, void*);
 
    // Data Members
-   FRect             scroll_size;
-   FPoint            scroll_offset;
+   FRect             scroll_geometry;
+   FRect             viewport_geometry;
    term_area*        viewport;  // virtual scroll content
    FScrollbar*       vbar;
    FScrollbar*       hbar;
@@ -157,23 +158,23 @@ inline int FScrollView::getViewportHeight() const
 
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollWidth() const
-{ return scroll_size.getWidth(); }
+{ return scroll_geometry.getWidth(); }
 
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollHeight() const
-{ return scroll_size.getHeight(); }
+{ return scroll_geometry.getHeight(); }
 
 //----------------------------------------------------------------------
 inline const FPoint FScrollView::getScrollPos() const
-{ return scroll_offset; }
+{ return viewport_geometry.getPos(); }
 
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollX() const
-{ return scroll_offset.getX(); }
+{ return viewport_geometry.getX(); }
 
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollY() const
-{ return scroll_offset.getY(); }
+{ return viewport_geometry.getY(); }
 
 //----------------------------------------------------------------------
 inline void FScrollView::scrollTo (FPoint pos)

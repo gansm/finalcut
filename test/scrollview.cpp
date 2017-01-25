@@ -60,7 +60,6 @@ scrollview::scrollview (FWidget* parent)
   go_north = new FButton(wchar_t(fc::BlackUpPointingTriangle) , this);
   go_north->setGeometry (1, getScrollHeight() - 2, 5, 1);
 
-
   if ( isCygwinTerminal() )
   {
     go_south->setText ('v');

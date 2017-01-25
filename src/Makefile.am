@@ -60,7 +60,7 @@ finalcutinclude_HEADERS = \
 	fconfig.h \
 	fswitch.h \
 	fdialog.h \
-	fenum.h \
+	fc.h \
 	fevent.h \
 	ffiledialog.h \
 	final.h \

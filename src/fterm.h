@@ -52,7 +52,7 @@
 #include <map>
 #include <queue>
 
-#include "fenum.h"
+#include "fc.h"
 #include "fobject.h"
 #include "foptiattr.h"
 #include "foptimove.h"

@@ -313,6 +313,7 @@ class FWidget : public FVTerm
    virtual void       onMouseMove (FMouseEvent*);
    virtual void       onFocusIn (FFocusEvent*);
    virtual void       onFocusOut (FFocusEvent*);
+   virtual void       onChildFocusChanged (FFocusEvent*);
    virtual void       onAccel (FAccelEvent*);
    virtual void       onResize (FResizeEvent*);
    virtual void       onShow (FShowEvent*);

@@ -264,6 +264,7 @@ void FWidget::setStatusbarMessage (FString msg)
 bool FWidget::setFocus (bool on)
 {
   FWindow* window;
+  FWidget* last_focus;
 
   if ( ! enable )
     return false;
@@ -271,13 +272,15 @@ bool FWidget::setFocus (bool on)
   if ( on == focus )
     return true;
 
+  last_focus = FWidget::getFocusWidget();
+
   // set widget focus
   if ( on && ! focus )
   {
     int focusable_children = numOfFocusableChildren();
 
-    if ( FWidget::getFocusWidget() )
-      FWidget::getFocusWidget()->unsetFocus();
+    if ( last_focus )
+      last_focus->unsetFocus();
 
     if ( (!isDialogWidget() && focusable_children == 0)
         || (isDialogWidget() && focusable_children == 1) )
@@ -300,6 +303,12 @@ bool FWidget::setFocus (bool on)
         window->redraw();
     }
     window->setWindowFocusWidget(this);
+  }
+
+  if ( hasParent() && last_focus != FWidget::getFocusWidget() )
+  {
+    FFocusEvent cfc (fc::ChildFocusChanged_Event);
+    FApplication::sendEvent(getParentWidget(), &cfc);
   }
 
   return focus = (on) ? true : false;
@@ -1995,6 +2004,10 @@ bool FWidget::event (FEvent* ev)
       onFocusOut ( static_cast<FFocusEvent*>(ev) );
       break;
 
+    case fc::ChildFocusChanged_Event:
+      onChildFocusChanged ( static_cast<FFocusEvent*>(ev) );
+      break;
+
     case fc::Accelerator_Event:
       onAccel ( static_cast<FAccelEvent*>(ev) );
       break;
@@ -2063,6 +2076,10 @@ void FWidget::onFocusIn (FFocusEvent*)
 
 //----------------------------------------------------------------------
 void FWidget::onFocusOut (FFocusEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FWidget::onChildFocusChanged (FFocusEvent*)
 { }
 
 //----------------------------------------------------------------------
