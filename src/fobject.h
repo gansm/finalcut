@@ -57,7 +57,7 @@ class FObject
    };
 
    // Typedef
-   typedef std::list<FObject*> object_list;
+   typedef std::list<FObject*> FObjectList;
 
    // Constructor
    explicit FObject (FObject* = 0);
@@ -68,7 +68,7 @@ class FObject
    // Accessors
    virtual const char* getClassName() const;
    FObject*            getParent() const;
-   object_list         getChildren() const;
+   FObjectList         getChildren() const;
    int                 numOfChildren() const;
 
    // Inquiries
@@ -108,7 +108,7 @@ class FObject
 
    // Data Members
    FObject*     parent_obj;
-   object_list  children_list;
+   FObjectList  children_list;
    bool         has_parent;
    static bool  timer_modify_lock;
 };
@@ -124,7 +124,7 @@ inline FObject* FObject::getParent() const
 { return parent_obj; }
 
 //----------------------------------------------------------------------
-inline FObject::object_list FObject::getChildren() const
+inline FObject::FObjectList FObject::getChildren() const
 { return children_list; }
 
 //----------------------------------------------------------------------

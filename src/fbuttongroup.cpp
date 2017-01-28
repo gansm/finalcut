@@ -36,7 +36,7 @@ FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButtonGroup::~FButtonGroup()  // destructor
 {
-  FButtonList::iterator iter;
+  FObjectList::iterator iter;
 
   if ( buttonlist.empty() )
     return;
@@ -45,7 +45,8 @@ FButtonGroup::~FButtonGroup()  // destructor
 
   while ( iter != buttonlist.end() )
   {
-    (*iter)->setGroup(0);
+    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    toggle_button->setGroup(0);
     iter = buttonlist.erase(iter);
   }
 }
@@ -55,44 +56,17 @@ FButtonGroup::~FButtonGroup()  // destructor
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getFirstButton()
 {
-  if ( buttonlist.empty() )
-    return 0;
-
-  FButtonList::const_iterator iter, end;
-  iter = buttonlist.begin();
-  end = buttonlist.end();
-
-  while ( iter != end )
-  {
-    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-      return (*iter);
-
-    ++iter;
-  }
-
-  return 0;
+  FWidget* widget = FWidget::getFirstFocusableWidget(buttonlist);
+  FToggleButton* toggle_button = static_cast<FToggleButton*>(widget);
+  return toggle_button;
 }
 
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getLastButton()
 {
-  if ( buttonlist.empty() )
-    return 0;
-
-  FButtonList::const_iterator iter, begin;
-  begin = buttonlist.begin();
-  iter = buttonlist.end();
-
-  do
-  {
-    --iter;
-
-    if ( (*iter)->isEnabled() && (*iter)->acceptFocus() )
-      return (*iter);
-  }
-  while ( iter != begin );
-
-  return 0;
+  FWidget* widget = FWidget::getLastFocusableWidget(buttonlist);
+  FToggleButton* toggle_button = static_cast<FToggleButton*>(widget);
+  return toggle_button;
 }
 
 //----------------------------------------------------------------------
@@ -143,13 +117,15 @@ bool FButtonGroup::hasFocusedButton()
   if ( buttonlist.empty() )
     return false;
 
-  FButtonList::const_iterator iter, end;
+  FObjectList::const_iterator iter, end;
   iter = buttonlist.begin();
   end = buttonlist.end();
 
   while ( iter != end )
   {
-    if ( (*iter)->hasFocus() )
+    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+
+    if ( toggle_button->hasFocus() )
       return true;
 
     ++iter;
@@ -164,13 +140,15 @@ bool FButtonGroup::hasCheckedButton()
   if ( buttonlist.empty() )
     return false;
 
-  FButtonList::const_iterator iter, end;
+  FObjectList::const_iterator iter, end;
   iter = buttonlist.begin();
   end = buttonlist.end();
 
   while ( iter != end )
   {
-    if ( (*iter)->isChecked() )
+    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+
+    if ( toggle_button->isChecked() )
       return true;
 
     ++iter;
@@ -190,13 +168,14 @@ void FButtonGroup::hide()
 
   if ( ! buttonlist.empty() )
   {
-    FButtonList::const_iterator iter, end;
+    FObjectList::const_iterator iter, end;
     iter = buttonlist.begin();
     end = buttonlist.end();
 
     while ( iter != end )
     {
-      (*iter)->hide();
+      FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+      toggle_button->hide();
       ++iter;
     }
   }
@@ -241,8 +220,13 @@ void FButtonGroup::insert (FToggleButton* button)
     button->getGroup()->remove(button);
 
   // setChecked the first FRadioButton
-  if ( buttonlist.size() == 1 && isRadioButton(*buttonlist.begin()) )
-    (*buttonlist.begin())->setChecked();
+  if ( buttonlist.size() == 1 )
+  {
+    FToggleButton* first_button = static_cast<FToggleButton*>(*buttonlist.begin());
+
+    if ( isRadioButton(first_button) )
+      first_button->setChecked();
+  }
 
   button->setGroup(this);
   buttonlist.push_back(button);
@@ -257,7 +241,7 @@ void FButtonGroup::insert (FToggleButton* button)
 //----------------------------------------------------------------------
 void FButtonGroup::remove (FToggleButton* button)
 {
-  FButtonList::iterator iter;
+  FObjectList::iterator iter;
 
   if ( ! button || buttonlist.empty() )
     return;
@@ -266,7 +250,9 @@ void FButtonGroup::remove (FToggleButton* button)
 
   while ( iter != buttonlist.end() )
   {
-    if ( (*iter) == button )
+    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+
+    if ( toggle_button == button )
     {
       iter = buttonlist.erase(iter);
       button->setGroup(0);
@@ -298,24 +284,26 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
   if ( hasCheckedButton() && ! buttonlist.empty() )
   {
-    FButtonList::const_iterator iter, end;
+    FObjectList::const_iterator iter, end;
     iter = buttonlist.begin();
     end = buttonlist.end();
 
     while ( iter != end )
     {
-      if ( (*iter)->isChecked() )
+      FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+
+      if ( toggle_button->isChecked() )
       {
-        if ( isRadioButton(*iter) )
+        if ( isRadioButton(toggle_button) )
         {
           in_ev->ignore();
           FWidget* prev_element = getFocusWidget();
-          (*iter)->setFocus();
+          toggle_button->setFocus();
 
           if ( prev_element )
             prev_element->redraw();
 
-          (*iter)->redraw();
+          toggle_button->redraw();
         }
 
         break;
@@ -327,30 +315,19 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 
   if ( in_ev->isAccepted() )
   {
+    in_ev->ignore();
+    FWidget* prev_element = getFocusWidget();
+
     if ( in_ev->getFocusType() == fc::FocusNextWidget )
-    {
-      in_ev->ignore();
-      FWidget* prev_element = getFocusWidget();
       focusFirstChild();
-
-      if ( prev_element )
-        prev_element->redraw();
-
-      if ( getFocusWidget() )
-        getFocusWidget()->redraw();
-    }
     else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
-    {
-      in_ev->ignore();
-      FWidget* prev_element = getFocusWidget();
       focusLastChild();
 
-      if ( prev_element )
-        prev_element->redraw();
+    if ( prev_element )
+      prev_element->redraw();
 
-      if ( getFocusWidget() )
-        getFocusWidget()->redraw();
-    }
+    if ( getFocusWidget() )
+      getFocusWidget()->redraw();
   }
 
   if ( getStatusBar() )
@@ -362,14 +339,10 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::onFocusOut (FFocusEvent*)
-{ }
-
-//----------------------------------------------------------------------
 void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 {
   FToggleButton* button = static_cast<FToggleButton*>(widget);
-  FButtonList::const_iterator iter, end;
+  FObjectList::const_iterator iter, end;
 
   if ( ! button->isChecked() )
     return;
@@ -382,14 +355,16 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
 
   while ( iter != end )
   {
-    if ( (*iter) != button
-        && (*iter)->isChecked()
-        && isRadioButton(*iter) )
-    {
-      (*iter)->unsetChecked();
+    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
 
-      if ( (*iter)->isVisible() && (*iter)->isShown() )
-        (*iter)->redraw();
+    if ( toggle_button != button
+        && toggle_button->isChecked()
+        && isRadioButton(toggle_button) )
+    {
+      toggle_button->unsetChecked();
+
+      if ( toggle_button->isVisible() && toggle_button->isShown() )
+        toggle_button->redraw();
     }
 
     ++iter;
@@ -571,21 +546,23 @@ void FButtonGroup::directFocus()
 
     if ( hasCheckedButton() && ! buttonlist.empty() )
     {
-      FButtonList::const_iterator iter, end;
+      FObjectList::const_iterator iter, end;
       iter = buttonlist.begin();
       end = buttonlist.end();
 
       while ( iter != end )
       {
-        if ( (*iter)->isChecked() )
+        FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+
+        if ( toggle_button->isChecked() )
         {
-          if ( isRadioButton(*iter) )
+          if ( isRadioButton(toggle_button) )
           {
             found_checked = true;
             FWidget* focused_widget = getFocusWidget();
             FFocusEvent out (fc::FocusOut_Event);
             FApplication::queueEvent(focused_widget, &out);
-            (*iter)->setFocus();
+            toggle_button->setFocus();
 
             if ( focused_widget )
               focused_widget->redraw();

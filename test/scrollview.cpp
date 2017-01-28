@@ -145,7 +145,8 @@ void scrollview::cb_go_west (FWidget*, void*)
   scrollToX (1);
   go_north->setFocus();
   go_west->redraw();
-  go_north->redraw();}
+  go_north->redraw();
+}
 
 //----------------------------------------------------------------------
 void scrollview::cb_go_north (FWidget*, void*)

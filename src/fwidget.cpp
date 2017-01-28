@@ -149,6 +149,52 @@ FWidget* FWidget::getFocusWidget() const
 }
 
 //----------------------------------------------------------------------
+FWidget* FWidget::getFirstFocusableWidget (FObjectList children)
+{
+  if ( children.empty() )
+    return 0;
+
+  FObjectList::const_iterator iter, end;
+  iter = children.begin();
+  end = children.end();
+
+  while ( iter != end )
+  {
+    FWidget* child = static_cast<FWidget*>(*iter);
+
+    if ( child->isEnabled() && child->acceptFocus() )
+      return child;
+
+    ++iter;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+FWidget* FWidget::getLastFocusableWidget (FObjectList children)
+{
+  if ( children.empty() )
+    return 0;
+
+  FObjectList::const_iterator iter, begin;
+  begin = children.begin();
+  iter = children.end();
+
+  do
+  {
+    --iter;
+    FWidget* child = static_cast<FWidget*>(*iter);
+
+    if ( child->isEnabled() && child->acceptFocus() )
+      return child;
+  }
+  while ( iter != begin );
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 FWidget* FWidget::getClickedWidget()
 {
   FWidget* clicked_widget = static_cast<FWidget*>(FApplication::clicked_widget);
@@ -303,12 +349,6 @@ bool FWidget::setFocus (bool on)
         window->redraw();
     }
     window->setWindowFocusWidget(this);
-  }
-
-  if ( hasParent() && last_focus != FWidget::getFocusWidget() )
-  {
-    FFocusEvent cfc (fc::ChildFocusChanged_Event);
-    FApplication::sendEvent(getParentWidget(), &cfc);
   }
 
   return focus = (on) ? true : false;
@@ -746,8 +786,8 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 {
   if ( p && p->hasChildren() )
   {
-    FObject::object_list children;
-    FObject::object_list::const_iterator iter, end;
+    FObjectList children;
+    FObjectList::const_iterator iter, end;
 
     children = p->getChildren();
     iter = children.begin();
@@ -776,8 +816,8 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 //----------------------------------------------------------------------
 int FWidget::numOfFocusableChildren()
 {
-  FObject::object_list children;
-  FObject::object_list::const_iterator iter, end;
+  FObjectList children;
+  FObjectList::const_iterator iter, end;
 
   if ( ! this->hasChildren() )
     return 0;
@@ -1044,8 +1084,8 @@ void FWidget::redraw()
     // draw child elements
     if ( this->hasChildren() )
     {
-      FObject::object_list children;
-      FObject::object_list::const_iterator iter, end;
+      FObjectList children;
+      FObjectList::const_iterator iter, end;
 
       children = this->getChildren();
       iter = children.begin();
@@ -1133,8 +1173,8 @@ void FWidget::show()
 
   if ( this->hasChildren() )
   {
-    FObject::object_list children;
-    FObject::object_list::const_iterator iter, end;
+    FObjectList children;
+    FObjectList::const_iterator iter, end;
 
     children = this->getChildren();
     iter = children.begin();
@@ -1186,8 +1226,8 @@ void FWidget::hide()
 //----------------------------------------------------------------------
 bool FWidget::focusFirstChild()
 {
-  FObject::object_list children;
-  FObject::object_list::const_iterator iter, end;
+  FObjectList children;
+  FObjectList::const_iterator iter, end;
 
   if ( ! this->hasChildren() )
     return false;
@@ -1228,8 +1268,8 @@ bool FWidget::focusFirstChild()
 //----------------------------------------------------------------------
 bool FWidget::focusLastChild()
 {
-  FObject::object_list children;
-  FObject::object_list::const_iterator iter, begin;
+  FObjectList children;
+  FObjectList::const_iterator iter, begin;
 
   if ( ! this->hasChildren() )
     return false;
@@ -1720,8 +1760,8 @@ void FWidget::adjustSize()
 
   if ( this->hasChildren() )
   {
-    FObject::object_list children;
-    FObject::object_list::const_iterator iter, end;
+    FObjectList children;
+    FObjectList::const_iterator iter, end;
 
     children = this->getChildren();
     iter = children.begin();
@@ -1770,12 +1810,12 @@ bool FWidget::focusNextChild()
 
   if ( hasParent() )
   {
-    FWidget* parent = static_cast<FWidget*>(getParent());
+    FWidget* parent = getParentWidget();
 
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
-      FObject::object_list children;
-      FObject::object_list::iterator iter, end;
+      FObjectList children;
+      FObjectList::iterator iter, end;
 
       children = parent->getChildren();
       iter = children.begin();
@@ -1788,7 +1828,7 @@ bool FWidget::focusNextChild()
         if ( w == this )
         {
           FWidget* next;
-          FObject::object_list::const_iterator next_element;
+          FObjectList::const_iterator next_element;
           next_element = iter;
 
           do
@@ -1808,20 +1848,31 @@ bool FWidget::focusNextChild()
           out.setFocusType(fc::FocusNextWidget);
           FApplication::sendEvent(this, &out);
 
+          FFocusEvent cfo (fc::ChildFocusOut_Event);
+          cfo.setFocusType(fc::FocusNextWidget);
+          cfo.ignore();
+          FApplication::sendEvent(parent, &cfo);
+
+          if ( cfo.isAccepted() )
+            out.ignore();
+
           if ( out.isAccepted() )
           {
             if ( next == this )
               return false;
 
             next->setFocus();
+            FFocusEvent cfi (fc::ChildFocusIn_Event);
+            FApplication::sendEvent(parent, &cfi);
+
             FFocusEvent in (fc::FocusIn_Event);
             in.setFocusType(fc::FocusNextWidget);
             FApplication::sendEvent(next, &in);
 
             if ( in.isAccepted() )
             {
-              this->draw();
-              next->draw();
+              this->redraw();
+              next->redraw();
               updateTerminal();
               flush_out();
             }
@@ -1843,12 +1894,12 @@ bool FWidget::focusPrevChild()
 
   if ( hasParent() )
   {
-    FWidget* parent = static_cast<FWidget*>(getParent());
+    FWidget* parent = getParentWidget();
 
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
-      FObject::object_list children;
-      FObject::object_list::iterator iter, begin;
+      FObjectList children;
+      FObjectList::iterator iter, begin;
 
       children = parent->getChildren();
       iter  = children.end();
@@ -1862,7 +1913,7 @@ bool FWidget::focusPrevChild()
         if ( w == this )
         {
           FWidget* prev;
-          FObject::object_list::const_iterator prev_element;
+          FObjectList::const_iterator prev_element;
           prev_element = iter;
 
           do
@@ -1881,20 +1932,31 @@ bool FWidget::focusPrevChild()
           out.setFocusType(fc::FocusPreviousWidget);
           FApplication::sendEvent(this, &out);
 
+          FFocusEvent cfo (fc::ChildFocusOut_Event);
+          cfo.setFocusType(fc::FocusPreviousWidget);
+          cfo.ignore();
+          FApplication::sendEvent(parent, &cfo);
+
+          if ( cfo.isAccepted() )
+            out.ignore();
+
           if ( out.isAccepted() )
           {
             if ( prev == this )
               return false;
 
             prev->setFocus();
+            FFocusEvent cfi (fc::ChildFocusIn_Event);
+            FApplication::sendEvent(parent, &cfi);
+
             FFocusEvent in (fc::FocusIn_Event);
             in.setFocusType(fc::FocusPreviousWidget);
             FApplication::sendEvent(prev, &in);
 
             if ( in.isAccepted() )
             {
-              this->draw();
-              prev->draw();
+              this->redraw();
+              prev->redraw();
               updateTerminal();
               flush_out();
             }
@@ -2004,8 +2066,12 @@ bool FWidget::event (FEvent* ev)
       onFocusOut ( static_cast<FFocusEvent*>(ev) );
       break;
 
-    case fc::ChildFocusChanged_Event:
-      onChildFocusChanged ( static_cast<FFocusEvent*>(ev) );
+    case fc::ChildFocusIn_Event:
+      onChildFocusIn ( static_cast<FFocusEvent*>(ev) );
+      break;
+
+    case fc::ChildFocusOut_Event:
+      onChildFocusOut ( static_cast<FFocusEvent*>(ev) );
       break;
 
     case fc::Accelerator_Event:
@@ -2079,7 +2145,11 @@ void FWidget::onFocusOut (FFocusEvent*)
 { }
 
 //----------------------------------------------------------------------
-void FWidget::onChildFocusChanged (FFocusEvent*)
+void FWidget::onChildFocusIn (FFocusEvent*)
+{ }
+
+//----------------------------------------------------------------------
+void FWidget::onChildFocusOut (FFocusEvent*)
 { }
 
 //----------------------------------------------------------------------

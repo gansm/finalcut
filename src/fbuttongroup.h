@@ -80,7 +80,6 @@ class FButtonGroup : public FWidget
    void           onMouseDown (FMouseEvent*);
    void           onAccel (FAccelEvent*);
    void           onFocusIn (FFocusEvent*);
-   void           onFocusOut (FFocusEvent*);
 
    // Callback method
    void           cb_buttonToggled (FWidget*, void*);
@@ -97,9 +96,6 @@ class FButtonGroup : public FWidget
    void           drawLabel();
 
  private:
-   // Typedef
-   typedef std::vector<FToggleButton*> FButtonList;
-
    // Disable copy constructor
    FButtonGroup (const FButtonGroup&);
 
@@ -116,7 +112,7 @@ class FButtonGroup : public FWidget
    // Data Members
    FString     text;
    bool        border;
-   FButtonList buttonlist;
+   FObjectList buttonlist;
 };
 #pragma pack(pop)
 

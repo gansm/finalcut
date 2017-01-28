@@ -498,7 +498,32 @@ void FScrollView::onWheel (FWheelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::onChildFocusChanged (FFocusEvent*)
+void FScrollView::onFocusIn (FFocusEvent* in_ev)
+{
+  // Sets the focus to a child widget if it exists
+
+  if ( hasChildren() )
+  {
+    FWidget* prev_element = getFocusWidget();
+
+    if ( in_ev->getFocusType() == fc::FocusNextWidget )
+      focusFirstChild();
+    else if ( in_ev->getFocusType() == fc::FocusPreviousWidget )
+      focusLastChild();
+
+    if ( prev_element )
+      prev_element->redraw();
+
+    if ( getFocusWidget() )
+      getFocusWidget()->redraw();
+
+    FFocusEvent cfi (fc::ChildFocusIn_Event);
+    onChildFocusIn(&cfi);
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onChildFocusIn (FFocusEvent*)
 {
   // Scrolls the viewport so that the focused widget is visible
 
@@ -529,6 +554,35 @@ void FScrollView::onChildFocusChanged (FFocusEvent*)
       y = wy;
 
     scrollTo (x, y);
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
+{
+  // Change the focus away from FScrollView to another widget
+
+  FWidget* focus_widget = FWidget::getFocusWidget();
+
+  if ( out_ev->getFocusType() == fc::FocusNextWidget )
+  {
+    FWidget* last_widget = getLastFocusableWidget(getChildren());
+
+    if ( focus_widget == last_widget )
+    {
+      out_ev->accept();
+      focusNextChild();
+    }
+  }
+  else if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
+  {
+    FWidget* first_widget = getFirstFocusableWidget(getChildren());
+
+    if ( focus_widget == first_widget )
+    {
+      out_ev->accept();
+      focusPrevChild();
+    }
   }
 }
 

@@ -36,7 +36,8 @@ class fc
      MouseMove_Event,          // mouse move
      FocusIn_Event,            // focus in
      FocusOut_Event,           // focus out
-     ChildFocusChanged_Event,  // child focus changed
+     ChildFocusIn_Event,       // child focus in
+     ChildFocusOut_Event,      // child focus out
      WindowActive_Event,       // activate window
      WindowInactive_Event,     // deactivate window
      WindowRaised_Event,       // raise window

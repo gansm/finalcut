@@ -1,3 +1,6 @@
+2017-01-28  Markus Gans  <guru.mail@muenster.de>
+	* Allow to change the focus out from FScrollView to another widget
+
 2017-01-26  Markus Gans  <guru.mail@muenster.de>
 	* FScrollView now scrolls automatically to the focused widget
 

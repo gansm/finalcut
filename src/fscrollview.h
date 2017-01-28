@@ -91,7 +91,9 @@ class FScrollView : public FWidget
    // Event handlers
    void              onKeyPress (FKeyEvent*);
    void              onWheel (FWheelEvent*);
-   void              onChildFocusChanged (FFocusEvent*);
+   void              onFocusIn (FFocusEvent*);
+   void              onChildFocusIn (FFocusEvent*);
+   void              onChildFocusOut (FFocusEvent*);
 
  protected:
    // Using-declaration

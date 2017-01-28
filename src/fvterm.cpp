@@ -797,6 +797,7 @@ void FVTerm::resizeArea ( int offset_top, int offset_left
   default_char.trans_shadow  = 0;
   default_char.inherit_bg    = 0;
   default_char.no_changes    = 0;
+  default_char.printed       = 0;
 
   std::fill_n (area->text, area_size, default_char);
 

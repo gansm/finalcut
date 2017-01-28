@@ -124,6 +124,8 @@ class FWidget : public FVTerm
    FWidget*           getParentWidget() const;
    static FWidget*    getMainWidget();
    virtual FWidget*   getFocusWidget() const;
+   virtual FWidget*   getFirstFocusableWidget (FObjectList);
+   virtual FWidget*   getLastFocusableWidget (FObjectList);
    static FWidget*    getClickedWidget();
    static FWidget*    getMoveSizeWidget();
    static FWidget*    getOpenMenu();
@@ -313,7 +315,8 @@ class FWidget : public FVTerm
    virtual void       onMouseMove (FMouseEvent*);
    virtual void       onFocusIn (FFocusEvent*);
    virtual void       onFocusOut (FFocusEvent*);
-   virtual void       onChildFocusChanged (FFocusEvent*);
+   virtual void       onChildFocusIn (FFocusEvent*);
+   virtual void       onChildFocusOut (FFocusEvent*);
    virtual void       onAccel (FAccelEvent*);
    virtual void       onResize (FResizeEvent*);
    virtual void       onShow (FShowEvent*);
@@ -521,6 +524,7 @@ class FWidget : public FVTerm
 
    // Friend class
    friend class FToggleButton;
+   friend class FScrollView;
 };
 
 #pragma pack(pop)
