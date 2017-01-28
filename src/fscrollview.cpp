@@ -327,6 +327,9 @@ void FScrollView::draw()
 {
   use_own_print_area = true;
 
+  if ( isMonochron() )
+    setReverse(true);
+
   if ( FWidget* p = getParentWidget() )
     setColor (p->getForegroundColor(), p->getBackgroundColor());
   else
@@ -336,6 +339,9 @@ void FScrollView::draw()
     drawBorder (1, 1, getWidth() - 1, getHeight());
   else
     drawBorder();
+
+  if ( isMonochron() )
+    setReverse(false);
 
   use_own_print_area = false;
   copy2area();

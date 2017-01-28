@@ -107,7 +107,10 @@ void scrollview::setScrollSize (int width, int height)
 //----------------------------------------------------------------------
 void scrollview::draw()
 {
-  setColor (wc.dialog_fg, wc.dialog_bg);
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.label_inactive_fg, wc.dialog_bg);
   clearArea();
 
   for (int y=0; y < getScrollHeight(); y++)
@@ -117,6 +120,9 @@ void scrollview::draw()
     for (int x=0; x < getScrollWidth(); x++)
       print (32 + ((x + y) % 0x5f));
   }
+
+  if ( isMonochron() )
+    setReverse(false);
 
   FScrollView::draw();
 }
