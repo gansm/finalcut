@@ -1,0 +1,3 @@
+usr/lib/*/lib*.la
+usr/lib/*/lib*.a
+usr/include/final/*.h

@@ -1,0 +1,2 @@
+version=3
+opts=passive https://github.com/gansm/finalcut/archive/([\d.]+)\.tar.gz 

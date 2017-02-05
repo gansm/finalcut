@@ -15,6 +15,7 @@ EXTRA_DIST = \
 	newfont2.png \
 	progress-bar.png \
 	readme.txt \
+	coding-style.txt \
 	terminfo-capabilities.sh \
 	terminfo-manual.sh \
 	textview.png \
@@ -34,6 +35,7 @@ doc_DATA = \
 	newfont2.png \
 	progress-bar.png \
 	readme.txt \
+	coding-style.txt \
 	terminfo-capabilities.sh \
 	terminfo-manual.sh \
 	textview.png \
@@ -41,4 +43,3 @@ doc_DATA = \
 	vt100_line_drawing_graphics.png \
 	VTerm.txt \
 	xgraphics
-

@@ -4,4 +4,4 @@
 TERMTITLE="infocmp: $TERM"
 echo -ne "\033]0;${TERMTITLE}\007"
 
-infocmp | less
+infocmp -x | less
