@@ -2,7 +2,15 @@ Source: finalcut
 Maintainer: Markus Gans <guru.mail@muenster.de>
 Section: libs
 Priority: standard
-Build-Depends: debhelper (>= 5), dpkg-dev, g++, pkg-config, autotools-dev
+Build-Depends:
+    debhelper (>= 5)
+  , autotools-dev
+  , dpkg-dev
+  , g++
+  , pkg-config
+  , libgpm-dev [linux-any]
+  , libtinfo-dev (>= 5.3)
+  , libncurses5-dev (>= 5.3)
 Standards-Version: 3.8.4
 Homepage: https://github.com/gansm/finalcut/
 
@@ -10,9 +18,16 @@ Package: libfinal0
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
-Depends: libtinfo-dev (>= 5.3), ${shlibs:Depends}, ${misc:Depends}
-Recommends: libgpm-dev [linux-any]
-Suggests: coreutils, grep, sed, vim-common, gzip, xfonts-utils
+Depends:
+    ${shlibs:Depends}
+  , ${misc:Depends}
+Suggests:
+    coreutils
+  , grep
+  , sed
+  , vim-common
+  , gzip
+  , xfonts-utils
 Description: Shared library for the final cut widget toolkit
  The Final Cut is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
@@ -31,7 +46,11 @@ Architecture: any
 Section: libdevel
 Priority: optional
 Multi-Arch: same
-Depends: libfinal0 (= ${binary:Version}), ${misc:Depends}
+Depends:
+    libfinal0 (= ${binary:Version})
+  , ${misc:Depends}
+  , libtinfo-dev
+  , libncurses5-dev
 Description: Developer's library for the final cut widget toolkit
  The Final Cut is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
@@ -51,7 +70,11 @@ Architecture: any
 Section: misc
 Priority: optional
 Multi-Arch: same
-Depends: libfinal0 (= ${binary:Version}), ${misc:Depends}
+Depends:
+    libfinal0 (= ${binary:Version})
+  , ${misc:Depends}
+  , libtinfo-dev
+  , libncurses5-dev
 Description: Test and example programs for the final cut widget toolkit
  The Final Cut is a class library and widget toolkit with full mouse
  support for creating a text-based user interface. The library supports
