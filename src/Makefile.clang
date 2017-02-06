@@ -38,6 +38,7 @@ INCLUDE_HEADERS = \
 	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
+	ftermcap.h \
 	fterm.h \
 	fvterm.h \
 	ftextview.h \

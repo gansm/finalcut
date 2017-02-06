@@ -89,8 +89,9 @@ finalcutinclude_HEADERS = \
 	fstatusbar.h \
 	fstring.h \
 	ftcap_map.h \
+	ftermcap.h \
 	fterm.h \
-	fvterm.cpp \
+	fvterm.h \
 	ftextview.h \
 	ftogglebutton.h \
 	fwidget.h \

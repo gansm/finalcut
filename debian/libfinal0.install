@@ -1,2 +1,3 @@
+usr/lib/*/lib*.so
 usr/lib/*/lib*.so.*
 

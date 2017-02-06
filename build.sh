@@ -4,6 +4,10 @@
 PREFIX="/usr"
 
 case "$1" in
+  "--release"|"release")
+    ./configure --prefix="$PREFIX"
+    ;;
+
   "--debug"|"debug")
     ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
     ;;
@@ -24,22 +28,18 @@ case "$1" in
     ./configure --prefix="$PREFIX" CXXFLAGS="-fprofile-arcs -ftest-coverage"
     ;;
 
-  "--release"|"release")
-    ./configure --prefix="$PREFIX"
-    ;;
-
   "--help"|"help"|*)
     echo "Usage:"
     echo "  $(basename "$0") {COMMAND}"
     echo ""
     echo "Commands:"
-    echo "  help          Show this help"
+    echo "  release       Compile for release"
     echo "  debug         Compile with debug option"
     echo "  fulldebug     Compile with all warning options"
     echo "  profile       Compile with profile option (analysis with gprof)"
     echo "  cpu-profiler  Link with Google cpu performance profiler"
     echo "  gcov          Compile with options for coverage analysis with gcov"
-    echo "  release       Compile for release"
+    echo "  help          Show this help"
     exit 1
     ;;
 esac
