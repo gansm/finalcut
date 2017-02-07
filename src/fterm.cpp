@@ -95,6 +95,7 @@ bool                   FTermcap::automatic_right_margin = false;
 bool                   FTermcap::eat_nl_glitch          = false;
 bool                   FTermcap::ansi_default_color     = false;
 bool                   FTermcap::osc_support            = false;
+bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 uInt                   FTermcap::tabstop                = 8;
 uInt                   FTermcap::attr_without_color     = 0;
@@ -1297,6 +1298,9 @@ void FTerm::beep()
 void FTerm::setEncoding (std::string enc)
 {
   std::map<std::string,fc::encoding>::const_iterator it;
+
+  if ( FTermcap::no_utf8_acs_chars && isUTF8() && enc == "VT100" )
+    enc = "UTF8";
 
   // available encodings: "UTF8", "VT100", "PC" and "ASCII"
   it = encoding_set->find(enc);
@@ -2618,6 +2622,9 @@ void FTerm::init_termcaps()
     // terminal supports operating system commands (OSC)
     // OSC = Esc + ']'
     FTermcap::osc_support = tgetflag(const_cast<char*>("XT"));
+
+    // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
+    FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
 
     if ( isTeraTerm() )
       FTermcap::eat_nl_glitch = true;

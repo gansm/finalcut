@@ -56,6 +56,7 @@ class FTermcap
    static bool eat_nl_glitch;
    static bool ansi_default_color;
    static bool osc_support;
+   static bool no_utf8_acs_chars;
    static int  max_color;
    static uInt tabstop;
    static uInt attr_without_color;

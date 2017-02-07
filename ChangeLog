@@ -1,3 +1,7 @@
+2017-02-07  Markus Gans  <guru.mail@muenster.de>
+	* Uses termcap capability U8 to identify terminals that can't display 
+	  vt100 line-drawing in UTF-8 mode
+
 2017-01-28  Markus Gans  <guru.mail@muenster.de>
 	* Allow to change the focus out from FScrollView to another widget
 
