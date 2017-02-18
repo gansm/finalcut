@@ -76,8 +76,18 @@ class FScrollView : public FWidget
    virtual void      setSize (int, int, bool = true);
    void              setGeometry (int, int, int, int, bool = true);
    void              setPrintPos (register int, register int);
+   bool              setViewportPrint (bool);
+   bool              setViewportPrint();
+   bool              unsetViewportPrint();
+   bool              setBorder (bool);
+   bool              setBorder();
+   bool              unsetBorder();
    void              setHorizontalScrollBarMode (fc::scrollBarMode);
    void              setVerticalScrollBarMode (fc::scrollBarMode);
+
+   // Inquiries
+   bool              hasBorder();
+   bool              isViewportPrint();
 
    // Method
    virtual void      clearArea (int = ' ');
@@ -138,6 +148,7 @@ class FScrollView : public FWidget
    FScrollbar*       vbar;
    FScrollbar*       hbar;
    int               nf_offset;
+   bool              border;
    bool              use_own_print_area;
    fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
    fc::scrollBarMode hMode;
@@ -177,6 +188,30 @@ inline int FScrollView::getScrollX() const
 //----------------------------------------------------------------------
 inline int FScrollView::getScrollY() const
 { return viewport_geometry.getY(); }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::setViewportPrint()
+{ return setViewportPrint(true); }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::unsetViewportPrint()
+{ return setViewportPrint(false); }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::setBorder()
+{ return setBorder(true); }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::unsetBorder()
+{ return setBorder(false); }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::hasBorder()
+{ return border; }
+
+//----------------------------------------------------------------------
+inline bool FScrollView::isViewportPrint()
+{ return ! use_own_print_area; }
 
 //----------------------------------------------------------------------
 inline void FScrollView::scrollTo (FPoint pos)

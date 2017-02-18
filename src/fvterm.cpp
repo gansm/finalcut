@@ -156,20 +156,6 @@ void FVTerm::setPrintCursor (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setPreprocessingHandler ( FVTerm* instance
-                                     , FPreprocessingHandler handler )
-{
-  if ( ! print_area )
-    FVTerm::getPrintArea();
-
-  if ( print_area )
-  {
-    print_area->pre_proc_instance = instance;
-    print_area->pre_proc = handler;
-  }
-}
-
-//----------------------------------------------------------------------
 void FVTerm::clearArea (int fillchar)
 {
   clearArea (vwin, fillchar);
@@ -253,6 +239,42 @@ void FVTerm::updateTerminal()
 
   // sets the new input cursor position
   updateTerminalCursor();
+}
+
+//----------------------------------------------------------------------
+void FVTerm::addPreprocessingHandler ( FVTerm* instance
+                                     , FPreprocessingHandler handler )
+{
+  if ( ! print_area )
+    FVTerm::getPrintArea();
+
+  if ( print_area )
+  {
+    vterm_preprocessing obj = { instance, handler };
+    delPreprocessingHandler (instance);
+    print_area->preprocessing_call.push_back(obj);
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTerm::delPreprocessingHandler (FVTerm* instance)
+{
+  if ( ! print_area )
+    FVTerm::getPrintArea();
+
+  if ( ! print_area || ! print_area->preprocessing_call.empty() )
+    return;
+
+  FPreprocessing::iterator iter, end;
+  iter = print_area->preprocessing_call.begin();
+
+  while ( iter != print_area->preprocessing_call.end() )
+  {
+    if ( iter->instance == instance )
+      iter = print_area->preprocessing_call.erase(iter);
+    else
+      ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -690,26 +712,7 @@ void FVTerm::createArea ( int offset_top, int offset_left
   // initialize virtual window
 
   area = new term_area;
-
-  area->offset_top           = 0;
-  area->offset_left          = 0;
-  area->width                = -1;
-  area->height               = -1;
-  area->right_shadow         = 0;
-  area->bottom_shadow        = 0;
-  area->cursor_x             = 0;
-  area->cursor_y             = 0;
-  area->input_cursor_x       = -1;
-  area->input_cursor_y       = -1;
-  area->input_cursor_visible = false;
-  area->has_changes          = false;
-  area->changes              = 0;
-  area->text                 = 0;
-  area->visible              = false;
-  area->widget               = static_cast<FWidget*>(this);
-  area->pre_proc_instance    = 0;
-  area->pre_proc             = 0;
-
+  area->widget = static_cast<FWidget*>(this);
   resizeArea (offset_top, offset_left, width, height, rsw, bsh, area);
 }
 
@@ -1064,12 +1067,24 @@ void FVTerm::updateVTerm()
       updateVTerm(win);
       win->has_changes = false;
     }
-    else if ( win->pre_proc_instance
-             && win->pre_proc_instance->child_print_area
-             && win->pre_proc_instance->child_print_area->has_changes )
+    else if ( ! win->preprocessing_call.empty() )
     {
-      updateVTerm(win);
-      win->pre_proc_instance->child_print_area->has_changes = false;
+      FPreprocessing::const_iterator iter, end;
+      iter = win->preprocessing_call.begin();
+      end = win->preprocessing_call.end();
+
+      while ( iter != end )
+      {
+        if ( iter->instance->child_print_area
+            && iter->instance->child_print_area->has_changes )
+        {
+          updateVTerm(win);
+          iter->instance->child_print_area->has_changes = false;
+          break;
+        }
+
+        ++iter;
+      }
     }
   }
 }
@@ -1090,8 +1105,20 @@ void FVTerm::updateVTerm (term_area* area)
     return;
 
   // Call preprocessing handler
-  if ( area->pre_proc_instance && area->pre_proc )
-    (area->pre_proc_instance->*area->pre_proc)();
+  if ( ! area->preprocessing_call.empty() )
+  {
+    FPreprocessing::const_iterator iter, end;
+    iter = area->preprocessing_call.begin();
+    end = area->preprocessing_call.end();
+
+    while ( iter != end )
+    {
+      FPreprocessingHandler handler = iter->handler;
+      // call the preprocessing handler
+      (iter->instance->*handler)();
+      ++iter;
+    }
+  }
 
   ax  = area->offset_top;
   ay  = area->offset_left;

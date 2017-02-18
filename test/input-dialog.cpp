@@ -78,7 +78,7 @@ int main (int argc, char* argv[])
 
   // Create radio buttons
   FRadioButton* male = new FRadioButton("&Male", radioButtonGroup);
-  FRadioButton* female = new FRadioButton("&Female",radioButtonGroup);
+  FRadioButton* female = new FRadioButton("&Female", radioButtonGroup);
   male->setGeometry(1, 1, 7, 1);
   female->setGeometry(1, 2, 7, 1);
 

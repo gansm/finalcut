@@ -18,6 +18,7 @@ FScrollView::FScrollView (FWidget* parent)
   , vbar(0)
   , hbar(0)
   , nf_offset(0)
+  , border(true)
   , use_own_print_area(false)
   , vMode(fc::Auto)
   , hMode(fc::Auto)
@@ -50,7 +51,8 @@ void FScrollView::setScrollWidth (int width)
     FPoint no_shadow(0,0);
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, no_shadow, viewport);
-    setPreprocessingHandler
+
+    addPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
@@ -77,7 +79,7 @@ void FScrollView::setScrollHeight (int height)
     FPoint no_shadow(0,0);
     scroll_geometry.setHeight (height);
     resizeArea (scroll_geometry, no_shadow, viewport);
-    setPreprocessingHandler
+    addPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
@@ -107,7 +109,7 @@ void FScrollView::setScrollSize (int width, int height)
     FPoint no_shadow(0,0);
     scroll_geometry.setSize (width, height);
     resizeArea (scroll_geometry, no_shadow, viewport);
-    setPreprocessingHandler
+    addPreprocessingHandler
     (
       _PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
@@ -169,7 +171,7 @@ void FScrollView::setPos (int x, int y, bool adjust)
 {
   FWidget::setPos (x, y, adjust);
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
-                     , getTermY() + getTopPadding() - 1 );
+                         , getTermY() + getTopPadding() - 1 );
 
   if ( ! adjust )
   {
@@ -240,6 +242,18 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 void FScrollView::setPrintPos (register int x, register int y)
 {
   FWidget::setPrintPos (x + getLeftPadding(), y + getTopPadding());
+}
+
+//----------------------------------------------------------------------
+bool FScrollView::setViewportPrint (bool on)
+{
+  return use_own_print_area = ! on;
+}
+
+//----------------------------------------------------------------------
+bool FScrollView::setBorder (bool on)
+{
+  return border = on;
 }
 
 //----------------------------------------------------------------------
@@ -325,7 +339,7 @@ void FScrollView::scrollBy (int dx, int dy)
 //----------------------------------------------------------------------
 void FScrollView::draw()
 {
-  use_own_print_area = true;
+  unsetViewportPrint();
 
   if ( isMonochron() )
     setReverse(true);
@@ -335,15 +349,18 @@ void FScrollView::draw()
   else
     setColor();
 
-  if ( isNewFont() )
-    drawBorder (1, 1, getWidth() - 1, getHeight());
-  else
-    drawBorder();
+  if ( border )
+  {
+    if ( isNewFont() )
+      drawBorder (1, 1, getWidth() - 1, getHeight());
+    else
+      drawBorder();
+  }
 
   if ( isMonochron() )
     setReverse(false);
 
-  use_own_print_area = false;
+  setViewportPrint();
   copy2area();
   redrawVBar();
   redrawHBar();
@@ -737,7 +754,7 @@ void FScrollView::init()
 
   scroll_geometry.setRect (0, 0, w, h);
   createArea (scroll_geometry, no_shadow, viewport);
-  setPreprocessingHandler
+  addPreprocessingHandler
   (
     _PREPROC_HANDLER (this, &FScrollView::copy2area)
   );

@@ -58,8 +58,39 @@ class FVTerm : public FObject, public FTerm
    typedef FOptiAttr::char_data  char_data;
    typedef void (FVTerm::*FPreprocessingHandler)();
 
-   typedef struct
+   struct vterm_preprocessing
    {
+     FVTerm*               instance;
+     FPreprocessingHandler handler;
+   };
+
+   typedef std::vector<vterm_preprocessing> FPreprocessing;
+
+   struct term_area
+   {
+     term_area()
+     : offset_top (0)
+     , offset_left (0)
+     , width (-1)
+     , height (-1)
+     , right_shadow (0)
+     , bottom_shadow (0)
+     , cursor_x (0)
+     , cursor_y (0)
+     , input_cursor_x (-1)
+     , input_cursor_y (-1)
+     , widget()
+     , preprocessing_call()
+     , changes (0)
+     , text (0)
+     , input_cursor_visible (false)
+     , has_changes (false)
+     , visible (false)
+     { }
+
+    ~term_area()
+     { }
+
      int offset_top;      // Distance from top of the terminal
      int offset_left;     // Distance from left terminal side
      int width;           // Window width
@@ -71,14 +102,13 @@ class FVTerm : public FObject, public FTerm
      int input_cursor_x;  // X-position input cursor
      int input_cursor_y;  // Y-position input cursor
      FWidget* widget;     // Widget that owns this term_area
-     FVTerm* pre_proc_instance;
-     FPreprocessingHandler pre_proc;
+     FPreprocessing preprocessing_call;
      line_changes* changes;
      char_data* text;     // Text data for the output
      bool input_cursor_visible;
      bool has_changes;
      bool visible;
-   } term_area;
+   };
 
    enum covered_state
    {
@@ -177,9 +207,6 @@ class FVTerm : public FObject, public FTerm
    static bool         setInheritBackground();
    static bool         unsetInheritBackground();
 
-   void                setPreprocessingHandler ( FVTerm*
-                                               , FPreprocessingHandler );
-
    // Inquiries
    static bool         isCursorHidden();
    static bool         isBold();
@@ -208,6 +235,9 @@ class FVTerm : public FObject, public FTerm
    static void         putVTerm();
    static void         updateTerminal (bool);
    static void         updateTerminal();
+   void                addPreprocessingHandler ( FVTerm*
+                                               , FPreprocessingHandler );
+   void                delPreprocessingHandler (FVTerm*);
 
    int                 printf (const wchar_t*, ...);
    int                 printf (const char*, ...)

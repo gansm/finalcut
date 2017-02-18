@@ -453,18 +453,22 @@ class FWidget : public FVTerm
      , max_width  (INT_MAX)
      , max_height (INT_MAX)
      { }
+
     ~widget_size_hints()
      { }
+
      void setMinimum (int w, int h)
      {
        min_width = w;
        min_height = h;
      }
+
      void setMaximum (int w, int h)
      {
        max_width = w;
        max_height = h;
      }
+
      int min_width;
      int min_height;
      int max_width;
@@ -475,8 +479,10 @@ class FWidget : public FVTerm
    {
      dbl_line_mask() : top(), right(), bottom(), left()
      { }
+
     ~dbl_line_mask()
      { }
+
      std::vector<bool> top;
      std::vector<bool> right;
      std::vector<bool> bottom;
@@ -487,8 +493,10 @@ class FWidget : public FVTerm
    {
      widget_padding() : top(0), left(0), bottom(0), right(0)
      { }
+
     ~widget_padding()
      { }
+
      int top;
      int left;
      int bottom;

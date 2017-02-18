@@ -865,7 +865,7 @@ bool FWidget::close()
 
 //----------------------------------------------------------------------
 void FWidget::addCallback ( FString cb_signal
-                          , FWidget::FCallback cb_handler
+                          , FCallback cb_handler
                           , data_ptr data )
 {
   // add a (normal) function pointer as callback
@@ -876,7 +876,7 @@ void FWidget::addCallback ( FString cb_signal
 //----------------------------------------------------------------------
 void FWidget::addCallback ( FString cb_signal
                           , FWidget* cb_instance
-                          , FWidget::FMemberCallback cb_handler
+                          , FMemberCallback cb_handler
                           , data_ptr data )
 {
   // add a member function pointer as callback
@@ -885,11 +885,12 @@ void FWidget::addCallback ( FString cb_signal
 }
 
 //----------------------------------------------------------------------
-void FWidget::delCallback (FWidget::FCallback cb_handler)
+void FWidget::delCallback (FCallback cb_handler)
 {
-  FWidget::CallbackObjects::iterator iter;
-
   // delete a cb_handler function pointer
+
+  CallbackObjects::iterator iter;
+
   if ( callback_objects.empty() )
     return;
 
@@ -907,9 +908,10 @@ void FWidget::delCallback (FWidget::FCallback cb_handler)
 //----------------------------------------------------------------------
 void FWidget::delCallback (FWidget* cb_instance)
 {
+  // delete all member function pointer from cb_instance
+
   FWidget::MemberCallbackObjects::iterator iter;
 
-  // delete all member function pointer from cb_instance
   if ( member_callback_objects.empty() )
     return;
 
@@ -939,7 +941,7 @@ void FWidget::emitCallback (FString emit_signal)
   // member function pointer
   if ( ! member_callback_objects.empty() )
   {
-    FWidget::MemberCallbackObjects::const_iterator m_iter, m_end;
+    MemberCallbackObjects::const_iterator m_iter, m_end;
     m_iter = member_callback_objects.begin();
     m_end = member_callback_objects.end();
 
@@ -959,7 +961,7 @@ void FWidget::emitCallback (FString emit_signal)
   // function pointer
   if ( ! callback_objects.empty() )
   {
-    FWidget::CallbackObjects::const_iterator iter, end;
+    CallbackObjects::const_iterator iter, end;
     iter = callback_objects.begin();
     end = callback_objects.end();
 
