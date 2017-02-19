@@ -28,7 +28,7 @@
 #ifndef _FBUTTONGROUP_H
 #define _FBUTTONGROUP_H
 
-#include "fwidget.h"
+#include "fscrollview.h"
 
 
 // class forward declaration
@@ -41,7 +41,7 @@ class FToggleButton;
 #pragma pack(push)
 #pragma pack(1)
 
-class FButtonGroup : public FWidget
+class FButtonGroup : public FScrollView
 {
  public:
    // Constructors
@@ -62,9 +62,6 @@ class FButtonGroup : public FWidget
    bool           setEnable();
    bool           unsetEnable();
    bool           setDisable();
-   bool           setBorder(bool);
-   bool           setBorder();
-   bool           unsetBorder();
    void           setText (const FString&);
 
    // Inquiries
@@ -103,7 +100,7 @@ class FButtonGroup : public FWidget
    FButtonGroup& operator = (const FButtonGroup&);
 
    // Inquiries
-   bool isRadioButton(FToggleButton*) const;
+   bool isRadioButton (FToggleButton*) const;
 
    // Methods
    void init();
@@ -111,7 +108,6 @@ class FButtonGroup : public FWidget
 
    // Data Members
    FString     text;
-   bool        border;
    FObjectList buttonlist;
 };
 #pragma pack(pop)
@@ -133,14 +129,6 @@ inline bool FButtonGroup::unsetEnable()
 //----------------------------------------------------------------------
 inline bool FButtonGroup::setDisable()
 { return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline bool FButtonGroup::setBorder()
-{ return setBorder(true); }
-
-//----------------------------------------------------------------------
-inline bool FButtonGroup::unsetBorder()
-{ return setBorder(false); }
 
 //----------------------------------------------------------------------
 inline FString& FButtonGroup::getText()

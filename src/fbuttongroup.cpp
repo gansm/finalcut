@@ -14,9 +14,8 @@
 // constructor and destructor
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup(FWidget* parent)
-  : FWidget(parent)
+  : FScrollView(parent)
   , text()
-  , border(true)
   , buttonlist()
 {
   init();
@@ -24,9 +23,8 @@ FButtonGroup::FButtonGroup(FWidget* parent)
 
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
-  : FWidget(parent)
+  : FScrollView(parent)
   , text(txt)
-  , border(true)
   , buttonlist()
 {
   init();
@@ -84,17 +82,6 @@ bool FButtonGroup::setEnable (bool on)
     flags &= ~fc::active;
     delAccelerator();
   }
-
-  return on;
-}
-
-//----------------------------------------------------------------------
-bool FButtonGroup::setBorder(bool on)
-{
-  if ( on )
-    border = true;
-  else
-    border = false;
 
   return on;
 }
@@ -203,7 +190,7 @@ void FButtonGroup::hide()
 
   for (int y=0; y < getHeight(); y++)
   {
-    setPrintPos (1, 1+y);
+    FWidget::setPrintPos (1, 1+y);
     print (blank);
   }
 
@@ -426,14 +413,13 @@ void FButtonGroup::draw()
     setReverse(true);
 
   setColor();
-
-  if ( border )
-    drawBorder();
-
-  drawLabel();
+  clearArea();
 
   if ( isMonochron() )
     setReverse(false);
+
+  FScrollView::draw();
+  drawLabel();
 }
 
 //----------------------------------------------------------------------
@@ -459,6 +445,7 @@ void FButtonGroup::drawLabel()
 
   isActive = ((flags & fc::active) != 0);
   isNoUnderline = ((flags & fc::no_underline) != 0);
+  unsetViewportPrint();
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -476,10 +463,10 @@ void FButtonGroup::drawLabel()
   if ( hotkeypos != -1 )
     length--;
 
-  if ( border )
-    setPrintPos (2, 1);
+  if ( hasBorder() )
+    FWidget::setPrintPos (2, 1);
   else
-    setPrintPos (0, 1);
+    FWidget::setPrintPos (0, 1);
 
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
@@ -506,13 +493,14 @@ void FButtonGroup::drawLabel()
       print ( LabelText[z] );
   }
 
+  setViewportPrint();
   delete[] LabelText;
 }
 
 
 // private methods of FButtonGroup
 //----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton(FToggleButton* button) const
+bool FButtonGroup::isRadioButton (FToggleButton* button) const
 {
   if ( ! button )
     return false;
@@ -524,16 +512,12 @@ bool FButtonGroup::isRadioButton(FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  setTopPadding(1);
-  setLeftPadding(1);
-  setBottomPadding(1);
-  setRightPadding(1);
-
   if ( isEnabled() )
     flags |= fc::active;
 
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
+  setMinimumSize (7, 4);
   buttonlist.clear();  // no buttons yet
 }
 

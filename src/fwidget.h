@@ -204,7 +204,11 @@ class FWidget : public FVTerm
    virtual void       setGeometry (const FRect&, bool = true);
    virtual void       setGeometry (int, int, int, int, bool = true);
    virtual void       setShadowSize (int, int);
+   void               setMinimumWidth (int);
+   void               setMinimumHeight (int);
    void               setMinimumSize (int, int);
+   void               setMaximumWidth (int);
+   void               setMaximumHeight (int);
    void               setMaximumSize (int, int);
    void               setFixedSize (int, int);
    bool               setCursorPos (const FPoint&);
@@ -772,8 +776,24 @@ inline void FWidget::setShadowSize (int right, int bottom)
 { wshadow.setPoint (right, bottom); }
 
 //----------------------------------------------------------------------
+inline void FWidget::setMinimumWidth (int min_width)
+{ size_hints.setMinimum (min_width, size_hints.min_height); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMinimumHeight (int min_height)
+{ size_hints.setMinimum (size_hints.min_width, min_height); }
+
+//----------------------------------------------------------------------
 inline void FWidget::setMinimumSize (int min_width, int min_height)
 { size_hints.setMinimum (min_width, min_height); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMaximumWidth (int max_width)
+{ size_hints.setMaximum (max_width, size_hints.max_height); }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMaximumHeight (int max_height)
+{ size_hints.setMaximum (size_hints.max_width, max_height); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setMaximumSize (int max_width, int max_height)

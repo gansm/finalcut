@@ -286,112 +286,112 @@ void FScrollbar::drawButtons()
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
 {
-  if ( slider_pos != current_slider_pos )
+  int z;
+
+  if ( slider_pos == current_slider_pos || length < 3 )
+    return;
+
+  if ( bar_orientation == fc::vertical )
   {
-    int z;
+    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-    if ( bar_orientation == fc::vertical )
+    for (z=1; z <= slider_pos; z++)
     {
-      setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-      for (z=1; z <= slider_pos; z++)
-      {
-        setPrintPos (1, 1 + z);
-
-        if ( isNewFont() )
-          print (fc::NF_border_line_left); // ⎸
-
-        if ( isMonochron() || max_color < 16 )
-          print (fc::MediumShade); // ▒
-        else
-          print (' ');
-      }
-
-      setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-      if ( isMonochron() )
-        setReverse(false);
-
-      for (z=1; z <= slider_length; z++)
-      {
-        setPrintPos (1, 1 + slider_pos + z);
-
-        if ( isNewFont() )
-          print (' ');
-
-        print (' ');
-      }
-
-      if ( isMonochron() )
-        setReverse(true);
-
-      setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-      for (z=slider_pos+slider_length+1; z <= bar_length; z++)
-      {
-        setPrintPos (1, 1 + z);
-
-        if ( isNewFont() )
-          print (fc::NF_border_line_left); // ⎸
-
-        if ( isMonochron() || max_color < 16 )
-          print (fc::MediumShade);
-        else
-          print (' ');
-      }
-    }
-    else  // horizontal
-    {
-      setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-      z = 0;
+      setPrintPos (1, 1 + z);
 
       if ( isNewFont() )
-        setPrintPos (3 + z, 1);
+        print (fc::NF_border_line_left); // ⎸
+
+      if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade); // ▒
       else
-        setPrintPos (2 + z, 1);
-
-      for (; z < slider_pos; z++)
-      {
-        if ( isNewFont() )
-          print (fc::NF_border_line_upper); // ¯
-        else if ( isMonochron() || max_color < 16 )
-          print (fc::MediumShade); // ▒
-        else
-          print (' ');
-      }
-
-      setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-      if ( isMonochron() )
-        setReverse(false);
-
-      z = 0;
-
-      for (; z < slider_length; z++)
         print (' ');
-
-      if ( isMonochron() )
-        setReverse(true);
-
-      setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-      z = slider_pos + slider_length + 1;
-
-      for (; z <= bar_length; z++)
-      {
-        if ( isNewFont() )
-          print (fc::NF_border_line_upper); // ¯
-        else if ( isMonochron() || max_color < 16 )
-          print (fc::MediumShade); // ▒
-        else
-          print (' ');
-      }
     }
 
-    current_slider_pos = slider_pos;
+    setColor (wc.scrollbar_bg, wc.scrollbar_fg);
 
     if ( isMonochron() )
       setReverse(false);
+
+    for (z=1; z <= slider_length; z++)
+    {
+      setPrintPos (1, 1 + slider_pos + z);
+
+      if ( isNewFont() )
+        print (' ');
+
+      print (' ');
+    }
+
+    if ( isMonochron() )
+      setReverse(true);
+
+    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+    for (z=slider_pos+slider_length+1; z <= bar_length; z++)
+    {
+      setPrintPos (1, 1 + z);
+
+      if ( isNewFont() )
+        print (fc::NF_border_line_left); // ⎸
+
+      if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade);
+      else
+        print (' ');
+    }
   }
+  else  // horizontal
+  {
+    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+    z = 0;
+
+    if ( isNewFont() )
+      setPrintPos (3 + z, 1);
+    else
+      setPrintPos (2 + z, 1);
+
+    for (; z < slider_pos; z++)
+    {
+      if ( isNewFont() )
+        print (fc::NF_border_line_upper); // ¯
+      else if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade); // ▒
+      else
+        print (' ');
+    }
+
+    setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+    if ( isMonochron() )
+      setReverse(false);
+
+    z = 0;
+
+    for (; z < slider_length; z++)
+      print (' ');
+
+    if ( isMonochron() )
+      setReverse(true);
+
+    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+    z = slider_pos + slider_length + 1;
+
+    for (; z <= bar_length; z++)
+    {
+      if ( isNewFont() )
+        print (fc::NF_border_line_upper); // ¯
+      else if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade); // ▒
+      else
+        print (' ');
+    }
+  }
+
+  current_slider_pos = slider_pos;
+
+  if ( isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------
@@ -418,27 +418,30 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   // process LeftButton
   scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
-  if ( bar_orientation == fc::vertical )
+  if ( scroll_type == FScrollbar::noScroll )
   {
-    if ( mouse_y > slider_pos+1 && mouse_y <= slider_pos+slider_length+1 )
-      slider_click_pos = mouse_y;  // on slider
-  }
-  else  // horizontal
-  {
-    if ( isNewFont() )
+    if ( bar_orientation == fc::vertical )
     {
-      if ( mouse_x > slider_pos+2 && mouse_x <= slider_pos+slider_length+2 )
-        slider_click_pos = mouse_x;  // on slider
+      if ( mouse_y > slider_pos+1 && mouse_y <= slider_pos+slider_length+1 )
+        slider_click_pos = mouse_y;  // on slider
     }
-    else
+    else  // horizontal
     {
-      if ( mouse_x > slider_pos+1 && mouse_x <= slider_pos+slider_length+1 )
-        slider_click_pos = mouse_x;  // on slider
+      if ( isNewFont() )
+      {
+        if ( mouse_x > slider_pos+2 && mouse_x <= slider_pos+slider_length+2 )
+          slider_click_pos = mouse_x;  // on slider
+      }
+      else
+      {
+        if ( mouse_x > slider_pos+1 && mouse_x <= slider_pos+slider_length+1 )
+          slider_click_pos = mouse_x;  // on slider
+      }
     }
-  }
 
-  if ( slider_click_pos > 0 )
-    scroll_type = FScrollbar::scrollJump;
+    if ( slider_click_pos > 0 )
+      scroll_type = FScrollbar::scrollJump;
+  }
 
   if ( scroll_type == FScrollbar::scrollPageBackward
       || scroll_type == FScrollbar::scrollPageForward )
@@ -609,6 +612,9 @@ void FScrollbar::init()
 //----------------------------------------------------------------------
 void FScrollbar::draw()
 {
+  if ( length < 2 )
+    return;
+
   drawButtons();
   current_slider_pos = -1;
   drawBar();

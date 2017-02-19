@@ -13,7 +13,7 @@
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FToggleButton::FToggleButton(FWidget* parent)
+FToggleButton::FToggleButton (FWidget* parent)
   : FWidget(parent)
   , checked(false)
   , label_offset_pos(0)
