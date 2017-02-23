@@ -668,23 +668,24 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 bool FWidget::setCursorPos (register int x, register int y)
 {
   // sets the input cursor position
+
   widget_cursor_position.setPoint(x,y);
 
-  if ( (flags & fc::focus) != 0 && ! isWindowWidget() )
-  {
-    FWidget* window = FWindow::getWindowWidget(this);
+  if ( (flags & fc::focus) == 0 || isWindowWidget() )
+    return false;
 
-    if ( window )
-    {
-      if ( term_area* area = window->getVWin() )
-      {
-        setAreaCursor ( getTermX() - window->getTermX() + x
-                      , getTermY() - window->getTermY() + y
-                      , visible_cursor
-                      , area );
-        return true;
-      }
-    }
+  FWidget* window = FWindow::getWindowWidget(this);
+
+  if ( ! window )
+    return false;
+
+  if ( term_area* area = window->getVWin() )
+  {
+    setAreaCursor ( getTermX() - window->getTermX() + x
+                  , getTermY() - window->getTermY() + y
+                  , visible_cursor
+                  , area );
+    return true;
   }
 
   return false;

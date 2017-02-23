@@ -719,7 +719,7 @@ void FFileDialog::printPath (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processActivate (FWidget*, void*)
+void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 {
   if ( filename->getText().includes('*')
       || filename->getText().includes('?') )
@@ -770,7 +770,7 @@ void FFileDialog::cb_processActivate (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processRowChanged (FWidget*, void*)
+void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 {
   int n = filebrowser->currentItem();
 
@@ -788,7 +788,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processClicked (FWidget*, void*)
+void FFileDialog::cb_processClicked (FWidget*, data_ptr)
 {
   uLong n = uLong(filebrowser->currentItem() - 1);
 
@@ -799,19 +799,19 @@ void FFileDialog::cb_processClicked (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processCancel (FWidget*, void*)
+void FFileDialog::cb_processCancel (FWidget*, data_ptr)
 {
   done (FDialog::Reject);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processOpen (FWidget*, void*)
+void FFileDialog::cb_processOpen (FWidget*, data_ptr)
 {
   done (FDialog::Accept);
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::cb_processShowHidden (FWidget*, void*)
+void FFileDialog::cb_processShowHidden (FWidget*, data_ptr)
 {
   setShowHiddenFiles(not show_hidden);
 }

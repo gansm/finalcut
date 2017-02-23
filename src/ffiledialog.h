@@ -137,12 +137,12 @@ class FFileDialog : public FDialog
    void          printPath (const FString&);
 
    // Callback methods
-   void          cb_processActivate (FWidget*, void*);
-   void          cb_processRowChanged (FWidget*, void*);
-   void          cb_processClicked (FWidget*, void*);
-   void          cb_processCancel (FWidget*, void*);
-   void          cb_processOpen (FWidget*, void*);
-   void          cb_processShowHidden (FWidget*, void*);
+   void          cb_processActivate (FWidget*, data_ptr);
+   void          cb_processRowChanged (FWidget*, data_ptr);
+   void          cb_processClicked (FWidget*, data_ptr);
+   void          cb_processCancel (FWidget*, data_ptr);
+   void          cb_processOpen (FWidget*, data_ptr);
+   void          cb_processShowHidden (FWidget*, data_ptr);
 
    // Data Members
    DIR*          directory_stream;

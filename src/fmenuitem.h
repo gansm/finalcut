@@ -153,8 +153,8 @@ class FMenuItem : public FWidget
    void        createDialogList (FMenu*);
 
    // Callback methods
-   void        cb_switchToDialog (FWidget*, void*);
-   void        cb_destroyDialog (FWidget*, void*);
+   void        cb_switchToDialog (FWidget*, data_ptr);
+   void        cb_destroyDialog (FWidget*, data_ptr);
 
    virtual void processClicked();
 

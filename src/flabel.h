@@ -82,7 +82,7 @@ class FLabel : public FWidget
    void        onAccel (FAccelEvent*);
 
    // Callback method
-   void        cb_accel_widget_destroyed (FWidget*, void*);
+   void        cb_accel_widget_destroyed (FWidget*, data_ptr);
 
  private:
    // Typedef

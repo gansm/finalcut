@@ -32,9 +32,9 @@ class watch : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback methods
-   void cb_clock (FWidget*, void*);
-   void cb_seconds (FWidget*, void*);
-   void cb_exitApp (FWidget*, void*);
+   void cb_clock (FWidget*, data_ptr);
+   void cb_seconds (FWidget*, data_ptr);
+   void cb_exitApp (FWidget*, data_ptr);
 
  protected:
    // Method
@@ -155,7 +155,7 @@ void watch::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_clock (FWidget*, void*)
+void watch::cb_clock (FWidget*, data_ptr)
 {
   if ( clock_sw->isChecked() )
   {
@@ -171,7 +171,7 @@ void watch::cb_clock (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_seconds (FWidget*, void*)
+void watch::cb_seconds (FWidget*, data_ptr)
 {
   if ( seconds_sw->isChecked() )
     sec = true;
@@ -191,7 +191,7 @@ void watch::cb_seconds (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_exitApp (FWidget*, void*)
+void watch::cb_exitApp (FWidget*, data_ptr)
 {
   close();
 }

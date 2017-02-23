@@ -72,7 +72,7 @@ class FMenuBar : public FWindow, public FMenuList
    void                onAccel (FAccelEvent*);
 
    // Callback methods
-   void                cb_item_deactivated (FWidget*, void*);
+   void                cb_item_deactivated (FWidget*, data_ptr);
 
  private:
    // Disable copy constructor

@@ -107,9 +107,9 @@ class FWidget : public FVTerm
 
    // Typedefs
    typedef std::vector<FWidget*> widgetList;
-   typedef void (*FCallback)(FWidget*, void*);
-   typedef void (FWidget::*FMemberCallback)(FWidget*, void*);
    typedef void* data_ptr;
+   typedef void (*FCallback)(FWidget*, data_ptr);
+   typedef void (FWidget::*FMemberCallback)(FWidget*, data_ptr);
    typedef std::vector<accelerator> Accelerators;
 
    // Constructor
@@ -242,11 +242,11 @@ class FWidget : public FVTerm
    void               clearStatusbarMessage();
    void               addCallback ( FString
                                   , FCallback
-                                  , void* = null );
+                                  , data_ptr = null );
    void               addCallback ( FString
                                   , FWidget*
                                   , FMemberCallback
-                                  , void* = null );
+                                  , data_ptr = null );
    void               delCallback (FCallback);
    void               delCallback (FWidget*);
    void               delCallbacks();

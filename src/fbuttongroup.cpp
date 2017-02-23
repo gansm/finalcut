@@ -326,7 +326,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, void*)
+void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
 {
   FToggleButton* button = static_cast<FToggleButton*>(widget);
   FObjectList::const_iterator iter, end;

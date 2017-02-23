@@ -241,6 +241,12 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
+void FScrollView::setCursorPos (register int x, register int y)
+{
+  FWidget::setCursorPos (x + getLeftPadding(), y + getTopPadding());
+}
+
+//----------------------------------------------------------------------
 void FScrollView::setPrintPos (register int x, register int y)
 {
   FWidget::setPrintPos (x + getLeftPadding(), y + getTopPadding());
@@ -844,7 +850,7 @@ void FScrollView::setVerticalScrollBarVisibility()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_VBarChange (FWidget*, void*)
+void FScrollView::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   bool   hasChanges = false;
@@ -949,7 +955,7 @@ void FScrollView::cb_VBarChange (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_HBarChange (FWidget*, void*)
+void FScrollView::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   bool   hasChanges = false;

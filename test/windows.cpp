@@ -196,12 +196,12 @@ class Window : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback methods
-   void cb_createWindows (FWidget*, void*);
-   void cb_closeWindows (FWidget*, void*);
-   void cb_next (FWidget*, void*);
-   void cb_previous (FWidget*, void*);
-   void cb_exitApp (FWidget*, void*);
-   void cb_destroyWindow (FWidget*, void*);
+   void cb_createWindows (FWidget*, data_ptr);
+   void cb_closeWindows (FWidget*, data_ptr);
+   void cb_next (FWidget*, data_ptr);
+   void cb_previous (FWidget*, data_ptr);
+   void cb_exitApp (FWidget*, data_ptr);
+   void cb_destroyWindow (FWidget*, data_ptr);
 
    // Data Members
    std::vector<win_data*> windows;
@@ -414,7 +414,7 @@ void Window::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_createWindows (FWidget*, void*)
+void Window::cb_createWindows (FWidget*, data_ptr)
 {
   int w,h,dx,dy;
   std::vector<win_data*>::const_iterator iter, begin;
@@ -457,7 +457,7 @@ void Window::cb_createWindows (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_closeWindows (FWidget*, void*)
+void Window::cb_closeWindows (FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -478,7 +478,7 @@ void Window::cb_closeWindows (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_next (FWidget*, void*)
+void Window::cb_next (FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -516,7 +516,7 @@ void Window::cb_next (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_previous (FWidget*, void*)
+void Window::cb_previous (FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -555,15 +555,15 @@ void Window::cb_previous (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_exitApp (FWidget*, void*)
+void Window::cb_exitApp (FWidget*, data_ptr)
 {
   close();
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (FWidget*, void* data_ptr)
+void Window::cb_destroyWindow (FWidget*, data_ptr data)
 {
-  win_data* win_dat = static_cast<win_data*>(data_ptr);
+  win_data* win_dat = static_cast<win_data*>(data);
 
   if ( win_dat )
     win_dat->is_open = false;

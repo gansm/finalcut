@@ -16,27 +16,31 @@
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem()
   : text()
+  , data_pointer(0)
   , brackets(fc::NoBrackets)
   , selected(false)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (FString& txt)
+FListBoxItem::FListBoxItem (FString& txt, FWidget::data_ptr data)
   : text(txt)
+  , data_pointer(data)
   , brackets(fc::NoBrackets)
   , selected(false)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const std::string& txt)
+FListBoxItem::FListBoxItem (const std::string& txt, FWidget::data_ptr data)
   : text(txt)
+  , data_pointer(data)
   , brackets(fc::NoBrackets)
   , selected(false)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const char* txt)
+FListBoxItem::FListBoxItem (const char* txt, FWidget::data_ptr data)
   : text(txt)
+  , data_pointer(data)
   , brackets(fc::NoBrackets)
   , selected(false)
 { }
@@ -249,7 +253,8 @@ void FListBox::hide()
 //----------------------------------------------------------------------
 void FListBox::insert ( FString item
                       , fc::brackets_type b
-                      , bool s )
+                      , bool s
+                      , data_ptr d )
 {
   int len, element_count;
 
@@ -273,8 +278,9 @@ void FListBox::insert ( FString item
     }
   }
   FListBoxItem listItem (item);
-  listItem.brackets = b;
-  listItem.selected = s;
+  listItem.data_pointer = d;
+  listItem.brackets     = b;
+  listItem.selected     = s;
   data.push_back (listItem);
 
   element_count = int(getCount());
@@ -289,9 +295,10 @@ void FListBox::insert ( FString item
 //----------------------------------------------------------------------
 void FListBox::insert ( long item
                       , fc::brackets_type b
-                      , bool s )
+                      , bool s
+                      , data_ptr d )
 {
-  insert (FString().setNumber(item), b, s);
+  insert (FString().setNumber(item), b, s, d);
 }
 
 //----------------------------------------------------------------------
@@ -1155,7 +1162,7 @@ void FListBox::onFocusOut (FFocusEvent*)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_VBarChange (FWidget*, void*)
+void FListBox::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;
@@ -1262,7 +1269,7 @@ void FListBox::cb_VBarChange (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_HBarChange (FWidget*, void*)
+void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;

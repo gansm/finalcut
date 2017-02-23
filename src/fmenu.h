@@ -99,7 +99,7 @@ class FMenu : public FWindow, public FMenuList
    void                onAccel (FAccelEvent*);
 
    // Callback method
-   void                cb_menuitem_toggled (FWidget*, void*);
+   void                cb_menuitem_toggled (FWidget*, data_ptr);
 
  private:
    // Disable copy constructor

@@ -213,14 +213,14 @@ class FAccelEvent : public FEvent    // focus event
    FAccelEvent (int, void*);
   ~FAccelEvent();
 
-   void* focusedWidget() const;
-   bool  isAccepted() const;
-   void  accept();
-   void  ignore();
+   void*    focusedWidget() const;
+   bool     isAccepted() const;
+   void     accept();
+   void     ignore();
 
  protected:
-   bool  accpt;
-   void* focus_widget;
+   bool     accpt;
+   void*    focus_widget;
 };
 
 #pragma pack(pop)

@@ -220,7 +220,7 @@ class FStatusBar : public FWindow
    void                onMouseMove (FMouseEvent*);
 
    // Callback method
-   void                cb_statuskey_activated (FWidget*, void*);
+   void                cb_statuskey_activated (FWidget*, data_ptr);
 
  private:
    // Typedef

@@ -105,8 +105,8 @@ class FTextView : public FWidget
    void        processChanged();
 
    // Callback methods
-   void        cb_VBarChange (FWidget*, void*);
-   void        cb_HBarChange (FWidget*, void*);
+   void        cb_VBarChange (FWidget*, data_ptr);
+   void        cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
    stringLines data;

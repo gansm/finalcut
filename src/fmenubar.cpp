@@ -446,7 +446,7 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::cb_item_deactivated (FWidget* widget, void*)
+void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
 {
   FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
 

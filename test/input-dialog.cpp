@@ -9,22 +9,22 @@
 #include "fradiobutton.h"
 
 // function prototypes
-void cb_quit (FWidget*, void*);
-void cb_publish (FWidget*, void*);
+void cb_quit (FWidget*, FWidget::data_ptr);
+void cb_publish (FWidget*, FWidget::data_ptr);
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (FWidget*, void* data_ptr)
+void cb_quit (FWidget*, FWidget::data_ptr data)
 {
-  FApplication* app = static_cast<FApplication*>(data_ptr);
+  FApplication* app = static_cast<FApplication*>(data);
   app->quit();
 }
 
-void cb_publish (FWidget* widget, void* data_ptr)
+void cb_publish (FWidget* widget, FWidget::data_ptr data)
 {
   FCheckBox* cbox1 = static_cast<FCheckBox*>(widget);
-  FCheckBox* cbox2 = static_cast<FCheckBox*>(data_ptr);
+  FCheckBox* cbox2 = static_cast<FCheckBox*>(data);
 
   if ( cbox1->isChecked() )
     cbox2->setEnable();

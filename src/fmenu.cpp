@@ -698,7 +698,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitem_toggled (FWidget* widget, void*)
+void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
 {
   FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
   std::vector<FMenuItem*>::const_iterator iter, end;

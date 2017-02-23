@@ -6,14 +6,14 @@
 #include "flabel.h"
 
 // function prototype
-void cb_quit (FWidget*, void*);
+void cb_quit (FWidget*, FWidget::data_ptr);
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (FWidget*, void* data_ptr)
+void cb_quit (FWidget*, FWidget::data_ptr data)
 {
-  FApplication* app = static_cast<FApplication*>(data_ptr);
+  FApplication* app = static_cast<FApplication*>(data);
   app->quit();
 }
 

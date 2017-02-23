@@ -32,9 +32,9 @@ class ProgressDialog : public FDialog
    void onTimer (FTimerEvent*);
 
    // Callback methods
-   void cb_reset_bar (FWidget*, void*);
-   void cb_more_bar (FWidget*, void*);
-   void cb_exit_bar (FWidget*, void*);
+   void cb_reset_bar (FWidget*, data_ptr);
+   void cb_more_bar (FWidget*, data_ptr);
+   void cb_exit_bar (FWidget*, data_ptr);
 
    // Data Members
    FProgressbar* progressBar;
@@ -142,20 +142,20 @@ void ProgressDialog::onTimer (FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_reset_bar (FWidget*, void*)
+void ProgressDialog::cb_reset_bar (FWidget*, data_ptr)
 {
   progressBar->reset();
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_more_bar (FWidget*, void*)
+void ProgressDialog::cb_more_bar (FWidget*, data_ptr)
 {
   int p = progressBar->getPercentage();
   progressBar->setPercentage(++p);
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_exit_bar (FWidget*, void*)
+void ProgressDialog::cb_exit_bar (FWidget*, data_ptr)
 {
   close();
 }
@@ -257,22 +257,22 @@ class MyDialog : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback methods
-   void cb_noFunctionMsg (FWidget*, void*);
-   void cb_about (FWidget*, void*);
-   void cb_terminfo (FWidget*, void*);
-   void cb_drives (FWidget*, void*);
-   void cb_cutClipboard (FWidget*, void*);
-   void cb_copyClipboard (FWidget*, void*);
-   void cb_pasteClipboard (FWidget*, void*);
-   void cb_clearInput (FWidget*, void*);
-   void cb_input2buttonText (FWidget*, void*);
-   void cb_setTitlebar (FWidget*, void*);
-   void cb_ProgressBar (FWidget*, void*);
-   void cb_updateNumber (FWidget*, void*);
-   void cb_activateButton (FWidget*, void*);
-   void cb_view (FWidget*, void*);
-   void cb_setInput (FWidget*, void*);
-   void cb_exitApp (FWidget*, void*);
+   void cb_noFunctionMsg (FWidget*, data_ptr);
+   void cb_about (FWidget*, data_ptr);
+   void cb_terminfo (FWidget*, data_ptr);
+   void cb_drives (FWidget*, data_ptr);
+   void cb_cutClipboard (FWidget*, data_ptr);
+   void cb_copyClipboard (FWidget*, data_ptr);
+   void cb_pasteClipboard (FWidget*, data_ptr);
+   void cb_clearInput (FWidget*, data_ptr);
+   void cb_input2buttonText (FWidget*, data_ptr);
+   void cb_setTitlebar (FWidget*, data_ptr);
+   void cb_ProgressBar (FWidget*, data_ptr);
+   void cb_updateNumber (FWidget*, data_ptr);
+   void cb_activateButton (FWidget*, data_ptr);
+   void cb_view (FWidget*, data_ptr);
+   void cb_setInput (FWidget*, data_ptr);
+   void cb_exitApp (FWidget*, data_ptr);
 
    // Data Members
    FLineEdit* myLineEdit;
@@ -660,7 +660,7 @@ void MyDialog::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_noFunctionMsg (FWidget* widget, void*)
+void MyDialog::cb_noFunctionMsg (FWidget* widget, data_ptr)
 {
   FButton* button = static_cast<FButton*>(widget);
   FString text = button->getText();
@@ -670,7 +670,7 @@ void MyDialog::cb_noFunctionMsg (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_about (FWidget*, void*)
+void MyDialog::cb_about (FWidget*, data_ptr)
 {
   const char libver[] = F_VERSION;
   FString line(2, wchar_t(fc::BoxDrawingsHorizontal));
@@ -685,7 +685,7 @@ void MyDialog::cb_about (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_terminfo (FWidget*, void*)
+void MyDialog::cb_terminfo (FWidget*, data_ptr)
 {
   int x = getColumnNumber();
   int y = getLineNumber();
@@ -702,7 +702,7 @@ void MyDialog::cb_terminfo (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_drives (FWidget*, void*)
+void MyDialog::cb_drives (FWidget*, data_ptr)
 {
   FMessageBox info2 ( "Drive symbols"
                     , "Generic:       \n\n"
@@ -749,7 +749,7 @@ void MyDialog::cb_drives (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_cutClipboard (FWidget*, void*)
+void MyDialog::cb_cutClipboard (FWidget*, data_ptr)
 {
   if ( ! myLineEdit )
     return;
@@ -760,7 +760,7 @@ void MyDialog::cb_cutClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_copyClipboard (FWidget*, void*)
+void MyDialog::cb_copyClipboard (FWidget*, data_ptr)
 {
   if ( ! myLineEdit )
     return;
@@ -769,7 +769,7 @@ void MyDialog::cb_copyClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_pasteClipboard (FWidget*, void*)
+void MyDialog::cb_pasteClipboard (FWidget*, data_ptr)
 {
   if ( ! myLineEdit )
     return;
@@ -779,7 +779,7 @@ void MyDialog::cb_pasteClipboard (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_clearInput (FWidget*, void*)
+void MyDialog::cb_clearInput (FWidget*, data_ptr)
 {
   if ( ! myLineEdit )
     return;
@@ -790,16 +790,16 @@ void MyDialog::cb_clearInput (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_input2buttonText (FWidget* widget, void* data_ptr)
+void MyDialog::cb_input2buttonText (FWidget* widget, data_ptr data)
 {
   FButton* button = static_cast<FButton*>(widget);
-  FLineEdit* lineedit = static_cast<FLineEdit*>(data_ptr);
+  FLineEdit* lineedit = static_cast<FLineEdit*>(data);
   button->setText( lineedit->getText() );
   button->redraw();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setTitlebar (FWidget* widget, void*)
+void MyDialog::cb_setTitlebar (FWidget* widget, data_ptr)
 {
   FLineEdit* lineedit = static_cast<FLineEdit*>(widget);
   lineedit->setXTermTitle(lineedit->getText());
@@ -808,17 +808,17 @@ void MyDialog::cb_setTitlebar (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_ProgressBar (FWidget*, void*)
+void MyDialog::cb_ProgressBar (FWidget*, data_ptr)
 {
   ProgressDialog* p_dgl = new ProgressDialog(this);
   p_dgl->show();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber (FWidget* widget, void* data_ptr)
+void MyDialog::cb_updateNumber (FWidget* widget, data_ptr data)
 {
   FListBox* list = static_cast<FListBox*>(widget);
-  FLabel* num = static_cast<FLabel*>(data_ptr);
+  FLabel* num = static_cast<FLabel*>(data);
   int select_num = 0;
   uInt end = list->getCount();
 
@@ -831,10 +831,10 @@ void MyDialog::cb_updateNumber (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
+void MyDialog::cb_activateButton (FWidget* widget, data_ptr data)
 {
   FRadioButton* rb = static_cast<FRadioButton*>(widget);
-  FButton* button = static_cast<FButton*>(data_ptr);
+  FButton* button = static_cast<FButton*>(data);
 
   if ( rb->isChecked() )
     button->setEnable();
@@ -845,10 +845,10 @@ void MyDialog::cb_activateButton (FWidget* widget, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (FWidget*, void* data_ptr)
+void MyDialog::cb_view (FWidget*, data_ptr data)
 {
   FString file;
-  FMenuItem* item = static_cast<FMenuItem*>(data_ptr);
+  FMenuItem* item = static_cast<FMenuItem*>(data);
 
   if ( item && item->getText() )
     file = item->getText();
@@ -884,16 +884,16 @@ void MyDialog::cb_view (FWidget*, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setInput (FWidget* widget, void* data_ptr)
+void MyDialog::cb_setInput (FWidget* widget, data_ptr data)
 {
   FListBox* ListBox = static_cast<FListBox*>(widget);
-  FLineEdit* lineedit = static_cast<FLineEdit*>(data_ptr);
+  FLineEdit* lineedit = static_cast<FLineEdit*>(data);
   lineedit->setText( ListBox->getItem(ListBox->currentItem()).getText() );
   lineedit->redraw();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_exitApp (FWidget*, void*)
+void MyDialog::cb_exitApp (FWidget*, data_ptr)
 {
   close();
 }

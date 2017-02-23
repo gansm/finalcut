@@ -42,8 +42,8 @@ class Menu : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback methods
-   void cb_message (FWidget*, void*);
-   void cb_exitApp (FWidget*, void*);
+   void cb_message (FWidget*, data_ptr);
+   void cb_exitApp (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -257,7 +257,7 @@ void Menu::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_message (FWidget* widget, void*)
+void Menu::cb_message (FWidget* widget, data_ptr)
 {
   FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
   FString text = menuitem->getText();
@@ -266,7 +266,7 @@ void Menu::cb_message (FWidget* widget, void*)
 }
 
 //----------------------------------------------------------------------
-void Menu::cb_exitApp (FWidget*, void*)
+void Menu::cb_exitApp (FWidget*, data_ptr)
 {
   close();
 }

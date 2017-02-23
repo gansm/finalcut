@@ -1,8 +1,12 @@
+2017-02-24  Markus Gans  <guru.mail@muenster.de>
+	* FListBox gets the option to save a data pointer for 
+	  every FListBoxItem element
+
 2017-02-19  Markus Gans  <guru.mail@muenster.de>
 	* New FWidget methods setMinimumWidth(), setMinimumHeight(), 
 	  setMaximumWidth() and setMaximumHeight() 
 	* FButtonGroup now inherits from FScrollView. This supports 
-	   many buttons to be displayed in a smaller frame.
+	  many buttons to be displayed in a smaller frame.
 
 2017-02-18  Markus Gans  <guru.mail@muenster.de>
 	* Allows a window to have more than one FScrollView widget

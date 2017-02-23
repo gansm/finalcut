@@ -75,6 +75,7 @@ class FScrollView : public FWidget
    virtual void      setHeight (int, bool = true);
    virtual void      setSize (int, int, bool = true);
    void              setGeometry (int, int, int, int, bool = true);
+   void              setCursorPos (register int, register int);
    void              setPrintPos (register int, register int);
    bool              setViewportPrint (bool);
    bool              setViewportPrint();
@@ -138,8 +139,8 @@ class FScrollView : public FWidget
    void              drawVBar();
 
    // Callback methods
-   void              cb_VBarChange (FWidget*, void*);
-   void              cb_HBarChange (FWidget*, void*);
+   void              cb_VBarChange (FWidget*, data_ptr);
+   void              cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
    FRect             scroll_geometry;

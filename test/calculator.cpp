@@ -106,7 +106,7 @@ class Calc : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback method
-   void cb_buttonClicked (FWidget*, void*);
+   void cb_buttonClicked (FWidget*, data_ptr);
 
  private:
    // Methods
@@ -570,7 +570,7 @@ void Calc::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
+void Calc::cb_buttonClicked (FWidget*, data_ptr data)
 {
   int key;
   lDouble* x;
@@ -582,7 +582,7 @@ void Calc::cb_buttonClicked (FWidget*, void* data_ptr)
   else
     x = &a;
 
-  key = *(static_cast<int*>(data_ptr));
+  key = *(static_cast<int*>(data));
 
   switch ( key )
   {

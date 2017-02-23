@@ -27,8 +27,8 @@ class AttribDlg : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback methods
-   void cb_next (FWidget* = 0, void* = 0);
-   void cb_back (FWidget* = 0, void* = 0);
+   void cb_next (FWidget* = 0, data_ptr = 0);
+   void cb_back (FWidget* = 0, data_ptr = 0);
 
    // Data Members
    short bgcolor;
@@ -121,7 +121,7 @@ void AttribDlg::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (FWidget*, void*)
+void AttribDlg::cb_next (FWidget*, data_ptr)
 {
   if ( isMonochron() )
     return;
@@ -135,7 +135,7 @@ void AttribDlg::cb_next (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (FWidget*, void*)
+void AttribDlg::cb_back (FWidget*, data_ptr)
 {
   if ( isMonochron() )
     return;

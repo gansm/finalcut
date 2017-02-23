@@ -878,9 +878,9 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
+void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 {
-  FDialog* win = static_cast<FDialog*>(data_ptr);
+  FDialog* win = static_cast<FDialog*>(data);
 
   if ( win )
   {
@@ -891,7 +891,7 @@ void FMenuItem::cb_switchToDialog (FWidget*, void* data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, void*)
+void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
 {
   FDialog* win = static_cast<FDialog*>(widget);
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());

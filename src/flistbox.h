@@ -47,9 +47,9 @@ class FListBoxItem
  public:
    // Constructors
    FListBoxItem ();
-   explicit FListBoxItem (FString&);
-   explicit FListBoxItem (const std::string&);
-   explicit FListBoxItem (const char*);
+   explicit FListBoxItem (FString&, FWidget::data_ptr = 0);
+   explicit FListBoxItem (const std::string&, FWidget::data_ptr = 0);
+   explicit FListBoxItem (const char*, FWidget::data_ptr = 0);
 
    // Destructor
    virtual ~FListBoxItem();
@@ -61,6 +61,7 @@ class FListBoxItem
    void setText (FString&);
    void setText (const std::string&);
    void setText (const char*);
+   void setData (FWidget::data_ptr);
 
  private:
    // Friend classes
@@ -68,6 +69,7 @@ class FListBoxItem
 
    // Data Members
    FString           text;
+   FWidget::data_ptr data_pointer;
    fc::brackets_type brackets;
    bool              selected;
 };
@@ -90,6 +92,10 @@ inline void FListBoxItem::setText (const std::string& txt)
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (const char* txt)
 { text = txt; }
+
+//----------------------------------------------------------------------
+inline void FListBoxItem::setData (FWidget::data_ptr data)
+{ data_pointer = data; }
 
 
 //----------------------------------------------------------------------
@@ -146,10 +152,12 @@ class FListBox : public FWidget
    void         hide();
    void         insert ( FString
                        , fc::brackets_type = fc::NoBrackets
-                       , bool = false );
+                       , bool = false
+                       , data_ptr = 0);
    void         insert ( long
                        , fc::brackets_type = fc::NoBrackets
-                       , bool = false );
+                       , bool = false
+                       , data_ptr = 0 );
    void         remove (int);
    void         clear();
 
@@ -165,8 +173,8 @@ class FListBox : public FWidget
    void         onFocusOut (FFocusEvent*);
 
    // Callback methods
-   void         cb_VBarChange (FWidget*, void*);
-   void         cb_HBarChange (FWidget*, void*);
+   void         cb_VBarChange (FWidget*, data_ptr);
+   void         cb_HBarChange (FWidget*, data_ptr);
 
  protected:
    // Methods

@@ -746,7 +746,7 @@ void FTextView::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_VBarChange (FWidget*, void*)
+void FTextView::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;
@@ -837,7 +837,7 @@ void FTextView::cb_VBarChange (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_HBarChange (FWidget*, void*)
+void FTextView::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;
