@@ -569,7 +569,7 @@ const char* FString::c_str() const
 //----------------------------------------------------------------------
 const std::string FString::toString() const
 {
-  return std::string(c_str(), length+1);
+  return std::string(c_str(), length);
 }
 
 //----------------------------------------------------------------------
