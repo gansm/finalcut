@@ -56,8 +56,10 @@ class FListBoxItem
 
    // Accessors
    virtual FString getText() const;
+   virtual FWidget::data_ptr getData() const;
 
  protected:
+   // Mutators
    void setText (FString&);
    void setText (const std::string&);
    void setText (const char*);
@@ -80,6 +82,10 @@ class FListBoxItem
 //----------------------------------------------------------------------
 inline FString FListBoxItem::getText() const
 { return text; }
+
+//----------------------------------------------------------------------
+inline FWidget::data_ptr FListBoxItem::getData() const
+{ return data_pointer; }
 
 //----------------------------------------------------------------------
 inline void FListBoxItem::setText (FString& txt)

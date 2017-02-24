@@ -1069,21 +1069,21 @@ void FVTerm::updateVTerm()
     }
     else if ( ! win->preprocessing_call.empty() )
     {
-      FPreprocessing::const_iterator iter, end;
-      iter = win->preprocessing_call.begin();
-      end = win->preprocessing_call.end();
+      FPreprocessing::const_iterator iter2, end2;
+      iter2 = win->preprocessing_call.begin();
+      end2 = win->preprocessing_call.end();
 
-      while ( iter != end )
+      while ( iter2 != end2 )
       {
-        if ( iter->instance->child_print_area
-            && iter->instance->child_print_area->has_changes )
+        if ( iter2->instance->child_print_area
+            && iter2->instance->child_print_area->has_changes )
         {
           updateVTerm(win);
-          iter->instance->child_print_area->has_changes = false;
+          iter2->instance->child_print_area->has_changes = false;
           break;
         }
 
-        ++iter;
+        ++iter2;
       }
     }
   }
