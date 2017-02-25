@@ -66,48 +66,56 @@ class FVTerm : public FObject, public FTerm
 
    typedef std::vector<vterm_preprocessing> FPreprocessing;
 
+   // define virtual terminal character properties
    struct term_area
    {
-     term_area()
-     : offset_top (0)
-     , offset_left (0)
-     , width (-1)
-     , height (-1)
-     , right_shadow (0)
-     , bottom_shadow (0)
-     , cursor_x (0)
-     , cursor_y (0)
-     , input_cursor_x (-1)
-     , input_cursor_y (-1)
-     , widget()
-     , preprocessing_call()
-     , changes (0)
-     , text (0)
-     , input_cursor_visible (false)
-     , has_changes (false)
-     , visible (false)
-     { }
+     public:
+      term_area()
+      : offset_left (0)
+      , offset_top (0)
+      , width (-1)
+      , height (-1)
+      , right_shadow (0)
+      , bottom_shadow (0)
+      , cursor_x (0)
+      , cursor_y (0)
+      , input_cursor_x (-1)
+      , input_cursor_y (-1)
+      , widget()
+      , preprocessing_call()
+      , changes (0)
+      , text (0)
+      , input_cursor_visible (false)
+      , has_changes (false)
+      , visible (false)
+      { }
 
-    ~term_area()
-     { }
+     ~term_area()
+      { }
 
-     int offset_top;      // Distance from top of the terminal
-     int offset_left;     // Distance from left terminal side
-     int width;           // Window width
-     int height;          // Window height
-     int right_shadow;    // Right window shadow
-     int bottom_shadow;   // Bottom window shadow
-     int cursor_x;        // X-position for the next write operation
-     int cursor_y;        // Y-position for the next write operation
-     int input_cursor_x;  // X-position input cursor
-     int input_cursor_y;  // Y-position input cursor
-     FWidget* widget;     // Widget that owns this term_area
-     FPreprocessing preprocessing_call;
-     line_changes* changes;
-     char_data* text;     // Text data for the output
-     bool input_cursor_visible;
-     bool has_changes;
-     bool visible;
+      int offset_left;     // Distance from left terminal side
+      int offset_top;      // Distance from top of the terminal
+      int width;           // Window width
+      int height;          // Window height
+      int right_shadow;    // Right window shadow
+      int bottom_shadow;   // Bottom window shadow
+      int cursor_x;        // X-position for the next write operation
+      int cursor_y;        // Y-position for the next write operation
+      int input_cursor_x;  // X-position input cursor
+      int input_cursor_y;  // Y-position input cursor
+      FWidget* widget;     // Widget that owns this term_area
+      FPreprocessing preprocessing_call;
+      line_changes* changes;
+      char_data* text;     // Text data for the output
+      bool input_cursor_visible;
+      bool has_changes;
+      bool visible;
+
+    private:
+      // Disable copy constructor
+      term_area (const term_area&);
+      // Disable assignment operator (=)
+      term_area& operator = (const term_area&);
    };
 
    enum covered_state

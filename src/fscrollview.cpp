@@ -143,8 +143,8 @@ void FScrollView::setX (int x, bool adjust)
 
     if ( viewport )
     {
-      viewport->offset_top = scroll_geometry.getX();
-      viewport->offset_left = scroll_geometry.getY();
+      viewport->offset_left = scroll_geometry.getX();
+      viewport->offset_top = scroll_geometry.getY();
     }
   }
 }
@@ -160,8 +160,8 @@ void FScrollView::setY (int y, bool adjust)
 
     if ( viewport )
     {
-      viewport->offset_top = scroll_geometry.getX();
-      viewport->offset_left = scroll_geometry.getY();
+      viewport->offset_left = scroll_geometry.getX();
+      viewport->offset_top = scroll_geometry.getY();
     }
   }
 }
@@ -177,8 +177,8 @@ void FScrollView::setPos (int x, int y, bool adjust)
   {
     if ( viewport )
     {
-      viewport->offset_top = scroll_geometry.getX();
-      viewport->offset_left = scroll_geometry.getY();
+      viewport->offset_left = scroll_geometry.getX();
+      viewport->offset_top = scroll_geometry.getY();
     }
   }
 }
@@ -235,8 +235,8 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
   }
   else if ( ! adjust && viewport )
   {
-    viewport->offset_top = scroll_geometry.getX();
-    viewport->offset_left = scroll_geometry.getY();
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
   }
 }
 
@@ -662,8 +662,8 @@ void FScrollView::adjustSize()
 
   if ( viewport )
   {
-    viewport->offset_top = scroll_geometry.getX();
-    viewport->offset_left = scroll_geometry.getY();
+    viewport->offset_left = scroll_geometry.getX();
+    viewport->offset_top = scroll_geometry.getY();
   }
 
   hbar->setMaximum (getScrollWidth() - getViewportWidth());
@@ -701,8 +701,8 @@ void FScrollView::copy2area()
   if ( ! viewport->has_changes )
     return;
 
-  ax = getTermX() - print_area->offset_top;
-  ay = getTermY() - print_area->offset_left;
+  ax = getTermX() - print_area->offset_left;
+  ay = getTermY() - print_area->offset_top;
   dx = viewport_geometry.getX();
   dy = viewport_geometry.getY();
   y_end = getViewportHeight();

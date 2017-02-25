@@ -64,8 +64,8 @@ FPoint FVTerm::getPrintCursor()
   term_area* win = getPrintArea();
 
   if ( win )
-    return FPoint ( win->offset_top + win->cursor_x
-                  , win->offset_left + win->cursor_y );
+    return FPoint ( win->offset_left + win->cursor_x
+                  , win->offset_top + win->cursor_y );
 
   return FPoint(0,0);
 }
@@ -150,8 +150,8 @@ void FVTerm::setPrintCursor (register int x, register int y)
 
   if ( win )
   {
-    win->cursor_x = x - win->offset_top;
-    win->cursor_y = y - win->offset_left;
+    win->cursor_x = x - win->offset_left;
+    win->cursor_y = y - win->offset_top;
   }
 }
 
@@ -704,7 +704,7 @@ void FVTerm::createArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::createArea ( int offset_top, int offset_left
+void FVTerm::createArea ( int offset_left, int offset_top
                         , int width, int height
                         , int rsw, int bsh
                         , term_area*& area )
@@ -713,7 +713,7 @@ void FVTerm::createArea ( int offset_top, int offset_left
 
   area = new term_area;
   area->widget = static_cast<FWidget*>(this);
-  resizeArea (offset_top, offset_left, width, height, rsw, bsh, area);
+  resizeArea (offset_left, offset_top, width, height, rsw, bsh, area);
 }
 
 //----------------------------------------------------------------------
@@ -731,13 +731,12 @@ void FVTerm::resizeArea ( const FRect& r
 }
 
 //----------------------------------------------------------------------
-void FVTerm::resizeArea ( int offset_top, int offset_left
+void FVTerm::resizeArea ( int offset_left, int offset_top
                         , int width, int height
                         , int rsw, int bsh
                         , term_area* area )
 {
   assert ( offset_top >= 0 );
-  assert ( offset_left >= 0 );
   assert ( width > 0 );
   assert ( height > 0 );
   assert ( rsw >= 0 );
@@ -772,8 +771,8 @@ void FVTerm::resizeArea ( int offset_top, int offset_left
   else
     return;
 
-  area->offset_top = offset_top;
   area->offset_left = offset_left;
+  area->offset_top = offset_top;
   area->width = width;
   area->height = height;
   area->right_shadow = rsw;
@@ -901,8 +900,8 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
           if ( ! win->visible )
             continue;
 
-          int win_x = win->offset_top;
-          int win_y = win->offset_left;
+          int win_x = win->offset_left;
+          int win_y = win->offset_top;
           FRect geometry ( win_x
                          , win_y
                          , win->width + win->right_shadow
@@ -1000,8 +999,8 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
       if ( ! win->visible )
         continue;
 
-      int win_x = win->offset_top;
-      int win_y = win->offset_left;
+      int win_x = win->offset_left;
+      int win_y = win->offset_top;
       FRect geometry ( win_x
                      , win_y
                      , win->width + win->right_shadow
@@ -1120,8 +1119,8 @@ void FVTerm::updateVTerm (term_area* area)
     }
   }
 
-  ax  = area->offset_top;
-  ay  = area->offset_left;
+  ax  = area->offset_left;
+  ay  = area->offset_top;
   aw  = area->width;
   ah  = area->height;
   rsh = area->right_shadow;
@@ -1298,8 +1297,8 @@ bool FVTerm::updateVTermCursor (term_area* area)
   {
     int cx, cy, ax, ay, x, y;
     // area offset
-    ax  = area->offset_top;
-    ay  = area->offset_left;
+    ax  = area->offset_left;
+    ay  = area->offset_top;
     // area cursor position
     cx = area->input_cursor_x;
     cy = area->input_cursor_y;
@@ -1426,8 +1425,8 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
   if ( ! area )
     return;
 
-  dx = x - area->offset_top + 1;
-  dy = y - area->offset_left + 1;
+  dx = x - area->offset_left + 1;
+  dy = y - area->offset_top + 1;
 
   if ( x < 0 || y < 0 )
     return;
@@ -1871,8 +1870,8 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
         if ( ! win->visible )
           continue;
 
-        int win_x = win->offset_top;
-        int win_y = win->offset_left;
+        int win_x = win->offset_left;
+        int win_y = win->offset_top;
         FRect geometry ( win_x
                        , win_y
                        , win->width + win->right_shadow

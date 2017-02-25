@@ -22,6 +22,14 @@ FListBoxItem::FListBoxItem()
 { }
 
 //----------------------------------------------------------------------
+FListBoxItem::FListBoxItem (const FListBoxItem& item)
+  : text(item.text)
+  , data_pointer(item.data_pointer)
+  , brackets(item.brackets)
+  , selected(item.selected)
+{ }
+
+//----------------------------------------------------------------------
 FListBoxItem::FListBoxItem (FString& txt, FWidget::data_ptr data)
   : text(txt)
   , data_pointer(data)
@@ -49,6 +57,24 @@ FListBoxItem::FListBoxItem (const char* txt, FWidget::data_ptr data)
 FListBoxItem::~FListBoxItem()
 { }
 
+// public methods of FListBoxItem
+//----------------------------------------------------------------------
+FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
+{
+  if ( &item == this )
+  {
+    return *this;
+  }
+  else
+  {
+    text         = item.text;
+    data_pointer = item.data_pointer;
+    brackets     = item.brackets;
+    selected     = item.selected;
+    return *this;
+  }
+}
+
 
 //----------------------------------------------------------------------
 // class FListBox
@@ -56,7 +82,7 @@ FListBoxItem::~FListBoxItem()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListBox::FListBox(FWidget* parent)
+FListBox::FListBox (FWidget* parent)
   : FWidget(parent)
   , data()
   , vbar(0)
@@ -92,7 +118,7 @@ FListBox::~FListBox()  // destructor
 
 // public methods of FListBox
 //----------------------------------------------------------------------
-void FListBox::setCurrentItem(int index)
+void FListBox::setCurrentItem (int index)
 {
   int element_count;
 

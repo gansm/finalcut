@@ -47,12 +47,16 @@ class FListBoxItem
  public:
    // Constructors
    FListBoxItem ();
+   FListBoxItem (const FListBoxItem&);  // copy constructor
    explicit FListBoxItem (FString&, FWidget::data_ptr = 0);
    explicit FListBoxItem (const std::string&, FWidget::data_ptr = 0);
    explicit FListBoxItem (const char*, FWidget::data_ptr = 0);
 
    // Destructor
    virtual ~FListBoxItem();
+
+   // Assignment operator (=)
+   FListBoxItem& operator = (const FListBoxItem&);
 
    // Accessors
    virtual FString getText() const;

@@ -1,4 +1,8 @@
 2017-02-24  Markus Gans  <guru.mail@muenster.de>
+	* Corrected swapped top and left offset variables 
+	  in the class FVTerm
+
+2017-02-24  Markus Gans  <guru.mail@muenster.de>
 	* FListBox gets the option to save a data pointer for 
 	  every FListBoxItem element
 	* Fixes incorrect return value of FString::toString()

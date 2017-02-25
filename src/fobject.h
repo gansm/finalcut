@@ -11,6 +11,7 @@
 #ifndef _FOBJECT_H
 #define _FOBJECT_H
 
+#include <stdint.h>
 #include <sys/time.h> // need for gettimeofday
 #include <cstdlib>
 #include <list>
@@ -24,16 +25,16 @@
 typedef unsigned char  uChar;
 typedef unsigned int   uInt;
 typedef unsigned long  uLong;
-typedef unsigned char  uInt8;
-typedef unsigned short uInt16;
-typedef unsigned int   uInt32;
-typedef u_int64_t      uInt64;
+typedef uint8_t        uInt8;
+typedef uint16_t       uInt16;
+typedef uint32_t       uInt32;
+typedef uint64_t       uInt64;
 
 typedef signed int     sInt;
 typedef signed long    sLong;
-typedef signed char    sInt8;
-typedef signed short   sInt16;
-typedef signed int     sInt32;
+typedef int8_t         sInt8;
+typedef int16_t        sInt16;
+typedef int32_t        sInt32;
 typedef int64_t        sInt64;
 
 typedef long double    lDouble;
