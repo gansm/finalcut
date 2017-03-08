@@ -27,14 +27,19 @@ class scrollview : public FScrollView
    void setScrollSize (int, int);
 
  private:
+   // Disable copy constructor
+   scrollview (const scrollview&);
+   // Disable assignment operator (=)
+   scrollview& operator = (const scrollview&);
+
    // Method
    void draw();
 
    // Callback methods
-   void cb_go_east (FWidget*, void*);
-   void cb_go_south (FWidget*, void*);
-   void cb_go_west (FWidget*, void*);
-   void cb_go_north (FWidget*, void*);
+   void cb_go_east (FWidget*, data_ptr);
+   void cb_go_south (FWidget*, data_ptr);
+   void cb_go_west (FWidget*, data_ptr);
+   void cb_go_north (FWidget*, data_ptr);
 
    // Data Members
    FButton* go_east;
@@ -44,9 +49,14 @@ class scrollview : public FScrollView
 };
 #pragma pack(pop)
 
+#include "fcheckbox.h"
 //----------------------------------------------------------------------
 scrollview::scrollview (FWidget* parent)
   : FScrollView(parent)
+  , go_east()
+  , go_south()
+  , go_west()
+  , go_north()
 {
   go_east = new FButton(wchar_t(fc::BlackRightPointingPointer) , this);
   go_east->setGeometry (1, 1, 5, 1);
@@ -128,7 +138,7 @@ void scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_east (FWidget*, void*)
+void scrollview::cb_go_east (FWidget*, data_ptr)
 {
   scrollToX (getScrollWidth() - getViewportWidth() + 1);
   go_south->setFocus();
@@ -137,7 +147,7 @@ void scrollview::cb_go_east (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_south (FWidget*, void*)
+void scrollview::cb_go_south (FWidget*, data_ptr)
 {
   scrollToY (getScrollHeight() - getViewportHeight() + 1);
   go_west->setFocus();
@@ -146,7 +156,7 @@ void scrollview::cb_go_south (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_west (FWidget*, void*)
+void scrollview::cb_go_west (FWidget*, data_ptr)
 {
   scrollToX (1);
   go_north->setFocus();
@@ -155,7 +165,7 @@ void scrollview::cb_go_west (FWidget*, void*)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_north (FWidget*, void*)
+void scrollview::cb_go_north (FWidget*, data_ptr)
 {
   scrollToY (1);
   go_east->setFocus();
@@ -184,7 +194,7 @@ class scrollviewdemo : public FDialog
    void onClose (FCloseEvent*);
 
    // Callback method
-   void cb_quit (FWidget* = 0, void* = 0);
+   void cb_quit (FWidget* = 0, data_ptr = 0);
 };
 #pragma pack(pop)
 
@@ -224,7 +234,7 @@ scrollviewdemo::~scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void scrollviewdemo::cb_quit (FWidget*, void*)
+void scrollviewdemo::cb_quit (FWidget*, data_ptr)
 {
   close();
 }

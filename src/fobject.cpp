@@ -68,6 +68,20 @@ FObject::~FObject()  // destructor
 
 // public methods of FObject
 //----------------------------------------------------------------------
+bool FObject::isChild (FObject* obj) const
+{
+  while ( FObject* p_obj = obj->getParent() )
+  {
+    obj = p_obj;
+
+    if ( obj == this )
+      return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FObject::addChild (FObject* obj)
 {
   if ( ! obj )

@@ -75,6 +75,8 @@ class FObject
    // Inquiries
    bool                hasParent() const;
    bool                hasChildren() const;
+   bool                isChild (FObject*) const;
+   bool                isDirectChild (FObject*) const;
    bool                isTimerInUpdating() const;
 
    // Methods
@@ -139,6 +141,10 @@ inline bool FObject::hasParent() const
 //----------------------------------------------------------------------
 inline bool FObject::hasChildren() const
 { return bool( ! children_list.empty() ); }
+
+//----------------------------------------------------------------------
+inline bool FObject::isDirectChild (FObject* obj) const
+{ return bool( obj->getParent() == this ); }
 
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const

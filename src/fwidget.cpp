@@ -674,15 +674,24 @@ bool FWidget::setCursorPos (register int x, register int y)
   if ( (flags & fc::focus) == 0 || isWindowWidget() )
     return false;
 
-  FWidget* window = FWindow::getWindowWidget(this);
-
-  if ( ! window )
+  if ( ! FWindow::getWindowWidget(this) )
     return false;
 
-  if ( term_area* area = window->getVWin() )
+  term_area* area = getPrintArea();
+
+  if ( area->widget )
   {
-    setAreaCursor ( getTermX() - window->getTermX() + x
-                  , getTermY() - window->getTermY() + y
+    int widget_offsetX = getTermX() - area->widget->getTermX();
+    int widget_offsetY = getTermY() - area->widget->getTermY();
+
+    if ( isChildPrintArea() )
+    {
+      widget_offsetX += (1 - area->widget->getLeftPadding());
+      widget_offsetY += (1 - area->widget->getTopPadding());
+    }
+
+    setAreaCursor ( widget_offsetX + x
+                  , widget_offsetY + y
                   , visible_cursor
                   , area );
     return true;

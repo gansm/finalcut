@@ -262,7 +262,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
   if ( ! print_area )
     FVTerm::getPrintArea();
 
-  if ( ! print_area || ! print_area->preprocessing_call.empty() )
+  if ( ! print_area || print_area->preprocessing_call.empty() )
     return;
 
   FPreprocessing::iterator iter, end;
@@ -690,6 +690,19 @@ FVTerm::term_area* FVTerm::getPrintArea()
 }
 
 //----------------------------------------------------------------------
+bool FVTerm::isChildPrintArea() const
+{
+  FVTerm* p_obj = static_cast<FVTerm*>(getParent());
+
+  if ( p_obj
+      && p_obj->child_print_area
+      && p_obj->child_print_area == this->print_area )
+    return true;
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::createArea ( const FRect& r
                         , const FPoint& p
                         , term_area*& area )
@@ -736,6 +749,8 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
                         , int rsw, int bsh
                         , term_area* area )
 {
+  // Resize the virtual window to a new size.
+
   assert ( offset_top >= 0 );
   assert ( width > 0 );
   assert ( height > 0 );
@@ -814,6 +829,7 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
 void FVTerm::removeArea (term_area*& area)
 {
   // remove the virtual window
+
   if ( area != 0 )
   {
     if ( area->changes != 0 )

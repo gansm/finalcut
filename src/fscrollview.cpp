@@ -2,6 +2,7 @@
 // Provides: class FScrollView
 
 #include "fscrollview.h"
+#include "fwindow.h"
 
 
 //----------------------------------------------------------------------
@@ -23,7 +24,7 @@ FScrollView::FScrollView (FWidget* parent)
   , vMode(fc::Auto)
   , hMode(fc::Auto)
 {
-  init();
+  init(parent);
 }
 
 //----------------------------------------------------------------------
@@ -329,16 +330,16 @@ void FScrollView::scrollTo (int x, int y)
 
   viewport_geometry.setWidth(save_width);
   viewport_geometry.setHeight(save_height);
-  hbar->setValue (xoffset);
-  vbar->setValue (yoffset);
-  drawHBar();
-  drawVBar();
   viewport->has_changes = true;
   setTopPadding (1 - yoffset);
   setLeftPadding (1 - xoffset);
   setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - yoffset));
   setRightPadding (1 - (getScrollWidth() - getViewportWidth() - xoffset) + nf_offset);
   copy2area();
+  hbar->setValue (xoffset);
+  vbar->setValue (yoffset);
+  drawHBar();
+  drawVBar();
   updateTerminal();
 }
 
@@ -723,6 +724,7 @@ void FScrollView::copy2area()
       print_area->changes[ay+y].xmax = uInt(ax+x_end-1);
   }
 
+  setViewportCursor();
   viewport->has_changes = false;
   print_area->has_changes = true;
 }
@@ -730,8 +732,29 @@ void FScrollView::copy2area()
 
 // private methods of FScrollView
 //----------------------------------------------------------------------
-void FScrollView::init()
+inline FPoint FScrollView::getViewportCursorPos()
 {
+  int x, y;
+  FWidget* window = FWindow::getWindowWidget(this);
+  if ( window )
+  {
+    int widget_offsetX = getTermX() - window->getTermX();
+    int widget_offsetY = getTermY() - window->getTermY();
+    x = widget_offsetX + viewport->input_cursor_x - viewport_geometry.getX();
+    y = widget_offsetY + viewport->input_cursor_y - viewport_geometry.getY();
+    return FPoint(x,y);
+  }
+  else
+    return FPoint(-1,-1);
+}
+
+//----------------------------------------------------------------------
+void FScrollView::init (FWidget* parent)
+{
+  assert ( parent != 0 );
+  assert ( std::strcmp ( parent->getClassName()
+                       , const_cast<char*>("FScrollView") ) != 0 );
+
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
@@ -847,6 +870,25 @@ void FScrollView::setVerticalScrollBarVisibility()
       vbar->setVisible();
       break;
   }
+}
+
+//----------------------------------------------------------------------
+void FScrollView::setViewportCursor()
+{
+  if ( ! isChild(getFocusWidget()) )
+    return;
+
+  FPoint cursor_pos ( viewport->input_cursor_x - 1
+                    , viewport->input_cursor_y - 1 );
+  FPoint window_cursor_pos = getViewportCursorPos();
+  print_area->input_cursor_x = window_cursor_pos.getX();
+  print_area->input_cursor_y = window_cursor_pos.getY();
+
+  if ( viewport->input_cursor_visible
+      && viewport_geometry.contains(cursor_pos) )
+    print_area->input_cursor_visible = true;
+  else
+    print_area->input_cursor_visible = false;
 }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,6 @@
+2017-03-08  Markus Gans  <guru.mail@muenster.de>
+	* Improve input cursor positioning in FScrollView
+
 2017-02-24  Markus Gans  <guru.mail@muenster.de>
 	* Corrected swapped top and left offset variables 
 	  in the class FVTerm

@@ -379,7 +379,7 @@ int FTerm::parseKeyString ( char buffer[]
                           , timeval* time_keypressed )
 {
   register uChar firstchar = uChar(buffer[0]);
-  register size_t buf_len = std::strlen(buffer);
+  register std::size_t buf_len = std::strlen(buffer);
   const long key_timeout = 100000;  // 100 ms
   int key, len, n;
 
@@ -831,7 +831,7 @@ FString* FTerm::getXTermFont()
     {
       if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
       {
-        size_t n = std::strlen(temp);
+        std::size_t n = std::strlen(temp);
 
         // BEL + '\0' = string terminator
         if ( n >= 5 && temp[n-1] == BEL[0] && temp[n] == '\0' )
@@ -868,7 +868,7 @@ FString* FTerm::getXTermTitle()
   {
     if ( std::scanf("\033]l%[^\n]s", temp) == 1 )
     {
-      size_t n = std::strlen(temp);
+      std::size_t n = std::strlen(temp);
 
       // Esc + \ = OSC string terminator
       if ( n >= 2 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
@@ -912,7 +912,7 @@ const FString FTerm::getXTermColorName (int color)
   {
     if ( std::scanf("\033]4;%d;%[^\n]s", &color, temp) == 2 )
     {
-      size_t n = std::strlen(temp);
+      std::size_t n = std::strlen(temp);
 
       // BEL + '\0' = string terminator
       if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
@@ -1969,7 +1969,7 @@ void FTerm::restoreTTYsettings()
 int FTerm::getScreenFont()
 {
   struct console_font_op font;
-  const size_t data_size = 4 * 32 * 512;
+  const std::size_t data_size = 4 * 32 * 512;
   int ret;
 
   if ( fd_tty < 0 )
@@ -2026,7 +2026,7 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
   else
   {
     const uInt bytes_per_line = font.width / 8;
-    const size_t data_size = bytes_per_line * 32 * font.charcount;
+    const std::size_t data_size = bytes_per_line * 32 * font.charcount;
 
     try
     {

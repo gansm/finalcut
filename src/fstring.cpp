@@ -2381,7 +2381,7 @@ inline char* FString::wc_to_c_str (const wchar_t* s) const
     c_string = new char[dest_size]();
 
     // pre-initialiaze the whole string with '\0'
-    std::memset (c_string, '\0', size_t(dest_size));
+    std::memset (c_string, '\0', std::size_t(dest_size));
   }
   catch (const std::bad_alloc& ex)
   {
@@ -2435,7 +2435,7 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
   {
     dest = new wchar_t[size]();
     // pre-initialiaze the whole string with '\0'
-    std::wmemset (dest, L'\0', size_t(size));
+    std::wmemset (dest, L'\0', std::size_t(size));
   }
   catch (const std::bad_alloc& ex)
   {

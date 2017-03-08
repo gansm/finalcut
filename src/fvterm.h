@@ -11,7 +11,7 @@
 //      │           │
 //      └─────┬─────┘
 //            │
-//        ▕▔▔▔▔▔▔▔▔▏ 1      *▕▔▔▔▔▔▔▔▔▔▏
+//        ▕▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▔▔▏
 //        ▕ FVTerm ▏-┬- - - -▕ FString ▏
 //        ▕▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▏
 //                   :
@@ -283,6 +283,7 @@ class FVTerm : public FObject, public FTerm
    // Inquiries
    bool                 hasPrintArea() const;
    bool                 hasChildPrintArea() const;
+   bool                 isChildPrintArea() const;
    bool                 isVirtualWindow() const;
 
    // Methods

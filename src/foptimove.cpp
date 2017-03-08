@@ -709,8 +709,8 @@ int FOptiMove::capDurationToLength (int duration)
 //----------------------------------------------------------------------
 int FOptiMove::repeatedAppend (capability& o, int count, char* dst)
 {
-  register size_t src_len;
-  register size_t dst_len;
+  register std::size_t src_len;
+  register std::size_t dst_len;
   register int total;
 
   src_len = std::strlen(o.cap);

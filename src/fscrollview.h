@@ -128,11 +128,15 @@ class FScrollView : public FWidget
    // Disable assignment operator (=)
    FScrollView& operator = (const FScrollView&);
 
+   // Accessors
+   FPoint            getViewportCursorPos();
+
    // Methods
-   void              init();
+   void              init (FWidget*);
    void              calculateScrollbarPos();
    void              setHorizontalScrollBarVisibility();
    void              setVerticalScrollBarVisibility();
+   void              setViewportCursor();
    void              redrawHBar();
    void              redrawVBar();
    void              drawHBar();
