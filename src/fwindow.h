@@ -76,6 +76,7 @@ class FWindow : public FWidget
    void            setWindowFocusWidget (FWidget*);
    bool            activateWindow (bool);
    bool            activateWindow();
+   void            unsetActiveWindow();
    bool            deactivateWindow();
    virtual bool    setResizeable (bool);
    virtual bool    setResizeable();

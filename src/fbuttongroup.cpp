@@ -52,6 +52,23 @@ FButtonGroup::~FButtonGroup()  // destructor
 
 // public methods of FButtonGroup
 //----------------------------------------------------------------------
+FToggleButton* FButtonGroup::getButton(int index) const
+{
+  FObjectList::const_iterator iter;
+  index--;
+
+  if ( buttonlist.empty() )
+    return 0;
+
+  if ( index < 0 || index >= int(getCount()) )
+    return 0;
+
+  iter = buttonlist.begin();
+  std::advance (iter, index);
+  return static_cast<FToggleButton*>(*iter);
+}
+
+//----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getFirstButton()
 {
   FWidget* widget = FWidget::getFirstFocusableWidget(buttonlist);
@@ -99,7 +116,18 @@ void FButtonGroup::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasFocusedButton()
+bool FButtonGroup::isChecked (int index) const
+{
+  FToggleButton* button = getButton(index);
+
+  if ( button )
+    return button->isChecked();
+  else
+    return false;
+}
+
+//----------------------------------------------------------------------
+bool FButtonGroup::hasFocusedButton() const
 {
   if ( buttonlist.empty() )
     return false;
@@ -122,7 +150,7 @@ bool FButtonGroup::hasFocusedButton()
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::hasCheckedButton()
+bool FButtonGroup::hasCheckedButton() const
 {
   if ( buttonlist.empty() )
     return false;
@@ -223,6 +251,8 @@ void FButtonGroup::insert (FToggleButton* button)
     "toggled",
     _METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
   );
+
+  //checkScrollSize (button);
 }
 
 //----------------------------------------------------------------------
@@ -248,6 +278,28 @@ void FButtonGroup::remove (FToggleButton* button)
     }
     else
       ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::checkScrollSize (FToggleButton* button)
+{
+  // Check and adjust the scroll size
+
+  checkScrollSize (button->getGeometry());
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::checkScrollSize (const FRect& r)
+{
+  // Check and adjust the scroll size
+
+  FRect scrollgeometry (1, 1, getScrollWidth(), getScrollHeight());
+
+  if ( ! scrollgeometry.contains(r) )
+  {
+    FRect new_size = scrollgeometry.combined(r);
+    setScrollSize (new_size.getWidth(), new_size.getHeight());
   }
 }
 
@@ -283,9 +335,15 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
       {
         if ( isRadioButton(toggle_button) )
         {
-          in_ev->ignore();
           FWidget* prev_element = getFocusWidget();
+          in_ev->ignore();
           toggle_button->setFocus();
+
+          FFocusEvent cfi (fc::ChildFocusIn_Event);
+          FApplication::sendEvent(this, &cfi);
+
+          FFocusEvent in (fc::FocusIn_Event);
+          FApplication::sendEvent(toggle_button, &in);
 
           if ( prev_element )
             prev_element->redraw();

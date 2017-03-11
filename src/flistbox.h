@@ -310,7 +310,7 @@ inline bool FListBox::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected(int index) const
+inline bool FListBox::isSelected (int index) const
 { return data[uInt(index-1)].selected; }
 
 //----------------------------------------------------------------------

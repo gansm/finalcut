@@ -41,6 +41,10 @@ FWindow::~FWindow()  // destructor
   if ( isAlwaysOnTop() )
     deleteFromAlwaysOnTopList (this);
 
+  // unset the global active window
+  if ( this == FWindow::getActiveWindow() )
+    unsetActiveWindow();
+
   delWindow (this);
 
   if ( ! fapp->isQuit() )
@@ -149,6 +153,13 @@ bool FWindow::activateWindow (bool on)
   }
 
   return window_active = (on) ? true : false;
+}
+
+//----------------------------------------------------------------------
+void FWindow::unsetActiveWindow()
+{
+  // unset the active FWindow object
+  FApplication::active_window = 0;
 }
 
 //----------------------------------------------------------------------

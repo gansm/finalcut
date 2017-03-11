@@ -79,8 +79,8 @@ int main (int argc, char* argv[])
   // Create radio buttons
   FRadioButton* male = new FRadioButton("&Male", radioButtonGroup);
   FRadioButton* female = new FRadioButton("&Female", radioButtonGroup);
-  male->setGeometry(1, 1, 7, 1);
-  female->setGeometry(1, 2, 7, 1);
+  male->setGeometry(1, 1, 8, 1);
+  female->setGeometry(1, 2, 10, 1);
 
   // Create another button group
   FButtonGroup* checkButtonGroup = new FButtonGroup("&Data options", &dgl);
@@ -89,8 +89,8 @@ int main (int argc, char* argv[])
   // Create checkbox buttons
   FCheckBox* check1 = new FCheckBox("Save data", checkButtonGroup);
   FCheckBox* check2 = new FCheckBox("Encrypt data", checkButtonGroup);
-  check1->setGeometry(1, 1, 7, 1);
-  check2->setGeometry(1, 2, 7, 1);
+  check1->setGeometry(1, 1, 13, 1);
+  check2->setGeometry(1, 2, 16, 1);
   check2->setDisable();
 
   // Create a OK button

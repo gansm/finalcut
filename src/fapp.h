@@ -207,6 +207,7 @@ class FApplication : public FWidget
    // Friend functions from FWindow
    friend  bool     FWindow::activateWindow (bool);
    friend  FWindow* FWindow::getActiveWindow();
+   friend  void     FWindow::unsetActiveWindow();
 };
 #pragma pack(pop)
 

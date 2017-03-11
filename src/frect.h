@@ -91,6 +91,7 @@ class FRect
    bool    contains (const FRect&) const;
    bool    overlap  (const FRect&) const;
    FRect   intersect (const FRect&) const;
+   FRect   combined (const FRect&) const;
 
  private:
    // Data Members

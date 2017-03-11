@@ -654,7 +654,6 @@ void FMenu::onMouseMove (FMouseEvent* ev)
         FString curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
-        if ( curMsg != msg )
         {
           getStatusBar()->setMessage(msg);
           getStatusBar()->drawMessage();

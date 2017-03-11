@@ -736,6 +736,7 @@ inline FPoint FScrollView::getViewportCursorPos()
 {
   int x, y;
   FWidget* window = FWindow::getWindowWidget(this);
+
   if ( window )
   {
     int widget_offsetX = getTermX() - window->getTermX();

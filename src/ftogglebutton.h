@@ -84,6 +84,7 @@ class FToggleButton : public FWidget
    // Event handlers
    void          onMouseDown (FMouseEvent*);
    void          onMouseUp (FMouseEvent*);
+   void          onWheel (FWheelEvent*);
    void          onAccel (FAccelEvent*);
    void          onFocusIn (FFocusEvent*);
    void          onFocusOut (FFocusEvent*);
@@ -99,6 +100,7 @@ class FToggleButton : public FWidget
    // Inquiries
    bool          isRadioButton() const;
    bool          isCheckboxButton() const;
+   bool          hasGroup() const;
 
    // Methods
    virtual void  draw();
@@ -189,6 +191,10 @@ inline bool FToggleButton::isChecked()
 
 //----------------------------------------------------------------------
 inline FButtonGroup* FToggleButton::getGroup() const
+{ return button_group; }
+
+//----------------------------------------------------------------------
+inline bool FToggleButton::hasGroup() const
 { return button_group; }
 
 #endif  // _FTOGGLEBUTTON_H

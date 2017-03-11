@@ -68,6 +68,23 @@ FObject::~FObject()  // destructor
 
 // public methods of FObject
 //----------------------------------------------------------------------
+FObject* FObject::getChild (int index) const
+{
+  index--;
+
+  if ( children_list.empty() )
+    return 0;
+
+  if ( index < 0 || index >= numOfChildren() )
+    return 0;
+
+  FObjectList::const_iterator iter;
+  iter = children_list.begin();
+  std::advance (iter, index);
+  return *iter;
+}
+
+//----------------------------------------------------------------------
 bool FObject::isChild (FObject* obj) const
 {
   while ( FObject* p_obj = obj->getParent() )

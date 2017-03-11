@@ -29,7 +29,7 @@ FToggleButton::FToggleButton (FWidget* parent)
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
-    if ( getGroup() )
+    if ( hasGroup() )
       getGroup()->insert(this);  // insert into button group
   }
 }
@@ -52,8 +52,8 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
-    if ( getGroup() )
-      getGroup()->insert( this );  // insert into button group
+    if ( hasGroup() )
+      getGroup()->insert(this);  // insert into button group
   }
 }
 
@@ -62,7 +62,7 @@ FToggleButton::~FToggleButton()  // destructor
 {
   delAccelerator();
 
-  if ( getGroup() )
+  if ( hasGroup() )
     getGroup()->remove(this);
 }
 
@@ -75,6 +75,11 @@ void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( w < min_width )
     w = min_width;
+
+  const FRect geometry(x, y, w, h);
+
+  if ( hasGroup() )
+    getGroup()->checkScrollSize(geometry);
 
   FWidget::setGeometry(x, y, w, h, adjust);
 }
@@ -281,6 +286,15 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
+void FToggleButton::onWheel (FWheelEvent* ev)
+{
+  if ( ! hasGroup() )
+    return;
+
+  getGroup()->onWheel(ev);
+}
+
+//----------------------------------------------------------------------
 void FToggleButton::onAccel (FAccelEvent* ev)
 {
   if ( ! isEnabled() )
@@ -340,7 +354,7 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     getStatusBar()->drawMessage();
   }
 
-  if ( ! getGroup() )
+  if ( ! hasGroup() )
     return;
 
   if ( ! focus_inside_group && isRadioButton()  )

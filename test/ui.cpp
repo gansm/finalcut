@@ -452,11 +452,11 @@ MyDialog::MyDialog (FWidget* parent)
   //radioButtonGroup->unsetBorder();
 
   FRadioButton* radio1 = new FRadioButton ("E&nable", radioButtonGroup);
-  radio1->setGeometry(1, 1, 7, 1);
+  radio1->setGeometry(1, 1, 10, 1);
   radio1->setStatusbarMessage ("Enable button Test");
 
   FRadioButton* radio2 = new FRadioButton (radioButtonGroup);
-  radio2->setGeometry(1, 2, 7, 1);
+  radio2->setGeometry(1, 2, 11, 1);
   radio2->setText ("&Disable");
   radio2->setStatusbarMessage ("Disable button Test");
   radio2->setChecked();
@@ -467,11 +467,11 @@ MyDialog::MyDialog (FWidget* parent)
   checkButtonGroup->setGeometry(3, 12, 14, 4);
 
   FCheckBox* check1 = new FCheckBox ("&Bitmode", checkButtonGroup);
-  check1->setGeometry(1, 1, 7, 1);
+  check1->setGeometry(1, 1, 11, 1);
   check1->setNoUnderline();
 
   FCheckBox* check2 = new FCheckBox ("&8-Bit", checkButtonGroup);
-  check2->setGeometry(1, 2, 7, 1);
+  check2->setGeometry(1, 2, 9, 1);
   check2->setChecked();
   check2->setNoUnderline();
 

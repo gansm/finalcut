@@ -9,6 +9,7 @@ noinst_PROGRAMS = \
 	hello \
 	dialog \
 	input-dialog \
+	choice \
 	opti-move \
 	string-operations \
 	mandelbrot \
@@ -26,6 +27,7 @@ noinst_PROGRAMS = \
 hello_SOURCES = hello.cpp
 dialog_SOURCES = dialog.cpp
 input_dialog_SOURCES = input-dialog.cpp
+choice_SOURCES = choice.cpp
 opti_move_SOURCES = opti-move.cpp
 string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp

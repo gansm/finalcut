@@ -197,6 +197,17 @@ FRect FRect::intersect (const FRect& r) const
 }
 
 //----------------------------------------------------------------------
+FRect FRect::combined (const FRect& r) const
+{
+  // Union: this ∪ r
+  FRect new_rect;
+  new_rect.X1 = std::min(X1, r.X1);
+  new_rect.Y1 = std::min(Y1, r.Y1);
+  new_rect.X2 = std::max(X2, r.X2);
+  new_rect.Y2 = std::max(Y2, r.Y2);
+  return new_rect;
+}
+//----------------------------------------------------------------------
 FRect& FRect::operator = (const FRect& r)
 {
   X1 = short(r.getX1());

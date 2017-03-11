@@ -35,6 +35,7 @@ test/windows
 test/term-attributes
 test/transparent
 test/input-dialog
+test/choice
 test/mandelbrot
 test/keyboard
 test/timer

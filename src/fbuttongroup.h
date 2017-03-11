@@ -55,6 +55,8 @@ class FButtonGroup : public FScrollView
    const char*    getClassName() const;
    FToggleButton* getFirstButton();
    FToggleButton* getLastButton();
+   FToggleButton* getButton (int) const;
+   uInt           getCount() const;
    FString&       getText();
 
    // Mutator
@@ -65,13 +67,16 @@ class FButtonGroup : public FScrollView
    void           setText (const FString&);
 
    // Inquiries
-   bool           hasFocusedButton();
-   bool           hasCheckedButton();
+   bool           isChecked(int) const;
+   bool           hasFocusedButton() const;
+   bool           hasCheckedButton() const;
 
    // Methods
    void           hide();
    void           insert (FToggleButton*);
    void           remove (FToggleButton*);
+   void           checkScrollSize (FToggleButton*);
+   void           checkScrollSize (const FRect&);
 
    // Event handlers
    void           onMouseDown (FMouseEvent*);
@@ -100,15 +105,15 @@ class FButtonGroup : public FScrollView
    FButtonGroup& operator = (const FButtonGroup&);
 
    // Inquiries
-   bool isRadioButton (FToggleButton*) const;
+   bool           isRadioButton (FToggleButton*) const;
 
    // Methods
-   void init();
-   void directFocus();
+   void           init();
+   void           directFocus();
 
    // Data Members
-   FString     text;
-   FObjectList buttonlist;
+   FString        text;
+   FObjectList    buttonlist;
 };
 #pragma pack(pop)
 
@@ -129,6 +134,10 @@ inline bool FButtonGroup::unsetEnable()
 //----------------------------------------------------------------------
 inline bool FButtonGroup::setDisable()
 { return setEnable(false); }
+
+//----------------------------------------------------------------------
+inline uInt FButtonGroup::getCount() const
+{ return uInt(buttonlist.size()); }
 
 //----------------------------------------------------------------------
 inline FString& FButtonGroup::getText()

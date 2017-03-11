@@ -69,6 +69,7 @@ class FObject
    // Accessors
    virtual const char* getClassName() const;
    FObject*            getParent() const;
+   FObject*            getChild (int) const;
    FObjectList         getChildren() const;
    int                 numOfChildren() const;
 

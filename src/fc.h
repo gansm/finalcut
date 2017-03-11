@@ -22,7 +22,7 @@
 class fc
 {
  public:
-   // event types
+   // Event types
    enum events
    {
      None_Event,               // invalid event
@@ -50,7 +50,7 @@ class fc
      Timer_Event               // timer event occur
    };
 
-   // properties of a widget
+   // Properties of a widget
    enum widget_flags
    {
      shadow        = 0x00000001,
@@ -68,7 +68,7 @@ class fc
      no_underline  = 0x00001000
    };
 
-   // internal character encoding
+   // Internal character encoding
    enum encoding
    {
      UTF8,
@@ -121,7 +121,7 @@ class fc
      vt100_key_bullet    = '~'    // ·  -  bullet
    };
 
-   // unicode characters
+   // Unicode characters
    enum SpecialCharacter
    {
      Euro                                = 0x20ac,  // €
@@ -403,7 +403,7 @@ class fc
      Fkey_f63                   = 0x1000194
    };
 
-   // keyboard - modifier key combinations
+   // Keyboard - modifier key combinations
    enum metakeys
    {
      Fmkey_ic                   = 0x1500100,  // M-insert
@@ -614,7 +614,7 @@ class fc
      Fmkey_tilde                = 0x200015e   // M-~
    };
 
-   // console color names
+   // Console color names
    enum colornames
    {
      Default           = -1,
@@ -877,7 +877,7 @@ class fc
      Grey93            = 255  // #eeeeee
    };
 
-   // mouse/keyboard state values
+   // Mouse/keyboard state values
    enum ButtonState
    {
      NoButton        = 0x00,
@@ -891,7 +891,7 @@ class fc
      KeyButtonMask   = 0x38
    };
 
-   // wheel state values
+   // Wheel state values
    enum WheelState
    {
      NoWheel   = 0x00,
@@ -900,15 +900,15 @@ class fc
      WheelMask = 0x03
    };
 
-   // type of focus
+   // Type of focus
    enum FocusTypes
    {
      FocusNextWidget     = 0x00,
      FocusPreviousWidget = 0x01,
-     FocusDefiniteWidget = 0x03
+     FocusDefiniteWidget = 0x03  // event default
    };
 
-   // scroll bar visibility mode
+   // Scroll bar visibility mode
    enum scrollBarMode
    {
      Auto   = 0,  // Shows a scroll bar when area is larger than viewport
@@ -916,7 +916,7 @@ class fc
      Scroll = 2   // Always shows a scroll bar
    };
 
-   // xterm cursor style
+   // Xterm cursor style
    enum xtermCursorStyle
    {
      blinking_block         = 0,
@@ -928,7 +928,7 @@ class fc
      steady_bar_xterm       = 6
    };
 
-   // linux console and framebuffer cursor style
+   // Linux console and framebuffer cursor style
    enum consoleCursorStyle
    {
      default_cursor     = 0,
