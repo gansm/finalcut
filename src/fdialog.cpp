@@ -279,12 +279,14 @@ void FDialog::setPos (int x, int y, bool)
 
   // set the cursor to the focus widget
   FWidget* focus_widget = FWidget::getFocusWidget();
+
   if ( focus_widget
       && focus_widget->isVisible()
       && focus_widget->hasVisibleCursor() )
   {
     FPoint cursor_pos = focus_widget->getCursorPos();
     focus_widget->setCursorPos(cursor_pos);
+    updateVTermCursor(vwin);
   }
 
   updateTerminal();

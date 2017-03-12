@@ -41,7 +41,6 @@ int main (int argc, char* argv[])
   x = (app.getColumnNumber() - w) / 2;
   y = (app.getLineNumber() - h) / 2;
   dgl->setGeometry (x, y, w, h);
-  dgl->setShadow();
 
   // Create another button group
   FButtonGroup* checkButtonGroup = new FButtonGroup("choice", dgl);

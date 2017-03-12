@@ -1,3 +1,6 @@
+2017-03-13  Markus Gans  <guru.mail@muenster.de>
+	* Corrects directly the input cursor position on window moving
+
 2017-03-12  Markus Gans  <guru.mail@muenster.de>
 	* The FButtonGroup now has a scrolling area 
 	  with on-demand scroll bars
