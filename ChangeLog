@@ -6,6 +6,7 @@
 	* FRect can now combine two FRect objects
 	* The FButtonGroup got the possibility of index access 
 	  to a child button.
+	* Fixed bug in FString copy constructor
 
 2017-03-08  Markus Gans  <guru.mail@muenster.de>
 	* Improve input cursor positioning in FScrollView

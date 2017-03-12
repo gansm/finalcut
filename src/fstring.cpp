@@ -111,15 +111,15 @@ FString::FString (uInt len, char c)
 }
 
 //----------------------------------------------------------------------
-FString::FString (const FString& s)  // copy constructor
-  : string(new wchar_t[FWDBUFFER + s.length + 1]())
-  , length(s.length)
-  , bufsize(FWDBUFFER + s.length + 1)
-  , c_string(0)
-{
-  if ( s.string )
-    std::wcscpy (string, s.string);
-}
+FString::FString (const FString& s)  // copy constructor             
+  : string(0)                                    
+  , length(0)                                    
+  , bufsize(0)                                   
+  , c_string(0)                                  
+{                                                
+  if ( s.string )                                
+    _replace (s.string);                         
+}                                                
 
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
