@@ -62,9 +62,9 @@ class FLineEdit : public FWidget
    int         getLabelOrientation();
 
    // Mutators
-   void        setText (FString);
-   void        setLabelText (FString);
-   void        setLabelOrientation(label_o);
+   void        setText (const FString);
+   void        setLabelText (const FString);
+   void        setLabelOrientation(const label_o);
    bool        setEnable(bool);
    bool        setEnable();
    bool        unsetEnable();

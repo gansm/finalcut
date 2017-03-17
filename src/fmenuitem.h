@@ -56,12 +56,8 @@ class FMenuItem : public FWidget
 
    // Constructor
    explicit FMenuItem (FWidget* = 0);
-   FMenuItem (FString&, FWidget* = 0);
-   FMenuItem (const std::string&, FWidget* = 0);
-   FMenuItem (const char*, FWidget* = 0);
-   FMenuItem (int, FString&, FWidget* = 0);
-   FMenuItem (int, const std::string&, FWidget* = 0);
-   FMenuItem (int, const char*, FWidget* = 0);
+   FMenuItem (const FString&, FWidget* = 0);
+   FMenuItem (int, const FString&, FWidget* = 0);
 
    // Destructor
    virtual ~FMenuItem();
@@ -85,9 +81,7 @@ class FMenuItem : public FWidget
    void        setChecked();
    void        unsetChecked();
    void        setMenu (FMenu*);
-   void        setText (FString&);
-   void        setText (const std::string&);
-   void        setText (const char*);
+   void        setText (const FString&);
 
    // Inquiries
    bool        isSelected() const;

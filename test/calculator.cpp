@@ -201,7 +201,7 @@ Calc::Calc (FWidget* parent)
 {
   clearInfixOperator();
 
-  const wchar_t* button_text[Calc::NUM_OF_BUTTONS] =
+  const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {
     L"&Sin",
     L"&Cos",

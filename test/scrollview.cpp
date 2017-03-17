@@ -49,7 +49,6 @@ class scrollview : public FScrollView
 };
 #pragma pack(pop)
 
-#include "fcheckbox.h"
 //----------------------------------------------------------------------
 scrollview::scrollview (FWidget* parent)
   : FScrollView(parent)

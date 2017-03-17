@@ -166,7 +166,7 @@ class FWidget : public FVTerm
    static void        setClickedWidget (FWidget*);
    static void        setMoveSizeWidget (FWidget*);
    static void        setOpenMenu (FWidget*);
-   virtual void       setStatusbarMessage (FString);
+   virtual void       setStatusbarMessage (const FString);
    bool               setVisible();
    virtual bool       setEnable (bool);
    virtual bool       setEnable();
@@ -240,17 +240,17 @@ class FWidget : public FVTerm
    int                numOfFocusableChildren();
    virtual bool       close();
    void               clearStatusbarMessage();
-   void               addCallback ( FString
+   void               addCallback ( const FString
                                   , FCallback
                                   , data_ptr = null );
-   void               addCallback ( FString
+   void               addCallback ( const FString
                                   , FWidget*
                                   , FMemberCallback
                                   , data_ptr = null );
    void               delCallback (FCallback);
    void               delCallback (FWidget*);
    void               delCallbacks();
-   void               emitCallback (FString);
+   void               emitCallback (const FString);
    void               addAccelerator (int);
    virtual void       addAccelerator (int, FWidget*);
    void               delAccelerator ();

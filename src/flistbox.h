@@ -48,9 +48,7 @@ class FListBoxItem
    // Constructors
    FListBoxItem ();
    FListBoxItem (const FListBoxItem&);  // copy constructor
-   explicit FListBoxItem (FString&, FWidget::data_ptr = 0);
-   explicit FListBoxItem (const std::string&, FWidget::data_ptr = 0);
-   explicit FListBoxItem (const char*, FWidget::data_ptr = 0);
+   explicit FListBoxItem (const FString&, FWidget::data_ptr = 0);
 
    // Destructor
    virtual ~FListBoxItem();
@@ -64,9 +62,7 @@ class FListBoxItem
 
  protected:
    // Mutators
-   void setText (FString&);
-   void setText (const std::string&);
-   void setText (const char*);
+   void setText (const FString&);
    void setData (FWidget::data_ptr);
 
  private:
@@ -92,15 +88,7 @@ inline FWidget::data_ptr FListBoxItem::getData() const
 { return data_pointer; }
 
 //----------------------------------------------------------------------
-inline void FListBoxItem::setText (FString& txt)
-{ text = txt; }
-
-//----------------------------------------------------------------------
-inline void FListBoxItem::setText (const std::string& txt)
-{ text = txt; }
-
-//----------------------------------------------------------------------
-inline void FListBoxItem::setText (const char* txt)
+inline void FListBoxItem::setText (const FString& txt)
 { text = txt; }
 
 //----------------------------------------------------------------------
@@ -160,7 +148,7 @@ class FListBox : public FWidget
 
    // Methods
    void         hide();
-   void         insert ( FString
+   void         insert ( const FString
                        , fc::brackets_type = fc::NoBrackets
                        , bool = false
                        , data_ptr = 0);

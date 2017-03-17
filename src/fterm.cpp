@@ -162,7 +162,7 @@ int FTerm::getColumnNumber()
 }
 
 //----------------------------------------------------------------------
-FString FTerm::getKeyName (int keynum)
+const FString FTerm::getKeyName (int keynum)
 {
   for (int i=0; FkeyName[i].string[0] != 0; i++)
     if ( FkeyName[i].num && FkeyName[i].num == keynum )
@@ -808,7 +808,7 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 }
 
 //----------------------------------------------------------------------
-FString* FTerm::getXTermFont()
+const FString* FTerm::getXTermFont()
 {
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
@@ -846,7 +846,7 @@ FString* FTerm::getXTermFont()
 }
 
 //----------------------------------------------------------------------
-FString* FTerm::getXTermTitle()
+const FString* FTerm::getXTermTitle()
 {
   if ( kde_konsole )
     return 0;
@@ -1436,7 +1436,7 @@ const FString FTerm::getSecDA()
 }
 
 //----------------------------------------------------------------------
-void FTerm::putstringf (const char* format, ...)
+void FTerm::putstringf (const char* const format, ...)
 {
   assert ( format != 0 );
   char  buf[512];
@@ -1452,7 +1452,7 @@ void FTerm::putstringf (const char* format, ...)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::putstring (const char* s, int affcnt)
+inline void FTerm::putstring (const char* const s, int affcnt)
 {
   tputs (s, affcnt, std::putchar);
 }
@@ -1881,7 +1881,7 @@ int FTerm::closeConsole()
 void FTerm::identifyTermType()
 {
   // Import the untrusted environment variable TERM
-  const char* term_env = std::getenv(const_cast<char*>("TERM"));
+  const char* const& term_env = std::getenv(const_cast<char*>("TERM"));
 
   if ( term_env )
   {

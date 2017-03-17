@@ -17,28 +17,11 @@ FDialogListMenu::FDialogListMenu(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu (FString& txt, FWidget* parent)
+FDialogListMenu::FDialogListMenu (const FString& txt, FWidget* parent)
   : FMenu(txt, parent)
 {
   init();
 }
-
-
-//----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu (const std::string& txt, FWidget* parent)
-  : FMenu(txt, parent)
-{
-  init();
-}
-
-
-//----------------------------------------------------------------------
-FDialogListMenu::FDialogListMenu (const char* txt, FWidget* parent)
-  : FMenu(txt, parent)
-{
-  init();
-}
-
 
 //----------------------------------------------------------------------
 FDialogListMenu::~FDialogListMenu()

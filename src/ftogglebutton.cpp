@@ -146,8 +146,8 @@ bool FToggleButton::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        FString msg = getStatusbarMessage();
-        FString curMsg = getStatusBar()->getMessage();
+        const FString msg = getStatusbarMessage();
+        const FString curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -184,7 +184,7 @@ bool FToggleButton::setChecked (bool on)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::setText (FString txt)
+void FToggleButton::setText (const FString txt)
 {
   text = txt;
   setWidth(button_width + int(text.getLength()));
@@ -456,8 +456,8 @@ void FToggleButton::draw()
 
   if ( isFocus && getStatusBar() )
   {
-    FString msg = getStatusbarMessage();
-    FString curMsg = getStatusBar()->getMessage();
+    const FString msg = getStatusbarMessage();
+    const FString curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

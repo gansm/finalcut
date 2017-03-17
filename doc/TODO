@@ -20,6 +20,11 @@ Missing Features
      └──► tmp
 ---------------------------------------
 
+- The FSlider() widget
+   . . . . . . . . .
+   ────▲────────────
+   0   2   4   6   8
+
 - Adding for flexible layouts a FGrid widget container that organizes 
   its child widgets in rows and columns
 

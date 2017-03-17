@@ -22,31 +22,7 @@ FStatusKey::FStatusKey(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey (int k, FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , key(k)
-  , text(txt)
-  , active(false)
-  , mouse_focus(false)
-  , bar(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FStatusKey::FStatusKey (int k, const std::string& txt, FWidget* parent)
-  : FWidget(parent)
-  , key(k)
-  , text(txt)
-  , active(false)
-  , mouse_focus(false)
-  , bar(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FStatusKey::FStatusKey (int k, const char* txt, FWidget* parent)
+FStatusKey::FStatusKey (int k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , key(k)
   , text(txt)
@@ -167,23 +143,9 @@ FStatusBar::~FStatusBar()
 
 // public methods of FStatusBar
 //----------------------------------------------------------------------
-void FStatusBar::setMessage (FString& mgs)
+void FStatusBar::setMessage (const FString& mgs)
 {
   text = mgs;
-}
-
-//----------------------------------------------------------------------
-void FStatusBar::setMessage (const std::string& mgs)
-{
-  FString s = FString(mgs);
-  setMessage (s);
-}
-
-//----------------------------------------------------------------------
-void FStatusBar::setMessage (const char* mgs)
-{
-  FString s = FString(mgs);
-  setMessage (s);
 }
 
 //----------------------------------------------------------------------

@@ -30,23 +30,7 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (FString& txt, FWidget::data_ptr data)
-  : text(txt)
-  , data_pointer(data)
-  , brackets(fc::NoBrackets)
-  , selected(false)
-{ }
-
-//----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const std::string& txt, FWidget::data_ptr data)
-  : text(txt)
-  , data_pointer(data)
-  , brackets(fc::NoBrackets)
-  , selected(false)
-{ }
-
-//----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const char* txt, FWidget::data_ptr data)
+FListBoxItem::FListBoxItem (const FString& txt, FWidget::data_ptr data)
   : text(txt)
   , data_pointer(data)
   , brackets(fc::NoBrackets)
@@ -211,8 +195,8 @@ bool FListBox::setFocus (bool on)
 
     if ( getStatusBar() )
     {
-      FString msg = getStatusbarMessage();
-      FString curMsg = getStatusBar()->getMessage();
+      const FString msg = getStatusbarMessage();
+      const FString curMsg = getStatusBar()->getMessage();
 
       if ( curMsg != msg )
         getStatusBar()->setMessage(msg);
@@ -230,7 +214,7 @@ bool FListBox::setFocus (bool on)
 }
 
 //----------------------------------------------------------------------
-void FListBox::setText (FString txt)
+void FListBox::setText (const FString txt)
 {
   text = txt;
 }
@@ -277,7 +261,7 @@ void FListBox::hide()
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert ( FString item
+void FListBox::insert ( const FString item
                       , fc::brackets_type b
                       , bool s
                       , data_ptr d )
@@ -1687,7 +1671,6 @@ void FListBox::drawList()
 
     if ( lineHasBrackets )
     {
-      const wchar_t* element_str;
       int full_length;
       uInt len;
       uInt i = 0;
@@ -1728,7 +1711,7 @@ void FListBox::drawList()
                                        .mid ( uInt(xoffset)
                                             ,  uInt(getWidth()-nf_offset-4) );
 
-      element_str = element.wc_str();
+      const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
 
       for (; i < len; i++)
@@ -1788,12 +1771,11 @@ void FListBox::drawList()
     }
     else  // line has no brackets
     {
-      const wchar_t* element_str;
       uInt i, len;
       element = data[y+uInt(yoffset)].getText()
                                      .mid ( uInt(1+xoffset)
                                           , uInt(getWidth()-nf_offset-4) );
-      element_str = element.wc_str();
+      const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
 
       if ( serach_mark )

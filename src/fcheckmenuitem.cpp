@@ -17,21 +17,7 @@ FCheckMenuItem::FCheckMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FCheckMenuItem::FCheckMenuItem (FString& txt, FWidget* parent)
-  : FMenuItem(txt, parent)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FCheckMenuItem::FCheckMenuItem (const std::string& txt, FWidget* parent)
-  : FMenuItem(txt, parent)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FCheckMenuItem::FCheckMenuItem (const char* txt, FWidget* parent)
+FCheckMenuItem::FCheckMenuItem (const FString& txt, FWidget* parent)
   : FMenuItem(txt, parent)
 {
   init (parent);

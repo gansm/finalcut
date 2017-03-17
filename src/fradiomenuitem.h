@@ -48,9 +48,7 @@ class FRadioMenuItem : public FMenuItem
  public:
    // Constructors
    explicit FRadioMenuItem (FWidget* = 0);
-   FRadioMenuItem (FString&, FWidget* = 0);
-   FRadioMenuItem (const std::string&, FWidget* = 0);
-   FRadioMenuItem (const char*, FWidget* = 0);
+   FRadioMenuItem (const FString&, FWidget* = 0);
 
    // Destructor
    virtual ~FRadioMenuItem();

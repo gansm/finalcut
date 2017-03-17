@@ -18,6 +18,7 @@ noinst_PROGRAMS = \
 	term-attributes \
 	transparent \
 	keyboard \
+	mouse \
 	timer \
 	scrollview \
 	windows \
@@ -36,6 +37,7 @@ watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp
 transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp
+mouse_SOURCES = mouse.cpp
 timer_SOURCES = timer.cpp
 scrollview_SOURCES = scrollview.cpp
 windows_SOURCES = windows.cpp

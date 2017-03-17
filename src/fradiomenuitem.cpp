@@ -17,21 +17,7 @@ FRadioMenuItem::FRadioMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (FString& txt, FWidget* parent)
-  : FMenuItem(txt, parent)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (const std::string& txt, FWidget* parent)
-  : FMenuItem(txt, parent)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FRadioMenuItem::FRadioMenuItem (const char* txt, FWidget* parent)
+FRadioMenuItem::FRadioMenuItem (const FString& txt, FWidget* parent)
   : FMenuItem(txt, parent)
 {
   init (parent);

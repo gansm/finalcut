@@ -53,9 +53,7 @@ class FMenu : public FWindow, public FMenuList
  public:
    // Constructor
    explicit FMenu (FWidget* = 0);
-   FMenu (FString&, FWidget* = 0);
-   FMenu (const std::string&, FWidget* = 0);
-   FMenu (const char*, FWidget* = 0);
+   FMenu (const FString&, FWidget* = 0);
 
    // Destructor
    virtual ~FMenu();
@@ -75,11 +73,9 @@ class FMenu : public FWindow, public FMenuList
    bool                setMenuWidget (bool);
    bool                setMenuWidget();
    bool                unsetMenuWidget();
-   void                setStatusbarMessage (FString);
+   void                setStatusbarMessage (const FString);
    void                setMenu (FMenu*);
-   void                setText (FString&);
-   void                setText (const std::string&);
-   void                setText (const char*);
+   void                setText (const FString&);
 
    // Inquiries
    bool                isEnabled() const;
@@ -212,15 +208,7 @@ inline void FMenu::setMenu (FMenu* m)
 { item->setMenu(m); }
 
 //----------------------------------------------------------------------
-inline void FMenu::setText (FString& txt)
-{ item->setText(txt); }
-
-//----------------------------------------------------------------------
-inline void FMenu::setText (const std::string& txt)
-{ item->setText(txt); }
-
-//----------------------------------------------------------------------
-inline void FMenu::setText (const char* txt)
+inline void FMenu::setText (const FString& txt)
 { item->setText(txt); }
 
 //----------------------------------------------------------------------

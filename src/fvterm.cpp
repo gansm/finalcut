@@ -404,7 +404,7 @@ int FVTerm::print (FString& s)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (term_area* area, FString& s)
+int FVTerm::print (term_area* area, const FString& s)
 {
   assert ( ! s.isNull() );
   register int len = 0;
@@ -2654,12 +2654,12 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (std::string& s)
 {
-  const char* c_string = s.c_str();
+  const char* const& c_string = s.c_str();
   tputs (c_string, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const char* s)
+inline void FVTerm::appendOutputBuffer (const char* const& s)
 {
   tputs (s, 1, appendOutputBuffer);
 }

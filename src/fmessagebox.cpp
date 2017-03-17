@@ -5,7 +5,7 @@
 #include "fmessagebox.h"
 
 
-static const char* button_text[] =
+static const char* const button_text[] =
 {
   0,
   "&OK",
@@ -154,20 +154,6 @@ void FMessageBox::setHeadline (const FString& headline)
 }
 
 //----------------------------------------------------------------------
-void FMessageBox::setHeadline (const std::string& headline)
-{
-  FString headline_txt(headline);
-  setHeadline( headline_txt );
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setHeadline (const char* headline)
-{
-  FString headline_txt(headline);
-  setHeadline( headline_txt );
-}
-
-//----------------------------------------------------------------------
 void FMessageBox::setText (const FString& txt)
 {
   text = txt;
@@ -181,20 +167,6 @@ void FMessageBox::setText (const FString& txt)
     button[2]->setY(getHeight()-4, false);
 
   adjustButtons();
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setText (const std::string& txt)
-{
-  FString message_text(txt);
-  setText( message_text );
-}
-
-//----------------------------------------------------------------------
-void FMessageBox::setText (const char* txt)
-{
-  FString message_text(txt);
-  setText( message_text );
 }
 
 //----------------------------------------------------------------------

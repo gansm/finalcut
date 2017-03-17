@@ -301,7 +301,7 @@ void FWidget::setOpenMenu (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarMessage (FString msg)
+void FWidget::setStatusbarMessage (const FString msg)
 {
   statusbar_message = msg;
 }
@@ -874,7 +874,7 @@ bool FWidget::close()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( FString cb_signal
+void FWidget::addCallback ( const FString cb_signal
                           , FCallback cb_handler
                           , data_ptr data )
 {
@@ -884,7 +884,7 @@ void FWidget::addCallback ( FString cb_signal
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( FString cb_signal
+void FWidget::addCallback ( const FString cb_signal
                           , FWidget* cb_instance
                           , FMemberCallback cb_handler
                           , data_ptr data )
@@ -946,7 +946,7 @@ inline void FWidget::delCallbacks()
 }
 
 //----------------------------------------------------------------------
-void FWidget::emitCallback (FString emit_signal)
+void FWidget::emitCallback (const FString emit_signal)
 {
   // member function pointer
   if ( ! member_callback_objects.empty() )

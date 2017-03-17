@@ -59,8 +59,6 @@ class FToolTip : public FWindow
 
    // Mutators
    void          setText (const FString&);
-   void          setText (const std::string&);
-   void          setText (const char*);
 
    // Methods
    virtual void  draw();

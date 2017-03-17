@@ -18,7 +18,7 @@ FRadioButton::FRadioButton(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FRadioButton::FRadioButton ( const FString& txt, FWidget* parent )
+FRadioButton::FRadioButton (const FString& txt, FWidget* parent)
   : FToggleButton(txt, parent)
 {
   init();

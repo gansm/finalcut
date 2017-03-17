@@ -55,9 +55,7 @@ class FDialogListMenu : public FMenu
  public:
    // Constructors
    explicit FDialogListMenu (FWidget* = 0);
-   FDialogListMenu (FString&, FWidget* = 0);
-   FDialogListMenu (const std::string&, FWidget* = 0);
-   FDialogListMenu (const char*, FWidget* = 0);
+   FDialogListMenu (const FString&, FWidget* = 0);
 
    // Destructor
    virtual ~FDialogListMenu();

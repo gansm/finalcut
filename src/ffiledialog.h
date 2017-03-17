@@ -106,12 +106,12 @@ class FFileDialog : public FDialog
 
    // Methods
    int           readDir();
-   static FString fileOpenChooser ( FWidget*
-                                  , const FString& = FString()
-                                  , const FString& = FString() );
-   static FString fileSaveChooser ( FWidget*
-                                  , const FString& = FString()
-                                  , const FString& = FString() );
+   static const FString fileOpenChooser ( FWidget*
+                                        , const FString& = FString()
+                                        , const FString& = FString() );
+   static const FString fileSaveChooser ( FWidget*
+                                        , const FString& = FString()
+                                        , const FString& = FString() );
 
  protected:
    // Method
@@ -130,7 +130,7 @@ class FFileDialog : public FDialog
    // Method
    void          init();
    static char*  getHomeDir();
-   inline bool   pattern_match (const char*, const char*);
+   inline bool   pattern_match (const char* const, char*&);
    void          clear();
    int           numOfDirs();
    int           changeDir (const FString&);

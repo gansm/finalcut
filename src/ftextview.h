@@ -58,38 +58,38 @@ class FTextView : public FWidget
   ~FTextView();
 
    // Accessors
-   const char* getClassName() const;
-   uInt        getColumns() const;
-   uInt        getRows() const;
-   FString     getText() const;
-   stringLines getLines() const;
+   const char*   getClassName() const;
+   uInt          getColumns() const;
+   uInt          getRows() const;
+   const FString getText() const;
+   stringLines   getLines() const;
 
    // Mutators
-   void        setGeometry (int, int, int, int, bool = true);
-   void        setPosition (int);
-   void        setText (const FString&);
+   void          setGeometry (int, int, int, int, bool = true);
+   void          setPosition (int);
+   void          setText (const FString&);
 
    // Methods
-   void        hide();
-   void        append (const FString&);
-   void        insert (const FString&, int);
-   void        replaceRange (const FString&, int, int);
-   void        deleteRange (int, int);
-   void        deleteLine (int);
-   void        clear();
+   void          hide();
+   void          append (const FString&);
+   void          insert (const FString&, int);
+   void          replaceRange (const FString&, int, int);
+   void          deleteRange (int, int);
+   void          deleteLine (int);
+   void          clear();
 
    // Event handlers
-   void        onKeyPress (FKeyEvent*);
-   void        onMouseDown (FMouseEvent*);
-   void        onMouseUp (FMouseEvent*);
-   void        onMouseMove (FMouseEvent*);
-   void        onWheel (FWheelEvent*);
-   void        onFocusIn (FFocusEvent*);
-   void        onFocusOut (FFocusEvent*);
+   void          onKeyPress (FKeyEvent*);
+   void          onMouseDown (FMouseEvent*);
+   void          onMouseUp (FMouseEvent*);
+   void          onMouseMove (FMouseEvent*);
+   void          onWheel (FWheelEvent*);
+   void          onFocusIn (FFocusEvent*);
+   void          onFocusOut (FFocusEvent*);
 
  protected:
    // Method
-   void adjustSize();
+   void          adjustSize();
 
  private:
    // Disable copy constructor
@@ -99,14 +99,14 @@ class FTextView : public FWidget
    FTextView& operator = (const FTextView&);
 
    // Methods
-   void        init();
-   void        draw();
-   void        drawText();
-   void        processChanged();
+   void          init();
+   void          draw();
+   void          drawText();
+   void          processChanged();
 
    // Callback methods
-   void        cb_VBarChange (FWidget*, data_ptr);
-   void        cb_HBarChange (FWidget*, data_ptr);
+   void          cb_VBarChange (FWidget*, data_ptr);
+   void          cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
    stringLines data;

@@ -89,14 +89,10 @@ class FMessageBox : public FDialog
    // Mutator
    void          setTitlebarText (const FString&);
    void          setHeadline (const FString&);
-   void          setHeadline (const std::string&);
-   void          setHeadline (const char*);
    bool          setCenterText(bool);
    bool          setCenterText();
    bool          unsetCenterText();
    void          setText (const FString&);
-   void          setText (const std::string&);
-   void          setText (const char*);
 
    // Methods
    static int    info ( FWidget*

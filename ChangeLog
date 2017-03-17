@@ -1,3 +1,6 @@
+2017-03-17  Markus Gans  <guru.mail@muenster.de>
+	* More constant character pointers
+
 2017-03-13  Markus Gans  <guru.mail@muenster.de>
 	* Corrects directly the input cursor position on window moving
 

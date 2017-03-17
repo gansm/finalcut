@@ -25,35 +25,7 @@ FMenu::FMenu(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenu::FMenu (FString& txt, FWidget* parent)
-  : FWindow(parent)
-  , item(0)
-  , super_menu(0)
-  , open_sub_menu(0)
-  , max_item_width(0)
-  , mouse_down(false)
-  , has_checkable_items(false)
-{
-  item = new FMenuItem(txt, parent);
-  init(parent);
-}
-
-//----------------------------------------------------------------------
-FMenu::FMenu (const std::string& txt, FWidget* parent)
-  : FWindow(parent)
-  , item(0)
-  , super_menu(0)
-  , open_sub_menu(0)
-  , max_item_width(0)
-  , mouse_down(false)
-  , has_checkable_items(false)
-{
-  item = new FMenuItem(txt, parent);
-  init(parent);
-}
-
-//----------------------------------------------------------------------
-FMenu::FMenu (const char* txt, FWidget* parent)
+FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(0)
   , super_menu(0)
@@ -92,7 +64,7 @@ bool FMenu::setMenuWidget (bool on)
 }
 
 //----------------------------------------------------------------------
-void FMenu::setStatusbarMessage(FString msg)
+void FMenu::setStatusbarMessage (const FString msg)
 {
   FWidget::setStatusbarMessage(msg);
 
@@ -650,8 +622,8 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       // Mouse is over border or separator
       if ( getStatusBar() )
       {
-        FString msg = getStatusbarMessage();
-        FString curMsg = getStatusBar()->getMessage();
+        const FString msg = getStatusbarMessage();
+        const FString curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
         {

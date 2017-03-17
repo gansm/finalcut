@@ -151,7 +151,7 @@ const FString FFileDialog::getSelectedFile() const
 //----------------------------------------------------------------------
 void FFileDialog::setPath (const FString& dir)
 {
-  const char* dirname = dir.c_str();
+  const char* const dirname = dir.c_str();
   char resolved_path[MAXPATHLEN];
   FString r_dir;
   struct stat sb;
@@ -237,8 +237,8 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 int FFileDialog::readDir()
 {
   int start, dir_num;
-  const char* dir = directory.c_str();
-  const char* filter = filter_pattern.c_str();
+  const char* const dir = directory.c_str();
+  const char* const filter = filter_pattern.c_str();
   errno = 0;
   directory_stream = opendir(dir);
 
@@ -355,9 +355,9 @@ int FFileDialog::readDir()
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileOpenChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter )
+const FString FFileDialog::fileOpenChooser ( FWidget* parent
+                                           , const FString& dirname
+                                           , const FString& filter )
 {
   FFileDialog* fileopen;
   FString ret;
@@ -390,9 +390,9 @@ FString FFileDialog::fileOpenChooser ( FWidget* parent
 }
 
 //----------------------------------------------------------------------
-FString FFileDialog::fileSaveChooser ( FWidget* parent
-                                     , const FString& dirname
-                                     , const FString& filter )
+const FString FFileDialog::fileSaveChooser ( FWidget* parent
+                                           , const FString& dirname
+                                           , const FString& filter )
 {
   FFileDialog* fileopen;
   FString ret;
@@ -572,8 +572,8 @@ char* FFileDialog::getHomeDir()
 }
 
 //----------------------------------------------------------------------
-inline bool FFileDialog::pattern_match ( const char* pattern
-                                       , const char* fname )
+inline bool FFileDialog::pattern_match ( const char* const pattern
+                                       , char*& fname )
 {
   char search[128] = {};
 
@@ -669,7 +669,7 @@ int FFileDialog::changeDir (const FString& dirname)
         {
           int i = 1;
           std::vector<dir_entry>::const_iterator iter, end;
-          const char* baseName = basename(const_cast<char*>(lastdir.c_str()));
+          const char* const baseName = basename(const_cast<char*>(lastdir.c_str()));
           iter = dir_entries.begin();
           end = dir_entries.end();
 

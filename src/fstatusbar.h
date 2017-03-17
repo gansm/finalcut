@@ -54,9 +54,7 @@ class FStatusKey : public FWidget
  public:
    // Constructors
    explicit FStatusKey (FWidget* = 0);
-   FStatusKey (int, FString&, FWidget* = 0);
-   FStatusKey (int, const std::string&, FWidget* = 0);
-   FStatusKey (int, const char*, FWidget* = 0);
+   FStatusKey (int, const FString&, FWidget* = 0);
 
    // Destructor
    virtual ~FStatusKey();
@@ -83,9 +81,7 @@ class FStatusKey : public FWidget
  protected:
    // Mutators
    void                setKey (int);
-   void                setText (FString&);
-   void                setText (const std::string&);
-   void                setText (const char*);
+   void                setText (const FString&);
 
  private:
    // Disable copy constructor
@@ -151,15 +147,7 @@ inline void FStatusKey::setKey (int k)
 { key = k; }
 
 //----------------------------------------------------------------------
-inline void FStatusKey::setText (FString& txt)
-{ text = txt; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setText (const std::string& txt)
-{ text = txt; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setText (const char* txt)
+inline void FStatusKey::setText (const FString& txt)
 { text = txt; }
 
 //----------------------------------------------------------------------
@@ -196,9 +184,7 @@ class FStatusBar : public FWindow
    // Mutators
    void                activateKey (int);
    void                deactivateKey (int);
-   void                setMessage (FString&);
-   void                setMessage (const std::string&);
-   void                setMessage (const char*);
+   void                setMessage (const FString&);
 
    // Inquiries
    bool                isActivated (int) const;

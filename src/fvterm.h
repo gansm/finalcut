@@ -264,7 +264,7 @@ class FVTerm : public FObject, public FTerm
    int                 print (const std::string&);
    int                 print (term_area*, const std::string&);
    int                 print (FString&);
-   int                 print (term_area*, FString&);
+   int                 print (term_area*, const FString&);
    int                 print (int);
    int                 print (term_area*, int);
    FVTerm&             print();
@@ -392,7 +392,7 @@ class FVTerm : public FObject, public FTerm
    static void             appendAttributes (char_data*&);
    static int              appendLowerRight (char_data*&);
    static void             appendOutputBuffer (std::string&);
-   static void             appendOutputBuffer (const char*);
+   static void             appendOutputBuffer (const char* const&);
    static int              appendOutputBuffer (int);
 
    // Data Members

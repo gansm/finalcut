@@ -108,8 +108,8 @@ bool FLineEdit::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        FString msg = getStatusbarMessage();
-        FString curMsg = getStatusBar()->getMessage();
+        const FString msg = getStatusbarMessage();
+        const FString curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -153,7 +153,7 @@ bool FLineEdit::setShadow (bool on)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setText (FString txt)
+void FLineEdit::setText (const FString txt)
 {
   text_offset = 0;
   cursor_pos = 0;
@@ -165,7 +165,7 @@ void FLineEdit::setText (FString txt)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setLabelText (FString ltxt)
+void FLineEdit::setLabelText (const FString ltxt)
 {
   label_text = ltxt;
   label->setText(label_text);
@@ -173,7 +173,7 @@ void FLineEdit::setLabelText (FString ltxt)
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::setLabelOrientation(label_o o)
+void FLineEdit::setLabelOrientation(const label_o o)
 {
   label_orientation = o;
   adjustLabel();
@@ -734,8 +734,8 @@ void FLineEdit::draw()
 
   if ( isFocus && getStatusBar() )
   {
-    FString msg = getStatusbarMessage();
-    FString curMsg = getStatusBar()->getMessage();
+    const FString msg = getStatusbarMessage();
+    const FString curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

@@ -35,7 +35,7 @@ FTextView::~FTextView()  // destructor
 
 // public methods of FTextView
 //----------------------------------------------------------------------
-FString FTextView::getText() const
+const FString FTextView::getText() const
 {
   uInt len, rows, idx;
 
@@ -670,8 +670,8 @@ void FTextView::draw()
 
   if ( hasFocus() && getStatusBar() )
   {
-    FString msg = getStatusbarMessage();
-    FString curMsg = getStatusBar()->getMessage();
+    const FString msg = getStatusbarMessage();
+    const FString curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

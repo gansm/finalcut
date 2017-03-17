@@ -326,7 +326,7 @@ class FString
    static const uInt  FWDBUFFER = 15;
    static const uInt  INPBUFFER = 200;
    static const uInt  CHAR_SIZE = sizeof(wchar_t); // bytes per character
-   static const char* bad_alloc_str;
+   static const char* const bad_alloc_str;
 
    // Methods
    void     initLength (uInt);

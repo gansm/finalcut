@@ -63,20 +63,6 @@ void FToolTip::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-void FToolTip::setText (const std::string& txt)
-{
-  FString message_text(txt);
-  setText (message_text);
-}
-
-//----------------------------------------------------------------------
-void FToolTip::setText (const char* txt)
-{
-  FString message_text(txt);
-  setText (message_text);
-}
-
-//----------------------------------------------------------------------
 void FToolTip::draw()
 {
   setColor();

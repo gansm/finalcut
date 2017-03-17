@@ -35,7 +35,7 @@ FMenuItem::FMenuItem (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (FString& txt, FWidget* parent)
+FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
   , selected(false)
@@ -55,87 +55,7 @@ FMenuItem::FMenuItem (FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (const std::string& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FMenuItem::FMenuItem (const char* txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FMenuItem::FMenuItem (int k, FString& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(k)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FMenuItem::FMenuItem (int k, const std::string& txt, FWidget* parent)
-  : FWidget(parent)
-  , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(k)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
-{
-  init (parent);
-}
-
-//----------------------------------------------------------------------
-FMenuItem::FMenuItem (int k, const char* txt, FWidget* parent)
+FMenuItem::FMenuItem (int k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
   , selected(false)
@@ -238,8 +158,8 @@ bool FMenuItem::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        FString msg = getStatusbarMessage();
-        FString curMsg = getStatusBar()->getMessage();
+        const FString msg = getStatusbarMessage();
+        const FString curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -276,7 +196,7 @@ void FMenuItem::unsetSelected()
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::setText (FString& txt)
+void FMenuItem::setText (const FString& txt)
 {
   text = txt;
   text_length = text.getLength();
@@ -288,19 +208,6 @@ void FMenuItem::setText (FString& txt)
   setWidth(int(text_length));
 }
 
-//----------------------------------------------------------------------
-void FMenuItem::setText (const std::string& txt)
-{
-  FString s = FString(txt);
-  setText (s);
-}
-
-//----------------------------------------------------------------------
-void FMenuItem::setText (const char* txt)
-{
-  FString s = FString(txt);
-  setText (s);
-}
 //----------------------------------------------------------------------
 
 void FMenuItem::addAccelerator (int key, FWidget* obj)
@@ -847,7 +754,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       {
         int n = int(std::distance(begin, iter));
         // get the dialog title
-        FString name = win->getText();
+        const FString name = win->getText();
         // create a new dialog list item
         FMenuItem* win_item = new FMenuItem (name, winmenu);
 
