@@ -38,5 +38,6 @@ test/input-dialog
 test/choice
 test/mandelbrot
 test/keyboard
+test/mouse
 test/timer
 test/ui

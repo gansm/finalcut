@@ -263,7 +263,7 @@ class FVTerm : public FObject, public FTerm
    int                 print (term_area*, const char*);
    int                 print (const std::string&);
    int                 print (term_area*, const std::string&);
-   int                 print (FString&);
+   int                 print (const FString&);
    int                 print (term_area*, const FString&);
    int                 print (int);
    int                 print (term_area*, int);

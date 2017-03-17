@@ -387,7 +387,7 @@ int FVTerm::print (term_area* area, const std::string& s)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (FString& s)
+int FVTerm::print (const FString& s)
 {
   assert ( ! s.isNull() );
   term_area* area = getPrintArea();
