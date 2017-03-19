@@ -49,14 +49,6 @@ typedef long double    lDouble;
 class FObject
 {
  public:
-   struct timer_data
-   {
-     int       id;
-     timeval   interval;
-     timeval   timeout;
-     FObject*  object;
-   };
-
    // Typedef
    typedef std::list<FObject*> FObjectList;
 
@@ -93,6 +85,14 @@ class FObject
    bool                delAllTimer();
 
  protected:
+   struct timer_data
+   {
+     int       id;
+     timeval   interval;
+     timeval   timeout;
+     FObject*  object;
+   };
+
    // Typedef
    typedef std::vector<timer_data> TimerList;
 

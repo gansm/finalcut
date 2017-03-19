@@ -455,6 +455,7 @@ void FLabel::draw()
   if ( isMonochron() )
   {
     setReverse(true);
+
     if ( hasEmphasis() )
       setBold(true);
   }

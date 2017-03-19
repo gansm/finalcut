@@ -763,6 +763,20 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   if ( ! area )
     return;
 
+  if ( width == area->width
+      && height == area->height
+      && rsw == area->right_shadow
+      && bsh == area->bottom_shadow )
+  {
+    if ( offset_left != area->offset_left )
+      area->offset_left = offset_left;
+
+    if ( offset_top != area->offset_top )
+      area->offset_top = offset_top;
+
+    return;
+  }
+
   area_size = (width+rsw) * (height+bsh);
 
   if ( area->height + area->bottom_shadow != height + bsh )
