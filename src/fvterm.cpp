@@ -33,8 +33,9 @@ FVTerm::char_data    FVTerm::next_attribute;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FVTerm::FVTerm (FVTerm* parent)
+FVTerm::FVTerm (FVTerm* parent, bool disable_alt_screen)
   : FObject(parent)
+  , FTerm(disable_alt_screen)
   , print_area(0)
   , child_print_area(0)
   , vwin(0)
@@ -304,14 +305,14 @@ int FVTerm::printf (const char* format, ...)
 
   buffer = buf;
   va_start (args, format);
-  len = std::vsnprintf (buffer, sizeof(buf), format, args);
+  len = vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
   if ( len >= int(sizeof(buf)) )
   {
     buffer = new char[len+1]();
     va_start (args, format);
-    std::vsnprintf (buffer, uLong(len+1), format, args);
+    vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
   }
 
@@ -409,7 +410,7 @@ int FVTerm::print (term_area* area, const FString& s)
   assert ( ! s.isNull() );
   register int len = 0;
   const wchar_t* p;
-  uInt tabstop = getTabstop();
+  uInt tabstop = uInt(getTabstop());
 
   if ( ! area )
     return -1;
@@ -2102,7 +2103,10 @@ void FVTerm::finish()
 
   // Clear the terminal
   setNormal();
-  clearTerm();
+
+  if ( use_alternate_screen )
+    clearTerm();
+
   flush_out();
 
   if ( output_buffer )

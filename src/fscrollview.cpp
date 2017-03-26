@@ -383,7 +383,6 @@ void FScrollView::draw()
 void FScrollView::onKeyPress (FKeyEvent* ev)
 {
   int    key = ev->key();
-  bool   hasChanges = false;
   short& xoffset = viewport_geometry.x1_ref();
   short& yoffset = viewport_geometry.y1_ref();
   short  xoffset_before = xoffset;
@@ -457,6 +456,8 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
+    bool hasChanges = false;
+
     if ( isVisible() && viewport
         && (xoffset_before != xoffset || yoffset_before != yoffset) )
     {
@@ -690,8 +691,6 @@ void FScrollView::copy2area()
   // copy viewport to area
 
   int ax, ay, dx, dy, y_end, x_end;
-  char_data* vc; // viewport character
-  char_data* ac; // area character
 
   if ( ! hasPrintArea() )
     FVTerm::getPrintArea();
@@ -711,6 +710,8 @@ void FScrollView::copy2area()
 
   for (int y=0; y < y_end; y++)  // line loop
   {
+    char_data* vc; // viewport character
+    char_data* ac; // area character
     int v_line_len = viewport->width;
     int a_line_len = print_area->width + print_area->right_shadow;
     vc = &viewport->text[(dy+y) * v_line_len + dx];
@@ -734,15 +735,16 @@ void FScrollView::copy2area()
 //----------------------------------------------------------------------
 inline FPoint FScrollView::getViewportCursorPos()
 {
-  int x, y;
   FWidget* window = FWindow::getWindowWidget(this);
 
   if ( window )
   {
     int widget_offsetX = getTermX() - window->getTermX();
     int widget_offsetY = getTermY() - window->getTermY();
-    x = widget_offsetX + viewport->input_cursor_x - viewport_geometry.getX();
-    y = widget_offsetY + viewport->input_cursor_y - viewport_geometry.getY();
+    int x = widget_offsetX + viewport->input_cursor_x
+          - viewport_geometry.getX();
+    int y = widget_offsetY + viewport->input_cursor_y
+          - viewport_geometry.getY();
     return FPoint(x,y);
   }
   else

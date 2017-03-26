@@ -306,7 +306,7 @@ class FString
    FString replace (const char, const char);
 
    FString replaceControlCodes() const;
-   FString expandTabs (uInt = 8) const;
+   FString expandTabs (int = 8) const;
    FString removeDel() const;
    FString removeBackspaces() const;
 

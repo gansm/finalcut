@@ -212,7 +212,7 @@ int FMessageBox::error ( FWidget* parent
                        , int button2 )
 {
   int reply;
-  const FString caption = "Error message";
+  const FString& caption = "Error message";
   FMessageBox* mbox = new FMessageBox ( caption, message
                                       , button0, button1, button2
                                       , parent );

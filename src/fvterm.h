@@ -126,7 +126,7 @@ class FVTerm : public FObject, public FTerm
    };
 
    // Constructor
-   explicit FVTerm (FVTerm* = 0);
+   explicit FVTerm (FVTerm* = 0, bool = false);
 
    // Destructor
   ~FVTerm();

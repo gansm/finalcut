@@ -27,6 +27,7 @@ test/calculator
 test/dialog
 test/string-operations
 test/opti-move
+test/termcap
 test/hello
 test/watch
 test/menu

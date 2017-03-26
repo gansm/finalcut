@@ -73,7 +73,7 @@ class FToggleButton : public FWidget
    bool          setChecked (bool);
    bool          setChecked();
    bool          unsetChecked();
-   virtual void  setText (const FString);
+   virtual void  setText (const FString&);
 
    // Inquiries
    bool          isChecked();

@@ -195,8 +195,8 @@ bool FListBox::setFocus (bool on)
 
     if ( getStatusBar() )
     {
-      const FString msg = getStatusbarMessage();
-      const FString curMsg = getStatusBar()->getMessage();
+      const FString& msg = getStatusbarMessage();
+      const FString& curMsg = getStatusBar()->getMessage();
 
       if ( curMsg != msg )
         getStatusBar()->setMessage(msg);
@@ -214,7 +214,7 @@ bool FListBox::setFocus (bool on)
 }
 
 //----------------------------------------------------------------------
-void FListBox::setText (const FString txt)
+void FListBox::setText (const FString& txt)
 {
   text = txt;
 }
@@ -261,7 +261,7 @@ void FListBox::hide()
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert ( const FString item
+void FListBox::insert ( const FString& item
                       , fc::brackets_type b
                       , bool s
                       , data_ptr d )

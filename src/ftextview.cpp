@@ -670,8 +670,8 @@ void FTextView::draw()
 
   if ( hasFocus() && getStatusBar() )
   {
-    const FString msg = getStatusbarMessage();
-    const FString curMsg = getStatusBar()->getMessage();
+    const FString& msg = getStatusbarMessage();
+    const FString& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

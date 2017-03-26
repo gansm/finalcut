@@ -429,7 +429,7 @@ bool Calc::isOperatorKey(int key)
 void Calc::setDisplay (lDouble d)
 {
   char buffer[33];
-  std::snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
+  snprintf (buffer, sizeof(buffer), "%32.11Lg", d);
   input = buffer;
 }
 

@@ -73,7 +73,7 @@ class FMenu : public FWindow, public FMenuList
    bool                setMenuWidget (bool);
    bool                setMenuWidget();
    bool                unsetMenuWidget();
-   void                setStatusbarMessage (const FString);
+   void                setStatusbarMessage (const FString&);
    void                setMenu (FMenu*);
    void                setText (const FString&);
 

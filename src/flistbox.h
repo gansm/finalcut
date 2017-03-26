@@ -139,7 +139,7 @@ class FListBox : public FWidget
    bool         setFocus (bool);
    bool         setFocus();
    bool         unsetFocus();
-   void         setText (const FString);
+   void         setText (const FString&);
 
    // Inquiries
    bool         isSelected (int) const;
@@ -148,7 +148,7 @@ class FListBox : public FWidget
 
    // Methods
    void         hide();
-   void         insert ( const FString
+   void         insert ( const FString&
                        , fc::brackets_type = fc::NoBrackets
                        , bool = false
                        , data_ptr = 0);

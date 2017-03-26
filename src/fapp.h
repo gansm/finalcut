@@ -55,7 +55,7 @@ class FApplication : public FWidget
 {
  public:
    // Constructor
-   FApplication (int&, char*[]);
+   FApplication (int&, char*[], bool = false);
 
    // Destructor
    virtual ~FApplication();
@@ -129,7 +129,9 @@ class FApplication : public FWidget
    bool               KeyPressed();
    ssize_t            readKey();
    void               processKeyboardEvent();
+#if defined(__linux__)
    int                modifierKeyCorrection (int& key);
+#endif
    bool               processDialogSwitchAccelerator();
    bool               processAccelerator (FWidget*&);
    void               getX11ButtonState (int);

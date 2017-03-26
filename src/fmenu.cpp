@@ -64,7 +64,7 @@ bool FMenu::setMenuWidget (bool on)
 }
 
 //----------------------------------------------------------------------
-void FMenu::setStatusbarMessage (const FString msg)
+void FMenu::setStatusbarMessage (const FString& msg)
 {
   FWidget::setStatusbarMessage(msg);
 
@@ -622,8 +622,8 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       // Mouse is over border or separator
       if ( getStatusBar() )
       {
-        const FString msg = getStatusbarMessage();
-        const FString curMsg = getStatusBar()->getMessage();
+        const FString& msg = getStatusbarMessage();
+        const FString& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
         {

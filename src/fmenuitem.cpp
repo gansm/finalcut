@@ -158,8 +158,8 @@ bool FMenuItem::setFocus (bool on)
 
       if ( getStatusBar() )
       {
-        const FString msg = getStatusbarMessage();
-        const FString curMsg = getStatusBar()->getMessage();
+        const FString& msg = getStatusbarMessage();
+        const FString& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -754,7 +754,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       {
         int n = int(std::distance(begin, iter));
         // get the dialog title
-        const FString name = win->getText();
+        const FString& name = win->getText();
         // create a new dialog list item
         FMenuItem* win_item = new FMenuItem (name, winmenu);
 

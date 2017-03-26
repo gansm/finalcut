@@ -32,8 +32,8 @@ bool                   FWidget::hideable;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FWidget::FWidget (FWidget* parent)
-  : FVTerm(parent)
+FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
+  : FVTerm(parent, disable_alt_screen)
   , accelerator_list(0)
   , flags(0)
   , callback_objects()
@@ -301,7 +301,7 @@ void FWidget::setOpenMenu (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setStatusbarMessage (const FString msg)
+void FWidget::setStatusbarMessage (const FString& msg)
 {
   statusbar_message = msg;
 }
@@ -874,7 +874,7 @@ bool FWidget::close()
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( const FString cb_signal
+void FWidget::addCallback ( const FString& cb_signal
                           , FCallback cb_handler
                           , data_ptr data )
 {
@@ -884,7 +884,7 @@ void FWidget::addCallback ( const FString cb_signal
 }
 
 //----------------------------------------------------------------------
-void FWidget::addCallback ( const FString cb_signal
+void FWidget::addCallback ( const FString& cb_signal
                           , FWidget* cb_instance
                           , FMemberCallback cb_handler
                           , data_ptr data )
@@ -946,7 +946,7 @@ inline void FWidget::delCallbacks()
 }
 
 //----------------------------------------------------------------------
-void FWidget::emitCallback (const FString emit_signal)
+void FWidget::emitCallback (const FString& emit_signal)
 {
   // member function pointer
   if ( ! member_callback_objects.empty() )
@@ -1157,9 +1157,11 @@ void FWidget::show()
 
   if ( ! init_desktop )
   {
+#if defined(__linux__)
     // Important: Do not use setNewFont() or setVGAFont() after
     //            the console character mapping has been initialized
     init_consoleCharMap();
+#endif
 
     // set xterm underline cursor
     setXTermCursorStyle(fc::blinking_underline);

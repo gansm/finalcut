@@ -33,8 +33,10 @@ FApplication::eventQueue* FApplication::event_queue = 0;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication (int& _argc, char* _argv[])
-  : FWidget(0)
+FApplication::FApplication ( int& _argc
+                           , char* _argv[]
+                           , bool disable_alt_screen )
+  : FWidget(0, disable_alt_screen)
   , app_argc(_argc)
   , app_argv(_argv)
   , key(0)
@@ -323,10 +325,10 @@ void FApplication::init()
 void FApplication::setExitMessage (std::string message)
 {
   quit_now = true;
-  std::snprintf ( FTerm::exit_message
-                , sizeof(FTerm::exit_message)
-                , "%s"
-                , message.c_str() );
+  snprintf ( FTerm::exit_message
+           , sizeof(FTerm::exit_message)
+           , "%s"
+           , message.c_str() );
 }
 
 //----------------------------------------------------------------------
@@ -548,7 +550,10 @@ void FApplication::processKeyboardEvent()
 
         if ( key != NEED_MORE_DATA )
         {
+
+#if defined(__linux__)
           key = modifierKeyCorrection (key);
+#endif
 
           switch ( key )
           {
@@ -704,6 +709,7 @@ void FApplication::processKeyboardEvent()
   }
 }
 
+#if defined(__linux__)
 //----------------------------------------------------------------------
 int FApplication::modifierKeyCorrection (int& key_id)
 {
@@ -983,6 +989,7 @@ int FApplication::modifierKeyCorrection (int& key_id)
 
   return key_id;
 }
+#endif
 
 //----------------------------------------------------------------------
 bool FApplication::processDialogSwitchAccelerator()

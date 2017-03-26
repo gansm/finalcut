@@ -6,9 +6,11 @@
 #include "fkey_map.h"
 #include "ftcap_map.h"
 
-#include "fonts/newfont.h"
-#include "fonts/unicodemap.h"
-#include "fonts/vgafont.h"
+#if defined(__linux__)
+  #include "fonts/newfont.h"
+  #include "fonts/unicodemap.h"
+  #include "fonts/vgafont.h"
+#endif
 
 // global FTerm object
 static FTerm* init_term_object = 0;
@@ -68,8 +70,12 @@ bool     FTerm::no_shadow_character;
 bool     FTerm::no_half_block_character;
 bool     FTerm::cursor_optimisation;
 bool     FTerm::xterm_default_colors;
+bool     FTerm::use_alternate_screen = true;
 termios  FTerm::term_init;
-char     FTerm::termtype[30] = "";
+char     FTerm::termtype[30]            = "";
+char     FTerm::termtype_256color[30]   = "";
+char     FTerm::termtype_Answerback[30] = "";
+char     FTerm::termtype_SecDA[30]      = "";
 char*    FTerm::term_name    = 0;
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
@@ -97,11 +103,14 @@ bool                   FTermcap::ansi_default_color     = false;
 bool                   FTermcap::osc_support            = false;
 bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
-uInt                   FTermcap::tabstop                = 8;
-uInt                   FTermcap::attr_without_color     = 0;
-console_font_op        FTerm::screen_font;
-unimapdesc             FTerm::screen_unicode_map;
+int                    FTermcap::tabstop                = 8;
+int                    FTermcap::attr_without_color     = 0;
 fc::consoleCursorStyle FTerm::console_cursor_style;
+
+#if defined(__linux__)
+  console_font_op      FTerm::screen_font;
+  unimapdesc           FTerm::screen_unicode_map;
+#endif
 
 
 //----------------------------------------------------------------------
@@ -110,13 +119,16 @@ fc::consoleCursorStyle FTerm::console_cursor_style;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FTerm::FTerm()
+FTerm::FTerm (bool disable_alt_screen)
   : color_map()
 {
   resize_term = false;
 
   if ( ! term_initialized )
+  {
+    use_alternate_screen = ! disable_alt_screen;
     init();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -174,6 +186,7 @@ const FString FTerm::getKeyName (int keynum)
   return FString("");
 }
 
+#if defined(__linux__)
 //----------------------------------------------------------------------
 FTerm::modifier_key& FTerm::getModifierKey()
 {
@@ -199,6 +212,7 @@ FTerm::modifier_key& FTerm::getModifierKey()
 
   return mod_key;
 }
+#endif
 
 //----------------------------------------------------------------------
 fc::consoleCursorStyle FTerm::getConsoleCursor()
@@ -530,6 +544,7 @@ bool FTerm::setVGAFont()
     else
       Fputchar = &FTerm::putchar_ASCII;
   }
+#if defined(__linux__)
   else if ( linux_terminal )
   {
     if ( openConsole() == 0 )
@@ -562,6 +577,7 @@ bool FTerm::setVGAFont()
     Encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;
   }
+#endif
   else
     VGAFont = false;
 
@@ -599,6 +615,7 @@ bool FTerm::setNewFont()
     else
       Fputchar = &FTerm::putchar_ASCII;
   }
+#if defined(__linux__)
   else if ( linux_terminal )
   {
     NewFont = true;
@@ -631,6 +648,7 @@ bool FTerm::setNewFont()
     Encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
+#endif
   else
     NewFont = false;
 
@@ -670,6 +688,7 @@ bool FTerm::setOldFont()
     std::fflush(stdout);
     retval = true;
   }
+#if defined(__linux__)
   else if ( linux_terminal )
   {
     if ( openConsole() == 0 )
@@ -701,6 +720,7 @@ bool FTerm::setOldFont()
       closeConsole();
     }
   }
+#endif
 
   return retval;
 }
@@ -1425,7 +1445,7 @@ const FString FTerm::getSecDA()
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
-  tv.tv_usec = 600000;;  // 600 ms
+  tv.tv_usec = 600000;  // 600 ms
 
   // read the answer
   if ( select (stdin_no+1, &ifds, 0, 0, &tv) == 1 )
@@ -1445,7 +1465,7 @@ void FTerm::putstringf (const char* const format, ...)
 
   buffer = buf;
   va_start (args, format);
-  std::vsnprintf (buffer, sizeof(buf), format, args);
+  vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
   tputs (buffer, 1, std::putchar);
@@ -1550,6 +1570,7 @@ int FTerm::UTF8decode (const char utf8[])
 
 // protected methods of FTerm
 //----------------------------------------------------------------------
+#if defined(__linux__)
 void FTerm::init_consoleCharMap()
 {
   uInt c1, c2, c3, c4, c5;
@@ -1597,6 +1618,7 @@ void FTerm::init_consoleCharMap()
      no_half_block_character = true;
   }
 }
+#endif
 
 //----------------------------------------------------------------------
 bool FTerm::charEncodable (uInt c)
@@ -1707,6 +1729,7 @@ bool FTerm::gpmMouse (bool on)
 
 // private methods of FTerm
 //----------------------------------------------------------------------
+#if defined(__linux__)
 int FTerm::isConsole()
 {
   char arg = 0;
@@ -1844,6 +1867,7 @@ int FTerm::getFramebuffer_bpp ()
 
   return -1;
 }
+#endif
 
 //----------------------------------------------------------------------
 int FTerm::openConsole()
@@ -1902,7 +1926,7 @@ void FTerm::identifyTermType()
     std::FILE *fp;
 
     if ( (fp = std::fopen("/etc/ttytype", "r")) != 0
-        || (fp = std::fopen("/etc/ttys", "r")) != 0 )
+        || (fp = std::fopen("/etc/ttys", "r")) != 0 ) // FreeBSD: man 5 ttys
     {
       char* p;
       char* type;
@@ -1965,6 +1989,7 @@ void FTerm::restoreTTYsettings()
   setTTY (term_init);
 }
 
+#if defined(__linux__)
 //----------------------------------------------------------------------
 int FTerm::getScreenFont()
 {
@@ -2172,6 +2197,7 @@ void FTerm::init_console()
     std::abort();
   }
 }
+#endif
 
 //----------------------------------------------------------------------
 uInt FTerm::getBaudRate (const struct termios* termios_p)
@@ -2283,6 +2309,13 @@ char* FTerm::init_256colorTerminal()
     new_termtype = const_cast<char*>("gnome-256color");
   }
 
+#if DEBUG
+  if ( new_termtype )
+    std::strncpy ( termtype_256color
+                 , new_termtype
+                 , std::strlen(new_termtype) + 1 );
+#endif
+
   return new_termtype;
 }
 
@@ -2309,6 +2342,13 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
   // cygwin needs a backspace to delete the '♣' char
   if ( cygwin_terminal )
     putstring (BS " " BS);
+
+#if DEBUG
+  if ( new_termtype )
+    std::strncpy ( termtype_Answerback
+                 , new_termtype
+                 , std::strlen(new_termtype) + 1 );
+#endif
 
   return new_termtype;
 }
@@ -2373,6 +2413,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
         {
           terminal_id_version = -1;
         }
+
         switch ( terminal_id_type )
         {
           case 0: // DEC VT100
@@ -2453,6 +2494,13 @@ char* FTerm::parseSecDA (char*& current_termtype)
     }
   }
 
+#if DEBUG
+  if ( new_termtype )
+    std::strncpy ( termtype_SecDA
+                 , new_termtype
+                 , std::strlen(new_termtype) + 1 );
+#endif
+
   return new_termtype;
 }
 
@@ -2485,9 +2533,10 @@ void FTerm::oscPostfix()
 void FTerm::init_alt_charset()
 {
   // read the used vt100 pairs
+
   if ( tcap[fc::t_acs_chars].string )
   {
-    for (int n=0; tcap[fc::t_acs_chars].string[n]; tcap[fc::t_acs_chars].string += 2)
+    for (int n=0; tcap[fc::t_acs_chars].string[n]; n += 2)
     {
       // insert the vt100 key/value pairs into a map
       uChar p1 = uChar(tcap[fc::t_acs_chars].string[n]);
@@ -2595,328 +2644,446 @@ void FTerm::init_termcaps()
   static char term_buffer[2048];
   static char string_buf[2048];
   char* buffer = string_buf;
+  char* key_up_string;
+  const int success       =  1;
+  const int no_entry      =  0;
+  const int db_not_found  = -1;
+  const int not_available = -1;
+  const int uninitialized = -2;
+  int status = uninitialized;
 
   // share the terminal capabilities
   FTermcap().setTermcapMap(tcap);
 
-  // open the termcap file + load entry for termtype
-  if ( tgetent(term_buffer, termtype) == 1 )
+  if ( termtype[0] )
   {
-    char* key_up_string;
+    // open the termcap file + load entry for termtype
+    status = tgetent(term_buffer, termtype);
+  }
 
-    // screen erased with the background color
-    FTermcap::background_color_erase = tgetflag(const_cast<char*>("ut"));
+  if ( status != success )
+  {
+    // use xterm as fallback if not found
+    std::strncpy (termtype, const_cast<char*>("xterm"), 5);
+    status = tgetent(term_buffer, termtype);
 
-    // t_cursor_left wraps from column 0 to last column
-    FTermcap::automatic_left_margin = tgetflag(const_cast<char*>("bw"));
+    if ( status != success )
+    {
+      // use ansi as fallback if not found
+      std::strncpy (termtype, const_cast<char*>("ansi"), 5);
+      status = tgetent(term_buffer, termtype);
+      ansi_terminal = true;
 
-    // terminal has auto-matic margins
-    FTermcap::automatic_right_margin = tgetflag(const_cast<char*>("am"));
+      if ( status != success )
+      {
+        // use vt100 as fallback if not found
+        std::strncpy (termtype, const_cast<char*>("vt100"), 6);
+        status = tgetent(term_buffer, termtype);
+        ansi_terminal = false;
+      }
+    }
+  }
 
-    // newline ignored after 80 cols
-    FTermcap::eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
+  if ( status == no_entry )
+  {
+    std::cerr << "Unknown terminal: "  << termtype << "\n"
+              << "Check the TERM environment variable\n"
+              << "Also make sure that the terminal\n"
+              << "is defined in the termcap/terminfo database.\n";
+    std::abort();
+  }
+  else if ( status == db_not_found )
+  {
+    std::cerr << "The termcap/terminfo database could not be found.\n";
+    std::abort();
+  }
 
-    // terminal supports ANSI set default fg and bg color
-    FTermcap::ansi_default_color = tgetflag(const_cast<char*>("AX"));
+  // get termcap booleans
+  // --------------------
 
-    // terminal supports operating system commands (OSC)
-    // OSC = Esc + ']'
-    FTermcap::osc_support = tgetflag(const_cast<char*>("XT"));
+  // screen erased with the background color
+  FTermcap::background_color_erase = tgetflag(const_cast<char*>("ut"));
 
-    // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
-    FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
+  // t_cursor_left wraps from column 0 to last column
+  FTermcap::automatic_left_margin = tgetflag(const_cast<char*>("bw"));
 
-    if ( isTeraTerm() )
-      FTermcap::eat_nl_glitch = true;
+  // terminal has auto-matic margins
+  FTermcap::automatic_right_margin = tgetflag(const_cast<char*>("am"));
 
-    // maximum number of colors on screen
-    FTermcap::max_color = std::max( FTermcap::max_color
-                                  , tgetnum(const_cast<char*>("Co")) );
+  // newline ignored after 80 cols
+  FTermcap::eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
 
-    if ( FTermcap::max_color < 0 )
-      FTermcap::max_color = 1;
+  // terminal supports ANSI set default fg and bg color
+  FTermcap::ansi_default_color = tgetflag(const_cast<char*>("AX"));
 
-    if ( FTermcap::max_color < 8 )
-      monochron = true;
+  // terminal supports operating system commands (OSC)
+  // OSC = Esc + ']'
+  FTermcap::osc_support = tgetflag(const_cast<char*>("XT"));
+
+  // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
+  FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
+
+  if ( isTeraTerm() )
+    FTermcap::eat_nl_glitch = true;
+
+  // get termcap numeric
+  // -------------------
+
+  // maximum number of colors on screen
+  FTermcap::max_color = std::max( FTermcap::max_color
+                                , tgetnum(const_cast<char*>("Co")) );
+
+  if ( FTermcap::max_color < 0 )
+    FTermcap::max_color = 1;
+
+  if ( FTermcap::max_color < 8 )
+    monochron = true;
+  else
+    monochron = false;
+
+  // get initial spacing for hardware tab stop
+  FTermcap::tabstop = tgetnum(const_cast<char*>("it"));
+
+  if ( FTermcap::tabstop == not_available )
+    FTermcap::tabstop = 8;
+
+  // get video attributes that cannot be used with colors
+  FTermcap::attr_without_color = tgetnum(const_cast<char*>("NC"));
+
+  if ( FTermcap::attr_without_color == not_available )
+    FTermcap::attr_without_color = 0;
+
+  // gnome-terminal has NC=16 however, it can use the dim attribute
+  if ( gnome_terminal )
+    FTermcap::attr_without_color = 0;
+
+  // PuTTY has NC=22 however, it can show underline and reverse
+  if ( putty_terminal )
+    FTermcap::attr_without_color = 16;
+
+  // get termcap strings
+  // -------------------
+
+  // read termcap output strings
+  for (int i=0; tcap[i].tname[0] != 0; i++)
+    tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+
+  // set invisible cursor for cygwin terminal
+  if ( cygwin_terminal && ! tcap[fc::t_cursor_invisible].string )
+    tcap[fc::t_cursor_invisible].string = \
+      const_cast<char*>(CSI "?25l");
+
+  // set visible cursor for cygwin terminal
+  if ( cygwin_terminal && ! tcap[fc::t_cursor_visible].string )
+    tcap[fc::t_cursor_visible].string = \
+      const_cast<char*>(CSI "?25h");
+
+  // set ansi blink for cygwin terminal
+  if ( cygwin_terminal && ! tcap[fc::t_enter_blink_mode].string )
+    tcap[fc::t_enter_blink_mode].string = \
+      const_cast<char*>(CSI "5m");
+
+  // set enter/exit alternative charset mode for rxvt terminal
+  if ( rxvt_terminal && std::strncmp(termtype, "rxvt-16color", 12) == 0 )
+  {
+    tcap[fc::t_enter_alt_charset_mode].string = \
+      const_cast<char*>(ESC "(0");
+    tcap[fc::t_exit_alt_charset_mode].string  = \
+      const_cast<char*>(ESC "(B");
+  }
+
+  // set exit underline for gnome terminal
+  if ( gnome_terminal )
+    tcap[fc::t_exit_underline_mode].string = \
+      const_cast<char*>(CSI "24m");
+
+  // set background color erase for cygwin terminal
+  if ( cygwin_terminal )
+    FTermcap::background_color_erase = true;
+
+  // set ansi foreground and background color
+  if ( linux_terminal || cygwin_terminal )
+  {
+    if ( FTermcap::max_color > 8 )
+    {
+      tcap[fc::t_set_a_foreground].string = \
+        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+      tcap[fc::t_set_a_background].string = \
+        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+    }
     else
-      monochron = false;
-
-    FTermcap::tabstop = uInt(tgetnum(const_cast<char*>("it")));
-    FTermcap::attr_without_color = uInt(tgetnum(const_cast<char*>("NC")));
-
-    // gnome-terminal has NC=16 however, it can use the dim attribute
-    if ( gnome_terminal )
-      FTermcap::attr_without_color = 0;
-
-    // PuTTY has NC=22 however, it can show underline and reverse
-    if ( putty_terminal )
-      FTermcap::attr_without_color = 16;
-
-    // read termcap output strings
-    for (int i=0; tcap[i].tname[0] != 0; i++)
-      tcap[i].string = tgetstr(tcap[i].tname, &buffer);
-
-    // set invisible cursor for cygwin terminal
-    if ( cygwin_terminal && ! tcap[fc::t_cursor_invisible].string )
-      tcap[fc::t_cursor_invisible].string = \
-        const_cast<char*>(CSI "?25l");
-
-    // set visible cursor for cygwin terminal
-    if ( cygwin_terminal && ! tcap[fc::t_cursor_visible].string )
-      tcap[fc::t_cursor_visible].string = \
-        const_cast<char*>(CSI "?25h");
-
-    // set ansi blink for cygwin terminal
-    if ( cygwin_terminal && ! tcap[fc::t_enter_blink_mode].string )
-      tcap[fc::t_enter_blink_mode].string = \
-        const_cast<char*>(CSI "5m");
-
-    // set enter/exit alternative charset mode for rxvt terminal
-    if ( rxvt_terminal && std::strncmp(termtype, "rxvt-16color", 12) == 0 )
     {
-      tcap[fc::t_enter_alt_charset_mode].string = \
-        const_cast<char*>(ESC "(0");
-      tcap[fc::t_exit_alt_charset_mode].string  = \
-        const_cast<char*>(ESC "(B");
-    }
-
-    // set exit underline for gnome terminal
-    if ( gnome_terminal )
-      tcap[fc::t_exit_underline_mode].string = \
-        const_cast<char*>(CSI "24m");
-
-    // set background color erase for cygwin terminal
-    if ( cygwin_terminal )
-      FTermcap::background_color_erase = true;
-
-    // set ansi foreground and background color
-    if ( linux_terminal || cygwin_terminal )
-    {
-      if ( FTermcap::max_color > 8 )
-      {
-        tcap[fc::t_set_a_foreground].string = \
-          const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
-        tcap[fc::t_set_a_background].string = \
-          const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
-      }
-      else
-      {
-        tcap[fc::t_set_a_foreground].string = \
-          const_cast<char*>(CSI "3%p1%dm");
-        tcap[fc::t_set_a_background].string = \
-          const_cast<char*>(CSI "4%p1%dm");
-      }
-
-      tcap[fc::t_orig_pair].string = \
-        const_cast<char*>(CSI "39;49;25m");
-
-      // avoid dim + underline
-      tcap[fc::t_enter_dim_mode].string       = 0;
-      tcap[fc::t_exit_dim_mode].string        = 0;
-      tcap[fc::t_enter_underline_mode].string = 0;
-      tcap[fc::t_exit_underline_mode].string  = 0;
-      FTermcap::attr_without_color            = 18;
-    }
-    else if ( rxvt_terminal && ! urxvt_terminal )
-    {
-      tcap[fc::t_set_a_foreground].string = \
-        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
-      tcap[fc::t_set_a_background].string = \
-        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
-    }
-    else if ( tera_terminal )
-    {
-      tcap[fc::t_set_a_foreground].string = \
-        const_cast<char*>(CSI "38;5;%p1%dm");
-      tcap[fc::t_set_a_background].string = \
-        const_cast<char*>(CSI "48;5;%p1%dm");
-      tcap[fc::t_exit_attribute_mode].string = \
-        const_cast<char*>(CSI "0m" SI);
-      tcap[fc::t_orig_pair].string = \
-        const_cast<char*>(CSI "39;49m");
-    }
-    else if ( putty_terminal )
-    {
-      tcap[fc::t_set_a_foreground].string = \
-        const_cast<char*>(CSI "%?%p1%{8}%<"
-                          "%t3%p1%d"
-                          "%e%p1%{16}%<"
-                          "%t9%p1%{8}%-%d"
-                          "%e38;5;%p1%d%;m");
-      tcap[fc::t_set_a_background].string = \
-        const_cast<char*>(CSI "%?%p1%{8}%<"
-                          "%t4%p1%d"
-                          "%e%p1%{16}%<"
-                          "%t10%p1%{8}%-%d"
-                          "%e48;5;%p1%d%;m");
-    }
-
-    // fallback if "AF" is not found
-    if ( ! tcap[fc::t_set_a_foreground].string )
       tcap[fc::t_set_a_foreground].string = \
         const_cast<char*>(CSI "3%p1%dm");
-
-    // fallback if "AB" is not found
-    if ( ! tcap[fc::t_set_a_background].string )
       tcap[fc::t_set_a_background].string = \
         const_cast<char*>(CSI "4%p1%dm");
+    }
 
-    // fallback if "Ic" is not found
-    if ( ! tcap[fc::t_initialize_color].string )
+    tcap[fc::t_orig_pair].string = \
+      const_cast<char*>(CSI "39;49;25m");
+
+    // avoid dim + underline
+    tcap[fc::t_enter_dim_mode].string       = 0;
+    tcap[fc::t_exit_dim_mode].string        = 0;
+    tcap[fc::t_enter_underline_mode].string = 0;
+    tcap[fc::t_exit_underline_mode].string  = 0;
+    FTermcap::attr_without_color            = 18;
+  }
+  else if ( rxvt_terminal && ! urxvt_terminal )
+  {
+    tcap[fc::t_set_a_foreground].string = \
+      const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
+    tcap[fc::t_set_a_background].string = \
+      const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
+  }
+  else if ( tera_terminal )
+  {
+    tcap[fc::t_set_a_foreground].string = \
+      const_cast<char*>(CSI "38;5;%p1%dm");
+    tcap[fc::t_set_a_background].string = \
+      const_cast<char*>(CSI "48;5;%p1%dm");
+    tcap[fc::t_exit_attribute_mode].string = \
+      const_cast<char*>(CSI "0m" SI);
+    tcap[fc::t_orig_pair].string = \
+      const_cast<char*>(CSI "39;49m");
+  }
+  else if ( putty_terminal )
+  {
+    FTermcap::background_color_erase = true;
+    FTermcap::osc_support = true;
+
+    tcap[fc::t_set_a_foreground].string = \
+      const_cast<char*>(CSI "%?%p1%{8}%<"
+                        "%t3%p1%d"
+                        "%e%p1%{16}%<"
+                        "%t9%p1%{8}%-%d"
+                        "%e38;5;%p1%d%;m");
+
+    tcap[fc::t_set_a_background].string = \
+      const_cast<char*>(CSI "%?%p1%{8}%<"
+                        "%t4%p1%d"
+                        "%e%p1%{16}%<"
+                        "%t10%p1%{8}%-%d"
+                        "%e48;5;%p1%d%;m");
+
+    if ( ! tcap[fc::t_clr_bol].string )
+      tcap[fc::t_clr_bol].string = \
+        const_cast<char*>(CSI "1K");
+
+    if ( ! tcap[fc::t_orig_pair].string )
+      tcap[fc::t_orig_pair].string = \
+        const_cast<char*>(CSI "39;49m");
+
+    if ( ! tcap[fc::t_orig_colors].string )
+      tcap[fc::t_orig_colors].string = \
+        const_cast<char*>(OSC "R");
+
+    if ( ! tcap[fc::t_column_address].string )
+      tcap[fc::t_column_address].string = \
+        const_cast<char*>(CSI "%i%p1%dG");
+
+    if ( ! tcap[fc::t_row_address].string )
+      tcap[fc::t_row_address].string = \
+        const_cast<char*>(CSI "%i%p1%dd");
+
+    if ( ! tcap[fc::t_enable_acs].string )
+      tcap[fc::t_enable_acs].string = \
+        const_cast<char*>(ESC "(B" ESC ")0");
+
+    if ( ! tcap[fc::t_set_attributes].string )
+      tcap[fc::t_set_attributes].string = \
+        const_cast<char*>(CSI "0%?%p1%p6%|"
+                              "%t;1%;%?%p2%t;"
+                              "4%;%?%p1%p3%|"
+                              "%t;7%;%?%p4%t;"
+                              "5%;m%?%p9%t\016%e\017%;");
+
+    if ( ! tcap[fc::t_enter_am_mode].string )
+      tcap[fc::t_enter_am_mode].string = \
+        const_cast<char*>(CSI "?7h");
+
+    if ( ! tcap[fc::t_exit_am_mode].string )
+      tcap[fc::t_exit_am_mode].string = \
+        const_cast<char*>(CSI "?7l");
+
+    if ( ! tcap[fc::t_enter_pc_charset_mode].string )
+      tcap[fc::t_enter_pc_charset_mode].string = \
+        const_cast<char*>(CSI "11m");
+
+    if ( ! tcap[fc::t_exit_pc_charset_mode].string )
+      tcap[fc::t_exit_pc_charset_mode].string = \
+        const_cast<char*>(CSI "10m");
+
+    if ( ! tcap[fc::t_key_mouse].string )
+      tcap[fc::t_key_mouse].string = \
+        const_cast<char*>(CSI "M");
+  }
+
+  // fallback if "AF" is not found
+  if ( ! tcap[fc::t_set_a_foreground].string )
+    tcap[fc::t_set_a_foreground].string = \
+      const_cast<char*>(CSI "3%p1%dm");
+
+  // fallback if "AB" is not found
+  if ( ! tcap[fc::t_set_a_background].string )
+    tcap[fc::t_set_a_background].string = \
+      const_cast<char*>(CSI "4%p1%dm");
+
+  // fallback if "Ic" is not found
+  if ( ! tcap[fc::t_initialize_color].string )
+  {
+    if ( screen_terminal )
     {
-      if ( screen_terminal )
+      if ( tmux_terminal )
       {
-        if ( tmux_terminal )
-        {
-          tcap[fc::t_initialize_color].string = \
-            const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                              "%p2%{255}%*%{1000}%/%2.2X/"
-                              "%p3%{255}%*%{1000}%/%2.2X/"
-                              "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-        }
-        else
-        {
-          tcap[fc::t_initialize_color].string = \
-            const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
-                              "%p2%{255}%*%{1000}%/%2.2X/"
-                              "%p3%{255}%*%{1000}%/%2.2X/"
-                              "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-        }
+        tcap[fc::t_initialize_color].string = \
+          const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
+                            "%p2%{255}%*%{1000}%/%2.2X/"
+                            "%p3%{255}%*%{1000}%/%2.2X/"
+                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
       }
       else
       {
         tcap[fc::t_initialize_color].string = \
-          const_cast<char*>(OSC "P%p1%x"
-                            "%p2%{255}%*%{1000}%/%02x"
-                            "%p3%{255}%*%{1000}%/%02x"
-                            "%p4%{255}%*%{1000}%/%02x");
+          const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
+                            "%p2%{255}%*%{1000}%/%2.2X/"
+                            "%p3%{255}%*%{1000}%/%2.2X/"
+                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
       }
-   }
-
-    // fallback if "ti" is not found
-    if ( ! tcap[fc::t_enter_ca_mode].string )
-      tcap[fc::t_enter_ca_mode].string = \
-        const_cast<char*>(ESC "7" CSI "?47h");
-
-    // fallback if "te" is not found
-    if ( ! tcap[fc::t_exit_ca_mode].string )
-      tcap[fc::t_exit_ca_mode].string = \
-        const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
-
-    // set ansi move if "cm" is not found
-    if ( ! tcap[fc::t_cursor_address].string )
-      tcap[fc::t_cursor_address].string = \
-        const_cast<char*>(CSI "%i%p1%d;%p2%dH");
-
-    // test for standard ECMA-48 (ANSI X3.64) terminal
-    if ( tcap[fc::t_exit_underline_mode].string
-        && std::strncmp(tcap[fc::t_exit_underline_mode].string, CSI "24m", 5) == 0 )
-    {
-      // seems to be a ECMA-48 (ANSI X3.64) compatible terminal
-      tcap[fc::t_enter_dbl_underline_mode].string = \
-        const_cast<char*>(CSI "21m");  // Exit single underline, too
-
-      tcap[fc::t_exit_dbl_underline_mode].string = \
-        const_cast<char*>(CSI "24m");
-
-      tcap[fc::t_exit_bold_mode].string = \
-        const_cast<char*>(CSI "22m");  // Exit dim, too
-
-      tcap[fc::t_exit_dim_mode].string = \
-        const_cast<char*>(CSI "22m");
-
-      tcap[fc::t_exit_underline_mode].string = \
-        const_cast<char*>(CSI "24m");
-
-      tcap[fc::t_exit_blink_mode].string = \
-        const_cast<char*>(CSI "25m");
-
-      tcap[fc::t_exit_reverse_mode].string = \
-        const_cast<char*>(CSI "27m");
-
-      tcap[fc::t_exit_secure_mode].string = \
-        const_cast<char*>(CSI "28m");
-
-      tcap[fc::t_enter_crossed_out_mode].string = \
-        const_cast<char*>(CSI "9m");
-
-      tcap[fc::t_exit_crossed_out_mode].string = \
-        const_cast<char*>(CSI "29m");
     }
-
-    // read termcap key strings
-    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    else if ( xterm_terminal && ! putty_terminal )
     {
-      Fkey[i].string = tgetstr(Fkey[i].tname, &buffer);
-
-      // fallback for rxvt with TERM=xterm
-      if ( std::strncmp(Fkey[i].tname, "khx", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "7~");  // home key
-
-      if ( std::strncmp(Fkey[i].tname, "@7x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "8~");  // end key
-
-      if ( std::strncmp(Fkey[i].tname, "k1x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "11~");  // F1
-
-      if ( std::strncmp(Fkey[i].tname, "k2x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "12~");  // F2
-
-      if ( std::strncmp(Fkey[i].tname, "k3x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "13~");  // F3
-
-      if ( std::strncmp(Fkey[i].tname, "k4x", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "14~");  // F4
-
-      // fallback for TERM=ansi
-      if ( std::strncmp(Fkey[i].tname, "@7X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "K");  // end key
+      tcap[fc::t_initialize_color].string = \
+        const_cast<char*>(OSC "4;%p1%d;rgb:"
+                          "%p2%{255}%*%{1000}%/%2.2X/"
+                          "%p3%{255}%*%{1000}%/%2.2X/"
+                          "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
     }
-
-    // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
-    // http://www.unix.com/shell-programming-scripting/..
-    //      ..110380-using-arrow-keys-shell-scripts.html
-    key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
-
-    if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
-        || ( tcap[fc::t_cursor_up].string
-            && (std::strcmp(tcap[fc::t_cursor_up].string, CSI "A") == 0) ) )
+    else
     {
-      for (int i=0; Fkey[i].tname[0] != 0; i++)
-      {
-        if ( std::strncmp(Fkey[i].tname, "kux", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(CSI "A");  // key up
-
-        if ( std::strncmp(Fkey[i].tname, "kdx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(CSI "B");  // key down
-
-        if ( std::strncmp(Fkey[i].tname, "krx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(CSI "C");  // key right
-
-        if ( std::strncmp(Fkey[i].tname, "klx", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(CSI "D");  // key left
-
-        if ( std::strncmp(Fkey[i].tname, "k1X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(ESC "OP");  // PF1
-
-        if ( std::strncmp(Fkey[i].tname, "k2X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(ESC "OQ");  // PF2
-
-        if ( std::strncmp(Fkey[i].tname, "k3X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(ESC "OR");  // PF3
-
-        if ( std::strncmp(Fkey[i].tname, "k4X", 3) == 0 )
-          Fkey[i].string = const_cast<char*>(ESC "OS");  // PF4
-      }
+      tcap[fc::t_initialize_color].string = \
+        const_cast<char*>(OSC "P%p1%x"
+                          "%p2%{255}%*%{1000}%/%02x"
+                          "%p3%{255}%*%{1000}%/%02x"
+                          "%p4%{255}%*%{1000}%/%02x");
     }
   }
-  else
+
+  // fallback if "ti" is not found
+  if ( ! tcap[fc::t_enter_ca_mode].string )
+    tcap[fc::t_enter_ca_mode].string = \
+      const_cast<char*>(ESC "7" CSI "?47h");
+
+  // fallback if "te" is not found
+  if ( ! tcap[fc::t_exit_ca_mode].string )
+    tcap[fc::t_exit_ca_mode].string = \
+      const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
+
+  // set ansi move if "cm" is not found
+  if ( ! tcap[fc::t_cursor_address].string )
+    tcap[fc::t_cursor_address].string = \
+      const_cast<char*>(CSI "%i%p1%d;%p2%dH");
+
+  // test for standard ECMA-48 (ANSI X3.64) terminal
+  if ( tcap[fc::t_exit_underline_mode].string
+      && std::strncmp(tcap[fc::t_exit_underline_mode].string, CSI "24m", 5) == 0 )
   {
-    std::cerr << "Unknown terminal: "  << termtype << "\n"
-              << "Check the TERM environment variable\n"
-              << "Also make sure that the terminal"
-              << "is defined in the terminfo database.\n";
-    std::abort();
+    // seems to be a ECMA-48 (ANSI X3.64) compatible terminal
+    tcap[fc::t_enter_dbl_underline_mode].string = \
+      const_cast<char*>(CSI "21m");  // Exit single underline, too
+
+    tcap[fc::t_exit_dbl_underline_mode].string = \
+      const_cast<char*>(CSI "24m");
+
+    tcap[fc::t_exit_bold_mode].string = \
+      const_cast<char*>(CSI "22m");  // Exit dim, too
+
+    tcap[fc::t_exit_dim_mode].string = \
+      const_cast<char*>(CSI "22m");
+
+    tcap[fc::t_exit_underline_mode].string = \
+      const_cast<char*>(CSI "24m");
+
+    tcap[fc::t_exit_blink_mode].string = \
+      const_cast<char*>(CSI "25m");
+
+    tcap[fc::t_exit_reverse_mode].string = \
+      const_cast<char*>(CSI "27m");
+
+    tcap[fc::t_exit_secure_mode].string = \
+      const_cast<char*>(CSI "28m");
+
+    tcap[fc::t_enter_crossed_out_mode].string = \
+      const_cast<char*>(CSI "9m");
+
+    tcap[fc::t_exit_crossed_out_mode].string = \
+      const_cast<char*>(CSI "29m");
+  }
+
+  // read termcap key strings
+  for (int i=0; Fkey[i].tname[0] != 0; i++)
+  {
+    Fkey[i].string = tgetstr(Fkey[i].tname, &buffer);
+
+    // fallback for rxvt with TERM=xterm
+    if ( std::strncmp(Fkey[i].tname, "khx", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "7~");  // home key
+
+    if ( std::strncmp(Fkey[i].tname, "@7x", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "8~");  // end key
+
+    if ( std::strncmp(Fkey[i].tname, "k1x", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "11~");  // F1
+
+    if ( std::strncmp(Fkey[i].tname, "k2x", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "12~");  // F2
+
+    if ( std::strncmp(Fkey[i].tname, "k3x", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "13~");  // F3
+
+    if ( std::strncmp(Fkey[i].tname, "k4x", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "14~");  // F4
+
+    // fallback for TERM=ansi
+    if ( std::strncmp(Fkey[i].tname, "@7X", 3) == 0 )
+      Fkey[i].string = const_cast<char*>(CSI "K");  // end key
+  }
+
+  // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
+  // http://www.unix.com/shell-programming-scripting/..
+  //      ..110380-using-arrow-keys-shell-scripts.html
+  key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
+
+  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
+      || ( tcap[fc::t_cursor_up].string
+          && (std::strcmp(tcap[fc::t_cursor_up].string, CSI "A") == 0) ) )
+  {
+    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    {
+      if ( std::strncmp(Fkey[i].tname, "kux", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(CSI "A");  // key up
+
+      if ( std::strncmp(Fkey[i].tname, "kdx", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(CSI "B");  // key down
+
+      if ( std::strncmp(Fkey[i].tname, "krx", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(CSI "C");  // key right
+
+      if ( std::strncmp(Fkey[i].tname, "klx", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(CSI "D");  // key left
+
+      if ( std::strncmp(Fkey[i].tname, "k1X", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(ESC "OP");  // PF1
+
+      if ( std::strncmp(Fkey[i].tname, "k2X", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(ESC "OQ");  // PF2
+
+      if ( std::strncmp(Fkey[i].tname, "k3X", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(ESC "OR");  // PF3
+
+      if ( std::strncmp(Fkey[i].tname, "k4X", 3) == 0 )
+        Fkey[i].string = const_cast<char*>(ESC "OS");  // PF4
+    }
   }
 
   // duration precalculation of the cursor movement strings
@@ -3051,8 +3218,10 @@ void FTerm::init_encoding()
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
 
-  if ( linux_terminal
-      && (Encoding == fc::VT100 || Encoding == fc::PC) )
+  // In some alternative character sets, a tab character prints a '○'
+  // on the terminal and does not move the cursor to the next tab stop
+  // position
+  if ( Encoding == fc::VT100 || Encoding == fc::PC )
   {
     char* empty = 0;
     opti_move->set_tabular (empty);
@@ -3129,8 +3298,10 @@ void FTerm::init()
 
   term_name = ttyname(stdout_no);
 
+#if defined(__linux__)
   // initialize terminal and Linux console
   init_console();
+#endif
 
   // save termios settings
   storeTTYsettings();
@@ -3213,6 +3384,7 @@ void FTerm::init()
       FTermcap::max_color = 16;
     }
 
+#if defined(__linux__)
     if ( linux_terminal && openConsole() == 0 )
     {
       if ( isConsole() )
@@ -3229,6 +3401,7 @@ void FTerm::init()
 
     if ( linux_terminal && getFramebuffer_bpp() >= 4 )
       FTermcap::max_color = 16;
+#endif
 
     t.c_lflag |= uInt(ICANON | ECHO);
     tcsetattr(stdin_no, TCSADRAIN, &t);
@@ -3236,7 +3409,7 @@ void FTerm::init()
 
   // Test if the terminal is a xterm
   if ( std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-      || std::strncmp(termtype, const_cast<char*>("Eterm"), 4) == 0 )
+      || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
   {
     xterm_terminal = true;
 
@@ -3304,7 +3477,7 @@ void FTerm::init()
 #endif
 
   // xterm mouse support
-  if ( tcap[fc::t_key_mouse].string != 0 && ! linux_terminal )
+  if ( tcap[fc::t_key_mouse].string && ! linux_terminal )
   {
     mouse_support = true;
     enableXTermMouse();
@@ -3318,14 +3491,14 @@ void FTerm::init()
   }
 
   // save current cursor position
-  if ( tcap[fc::t_save_cursor].string )
+  if ( use_alternate_screen && tcap[fc::t_save_cursor].string )
   {
     putstring (tcap[fc::t_save_cursor].string);
     std::fflush(stdout);
   }
 
   // saves the screen and the cursor position
-  if ( tcap[fc::t_enter_ca_mode].string )
+  if ( use_alternate_screen && tcap[fc::t_enter_ca_mode].string )
   {
     putstring (tcap[fc::t_enter_ca_mode].string);
     std::fflush(stdout);
@@ -3358,7 +3531,8 @@ void FTerm::init()
   if ( FTermcap::max_color >= 16
       && ! cygwin_terminal
       && ! kde_konsole
-      && ! tera_terminal )
+      && ! tera_terminal
+      && ! ansi_terminal )
   {
     resetColorMap();
     saveColorMap();
@@ -3437,7 +3611,8 @@ void FTerm::finish()
   // set xterm full block cursor
   setXTermCursorStyle(fc::steady_block);
 
-  if ( FTermcap::max_color >= 16 && ! (kde_konsole || tera_terminal) )
+  if ( FTermcap::max_color >= 16
+      && ! (kde_konsole || tera_terminal || ansi_terminal) )
   {
     // reset screen settings
     setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
@@ -3457,11 +3632,13 @@ void FTerm::finish()
     std::fflush(stdout);
   }
 
+#if defined(__linux__)
   if ( linux_terminal )
   {
     setBlinkAsIntensity (false);
     setConsoleCursor(fc::default_cursor, false);
   }
+#endif
 
   if ( kde_konsole )
     setKDECursor(fc::BlockCursor);
@@ -3479,14 +3656,14 @@ void FTerm::finish()
 #endif
 
   // restores the screen and the cursor position
-  if ( tcap[fc::t_exit_ca_mode].string )
+  if ( use_alternate_screen && tcap[fc::t_exit_ca_mode].string )
   {
     putstring (tcap[fc::t_exit_ca_mode].string);
     std::fflush(stdout);
   }
 
   // restore cursor to position of last save_cursor
-  if ( tcap[fc::t_restore_cursor].string )
+  if ( use_alternate_screen && tcap[fc::t_restore_cursor].string )
   {
     putstring (tcap[fc::t_restore_cursor].string);
     std::fflush(stdout);
@@ -3499,6 +3676,7 @@ void FTerm::finish()
     std::fflush(stdout);
   }
 
+#if defined(__linux__)
   if ( linux_terminal && utf8_console )
     setUTF8(true);
 
@@ -3512,6 +3690,7 @@ void FTerm::finish()
     if ( screen_unicode_map.entries != 0 )
       delete[] screen_unicode_map.entries;
   }
+#endif
 
   if ( encoding_set )
     delete encoding_set;

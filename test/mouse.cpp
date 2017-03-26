@@ -444,8 +444,6 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
 void MouseDraw::drawCanvas()
 {
   int ax, ay, y_end, x_end;
-  char_data* cc; // canvas character
-  char_data* wc; // window character
 
   if ( ! hasPrintArea() )
     FVTerm::getPrintArea();
@@ -461,6 +459,8 @@ void MouseDraw::drawCanvas()
 
   for (int y=0; y < y_end; y++)  // line loop
   {
+    char_data* cc; // canvas character
+    char_data* wc; // window character
     cc = &canvas->text[y * x_end];
     wc = &print_area->text[(ay+y) * w_line_len + ax];
     std::memcpy (wc, cc, sizeof(char_data) * unsigned(x_end));

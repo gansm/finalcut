@@ -11,6 +11,7 @@ noinst_PROGRAMS = \
 	input-dialog \
 	choice \
 	opti-move \
+	termcap \
 	string-operations \
 	mandelbrot \
 	calculator \
@@ -35,6 +36,7 @@ mandelbrot_SOURCES = mandelbrot.cpp
 calculator_SOURCES = calculator.cpp
 watch_SOURCES = watch.cpp
 term_attributes_SOURCES = term-attributes.cpp
+termcap_SOURCES = termcap.cpp
 transparent_SOURCES = transparent.cpp
 keyboard_SOURCES = keyboard.cpp
 mouse_SOURCES = mouse.cpp

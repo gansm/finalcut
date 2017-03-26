@@ -33,12 +33,14 @@
   #include <gpm.h>
 #endif
 
-#include <linux/fb.h>       // Linux framebuffer console
-#include <linux/keyboard.h> // need for gpm keyboard modifiers
+#if defined(__linux__)
+  #include <linux/fb.h>       // Linux framebuffer console
+  #include <linux/keyboard.h> // need for gpm keyboard modifiers
+  #include <sys/io.h>         // <asm/io.h> is deprecated, use <sys/io.h> instead
+  #include <sys/kd.h>
+#endif
 
-#include <sys/io.h>         // <asm/io.h> is deprecated, use <sys/io.h> instead
 #include <sys/ioctl.h>
-#include <sys/kd.h>
 #include <sys/stat.h>
 
 #include <fcntl.h>
@@ -99,7 +101,7 @@ class FTerm
    } mod_key;
 
    // Constructor
-   FTerm ();
+   FTerm (bool = false);
 
    // Destructor
    virtual ~FTerm();
@@ -110,12 +112,19 @@ class FTerm
    static int            getLineNumber();
    static int            getColumnNumber();
    static const FString  getKeyName (int);
+#if defined(__linux__)
    static modifier_key&  getModifierKey();
+#endif
    static char*          getTermType();
    static char*          getTermName();
-   static uInt           getTabstop();
+   static int            getTabstop();
    static int            getMaxColor();
    static fc::consoleCursorStyle getConsoleCursor();
+
+#if DEBUG
+   static const FString& getAnswerbackString();
+   static const FString& getSecDAString();
+#endif
 
    // Inquiries
    static bool           isKeyTimeout (timeval*, register long);
@@ -156,6 +165,7 @@ class FTerm
    static bool           setRawMode();
    static bool           unsetRawMode();
    static bool           setCookedMode();
+   static void           disableAltScreen();
    static bool           setUTF8 (bool);
    static bool           setUTF8();
    static bool           unsetUTF8();
@@ -227,9 +237,17 @@ class FTerm
    static int            putchar_UTF8  (register int);
    static int            UTF8decode (const char[]);
 
+#if DEBUG
+   static char termtype_256color[30];
+   static char termtype_Answerback[30];
+   static char termtype_SecDA[30];
+#endif
+
  protected:
    // Methods
+#if defined(__linux__)
    static void           init_consoleCharMap();
+#endif
    static bool           charEncodable (uInt);
    static uInt           charEncode (uInt);
    static uInt           charEncode (uInt, fc::encoding);
@@ -265,6 +283,7 @@ class FTerm
    static bool           no_half_block_character;
    static bool           cursor_optimisation;
    static bool           xterm_default_colors;
+   static bool           use_alternate_screen;
    static fc::encoding   Encoding;
    static char           exit_message[8192];
 
@@ -287,6 +306,7 @@ class FTerm
    // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
+#if defined(__linux__)
    // Inquiries
    static int            isConsole();
 
@@ -298,16 +318,19 @@ class FTerm
    static void           setAttributeMode (uChar);
    static int            setBlinkAsIntensity (bool);
    static int            getFramebuffer_bpp();
+#endif
    static int            openConsole();
    static int            closeConsole();
    static void           identifyTermType();
    static void           storeTTYsettings();
    static void           restoreTTYsettings();
+#if defined(__linux__)
    static int            getScreenFont();
    static int            setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int            setUnicodeMap (struct unimapdesc*);
    static int            getUnicodeMap ();
    static void           init_console();
+#endif
    static uInt           getBaudRate (const struct termios*);
    static char*          init_256colorTerminal();
    static char*          parseAnswerbackMsg (char*&);
@@ -406,12 +429,22 @@ inline char* FTerm::getTermName()
 { return term_name; }
 
 //----------------------------------------------------------------------
-inline uInt FTerm::getTabstop()
+inline int FTerm::getTabstop()
 { return FTermcap::tabstop; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getMaxColor()
 { return FTermcap::max_color; }
+
+#if DEBUG
+//----------------------------------------------------------------------
+inline const FString& FTerm::getAnswerbackString()
+{ return *answer_back; }
+
+//----------------------------------------------------------------------
+inline const FString& FTerm::getSecDAString()
+{ return *sec_da; }
+#endif
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
@@ -532,6 +565,10 @@ inline bool FTerm::unsetRawMode()
 //----------------------------------------------------------------------
 inline bool FTerm::setCookedMode()
 { return setRawMode(false); }
+
+//----------------------------------------------------------------------
+inline void FTerm::disableAltScreen()
+{ use_alternate_screen = false; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setUTF8()

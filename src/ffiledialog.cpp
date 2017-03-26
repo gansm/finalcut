@@ -368,7 +368,7 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
   {
     path = getHomeDir();
 
-    if ( path.isEmpty() || path.isEmpty() )
+    if ( path.isNull() || path.isEmpty() )
       path = FString("/");
   }
 
@@ -403,7 +403,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
   {
     path = getHomeDir();
 
-    if ( path.isEmpty() || path.isEmpty() )
+    if ( path.isNull() || path.isEmpty() )
       path = FString("/");
   }
 

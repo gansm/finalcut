@@ -38,13 +38,13 @@ class FTermcap
    { }
 
    // Accessor
-   tcap_map* getTermcapMap()
+   static tcap_map* getTermcapMap()
    {
      return tcap;
    }
 
    // Mutator
-   void setTermcapMap (tcap_map* t)
+   static void setTermcapMap (tcap_map* t)
    {
      tcap = t;
    }
@@ -58,8 +58,8 @@ class FTermcap
    static bool osc_support;
    static bool no_utf8_acs_chars;
    static int  max_color;
-   static uInt tabstop;
-   static uInt attr_without_color;
+   static int  tabstop;
+   static int  attr_without_color;
 
  private:
    // Data Members

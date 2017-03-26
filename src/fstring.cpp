@@ -517,14 +517,14 @@ FString& FString::sprintf (const char* format, ...)
 
   buffer = buf;
   va_start (args, format);
-  len = std::vsnprintf (buffer, sizeof(buf), format, args);
+  len = vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
   if ( len >= int(sizeof(buf)) )
   {
     buffer = new char[len+1]();
     va_start (args, format);
-    std::vsnprintf (buffer, uLong(len+1), format, args);
+    vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
   }
 
@@ -1999,12 +1999,15 @@ FString FString::replaceControlCodes() const
 }
 
 //----------------------------------------------------------------------
-FString FString::expandTabs (uInt tabstop) const
+FString FString::expandTabs (int tabstop) const
 {
   uLong last;
   std::vector<FString> tab_split;
   FString instr(string);
   FString outstr;
+
+  if ( tabstop <= 0 )
+    return instr;
 
   tab_split = instr.split("\t");
   last = tab_split.size();
@@ -2012,7 +2015,8 @@ FString FString::expandTabs (uInt tabstop) const
   for (uInt i=0; i < last; i++)
   {
     uInt len = tab_split[i].getLength();
-    outstr += tab_split[i] + FString(tabstop - len % tabstop, L' ');
+    uInt tab_len = uInt(tabstop);
+    outstr += tab_split[i] + FString(tab_len - (len % tab_len), L' ');
   }
 
   return outstr;

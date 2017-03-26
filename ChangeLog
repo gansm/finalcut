@@ -1,3 +1,7 @@
+2017-03-26  Markus Gans  <guru.mail@muenster.de>
+	* The Final Cut compiles now under FreeBSD
+	* A new test program to show the termcap variables
+
 2017-03-19  Markus Gans  <guru.mail@muenster.de>
 	* Add the "mouse" example to illustrate mouse programming
 
