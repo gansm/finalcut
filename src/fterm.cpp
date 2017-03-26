@@ -73,9 +73,13 @@ bool     FTerm::xterm_default_colors;
 bool     FTerm::use_alternate_screen = true;
 termios  FTerm::term_init;
 char     FTerm::termtype[30]            = "";
+
+#if DEBUG
 char     FTerm::termtype_256color[30]   = "";
 char     FTerm::termtype_Answerback[30] = "";
 char     FTerm::termtype_SecDA[30]      = "";
+#endif
+
 char*    FTerm::term_name    = 0;
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
