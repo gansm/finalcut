@@ -2668,7 +2668,7 @@ void FTerm::init_termcaps()
   if ( status != success )
   {
     // use xterm as fallback if not found
-    std::strncpy (termtype, const_cast<char*>("xterm"), 5);
+    std::strncpy (termtype, const_cast<char*>("xterm"), 6);
     status = tgetent(term_buffer, termtype);
 
     if ( status != success )
