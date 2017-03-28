@@ -553,7 +553,7 @@ bool FTerm::setVGAFont()
   {
     if ( openConsole() == 0 )
     {
-      if ( isConsole() )
+      if ( isLinuxConsole() )
       {
         // standard vga font 8x16
         int ret = setScreenFont(__8x16std, 256, 8, 16);
@@ -626,7 +626,7 @@ bool FTerm::setNewFont()
 
     if ( openConsole() == 0 )
     {
-      if ( isConsole() )
+      if ( isLinuxConsole() )
       {
         struct unimapdesc unimap;
         int ret;
@@ -697,7 +697,7 @@ bool FTerm::setOldFont()
   {
     if ( openConsole() == 0 )
     {
-      if ( isConsole() )
+      if ( isLinuxConsole() )
       {
         if ( screen_font.data )
         {
@@ -1693,7 +1693,7 @@ bool FTerm::gpmMouse (bool on)
 
   if ( openConsole() == 0 )
   {
-    if ( ! isConsole() )
+    if ( ! isLinuxConsole() )
       return false;
 
     closeConsole();
@@ -1734,7 +1734,7 @@ bool FTerm::gpmMouse (bool on)
 // private methods of FTerm
 //----------------------------------------------------------------------
 #if defined(__linux__)
-int FTerm::isConsole()
+int FTerm::isLinuxConsole()
 {
   char arg = 0;
   // get keyboard type an compare
@@ -1742,7 +1742,27 @@ int FTerm::isConsole()
           && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
           && ((arg == KB_101) || (arg == KB_84)) );
 }
+#endif
 
+//----------------------------------------------------------------------
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+  #include <sys/param.h>
+#if defined(BSD)
+
+bool FTerm::isBSDConsole()
+{
+  keymap_t keymap;
+
+  if ( ioctl(0, GIO_KEYMAP, &keymap) == 0 )
+    return true;
+  else
+    return false;
+}
+
+#endif
+#endif
+
+#if defined(__linux__)
 //----------------------------------------------------------------------
 inline uInt16 FTerm::getInputStatusRegisterOne()
 {
@@ -2186,7 +2206,7 @@ void FTerm::init_console()
 
   if ( openConsole() == 0 )
   {
-    if ( isConsole() )
+    if ( isLinuxConsole() )
     {
       getUnicodeMap();
       getScreenFont();
@@ -3024,6 +3044,24 @@ void FTerm::init_termcaps()
       const_cast<char*>(CSI "29m");
   }
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+  #include <sys/param.h>
+#if defined(BSD)
+  if ( isBSDConsole() )
+  {
+    tcap[fc::t_acs_chars].string = \
+      const_cast<char*>("-\036.\0370\333"
+                        "a\260f\370g\361"
+                        "h\261j\331k\277"
+                        "l\332m\300n\305"
+                        "q\304t\303u\264"
+                        "v\301w\302x\263"
+                        "y\363z\362~\371");
+    FTermcap::attr_without_color = 18;
+  }
+#endif
+#endif
+
   // read termcap key strings
   for (int i=0; Fkey[i].tname[0] != 0; i++)
   {
@@ -3391,7 +3429,7 @@ void FTerm::init()
 #if defined(__linux__)
     if ( linux_terminal && openConsole() == 0 )
     {
-      if ( isConsole() )
+      if ( isLinuxConsole() )
       {
         if ( setBlinkAsIntensity(true) == 0 )
           FTermcap::max_color = 16;

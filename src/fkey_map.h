@@ -13,11 +13,11 @@ typedef struct
   char* string;
   char  tname[4];
 }
-keymap;
+fkeymap;
 
 #pragma pack(pop)
 
-static keymap Fkey[] =
+static fkeymap Fkey[] =
 {
   { fc::Fkey_backspace, 0, "kb" },  // backspace key
   { fc::Fkey_catab    , 0, "ka" },  // clear-all-tabs key
@@ -191,9 +191,9 @@ typedef struct
   int  num;
   char string[8];
 }
-metakeymap;
+fmetakeymap;
 
-static metakeymap Fmetakey[] =
+static fmetakeymap Fmetakey[] =
 {
   { fc::Fmkey_ic                   , "\033[2;3~"   },  // M-insert
   { fc::Fmkey_ic                   , "\033\033[2~" },  // M-insert

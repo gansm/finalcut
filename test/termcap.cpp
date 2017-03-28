@@ -93,10 +93,15 @@ int main (int argc, char* argv[])
             << terminal->termtype_Answerback << "\r\n";
   std::cout << "|            after parseSecDA(): "
             << terminal->termtype_SecDA << "\r\n";
-  tcapString ( "|         The answerback String"
-             , terminal->getAnswerbackString().c_str() );
-  tcapString ( "|              The SecDA String"
-             , terminal->getSecDAString().c_str() );
+
+  if ( &terminal->getAnswerbackString() )
+    tcapString ( "|         The answerback String"
+               , terminal->getAnswerbackString().c_str() );
+
+  if ( &terminal->getSecDAString() )
+    tcapString ( "|              The SecDA String"
+               , terminal->getSecDAString().c_str() );
+
   std::cout << "'------------------- debug -------------------\r\n";
 #endif
 

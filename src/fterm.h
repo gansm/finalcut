@@ -40,8 +40,16 @@
   #include <sys/kd.h>
 #endif
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+  #include <sys/param.h>
+#if defined(BSD)
+  #include <sys/kbio.h>
+#endif
+#endif
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+
 
 #include <fcntl.h>
 #include <langinfo.h>
@@ -306,11 +314,14 @@ class FTerm
    // Disable assignment operator (=)
    FTerm& operator = (const FTerm&);
 
-#if defined(__linux__)
    // Inquiries
-   static int            isConsole();
+#if defined(__linux__)
+   static int            isLinuxConsole();
+#endif
+   static bool           isBSDConsole();
 
    // Methods
+#if defined(__linux__)
    static uInt16         getInputStatusRegisterOne();
    static uChar          readAttributeController (uChar);
    static void           writeAttributeController (uChar, uChar);
@@ -319,11 +330,13 @@ class FTerm
    static int            setBlinkAsIntensity (bool);
    static int            getFramebuffer_bpp();
 #endif
+
    static int            openConsole();
    static int            closeConsole();
    static void           identifyTermType();
    static void           storeTTYsettings();
    static void           restoreTTYsettings();
+
 #if defined(__linux__)
    static int            getScreenFont();
    static int            setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
@@ -331,6 +344,7 @@ class FTerm
    static int            getUnicodeMap ();
    static void           init_console();
 #endif
+
    static uInt           getBaudRate (const struct termios*);
    static char*          init_256colorTerminal();
    static char*          parseAnswerbackMsg (char*&);
