@@ -2545,17 +2545,17 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
     return;
 
   uInt code = uInt(next_char->code);
-  uInt ch = charEncode(code);
+  uInt ch_enc = charEncode(code);
 
-  if ( ch != code )
+  if ( ch_enc != code )
   {
-    if ( ch == 0 )
+    if ( ch_enc == 0 )
     {
       next_char->code = int(charEncode(code, fc::ASCII));
       return;
     }
 
-    next_char->code = int(ch);
+    next_char->code = int(ch_enc);
 
     if ( Encoding == fc::VT100 )
       next_char->alt_charset = true;
@@ -2563,7 +2563,7 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
     {
       next_char->pc_charset = true;
 
-      if ( isXTerminal() && hasUTF8() && ch < 0x20 )  // Character 0x00..0x1f
+      if ( isXTerminal() && hasUTF8() && ch_enc < 0x20 )  // Character 0x00..0x1f
         next_char->code = int(charEncode(code, fc::ASCII));
     }
   }

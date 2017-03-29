@@ -529,18 +529,26 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
 
   if ( hasNoAttribute(next) )
   {
-    if ( off.pc_charset )
-      unsetTermPCcharset(term);
-
-    if ( off.alt_charset )
-      unsetTermAltCharset(term);
-
     if ( hasAttribute(term) )
     {
       if ( F_exit_attribute_mode.cap )
+      {
         unsetTermAttributes(term);
+
+        if ( off.pc_charset )
+          unsetTermPCcharset(term);
+
+        if ( off.alt_charset )
+          unsetTermAltCharset(term);
+      }
       else
       {
+        if ( off.pc_charset )
+          unsetTermPCcharset(term);
+
+        if ( off.alt_charset )
+          unsetTermAltCharset(term);
+
         if ( off.bold )
           unsetTermBold(term);
 
@@ -579,11 +587,8 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
     if ( colorChange(term, next) )
       change_color (term, next);
   }
-  else if ( F_set_attributes.cap )
+  else if ( F_set_attributes.cap && ! term->pc_charset )
   {
-    if ( off.pc_charset )
-      unsetTermPCcharset(term);
-
     if ( switchOn() || switchOff() )
       setTermAttributes ( term
                         , next->standout
@@ -595,6 +600,9 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
                         , next->invisible
                         , next->protect
                         , next->alt_charset );
+
+    if ( off.pc_charset )
+      unsetTermPCcharset(term);
 
     if ( next->italic )
       setTermItalic(term);
@@ -676,11 +684,11 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
 
     detectSwitchOn (term, next);
 
-    if ( on.pc_charset )
-      setTermPCcharset(term);
-
     if ( on.alt_charset )
       setTermAltCharset(term);
+
+    if ( on.pc_charset )
+      setTermPCcharset(term);
 
     if ( on.bold )
       setTermBold(term);

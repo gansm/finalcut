@@ -1,3 +1,7 @@
+2017-03-30  Markus Gans  <guru.mail@muenster.de>
+	* Fixed bug: termcap "me" does not reset 
+	  the alternate character set
+
 2017-03-28  Markus Gans  <guru.mail@muenster.de>
 	* Improved graphic charset pairs (vt100) 
 	  for FreeBSD console
