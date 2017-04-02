@@ -1160,7 +1160,7 @@ void FWidget::show()
 #if defined(__linux__)
     // Important: Do not use setNewFont() or setVGAFont() after
     //            the console character mapping has been initialized
-    init_consoleCharMap();
+    initLinuxConsoleCharMap();
 #endif
 
     // set xterm underline cursor

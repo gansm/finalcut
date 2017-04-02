@@ -254,8 +254,9 @@ class FTerm
  protected:
    // Methods
 #if defined(__linux__)
-   static void           init_consoleCharMap();
+   static void           initLinuxConsoleCharMap();
 #endif
+
    static bool           charEncodable (uInt);
    static uInt           charEncode (uInt);
    static uInt           charEncode (uInt, fc::encoding);
@@ -318,7 +319,14 @@ class FTerm
 #if defined(__linux__)
    static int            isLinuxConsole();
 #endif
+
+#if defined(BSD)
    static bool           isBSDConsole();
+   static bool           saveBSDAltKey();
+   static bool           setBSDAltKey (uChar);
+   static bool           setBSDAlt2Meta();
+   static bool           resetBSDAlt2Meta();
+#endif
 
    // Methods
 #if defined(__linux__)
@@ -342,7 +350,11 @@ class FTerm
    static int            setScreenFont (uChar*, uInt, uInt, uInt, bool = false);
    static int            setUnicodeMap (struct unimapdesc*);
    static int            getUnicodeMap ();
-   static void           init_console();
+   static void           initLinuxConsole();
+#endif
+
+#if defined(BSD)
+   static void           initBSDConsole();
 #endif
 
    static uInt           getBaudRate (const struct termios*);
@@ -409,10 +421,10 @@ class FTerm
    static bool    resize_term;
 
    static struct  termios term_init;
-
    static fc::consoleCursorStyle console_cursor_style;
-   static struct console_font_op screen_font;
-   static struct unimapdesc      screen_unicode_map;
+   static struct  console_font_op screen_font;
+   static struct  unimapdesc      screen_unicode_map;
+   static uChar   bsd_alt_keymap;
 
    static FOptiMove*     opti_move;
    static FOptiAttr*     opti_attr;

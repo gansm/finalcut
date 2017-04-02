@@ -3,6 +3,23 @@
 #CXX="clang++"
 PREFIX="/usr"
 
+# Get number of logical processor cores
+if command -v getconf >/dev/null 2>&1
+then
+  CPU_COUNT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null)" || CPU_COUNT="0"
+fi
+
+if [ "$CPU_COUNT" -eq 0 ]
+then
+  if command -v nproc >/dev/null 2>&1
+  then
+    CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0" 
+  fi
+fi
+
+test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
+
+# Build commands
 case "$1" in
   "--release"|"release")
     ./configure --prefix="$PREFIX"
@@ -44,5 +61,7 @@ case "$1" in
     ;;
 esac
 
-make V=1 -j10
+JOBS="$((CPU_COUNT/2))"
+test "$JOBS" -eq 0 && JOBS=1
+make V=1 -j$JOBS
 # make install

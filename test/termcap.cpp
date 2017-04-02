@@ -1,6 +1,7 @@
 // File: opti-move.cpp
 
 #include <iomanip>
+#include <iostream>
 #include "fapp.h"
 #include "ftermcap.h"
 #include "fvterm.h"
@@ -51,18 +52,27 @@ void tcapString (std::string name, const char* cap_str)
 
   for (uInt i=0; i < len; i++)
   {
-    if ( cap_str[i] < 32 )
+    uChar c = cap_str[i];
+
+    if ( c < 32 )
     {
-      if ( cap_str[i] == 27 )
+      if ( c == 27 )
         sequence += "\\E";
       else
       {
         sequence += '^';
-        sequence += cap_str[i] + 64;
+        sequence += c + 64;
       }
     }
+    else if ( c >= 127 )
+    {
+      std::ostringstream o;
+      o << std::oct << int(c);
+      sequence += "\\";
+      sequence += o.str();
+    }
     else
-      sequence += cap_str[i];
+      sequence += c;
   }
 
   std::cout << sequence << " ";

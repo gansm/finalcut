@@ -116,6 +116,7 @@ fc::consoleCursorStyle FTerm::console_cursor_style;
   unimapdesc           FTerm::screen_unicode_map;
 #endif
 
+uChar FTerm::bsd_alt_keymap = 0;
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -1575,7 +1576,7 @@ int FTerm::UTF8decode (const char utf8[])
 // protected methods of FTerm
 //----------------------------------------------------------------------
 #if defined(__linux__)
-void FTerm::init_consoleCharMap()
+void FTerm::initLinuxConsoleCharMap()
 {
   uInt c1, c2, c3, c4, c5;
 
@@ -1744,11 +1745,8 @@ int FTerm::isLinuxConsole()
 }
 #endif
 
-//----------------------------------------------------------------------
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-  #include <sys/param.h>
 #if defined(BSD)
-
+//----------------------------------------------------------------------
 bool FTerm::isBSDConsole()
 {
   keymap_t keymap;
@@ -1759,7 +1757,55 @@ bool FTerm::isBSDConsole()
     return false;
 }
 
-#endif
+//----------------------------------------------------------------------
+bool FTerm::saveBSDAltKey()
+{
+  keymap_t keymap;
+  int ret;
+  static const int left_alt = 0x38;
+
+  ret = ioctl(0, GIO_KEYMAP, &keymap);
+
+  if ( ret < 0 )
+    return false;
+
+  // save current mapping
+  bsd_alt_keymap = keymap.key[left_alt].map[0];
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setBSDAltKey (uChar key)
+{
+  keymap_t keymap;
+  int ret;
+  static const int left_alt = 0x38;
+
+  ret = ioctl(0, GIO_KEYMAP, &keymap);
+
+  if ( ret < 0 )
+    return false;
+
+  // map to meta key
+  keymap.key[left_alt].map[0] = key;
+
+  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0))
+    return false;
+  else
+    return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setBSDAlt2Meta()
+{
+  return setBSDAltKey (META);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::resetBSDAlt2Meta()
+{
+  return setBSDAltKey(bsd_alt_keymap);
+}
 #endif
 
 #if defined(__linux__)
@@ -2197,9 +2243,10 @@ int FTerm::setUnicodeMap (struct unimapdesc* unimap)
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_console()
+void FTerm::initLinuxConsole()
 {
-  // initialize terminal and Linux console
+  // initialize Linux console
+
   fd_tty = -1;
   screen_unicode_map.entries = 0;
   screen_font.data = 0;
@@ -2219,6 +2266,23 @@ void FTerm::init_console()
   {
     std::cerr << "can not open the console.\n";
     std::abort();
+  }
+}
+#endif
+
+#if defined(BSD)
+//----------------------------------------------------------------------
+void FTerm::initBSDConsole()
+{
+  // initialize BSD console
+
+  if ( isBSDConsole() )
+  {
+    // save current left alt key mapping
+    saveBSDAltKey();
+
+    // map meta key to left alt key
+    setBSDAlt2Meta();
   }
 }
 #endif
@@ -3044,8 +3108,6 @@ void FTerm::init_termcaps()
       const_cast<char*>(CSI "29m");
   }
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-  #include <sys/param.h>
 #if defined(BSD)
   if ( isBSDConsole() )
   {
@@ -3057,9 +3119,14 @@ void FTerm::init_termcaps()
                         "q\304t\303u\264"
                         "v\301w\302x\263"
                         "y\363z\362~\371");
+      tcap[fc::t_set_attributes].string = \
+        const_cast<char*>(CSI "0%?%p1%p6%|"
+                              "%t;1%;%?%p2%t;"
+                              "4%;%?%p1%p3%|"
+                              "%t;7%;%?%p4%t;"
+                              "5%;m%?%p9%t\016%e\017%;");
     FTermcap::attr_without_color = 18;
   }
-#endif
 #endif
 
   // read termcap key strings
@@ -3341,8 +3408,13 @@ void FTerm::init()
   term_name = ttyname(stdout_no);
 
 #if defined(__linux__)
-  // initialize terminal and Linux console
-  init_console();
+  // initialize Linux console
+  initLinuxConsole();
+#endif
+
+#if defined(BSD)
+  // initialize BSD console
+  initBSDConsole();
 #endif
 
   // save termios settings
@@ -3680,6 +3752,10 @@ void FTerm::finish()
     setBlinkAsIntensity (false);
     setConsoleCursor(fc::default_cursor, false);
   }
+#endif
+
+#if defined(BSD)
+  resetBSDAlt2Meta();
 #endif
 
   if ( kde_konsole )
