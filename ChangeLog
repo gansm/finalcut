@@ -1,6 +1,6 @@
 2017-04-02  Markus Gans  <guru.mail@muenster.de>
 	* Remap the meta key to left alt key at runtime 
-	  on the FreeBSD console
+	  on the FreeBSD console for the accelerator key access
 	  (Console switching is still possible with 
 	   Ctrl-Alt-F1 through Ctrl-Alt-F8)
 
