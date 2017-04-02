@@ -3,6 +3,7 @@
 	  on the FreeBSD console for the accelerator key access
 	  (Console switching is still possible with 
 	   Ctrl-Alt-F1 through Ctrl-Alt-F8)
+	* Avoid non-printable ASCII codes < 0x1c on a FreeBSD console
 
 2017-03-30  Markus Gans  <guru.mail@muenster.de>
 	* Fixed bug: termcap "me" does not reset 

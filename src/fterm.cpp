@@ -1625,6 +1625,21 @@ void FTerm::initLinuxConsoleCharMap()
 }
 #endif
 
+#if defined(BSD)
+//----------------------------------------------------------------------
+void FTerm::initBSDConsoleCharMap()
+{
+  // A FreeBSD console can't show ASCII codes from 0x00 to 0x1b
+
+  if ( ! isBSDConsole() )
+    return;
+
+  for (int i=0; i <= lastCharItem; i++ )
+    if ( character[i][fc::PC] < 0x1c )
+      character[i][fc::PC] = character[i][fc::ASCII];
+}
+#endif
+
 //----------------------------------------------------------------------
 bool FTerm::charEncodable (uInt c)
 {
@@ -2749,22 +2764,29 @@ void FTerm::init_termcaps()
     status = tgetent(term_buffer, termtype);
   }
 
+  if ( status != success && color256 )
+  {
+    // use "xterm-256color" as fallback if not found
+    std::strncpy (termtype, const_cast<char*>("xterm-256color"), 15);
+    status = tgetent(term_buffer, termtype);
+  }
+
   if ( status != success )
   {
-    // use xterm as fallback if not found
+    // use "xterm" as fallback if not found
     std::strncpy (termtype, const_cast<char*>("xterm"), 6);
     status = tgetent(term_buffer, termtype);
 
     if ( status != success )
     {
-      // use ansi as fallback if not found
+      // use "ansi" as fallback if not found
       std::strncpy (termtype, const_cast<char*>("ansi"), 5);
       status = tgetent(term_buffer, termtype);
       ansi_terminal = true;
 
       if ( status != success )
       {
-        // use vt100 as fallback if not found
+        // use "vt100" as fallback if not found
         std::strncpy (termtype, const_cast<char*>("vt100"), 6);
         status = tgetent(term_buffer, termtype);
         ansi_terminal = false;

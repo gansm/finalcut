@@ -1163,6 +1163,10 @@ void FWidget::show()
     initLinuxConsoleCharMap();
 #endif
 
+#if defined(BSD)
+    initBSDConsoleCharMap();
+#endif
+
     // set xterm underline cursor
     setXTermCursorStyle(fc::blinking_underline);
 

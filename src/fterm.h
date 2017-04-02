@@ -257,6 +257,10 @@ class FTerm
    static void           initLinuxConsoleCharMap();
 #endif
 
+#if defined(BSD)
+   static void           initBSDConsoleCharMap();
+#endif
+
    static bool           charEncodable (uInt);
    static uInt           charEncode (uInt);
    static uInt           charEncode (uInt, fc::encoding);
