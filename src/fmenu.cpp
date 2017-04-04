@@ -1278,8 +1278,6 @@ void FMenu::drawItems()
             {
               if ( isNewFont() )
                 print (fc::NF_Bullet); // NF_Bullet ●
-              else if ( isCygwinTerminal() )
-                print (0x04);
               else
                 print (fc::Bullet);    // Bullet ●
             }
@@ -1287,8 +1285,6 @@ void FMenu::drawItems()
             {
               if ( isNewFont() )
                 print (fc::NF_check_mark);   // NF_check_mark ✓
-              else if ( isCygwinTerminal() )
-                print (fc::Times);           // Times ×
               else
                 print (fc::SquareRoot);      // SquareRoot √
             }

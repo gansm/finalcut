@@ -259,17 +259,9 @@ void FScrollbar::drawButtons()
 
     if ( bar_orientation == fc::vertical )
     {
-      if ( isCygwinTerminal() )
-        print ('^');
-      else
-        print (fc::BlackUpPointingTriangle); // ▲
-
+      print (fc::BlackUpPointingTriangle); // ▲
       setPrintPos (1, length);
-
-      if ( isCygwinTerminal() )
-        print ('v');
-      else
-        print (fc::BlackDownPointingTriangle); // ▼
+      print (fc::BlackDownPointingTriangle); // ▼
     }
     else // horizontal
     {

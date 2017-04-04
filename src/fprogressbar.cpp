@@ -70,7 +70,7 @@ bool FProgressbar::setEnable (bool on)
 bool FProgressbar::setShadow (bool on)
 {
   if ( on
-      && (Encoding != fc::VT100 || isTeraTerm() )
+      && Encoding != fc::VT100
       && Encoding != fc::ASCII )
   {
     flags |= fc::shadow;
@@ -202,7 +202,6 @@ void FProgressbar::drawBar()
   if ( percentage > 0.0f && trunc(length) < bar_length )
   {
     if ( round(length) > trunc(length)
-        || isCygwinTerminal()
         || getMaxColor() < 16 )
     {
       if ( isMonochron() )

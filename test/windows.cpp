@@ -60,16 +60,8 @@ smallWindow::smallWindow (FWidget* parent)
 {
   wchar_t arrow_up, arrow_down;
 
-  if ( isCygwinTerminal() )
-  {
-    arrow_up = L'^';
-    arrow_down = L'v';
-  }
-  else
-  {
-    arrow_up = fc::BlackUpPointingTriangle;
-    arrow_down = fc::BlackDownPointingTriangle;
-  }
+  arrow_up = fc::BlackUpPointingTriangle;
+  arrow_down = fc::BlackDownPointingTriangle;
 
   left_arrow = new FLabel (arrow_up, this);
   left_arrow->setForegroundColor (wc.label_inactive_fg);
@@ -222,10 +214,7 @@ Window::Window (FWidget* parent)
   File->setStatusbarMessage ("File management commands");
 
   // dialog list menu item
-  if ( isCygwinTerminal() )
-    drop_down_symbol = 'v';
-  else
-    drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
+  drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
 
   FDialogListMenu* DglList = new FDialogListMenu (drop_down_symbol, Menubar);
   DglList->setStatusbarMessage ("List of all the active dialogs");

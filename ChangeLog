@@ -1,3 +1,8 @@
+2017-04-05  Markus Gans  <guru.mail@muenster.de>
+	* Replace non-printable characters for Tera Term and 
+	  Cygwin terminal directly at start-up. Special cases 
+	  in the code are no longer necessary.
+
 2017-04-02  Markus Gans  <guru.mail@muenster.de>
 	* Remap the meta key to left alt key at runtime 
 	  on the FreeBSD console for the accelerator key access

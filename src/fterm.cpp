@@ -1641,6 +1641,36 @@ void FTerm::initBSDConsoleCharMap()
 #endif
 
 //----------------------------------------------------------------------
+void FTerm::initCygwinCharMap()
+{
+  // Replace don't printable characters in a Cygwin terminal
+
+  if ( ! cygwin_terminal )
+    return;
+
+  for (int i=0; i <= lastCharItem; i++ )
+  {
+    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle     // ▲
+        || character[i][fc::UTF8] == fc::BlackDownPointingTriangle // ▼
+        || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
+      character[i][fc::PC] = character[i][fc::ASCII];
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::initTeraTermCharMap()
+{
+  // Tera Term can't print ascii characters < 0x20
+
+  if ( ! tera_terminal )
+    return;
+
+  for (int i=0; i <= lastCharItem; i++ )
+    if ( character[i][fc::PC] < 0x20 )
+      character[i][fc::PC] = character[i][fc::ASCII];
+}
+
+//----------------------------------------------------------------------
 bool FTerm::charEncodable (uInt c)
 {
   uInt ch = charEncode(c);
@@ -2833,7 +2863,7 @@ void FTerm::init_termcaps()
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
   FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
 
-  if ( isTeraTerm() )
+  if ( tera_terminal )
     FTermcap::eat_nl_glitch = true;
 
   // get termcap numeric
@@ -3325,7 +3355,8 @@ void FTerm::init_encoding()
   if ( linux_terminal
       || cygwin_terminal
       || NewFont
-      || (putty_terminal && ! utf8_state) )
+      || (putty_terminal && ! utf8_state)
+      || (tera_terminal && ! utf8_state) )
   {
     pc_charset_console = true;
     Encoding = fc::PC;
@@ -3663,6 +3694,12 @@ void FTerm::init()
 
   if ( kde_konsole )
     setKDECursor(fc::UnderlineCursor);
+
+  if ( cygwin_terminal )
+    initCygwinCharMap();
+
+  if ( tera_terminal )
+    initTeraTermCharMap();
 
   if ( FTermcap::max_color >= 16
       && ! cygwin_terminal

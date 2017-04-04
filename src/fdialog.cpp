@@ -1285,12 +1285,7 @@ void FDialog::drawTitleBar()
         else
         {
           print (' ');
-
-          if ( isCygwinTerminal() )
-            print ('v');
-          else
-            print (fc::BlackDownPointingTriangle);  // ▼
-
+          print (fc::BlackDownPointingTriangle);  // ▼
           print (' ');
         }
       }
@@ -1313,12 +1308,7 @@ void FDialog::drawTitleBar()
         else
         {
           print (' ');
-
-          if ( isCygwinTerminal() )
-            print ('^');
-          else
-            print (fc::BlackUpPointingTriangle);  // ▲
-
+          print (fc::BlackUpPointingTriangle);  // ▲
           print (' ');
         }
       }

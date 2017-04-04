@@ -1353,7 +1353,7 @@ void FWidget::drawShadow()
   if ( isMonochron() && ! trans_shadow )
     return;
 
-  if ( (Encoding == fc::VT100 && ! (trans_shadow || isTeraTerm()) )
+  if ( (Encoding == fc::VT100 && ! trans_shadow)
       || (Encoding == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();
@@ -1417,16 +1417,8 @@ void FWidget::drawShadow()
     else if ( FWidget* p = getParentWidget() )
       setColor (wc.shadow_fg, p->getBackgroundColor());
 
-    if ( isTeraTerm() )
-    {
-      block = 0xdb; // █
-      print (0xdc); // ▄
-    }
-    else
-    {
-      block = fc::FullBlock; // █
-      print (fc::LowerHalfBlock); // ▄
-    }
+    block = fc::FullBlock; // █
+    print (fc::LowerHalfBlock); // ▄
 
     if ( isWindowWidget() )
       unsetInheritBackground();
@@ -1443,12 +1435,7 @@ void FWidget::drawShadow()
       setInheritBackground();
 
     for (int i=1; i <= getWidth(); i++)
-    {
-      if ( isTeraTerm() )
-        print (0xdf); // ▀
-      else
-        print (fc::UpperHalfBlock); // ▀
-    }
+      print (fc::UpperHalfBlock); // ▀
 
     if ( isWindowWidget() )
       unsetInheritBackground();
@@ -2411,9 +2398,6 @@ void FWidget::setColorTheme()
 
   if ( isKdeTerminal() )
     wc.term_bg = fc::SteelBlue3;
-
-  if ( isTeraTerm() )
-    wc.term_bg = fc::LightBlue;
 
   if ( getMaxColor() < 16 )  // for 8 color mode
   {

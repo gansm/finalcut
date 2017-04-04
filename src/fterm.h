@@ -260,6 +260,8 @@ class FTerm
 #if defined(BSD)
    static void           initBSDConsoleCharMap();
 #endif
+   static void           initCygwinCharMap();
+   static void           initTeraTermCharMap();
 
    static bool           charEncodable (uInt);
    static uInt           charEncode (uInt);
