@@ -50,14 +50,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( ! insert_mode )
-  {
-    setXTermCursorStyle(fc::blinking_underline);
-    setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
-
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:ffff/ffff/ffff");
-  }
+    setInsertCursorStyle();
 }
 
 
@@ -314,23 +307,9 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       insert_mode = not insert_mode;
 
       if ( insert_mode )
-      {
-        setXTermCursorStyle(fc::blinking_underline);
-        setKDECursor(fc::UnderlineCursor);
-        setConsoleCursor(fc::underscore_cursor, isCursorHidden());
-
-        if ( isUrxvtTerminal() )
-          setXTermCursorColor("rgb:ffff/ffff/ffff");
-      }
+        setInsertCursorStyle();
       else
-      {
-        setXTermCursorStyle(fc::steady_block);
-        setKDECursor(fc::BlockCursor);
-        setConsoleCursor(fc::full_block_cursor, isCursorHidden());
-
-        if ( isUrxvtTerminal() )
-          setXTermCursorColor("rgb:eeee/0000/0000");
-      }
+        unsetInsertCursorStyle();
 
       ev->accept();
       break;
@@ -593,34 +572,16 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 void FLineEdit::onHide (FHideEvent*)
 {
   if ( ! insert_mode )
-  {
-    setXTermCursorStyle(fc::blinking_underline);
-    setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:ffff/ffff/ffff");
-  }
+    setInsertCursorStyle();
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::onFocusIn (FFocusEvent*)
 {
   if ( insert_mode )
-  {
-    setXTermCursorStyle(fc::blinking_underline);
-    setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:ffff/ffff/ffff");
-  }
+    setInsertCursorStyle();
   else
-  {
-    setXTermCursorStyle(fc::steady_block);
-    setKDECursor(fc::BlockCursor);
-    setConsoleCursor(fc::full_block_cursor, isCursorHidden());
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:0000/0000/0000");
-  }
+    unsetInsertCursorStyle();
 
   if ( getStatusBar() )
   {
@@ -640,14 +601,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 
   if ( ! insert_mode )
-  {
-    setXTermCursorStyle(fc::blinking_underline);
-    setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
-
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:ffff/ffff/ffff");
-  }
+    setInsertCursorStyle();
 }
 
 

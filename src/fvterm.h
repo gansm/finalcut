@@ -286,6 +286,11 @@ class FVTerm : public FObject, public FTerm
    bool                 isChildPrintArea() const;
    bool                 isVirtualWindow() const;
 
+   // Mutator
+   static void          setInsertCursorStyle (bool on);
+   static void          setInsertCursorStyle();
+   static void          unsetInsertCursorStyle();
+
    // Methods
    void                 createArea ( const FRect&
                                    , const FPoint&
@@ -759,6 +764,14 @@ inline bool FVTerm::hasChildPrintArea() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setInsertCursorStyle()
+{ setInsertCursorStyle(true); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::unsetInsertCursorStyle()
+{ setInsertCursorStyle(false); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

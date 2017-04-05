@@ -704,6 +704,29 @@ bool FVTerm::isChildPrintArea() const
 }
 
 //----------------------------------------------------------------------
+void FVTerm::setInsertCursorStyle (bool on)
+{
+  if ( on )
+  {
+    setXTermCursorStyle(fc::blinking_underline);
+    setKDECursor(fc::UnderlineCursor);
+    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
+
+    if ( isUrxvtTerminal() )
+      setXTermCursorColor("rgb:ffff/ffff/ffff");
+  }
+  else
+  {
+    setXTermCursorStyle(fc::steady_block);
+    setKDECursor(fc::BlockCursor);
+    setConsoleCursor(fc::full_block_cursor, isCursorHidden());
+
+    if ( isUrxvtTerminal() )
+      setXTermCursorColor("rgb:eeee/0000/0000");
+  }
+}
+
+//----------------------------------------------------------------------
 void FVTerm::createArea ( const FRect& r
                         , const FPoint& p
                         , term_area*& area )

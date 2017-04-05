@@ -112,7 +112,7 @@ int main (int argc, char* argv[])
     tcapString ( "|              The SecDA String"
                , terminal->getSecDAString().c_str() );
 
-  std::cout << "'------------------- debug -------------------\r\n";
+  std::cout << "`------------------- debug -------------------\r\n";
 #endif
 
   std::cout << "\r\n[Booleans]\r\n";
