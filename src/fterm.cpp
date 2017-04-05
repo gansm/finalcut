@@ -109,7 +109,8 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-fc::consoleCursorStyle FTerm::console_cursor_style;
+fc::linuxConsoleCursorStyle FTerm::linux_console_cursor_style;
+fc::bsdConsoleCursorStyle   FTerm::bsd_console_cursor_style;
 
 #if defined(__linux__)
   console_font_op      FTerm::screen_font;
@@ -217,13 +218,21 @@ FTerm::modifier_key& FTerm::getModifierKey()
 
   return mod_key;
 }
-#endif
 
 //----------------------------------------------------------------------
-fc::consoleCursorStyle FTerm::getConsoleCursor()
+fc::linuxConsoleCursorStyle FTerm::getLinuxConsoleCursorStyle()
 {
-  return console_cursor_style;
+  return linux_console_cursor_style;
 }
+#endif
+
+#if defined(BSD)
+//----------------------------------------------------------------------
+fc::bsdConsoleCursorStyle FTerm::getBSDConsoleCursorStyle()
+{
+  return bsd_console_cursor_style;
+}
+#endif
 
 //----------------------------------------------------------------------
 bool FTerm::isKeyTimeout (timeval* time, register long timeout)
@@ -252,14 +261,17 @@ bool FTerm::isNormal (char_data*& ch)
   return opti_attr->isNormal(ch);
 }
 
+#if defined(__linux__)
 //----------------------------------------------------------------------
-void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
+void FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
+                                       , bool hidden )
 {
   // Set cursor style in linux console
+
   if ( ! linux_terminal )
     return;
 
-  console_cursor_style = style;
+  linux_console_cursor_style = style;
 
   if ( hidden )
     return;
@@ -267,6 +279,26 @@ void FTerm::setConsoleCursor (fc::consoleCursorStyle style, bool hidden)
   putstringf (CSI "?%dc", style);
   std::fflush(stdout);
 }
+#endif
+
+#if defined(BSD)
+//----------------------------------------------------------------------
+void FTerm::setBSDConsoleCursorStyle ( fc::bsdConsoleCursorStyle style
+                                     , bool hidden )
+{
+  // Set cursor style in a BSD console
+
+  if ( ! isBSDConsole() )
+    return;
+
+  bsd_console_cursor_style = style;
+
+  if ( hidden )
+    return;
+
+  ioctl(0, CONS_CURSORTYPE, &style);
+}
+#endif
 
 //----------------------------------------------------------------------
 void FTerm::setTTY (termios& t)
@@ -812,6 +844,7 @@ void FTerm::detectTermSize()
 void FTerm::setTermSize (int term_width, int term_height)
 {
   // Set xterm size to {term_width} x {term_height}
+
   if ( xterm_terminal )
   {
     putstringf (CSI "8;%d;%dt", term_height, term_width);
@@ -823,6 +856,7 @@ void FTerm::setTermSize (int term_width, int term_height)
 void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 {
   // Set cursor style in KDE konsole
+
   if ( kde_konsole )
   {
     oscPrefix();
@@ -958,6 +992,12 @@ const FString FTerm::getXTermColorName (int color)
 void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
+
+#if defined(BSD)
+  if ( isBSDConsole() )
+    return;
+#endif
+
   if ( (xterm_terminal || mintty_terminal)
       && ! (gnome_terminal || kde_konsole) )
   {
@@ -3563,11 +3603,15 @@ void FTerm::init()
       }
 
       closeConsole();
-      setConsoleCursor(fc::underscore_cursor, true);
+      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
     }
 
     if ( linux_terminal && getFramebuffer_bpp() >= 4 )
       FTermcap::max_color = 16;
+#endif
+
+#if defined(BSD)
+    setBSDConsoleCursorStyle (fc::destructive_cursor, true);
 #endif
 
     t.c_lflag |= uInt(ICANON | ECHO);
@@ -3809,12 +3853,13 @@ void FTerm::finish()
   if ( linux_terminal )
   {
     setBlinkAsIntensity (false);
-    setConsoleCursor(fc::default_cursor, false);
+    setLinuxConsoleCursorStyle (fc::default_cursor, false);
   }
 #endif
 
 #if defined(BSD)
   resetBSDAlt2Meta();
+  setBSDConsoleCursorStyle (fc::normal_cursor, false);
 #endif
 
   if ( kde_konsole )

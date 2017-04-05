@@ -929,7 +929,7 @@ class fc
    };
 
    // Linux console and framebuffer cursor style
-   enum consoleCursorStyle
+   enum linuxConsoleCursorStyle
    {
      default_cursor     = 0,
      invisible_cursor   = 1,
@@ -938,6 +938,14 @@ class fc
      lower_half_cursor  = 4,
      two_thirds_cursor  = 5,
      full_block_cursor  = 6
+   };
+
+   // BSD console cursor style
+   enum bsdConsoleCursorStyle
+   {
+     normal_cursor      = 0,
+     blink_cursor       = 1,
+     destructive_cursor = 3 
    };
 
    // KDE konsole cursor style

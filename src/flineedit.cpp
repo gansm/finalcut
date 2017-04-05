@@ -554,7 +554,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 
     if ( focused_widget )
       focused_widget->redraw();
-
+    
     redraw();
 
     if ( getStatusBar() )

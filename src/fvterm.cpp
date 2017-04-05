@@ -138,8 +138,15 @@ bool FVTerm::hideCursor (bool on)
 
   flush_out();
 
+#if defined(__linux__)
   if ( ! hidden_cursor && isLinuxTerm() )
-    setConsoleCursor (getConsoleCursor(), false);
+    setLinuxConsoleCursorStyle (getLinuxConsoleCursorStyle(), false);
+#endif
+
+#if defined(BSD)
+  if ( ! hidden_cursor )
+    setBSDConsoleCursorStyle (getBSDConsoleCursorStyle(), false);
+#endif
 
   return hidden_cursor;
 }
@@ -710,7 +717,14 @@ void FVTerm::setInsertCursorStyle (bool on)
   {
     setXTermCursorStyle(fc::blinking_underline);
     setKDECursor(fc::UnderlineCursor);
-    setConsoleCursor(fc::underscore_cursor, isCursorHidden());
+
+#if defined(__linux__)
+    setLinuxConsoleCursorStyle (fc::underscore_cursor, isCursorHidden());
+#endif
+
+#if defined(BSD)
+    setBSDConsoleCursorStyle (fc::destructive_cursor, isCursorHidden());
+#endif
 
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:ffff/ffff/ffff");
@@ -719,7 +733,14 @@ void FVTerm::setInsertCursorStyle (bool on)
   {
     setXTermCursorStyle(fc::steady_block);
     setKDECursor(fc::BlockCursor);
-    setConsoleCursor(fc::full_block_cursor, isCursorHidden());
+
+#if defined(__linux__)
+    setLinuxConsoleCursorStyle (fc::full_block_cursor, isCursorHidden());
+#endif
+
+#if defined(BSD)
+    setBSDConsoleCursorStyle (fc::normal_cursor, isCursorHidden());
+#endif
 
     if ( isUrxvtTerminal() )
       setXTermCursorColor("rgb:eeee/0000/0000");

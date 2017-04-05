@@ -43,6 +43,7 @@
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
   #include <sys/param.h>
 #if defined(BSD)
+  #include <sys/consio.h>
   #include <sys/kbio.h>
 #endif
 #endif
@@ -120,14 +121,23 @@ class FTerm
    static int            getLineNumber();
    static int            getColumnNumber();
    static const FString  getKeyName (int);
+
 #if defined(__linux__)
    static modifier_key&  getModifierKey();
 #endif
+
    static char*          getTermType();
    static char*          getTermName();
    static int            getTabstop();
    static int            getMaxColor();
-   static fc::consoleCursorStyle getConsoleCursor();
+
+#if defined(__linux__)
+   static fc::linuxConsoleCursorStyle getLinuxConsoleCursorStyle();
+#endif
+
+#if defined(BSD)
+   static fc::bsdConsoleCursorStyle getBSDConsoleCursorStyle();
+#endif
 
 #if DEBUG
    static const FString& getAnswerbackString();
@@ -166,7 +176,17 @@ class FTerm
    // Mutators
    static bool           setCursorOptimisation (bool);
    static void           setXTermDefaultColors (bool);
-   static void           setConsoleCursor (fc::consoleCursorStyle, bool);
+
+#if defined(__linux__)
+   static void           setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle
+                                                    , bool );
+#endif
+
+#if defined(BSD)
+   static void           setBSDConsoleCursorStyle ( fc::bsdConsoleCursorStyle
+                                                  , bool );
+#endif
+
    static void           setTTY (termios&);
    static void           noHardwareEcho();
    static bool           setRawMode (bool);
@@ -427,7 +447,8 @@ class FTerm
    static bool    resize_term;
 
    static struct  termios term_init;
-   static fc::consoleCursorStyle console_cursor_style;
+   static fc::linuxConsoleCursorStyle linux_console_cursor_style;
+   static fc::bsdConsoleCursorStyle bsd_console_cursor_style;
    static struct  console_font_op screen_font;
    static struct  unimapdesc      screen_unicode_map;
    static uChar   bsd_alt_keymap;

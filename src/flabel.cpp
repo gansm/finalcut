@@ -229,10 +229,13 @@ void FLabel::onAccel (FAccelEvent* ev)
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
 
+
     if ( focused_widget )
       focused_widget->redraw();
 
     accel_widget->redraw();
+    FFocusEvent in (fc::FocusIn_Event);
+    FApplication::sendEvent(accel_widget, &in);
 
     if ( getStatusBar() )
     {
