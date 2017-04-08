@@ -35,7 +35,7 @@ FSwitch::~FSwitch()  // destructor
 
 // public methods of FSwitch
 //----------------------------------------------------------------------
-void FSwitch::setText (FString txt)
+void FSwitch::setText (const FString& txt)
 {
   FToggleButton::setText(txt);
   switch_offset_pos = int(txt.getLength()) + 1;

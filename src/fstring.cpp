@@ -563,7 +563,10 @@ const wchar_t* FString::wc_str() const
 //----------------------------------------------------------------------
 const char* FString::c_str() const
 {
-  return wc_to_c_str (string);
+  if ( string )
+    return wc_to_c_str (string);
+  else
+    return 0;
 }
 
 //----------------------------------------------------------------------

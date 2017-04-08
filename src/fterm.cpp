@@ -92,6 +92,7 @@ const FString*         FTerm::xterm_font                = 0;
 const FString*         FTerm::xterm_title               = 0;
 const FString*         FTerm::answer_back               = 0;
 const FString*         FTerm::sec_da                    = 0;
+const FString*         FTerm::empty_string              = 0;
 FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
 FTerm::modifier_key    FTerm::mod_key;
@@ -2057,7 +2058,7 @@ int FTerm::closeConsole()
 }
 
 //----------------------------------------------------------------------
-void FTerm::identifyTermType()
+void FTerm::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const char* const& term_env = std::getenv(const_cast<char*>("TERM"));
@@ -2067,34 +2068,33 @@ void FTerm::identifyTermType()
     std::strncpy (termtype, term_env, sizeof(termtype) - 1);
     return;
   }
-  else if ( term_name )
+  else if ( term_name )  // fallback: look into /etc/ttytype or /etc/ttys
   {
-    // fallback: look into /etc/ttytype or /etc/ttys
-    //
+    // get term basename
+    const char* term_basename = std::strrchr(term_name, '/');
+
+    if ( term_basename == 0 )
+      term_basename = term_name;
+    else
+      term_basename++;
+
+    // Analyse /etc/ttytype
+    // --------------------
     // file format:
     // <terminal type> <whitespace> <tty name>
     //
     // Example:
-    // linux	tty1
-    // vt100	ttys0
+    // linux  tty1
+    // vt100  ttys0
 
     std::FILE *fp;
 
-    if ( (fp = std::fopen("/etc/ttytype", "r")) != 0
-        || (fp = std::fopen("/etc/ttys", "r")) != 0 ) // FreeBSD: man 5 ttys
+    if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
     {
       char* p;
       char* type;
       char* name;
       char  str[BUFSIZ];
-
-      // get term basename
-      const char* term_basename = std::strrchr(term_name, '/');
-
-      if ( term_basename == 0 )
-        term_basename = term_name;
-      else
-        term_basename++;
 
       // read and parse the file
       while ( fgets(str, sizeof(str)-1, fp) != 0 )
@@ -2124,6 +2124,25 @@ void FTerm::identifyTermType()
 
       std::fclose(fp);
     }
+
+    // Analyse /etc/ttys
+    // --------------------
+    struct ttyent* ttys_entryt;
+    ttys_entryt = getttynam(term_basename);
+
+    if ( ttys_entryt )
+    {
+      char* type = ttys_entryt->ty_type;
+
+      if ( type != 0 )
+      {
+        std::strncpy (termtype, type, sizeof(termtype) - 1);
+        endttyent();
+        return;
+      }
+    }
+
+    endttyent();
   }
 
   // use vt100 if not found
@@ -3436,11 +3455,12 @@ void FTerm::init()
   char* new_termtype = 0;
   term_initialized = true;
   init_term_object = this;
-  fd_tty      = -1;
-  opti_move   = new FOptiMove();
-  opti_attr   = new FOptiAttr();
-  term        = new FRect(0,0,0,0);
-  mouse       = new FPoint(0,0);
+  fd_tty       = -1;
+  opti_move    = new FOptiMove();
+  opti_attr    = new FOptiAttr();
+  term         = new FRect(0,0,0,0);
+  mouse        = new FPoint(0,0);
+  empty_string = new FString("");
 
   vt100_alt_char = new std::map<uChar,uChar>;
   encoding_set   = new std::map<std::string,fc::encoding>;
@@ -3506,21 +3526,21 @@ void FTerm::init()
 #endif
 
 #if defined(BSD)
-  // initialize BSD console
+  // Initialize BSD console
   initBSDConsole();
 #endif
 
-  // save termios settings
+  // Save termios settings
   storeTTYsettings();
 
-  // get output baud rate
+  // Get output baud rate
   baudrate = getBaudRate(&term_init);
 
   if ( isatty(stdout_no) )
     opti_move->setBaudRate(int(baudrate));
 
-  // get the set type of the terminal
-  identifyTermType();
+  // Set the variable 'termtype' to the predefined type of the terminal
+  getSystemTermType();
 
   if ( std::strncmp(termtype, "cygwin", 6) == 0 )
     cygwin_terminal = true;
@@ -3543,7 +3563,7 @@ void FTerm::init()
   else
     linux_terminal = false;
 
-  // terminal detection
+  // Terminal detection
   if ( terminal_detection )
   {
     struct termios t;
@@ -3553,7 +3573,7 @@ void FTerm::init()
     t.c_cc[VMIN]  = 0; // Minimum number of characters
     tcsetattr (stdin_no, TCSANOW, &t);
 
-    // initialize 256 colors terminals
+    // Initialize 256 colors terminals
     new_termtype = init_256colorTerminal();
 
     // Identify the terminal via the answerback-message
@@ -3919,6 +3939,9 @@ void FTerm::finish()
 
   if ( vt100_alt_char )
     delete vt100_alt_char;
+
+  if ( empty_string )
+    delete empty_string;
 
   if ( sec_da )
     delete sec_da;

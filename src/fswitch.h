@@ -57,7 +57,7 @@ class FSwitch : public FToggleButton
    const char* getClassName() const;
 
    // Mutator
-   void setText (FString);
+   void setText (const FString&);
 
    // Event handlers
    void onKeyPress (FKeyEvent*);

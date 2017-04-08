@@ -56,6 +56,7 @@
 #include <langinfo.h>
 #include <term.h>           // termcap
 #include <termios.h>
+#include <ttyent.h>
 #include <unistd.h>
 
 #include <cmath>
@@ -110,7 +111,7 @@ class FTerm
    } mod_key;
 
    // Constructor
-   FTerm (bool = false);
+   explicit FTerm (bool = false);
 
    // Destructor
    virtual ~FTerm();
@@ -367,7 +368,7 @@ class FTerm
 
    static int            openConsole();
    static int            closeConsole();
-   static void           identifyTermType();
+   static void           getSystemTermType();
    static void           storeTTYsettings();
    static void           restoreTTYsettings();
 
@@ -459,6 +460,7 @@ class FTerm
    static const FString* xterm_title;
    static const FString* answer_back;
    static const FString* sec_da;
+   static const FString* empty_string;
 
    struct
    {
@@ -492,11 +494,11 @@ inline int FTerm::getMaxColor()
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
-{ return *answer_back; }
+{ return (answer_back) ? *answer_back : *empty_string; }
 
 //----------------------------------------------------------------------
 inline const FString& FTerm::getSecDAString()
-{ return *sec_da; }
+{ return (sec_da) ? *sec_da : *empty_string; }
 #endif
 
 //----------------------------------------------------------------------

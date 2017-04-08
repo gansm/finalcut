@@ -1,3 +1,6 @@
+2017-04-08  Markus Gans  <guru.mail@muenster.de>
+	* Looking in /etc/ttys for the type of terminal
+
 2017-04-06  Markus Gans  <guru.mail@muenster.de>
 	* Change cursor style on a FreeBSD console
 
