@@ -753,7 +753,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
       while ( iter != end )
       {
-        if ( (*iter).name && input
+        if ( (*iter).name && ! input.isNull()
             && std::strcmp((*iter).name, input) == 0
             && (*iter).type == DT_DIR )
         {
