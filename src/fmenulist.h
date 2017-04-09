@@ -16,8 +16,8 @@
 //       └- - - - - - -▕ FCheckMenuItem ▏
 //                     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FMENULIST_H
-#define _FMENULIST_H
+#ifndef FMENULIST_H
+#define FMENULIST_H
 
 #include "fmenuitem.h"
 #include "fwidget.h"
@@ -113,4 +113,4 @@ inline bool FMenuList::isSelected(int index) const
 inline bool FMenuList::hasSelectedItem() const
 { return selected_item; }
 
-#endif  // _FMENULIST_H
+#endif  // FMENULIST_H

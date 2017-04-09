@@ -1,7 +1,7 @@
 // unicodemap.h
 
-#ifndef _FUNICODEMAP_H
-#define _FUNICODEMAP_H
+#ifndef FUNICODEMAP_H
+#define FUNICODEMAP_H
 
 static struct unipair unicode_cp437_pairs[] =
 {
@@ -313,4 +313,4 @@ static struct unipair unicode_cp437_pairs[] =
   {0xfffd, 0xfe}
 };
 
-#endif  // _FUNICODEMAP_H
+#endif  // FUNICODEMAP_H

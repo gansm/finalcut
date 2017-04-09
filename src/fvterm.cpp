@@ -143,9 +143,9 @@ bool FVTerm::hideCursor (bool on)
     setLinuxConsoleCursorStyle (getLinuxConsoleCursorStyle(), false);
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( ! hidden_cursor )
-    setBSDConsoleCursorStyle (getBSDConsoleCursorStyle(), false);
+    setFreeBSDConsoleCursorStyle (getFreeBSDConsoleCursorStyle(), false);
 #endif
 
   return hidden_cursor;
@@ -722,8 +722,8 @@ void FVTerm::setInsertCursorStyle (bool on)
     setLinuxConsoleCursorStyle (fc::underscore_cursor, isCursorHidden());
 #endif
 
-#if defined(BSD)
-    setBSDConsoleCursorStyle (fc::destructive_cursor, isCursorHidden());
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, isCursorHidden());
 #endif
 
     if ( isUrxvtTerminal() )
@@ -738,8 +738,8 @@ void FVTerm::setInsertCursorStyle (bool on)
     setLinuxConsoleCursorStyle (fc::full_block_cursor, isCursorHidden());
 #endif
 
-#if defined(BSD)
-    setBSDConsoleCursorStyle (fc::normal_cursor, isCursorHidden());
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    setFreeBSDConsoleCursorStyle (fc::normal_cursor, isCursorHidden());
 #endif
 
     if ( isUrxvtTerminal() )
@@ -2384,7 +2384,7 @@ void FVTerm::updateTerminalLine (uInt y)
                 && (ut || normal) )
             {
               appendAttributes (print_char);
-              appendOutputBuffer (tparm(ec, whitespace));
+              appendOutputBuffer (tparm(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
 
               if ( x + whitespace - 1 < xmax || draw_tailing_ws )
                 setTermXY (int(x + whitespace), int(y));
@@ -2433,7 +2433,7 @@ void FVTerm::updateTerminalLine (uInt y)
               newFontChanges (print_char);
               charsetChanges (print_char);
               appendAttributes (print_char);
-              appendOutputBuffer (tparm(rp, print_char->code, repetitions));
+              appendOutputBuffer (tparm(rp, print_char->code, repetitions, 0, 0, 0, 0, 0, 0, 0));
               term_pos->x_ref() += short(repetitions);
               x = x + repetitions - 1;
             }
@@ -2687,7 +2687,7 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
 
     if ( IC )
     {
-      appendOutputBuffer (tparm(IC, 1));
+      appendOutputBuffer (tparm(IC, 1, 0, 0, 0, 0, 0, 0, 0, 0));
       appendChar (screen_char);
     }
     else if ( im && ei )

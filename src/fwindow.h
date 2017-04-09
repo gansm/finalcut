@@ -33,8 +33,8 @@
 //                   └- - - -▕ FWidget ▏
 //                           ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FWINDOW_H
-#define _FWINDOW_H
+#ifndef FWINDOW_H
+#define FWINDOW_H
 
 #include "fwidget.h"
 
@@ -249,4 +249,4 @@ inline bool FWindow::raiseWindow()
 inline bool FWindow::lowerWindow()
 { return lowerWindow(this); }
 
-#endif  // _FWINDOW_H
+#endif  // FWINDOW_H

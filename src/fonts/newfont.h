@@ -1,7 +1,7 @@
 // newfont.h
 
-#ifndef _FNEWFONT_H
-#define _FNEWFONT_H
+#ifndef FNEWFONT_H
+#define FNEWFONT_H
 
 
 static unsigned char __8x16graph[] =
@@ -264,4 +264,4 @@ static unsigned char __8x16graph[] =
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   /* 255 */
 };
 
-#endif  // _FNEWFONT_H
+#endif  // FNEWFONT_H

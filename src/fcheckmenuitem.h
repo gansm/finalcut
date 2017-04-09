@@ -30,8 +30,8 @@
 //    ▕ FCheckMenuItem ▏- - - - -▕ FMenu ▏
 //    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▏
 
-#ifndef _FCHECKMENUITEM_H
-#define _FCHECKMENUITEM_H
+#ifndef FCHECKMENUITEM_H
+#define FCHECKMENUITEM_H
 
 #include "fmenuitem.h"
 
@@ -76,4 +76,4 @@ class FCheckMenuItem : public FMenuItem
 inline const char* FCheckMenuItem::getClassName() const
 { return "FCheckMenuItem"; }
 
-#endif  // _FCHECKMENUITEM_H
+#endif  // FCHECKMENUITEM_H

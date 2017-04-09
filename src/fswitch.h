@@ -30,8 +30,8 @@
 //       ▕ FSwitch ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FSWITCH_H
-#define _FSWITCH_H
+#ifndef FSWITCH_H
+#define FSWITCH_H
 
 #include "ftogglebutton.h"
 
@@ -87,4 +87,4 @@ class FSwitch : public FToggleButton
 inline const char* FSwitch::getClassName() const
 { return "FSwitch"; }
 
-#endif  // _FSWITCH_H
+#endif  // FSWITCH_H

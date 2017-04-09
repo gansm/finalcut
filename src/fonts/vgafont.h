@@ -1,7 +1,7 @@
 // vgafont.h
 
-#ifndef _FVGAFONT_H
-#define _FVGAFONT_H
+#ifndef FVGAFONT_H
+#define FVGAFONT_H
 
 static unsigned char __8x16std[] =
 {
@@ -263,4 +263,4 @@ static unsigned char __8x16std[] =
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00   /* 255 */
 };
 
-#endif  // _FVGAFONT_H
+#endif  // FVGAFONT_H

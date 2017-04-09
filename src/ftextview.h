@@ -25,8 +25,8 @@
 //      ▕ FTextView ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FTEXTVIEW_H
-#define _FTEXTVIEW_H
+#ifndef FTEXTVIEW_H
+#define FTEXTVIEW_H
 
 #include "fapp.h"
 #include "fscrollbar.h"
@@ -145,4 +145,4 @@ inline void FTextView::deleteRange (int start, int end)
 inline void FTextView::deleteLine (int pos)
 { deleteRange (pos, pos); }
 
-#endif  // _FTEXTVIEW_H
+#endif  // FTEXTVIEW_H

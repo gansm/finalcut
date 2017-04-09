@@ -8,8 +8,8 @@
 //     ▕ FRect ▏- - - -▕ FPoint ▏
 //     ▕▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▏
 
-#ifndef _FRECT_H
-#define _FRECT_H
+#ifndef FRECT_H
+#define FRECT_H
 
 #include <algorithm>
 #include "fpoint.h"
@@ -192,4 +192,4 @@ inline short& FRect::x2_ref()
 inline short& FRect::y2_ref()
 { return Y2; }
 
-#endif  // _FRECT_H
+#endif  // FRECT_H

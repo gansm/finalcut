@@ -185,7 +185,7 @@ void FProgressbar::drawPercentage()
 void FProgressbar::drawBar()
 {
   int i = 0;
-  float length = float(bar_length * percentage) / 100;
+  double length = double(bar_length * percentage) / 100;
   setPrintPos (1,1);
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );

@@ -515,37 +515,37 @@ void FFileDialog::init()
   filename->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
   );
 
   filebrowser->addCallback
   (
     "row-changed",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
   );
 
   filebrowser->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
   );
 
   hidden->addCallback
   (
     "toggled",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
   );
 
   cancel->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
   );
 
   open->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
+    F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
   );
 
   setModal();

@@ -23,14 +23,14 @@
 //                   └- - - -▕ FRect ▏
 //                           ▕▁▁▁▁▁▁▁▏
 
-#ifndef _FVTERM_H
-#define _FVTERM_H
+#ifndef FVTERM_H
+#define FVTERM_H
 
 #include "fterm.h"
 #include <sstream>  // std::stringstream
 
 // Preprocessing handler macro
-#define _PREPROC_HANDLER(i,h) \
+#define F_PREPROC_HANDLER(i,h) \
            reinterpret_cast<FVTerm*>((i)) \
          , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
 
@@ -777,4 +777,4 @@ inline void FVTerm::unsetInsertCursorStyle()
 inline void FVTerm::setPrintArea (term_area* area)
 { print_area = area; }
 
-#endif  // _FVTERM_H
+#endif  // FVTERM_H

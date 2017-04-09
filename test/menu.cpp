@@ -174,7 +174,7 @@ Menu::Menu (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Menu::cb_exitApp)
+    F_METHOD_CALLBACK (this, &Menu::cb_exitApp)
   );
 
   // Statusbar at the bottom
@@ -221,7 +221,7 @@ void Menu::defaultCallback (FMenuList* mb)
       item->addCallback
       (
         "clicked",
-        _METHOD_CALLBACK (this, &Menu::cb_message)
+        F_METHOD_CALLBACK (this, &Menu::cb_message)
       );
 
       // Call sub-menu

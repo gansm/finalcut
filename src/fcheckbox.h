@@ -30,8 +30,8 @@
 //      ▕ FCheckBox ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FCHECKBOX_H
-#define _FCHECKBOX_H
+#ifndef FCHECKBOX_H
+#define FCHECKBOX_H
 
 #include "ftogglebutton.h"
 
@@ -76,4 +76,4 @@ class FCheckBox : public FToggleButton
 inline const char* FCheckBox::getClassName() const
 { return "FCheckBox"; }
 
-#endif  // _FCHECKBOX_H
+#endif  // FCHECKBOX_H

@@ -341,7 +341,7 @@ MouseDraw::MouseDraw (FWidget* parent)
   c_chooser->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
+    F_METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
   );
 
   brush = new Brushes(this);

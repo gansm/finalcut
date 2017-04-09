@@ -29,8 +29,8 @@
 //                    └- - - -▕ FMenuList ▏
 //                            ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FMENUITEM_H
-#define _FMENUITEM_H
+#ifndef FMENUITEM_H
+#define FMENUITEM_H
 
 #include "fwidget.h"
 
@@ -244,4 +244,4 @@ inline FWidget* FMenuItem::getSuperMenu() const
 inline void FMenuItem::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
 
-#endif  // _FMENUITEM_H
+#endif  // FMENUITEM_H

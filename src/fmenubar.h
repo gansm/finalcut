@@ -32,8 +32,8 @@
 //            ▕ FMenuBar ▏
 //            ▕▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FMENUBAR_H
-#define _FMENUBAR_H
+#ifndef FMENUBAR_H
+#define FMENUBAR_H
 
 #include "fmenu.h"
 #include "fmenulist.h"
@@ -116,4 +116,4 @@ inline const char* FMenuBar::getClassName() const
 inline bool FMenuBar::isMenu (FMenuItem* mi) const
 { return mi->hasMenu(); }
 
-#endif  // _FMENUBAR_H
+#endif  // FMENUBAR_H

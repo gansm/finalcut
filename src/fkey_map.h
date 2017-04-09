@@ -1,7 +1,7 @@
 // File: fkey_map.h
 
-#ifndef _FKEYMAP_H
-#define _FKEYMAP_H
+#ifndef FKEYMAP_H
+#define FKEYMAP_H
 
 
 #pragma pack(push)
@@ -827,4 +827,4 @@ static keyname FkeyName[] =
   { 0                             , "\0" }
 };
 
-#endif  // _FKEYMAP_H
+#endif  // FKEYMAP_H

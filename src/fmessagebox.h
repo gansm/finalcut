@@ -35,8 +35,8 @@
 //     ▕ FMessageBox ▏
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FMESSAGEBOX_H
-#define _FMESSAGEBOX_H
+#ifndef FMESSAGEBOX_H
+#define FMESSAGEBOX_H
 
 #include <cstring>
 
@@ -181,4 +181,4 @@ inline bool FMessageBox::setCenterText()
 inline bool FMessageBox::unsetCenterText()
 { return setCenterText(false); }
 
-#endif  // _FMESSAGEBOX_H
+#endif  // FMESSAGEBOX_H

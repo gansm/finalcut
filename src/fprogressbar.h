@@ -25,8 +25,8 @@
 //    ▕ FProgressbar ▏
 //    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FPROGRESSBAR_H
-#define _FPROGRESSBAR_H
+#ifndef FPROGRESSBAR_H
+#define FPROGRESSBAR_H
 
 #include "fwidget.h"
 
@@ -119,4 +119,4 @@ inline bool FProgressbar::hasShadow()
 { return ((flags & fc::shadow) != 0); }
 
 
-#endif  // _FPROGRESSBAR_H
+#endif  // FPROGRESSBAR_H

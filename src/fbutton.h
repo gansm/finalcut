@@ -25,8 +25,8 @@
 //       ▕ FButton ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FBUTTON_H
-#define _FBUTTON_H
+#ifndef FBUTTON_H
+#define FBUTTON_H
 
 #include "fwidget.h"
 
@@ -224,4 +224,4 @@ inline bool FButton::hasShadow() const
 inline bool FButton::hasClickAnimation()
 { return click_animation; }
 
-#endif  // _FBUTTON_H
+#endif  // FBUTTON_H

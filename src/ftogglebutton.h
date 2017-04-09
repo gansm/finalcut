@@ -25,8 +25,8 @@
 //    ▕ FToggleButton ▏
 //    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FTOGGLEBUTTON_H
-#define _FTOGGLEBUTTON_H
+#ifndef FTOGGLEBUTTON_H
+#define FTOGGLEBUTTON_H
 
 #include "fwidget.h"
 
@@ -197,4 +197,4 @@ inline FButtonGroup* FToggleButton::getGroup() const
 inline bool FToggleButton::hasGroup() const
 { return button_group; }
 
-#endif  // _FTOGGLEBUTTON_H
+#endif  // FTOGGLEBUTTON_H

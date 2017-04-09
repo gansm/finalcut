@@ -33,8 +33,8 @@
 //     ▕ FStatusBar ▏- - - -▕ FStatusKey ▏
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FSTATUSBAR_H
-#define _FSTATUSBAR_H
+#ifndef FSTATUSBAR_H
+#define FSTATUSBAR_H
 
 #include "fwindow.h"
 
@@ -266,4 +266,4 @@ inline FString FStatusBar::getMessage() const
 inline void FStatusBar::clearMessage()
 { text.clear(); }
 
-#endif  // _FSTATUSBAR_H
+#endif  // FSTATUSBAR_H

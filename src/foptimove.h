@@ -11,8 +11,8 @@
 // The cursor optimization based on ncurses lib_mvcur.c
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef _FOPTIMOVE_H
-#define _FOPTIMOVE_H
+#ifndef FOPTIMOVE_H
+#define FOPTIMOVE_H
 
 #include <assert.h>
 #include <term.h>  // need for tparm
@@ -141,4 +141,4 @@ inline void FOptiMove::set_auto_left_margin (bool& bcap)
 inline void FOptiMove::set_eat_newline_glitch (bool& bcap)
 { eat_nl_glitch = bcap; }
 
-#endif  // _FOPTIMOVE_H
+#endif  // FOPTIMOVE_H

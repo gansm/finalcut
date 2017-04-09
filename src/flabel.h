@@ -25,8 +25,8 @@
 //       ▕ FLabel ▏
 //       ▕▁▁▁▁▁▁▁▁▏
 
-#ifndef _FLABEL_H
-#define _FLABEL_H
+#ifndef FLABEL_H
+#define FLABEL_H
 
 #include "fwidget.h"
 
@@ -158,4 +158,4 @@ inline bool FLabel::hasEmphasis()
 inline bool FLabel::hasReverseMode()
 { return reverse_mode; }
 
-#endif  // _FLABEL_H
+#endif  // FLABEL_H

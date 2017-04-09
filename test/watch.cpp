@@ -91,21 +91,21 @@ watch::watch (FWidget* parent)
   clock_sw->addCallback
   (
     "toggled",
-    _METHOD_CALLBACK (this, &watch::cb_clock)
+    F_METHOD_CALLBACK (this, &watch::cb_clock)
   );
 
   // Connect switch signal "toggled" with a callback member function
   seconds_sw->addCallback
   (
     "toggled",
-    _METHOD_CALLBACK (this, &watch::cb_seconds)
+    F_METHOD_CALLBACK (this, &watch::cb_seconds)
   );
 
   // Connect button signal "clicked" with a callback member function
   quit_btn->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &watch::cb_exitApp)
+    F_METHOD_CALLBACK (this, &watch::cb_exitApp)
   );
 }
 

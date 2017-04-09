@@ -249,7 +249,7 @@ void FButtonGroup::insert (FToggleButton* button)
   button->addCallback
   (
     "toggled",
-    _METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
+    F_METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
   );
 
   //checkScrollSize (button);

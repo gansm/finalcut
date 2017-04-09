@@ -55,7 +55,7 @@ void FScrollView::setScrollWidth (int width)
 
     addPreprocessingHandler
     (
-      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
     child_print_area = viewport;
   }
@@ -82,7 +82,7 @@ void FScrollView::setScrollHeight (int height)
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
     (
-      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
     child_print_area = viewport;
   }
@@ -112,7 +112,7 @@ void FScrollView::setScrollSize (int width, int height)
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
     (
-      _PREPROC_HANDLER (this, &FScrollView::copy2area)
+      F_PREPROC_HANDLER (this, &FScrollView::copy2area)
     );
     child_print_area = viewport;
   }
@@ -774,13 +774,13 @@ void FScrollView::init (FWidget* parent)
   vbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FScrollView::cb_VBarChange)
+    F_METHOD_CALLBACK (this, &FScrollView::cb_VBarChange)
   );
 
   hbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FScrollView::cb_HBarChange)
+    F_METHOD_CALLBACK (this, &FScrollView::cb_HBarChange)
   );
 
   nf_offset = isNewFont() ? 1 : 0;
@@ -803,7 +803,7 @@ void FScrollView::init (FWidget* parent)
   createArea (scroll_geometry, no_shadow, viewport);
   addPreprocessingHandler
   (
-    _PREPROC_HANDLER (this, &FScrollView::copy2area)
+    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
   );
 
   if ( viewport )

@@ -25,8 +25,8 @@
 //      ▕ FLineEdit ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FLINEEDIT_H
-#define _FLINEEDIT_H
+#ifndef FLINEEDIT_H
+#define FLINEEDIT_H
 
 #include "fwidget.h"
 #include "flabel.h"
@@ -181,4 +181,4 @@ inline bool FLineEdit::unsetShadow()
 inline bool FLineEdit::hasShadow()
 { return ((flags & fc::shadow) != 0); }
 
-#endif  // _FLINEEDIT_H
+#endif  // FLINEEDIT_H

@@ -6,8 +6,8 @@ FONTFILE="8x16std"
 
 (
   echo -e "// vgafont.h\n"
-  echo -e "#ifndef _FVGAFONT_H"
-  echo -e "#define _FVGAFONT_H\n"
+  echo -e "#ifndef FVGAFONT_H"
+  echo -e "#define FVGAFONT_H\n"
 
   xxd -g 1 -i -c $HEIGHT $FONTFILE \
   | sed -e 's/ {$/\n{/' \
@@ -24,5 +24,5 @@ FONTFILE="8x16std"
     fi
   done
 
-  echo -e "\n#endif  // _FVGAFONT_H"
+  echo -e "\n#endif  // FVGAFONT_H"
 ) > vgafont.h

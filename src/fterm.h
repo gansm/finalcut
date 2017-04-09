@@ -24,8 +24,8 @@
 //           └- - - -▕ FRect ▏
 //                   ▕▁▁▁▁▁▁▁▏
 
-#ifndef _FTERM_H
-#define _FTERM_H
+#ifndef FTERM_H
+#define FTERM_H
 
 #include <fconfig.h>
 
@@ -40,12 +40,9 @@
   #include <sys/kd.h>
 #endif
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-  #include <sys/param.h>
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
   #include <sys/consio.h>
   #include <sys/kbio.h>
-#endif
 #endif
 
 #include <sys/ioctl.h>
@@ -59,6 +56,7 @@
 #include <ttyent.h>
 #include <unistd.h>
 
+#include <clocale>
 #include <cmath>
 #include <csignal>
 #include <map>
@@ -136,8 +134,8 @@ class FTerm
    static fc::linuxConsoleCursorStyle getLinuxConsoleCursorStyle();
 #endif
 
-#if defined(BSD)
-   static fc::bsdConsoleCursorStyle getBSDConsoleCursorStyle();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+   static fc::freebsdConsoleCursorStyle getFreeBSDConsoleCursorStyle();
 #endif
 
 #if DEBUG
@@ -183,9 +181,9 @@ class FTerm
                                                     , bool );
 #endif
 
-#if defined(BSD)
-   static void           setBSDConsoleCursorStyle ( fc::bsdConsoleCursorStyle
-                                                  , bool );
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+   static void           setFreeBSDConsoleCursorStyle ( fc::freebsdConsoleCursorStyle
+                                                      , bool );
 #endif
 
    static void           setTTY (termios&);
@@ -278,8 +276,8 @@ class FTerm
    static void           initLinuxConsoleCharMap();
 #endif
 
-#if defined(BSD)
-   static void           initBSDConsoleCharMap();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+   static void           initFreeBSDConsoleCharMap();
 #endif
    static void           initCygwinCharMap();
    static void           initTeraTermCharMap();
@@ -347,12 +345,12 @@ class FTerm
    static int            isLinuxConsole();
 #endif
 
-#if defined(BSD)
-   static bool           isBSDConsole();
-   static bool           saveBSDAltKey();
-   static bool           setBSDAltKey (uChar);
-   static bool           setBSDAlt2Meta();
-   static bool           resetBSDAlt2Meta();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+   static bool           isFreeBSDConsole();
+   static bool           saveFreeBSDAltKey();
+   static bool           setFreeBSDAltKey (uInt);
+   static bool           setFreeBSDAlt2Meta();
+   static bool           resetFreeBSDAlt2Meta();
 #endif
 
    // Methods
@@ -380,8 +378,8 @@ class FTerm
    static void           initLinuxConsole();
 #endif
 
-#if defined(BSD)
-   static void           initBSDConsole();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+   static void           initFreeBSDConsole();
 #endif
 
    static uInt           getBaudRate (const struct termios*);
@@ -433,6 +431,7 @@ class FTerm
    static bool    cygwin_terminal;
    static bool    mintty_terminal;
    static bool    linux_terminal;
+   static bool    netbsd_terminal;
    static bool    screen_terminal;
    static bool    tmux_terminal;
    static char    termtype[30];
@@ -449,10 +448,10 @@ class FTerm
 
    static struct  termios term_init;
    static fc::linuxConsoleCursorStyle linux_console_cursor_style;
-   static fc::bsdConsoleCursorStyle bsd_console_cursor_style;
+   static fc::freebsdConsoleCursorStyle freebsd_console_cursor_style;
    static struct  console_font_op screen_font;
    static struct  unimapdesc      screen_unicode_map;
-   static uChar   bsd_alt_keymap;
+   static uInt    bsd_alt_keymap;
 
    static FOptiMove*     opti_move;
    static FOptiAttr*     opti_attr;
@@ -684,4 +683,4 @@ inline void FTerm::setMousePos (short x, short y)
 { mouse->setPoint (x, y); }
 
 
-#endif  // _FTERM_H
+#endif  // FTERM_H

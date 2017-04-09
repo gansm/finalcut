@@ -30,8 +30,8 @@
 //    ▕ FRadioMenuItem ▏- - - - -▕ FMenu ▏
 //    ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏         ▕▁▁▁▁▁▁▁▏
 
-#ifndef _FRADIOMENUITEM_H
-#define _FRADIOMENUITEM_H
+#ifndef FRADIOMENUITEM_H
+#define FRADIOMENUITEM_H
 
 #include "fmenuitem.h"
 
@@ -76,4 +76,4 @@ class FRadioMenuItem : public FMenuItem
 inline const char* FRadioMenuItem::getClassName() const
 { return "FRadioMenuItem"; }
 
-#endif  // _FRADIOMENUITEM_H
+#endif  // FRADIOMENUITEM_H

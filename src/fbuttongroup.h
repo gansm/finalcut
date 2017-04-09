@@ -25,8 +25,8 @@
 //     ▕ FButtonGroup ▏
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FBUTTONGROUP_H
-#define _FBUTTONGROUP_H
+#ifndef FBUTTONGROUP_H
+#define FBUTTONGROUP_H
 
 #include "fscrollview.h"
 
@@ -143,4 +143,4 @@ inline uInt FButtonGroup::getCount() const
 inline FString& FButtonGroup::getText()
 { return text; }
 
-#endif  // _FBUTTONGROUP_H
+#endif  // FBUTTONGROUP_H

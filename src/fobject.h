@@ -8,8 +8,8 @@
 // ▕ FObject ▏
 // ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FOBJECT_H
-#define _FOBJECT_H
+#ifndef FOBJECT_H
+#define FOBJECT_H
 
 #include <stdint.h>
 #include <sys/time.h> // need for gettimeofday
@@ -210,4 +210,4 @@ static inline bool operator < (const timeval& t1, const timeval& t2)
       || (t1.tv_sec == t2.tv_sec && t1.tv_usec < t2.tv_usec);
 }
 
-#endif  // _FOBJECT_H
+#endif  // FOBJECT_H

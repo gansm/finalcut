@@ -68,17 +68,17 @@
 //                   └- - - -▕ FCloseEvent ▏
 //                           ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FWIDGET_H
-#define _FWIDGET_H
+#ifndef FWIDGET_H
+#define FWIDGET_H
 
 #include "fvterm.h"
 
 
 // Callback macros
-#define _FUNCTION_CALLBACK(h) \
+#define F_FUNCTION_CALLBACK(h) \
            reinterpret_cast<FWidget::FCallback>((h))
 
-#define _METHOD_CALLBACK(i,h) \
+#define F_METHOD_CALLBACK(i,h) \
            reinterpret_cast<FWidget*>((i)) \
          , reinterpret_cast<FWidget::FMemberCallback>((h))
 
@@ -967,4 +967,4 @@ const wchar_t CHECKED_RADIO_BUTTON[4] =
   '\0'
 };
 
-#endif  // _FWIDGET_H
+#endif  // FWIDGET_H

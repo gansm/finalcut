@@ -27,8 +27,8 @@
 //       ▕▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 //
 
-#ifndef _FLISTBOX_H
-#define _FLISTBOX_H
+#ifndef FLISTBOX_H
+#define FLISTBOX_H
 
 #include "fscrollbar.h"
 #include "fstring.h"
@@ -309,4 +309,4 @@ inline bool FListBox::isMultiSelection() const
 inline bool FListBox::hasBrackets(int index) const
 { return bool(data[uInt(index-1)].brackets > 0); }
 
-#endif  // _FLISTBOX_H
+#endif  // FLISTBOX_H

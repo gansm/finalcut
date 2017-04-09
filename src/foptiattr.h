@@ -8,8 +8,8 @@
 // ▕ FOptiAttr ▏
 // ▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FOPTIATTR_H
-#define _FOPTIATTR_H
+#ifndef FOPTIATTR_H
+#define FOPTIATTR_H
 
 
 #include <algorithm>  // need for std::swap
@@ -306,4 +306,4 @@ inline void FOptiAttr::setDefaultColorSupport()
 inline void FOptiAttr::setCygwinTerminal()
 { cygwin_terminal = true; }
 
-#endif  // _FOPTIATTR_H
+#endif  // FOPTIATTR_H

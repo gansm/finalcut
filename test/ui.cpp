@@ -80,19 +80,19 @@ ProgressDialog::ProgressDialog (FWidget* parent)
   reset->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &ProgressDialog::cb_reset_bar)
+    F_METHOD_CALLBACK (this, &ProgressDialog::cb_reset_bar)
   );
 
   more->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &ProgressDialog::cb_more_bar)
+    F_METHOD_CALLBACK (this, &ProgressDialog::cb_more_bar)
   );
 
   quit->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &ProgressDialog::cb_exit_bar)
+    F_METHOD_CALLBACK (this, &ProgressDialog::cb_exit_bar)
   );
 }
 
@@ -350,75 +350,75 @@ MyDialog::MyDialog (FWidget* parent)
   Open->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view)
   );
 
   Quit->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 
   Cut->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_cutClipboard)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_cutClipboard)
   );
 
   Copy->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_copyClipboard)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_copyClipboard)
   );
 
   Paste->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_pasteClipboard)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_pasteClipboard)
   );
 
   Clear->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_clearInput)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_clearInput)
   );
 
   Env->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_terminfo)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_terminfo)
   );
 
   Drive->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_drives)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_drives)
   );
 
   Help->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_about)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
 
   File1->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
     dynamic_cast<FWidget::data_ptr>(File1)
   );
 
   File2->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
     dynamic_cast<FWidget::data_ptr>(File2)
   );
 
   File3->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
     dynamic_cast<FWidget::data_ptr>(File3)
   );
 
@@ -543,83 +543,83 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton1->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton2->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton3->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
   );
 
   MyButton4->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
     dynamic_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   MyButton5->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
   );
 
   MyButton6->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 
   myLineEdit->addCallback
   (
     "activate",  // e.g. on <Enter>
-    _METHOD_CALLBACK (this, &MyDialog::cb_setTitlebar)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_setTitlebar)
   );
 
   radio1->addCallback
   (
     "toggled",
-    _METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
     dynamic_cast<FWidget::data_ptr>(MyButton5)
   );
 
   myList->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &MyDialog::cb_setInput),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_setInput),
     dynamic_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   myList->addCallback
   (
     "row-selected",
-    _METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
+    F_METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
     dynamic_cast<FWidget::data_ptr>(tagged_count)
   );
 
   key_F1->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &MyDialog::cb_about)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_about)
   );
 
   key_F2->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &MyDialog::cb_view)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view)
   );
 
   key_F3->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
   );
 }
 

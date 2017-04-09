@@ -615,13 +615,13 @@ void FTextView::init()
   vbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
+    F_METHOD_CALLBACK (this, &FTextView::cb_VBarChange)
   );
 
   hbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
+    F_METHOD_CALLBACK (this, &FTextView::cb_HBarChange)
   );
 
   nf_offset = isNewFont() ? 1 : 0;

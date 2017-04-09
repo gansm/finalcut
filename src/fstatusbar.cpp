@@ -274,7 +274,7 @@ void FStatusBar::insert (FStatusKey* skey)
   skey->addCallback
   (
     "activate",
-    _METHOD_CALLBACK (this, &FStatusBar::cb_statuskey_activated)
+    F_METHOD_CALLBACK (this, &FStatusBar::cb_statuskey_activated)
   );
 }
 

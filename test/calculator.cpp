@@ -272,7 +272,7 @@ Calc::Calc (FWidget* parent)
     btn->addCallback
     (
       "clicked",
-      _METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
+      F_METHOD_CALLBACK (this, &Calc::cb_buttonClicked),
       &button_no[key]
     );
 
@@ -527,7 +527,7 @@ void Calc::onKeyPress (FKeyEvent* ev)
         else
           input = input.left(input.getLength() - 1);
 
-        a = std::atof(input.c_str());
+        a = lDouble(std::atof(input.c_str()));
         drawDispay();
         updateTerminal();
       }
@@ -574,6 +574,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
 {
   int key;
   lDouble* x;
+  lDouble infinity = std::numeric_limits<lDouble>::infinity();
 
   using namespace std;
 
@@ -596,7 +597,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
           if ( errno == EDOM || errno == ERANGE )
             error = true;
 
-          if ( *x == INFINITY )
+          if ( fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
             error = true;
         }
         else
@@ -632,7 +633,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
           if ( errno == EDOM || errno == ERANGE )
             error = true;
 
-          if ( *x == INFINITY )
+          if ( fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
             error = true;
         }
         else
@@ -976,7 +977,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
   if ( ! input.isEmpty() )
   {
     if ( isDataEntryKey(key) )
-      *x = input.toDouble();
+      *x = lDouble(input.toDouble());
     else
     {
       // remove trailing zeros

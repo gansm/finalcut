@@ -26,8 +26,8 @@
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 
-#ifndef _FSCROLLVIEW_H
-#define _FSCROLLVIEW_H
+#ifndef FSCROLLVIEW_H
+#define FSCROLLVIEW_H
 
 #include "fscrollbar.h"
 #include "fwidget.h"
@@ -223,4 +223,4 @@ inline void FScrollView::scrollTo (FPoint pos)
 { scrollTo(pos.getX(), pos.getY()); }
 
 
-#endif  // _FSCROLLVIEW_H
+#endif  // FSCROLLVIEW_H

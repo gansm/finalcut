@@ -8,8 +8,8 @@
 //  ▕   fc   ▏
 //  ▕▁▁▁▁▁▁▁▁▏
 
-#ifndef _FC_H
-#define _FC_H
+#ifndef FC_H
+#define FC_H
 
 
 //----------------------------------------------------------------------
@@ -941,11 +941,11 @@ class fc
    };
 
    // BSD console cursor style
-   enum bsdConsoleCursorStyle
+   enum freebsdConsoleCursorStyle
    {
      normal_cursor      = 0,
      blink_cursor       = 1,
-     destructive_cursor = 3 
+     destructive_cursor = 3
    };
 
    // KDE konsole cursor style
@@ -1075,4 +1075,4 @@ class fc
 
 #pragma pack(pop)
 
-#endif  // _FC_H
+#endif  // FC_H

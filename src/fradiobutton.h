@@ -30,8 +30,8 @@
 //     ▕ FRadioButton ▏
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FRADIOBUTTON_H
-#define _FRADIOBUTTON_H
+#ifndef FRADIOBUTTON_H
+#define FRADIOBUTTON_H
 
 #include "ftogglebutton.h"
 
@@ -76,4 +76,4 @@ class FRadioButton : public FToggleButton
 inline const char* FRadioButton::getClassName() const
 { return "FRadioButton"; }
 
-#endif  // _FRADIOBUTTON_H
+#endif  // FRADIOBUTTON_H

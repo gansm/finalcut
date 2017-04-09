@@ -111,7 +111,7 @@ int main (int argc, char* argv[])
   ok->addCallback
   (
     "clicked",
-    _FUNCTION_CALLBACK (&cb_quit),
+    F_FUNCTION_CALLBACK (&cb_quit),
     dgl
   );
 

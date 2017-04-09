@@ -1458,13 +1458,13 @@ void FListBox::init()
   vbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FListBox::cb_VBarChange)
+    F_METHOD_CALLBACK (this, &FListBox::cb_VBarChange)
   );
 
   hbar->addCallback
   (
     "change-value",
-    _METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
+    F_METHOD_CALLBACK (this, &FListBox::cb_HBarChange)
   );
 
   nf_offset = isNewFont() ? 1 : 0;
@@ -1519,8 +1519,8 @@ void FListBox::draw()
 
   if ( isFocus && getStatusBar() )
   {
-    FString msg = getStatusbarMessage();
-    FString curMsg = getStatusBar()->getMessage();
+    const FString& msg = getStatusbarMessage();
+    const FString& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

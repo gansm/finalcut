@@ -1,7 +1,7 @@
 // File: ftcap_map.h
 
-#ifndef _FTCAPMAP_H
-#define _FTCAPMAP_H
+#ifndef FTCAPMAP_H
+#define FTCAPMAP_H
 
 #include "ftermcap.h"
 
@@ -109,4 +109,4 @@ static FTermcap::tcap_map term_caps[] =
  * "XX", "Us" and "Ue" are unofficial and they are only used here.
  */
 
-#endif  // _FTCAPMAP_H
+#endif  // FTCAPMAP_H

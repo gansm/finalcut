@@ -1,7 +1,7 @@
 // final.h
 
-#ifndef _FINAL_H
-#define _FINAL_H
+#ifndef FINAL_H
+#define FINAL_H
 
 #include "fapp.h"
 #include "fbuttongroup.h"
@@ -32,4 +32,4 @@
 #include "ftooltip.h"
 #include "fwidget.h"
 
-#endif  // _FINAL_H
+#endif  // FINAL_H

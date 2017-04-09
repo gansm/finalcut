@@ -8,8 +8,8 @@
 // ▕ FTermcap ▏
 // ▕▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FTERMCAP_H
-#define _FTERMCAP_H
+#ifndef FTERMCAP_H
+#define FTERMCAP_H
 
 
 //----------------------------------------------------------------------
@@ -67,4 +67,4 @@ class FTermcap
 };
 #pragma pack(pop)
 
-#endif  // _FTERMCAP_H
+#endif  // FTERMCAP_H

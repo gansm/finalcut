@@ -8,8 +8,8 @@
 // ▕ FPoint ▏
 // ▕▁▁▁▁▁▁▁▁▏
 
-#ifndef _FPOINT_H
-#define _FPOINT_H
+#ifndef FPOINT_H
+#define FPOINT_H
 
 //----------------------------------------------------------------------
 // class FPoint
@@ -115,4 +115,4 @@ inline short& FPoint::x_ref()
 inline short& FPoint::y_ref()
 { return ypos; }
 
-#endif  // _FPOINT_H
+#endif  // FPOINT_H

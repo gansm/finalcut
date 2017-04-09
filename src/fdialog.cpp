@@ -1099,7 +1099,7 @@ void FDialog::init()
   move_size_item->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FDialog::cb_move)
+    F_METHOD_CALLBACK (this, &FDialog::cb_move)
   );
 
   zoom_item = new FMenuItem (dialog_menu);
@@ -1109,7 +1109,7 @@ void FDialog::init()
   zoom_item->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FDialog::cb_zoom)
+    F_METHOD_CALLBACK (this, &FDialog::cb_zoom)
   );
 
   close_item = new FMenuItem ("&Close", dialog_menu);
@@ -1118,7 +1118,7 @@ void FDialog::init()
   close_item->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &FDialog::cb_close)
+    F_METHOD_CALLBACK (this, &FDialog::cb_close)
   );
 }
 

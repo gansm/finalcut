@@ -35,8 +35,8 @@
 //     ▕ FFileDialog ▏
 //     ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FFILEDIALOG_H
-#define _FFILEDIALOG_H
+#ifndef FFILEDIALOG_H
+#define FFILEDIALOG_H
 
 #include <sys/param.h>
 
@@ -191,5 +191,4 @@ inline bool FFileDialog::unsetShowHiddenFiles()
 inline bool FFileDialog::getShowHiddenFiles()
 { return show_hidden; }
 
-#endif  // _FFILEDIALOG_H
-
+#endif  // FFILEDIALOG_H

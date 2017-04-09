@@ -32,8 +32,8 @@
 //              ▕ FMenu ▏- - - - - - - -▕ FMenuItem ▏
 //              ▕▁▁▁▁▁▁▁▏1             1▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FMENU_H
-#define _FMENU_H
+#ifndef FMENU_H
+#define FMENU_H
 
 #include "fwindow.h"
 #include "fmenubar.h"
@@ -248,4 +248,4 @@ inline void FMenu::onAccel (FAccelEvent* ev)
 { item->onAccel(ev); }
 
 
-#endif  // _FMENU_H
+#endif  // FMENU_H

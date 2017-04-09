@@ -54,6 +54,7 @@ bool     FTerm::tera_terminal;
 bool     FTerm::cygwin_terminal;
 bool     FTerm::mintty_terminal;
 bool     FTerm::linux_terminal;
+bool     FTerm::netbsd_terminal;
 bool     FTerm::screen_terminal;
 bool     FTerm::tmux_terminal;
 bool     FTerm::pc_charset_console;
@@ -110,15 +111,15 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-fc::linuxConsoleCursorStyle FTerm::linux_console_cursor_style;
-fc::bsdConsoleCursorStyle   FTerm::bsd_console_cursor_style;
+fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
+fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 
 #if defined(__linux__)
   console_font_op      FTerm::screen_font;
   unimapdesc           FTerm::screen_unicode_map;
 #endif
 
-uChar FTerm::bsd_alt_keymap = 0;
+uInt FTerm::bsd_alt_keymap = 0;
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -227,11 +228,11 @@ fc::linuxConsoleCursorStyle FTerm::getLinuxConsoleCursorStyle()
 }
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-fc::bsdConsoleCursorStyle FTerm::getBSDConsoleCursorStyle()
+fc::freebsdConsoleCursorStyle FTerm::getFreeBSDConsoleCursorStyle()
 {
-  return bsd_console_cursor_style;
+  return freebsd_console_cursor_style;
 }
 #endif
 
@@ -282,17 +283,17 @@ void FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
 }
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-void FTerm::setBSDConsoleCursorStyle ( fc::bsdConsoleCursorStyle style
-                                     , bool hidden )
+void FTerm::setFreeBSDConsoleCursorStyle ( fc::freebsdConsoleCursorStyle style
+                                         , bool hidden )
 {
   // Set cursor style in a BSD console
 
-  if ( ! isBSDConsole() )
+  if ( ! isFreeBSDConsole() )
     return;
 
-  bsd_console_cursor_style = style;
+  freebsd_console_cursor_style = style;
 
   if ( hidden )
     return;
@@ -994,8 +995,8 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
 
-#if defined(BSD)
-  if ( isBSDConsole() )
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  if ( isFreeBSDConsole() )
     return;
 #endif
 
@@ -1666,13 +1667,13 @@ void FTerm::initLinuxConsoleCharMap()
 }
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-void FTerm::initBSDConsoleCharMap()
+void FTerm::initFreeBSDConsoleCharMap()
 {
   // A FreeBSD console can't show ASCII codes from 0x00 to 0x1b
 
-  if ( ! isBSDConsole() )
+  if ( ! isFreeBSDConsole() )
     return;
 
   for (int i=0; i <= lastCharItem; i++ )
@@ -1831,9 +1832,9 @@ int FTerm::isLinuxConsole()
 }
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-bool FTerm::isBSDConsole()
+bool FTerm::isFreeBSDConsole()
 {
   keymap_t keymap;
 
@@ -1844,7 +1845,7 @@ bool FTerm::isBSDConsole()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::saveBSDAltKey()
+bool FTerm::saveFreeBSDAltKey()
 {
   keymap_t keymap;
   int ret;
@@ -1861,7 +1862,7 @@ bool FTerm::saveBSDAltKey()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setBSDAltKey (uChar key)
+bool FTerm::setFreeBSDAltKey (uInt key)
 {
   keymap_t keymap;
   int ret;
@@ -1882,15 +1883,15 @@ bool FTerm::setBSDAltKey (uChar key)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setBSDAlt2Meta()
+bool FTerm::setFreeBSDAlt2Meta()
 {
-  return setBSDAltKey (META);
+  return setFreeBSDAltKey (META);
 }
 
 //----------------------------------------------------------------------
-bool FTerm::resetBSDAlt2Meta()
+bool FTerm::resetFreeBSDAlt2Meta()
 {
-  return setBSDAltKey(bsd_alt_keymap);
+  return setFreeBSDAltKey (bsd_alt_keymap);
 }
 #endif
 
@@ -2374,19 +2375,19 @@ void FTerm::initLinuxConsole()
 }
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-void FTerm::initBSDConsole()
+void FTerm::initFreeBSDConsole()
 {
   // initialize BSD console
 
-  if ( isBSDConsole() )
+  if ( isFreeBSDConsole() )
   {
     // save current left alt key mapping
-    saveBSDAltKey();
+    saveFreeBSDAltKey();
 
     // map meta key to left alt key
-    setBSDAlt2Meta();
+    setFreeBSDAlt2Meta();
   }
 }
 #endif
@@ -2394,28 +2395,28 @@ void FTerm::initBSDConsole()
 //----------------------------------------------------------------------
 uInt FTerm::getBaudRate (const struct termios* termios_p)
 {
-  std::map<speed_t,uInt> ospeed;
-  ospeed[B0]      = 0;       // hang up
-  ospeed[B50]     = 50;      //      50 baud
-  ospeed[B75]     = 75;      //      75 baud
-  ospeed[B110]    = 110;     //     110 baud
-  ospeed[B134]    = 134;     //     134.5 baud
-  ospeed[B150]    = 150;     //     150 baud
-  ospeed[B200]    = 200;     //     200 baud
-  ospeed[B300]    = 300;     //     300 baud
-  ospeed[B600]    = 600;     //     600 baud
-  ospeed[B1200]   = 1200;    //   1,200 baud
-  ospeed[B1800]   = 1800;    //   1,800 baud
-  ospeed[B2400]   = 2400;    //   2,400 baud
-  ospeed[B4800]   = 4800;    //   4,800 baud
-  ospeed[B9600]   = 9600;    //   9,600 baud
-  ospeed[B19200]  = 19200;   //  19,200 baud
-  ospeed[B38400]  = 38400;   //  38,400 baud
-  ospeed[B57600]  = 57600;   //  57,600 baud
-  ospeed[B115200] = 115200;  // 115,200 baud
-  ospeed[B230400] = 230400;  // 230,400 baud
+  std::map<speed_t,uInt> outspeed;
+  outspeed[B0]      = 0;       // hang up
+  outspeed[B50]     = 50;      //      50 baud
+  outspeed[B75]     = 75;      //      75 baud
+  outspeed[B110]    = 110;     //     110 baud
+  outspeed[B134]    = 134;     //     134.5 baud
+  outspeed[B150]    = 150;     //     150 baud
+  outspeed[B200]    = 200;     //     200 baud
+  outspeed[B300]    = 300;     //     300 baud
+  outspeed[B600]    = 600;     //     600 baud
+  outspeed[B1200]   = 1200;    //   1,200 baud
+  outspeed[B1800]   = 1800;    //   1,800 baud
+  outspeed[B2400]   = 2400;    //   2,400 baud
+  outspeed[B4800]   = 4800;    //   4,800 baud
+  outspeed[B9600]   = 9600;    //   9,600 baud
+  outspeed[B19200]  = 19200;   //  19,200 baud
+  outspeed[B38400]  = 38400;   //  38,400 baud
+  outspeed[B57600]  = 57600;   //  57,600 baud
+  outspeed[B115200] = 115200;  // 115,200 baud
+  outspeed[B230400] = 230400;  // 230,400 baud
 
-  return ospeed[cfgetospeed(termios_p)];
+  return outspeed[cfgetospeed(termios_p)];
 }
 
 //----------------------------------------------------------------------
@@ -2633,7 +2634,12 @@ char* FTerm::parseSecDA (char*& current_termtype)
           case 2:  // DEC VT240
           case 18: // DEC VT330
           case 19: // DEC VT340
+
           case 24: // DEC VT320
+            if ( terminal_id_version == 20 )
+              netbsd_terminal = true;  //  NetBSD workstation console
+            break;
+
           case 41: // DEC VT420
           case 61: // DEC VT510
           case 64: // DEC VT520
@@ -3219,8 +3225,8 @@ void FTerm::init_termcaps()
       const_cast<char*>(CSI "29m");
   }
 
-#if defined(BSD)
-  if ( isBSDConsole() )
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  if ( isFreeBSDConsole() )
   {
     tcap[fc::t_acs_chars].string = \
       const_cast<char*>("-\036.\0370\333"
@@ -3525,9 +3531,9 @@ void FTerm::init()
   initLinuxConsole();
 #endif
 
-#if defined(BSD)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
   // Initialize BSD console
-  initBSDConsole();
+  initFreeBSDConsole();
 #endif
 
   // Save termios settings
@@ -3563,6 +3569,12 @@ void FTerm::init()
   else
     linux_terminal = false;
 
+  // Test for NetBSD workstation console
+  if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
+    netbsd_terminal = true;
+  else
+    netbsd_terminal = false;
+
   // Terminal detection
   if ( terminal_detection )
   {
@@ -3587,17 +3599,18 @@ void FTerm::init()
         && ! cygwin_terminal
         && ! tera_terminal
         && ! linux_terminal
-        && getXTermColorName(0) != "" )
+        && ! netbsd_terminal
+        && ! getXTermColorName(0).isEmpty() )
     {
-      if ( getXTermColorName(256) != "" )
+      if ( ! getXTermColorName(256).isEmpty() )
       {
         new_termtype = const_cast<char*>("xterm-256color");
       }
-      else if ( getXTermColorName(87) != "" )
+      else if ( ! getXTermColorName(87).isEmpty() )
       {
         new_termtype = const_cast<char*>("xterm-88color");
       }
-      else if ( getXTermColorName(15) != "" )
+      else if ( ! getXTermColorName(15).isEmpty() )
       {
         new_termtype = const_cast<char*>("xterm-16color");
       }
@@ -3630,8 +3643,8 @@ void FTerm::init()
       FTermcap::max_color = 16;
 #endif
 
-#if defined(BSD)
-    setBSDConsoleCursorStyle (fc::destructive_cursor, true);
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
 #endif
 
     t.c_lflag |= uInt(ICANON | ECHO);
@@ -3877,9 +3890,9 @@ void FTerm::finish()
   }
 #endif
 
-#if defined(BSD)
-  resetBSDAlt2Meta();
-  setBSDConsoleCursorStyle (fc::normal_cursor, false);
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  resetFreeBSDAlt2Meta();
+  setFreeBSDConsoleCursorStyle (fc::normal_cursor, false);
 #endif
 
   if ( kde_konsole )

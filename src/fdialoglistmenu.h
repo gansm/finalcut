@@ -37,8 +37,8 @@
 //         ▕ FDialogListMenu ▏- - - - - -▕ FMenuItem ▏
 //         ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏1         1▕▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FDIALOGLISTMENU_H
-#define _FDIALOGLISTMENU_H
+#ifndef FDIALOGLISTMENU_H
+#define FDIALOGLISTMENU_H
 
 #include "fmenu.h"
 
@@ -81,4 +81,4 @@ class FDialogListMenu : public FMenu
 inline const char* FDialogListMenu::getClassName() const
 { return "FDialogListMenu"; }
 
-#endif  // _FDIALOGLISTMENU_H
+#endif  // FDIALOGLISTMENU_H

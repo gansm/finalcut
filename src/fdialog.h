@@ -30,8 +30,8 @@
 //       ▕ FDialog ▏
 //       ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FDIALOG_H
-#define _FDIALOG_H
+#ifndef FDIALOG_H
+#define FDIALOG_H
 
 #include "fmenu.h"
 #include "fmenuitem.h"
@@ -225,4 +225,4 @@ inline bool FDialog::isScrollable()
 
 
 
-#endif  // _FDIALOG_H
+#endif  // FDIALOG_H

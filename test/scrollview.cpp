@@ -72,25 +72,25 @@ scrollview::scrollview (FWidget* parent)
   go_east->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &scrollview::cb_go_east)
+    F_METHOD_CALLBACK (this, &scrollview::cb_go_east)
   );
 
   go_south->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &scrollview::cb_go_south)
+    F_METHOD_CALLBACK (this, &scrollview::cb_go_south)
   );
 
   go_west->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &scrollview::cb_go_west)
+    F_METHOD_CALLBACK (this, &scrollview::cb_go_west)
   );
 
   go_north->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &scrollview::cb_go_north)
+    F_METHOD_CALLBACK (this, &scrollview::cb_go_north)
   );
 }
 
@@ -212,7 +212,7 @@ scrollviewdemo::scrollviewdemo (FWidget* parent)
   button->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &scrollviewdemo::cb_quit)
+    F_METHOD_CALLBACK (this, &scrollviewdemo::cb_quit)
   );
 
   // Text label

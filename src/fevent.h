@@ -50,8 +50,8 @@
 //            ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
 
 
-#ifndef _FEVENT_H
-#define _FEVENT_H
+#ifndef FEVENT_H
+#define FEVENT_H
 
 #include "fc.h"
 #include "fpoint.h"
@@ -313,4 +313,4 @@ class FTimerEvent : public FEvent   // timer event
 
 #pragma pack(pop)
 
-#endif  // _FEVENT_H
+#endif  // FEVENT_H

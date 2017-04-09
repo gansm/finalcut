@@ -73,13 +73,13 @@ AttribDlg::AttribDlg (FWidget* parent)
   next_button->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &AttribDlg::cb_next)
+    F_METHOD_CALLBACK (this, &AttribDlg::cb_next)
   );
 
   back_button->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &AttribDlg::cb_back)
+    F_METHOD_CALLBACK (this, &AttribDlg::cb_back)
   );
 }
 

@@ -1163,8 +1163,8 @@ void FWidget::show()
     initLinuxConsoleCharMap();
 #endif
 
-#if defined(BSD)
-    initBSDConsoleCharMap();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    initFreeBSDConsoleCharMap();
 #endif
 
     // set xterm underline cursor

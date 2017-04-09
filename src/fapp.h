@@ -33,8 +33,8 @@
 //                      └- - - -▕ FWidget ▏
 //                              ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FAPPLICATION_H
-#define _FAPPLICATION_H
+#ifndef FAPPLICATION_H
+#define FAPPLICATION_H
 
 #include <getopt.h>
 #include <deque>
@@ -236,4 +236,4 @@ inline FWidget* FApplication::getFocusWidget() const
 { return focus_widget; }
 
 
-#endif  // _FAPPLICATION_H
+#endif  // FAPPLICATION_H

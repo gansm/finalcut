@@ -1,7 +1,7 @@
 // File: fcharmap.h
 
-#ifndef _FCHARMAP_H
-#define _FCHARMAP_H
+#ifndef FCHARMAP_H
+#define FCHARMAP_H
 
 static uInt character[][fc::NUM_OF_ENCODINGS] =
 {
@@ -290,4 +290,4 @@ const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
                                 / sizeof(cp437_to_ucs[0]) ) - 1;
 
 
-#endif  // _FCHARMAP_H
+#endif  // FCHARMAP_H

@@ -586,7 +586,7 @@ FString FString::toLower() const
   {
     while ( *p )
     {
-      *p = wchar_t(std::towlower(uInt(*p)));
+      *p = wchar_t(std::towlower(wint_t(*p)));
       p++;
     }
   }
@@ -605,7 +605,7 @@ FString FString::toUpper() const
   {
     while ( *p )
     {
-      *p = wchar_t(std::towupper(uInt(*p)));
+      *p = wchar_t(std::towupper(wint_t(*p)));
       p++;
     }
   }
@@ -765,7 +765,7 @@ float FString::toFloat() const
   register double num;
   num = toDouble();
 
-  if ( num > FLT_MAX || num < FLT_MIN )
+  if ( num > double(FLT_MAX) || num < double(FLT_MIN) )
     throw std::overflow_error ("overflow");
 
   return float(num);
@@ -812,7 +812,7 @@ FString FString::ltrim() const
 
   p = s.string;
 
-  while ( std::iswspace(uInt(*p)) )
+  while ( std::iswspace(wint_t(*p)) )
     p++;
 
   return FString(p);
@@ -832,9 +832,9 @@ FString FString::rtrim() const
   p = s.string;
   last = p + length;
 
-  while ( std::iswspace(uInt(*--last)) && last > p );
+  while ( std::iswspace(wint_t(*--last)) && last > p );
 
-  if ( last == p && std::iswspace(uInt(*last)) )
+  if ( last == p && std::iswspace(wint_t(*last)) )
     s.clear();
   else
     *(last+1) = '\0';

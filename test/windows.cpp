@@ -265,50 +265,50 @@ Window::Window (FWidget* parent)
   New->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_createWindows)
+    F_METHOD_CALLBACK (this, &Window::cb_createWindows)
   );
 
   Close->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_closeWindows)
+    F_METHOD_CALLBACK (this, &Window::cb_closeWindows)
   );
 
   Next->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_next)
+    F_METHOD_CALLBACK (this, &Window::cb_next)
   );
 
   Previous->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_previous)
+    F_METHOD_CALLBACK (this, &Window::cb_previous)
   );
 
   Quit->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_exitApp)
+    F_METHOD_CALLBACK (this, &Window::cb_exitApp)
   );
 
   // Add button callback
   CreateButton->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_createWindows)
+    F_METHOD_CALLBACK (this, &Window::cb_createWindows)
   );
 
   CloseButton->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_closeWindows)
+    F_METHOD_CALLBACK (this, &Window::cb_closeWindows)
   );
 
   QuitButton->addCallback
   (
     "clicked",
-    _METHOD_CALLBACK (this, &Window::cb_exitApp)
+    F_METHOD_CALLBACK (this, &Window::cb_exitApp)
   );
 
   for (int n=1; n <= 6; n++)
@@ -434,7 +434,7 @@ void Window::cb_createWindows (FWidget*, data_ptr)
       win->addCallback
       (
         "destroy",
-        _METHOD_CALLBACK (this, &Window::cb_destroyWindow),
+        F_METHOD_CALLBACK (this, &Window::cb_destroyWindow),
         static_cast<FWidget::data_ptr>(win_dat)
       );
     }

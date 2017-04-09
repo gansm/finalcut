@@ -30,8 +30,8 @@
 //       ▕ FToolTip ▏
 //       ▕▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FTOOLTIP_H
-#define _FTOOLTIP_H
+#ifndef FTOOLTIP_H
+#define FTOOLTIP_H
 
 #include "fwindow.h"
 
@@ -99,4 +99,4 @@ inline const char* FToolTip::getClassName() const
 { return "FToolTip"; }
 
 
-#endif  // _FTOOLTIP_H
+#endif  // FTOOLTIP_H

@@ -8,8 +8,8 @@
 // ▕ FString ▏
 // ▕▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FSTRING_H
-#define _FSTRING_H
+#ifndef FSTRING_H
+#define FSTRING_H
 
 #include <sys/types.h>
 
@@ -445,4 +445,4 @@ inline FString& FString::setFormatedNumber (uInt num, char separator)
 { return setFormatedNumber (uLong(num), separator); }
 
 
-#endif  // _FSTRING_H
+#endif  // FSTRING_H

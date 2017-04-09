@@ -1,5 +1,6 @@
 // File: string-operations.cpp
 
+#include <clocale>
 #include <iomanip>
 
 #include <langinfo.h>

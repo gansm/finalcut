@@ -679,7 +679,7 @@ void FMenuItem::init (FWidget* parent)
       this->addCallback
       (
         "deactivate",
-        _METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
+        F_METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
       );
     }
     else if ( isMenu(parent) ) // Parent is menu
@@ -764,14 +764,14 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         win_item->addCallback
         (
           "clicked",
-          _METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
+          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
           dynamic_cast<FWidget::data_ptr>(win)
         );
 
         win->addCallback
         (
           "destroy",
-          _METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
+          F_METHOD_CALLBACK (win_item, &FMenuItem::cb_destroyDialog)
         );
 
         win_item->associated_window = win;

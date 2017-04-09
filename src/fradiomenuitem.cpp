@@ -48,7 +48,7 @@ void FRadioMenuItem::init (FWidget* parent)
     this->addCallback
     (
       "toggled",
-      _METHOD_CALLBACK (parent, &FMenu::cb_menuitem_toggled)
+      F_METHOD_CALLBACK (parent, &FMenu::cb_menuitem_toggled)
     );
   }
 }

@@ -25,8 +25,8 @@
 //      ▕ FScrollbar ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
 
-#ifndef _FSCROLLBAR_H
-#define _FSCROLLBAR_H
+#ifndef FSCROLLBAR_H
+#define FSCROLLBAR_H
 
 #include "fwidget.h"
 
@@ -74,7 +74,7 @@ class FScrollbar : public FWidget
    void  setMaximum (int);
    void  setRange (int, int);
    void  setValue (int);
-   void  setSteps (float);
+   void  setSteps (double);
    void  setPageSize (int, int);
    void  setOrientation (int);
    void  setGeometry (int, int, int, int, bool = true);
@@ -108,24 +108,24 @@ class FScrollbar : public FWidget
    void  processScroll();
 
    // Data Members
-   sType scroll_type;
-   bool  threshold_reached;
-   int   threshold_time;
-   int   repeat_time;
-   int   slider_click_pos;
-   int   slider_click_stop_pos;
-   int   current_slider_pos;
-   int   slider_pos;
-   int   slider_length;
-   int   bar_length;
-   int   val;
-   int   min;
-   int   max;
-   float steps;
-   int   pageSize;
-   int   length;
-   int   bar_orientation;
-   int   max_color;
+   sType  scroll_type;
+   bool   threshold_reached;
+   int    threshold_time;
+   int    repeat_time;
+   int    slider_click_pos;
+   int    slider_click_stop_pos;
+   int    current_slider_pos;
+   int    slider_pos;
+   int    slider_length;
+   int    bar_length;
+   int    val;
+   int    min;
+   int    max;
+   double steps;
+   int    pageSize;
+   int    length;
+   int    bar_orientation;
+   int    max_color;
 };
 #pragma pack(pop)
 
@@ -143,4 +143,4 @@ inline int FScrollbar::getValue() const
 inline FScrollbar::sType FScrollbar::getScrollType() const
 { return scroll_type; }
 
-#endif  // _FSCROLLBAR_H
+#endif  // FSCROLLBAR_H
