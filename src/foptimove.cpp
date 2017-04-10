@@ -717,7 +717,7 @@ int FOptiMove::repeatedAppend (capability& o, int count, char* dst)
   dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;
   total = 0;
 
-  if ( (dst_len + uInt(count) * src_len) < sizeof(move_buf)-1 )
+  if ( (dst_len + uInt(count) * src_len) < sizeof(move_buf) - 1 )
   {
     total += count * o.duration;
 
@@ -727,7 +727,7 @@ int FOptiMove::repeatedAppend (capability& o, int count, char* dst)
 
       while ( count-- > 0 )
       {
-        std::strcpy (dst, o.cap);
+        std::strncpy (dst, o.cap, src_len + 1);
         dst += src_len;
       }
     }
@@ -757,7 +757,9 @@ int FOptiMove::relativeMove ( char*& move
     if ( F_row_address.cap )
     {
       if ( move )
-        std::strcpy (move, tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0));
+        std::strncpy ( move
+                     , tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
+                     , sizeof(move_buf) - 1 );
 
       vtime = F_row_address.duration;
     }
@@ -769,7 +771,9 @@ int FOptiMove::relativeMove ( char*& move
       if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
       {
         if ( move )
-          std::strcpy (move, tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0));
+          std::strncpy ( move
+                       , tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                       , sizeof(move_buf) - 1 );
 
         vtime = F_parm_down_cursor.duration;
       }
@@ -789,7 +793,9 @@ int FOptiMove::relativeMove ( char*& move
       if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
       {
         if ( move )
-          std::strcpy (move, tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0));
+          std::strncpy ( move
+                       , tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                       , sizeof(move_buf) - 1 );
 
         vtime = F_parm_up_cursor.duration;
       }
@@ -865,7 +871,7 @@ int FOptiMove::relativeMove ( char*& move
 
         if ( htime_r < htime )
         {
-          std::strcpy (hmove, str);
+          std::strncpy (hmove, str, sizeof(move_buf) - 1);
           htime = htime_r;
         }
 
@@ -915,7 +921,7 @@ int FOptiMove::relativeMove ( char*& move
 
         if ( htime_l < htime )
         {
-          std::strcpy (hmove, str);
+          std::strncpy (hmove, str, sizeof(move_buf) - 1);
           htime = htime_l;
         }
 
@@ -928,9 +934,9 @@ int FOptiMove::relativeMove ( char*& move
     if ( move )
     {
       if ( *move )
-        strcat (move, hmove);
+        std::strncat (move, hmove, sizeof(move_buf) - std::strlen(move) - 1);
       else
-        std::strcpy (move, hmove);
+        std::strncpy (move, hmove, sizeof(move_buf) - 1);
     }
   }
 

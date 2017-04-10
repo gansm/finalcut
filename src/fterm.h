@@ -289,6 +289,7 @@ class FTerm
                                          , char_data*& );
    static bool           hasChangedTermSize();
    static void           changeTermSizeFinished();
+   static void           xtermMetaSendsESC (bool);
    static void           xtermMouse (bool);
    static void           enableXTermMouse();
    static void           disableXTermMouse();
@@ -432,6 +433,7 @@ class FTerm
    static bool    mintty_terminal;
    static bool    linux_terminal;
    static bool    netbsd_terminal;
+   static bool    openbsd_terminal;
    static bool    screen_terminal;
    static bool    tmux_terminal;
    static char    termtype[30];

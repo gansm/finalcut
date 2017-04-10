@@ -2235,7 +2235,7 @@ inline void FString::_replace (const wchar_t* s)
               << e.what() << std::endl;
     return;
   }*/
-  std::wcscpy (string, s);
+  std::wcsncpy (string, s, bufsize);
 }
 
 //----------------------------------------------------------------------
@@ -2257,7 +2257,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
       return;
     }
 
-    std::wcscpy (string, s);
+    std::wcsncpy (string, s, bufsize);
     return;
   }
   else

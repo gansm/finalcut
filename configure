@@ -18877,7 +18877,6 @@ $as_echo X"$ac_prefix_conf_OUT" |
       rm -f "$ac_prefix_conf_OUT"
       mv $tmp/pconfig.h "$ac_prefix_conf_OUT"
     fi
-    cp conftest.prefix _configs.sed
   else
     as_fn_error $? "input file $ac_prefix_conf_INP does not exist - skip generating $ac_prefix_conf_OUT" "$LINENO" 5
   fi

@@ -55,6 +55,7 @@ bool     FTerm::cygwin_terminal;
 bool     FTerm::mintty_terminal;
 bool     FTerm::linux_terminal;
 bool     FTerm::netbsd_terminal;
+bool     FTerm::openbsd_terminal;
 bool     FTerm::screen_terminal;
 bool     FTerm::tmux_terminal;
 bool     FTerm::pc_charset_console;
@@ -1748,6 +1749,20 @@ char* FTerm::changeAttribute ( char_data*& term_attr
 }
 
 //----------------------------------------------------------------------
+void FTerm::xtermMetaSendsESC (bool on)
+{
+  // activate/deactivate the xterm meta key sends escape prefix
+
+  if ( on )
+    putstring (CSI "?1036s"   // save meta key sends escape
+               CSI "?1036h"); // enable meta key sends escape
+  else
+    putstring (CSI "?1036r"); // restore meta key sends escape
+
+  std::fflush(stdout);
+}
+
+//----------------------------------------------------------------------
 void FTerm::xtermMouse (bool on)
 {
   // activate/deactivate the xterm mouse support
@@ -2637,7 +2652,13 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
           case 24: // DEC VT320
             if ( terminal_id_version == 20 )
-              netbsd_terminal = true;  //  NetBSD workstation console
+            {
+              // NetBSD/OpenBSD workstation console
+              if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
+                netbsd_terminal = true;
+              else if ( std::strncmp(termtype, const_cast<char*>("vt220"), 5) == 0 )
+                openbsd_terminal = true;
+            }
             break;
 
           case 41: // DEC VT420
@@ -3501,6 +3522,7 @@ void FTerm::init()
   urxvt_terminal          = \
   mlterm_terminal         = \
   mintty_terminal         = \
+  openbsd_terminal        = \
   screen_terminal         = \
   tmux_terminal           = \
   xterm_default_colors    = false;
@@ -3727,6 +3749,10 @@ void FTerm::init()
     enableXTermMouse();
   }
 
+  // activate meta key sends escape
+  if ( xterm_terminal )
+    xtermMetaSendsESC(true);
+
   // enter 'keyboard_transmit' mode
   if ( tcap[fc::t_keypad_xmit].string )
   {
@@ -3900,8 +3926,13 @@ void FTerm::finish()
 
   resetBeep();
 
+  // disable xterm mouse support
   if ( mouse_support )
     disableXTermMouse();
+
+  // deactivate meta key sends escape
+  if ( xterm_terminal )
+    xtermMetaSendsESC(false);
 
 #ifdef F_HAVE_LIBGPM
 
