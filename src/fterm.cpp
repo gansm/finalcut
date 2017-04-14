@@ -120,7 +120,14 @@ fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
   unimapdesc           FTerm::screen_unicode_map;
 #endif
 
-uInt FTerm::bsd_alt_keymap = 0;
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  uInt FTerm::bsd_alt_keymap = 0;
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  kbd_t FTerm::wscons_keyboard_encoding = 0;
+#endif
+
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -148,9 +155,7 @@ FTerm::~FTerm()  // destructor
     finish();
 
     if ( exit_message[0] )
-    {
       std::fprintf (stderr, "Warning: %s\n", exit_message);
-    }
   }
 }
 
@@ -197,7 +202,7 @@ const FString FTerm::getKeyName (int keynum)
 
 #if defined(__linux__)
 //----------------------------------------------------------------------
-FTerm::modifier_key& FTerm::getModifierKey()
+FTerm::modifier_key& FTerm::getLinuxModifierKey()
 {
   char subcode = 6;
   // fill bit field with 0
@@ -1858,55 +1863,18 @@ bool FTerm::isFreeBSDConsole()
   else
     return false;
 }
+#endif
 
 //----------------------------------------------------------------------
-bool FTerm::saveFreeBSDAltKey()
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+bool FTerm::isWSConsConsole()
 {
-  keymap_t keymap;
-  int ret;
-  static const int left_alt = 0x38;
+  static kbd_t kbdencoding;
 
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
-
-  if ( ret < 0 )
-    return false;
-
-  // save current mapping
-  bsd_alt_keymap = keymap.key[left_alt].map[0];
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setFreeBSDAltKey (uInt key)
-{
-  keymap_t keymap;
-  int ret;
-  static const int left_alt = 0x38;
-
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
-
-  if ( ret < 0 )
-    return false;
-
-  // map to meta key
-  keymap.key[left_alt].map[0] = key;
-
-  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0))
-    return false;
-  else
+  if ( ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
     return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setFreeBSDAlt2Meta()
-{
-  return setFreeBSDAltKey (META);
-}
-
-//----------------------------------------------------------------------
-bool FTerm::resetFreeBSDAlt2Meta()
-{
-  return setFreeBSDAltKey (bsd_alt_keymap);
+  else
+    return false;
 }
 #endif
 
@@ -2392,6 +2360,56 @@ void FTerm::initLinuxConsole()
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
+bool FTerm::saveFreeBSDAltKey()
+{
+  keymap_t keymap;
+  int ret;
+  static const int left_alt = 0x38;
+
+  ret = ioctl(0, GIO_KEYMAP, &keymap);
+
+  if ( ret < 0 )
+    return false;
+
+  // save current mapping
+  bsd_alt_keymap = keymap.key[left_alt].map[0];
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setFreeBSDAltKey (uInt key)
+{
+  keymap_t keymap;
+  int ret;
+  static const int left_alt = 0x38;
+
+  ret = ioctl(0, GIO_KEYMAP, &keymap);
+
+  if ( ret < 0 )
+    return false;
+
+  // map to meta key
+  keymap.key[left_alt].map[0] = key;
+
+  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0))
+    return false;
+  else
+    return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setFreeBSDAlt2Meta()
+{
+  return setFreeBSDAltKey (META);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::resetFreeBSDAlt2Meta()
+{
+  return setFreeBSDAltKey (bsd_alt_keymap);
+}
+
+//----------------------------------------------------------------------
 void FTerm::initFreeBSDConsole()
 {
   // initialize BSD console
@@ -2403,6 +2421,60 @@ void FTerm::initFreeBSDConsole()
 
     // map meta key to left alt key
     setFreeBSDAlt2Meta();
+  }
+}
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+//----------------------------------------------------------------------
+bool FTerm::saveWSConsEncoding()
+{
+  static kbd_t k_encoding;
+  int ret = ioctl(0, WSKBDIO_GETENCODING, &k_encoding);
+
+  if ( ret < 0 )
+    return false;
+
+  // save current encoding
+  wscons_keyboard_encoding = k_encoding;
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setWSConsEncoding (kbd_t k_encoding)
+{
+  if ( ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
+    return false;
+  else
+    return true;
+}
+
+//----------------------------------------------------------------------
+bool FTerm::setWSConsMetaEsc()
+{
+  static const kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
+
+  return setWSConsEncoding (wscons_keyboard_encoding | meta_esc);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::resetWSConsEncoding()
+{
+  return setWSConsEncoding (wscons_keyboard_encoding);
+}
+
+//----------------------------------------------------------------------
+void FTerm::initWSConsConsole()
+{
+  // initialize wscons console
+
+  if ( isWSConsConsole() )
+  {
+    // save current left alt key mapping
+    saveWSConsEncoding();
+
+    // alt key generate ESC prefix
+    setWSConsMetaEsc();
   }
 }
 #endif
@@ -3558,6 +3630,11 @@ void FTerm::init()
   initFreeBSDConsole();
 #endif
 
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  // Initialize wscons console
+  initWSConsConsole();
+#endif
+
   // Save termios settings
   storeTTYsettings();
 
@@ -3919,6 +3996,10 @@ void FTerm::finish()
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   resetFreeBSDAlt2Meta();
   setFreeBSDConsoleCursorStyle (fc::normal_cursor, false);
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  resetWSConsEncoding();
 #endif
 
   if ( kde_konsole )

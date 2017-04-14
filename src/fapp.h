@@ -130,7 +130,7 @@ class FApplication : public FWidget
    ssize_t            readKey();
    void               processKeyboardEvent();
 #if defined(__linux__)
-   int                modifierKeyCorrection (int& key);
+   int                linuxModifierKeyCorrection (int& key);
 #endif
    bool               processDialogSwitchAccelerator();
    bool               processAccelerator (FWidget*&);

@@ -1,3 +1,8 @@
+2017-04-14  Markus Gans  <guru.mail@muenster.de>
+	* The Final Cut compiles also under OpenBSD
+	* The alt key now always generates an esc prefix 
+	  on an OpenBSD and a NetBSD console
+
 2017-04-11  Markus Gans  <guru.mail@muenster.de>
 	* Enable xterm "metaSendsEscape" switch
 

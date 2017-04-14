@@ -45,6 +45,11 @@
   #include <sys/kbio.h>
 #endif
 
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  #include <sys/time.h>
+  #include <dev/wscons/wsconsio.h>
+#endif
+
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 
@@ -122,7 +127,7 @@ class FTerm
    static const FString  getKeyName (int);
 
 #if defined(__linux__)
-   static modifier_key&  getModifierKey();
+   static modifier_key&  getLinuxModifierKey();
 #endif
 
    static char*          getTermType();
@@ -279,6 +284,7 @@ class FTerm
 #if defined(__FreeBSD__) || defined(__DragonFly__)
    static void           initFreeBSDConsoleCharMap();
 #endif
+
    static void           initCygwinCharMap();
    static void           initTeraTermCharMap();
 
@@ -348,10 +354,10 @@ class FTerm
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
    static bool           isFreeBSDConsole();
-   static bool           saveFreeBSDAltKey();
-   static bool           setFreeBSDAltKey (uInt);
-   static bool           setFreeBSDAlt2Meta();
-   static bool           resetFreeBSDAlt2Meta();
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+   static bool           isWSConsConsole();
 #endif
 
    // Methods
@@ -380,7 +386,19 @@ class FTerm
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
+   static bool           saveFreeBSDAltKey();
+   static bool           setFreeBSDAltKey (uInt);
+   static bool           setFreeBSDAlt2Meta();
+   static bool           resetFreeBSDAlt2Meta();
    static void           initFreeBSDConsole();
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+   static bool           saveWSConsEncoding();
+   static bool           setWSConsEncoding (kbd_t);
+   static bool           setWSConsMetaEsc();
+   static bool           resetWSConsEncoding();
+   static void           initWSConsConsole();
 #endif
 
    static uInt           getBaudRate (const struct termios*);
@@ -453,7 +471,14 @@ class FTerm
    static fc::freebsdConsoleCursorStyle freebsd_console_cursor_style;
    static struct  console_font_op screen_font;
    static struct  unimapdesc      screen_unicode_map;
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
    static uInt    bsd_alt_keymap;
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+   static kbd_t   wscons_keyboard_encoding;
+#endif
 
    static FOptiMove*     opti_move;
    static FOptiAttr*     opti_attr;

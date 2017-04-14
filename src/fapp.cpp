@@ -552,7 +552,7 @@ void FApplication::processKeyboardEvent()
         {
 
 #if defined(__linux__)
-          key = modifierKeyCorrection (key);
+          key = linuxModifierKeyCorrection (key);
 #endif
 
           switch ( key )
@@ -711,10 +711,10 @@ void FApplication::processKeyboardEvent()
 
 #if defined(__linux__)
 //----------------------------------------------------------------------
-int FApplication::modifierKeyCorrection (int& key_id)
+int FApplication::linuxModifierKeyCorrection (int& key_id)
 {
   // get the current modifier key state
-  FTerm::modifier_key& m = getModifierKey();
+  FTerm::modifier_key& m = getLinuxModifierKey();
 
   if ( ! (m.shift || m.ctrl || m.alt) )
   {
