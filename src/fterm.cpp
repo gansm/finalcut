@@ -2723,16 +2723,20 @@ char* FTerm::parseSecDA (char*& current_termtype)
           case 19: // DEC VT340
 
           case 24: // DEC VT320
-            if ( terminal_id_version == 20 )
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+            if ( terminal_id_version == 20 && isWSConsConsole() )
             {
               // NetBSD/OpenBSD workstation console
               if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
                 netbsd_terminal = true;
               else if ( std::strncmp(termtype, const_cast<char*>("vt220"), 5) == 0 )
+              {
                 openbsd_terminal = true;
+                new_termtype = const_cast<char*>("pccon");
+              }
             }
             break;
-
+#endif
           case 41: // DEC VT420
           case 61: // DEC VT510
           case 64: // DEC VT520

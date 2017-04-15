@@ -2267,7 +2267,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
     if ( (length + len + 1) <= bufsize )
     {
       // output string <= bufsize
-      for (x = length; x > pos-1; x--)  // shifting right side  + '\0'
+      for (x = length; x+1 > pos; x--)  // shifting right side  + '\0'
         string[x+len] = string[x];
 
       for (x=0; x < len; x++)           // insert string

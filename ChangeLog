@@ -1,3 +1,6 @@
+2017-04-15  Markus Gans  <guru.mail@muenster.de>
+	* Fix unsigned integer underflow in FString::_insert()
+
 2017-04-14  Markus Gans  <guru.mail@muenster.de>
 	* The Final Cut compiles also under OpenBSD
 	* The alt key now always generates an esc prefix 
