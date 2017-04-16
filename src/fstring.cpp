@@ -1015,7 +1015,7 @@ FString& FString::setNumber (long num)
 
   do
   {
-    *--s = wchar_t(int(num%10) + '0');
+    *--s = L"0123456789"[num % 10];
     num /= 10;
   }
   while ( num );
@@ -1038,7 +1038,7 @@ FString& FString::setNumber (uLong num)
 
   do
   {
-    *--s = wchar_t(int(num%10) + '0');
+    *--s = L"0123456789"[num % 10];
     num /= 10;
   }
   while ( num );
@@ -1102,7 +1102,7 @@ FString& FString::setFormatedNumber (long num, char separator)
 
   do
   {
-    *--s = wchar_t(int(num%10) + '0');
+    *--s = L"0123456789"[num % 10];
     num /= 10;
 
     if ( num && ++n % 3 == 0 )
@@ -1133,7 +1133,7 @@ FString& FString::setFormatedNumber (uLong num, char separator)
 
   do
   {
-    *--s = wchar_t(int(num%10) + '0');
+    *--s = L"0123456789"[num % 10];
     num /= 10;
 
     if ( num && ++n % 3 == 0 )

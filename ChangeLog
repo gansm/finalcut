@@ -1,3 +1,7 @@
+2017-04-17  Markus Gans  <guru.mail@muenster.de>
+	* Speed up FString::setNumber() by using a decimal 
+	  string lookup table
+
 2017-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Fix unsigned integer underflow in FString::_insert()
 
