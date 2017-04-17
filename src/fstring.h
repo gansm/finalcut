@@ -330,7 +330,7 @@ class FString
 
    // Methods
    void     initLength (uInt);
-   void     _replace (const wchar_t*);
+   void     _assign (const wchar_t*);
    void     _insert (uInt, uInt, const wchar_t*);
    void     _remove (uInt, uInt);
    char*    wc_to_c_str (const wchar_t*) const;

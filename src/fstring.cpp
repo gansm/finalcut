@@ -51,7 +51,7 @@ FString::FString (int len, wchar_t c)
   , c_string(0)
 {
   if ( len > 0 )
-    _replace ( FString(uInt(len), c).string );
+    _assign ( FString(uInt(len), c).string );
   else
     initLength(0);
 }
@@ -87,7 +87,7 @@ FString::FString (int len, char c)
   c_string = 0;
 
   if ( len > 0 )
-    _replace ( FString(uInt(len), c).string );
+    _assign ( FString(uInt(len), c).string );
   else
     initLength(0);
 }
@@ -118,7 +118,7 @@ FString::FString (const FString& s)  // copy constructor
   , c_string(0)
 {
   if ( s.string )
-    _replace (s.string);
+    _assign (s.string);
 }
 
 //----------------------------------------------------------------------
@@ -129,7 +129,7 @@ FString::FString (const std::wstring& s)
   , c_string(0)
 {
   if ( ! s.empty() )
-    _replace ( s.c_str() );
+    _assign ( s.c_str() );
 }
 
 //----------------------------------------------------------------------
@@ -140,7 +140,7 @@ FString::FString (const wchar_t* s)
   , c_string(0)
 {
   if ( s )
-    _replace (s);
+    _assign (s);
 }
 
 //----------------------------------------------------------------------
@@ -158,7 +158,7 @@ FString::FString (const std::string& s)
 
   if ( wc_string )
   {
-    _replace( wc_string );
+    _assign( wc_string );
     delete[] wc_string;
   }
 }
@@ -175,7 +175,7 @@ FString::FString (const char* s)
 
   if ( wc_string )
   {
-    _replace( wc_string );
+    _assign (wc_string);
     delete[] wc_string;
   }
 }
@@ -190,7 +190,7 @@ FString::FString (const wchar_t c)
   wchar_t s[2];
   s[0] = c;
   s[1] = L'\0';
-  _replace (s);
+  _assign (s);
 }
 
 //----------------------------------------------------------------------
@@ -203,7 +203,7 @@ FString::FString (const char c)
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';
-  _replace (s);
+  _assign (s);
 }
 
 //----------------------------------------------------------------------
@@ -222,7 +222,7 @@ FString::~FString()  // destructor
 FString& FString::operator = (const FString& s)
 {
   if ( s )
-    _replace (s.string);
+    _assign (s.string);
   else
     clear();
 
@@ -233,7 +233,7 @@ FString& FString::operator = (const FString& s)
 FString& FString::operator = (const std::wstring& s)
 {
   if ( ! s.empty() )
-    _replace (s.c_str());
+    _assign (s.c_str());
   else
     clear();
 
@@ -244,7 +244,7 @@ FString& FString::operator = (const std::wstring& s)
 const FString& FString::operator = (const wchar_t* s)
 {
   if ( s )
-    _replace (s);
+    _assign (s);
   else
     clear();
 
@@ -258,7 +258,7 @@ FString& FString::operator = (const std::string& s)
 
   if ( wc_string )
   {
-    _replace( wc_string );
+    _assign( wc_string );
     delete[] wc_string;
   }
   else
@@ -274,7 +274,7 @@ const FString& FString::operator = (const char* s)
 
   if ( wc_string )
   {
-    _replace( wc_string );
+    _assign( wc_string );
     delete[] wc_string;
   }
   else
@@ -289,7 +289,7 @@ const FString& FString::operator = (const wchar_t c)
   wchar_t s[2];
   s[0] = c;
   s[1] = L'\0';
-  _replace (s);
+  _assign (s);
   return (*this);
 }
 
@@ -299,7 +299,7 @@ const FString& FString::operator = (const char c)
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';
-  _replace (s);
+  _assign (s);
   return (*this);
 }
 
@@ -502,7 +502,7 @@ FString& FString::sprintf (const wchar_t* format, ...)
   std::vswprintf (buffer, buf_size, format, args);
   va_end (args);
 
-  _replace (buffer);
+  _assign (buffer);
   return (*this);
 }
 
@@ -532,7 +532,7 @@ FString& FString::sprintf (const char* format, ...)
 
   if ( wc_string )
   {
-    _replace(wc_string);
+    _assign(wc_string);
     delete[] wc_string;
   }
 
@@ -974,7 +974,7 @@ std::vector<FString> FString::split (const FString& delimiter)
 //----------------------------------------------------------------------
 FString& FString::setString (const wchar_t* s)
 {
-  _replace (s);
+  _assign (s);
   return (*this);
 }
 
@@ -985,7 +985,7 @@ FString& FString::setString (const char* s)
 
   if ( wc_string )
   {
-    _replace (wc_string);
+    _assign (wc_string);
     delete[] wc_string;
   }
 
@@ -1023,7 +1023,7 @@ FString& FString::setNumber (long num)
   if ( neg )
     *--s = '-';
 
-  _replace (s);
+  _assign (s);
   return *this;
 }
 
@@ -1043,7 +1043,7 @@ FString& FString::setNumber (uLong num)
   }
   while ( num );
 
-  _replace (s);
+  _assign (s);
   return *this;
 }
 
@@ -1113,7 +1113,7 @@ FString& FString::setFormatedNumber (long num, char separator)
   if ( neg )
     *--s = '-';
 
-  _replace (s);
+  _assign (s);
   return *this;
 }
 
@@ -1142,7 +1142,7 @@ FString& FString::setFormatedNumber (uLong num, char separator)
   }
   while ( num );
 
-  _replace (s);
+  _assign (s);
   return *this;
 }
 
@@ -2212,30 +2212,33 @@ inline void FString::initLength (uInt len)
 }
 
 //----------------------------------------------------------------------
-inline void FString::_replace (const wchar_t* s)
+inline void FString::_assign (const wchar_t* s)
 {
-  if ( string )
-    delete[](string);
-
-  length =  uInt(std::wcslen(s));
-  bufsize = FWDBUFFER + length + 1;
-
-  try
-  {
-    string = new wchar_t[bufsize]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
+  if ( s == string )
     return;
-  }
-/*  catch (std::exception& e)
+
+  uInt new_length = uInt(std::wcslen(s));
+
+  if ( ! string || new_length > bufsize - 1 )
   {
-    std::cerr << "not enough memory for a new FString object "
-              << e.what() << std::endl;
-    return;
-  }*/
+    if ( string )
+      delete[](string);
+
+    bufsize = FWDBUFFER + new_length + 1;
+
+    try
+    {
+      string = new wchar_t[bufsize]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      return;
+    }
+  }
+
   std::wcsncpy (string, s, bufsize);
+  length = new_length;
 }
 
 //----------------------------------------------------------------------
@@ -2517,7 +2520,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
 
   if ( wc_str )
   {
-    s._replace (wc_str);
+    s._assign (wc_str);
     delete[] wc_str;
   }
 
@@ -2538,7 +2541,7 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
 {
   wchar_t buf[FString::INPBUFFER + 1];
   instr.getline (buf, FString::INPBUFFER);
-  s._replace (buf);
+  s._assign (buf);
   return (instr);
 }
 
