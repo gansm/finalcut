@@ -1,0 +1,161 @@
+// File: ui.cpp
+
+#include <iostream>
+#include <fstream>
+
+#include "final.h"
+
+// Global application object
+static FString* temp_str = 0;
+
+// Function prototypes
+FString& doubleToString (std::list<double>::const_iterator iter);
+FString& mapToString (std::map<FString, FString>::const_iterator iter);
+
+// Import converter functions
+FString& doubleToString (std::list<double>::const_iterator iter)
+{
+  return temp_str->setNumber(*iter);
+}
+
+FString& mapToString (std::map<FString, FString>::const_iterator iter)
+{
+  return *temp_str = iter->first + ": " + iter->second;
+}
+
+
+//----------------------------------------------------------------------
+// class Listbox
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class Listbox : public FDialog
+{
+ public:
+   // Constructor
+   explicit Listbox (FWidget* = 0);
+   // Destructor
+  ~Listbox();
+
+ private:
+   // Disable copy constructor
+   Listbox (const Listbox&);
+   // Disable assignment operator (=)
+   Listbox& operator = (const Listbox&);
+
+   // Event handlers
+   void onClose (FCloseEvent*);
+
+   // Callback methods
+   void cb_exitApp (FWidget*, data_ptr);
+};
+#pragma pack(pop)
+
+//----------------------------------------------------------------------
+Listbox::Listbox (FWidget* parent)
+  : FDialog(parent)
+{
+  temp_str = new FString;
+
+  // listbox 1
+  FListBox* list1 = new FListBox (this);
+  list1->setGeometry(2, 1, 18, 10);
+  list1->setText ("FListBoxItem");
+
+  for (int i=1; i < 30; i++)
+    list1->insert (L"----- " + FString().setNumber(i) + L" -----");
+
+  // listbox 2
+  FListBox* list2 = new FListBox (this);
+  list2->setGeometry(21, 1, 10, 10);
+  list2->setText ("double");
+
+  std::list<double> double_list;
+
+  for (double i=1; i<=15; i++)
+    double_list.push_back(2*i + (i/100));
+
+  list2->insert (double_list.begin(), double_list.end(), doubleToString);
+
+  // listbox 3
+  std::map<FString, FString> TLD;
+  TLD["com"] = "Commercial";
+  TLD["org"] = "Organization";
+  TLD["net"] = "Network";
+  TLD["edu"] = "Education";
+  TLD["gov"] = "Government";
+
+  FListBox* list3;
+  list3 = new FListBox (TLD.begin(), TLD.end(), mapToString, this);
+  list3->setGeometry(32, 1, 21, 10);
+  list3->setText ("key: value");
+
+  // Quit button
+  FButton* Quit = new FButton (this);
+  Quit->setGeometry(42, 12, 10, 1);
+  Quit->setText (L"&Quit");
+
+  // Add some function callbacks
+  Quit->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &Listbox::cb_exitApp)
+  );
+}
+
+//----------------------------------------------------------------------
+Listbox::~Listbox()
+{
+  delete temp_str;
+}
+
+//----------------------------------------------------------------------
+void Listbox::onClose (FCloseEvent* ev)
+{
+  int ret = FMessageBox::info ( this, "Quit"
+                              , "Do you really want\n"
+                                "to quit the program ?"
+                              , FMessageBox::Yes
+                              , FMessageBox::No );
+  if ( ret == FMessageBox::Yes )
+    ev->accept();
+  else
+    ev->ignore();
+}
+
+//----------------------------------------------------------------------
+void Listbox::cb_exitApp (FWidget*, data_ptr)
+{
+  close();
+}
+
+
+//----------------------------------------------------------------------
+//                               main part
+//----------------------------------------------------------------------
+
+int main (int argc, char* argv[])
+{
+  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                   || std::strcmp(argv[1], "-h") == 0 ) )
+  {
+    std::cout << "Generic options:" << std::endl
+              << "  -h, --help                  "
+              << "Display this help and exit" << std::endl;
+    FApplication::print_cmd_Options();
+    std::exit(EXIT_SUCCESS);
+  }
+
+  FApplication app(argc, argv);
+
+  Listbox d(&app);
+  d.setText (L"Listbox");
+  d.setGeometry (int(1+(app.getWidth()-56)/2), 5, 56, 16);
+  d.setShadow();
+
+  app.setMainWidget(&d);
+  d.show();
+  return app.exec();
+}

@@ -37,6 +37,7 @@ test/term-attributes
 test/transparent
 test/input-dialog
 test/choice
+test/listbox
 test/mandelbrot
 test/keyboard
 test/mouse

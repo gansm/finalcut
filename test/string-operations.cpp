@@ -150,7 +150,7 @@ int main (int, char**)
   else
     std::cout << "       cmp: != Not Ok" << std::endl;
 
-  // Test: split a string with a delimiter and returns a vector (array)  
+  // Test: split a string with a delimiter and returns a vector (array)
   FString split_str = "a,b,c,d";
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
@@ -219,7 +219,7 @@ int main (int, char**)
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
 
-  // Test: convert integer and double value to a string 
+  // Test: convert integer and double value to a string
   FString num1, num2, num3;
   num1.setNumber(137);
   num2.setNumber(-512);

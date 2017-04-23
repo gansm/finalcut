@@ -507,6 +507,7 @@ MyDialog::MyDialog (FWidget* parent)
   myList->setText ("Items");
   myList->setStatusbarMessage ("99 items in a list");
   myList->setMultiSelection();
+
   for (int z=1; z < 100; z++)
     myList->insert (FString().setNumber(z) + L" placeholder");
 

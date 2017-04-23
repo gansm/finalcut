@@ -7,6 +7,9 @@
 #include "fscrollbar.h"
 #include "fstatusbar.h"
 
+// function pointer
+FString& (*FListBox::getString)(FListBox::listBoxItems::iterator);
+
 
 //----------------------------------------------------------------------
 // class FListBoxItem
@@ -128,15 +131,23 @@ void FListBox::setCurrentItem (int index)
 }
 
 //----------------------------------------------------------------------
+void FListBox::setCurrentItem (listBoxItems::iterator iter)
+{
+  int index = int(std::distance(data.begin(), iter) + 1);
+  setCurrentItem(index);
+}
+
+//----------------------------------------------------------------------
 void FListBox::showInsideBrackets ( int index
                                   , fc::brackets_type b )
 {
-  data[uInt(index-1)].brackets = b;
+  listBoxItems::iterator iter = index2iterator(index - 1);
+  iter->brackets = b;
 
   if ( b == fc::NoBrackets )
     return;
 
-  int len = int(data[uInt(index-1)].getText().getLength() + 2);
+  int len = int(iter->getText().getLength() + 2);
 
   if ( len > max_line_width )
   {
@@ -261,16 +272,13 @@ void FListBox::hide()
 }
 
 //----------------------------------------------------------------------
-void FListBox::insert ( const FString& item
-                      , fc::brackets_type b
-                      , bool s
-                      , data_ptr d )
+void FListBox::insert (FListBoxItem listItem)
 {
   int len, element_count;
 
-  len = int(item.getLength());
+  len = int(listItem.text.getLength());
 
-  if ( b )
+  if ( listItem.brackets )
     len += 2;
 
   if ( len > max_line_width )
@@ -287,10 +295,7 @@ void FListBox::insert ( const FString& item
         hbar->setVisible();
     }
   }
-  FListBoxItem listItem (item);
-  listItem.data_pointer = d;
-  listItem.brackets     = b;
-  listItem.selected     = s;
+
   data.push_back (listItem);
 
   element_count = int(getCount());
@@ -300,6 +305,18 @@ void FListBox::insert ( const FString& item
 
   if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
     vbar->setVisible();
+}
+
+//----------------------------------------------------------------------
+void FListBox::insert ( const FString& item
+                      , fc::brackets_type b
+                      , bool s
+                      , data_ptr d )
+{
+  FListBoxItem listItem (item, d);
+  listItem.brackets     = b;
+  listItem.selected     = s;
+  insert (listItem);
 }
 
 //----------------------------------------------------------------------
@@ -323,12 +340,16 @@ void FListBox::remove (int item)
   element_count = int(getCount());
   max_line_width = 0;
 
-  for (int i=0; i < element_count; i++)
+  listBoxItems::iterator iter = data.begin();
+
+  while ( iter != data.end() )
   {
-    int len = int(data[uInt(i)].getText().getLength());
+    int len = int(iter->getText().getLength());
 
     if ( len > max_line_width )
       max_line_width = len;
+
+    ++iter;
   }
 
   hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
@@ -553,18 +574,20 @@ void FListBox::onKeyPress (FKeyEvent* ev)
         {
           inc_search += L' ';
           bool inc_found = false;
-          uInt end = getCount();
+          listBoxItems::iterator iter = data.begin();
 
-          for (uInt i=0; i < end; i++)
+          while ( iter != data.end() )
           {
             if ( ! inc_found
                 && inc_search.toLower()
-                == data[i].getText().left(inc_len+1).toLower() )
+                == iter->getText().left(inc_len+1).toLower() )
             {
-              setCurrentItem(int(i+1));
+              setCurrentItem(iter);
               inc_found = true;
               break;
             }
+
+            ++iter;
           }
 
           if ( ! inc_found )
@@ -600,16 +623,18 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
           if ( inc_len > 1 )
           {
-            uInt end = getCount();
+            listBoxItems::iterator iter = data.begin();
 
-            for (uInt i=0; i < end; i++)
+            while ( iter != data.end() )
             {
               if ( inc_search.toLower()
-                   == data[i].getText().left(inc_len-1).toLower() )
+                   == iter->getText().left(inc_len-1).toLower() )
               {
-                setCurrentItem(int(i+1));
+                setCurrentItem(iter);
                 break;
               }
+
+              ++iter;
             }
           }
 
@@ -640,18 +665,20 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
         uInt inc_len = inc_search.getLength();
         bool inc_found = false;
-        uInt end = getCount();
+        listBoxItems::iterator iter = data.begin();
 
-        for (uInt i=0; i < end; i++)
+        while ( iter != data.end() )
         {
           if ( ! inc_found
               && inc_search.toLower()
-              == data[i].getText().left(inc_len).toLower() )
+              == iter->getText().left(inc_len).toLower() )
           {
-            setCurrentItem(int(i+1));
+            setCurrentItem(iter);
             inc_found = true;
             break;
           }
+
+          ++iter;
         }
 
         if ( ! inc_found )
@@ -1432,6 +1459,12 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
+FString& FListBox::getString_FListBoxItem (listBoxItems::iterator iter)
+{
+  return iter->getText();
+}
+
+//----------------------------------------------------------------------
 void FListBox::init()
 {
   if ( hasFocus() )
@@ -1472,6 +1505,9 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + nf_offset);
+
+  // set the new getString function pointer
+  getString = &FListBox::getString_FListBoxItem;
 }
 
 //----------------------------------------------------------------------
@@ -1564,6 +1600,7 @@ void FListBox::drawList()
   FString element;
   uInt start, end, inc_len;
   bool isFocus;
+  listBoxItems::iterator iter;
 
   if ( data.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
@@ -1587,13 +1624,15 @@ void FListBox::drawList()
     end = std::max(last_pos, current_pos)+1;
   }
 
+  iter = index2iterator(int(start) + yoffset);
+
   for (uInt y=start; y < end; y++)
   {
     setPrintPos (2, 2 + int(y));
     bool serach_mark = false;
-    bool lineHasBrackets = hasBrackets(int(y) + yoffset + 1);
-    bool isLineSelected = isSelected(int(y) + yoffset + 1);
-    bool isCurrentLine = bool(uInt(y) + uInt(yoffset) + 1 == uInt(current));
+    bool lineHasBrackets = hasBrackets(iter);
+    bool isLineSelected = isSelected(iter);
+    bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
 
     if ( isLineSelected )
     {
@@ -1680,7 +1719,7 @@ void FListBox::drawList()
       {
         b=1;
 
-        switch ( data[y+uInt(yoffset)].brackets )
+        switch ( iter->brackets )
         {
           case fc::NoBrackets:
             break;
@@ -1702,14 +1741,12 @@ void FListBox::drawList()
             break;
         }
 
-        element = data[y+uInt(yoffset)].getText()
-                                       .mid ( uInt(1+xoffset)
-                                            , uInt(getWidth()-nf_offset-5) );
+        element = getString(iter).mid ( uInt(1+xoffset)
+                                      , uInt(getWidth()-nf_offset-5) );
       }
       else
-        element = data[y+uInt(yoffset)].getText()
-                                       .mid ( uInt(xoffset)
-                                            ,  uInt(getWidth()-nf_offset-4) );
+        element = getString(iter).mid ( uInt(xoffset)
+                                      ,  uInt(getWidth()-nf_offset-4) );
 
       const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
@@ -1727,7 +1764,7 @@ void FListBox::drawList()
         print (element_str[i]);
       }
 
-      full_length = int(data[y+uInt(yoffset)].getText().getLength());
+      full_length = int(getString(iter).getLength());
 
       if ( b+i < uInt(getWidth()-nf_offset-4) && xoffset <= full_length+1 )
       {
@@ -1735,7 +1772,7 @@ void FListBox::drawList()
           setColor ( wc.current_element_focus_fg
                    , wc.current_element_focus_bg );
 
-        switch ( data[y+uInt(yoffset)].brackets )
+        switch ( iter->brackets )
         {
           case fc::NoBrackets:
             break;
@@ -1772,9 +1809,8 @@ void FListBox::drawList()
     else  // line has no brackets
     {
       uInt i, len;
-      element = data[y+uInt(yoffset)].getText()
-                                     .mid ( uInt(1+xoffset)
-                                          , uInt(getWidth()-nf_offset-4) );
+      element = getString(iter).mid ( uInt(1+xoffset)
+                                    , uInt(getWidth()-nf_offset-4) );
       const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
 
@@ -1800,6 +1836,8 @@ void FListBox::drawList()
       for (; i < uInt(getWidth()-nf_offset-3); i++)
         print (' ');
     }
+
+    ++iter;
   }
 
   if ( isMonochron() )  // unset for the last element
