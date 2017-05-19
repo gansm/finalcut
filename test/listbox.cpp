@@ -88,11 +88,14 @@ Listbox::Listbox (FWidget* parent)
     list1->insert (L"----- " + FString().setNumber(i) + L" -----");
 
   // listbox 2
+  double_list = new std::list<double>;
+
+  for (double i=1; i<=15; i++)
+    double_list->push_back(2*i + (i/100));
+
   FListBox* list2 = new FListBox (this);
   list2->setGeometry(21, 1, 10, 10);
   list2->setText ("double");
-
-  double_list = new std::list<double>;
 
   for (double i=1; i<=15; i++)
     double_list->push_back(2*i + (i/100));
@@ -100,12 +103,12 @@ Listbox::Listbox (FWidget* parent)
   //
   // Import via lazy conversion on print
   //
-  //list2->insert (double_list, doubleToItem);
+  list2->insert (double_list, doubleToItem);
 
   //
   // Direct import of the complete list
   //
-  list2->insert (double_list->begin(), double_list->end(), doubleToString);
+  //list2->insert (double_list->begin(), double_list->end(), doubleToString);
 
   // listbox 3
   std::map<FString, FString> TLD;

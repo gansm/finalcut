@@ -1,6 +1,6 @@
 2017-05-19  Markus Gans  <guru.mail@muenster.de>
 	* FListBox: Import of data from a container via 
-	  "lazy conversion" during item print.
+	  "lazy conversion" during item print
 
 2017-04-23  Markus Gans  <guru.mail@muenster.de>
 	* Import of data from a standard container in FListBox 

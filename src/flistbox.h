@@ -115,6 +115,8 @@ class FListBox : public FWidget
    explicit FListBox (FWidget* = 0);
    template <class Iterator, class InsertConverter>
    FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
+   template <class Container, class LazyConverter>
+   FListBox (Container, LazyConverter, FWidget* = 0);
 
    // Destructor
   ~FListBox();
@@ -301,6 +303,39 @@ inline FListBox::FListBox ( Iterator first
     insert(convert(first), fc::NoBrackets, false, &(*first));
     ++first;
   }
+}
+
+//----------------------------------------------------------------------
+template <class Container, class LazyConverter>
+inline FListBox::FListBox ( Container container
+                          , LazyConverter convert
+                          , FWidget* parent )
+  : FWidget(parent)
+  , convertToItem(0)
+  , data()
+  , source_container(0)
+  , conv_type(FListBox::no_convert)
+  , vbar(0)
+  , hbar(0)
+  , text()
+  , inc_search()
+  , multi_select(false)
+  , mouse_select(false)
+  , drag_scroll(FListBox::noScroll)
+  , scroll_timer(false)
+  , scroll_repeat(100)
+  , scroll_distance(1)
+  , current(0)
+  , last_current(-1)
+  , secect_from_item(-1)
+  , xoffset(0)
+  , yoffset(0)
+  , last_yoffset(-1)
+  , nf_offset(0)
+  , max_line_width(0)
+{
+  init();
+  insert (container, convert);
 }
 
 //----------------------------------------------------------------------
