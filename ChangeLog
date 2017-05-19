@@ -1,3 +1,7 @@
+2017-05-19  Markus Gans  <guru.mail@muenster.de>
+	* FListBox: Import of data from a container via 
+	  "lazy conversion" during item print.
+
 2017-04-23  Markus Gans  <guru.mail@muenster.de>
 	* Import of data from a standard container in FListBox 
 	  is now possible
@@ -7,7 +11,7 @@
 2017-04-17  Markus Gans  <guru.mail@muenster.de>
 	* Speed up FString::setNumber() by using a decimal 
 	  string lookup table
-	* FString allocates no new memory if the size in sufficient
+	* FString allocates no new memory if the size is sufficient
 
 2017-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Fix unsigned integer underflow in FString::_insert()

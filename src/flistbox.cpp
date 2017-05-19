@@ -7,9 +7,6 @@
 #include "fscrollbar.h"
 #include "fstatusbar.h"
 
-// function pointer
-FString& (*FListBox::getString)(FListBox::listBoxItems::iterator);
-
 
 //----------------------------------------------------------------------
 // class FListBoxItem
@@ -71,7 +68,10 @@ FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
 //----------------------------------------------------------------------
 FListBox::FListBox (FWidget* parent)
   : FWidget(parent)
+  , convertToItem(0)
   , data()
+  , source_container(0)
+  , conv_type(FListBox::no_convert)
   , vbar(0)
   , hbar(0)
   , text()
@@ -314,8 +314,8 @@ void FListBox::insert ( const FString& item
                       , data_ptr d )
 {
   FListBoxItem listItem (item, d);
-  listItem.brackets     = b;
-  listItem.selected     = s;
+  listItem.brackets = b;
+  listItem.selected = s;
   insert (listItem);
 }
 
@@ -1459,7 +1459,7 @@ void FListBox::adjustSize()
 
 // private methods of FListBox
 //----------------------------------------------------------------------
-FString& FListBox::getString_FListBoxItem (listBoxItems::iterator iter)
+inline FString& FListBox::getString (listBoxItems::iterator iter)
 {
   return iter->getText();
 }
@@ -1505,9 +1505,6 @@ void FListBox::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + nf_offset);
-
-  // set the new getString function pointer
-  getString = &FListBox::getString_FListBoxItem;
 }
 
 //----------------------------------------------------------------------
@@ -1633,6 +1630,9 @@ void FListBox::drawList()
     bool lineHasBrackets = hasBrackets(iter);
     bool isLineSelected = isSelected(iter);
     bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+
+    if ( conv_type == lazy_convert && iter->getText().isNull() )
+      convertToItem (*iter, source_container, int(y) + yoffset);
 
     if ( isLineSelected )
     {

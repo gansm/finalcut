@@ -3,14 +3,30 @@
 #include <iostream>
 #include <fstream>
 
-#include "final.h"
+#include "fapp.h"
+#include "fdialog.h"
+#include "flistbox.h"
+#include "fmessagebox.h"
+
 
 // Global application object
 static FString* temp_str = 0;
 
 // Function prototypes
+void doubleToItem (FListBoxItem&, FWidget::data_ptr container, int index);
 FString& doubleToString (std::list<double>::const_iterator iter);
 FString& mapToString (std::map<FString, FString>::const_iterator iter);
+
+// Lazy conversion import function
+void doubleToItem (FListBoxItem& item, FWidget::data_ptr container, int index)
+{
+  typedef std::list<double>* double_list_ptr;
+  double_list_ptr dbllist = static_cast<double_list_ptr>(container);
+  std::list<double>::iterator iter = dbllist->begin();
+  std::advance (iter, index);
+  item.setText (FString().setNumber(*iter));
+  item.setData (FWidget::data_ptr(&(*iter)));
+}
 
 // Import converter functions
 FString& doubleToString (std::list<double>::const_iterator iter)
@@ -50,12 +66,16 @@ class Listbox : public FDialog
 
    // Callback methods
    void cb_exitApp (FWidget*, data_ptr);
+
+   // Data Member
+   std::list<double>* double_list;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listbox::Listbox (FWidget* parent)
   : FDialog(parent)
+  , double_list()
 {
   temp_str = new FString;
 
@@ -72,12 +92,20 @@ Listbox::Listbox (FWidget* parent)
   list2->setGeometry(21, 1, 10, 10);
   list2->setText ("double");
 
-  std::list<double> double_list;
+  double_list = new std::list<double>;
 
   for (double i=1; i<=15; i++)
-    double_list.push_back(2*i + (i/100));
+    double_list->push_back(2*i + (i/100));
 
-  list2->insert (double_list.begin(), double_list.end(), doubleToString);
+  //
+  // Import via lazy conversion on print
+  //
+  //list2->insert (double_list, doubleToItem);
+
+  //
+  // Direct import of the complete list
+  //
+  list2->insert (double_list->begin(), double_list->end(), doubleToString);
 
   // listbox 3
   std::map<FString, FString> TLD;
@@ -109,6 +137,7 @@ Listbox::Listbox (FWidget* parent)
 Listbox::~Listbox()
 {
   delete temp_str;
+  delete double_list;
 }
 
 //----------------------------------------------------------------------

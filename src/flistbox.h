@@ -60,7 +60,6 @@ class FListBoxItem
    virtual FString& getText();
    virtual FWidget::data_ptr getData() const;
 
- protected:
    // Mutators
    void setText (const FString&);
    void setData (FWidget::data_ptr);
@@ -162,6 +161,8 @@ class FListBox : public FWidget
    void         hide();
    template <class Iterator, class InsertConverter>
    void         insert (Iterator, Iterator, InsertConverter);
+   template <class Container, class LazyConverter>
+   void         insert (Container, LazyConverter);
    void         insert (FListBoxItem);
    void         insert ( const FString&
                        , fc::brackets_type = fc::NoBrackets
@@ -205,6 +206,13 @@ class FListBox : public FWidget
      scrollDownSelect = 4
    };
 
+   enum convert_type
+   {
+     no_convert     = 0,
+     direct_convert = 1,
+     lazy_convert   = 2
+   };
+
    // Disable copy constructor
    FListBox (const FListBox&);
 
@@ -212,8 +220,7 @@ class FListBox : public FWidget
    FListBox& operator = (const FListBox&);
 
    // Accessors
-   static FString& getString_FListBoxItem (listBoxItems::iterator);
-   static FString& (*getString)(listBoxItems::iterator);
+   static FString& getString (listBoxItems::iterator);
 
    // Methods
    void        init();
@@ -225,8 +232,15 @@ class FListBox : public FWidget
    void        processChanged();
    listBoxItems::iterator index2iterator (int);
 
+   // Function Pointer
+   void        (*convertToItem) ( FListBoxItem&
+                                , FWidget::data_ptr
+                                , int index );
+
    // Data Members
    listBoxItems data;
+   FWidget::data_ptr source_container;
+   convert_type conv_type;
    FScrollbar*  vbar;
    FScrollbar*  hbar;
    FString      text;
@@ -257,7 +271,10 @@ inline FListBox::FListBox ( Iterator first
                           , InsertConverter convert
                           , FWidget* parent )
   : FWidget(parent)
+  , convertToItem(0)
   , data()
+  , source_container(0)
+  , conv_type(FListBox::no_convert)
   , vbar(0)
   , hbar(0)
   , text()
@@ -395,11 +412,26 @@ inline void FListBox::insert ( Iterator first
                              , Iterator last
                              , InsertConverter convert )
 {
+  conv_type = direct_convert;
+
   while ( first != last )
   {
     insert (convert(first), fc::NoBrackets, false, &(*first));
     ++first;
   }
+}
+
+//----------------------------------------------------------------------
+template <class Container, class LazyConverter>
+void FListBox::insert (Container container, LazyConverter convert)
+{
+  conv_type = lazy_convert;
+  source_container = container;
+  convertToItem = convert;
+  size_t size = container->size();
+
+  if ( size > 0 )
+    data.resize(size);
 }
 
 //----------------------------------------------------------------------
