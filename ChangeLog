@@ -1,3 +1,7 @@
+2017-05-20  Markus Gans  <guru.mail@muenster.de>
+	* Recalculate the horizontal FListBox scroll bar size 
+	  on lazy conversion
+
 2017-05-19  Markus Gans  <guru.mail@muenster.de>
 	* FListBox: Import of data from a container via 
 	  "lazy conversion" during item print

@@ -229,6 +229,8 @@ class FListBox : public FWidget
    void        draw();
    void        drawLabel();
    void        drawList();
+   void        recalculateHorizontalBar (int, bool);
+   void        recalculateVerticalBar (int);
    void        processClick();
    void        processSelect();
    void        processChanged();
@@ -467,6 +469,8 @@ void FListBox::insert (Container container, LazyConverter convert)
 
   if ( size > 0 )
     data.resize(size);
+
+  recalculateVerticalBar(int(size));
 }
 
 //----------------------------------------------------------------------

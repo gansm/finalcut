@@ -274,37 +274,14 @@ void FListBox::hide()
 //----------------------------------------------------------------------
 void FListBox::insert (FListBoxItem listItem)
 {
-  int len, element_count;
-
-  len = int(listItem.text.getLength());
-
-  if ( listItem.brackets )
-    len += 2;
-
-  if ( len > max_line_width )
-  {
-    max_line_width = len;
-
-    if ( len >= getWidth() - nf_offset - 3 )
-    {
-      hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-      hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
-      hbar->calculateSliderValues();
-
-      if ( ! hbar->isVisible() )
-        hbar->setVisible();
-    }
-  }
+  int len = int(listItem.text.getLength());
+  bool has_brackets = bool(listItem.brackets);
+  recalculateHorizontalBar(len, has_brackets);
 
   data.push_back (listItem);
 
-  element_count = int(getCount());
-  vbar->setMaximum(element_count - getHeight() + 2);
-  vbar->setPageSize(element_count, getHeight() - 2);
-  vbar->calculateSliderValues();
-
-  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
-    vbar->setVisible();
+  int element_count = int(getCount());
+  recalculateVerticalBar(element_count);
 }
 
 //----------------------------------------------------------------------
@@ -1625,14 +1602,22 @@ void FListBox::drawList()
 
   for (uInt y=start; y < end; y++)
   {
-    setPrintPos (2, 2 + int(y));
     bool serach_mark = false;
     bool lineHasBrackets = hasBrackets(iter);
     bool isLineSelected = isSelected(iter);
     bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
 
     if ( conv_type == lazy_convert && iter->getText().isNull() )
+    {
       convertToItem (*iter, source_container, int(y) + yoffset);
+      int len = int(iter->text.getLength());
+      recalculateHorizontalBar(len, lineHasBrackets);
+
+      if ( hbar->isVisible() )
+        hbar->redraw();
+    }
+
+    setPrintPos (2, 2 + int(y));
 
     if ( isLineSelected )
     {
@@ -1846,6 +1831,39 @@ void FListBox::drawList()
   unsetBold();
   last_yoffset = yoffset;
   last_current = current;
+}
+
+//----------------------------------------------------------------------
+void FListBox::recalculateHorizontalBar(int len, bool has_brackets)
+{
+  if ( has_brackets )
+    len += 2;
+
+  if ( len > max_line_width )
+  {
+    max_line_width = len;
+
+    if ( len >= getWidth() - nf_offset - 3 )
+    {
+      hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
+      hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+      hbar->calculateSliderValues();
+
+      if ( ! hbar->isVisible() )
+        hbar->setVisible();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FListBox::recalculateVerticalBar(int element_count)
+{
+  vbar->setMaximum (element_count - getHeight() + 2);
+  vbar->setPageSize (element_count, getHeight() - 2);
+  vbar->calculateSliderValues();
+
+  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
+    vbar->setVisible();
 }
 
 //----------------------------------------------------------------------
