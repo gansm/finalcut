@@ -466,12 +466,9 @@ wchar_t& FString::operator [] (uInt pos)
 }
 
 //----------------------------------------------------------------------
-const FString FString::operator () (uInt pos, uInt len)
+const FString& FString::operator () ()
 {
-  assert ( (pos < length) && ((pos+len) <= length) );
-  FString tmp(L"");
-  tmp._insert (0, len, string + pos);
-  return (tmp);
+  return (*this);
 }
 
 

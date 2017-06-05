@@ -143,9 +143,6 @@ class FListBox : public FWidget
    void         setMultiSelection (bool);
    void         setMultiSelection ();
    void         unsetMultiSelection ();
-   bool         setEnable (bool);
-   bool         setEnable();
-   bool         unsetEnable();
    bool         setDisable();
    bool         setFocus (bool);
    bool         setFocus();
@@ -402,14 +399,6 @@ inline void FListBox::setMultiSelection()
 //----------------------------------------------------------------------
 inline void FListBox::unsetMultiSelection()
 { setMultiSelection(false); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
-inline bool FListBox::unsetEnable()
-{ return setEnable(false); }
 
 //----------------------------------------------------------------------
 inline bool FListBox::setDisable()

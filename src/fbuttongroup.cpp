@@ -90,15 +90,9 @@ bool FButtonGroup::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-  {
-    flags |= fc::active;
     setHotkeyAccelerator();
-  }
   else
-  {
-    flags &= ~fc::active;
     delAccelerator();
-  }
 
   return on;
 }

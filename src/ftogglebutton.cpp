@@ -102,7 +102,6 @@ bool FToggleButton::setEnable (bool on)
 
   if ( on )
   {
-    flags |= fc::active;
     setHotkeyAccelerator();
 
     if ( hasFocus() )
@@ -118,7 +117,6 @@ bool FToggleButton::setEnable (bool on)
   }
   else
   {
-    flags &= ~fc::active;
     delAccelerator();
     setForegroundColor (wc.toggle_button_inactive_fg);
     setBackgroundColor (wc.toggle_button_inactive_bg);
@@ -134,8 +132,6 @@ bool FToggleButton::setFocus (bool on)
 
   if ( on )
   {
-    flags |= fc::focus;
-
     if ( isEnabled() )
     {
       if ( isRadioButton()  )
@@ -156,8 +152,6 @@ bool FToggleButton::setFocus (bool on)
   }
   else
   {
-    flags &= ~fc::focus;
-
     if ( isEnabled() )
     {
       setForegroundColor (wc.toggle_button_active_fg);
@@ -633,13 +627,8 @@ void FToggleButton::init()
 {
   setGeometry (1, 1, 4, 1, false);  // initialize geometry values
 
-  if ( hasFocus() )
-    flags = fc::focus;
-
   if ( isEnabled() )
   {
-    flags |= fc::active;
-
     if ( hasFocus() )
     {
       setForegroundColor (wc.toggle_button_active_focus_fg);

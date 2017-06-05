@@ -686,10 +686,6 @@ inline bool FWidget::setVisible()
 { return visible = true; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setEnable (bool on)
-{ return enable = (on) ? true : false; }
-
-//----------------------------------------------------------------------
 inline bool FWidget::setEnable()
 { return setEnable(true); }
 

@@ -61,6 +61,9 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   , background_color(fc::Default)
   , statusbar_message()
 {
+  if ( isEnabled() )
+    flags |= fc::active;
+
   if ( ! parent )
   {
     assert ( ! rootObject
@@ -307,6 +310,17 @@ void FWidget::setStatusbarMessage (const FString& msg)
 }
 
 //----------------------------------------------------------------------
+bool FWidget::setEnable (bool on)
+{  
+  if ( on )
+    flags |= fc::active;
+  else
+    flags &= ~fc::active;
+
+  return enable = (on) ? true : false;
+}
+
+//----------------------------------------------------------------------
 bool FWidget::setFocus (bool on)
 {
   FWindow* window;
@@ -314,6 +328,11 @@ bool FWidget::setFocus (bool on)
 
   if ( ! enable )
     return false;
+
+  if ( on )
+    flags |= fc::focus;
+  else
+    flags &= ~fc::focus;
 
   if ( on == focus )
     return true;

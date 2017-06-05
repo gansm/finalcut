@@ -73,9 +73,6 @@ class FDialog : public FWindow
    FString             getText() const;
 
    // Mutators
-   bool                setFocus (bool);
-   bool                setFocus();
-   bool                unsetFocus();
    bool                setDialogWidget (bool);
    bool                setDialogWidget();
    bool                unsetDialogWidget();
@@ -178,14 +175,6 @@ inline const char* FDialog::getClassName() const
 //----------------------------------------------------------------------
 inline FString FDialog::getText() const
 { return tb_text; }
-
-//----------------------------------------------------------------------
-inline bool FDialog::setFocus()
-{ return setFocus(true); }
-
-//----------------------------------------------------------------------
-inline bool FDialog::unsetFocus()
-{ return setFocus(false); }
 
 //----------------------------------------------------------------------
 inline bool FDialog::setDialogWidget()

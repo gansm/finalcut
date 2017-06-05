@@ -183,27 +183,12 @@ void FListBox::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FListBox::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
-    flags |= fc::active;
-  else
-    flags &= ~fc::active;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
 bool FListBox::setFocus (bool on)
 {
   FWidget::setFocus(on);
 
   if ( on )
   {
-    flags |= fc::focus;
-
     if ( getStatusBar() )
     {
       const FString& msg = getStatusbarMessage();
@@ -215,8 +200,6 @@ bool FListBox::setFocus (bool on)
   }
   else
   {
-    flags &= ~fc::focus;
-
     if ( getStatusBar() )
       getStatusBar()->clearMessage();
   }
@@ -1444,12 +1427,6 @@ inline FString& FListBox::getString (listBoxItems::iterator iter)
 //----------------------------------------------------------------------
 void FListBox::init()
 {
-  if ( hasFocus() )
-    flags = fc::focus;
-
-  if ( isEnabled() )
-    flags |= fc::active;
-
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 

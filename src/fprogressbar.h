@@ -57,10 +57,6 @@ class FProgressbar : public FWidget
    // Mutators
    void         setPercentage (int);
    void         setGeometry (int, int, int, int, bool = true);
-   bool         setEnable (bool);
-   bool         setEnable();
-   bool         unsetEnable();
-   bool         setDisable();
    bool         setShadow (bool);
    bool         setShadow();
    bool         unsetShadow();
@@ -93,18 +89,6 @@ inline const char* FProgressbar::getClassName() const
 //----------------------------------------------------------------------
 inline int FProgressbar::getPercentage()
 { return percentage; }
-
-//----------------------------------------------------------------------
-inline bool FProgressbar::setEnable()
-{ return setEnable(true); }
-
-//----------------------------------------------------------------------
-inline bool FProgressbar::unsetEnable()
-{ return setEnable(false); }
-
-//----------------------------------------------------------------------
-inline bool FProgressbar::setDisable()
-{ return setEnable(false); }
 
 //----------------------------------------------------------------------
 inline bool FProgressbar::setShadow()

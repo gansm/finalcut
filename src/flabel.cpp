@@ -100,15 +100,9 @@ bool FLabel::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-  {
-    flags |= fc::active;
     setHotkeyAccelerator();
-  }
   else
-  {
-    flags &= ~fc::active;
     delAccelerator();
-  }
 
   return on;
 }
@@ -261,10 +255,6 @@ void FLabel::cb_accel_widget_destroyed (FWidget*, data_ptr)
 void FLabel::init()
 {
   FWidget* parent_widget = getParentWidget();
-
-  if ( isEnabled() )
-    flags |= fc::active;
-
   unsetFocusable();
 
   if ( parent_widget )

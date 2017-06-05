@@ -54,19 +54,6 @@ void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FProgressbar::setEnable (bool on)
-{
-  FWidget::setEnable(on);
-
-  if ( on )
-    flags |= fc::active;
-  else
-    flags &= ~fc::active;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
 bool FProgressbar::setShadow (bool on)
 {
   if ( on

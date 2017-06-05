@@ -136,15 +136,9 @@ bool FButton::setEnable (bool on)
   FWidget::setEnable(on);
 
   if ( on )
-  {
-    flags |= fc::active;
     setHotkeyAccelerator();
-  }
   else
-  {
-    flags &= ~fc::active;
     delAccelerator();
-  }
 
   updateButtonColor();
   return on;
@@ -157,8 +151,6 @@ bool FButton::setFocus (bool on)
 
   if ( on )
   {
-    flags |= fc::focus;
-
     if ( isEnabled() )
     {
       if ( getStatusBar() )
@@ -173,8 +165,6 @@ bool FButton::setFocus (bool on)
   }
   else
   {
-    flags &= ~fc::focus;
-
     if ( isEnabled() && getStatusBar() )
       getStatusBar()->clearMessage();
   }
@@ -432,12 +422,6 @@ void FButton::init()
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
   setShadow();
-
-  if ( hasFocus() )
-    flags = fc::focus;
-
-  if ( isEnabled() )
-    flags |= fc::active;
 }
 
 //----------------------------------------------------------------------

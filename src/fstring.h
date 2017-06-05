@@ -108,7 +108,7 @@ class FString
 
    wchar_t& operator [] (int);
    wchar_t& operator [] (uInt);
-   const FString operator () (uInt, uInt);
+   const FString& operator () ();
 
    bool operator <  (const FString&) const;
    bool operator <  (const std::wstring&) const;

@@ -62,8 +62,6 @@ bool FLineEdit::setEnable (bool on)
 
   if ( on )
   {
-    flags |= fc::active;
-
     if ( hasFocus() )
     {
       setForegroundColor (wc.inputfield_active_focus_fg);
@@ -77,7 +75,6 @@ bool FLineEdit::setEnable (bool on)
   }
   else
   {
-    flags &= ~fc::active;
     setForegroundColor (wc.inputfield_inactive_fg);
     setBackgroundColor (wc.inputfield_inactive_bg);
   }
@@ -92,8 +89,6 @@ bool FLineEdit::setFocus (bool on)
 
   if ( on )
   {
-    flags |= fc::focus;
-
     if ( isEnabled() )
     {
       setForegroundColor (wc.inputfield_active_focus_fg);
@@ -111,8 +106,6 @@ bool FLineEdit::setFocus (bool on)
   }
   else
   {
-    flags &= ~fc::focus;
-
     if ( isEnabled() )
     {
       setForegroundColor (wc.inputfield_active_fg);
@@ -645,13 +638,8 @@ void FLineEdit::init()
   setVisibleCursor();
   setShadow();
 
-  if ( hasFocus() )
-    flags |= fc::focus;
-
   if ( isEnabled() )
   {
-    flags |= fc::active;
-
     if ( hasFocus() )
     {
       setForegroundColor (wc.inputfield_active_focus_fg);

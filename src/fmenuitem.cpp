@@ -94,8 +94,6 @@ bool FMenuItem::setEnable (bool on)
 
   if ( on )
   {
-    flags |= fc::active;
-
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
@@ -104,8 +102,6 @@ bool FMenuItem::setEnable (bool on)
   }
   else
   {
-    flags &= ~fc::active;
-
     if ( super && isMenuBar(super) )
       super->delAccelerator (this);
   }
@@ -120,8 +116,6 @@ bool FMenuItem::setFocus (bool on)
 
   if ( on )
   {
-    flags |= fc::focus;
-
     if ( isEnabled() )
     {
       if ( ! selected )
@@ -168,8 +162,6 @@ bool FMenuItem::setFocus (bool on)
   }
   else
   {
-    flags &= ~fc::focus;
-
     if ( isEnabled() && getStatusBar() )
       getStatusBar()->clearMessage();
   }
@@ -690,12 +682,6 @@ void FMenuItem::init (FWidget* parent)
         menu_ptr->calculateDimensions();
     }
   }
-
-  if ( hasFocus() )
-    flags = fc::focus;
-
-  if ( isEnabled() )
-    flags |= fc::active;
 }
 
 //----------------------------------------------------------------------

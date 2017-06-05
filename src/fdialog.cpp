@@ -73,19 +73,6 @@ FDialog::~FDialog()  // destructor
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-bool FDialog::setFocus (bool on)
-{
-  FWidget::setFocus(on);
-
-  if ( on )
-    flags |= fc::focus;
-  else
-    flags &= ~fc::focus;
-
-  return on;
-}
-
-//----------------------------------------------------------------------
 bool FDialog::setDialogWidget (bool on)
 {
   if ( isDialogWidget() == on )
@@ -1065,13 +1052,6 @@ void FDialog::init()
   setTransparentShadow();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-
-  if ( hasFocus() )
-    flags |= fc::focus;
-
-  if ( isEnabled() )
-    flags |= fc::active;
-
   old_focus = FWidget::getFocusWidget();
 
   if ( old_focus )
