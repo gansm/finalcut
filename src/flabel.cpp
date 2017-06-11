@@ -219,23 +219,26 @@ void FLabel::onAccel (FAccelEvent* ev)
   if ( ! accel_widget->hasFocus() )
   {
     FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    accel_widget->setFocus();
 
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    accel_widget->redraw();
-    FFocusEvent in (fc::FocusIn_Event);
-    FApplication::sendEvent(accel_widget, &in);
-
-    if ( getStatusBar() )
+    if ( focused_widget->isWidget() )
     {
-      accel_widget->getStatusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
+      FFocusEvent out (fc::FocusOut_Event);
+      FApplication::queueEvent(focused_widget, &out);
+      accel_widget->setFocus();
+
+      if ( focused_widget )
+        focused_widget->redraw();
+
+      accel_widget->redraw();
+      FFocusEvent in (fc::FocusIn_Event);
+      FApplication::sendEvent(accel_widget, &in);
+
+      if ( getStatusBar() )
+      {
+        accel_widget->getStatusBar()->drawMessage();
+        updateTerminal();
+        flush_out();
+      }
     }
   }
 

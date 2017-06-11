@@ -70,6 +70,7 @@ class FObject
    bool                hasChildren() const;
    bool                isChild (FObject*) const;
    bool                isDirectChild (FObject*) const;
+   bool                isWidget() const;
    bool                isTimerInUpdating() const;
 
    // Methods
@@ -102,6 +103,7 @@ class FObject
 
    // Data Members
    static TimerList* timer_list;
+   bool              widget_object;
 
  private:
    // Disable copy constructor
@@ -146,6 +148,10 @@ inline bool FObject::hasChildren() const
 //----------------------------------------------------------------------
 inline bool FObject::isDirectChild (FObject* obj) const
 { return bool( obj->getParent() == this ); }
+
+//----------------------------------------------------------------------
+inline bool FObject::isWidget() const
+{ return widget_object; }
 
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const

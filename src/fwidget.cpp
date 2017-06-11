@@ -64,6 +64,8 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   if ( isEnabled() )
     flags |= fc::active;
 
+  widget_object = true;
+
   if ( ! parent )
   {
     assert ( ! rootObject
@@ -138,6 +140,17 @@ FWidget* FWidget::getRootWidget() const
 }
 
 //----------------------------------------------------------------------
+inline FWidget* FWidget::getParentWidget() const
+{
+  FObject* p_obj = getParent();
+
+  if ( p_obj && p_obj->isWidget() )
+    return static_cast<FWidget*>(p_obj);
+  else
+    return 0;
+}
+
+//----------------------------------------------------------------------
 FWidget* FWidget::getMainWidget()
 {
   FWidget* main_widget = static_cast<FWidget*>(FApplication::main_widget);
@@ -163,10 +176,13 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList children)
 
   while ( iter != end )
   {
-    FWidget* child = static_cast<FWidget*>(*iter);
+    if ( (*iter)->isWidget() )
+    {
+      FWidget* child = static_cast<FWidget*>(*iter);
 
-    if ( child->isEnabled() && child->acceptFocus() )
-      return child;
+      if ( child->isEnabled() && child->acceptFocus() )
+        return child;
+    }
 
     ++iter;
   }
@@ -187,6 +203,10 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList children)
   do
   {
     --iter;
+
+    if ( ! (*iter)->isWidget() )
+      continue;
+
     FWidget* child = static_cast<FWidget*>(*iter);
 
     if ( child->isEnabled() && child->acceptFocus() )
@@ -311,7 +331,7 @@ void FWidget::setStatusbarMessage (const FString& msg)
 
 //----------------------------------------------------------------------
 bool FWidget::setEnable (bool on)
-{  
+{
   if ( on )
     flags |= fc::active;
   else
@@ -824,6 +844,12 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 
     while ( iter != end )
     {
+      if ( ! (*iter)->isWidget() )
+      {
+        ++iter;
+        continue;
+      }
+
       FWidget* widget = static_cast<FWidget*>(*iter);
 
       if ( widget->isEnabled()
@@ -858,10 +884,13 @@ int FWidget::numOfFocusableChildren()
 
   while ( iter != end )
   {
-    FWidget* widget = static_cast<FWidget*>(*iter);
+    if ( (*iter)->isWidget() )
+    {
+      FWidget* widget = static_cast<FWidget*>(*iter);
 
-    if ( widget->acceptFocus() )
-      num++;
+      if ( widget->acceptFocus() )
+        num++;
+    }
 
     ++iter;
   }
@@ -1124,10 +1153,13 @@ void FWidget::redraw()
 
       while ( iter != end )
       {
-        FWidget* widget = static_cast<FWidget*>(*iter);
+        if ( (*iter)->isWidget() )
+        {
+          FWidget* widget = static_cast<FWidget*>(*iter);
 
-        if ( widget->isVisible() && ! widget->isWindowWidget() )
-          widget->redraw();
+          if ( widget->isVisible() && ! widget->isWindowWidget() )
+            widget->redraw();
+        }
 
         ++iter;
       }
@@ -1219,8 +1251,12 @@ void FWidget::show()
 
     while ( iter != end )
     {
-      FWidget* widget = static_cast<FWidget*>(*iter);
-      widget->show();
+      if ( (*iter)->isWidget() )
+      {
+        FWidget* widget = static_cast<FWidget*>(*iter);
+        widget->show();
+      }
+
       ++iter;
     }
   }
@@ -1275,6 +1311,12 @@ bool FWidget::focusFirstChild()
 
   while ( iter != end )
   {
+    if ( ! (*iter)->isWidget() )
+    {
+      ++iter;
+      continue;
+    }
+
     FWidget* widget = static_cast<FWidget*>(*iter);
 
     if ( widget->isEnabled()
@@ -1295,8 +1337,6 @@ bool FWidget::focusFirstChild()
       return true;
     }
 
-    // prefix increment (++) is faster
-    // than postfix for non primitive type
     ++iter;
   }
   return false;
@@ -1318,6 +1358,10 @@ bool FWidget::focusLastChild()
   do
   {
     --iter;
+
+    if ( ! (*iter)->isWidget() )
+      continue;
+
     FWidget* widget = static_cast<FWidget*>(*iter);
 
     if ( widget->isEnabled()
@@ -1793,11 +1837,13 @@ void FWidget::adjustSize()
 
     while ( iter != end )
     {
-      FWidget* widget = static_cast<FWidget*>(*iter);
+      if ( (*iter)->isWidget() )
+      {
+        FWidget* widget = static_cast<FWidget*>(*iter);
 
-      if ( ! widget->isWindowWidget() )
-        widget->adjustSize();
-
+        if ( ! widget->isWindowWidget() )
+          widget->adjustSize();
+      }
       ++iter;
     }
   }
@@ -1847,6 +1893,12 @@ bool FWidget::focusNextChild()
 
       while ( iter != end )
       {
+        if ( ! (*iter)->isWidget() )
+        {
+          ++iter;
+          continue;
+        }
+
         FWidget* w = static_cast<FWidget*>(*iter);
 
         if ( w == this )
@@ -1858,6 +1910,9 @@ bool FWidget::focusNextChild()
           do
           {
             ++next_element;
+
+            if ( ! (*next_element)->isWidget() )
+              continue;
 
             if ( next_element == children.end() )
               next_element = children.begin();
@@ -1932,6 +1987,10 @@ bool FWidget::focusPrevChild()
       do
       {
         --iter;
+
+        if ( ! (*iter)->isWidget() )
+          continue;
+
         FWidget* w = static_cast<FWidget*>(*iter);
 
         if ( w == this )
@@ -1942,6 +2001,12 @@ bool FWidget::focusPrevChild()
 
           do
           {
+            if ( ! (*prev_element)->isWidget() )
+            {
+              --prev_element;
+              continue;
+            }
+
             if ( prev_element == children.begin() )
               prev_element = children.end();
 

@@ -541,20 +541,24 @@ void FLineEdit::onAccel (FAccelEvent* ev)
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
 
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    redraw();
-
-    if ( getStatusBar() )
+    if ( focused_widget->isWidget() )
     {
-      getStatusBar()->drawMessage();
-      updateTerminal();
-      flush_out();
+      FFocusEvent out (fc::FocusOut_Event);
+      FApplication::queueEvent(focused_widget, &out);
+      setFocus();
+
+      if ( focused_widget )
+        focused_widget->redraw();
+
+      redraw();
+
+      if ( getStatusBar() )
+      {
+        getStatusBar()->drawMessage();
+        updateTerminal();
+        flush_out();
+      }
     }
   }
 

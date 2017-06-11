@@ -372,20 +372,24 @@ void FButton::onAccel (FAccelEvent* ev)
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
 
-    if ( focused_widget )
-      focused_widget->redraw();
+    if ( focused_widget->isWidget() )
+    {
+      FFocusEvent out (fc::FocusOut_Event);
+      FApplication::queueEvent(focused_widget, &out);
+      setFocus();
 
-    if ( click_animation )
-      setDown();
-    else
-      redraw();
+      if ( focused_widget )
+        focused_widget->redraw();
 
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+      if ( click_animation )
+        setDown();
+      else
+        redraw();
+
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+    }
   }
   else if ( click_animation )
     setDown();

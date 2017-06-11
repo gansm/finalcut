@@ -542,24 +542,28 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     openMenu();
 
     focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    menu->unselectItem();
-    menu->selectFirstItem();
 
-    if ( menu->getSelectedItem() )
-      menu->getSelectedItem()->setFocus();
+    if ( focused_widget->isWidget() )
+    {
+      FFocusEvent out (fc::FocusOut_Event);
+      FApplication::queueEvent(focused_widget, &out);
+      menu->unselectItem();
+      menu->selectFirstItem();
 
-    if ( focused_widget )
-      focused_widget->redraw();
+      if ( menu->getSelectedItem() )
+        menu->getSelectedItem()->setFocus();
 
-    menu->redraw();
+      if ( focused_widget )
+        focused_widget->redraw();
 
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
+      menu->redraw();
 
-    mbar->redraw();
-    mbar->drop_down = true;
+      if ( getStatusBar() )
+        getStatusBar()->drawMessage();
+
+      mbar->redraw();
+      mbar->drop_down = true;
+    }
   }
   else
   {

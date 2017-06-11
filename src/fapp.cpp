@@ -167,6 +167,9 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
   if ( ! receiver )
     return false;
 
+  if ( ! receiver->isWidget() )
+    return false;
+
   widget = static_cast<FWidget*>(receiver);
 
   if ( modal_dialogs > 0 )

@@ -15,7 +15,8 @@ FObject::TimerList* FObject::timer_list = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FObject::FObject (FObject* parent)
-  : parent_obj(parent)
+  : widget_object(false)
+  , parent_obj(parent)
   , children_list()
   , has_parent(false)
 {

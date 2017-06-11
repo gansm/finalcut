@@ -1,3 +1,8 @@
+2017-06-11  Markus Gans  <guru.mail@muenster.de>
+	* New method FObject::isWidget()
+	* Non-widget objects inherit from FObjects will no longer 
+	  affect the widget lists
+
 2017-06-05  Markus Gans  <guru.mail@muenster.de>
 	* The focus and active flag is set centrally in FWidget
 
@@ -45,7 +50,7 @@
 	* Replace non-printable characters for Tera Term and 
 	  Cygwin terminal directly at start-up. Special cases 
 	  in the code are no longer necessary.
-	* New Method setInsertCursorStyle() to change the appearance 
+	* New method setInsertCursorStyle() to change the appearance 
 	  of a cursor
 
 2017-04-02  Markus Gans  <guru.mail@muenster.de>

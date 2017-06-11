@@ -547,10 +547,6 @@ inline const char* FWidget::getClassName() const
 { return "FWidget"; }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::getParentWidget() const
-{ return static_cast<FWidget*>(getParent()); }
-
-//----------------------------------------------------------------------
 inline FString FWidget::getStatusbarMessage() const
 { return statusbar_message; }
 
