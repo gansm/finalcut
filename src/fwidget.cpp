@@ -140,7 +140,7 @@ FWidget* FWidget::getRootWidget() const
 }
 
 //----------------------------------------------------------------------
-inline FWidget* FWidget::getParentWidget() const
+FWidget* FWidget::getParentWidget() const
 {
   FObject* p_obj = getParent();
 
