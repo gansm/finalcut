@@ -1903,7 +1903,7 @@ bool FWidget::focusNextChild()
 
         if ( w == this )
         {
-          FWidget* next;
+          FWidget* next = 0;
           FObjectList::const_iterator next_element;
           next_element = iter;
 
@@ -1918,7 +1918,8 @@ bool FWidget::focusNextChild()
               next_element = children.begin();
 
             next = static_cast<FWidget*>(*next_element);
-          } while (   ! next->isEnabled()
+          } while ( ! next
+                   || ! next->isEnabled()
                    || ! next->acceptFocus()
                    || ! next->isVisible()
                    || next->isWindowWidget() );
@@ -1995,7 +1996,7 @@ bool FWidget::focusPrevChild()
 
         if ( w == this )
         {
-          FWidget* prev;
+          FWidget* prev = 0;
           FObjectList::const_iterator prev_element;
           prev_element = iter;
 
@@ -2012,7 +2013,8 @@ bool FWidget::focusPrevChild()
 
             --prev_element;
             prev = static_cast<FWidget*>(*prev_element);
-          } while (   ! prev->isEnabled()
+          } while ( ! prev
+                   || ! prev->isEnabled()
                    || ! prev->acceptFocus()
                    || ! prev->isVisible()
                    || prev->isWindowWidget() );
