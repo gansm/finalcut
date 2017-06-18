@@ -1,3 +1,6 @@
+2017-06-18  Markus Gans  <guru.mail@muenster.de>
+	* Move the dragScroll enumeration into the fc namespace
+
 2017-06-11  Markus Gans  <guru.mail@muenster.de>
 	* New method FObject::isWidget()
 	* Non-widget objects inherit from FObjects will no longer 

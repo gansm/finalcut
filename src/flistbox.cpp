@@ -78,7 +78,7 @@ FListBox::FListBox (FWidget* parent)
   , inc_search()
   , multi_select(false)
   , mouse_select(false)
-  , drag_scroll(FListBox::noScroll)
+  , drag_scroll(fc::noScroll)
   , scroll_timer(false)
   , scroll_repeat(100)
   , scroll_distance(1)
@@ -762,10 +762,10 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseUp (FMouseEvent* ev)
 {
-  if ( drag_scroll != FListBox::noScroll )
+  if ( drag_scroll != fc::noScroll )
   {
     delOwnTimer();
-    drag_scroll = FListBox::noScroll;
+    drag_scroll = fc::noScroll;
     scroll_distance = 1;
     scroll_timer = false;
   }
@@ -865,7 +865,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
   if ( mouse_y < 2 )
   {
     // drag up
-    if ( drag_scroll != FListBox::noScroll
+    if ( drag_scroll != fc::noScroll
         && scroll_distance < getClientHeight() )
       scroll_distance++;
 
@@ -875,21 +875,21 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       addTimer(scroll_repeat);
 
       if ( ev->getButton() == fc::RightButton )
-        drag_scroll = FListBox::scrollUpSelect;
+        drag_scroll = fc::scrollUpSelect;
       else
-        drag_scroll = FListBox::scrollUp;
+        drag_scroll = fc::scrollUp;
     }
 
     if ( current == 1 )
     {
       delOwnTimer();
-      drag_scroll = FListBox::noScroll;
+      drag_scroll = fc::noScroll;
     }
   }
   else if ( mouse_y >= getHeight() )
   {
     // drag down
-    if ( drag_scroll != FListBox::noScroll
+    if ( drag_scroll != fc::noScroll
         && scroll_distance < getClientHeight() )
       scroll_distance++;
 
@@ -899,15 +899,15 @@ void FListBox::onMouseMove (FMouseEvent* ev)
       addTimer(scroll_repeat);
 
       if ( ev->getButton() == fc::RightButton )
-        drag_scroll = FListBox::scrollDownSelect;
+        drag_scroll = fc::scrollDownSelect;
       else
-        drag_scroll = FListBox::scrollDown;
+        drag_scroll = fc::scrollDown;
     }
 
     if ( current == int(getCount()) )
     {
       delOwnTimer();
-      drag_scroll = FListBox::noScroll;
+      drag_scroll = fc::noScroll;
     }
   }
   else
@@ -916,7 +916,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     delOwnTimer();
     scroll_timer = false;
     scroll_distance = 1;
-    drag_scroll = FListBox::noScroll;
+    drag_scroll = fc::noScroll;
   }
 }
 
@@ -951,14 +951,14 @@ void FListBox::onTimer (FTimerEvent*)
 
   switch ( int(drag_scroll) )
   {
-    case FListBox::noScroll:
+    case fc::noScroll:
       return;
 
-    case FListBox::scrollUp:
-    case FListBox::scrollUpSelect:
+    case fc::scrollUp:
+    case fc::scrollUpSelect:
       if ( current_before == 1)
       {
-        drag_scroll = FListBox::noScroll;
+        drag_scroll = fc::noScroll;
         return;
       }
 
@@ -974,11 +974,11 @@ void FListBox::onTimer (FTimerEvent*)
         yoffset=0;
       break;
 
-    case FListBox::scrollDown:
-    case FListBox::scrollDownSelect:
+    case fc::scrollDown:
+    case fc::scrollDownSelect:
       if ( current_before == element_count )
       {
-        drag_scroll = FListBox::noScroll;
+        drag_scroll = fc::noScroll;
         return;
       }
 
@@ -1000,8 +1000,8 @@ void FListBox::onTimer (FTimerEvent*)
   }
 
   // handle multiple selections
-  if ( drag_scroll == FListBox::scrollUpSelect
-      || drag_scroll == FListBox::scrollDownSelect )
+  if ( drag_scroll == fc::scrollUpSelect
+      || drag_scroll == fc::scrollDownSelect )
   {
     if ( isMultiSelection() && current_before != current )
     {
@@ -1062,12 +1062,12 @@ void FListBox::onWheel (FWheelEvent* ev)
 
   wheel = ev->getWheel();
 
-  if ( drag_scroll != FListBox::noScroll )
+  if ( drag_scroll != fc::noScroll )
   {
     delOwnTimer();
     scroll_timer = false;
     scroll_distance = 1;
-    drag_scroll = FListBox::noScroll;
+    drag_scroll = fc::noScroll;
   }
 
   switch ( wheel )

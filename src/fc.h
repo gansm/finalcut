@@ -908,6 +908,16 @@ class fc
      FocusDefiniteWidget = 0x03  // event default
    };
 
+   // Drag scrolling mode
+   enum dragScroll
+   {
+     noScroll         = 0,
+     scrollUp         = 1,
+     scrollDown       = 2,
+     scrollUpSelect   = 3,
+     scrollDownSelect = 4
+   };
+
    // Scroll bar visibility mode
    enum scrollBarMode
    {

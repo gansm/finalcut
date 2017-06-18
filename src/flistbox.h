@@ -196,15 +196,6 @@ class FListBox : public FWidget
 
  private:
    // Enumeration
-   enum dragScroll
-   {
-     noScroll         = 0,
-     scrollUp         = 1,
-     scrollDown       = 2,
-     scrollUpSelect   = 3,
-     scrollDownSelect = 4
-   };
-
    enum convert_type
    {
      no_convert     = 0,
@@ -239,27 +230,27 @@ class FListBox : public FWidget
                                 , int index );
 
    // Data Members
-   listBoxItems data;
+   listBoxItems      data;
    FWidget::data_ptr source_container;
-   convert_type conv_type;
-   FScrollbar*  vbar;
-   FScrollbar*  hbar;
-   FString      text;
-   FString      inc_search;
-   bool         multi_select;
-   bool         mouse_select;
-   dragScroll   drag_scroll;
-   bool         scroll_timer;
-   int          scroll_repeat;
-   int          scroll_distance;
-   int          current;
-   int          last_current;
-   int          secect_from_item;
-   int          xoffset;
-   int          yoffset;
-   int          last_yoffset;
-   int          nf_offset;
-   int          max_line_width;
+   convert_type      conv_type;
+   FScrollbar*       vbar;
+   FScrollbar*       hbar;
+   FString           text;
+   FString           inc_search;
+   bool              multi_select;
+   bool              mouse_select;
+   fc::dragScroll    drag_scroll;
+   bool              scroll_timer;
+   int               scroll_repeat;
+   int               scroll_distance;
+   int               current;
+   int               last_current;
+   int               secect_from_item;
+   int               xoffset;
+   int               yoffset;
+   int               last_yoffset;
+   int               nf_offset;
+   int               max_line_width;
 };
 #pragma pack(pop)
 
@@ -282,7 +273,7 @@ inline FListBox::FListBox ( Iterator first
   , inc_search()
   , multi_select(false)
   , mouse_select(false)
-  , drag_scroll(FListBox::noScroll)
+  , drag_scroll(fc::noScroll)
   , scroll_timer(false)
   , scroll_repeat(100)
   , scroll_distance(1)
@@ -320,7 +311,7 @@ inline FListBox::FListBox ( Container container
   , inc_search()
   , multi_select(false)
   , mouse_select(false)
-  , drag_scroll(FListBox::noScroll)
+  , drag_scroll(fc::noScroll)
   , scroll_timer(false)
   , scroll_repeat(100)
   , scroll_distance(1)
