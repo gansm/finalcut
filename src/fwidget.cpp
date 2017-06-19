@@ -1911,11 +1911,11 @@ bool FWidget::focusNextChild()
           {
             ++next_element;
 
-            if ( ! (*next_element)->isWidget() )
-              continue;
-
             if ( next_element == children.end() )
               next_element = children.begin();
+
+            if ( ! (*next_element)->isWidget() )
+              continue;
 
             next = static_cast<FWidget*>(*next_element);
           } while ( ! next
