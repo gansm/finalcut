@@ -384,7 +384,7 @@ void FListBox::clear()
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   int element_count = int(getCount());
-  int padding_space = 2; // 1 leading space + 1 tailing space
+  const int padding_space = 2; // 1 leading space + 1 tailing space
   int current_before = current;
   int xoffset_before = xoffset;
   int xoffset_end = max_line_width - getClientWidth() + padding_space;
@@ -1572,7 +1572,7 @@ void FListBox::drawList()
     uInt last_pos = uInt(current - yoffset) - 1;
     uInt current_pos = uInt(last_current - yoffset) - 1;
     start = std::min(last_pos, current_pos);
-    end = std::max(last_pos, current_pos)+1;
+    end = std::max(last_pos, current_pos) + 1;
   }
 
   iter = index2iterator(int(start) + yoffset);

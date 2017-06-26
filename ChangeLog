@@ -1,3 +1,7 @@
+2017-06-26  Markus Gans  <guru.mail@muenster.de>
+	* FString::rtrim() and FString::left() now return an FString 
+	  object with the correct character length
+
 2017-06-18  Markus Gans  <guru.mail@muenster.de>
 	* Move the dragScroll enumeration into the fc namespace
 

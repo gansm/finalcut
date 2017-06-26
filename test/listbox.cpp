@@ -97,9 +97,6 @@ Listbox::Listbox (FWidget* parent)
   list2->setGeometry(21, 1, 10, 10);
   list2->setText ("double");
 
-  for (double i=1; i<=15; i++)
-    double_list->push_back(2*i + (i/100));
-
   //
   // Import via lazy conversion on print
   //

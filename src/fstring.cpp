@@ -829,7 +829,8 @@ FString FString::rtrim() const
   p = s.string;
   last = p + length;
 
-  while ( std::iswspace(wint_t(*--last)) && last > p );
+  while ( std::iswspace(wint_t(*--last)) && last > p )
+    s.length--;
 
   if ( last == p && std::iswspace(wint_t(*last)) )
     s.clear();
@@ -873,6 +874,7 @@ FString FString::left (uInt len) const
     return s;
 
   p = s.string;
+  s.length = len;
   *(p+len) = '\0';
   return s;
 }
@@ -1572,6 +1574,7 @@ FString FString::replace (const FString& from, const FString& to)
       p++;
     }
   }
+
   return s;
 }
 
