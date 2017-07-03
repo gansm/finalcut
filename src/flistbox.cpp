@@ -259,12 +259,12 @@ void FListBox::insert (FListBoxItem listItem)
 {
   int len = int(listItem.text.getLength());
   bool has_brackets = bool(listItem.brackets);
-  recalculateHorizontalBar(len, has_brackets);
+  recalculateHorizontalBar (len, has_brackets);
 
   data.push_back (listItem);
 
   int element_count = int(getCount());
-  recalculateVerticalBar(element_count);
+  recalculateVerticalBar (element_count);
 }
 
 //----------------------------------------------------------------------
@@ -383,8 +383,8 @@ void FListBox::clear()
 //----------------------------------------------------------------------
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
+  static const int padding_space = 2; // 1 leading space + 1 tailing space
   int element_count = int(getCount());
-  const int padding_space = 2; // 1 leading space + 1 tailing space
   int current_before = current;
   int xoffset_before = xoffset;
   int xoffset_end = max_line_width - getClientWidth() + padding_space;
@@ -1268,9 +1268,9 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
+  static const int padding_space = 2; // 1 leading space + 1 tailing space
   FScrollbar::sType scrollType;
   int distance = 1;
-  int padding_space = 2; // 1 leading space + 1 tailing space
   int xoffset_before = xoffset;
   int xoffset_end = max_line_width - getClientWidth() + padding_space;
   scrollType = hbar->getScrollType();
@@ -1588,7 +1588,7 @@ void FListBox::drawList()
     {
       convertToItem (*iter, source_container, int(y) + yoffset);
       int len = int(iter->text.getLength());
-      recalculateHorizontalBar(len, lineHasBrackets);
+      recalculateHorizontalBar (len, lineHasBrackets);
 
       if ( hbar->isVisible() )
         hbar->redraw();
@@ -1811,7 +1811,7 @@ void FListBox::drawList()
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateHorizontalBar(int len, bool has_brackets)
+void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
 {
   if ( has_brackets )
     len += 2;
@@ -1833,7 +1833,7 @@ void FListBox::recalculateHorizontalBar(int len, bool has_brackets)
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateVerticalBar(int element_count)
+void FListBox::recalculateVerticalBar (int element_count)
 {
   vbar->setMaximum (element_count - getHeight() + 2);
   vbar->setPageSize (element_count, getHeight() - 2);

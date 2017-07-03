@@ -289,7 +289,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
 int FVTerm::printf (const wchar_t* format, ...)
 {
   assert ( format != 0 );
-  const int buf_size = 1024;
+  static const int buf_size = 1024;
   wchar_t buffer[buf_size];
   va_list args;
 

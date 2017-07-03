@@ -439,6 +439,7 @@ void FFileDialog::adjustSize()
   }
   else
   {
+    // fallback to xterm default size
     max_width = 80;
     max_height = 24;
   }
@@ -468,10 +469,11 @@ void FFileDialog::adjustSize()
 //----------------------------------------------------------------------
 void FFileDialog::init()
 {
+  static const int w = 42;
+  static const int h = 15;
+  int x, y;
   FWidget* parent_widget;
-  int x, y, w, h;
-  w = 42;
-  h = 15;
+  
   setGeometry(1, 1, w, h, false);
   parent_widget = getParentWidget();
 

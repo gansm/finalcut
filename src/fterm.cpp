@@ -204,7 +204,8 @@ const FString FTerm::getKeyName (int keynum)
 //----------------------------------------------------------------------
 FTerm::modifier_key& FTerm::getLinuxModifierKey()
 {
-  char subcode = 6;
+  static const char subcode = 6;
+
   // fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
@@ -437,9 +438,9 @@ int FTerm::parseKeyString ( char buffer[]
                           , int buf_size
                           , timeval* time_keypressed )
 {
+  static const long key_timeout = 100000;  // 100 ms
   register uChar firstchar = uChar(buffer[0]);
   register std::size_t buf_len = std::strlen(buffer);
-  const long key_timeout = 100000;  // 100 ms
   int key, len, n;
 
   if ( firstchar == ESC[0] )
@@ -832,10 +833,12 @@ void FTerm::detectTermSize()
   {
     char* str;
     term->setPos(1,1);
+    // Use COLUMNS or fallback to the xterm default width of 80 characters
     str = std::getenv("COLUMNS");
     term->setWidth(str ? std::atoi(str) : 80);
+    // Use LINES or fallback to the xterm default height of 24 characters
     str = std::getenv("LINES");
-    term->setHeight(str ? std::atoi(str) : 25);
+    term->setHeight(str ? std::atoi(str) : 24);
   }
   else
   {
@@ -1883,8 +1886,10 @@ bool FTerm::isWSConsConsole()
 inline uInt16 FTerm::getInputStatusRegisterOne()
 {
   // Gets the VGA input-status-register-1
-  uInt16 misc_read = 0x3cc;  // Miscellaneous output (read port)
-  uInt16 io_base = (inb(misc_read) & 0x01) ? 0x3d0 : 0x3b0;
+
+  // Miscellaneous output (read port)
+  static const uInt16 misc_read = 0x3cc;
+  const uInt16 io_base = (inb(misc_read) & 0x01) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 MDA (read port)
   // 0x3da : Input status 1 CGA (read port)
   return io_base + 0x0a;
@@ -1894,10 +1899,13 @@ inline uInt16 FTerm::getInputStatusRegisterOne()
 uChar FTerm::readAttributeController (uChar index)
 {
   // Reads a byte from the attribute controller from a given index
+
   uChar res;
-  uInt16 attrib_cntlr_write = 0x3c0; // Attribute controller (write port)
-  uInt16 attrib_cntlr_read  = 0x3c1; // Attribute controller (read port)
-  uInt16 input_status_1 = getInputStatusRegisterOne();
+  // Attribute controller (write port)
+  static const uInt16 attrib_cntlr_write = 0x3c0;
+  // Attribute controller (read port)
+  static const uInt16 attrib_cntlr_read  = 0x3c1;
+  const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
   outb (index & 0x1f, attrib_cntlr_write);
@@ -1914,8 +1922,10 @@ uChar FTerm::readAttributeController (uChar index)
 void FTerm::writeAttributeController (uChar index, uChar data)
 {
   // Writes a byte from the attribute controller from a given index
-  uInt16 attrib_cntlr_write = 0x3c0;  // Attribute controller (write port)
-  uInt16 input_status_1 = getInputStatusRegisterOne();
+
+  // Attribute controller (write port)
+  static const uInt16 attrib_cntlr_write = 0x3c0;
+  const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
   outb (index & 0x1f, attrib_cntlr_write);
@@ -1931,7 +1941,7 @@ void FTerm::writeAttributeController (uChar index, uChar data)
 inline uChar FTerm::getAttributeMode()
 {
   // Gets the attribute mode value from the vga attribute controller
-  uChar attrib_mode = 0x10;
+  static const uChar attrib_mode = 0x10;
   return readAttributeController(attrib_mode);
 }
 
@@ -1939,7 +1949,7 @@ inline uChar FTerm::getAttributeMode()
 inline void FTerm::setAttributeMode(uChar data)
 {
   // Sets the attribute mode value from the vga attribute controller
-  uChar attrib_mode = 0x10;
+  static const uChar attrib_mode = 0x10;
   writeAttributeController (attrib_mode, data);
 }
 
@@ -2151,8 +2161,9 @@ void FTerm::restoreTTYsettings()
 //----------------------------------------------------------------------
 int FTerm::getScreenFont()
 {
+  static const std::size_t data_size = 4 * 32 * 512;
   struct console_font_op font;
-  const std::size_t data_size = 4 * 32 * 512;
+
   int ret;
 
   if ( fd_tty < 0 )
@@ -2362,9 +2373,9 @@ void FTerm::initLinuxConsole()
 //----------------------------------------------------------------------
 bool FTerm::saveFreeBSDAltKey()
 {
-  keymap_t keymap;
-  int ret;
   static const int left_alt = 0x38;
+  int ret;
+  keymap_t keymap;
 
   ret = ioctl(0, GIO_KEYMAP, &keymap);
 
@@ -2379,9 +2390,9 @@ bool FTerm::saveFreeBSDAltKey()
 //----------------------------------------------------------------------
 bool FTerm::setFreeBSDAltKey (uInt key)
 {
-  keymap_t keymap;
-  int ret;
   static const int left_alt = 0x38;
+  int ret;
+  keymap_t keymap;
 
   ret = ioctl(0, GIO_KEYMAP, &keymap);
 
@@ -2936,15 +2947,15 @@ void FTerm::init_termcaps()
    *   captoinfo - convert all termcap descriptions into terminfo descriptions
    *   infocmp   - print out terminfo description from the current terminal
    */
+  static const int success       =  1;
+  static const int no_entry      =  0;
+  static const int db_not_found  = -1;
+  static const int not_available = -1;
+  static const int uninitialized = -2;
   static char term_buffer[2048];
   static char string_buf[2048];
   char* buffer = string_buf;
   char* key_up_string;
-  const int success       =  1;
-  const int no_entry      =  0;
-  const int db_not_found  = -1;
-  const int not_available = -1;
-  const int uninitialized = -2;
   int status = uninitialized;
 
   // share the terminal capabilities

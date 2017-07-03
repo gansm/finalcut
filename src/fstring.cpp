@@ -491,7 +491,7 @@ uInt FString::getUTF8length() const
 //----------------------------------------------------------------------
 FString& FString::sprintf (const wchar_t* format, ...)
 {
-  const int buf_size = 4096;
+  static const int buf_size = 4096;
   wchar_t buffer[buf_size];
   va_list args;
 

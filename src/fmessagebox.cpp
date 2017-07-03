@@ -242,6 +242,7 @@ void FMessageBox::adjustSize()
   }
   else
   {
+    // fallback to xterm default size
     max_width = 80;
     max_height = 24;
   }
@@ -461,8 +462,8 @@ void FMessageBox::resizeButtons()
 //----------------------------------------------------------------------
 void FMessageBox::adjustButtons()
 {
-  int btn_width=0;
-  int gap = 4;
+  static const int gap = 4;
+  int btn_width = 0;
 
   for (uInt n=0; n < num_buttons; n++)
   {

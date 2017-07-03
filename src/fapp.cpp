@@ -566,8 +566,8 @@ void FApplication::processKeyboardEvent()
 
             case fc::Fkey_mouse:
               {
+                static const int len = 6;
                 int n;
-                const int len = 6;
                 x11_mouse[0] = fifo_buf[3];
                 x11_mouse[1] = fifo_buf[4];
                 x11_mouse[2] = fifo_buf[5];
@@ -577,7 +577,7 @@ void FApplication::processKeyboardEvent()
                 for (n=len; n < fifo_buf_size; n++)
                   fifo_buf[n-len] = fifo_buf[n];
 
-                n = fifo_buf_size-len-1;
+                n = fifo_buf_size - len - 1;
 
                 // Fill rest with '\0'
                 for (; n < fifo_buf_size; n++)
@@ -590,8 +590,8 @@ void FApplication::processKeyboardEvent()
 
             case fc::Fkey_extended_mouse:
               {
-                int n = 3;
                 int len = int(std::strlen(fifo_buf));
+                int n = 3;
 
                 while ( n < len && n < fifo_buf_size )
                 {
@@ -619,8 +619,8 @@ void FApplication::processKeyboardEvent()
 
             case fc::Fkey_urxvt_mouse:
               {
-                int n = 2;
                 int len = int(std::strlen(fifo_buf));
+                int n = 2;
 
                 while ( n < len && n < fifo_buf_size )
                 {

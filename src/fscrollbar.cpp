@@ -144,7 +144,7 @@ void FScrollbar::setOrientation (int o)
     if ( isNewFont() )
       nf = 2;
   }
-  slider_length = bar_length = length-nf-2;
+  slider_length = bar_length = length - nf - 2;
   bar_orientation = o;
 }
 
@@ -170,7 +170,7 @@ void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
       nf = 2;
   }
 
-  slider_length = bar_length = length-nf-2;
+  slider_length = bar_length = length - nf - 2;
 }
 
 //----------------------------------------------------------------------
@@ -706,7 +706,7 @@ void FScrollbar::processMiddleButton (int x, int y)
     {
       int nf = isNewFont() ? 1 : 0;
 
-      if ( x > 1+nf && x < getWidth()-nf )
+      if ( x > 1 + nf && x < getWidth() - nf )
       {
         new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
                               / double(bar_length - slider_length) ) );

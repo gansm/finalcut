@@ -647,7 +647,7 @@ void FOptiMove::calculateCharDuration()
 {
   if ( baudrate != 0 )
   {
-    const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
+    static const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
     char_duration = (baudbyte * 1000 * 10)
                     / (baudrate > 0 ? baudrate : 9600); // milliseconds
 

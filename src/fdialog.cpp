@@ -1148,8 +1148,8 @@ void FDialog::drawBorder()
 //----------------------------------------------------------------------
 void FDialog::drawTitleBar()
 {
+  static const int menu_btn = 3;
   int i,x,length, zoom_btn;
-  const int menu_btn = 3;
 
   // draw the title button
   setPrintPos (1, 1);
