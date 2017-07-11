@@ -473,7 +473,7 @@ void FFileDialog::init()
   static const int h = 15;
   int x, y;
   FWidget* parent_widget;
-  
+
   setGeometry(1, 1, w, h, false);
   parent_widget = getParentWidget();
 

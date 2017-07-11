@@ -553,6 +553,142 @@ int FVTerm::print (term_area* area, const FString& s)
 }
 
 //----------------------------------------------------------------------
+int FVTerm::print (const std::vector<char_data>& termString)
+{
+  if ( termString.empty() )
+    return 0;
+
+  term_area* area = getPrintArea();
+
+  if ( ! area )
+  {
+    if ( vdesktop )
+      area = vdesktop;
+    else
+      return -1;
+  }
+
+  return print (area, termString);
+}
+
+//----------------------------------------------------------------------
+int FVTerm::print (term_area* area, const std::vector<char_data>& termString)
+{
+  register int len = 0;
+  std::vector<char_data>::const_iterator iter;
+  iter = termString.begin();
+  uInt tabstop = uInt(getTabstop());
+
+  if ( ! area )
+    return -1;
+
+  if ( termString.empty() )
+    return 0;
+  else
+    area->has_changes = true;
+
+  while ( iter != termString.end() )
+  {
+    int width, height, rsh, bsh;
+    width  = area->width;
+    height = area->height;
+    rsh    = area->right_shadow;
+    bsh    = area->bottom_shadow;
+
+    switch ( (*iter).code )
+    {
+      case '\n':
+        area->cursor_y++;
+
+      case '\r':
+        area->cursor_x = 1;
+        break;
+
+      case '\t':
+        area->cursor_x = short ( uInt(area->cursor_x)
+                               + tabstop
+                               - uInt(area->cursor_x)
+                               + 1
+                               % tabstop );
+        break;
+
+      case '\b':
+        area->cursor_x--;
+        break;
+
+      case '\a':
+        beep();
+        break;
+
+      default:
+      {
+        int ax = area->cursor_x - 1;
+        int ay = area->cursor_y - 1;
+
+        char_data nc = *iter;  // next character
+
+        if ( area
+            && area->cursor_x > 0
+            && area->cursor_y > 0
+            && ax < area->width + area->right_shadow
+            && ay < area->height + area->bottom_shadow )
+        {
+          char_data* ac; // area character
+          int line_len = area->width + area->right_shadow;
+          ac = &area->text[ay * line_len + ax];
+
+          if ( *ac != nc )  // compare with an overloaded operator
+          {
+            if (   ( ! ac->transparent  && nc.transparent )
+                || ( ! ac->trans_shadow && nc.trans_shadow )
+                || ( ! ac->inherit_bg   && nc.inherit_bg ) )
+            {
+              // add one transparent character form line
+              area->changes[ay].trans_count++;
+            }
+            else if (   ( ac->transparent  && ! nc.transparent )
+                     || ( ac->trans_shadow && ! nc.trans_shadow )
+                     || ( ac->inherit_bg   && ! nc.inherit_bg ) )
+            {
+              // remove one transparent character from line
+              area->changes[ay].trans_count--;
+            }
+
+            // copy character to area
+            std::memcpy (ac, &nc, sizeof(nc));
+
+            if ( ax < short(area->changes[ay].xmin) )
+              area->changes[ay].xmin = uInt(ax);
+
+            if ( ax > short(area->changes[ay].xmax) )
+              area->changes[ay].xmax = uInt(ax);
+          }
+        }
+
+        area->cursor_x++;
+      }
+    }
+
+    if ( area->cursor_x > width + rsh )
+    {
+      area->cursor_x = 1;
+      area->cursor_y++;
+    }
+
+    if ( area->cursor_y > height + bsh )
+    {
+      area->cursor_y--;
+      break;
+    }
+
+    len++;
+    ++iter;
+  } // end of while
+
+  return len;
+}
+
+//----------------------------------------------------------------------
 int FVTerm::print (register int c)
 {
   term_area* area = getPrintArea();

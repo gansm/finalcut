@@ -43,6 +43,7 @@ libfinal_la_SOURCES = \
 	fevent.cpp \
 	foptiattr.cpp \
 	foptimove.cpp \
+	ftermbuffer.cpp \
 	fapp.cpp \
 	fwidget.cpp \
 	fobject.cpp
@@ -81,6 +82,7 @@ finalcutinclude_HEADERS = \
 	fpoint.h \
 	foptiattr.h \
 	foptimove.h \
+	ftermbuffer.h \
 	fprogressbar.h \
 	fradiobutton.h \
 	frect.h \

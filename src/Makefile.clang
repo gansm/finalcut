@@ -30,6 +30,7 @@ INCLUDE_HEADERS = \
 	fobject.h \
 	foptiattr.h \
 	foptimove.h \
+	ftermbuffer.h \
 	fpoint.h \
 	fprogressbar.h \
 	fradiobutton.h \
@@ -91,6 +92,7 @@ OBJS = \
 	fevent.o \
 	foptiattr.o \
 	foptimove.o \
+	ftermbuffer.o \
 	fapp.o \
 	fwidget.o \
 	fobject.o

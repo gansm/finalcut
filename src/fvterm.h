@@ -140,6 +140,7 @@ class FVTerm : public FObject, public FTerm
    static short        getTermBackgroundColor();
    term_area*          getVWin() const;
    FPoint              getPrintCursor();
+   static char_data    getAttribute();
 
    // Mutators
    static void         setTermXY (register int, register int);
@@ -265,6 +266,8 @@ class FVTerm : public FObject, public FTerm
    int                 print (term_area*, const std::string&);
    int                 print (const FString&);
    int                 print (term_area*, const FString&);
+   int                 print (const std::vector<char_data>&);
+   int                 print (term_area*, const std::vector<char_data>&);
    int                 print (int);
    int                 print (term_area*, int);
    FVTerm&             print();
@@ -442,6 +445,10 @@ inline short FVTerm::getTermBackgroundColor()
 //----------------------------------------------------------------------
 inline FVTerm::term_area* FVTerm::getVWin() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline FVTerm::char_data FVTerm::getAttribute()
+{ return next_attribute; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hideCursor()
