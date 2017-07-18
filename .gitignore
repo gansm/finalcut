@@ -38,6 +38,7 @@ test/transparent
 test/input-dialog
 test/choice
 test/listbox
+test/listview
 test/mandelbrot
 test/keyboard
 test/mouse

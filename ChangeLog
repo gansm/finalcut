@@ -1,3 +1,8 @@
+2017-07-18  Markus Gans  <guru.mail@muenster.de>
+	* New Widget class FListView (filled with FListViewItem) 
+	  to allow a multi-column data view
+        * Add the listview example to demonstrate FListView
+
 2017-07-11  Markus Gans  <guru.mail@muenster.de>
 	* New class FTermBuffer to buffer terminal outputs
 	* Add the possibility to print from the terminal buffer

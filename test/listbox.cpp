@@ -181,7 +181,7 @@ int main (int argc, char* argv[])
 
   Listbox d(&app);
   d.setText (L"Listbox");
-  d.setGeometry (int(1+(app.getWidth()-56)/2), 5, 56, 16);
+  d.setGeometry (int(1 + (app.getWidth() - 56) / 2), 5, 56, 16);
   d.setShadow();
 
   app.setMainWidget(&d);
