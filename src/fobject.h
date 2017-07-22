@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <sys/time.h> // need for gettimeofday
 #include <cstdlib>
+#include <cstring>
 #include <list>
 #include <vector>
 
@@ -71,6 +72,7 @@ class FObject
    bool                isChild (FObject*) const;
    bool                isDirectChild (FObject*) const;
    bool                isWidget() const;
+   bool                isInstanceOf (const char*) const;
    bool                isTimerInUpdating() const;
 
    // Methods
@@ -152,6 +154,10 @@ inline bool FObject::isDirectChild (FObject* obj) const
 //----------------------------------------------------------------------
 inline bool FObject::isWidget() const
 { return widget_object; }
+
+//----------------------------------------------------------------------
+inline bool FObject::isInstanceOf (const char* classname) const
+{ return ( classname ) ? bool(strcmp(classname, getClassName()) == 0) : false; }
 
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const

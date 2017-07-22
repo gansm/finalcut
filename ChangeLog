@@ -1,3 +1,7 @@
+2017-07-23  Markus Gans  <guru.mail@muenster.de>
+	* Check an object with isInstanceOf(...) whether it is 
+	  an instance of a specified class
+
 2017-07-18  Markus Gans  <guru.mail@muenster.de>
 	* New Widget class FListView (filled with FListViewItem) 
 	  to allow a multi-column data view

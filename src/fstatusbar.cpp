@@ -86,8 +86,7 @@ void FStatusKey::init (FWidget* parent)
 {
   setGeometry (1,1,1,1);
 
-  if ( parent && std::strcmp ( parent->getClassName()
-                             , const_cast<char*>("FStatusBar") ) == 0 )
+  if ( parent && parent->isInstanceOf("FStatusBar") )
   {
     setConnectedStatusbar (static_cast<FStatusBar*>(parent));
 

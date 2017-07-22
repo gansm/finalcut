@@ -185,9 +185,6 @@ class FListBox : public FWidget
    void         onFocusIn (FFocusEvent*);
    void         onFocusOut (FFocusEvent*);
 
-   // Callback methods
-   void         cb_VBarChange (FWidget*, data_ptr);
-   void         cb_HBarChange (FWidget*, data_ptr);
 
  protected:
    // Methods
@@ -223,6 +220,10 @@ class FListBox : public FWidget
    void        processSelect();
    void        processChanged();
    listBoxItems::iterator index2iterator (int);
+
+   // Callback methods
+   void         cb_VBarChange (FWidget*, data_ptr);
+   void         cb_HBarChange (FWidget*, data_ptr);
 
    // Function Pointer
    void        (*convertToItem) ( FListBoxItem&

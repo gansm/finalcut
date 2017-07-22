@@ -606,17 +606,13 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 bool FMenuItem::isWindowsMenu (FWidget* w) const
 {
-  return ( ! w ) ? false : w->isDialogWidget();
+  return ( w ) ? w->isDialogWidget() : false;
 }
 
 //----------------------------------------------------------------------
 bool FMenuItem::isMenuBar (FWidget* w) const
 {
-  if ( ! w )
-    return false;
-  else
-    return bool( std::strcmp ( w->getClassName()
-                             , const_cast<char*>("FMenuBar") ) == 0 );
+  return ( w ) ? w->isInstanceOf("FMenuBar") : false;
 }
 
 //----------------------------------------------------------------------
@@ -625,10 +621,8 @@ bool FMenuItem::isMenu (FWidget* w) const
   if ( ! w )
     return false;
 
-  bool m1 = ( std::strcmp ( w->getClassName()
-                          , const_cast<char*>("FMenu") ) == 0 );
-  bool m2 = ( std::strcmp ( w->getClassName()
-                          , const_cast<char*>("FDialogListMenu") ) == 0 );
+  bool m1 = w->isInstanceOf("FMenu");
+  bool m2 = w->isInstanceOf("FDialogListMenu");
   return bool( m1 || m2 );
 }
 

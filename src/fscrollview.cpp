@@ -755,8 +755,7 @@ inline FPoint FScrollView::getViewportCursorPos()
 void FScrollView::init (FWidget* parent)
 {
   assert ( parent != 0 );
-  assert ( std::strcmp ( parent->getClassName()
-                       , const_cast<char*>("FScrollView") ) != 0 );
+  assert ( ! parent->isInstanceOf("FScrollView") );
 
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);

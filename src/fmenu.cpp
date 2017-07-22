@@ -710,22 +710,19 @@ bool FMenu::isWindowsMenu (FWidget* w) const
 //----------------------------------------------------------------------
 bool FMenu::isMenuBar (FWidget* w) const
 {
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FMenuBar") ) == 0 );
+  return w->isInstanceOf("FMenuBar");
 }
 
 //----------------------------------------------------------------------
 bool FMenu::isMenu (FWidget* w) const
 {
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FMenu") ) == 0 );
+  return w->isInstanceOf("FMenu");
 }
 
 //----------------------------------------------------------------------
 bool FMenu::isRadioMenuItem (FWidget* w) const
 {
-  return bool ( std::strcmp ( w->getClassName()
-                            , const_cast<char*>("FRadioMenuItem") ) == 0 );
+  return w->isInstanceOf("FRadioMenuItem");
 }
 
 //----------------------------------------------------------------------

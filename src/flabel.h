@@ -52,37 +52,37 @@ class FLabel : public FWidget
    virtual ~FLabel();
 
    // Accessors
-   const char* getClassName() const;
-   FTerm*      getAccelWidget();
-   uInt        getAlignment();
-   FString&    getText();
+   const char*        getClassName() const;
+   FTerm*             getAccelWidget();
+   fc::text_alignment getAlignment();
+   FString&           getText();
 
    // Mutators
-   void        setAccelWidget (FWidget* = 0);
-   void        setAlignment(uInt);
-   bool        setEmphasis(bool);
-   bool        setEmphasis();
-   bool        unsetEmphasis();
-   bool        setReverseMode(bool);
-   bool        setReverseMode();
-   bool        unsetReverseMode();
-   bool        setEnable (bool);
-   void        setNumber(long);
-   void        setText (const FString&);
+   void               setAccelWidget (FWidget* = 0);
+   void               setAlignment(fc::text_alignment);
+   bool               setEmphasis(bool);
+   bool               setEmphasis();
+   bool               unsetEmphasis();
+   bool               setReverseMode(bool);
+   bool               setReverseMode();
+   bool               unsetReverseMode();
+   bool               setEnable (bool);
+   void               setNumber(long);
+   void               setText (const FString&);
 
    // Inquiries
-   bool        hasEmphasis();
-   bool        hasReverseMode();
+   bool               hasEmphasis();
+   bool               hasReverseMode();
 
    // Methods
-   void        hide();
+   void               hide();
 
    // Event handlers
-   void        onMouseDown (FMouseEvent*);
-   void        onAccel (FAccelEvent*);
+   void               onMouseDown (FMouseEvent*);
+   void               onAccel (FAccelEvent*);
 
    // Callback method
-   void        cb_accel_widget_destroyed (FWidget*, data_ptr);
+   void               cb_accel_widget_destroyed (FWidget*, data_ptr);
 
  private:
    // Typedef
@@ -95,24 +95,24 @@ class FLabel : public FWidget
    FLabel& operator = (const FLabel&);
 
    // Methods
-   void          init();
-   uChar         getHotkey();
-   int           getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void          setHotkeyAccelerator();
-   int           getXOffset (int);
-   void          printLine (wchar_t*&, uInt, int, int = 0);
-   void          draw();
+   void               init();
+   uChar              getHotkey();
+   int                getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+   void               setHotkeyAccelerator();
+   int                getXOffset (int);
+   void               printLine (wchar_t*&, uInt, int, int = 0);
+   void               draw();
 
    // Data Members
-   multiLineText multiline_text;
-   bool          multiline;
-   FString       text;
-   uInt          alignment;
-   short         emphasis_color;
-   short         ellipsis_color;
-   bool          emphasis;
-   bool          reverse_mode;
-   FWidget*      accel_widget;
+   multiLineText      multiline_text;
+   bool               multiline;
+   FString            text;
+   fc::text_alignment alignment;
+   short              emphasis_color;
+   short              ellipsis_color;
+   bool               emphasis;
+   bool               reverse_mode;
+   FWidget*           accel_widget;
 };
 #pragma pack(pop)
 
@@ -127,7 +127,7 @@ inline FTerm* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------
-inline uInt FLabel::getAlignment()
+inline fc::text_alignment FLabel::getAlignment()
 { return alignment; }
 
 //----------------------------------------------------------------------

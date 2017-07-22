@@ -71,6 +71,7 @@ class FListViewItem : public FObject
    // Data Member
    std::vector<FString> column_line;
    FWidget::data_ptr    data_pointer;
+   fc::text_alignment   alignment;
 };
 #pragma pack(pop)
 
@@ -122,7 +123,6 @@ class FListView : public FWidget
    void         insert ( const std::vector<long>&
                        , data_ptr = 0
                        , FListView* = 0 );
-   listViewItems::iterator index2iterator (int);
 
    // Event handlers
    void         onKeyPress (FKeyEvent*);
@@ -134,10 +134,6 @@ class FListView : public FWidget
    void         onTimer (FTimerEvent*);
    void         onFocusIn (FFocusEvent*);
    void         onFocusOut (FFocusEvent*);
-
-   // Callback methods
-   void         cb_VBarChange (FWidget*, data_ptr);
-   void         cb_HBarChange (FWidget*, data_ptr);
 
  protected:
    // Methods
@@ -157,7 +153,7 @@ class FListView : public FWidget
 
      ~Header()
       { }
-      
+
       FString name;
       int width;
       bool fixed_width;
@@ -175,14 +171,19 @@ class FListView : public FWidget
    FListView& operator = (const FListView&);
 
    // Methods
-   void         init();
-   void         draw();
-   void         drawColumnLabels();
-   void         drawList();
-   void         recalculateHorizontalBar (int);
-   void         recalculateVerticalBar (int);
-   void         processClick();
-   void         processChanged();
+   void        init();
+   void        draw();
+   void        drawColumnLabels();
+   void        drawList();
+   void        recalculateHorizontalBar (int);
+   void        recalculateVerticalBar (int);
+   void        processClick();
+   void        processChanged();
+   listViewItems::iterator index2iterator (int);
+
+   // Callback methods
+   void         cb_VBarChange (FWidget*, data_ptr);
+   void         cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
    listViewItems  data;

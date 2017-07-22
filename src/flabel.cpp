@@ -66,7 +66,7 @@ void FLabel::setAccelWidget (FWidget* widget)
 }
 
 //----------------------------------------------------------------------
-void FLabel::setAlignment (uInt align)
+void FLabel::setAlignment (fc::text_alignment align)
 {
   if ( align != fc::alignLeft
       && align != fc::alignCenter

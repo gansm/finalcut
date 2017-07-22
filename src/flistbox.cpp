@@ -1158,213 +1158,6 @@ void FListBox::onFocusOut (FFocusEvent*)
   inc_search.clear();
 }
 
-//----------------------------------------------------------------------
-void FListBox::cb_VBarChange (FWidget*, data_ptr)
-{
-  FScrollbar::sType scrollType;
-  int distance = 1;
-  int element_count = int(getCount());
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
-  scrollType = vbar->getScrollType();
-
-  switch ( scrollType )
-  {
-    case FScrollbar::noScroll:
-      break;
-
-    case FScrollbar::scrollPageBackward:
-      distance = getClientHeight();
-      // fall through
-    case FScrollbar::scrollStepBackward:
-      current -= distance;
-
-      if ( current < 1 )
-        current=1;
-
-      if ( current <= yoffset )
-        yoffset -= distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
-      break;
-
-    case FScrollbar::scrollPageForward:
-      distance = getClientHeight();
-      // fall through
-    case FScrollbar::scrollStepForward:
-      current += distance;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset += distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      break;
-
-    case FScrollbar::scrollJump:
-    {
-      int val = vbar->getValue();
-
-      if ( yoffset == val )
-        break;
-
-      int c = current - yoffset;
-      yoffset = val;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
-      current = yoffset + c;
-
-      if ( current < yoffset )
-        current = yoffset;
-
-      if ( current > element_count )
-        current = element_count;
-
-      break;
-    }
-
-    case FScrollbar::scrollWheelUp:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
-      onWheel(&wheel_ev);
-    }
-    break;
-
-    case FScrollbar::scrollWheelDown:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
-      onWheel(&wheel_ev);
-    }
-    break;
-  }
-
-  if ( isVisible() )
-    drawList();
-
-  if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollPageForward )
-  {
-    vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() && yoffset_before != yoffset )
-      vbar->drawBar();
-
-    updateTerminal();
-    flush_out();
-  }
-}
-
-//----------------------------------------------------------------------
-void FListBox::cb_HBarChange (FWidget*, data_ptr)
-{
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
-  FScrollbar::sType scrollType;
-  int distance = 1;
-  int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth() + padding_space;
-  scrollType = hbar->getScrollType();
-
-  switch ( scrollType )
-  {
-    case FScrollbar::noScroll:
-      break;
-
-    case FScrollbar::scrollPageBackward:
-      distance = getClientWidth() - padding_space;
-      // fall through
-    case FScrollbar::scrollStepBackward:
-      xoffset -= distance;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-      break;
-
-    case FScrollbar::scrollPageForward:
-      distance = getClientWidth() - padding_space;
-      // fall through
-    case FScrollbar::scrollStepForward:
-      xoffset += distance;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
-      break;
-
-    case FScrollbar::scrollJump:
-    {
-      int val = hbar->getValue();
-
-      if ( xoffset == val )
-        break;
-
-      xoffset = val;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
-      break;
-    }
-
-    case FScrollbar::scrollWheelUp:
-      if ( xoffset == 0 )
-        break;
-
-      xoffset -= 4;
-
-      if ( xoffset < 0 )
-        xoffset=0;
-
-      break;
-
-    case FScrollbar::scrollWheelDown:
-      if ( xoffset == xoffset_end )
-        break;
-
-      xoffset += 4;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      break;
-  }
-
-  if ( isVisible() )
-  {
-    drawList();
-    updateTerminal();
-    flush_out();
-  }
-
-  if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown )
-  {
-    hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() && xoffset_before != xoffset )
-      hbar->drawBar();
-
-    updateTerminal();
-    flush_out();
-  }
-}
-
 
 // protected methods of FListBox
 //----------------------------------------------------------------------
@@ -1859,4 +1652,211 @@ void FListBox::processSelect()
 void FListBox::processChanged()
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+void FListBox::cb_VBarChange (FWidget*, data_ptr)
+{
+  FScrollbar::sType scrollType;
+  int distance = 1;
+  int element_count = int(getCount());
+  int yoffset_before = yoffset;
+  int yoffset_end = element_count - getClientHeight();
+  scrollType = vbar->getScrollType();
+
+  switch ( scrollType )
+  {
+    case FScrollbar::noScroll:
+      break;
+
+    case FScrollbar::scrollPageBackward:
+      distance = getClientHeight();
+      // fall through
+    case FScrollbar::scrollStepBackward:
+      current -= distance;
+
+      if ( current < 1 )
+        current=1;
+
+      if ( current <= yoffset )
+        yoffset -= distance;
+
+      if ( yoffset < 0 )
+        yoffset = 0;
+
+      break;
+
+    case FScrollbar::scrollPageForward:
+      distance = getClientHeight();
+      // fall through
+    case FScrollbar::scrollStepForward:
+      current += distance;
+
+      if ( current > element_count )
+        current = element_count;
+
+      if ( current - yoffset > getClientHeight() )
+        yoffset += distance;
+
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
+
+      break;
+
+    case FScrollbar::scrollJump:
+    {
+      int val = vbar->getValue();
+
+      if ( yoffset == val )
+        break;
+
+      int c = current - yoffset;
+      yoffset = val;
+
+      if ( yoffset > yoffset_end )
+        yoffset = yoffset_end;
+
+      if ( yoffset < 0 )
+        yoffset = 0;
+
+      current = yoffset + c;
+
+      if ( current < yoffset )
+        current = yoffset;
+
+      if ( current > element_count )
+        current = element_count;
+
+      break;
+    }
+
+    case FScrollbar::scrollWheelUp:
+    {
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
+      onWheel(&wheel_ev);
+    }
+    break;
+
+    case FScrollbar::scrollWheelDown:
+    {
+      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
+      onWheel(&wheel_ev);
+    }
+    break;
+  }
+
+  if ( isVisible() )
+    drawList();
+
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollPageForward )
+  {
+    vbar->setValue (yoffset);
+
+    if ( vbar->isVisible() && yoffset_before != yoffset )
+      vbar->drawBar();
+
+    updateTerminal();
+    flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
+void FListBox::cb_HBarChange (FWidget*, data_ptr)
+{
+  static const int padding_space = 2; // 1 leading space + 1 tailing space
+  FScrollbar::sType scrollType;
+  int distance = 1;
+  int xoffset_before = xoffset;
+  int xoffset_end = max_line_width - getClientWidth() + padding_space;
+  scrollType = hbar->getScrollType();
+
+  switch ( scrollType )
+  {
+    case FScrollbar::noScroll:
+      break;
+
+    case FScrollbar::scrollPageBackward:
+      distance = getClientWidth() - padding_space;
+      // fall through
+    case FScrollbar::scrollStepBackward:
+      xoffset -= distance;
+
+      if ( xoffset < 0 )
+        xoffset = 0;
+      break;
+
+    case FScrollbar::scrollPageForward:
+      distance = getClientWidth() - padding_space;
+      // fall through
+    case FScrollbar::scrollStepForward:
+      xoffset += distance;
+
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
+
+      if ( xoffset < 0 )
+        xoffset = 0;
+
+      break;
+
+    case FScrollbar::scrollJump:
+    {
+      int val = hbar->getValue();
+
+      if ( xoffset == val )
+        break;
+
+      xoffset = val;
+
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
+
+      if ( xoffset < 0 )
+        xoffset = 0;
+
+      break;
+    }
+
+    case FScrollbar::scrollWheelUp:
+      if ( xoffset == 0 )
+        break;
+
+      xoffset -= 4;
+
+      if ( xoffset < 0 )
+        xoffset=0;
+
+      break;
+
+    case FScrollbar::scrollWheelDown:
+      if ( xoffset == xoffset_end )
+        break;
+
+      xoffset += 4;
+
+      if ( xoffset > xoffset_end )
+        xoffset = xoffset_end;
+
+      break;
+  }
+
+  if ( isVisible() )
+  {
+    drawList();
+    updateTerminal();
+    flush_out();
+  }
+
+  if ( scrollType >= FScrollbar::scrollStepBackward
+      && scrollType <= FScrollbar::scrollWheelDown )
+  {
+    hbar->setValue (xoffset);
+
+    if ( hbar->isVisible() && xoffset_before != xoffset )
+      hbar->drawBar();
+
+    updateTerminal();
+    flush_out();
+  }
 }

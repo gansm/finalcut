@@ -24,8 +24,7 @@ FToggleButton::FToggleButton (FWidget* parent)
 {
   init();
 
-  if ( parent && std::strcmp ( parent->getClassName()
-                             , const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && parent->isInstanceOf("FButtonGroup") )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
@@ -47,8 +46,7 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   init();
   setText(txt);
 
-  if ( parent && std::strcmp ( parent->getClassName()
-                             , const_cast<char*>("FButtonGroup") ) == 0 )
+  if ( parent && parent->isInstanceOf("FButtonGroup") )
   {
     setGroup( static_cast<FButtonGroup*>(parent) );
 
@@ -434,15 +432,13 @@ void FToggleButton::setHotkeyAccelerator()
 //----------------------------------------------------------------------
 bool FToggleButton::isRadioButton() const
 {
-  return ( std::strcmp ( getClassName()
-                       , const_cast<char*>("FRadioButton") ) == 0 );
+  return isInstanceOf("FRadioButton");
 }
 
 //----------------------------------------------------------------------
 bool FToggleButton::isCheckboxButton() const
 {
-  return ( std::strcmp ( getClassName()
-                       , const_cast<char*>("FCheckBox") ) == 0 );
+  return isInstanceOf("FCheckBox");
 }
 
 //----------------------------------------------------------------------
