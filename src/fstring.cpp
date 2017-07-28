@@ -170,6 +170,9 @@ FString::FString (const char* s)
   , bufsize(0)
   , c_string(0)
 {
+  if ( ! s )
+    return;
+
   const wchar_t* wc_string;
   wc_string = c_to_wc_str(s);
 
@@ -187,6 +190,9 @@ FString::FString (const wchar_t c)
   , bufsize(0)
   , c_string(0)
 {
+  if ( c == 0 )
+    return;
+
   wchar_t s[2];
   s[0] = c;
   s[1] = L'\0';
@@ -200,6 +206,9 @@ FString::FString (const char c)
   , bufsize(0)
   , c_string(0)
 {
+  if ( c == 0 )
+    return;
+
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';

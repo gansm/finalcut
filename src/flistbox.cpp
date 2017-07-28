@@ -1351,7 +1351,7 @@ void FListBox::drawList()
 
   isFocus = ((flags & fc::focus) != 0);
   start   = 0;
-  end     = uInt(getHeight()-2);
+  end     = uInt(getHeight() - 2);
   inc_len = inc_search.getLength();
 
   if ( end > getCount() )

@@ -49,6 +49,7 @@ class FListViewItem : public FObject
 {
  public:
    FListViewItem (const FListViewItem&);  // copy constructor
+   FListViewItem (FListViewItem*);
    FListViewItem (FListView*);
    FListViewItem ( const std::vector<FString>&
                  , FWidget::data_ptr = 0
@@ -71,7 +72,6 @@ class FListViewItem : public FObject
    // Data Member
    std::vector<FString> column_line;
    FWidget::data_ptr    data_pointer;
-   fc::text_alignment   alignment;
 };
 #pragma pack(pop)
 
@@ -109,36 +109,38 @@ class FListView : public FWidget
   ~FListView();
 
    // Accessors
-   const char*  getClassName() const;
+   const char*        getClassName() const;
+   fc::text_alignment getColumnAlignment (int);
 
    // Mutators
-   void         setGeometry (int, int, int, int, bool = true);
+   void               setGeometry (int, int, int, int, bool = true);
+   void               setColumnAlignment (int, fc::text_alignment);
 
    // Methods
-   virtual int  addColumn (const FString&, int = USE_MAX_SIZE);
-   void         insert (FListViewItem*);
-   void         insert ( const std::vector<FString>&
-                       , data_ptr = 0
-                       , FListView* = 0 );
-   void         insert ( const std::vector<long>&
-                       , data_ptr = 0
-                       , FListView* = 0 );
+   virtual int        addColumn (const FString&, int = USE_MAX_SIZE);
+   void               insert (FListViewItem*);
+   void               insert ( const std::vector<FString>&
+                             , data_ptr = 0
+                             , FListView* = 0 );
+   void               insert ( const std::vector<long>&
+                             , data_ptr = 0
+                             , FListView* = 0 );
 
    // Event handlers
-   void         onKeyPress (FKeyEvent*);
-   void         onMouseDown (FMouseEvent*);
-   void         onMouseUp (FMouseEvent*);
-   void         onMouseMove (FMouseEvent*);
-   void         onMouseDoubleClick (FMouseEvent*);
-   void         onWheel (FWheelEvent*);
-   void         onTimer (FTimerEvent*);
-   void         onFocusIn (FFocusEvent*);
-   void         onFocusOut (FFocusEvent*);
+   void               onKeyPress (FKeyEvent*);
+   void               onMouseDown (FMouseEvent*);
+   void               onMouseUp (FMouseEvent*);
+   void               onMouseMove (FMouseEvent*);
+   void               onMouseDoubleClick (FMouseEvent*);
+   void               onWheel (FWheelEvent*);
+   void               onTimer (FTimerEvent*);
+   void               onFocusIn (FFocusEvent*);
+   void               onFocusOut (FFocusEvent*);
 
  protected:
    // Methods
-   void adjustYOffset();
-   void adjustSize();
+   void               adjustYOffset();
+   void               adjustSize();
 
  private:
    // Typedef
@@ -149,6 +151,7 @@ class FListView : public FWidget
       : name()
       , width (0)
       , fixed_width (-1)
+      , alignment (fc::alignLeft)
       { }
 
      ~Header()
@@ -157,6 +160,7 @@ class FListView : public FWidget
       FString name;
       int width;
       bool fixed_width;
+      fc::text_alignment alignment;
    };
 
    typedef std::vector<Header> headerItems;
@@ -171,35 +175,36 @@ class FListView : public FWidget
    FListView& operator = (const FListView&);
 
    // Methods
-   void        init();
-   void        draw();
-   void        drawColumnLabels();
-   void        drawList();
-   void        recalculateHorizontalBar (int);
-   void        recalculateVerticalBar (int);
-   void        processClick();
-   void        processChanged();
+   void               init();
+   uInt               getAlignOffset (fc::text_alignment, uInt, uInt);
+   void               draw();
+   void               drawColumnLabels();
+   void               drawList();
+   void               recalculateHorizontalBar (int);
+   void               recalculateVerticalBar (int);
+   void               processClick();
+   void               processChanged();
    listViewItems::iterator index2iterator (int);
 
    // Callback methods
-   void         cb_VBarChange (FWidget*, data_ptr);
-   void         cb_HBarChange (FWidget*, data_ptr);
+   void               cb_VBarChange (FWidget*, data_ptr);
+   void               cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
-   listViewItems  data;
-   headerItems    header;
-   FTermBuffer    headerline;
-   FScrollbar*    vbar;
-   FScrollbar*    hbar;
-   fc::dragScroll drag_scroll;
-   bool           scroll_timer;
-   int            scroll_repeat;
-   int            scroll_distance;
-   int            current;
-   int            xoffset;
-   int            yoffset;
-   int            nf_offset;
-   int            max_line_width;
+   listViewItems      data;
+   headerItems        header;
+   FTermBuffer        headerline;
+   FScrollbar*        vbar;
+   FScrollbar*        hbar;
+   fc::dragScroll     drag_scroll;
+   bool               scroll_timer;
+   int                scroll_repeat;
+   int                scroll_distance;
+   int                current;
+   int                xoffset;
+   int                yoffset;
+   int                nf_offset;
+   int                max_line_width;
 };
 #pragma pack(pop)
 

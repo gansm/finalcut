@@ -340,7 +340,7 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-int FLabel::getXOffset(int length)
+int FLabel::getAlignOffset (int length)
 {
   switch ( alignment )
   {
@@ -358,25 +358,24 @@ int FLabel::getXOffset(int length)
         return getWidth() - length;
       else
         return 0;
-
-    default:
-      return 0;
   }
+
+  return 0;
 }
 
 //----------------------------------------------------------------------
 void FLabel::printLine ( wchar_t*& line
                        , uInt length
                        , int  hotkeypos
-                       , int  xoffset )
+                       , int  align_offset )
 {
   int to_char;
   bool isActive, isNoUnderline;
   isActive = ((flags & fc::active) != 0);
   isNoUnderline = ((flags & fc::no_underline) != 0);
 
-  for (int x=0; x < xoffset; x++)
-    print (' ');
+  if ( align_offset > 0 )
+    print (FString(align_offset, ' '));  // leading spaces
 
   if ( length <= uInt(getWidth()) )
     to_char = int(length);
@@ -423,10 +422,10 @@ void FLabel::printLine ( wchar_t*& line
     print ("..");
     setColor();
   }
-  else
+  else if ( align_offset + to_char < getWidth() )
   {
-    for (int x=xoffset+to_char; x < getWidth(); x++)
-      print (' ');
+    int len = getWidth() - align_offset - to_char;
+    print (FString(len, ' '));  // tailing spaces
   }
 
   if ( hasReverseMode() )
@@ -440,7 +439,7 @@ void FLabel::draw()
   wchar_t* dest;
   wchar_t* LabelText;
   uInt length;
-  int hotkeypos, xoffset;
+  int hotkeypos, align_offset;
 
   if ( text.isNull() || text.isEmpty() )
     return;
@@ -482,15 +481,15 @@ void FLabel::draw()
 
       if ( hotkeypos != -1 )
       {
-        xoffset = getXOffset (int(length-1));
-        printLine (LabelText, length-1, hotkeypos, xoffset);
+        align_offset = getAlignOffset (int(length-1));
+        printLine (LabelText, length-1, hotkeypos, align_offset);
         hotkey_printed = true;
         hotkeypos = -1;
       }
       else
       {
-        xoffset = getXOffset (int(length));
-        printLine (LabelText, length, -1, xoffset);
+        align_offset = getAlignOffset (int(length));
+        printLine (LabelText, length, -1, align_offset);
       }
 
       y++;
@@ -509,8 +508,8 @@ void FLabel::draw()
       length--;
 
     setPrintPos (1,1);
-    xoffset = getXOffset (int(length));
-    printLine (LabelText, length, hotkeypos, xoffset);
+    align_offset = getAlignOffset (int(length));
+    printLine (LabelText, length, hotkeypos, align_offset);
     delete[] LabelText;
   }
 

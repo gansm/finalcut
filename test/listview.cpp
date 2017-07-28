@@ -49,10 +49,15 @@ Listview::Listview (FWidget* parent)
   // Add columns to the view
   listView->addColumn ("City");
   listView->addColumn ("Condition");
-  listView->addColumn ("Temp.", 7);
+  listView->addColumn ("Temp.");
   listView->addColumn ("Humidity");
-  listView->addColumn ("Pressure");
-           			
+  listView->addColumn ("Pressure", 10);
+
+  // Set right alignment for the third, fourth, and fifth column
+  listView->setColumnAlignment (3, fc::alignRight);
+  listView->setColumnAlignment (4, fc::alignRight);
+  listView->setColumnAlignment (5, fc::alignRight);
+
   // Populate FListView with a list of items
   std::string weather[][5] =
   {

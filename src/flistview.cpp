@@ -19,8 +19,20 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
   , column_line(item.column_line)
   , data_pointer(item.data_pointer)
-  , alignment(fc::alignLeft)
 {
+  FObject* parent = getParent();
+
+  if ( parent && parent->isInstanceOf("FListView") )
+    static_cast<FListView*>(parent)->insert (this);
+}
+
+//----------------------------------------------------------------------
+FListViewItem::FListViewItem (FListViewItem* item)
+  : FObject(item->getParent())
+  , column_line(item->column_line)
+  , data_pointer(item->data_pointer)
+{
+  // Add the FListViewItem to the parent
   FObject* parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListView") )
@@ -32,9 +44,10 @@ FListViewItem::FListViewItem (FListView* parent)
   : FObject(parent)
   , column_line()
   , data_pointer(0)
-  , alignment(fc::alignLeft)
 {
-  parent->insert (this);
+  // Add the FListViewItem to the parent
+  if ( parent )
+    parent->insert (this);
 }
 
 //----------------------------------------------------------------------
@@ -44,9 +57,19 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
   : FObject(parent)
   , column_line(cols)
   , data_pointer(data)
-  , alignment(fc::alignLeft)
 {
-  parent->insert (this);
+  // Replace the control codes characters
+  std::vector<FString>::iterator iter = column_line.begin();
+
+  while ( iter != column_line.end() )
+  {
+    *iter = iter->replaceControlCodes();
+    ++iter;
+  }
+
+  // Add the FListViewItem to the parent
+  if ( parent )
+    parent->insert (this);
 }
 
 //----------------------------------------------------------------------
@@ -90,22 +113,14 @@ FListView::~FListView()  // destructor
 
 // public methods of FListView
 //----------------------------------------------------------------------
-int FListView::addColumn (const FString& label, int width)
+fc::text_alignment FListView::getColumnAlignment (int column)
 {
-  Header column;
-  column.name = label;
-  column.width = width;
+  // Get the alignment for a column
 
-  if ( column.width == USE_MAX_SIZE )
-  {
-    column.fixed_width = false;
-    column.width = int(label.getLength());
-  }
-  else
-    column.fixed_width = true;
+  if ( column < 0 || header.empty() || column > int(header.size()) )
+    return fc::alignLeft;
 
-  header.push_back (column);
-  return int(std::distance(header.begin(), header.end()));
+  return header[uInt(column)].alignment;
 }
 
 //----------------------------------------------------------------------
@@ -123,6 +138,36 @@ void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
     vbar->setGeometry (getWidth(), 2, 1, getHeight()-2);
     hbar->setGeometry (2, getHeight(), getWidth()-2, 1);
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::setColumnAlignment (int column, fc::text_alignment align)
+{
+  // Set the alignment for a column
+
+  if ( column < 0 || header.empty() || column > int(header.size()) )
+    return;
+
+  header[uInt(column)].alignment = align;
+}
+
+//----------------------------------------------------------------------
+int FListView::addColumn (const FString& label, int width)
+{
+  Header column;
+  column.name = label;
+  column.width = width;
+
+  if ( column.width == USE_MAX_SIZE )
+  {
+    column.fixed_width = false;
+    column.width = int(label.getLength());
+  }
+  else
+    column.fixed_width = true;
+
+  header.push_back (column);
+  return int(std::distance(header.begin(), header.end()));
 }
 
 //----------------------------------------------------------------------
@@ -797,6 +842,32 @@ void FListView::init()
 }
 
 //----------------------------------------------------------------------
+uInt FListView::getAlignOffset ( fc::text_alignment align
+                               , uInt txt_length
+                               , uInt width )
+{
+  switch ( align )
+  {
+    case fc::alignLeft:
+      return 0;
+
+    case fc::alignCenter:
+      if ( txt_length < width )
+        return uInt((width - txt_length) / 2);
+      else
+        return 0;
+
+    case fc::alignRight:
+      if ( txt_length < width )
+        return width - txt_length;
+      else
+        return 0;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 void FListView::draw()
 {
   bool isFocus;
@@ -898,19 +969,14 @@ void FListView::drawColumnLabels()
       headerline.write (txt);
 
       if ( txt_length < uInt(column_width) )
-        headerline.write (' ');
+        headerline.write (' ');  // tailing space
 
       if ( txt_length + tailing_space < uInt(column_width) )
       {
         setColor();
-        FString line ( column_width - int(txt_length) - tailing_space
+        FString line ( uInt(column_width) - tailing_space - txt_length
                      , wchar_t(fc::BoxDrawingsHorizontal) );
-        headerline.write (line);
-      }
-      else if ( txt_length + tailing_space == uInt(column_width) )
-      {
-        setColor();
-        headerline.write (wchar_t(fc::BoxDrawingsHorizontal));
+        headerline.write (line);  // horizontal line
       }
     }
     else
@@ -930,10 +996,10 @@ void FListView::drawColumnLabels()
   const std::vector<char_data>& h = headerline.getBuffer();
   first = h.begin() + xoffset;
 
-  if ( int(h.size()) <= getWidth() - 2 )
+  if ( int(h.size()) <= getClientWidth() )
     last = h.end() - 1;
   else
-    last = h.begin() + getWidth() + xoffset - 2;
+    last = h.begin() + getClientWidth() + xoffset - 1;
 
   const std::vector<char_data> header_part (first, last);
   setPrintPos (2, 1);
@@ -952,7 +1018,7 @@ void FListView::drawList()
 
   isFocus = ((flags & fc::focus) != 0);
   start   = 0;
-  end     = uInt(getHeight()-2);
+  end     = uInt(getHeight() - 2);
 
   if ( end > data.size() )
     end = uInt(data.size());
@@ -1007,11 +1073,22 @@ void FListView::drawList()
         FString text = (*iter)->column_line[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
+        fc::text_alignment align = getColumnAlignment(int(i+1));
+        uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
 
-        if ( txt_length <= uInt(width) )
+        if ( align_offset > 0 )
+          line += FString(align_offset, ' ');
+
+        if ( align_offset + txt_length <= uInt(width) )
         {
           line += text.left(width);
-          line += FString (leading_space + width - int(txt_length), ' ');
+          line += FString (leading_space + width - int(align_offset + txt_length), ' ');
+        }
+        else if ( align == fc::alignRight )
+        {
+          line += FString ("..");
+          line += text.right(width - ellipsis_length);
+          line += ' ';
         }
         else
         {

@@ -1,3 +1,7 @@
+2017-07-28  Markus Gans  <guru.mail@muenster.de>
+	* Possibility for a FListView column to set 
+	  the alignment (left, center or right)
+
 2017-07-23  Markus Gans  <guru.mail@muenster.de>
 	* Check an object with isInstanceOf(...) whether it is 
 	  an instance of a specified class

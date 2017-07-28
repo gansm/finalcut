@@ -99,7 +99,7 @@ class FLabel : public FWidget
    uChar              getHotkey();
    int                getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
    void               setHotkeyAccelerator();
-   int                getXOffset (int);
+   int                getAlignOffset (int);
    void               printLine (wchar_t*&, uInt, int, int = 0);
    void               draw();
 
