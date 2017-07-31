@@ -64,14 +64,18 @@ class FListViewItem : public FObject
    // Accessors
    const char*  getClassName() const;
    uInt         getCount() const;
+   FString      getText (int) const;
+
+   // Mutator
+   void         setText (int, const FString&);
 
  private:
-   // Friend classes
-   friend class FListView;
-
    // Data Member
    std::vector<FString> column_line;
    FWidget::data_ptr    data_pointer;
+
+   // Friend class
+   friend class FListView;
 };
 #pragma pack(pop)
 
@@ -110,11 +114,14 @@ class FListView : public FWidget
 
    // Accessors
    const char*        getClassName() const;
-   fc::text_alignment getColumnAlignment (int);
+   fc::text_alignment getColumnAlignment (int) const;
+   FString            getColumnText (int) const;
+   FListViewItem*     getCurrentItem() const;
 
    // Mutators
    void               setGeometry (int, int, int, int, bool = true);
    void               setColumnAlignment (int, fc::text_alignment);
+   void               setColumnText (int, const FString&);
 
    // Methods
    virtual int        addColumn (const FString&, int = USE_MAX_SIZE);
@@ -150,7 +157,7 @@ class FListView : public FWidget
       Header()
       : name()
       , width (0)
-      , fixed_width (-1)
+      , fixed_width (false)
       , alignment (fc::alignLeft)
       { }
 
@@ -191,6 +198,7 @@ class FListView : public FWidget
    void               cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
+   static FString     empty_string;
    listViewItems      data;
    headerItems        header;
    FTermBuffer        headerline;
@@ -205,6 +213,9 @@ class FListView : public FWidget
    int                yoffset;
    int                nf_offset;
    int                max_line_width;
+
+   // Friend class
+   friend class FListViewItem;
 };
 #pragma pack(pop)
 
@@ -213,6 +224,10 @@ class FListView : public FWidget
 //----------------------------------------------------------------------
 inline const char* FListView::getClassName() const
 { return "FListView"; }
+
+//----------------------------------------------------------------------
+inline FListViewItem* FListView::getCurrentItem() const
+{ return data[current-1]; }
 
 //----------------------------------------------------------------------
 inline FListView::listViewItems::iterator FListView::index2iterator (int index)

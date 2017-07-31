@@ -9,6 +9,9 @@
 #include "ftermbuffer.h"
 
 
+// static class attributes
+FString FListView::empty_string = FString("");
+
 //----------------------------------------------------------------------
 // class FListViewItem
 //----------------------------------------------------------------------
@@ -76,6 +79,39 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
 FListViewItem::~FListViewItem()
 { }
 
+// public methods of FListViewItem
+//----------------------------------------------------------------------
+FString FListViewItem::getText (int column) const
+{
+  if (column < 0 || column_line.empty() || column >= int(column_line.size()) )
+    return FListView::empty_string;
+
+  return column_line[column];
+}
+
+//----------------------------------------------------------------------
+void FListViewItem::setText (int column, const FString& text)
+{
+  if (column < 0 || column_line.empty() || column >= int(column_line.size()) )
+    return;
+
+  FObject* parent = getParent();
+
+  if ( parent && parent->isInstanceOf("FListView") )
+  {
+    FListView* listview = static_cast<FListView*>(parent);
+
+    if ( ! listview->header[uInt(column)].fixed_width )
+    {
+      int length = int(text.getLength());
+
+      if ( length > listview->header[uInt(column)].width )
+        listview->header[uInt(column)].width = length;
+    }
+  }
+
+  column_line[column] = text;
+}
 
 //----------------------------------------------------------------------
 // class FListView
@@ -113,14 +149,25 @@ FListView::~FListView()  // destructor
 
 // public methods of FListView
 //----------------------------------------------------------------------
-fc::text_alignment FListView::getColumnAlignment (int column)
+fc::text_alignment FListView::getColumnAlignment (int column) const
 {
   // Get the alignment for a column
 
-  if ( column < 0 || header.empty() || column > int(header.size()) )
+  if ( column < 0 || header.empty() || column >= int(header.size()) )
     return fc::alignLeft;
 
   return header[uInt(column)].alignment;
+}
+
+//----------------------------------------------------------------------
+FString FListView::getColumnText (int column) const
+{
+  // Get the text of column
+
+  if ( column < 0 || header.empty() || column >= int(header.size()) )
+    return empty_string;
+
+  return header[uInt(column)].name;
 }
 
 //----------------------------------------------------------------------
@@ -149,6 +196,25 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
     return;
 
   header[uInt(column)].alignment = align;
+}
+
+//----------------------------------------------------------------------
+void FListView::setColumnText (int column, const FString& label)
+{
+  // Set the text for a column
+
+  if ( column < 0 || header.empty() || column > int(header.size()) )
+    return;
+
+  if ( ! header[uInt(column)].fixed_width )
+  {
+    int length = int(label.getLength());
+
+    if ( length > header[uInt(column)].width )
+      header[uInt(column)].width = length;
+  }
+
+  header[uInt(column)].name = label;
 }
 
 //----------------------------------------------------------------------

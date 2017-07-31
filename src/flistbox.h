@@ -338,7 +338,7 @@ inline uInt FListBox::getCount() const
 { return uInt(data.size()); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem FListBox::getItem (int index) //const
+inline FListBoxItem FListBox::getItem (int index)
 {
   listBoxItems::iterator iter = index2iterator(index - 1);
   return *iter;

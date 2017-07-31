@@ -1,3 +1,7 @@
+2017-07-31  Markus Gans  <guru.mail@muenster.de>
+	* New methods to retrieve or modify FListViewItem text or 
+	  a FListView column text for a specific column
+
 2017-07-28  Markus Gans  <guru.mail@muenster.de>
 	* Possibility for a FListView column to set 
 	  the alignment (left, center or right)

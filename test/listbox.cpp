@@ -64,7 +64,7 @@ class Listbox : public FDialog
    // Event handlers
    void onClose (FCloseEvent*);
 
-   // Callback methods
+   // Callback method
    void cb_exitApp (FWidget*, data_ptr);
 
    // Data Member
@@ -125,7 +125,7 @@ Listbox::Listbox (FWidget* parent)
   Quit->setGeometry(42, 12, 10, 1);
   Quit->setText (L"&Quit");
 
-  // Add some function callbacks
+  // Add quit button function callback
   Quit->addCallback
   (
     "clicked",

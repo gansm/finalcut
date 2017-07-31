@@ -10,7 +10,7 @@
 
 
 //----------------------------------------------------------------------
-// class Listbox
+// class Listview
 //----------------------------------------------------------------------
 
 #pragma pack(push)
@@ -35,6 +35,7 @@ class Listview : public FDialog
 
    // Callback methods
    void cb_exitApp (FWidget*, data_ptr);
+   void cb_showInMessagebox (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -123,6 +124,12 @@ Listview::Listview (FWidget* parent)
     "clicked",
     F_METHOD_CALLBACK (this, &Listview::cb_exitApp)
   );
+
+  listView->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &Listview::cb_showInMessagebox)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -149,6 +156,19 @@ void Listview::cb_exitApp (FWidget*, data_ptr)
   close();
 }
 
+//----------------------------------------------------------------------
+void Listview::cb_showInMessagebox (FWidget* widget, data_ptr)
+{
+  FListView* listView = static_cast<FListView*>(widget);listView=listView;
+  FListViewItem* item = listView->getCurrentItem();
+  FMessageBox info ( "Weather in " + item->getText(0)
+                   , "  Condition: " + item->getText(1) + "\n"
+                     "Temperature: " + item->getText(2) + "\n"
+                     "   Humidity: " + item->getText(3) + "\n"
+                     "   Pressure: " + item->getText(4)
+                   , FMessageBox::Ok, 0, 0, this );
+  info.show();
+}
 
 //----------------------------------------------------------------------
 //                               main part
@@ -169,7 +189,7 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
 
   Listview d(&app);
-  d.setText (L"Listview");
+  d.setText (L"Weather data");
   d.setGeometry (int(1 + (app.getWidth() - 37) / 2), 3, 37, 20);
   d.setShadow();
 
