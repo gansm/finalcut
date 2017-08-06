@@ -421,63 +421,63 @@ class FTerm
    static std::map <std::string,fc::encoding>* encoding_set;
    static FTermcap::tcap_map* tcap;
 
-   static bool    mouse_support;
-   static bool    terminal_detection;
-   static bool    raw_mode;
-   static bool    input_data_pending;
-   static bool    non_blocking_stdin;
-   static bool    gpm_mouse_enabled;
-   static bool    pc_charset_console;
-   static bool    utf8_input;
-   static bool    utf8_state;
-   static bool    utf8_console;
-   static bool    utf8_linux_terminal;
-   static bool    force_vt100;
-   static bool    vt100_console;
-   static bool    ascii_console;
-   static bool    color256;
-   static bool    monochron;
-   static bool    xterm_terminal;
-   static bool    ansi_terminal;
-   static bool    rxvt_terminal;
-   static bool    urxvt_terminal;
-   static bool    mlterm_terminal;
-   static bool    putty_terminal;
-   static bool    kde_konsole;
-   static bool    gnome_terminal;
-   static bool    kterm_terminal;
-   static bool    tera_terminal;
-   static bool    cygwin_terminal;
-   static bool    mintty_terminal;
-   static bool    linux_terminal;
-   static bool    netbsd_terminal;
-   static bool    openbsd_terminal;
-   static bool    screen_terminal;
-   static bool    tmux_terminal;
-   static char    termtype[30];
-   static char*   term_name;
-   static char*   locale_name;
-   static char*   locale_xterm;
-   static FRect*  term;      // current terminal geometry
-   static FPoint* mouse;     // mouse click position
+   static bool           mouse_support;
+   static bool           terminal_detection;
+   static bool           raw_mode;
+   static bool           input_data_pending;
+   static bool           non_blocking_stdin;
+   static bool           gpm_mouse_enabled;
+   static bool           pc_charset_console;
+   static bool           utf8_input;
+   static bool           utf8_state;
+   static bool           utf8_console;
+   static bool           utf8_linux_terminal;
+   static bool           force_vt100;
+   static bool           vt100_console;
+   static bool           ascii_console;
+   static bool           color256;
+   static bool           monochron;
+   static bool           xterm_terminal;
+   static bool           ansi_terminal;
+   static bool           rxvt_terminal;
+   static bool           urxvt_terminal;
+   static bool           mlterm_terminal;
+   static bool           putty_terminal;
+   static bool           kde_konsole;
+   static bool           gnome_terminal;
+   static bool           kterm_terminal;
+   static bool           tera_terminal;
+   static bool           cygwin_terminal;
+   static bool           mintty_terminal;
+   static bool           linux_terminal;
+   static bool           netbsd_terminal;
+   static bool           openbsd_terminal;
+   static bool           screen_terminal;
+   static bool           tmux_terminal;
+   static char           termtype[30];
+   static char*          term_name;
+   static char*          locale_name;
+   static char*          locale_xterm;
+   static FRect*         term;      // current terminal geometry
+   static FPoint*        mouse;     // mouse click position
 
-   static int     stdin_status_flags;
-   static int     fd_tty;
-   static uInt    baudrate;
-   static bool    resize_term;
+   static int            stdin_status_flags;
+   static int            fd_tty;
+   static uInt           baudrate;
+   static bool           resize_term;
 
-   static struct  termios term_init;
+   static struct         termios term_init;
    static fc::linuxConsoleCursorStyle linux_console_cursor_style;
    static fc::freebsdConsoleCursorStyle freebsd_console_cursor_style;
-   static struct  console_font_op screen_font;
-   static struct  unimapdesc      screen_unicode_map;
+   static struct         console_font_op screen_font;
+   static struct         unimapdesc      screen_unicode_map;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-   static uInt    bsd_alt_keymap;
+   static uInt           bsd_alt_keymap;
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-   static kbd_t   wscons_keyboard_encoding;
+   static kbd_t          wscons_keyboard_encoding;
 #endif
 
    static FOptiMove*     opti_move;
@@ -486,7 +486,6 @@ class FTerm
    static const FString* xterm_title;
    static const FString* answer_back;
    static const FString* sec_da;
-   static const FString* empty_string;
 
    struct
    {
@@ -520,11 +519,11 @@ inline int FTerm::getMaxColor()
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
-{ return (answer_back) ? *answer_back : *empty_string; }
+{ return (answer_back) ? *answer_back : *fc::empty_string; }
 
 //----------------------------------------------------------------------
 inline const FString& FTerm::getSecDAString()
-{ return (sec_da) ? *sec_da : *empty_string; }
+{ return (sec_da) ? *sec_da : *fc::empty_string; }
 #endif
 
 //----------------------------------------------------------------------

@@ -69,6 +69,8 @@ FToggleButton::~FToggleButton()  // destructor
 //----------------------------------------------------------------------
 void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the toggle button geometry
+
   int min_width = button_width + int(text.getLength());
 
   if ( w < min_width )

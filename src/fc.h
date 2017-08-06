@@ -11,6 +11,8 @@
 #ifndef FC_H
 #define FC_H
 
+#include "fstring.h"
+
 
 //----------------------------------------------------------------------
 // class fc
@@ -1081,6 +1083,9 @@ class fc
      t_keypad_local,
      t_key_mouse
    };
+
+   // Data Member
+   static const FString* empty_string;
 };
 
 #pragma pack(pop)

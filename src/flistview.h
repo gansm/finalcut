@@ -198,7 +198,6 @@ class FListView : public FWidget
    void               cb_HBarChange (FWidget*, data_ptr);
 
    // Data Members
-   static FString     empty_string;
    listViewItems      data;
    headerItems        header;
    FTermBuffer        headerline;
@@ -227,7 +226,7 @@ inline const char* FListView::getClassName() const
 
 //----------------------------------------------------------------------
 inline FListViewItem* FListView::getCurrentItem() const
-{ return data[current-1]; }
+{ return data[uInt(current-1)]; }
 
 //----------------------------------------------------------------------
 inline FListView::listViewItems::iterator FListView::index2iterator (int index)

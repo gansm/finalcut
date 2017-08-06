@@ -94,7 +94,6 @@ const FString*         FTerm::xterm_font                = 0;
 const FString*         FTerm::xterm_title               = 0;
 const FString*         FTerm::answer_back               = 0;
 const FString*         FTerm::sec_da                    = 0;
-const FString*         FTerm::empty_string              = 0;
 FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
 FTerm::modifier_key    FTerm::mod_key;
@@ -2597,7 +2596,8 @@ char* FTerm::init_256colorTerminal()
     gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
-    new_termtype = const_cast<char*>("gnome-256color");
+    if ( ! screen_terminal )
+      new_termtype = const_cast<char*>("gnome-256color");
   }
 
 #if DEBUG
@@ -3574,7 +3574,6 @@ void FTerm::init()
   opti_attr    = new FOptiAttr();
   term         = new FRect(0,0,0,0);
   mouse        = new FPoint(0,0);
-  empty_string = new FString("");
 
   vt100_alt_char = new std::map<uChar,uChar>;
   encoding_set   = new std::map<std::string,fc::encoding>;
@@ -4079,9 +4078,6 @@ void FTerm::finish()
 
   if ( vt100_alt_char )
     delete vt100_alt_char;
-
-  if ( empty_string )
-    delete empty_string;
 
   if ( sec_da )
     delete sec_da;

@@ -49,6 +49,8 @@ void FProgressbar::setPercentage (int percentage_value)
 //----------------------------------------------------------------------
 void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the progress bar geometry
+
   FWidget::setGeometry (x, y, w, h, adjust);
   bar_length = w;
 }

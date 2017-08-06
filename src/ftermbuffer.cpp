@@ -137,5 +137,13 @@ int FTermBuffer::write (register int c)
 }
 
 
-// private methods of FTermBuffer
+// FTermBuffer non-member operators
 //----------------------------------------------------------------------
+std::vector< FTermBuffer::char_data>& operator << ( std::vector<FTermBuffer::char_data>& termString
+                                                  , const FTermBuffer& buf )
+{
+  if ( ! buf.data.empty() )
+    termString.assign(buf.data.begin(), buf.data.end());
+
+  return termString;
+}

@@ -159,7 +159,7 @@ void Listview::cb_exitApp (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void Listview::cb_showInMessagebox (FWidget* widget, data_ptr)
 {
-  FListView* listView = static_cast<FListView*>(widget);listView=listView;
+  FListView* listView = static_cast<FListView*>(widget);
   FListViewItem* item = listView->getCurrentItem();
   FMessageBox info ( "Weather in " + item->getText(0)
                    , "  Condition: " + item->getText(1) + "\n"

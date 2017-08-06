@@ -151,6 +151,8 @@ void FScrollbar::setOrientation (int o)
 //----------------------------------------------------------------------
 void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the scrollbar geometry
+
   FWidget::setGeometry (x, y, w, h, adjust);
 
   int nf = 0;

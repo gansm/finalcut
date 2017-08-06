@@ -168,6 +168,8 @@ void FListBox::showInsideBrackets ( int index
 //----------------------------------------------------------------------
 void FListBox::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the widget geometry
+
   FWidget::setGeometry(x, y, w, h, adjust);
 
   if ( isNewFont() )

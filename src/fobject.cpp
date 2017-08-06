@@ -4,9 +4,9 @@
 #include "fobject.h"
 
 // static class attributes
-bool FObject::timer_modify_lock;
+bool                FObject::timer_modify_lock;
 FObject::TimerList* FObject::timer_list = 0;
-
+const FString*      fc::empty_string    = 0;
 
 //----------------------------------------------------------------------
 // class FObject
@@ -27,8 +27,14 @@ FObject::FObject (FObject* parent)
 
   if ( parent == 0 )
   {
+    
     timer_modify_lock = false;
-    timer_list   = new TimerList();
+
+    if ( ! timer_list )
+      timer_list   = new TimerList();
+
+    if ( ! fc::empty_string )
+      fc::empty_string = new FString("");
   }
   else
     has_parent = true;
@@ -47,6 +53,12 @@ FObject::~FObject()  // destructor
   {
     delete timer_list;
     timer_list = 0;
+  }
+
+  if ( ! has_parent && fc::empty_string )
+  {
+    delete fc::empty_string;
+    fc::empty_string = 0;
   }
 
   // delete children objects

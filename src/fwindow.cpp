@@ -395,6 +395,8 @@ void FWindow::setSize (int w, int h, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Sets the geometry of the widget
+
   int old_x = getX();
   int old_y = getY();
   int old_width = getWidth();

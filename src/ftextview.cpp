@@ -73,6 +73,8 @@ const FString FTextView::getText() const
 //----------------------------------------------------------------------
 void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the text view geometry
+
   FWidget::setGeometry(x, y, w, h, adjust);
   int width  = getWidth();
   int height = getHeight();

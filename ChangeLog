@@ -1,3 +1,8 @@
+2017-08-06  Markus Gans  <guru.mail@muenster.de>
+	* Fix GNU Screen support for vte/gnome-terminals
+	* Advanced streaming functionality for FTermBuffer 
+	  and FVTerm::print()
+
 2017-07-31  Markus Gans  <guru.mail@muenster.de>
 	* New methods to retrieve or modify FListViewItem text or 
 	  a FListView column text for a specific column

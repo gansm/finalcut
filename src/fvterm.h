@@ -133,6 +133,7 @@ class FVTerm : public FObject, public FTerm
 
    // Overloaded operators
    template<class type> FVTerm& operator << (const type&);
+   FVTerm& operator << (const std::vector<char_data>&);
 
    // Accessors
    virtual const char* getClassName() const;
@@ -424,9 +425,16 @@ class FVTerm : public FObject, public FTerm
 template<class type>
 inline FVTerm& FVTerm::operator << (const type& s)
 {
-  std::ostringstream outstream;
+  std::wostringstream outstream;
   outstream << s;
   print (outstream.str());
+  return *this;
+}
+
+//----------------------------------------------------------------------
+inline FVTerm& FVTerm::operator << (const std::vector<FVTerm::char_data>& termString)
+{
+  print (termString);
   return *this;
 }
 

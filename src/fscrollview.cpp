@@ -222,6 +222,8 @@ void FScrollView::setSize (int w, int h, bool adjust)
 //----------------------------------------------------------------------
 void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the scroll view geometry
+
   FWidget::setGeometry (x, y, w, h, adjust);
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );

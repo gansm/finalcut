@@ -661,6 +661,8 @@ void FWidget::setTermSize (int w, int h)
 //----------------------------------------------------------------------
 void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Sets the geometry of the widget relative to its parent
+
   int term_x, term_y;
 
   w = std::min (w, size_hints.max_width);

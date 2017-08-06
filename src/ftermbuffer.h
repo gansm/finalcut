@@ -40,6 +40,9 @@ class FTermBuffer
 
    // Overloaded operators
    template<class type> FTermBuffer& operator << (const type&);
+   // Non-member operators
+   friend std::vector<char_data>& operator << ( std::vector<char_data>&
+                                              , const FTermBuffer& );
 
    // Accessors
    virtual const char*    getClassName() const;
@@ -79,7 +82,7 @@ class FTermBuffer
 template<class type>
 inline FTermBuffer& FTermBuffer::operator << (const type& s)
 {
-  std::ostringstream outstream;
+  std::wostringstream outstream;
   outstream << s;
   write (outstream.str());
   return *this;

@@ -8,10 +8,6 @@
 #include "fstatusbar.h"
 #include "ftermbuffer.h"
 
-
-// static class attributes
-FString FListView::empty_string = FString("");
-
 //----------------------------------------------------------------------
 // class FListViewItem
 //----------------------------------------------------------------------
@@ -84,9 +80,9 @@ FListViewItem::~FListViewItem()
 FString FListViewItem::getText (int column) const
 {
   if (column < 0 || column_line.empty() || column >= int(column_line.size()) )
-    return FListView::empty_string;
+    return *fc::empty_string;
 
-  return column_line[column];
+  return column_line[uInt(column)];
 }
 
 //----------------------------------------------------------------------
@@ -110,7 +106,7 @@ void FListViewItem::setText (int column, const FString& text)
     }
   }
 
-  column_line[column] = text;
+  column_line[uInt(column)] = text;
 }
 
 //----------------------------------------------------------------------
@@ -165,7 +161,7 @@ FString FListView::getColumnText (int column) const
   // Get the text of column
 
   if ( column < 0 || header.empty() || column >= int(header.size()) )
-    return empty_string;
+    return *fc::empty_string;
 
   return header[uInt(column)].name;
 }
@@ -173,6 +169,8 @@ FString FListView::getColumnText (int column) const
 //----------------------------------------------------------------------
 void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
+  // Set the widget geometry
+
   FWidget::setGeometry(x, y, w, h, adjust);
 
   if ( isNewFont() )
@@ -1032,34 +1030,35 @@ void FListView::drawColumnLabels()
 
     if ( txt_length <= uInt(column_width) )
     {
-      headerline.write (txt);
+      headerline << txt;
 
       if ( txt_length < uInt(column_width) )
-        headerline.write (' ');  // tailing space
+        headerline << ' ';  // tailing space
 
       if ( txt_length + tailing_space < uInt(column_width) )
       {
         setColor();
         FString line ( uInt(column_width) - tailing_space - txt_length
                      , wchar_t(fc::BoxDrawingsHorizontal) );
-        headerline.write (line);  // horizontal line
+        headerline << line;  // horizontal line
       }
     }
     else
     {
-      headerline.write (' ');
-      headerline.write (text.left(uInt(width - ellipsis_length)));
+      headerline << ' ';
+      headerline << text.left(uInt(width - ellipsis_length));
       setColor (wc.label_ellipsis_fg, wc.label_bg);
-      headerline.write ("..");
+      headerline << "..";
 
       if ( iter == header.end() - 1 )  // Last element
-        headerline.write (' ');
+        headerline << ' ';
     }
 
     ++iter;
   }
 
-  const std::vector<char_data>& h = headerline.getBuffer();
+  std::vector<char_data> h;
+  h << headerline;
   first = h.begin() + xoffset;
 
   if ( int(h.size()) <= getClientWidth() )
@@ -1067,9 +1066,8 @@ void FListView::drawColumnLabels()
   else
     last = h.begin() + getClientWidth() + xoffset - 1;
 
-  const std::vector<char_data> header_part (first, last);
   setPrintPos (2, 1);
-  print (header_part);
+  print() << std::vector<char_data>(first, last);
 }
 
 //----------------------------------------------------------------------
