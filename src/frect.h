@@ -27,6 +27,7 @@ class FRect
  public:
    // Constructors
    FRect ();
+   FRect (const FRect&);  // copy constructor
    FRect (int, int, int, int);
    FRect (const FPoint&, const FPoint&);
 
@@ -110,6 +111,14 @@ inline FRect::FRect()
   , Y1(0)
   , X2(-1)
   , Y2(-1)
+{ }
+
+//----------------------------------------------------------------------
+inline FRect::FRect (const FRect& r)  // copy constructor
+  : X1(r.X1)
+  , Y1(r.Y1)
+  , X2(r.X2)
+  , Y2(r.Y2)
 { }
 
 //----------------------------------------------------------------------

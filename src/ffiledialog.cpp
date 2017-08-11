@@ -702,7 +702,7 @@ int FFileDialog::changeDir (const FString& dirname)
       printPath(directory);
       filename->redraw();
       filebrowser->redraw();
-
+      // fall through
     default:
       return 0;
   }

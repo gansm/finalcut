@@ -441,7 +441,7 @@ int FVTerm::print (term_area* area, const FString& s)
       {
         case '\n':
           area->cursor_y++;
-
+          // fall through
         case '\r':
           area->cursor_x = 1;
           break;
@@ -599,7 +599,7 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& termString)
     {
       case '\n':
         area->cursor_y++;
-
+        // fall through
       case '\r':
         area->cursor_x = 1;
         break;

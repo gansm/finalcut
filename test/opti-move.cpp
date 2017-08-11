@@ -67,7 +67,7 @@ void move (int xold, int yold, int xnew, int ynew)
   // prints the cursor move escape sequence
   std::string sequence;
   char* buffer;
-  char  from[10], to[10], byte[15];
+  char  from[10], to[10], byte[20];
   uInt  len;
 
   term_boundaries(xold, yold);

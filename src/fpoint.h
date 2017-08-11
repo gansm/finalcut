@@ -23,6 +23,7 @@ class FPoint
  public:
    // Constructors
    FPoint ();
+   FPoint (const FPoint&);  // copy constructor
    FPoint (int, int);
 
    // Destructor
@@ -67,6 +68,12 @@ class FPoint
 inline FPoint::FPoint()
   : xpos(0)
   , ypos(0)
+{ }
+
+//----------------------------------------------------------------------
+inline FPoint::FPoint (const FPoint& p)  // copy constructor
+  : xpos(p.xpos)
+  , ypos(p.ypos)
 { }
 
 //----------------------------------------------------------------------

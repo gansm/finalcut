@@ -1,3 +1,7 @@
+2017-08-11  Markus Gans  <guru.mail@muenster.de>
+	* Some code changes for GCC 7
+	* Implementation of a copy constructor for FPoint and FRect
+
 2017-08-06  Markus Gans  <guru.mail@muenster.de>
 	* Fix GNU Screen support for vte/gnome-terminals
 	* Advanced streaming functionality for FTermBuffer 
