@@ -136,10 +136,10 @@ void FWindow::setActiveWindow (FWindow* window)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setWindowFocusWidget (FWidget* obj)
+void FWindow::setWindowFocusWidget (const FWidget* obj)
 {
   // set focus widget of this window
-  win_focus_widget = obj;
+  win_focus_widget = const_cast<FWidget*>(obj);
 }
 
 //----------------------------------------------------------------------
@@ -500,7 +500,7 @@ void FWindow::delWindow (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-FWindow* FWindow::getWindowWidget (FWidget* obj)
+FWindow* FWindow::getWindowWidget (const FWidget* obj)
 {
   // returns the window object to the given widget obj
   FWidget* p_obj = obj->getParentWidget();
@@ -512,17 +512,17 @@ FWindow* FWindow::getWindowWidget (FWidget* obj)
   }
 
   if ( obj->isWindowWidget() )
-    return static_cast<FWindow*>(obj);
+    return const_cast<FWindow*>(static_cast<const FWindow*>(obj));
   else
     return 0;
 }
 
 //----------------------------------------------------------------------
-int FWindow::getWindowLayer (FWidget* obj)
+int FWindow::getWindowLayer (const FWidget* obj)
 {
   // returns the window layer from the widget obj
   widgetList::iterator iter, end;
-  FWidget* window;
+  const FWidget* window;
 
   if ( ! window_list )
     return -1;

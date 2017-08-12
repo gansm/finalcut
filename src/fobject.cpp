@@ -293,7 +293,7 @@ bool FObject::event (FEvent* ev)
 {
   if ( ev->type() == fc::Timer_Event )
   {
-    onTimer ( static_cast<FTimerEvent*>(ev) );
+    onTimer ( const_cast<FTimerEvent*>(static_cast<const FTimerEvent*>(ev)) );
     return true;
   }
 

@@ -157,10 +157,9 @@ void FApplication::quit()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::sendEvent(FObject* receiver, FEvent* event)
+bool FApplication::sendEvent ( const FObject* receiver
+                             , const FEvent* event )
 {
-  FWidget* widget;
-
   if ( quit_now || app_exit_loop )
     return false;
 
@@ -170,11 +169,12 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
   if ( ! receiver->isWidget() )
     return false;
 
-  widget = static_cast<FWidget*>(receiver);
+  const FWidget* r_widget = static_cast<const FWidget*>(receiver);
+  FWidget* widget = const_cast<FWidget*>(r_widget);
 
   if ( modal_dialogs > 0 )
   {
-    FWidget* window;
+    const FWidget* window;
     if ( widget->isWindowWidget() )
       window = widget;
     else
@@ -206,19 +206,21 @@ bool FApplication::sendEvent(FObject* receiver, FEvent* event)
     }
   }
 
-  // throw away mouse events to disabled widgets
+  // Throw away mouse events for disabled widgets
   if ( event->type() >= fc::MouseDown_Event
       && event->type() <= fc::MouseMove_Event
       && ! widget->isEnabled() )
     return false;
 
-  // sends event event directly to receiver
-  FApplication* w = static_cast<FApplication*>(widget);
-  return w->event(event);  // access to a protected base class member
+  // For access to a protected base class member
+  FApplication* w = const_cast<FApplication*>(static_cast<const FApplication*>(widget));
+  // Sends event event directly to receiver
+  return w->event(const_cast<FEvent*>(event));
 }
 
 //----------------------------------------------------------------------
-void FApplication::queueEvent (FObject* receiver, FEvent* event)
+void FApplication::queueEvent ( const FObject* receiver
+                              , const FEvent* event )
 {
   if ( ! receiver )
     return;
@@ -255,7 +257,7 @@ bool FApplication::eventInQueue()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::removeQueuedEvent(FObject* receiver)
+bool FApplication::removeQueuedEvent (const FObject* receiver)
 {
   bool retval;
   eventQueue::iterator iter;
@@ -666,7 +668,7 @@ void FApplication::processKeyboardEvent()
                   // windows keyboard accelerator
                   if ( ! accpt )
                   {
-                    FWidget* window = active_window;
+                    const FWidget* window = active_window;
 
                     if ( window )
                       accpt = processAccelerator (window);
@@ -675,7 +677,7 @@ void FApplication::processKeyboardEvent()
                   // global keyboard accelerator
                   if ( ! accpt )
                   {
-                    FWidget* root_widget = getRootWidget();
+                    const FWidget* root_widget = getRootWidget();
 
                     if ( root_widget )
                       processAccelerator (root_widget);
@@ -1022,7 +1024,7 @@ bool FApplication::processDialogSwitchAccelerator()
 }
 
 //----------------------------------------------------------------------
-bool FApplication::processAccelerator (FWidget*& widget)
+bool FApplication::processAccelerator (const FWidget*& widget)
 {
   bool accpt = false;
 

@@ -283,7 +283,7 @@ void FMenuItem::openMenu()
   setOpenMenu(dd_menu);
   dd_menu->setVisible();
   dd_menu->show();
-  dd_menu->raiseWindow(dd_menu);
+  dd_menu->raiseWindow();
   dd_menu->redraw();
   updateTerminal();
   flush_out();

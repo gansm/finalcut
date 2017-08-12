@@ -58,9 +58,9 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , button()
 {
   setTitlebarText (mbox.getTitlebarText());
-  init ( *mbox.button_digit[0]
-       , *mbox.button_digit[1]
-       , *mbox.button_digit[2] );
+  init ( mbox.button_digit[0]
+       , mbox.button_digit[1]
+       , mbox.button_digit[2] );
 }
 
 //----------------------------------------------------------------------
@@ -92,10 +92,6 @@ FMessageBox::~FMessageBox()  // destructor
 {
   for (uInt n=0; n < num_buttons; n++)
     delete button[n];
-
-  delete button_digit[2];
-  delete button_digit[1];
-  delete button_digit[0];
 }
 
 
@@ -112,10 +108,6 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     for (uInt n=0; n < num_buttons; n++)
       delete button[n];
 
-    delete button_digit[2];
-    delete button_digit[1];
-    delete button_digit[0];
-
     if ( mbox.getParentWidget() )
       mbox.getParentWidget()->addChild (this);
 
@@ -130,9 +122,9 @@ FMessageBox& FMessageBox::operator = (const FMessageBox& mbox)
     text_num_lines  = mbox.text_num_lines;
 
     setTitlebarText (mbox.getTitlebarText());
-    init ( *mbox.button_digit[0]
-         , *mbox.button_digit[1]
-         , *mbox.button_digit[2] );
+    init ( mbox.button_digit[0]
+         , mbox.button_digit[1]
+         , mbox.button_digit[2] );
 
     return *this;
   }
@@ -160,10 +152,10 @@ void FMessageBox::setText (const FString& txt)
   calculateDimensions();
   button[0]->setY(getHeight()-4, false);
 
-  if ( *button_digit[1] != 0 )
+  if ( button_digit[1] != 0 )
     button[1]->setY(getHeight()-4, false);
 
-  if ( *button_digit[2] != 0 )
+  if ( button_digit[2] != 0 )
     button[2]->setY(getHeight()-4, false);
 
   adjustButtons();
@@ -282,9 +274,9 @@ void FMessageBox::init (int button0, int button1, int button2)
   else
     num_buttons = 3;
 
-  button_digit[0] = new int(button0);
-  button_digit[1] = new int(button1);
-  button_digit[2] = new int(button2);
+  button_digit[0] = button0;
+  button_digit[1] = button1;
+  button_digit[2] = button2;
 
   button[0] = new FButton (this);
   button[0]->setText(button_text[button0]);
@@ -314,33 +306,33 @@ void FMessageBox::init (int button0, int button1, int button2)
   resizeButtons();
   adjustButtons();
 
-  if ( *button_digit[0] != 0 )
+  if ( button_digit[0] != 0 )
   {
     button[0]->addCallback
     (
       "clicked",
       F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FWidget::data_ptr>(button_digit[0])
+      static_cast<FWidget::data_ptr>(&button_digit[0])
     );
   }
 
-  if ( *button_digit[1] != 0 )
+  if ( button_digit[1] != 0 )
   {
     button[1]->addCallback
     (
       "clicked",
       F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FWidget::data_ptr>(button_digit[1])
+      static_cast<FWidget::data_ptr>(&button_digit[1])
     );
   }
 
-  if ( *button_digit[2] != 0 )
+  if ( button_digit[2] != 0 )
   {
     button[2]->addCallback
     (
       "clicked",
       F_METHOD_CALLBACK (this, &FMessageBox::cb_processClick),
-      static_cast<FWidget::data_ptr>(button_digit[2])
+      static_cast<FWidget::data_ptr>(&button_digit[2])
     );
   }
 

@@ -63,8 +63,8 @@ class FWindow : public FWidget
 
    // Accessors
    const char*     getClassName() const;
-   static FWindow* getWindowWidget (FWidget*);
-   static int      getWindowLayer (FWidget*);
+   static FWindow* getWindowWidget (const FWidget*);
+   static int      getWindowLayer (const FWidget*);
    static FWindow* getActiveWindow();
    FWidget*        getWindowFocusWidget() const;
 
@@ -73,7 +73,7 @@ class FWindow : public FWidget
    bool            setWindowWidget();
    bool            unsetWindowWidget();
    static void     setActiveWindow (FWindow*);
-   void            setWindowFocusWidget (FWidget*);
+   void            setWindowFocusWidget (const FWidget*);
    bool            activateWindow (bool);
    bool            activateWindow();
    void            unsetActiveWindow();

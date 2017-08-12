@@ -490,8 +490,7 @@ int FVTerm::print (term_area* area, const FString& s)
           nc.no_changes    = false;
           nc.printed       = false;
 
-          if ( area
-              && area->cursor_x > 0
+          if ( area->cursor_x > 0
               && area->cursor_y > 0
               && ax < area->width + area->right_shadow
               && ay < area->height + area->bottom_shadow )
@@ -627,8 +626,7 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& termString)
 
         char_data nc = *iter;  // next character
 
-        if ( area
-            && area->cursor_x > 0
+        if ( area->cursor_x > 0
             && area->cursor_y > 0
             && ax < area->width + area->right_shadow
             && ay < area->height + area->bottom_shadow )

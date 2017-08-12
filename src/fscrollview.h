@@ -94,7 +94,7 @@ class FScrollView : public FWidget
    virtual void      clearArea (int = ' ');
    void              scrollToX (int);
    void              scrollToY (int);
-   void              scrollTo (FPoint);
+   void              scrollTo (const FPoint&);
    void              scrollTo (int, int);
    void              scrollBy (int, int);
    virtual void      draw();
@@ -219,7 +219,7 @@ inline bool FScrollView::isViewportPrint()
 { return ! use_own_print_area; }
 
 //----------------------------------------------------------------------
-inline void FScrollView::scrollTo (FPoint pos)
+inline void FScrollView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
 
 

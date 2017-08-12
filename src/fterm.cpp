@@ -1401,7 +1401,10 @@ void FTerm::setEncoding (std::string enc)
     case fc::PC:
       if ( xterm_terminal && utf8_console )
         Fputchar = &FTerm::putchar_UTF8;
-      // fall through
+      else
+        Fputchar = &FTerm::putchar_ASCII;
+      break;
+
     case fc::ASCII:
     default:
       Fputchar = &FTerm::putchar_ASCII;
@@ -2650,15 +2653,22 @@ char* FTerm::parseSecDA (char*& current_termtype)
   char* new_termtype = current_termtype;
   bool  sec_da_supported = false;
 
-
   // The Linux console knows no Sec_DA
   if ( linux_terminal )
     return new_termtype;
 
-  // secondary device attributes (SEC_DA) <- decTerminalID string
-  sec_da = new FString(getSecDA());
+  try
+  {
+    // secondary device attributes (SEC_DA) <- decTerminalID string
+    sec_da = new FString(getSecDA());
+  }
 
-  if ( sec_da && sec_da->getLength() > 5 )
+  catch (const std::bad_alloc&)
+  {
+    return new_termtype;
+  }
+
+  if ( sec_da->getLength() > 5 )
   {
     uLong num_components;
 
@@ -2776,7 +2786,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             force_vt100 = true;  // this rxvt terminal support on utf-8
 
             if ( std::strncmp(termtype, "rxvt-", 5) != 0
-                || std::strncmp(termtype, "rxvt-cygwin-native", 5) == 0 )
+                && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
               new_termtype = const_cast<char*>("rxvt-16color");
             break;
 

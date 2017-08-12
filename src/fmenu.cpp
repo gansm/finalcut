@@ -984,7 +984,9 @@ FMenu* FMenu::superMenuAt (int x, int y)
     else
     {
       FMenu* smenu = dynamic_cast<FMenu*>(getSuperMenu());
-      return smenu->superMenuAt(x,y);
+
+      if ( smenu )
+        return smenu->superMenuAt(x,y);
     }
   }
 

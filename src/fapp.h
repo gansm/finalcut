@@ -79,16 +79,16 @@ class FApplication : public FWidget
    void               exit_loop();
    static void        exit (int = 0);
    void               quit();
-   static bool        sendEvent (FObject*, FEvent*);
-   static void        queueEvent (FObject*, FEvent*);
+   static bool        sendEvent (const FObject*, const FEvent*);
+   static void        queueEvent (const FObject*, const FEvent*);
    static void        sendQueuedEvents ();
    static bool        eventInQueue();
-   static bool        removeQueuedEvent(FObject*);
+   static bool        removeQueuedEvent(const FObject*);
    static void        print_cmd_Options();
 
  private:
    // Typedefs and Enumerations
-   typedef std::pair<FObject*,FEvent*> eventPair;
+   typedef std::pair<const FObject*, const FEvent*> eventPair;
    typedef std::deque<eventPair> eventQueue;
 
    enum btn_state
@@ -133,7 +133,7 @@ class FApplication : public FWidget
    int                linuxModifierKeyCorrection (int& key);
 #endif
    bool               processDialogSwitchAccelerator();
-   bool               processAccelerator (FWidget*&);
+   bool               processAccelerator (const FWidget*&);
    void               getX11ButtonState (int);
    bool               parseX11Mouse();
    bool               parseSGRMouse();

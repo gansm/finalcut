@@ -142,7 +142,7 @@ class FMessageBox : public FDialog
    short         emphasis_color;
    uInt          num_buttons;
    uInt          text_num_lines;
-   int*          button_digit[3];
+   int           button_digit[3];
    FButton*      button[3];
 };
 #pragma pack(pop)

@@ -307,7 +307,7 @@ class FTerm
    static bool           isGpmMouseEnabled();
 #endif  // F_HAVE_LIBGPM
    static FPoint&        getMousePos();
-   static void           setMousePos (FPoint&);
+   static void           setMousePos (const FPoint&);
    static void           setMousePos (short, short);
 
    // Data Members
@@ -701,7 +701,7 @@ inline FPoint& FTerm::getMousePos()
 { return *mouse; }
 
 //----------------------------------------------------------------------
-inline void FTerm::setMousePos (FPoint& m)
+inline void FTerm::setMousePos (const FPoint& m)
 { *mouse = m; }
 
 //----------------------------------------------------------------------

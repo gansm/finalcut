@@ -984,9 +984,7 @@ void FDialog::draw()
 {
   if ( tooltip && ! getMoveSizeWidget() )
   {
-    if ( tooltip )
-      delete tooltip;
-
+    delete tooltip;
     tooltip = 0;
   }
 
@@ -1342,7 +1340,7 @@ void FDialog::openMenu()
     dialog_menu->setVisible();
     drawTitleBar();
     dialog_menu->show();
-    dialog_menu->raiseWindow(dialog_menu);
+    dialog_menu->raiseWindow();
     dialog_menu->redraw();
   }
 }

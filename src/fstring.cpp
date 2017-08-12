@@ -1281,7 +1281,7 @@ bool FString::operator == (const FString& s) const
   if ( ! s )
     return false;
 
-  if ( (string && ! s.string ) || (! string && s.string) )
+  if ( bool(string) != bool(s.string) )
     return false;
 
   if ( ! (string || s.string) )
@@ -1338,7 +1338,7 @@ bool FString::operator != (const FString& s) const
   if ( ! s )
     return true;
 
-  if ( (string && ! s.string ) || (! string && s.string) )
+  if ( bool(string) != bool(s.string) )
     return true;
 
   if ( ! (string || s.string) )
