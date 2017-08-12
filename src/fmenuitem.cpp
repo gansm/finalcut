@@ -795,6 +795,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         catch (const std::bad_alloc& ex)
         {
           std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+          return;
         }
 
         if ( n < 9 )
