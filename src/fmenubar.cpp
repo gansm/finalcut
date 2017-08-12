@@ -43,7 +43,16 @@ void FMenuBar::hide()
   if ( screenWidth < 0 )
     return;
 
-  blank = new char[screenWidth+1];
+  try
+  {
+    blank = new char[screenWidth+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   setPrintPos (1,1);
@@ -408,11 +417,19 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             const FPoint& t = ev->getTermPos();
             const FPoint& p = menu->termToWidgetPos(t);
             int b = ev->getButton();
-            _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-            menu->mouse_down = true;
-            setClickedWidget(menu);
-            menu->onMouseMove(_ev);
-            delete _ev;
+
+            try
+            {
+              _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+              menu->mouse_down = true;
+              setClickedWidget(menu);
+              menu->onMouseMove(_ev);
+              delete _ev;
+            }
+            catch (const std::bad_alloc& ex)
+            {
+              std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+            }
           }
         }
       }
@@ -799,7 +816,17 @@ void FMenuBar::drawItems()
 
     txt = (*iter)->getText();
     txt_length = uInt(txt.getLength());
-    item_text = new wchar_t[txt_length+1]();
+
+    try
+    {
+      item_text = new wchar_t[txt_length+1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return;
+    }
+
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
 

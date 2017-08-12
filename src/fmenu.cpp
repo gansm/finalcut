@@ -34,7 +34,16 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   , mouse_down(false)
   , has_checkable_items(false)
 {
-  item = new FMenuItem(txt, parent);
+  try
+  {
+    item = new FMenuItem(txt, parent);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   init(parent);
 }
 
@@ -582,11 +591,20 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& t = ev->getTermPos();
       const FPoint& p = open_sub_menu->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      open_sub_menu->mouse_down = true;
-      setClickedWidget(open_sub_menu);
-      open_sub_menu->onMouseMove(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+        open_sub_menu->mouse_down = true;
+        setClickedWidget(open_sub_menu);
+        open_sub_menu->onMouseMove(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
+
       return;
     }
     else if ( ! mouse_over_menu && mouse_over_supermenu )
@@ -595,11 +613,20 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& t = ev->getTermPos();
       const FPoint& p = smenu->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      smenu->mouse_down = true;
-      setClickedWidget(smenu);
-      smenu->onMouseMove(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+        smenu->mouse_down = true;
+        setClickedWidget(smenu);
+        smenu->onMouseMove(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
+
       return;
     }
     else if ( mouse_over_menubar )
@@ -609,12 +636,21 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       const FPoint& t = ev->getTermPos();
       const FPoint& p = menubar->termToWidgetPos(t);
       int b = ev->getButton();
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-      setClickedWidget(menubar);
-      FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
-      mbar->mouse_down = true;
-      mbar->onMouseMove(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+        setClickedWidget(menubar);
+        FMenuBar* mbar = reinterpret_cast<FMenuBar*>(menubar);
+        mbar->mouse_down = true;
+        mbar->onMouseMove(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
+
       return;
     }
     else if ( ! hasSelectedItem() && mouse_over_menu )
@@ -1307,7 +1343,17 @@ void FMenu::drawItems()
       print (' ');
       txt = (*iter)->getText();
       txt_length = uInt(txt.getLength());
-      item_text = new wchar_t[txt_length+1]();
+
+      try
+      {
+        item_text = new wchar_t[txt_length+1]();
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        return;
+      }
+
       src  = const_cast<wchar_t*>(txt.wc_str());
       dest = const_cast<wchar_t*>(item_text);
       to_char = int(txt_length);

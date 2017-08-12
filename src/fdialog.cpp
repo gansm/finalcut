@@ -767,11 +767,20 @@ void FDialog::onMouseMove (FMouseEvent* ev)
         const FPoint& g = ev->getTermPos();
         const FPoint& p = dialog_menu->termToWidgetPos(g);
         int b = ev->getButton();
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
-        dialog_menu->mouse_down = true;
-        setClickedWidget(dialog_menu);
-        dialog_menu->onMouseMove(_ev);
-        delete _ev;
+
+        try
+        {
+          FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+          dialog_menu->mouse_down = true;
+          setClickedWidget(dialog_menu);
+          dialog_menu->onMouseMove(_ev);
+          delete _ev;
+        }
+        catch (const std::bad_alloc& ex)
+        {
+          std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+          return;
+        }
       }
     }
 
@@ -1058,9 +1067,27 @@ void FDialog::init()
     old_focus->redraw();
   }
 
-  accelerator_list = new Accelerators();
+  try
+  {
+    accelerator_list = new Accelerators();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   // Add the dialog menu
-  dialog_menu = new FMenu ("-", this);
+  try
+  {
+    dialog_menu = new FMenu ("-", this);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   dialog_menu->setPos (getX(), getY()+1);
   dgl_menuitem = dialog_menu->getItem();
 
@@ -1070,7 +1097,16 @@ void FDialog::init()
     dgl_menuitem->unsetFocusable();
   }
 
-  move_size_item = new FMenuItem (dialog_menu);
+  try
+  {
+    move_size_item = new FMenuItem (dialog_menu);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   move_size_item->setText ("&Move/Size");
   move_size_item->setStatusbarMessage ("Move or change the size of the window");
 
@@ -1080,7 +1116,16 @@ void FDialog::init()
     F_METHOD_CALLBACK (this, &FDialog::cb_move)
   );
 
-  zoom_item = new FMenuItem (dialog_menu);
+  try
+  {
+    zoom_item = new FMenuItem (dialog_menu);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   setZoomItem();
   zoom_item->setDisable();
 
@@ -1090,7 +1135,16 @@ void FDialog::init()
     F_METHOD_CALLBACK (this, &FDialog::cb_zoom)
   );
 
-  close_item = new FMenuItem ("&Close", dialog_menu);
+  try
+  {
+    close_item = new FMenuItem ("&Close", dialog_menu);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   close_item->setStatusbarMessage ("Close this window");
 
   close_item->addCallback
@@ -1421,15 +1475,24 @@ void FDialog::cb_move (FWidget*, data_ptr)
   setMoveSizeWidget(this);
 
   if ( isMonochron() )
-      setReverse(true);
+    setReverse(true);
 
   drawBorder();
 
   if ( isMonochron() )
-      setReverse(false);
+    setReverse(false);
 
   save_geometry = getGeometry();
-  tooltip = new FToolTip(this);
+
+  try
+  {
+    tooltip = new FToolTip(this);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   if ( isResizeable() )
   {

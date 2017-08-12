@@ -158,7 +158,16 @@ void FLabel::hide()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(size));
   blank[getWidth()] = '\0';
   setPrintPos (1,1);
@@ -180,9 +189,18 @@ void FLabel::onMouseDown (FMouseEvent* ev)
       int b = ev->getButton();
       const FPoint& tp = ev->getTermPos();
       const FPoint& p = parent->termToWidgetPos(tp);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        return;
+      }
     }
 
     return;
@@ -468,7 +486,17 @@ void FLabel::draw()
     while ( y < text_lines && y < uInt(getHeight()) )
     {
       length = multiline_text[y].getLength();
-      LabelText = new wchar_t[length+1]();
+
+      try
+      {
+        LabelText = new wchar_t[length+1]();
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        return;
+      }
+
       src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
       dest = const_cast<wchar_t*>(LabelText);
 
@@ -499,7 +527,17 @@ void FLabel::draw()
   else
   {
     length = text.getLength();
-    LabelText = new wchar_t[length+1]();
+
+    try
+    {
+      LabelText = new wchar_t[length+1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return;
+    }
+
     src  = const_cast<wchar_t*>(text.wc_str());
     dest = const_cast<wchar_t*>(LabelText);
     hotkeypos = getHotkeyPos (src, dest, length);

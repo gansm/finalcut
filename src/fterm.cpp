@@ -900,13 +900,24 @@ const FString* FTerm::getXTermFont()
     {
       if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
       {
+        FString* xtermfont;
         std::size_t n = std::strlen(temp);
 
         // BEL + '\0' = string terminator
         if ( n >= 5 && temp[n-1] == BEL[0] && temp[n] == '\0' )
           temp[n-1] = '\0';
 
-        return new FString(temp);
+        try
+        {
+          xtermfont = new FString(temp);
+        }
+        catch (const std::bad_alloc& ex)
+        {
+          std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+          return 0;
+        }
+
+        return xtermfont;
       }
     }
   }
@@ -942,11 +953,24 @@ const FString* FTerm::getXTermTitle()
       // Esc + \ = OSC string terminator
       if ( n >= 2 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
       {
+        FString* xtermtitle;
+
         if ( n < 4 )
           return 0;
 
         temp[n-2] = '\0';
-        return new FString(temp);
+
+        try
+        {
+          xtermtitle = new FString(temp);
+        }
+        catch (const std::bad_alloc& ex)
+        {
+          std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+          return 0;
+        }
+
+        return xtermtitle;
       }
     }
   }
@@ -2180,7 +2204,15 @@ int FTerm::getScreenFont()
   font.height = 32;
   font.charcount = 512;
   // initialize with 0
-  font.data = new uChar[data_size]();
+  try
+  {
+    font.data = new uChar[data_size]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return -1;
+  }
 
   // font operation
   ret = ioctl (fd_tty, KDFONTOP, &font);
@@ -2619,9 +2651,17 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
   char* new_termtype = current_termtype;
 
   // send ENQ and read the answerback message
-  answer_back = new FString(getAnswerbackMsg());
+  try
+  {
+    answer_back = new FString(getAnswerbackMsg());
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return 0;
+  }
 
-  if ( answer_back && *answer_back == FString("PuTTY") )
+  if ( *answer_back == FString("PuTTY") )
   {
     putty_terminal = true;
 
@@ -2662,10 +2702,10 @@ char* FTerm::parseSecDA (char*& current_termtype)
     // secondary device attributes (SEC_DA) <- decTerminalID string
     sec_da = new FString(getSecDA());
   }
-
-  catch (const std::bad_alloc&)
+  catch (const std::bad_alloc& ex)
   {
-    return new_termtype;
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return new_termtype;
   }
 
   if ( sec_da->getLength() > 5 )
@@ -3579,14 +3619,22 @@ void FTerm::init()
   char* new_termtype = 0;
   term_initialized = true;
   init_term_object = this;
-  fd_tty       = -1;
-  opti_move    = new FOptiMove();
-  opti_attr    = new FOptiAttr();
-  term         = new FRect(0,0,0,0);
-  mouse        = new FPoint(0,0);
+  fd_tty = -1;
 
-  vt100_alt_char = new std::map<uChar,uChar>;
-  encoding_set   = new std::map<std::string,fc::encoding>;
+  try
+  {
+    opti_move      = new FOptiMove();
+    opti_attr      = new FOptiAttr();
+    term           = new FRect(0,0,0,0);
+    mouse          = new FPoint(0,0);
+    vt100_alt_char = new std::map<uChar,uChar>;
+    encoding_set   = new std::map<std::string,fc::encoding>;
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::abort();
+  }
 
   // Define the encoding set
   (*encoding_set)["UTF8"]  = fc::UTF8;

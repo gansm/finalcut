@@ -206,7 +206,16 @@ void FButtonGroup::hide()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -491,7 +500,17 @@ void FButtonGroup::drawLabel()
   txt = " " + text + " ";
   length = txt.getLength();
   hotkeypos = -1;
-  LabelText = new wchar_t[length+1]();
+
+  try
+  {
+    LabelText = new wchar_t[length+1]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   src = const_cast<wchar_t*>(txt.wc_str());
   dest = const_cast<wchar_t*>(LabelText);
 

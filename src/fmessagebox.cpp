@@ -170,9 +170,20 @@ int FMessageBox::info ( FWidget* parent
                       , int button2 )
 {
   int reply;
-  FMessageBox* mbox = new FMessageBox ( caption, message
-                                      , button0, button1, button2
-                                      , parent );
+  FMessageBox* mbox;
+
+  try
+  {
+    mbox = new FMessageBox ( caption, message
+                           , button0, button1, button2
+                           , parent );
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return FDialog::Reject;
+  }
+
   reply = mbox->exec();
   delete mbox;
   return reply;
@@ -187,10 +198,21 @@ int FMessageBox::info ( FWidget* parent
                       , int button2 )
 {
   int reply;
-  FMessageBox* mbox = new FMessageBox ( caption
-                                      , FString().setNumber(num)
-                                      , button0, button1, button2
-                                      , parent );
+  FMessageBox* mbox;
+
+  try
+  {
+    mbox = new FMessageBox ( caption
+                           , FString().setNumber(num)
+                           , button0, button1, button2
+                           , parent );
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return FDialog::Reject;
+  }
+
   reply = mbox->exec();
   delete mbox;
   return reply;
@@ -205,9 +227,20 @@ int FMessageBox::error ( FWidget* parent
 {
   int reply;
   const FString& caption = "Error message";
-  FMessageBox* mbox = new FMessageBox ( caption, message
-                                      , button0, button1, button2
-                                      , parent );
+  FMessageBox* mbox;
+
+  try
+  {
+    mbox = new FMessageBox ( caption, message
+                           , button0, button1, button2
+                           , parent );
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return FDialog::Reject;
+  }
+
   mbox->beep();
   mbox->setHeadline("Warning:");
   mbox->setCenterText();
@@ -278,29 +311,37 @@ void FMessageBox::init (int button0, int button1, int button2)
   button_digit[1] = button1;
   button_digit[2] = button2;
 
-  button[0] = new FButton (this);
-  button[0]->setText(button_text[button0]);
-  button[0]->setPos(3, getHeight()-4, false);
-  button[0]->setWidth(1, false);
-  button[0]->setHeight(1, false);
-  button[0]->setFocus();
-
-  if ( button1 > 0 )
+  try
   {
-    button[1] = new FButton(this);
-    button[1]->setText(button_text[button1]);
-    button[1]->setPos(17, getHeight()-4, false);
-    button[1]->setWidth(0, false);
-    button[1]->setHeight(1, false);
+    button[0] = new FButton (this);
+    button[0]->setText(button_text[button0]);
+    button[0]->setPos(3, getHeight()-4, false);
+    button[0]->setWidth(1, false);
+    button[0]->setHeight(1, false);
+    button[0]->setFocus();
+
+    if ( button1 > 0 )
+    {
+      button[1] = new FButton(this);
+      button[1]->setText(button_text[button1]);
+      button[1]->setPos(17, getHeight()-4, false);
+      button[1]->setWidth(0, false);
+      button[1]->setHeight(1, false);
+    }
+
+    if ( button2 > 0 )
+    {
+      button[2] = new FButton(this);
+      button[2]->setText(button_text[button2]);
+      button[2]->setPos(32, getHeight()-4, false);
+      button[2]->setWidth(0, false);
+      button[2]->setHeight(1, false);
+    }
   }
-
-  if ( button2 > 0 )
+  catch (const std::bad_alloc& ex)
   {
-    button[2] = new FButton(this);
-    button[2]->setText(button_text[button2]);
-    button[2]->setPos(32, getHeight()-4, false);
-    button[2]->setWidth(0, false);
-    button[2]->setHeight(1, false);
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
   }
 
   resizeButtons();

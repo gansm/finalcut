@@ -150,7 +150,16 @@ void FTextView::hide()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -276,7 +285,16 @@ void FTextView::clear()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -419,9 +437,17 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     const FPoint& tp = ev->getTermPos();
     const FPoint& p = parent->termToWidgetPos(tp);
     parent->setFocus();
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-    FApplication::sendEvent (parent, _ev);
-    delete _ev;
+
+    try
+    {
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev);
+      delete _ev;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    }
   }
 }
 
@@ -441,9 +467,17 @@ void FTextView::onMouseUp (FMouseEvent* ev)
     const FPoint& tp = ev->getTermPos();
     const FPoint& p = parent->termToWidgetPos(tp);
     parent->setFocus();
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
-    FApplication::sendEvent (parent, _ev);
-    delete _ev;
+
+    try
+    {
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev);
+      delete _ev;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    }
   }
 
   if ( vbar->isVisible() )
@@ -469,9 +503,17 @@ void FTextView::onMouseMove (FMouseEvent* ev)
     const FPoint& tp = ev->getTermPos();
     const FPoint& p = parent->termToWidgetPos(tp);
     parent->setFocus();
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
-    FApplication::sendEvent (parent, _ev);
-    delete _ev;
+
+    try
+    {
+      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
+      FApplication::sendEvent (parent, _ev);
+      delete _ev;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    }
   }
 }
 
@@ -604,15 +646,23 @@ void FTextView::init()
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
-  vbar = new FScrollbar(fc::vertical, this);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  try
+  {
+    vbar = new FScrollbar(fc::vertical, this);
+    vbar->setMinimum(0);
+    vbar->setValue(0);
+    vbar->hide();
 
-  hbar = new FScrollbar(fc::horizontal, this);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
+    hbar = new FScrollbar(fc::horizontal, this);
+    hbar->setMinimum(0);
+    hbar->setValue(0);
+    hbar->hide();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   vbar->addCallback
   (

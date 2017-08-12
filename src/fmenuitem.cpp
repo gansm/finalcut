@@ -333,9 +333,17 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( smenu )
     {
       const FPoint& p2 = smenu->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-      smenu->onMouseDoubleClick(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+        smenu->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -346,9 +354,17 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( mbar )
     {
       const FPoint& p2 = mbar->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-      mbar->onMouseDoubleClick(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+        mbar->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -359,9 +375,17 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
     if ( dgl )
     {
       const FPoint& p2 = dgl->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
-      dgl->onMouseDoubleClick(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDoubleClick_Event, p2, t, b);
+        dgl->onMouseDoubleClick(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 }
@@ -382,9 +406,17 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( smenu )
     {
       const FPoint& p2 = smenu->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-      smenu->onMouseDown(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+        smenu->onMouseDown(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -395,9 +427,17 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( mbar )
     {
       const FPoint& p2 = mbar->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-      mbar->onMouseDown(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+        mbar->onMouseDown(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -408,9 +448,17 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
     if ( dgl )
     {
       const FPoint& p2 = dgl->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
-      dgl->onMouseDown(_ev);
-      delete _ev;
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p2, t, b);
+        dgl->onMouseDown(_ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 }
@@ -734,11 +782,20 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
       if ( win )
       {
+        FMenuItem* win_item;
         int n = int(std::distance(begin, iter));
         // get the dialog title
         const FString& name = win->getText();
-        // create a new dialog list item
-        FMenuItem* win_item = new FMenuItem (name, winmenu);
+
+        try
+        {
+          // create a new dialog list item
+          win_item = new FMenuItem (name, winmenu);
+        }
+        catch (const std::bad_alloc& ex)
+        {
+          std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        }
 
         if ( n < 9 )
           win_item->addAccelerator (fc::Fmkey_1 + n); // Meta + 1..9

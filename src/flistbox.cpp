@@ -243,7 +243,16 @@ void FListBox::hide()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -369,7 +378,16 @@ void FListBox::clear()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -1225,15 +1243,23 @@ void FListBox::init()
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
-  vbar = new FScrollbar(fc::vertical, this);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  try
+  {
+    vbar = new FScrollbar(fc::vertical, this);
+    vbar->setMinimum(0);
+    vbar->setValue(0);
+    vbar->hide();
 
-  hbar = new FScrollbar(fc::horizontal, this);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
+    hbar = new FScrollbar(fc::horizontal, this);
+    hbar->setMinimum(0);
+    hbar->setValue(0);
+    hbar->hide();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   setGeometry (1, 1, 5, 4, false);  // initialize geometry values
 

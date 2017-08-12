@@ -253,7 +253,15 @@ void FButton::hide()
   if ( size < 0 )
     return;
 
-  blank = new char[size+1];
+  try
+  {
+    blank = new char[size+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -502,10 +510,18 @@ void FButton::draw()
   hotkey_offset = 0;
   space = int(' ');
 
-  if ( isMonochron() || getMaxColor() < 16 )
-    ButtonText = new wchar_t[length+3]();
-  else
-    ButtonText = new wchar_t[length+1]();
+  try
+  {
+    if ( isMonochron() || getMaxColor() < 16 )
+      ButtonText = new wchar_t[length+3]();
+    else
+      ButtonText = new wchar_t[length+1]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   txt  = FString(text);
   src  = const_cast<wchar_t*>(txt.wc_str());

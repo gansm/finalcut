@@ -184,7 +184,16 @@ void FStatusBar::hide()
   if ( screenWidth < 0 )
     return;
 
-  blank = new char[screenWidth+1];
+  try
+  {
+    blank = new char[screenWidth+1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   std::memset(blank, ' ', uLong(screenWidth));
   blank[screenWidth] = '\0';
   setPrintPos (1, 1);

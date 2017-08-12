@@ -375,10 +375,18 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  fileopen = new FFileDialog ( path
-                             , file_filter
-                             , FFileDialog::Open
-                             , parent );
+  try
+  {
+    fileopen = new FFileDialog ( path
+                               , file_filter
+                               , FFileDialog::Open
+                               , parent );
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return FString();
+  }
 
   if ( fileopen->exec() == FDialog::Accept )
     ret = fileopen->getPath() + fileopen->getSelectedFile();
@@ -410,10 +418,18 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  fileopen = new FFileDialog ( path
-                             , file_filter
-                             , FFileDialog::Save
-                             , parent );
+  try
+  {
+    fileopen = new FFileDialog ( path
+                               , file_filter
+                               , FFileDialog::Save
+                               , parent );
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return FString();
+  }
 
   if ( fileopen->exec() == FDialog::Accept )
     ret = fileopen->getPath() + fileopen->getSelectedFile();
@@ -490,29 +506,37 @@ void FFileDialog::init()
   else
     FDialog::setText("Open file");
 
-  filename = new FLineEdit(this);
-  filename->setLabelText("File&name");
-  filename->setText(filter_pattern);
-  filename->setGeometry(11, 1, 28, 1);
-  filename->setFocus();
+  try
+  {
+    filename = new FLineEdit(this);
+    filename->setLabelText("File&name");
+    filename->setText(filter_pattern);
+    filename->setGeometry(11, 1, 28, 1);
+    filename->setFocus();
 
-  filebrowser = new FListBox(this);
-  filebrowser->setGeometry(2, 3, 38, 6);
-  printPath(directory);
+    filebrowser = new FListBox(this);
+    filebrowser->setGeometry(2, 3, 38, 6);
+    printPath(directory);
 
-  hidden = new FCheckBox("&hidden files", this);
-  hidden->setGeometry(2, 10, 16, 1);
+    hidden = new FCheckBox("&hidden files", this);
+    hidden->setGeometry(2, 10, 16, 1);
 
-  cancel = new FButton("&Cancel", this);
-  cancel->setGeometry(19, 10, 9, 1);
+    cancel = new FButton("&Cancel", this);
+    cancel->setGeometry(19, 10, 9, 1);
 
-  if ( dlg_type == FFileDialog::Save )
-    open = new FButton("&Save",this);
-  else
-    open = new FButton("&Open",this);
+    if ( dlg_type == FFileDialog::Save )
+      open = new FButton("&Save",this);
+    else
+      open = new FButton("&Open",this);
 
-  open->setGeometry(30, 10, 9, 1);
-  setGeometry (x, y, getWidth(), getHeight());
+    open->setGeometry(30, 10, 9, 1);
+    setGeometry (x, y, getWidth(), getHeight());
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   filename->addCallback
   (

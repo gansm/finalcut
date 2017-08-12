@@ -762,15 +762,23 @@ void FScrollView::init (FWidget* parent)
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
-  vbar = new FScrollbar(fc::vertical, this);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  try
+  {
+    vbar = new FScrollbar(fc::vertical, this);
+    vbar->setMinimum(0);
+    vbar->setValue(0);
+    vbar->hide();
 
-  hbar = new FScrollbar(fc::horizontal, this);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
+    hbar = new FScrollbar(fc::horizontal, this);
+    hbar->setMinimum(0);
+    hbar->setValue(0);
+    hbar->hide();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   vbar->addCallback
   (

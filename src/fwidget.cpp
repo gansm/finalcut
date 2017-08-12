@@ -2276,10 +2276,19 @@ void FWidget::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void FWidget::init()
 {
-  window_list        = new widgetList();
-  dialog_list        = new widgetList();
-  always_on_top_list = new widgetList();
-  close_widget       = new widgetList();
+  try
+  {
+    // Initialize widget lists
+    window_list        = new widgetList();
+    dialog_list        = new widgetList();
+    always_on_top_list = new widgetList();
+    close_widget       = new widgetList();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   char* cursor_off_str = disableCursor();
 
@@ -2290,7 +2299,7 @@ void FWidget::init()
 
   visible_cursor = ! hideable;
 
-  // determine width and height of the terminal
+  // Determine width and height of the terminal
   detectTermSize();
   wsize.setRect(1, 1, getColumnNumber(), getLineNumber());
   adjust_wsize = wsize;
@@ -2309,7 +2318,14 @@ void FWidget::init()
   background_color = wc.term_bg;
   init_desktop = false;
 
-  accelerator_list = new Accelerators();
+  try
+  {
+    accelerator_list = new Accelerators();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+  }
 }
 
 //----------------------------------------------------------------------

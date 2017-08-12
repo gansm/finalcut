@@ -282,10 +282,18 @@ void FListView::insert ( const std::vector<FString>& cols
                        , data_ptr d
                        , FListView* parent )
 {
-  if ( parent == 0 )
-    new FListViewItem (cols, d, this);
-  else
-    new FListViewItem (cols, d, parent);
+  try
+  {
+    if ( parent == 0 )
+      new FListViewItem (cols, d, this);
+    else
+      new FListViewItem (cols, d, parent);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -874,15 +882,23 @@ void FListView::init()
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
-  vbar = new FScrollbar(fc::vertical, this);
-  vbar->setMinimum(0);
-  vbar->setValue(0);
-  vbar->hide();
+  try
+  {
+    vbar = new FScrollbar(fc::vertical, this);
+    vbar->setMinimum(0);
+    vbar->setValue(0);
+    vbar->hide();
 
-  hbar = new FScrollbar(fc::horizontal, this);
-  hbar->setMinimum(0);
-  hbar->setValue(0);
-  hbar->hide();
+    hbar = new FScrollbar(fc::horizontal, this);
+    hbar->setMinimum(0);
+    hbar->setValue(0);
+    hbar->hide();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
 
   setGeometry (1, 1, 5, 4, false);  // initialize geometry values
 

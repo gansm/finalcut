@@ -317,7 +317,15 @@ int FVTerm::printf (const char* format, ...)
 
   if ( len >= int(sizeof(buf)) )
   {
-    buffer = new char[len+1]();
+    try
+    {
+      buffer = new char[len+1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return -1;
+    }
     va_start (args, format);
     vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
@@ -903,7 +911,16 @@ void FVTerm::createArea ( int offset_left, int offset_top
 {
   // initialize virtual window
 
-  area = new term_area;
+  try
+  {
+    area = new term_area;
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
   area->widget = static_cast<FWidget*>(this);
   resizeArea (offset_left, offset_top, width, height, rsw, bsh, area);
 }
@@ -966,15 +983,31 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
     if ( area->text != 0 )
       delete[] area->text;
 
-    area->changes = new line_changes[height + bsh];
-    area->text    = new char_data[area_size];
+    try
+    {
+      area->changes = new line_changes[height + bsh];
+      area->text    = new char_data[area_size];
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return;
+    }
   }
   else if ( area->width + area->right_shadow != width + rsw )
   {
     if ( area->text != 0 )
       delete[] area->text;
 
-    area->text = new char_data[area_size];
+    try
+    {
+      area->text = new char_data[area_size];
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return;
+    }
   }
   else
     return;
@@ -2221,8 +2254,17 @@ void FVTerm::init()
   init_object   = this;
   vterm         =  0;
   vdesktop      =  0;
-  term_pos      = new FPoint(-1,-1);
-  output_buffer = new std::queue<int>;
+
+  try
+  {
+    term_pos      = new FPoint(-1,-1);
+    output_buffer = new std::queue<int>;
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::abort();
+  }
 
   // Preset to false
   hidden_cursor           = \

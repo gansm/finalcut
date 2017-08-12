@@ -528,7 +528,16 @@ FString& FString::sprintf (const char* format, ...)
 
   if ( len >= int(sizeof(buf)) )
   {
-    buffer = new char[len+1]();
+    try
+    {
+      buffer = new char[len+1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
+      return (*this);
+    }
+
     va_start (args, format);
     vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);
@@ -2216,8 +2225,16 @@ inline void FString::initLength (uInt len)
 
   length  = len;
   bufsize = FWDBUFFER + len + 1;
-  string  = new wchar_t[bufsize]();
-  std::wmemset (string, L'\0', bufsize);
+
+  try
+  {
+    string = new wchar_t[bufsize]();
+    std::wmemset (string, L'\0', bufsize);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
+  }
 }
 
 //----------------------------------------------------------------------

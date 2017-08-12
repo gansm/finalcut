@@ -52,7 +52,16 @@ int FTermBuffer::writef (const char* format, ...)
 
   if ( len >= int(sizeof(buf)) )
   {
-    buffer = new char[len+1]();
+    try
+    {
+      buffer = new char[len+1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return -1;
+    }
+
     va_start (args, format);
     vsnprintf (buffer, uLong(len+1), format, args);
     va_end (args);

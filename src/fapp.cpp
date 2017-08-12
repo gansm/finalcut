@@ -312,8 +312,17 @@ void FApplication::init()
   gpm_ev.x = -1;
 #endif
 
-  zero_point = new FPoint(0,0);
-  event_queue = new eventQueue;
+  try
+  {
+    zero_point = new FPoint(0,0);
+    event_queue = new eventQueue;
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::abort();
+  }
+
   // init arrays with '\0'
   std::fill_n (k_buf, sizeof(k_buf), '\0');
   std::fill_n (fifo_buf, fifo_buf_size, '\0');

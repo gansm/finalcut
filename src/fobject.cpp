@@ -27,14 +27,34 @@ FObject::FObject (FObject* parent)
 
   if ( parent == 0 )
   {
-    
+
     timer_modify_lock = false;
 
     if ( ! timer_list )
-      timer_list   = new TimerList();
+    {
+      try
+      {
+        timer_list = new TimerList();
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        return;
+      }
+    }
 
     if ( ! fc::empty_string )
-      fc::empty_string = new FString("");
+    {
+      try
+      {
+        fc::empty_string = new FString("");
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        return;
+      }
+    }
   }
   else
     has_parent = true;
@@ -176,7 +196,17 @@ int FObject::addTimer (int interval)
   timer_modify_lock = true;
 
   if ( ! timer_list )
-    timer_list = new TimerList();
+  {
+    try
+    {
+      timer_list = new TimerList();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return -1;
+    }
+  }
 
   // find an unused timer id
   if ( ! timer_list->empty() )
