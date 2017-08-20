@@ -18,6 +18,9 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
   , column_line(item.column_line)
   , data_pointer(item.data_pointer)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
 {
   FObject* parent = getParent();
 
@@ -26,16 +29,20 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem (FListViewItem* item)
-  : FObject(item->getParent())
-  , column_line(item->column_line)
-  , data_pointer(item->data_pointer)
+FListViewItem::FListViewItem (FListViewItem* parent)
+  : FObject(parent)
+  , column_line()
+  , data_pointer(0)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
 {
   // Add the FListViewItem to the parent
-  FObject* parent = getParent();
+  if ( ! parent )
+    return;
 
-  if ( parent && parent->isInstanceOf("FListView") )
-    static_cast<FListView*>(parent)->insert (this);
+  parent->addChild (this);
+  parent->expandable = true;
 }
 
 //----------------------------------------------------------------------
@@ -43,6 +50,9 @@ FListViewItem::FListViewItem (FListView* parent)
   : FObject(parent)
   , column_line()
   , data_pointer(0)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
 {
   // Add the FListViewItem to the parent
   if ( parent )
@@ -56,6 +66,9 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
   : FObject(parent)
   , column_line(cols)
   , data_pointer(data)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
 {
   // Replace the control codes characters
   std::vector<FString>::iterator iter = column_line.begin();
@@ -72,14 +85,41 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
 }
 
 //----------------------------------------------------------------------
+FListViewItem::FListViewItem ( const std::vector<FString>& cols
+                             , FWidget::data_ptr data
+                             , FListViewItem* parent )
+  : FObject(parent)
+  , column_line(cols)
+  , data_pointer(data)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
+{
+  // Replace the control codes characters
+  std::vector<FString>::iterator iter = column_line.begin();
+
+  while ( iter != column_line.end() )
+  {
+    *iter = iter->replaceControlCodes();
+    ++iter;
+  }
+
+  if ( parent )
+    parent->expandable = true;
+}
+
+//----------------------------------------------------------------------
 FListViewItem::~FListViewItem()
 { }
+
 
 // public methods of FListViewItem
 //----------------------------------------------------------------------
 FString FListViewItem::getText (int column) const
 {
-  if (column < 0 || column_line.empty() || column >= int(column_line.size()) )
+  if ( column < 0
+     || column_line.empty()
+     || column >= int(column_line.size()) )
     return *fc::empty_string;
 
   return column_line[uInt(column)];
@@ -88,7 +128,9 @@ FString FListViewItem::getText (int column) const
 //----------------------------------------------------------------------
 void FListViewItem::setText (int column, const FString& text)
 {
-  if (column < 0 || column_line.empty() || column >= int(column_line.size()) )
+  if ( column < 0
+     || column_line.empty()
+     || column >= int(column_line.size()) )
     return;
 
   FObject* parent = getParent();
@@ -110,6 +152,61 @@ void FListViewItem::setText (int column, const FString& text)
 }
 
 //----------------------------------------------------------------------
+void FListViewItem::insert (FListViewItem* child)
+{
+   // Add a FListViewItem as child element
+   if ( ! child || ! hasChildren() )
+     return;
+
+  addChild (child);
+  expandable = true;
+}
+
+//----------------------------------------------------------------------
+void FListViewItem::expand()
+{
+  if ( is_expand || ! hasChildren() )
+    return;
+
+  is_expand = true;
+}
+
+//----------------------------------------------------------------------
+void FListViewItem::collapse()
+{
+  if ( ! is_expand )
+    return;
+
+  is_expand = false;
+}
+
+//----------------------------------------------------------------------
+int FListViewItem::getVisibleLines()
+{
+  if ( visible_lines > 1 )
+    return visible_lines;
+
+  if ( ! isExpand() || ! hasChildren() )
+  {
+     visible_lines = 1;
+     return visible_lines;
+  }
+
+  FObjectList children = this->getChildren();
+  FObjectList::const_iterator iter = children.begin();
+
+  while ( iter != children.end() )
+  {
+    FListViewItem* child = static_cast<FListViewItem*>(*iter);
+    visible_lines += child->getVisibleLines();
+    ++iter;
+  }
+
+  return visible_lines;
+}
+
+
+//----------------------------------------------------------------------
 // class FListView
 //----------------------------------------------------------------------
 
@@ -123,9 +220,10 @@ FListView::FListView (FWidget* parent)
   , vbar(0)
   , hbar(0)
   , drag_scroll(fc::noScroll)
-  , scroll_timer(false)
   , scroll_repeat(100)
   , scroll_distance(1)
+  , scroll_timer(false)
+  , tree_view(false)
   , current(0)
   , xoffset(0)
   , yoffset(0)

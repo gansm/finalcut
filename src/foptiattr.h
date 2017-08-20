@@ -39,25 +39,40 @@ class FOptiAttr
      int   code;      // character code
      short fg_color;  // foreground color
      short bg_color;  // background color
-     uChar bold          : 1;  // bold
-     uChar dim           : 1;  // dim
-     uChar italic        : 1;  // italic
-     uChar underline     : 1;  // underline
-     uChar blink         : 1;  // blink
-     uChar reverse       : 1;  // reverse
-     uChar standout      : 1;  // standout
-     uChar invisible     : 1;  // invisible
-     uChar protect       : 1;  // protect mode
-     uChar crossed_out   : 1;  // crossed out
-     uChar dbl_underline : 1;  // double underline
-     uChar alt_charset   : 1;  // alternate character set (vt100)
-     uChar pc_charset    : 1;  // pc character set (CP437)
-     uChar transparent   : 1;  // transparent
-     uChar trans_shadow  : 1;  // transparent shadow
-     uChar inherit_bg    : 1;  // inherit background
-     uChar no_changes    : 1;  // no changes required
-     uChar printed       : 1;  // is printed to VTerm
-     uChar               : 6;  // padding bits
+
+     union attribute
+     {
+       struct
+       {
+         // Attribute byte #1
+         uChar bold          : 1;  // bold
+         uChar dim           : 1;  // dim
+         uChar italic        : 1;  // italic
+         uChar underline     : 1;  // underline
+         uChar blink         : 1;  // blink
+         uChar reverse       : 1;  // reverse
+         uChar standout      : 1;  // standout
+         uChar invisible     : 1;  // invisible
+         // Attribute byte #2
+         uChar protect       : 1;  // protect mode
+         uChar crossed_out   : 1;  // crossed out
+         uChar dbl_underline : 1;  // double underline
+         uChar alt_charset   : 1;  // alternate character set (vt100)
+         uChar pc_charset    : 1;  // pc character set (CP437)
+         uChar transparent   : 1;  // transparent
+         uChar trans_shadow  : 1;  // transparent shadow
+         uChar inherit_bg    : 1;  // inherit background
+         // Attribute byte #3
+         uChar no_changes    : 1;  // no changes required
+         uChar printed       : 1;  // is printed to VTerm
+         uChar               : 6;  // padding bits
+       } bit;
+
+       uChar byte1;
+       uChar byte2;
+       uChar byte3;
+     } attr;
+
    } char_data;
 
    // Constructor
@@ -264,25 +279,11 @@ class FOptiAttr
 inline bool operator == ( const FOptiAttr::char_data& lhs,
                           const FOptiAttr::char_data& rhs )
 {
-  return lhs.code          == rhs.code
-      && lhs.fg_color      == rhs.fg_color
-      && lhs.bg_color      == rhs.bg_color
-      && lhs.bold          == rhs.bold
-      && lhs.dim           == rhs.dim
-      && lhs.italic        == rhs.italic
-      && lhs.underline     == rhs.underline
-      && lhs.blink         == rhs.blink
-      && lhs.reverse       == rhs.reverse
-      && lhs.standout      == rhs.standout
-      && lhs.invisible     == rhs.invisible
-      && lhs.protect       == rhs.protect
-      && lhs.crossed_out   == rhs.crossed_out
-      && lhs.dbl_underline == rhs.dbl_underline
-      && lhs.alt_charset   == rhs.alt_charset
-      && lhs.pc_charset    == rhs.pc_charset
-      && lhs.transparent   == rhs.transparent
-      && lhs.trans_shadow  == rhs.trans_shadow
-      && lhs.inherit_bg    == rhs.inherit_bg;
+  return lhs.code       == rhs.code
+      && lhs.fg_color   == rhs.fg_color
+      && lhs.bg_color   == rhs.bg_color
+      && lhs.attr.byte1 == rhs.attr.byte1
+      && lhs.attr.byte2 == rhs.attr.byte2;
 }
 
 //----------------------------------------------------------------------

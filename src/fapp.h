@@ -71,7 +71,7 @@ class FApplication : public FWidget
    void               setMainWidget (FWidget*);
 
    // Inquiry
-   bool               isQuit();
+   static bool        isQuit();
 
    // Methods
    int                exec(); // run

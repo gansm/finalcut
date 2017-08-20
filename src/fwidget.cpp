@@ -1099,25 +1099,25 @@ void FWidget::redraw()
   {
     // draw windows
     FOptiAttr::char_data default_char;
-    default_char.code          = ' ';
-    default_char.fg_color      = fc::Black;
-    default_char.bg_color      = fc::Black;
-    default_char.bold          = 0;
-    default_char.dim           = 0;
-    default_char.italic        = 0;
-    default_char.underline     = 0;
-    default_char.blink         = 0;
-    default_char.reverse       = 0;
-    default_char.standout      = 0;
-    default_char.invisible     = 0;
-    default_char.protect       = 0;
-    default_char.crossed_out   = 0;
-    default_char.dbl_underline = 0;
-    default_char.alt_charset   = 0;
-    default_char.pc_charset    = 0;
-    default_char.transparent   = 0;
-    default_char.trans_shadow  = 0;
-    default_char.inherit_bg    = 0;
+    default_char.code                   = ' ';
+    default_char.fg_color               = fc::Black;
+    default_char.bg_color               = fc::Black;
+    default_char.attr.bit.bold          = 0;
+    default_char.attr.bit.dim           = 0;
+    default_char.attr.bit.italic        = 0;
+    default_char.attr.bit.underline     = 0;
+    default_char.attr.bit.blink         = 0;
+    default_char.attr.bit.reverse       = 0;
+    default_char.attr.bit.standout      = 0;
+    default_char.attr.bit.invisible     = 0;
+    default_char.attr.bit.protect       = 0;
+    default_char.attr.bit.crossed_out   = 0;
+    default_char.attr.bit.dbl_underline = 0;
+    default_char.attr.bit.alt_charset   = 0;
+    default_char.attr.bit.pc_charset    = 0;
+    default_char.attr.bit.transparent   = 0;
+    default_char.attr.bit.trans_shadow  = 0;
+    default_char.attr.bit.inherit_bg    = 0;
 
     if ( window_list && ! window_list->empty() )
     {

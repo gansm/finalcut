@@ -1,3 +1,7 @@
+2017-08-20  Markus Gans  <guru.mail@muenster.de>
+	* Screen characters got a union structure for a faster 
+	  attribute compare operation
+
 2017-08-11  Markus Gans  <guru.mail@muenster.de>
 	* Some code changes for GCC 7
 	* Implementation of a copy constructor for FPoint and FRect

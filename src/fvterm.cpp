@@ -476,27 +476,27 @@ int FVTerm::print (term_area* area, const FString& s)
           int ay = area->cursor_y - 1;
 
           char_data  nc; // next character
-          nc.code          = *p;
-          nc.fg_color      = next_attribute.fg_color;
-          nc.bg_color      = next_attribute.bg_color;
-          nc.bold          = next_attribute.bold;
-          nc.dim           = next_attribute.dim;
-          nc.italic        = next_attribute.italic;
-          nc.underline     = next_attribute.underline;
-          nc.blink         = next_attribute.blink;
-          nc.reverse       = next_attribute.reverse;
-          nc.standout      = next_attribute.standout;
-          nc.invisible     = next_attribute.invisible;
-          nc.protect       = next_attribute.protect;
-          nc.crossed_out   = next_attribute.crossed_out;
-          nc.dbl_underline = next_attribute.dbl_underline;
-          nc.alt_charset   = next_attribute.alt_charset;
-          nc.pc_charset    = next_attribute.pc_charset;
-          nc.transparent   = next_attribute.transparent;
-          nc.trans_shadow  = next_attribute.trans_shadow;
-          nc.inherit_bg    = next_attribute.inherit_bg;
-          nc.no_changes    = false;
-          nc.printed       = false;
+          nc.code                   = *p;
+          nc.fg_color               = next_attribute.fg_color;
+          nc.bg_color               = next_attribute.bg_color;
+          nc.attr.bit.bold          = next_attribute.attr.bit.bold;
+          nc.attr.bit.dim           = next_attribute.attr.bit.dim;
+          nc.attr.bit.italic        = next_attribute.attr.bit.italic;
+          nc.attr.bit.underline     = next_attribute.attr.bit.underline;
+          nc.attr.bit.blink         = next_attribute.attr.bit.blink;
+          nc.attr.bit.reverse       = next_attribute.attr.bit.reverse;
+          nc.attr.bit.standout      = next_attribute.attr.bit.standout;
+          nc.attr.bit.invisible     = next_attribute.attr.bit.invisible;
+          nc.attr.bit.protect       = next_attribute.attr.bit.protect;
+          nc.attr.bit.crossed_out   = next_attribute.attr.bit.crossed_out;
+          nc.attr.bit.dbl_underline = next_attribute.attr.bit.dbl_underline;
+          nc.attr.bit.alt_charset   = next_attribute.attr.bit.alt_charset;
+          nc.attr.bit.pc_charset    = next_attribute.attr.bit.pc_charset;
+          nc.attr.bit.transparent   = next_attribute.attr.bit.transparent;
+          nc.attr.bit.trans_shadow  = next_attribute.attr.bit.trans_shadow;
+          nc.attr.bit.inherit_bg    = next_attribute.attr.bit.inherit_bg;
+          nc.attr.bit.no_changes    = false;
+          nc.attr.bit.printed       = false;
 
           if ( area->cursor_x > 0
               && area->cursor_y > 0
@@ -509,16 +509,16 @@ int FVTerm::print (term_area* area, const FString& s)
 
             if ( *ac != nc )  // compare with an overloaded operator
             {
-              if (   ( ! ac->transparent  && nc.transparent )
-                  || ( ! ac->trans_shadow && nc.trans_shadow )
-                  || ( ! ac->inherit_bg   && nc.inherit_bg ) )
+              if (   ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
+                  || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
+                  || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
               {
                 // add one transparent character form line
                 area->changes[ay].trans_count++;
               }
-              else if (   ( ac->transparent  && ! nc.transparent )
-                       || ( ac->trans_shadow && ! nc.trans_shadow )
-                       || ( ac->inherit_bg   && ! nc.inherit_bg ) )
+              else if (   ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
+                       || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
+                       || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
               {
                 // remove one transparent character from line
                 area->changes[ay].trans_count--;
@@ -645,16 +645,16 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& termString)
 
           if ( *ac != nc )  // compare with an overloaded operator
           {
-            if (   ( ! ac->transparent  && nc.transparent )
-                || ( ! ac->trans_shadow && nc.trans_shadow )
-                || ( ! ac->inherit_bg   && nc.inherit_bg ) )
+            if (   ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
+                || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
+                || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
             {
               // add one transparent character form line
               area->changes[ay].trans_count++;
             }
-            else if (   ( ac->transparent  && ! nc.transparent )
-                     || ( ac->trans_shadow && ! nc.trans_shadow )
-                     || ( ac->inherit_bg   && ! nc.inherit_bg ) )
+            else if (   ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
+                     || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
+                     || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
             {
               // remove one transparent character from line
               area->changes[ay].trans_count--;
@@ -726,27 +726,27 @@ int FVTerm::print (term_area* area, register int c)
   ax     = area->cursor_x - 1;
   ay     = area->cursor_y - 1;
 
-  nc.code          = c;
-  nc.fg_color      = next_attribute.fg_color;
-  nc.bg_color      = next_attribute.bg_color;
-  nc.bold          = next_attribute.bold;
-  nc.dim           = next_attribute.dim;
-  nc.italic        = next_attribute.italic;
-  nc.underline     = next_attribute.underline;
-  nc.blink         = next_attribute.blink;
-  nc.reverse       = next_attribute.reverse;
-  nc.standout      = next_attribute.standout;
-  nc.invisible     = next_attribute.invisible;
-  nc.protect       = next_attribute.protect;
-  nc.crossed_out   = next_attribute.crossed_out;
-  nc.dbl_underline = next_attribute.dbl_underline;
-  nc.alt_charset   = next_attribute.alt_charset;
-  nc.pc_charset    = next_attribute.pc_charset;
-  nc.transparent   = next_attribute.transparent;
-  nc.trans_shadow  = next_attribute.trans_shadow;
-  nc.inherit_bg    = next_attribute.inherit_bg;
-  nc.no_changes    = false;
-  nc.printed       = false;
+  nc.code                   = c;
+  nc.fg_color               = next_attribute.fg_color;
+  nc.bg_color               = next_attribute.bg_color;
+  nc.attr.bit.bold          = next_attribute.attr.bit.bold;
+  nc.attr.bit.dim           = next_attribute.attr.bit.dim;
+  nc.attr.bit.italic        = next_attribute.attr.bit.italic;
+  nc.attr.bit.underline     = next_attribute.attr.bit.underline;
+  nc.attr.bit.blink         = next_attribute.attr.bit.blink;
+  nc.attr.bit.reverse       = next_attribute.attr.bit.reverse;
+  nc.attr.bit.standout      = next_attribute.attr.bit.standout;
+  nc.attr.bit.invisible     = next_attribute.attr.bit.invisible;
+  nc.attr.bit.protect       = next_attribute.attr.bit.protect;
+  nc.attr.bit.crossed_out   = next_attribute.attr.bit.crossed_out;
+  nc.attr.bit.dbl_underline = next_attribute.attr.bit.dbl_underline;
+  nc.attr.bit.alt_charset   = next_attribute.attr.bit.alt_charset;
+  nc.attr.bit.pc_charset    = next_attribute.attr.bit.pc_charset;
+  nc.attr.bit.transparent   = next_attribute.attr.bit.transparent;
+  nc.attr.bit.trans_shadow  = next_attribute.attr.bit.trans_shadow;
+  nc.attr.bit.inherit_bg    = next_attribute.attr.bit.inherit_bg;
+  nc.attr.bit.no_changes    = false;
+  nc.attr.bit.printed       = false;
 
   if ( area->cursor_x > 0
       && area->cursor_y > 0
@@ -759,17 +759,17 @@ int FVTerm::print (term_area* area, register int c)
 
     if ( *ac != nc )  // compare with an overloaded operator
     {
-      if (   ( ! ac->transparent  && nc.transparent )
-          || ( ! ac->trans_shadow && nc.trans_shadow )
-          || ( ! ac->inherit_bg   && nc.inherit_bg ) )
+      if (   ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
+          || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
+          || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
       {
         // add one transparent character form line
         area->changes[ay].trans_count++;
       }
 
-      if (   ( ac->transparent  && ! nc.transparent )
-          || ( ac->trans_shadow && ! nc.trans_shadow )
-          || ( ac->inherit_bg   && ! nc.inherit_bg ) )
+      if (   ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
+          || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
+          || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
       {
         // remove one transparent character from line
         area->changes[ay].trans_count--;
@@ -1020,27 +1020,27 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   area->bottom_shadow = bsh;
   area->has_changes = false;
 
-  default_char.code          = ' ';
-  default_char.fg_color      = fc::Default;
-  default_char.bg_color      = fc::Default;
-  default_char.bold          = 0;
-  default_char.dim           = 0;
-  default_char.italic        = 0;
-  default_char.underline     = 0;
-  default_char.blink         = 0;
-  default_char.reverse       = 0;
-  default_char.standout      = 0;
-  default_char.invisible     = 0;
-  default_char.protect       = 0;
-  default_char.crossed_out   = 0;
-  default_char.dbl_underline = 0;
-  default_char.alt_charset   = 0;
-  default_char.pc_charset    = 0;
-  default_char.transparent   = 0;
-  default_char.trans_shadow  = 0;
-  default_char.inherit_bg    = 0;
-  default_char.no_changes    = 0;
-  default_char.printed       = 0;
+  default_char.code                   = ' ';
+  default_char.fg_color               = fc::Default;
+  default_char.bg_color               = fc::Default;
+  default_char.attr.bit.bold          = 0;
+  default_char.attr.bit.dim           = 0;
+  default_char.attr.bit.italic        = 0;
+  default_char.attr.bit.underline     = 0;
+  default_char.attr.bit.blink         = 0;
+  default_char.attr.bit.reverse       = 0;
+  default_char.attr.bit.standout      = 0;
+  default_char.attr.bit.invisible     = 0;
+  default_char.attr.bit.protect       = 0;
+  default_char.attr.bit.crossed_out   = 0;
+  default_char.attr.bit.dbl_underline = 0;
+  default_char.attr.bit.alt_charset   = 0;
+  default_char.attr.bit.pc_charset    = 0;
+  default_char.attr.bit.transparent   = 0;
+  default_char.attr.bit.trans_shadow  = 0;
+  default_char.attr.bit.inherit_bg    = 0;
+  default_char.attr.bit.no_changes    = 0;
+  default_char.attr.bit.printed       = 0;
 
   std::fill_n (area->text, area_size, default_char);
 
@@ -1156,16 +1156,16 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
             int line_len = win->width + win->right_shadow;
             tmp = &win->text[(ty+y-win_y) * line_len + (tx+x-win_x)];
 
-            if ( ! tmp->transparent )   // current character not transparent
+            if ( ! tmp->attr.bit.transparent )   // current character not transparent
             {
-              if ( tmp->trans_shadow )  // transparent shadow
+              if ( tmp->attr.bit.trans_shadow )  // transparent shadow
               {
                 // keep the current vterm character
                 std::memcpy (&s_ch, sc, sizeof(char_data));
                 s_ch.fg_color = tmp->fg_color;
                 s_ch.bg_color = tmp->bg_color;
-                s_ch.reverse  = false;
-                s_ch.standout = false;
+                s_ch.attr.bit.reverse  = false;
+                s_ch.attr.bit.standout = false;
 
                 if ( s_ch.code == fc::LowerHalfBlock
                     || s_ch.code == fc::UpperHalfBlock
@@ -1177,7 +1177,7 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
 
                 sc = &s_ch;
               }
-              else if ( tmp->inherit_bg )
+              else if ( tmp->attr.bit.inherit_bg )
               {
                 // add the covered background to this character
                 std::memcpy (&i_ch, tmp, sizeof(char_data));
@@ -1254,11 +1254,11 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
         int line_len = win->width + win->right_shadow;
         tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
 
-        if ( tmp->trans_shadow )
+        if ( tmp->attr.bit.trans_shadow )
         {
           is_covered = half_covered;
         }
-        else if ( ! tmp->transparent )
+        else if ( ! tmp->attr.bit.transparent )
         {
           is_covered = fully_covered;
           break;
@@ -1426,8 +1426,8 @@ void FVTerm::updateVTerm (term_area* area)
             oc = getOverlappedCharacter (gx+1 - ol, gy+1, area->widget);
             ch.fg_color = oc.fg_color;
             ch.bg_color = oc.bg_color;
-            ch.reverse  = false;
-            ch.standout = false;
+            ch.attr.bit.reverse  = false;
+            ch.attr.bit.standout = false;
 
             if ( ch.code == fc::LowerHalfBlock
                 || ch.code == fc::UpperHalfBlock
@@ -1437,28 +1437,28 @@ void FVTerm::updateVTerm (term_area* area)
                 || ch.code == fc::FullBlock )
               ch.code = ' ';
 
-            ch.no_changes = bool(tc->printed && *tc == ch);
+            ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
             std::memcpy (tc, &ch, sizeof(char_data));
           }
-          else if ( ac->transparent )   // transparent
+          else if ( ac->attr.bit.transparent )   // transparent
           {
             // restore one character on vterm
             char_data ch;
             ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
-            ch.no_changes = bool(tc->printed && *tc == ch);
+            ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
             std::memcpy (tc, &ch, sizeof(char_data));
           }
           else  // not transparent
           {
-            if ( ac->trans_shadow )  // transparent shadow
+            if ( ac->attr.bit.trans_shadow )  // transparent shadow
             {
               // get covered character + add the current color
               char_data ch;
               ch = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.fg_color = ac->fg_color;
               ch.bg_color = ac->bg_color;
-              ch.reverse  = false;
-              ch.standout = false;
+              ch.attr.bit.reverse  = false;
+              ch.attr.bit.standout = false;
 
               if ( ch.code == fc::LowerHalfBlock
                   || ch.code == fc::UpperHalfBlock
@@ -1468,30 +1468,30 @@ void FVTerm::updateVTerm (term_area* area)
                   || ch.code == fc::FullBlock )
                 ch.code = ' ';
 
-              ch.no_changes = bool(tc->printed && *tc == ch);
+              ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
               std::memcpy (tc, &ch, sizeof(char_data));
             }
-            else if ( ac->inherit_bg )
+            else if ( ac->attr.bit.inherit_bg )
             {
               // add the covered background to this character
               char_data ch, cc;
               std::memcpy (&ch, ac, sizeof(char_data));
               cc = getCoveredCharacter (gx+1 - ol, gy+1, area->widget);
               ch.bg_color = cc.bg_color;
-              ch.no_changes = bool(tc->printed && *tc == ch);
+              ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
               std::memcpy (tc, &ch, sizeof(char_data));
             }
             else  // default
             {
-              if ( tc->printed && *tc == *ac )
+              if ( tc->attr.bit.printed && *tc == *ac )
               {
                 std::memcpy (tc, ac, sizeof(char_data));
-                tc->no_changes = true;
+                tc->attr.bit.no_changes = true;
               }
               else
               {
                 std::memcpy (tc, ac, sizeof(char_data));
-                tc->no_changes = false;
+                tc->attr.bit.no_changes = false;
               }
             }
           }
@@ -1774,7 +1774,7 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
         tc = &vterm->text[(ay+y) * vterm->width + (ax+x)];
         ac = &area->text[y * line_len + ol + x];
 
-        if ( ac->transparent )  // transparent
+        if ( ac->attr.bit.transparent )  // transparent
         {
           // restore one character on vterm
           char_data ch;
@@ -1783,15 +1783,15 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
         }
         else  // not transparent
         {
-          if ( ac->trans_shadow )  // transparent shadow
+          if ( ac->attr.bit.trans_shadow )  // transparent shadow
           {
             // get covered character + add the current color
             char_data ch;
             ch = getCoveredCharacter (ax+x+1, ay+y+1, area->widget);
             ch.fg_color = ac->fg_color;
             ch.bg_color = ac->bg_color;
-            ch.reverse  = false;
-            ch.standout = false;
+            ch.attr.bit.reverse  = false;
+            ch.attr.bit.standout = false;
 
             if ( ch.code == fc::LowerHalfBlock
                 || ch.code == fc::UpperHalfBlock
@@ -1803,7 +1803,7 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
 
             std::memcpy (tc, &ch, sizeof(char_data));
           }
-          else if ( ac->inherit_bg )
+          else if ( ac->attr.bit.inherit_bg )
           {
             // add the covered background to this character
             char_data ch, cc;
@@ -1975,7 +1975,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     {
       if ( clearTerm (fillchar) )
       {
-        nc.printed = true;
+        nc.attr.bit.printed = true;
         std::fill_n (vterm->text, area_size, nc);
       }
       else
@@ -1996,7 +1996,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   else
   {
     char_data t_char = nc;
-    t_char.transparent = true;
+    t_char.attr.bit.transparent = true;
 
     for (int y=0; y < area->height; y++)
     {
@@ -2020,9 +2020,9 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     area->changes[i].xmin = 0;
     area->changes[i].xmax = w - 1;
 
-    if ( nc.transparent
-        || nc.trans_shadow
-        || nc.inherit_bg )
+    if ( nc.attr.bit.transparent
+        || nc.attr.bit.trans_shadow
+        || nc.attr.bit.inherit_bg )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
       area->changes[i].trans_count = uInt(area->right_shadow);
@@ -2127,19 +2127,19 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
           tmp = &win->text[(y-win_y) * line_len + (x-win_x)];
 
           // current character not transparent
-          if ( ! tmp->transparent )
+          if ( ! tmp->attr.bit.transparent )
           {
-            if ( tmp->trans_shadow )  // transparent shadow
+            if ( tmp->attr.bit.trans_shadow )  // transparent shadow
             {
               // keep the current vterm character
               std::memcpy (&s_ch, cc, sizeof(char_data));
               s_ch.fg_color = tmp->fg_color;
               s_ch.bg_color = tmp->bg_color;
-              s_ch.reverse  = false;
-              s_ch.standout = false;
+              s_ch.attr.bit.reverse  = false;
+              s_ch.attr.bit.standout = false;
               cc = &s_ch;
             }
-            else if ( tmp->inherit_bg )
+            else if ( tmp->attr.bit.inherit_bg )
             {
               // add the covered background to this character
               std::memcpy (&i_ch, tmp, sizeof(char_data));
@@ -2273,27 +2273,27 @@ void FVTerm::init()
   stop_terminal_updates   = false;
 
   // term_attribute stores the current state of the terminal
-  term_attribute.code          = '\0';
-  term_attribute.fg_color      = fc::Default;
-  term_attribute.bg_color      = fc::Default;
-  term_attribute.bold          = \
-  term_attribute.dim           = \
-  term_attribute.italic        = \
-  term_attribute.underline     = \
-  term_attribute.blink         = \
-  term_attribute.reverse       = \
-  term_attribute.standout      = \
-  term_attribute.invisible     = \
-  term_attribute.protect       = \
-  term_attribute.crossed_out   = \
-  term_attribute.dbl_underline = \
-  term_attribute.alt_charset   = \
-  term_attribute.pc_charset    = \
-  term_attribute.transparent   = \
-  term_attribute.trans_shadow  = \
-  term_attribute.inherit_bg    = \
-  term_attribute.no_changes    = \
-  term_attribute.printed       = false;
+  term_attribute.code                   = '\0';
+  term_attribute.fg_color               = fc::Default;
+  term_attribute.bg_color               = fc::Default;
+  term_attribute.attr.bit.bold          = \
+  term_attribute.attr.bit.dim           = \
+  term_attribute.attr.bit.italic        = \
+  term_attribute.attr.bit.underline     = \
+  term_attribute.attr.bit.blink         = \
+  term_attribute.attr.bit.reverse       = \
+  term_attribute.attr.bit.standout      = \
+  term_attribute.attr.bit.invisible     = \
+  term_attribute.attr.bit.protect       = \
+  term_attribute.attr.bit.crossed_out   = \
+  term_attribute.attr.bit.dbl_underline = \
+  term_attribute.attr.bit.alt_charset   = \
+  term_attribute.attr.bit.pc_charset    = \
+  term_attribute.attr.bit.transparent   = \
+  term_attribute.attr.bit.trans_shadow  = \
+  term_attribute.attr.bit.inherit_bg    = \
+  term_attribute.attr.bit.no_changes    = \
+  term_attribute.attr.bit.printed       = false;
 
   // next_attribute contains the state of the next printed character
   std::memcpy (&next_attribute, &term_attribute, sizeof(char_data));
@@ -2506,10 +2506,10 @@ void FVTerm::updateTerminalLine (uInt y)
       {
         char_data* print_char;
         print_char = &vt->text[y * uInt(vt->width) + x];
-        print_char->printed = true;
+        print_char->attr.bit.printed = true;
 
         // skip character with no changes
-       if ( print_char->no_changes )
+       if ( print_char->attr.bit.no_changes )
         {
           uInt count = 1;
 
@@ -2517,7 +2517,7 @@ void FVTerm::updateTerminalLine (uInt y)
           {
             char_data* ch = &vt->text[y * uInt(vt->width) + i];
 
-            if ( ch->no_changes )
+            if ( ch->attr.bit.no_changes )
               count++;
             else
               break;
@@ -2705,7 +2705,7 @@ inline void FVTerm::markAsPrinted (uInt pos, uInt line)
 {
   // Marks a character as printed
 
-  vterm->text[line * uInt(vterm->width) + pos].printed = true;
+  vterm->text[line * uInt(vterm->width) + pos].attr.bit.printed = true;
 }
 
 //----------------------------------------------------------------------
@@ -2714,7 +2714,7 @@ inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
   // Marks characters in the specified range [from .. to] as printed
 
   for (uInt x=from; x <= to; x++)
-    vterm->text[line * uInt(vterm->width) + x].printed = true;
+    vterm->text[line * uInt(vterm->width) + x].attr.bit.printed = true;
 }
 
 //----------------------------------------------------------------------
@@ -2778,10 +2778,10 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
     next_char->code = int(ch_enc);
 
     if ( Encoding == fc::VT100 )
-      next_char->alt_charset = true;
+      next_char->attr.bit.alt_charset = true;
     else if ( Encoding == fc::PC )
     {
-      next_char->pc_charset = true;
+      next_char->attr.bit.pc_charset = true;
 
       if ( isXTerminal() && hasUTF8() && ch_enc < 0x20 )  // Character 0x00..0x1f
         next_char->code = int(charEncode(code, fc::ASCII));

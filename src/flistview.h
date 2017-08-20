@@ -53,7 +53,10 @@ class FListViewItem : public FObject
    FListViewItem (FListView*);
    FListViewItem ( const std::vector<FString>&
                  , FWidget::data_ptr = 0
-                 , FListView* = 0);
+                 , FListView* = 0 );
+   FListViewItem ( const std::vector<FString>&
+                 , FWidget::data_ptr = 0
+                 , FListViewItem* = 0 );
 
   // Destructor
   ~FListViewItem();
@@ -63,16 +66,33 @@ class FListViewItem : public FObject
 
    // Accessors
    const char*  getClassName() const;
-   uInt         getCount() const;
+   uInt         getColumnCount() const;
    FString      getText (int) const;
 
    // Mutator
    void         setText (int, const FString&);
 
+   // Inquiry
+   bool         isExpand();
+
+   // Methods
+   void         insert (FListViewItem*);
+   void         expand();
+   void         collapse();
+
  private:
+   // Inquiry
+   bool         isExpandable();
+
+   // Methods
+   int          getVisibleLines();
+
    // Data Member
    std::vector<FString> column_line;
    FWidget::data_ptr    data_pointer;
+   int                  visible_lines;
+   bool                 expandable;
+   bool                 is_expand;
 
    // Friend class
    friend class FListView;
@@ -86,8 +106,16 @@ inline const char* FListViewItem::getClassName() const
 { return "FListViewItem"; }
 
 //----------------------------------------------------------------------
-inline uInt FListViewItem::getCount() const
+inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_line.size()); }
+
+//----------------------------------------------------------------------
+inline bool FListViewItem::isExpand()
+{ return is_expand; }
+
+//----------------------------------------------------------------------
+inline bool FListViewItem::isExpandable()
+{ return expandable; }
 
 
 //----------------------------------------------------------------------
@@ -122,6 +150,9 @@ class FListView : public FWidget
    void               setGeometry (int, int, int, int, bool = true);
    void               setColumnAlignment (int, fc::text_alignment);
    void               setColumnText (int, const FString&);
+   bool               setTreeView (bool);
+   bool               setTreeView();
+   bool               unsetTreeView();
 
    // Methods
    virtual int        addColumn (const FString&, int = USE_MAX_SIZE);
@@ -204,9 +235,10 @@ class FListView : public FWidget
    FScrollbar*        vbar;
    FScrollbar*        hbar;
    fc::dragScroll     drag_scroll;
-   bool               scroll_timer;
    int                scroll_repeat;
    int                scroll_distance;
+   bool               scroll_timer;
+   bool               tree_view;
    int                current;
    int                xoffset;
    int                yoffset;
@@ -227,6 +259,18 @@ inline const char* FListView::getClassName() const
 //----------------------------------------------------------------------
 inline FListViewItem* FListView::getCurrentItem() const
 { return data[uInt(current-1)]; }
+
+//----------------------------------------------------------------------
+inline bool FListView::setTreeView (bool on)
+{ return tree_view = (on) ? true : false; }
+
+//----------------------------------------------------------------------
+inline bool FListView::setTreeView()
+{ return setTreeView(true); }
+
+//----------------------------------------------------------------------
+inline bool FListView::unsetTreeView()
+{ return setTreeView(false); }
 
 //----------------------------------------------------------------------
 inline FListView::listViewItems::iterator FListView::index2iterator (int index)

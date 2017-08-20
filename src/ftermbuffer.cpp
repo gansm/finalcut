@@ -119,8 +119,8 @@ int FTermBuffer::write (const FString& s)
       char_data  nc; // next character
       nc = FVTerm::getAttribute();
       nc.code = *p;
-      nc.no_changes = false;
-      nc.printed = false;
+      nc.attr.bit.no_changes = false;
+      nc.attr.bit.printed = false;
 
       data.push_back(nc);
 
@@ -138,8 +138,8 @@ int FTermBuffer::write (register int c)
   char_data nc; // next character
   nc = FVTerm::getAttribute();
   nc.code = c;
-  nc.no_changes = false;
-  nc.printed = false;
+  nc.attr.bit.no_changes = false;
+  nc.attr.bit.printed = false;
 
   data.push_back(nc);
   return 1;

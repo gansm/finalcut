@@ -482,31 +482,31 @@ inline void FVTerm::setColor (register short fg, register short bg)
 inline void FVTerm::setNormal()
 {
   // reset all character attributes
-  next_attribute.bold          = \
-  next_attribute.dim           = \
-  next_attribute.italic        = \
-  next_attribute.underline     = \
-  next_attribute.blink         = \
-  next_attribute.reverse       = \
-  next_attribute.standout      = \
-  next_attribute.invisible     = \
-  next_attribute.protect       = \
-  next_attribute.crossed_out   = \
-  next_attribute.dbl_underline = \
-  next_attribute.alt_charset   = \
-  next_attribute.pc_charset    = \
-  next_attribute.transparent   = \
-  next_attribute.trans_shadow  = \
-  next_attribute.inherit_bg    = \
-  next_attribute.no_changes    = false;
+  next_attribute.attr.bit.bold          = \
+  next_attribute.attr.bit.dim           = \
+  next_attribute.attr.bit.italic        = \
+  next_attribute.attr.bit.underline     = \
+  next_attribute.attr.bit.blink         = \
+  next_attribute.attr.bit.reverse       = \
+  next_attribute.attr.bit.standout      = \
+  next_attribute.attr.bit.invisible     = \
+  next_attribute.attr.bit.protect       = \
+  next_attribute.attr.bit.crossed_out   = \
+  next_attribute.attr.bit.dbl_underline = \
+  next_attribute.attr.bit.alt_charset   = \
+  next_attribute.attr.bit.pc_charset    = \
+  next_attribute.attr.bit.transparent   = \
+  next_attribute.attr.bit.trans_shadow  = \
+  next_attribute.attr.bit.inherit_bg    = \
+  next_attribute.attr.bit.no_changes    = false;
 
-  next_attribute.fg_color      = fc::Default;
-  next_attribute.bg_color      = fc::Default;
+  next_attribute.fg_color = fc::Default;
+  next_attribute.bg_color = fc::Default;
 }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBold (register bool on)
-{ return (next_attribute.bold = on); }
+{ return (next_attribute.attr.bit.bold = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBold()
@@ -518,7 +518,7 @@ inline bool FVTerm::unsetBold()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDim (register bool on)
-{ return (next_attribute.dim = on); }
+{ return (next_attribute.attr.bit.dim = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDim()
@@ -530,7 +530,7 @@ inline bool FVTerm::unsetDim()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setItalic (register bool on)
-{ return (next_attribute.italic = on); }
+{ return (next_attribute.attr.bit.italic = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setItalic()
@@ -542,7 +542,7 @@ inline bool FVTerm::unsetItalic()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUnderline (register bool on)
-{ return (next_attribute.underline = on); }
+{ return (next_attribute.attr.bit.underline = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUnderline()
@@ -554,7 +554,7 @@ inline bool FVTerm::unsetUnderline()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBlink (register bool on)
-{ return (next_attribute.blink = on); }
+{ return (next_attribute.attr.bit.blink = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setBlink()
@@ -566,7 +566,7 @@ inline bool FVTerm::unsetBlink()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setReverse (register bool on)
-{ return (next_attribute.reverse = on); }
+{ return (next_attribute.attr.bit.reverse = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setReverse()
@@ -578,7 +578,7 @@ inline bool FVTerm::unsetReverse()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setStandout (register bool on)
-{ return (next_attribute.standout = on); }
+{ return (next_attribute.attr.bit.standout = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setStandout()
@@ -590,7 +590,7 @@ inline bool FVTerm::unsetStandout()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInvisible (register bool on)
-{ return (next_attribute.invisible = on); }
+{ return (next_attribute.attr.bit.invisible = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInvisible()
@@ -602,7 +602,7 @@ inline bool FVTerm::unsetInvisible()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setProtected (register bool on)
-{ return (next_attribute.protect = on); }
+{ return (next_attribute.attr.bit.protect = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setProtected()
@@ -614,7 +614,7 @@ inline bool FVTerm::unsetProtected()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setCrossedOut (register bool on)
-{ return (next_attribute.crossed_out = on); }
+{ return (next_attribute.attr.bit.crossed_out = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setCrossedOut()
@@ -626,7 +626,7 @@ inline bool FVTerm::unsetCrossedOut()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDoubleUnderline (register bool on)
-{ return (next_attribute.dbl_underline = on); }
+{ return (next_attribute.attr.bit.dbl_underline = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setDoubleUnderline()
@@ -638,7 +638,7 @@ inline bool FVTerm::unsetDoubleUnderline()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setAltCharset (register bool on)
-{ return (next_attribute.alt_charset = on); }
+{ return (next_attribute.attr.bit.alt_charset = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setAltCharset()
@@ -650,7 +650,7 @@ inline bool FVTerm::unsetAltCharset()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setPCcharset (register bool on)
-{ return (next_attribute.pc_charset = on); }
+{ return (next_attribute.attr.bit.pc_charset = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setPCcharset()
@@ -662,7 +662,7 @@ inline bool FVTerm::unsetPCcharset()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransparent (register bool on)
-{ return (next_attribute.transparent = on); }
+{ return (next_attribute.attr.bit.transparent = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransparent()
@@ -674,7 +674,7 @@ inline bool FVTerm::unsetTransparent()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransShadow (register bool on)
-{ return (next_attribute.trans_shadow = on); }
+{ return (next_attribute.attr.bit.trans_shadow = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setTransShadow()
@@ -686,7 +686,7 @@ inline bool FVTerm::unsetTransShadow()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground (register bool on)
-{ return (next_attribute.inherit_bg = on); }
+{ return (next_attribute.attr.bit.inherit_bg = on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setInheritBackground()
@@ -702,67 +702,67 @@ inline bool FVTerm::isCursorHidden()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isBold()
-{ return next_attribute.bold; }
+{ return next_attribute.attr.bit.bold; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isDim()
-{ return next_attribute.dim; }
+{ return next_attribute.attr.bit.dim; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isItalic()
-{ return next_attribute.italic; }
+{ return next_attribute.attr.bit.italic; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isUnderline()
-{ return next_attribute.underline; }
+{ return next_attribute.attr.bit.underline; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isBlink()
-{ return next_attribute.blink; }
+{ return next_attribute.attr.bit.blink; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isReverse()
-{ return next_attribute.reverse; }
+{ return next_attribute.attr.bit.reverse; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isStandout()
-{ return next_attribute.standout; }
+{ return next_attribute.attr.bit.standout; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isInvisible()
-{ return next_attribute.invisible; }
+{ return next_attribute.attr.bit.invisible; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isProtected()
-{ return next_attribute.protect; }
+{ return next_attribute.attr.bit.protect; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isCrossedOut()
-{ return next_attribute.crossed_out; }
+{ return next_attribute.attr.bit.crossed_out; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isDoubleUnderline()
-{ return next_attribute.dbl_underline; }
+{ return next_attribute.attr.bit.dbl_underline; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isAltCharset()
-{ return next_attribute.alt_charset; }
+{ return next_attribute.attr.bit.alt_charset; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isPCcharset()
-{ return next_attribute.pc_charset; }
+{ return next_attribute.attr.bit.pc_charset; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isTransparent()
-{ return next_attribute.transparent; }
+{ return next_attribute.attr.bit.transparent; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isTransShadow()
-{ return next_attribute.trans_shadow; }
+{ return next_attribute.attr.bit.trans_shadow; }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isInheritBackground()
-{ return next_attribute.inherit_bg; }
+{ return next_attribute.attr.bit.inherit_bg; }
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
