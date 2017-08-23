@@ -1,7 +1,7 @@
 // File: fvterm.cpp
 // Provides: class FVTerm
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fvterm.h"
 #include "fwidget.h"
 #include "fwindow.h"

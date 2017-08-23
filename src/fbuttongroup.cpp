@@ -1,7 +1,7 @@
 // File: fbuttongroup.cpp
 // Provides: class FButtonGroup
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fbuttongroup.h"
 #include "fstatusbar.h"
 #include "ftogglebutton.h"

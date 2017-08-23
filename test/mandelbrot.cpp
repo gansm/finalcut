@@ -1,6 +1,6 @@
 // File: mandelbrot.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "fmessagebox.h"
 

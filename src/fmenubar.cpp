@@ -1,7 +1,7 @@
 // File: fmenubar.cpp
 // Provides: class FMenuBar
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fmenubar.h"
 #include "fstatusbar.h"
 

@@ -3,7 +3,7 @@
 #ifndef FINAL_H
 #define FINAL_H
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fbuttongroup.h"
 #include "fbutton.h"
 #include "fcheckbox.h"

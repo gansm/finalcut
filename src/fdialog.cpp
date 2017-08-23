@@ -1,7 +1,7 @@
 // File: fdialog.cpp
 // Provides: class FDialog
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "fstatusbar.h"
 

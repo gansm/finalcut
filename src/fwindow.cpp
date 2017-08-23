@@ -1,7 +1,7 @@
 // File: fwindow.cpp
 // Provides: class FWindow
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fmenubar.h"
 #include "fstatusbar.h"
 #include "fwindow.h"

@@ -1,6 +1,6 @@
 // File: input-dialog.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fbutton.h"
 #include "fbuttongroup.h"
 #include "fcheckbox.h"

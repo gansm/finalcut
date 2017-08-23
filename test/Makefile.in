@@ -84,11 +84,12 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
 	choice$(EXEEXT) listbox$(EXEEXT) listview$(EXEEXT) \
-	opti-move$(EXEEXT) termcap$(EXEEXT) string-operations$(EXEEXT) \
-	mandelbrot$(EXEEXT) calculator$(EXEEXT) watch$(EXEEXT) \
-	term-attributes$(EXEEXT) transparent$(EXEEXT) \
-	keyboard$(EXEEXT) mouse$(EXEEXT) timer$(EXEEXT) \
-	scrollview$(EXEEXT) windows$(EXEEXT) menu$(EXEEXT) ui$(EXEEXT)
+	treeview$(EXEEXT) opti-move$(EXEEXT) termcap$(EXEEXT) \
+	string-operations$(EXEEXT) mandelbrot$(EXEEXT) \
+	calculator$(EXEEXT) watch$(EXEEXT) term-attributes$(EXEEXT) \
+	transparent$(EXEEXT) keyboard$(EXEEXT) mouse$(EXEEXT) \
+	timer$(EXEEXT) scrollview$(EXEEXT) windows$(EXEEXT) \
+	menu$(EXEEXT) ui$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -162,6 +163,9 @@ timer_LDADD = $(LDADD)
 am_transparent_OBJECTS = transparent.$(OBJEXT)
 transparent_OBJECTS = $(am_transparent_OBJECTS)
 transparent_LDADD = $(LDADD)
+am_treeview_OBJECTS = treeview.$(OBJEXT)
+treeview_OBJECTS = $(am_treeview_OBJECTS)
+treeview_LDADD = $(LDADD)
 am_ui_OBJECTS = ui.$(OBJEXT)
 ui_OBJECTS = $(am_ui_OBJECTS)
 ui_LDADD = $(LDADD)
@@ -211,8 +215,8 @@ SOURCES = $(calculator_SOURCES) $(choice_SOURCES) $(dialog_SOURCES) \
 	$(menu_SOURCES) $(mouse_SOURCES) $(opti_move_SOURCES) \
 	$(scrollview_SOURCES) $(string_operations_SOURCES) \
 	$(term_attributes_SOURCES) $(termcap_SOURCES) $(timer_SOURCES) \
-	$(transparent_SOURCES) $(ui_SOURCES) $(watch_SOURCES) \
-	$(windows_SOURCES)
+	$(transparent_SOURCES) $(treeview_SOURCES) $(ui_SOURCES) \
+	$(watch_SOURCES) $(windows_SOURCES)
 DIST_SOURCES = $(calculator_SOURCES) $(choice_SOURCES) \
 	$(dialog_SOURCES) $(hello_SOURCES) $(input_dialog_SOURCES) \
 	$(keyboard_SOURCES) $(listbox_SOURCES) $(listview_SOURCES) \
@@ -220,7 +224,8 @@ DIST_SOURCES = $(calculator_SOURCES) $(choice_SOURCES) \
 	$(opti_move_SOURCES) $(scrollview_SOURCES) \
 	$(string_operations_SOURCES) $(term_attributes_SOURCES) \
 	$(termcap_SOURCES) $(timer_SOURCES) $(transparent_SOURCES) \
-	$(ui_SOURCES) $(watch_SOURCES) $(windows_SOURCES)
+	$(treeview_SOURCES) $(ui_SOURCES) $(watch_SOURCES) \
+	$(windows_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -376,6 +381,7 @@ input_dialog_SOURCES = input-dialog.cpp
 choice_SOURCES = choice.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp
+treeview_SOURCES = treeview.cpp
 opti_move_SOURCES = opti-move.cpp
 string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp
@@ -507,6 +513,10 @@ transparent$(EXEEXT): $(transparent_OBJECTS) $(transparent_DEPENDENCIES) $(EXTRA
 	@rm -f transparent$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(transparent_OBJECTS) $(transparent_LDADD) $(LIBS)
 
+treeview$(EXEEXT): $(treeview_OBJECTS) $(treeview_DEPENDENCIES) $(EXTRA_treeview_DEPENDENCIES) 
+	@rm -f treeview$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(treeview_OBJECTS) $(treeview_LDADD) $(LIBS)
+
 ui$(EXEEXT): $(ui_OBJECTS) $(ui_DEPENDENCIES) $(EXTRA_ui_DEPENDENCIES) 
 	@rm -f ui$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(ui_OBJECTS) $(ui_LDADD) $(LIBS)
@@ -543,6 +553,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/termcap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/transparent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treeview.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/watch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windows.Po@am__quote@

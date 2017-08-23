@@ -2,7 +2,7 @@
 
 #include <ctime>
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "flabel.h"
 #include "fdialog.h"
 #include "fmessagebox.h"

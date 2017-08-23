@@ -1,6 +1,6 @@
 // File: menu.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fcheckmenuitem.h"
 #include "fdialog.h"
 #include "flabel.h"

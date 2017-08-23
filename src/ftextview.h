@@ -28,7 +28,7 @@
 #ifndef FTEXTVIEW_H
 #define FTEXTVIEW_H
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fscrollbar.h"
 #include "fstatusbar.h"
 #include "fstring.h"
@@ -58,38 +58,38 @@ class FTextView : public FWidget
   ~FTextView();
 
    // Accessors
-   const char*   getClassName() const;
-   uInt          getColumns() const;
-   uInt          getRows() const;
-   const FString getText() const;
-   stringLines   getLines() const;
+   const char*        getClassName() const;
+   uInt               getColumns() const;
+   uInt               getRows() const;
+   const FString      getText() const;
+   const stringLines& getLines() const;
 
    // Mutators
-   void          setGeometry (int, int, int, int, bool = true);
-   void          setPosition (int);
-   void          setText (const FString&);
+   void               setGeometry (int, int, int, int, bool = true);
+   void               setPosition (int);
+   void               setText (const FString&);
 
    // Methods
-   void          hide();
-   void          append (const FString&);
-   void          insert (const FString&, int);
-   void          replaceRange (const FString&, int, int);
-   void          deleteRange (int, int);
-   void          deleteLine (int);
-   void          clear();
+   void               hide();
+   void               append (const FString&);
+   void               insert (const FString&, int);
+   void               replaceRange (const FString&, int, int);
+   void               deleteRange (int, int);
+   void               deleteLine (int);
+   void               clear();
 
    // Event handlers
-   void          onKeyPress (FKeyEvent*);
-   void          onMouseDown (FMouseEvent*);
-   void          onMouseUp (FMouseEvent*);
-   void          onMouseMove (FMouseEvent*);
-   void          onWheel (FWheelEvent*);
-   void          onFocusIn (FFocusEvent*);
-   void          onFocusOut (FFocusEvent*);
+   void               onKeyPress (FKeyEvent*);
+   void               onMouseDown (FMouseEvent*);
+   void               onMouseUp (FMouseEvent*);
+   void               onMouseMove (FMouseEvent*);
+   void               onWheel (FWheelEvent*);
+   void               onFocusIn (FFocusEvent*);
+   void               onFocusOut (FFocusEvent*);
 
  protected:
    // Method
-   void          adjustSize();
+   void               adjustSize();
 
  private:
    // Disable copy constructor
@@ -134,7 +134,7 @@ inline uInt FTextView::getRows() const
 { return uInt(data.size()); }
 
 //----------------------------------------------------------------------
-inline FTextView::stringLines FTextView::getLines() const
+inline const FTextView::stringLines& FTextView::getLines() const
 { return data; }
 
 //----------------------------------------------------------------------

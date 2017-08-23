@@ -8,7 +8,7 @@ MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib64
 INCLUDEDIR = /usr/local/include/final
 INCLUDE_HEADERS = \
-	fapp.h \
+	fapplication.h \
 	fbuttongroup.h \
 	fbutton.h \
 	fcheckbox.h \
@@ -95,7 +95,7 @@ OBJS = \
 	foptiattr.o \
 	foptimove.o \
 	ftermbuffer.o \
-	fapp.o \
+	fapplication.o \
 	fwidget.o \
 	fobject.o
 

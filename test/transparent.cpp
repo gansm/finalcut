@@ -1,6 +1,6 @@
 // File: transparent.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "flabel.h"
 #include "fmessagebox.h"

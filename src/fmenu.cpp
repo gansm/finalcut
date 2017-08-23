@@ -1,7 +1,7 @@
 // File: fmenu.cpp
 // Provides: class FMenu
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "fmenu.h"
 #include "fstatusbar.h"

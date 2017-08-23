@@ -12,6 +12,7 @@ noinst_PROGRAMS = \
 	choice \
 	listbox \
 	listview \
+	treeview \
 	opti-move \
 	termcap \
 	string-operations \
@@ -34,6 +35,7 @@ input_dialog_SOURCES = input-dialog.cpp
 choice_SOURCES = choice.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp
+treeview_SOURCES = treeview.cpp
 opti_move_SOURCES = opti-move.cpp
 string_operations_SOURCES = string-operations.cpp
 mandelbrot_SOURCES = mandelbrot.cpp

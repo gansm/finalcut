@@ -2,7 +2,7 @@
 
 #include <iomanip>
 #include <iostream>
-#include "fapp.h"
+#include "fapplication.h"
 #include "ftermcap.h"
 #include "fvterm.h"
 

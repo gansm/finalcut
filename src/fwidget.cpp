@@ -1,7 +1,7 @@
 // File: fwidget.cpp
 // Provides: class FWidget
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fmenubar.h"
 #include "fstatusbar.h"
 #include "fwidget.h"

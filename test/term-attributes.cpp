@@ -1,6 +1,6 @@
 // File: term-attributes.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fbutton.h"
 #include "fdialog.h"
 #include "fmessagebox.h"

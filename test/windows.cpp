@@ -1,6 +1,6 @@
 // File: windows.cpp
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "fdialoglistmenu.h"
 #include "flabel.h"

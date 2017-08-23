@@ -1,3 +1,6 @@
+2017-08-24  Markus Gans  <guru.mail@muenster.de>
+	* Rename fapp.{cpp,h} to fapplication.{cpp,h}
+
 2017-08-20  Markus Gans  <guru.mail@muenster.de>
 	* Screen characters got a union structure for a faster 
 	  attribute compare operation

@@ -1,7 +1,7 @@
 // File: fapplication.cpp
 // Provides: class FApplication
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fmenu.h"
 #include "fstatusbar.h"
 #include "fwindow.h"

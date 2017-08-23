@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fdialog.h"
 #include "flistbox.h"
 #include "fmessagebox.h"

@@ -1,7 +1,7 @@
 // File: fmessagebox.cpp
 // Provides: class FMessageBox
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "fmessagebox.h"
 
 

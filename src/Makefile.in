@@ -136,7 +136,8 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fmenulist.lo fdialog.lo fscrollview.lo fwindow.lo \
 	fmessagebox.lo ftooltip.lo ffiledialog.lo ftextview.lo \
 	fstatusbar.lo fterm.lo fvterm.lo fevent.lo foptiattr.lo \
-	foptimove.lo ftermbuffer.lo fapp.lo fwidget.lo fobject.lo
+	foptimove.lo ftermbuffer.lo fapplication.lo fwidget.lo \
+	fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -411,14 +412,14 @@ libfinal_la_SOURCES = \
 	foptiattr.cpp \
 	foptimove.cpp \
 	ftermbuffer.cpp \
-	fapp.cpp \
+	fapplication.cpp \
 	fwidget.cpp \
 	fobject.cpp
 
 libfinal_la_LDFLAGS = -version-info @SO_VERSION@
 finalcutincludedir = $(includedir)/final
 finalcutinclude_HEADERS = \
-	fapp.h \
+	fapplication.h \
 	fbutton.h \
 	fbuttongroup.h \
 	fcharmap.h \
@@ -544,7 +545,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fapp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fapplication.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbutton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbuttongroup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fcheckbox.Plo@am__quote@

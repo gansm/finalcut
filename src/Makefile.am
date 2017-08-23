@@ -45,7 +45,7 @@ libfinal_la_SOURCES = \
 	foptiattr.cpp \
 	foptimove.cpp \
 	ftermbuffer.cpp \
-	fapp.cpp \
+	fapplication.cpp \
 	fwidget.cpp \
 	fobject.cpp
 
@@ -54,7 +54,7 @@ libfinal_la_LDFLAGS = -version-info @SO_VERSION@
 finalcutincludedir = $(includedir)/final
 
 finalcutinclude_HEADERS = \
-	fapp.h \
+	fapplication.h \
 	fbutton.h \
 	fbuttongroup.h \
 	fcharmap.h \

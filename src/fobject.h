@@ -64,7 +64,7 @@ class FObject
    virtual const char* getClassName() const;
    FObject*            getParent() const;
    FObject*            getChild (int) const;
-   FObjectList         getChildren() const;
+   const FObjectList&  getChildren() const;
    int                 numOfChildren() const;
 
    // Inquiries
@@ -133,7 +133,7 @@ inline FObject* FObject::getParent() const
 { return parent_obj; }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectList FObject::getChildren() const
+inline const FObject::FObjectList& FObject::getChildren() const
 { return children_list; }
 
 //----------------------------------------------------------------------

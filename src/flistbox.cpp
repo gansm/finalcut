@@ -2,7 +2,7 @@
 // Provides: class FListBoxItem
 //           class FListBox
 
-#include "fapp.h"
+#include "fapplication.h"
 #include "flistbox.h"
 #include "fscrollbar.h"
 #include "fstatusbar.h"
