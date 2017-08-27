@@ -273,13 +273,13 @@ void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (getWidth(), 2, 2, getHeight()-2);
-    hbar->setGeometry (1, getHeight(), getWidth()-2, 1);
+    vbar->setGeometry (getWidth(), 2, 2, getHeight() - 2);
+    hbar->setGeometry (1, getHeight(), getWidth() - 2, 1);
   }
   else
   {
-    vbar->setGeometry (getWidth(), 2, 1, getHeight()-2);
-    hbar->setGeometry (2, getHeight(), getWidth()-2, 1);
+    vbar->setGeometry (getWidth(), 2, 1, getHeight() - 2);
+    hbar->setGeometry (2, getHeight(), getWidth() - 2, 1);
   }
 }
 
@@ -403,7 +403,7 @@ void FListView::insert ( const std::vector<long>& cols
 
   if ( ! cols.empty() )
   {
-    for (uInt i=0; i < cols.size(); i++)
+    for (uInt i = 0; i < cols.size(); i++)
       str_cols.push_back (FString().setNumber(cols[i]));
   }
 
@@ -437,7 +437,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
       current--;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
         yoffset--;
@@ -482,14 +482,14 @@ void FListView::onKeyPress (FKeyEvent* ev)
       current -= getClientHeight() - 1;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
       {
         yoffset -= getClientHeight() - 1;
 
         if ( yoffset < 0 )
-          yoffset=0;
+          yoffset = 0;
       }
 
       ev->accept();
@@ -776,13 +776,13 @@ void FListView::onTimer (FTimerEvent*)
       current -= scroll_distance;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
         yoffset -= scroll_distance;
 
       if ( yoffset < 0 )
-        yoffset=0;
+        yoffset = 0;
       break;
 
     case fc::scrollDown:
@@ -854,7 +854,7 @@ void FListView::onWheel (FWheelEvent* ev)
 
       if ( yoffset < 0 )
       {
-        current -= 4+yoffset;
+        current -= 4 + yoffset;
         yoffset=0;
       }
       else
@@ -902,6 +902,7 @@ void FListView::onWheel (FWheelEvent* ev)
   updateTerminal();
   flush_out();
 }
+
 //----------------------------------------------------------------------
 void FListView::onFocusIn (FFocusEvent*)
 {
@@ -1067,7 +1068,7 @@ void FListView::draw()
   {
     setColor();
 
-    for (int y=2; y < getHeight(); y++)
+    for (int y = 2; y < getHeight(); y++)
     {
       setPrintPos (getWidth(),y);
       print (' '); // clear right side of the scrollbar
@@ -1203,7 +1204,7 @@ void FListView::drawList()
 
   iter = index2iterator(int(start) + yoffset);
 
-  for (uInt y=start; y < end; y++)
+  for (uInt y = start; y < end; y++)
   {
     bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
     setPrintPos (2, 2 + int(y));
@@ -1244,14 +1245,14 @@ void FListView::drawList()
     // print columns
     if ( ! (*iter)->column_line.empty() )
     {
-      for (uInt i=0; i < (*iter)->column_line.size(); i++)
+      for (uInt i = 0; i < (*iter)->column_line.size(); i++)
       {
         static const int leading_space = 1;
         static const int ellipsis_length = 2;
         FString text = (*iter)->column_line[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
-        fc::text_alignment align = getColumnAlignment(int(i+1));
+        fc::text_alignment align = getColumnAlignment(int(i + 1));
         uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
 
         if ( align_offset > 0 )
@@ -1282,7 +1283,7 @@ void FListView::drawList()
     uInt len = line.getLength();
     uInt i;
 
-    for (i=0; i < len; i++)
+    for (i = 0; i < len; i++)
       print (element_str[i]);
 
     for (; i < uInt(getWidth() - nf_offset - 2); i++)
@@ -1505,7 +1506,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       xoffset -= 4;
 
       if ( xoffset < 0 )
-        xoffset=0;
+        xoffset = 0;
 
       break;
 

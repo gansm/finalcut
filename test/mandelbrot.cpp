@@ -67,27 +67,27 @@ void Mandelbrot::draw()
   dX = (x_max - x_min) / (Cols - 1);
   dY = (y_max - y_min) / Lines;
 
-  for (y0=y_min; y0 < y_max && current_line < Lines; y0+=dY)
+  for (y0 = y_min; y0 < y_max && current_line < Lines; y0 += dY)
   {
     current_line++;
     setPrintPos (xoffset, yoffset + current_line);
 
-    for (x0=x_min; x0 < x_max; x0+=dX)
+    for (x0 = x_min; x0 < x_max; x0 += dX)
     {
       x = 0.0;
       y = 0.0;
       iter = 0;
 
-      while ( x*x + y*y < 4 && iter < max_iter )
+      while ( x * x + y * y < 4 && iter < max_iter )
       {
-        xtemp = x*x - y*y + x0;
-        y = 2*x*y + y0;
+        xtemp = x * x - y * y + x0;
+        y = 2 * x * y + y0;
         x = xtemp;
         iter++;
       }
 
       if ( iter < max_iter )
-        setColor(fc::Black, iter%16);
+        setColor(fc::Black, iter % 16);
       else
         setColor(fc::Black, 0);
 

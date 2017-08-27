@@ -90,9 +90,9 @@ void Transparent::draw()
 
   FString line(getClientWidth(), wchar_t('.'));
 
-  for (int n=1; n <= getClientHeight(); n++)
+  for (int n = 1; n <= getClientHeight(); n++)
   {
-    setPrintPos (2, 2+n);
+    setPrintPos (2, 2 + n);
     print(line);
   }
 

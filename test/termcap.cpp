@@ -50,7 +50,7 @@ void tcapString (const std::string& name, const char* cap_str)
 
   len = uInt(std::strlen(cap_str));
 
-  for (uInt i=0; i < len; i++)
+  for (uInt i = 0; i < len; i++)
   {
     char c = cap_str[i];
 

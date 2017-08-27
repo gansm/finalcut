@@ -52,7 +52,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
   , more()
   , quit()
 {
-  setGeometry (int((this->getParentWidget()->getWidth()-40)/2), 7, 40, 10);
+  setGeometry (int((this->getParentWidget()->getWidth() - 40) / 2), 7, 40, 10);
   setText("Progress bar");
   //setModal();
 
@@ -198,7 +198,7 @@ TextWindow::TextWindow (FWidget* parent)
 {
   scrollText = new FTextView(this);
   scrollText->ignorePadding();
-  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
+  scrollText->setGeometry (1, 2, getWidth(), getHeight() - 1);
   setMinimumSize (51, 6);
   scrollText->setFocus();
   scrollText->insert(" -----------------------------------------------\n"
@@ -225,7 +225,7 @@ void TextWindow::append (const FString& str)
 void TextWindow::adjustSize()
 {
   FDialog::adjustSize();
-  scrollText->setGeometry (1, 2, getWidth(), getHeight()-1);
+  scrollText->setGeometry (1, 2, getWidth(), getHeight() - 1);
 }
 
 
@@ -508,7 +508,7 @@ MyDialog::MyDialog (FWidget* parent)
   myList->setStatusbarMessage ("99 items in a list");
   myList->setMultiSelection();
 
-  for (int z=1; z < 100; z++)
+  for (int z = 1; z < 100; z++)
     myList->insert (FString().setNumber(z) + L" placeholder");
 
   // Text labels
@@ -823,7 +823,7 @@ void MyDialog::cb_updateNumber (FWidget* widget, data_ptr data)
   int select_num = 0;
   uInt end = list->getCount();
 
-  for (uInt n=1; n <= end; n++)
+  for (uInt n = 1; n <= end; n++)
     if ( list->isSelected(int(n)) )
       select_num++;
 
@@ -862,10 +862,10 @@ void MyDialog::cb_view (FWidget*, data_ptr data)
   TextWindow* view = new TextWindow(this);
   FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
-  view->setGeometry (1+int((getRootWidget()->getWidth()-60)/2),
-                     int(getRootWidget()->getHeight()/6),
+  view->setGeometry (1 + int((getRootWidget()->getWidth() - 60) / 2),
+                     int(getRootWidget()->getHeight() / 6),
                      60,
-                     int(getRootWidget()->getHeight()*3/4));
+                     int(getRootWidget()->getHeight() * 3 / 4));
   view->setResizeable();
 
   std::string line = "";
@@ -929,7 +929,7 @@ int main (int argc, char* argv[])
 
   MyDialog d(&app);
   d.setText (title);
-  d.setGeometry (int((app.getWidth()-56)/2), 2, 56, app.getHeight()-4);
+  d.setGeometry (int((app.getWidth() - 56) / 2), 2, 56, app.getHeight() - 4);
   d.setShadow();
 
   app.setMainWidget(&d);

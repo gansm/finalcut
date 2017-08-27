@@ -688,7 +688,7 @@ void FMenuItem::init (FWidget* parent)
   if ( hotkey )
     text_length--;
 
-  setGeometry (1,1,int(text_length+2),1, false);
+  setGeometry (1, 1, int(text_length + 2), 1, false);
 
   if ( parent )
   {
@@ -741,16 +741,16 @@ uChar FMenuItem::hotKey()
 
   length = text.getLength();
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
     try
     {
-      if ( (i+1 < length) && (text[i] == '&') )
+      if ( i + 1 < length && text[i] == '&' )
         return uChar(text[++i]);
     }
     catch (const std::out_of_range&)
     {
-      return 0;;
+      return 0;
     }
   }
 

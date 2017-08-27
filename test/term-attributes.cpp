@@ -63,10 +63,10 @@ AttribDlg::AttribDlg (FWidget* parent)
           + ")");
 
   next_button = new FButton("&Next >", this);
-  next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1);
+  next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1);
   next_button->addAccelerator(fc::Fkey_right);
   back_button = new FButton("< &Back", this);
-  back_button->setGeometry(getWidth()-25, getHeight()-4, 10, 1);
+  back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1);
   back_button->addAccelerator(fc::Fkey_left);
 
   // Add function callbacks
@@ -151,8 +151,8 @@ void AttribDlg::cb_back (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int x = ((getParentWidget()->getWidth() - getWidth()) / 2 );
-  int y = ((getParentWidget()->getHeight() - getHeight()) / 2 ) + 1;
+  int x = ((getParentWidget()->getWidth() - getWidth()) / 2);
+  int y = ((getParentWidget()->getHeight() - getHeight()) / 2) + 1;
 
   if ( x < 1 )
     x = 1;
@@ -161,8 +161,8 @@ void AttribDlg::adjustSize()
     y = 1;
 
   setGeometry(x, y, 69, 21, false);
-  next_button->setGeometry(getWidth()-13, getHeight()-4, 10, 1, false);
-  back_button->setGeometry(getWidth()-25, getHeight()-4, 10, 1, false);
+  next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1, false);
+  back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1, false);
   FDialog::adjustSize();
 }
 
@@ -222,7 +222,7 @@ void AttribDemo::printColorLine()
 {
   AttribDlg* parent = static_cast<AttribDlg*>(getParent());
 
-  for (short color=0; color < colors; color++)
+  for (short color = 0; color < colors; color++)
   {
     setColor (color, parent->bgcolor);
     print (" # ");
@@ -264,9 +264,9 @@ void AttribDemo::draw()
   // test alternate character set
   printAltCharset();
 
-  for (int y=0; y < getParentWidget()->getHeight()-7; y++)
+  for (int y = 0; y < getParentWidget()->getHeight() - 7; y++)
   {
-    setPrintPos (1, 2+y);
+    setPrintPos (1, 2 + y);
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);

@@ -533,7 +533,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   // Method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    new_time = relativeMove (null_ptr, 0, screen_height-1, xnew, ynew);
+    new_time = relativeMove (null_ptr, 0, screen_height - 1, xnew, ynew);
 
     if ( new_time < LONG_DURATION
         && F_cursor_to_ll.duration + new_time < move_time )
@@ -549,7 +549,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
       && yold > 0
       && F_cursor_left.cap )
   {
-    new_time = relativeMove (null_ptr, screen_width-1, yold-1, xnew, ynew);
+    new_time = relativeMove (null_ptr, screen_width - 1, yold - 1, xnew, ynew);
 
     if ( new_time < LONG_DURATION
         && F_carriage_return.cap
@@ -588,7 +588,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
       case 4:
         std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
         move_ptr += F_cursor_to_ll.length;
-        relativeMove (move_ptr, 0, screen_height-1, xnew, ynew);
+        relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
         break;
 
       case 5:
@@ -603,7 +603,7 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
                      , F_cursor_left.cap
                      , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
         move_ptr += std::strlen(move_buf);
-        relativeMove (move_ptr, screen_width-1, yold-1, xnew, ynew);
+        relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
         break;
 
       default:
@@ -620,24 +620,24 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 void FOptiMove::printDurations()
 {
-  std::printf ("            speed: %d baud\r\n", baudrate);
-  std::printf ("    char_duration: %d ms\r\n", char_duration);
-  std::printf ("      cursor_home: %d ms\r\n", F_cursor_home.duration);
-  std::printf ("     cursor_to_ll: %d ms\r\n", F_cursor_to_ll.duration);
-  std::printf ("  carriage_return: %d ms\r\n", F_carriage_return.duration);
-  std::printf ("              tab: %d ms\r\n", F_tab.duration);
-  std::printf ("         back_tab: %d ms\r\n", F_back_tab.duration);
-  std::printf ("        cursor_up: %d ms\r\n", F_cursor_up.duration);
-  std::printf ("      cursor_down: %d ms\r\n", F_cursor_down.duration);
-  std::printf ("      cursor_left: %d ms\r\n", F_cursor_left.duration);
-  std::printf ("     cursor_right: %d ms\r\n", F_cursor_right.duration);
-  std::printf ("   cursor_address: %d ms\r\n", F_cursor_address.duration);
-  std::printf ("   column_address: %d ms\r\n", F_column_address.duration);
-  std::printf ("      row_address: %d ms\r\n", F_row_address.duration);
-  std::printf ("   parm_up_cursor: %d ms\r\n", F_parm_up_cursor.duration);
-  std::printf (" parm_down_cursor: %d ms\r\n", F_parm_down_cursor.duration);
-  std::printf (" parm_left_cursor: %d ms\r\n", F_parm_left_cursor.duration);
-  std::printf ("parm_right_cursor: %d ms\r\n", F_parm_right_cursor.duration);
+  std::cout << "            speed: " << baudrate << " baud\r\n";
+  std::cout << "    char_duration: " << char_duration << " ms\r\n";
+  std::cout << "      cursor_home: " << F_cursor_home.duration << " ms\r\n";
+  std::cout << "     cursor_to_ll: " << F_cursor_to_ll.duration << " ms\r\n";
+  std::cout << "  carriage_return: " << F_carriage_return.duration << " ms\r\n";
+  std::cout << "              tab: " << F_tab.duration << " ms\r\n";
+  std::cout << "         back_tab: " << F_back_tab.duration << " ms\r\n";
+  std::cout << "        cursor_up: " << F_cursor_up.duration << " ms\r\n";
+  std::cout << "      cursor_down: " << F_cursor_down.duration << " ms\r\n";
+  std::cout << "      cursor_left: " << F_cursor_left.duration << " ms\r\n";
+  std::cout << "     cursor_right: " << F_cursor_right.duration << " ms\r\n";
+  std::cout << "   cursor_address: " << F_cursor_address.duration << " ms\r\n";
+  std::cout << "   column_address: " << F_column_address.duration << " ms\r\n";
+  std::cout << "      row_address: " << F_row_address.duration << " ms\r\n";
+  std::cout << "   parm_up_cursor: " << F_parm_up_cursor.duration << " ms\r\n";
+  std::cout << " parm_down_cursor: " << F_parm_down_cursor.duration << " ms\r\n";
+  std::cout << " parm_left_cursor: " << F_parm_left_cursor.duration << " ms\r\n";
+  std::cout << "parm_right_cursor: " << F_parm_right_cursor.duration << " ms\r\n";
 }
 
 
@@ -671,7 +671,7 @@ int FOptiMove::capDuration (char*& cap, int affcnt)
   const char* p;
   float ms = 0;
 
-  for (p=cap; *p; p++)
+  for (p = cap; *p; p++)
   {
     // check for delay with padding character
     if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
@@ -901,7 +901,7 @@ int FOptiMove::relativeMove ( char*& move
 
           while ( true )
           {
-            int tab_pos = ( pos > 0 ) ? ((pos-1)/tabstop)*tabstop : -1;
+            int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
 
             if ( tab_pos < to_x )
               break;
@@ -949,5 +949,5 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
 {
   return bool ( (xnew > MOVE_LIMIT)
                && (xnew < screen_width - 1 - MOVE_LIMIT)
-               && (std::abs(xnew-xold) + std::abs(ynew-yold) > MOVE_LIMIT) );
+               && (std::abs(xnew - xold) + std::abs(ynew - yold) > MOVE_LIMIT) );
 }

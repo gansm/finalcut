@@ -195,7 +195,7 @@ void FLineEdit::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -206,9 +206,9 @@ void FLineEdit::hide()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight()+s; y++)
+  for (int y = 0; y < getHeight() + s; y++)
   {
-    setPrintPos (1, 1+y);
+    setPrintPos (1, 1 + y);
     print (blank);
   }
 
@@ -252,7 +252,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       if ( cursor_pos >= len )
         cursor_pos=len;
 
-      if ( cursor_pos-text_offset >= getWidth()-2 && text_offset <= len-getWidth()+1 )
+      if ( cursor_pos - text_offset >= getWidth() - 2
+          && text_offset <= len - getWidth() + 1 )
         text_offset++;
 
       ev->accept();
@@ -266,8 +267,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_end:
       cursor_pos=len;
-      if ( cursor_pos >= getWidth()-1 )
-        text_offset=len-getWidth()+2;
+      if ( cursor_pos >= getWidth() - 1 )
+        text_offset = len - getWidth() + 2;
       ev->accept();
       break;
 
@@ -282,9 +283,9 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         cursor_pos=len;
 
       if ( cursor_pos < 0 )
-        cursor_pos=0;
+        cursor_pos = 0;
 
-      if ( text_offset > 0 && len-text_offset < getWidth()-1 )
+      if ( text_offset > 0 && len - text_offset < getWidth() - 1 )
         text_offset--;
 
       ev->accept();
@@ -294,7 +295,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_backspace:
       if ( len > 0 && cursor_pos > 0 )
       {
-        text.remove(uInt(cursor_pos-1), 1);
+        text.remove(uInt(cursor_pos - 1), 1);
         processChanged();
         cursor_pos--;
 
@@ -350,7 +351,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         }
         cursor_pos++;
 
-        if ( cursor_pos >= getWidth()-1 )
+        if ( cursor_pos >= getWidth() - 1 )
           text_offset++;
 
         ev->accept();
@@ -463,14 +464,14 @@ void FLineEdit::onMouseMove (FMouseEvent* ev)
   else if ( mouse_x >= getWidth() )
   {
     // drag right
-    if ( ! scroll_timer && text_offset <= len-getWidth()+1 )
+    if ( ! scroll_timer && text_offset <= len - getWidth() + 1 )
     {
       scroll_timer = true;
       addTimer(scroll_repeat);
       drag_scroll = FLineEdit::scrollRight;
     }
 
-    if ( text_offset == len-getWidth()+2 )
+    if ( text_offset == len - getWidth() + 2 )
     {
       delOwnTimer();
       drag_scroll = FLineEdit::noScroll;
@@ -515,7 +516,7 @@ void FLineEdit::onTimer (FTimerEvent*)
       break;
 
     case FLineEdit::scrollRight:
-      if ( text_offset == len-getWidth()+2 )
+      if ( text_offset == len - getWidth() + 2 )
       {
         drag_scroll = FLineEdit::noScroll;
         return;
@@ -523,8 +524,8 @@ void FLineEdit::onTimer (FTimerEvent*)
 
       text_offset++;
 
-      if ( text_offset > len-getWidth()+2 )
-        text_offset = len-getWidth()+2;
+      if ( text_offset > len - getWidth() + 2 )
+        text_offset = len - getWidth() + 2;
 
       cursor_pos++;
 
@@ -623,11 +624,11 @@ void FLineEdit::adjustLabel()
   switch ( label_orientation )
   {
     case label_above:
-      label->setGeometry(getX(), getY()-1, label_length, 1);
+      label->setGeometry(getX(), getY() - 1, label_length, 1);
       break;
 
     case label_left:
-      label->setGeometry(getX()-label_length-1, getY(), label_length, 1);
+      label->setGeometry(getX() - label_length - 1, getY(), label_length, 1);
       break;
   }
 }
@@ -727,7 +728,7 @@ void FLineEdit::drawInputField()
   if ( isActiveFocus && getMaxColor() < 16 )
     setBold();
 
-  show_text = text.mid(uInt(1+text_offset), uInt(getWidth()-2));
+  show_text = text.mid(uInt(1 + text_offset), uInt(getWidth() - 2));
 
   if ( isUTF8_linux_terminal() )
   {
@@ -743,7 +744,7 @@ void FLineEdit::drawInputField()
 
   x = int(show_text.getLength());
 
-  while ( x < getWidth()-1 )
+  while ( x < getWidth() - 1 )
   {
     print (' ');
     x++;
@@ -762,7 +763,7 @@ void FLineEdit::drawInputField()
     drawShadow ();
 
   // set the cursor to the first pos.
-  setCursorPos (2+cursor_pos-text_offset, 1);
+  setCursorPos (2 + cursor_pos - text_offset, 1);
 }
 
 //----------------------------------------------------------------------

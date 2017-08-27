@@ -54,7 +54,7 @@ int FTermBuffer::writef (const char* format, ...)
   {
     try
     {
-      buffer = new char[len+1]();
+      buffer = new char[len + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -63,7 +63,7 @@ int FTermBuffer::writef (const char* format, ...)
     }
 
     va_start (args, format);
-    vsnprintf (buffer, uLong(len+1), format, args);
+    vsnprintf (buffer, uLong(len + 1), format, args);
     va_end (args);
   }
 

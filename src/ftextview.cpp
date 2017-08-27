@@ -45,20 +45,20 @@ const FString FTextView::getText() const
   len = 0;
   rows = getRows();
 
-  for (uInt i=0 ; i < rows; i++)
+  for (uInt i = 0 ; i < rows; i++)
     len += data[i].getLength() + 1;
 
   FString s(len + 1);
   idx = 0;
 
-  for (uInt i=0 ; i < rows; i++)
+  for (uInt i = 0 ; i < rows; i++)
   {
     const wchar_t* p = data[i].wc_str();
 
     if ( p )
     {
       while ( (s[idx++] = *p++) != 0 );
-      s[idx-1] = '\n';
+      s[idx - 1] = '\n';
     }
     else
     {
@@ -66,7 +66,7 @@ const FString FTextView::getText() const
     }
   }
 
-  s[idx-1] = 0;
+  s[idx - 1] = 0;
   return s;
 }
 
@@ -81,13 +81,13 @@ void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (width, 1, 2, height-1);
-    hbar->setGeometry (1, height, width-2, 1);
+    vbar->setGeometry (width, 1, 2, height - 1);
+    hbar->setGeometry (1, height, width - 2, 1);
   }
   else
   {
-    vbar->setGeometry (width, 2, 1, height-2);
-    hbar->setGeometry (2, height, width-2, 1);
+    vbar->setGeometry (width, 2, 1, height - 2);
+    hbar->setGeometry (2, height, width - 2, 1);
   }
 
   vbar->resize();
@@ -152,7 +152,7 @@ void FTextView::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -163,7 +163,7 @@ void FTextView::hide()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
     setPrintPos (1, 1 + y);
     print (blank);
@@ -199,7 +199,7 @@ void FTextView::insert (const FString& str, int pos)
   text_split = s.split("\r\n");
   end = text_split.size();
 
-  for (uInt i=0; i < end; i++)
+  for (uInt i = 0; i < end; i++)
   {
     uInt len;
     text_split[i] = text_split[i].removeBackspaces()
@@ -253,7 +253,7 @@ void FTextView::replaceRange (const FString& str, int start, int end)
     return;
 
   iter = data.begin();
-  data.erase (iter+start, iter+end+1);
+  data.erase (iter + start, iter + end + 1);
 
   if ( ! str.isNull() )
     insert(str, start);
@@ -287,7 +287,7 @@ void FTextView::clear()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -298,7 +298,7 @@ void FTextView::clear()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight() + nf_offset - 2; y++)
+  for (int y = 0; y < getHeight() + nf_offset - 2; y++)
   {
     setPrintPos (2, 2 - nf_offset + y);
     print (blank);
@@ -345,7 +345,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_ppage:
-      yoffset -= getHeight()-2;
+      yoffset -= getHeight() - 2;
 
       if ( yoffset < 0 )
         yoffset = 0;
@@ -355,7 +355,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_npage:
       if ( last_line >= getHeight() )
-        yoffset += getHeight()-2;
+        yoffset += getHeight() - 2;
 
       if ( yoffset > last_line - getHeight() - nf_offset + 2 )
         yoffset = last_line - getHeight() - nf_offset + 2;
@@ -756,18 +756,18 @@ void FTextView::drawText()
   if ( isMonochron() )
     setReverse(true);
 
-  for (uInt y=start; y < end; y++)
+  for (uInt y = start; y < end; y++)
   {
     uInt i, len;
     FString line;
     const wchar_t* line_str;
     setPrintPos (2, 2 - nf_offset + int(y));
-    line = data[y+uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                     , uInt(getWidth() - nf_offset - 2) );
+    line = data[y + uInt(yoffset)].mid ( uInt(1 + xoffset)
+                                       , uInt(getWidth() - nf_offset - 2) );
     line_str = line.wc_str();
     len = line.getLength();
 
-    for (i=0; i < len; i++)
+    for (i = 0; i < len; i++)
     {
       wchar_t ch = line_str[i];
       bool utf8 = (Encoding == fc::UTF8) ? true : false;

@@ -1186,7 +1186,7 @@ void FWidget::resize()
   {
     detectTermSize();
     FRect term_geometry = getTermGeometry();
-    term_geometry.move(-1,-1);
+    term_geometry.move (-1, -1);
 
     resizeVTerm (term_geometry);
     resizeArea (term_geometry, getShadow(), vdesktop);
@@ -1433,7 +1433,7 @@ void FWidget::drawShadow()
   if ( trans_shadow )
   {
     // transparent shadow
-    setPrintPos (x2+1, y1);
+    setPrintPos (x2 + 1, y1);
     setTransparent();
     print ("  ");
     unsetTransparent();
@@ -1441,14 +1441,14 @@ void FWidget::drawShadow()
     setColor (wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
 
-    for (int i=1; i < getHeight(); i++)
+    for (int i = 1; i < getHeight(); i++)
     {
-      setPrintPos (x2+1, y1+i);
+      setPrintPos (x2 + 1, y1 + i);
       print ("  ");
     }
 
     unsetTransShadow();
-    setPrintPos (x1, y2+1);
+    setPrintPos (x1, y2 + 1);
     setTransparent();
     print ("  ");
     unsetTransparent();
@@ -1456,7 +1456,7 @@ void FWidget::drawShadow()
     setColor (wc.shadow_bg, wc.shadow_fg);
     setTransShadow();
 
-    for (int i=2; i <= getWidth()+1; i++)
+    for (int i = 2; i <= getWidth() + 1; i++)
       print (' ');
 
     unsetTransShadow();
@@ -1472,7 +1472,7 @@ void FWidget::drawShadow()
     if ( no_shadow_character )
       return;
 
-    setPrintPos (x2+1, y1);
+    setPrintPos (x2 + 1, y1);
 
     if ( isWindowWidget() )
     {
@@ -1488,18 +1488,18 @@ void FWidget::drawShadow()
     if ( isWindowWidget() )
       unsetInheritBackground();
 
-    for (int i=1; i < getHeight(); i++)
+    for (int i = 1; i < getHeight(); i++)
     {
-      setPrintPos (x2+1, y1+i);
+      setPrintPos (x2 + 1, y1 + i);
       print (block); // █
     }
 
-    setPrintPos (x1+1, y2+1);
+    setPrintPos (x1 + 1, y2 + 1);
 
     if ( isWindowWidget() )
       setInheritBackground();
 
-    for (int i=1; i <= getWidth(); i++)
+    for (int i = 1; i <= getWidth(); i++)
       print (fc::UpperHalfBlock); // ▀
 
     if ( isWindowWidget() )
@@ -1530,18 +1530,18 @@ void FWidget::clearShadow()
 
   if ( x2 <= offset.getX2() )
   {
-    for (int i=0; i < getHeight(); i++)
+    for (int i = 0; i < getHeight(); i++)
     {
-      setPrintPos (x2+1, y1+i);
+      setPrintPos (x2 + 1, y1 + i);
       print  (' ');  // clear █
     }
   }
 
   if ( y2 <= offset.getY2() )
   {
-    setPrintPos (x1+1, y2+1);
+    setPrintPos (x1 + 1, y2 + 1);
 
-    for (int i=1; i <= getWidth(); i++)
+    for (int i = 1; i <= getWidth(); i++)
       print (' '); // clear ▀
   }
 
@@ -1567,9 +1567,9 @@ void FWidget::drawFlatBorder()
   else
     setColor (wc.dialog_fg, wc.dialog_bg);
 
-  for (int y=0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1-1, y1+y+1);
+    setPrintPos (x1 - 1, y1 + y + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
       print (fc::NF_rev_border_line_right_and_left); // left+right line (on left side)
@@ -1577,21 +1577,21 @@ void FWidget::drawFlatBorder()
       print (fc::NF_rev_border_line_right); // right line (on left side)
   }
 
-  setPrintPos (x2, y1+1);
+  setPrintPos (x2, y1 + 1);
 
-  for (int y=0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
     if ( double_flatline_mask.right[uLong(y)] )
       print (fc::NF_rev_border_line_right_and_left); // left+right line (on right side)
     else
       print (fc::NF_border_line_left); // left line (on right side)
 
-    setPrintPos (x2, y1+y+2);
+    setPrintPos (x2, y1 + y + 2);
   }
 
   setPrintPos (x1, y1);
 
-  for (int x=0; x < getWidth(); x++)
+  for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
       print (fc::NF_border_line_up_and_down); // top+bottom line (at top)
@@ -1601,7 +1601,7 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x1, y2);
 
-  for (int x=0; x < getWidth(); x++)
+  for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
       print (fc::NF_border_line_up_and_down); // top+bottom line (at bottom)
@@ -1629,9 +1629,9 @@ void FWidget::clearFlatBorder()
     setColor (wc.dialog_fg, wc.dialog_bg);
 
   // clear on left side
-  for (register int y=0; y < getHeight(); y++)
+  for (register int y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1-1, y1+y+1);
+    setPrintPos (x1 - 1, y1 + y + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
       print (fc::NF_border_line_left);
@@ -1640,9 +1640,9 @@ void FWidget::clearFlatBorder()
   }
 
   // clear on right side
-  for (register int y=0; y < getHeight(); y++)
+  for (register int y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x2, y1+y+1);
+    setPrintPos (x2, y1 + y + 1);
 
     if ( double_flatline_mask.right[uLong(y)] )
       print (fc::NF_rev_border_line_right);
@@ -1653,7 +1653,7 @@ void FWidget::clearFlatBorder()
   // clear at top
   setPrintPos (x1, y1);
 
-  for (register int x=0; x < getWidth(); x++)
+  for (register int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
       print (fc::NF_border_line_upper);
@@ -1664,7 +1664,7 @@ void FWidget::clearFlatBorder()
   // clear at bottom
   setPrintPos (x1, y2);
 
-  for (register int x=0; x < getWidth(); x++)
+  for (register int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
       print (fc::NF_border_line_bottom);
@@ -1699,12 +1699,12 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
     setPrintPos (x1, y1);
     print (fc::NF_border_corner_middle_upper_left); // ┌
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
 
     print (fc::NF_border_corner_middle_upper_right); // ┐
 
-    for (int y=y1+1; y <= y2; y++)
+    for (int y = y1 + 1; y <= y2; y++)
     {
       setPrintPos (x1, y);
       print (fc::NF_border_line_left); // border left ⎸
@@ -1715,7 +1715,7 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
     setPrintPos (x1, y2);
     print (fc::NF_border_corner_middle_lower_left); // └
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
 
     print (fc::NF_border_corner_middle_lower_right); // ┘
@@ -1725,12 +1725,12 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
     setPrintPos (x1, y1);
     print (fc::BoxDrawingsDownAndRight); // ┌
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
 
     print (fc::BoxDrawingsDownAndLeft); // ┐
 
-    for (int y=y1+1; y < y2; y++)
+    for (int y = y1 + 1; y < y2; y++)
     {
       setPrintPos (x1, y);
       print (fc::BoxDrawingsVertical); // │
@@ -1741,12 +1741,12 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
     setPrintPos (x1, y2);
     print (fc::BoxDrawingsUpAndRight); // └
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
       print (fc::BoxDrawingsHorizontal); // ─
 
     print (fc::BoxDrawingsUpAndLeft); // ┘
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
     {
       setPrintPos (x, y1);
       print (fc::BoxDrawingsHorizontal); // ─
@@ -2368,7 +2368,7 @@ inline void FWidget::insufficientSpaceAdjust()
     return;
 
   // move left if not enough space
-  while ( getTermX()+getWidth()-padding.right > offset.getX2()+2 )
+  while ( getTermX() + getWidth() - padding.right > offset.getX2() + 2 )
   {
     adjust_wsize.x1_ref()--;
     adjust_wsize.x2_ref()--;
@@ -2378,7 +2378,7 @@ inline void FWidget::insufficientSpaceAdjust()
   }
 
   // move up if not enough space
-  while ( getTermY()+getHeight()-padding.bottom > offset.getY2()+2 )
+  while ( getTermY() + getHeight() - padding.bottom > offset.getY2() + 2 )
   {
     adjust_wsize.y1_ref()--;
     adjust_wsize.y2_ref()--;
@@ -2388,7 +2388,7 @@ inline void FWidget::insufficientSpaceAdjust()
   }
 
   // reduce the width if not enough space
-  while ( offset.getX1()+getWidth()-1 > offset.getX2() )
+  while ( offset.getX1() + getWidth() - 1 > offset.getX2() )
     adjust_wsize.x2_ref()--;
 
   if ( getWidth() < size_hints.min_width )
@@ -2398,7 +2398,7 @@ inline void FWidget::insufficientSpaceAdjust()
     adjust_wsize.setWidth(1);
 
   // reduce the height if not enough space
-  while ( offset.getY1()+getHeight()-1 > offset.getY2() )
+  while ( offset.getY1() + getHeight() - 1 > offset.getY2() )
     adjust_wsize.y2_ref()--;
 
   if ( getHeight() < size_hints.min_height )

@@ -69,7 +69,7 @@ Treeview::Treeview (FWidget* parent)
 
   const int lastItem = int(sizeof(continent) / sizeof(continent[0])) - 1;
 
-  for (int i=0; i <= lastItem; i++)
+  for (int i = 0; i <= lastItem; i++)
   {
     std::vector<FString> line (&continent[i][0], &continent[i][0] + 3);
     listView->insert (line);

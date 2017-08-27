@@ -160,7 +160,7 @@ void FLabel::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -297,16 +297,16 @@ uChar FLabel::getHotkey()
 
   length = text.getLength();
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
     try
     {
-      if ( (i+1 < length) && (text[i] == '&') )
+      if ( i + 1 < length && text[i] == '&' )
         return uChar(text[++i]);
     }
     catch (const std::out_of_range&)
     {
-      return 0;;
+      return 0;
     }
   }
 
@@ -321,9 +321,9 @@ int FLabel::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
   int hotkeypos = -1;
   wchar_t* txt = src;
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
-    if ( (i < length) && (txt[i] == L'&') && (hotkeypos == -1) )
+    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
     {
       hotkeypos = int(i);
       i++;
@@ -403,7 +403,7 @@ void FLabel::printLine ( wchar_t*& line
   if ( hasReverseMode() )
     setReverse(true);
 
-  for (int z=0; z < to_char; z++)
+  for (int z = 0; z < to_char; z++)
   {
     if ( ! std::iswprint(wint_t(line[z])) )
     {
@@ -489,7 +489,7 @@ void FLabel::draw()
 
       try
       {
-        LabelText = new wchar_t[length+1]();
+        LabelText = new wchar_t[length + 1]();
       }
       catch (const std::bad_alloc& ex)
       {
@@ -505,12 +505,12 @@ void FLabel::draw()
       else
         std::wcsncpy(dest, src, length);
 
-      setPrintPos (1, 1+int(y));
+      setPrintPos (1, 1 + int(y));
 
       if ( hotkeypos != -1 )
       {
-        align_offset = getAlignOffset (int(length-1));
-        printLine (LabelText, length-1, hotkeypos, align_offset);
+        align_offset = getAlignOffset (int(length - 1));
+        printLine (LabelText, length - 1, hotkeypos, align_offset);
         hotkey_printed = true;
         hotkeypos = -1;
       }
@@ -530,7 +530,7 @@ void FLabel::draw()
 
     try
     {
-      LabelText = new wchar_t[length+1]();
+      LabelText = new wchar_t[length + 1]();
     }
     catch (const std::bad_alloc& ex)
     {

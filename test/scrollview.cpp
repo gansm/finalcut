@@ -116,11 +116,11 @@ void scrollview::draw()
   setColor (wc.label_inactive_fg, wc.dialog_bg);
   clearArea();
 
-  for (int y=0; y < getScrollHeight(); y++)
+  for (int y = 0; y < getScrollHeight(); y++)
   {
     setPrintPos (1, 1 + y);
 
-    for (int x=0; x < getScrollWidth(); x++)
+    for (int x = 0; x < getScrollWidth(); x++)
       print (32 + ((x + y) % 0x5f));
   }
 

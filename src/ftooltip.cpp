@@ -73,7 +73,7 @@ void FToolTip::draw()
   clearArea();
   drawBorder();
 
-  for (int i=0; i < int(text_num_lines); i++)
+  for (int i = 0; i < int(text_num_lines); i++)
   {
     setPrintPos (3, 2 + i);
     print(text_components[i]);
@@ -129,7 +129,7 @@ void FToolTip::calculateDimensions()
   text_components = &text_split[0];
   max_line_width = 0;
 
-  for (uInt i=0; i < text_num_lines; i++)
+  for (uInt i = 0; i < text_num_lines; i++)
   {
     uInt len = text_components[i].getLength();
 
@@ -142,8 +142,8 @@ void FToolTip::calculateDimensions()
 
   if ( r )
   {
-    x = 1 + int((r->getWidth()-w)/2);
-    y = 1 + int((r->getHeight()-h)/2);
+    x = 1 + int((r->getWidth() - w) / 2);
+    y = 1 + int((r->getHeight() - h) / 2);
   }
   else
     x = y = 1;

@@ -244,7 +244,7 @@ Calc::Calc (FWidget* parent)
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // press 'q' to quit
 
-  for (int key=0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
     Button* btn = new Button(this);
     button_no[key] = key;
@@ -254,9 +254,9 @@ Calc::Calc (FWidget* parent)
     else
     {
       int x, y, n;
-      (key <= Three) ? n=0 : n=1;
-      x = (key+n)%5*7 + 2;
-      y = (key+n)/5*2 + 3;
+      (key <= Three) ? n = 0 : n = 1;
+      x = (key + n) % 5 * 7 + 2;
+      y = (key + n) / 5 * 2 + 3;
       btn->setGeometry(x, y, 5, 1);
     }
 
@@ -395,9 +395,9 @@ bool Calc::isDataEntryKey (int key)
     Nine
   };
 
-  int* iter = std::find (data_entry_keys, data_entry_keys+11, key);
+  int* iter = std::find (data_entry_keys, data_entry_keys + 11, key);
 
-  if ( iter != data_entry_keys+11 )
+  if ( iter != data_entry_keys + 11 )
     return true;
   else
     return false;
@@ -417,9 +417,9 @@ bool Calc::isOperatorKey(int key)
     Equals
   };
 
-  int* iter = std::find (operators, operators+6, key);
+  int* iter = std::find (operators, operators + 6, key);
 
-  if ( iter != operators+6 )
+  if ( iter != operators + 6 )
     return true;
   else
     return false;
@@ -476,7 +476,7 @@ void Calc::calcInfixOperator()
     case '+':
       if ( std::fabs(a) > LDBL_EPSILON )  // a != 0.0L
       {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 + b/a)) <= std::log(LDBL_MAX) )
+        if ( std::log(std::abs(a)) + std::log(std::abs(1 + b / a)) <= std::log(LDBL_MAX) )
           a += b;
         else
           error = true;
@@ -488,7 +488,7 @@ void Calc::calcInfixOperator()
     case '-':
       if ( std::fabs(b) > LDBL_EPSILON )  // b != 0.0L
       {
-        if ( std::log(std::abs(a)) + std::log(std::abs(1 - b/a)) <= std::log(LDBL_MAX) )
+        if ( std::log(std::abs(a)) + std::log(std::abs(1 - b / a)) <= std::log(LDBL_MAX) )
           a -= b;
         else
           error = true;
@@ -606,11 +606,11 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       else
       {
         if ( arcus_mode )
-          *x = std::asin(*x) * 180.0L/PI;
-        else if ( std::fabs(std::fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 = 0
+          *x = std::asin(*x) * 180.0L / PI;
+        else if ( std::fabs(std::fmod(*x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
           *x = 0.0L;
         else
-          *x = std::sin(*x * PI/180.0L);
+          *x = std::sin(*x * PI / 180.0L);
       }
 
       if ( errno == EDOM )
@@ -642,11 +642,11 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       else
       {
         if ( arcus_mode )
-          *x = std::acos(*x) * 180.0L/PI;
-        else if ( std::fabs(std::fmod(*x - 90.0L,180.0L)) < LDBL_EPSILON )  // (x - 90)/180 == 0
+          *x = std::acos(*x) * 180.0L / PI;
+        else if ( std::fabs(std::fmod(*x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
           *x = 0.0L;
         else
-          *x = std::cos(*x * PI/180.0L);
+          *x = std::cos(*x * PI / 180.0L);
       }
 
       if ( errno == EDOM )
@@ -665,7 +665,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
         if ( arcus_mode )
           if ( *x < 1 )
           {
-            *x = 0.5L * std::log((1+(*x))/(1-(*x)));
+            *x = 0.5L * std::log((1 + (*x)) / (1 - (*x)));
 
             if ( errno == EDOM || errno == ERANGE )
               error = true;
@@ -678,16 +678,16 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       else
       {
         if ( arcus_mode )
-          *x = std::atan(*x) * 180.0L/PI;
+          *x = std::atan(*x) * 180.0L / PI;
         else
-          // Test if (x/180) != 0 and x/90 == 0
-          if ( std::fabs(std::fmod(*x,180.0L)) > LDBL_EPSILON
-              && std::fabs(std::fmod(*x,90.0L)) < LDBL_EPSILON )
+          // Test if (x / 180) != 0 and x / 90 == 0
+          if ( std::fabs(std::fmod(*x, 180.0L)) > LDBL_EPSILON
+              && std::fabs(std::fmod(*x, 90.0L)) < LDBL_EPSILON )
             error = true;
-          else if ( std::fabs(std::fmod(*x,180.0L)) < LDBL_EPSILON )  // x/180 == 0
+          else if ( std::fabs(std::fmod(*x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
             *x = 0.0L;
           else
-            *x = std::tan(*x * PI/180.0L);
+            *x = std::tan(*x * PI / 180.0L);
       }
 
       if ( errno == EDOM )
@@ -700,12 +700,12 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       calculator_buttons[Hyperbolic]->setChecked(false);
       break;
 
-    case Reciprocal:  // 1/x
+    case Reciprocal:  // 1 / x
       if ( std::fabs(*x) < LDBL_EPSILON )  // x == 0
         error = true;
       else
       {
-        *x = 1/(*x);
+        *x = 1 / (*x);
         setDisplay(*x);
       }
       break;
@@ -984,7 +984,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       while ( ! input.includes(L'e')
              && input.includes(L'.')
              && input.back() == L'0' )
-        input = input.left(input.getLength()-1);
+        input = input.left(input.getLength() - 1);
     }
   }
 

@@ -174,13 +174,13 @@ void FListBox::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (getWidth(), 2, 2, getHeight()-2);
-    hbar->setGeometry (1, getHeight(), getWidth()-2, 1);
+    vbar->setGeometry (getWidth(), 2, 2, getHeight() - 2);
+    hbar->setGeometry (1, getHeight(), getWidth() - 2, 1);
   }
   else
   {
-    vbar->setGeometry (getWidth(), 2, 1, getHeight()-2);
-    hbar->setGeometry (2, getHeight(), getWidth()-2, 1);
+    vbar->setGeometry (getWidth(), 2, 1, getHeight() - 2);
+    hbar->setGeometry (2, getHeight(), getWidth() - 2, 1);
   }
 }
 
@@ -245,7 +245,7 @@ void FListBox::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -256,7 +256,7 @@ void FListBox::hide()
   std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
     setPrintPos (1, 1 + y);
     print (blank);
@@ -380,7 +380,7 @@ void FListBox::clear()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -391,7 +391,7 @@ void FListBox::clear()
   std::memset (blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight()-2; y++)
+  for (int y = 0; y < getHeight() - 2; y++)
   {
     setPrintPos (2, 2 + y);
     print (blank);
@@ -537,7 +537,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
         if ( current > element_count )
           current = element_count;
 
-        if ( current-yoffset >= getHeight() - 1 )
+        if ( current - yoffset >= getHeight() - 1 )
           yoffset++;
 
         ev->accept();
@@ -560,7 +560,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
           {
             if ( ! inc_found
                 && inc_search.toLower()
-                == iter->getText().left(inc_len+1).toLower() )
+                == iter->getText().left(inc_len + 1).toLower() )
             {
               setCurrentItem(iter);
               inc_found = true;
@@ -599,7 +599,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
         if ( inc_len > 0 )
         {
-          inc_search.remove(inc_len-1, 1);
+          inc_search.remove(inc_len - 1, 1);
 
           if ( inc_len > 1 )
           {
@@ -608,7 +608,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
             while ( iter != data.end() )
             {
               if ( inc_search.toLower()
-                   == iter->getText().left(inc_len-1).toLower() )
+                   == iter->getText().left(inc_len - 1).toLower() )
               {
                 setCurrentItem(iter);
                 break;
@@ -663,7 +663,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
         if ( ! inc_found )
         {
-          inc_search.remove(inc_len-1, 1);
+          inc_search.remove(inc_len - 1, 1);
 
           if ( inc_len == 1 )
             ev->ignore();
@@ -852,7 +852,7 @@ void FListBox::onMouseMove (FMouseEvent* ev)
         from = secect_from_item + 1;
         to = current;
       }
-      for (int i=from; i <= to; i++)
+      for (int i = from; i <= to; i++)
       {
         if ( mouse_select )
         {
@@ -1100,7 +1100,7 @@ void FListBox::onWheel (FWheelEvent* ev)
 
       if ( yoffset < 0 )
       {
-        current -= 4+yoffset;
+        current -= 4 + yoffset;
         yoffset=0;
       }
       else
@@ -1304,7 +1304,7 @@ void FListBox::draw()
   {
     setColor();
 
-    for (int y=2; y < getHeight(); y++)
+    for (int y = 2; y < getHeight(); y++)
     {
       setPrintPos (getWidth(),y);
       print (' '); // clear right side of the scrollbar
@@ -1360,7 +1360,7 @@ void FListBox::drawLabel()
     print (txt);
   else
   {
-    print (text.left(uInt(getClientWidth()-2)));
+    print (text.left(uInt(getClientWidth() - 2)));
     setColor (wc.label_ellipsis_fg, wc.label_bg);
     print("..");
   }
@@ -1398,7 +1398,7 @@ void FListBox::drawList()
 
   iter = index2iterator(int(start) + yoffset);
 
-  for (uInt y=start; y < end; y++)
+  for (uInt y = start; y < end; y++)
   {
     bool serach_mark = false;
     bool lineHasBrackets = hasBrackets(iter);
@@ -1524,12 +1524,12 @@ void FListBox::drawList()
             break;
         }
 
-        element = getString(iter).mid ( uInt(1+xoffset)
-                                      , uInt(getWidth()-nf_offset-5) );
+        element = getString(iter).mid ( uInt(1 + xoffset)
+                                      , uInt(getWidth() - nf_offset - 5) );
       }
       else
         element = getString(iter).mid ( uInt(xoffset)
-                                      ,  uInt(getWidth()-nf_offset-4) );
+                                      , uInt(getWidth() - nf_offset - 4) );
 
       const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
@@ -1549,7 +1549,8 @@ void FListBox::drawList()
 
       full_length = int(getString(iter).getLength());
 
-      if ( b+i < uInt(getWidth()-nf_offset-4) && xoffset <= full_length+1 )
+      if ( b + i < uInt(getWidth() - nf_offset - 4)
+          && xoffset <= full_length + 1 )
       {
         if ( serach_mark && i == inc_len )
           setColor ( wc.current_element_focus_fg
@@ -1586,14 +1587,14 @@ void FListBox::drawList()
         i++;
       }
 
-      for (; b+i < uInt(getWidth()-nf_offset-3); i++)
+      for (; b + i < uInt(getWidth() - nf_offset - 3); i++)
         print (' ');
     }
     else  // line has no brackets
     {
       uInt i, len;
-      element = getString(iter).mid ( uInt(1+xoffset)
-                                    , uInt(getWidth()-nf_offset-4) );
+      element = getString(iter).mid ( uInt(1 + xoffset)
+                                    , uInt(getWidth() - nf_offset - 4) );
       const wchar_t* const& element_str = element.wc_str();
       len = element.getLength();
 
@@ -1601,7 +1602,7 @@ void FListBox::drawList()
         setColor ( wc.current_inc_search_element_fg
                  , wc.current_element_focus_bg );
 
-      for (i=0; i < len; i++)
+      for (i = 0; i < len; i++)
       {
         if ( serach_mark && i == inc_len )
           setColor ( wc.current_element_focus_fg
@@ -1616,7 +1617,7 @@ void FListBox::drawList()
         i++;
       }
 
-      for (; i < uInt(getWidth()-nf_offset-3); i++)
+      for (; i < uInt(getWidth() - nf_offset - 3); i++)
         print (' ');
     }
 
@@ -1853,7 +1854,7 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
       xoffset -= 4;
 
       if ( xoffset < 0 )
-        xoffset=0;
+        xoffset = 0;
 
       break;
 

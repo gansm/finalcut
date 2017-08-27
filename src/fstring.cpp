@@ -530,7 +530,7 @@ FString& FString::sprintf (const char* format, ...)
   {
     try
     {
-      buffer = new char[len+1]();
+      buffer = new char[len + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -539,7 +539,7 @@ FString& FString::sprintf (const char* format, ...)
     }
 
     va_start (args, format);
-    vsnprintf (buffer, uLong(len+1), format, args);
+    vsnprintf (buffer, uLong(len + 1), format, args);
     va_end (args);
   }
 
@@ -853,7 +853,7 @@ FString FString::rtrim() const
   if ( last == p && std::iswspace(wint_t(*last)) )
     s.clear();
   else
-    *(last+1) = '\0';
+    *(last + 1) = '\0';
 
   return s;
 }
@@ -893,7 +893,7 @@ FString FString::left (uInt len) const
 
   p = s.string;
   s.length = len;
-  *(p+len) = '\0';
+  *(p + len) = '\0';
   return s;
 }
 
@@ -920,7 +920,7 @@ FString FString::right (uInt len) const
     return s;
 
   p = s.string;
-  p += (length-len);
+  p += (length - len);
   return FString(p);
 }
 
@@ -952,15 +952,15 @@ FString FString::mid (uInt pos, uInt len) const
   if ( pos == 0 )
     pos = 1;
 
-  if ( pos <= length && pos+len > length )
+  if ( pos <= length && pos + len > length )
     len = length - pos + 1;
 
-  if ( pos > length || pos+len-1 > length || len == 0 )
+  if ( pos > length || pos + len - 1 > length || len == 0 )
     return FString(L"");
 
   p = s.string;
   first = p + pos - 1;
-  *(first+len) = '\0';
+  *(first + len) = '\0';
   return FString(first);
 }
 
@@ -2033,7 +2033,7 @@ FString FString::expandTabs (int tabstop) const
   tab_split = instr.split("\t");
   last = tab_split.size();
 
-  for (uInt i=0; i < last; i++)
+  for (uInt i = 0; i < last; i++)
   {
     uInt len = tab_split[i].getLength();
     uInt tab_len = uInt(tabstop);
@@ -2053,8 +2053,8 @@ FString FString::removeDel() const
 
   if ( p )
   {
-    uInt i=0;
-    uInt d=0;
+    uInt i = 0;
+    uInt d = 0;
 
     while ( *p )
     {
@@ -2093,7 +2093,7 @@ FString FString::removeBackspaces() const
 
   if ( p )
   {
-    uInt i=0;
+    uInt i = 0;
 
     while ( *p )
     {
@@ -2138,7 +2138,7 @@ const FString& FString::overwrite (const wchar_t* s, uInt pos)
 {
   uInt len = uInt(std::wcslen(s));
 
-  if (length >= (pos+len) )
+  if (length >= (pos +len) )
   {
     std::wcsncpy (string + pos, s, len);
   }
@@ -2154,7 +2154,7 @@ const FString& FString::overwrite (const wchar_t* s, uInt pos)
 //----------------------------------------------------------------------
 const FString& FString::overwrite (const wchar_t c, uInt pos)
 {
-  if ( length >= (pos+1) )
+  if ( length >= (pos + 1) )
   {
     string[pos] = c;
   }
@@ -2296,11 +2296,11 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
     if ( (length + len + 1) <= bufsize )
     {
       // output string <= bufsize
-      for (x = length; x+1 > pos; x--)  // shifting right side  + '\0'
-        string[x+len] = string[x];
+      for (x = length; x + 1 > pos; x--)  // shifting right side  + '\0'
+        string[x + len] = string[x];
 
-      for (x=0; x < len; x++)           // insert string
-        string[x+pos] = s[x];
+      for (x = 0; x < len; x++)           // insert string
+        string[x + pos] = s[x];
 
       length += len;
     }
@@ -2322,17 +2322,17 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
 
       uInt y = 0;
 
-      for (x=0; x < pos; x++)           // left side
+      for (x = 0; x < pos; x++)           // left side
         sptr[y++] = string[x];
 
-      for (x=0; x < len; x++)           // insert string
+      for (x = 0 ; x < len; x++)          // insert string
         sptr[y++] = s[x];
 
-      for (x=pos; x < length+1; x++)    // right side  + '\0'
+      for (x = pos; x < length + 1; x++)  // right side  + '\0'
         sptr[y++] = string[x];
 
       length += len;
-      delete[](string);                 // delete old string
+      delete[](string);                   // delete old string
       string = sptr;
     }
   }
@@ -2344,8 +2344,8 @@ inline void FString::_remove (uInt pos, uInt len)
   if ( (bufsize - length - 1 + len) <= FWDBUFFER )
   {
     // shifting left side to pos
-    for (uInt i=pos; (i+len) < length+1; i++)
-      string[i] = string[i+len];
+    for (uInt i = pos; i + len < length + 1; i++)
+      string[i] = string[i + len];
 
     length -= len;
   }
@@ -2366,10 +2366,10 @@ inline void FString::_remove (uInt pos, uInt len)
 
     uInt x, y = 0;
 
-    for (x=0; x < pos; x++)             // left side
+    for (x = 0; x < pos; x++)             // left side
       sptr[y++] = string[x];
 
-    for (x=pos+len; x < length+1; x++)  // right side  + '\0'
+    for (x = pos + len; x < length + 1; x++)  // right side  + '\0'
       sptr[y++] = string[x];
 
     delete[](string);                   // delete old string
@@ -2493,7 +2493,7 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
   }
 
   if ( wclength == size )
-    dest[size-1] = '\0';
+    dest[size - 1] = '\0';
 
   if ( wclength )
     return dest;

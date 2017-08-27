@@ -219,7 +219,7 @@ void FToggleButton::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -403,16 +403,16 @@ uChar FToggleButton::getHotkey()
 
   length = text.getLength();
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
     try
     {
-      if ( (i+1 < length) && (text[i] == '&') )
+      if ( i + 1 < length && text[i] == '&' )
         return uChar(text[++i]);
     }
     catch (const std::out_of_range&)
     {
-      return 0;;
+      return 0;
     }
   }
 
@@ -496,7 +496,7 @@ void FToggleButton::drawLabel()
 
   try
   {
-    LabelText = new wchar_t[length+1]();
+    LabelText = new wchar_t[length + 1]();
   }
   catch (const std::bad_alloc& ex)
   {
@@ -512,9 +512,9 @@ void FToggleButton::drawLabel()
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  for (i=0; i < length; i++)
+  for (i = 0; i < length; i++)
   {
-    if ( (i < length) && (txt[i] == '&') && (hotkeypos == -1) )
+    if ( i < length && txt[i] == '&' && hotkeypos == -1 )
     {
       hotkeypos = int(i);
       i++;
@@ -537,7 +537,7 @@ void FToggleButton::drawLabel()
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (int z=0; z < int(length); z++)
+  for (int z = 0; z < int(length); z++)
   {
     if ( (z == hotkeypos) && isActive )
     {

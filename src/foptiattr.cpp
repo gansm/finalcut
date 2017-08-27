@@ -1236,7 +1236,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
 
   if ( hasColor(attr) && attr_without_color > 0 )
   {
-    for (int bit=1; bit < no_mode; bit <<= 1)
+    for (int bit = 1; bit < no_mode; bit <<= 1)
     {
       switch ( bit & attr_without_color )
       {

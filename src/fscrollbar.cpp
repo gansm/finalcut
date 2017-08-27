@@ -247,7 +247,7 @@ void FScrollbar::drawButtons()
     {
       print (fc::NF_rev_left_arrow1);
       print (fc::NF_rev_left_arrow2);
-      setPrintPos (length-1, 1);
+      setPrintPos (length - 1, 1);
       print (fc::NF_rev_right_arrow1);
       print (fc::NF_rev_right_arrow2);
     }
@@ -289,7 +289,7 @@ void FScrollbar::drawBar()
   {
     setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-    for (z=1; z <= slider_pos; z++)
+    for (z = 1; z <= slider_pos; z++)
     {
       setPrintPos (1, 1 + z);
 
@@ -307,7 +307,7 @@ void FScrollbar::drawBar()
     if ( isMonochron() )
       setReverse(false);
 
-    for (z=1; z <= slider_length; z++)
+    for (z = 1; z <= slider_length; z++)
     {
       setPrintPos (1, 1 + slider_pos + z);
 
@@ -322,7 +322,7 @@ void FScrollbar::drawBar()
 
     setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-    for (z=slider_pos+slider_length+1; z <= bar_length; z++)
+    for (z = slider_pos + slider_length + 1; z <= bar_length; z++)
     {
       setPrintPos (1, 1 + z);
 
@@ -416,19 +416,22 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   {
     if ( bar_orientation == fc::vertical )
     {
-      if ( mouse_y > slider_pos+1 && mouse_y <= slider_pos+slider_length+1 )
+      if ( mouse_y > slider_pos + 1
+         && mouse_y <= slider_pos + slider_length + 1 )
         slider_click_pos = mouse_y;  // on slider
     }
     else  // horizontal
     {
       if ( isNewFont() )
       {
-        if ( mouse_x > slider_pos+2 && mouse_x <= slider_pos+slider_length+2 )
+        if ( mouse_x > slider_pos + 2
+           && mouse_x <= slider_pos + slider_length + 2 )
           slider_click_pos = mouse_x;  // on slider
       }
       else
       {
-        if ( mouse_x > slider_pos+1 && mouse_x <= slider_pos+slider_length+1 )
+        if ( mouse_x > slider_pos + 1
+           && mouse_x <= slider_pos + slider_length + 1 )
           slider_click_pos = mouse_x;  // on slider
       }
     }
@@ -576,11 +579,11 @@ void FScrollbar::onTimer (FTimerEvent*)
   if ( ( scroll_type == FScrollbar::scrollPageBackward
         && slider_pos < slider_click_stop_pos )
       || ( scroll_type == FScrollbar::scrollPageForward
-          && slider_pos+slider_length > slider_click_stop_pos ) )
+          && slider_pos + slider_length > slider_click_stop_pos ) )
   {
     // Scroll to the end
     if ( scroll_type == FScrollbar::scrollPageForward
-        && slider_pos+slider_length > slider_click_stop_pos )
+        && slider_pos + slider_length > slider_click_stop_pos )
     {
       setValue(max);
       processScroll();
@@ -625,11 +628,11 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
     {
       stype = FScrollbar::scrollStepBackward;  // decrement button
     }
-    else if ( y >1 && y <= slider_pos+1 )
+    else if ( y > 1 && y <= slider_pos + 1 )
     {
       stype = FScrollbar::scrollPageBackward;  // before slider
     }
-    else if ( y > slider_pos+slider_length+1 && y < getHeight() )
+    else if ( y > slider_pos + slider_length + 1 && y < getHeight() )
     {
       stype = FScrollbar::scrollPageForward;  // after slider
     }
@@ -648,15 +651,15 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
       {
         stype = FScrollbar::scrollStepBackward;  // decrement button
       }
-      else if ( x >2 && x <= slider_pos+2 )
+      else if ( x > 2 && x <= slider_pos + 2 )
       {
         stype = FScrollbar::scrollPageBackward;  // before slider
       }
-      else if ( x > slider_pos+slider_length+2 && x < getWidth()-1 )
+      else if ( x > slider_pos + slider_length + 2 && x < getWidth() - 1 )
       {
         stype = FScrollbar::scrollPageForward;  // after slider
       }
-      else if ( x == getWidth()-1 || x == getWidth() )
+      else if ( x == getWidth() - 1 || x == getWidth() )
       {
         stype = FScrollbar::scrollStepForward;  // increment button
       }
@@ -669,11 +672,11 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
       {
         stype = FScrollbar::scrollStepBackward;  // decrement button
       }
-      else if ( x >1 && x <= slider_pos+1 )
+      else if ( x > 1 && x <= slider_pos + 1 )
       {
         stype = FScrollbar::scrollPageBackward;  // before slider
       }
-      else if ( x > slider_pos+slider_length+1 && x < getWidth() )
+      else if ( x > slider_pos + slider_length + 1 && x < getWidth() )
       {
         stype = FScrollbar::scrollPageForward;  // after slider
       }

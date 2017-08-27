@@ -909,7 +909,7 @@ void FMenu::adjustItems()
 int FMenu::adjustX (int x_pos)
 {
   // Is menu outside on the right of the screen?
-  if ( x_pos+int(max_item_width) >= getColumnNumber()-1 )
+  if ( x_pos + int(max_item_width) >= getColumnNumber() - 1 )
   {
     x_pos = getColumnNumber() - int(max_item_width + 1);
     // Menu to large for the screen
@@ -1204,9 +1204,9 @@ int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
   int hotkeypos = -1;
   wchar_t* txt = src;
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
-    if ( (i < length) && (txt[i] == L'&') && (hotkeypos == -1) )
+    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
     {
       hotkeypos = int(i);
       i++;
@@ -1346,7 +1346,7 @@ void FMenu::drawItems()
 
       try
       {
-        item_text = new wchar_t[txt_length+1]();
+        item_text = new wchar_t[txt_length + 1]();
       }
       catch (const std::bad_alloc& ex)
       {
@@ -1385,7 +1385,7 @@ void FMenu::drawItems()
         to_char--;
       }
 
-      for (int z=0; z < to_char; z++)
+      for (int z = 0; z < to_char; z++)
       {
         if ( ! std::iswprint(wint_t(item_text[z])) )
         {
@@ -1444,7 +1444,7 @@ void FMenu::drawItems()
 
       if ( is_selected )
       {
-        for (uInt i=uInt(to_char+c); i < max_item_width - 1; i++)
+        for (uInt i = uInt(to_char + c); i < max_item_width - 1; i++)
           print (' ');
       }
 
@@ -1471,14 +1471,14 @@ inline void FMenu::drawSeparator(int y)
   if ( isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
-    FString line(getWidth()-2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line(getWidth() - 2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
   else
   {
     print (fc::BoxDrawingsVerticalAndRight);
-    FString line(getWidth()-2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line(getWidth() - 2, wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }

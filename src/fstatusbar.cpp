@@ -186,7 +186,7 @@ void FStatusBar::hide()
 
   try
   {
-    blank = new char[screenWidth+1];
+    blank = new char[screenWidth + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -220,8 +220,8 @@ void FStatusBar::drawMessage()
   if ( hasKeys )
   {
     std::vector<FStatusKey*>::const_iterator iter = key_list.end();
-    isLastActiveFocus = bool ( (*(iter-1))->isActivated()
-                              || (*(iter-1))->hasMouseFocus() );
+    isLastActiveFocus = bool ( (*(iter - 1))->isActivated()
+                              || (*(iter - 1))->hasMouseFocus() );
   }
   else
     isLastActiveFocus = false;
@@ -235,7 +235,7 @@ void FStatusBar::drawMessage()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( x+space_offset+3 < termWidth )
+  if ( x + space_offset + 3 < termWidth )
   {
     if ( text )
     {
@@ -255,17 +255,17 @@ void FStatusBar::drawMessage()
       int msg_length = int(getMessage().getLength());
       x += msg_length;
 
-      if ( x-1 <= termWidth )
+      if ( x - 1 <= termWidth )
         print (getMessage());
       else
       {
-        print ( getMessage().left(uInt(msg_length+termWidth-x-1)) );
+        print ( getMessage().left(uInt(msg_length + termWidth - x - 1)) );
         print ("..");
       }
     }
   }
 
-  for (int i=x; i <= termWidth; i++)
+  for (int i = x; i <= termWidth; i++)
     print (' ');
 
   if ( isMonochron() )
@@ -317,7 +317,7 @@ void FStatusBar::remove (int pos)
   if ( int(getCount()) < pos )
     return;
 
-  key_list.erase (key_list.begin()+pos-1);
+  key_list.erase (key_list.begin() + pos - 1);
 }
 
 //----------------------------------------------------------------------
@@ -461,7 +461,7 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FStatusKey*>::const_iterator iter, end;
     bool focus_changed = false;
-    int X=1;
+    int X = 1;
     iter = key_list.begin();
     end = key_list.end();
 
@@ -583,7 +583,7 @@ void FStatusBar::drawKeys()
   {
     int kname_len = int(getKeyName((*iter)->getKey()).getLength());
 
-    if ( x+kname_len+2 < screenWidth )
+    if ( x + kname_len + 2 < screenWidth )
     {
       if ( (*iter)->isActivated() || (*iter)->hasMouseFocus() )
       {
@@ -612,7 +612,7 @@ void FStatusBar::drawKeys()
         else
         {
           print ( (*iter)->getText()
-                          .left(uInt(txt_length+screenWidth-x-1)) );
+                          .left(uInt(txt_length + screenWidth - x - 1)) );
           print ("..");
         }
 
@@ -635,18 +635,18 @@ void FStatusBar::drawKeys()
         txt_length = int((*iter)->getText().getLength());
         x += txt_length;
 
-        if ( x-1 <= screenWidth )
+        if ( x - 1 <= screenWidth )
           print ((*iter)->getText());
         else
         {
           print ( (*iter)->getText()
-                          .left(uInt(txt_length+screenWidth-x-1)) );
+                          .left(uInt(txt_length + screenWidth - x - 1)) );
           print ("..");
         }
 
-        if ( iter+1 != key_list.end()
-            && ( (*(iter+1))->isActivated() || (*(iter+1))->hasMouseFocus() )
-            && x + int(getKeyName((*(iter+1))->getKey()).getLength()) + 3
+        if ( iter + 1 != key_list.end()
+            && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
+            && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
              < screenWidth )
         {
           // next element is active
@@ -666,7 +666,7 @@ void FStatusBar::drawKeys()
           if ( isMonochron() )
             setReverse(true);
         }
-        else if ( iter+1 != key_list.end() && x < screenWidth )
+        else if ( iter + 1 != key_list.end() && x < screenWidth )
         {
           // not the last element
           setColor (wc.statusbar_separator_fg, wc.statusbar_bg);

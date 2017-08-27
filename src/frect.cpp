@@ -24,7 +24,7 @@ FRect::~FRect()  // destructor
 //----------------------------------------------------------------------
 bool FRect::isNull() const
 {
-  return X2 == X1-1 && Y2 == Y1-1;
+  return X2 == X1 - 1 && Y2 == Y1 - 1;
 }
 
 //----------------------------------------------------------------------
@@ -111,7 +111,7 @@ void FRect::setSize (int w, int h)
 //----------------------------------------------------------------------
 void FRect::setRect (const FRect& r)
 {
-  setRect (r.X1, r.Y1, r.X2-r.X1+1, r.Y2-r.Y1+1);
+  setRect (r.X1, r.Y1, r.X2 - r.X1 + 1, r.Y2 - r.Y1 + 1);
 }
 
 //----------------------------------------------------------------------
@@ -119,8 +119,8 @@ void FRect::setRect (int x, int y, int width, int height)
 {
   X1 = short(x);
   Y1 = short(y);
-  X2 = short(x+width-1);
-  Y2 = short(y+height-1);
+  X2 = short(x + width - 1);
+  Y2 = short(y + height - 1);
 }
 
 //----------------------------------------------------------------------

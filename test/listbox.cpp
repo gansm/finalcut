@@ -91,7 +91,7 @@ Listbox::Listbox (FWidget* parent)
   double_list = new std::list<double>;
 
   for (double i=1; i<=15; i++)
-    double_list->push_back(2*i + (i/100));
+    double_list->push_back(2 * i + (i / 100));
 
   FListBox* list2 = new FListBox (this);
   list2->setGeometry(21, 1, 10, 10);

@@ -423,7 +423,7 @@ int FApplication::gpmEvent (bool clear)
   FD_SET(gpm_fd, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  result = select (max+1, &ifds, 0, 0, &tv);
+  result = select (max + 1, &ifds, 0, 0, &tv);
 
   if ( FD_ISSET(stdin_no, &ifds) )
   {
@@ -454,7 +454,7 @@ inline bool FApplication::KeyPressed()
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 100000;  // 100 ms
-  result = select (stdin_no+1, &ifds, 0, 0, &tv);
+  result = select (stdin_no + 1, &ifds, 0, 0, &tv);
 
   if ( FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
@@ -467,7 +467,7 @@ inline ssize_t FApplication::readKey()
 {
   register ssize_t bytes;
   setNonBlockingInput();
-  bytes = read(stdin_no, &k_buf, sizeof(k_buf)-1);
+  bytes = read(stdin_no, &k_buf, sizeof(k_buf) - 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -546,7 +546,7 @@ void FApplication::processKeyboardEvent()
     {
       if ( bytesread + fifo_offset <= fifo_buf_size )
       {
-        for (int i=0; i < bytesread; i++)
+        for (int i = 0; i < bytesread; i++)
         {
           fifo_buf[fifo_offset] = k_buf[i];
           fifo_offset++;
@@ -585,14 +585,14 @@ void FApplication::processKeyboardEvent()
                 x11_mouse[3] = '\0';
 
                 // Remove founded entry
-                for (n=len; n < fifo_buf_size; n++)
-                  fifo_buf[n-len] = fifo_buf[n];
+                for (n = len; n < fifo_buf_size; n++)
+                  fifo_buf[n - len] = fifo_buf[n];
 
                 n = fifo_buf_size - len - 1;
 
                 // Fill rest with '\0'
                 for (; n < fifo_buf_size; n++)
-                  fifo_buf[n-len] = '\0';
+                  fifo_buf[n - len] = '\0';
 
                 unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
@@ -606,22 +606,22 @@ void FApplication::processKeyboardEvent()
 
                 while ( n < len && n < fifo_buf_size )
                 {
-                  sgr_mouse[n-3] = fifo_buf[n];
+                  sgr_mouse[n - 3] = fifo_buf[n];
                   n++;
 
                   if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
                     len = n + 1;
                 }
 
-                sgr_mouse[n-3] = '\0';
+                sgr_mouse[n - 3] = '\0';
 
-                for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-                  fifo_buf[n-len] = fifo_buf[n];
+                for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+                  fifo_buf[n - len] = fifo_buf[n];
 
-                n = fifo_buf_size-len-1;
+                n = fifo_buf_size - len - 1;
 
                 for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-                  fifo_buf[n-len] = '\0';
+                  fifo_buf[n - len] = '\0';
 
                 unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
@@ -635,22 +635,22 @@ void FApplication::processKeyboardEvent()
 
                 while ( n < len && n < fifo_buf_size )
                 {
-                  urxvt_mouse[n-2] = fifo_buf[n];
+                  urxvt_mouse[n - 2] = fifo_buf[n];
                   n++;
 
                   if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
                     len = n + 1;
                 }
 
-                urxvt_mouse[n-2] = '\0';
+                urxvt_mouse[n - 2] = '\0';
 
-                for (n=len; n < fifo_buf_size; n++)  // Remove founded entry
-                  fifo_buf[n-len] = fifo_buf[n];
+                for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+                  fifo_buf[n - len] = fifo_buf[n];
 
-                n = fifo_buf_size-len-1;
+                n = fifo_buf_size - len - 1;
 
                 for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-                  fifo_buf[n-len] = '\0';
+                  fifo_buf[n - len] = '\0';
 
                 unprocessedInput() = bool(fifo_buf[0] != '\0');
                 processMouseEvent();
@@ -1024,7 +1024,7 @@ bool FApplication::processDialogSwitchAccelerator()
       }
 
       FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
-      sendEvent (dialog_list->at(n-1), &a_ev);
+      sendEvent (dialog_list->at(n - 1), &a_ev);
       return true;
     }
   }

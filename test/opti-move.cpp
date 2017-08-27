@@ -82,7 +82,7 @@ void move (int xold, int yold, int xnew, int ynew)
   buffer = terminal->moveCursor (xold, yold, xnew, ynew);
   len    = uInt(std::strlen(buffer));
 
-  for (uInt i=0; i < len; i++)
+  for (uInt i = 0; i < len; i++)
   {
     switch ( buffer[i] )
     {
@@ -134,7 +134,7 @@ int main (int argc, char* argv[])
   terminal = new FVTerm(&app);
   xmax = terminal->getColumnNumber() - 1;
   ymax = terminal->getLineNumber() - 1;
-  FString line(xmax+1, '-');
+  FString line(xmax + 1, '-');
 
   terminal->setTermXY(0,0);
   terminal->setNormal();
@@ -154,7 +154,7 @@ int main (int argc, char* argv[])
   move (5, ymax, 5, 0);
   move (xmax, 1, 0, 1);
   move (xmax, 1, 0, 2);
-  move (xmax+1, 1, 0, 2);
+  move (xmax + 1, 1, 0, 2);
   move (9, 4, 10, 4);
   move (10, 4, 9, 4);
   move (9, 4, 11, 4);
@@ -165,7 +165,7 @@ int main (int argc, char* argv[])
   move (16, 0, 16, 2);
   move (16, 2, 16, 0);
   move (3, 2, xmax, 2);
-  move (5, 5, xmax-5, ymax-5);
+  move (5, 5, xmax - 5, ymax - 5);
 
   keyPressed();
 

@@ -104,7 +104,7 @@ void FProgressbar::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -115,7 +115,7 @@ void FProgressbar::hide()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight()+s; y++)
+  for (int y = 0; y < getHeight() + s; y++)
   {
     setPrintPos (1, 1 + y);
     print (blank);

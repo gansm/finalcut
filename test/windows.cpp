@@ -311,7 +311,7 @@ Window::Window (FWidget* parent)
     F_METHOD_CALLBACK (this, &Window::cb_exitApp)
   );
 
-  for (int n=1; n <= 6; n++)
+  for (int n = 1; n <= 6; n++)
   {
     win_data* win_dat = new win_data;
     win_dat->is_open = false;
@@ -374,8 +374,8 @@ void Window::adjustSize()
     {
       int x,y,n;
       n = int(std::distance(begin, iter));
-      x = dx + 5 + (n%3)*25 + int(n/3)*3;
-      y = dy + 11 + int(n/3)*3;
+      x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
+      y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (x, y);
     }
 
@@ -424,8 +424,8 @@ void Window::cb_createWindows (FWidget*, data_ptr)
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);
       n = int(std::distance(begin, iter));
-      x = dx + 5 + (n%3)*25 + int(n/3)*3;
-      y = dy + 11 + int(n/3)*3;
+      x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
+      y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (x, y, 20, 8);
       win->setMinimumSize (20, 8);
       win->setResizeable();
@@ -579,7 +579,7 @@ int main (int argc, char* argv[])
 
   Window main_dlg (&app);
   main_dlg.setText ("Main window");
-  main_dlg.setGeometry (int(1+(app.getWidth()-40)/2), 2, 40, 6);
+  main_dlg.setGeometry (int(1 + (app.getWidth() - 40) / 2), 2, 40, 6);
 
   app.setMainWidget (&main_dlg);
   main_dlg.show();

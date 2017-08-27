@@ -188,7 +188,7 @@ void FDialog::setPos (int x, int y, bool)
   height = getHeight();
 
   // Avoid to move widget completely outside the terminal
-  if ( x+width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
+  if ( x + width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
     return;
 
   if ( isZoomed() )
@@ -220,22 +220,25 @@ void FDialog::setPos (int x, int y, bool)
     if ( dx > 0 )
     {
       if ( dy > 0 )
-        restoreVTerm (old_x+width+rsw-dx, old_y, dx, getHeight()+bsh-dy);
+        restoreVTerm ( old_x + width + rsw - dx, old_y
+                     , dx, getHeight() + bsh - dy );
       else
-        restoreVTerm (old_x+width+rsw-dx, old_y+std::abs(dy), dx, height+bsh-std::abs(dy));
+        restoreVTerm ( old_x + width + rsw - dx, old_y + std::abs(dy)
+                     , dx, height + bsh - std::abs(dy));
     }
     else
     {
       if ( dy > 0 )
-        restoreVTerm (old_x, old_y, std::abs(dx), height+bsh-dy);
+        restoreVTerm (old_x, old_y, std::abs(dx), height + bsh - dy);
       else
-        restoreVTerm (old_x, old_y+std::abs(dy), std::abs(dx), height+bsh-std::abs(dy));
+        restoreVTerm ( old_x, old_y + std::abs(dy)
+                     , std::abs(dx), height + bsh - std::abs(dy) );
     }
 
     if ( dy > 0 )
-      restoreVTerm (old_x, old_y+height+bsh-dy, width+rsw, dy);
+      restoreVTerm (old_x, old_y + height + bsh - dy, width + rsw, dy);
     else
-      restoreVTerm (old_x, old_y, width+rsw, std::abs(dy));
+      restoreVTerm (old_x, old_y, width + rsw, std::abs(dy));
   }
   else
   {
@@ -321,10 +324,10 @@ void FDialog::setSize (int w, int h, bool adjust)
 
   // restoring the non-covered terminal areas
   if ( dw > 0 )
-    restoreVTerm (x+w+rsw, y, dw, h+bsh+dh);  // restore right
+    restoreVTerm (x + w + rsw, y, dw, h + bsh + dh);  // restore right
 
   if ( dh > 0 )
-    restoreVTerm (x, y+h+bsh, w+rsw+dw, dh);  // restore bottom
+    restoreVTerm (x, y + h + bsh, w + rsw + dw, dh);  // restore bottom
 
   redraw();
 
@@ -528,7 +531,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
 {
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
-  int zoom_btn;;
+  int zoom_btn;
 
   if ( ! isResizeable() )
     zoom_btn = 0;
@@ -549,7 +552,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     bool has_raised;
 
     // click on titlebar or window: raise + activate
-    if ( mouse_x >= 4 && mouse_x <= getWidth()-zoom_btn && mouse_y == 1 )
+    if ( mouse_x >= 4 && mouse_x <= getWidth() - zoom_btn && mouse_y == 1 )
       titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
     else
       titlebar_click_pos.setPoint (0,0);
@@ -565,7 +568,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     // click on titlebar menu button
     if ( mouse_x < 4 && mouse_y == 1 )
       openMenu();
-    else if ( mouse_x > getWidth()-zoom_btn && mouse_y == 1 )
+    else if ( mouse_x > getWidth() - zoom_btn && mouse_y == 1 )
     {
       zoom_button_pressed = true;
       zoom_button_active = true;
@@ -575,8 +578,8 @@ void FDialog::onMouseDown (FMouseEvent* ev)
     // click on the lower right resize corner
     if ( isResizeable()
         && ( (mouse_x == getWidth() && mouse_y == getHeight())
-            || (mouse_x == getWidth()-1 && mouse_y == getHeight())
-            || (mouse_x == getWidth() && mouse_y == getHeight()-1) ) )
+            || (mouse_x == getWidth() - 1 && mouse_y == getHeight())
+            || (mouse_x == getWidth() && mouse_y == getHeight() - 1) ) )
     {
       resize_click_pos = ev->getTermPos();
       FPoint lower_right_pos = getTermGeometry().getLowerRightPos();
@@ -1088,7 +1091,7 @@ void FDialog::init()
     return;
   }
 
-  dialog_menu->setPos (getX(), getY()+1);
+  dialog_menu->setPos (getX(), getY() + 1);
   dgl_menuitem = dialog_menu->getItem();
 
   if ( dgl_menuitem )
@@ -1170,7 +1173,7 @@ void FDialog::drawBorder()
 
   if ( isNewFont() )
   {
-    for (int y=y1; y < y2; y++)
+    for (int y = y1; y < y2; y++)
     {
       setPrintPos (x1, y);
       // border left ⎸
@@ -1184,7 +1187,7 @@ void FDialog::drawBorder()
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x=1; x < getWidth()-1; x++) // low line _
+    for (int x = 1; x < getWidth() - 1; x++) // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);
@@ -1269,7 +1272,7 @@ void FDialog::drawTitleBar()
   i = getWidth() - length - menu_btn - zoom_btn;
   i = int(i/2);
 
-  for (x=1; x <= i; x++)
+  for (x = 1; x <= i; x++)
     print (' ');
 
   // the title bar text
@@ -1285,7 +1288,7 @@ void FDialog::drawTitleBar()
   }
 
   // fill the rest of the bar
-  for (; x+1+length < getWidth()-zoom_btn-1; x++)
+  for ( ; x + 1 + length < getWidth() - zoom_btn - 1; x++)
     print (' ');
 
   if ( getMaxColor() < 16 )
@@ -1351,7 +1354,7 @@ void FDialog::drawTitleBar()
     setReverse(false);
 
 /* print the number of window in stack */
-//setPrintPos (getWidth()-2, 1);
+//setPrintPos (getWidth() - 2, 1);
 //printf ("(%d)", getWindowLayer(this));
 }
 
@@ -1390,7 +1393,7 @@ void FDialog::openMenu()
   else
   {
     setOpenMenu(dialog_menu);
-    dialog_menu->setPos (getX(), getY()+1);
+    dialog_menu->setPos (getX(), getY() + 1);
     dialog_menu->setVisible();
     drawTitleBar();
     dialog_menu->show();

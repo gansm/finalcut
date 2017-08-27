@@ -263,12 +263,12 @@ void FWindow::drawBorder()
     setPrintPos (x1, y1);
     print (fc::NF_border_corner_upper_left); // ⎡
 
-    for (int x=x1+1; x < x2; x++)
+    for (int x = x1 + 1; x < x2; x++)
       print (fc::NF_border_line_upper); // ¯
 
     print (fc::NF_rev_border_corner_upper_right); // ⎤
 
-    for (int y=y1+1; y < y2; y++)
+    for (int y = y1 + 1; y < y2; y++)
     {
       setPrintPos (x1, y);
       // border left ⎸
@@ -282,7 +282,7 @@ void FWindow::drawBorder()
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x=2; x < getWidth(); x++) // low line _
+    for (int x = 2; x < getWidth(); x++) // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);

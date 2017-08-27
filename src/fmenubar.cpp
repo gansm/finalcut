@@ -45,7 +45,7 @@ void FMenuBar::hide()
 
   try
   {
-    blank = new char[screenWidth+1];
+    blank = new char[screenWidth + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -729,9 +729,9 @@ int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
   int hotkeypos = -1;
   wchar_t* txt = src;
 
-  for (uInt i=0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
-    if ( (i < length) && (txt[i] == L'&') && (hotkeypos == -1) )
+    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
     {
       hotkeypos = int(i);
       i++;
@@ -819,7 +819,7 @@ void FMenuBar::drawItems()
 
     try
     {
-      item_text = new wchar_t[txt_length+1]();
+      item_text = new wchar_t[txt_length + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -830,10 +830,10 @@ void FMenuBar::drawItems()
     src  = const_cast<wchar_t*>(txt.wc_str());
     dest = const_cast<wchar_t*>(item_text);
 
-    if ( x-1 <= screenWidth )
+    if ( x - 1 <= screenWidth )
       to_char = int(txt_length);
     else
-      to_char = int(txt_length) - (screenWidth-x-1);
+      to_char = int(txt_length) - (screenWidth - x - 1);
 
     hotkeypos = getHotkeyPos (src, dest, txt_length);
 
@@ -845,9 +845,9 @@ void FMenuBar::drawItems()
 
     x += int(txt_length);
 
-    for (int z=0; z < to_char; z++)
+    for (int z = 0; z < to_char; z++)
     {
-      if ( startpos > screenWidth-z )
+      if ( startpos > screenWidth - z )
         break;
 
       if ( ! std::iswprint(wint_t(item_text[z])) )
@@ -878,14 +878,14 @@ void FMenuBar::drawItems()
         print (item_text[z]);
     }
 
-    if ( x > screenWidth+1 )
+    if ( x > screenWidth + 1 )
     {
       if ( startpos < screenWidth )
       {
         setPrintPos (screenWidth - 1, 1);
         print ("..");
       }
-      else if ( startpos-1 <= screenWidth )
+      else if ( startpos - 1 <= screenWidth )
       {
         setPrintPos (screenWidth, 1);
         print (' ');

@@ -81,7 +81,7 @@ void ColorChooser::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() == fc::MiddleButton )
     return;
 
-  for (int c=0; c < 16; c++)
+  for (int c = 0; c < 16; c++)
   {
     int xmin = 2 + (c / 8) * 3;
     int xmax = 4 + (c / 8) * 3;
@@ -106,9 +106,9 @@ void ColorChooser::draw()
   setColor();
   FWidget::drawBorder (1, 2, 8, 11);
 
-  for (short c=0; c < 16; c++)
+  for (short c = 0; c < 16; c++)
   {
-    setPrintPos (2 + (c/8)*3, 3 + c%8);
+    setPrintPos (2 + (c / 8) * 3, 3 + c % 8);
 
     if ( c < 6 )
       setColor (fc::LightGray, c);
@@ -363,7 +363,7 @@ void MouseDraw::setGeometry (int x, int y, int w, int h, bool adjust)
   FDialog::setGeometry (x, y, w, h, adjust);
 
   FPoint no_shadow(0,0);
-  FRect scroll_geometry (0, 0, w-11, h-3);
+  FRect scroll_geometry (0, 0, w - 11, h - 3);
   old_w = canvas->width;
   old_h = canvas->height;
   resizeArea (scroll_geometry, no_shadow, canvas);
@@ -406,7 +406,7 @@ void MouseDraw::draw()
   setPrintPos (10, 2);
   print (wchar_t(fc::BoxDrawingsDownAndHorizontal));
 
-  for (int y=3; y < y_max; y++)
+  for (int y = 3; y < y_max; y++)
   {
     setPrintPos (10, y);
     print (wchar_t(fc::BoxDrawingsVertical));
@@ -457,19 +457,19 @@ void MouseDraw::drawCanvas()
   x_end = canvas->width;
   int w_line_len = print_area->width + print_area->right_shadow;
 
-  for (int y=0; y < y_end; y++)  // line loop
+  for (int y = 0; y < y_end; y++)  // line loop
   {
     char_data* cc; // canvas character
     char_data* wc; // window character
     cc = &canvas->text[y * x_end];
-    wc = &print_area->text[(ay+y) * w_line_len + ax];
+    wc = &print_area->text[(ay + y) * w_line_len + ax];
     std::memcpy (wc, cc, sizeof(char_data) * unsigned(x_end));
 
-    if ( short(print_area->changes[ay+y].xmin) > ax )
-      print_area->changes[ay+y].xmin = uInt(ax);
+    if ( short(print_area->changes[ay + y].xmin) > ax )
+      print_area->changes[ay + y].xmin = uInt(ax);
 
-    if ( short(print_area->changes[ay+y].xmax) < ax+x_end-1 )
-      print_area->changes[ay+y].xmax = uInt(ax+x_end-1);
+    if ( short(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
+      print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 
   print_area->has_changes = true;

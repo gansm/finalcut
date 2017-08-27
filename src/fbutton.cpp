@@ -255,7 +255,7 @@ void FButton::hide()
 
   try
   {
-    blank = new char[size+1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -265,9 +265,9 @@ void FButton::hide()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y=0; y < getHeight()+s+(f << 1); y++)
+  for (int y = 0; y < getHeight() + s + (f << 1); y++)
   {
-    setPrintPos (1-f, 1+y-f);
+    setPrintPos (1 - f, 1 + y - f);
     print (blank);
   }
 
@@ -444,16 +444,16 @@ uChar FButton::getHotkey()
 
   length = int(text.getLength());
 
-  for (int i=0; i < length; i++)
+  for (int i = 0; i < length; i++)
   {
     try
     {
-      if ( (i+1 < length) && (text[uInt(i)] == '&') )
+      if ( i + 1 < length && text[uInt(i)] == '&' )
         return uChar(text[uInt(++i)]);
     }
     catch (const std::out_of_range&)
     {
-      return 0;;
+      return 0;
     }
   }
 
@@ -513,9 +513,9 @@ void FButton::draw()
   try
   {
     if ( isMonochron() || getMaxColor() < 16 )
-      ButtonText = new wchar_t[length+3]();
+      ButtonText = new wchar_t[length + 3]();
     else
-      ButtonText = new wchar_t[length+1]();
+      ButtonText = new wchar_t[length + 1]();
   }
   catch (const std::bad_alloc& ex)
   {
@@ -532,7 +532,7 @@ void FButton::draw()
   is_Active = ((flags & fc::active) != 0);
   is_Focus = ((flags & fc::focus) != 0);
   is_Flat = isFlat();
-  is_NonFlatShadow = ((flags & (fc::shadow+fc::flat)) == fc::shadow);
+  is_NonFlatShadow = ((flags & (fc::shadow + fc::flat)) == fc::shadow);
   is_NoUnderline = ((flags & fc::no_underline) != 0);
 
   if ( isMonochron() )
@@ -550,7 +550,7 @@ void FButton::draw()
       setColor ( parent_widget->getForegroundColor()
                , parent_widget->getBackgroundColor() );
 
-    for (int y=1; y <= getHeight(); y++)
+    for (int y = 1; y <= getHeight(); y++)
     {
       setPrintPos (1, y);
       print (' '); // clear one left █
@@ -580,9 +580,9 @@ void FButton::draw()
 
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  for (i=0; i < length; i++)
+  for (i = 0; i < length; i++)
   {
-    if ( (i < length) && (txt[uInt(i)] == '&') && (hotkeypos == -1) )
+    if ( i < length && txt[uInt(i)] == '&' && hotkeypos == -1 )
     {
       hotkeypos = i;
       i++;
@@ -595,7 +595,7 @@ void FButton::draw()
   if ( hotkeypos != -1 )
     hotkey_offset = 1;
 
-  if ( (length - hotkey_offset + mono_offset - hotkey_offset) <= getWidth() )
+  if ( length - hotkey_offset + mono_offset - hotkey_offset <= getWidth() )
     margin = 1;
   else
     margin = 0;
@@ -607,9 +607,9 @@ void FButton::draw()
   {
     setColor (getForegroundColor(), button_bg);
 
-    for (int y=0; y < getHeight(); y++)
+    for (int y = 0; y < getHeight(); y++)
     {
-      setPrintPos (1+d, 1+y);
+      setPrintPos (1 + d, 1 + y);
       print (space); // full block █
     }
   }
@@ -626,12 +626,12 @@ void FButton::draw()
       setColor ( parent_widget->getForegroundColor()
                , parent_widget->getBackgroundColor() );
 
-    for (int y=1; y <= getHeight(); y++)
+    for (int y = 1; y <= getHeight(); y++)
     {
       if ( isMonochron() )
         setReverse(true);
 
-      setPrintPos (1+getWidth(), y);
+      setPrintPos (1 + getWidth(), y);
       print (' '); // clear right
 
       if ( isMonochron() )
@@ -646,25 +646,25 @@ void FButton::draw()
   i = int(i / 2);
 
   if ( getHeight() >= 2 )
-    j = int((getHeight()-1) / 2);
+    j = int((getHeight() - 1) / 2);
   else
     j=0;
 
-  setPrintPos (1+margin+d, 1+j);
+  setPrintPos (1 + margin + d, 1 + j);
   setColor (button_fg, button_bg);
 
-  for (x=0; x < i; x++)
+  for (x = 0; x < i; x++)
     print (space); // █
 
   if ( hotkeypos == -1 )
-    setCursorPos (1+margin+i+mono_1st_char, 1+j ); // first character
+    setCursorPos (1 + margin + i + mono_1st_char, 1 + j ); // first character
   else
-    setCursorPos (1+margin+i+hotkeypos, 1+j ); // hotkey
+    setCursorPos (1 + margin + i + hotkeypos, 1 + j ); // hotkey
 
   if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for (int z=0; x < i+length && z < getWidth(); z++,x++)
+  for (int z = 0; x < i + length && z < getWidth(); z++,x++)
   {
     if ( (z == hotkeypos) && is_Active )
     {
@@ -695,23 +695,23 @@ void FButton::draw()
   if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     unsetBold();
 
-  for (x=i+length; x < getWidth()-1; x++)
+  for (x = i + length; x < getWidth() - 1; x++)
     print (space); // █
 
   if ( getHeight() >= 2 )
   {
-    for (i=0; i < j; i++)
+    for (i = 0; i < j; i++)
     {
-      setPrintPos (2+d, 1+i);
+      setPrintPos (2 + d, 1 + i);
 
-      for (int z=1; z < getWidth(); z++)
+      for (int z = 1; z < getWidth(); z++)
         print (space); // █
     }
-    for (i=j+1; i < getHeight(); i++)
+    for (i = j + 1; i < getHeight(); i++)
     {
-      setPrintPos (2+d, 1+i);
+      setPrintPos (2 + d, 1 + i);
 
-      for (int z=1; z < getWidth(); z++)
+      for (int z = 1; z < getWidth(); z++)
         print (space); // █
     }
   }

@@ -182,7 +182,7 @@ void FFileDialog::setPath (const FString& dir)
   else
     r_dir = dir;
 
-  if ( r_dir[r_dir.getLength()-1] != '/' )
+  if ( r_dir[r_dir.getLength() - 1] != '/' )
     directory = r_dir + "/";
   else
     directory = r_dir;
@@ -326,11 +326,11 @@ int FFileDialog::readDir()
 
   dir_num = numOfDirs();
   // directories first
-  std::sort(dir_entries.begin()+start, dir_entries.end(), sortDirFirst);
+  std::sort(dir_entries.begin() + start, dir_entries.end(), sortDirFirst);
   // sort directories by name
-  std::sort(dir_entries.begin()+start, dir_entries.begin()+dir_num, sortByName);
+  std::sort(dir_entries.begin() + start, dir_entries.begin() + dir_num, sortByName);
   // sort files by name
-  std::sort(dir_entries.begin()+dir_num, dir_entries.end(), sortByName);
+  std::sort(dir_entries.begin() + dir_num, dir_entries.end(), sortByName);
   // fill list with directory entries
   filebrowser->clear();
 
@@ -472,10 +472,10 @@ void FFileDialog::adjustSize()
   X = 1 + int((max_width - getWidth()) / 2);
   Y = 1 + int((max_height - getHeight()) / 3);
   setPos(X, Y, false);
-  filebrowser->setHeight (h-8, false);
-  hidden->setY(h-4, false);
-  cancel->setY(h-4, false);
-  open->setY(h-4, false);
+  filebrowser->setHeight (h - 8, false);
+  hidden->setY (h - 4, false);
+  cancel->setY (h - 4, false);
+  open->setY (h - 4, false);
   FDialog::adjustSize();
   printPath(directory);
 }
@@ -495,8 +495,8 @@ void FFileDialog::init()
 
   if ( parent_widget )
   {
-    x = 1 + int((parent_widget->getWidth()-w)/2);
-    y = 1 + int((parent_widget->getHeight()-h)/3);
+    x = 1 + int((parent_widget->getWidth() - w) / 2);
+    y = 1 + int((parent_widget->getHeight() - h) / 3);
   }
   else
     x = y = 1;
@@ -739,7 +739,7 @@ void FFileDialog::printPath (const FString& txt)
   uInt max_width = uInt(filebrowser->getWidth()) - 4;
 
   if ( path.getLength() > max_width )
-    filebrowser->setText(".." + path.right(max_width-2));
+    filebrowser->setText(".." + path.right(max_width - 2));
   else
     filebrowser->setText(path);
 }
@@ -805,9 +805,9 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
   if ( n == 0 )
     return;
 
-  FString name = dir_entries[uLong(n-1)].name;
+  FString name = dir_entries[uLong(n - 1)].name;
 
-  if ( dir_entries[uLong(n-1)].type == DT_DIR )
+  if ( dir_entries[uLong(n - 1)].type == DT_DIR )
     filename->setText( name + '/' );
   else
     filename->setText( name );

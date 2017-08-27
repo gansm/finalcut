@@ -710,21 +710,21 @@ void FScrollView::copy2area()
   y_end = getViewportHeight();
   x_end = getViewportWidth();
 
-  for (int y=0; y < y_end; y++)  // line loop
+  for (int y = 0; y < y_end; y++)  // line loop
   {
     char_data* vc; // viewport character
     char_data* ac; // area character
     int v_line_len = viewport->width;
     int a_line_len = print_area->width + print_area->right_shadow;
-    vc = &viewport->text[(dy+y) * v_line_len + dx];
-    ac = &print_area->text[(ay+y) * a_line_len + ax];
+    vc = &viewport->text[(dy + y) * v_line_len + dx];
+    ac = &print_area->text[(ay + y) * a_line_len + ax];
     std::memcpy (ac, vc, sizeof(char_data) * unsigned(x_end));
 
-    if ( short(print_area->changes[ay+y].xmin) > ax )
-      print_area->changes[ay+y].xmin = uInt(ax);
+    if ( short(print_area->changes[ay + y].xmin) > ax )
+      print_area->changes[ay + y].xmin = uInt(ax);
 
-    if ( short(print_area->changes[ay+y].xmax) < ax+x_end-1 )
-      print_area->changes[ay+y].xmax = uInt(ax+x_end-1);
+    if ( short(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
+      print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 
   setViewportCursor();
@@ -747,10 +747,10 @@ inline FPoint FScrollView::getViewportCursorPos()
           - viewport_geometry.getX();
     int y = widget_offsetY + viewport->input_cursor_y
           - viewport_geometry.getY();
-    return FPoint(x,y);
+    return FPoint (x, y);
   }
   else
-    return FPoint(-1,-1);
+    return FPoint (-1, -1);
 }
 
 //----------------------------------------------------------------------
@@ -827,13 +827,13 @@ void FScrollView::calculateScrollbarPos()
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (width, 2, 2, height-2);
-    hbar->setGeometry (1, height, width-2, 1);
+    vbar->setGeometry (width, 2, 2, height - 2);
+    hbar->setGeometry (1, height, width - 2, 1);
   }
   else
   {
-    vbar->setGeometry (width, 2, 1, height-2);
-    hbar->setGeometry (2, height, width-2, 1);
+    vbar->setGeometry (width, 2, 1, height - 2);
+    hbar->setGeometry (2, height, width - 2, 1);
   }
 
   vbar->resize();

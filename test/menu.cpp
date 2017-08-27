@@ -206,7 +206,7 @@ Menu::~Menu()
 //----------------------------------------------------------------------
 void Menu::defaultCallback (FMenuList* mb)
 {
-  for (uInt i=1; i <= mb->getCount(); i++)
+  for (uInt i = 1; i <= mb->getCount(); i++)
   {
     FMenuItem* item = mb->getItem(int(i));
 
@@ -292,7 +292,7 @@ int main (int argc, char* argv[])
 
   Menu main_dlg (&app);
   main_dlg.setText ("Menu example");
-  main_dlg.setGeometry (int(1+(app.getWidth()-40)/2), 2, 40, 6);
+  main_dlg.setGeometry (int(1 + (app.getWidth() - 40) / 2), 2, 40, 6);
   main_dlg.setShadow();
 
   app.setMainWidget (&main_dlg);

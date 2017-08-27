@@ -189,7 +189,7 @@ int FTerm::getColumnNumber()
 //----------------------------------------------------------------------
 const FString FTerm::getKeyName (int keynum)
 {
-  for (int i=0; FkeyName[i].string[0] != 0; i++)
+  for (int i = 0; FkeyName[i].string[0] != 0; i++)
     if ( FkeyName[i].num && FkeyName[i].num == keynum )
       return FString(FkeyName[i].string);
 
@@ -450,17 +450,17 @@ int FTerm::parseKeyString ( char buffer[]
 
     // SGR mouse tracking
     if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-        && (buffer[buf_len-1] == 'M' || buffer[buf_len-1] == 'm') )
+        && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
      return fc::Fkey_extended_mouse;
 
     // urxvt mouse tracking
     if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
         && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-        && buffer[buf_len-1] == 'M' )
+        && buffer[buf_len - 1] == 'M' )
      return fc::Fkey_urxvt_mouse;
 
     // look for termcap keys
-    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    for (int i = 0; Fkey[i].tname[0] != 0; i++)
     {
       char* k = Fkey[i].string;
       len = (k) ? int(std::strlen(k)) : 0;
@@ -470,10 +470,10 @@ int FTerm::parseKeyString ( char buffer[]
         n = len;
 
         for (; n < buf_size; n++)   // Remove founded entry
-          buffer[n-len] = buffer[n];
+          buffer[n - len] = buffer[n];
 
-        for (; n-len < len; n++)    // Fill rest with '\0'
-          buffer[n-len] = '\0';
+        for (; n - len < len; n++)    // Fill rest with '\0'
+          buffer[n - len] = '\0';
 
         input_data_pending = bool(buffer[0] != '\0');
         return Fkey[i].num;
@@ -481,7 +481,7 @@ int FTerm::parseKeyString ( char buffer[]
     }
 
     // look for meta keys
-    for (int i=0; Fmetakey[i].string[0] != 0; i++)
+    for (int i = 0; Fmetakey[i].string[0] != 0; i++)
     {
       char* kmeta = Fmetakey[i].string;  // The string is never null
       len = int(std::strlen(kmeta));
@@ -498,10 +498,10 @@ int FTerm::parseKeyString ( char buffer[]
         n = len;
 
         for (; n < buf_size; n++)    // Remove founded entry
-          buffer[n-len] = buffer[n];
+          buffer[n - len] = buffer[n];
 
-        for (; n-len < len; n++)     // Fill rest with '\0'
-          buffer[n-len] = '\0';
+        for (; n - len < len; n++)     // Fill rest with '\0'
+          buffer[n - len] = '\0';
 
         input_data_pending = bool(buffer[0] != '\0');
         return Fmetakey[i].num;
@@ -527,7 +527,7 @@ int FTerm::parseKeyString ( char buffer[]
     else if ((firstchar & 0xf8) == 0xf0)
       len = 4;
 
-    for (n=0; n < len ; n++)
+    for (n = 0; n < len ; n++)
       utf8char[n] = char(buffer[n] & 0xff);
 
     key = UTF8decode(utf8char);
@@ -538,9 +538,9 @@ int FTerm::parseKeyString ( char buffer[]
   n = len;
 
   for (; n < buf_size; n++)  // remove the key from the buffer front
-    buffer[n-len] = buffer[n];
+    buffer[n - len] = buffer[n];
 
-  for (n=n-len; n < buf_size; n++)   // fill the rest with '\0' bytes
+  for (n = n - len; n < buf_size; n++)   // fill the rest with '\0' bytes
     buffer[n] = '\0';
 
   input_data_pending = bool(buffer[0] != '\0');
@@ -896,7 +896,7 @@ const FString* FTerm::getXTermFont()
     tv.tv_usec = 150000;  // 150 ms
 
     // read the terminal answer
-    if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
+    if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
     {
       if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
       {
@@ -904,8 +904,8 @@ const FString* FTerm::getXTermFont()
         std::size_t n = std::strlen(temp);
 
         // BEL + '\0' = string terminator
-        if ( n >= 5 && temp[n-1] == BEL[0] && temp[n] == '\0' )
-          temp[n-1] = '\0';
+        if ( n >= 5 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
+          temp[n - 1] = '\0';
 
         try
         {
@@ -944,21 +944,21 @@ const FString* FTerm::getXTermTitle()
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
   {
     if ( std::scanf("\033]l%[^\n]s", temp) == 1 )
     {
       std::size_t n = std::strlen(temp);
 
       // Esc + \ = OSC string terminator
-      if ( n >= 2 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
+      if ( n >= 2 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
       {
         FString* xtermtitle;
 
         if ( n < 4 )
           return 0;
 
-        temp[n-2] = '\0';
+        temp[n - 2] = '\0';
 
         try
         {
@@ -1001,19 +1001,19 @@ const FString FTerm::getXTermColorName (int color)
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
   {
     if ( std::scanf("\033]4;%d;%[^\n]s", &color, temp) == 2 )
     {
       std::size_t n = std::strlen(temp);
 
       // BEL + '\0' = string terminator
-      if ( n >= 6 && temp[n-1] == BEL[0] && temp[n] == '\0' )
-        temp[n-1] = '\0';
+      if ( n >= 6 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
+        temp[n - 1] = '\0';
 
       // Esc + \ = OSC string terminator (mintty)
-      if ( n >= 6 && temp[n-2] == ESC[0] && temp[n-1] == '\\' )
-        temp[n-2] = '\0';
+      if ( n >= 6 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
+        temp[n - 2] = '\0';
 
       color_str = temp;
     }
@@ -1297,7 +1297,7 @@ void FTerm::resetColorMap()
       {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
       {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
     };
-    for (int x=0; x<16; x++)
+    for (int x = 0; x < 16; x++)
     {
       color_map.d[x].red = CurrentColors[x].red;
       color_map.d[x].green = CurrentColors[x].green;
@@ -1504,8 +1504,8 @@ const FString FTerm::getAnswerbackMsg()
   tv.tv_usec = 150000;  // 150 ms
 
   // read the answerback message
-  if ( select (stdin_no+1, &ifds, 0, 0, &tv) > 0)
-    if ( std::fgets (temp, sizeof(temp)-1, stdin) != 0 )
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
+    if ( std::fgets (temp, sizeof(temp) - 1, stdin) != 0 )
       answerback = temp;
 
   return answerback;
@@ -1530,7 +1530,7 @@ const FString FTerm::getSecDA()
   tv.tv_usec = 600000;  // 600 ms
 
   // read the answer
-  if ( select (stdin_no+1, &ifds, 0, 0, &tv) == 1 )
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1 )
     if ( std::scanf("\033[>%d;%d;%dc", &a, &b, &c) == 3 )
       sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
@@ -1608,9 +1608,9 @@ int FTerm::putchar_UTF8 (register int c)
 //----------------------------------------------------------------------
 int FTerm::UTF8decode (const char utf8[])
 {
-  register int ucs=0;
+  register int ucs = 0;
 
-  for (register int i=0; i < int(std::strlen(utf8)); ++i)
+  for (register int i = 0; i < int(std::strlen(utf8)); ++i)
   {
     register uChar ch = uChar(utf8[i]);
 
@@ -1662,11 +1662,11 @@ void FTerm::initLinuxConsoleCharMap()
 
   if ( screen_unicode_map.entry_ct != 0 )
   {
-    for (int i=0; i <= lastCharItem; i++ )
+    for (int i = 0; i <= lastCharItem; i++ )
     {
       bool found = false;
 
-      for (uInt n=0; n < screen_unicode_map.entry_ct; n++)
+      for (uInt n = 0; n < screen_unicode_map.entry_ct; n++)
       {
         if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
         {
@@ -1711,7 +1711,7 @@ void FTerm::initFreeBSDConsoleCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (int i=0; i <= lastCharItem; i++ )
+  for (int i = 0; i <= lastCharItem; i++ )
     if ( character[i][fc::PC] < 0x1c )
       character[i][fc::PC] = character[i][fc::ASCII];
 }
@@ -1725,7 +1725,7 @@ void FTerm::initCygwinCharMap()
   if ( ! cygwin_terminal )
     return;
 
-  for (int i=0; i <= lastCharItem; i++ )
+  for (int i = 0; i <= lastCharItem; i++ )
   {
     if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle     // ▲
         || character[i][fc::UTF8] == fc::BlackDownPointingTriangle // ▼
@@ -1742,7 +1742,7 @@ void FTerm::initTeraTermCharMap()
   if ( ! tera_terminal )
     return;
 
-  for (int i=0; i <= lastCharItem; i++ )
+  for (int i = 0; i <= lastCharItem; i++ )
     if ( character[i][fc::PC] < 0x20 )
       character[i][fc::PC] = character[i][fc::ASCII];
 }
@@ -1763,7 +1763,7 @@ uInt FTerm::charEncode (uInt c)
 //----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c, fc::encoding enc)
 {
-  for (uInt i=0; i <= uInt(lastCharItem); i++)
+  for (uInt i = 0; i <= uInt(lastCharItem); i++)
   {
     if ( character[i][0] == c )
     {
@@ -2117,7 +2117,7 @@ void FTerm::getSystemTermType()
       char  str[BUFSIZ];
 
       // read and parse the file
-      while ( fgets(str, sizeof(str)-1, fp) != 0 )
+      while ( fgets(str, sizeof(str) - 1, fp) != 0 )
       {
         type = name = 0;  // 0 == not found
         p = str;
@@ -2266,7 +2266,7 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
       return -1;
     }
 
-    for (uInt i=0; i < count; i++)
+    for (uInt i = 0; i < count; i++)
       std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
                   , &fontdata[i * font.height]
                   , font.height);
@@ -2715,7 +2715,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
     // remove the first 3 bytes ("\033[>")
     FString temp = sec_da->right(sec_da->getLength() - 3);
     // remove the last byte ("c")
-    temp.remove(temp.getLength()-1, 1);
+    temp.remove(temp.getLength() - 1, 1);
     // split into components
     std::vector<FString> sec_da_split = temp.split(';');
 
@@ -2892,11 +2892,11 @@ void FTerm::init_alt_charset()
 
   if ( tcap[fc::t_acs_chars].string )
   {
-    for (int n=0; tcap[fc::t_acs_chars].string[n]; n += 2)
+    for (int n = 0; tcap[fc::t_acs_chars].string[n]; n += 2)
     {
       // insert the vt100 key/value pairs into a map
       uChar p1 = uChar(tcap[fc::t_acs_chars].string[n]);
-      uChar p2 = uChar(tcap[fc::t_acs_chars].string[n+1]);
+      uChar p2 = uChar(tcap[fc::t_acs_chars].string[n + 1]);
       (*vt100_alt_char)[p1] = p2;
     }
   }
@@ -2908,7 +2908,7 @@ void FTerm::init_alt_charset()
   };
 
   // update array 'character' with discovered vt100 pairs
-  for (int n=0; n <= lastKeyItem; n++ )
+  for (int n = 0; n <= lastKeyItem; n++ )
   {
     uChar keyChar = uChar(vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
@@ -3128,7 +3128,7 @@ void FTerm::init_termcaps()
   // -------------------
 
   // read termcap output strings
-  for (int i=0; tcap[i].tname[0] != 0; i++)
+  for (int i = 0; tcap[i].tname[0] != 0; i++)
     tcap[i].string = tgetstr(tcap[i].tname, &buffer);
 
   // set invisible cursor for cygwin terminal
@@ -3405,7 +3405,7 @@ void FTerm::init_termcaps()
 #endif
 
   // read termcap key strings
-  for (int i=0; Fkey[i].tname[0] != 0; i++)
+  for (int i = 0; Fkey[i].tname[0] != 0; i++)
   {
     Fkey[i].string = tgetstr(Fkey[i].tname, &buffer);
 
@@ -3442,7 +3442,7 @@ void FTerm::init_termcaps()
       || ( tcap[fc::t_cursor_up].string
           && (std::strcmp(tcap[fc::t_cursor_up].string, CSI "A") == 0) ) )
   {
-    for (int i=0; Fkey[i].tname[0] != 0; i++)
+    for (int i = 0; Fkey[i].tname[0] != 0; i++)
     {
       if ( std::strncmp(Fkey[i].tname, "kux", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "A");  // key up
@@ -3839,7 +3839,7 @@ void FTerm::init()
   if ( new_termtype )
   {
     setenv(const_cast<char*>("TERM"), new_termtype, 1);
-    std::strncpy (termtype, new_termtype, std::strlen(new_termtype)+1);
+    std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
   }
 
   // Initializes variables for the current terminal
@@ -4167,7 +4167,7 @@ uInt FTerm::cp437_to_unicode (uChar c)
 {
   register uInt ucs = uInt(c);
 
-  for (register uInt i=0; i <= lastCP437Item; i++)
+  for (register uInt i = 0; i <= lastCP437Item; i++)
   {
     if ( cp437_to_ucs[i][0] == c ) // found
     {
