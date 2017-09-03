@@ -207,6 +207,7 @@ FRect FRect::combined (const FRect& r) const
   new_rect.Y2 = std::max(Y2, r.Y2);
   return new_rect;
 }
+
 //----------------------------------------------------------------------
 FRect& FRect::operator = (const FRect& r)
 {

@@ -16,7 +16,7 @@
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
-  , column_line(item.column_line)
+  , column_value(item.column_value)
   , data_pointer(item.data_pointer)
   , visible_lines(1)
   , expandable(false)
@@ -31,7 +31,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (FListViewItem* parent)
   : FObject(parent)
-  , column_line()
+  , column_value()
   , data_pointer(0)
   , visible_lines(1)
   , expandable(false)
@@ -48,7 +48,7 @@ FListViewItem::FListViewItem (FListViewItem* parent)
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (FListView* parent)
   : FObject(parent)
-  , column_line()
+  , column_value()
   , data_pointer(0)
   , visible_lines(1)
   , expandable(false)
@@ -64,16 +64,16 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
                              , FWidget::data_ptr data
                              , FListView* parent )
   : FObject(parent)
-  , column_line(cols)
+  , column_value(cols)
   , data_pointer(data)
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
 {
   // Replace the control codes characters
-  std::vector<FString>::iterator iter = column_line.begin();
+  std::vector<FString>::iterator iter = column_value.begin();
 
-  while ( iter != column_line.end() )
+  while ( iter != column_value.end() )
   {
     *iter = iter->replaceControlCodes();
     ++iter;
@@ -89,16 +89,16 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
                              , FWidget::data_ptr data
                              , FListViewItem* parent )
   : FObject(parent)
-  , column_line(cols)
+  , column_value(cols)
   , data_pointer(data)
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
 {
   // Replace the control codes characters
-  std::vector<FString>::iterator iter = column_line.begin();
+  std::vector<FString>::iterator iter = column_value.begin();
 
-  while ( iter != column_line.end() )
+  while ( iter != column_value.end() )
   {
     *iter = iter->replaceControlCodes();
     ++iter;
@@ -117,20 +117,20 @@ FListViewItem::~FListViewItem()
 //----------------------------------------------------------------------
 FString FListViewItem::getText (int column) const
 {
-  if ( column < 0
-     || column_line.empty()
-     || column >= int(column_line.size()) )
+  if ( column < 1
+     || column_value.empty()
+     || column > int(column_value.size()) )
     return *fc::empty_string;
 
-  return column_line[uInt(column)];
+  return column_value[uInt(column - 1)];
 }
 
 //----------------------------------------------------------------------
 void FListViewItem::setText (int column, const FString& text)
 {
-  if ( column < 0
-     || column_line.empty()
-     || column >= int(column_line.size()) )
+  if ( column < 1
+     || column_value.empty()
+     || column > int(column_value.size()) )
     return;
 
   FObject* parent = getParent();
@@ -139,16 +139,16 @@ void FListViewItem::setText (int column, const FString& text)
   {
     FListView* listview = static_cast<FListView*>(parent);
 
-    if ( ! listview->header[uInt(column)].fixed_width )
+    if ( ! listview->header[uInt(column - 1)].fixed_width )
     {
       int length = int(text.getLength());
 
-      if ( length > listview->header[uInt(column)].width )
-        listview->header[uInt(column)].width = length;
+      if ( length > listview->header[uInt(column - 1)].width )
+        listview->header[uInt(column - 1)].width = length;
     }
   }
 
-  column_line[uInt(column)] = text;
+  column_value[uInt(column - 1)] = text;
 }
 
 //----------------------------------------------------------------------
@@ -247,10 +247,10 @@ fc::text_alignment FListView::getColumnAlignment (int column) const
 {
   // Get the alignment for a column
 
-  if ( column < 0 || header.empty() || column >= int(header.size()) )
+  if ( column < 1 || header.empty() || column > int(header.size()) )
     return fc::alignLeft;
 
-  return header[uInt(column)].alignment;
+  return header[uInt(column - 1)].alignment;
 }
 
 //----------------------------------------------------------------------
@@ -258,10 +258,10 @@ FString FListView::getColumnText (int column) const
 {
   // Get the text of column
 
-  if ( column < 0 || header.empty() || column >= int(header.size()) )
+  if ( column < 1 || header.empty() || column > int(header.size()) )
     return *fc::empty_string;
 
-  return header[uInt(column)].name;
+  return header[uInt(column - 1)].name;
 }
 
 //----------------------------------------------------------------------
@@ -288,10 +288,10 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
 {
   // Set the alignment for a column
 
-  if ( column < 0 || header.empty() || column > int(header.size()) )
-    return;
+  if ( column < 1 || header.empty() || column > int(header.size()) )
+    {beep();return;}
 
-  header[uInt(column)].alignment = align;
+  header[uInt(column - 1)].alignment = align;
 }
 
 //----------------------------------------------------------------------
@@ -299,46 +299,46 @@ void FListView::setColumnText (int column, const FString& label)
 {
   // Set the text for a column
 
-  if ( column < 0 || header.empty() || column > int(header.size()) )
+  if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  if ( ! header[uInt(column)].fixed_width )
+  if ( ! header[uInt(column - 1)].fixed_width )
   {
     int length = int(label.getLength());
 
-    if ( length > header[uInt(column)].width )
-      header[uInt(column)].width = length;
+    if ( length > header[uInt(column - 1)].width )
+      header[uInt(column - 1)].width = length;
   }
 
-  header[uInt(column)].name = label;
+  header[uInt(column - 1)].name = label;
 }
 
 //----------------------------------------------------------------------
 int FListView::addColumn (const FString& label, int width)
 {
-  Header column;
-  column.name = label;
-  column.width = width;
+  Header new_column;
+  new_column.name = label;
+  new_column.width = width;
 
-  if ( column.width == USE_MAX_SIZE )
+  if ( new_column.width == USE_MAX_SIZE )
   {
-    column.fixed_width = false;
-    column.width = int(label.getLength());
+    new_column.fixed_width = false;
+    new_column.width = int(label.getLength());
   }
   else
-    column.fixed_width = true;
+    new_column.fixed_width = true;
 
-  header.push_back (column);
+  header.push_back (new_column);
   return int(std::distance(header.begin(), header.end()));
 }
 
 //----------------------------------------------------------------------
 void FListView::insert (FListViewItem* item)
 {
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
-  int  line_width = padding_space;
+  static const int padding_space = 1;
+  int  line_width = padding_space;  // leading space
   uInt column  = 1;
-  uInt entries = uInt(item->column_line.size());
+  uInt entries = uInt(item->column_value.size());
   headerItems::iterator iter;
 
   iter = header.begin();
@@ -354,7 +354,7 @@ void FListView::insert (FListViewItem* item)
       int len;
 
       if ( column <= entries )
-        len = int(item->column_line[column - 1].getLength());
+        len = int(item->column_value[column - 1].getLength());
       else
         len = 0;
 
@@ -362,13 +362,12 @@ void FListView::insert (FListViewItem* item)
         (*iter).width = len;
     }
 
-    line_width += (*iter).width;
+    line_width += (*iter).width + padding_space;  // width + tailing space
     column++;
     ++iter;
   }
 
   recalculateHorizontalBar (line_width);
-
   data.push_back (item);
 
   int element_count = int(data.size());
@@ -416,11 +415,10 @@ void FListView::insert ( const std::vector<long>& cols
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
   int element_count = int(data.size());
   int current_before = current;
   int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth() + padding_space + 2;
+  int xoffset_end = max_line_width - getClientWidth();
   int yoffset_before = yoffset;
   int yoffset_end = element_count - getClientHeight();
   int key = ev->key();
@@ -950,15 +948,15 @@ void FListView::adjustSize()
   adjustYOffset();
 
   element_count = int(data.size());
-  vbar->setMaximum(element_count - getClientHeight());
-  vbar->setPageSize(element_count, getClientHeight());
-  vbar->setX(getWidth());
+  vbar->setMaximum (element_count - getClientHeight());
+  vbar->setPageSize (element_count, getClientHeight());
+  vbar->setX (getWidth());
   vbar->setHeight (getClientHeight(), false);
   vbar->resize();
 
-  hbar->setMaximum(max_line_width - getClientWidth() + 2);
-  hbar->setPageSize(max_line_width, getClientWidth() - 2);
-  hbar->setY(getHeight() );
+  hbar->setMaximum (max_line_width - getClientWidth());
+  hbar->setPageSize (max_line_width, getClientWidth());
+  hbar->setY (getHeight() );
   hbar->setWidth (getClientWidth(), false);
   hbar->resize();
 
@@ -1071,7 +1069,7 @@ void FListView::draw()
     for (int y = 2; y < getHeight(); y++)
     {
       setPrintPos (getWidth(),y);
-      print (' '); // clear right side of the scrollbar
+      print (' ');  // clear right side of the scrollbar
     }
   }
 
@@ -1179,7 +1177,14 @@ void FListView::drawColumnLabels()
   if ( int(h.size()) <= getClientWidth() )
     last = h.end() - 1;
   else
-    last = h.begin() + getClientWidth() + xoffset - 1;
+  {
+    int len = getClientWidth() + xoffset - 1;
+
+    if ( len > int(h.size()) )
+      len = int(h.size());
+
+    last = h.begin() + len;
+  }
 
   setPrintPos (2, 1);
   print() << std::vector<char_data>(first, last);
@@ -1243,13 +1248,13 @@ void FListView::drawList()
     FString line = " ";
 
     // print columns
-    if ( ! (*iter)->column_line.empty() )
+    if ( ! (*iter)->column_value.empty() )
     {
-      for (uInt i = 0; i < (*iter)->column_line.size(); i++)
+      for (uInt i = 0; i < (*iter)->column_value.size(); i++)
       {
         static const int leading_space = 1;
         static const int ellipsis_length = 2;
-        FString text = (*iter)->column_line[i];
+        FString text = (*iter)->column_value[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
         fc::text_alignment align = getColumnAlignment(int(i + 1));
@@ -1303,8 +1308,8 @@ void FListView::recalculateHorizontalBar (int len)
 
   if ( len >= getWidth() - nf_offset - 3 )
   {
-    hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-    hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+    hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
+    hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
     hbar->calculateSliderValues();
 
     if ( ! hbar->isVisible() )
@@ -1445,11 +1450,10 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListView::cb_HBarChange (FWidget*, data_ptr)
 {
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
   FScrollbar::sType scrollType;
   int distance = 1;
   int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth() + padding_space + 2;
+  int xoffset_end = max_line_width - getClientWidth();
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -1458,7 +1462,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientWidth() - padding_space;
+      distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepBackward:
       xoffset -= distance;
@@ -1468,7 +1472,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientWidth() - padding_space;
+      distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepForward:
       xoffset += distance;

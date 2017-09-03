@@ -88,7 +88,7 @@ class FListViewItem : public FObject
    int          getVisibleLines();
 
    // Data Member
-   std::vector<FString> column_line;
+   std::vector<FString> column_value;
    FWidget::data_ptr    data_pointer;
    int                  visible_lines;
    bool                 expandable;
@@ -107,7 +107,7 @@ inline const char* FListViewItem::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
-{ return uInt(column_line.size()); }
+{ return uInt(column_value.size()); }
 
 //----------------------------------------------------------------------
 inline bool FListViewItem::isExpand()

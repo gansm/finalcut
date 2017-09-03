@@ -1022,6 +1022,7 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (char_data*& term)
   else
     return false;
 }
+
 //----------------------------------------------------------------------
 bool FOptiAttr::setTermAttributes ( char_data*& term
                                   , bool p1, bool p2, bool p3

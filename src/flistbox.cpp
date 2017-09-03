@@ -155,8 +155,8 @@ void FListBox::showInsideBrackets ( int index
 
     if ( len >= getWidth() - nf_offset - 3 )
     {
-      hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-      hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+      hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
+      hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
       hbar->setValue (xoffset);
 
       if ( ! hbar->isVisible() )
@@ -323,14 +323,14 @@ void FListBox::remove (int item)
     ++iter;
   }
 
-  hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-  hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+  hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
+  hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
 
   if ( hbar->isVisible() && max_line_width < getWidth() - nf_offset - 3 )
     hbar->hide();
 
-  vbar->setMaximum(element_count - getHeight() + 2);
-  vbar->setPageSize(element_count, getHeight() - 2);
+  vbar->setMaximum (element_count - getHeight() + 2);
+  vbar->setPageSize (element_count, getHeight() - 2);
 
   if ( vbar->isVisible() && element_count < getHeight() - 1 )
     vbar->hide();
@@ -1206,15 +1206,15 @@ void FListBox::adjustSize()
   adjustYOffset();
 
   element_count = int(getCount());
-  vbar->setMaximum(element_count - getClientHeight());
-  vbar->setPageSize(element_count, getClientHeight());
-  vbar->setX(getWidth());
+  vbar->setMaximum (element_count - getClientHeight());
+  vbar->setPageSize (element_count, getClientHeight());
+  vbar->setX (getWidth());
   vbar->setHeight (getClientHeight(), false);
   vbar->resize();
 
-  hbar->setMaximum(max_line_width - getClientWidth() + 2);
-  hbar->setPageSize(max_line_width, getClientWidth() - 2);
-  hbar->setY(getHeight());
+  hbar->setMaximum (max_line_width - getClientWidth() + 2);
+  hbar->setPageSize (max_line_width, getClientWidth() - 2);
+  hbar->setY (getHeight());
   hbar->setWidth (getClientWidth(), false);
   hbar->resize();
 
@@ -1644,8 +1644,8 @@ void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
 
     if ( len >= getWidth() - nf_offset - 3 )
     {
-      hbar->setMaximum(max_line_width - getWidth() + nf_offset + 4);
-      hbar->setPageSize(max_line_width, getWidth() - nf_offset - 4);
+      hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
+      hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
       hbar->calculateSliderValues();
 
       if ( ! hbar->isVisible() )

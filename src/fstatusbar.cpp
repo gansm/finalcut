@@ -200,6 +200,7 @@ void FStatusBar::hide()
   print (blank);
   delete[] blank;
 }
+
 //----------------------------------------------------------------------
 void FStatusBar::drawMessage()
 {
