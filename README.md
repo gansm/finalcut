@@ -19,22 +19,22 @@
 
 The Final Cut
 =============
-The Final Cut is a class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple windows on the screen.  
+The Final Cut is a class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple windows on the screen.
 The C++ class design was inspired by the Qt framework. It provides common controls like dialog windows, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 
-![](doc/fileopen-dialog.png)  
+![](doc/fileopen-dialog.png)
 
-![](doc/progress-bar.png)  
+![](doc/progress-bar.png)
 
-![](doc/textview.png)  
+![](doc/textview.png)
 
-![](doc/Mandelbrot.png)  
+![](doc/Mandelbrot.png)
 
 
 newfont
 -------
 A new text font for X11 and the Linux console.
-![](doc/newfont1.png)  
+![](doc/newfont1.png)
 
 ![](doc/newfont2.png)
 
@@ -43,8 +43,8 @@ A new text font for X11 and the Linux console.
 
 Virtual terminal
 ----------------
-It uses a virtual terminal to print the character via an update method on the screen.  
-The virtual windows are an overlying layer to realizing window movements.  
+It uses a virtual terminal to print the character via an update method on the screen.
+The virtual windows are an overlying layer to realizing window movements.
 The update method transmits only the changes to the virtual terminal or the screen.
 
 <pre style="line-height: 1 !important;">
@@ -87,7 +87,7 @@ printf(...)
                                          │ output_buffer │
                                          └───────────────┘
                                                  │
-                                                 │ flush_out() 
+                                                 │ flush_out()
                                                  │     +
                                                  │ Fputchar(char)
                                                  │
@@ -122,90 +122,85 @@ Class digramm
                                            │    ┌─────────────┐
                                ┌────────┐  ├────┤ FAccelEvent │
                                │ FEvent │◄─┤    └─────────────┘
-                               └────┬───┘  │    ┌──────────────┐
-                                    :1     ├────┤ FResizeEvent │
-                                    :      │    └──────────────┘
-                                    :      │    ┌────────────┐
-                                    :      ├────┤ FShowEvent │
-                                    :      │    └────────────┘
-                                    :      │    ┌────────────┐
-                                    :      ├────┤ FHideEvent │
-                                    :      │    └────────────┘
-                                    :      │    ┌─────────────┐
-                                    :      ├────┤ FCloseEvent │
-                                    :      │    └─────────────┘
-                                    :      │    ┌─────────────┐
-                                    :      └────┤ FTimerEvent │
-                                    :           └─────────────┘
-                                    :
-                                    :           ┌──────────────┐
-                                    :      ┌────┤ FApplication │
-                                    :      │    └──────────────┘
-                                    :      │    ┌─────────┐1
-                                    :      ├────┤ FButton ├-----------------------------┐
-                                    :      │    └─────────┘                             :
-                                    :      │    ┌────────┐1                             :
-                                    :      ├────┤ FLabel ├------------------------------┐
-                                    :      │    └────────┘                              :
-                                    :      │    ┌───────────┐1                          :
-                                    :      ├────┤ FLineEdit ├---------------------------┐
-                                    :      │    └───────────┘                           :
-                                    :      │    ┌──────────────┐      ┌──────────────┐1 :
-                                    :1     ├────┤ FButtonGroup │   ┌──┤ FRadioButton ├--┐
- ┌─────────┐    ┌────────┐    ┌─────┴───┐  │    └──────────────┘   │  └──────────────┘  :
- │ FObject │◄─┬─┤ FVTerm │◄───┤ FWidget │◄─┤    ┌───────────────┐  │  ┌───────────┐1    :
- └─────────┘  │ └────┬───┘    └───┬─┬───┘  ├────┤ FToggleButton │◄─┼──┤ FCheckBox ├-----┐
-              │      :1           :1:1     │    └───────────────┘  │  └───────────┘     :
-   ┌───────┐  │      :            : :      │    ┌──────────────┐   │  ┌─────────┐1      :
-   │ FTerm │◄─┘      └------------┐ :      ├────┤ FProgressbar │   └──┤ FSwitch ├-------┐
-   └─┬───┬─┘                      : :      │    └──────────────┘      └─────────┘       :
-     :1  :1                       : :      │    ┌────────────┐                          :  *┌─────────┐
-     :   └------------------------┐ :      ├────┤ FScrollbar │                          ├---┤ FString │
-     :                            : :      │    └────────────┘                          :   └─────────┘
-     :  1┌───────────┐            : :      │    ┌───────────┐1                          :
-     └---┤ FOptiAttr │            : :      ├────┤ FTextView ├---------------------------┘
-     :   └───────────┘            : :      │    └───────────┘                           :
-     :  1┌───────────┐            : :      │    ┌──────────┐1     *┌──────────────┐1    :
-     └---┤ FOptiMove │            : :      ├────┤ FListBox ├-------┤ FListBoxItem ├-----┘
-         └───────────┘            : :      │    └──────────┘       └──────────────┘     :
-                                  : :      │    ┌─────────────┐                         :
-                                  : :      ├────┤ FScrollView │                         :
-                                  : :      │    └─────────────┘                         :
-                                  : :      │    ┌────────────┐1   *┌────────────┐1      :
-                                  : :      │ ┌──┤ FStatusBar ├-----┤ FStatusKey ├-------┘
-                                  : :      │ │  └────┬───────┘     └────────────┘       :
-                                  : :      │ │      1└----------------------------------┘
-                                  : :      │ ▼                       ┌─────────────┐1   :
-                                  : :  ┌───┴─┴───┐  ┌─────────┐   ┌──┤ FFileDialog ├----┘
-                                  : :  │ FWindow │◄─┤ FDialog │◄──┤  └─────────────┘    :
-                                  : :  └──┬──┬───┘  └────┬────┘   │  ┌─────────────┐1   :
-                                  : :     ▲  ▲          1:        └──┤ FMessageBox ├----┘
-                                  : :     │  │           :           └─────────────┘    :
-                                  : :     │  │           └------------------------------┘
-                                  : :     │  │      ┌──────────┐                        :
-                                  : :     │  └──────┤ FToolTip ├------------------------┘
-                                  : :     │         └──────────┘                        :
-                                  : :     └───────────────┐          ┌──────────┐       :
-                                  : :                     │      ┌───┤ FMenuBar │       :
-                                  : :    ┌───────────┐    └──────┤   └──────────┘       :
-                                  : :    │ FMenuList │◄──────────┤   ┌───────┐          :
-                                  : :    └────┬──────┘           └───┤ FMenu │◄──┐      :
-                                  : :        1:                      └───────┘   │      :
-                                  : :         :            ┌─────────────────┐   │      :
-                                  : :         :            │ FDialogListMenu ├───┘      :
-                                  : :         :            └─────────────────┘          :
-                                  : :         :                    ┌────────────────┐*  :
-                                  : :         : *┌───────────┐  ┌──┤ FCheckMenuItem ├-┐ :
-                                  : :         ├--┤ FMenuItem │◄─┤  └────────────────┘ : :
-                                  : :         :  └───────────┘  │  ┌────────────────┐*: :
-                                  : :         :                 └──┤ FRadioMenuItem ├-┤ :
-                                  : :         :                    └────────────────┘ : :
-                                  : :         └---------------------------------------┘ :
-                                  : └---------------------------------------------------┘
-                                  :  *┌────────┐
-                                  └---┤ FPoint │
-                                  :   └────────┘
-                                  :  *┌───────┐
-                                  └---┤ FRect │
-                                      └───────┘
+                               └───┬────┘  │    ┌──────────────┐
+                                   :1      ├────┤ FResizeEvent │
+                                   :       │    └──────────────┘
+                                   :       │    ┌────────────┐
+                                   :       ├────┤ FShowEvent │
+                                   :       │    └────────────┘
+                                   :       │    ┌────────────┐
+                                   :       ├────┤ FHideEvent │
+                                   :       │    └────────────┘
+                                   :       │    ┌─────────────┐
+                                   :       ├────┤ FCloseEvent │
+                                   :       │    └─────────────┘
+              1┌───────────┐       :       │    ┌─────────────┐
+   ┌-----------┤ FOptiMove │       :       └────┤ FTimerEvent │
+   :           └───────────┘       :            └─────────────┘
+   :          1┌───────────┐       :
+   ┌-----------┤ FOptiAttr │       :            ┌──────────────┐
+   :           └───────────┘       :       ┌────┤ FApplication │
+   :          *┌─────────┐         :       │    └──────────────┘
+   :  ┌--------┤ FString │         :       │    ┌─────────┐
+   :  :        └─────────┘         :       ├────┤ FButton │
+   :  :       *┌────────┐          :       │    └─────────┘
+   :  ┌--------┤ FPoint │          :       │    ┌────────┐
+   :  :        └────────┘          :       ├────┤ FLabel │
+   :  :       *┌───────┐           :       │    └────────┘
+   :  ┌--------┤ FRect │           :       │    ┌───────────┐
+   :  :        └───────┘           :       ├────┤ FLineEdit │
+   :1 :1                           :       │    └───────────┘
+ ┌─┴──┴──┐                         :       │    ┌──────────────┐      ┌──────────────┐
+ │ FTerm │◄────┐                   :1      ├────┤ FButtonGroup │   ┌──┤ FRadioButton │
+ └───────┘     │ ┌────────┐   ┌────┴────┐  │    └──────────────┘   │  └──────────────┘
+               ├─┤ FVTerm │◄──┤ FWidget │◄─┤    ┌───────────────┐  │  ┌───────────┐
+ ┌─────────┐   │ └────────┘   └─────────┘  ├────┤ FToggleButton │◄─┼──┤ FCheckBox │
+ │ FObject │◄──┘                           │    └───────────────┘  │  └───────────┘
+ └─────────┘                               │    ┌──────────────┐   │  ┌─────────┐
+                                           ├────┤ FProgressbar │   └──┤ FSwitch │
+                                           │    └──────────────┘      └─────────┘
+                                           │    ┌────────────┐
+                                           ├────┤ FScrollbar │
+                                           │    └────────────┘
+                                           │    ┌───────────┐
+                                           ├────┤ FTextView │
+                                           │    └───────────┘
+                                           │    ┌──────────┐1     *┌──────────────┐
+                                           ├────┤ FListBox ├-------┤ FListBoxItem │
+                                           │    └──────────┘       └──────────────┘
+ ┌─────────────┐1                          │   1┌───────────┐1    *┌───────────────┐
+ │ FTermBuffer ├---------------------------├────┤ FListView ├------┤ FListViewItem │
+ └─────────────┘                           │    └───────────┘      └───────────────┘
+                                           │    ┌─────────────┐
+                                           ├────┤ FScrollView │
+                                           │    └─────────────┘
+                                           │    ┌────────────┐1   *┌────────────┐
+                                           │ ┌──┤ FStatusBar ├-----┤ FStatusKey │
+                                           │ │  └────────────┘     └────────────┘
+                                           │ │
+                                           │ ▼                       ┌─────────────┐
+                                       ┌───┴─┴───┐  ┌─────────┐   ┌──┤ FFileDialog │
+                                       │ FWindow │◄─┤ FDialog │◄──┤  └─────────────┘
+                                       └──┬──┬───┘  └─────────┘   │  ┌─────────────┐
+                                          ▲  ▲                    └──┤ FMessageBox │
+                                          │  │                       └─────────────┘
+                                          │  │      ┌──────────┐
+                                          │  └──────┤ FToolTip │
+                                          │         └──────────┘
+                                          └───────────────┐          ┌──────────┐
+                                                          │      ┌───┤ FMenuBar │
+                                         ┌───────────┐    └──────┤   └──────────┘
+                                         │ FMenuList │◄──────────┤   ┌───────┐
+                                         └────┬──────┘           └───┤ FMenu │◄──┐
+                                             1:                      └───────┘   │
+                                              :            ┌─────────────────┐   │
+                                              :            │ FDialogListMenu ├───┘
+                                              :            └─────────────────┘
+                                              :                    ┌────────────────┐*
+                                              : *┌───────────┐  ┌──┤ FCheckMenuItem ├-┐
+                                              ├--┤ FMenuItem │◄─┤  └────────────────┘ :
+                                              :  └───────────┘  │  ┌────────────────┐*:
+                                              :                 └──┤ FRadioMenuItem ├-┤
+                                              :                    └────────────────┘ :
+                                              └---------------------------------------┘
 </pre>

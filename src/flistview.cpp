@@ -122,7 +122,8 @@ FString FListViewItem::getText (int column) const
      || column > int(column_value.size()) )
     return *fc::empty_string;
 
-  return column_value[uInt(column - 1)];
+  column--;  // Convert column position to address offset (index)
+  return column_value[uInt(column)];
 }
 
 //----------------------------------------------------------------------
@@ -134,21 +135,22 @@ void FListViewItem::setText (int column, const FString& text)
     return;
 
   FObject* parent = getParent();
+  column--;  // Convert column position to address offset (index)
 
   if ( parent && parent->isInstanceOf("FListView") )
   {
     FListView* listview = static_cast<FListView*>(parent);
 
-    if ( ! listview->header[uInt(column - 1)].fixed_width )
+    if ( ! listview->header[uInt(column)].fixed_width )
     {
       int length = int(text.getLength());
 
-      if ( length > listview->header[uInt(column - 1)].width )
-        listview->header[uInt(column - 1)].width = length;
+      if ( length > listview->header[uInt(column)].width )
+        listview->header[uInt(column)].width = length;
     }
   }
 
-  column_value[uInt(column - 1)] = text;
+  column_value[uInt(column)] = text;
 }
 
 //----------------------------------------------------------------------
@@ -250,7 +252,8 @@ fc::text_alignment FListView::getColumnAlignment (int column) const
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return fc::alignLeft;
 
-  return header[uInt(column - 1)].alignment;
+  column--;  // Convert column position to address offset (index)
+  return header[uInt(column)].alignment;
 }
 
 //----------------------------------------------------------------------
@@ -261,7 +264,8 @@ FString FListView::getColumnText (int column) const
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return *fc::empty_string;
 
-  return header[uInt(column - 1)].name;
+  column--;  // Convert column position to address offset (index)
+  return header[uInt(column)].name;
 }
 
 //----------------------------------------------------------------------
@@ -291,7 +295,8 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     {beep();return;}
 
-  header[uInt(column - 1)].alignment = align;
+  column--;  // Convert column position to address offset (index)
+  header[uInt(column)].alignment = align;
 }
 
 //----------------------------------------------------------------------
@@ -302,15 +307,17 @@ void FListView::setColumnText (int column, const FString& label)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  if ( ! header[uInt(column - 1)].fixed_width )
+  column--;  // Convert column position to address offset (index)
+
+  if ( ! header[uInt(column)].fixed_width )
   {
     int length = int(label.getLength());
 
-    if ( length > header[uInt(column - 1)].width )
-      header[uInt(column - 1)].width = length;
+    if ( length > header[uInt(column)].width )
+      header[uInt(column)].width = length;
   }
 
-  header[uInt(column - 1)].name = label;
+  header[uInt(column)].name = label;
 }
 
 //----------------------------------------------------------------------
@@ -337,7 +344,7 @@ void FListView::insert (FListViewItem* item)
 {
   static const int padding_space = 1;
   int  line_width = padding_space;  // leading space
-  uInt column  = 1;
+  uInt column_idx = 0;
   uInt entries = uInt(item->column_value.size());
   headerItems::iterator iter;
 
@@ -353,8 +360,8 @@ void FListView::insert (FListViewItem* item)
     {
       int len;
 
-      if ( column <= entries )
-        len = int(item->column_value[column - 1].getLength());
+      if ( column_idx < entries )
+        len = int(item->column_value[column_idx].getLength());
       else
         len = 0;
 
@@ -363,7 +370,7 @@ void FListView::insert (FListViewItem* item)
     }
 
     line_width += (*iter).width + padding_space;  // width + tailing space
-    column++;
+    column_idx++;
     ++iter;
   }
 
@@ -1211,7 +1218,7 @@ void FListView::drawList()
 
   for (uInt y = start; y < end; y++)
   {
-    bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+    bool isCurrentLine = bool( y + uInt(yoffset) + 1 == uInt(current) );
     setPrintPos (2, 2 + int(y));
     setColor (wc.list_fg, wc.list_bg);
 
@@ -1250,14 +1257,17 @@ void FListView::drawList()
     // print columns
     if ( ! (*iter)->column_value.empty() )
     {
-      for (uInt i = 0; i < (*iter)->column_value.size(); i++)
+      for (uInt i = 0; i < (*iter)->column_value.size(); )
       {
         static const int leading_space = 1;
         static const int ellipsis_length = 2;
         FString text = (*iter)->column_value[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
-        fc::text_alignment align = getColumnAlignment(int(i + 1));
+        // Increment the value of i for the column position
+        // and the next iteration
+        i++;
+        fc::text_alignment align = getColumnAlignment(int(i));
         uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
 
         if ( align_offset > 0 )
@@ -1266,7 +1276,8 @@ void FListView::drawList()
         if ( align_offset + txt_length <= uInt(width) )
         {
           line += text.left(width);
-          line += FString (leading_space + width - int(align_offset + txt_length), ' ');
+          line += FString ( leading_space + width
+                           - int(align_offset + txt_length), ' ');
         }
         else if ( align == fc::alignRight )
         {
