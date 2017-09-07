@@ -1,4 +1,7 @@
-2017-91-03  Markus Gans  <guru.mail@muenster.de>
+2017-09-07  Markus Gans  <guru.mail@muenster.de>
+	* Type definition exported into a separate header file
+
+2017-09-03  Markus Gans  <guru.mail@muenster.de>
 	* Fixes wrong maximum line width in FListView
 
 2017-08-26  Markus Gans  <guru.mail@muenster.de>

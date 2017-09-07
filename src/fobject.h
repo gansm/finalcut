@@ -20,7 +20,7 @@
 
 #include "fc.h"
 #include "fevent.h"
-
+#include "ftypes.h"
 
 #define null NULL
 

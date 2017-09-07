@@ -16,11 +16,7 @@
 #include <assert.h>
 #include <term.h>     // need for tparm
 
-// ascii sequences
-#define ESC  "\033"   // Escape
-#define CSI  ESC "["  // Control sequence introducer (7-bit)
-
-typedef unsigned char uChar;
+#include "fc.h"
 
 
 //----------------------------------------------------------------------

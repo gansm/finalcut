@@ -13,6 +13,17 @@
 
 #include "fstring.h"
 
+// ascii sequences
+#define ESC    "\033"     // Escape
+#define CSI    ESC "["    // Control sequence introducer (7-bit)
+#define ENQ    "\005"     // Enquiry
+#define BEL    "\007"     // Bell (ctrl‐g)
+#define BS     "\010"     // Backspace
+#define SO     "\016"     // Shift out (alternative character set)
+#define SI     "\017"     // Shift in  (regular character set)
+#define OSC    ESC "]"    // Operating system command (7-bit)
+#define SECDA  ESC "[>c"  // Secondary Device Attributes
+
 
 //----------------------------------------------------------------------
 // class fc

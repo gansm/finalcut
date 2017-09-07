@@ -75,6 +75,9 @@ Treeview::Treeview (FWidget* parent)
     listView->insert (line);
   }
 
+  // Enable the tree view
+  listView->setTreeView();
+
   // Quit button
   FButton* Quit = new FButton (this);
   Quit->setGeometry(24, 16, 10, 1);
