@@ -682,25 +682,25 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
         if ( (*iter)->hasMenu() )
         {
-           FMenuItem* first_item;
-           FMenu* menu = (*iter)->getMenu();
-           (*iter)->setSelected();
-           setSelectedItem(*iter);
-           (*iter)->setFocus();
-           (*iter)->openMenu();
-           menu->selectFirstItem();
-           first_item = menu->getSelectedItem();
+          FMenuItem* first_item;
+          FMenu* menu = (*iter)->getMenu();
+          (*iter)->setSelected();
+          setSelectedItem(*iter);
+          (*iter)->setFocus();
+          (*iter)->openMenu();
+          menu->selectFirstItem();
+          first_item = menu->getSelectedItem();
 
-           if ( first_item )
-             first_item->setFocus();
+          if ( first_item )
+            first_item->setFocus();
 
-           menu->redraw();
+          menu->redraw();
 
-           if ( getStatusBar() )
-             getStatusBar()->drawMessage();
+          if ( getStatusBar() )
+            getStatusBar()->drawMessage();
 
-           redraw();
-           drop_down = true;
+          redraw();
+          drop_down = true;
         }
         else
         {

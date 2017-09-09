@@ -75,13 +75,13 @@ smallWindow::smallWindow (FWidget* parent)
   right_arrow->ignorePadding();
   right_arrow->setGeometry (getWidth() - 1, 2, 1, 1);
 
-  FString top_left_label_text = "menu";
+  const FString& top_left_label_text = "menu";
   top_left_label = new FLabel (top_left_label_text, this);
   top_left_label->setForegroundColor (wc.label_inactive_fg);
   top_left_label->setEmphasis();
   top_left_label->setGeometry (1, 1, 6, 1);
 
-  FString top_right_label_text = "zoom";
+  const FString& top_right_label_text = "zoom";
   top_right_label = new FLabel (top_right_label_text, this);
   top_right_label->setAlignment (fc::alignRight);
   top_right_label->setForegroundColor (wc.label_inactive_fg);

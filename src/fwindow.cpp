@@ -727,7 +727,7 @@ void FWindow::switchToPrevWindow()
           break;
         }
       }
-       while ( iter != begin );
+      while ( iter != begin );
     }
   }
 

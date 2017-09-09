@@ -2509,7 +2509,7 @@ void FVTerm::updateTerminalLine (uInt y)
         print_char->attr.bit.printed = true;
 
         // skip character with no changes
-       if ( print_char->attr.bit.no_changes )
+        if ( print_char->attr.bit.no_changes )
         {
           uInt count = 1;
 

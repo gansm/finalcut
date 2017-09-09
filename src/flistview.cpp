@@ -156,9 +156,9 @@ void FListViewItem::setText (int column, const FString& text)
 //----------------------------------------------------------------------
 void FListViewItem::insert (FListViewItem* child)
 {
-   // Add a FListViewItem as child element
-   if ( ! child || ! hasChildren() )
-     return;
+  // Add a FListViewItem as child element
+  if ( ! child || ! hasChildren() )
+    return;
 
   addChild (child);
   expandable = true;
@@ -190,8 +190,8 @@ int FListViewItem::getVisibleLines()
 
   if ( ! isExpand() || ! hasChildren() )
   {
-     visible_lines = 1;
-     return visible_lines;
+    visible_lines = 1;
+    return visible_lines;
   }
 
   FObjectList children = this->getChildren();
@@ -354,7 +354,6 @@ void FListView::insert (FListViewItem* item)
   {
     int width = (*iter).width;
     bool fixed_width = (*iter).fixed_width;
-    FString text = (*iter).name;
 
     if ( ! fixed_width )
     {
@@ -1129,7 +1128,7 @@ void FListView::drawColumnLabels()
 
   while ( iter != header.end() )
   {
-    FString text = (*iter).name;
+    const FString& text = (*iter).name;
     int width = (*iter).width;
     int column_width;
 
@@ -1158,8 +1157,8 @@ void FListView::drawColumnLabels()
       if ( txt_length + tailing_space < uInt(column_width) )
       {
         setColor();
-        FString line ( uInt(column_width) - tailing_space - txt_length
-                     , wchar_t(fc::BoxDrawingsHorizontal) );
+        const FString line ( uInt(column_width) - tailing_space - txt_length
+                           , wchar_t(fc::BoxDrawingsHorizontal) );
         headerline << line;  // horizontal line
       }
     }
@@ -1254,6 +1253,11 @@ void FListView::drawList()
     // print the entry
     FString line = " ";
 
+    if ( tree_view /*&& (*iter)->expandable*/  )
+    {
+      line += "► ";
+    }
+
     // print columns
     if ( ! (*iter)->column_value.empty() )
     {
@@ -1261,7 +1265,8 @@ void FListView::drawList()
       {
         static const int leading_space = 1;
         static const int ellipsis_length = 2;
-        FString text = (*iter)->column_value[i];
+
+        const FString& text = (*iter)->column_value[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
         // Increment the value of i for the column position
@@ -1270,23 +1275,27 @@ void FListView::drawList()
         fc::text_alignment align = getColumnAlignment(int(i));
         uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
 
+        // Insert alignment spaces
         if ( align_offset > 0 )
           line += FString(align_offset, ' ');
 
         if ( align_offset + txt_length <= uInt(width) )
         {
+          // Insert text and tailing space
           line += text.left(width);
           line += FString ( leading_space + width
                            - int(align_offset + txt_length), ' ');
         }
         else if ( align == fc::alignRight )
         {
+          // Ellipse right align text
           line += FString ("..");
           line += text.right(width - ellipsis_length);
           line += ' ';
         }
         else
         {
+          // Ellipse left align text and center text
           line += text.left(width - ellipsis_length);
           line += FString (".. ");
         }

@@ -354,7 +354,7 @@ const FString& FString::operator += (const char* s)
 
   if ( wc_string )
   {
-    _insert (length, uInt(std::strlen(s)), wc_string);
+    _insert (length, uInt(std::wcslen(wc_string)), wc_string);
     delete[] wc_string;
   }
 

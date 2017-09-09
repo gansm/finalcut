@@ -451,13 +451,13 @@ int FTerm::parseKeyString ( char buffer[]
     // SGR mouse tracking
     if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
         && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
-     return fc::Fkey_extended_mouse;
+      return fc::Fkey_extended_mouse;
 
     // urxvt mouse tracking
     if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
         && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
         && buffer[buf_len - 1] == 'M' )
-     return fc::Fkey_urxvt_mouse;
+      return fc::Fkey_urxvt_mouse;
 
     // look for termcap keys
     for (int i = 0; Fkey[i].tname[0] != 0; i++)
@@ -655,7 +655,7 @@ bool FTerm::setNewFont()
     pc_charset_console = true;
     Encoding = fc::PC;
 
-   if ( xterm_terminal && utf8_console )
+    if ( xterm_terminal && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
@@ -1271,7 +1271,7 @@ void FTerm::resetXTermDefaults()
 //----------------------------------------------------------------------
 void FTerm::saveColorMap()
 {
- // ioctl (0, GIO_CMAP, &color_map);
+  //ioctl (0, GIO_CMAP, &color_map);
 }
 
 //----------------------------------------------------------------------
@@ -1688,7 +1688,7 @@ void FTerm::initLinuxConsoleCharMap()
       || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
       || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
   {
-     no_shadow_character = true;
+    no_shadow_character = true;
   }
 
   c4 = fc::RightHalfBlock;
@@ -1697,7 +1697,7 @@ void FTerm::initLinuxConsoleCharMap()
   if ( charEncode(c4, fc::PC) == charEncode(c4, fc::ASCII)
       || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
   {
-     no_half_block_character = true;
+    no_half_block_character = true;
   }
 }
 #endif
@@ -2661,7 +2661,7 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
     return 0;
   }
 
-  if ( *answer_back == FString("PuTTY") )
+  if ( *answer_back == "PuTTY" )
   {
     putty_terminal = true;
 
@@ -2726,7 +2726,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
     if ( num_components >= 2 )
     {
-      FString* sec_da_components = &sec_da_split[0];
+      const FString* sec_da_components = &sec_da_split[0];
 
       if ( ! sec_da_components[0].isEmpty() )
       {

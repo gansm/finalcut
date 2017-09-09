@@ -1,3 +1,6 @@
+2017-09-09  Markus Gans  <guru.mail@muenster.de>
+	* Wrong UTF-8 string length fixed when attaching to FString
+
 2017-09-07  Markus Gans  <guru.mail@muenster.de>
 	* Type definition exported into a separate header file
 

@@ -735,8 +735,8 @@ int FFileDialog::changeDir (const FString& dirname)
 //----------------------------------------------------------------------
 void FFileDialog::printPath (const FString& txt)
 {
-  FString path = txt;
-  uInt max_width = uInt(filebrowser->getWidth()) - 4;
+  const FString& path = txt;
+  const uInt max_width = uInt(filebrowser->getWidth()) - 4;
 
   if ( path.getLength() > max_width )
     filebrowser->setText(".." + path.right(max_width - 2));
@@ -773,7 +773,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
     if ( ! dir_entries.empty() )
     {
       std::vector<dir_entry>::const_iterator iter, end;
-      FString input = filename->getText().trim();
+      const FString& input = filename->getText().trim();
       iter = dir_entries.begin();
       end = dir_entries.end();
 
@@ -800,12 +800,12 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 {
-  int n = filebrowser->currentItem();
+  const int n = filebrowser->currentItem();
 
   if ( n == 0 )
     return;
 
-  FString name = dir_entries[uLong(n - 1)].name;
+  const FString& name = dir_entries[uLong(n - 1)].name;
 
   if ( dir_entries[uLong(n - 1)].type == DT_DIR )
     filename->setText( name + '/' );
@@ -818,7 +818,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked (FWidget*, data_ptr)
 {
-  uLong n = uLong(filebrowser->currentItem() - 1);
+  const uLong n = uLong(filebrowser->currentItem() - 1);
 
   if ( dir_entries[n].type == DT_DIR )
     changeDir(dir_entries[n].name);
