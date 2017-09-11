@@ -589,24 +589,6 @@ void FFileDialog::init()
 }
 
 //----------------------------------------------------------------------
-char* FFileDialog::getHomeDir()
-{
-  struct passwd pwd;
-  struct passwd* pwd_ptr;
-  char buf[1024];
-
-  if ( getpwuid_r (geteuid(), &pwd, buf, sizeof(buf), &pwd_ptr) )
-    return const_cast<char*>("");
-  else
-  {
-    if ( getpwnam_r (pwd.pw_name, &pwd, buf, sizeof(buf), &pwd_ptr) )
-      return const_cast<char*>("");
-    else
-      return pwd.pw_dir;
-  }
-}
-
-//----------------------------------------------------------------------
 inline bool FFileDialog::pattern_match ( const char* const pattern
                                        , char*& fname )
 {
@@ -752,6 +734,19 @@ void FFileDialog::printPath (const FString& txt)
     filebrowser->setText(".." + path.right(max_width - 2));
   else
     filebrowser->setText(path);
+}
+
+//----------------------------------------------------------------------
+const FString FFileDialog::getHomeDir()
+{
+  struct passwd pwd;
+  struct passwd* pwd_ptr;
+  char buf[1024];
+
+  if ( getpwuid_r (geteuid(), &pwd, buf, sizeof(buf), &pwd_ptr) )
+    return FString("");
+  else
+    return FString(pwd.pw_dir);
 }
 
 //----------------------------------------------------------------------

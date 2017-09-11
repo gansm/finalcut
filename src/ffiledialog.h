@@ -130,12 +130,12 @@ class FFileDialog : public FDialog
 
     // Method
     void          init();
-    static char*  getHomeDir();
     inline bool   pattern_match (const char* const, char*&);
     void          clear();
     int           numOfDirs();
     int           changeDir (const FString&);
     void          printPath (const FString&);
+    static const FString getHomeDir();
 
     // Callback methods
     void          cb_processActivate (FWidget*, data_ptr);

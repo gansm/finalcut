@@ -533,7 +533,7 @@ MyDialog::MyDialog (FWidget* parent)
 
   FLabel* sum_count = new FLabel (this);
   sum_count->setGeometry(29, 5, 5, 3);
-  sum_count->setNumber (myList->getCount());
+  sum_count->setNumber (long(myList->getCount()));
 
   // Statusbar at the bottom
   FStatusBar* statusbar = new FStatusBar (this);

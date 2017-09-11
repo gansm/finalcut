@@ -682,12 +682,14 @@ uInt FString::toUInt() const
 //----------------------------------------------------------------------
 long FString::toLong() const
 {
+  register bool neg;
   register long num;
   register long tenth_limit;
   register long tenth_limit_digit;
   register wchar_t* p;
   FString s;
 
+  neg = false;
   num = 0;
   tenth_limit = LONG_MAX / 10;
   tenth_limit_digit = LONG_MAX % 10;
@@ -703,6 +705,7 @@ long FString::toLong() const
   if ( *p == L'-' )
   {
     p++;
+    neg = true;
     tenth_limit = -(LONG_MIN / 10);
     tenth_limit_digit += 1;
   }
@@ -721,12 +724,15 @@ long FString::toLong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num<<3)+(num<<1) + d;  // (10 * num) + d
+    num = (num << 3) + (num << 1) + d;  // (10 * num) + d
     p++;
   }
 
   if ( *p != L'\0' && ! std::iswdigit(wint_t(*p)) )
     throw std::invalid_argument ("no valid number");
+
+  if ( neg )
+    num = (~num) + 1;
 
   return num;
 }
@@ -2653,4 +2659,15 @@ const FString operator + (const wchar_t c, const std::wstring& s)
   FString tmp(c);
   tmp._insert (1, uInt(s.length()), s.c_str());
   return (tmp);
+}
+
+//----------------------------------------------------------------------
+const FString operator + (const FString& s, const char c)
+{
+  FString tmp1(s);
+  wchar_t tmp2[2];
+  tmp2[0] = wchar_t(c & 0xff);
+  tmp2[1] = L'\0';
+  tmp1._insert (s.length, 1, tmp2);
+  return (tmp1);
 }

@@ -152,6 +152,7 @@ class FString
     friend const FString operator + (const wchar_t, const FString&);
     friend const FString operator + (const char, const FString&);
     friend const FString operator + (const wchar_t, const std::wstring&);
+    friend const FString operator + (const FString&, const char);
 
     // inquiries
     bool isNull() const;
