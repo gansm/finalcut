@@ -1,6 +1,8 @@
 // File: fapplication.cpp
 // Provides: class FApplication
 
+#include <string>
+
 #include "fapplication.h"
 #include "fmenu.h"
 #include "fstatusbar.h"
@@ -33,7 +35,7 @@ FApplication::eventQueue* FApplication::event_queue = 0;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FApplication::FApplication ( int& _argc
+FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
   : FWidget(0, disable_alt_screen)
@@ -69,7 +71,7 @@ FApplication::FApplication ( int& _argc
 }
 
 //----------------------------------------------------------------------
-FApplication::~FApplication() // destructor
+FApplication::~FApplication()  // destructor
 {
   if ( zero_point )
     delete zero_point;
@@ -143,7 +145,7 @@ void FApplication::exit (int retcode)
   if ( ! rootObj )  // no global app object
     return;
 
-  if ( quit_now ) // don't overwrite quit code
+  if ( quit_now )  // don't overwrite quit code
     return;
 
   quit_now  = true;
@@ -213,7 +215,9 @@ bool FApplication::sendEvent ( const FObject* receiver
     return false;
 
   // For access to a protected base class member
-  FApplication* w = const_cast<FApplication*>(static_cast<const FApplication*>(widget));
+  const FApplication* const_w = static_cast<const FApplication*>(widget);
+  FApplication* w = const_cast<FApplication*>(const_w);
+
   // Sends event event directly to receiver
   return w->event(const_cast<FEvent*>(event));
 }
@@ -314,7 +318,7 @@ void FApplication::init()
 
   try
   {
-    zero_point = new FPoint(0,0);
+    zero_point = new FPoint (0,0);
     event_queue = new eventQueue;
   }
   catch (const std::bad_alloc& ex)
@@ -536,7 +540,7 @@ void FApplication::processKeyboardEvent()
   if ( isKeyPressed )
   {
     register ssize_t bytesread;
-    widget->getCurrentTime(time_keypressed);
+    widget->getCurrentTime (&time_keypressed);
     x11_mouse[0] = sgr_mouse[0] = urxvt_mouse[0] = '\0';
 
     if ( quit_now || app_exit_loop )
@@ -694,8 +698,7 @@ void FApplication::processKeyboardEvent()
                 }
               }
               break;
-
-          } // end of switch
+          }  // end of switch
         }
 
         fifo_offset = int(std::strlen(fifo_buf));
@@ -725,7 +728,7 @@ void FApplication::processKeyboardEvent()
 
 #if defined(__linux__)
 //----------------------------------------------------------------------
-int FApplication::linuxModifierKeyCorrection (int& key_id)
+int FApplication::linuxModifierKeyCorrection (const int& key_id)
 {
   // get the current modifier key state
   FTerm::modifier_key& m = getLinuxModifierKey();
@@ -739,34 +742,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fkey_sr;        // Shift+Up
+        return fc::Fkey_sr;         // Shift+Up
 
       case fc::Fkey_down:
-        return fc::Fkey_sf;        // Shift+Down
+        return fc::Fkey_sf;         // Shift+Down
 
       case fc::Fkey_left:
-        return fc::Fkey_sleft;     // Shift+Left
+        return fc::Fkey_sleft;      // Shift+Left
 
       case fc::Fkey_right:
-        return fc::Fkey_sright;    // Shift+Right
+        return fc::Fkey_sright;     // Shift+Right
 
       case fc::Fkey_ic:
-        return fc::Fkey_sic;       // Shift+Ins
+        return fc::Fkey_sic;        // Shift+Ins
 
       case fc::Fkey_dc:
-        return fc::Fkey_sdc;       // Shift+Del
+        return fc::Fkey_sdc;        // Shift+Del
 
       case fc::Fkey_home:
-        return fc::Fkey_shome;     // Shift+Home
+        return fc::Fkey_shome;      // Shift+Home
 
       case fc::Fkey_end:
-        return fc::Fkey_send;      // Shift+End
+        return fc::Fkey_send;       // Shift+End
 
       case fc::Fkey_ppage:
-        return fc::Fkey_sprevious; // Shift+PgUp
+        return fc::Fkey_sprevious;  // Shift+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fkey_snext;     // Shift+PgDn
+        return fc::Fkey_snext;      // Shift+PgDn
 
       default:
         return key_id;
@@ -777,34 +780,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fckey_up;    // Ctrl+Up
+        return fc::Fckey_up;     // Ctrl+Up
 
       case fc::Fkey_down:
-        return fc::Fckey_down;  // Ctrl+Down
+        return fc::Fckey_down;   // Ctrl+Down
 
       case fc::Fkey_left:
-        return fc::Fckey_left;  // Ctrl+Left
+        return fc::Fckey_left;   // Ctrl+Left
 
       case fc::Fkey_right:
-        return fc::Fckey_right; // Ctrl+Right
+        return fc::Fckey_right;  // Ctrl+Right
 
       case fc::Fkey_ic:
-        return fc::Fckey_ic;    // Ctrl+Ins
+        return fc::Fckey_ic;     // Ctrl+Ins
 
       case fc::Fkey_dc:
-        return fc::Fckey_dc;    // Ctrl+Del
+        return fc::Fckey_dc;     // Ctrl+Del
 
       case fc::Fkey_home:
-        return fc::Fckey_home;  // Ctrl+Home
+        return fc::Fckey_home;   // Ctrl+Home
 
       case fc::Fkey_end:
-        return fc::Fckey_end;   // Ctrl+End
+        return fc::Fckey_end;    // Ctrl+End
 
       case fc::Fkey_ppage:
-        return fc::Fckey_ppage; // Ctrl+PgUp
+        return fc::Fckey_ppage;  // Ctrl+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fckey_npage; // Ctrl+PgDn
+        return fc::Fckey_npage;  // Ctrl+PgDn
 
       default:
         return key_id;
@@ -815,34 +818,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fmkey_up;    // Meta+Up
+        return fc::Fmkey_up;     // Meta+Up
 
       case fc::Fkey_down:
-        return fc::Fmkey_down;  // Meta+Down
+        return fc::Fmkey_down;   // Meta+Down
 
       case fc::Fkey_left:
-        return fc::Fmkey_left;  // Meta+Left
+        return fc::Fmkey_left;   // Meta+Left
 
       case fc::Fkey_right:
-        return fc::Fmkey_right; // Meta+Right
+        return fc::Fmkey_right;  // Meta+Right
 
       case fc::Fkey_ic:
-        return fc::Fmkey_ic;    // Meta+Ins
+        return fc::Fmkey_ic;     // Meta+Ins
 
       case fc::Fkey_dc:
-        return fc::Fmkey_dc;    // Meta+Del
+        return fc::Fmkey_dc;     // Meta+Del
 
       case fc::Fkey_home:
-        return fc::Fmkey_home;  // Meta+Home
+        return fc::Fmkey_home;   // Meta+Home
 
       case fc::Fkey_end:
-        return fc::Fmkey_end;   // Meta+End
+        return fc::Fmkey_end;    // Meta+End
 
       case fc::Fkey_ppage:
-        return fc::Fmkey_ppage; // Meta+PgUp
+        return fc::Fmkey_ppage;  // Meta+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fmkey_npage; // Meta+PgDn
+        return fc::Fmkey_npage;  // Meta+PgDn
 
       default:
         return key_id;
@@ -853,34 +856,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fckey_sup;    // Shift+Ctrl+Up
+        return fc::Fckey_sup;     // Shift+Ctrl+Up
 
       case fc::Fkey_down:
-        return fc::Fckey_sdown;  // Shift+Ctrl+Down
+        return fc::Fckey_sdown;   // Shift+Ctrl+Down
 
       case fc::Fkey_left:
-        return fc::Fckey_sleft;  // Shift+Ctrl+Left
+        return fc::Fckey_sleft;   // Shift+Ctrl+Left
 
       case fc::Fkey_right:
-        return fc::Fckey_sright; // Shift+Ctrl+Right
+        return fc::Fckey_sright;  // Shift+Ctrl+Right
 
       case fc::Fkey_ic:
-        return fc::Fckey_sic;    // Shift+Ctrl+Ins
+        return fc::Fckey_sic;     // Shift+Ctrl+Ins
 
       case fc::Fkey_dc:
-        return fc::Fckey_sdc;    // Shift+Ctrl+Del
+        return fc::Fckey_sdc;     // Shift+Ctrl+Del
 
       case fc::Fkey_home:
-        return fc::Fckey_shome;  // Shift+Ctrl+Home
+        return fc::Fckey_shome;   // Shift+Ctrl+Home
 
       case fc::Fkey_end:
-        return fc::Fckey_send;   // Shift+Ctrl+End
+        return fc::Fckey_send;    // Shift+Ctrl+End
 
       case fc::Fkey_ppage:
-        return fc::Fckey_sppage; // Shift+Ctrl+PgUp
+        return fc::Fckey_sppage;  // Shift+Ctrl+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fckey_snpage; // Shift+Ctrl+PgDn
+        return fc::Fckey_snpage;  // Shift+Ctrl+PgDn
 
       default:
         return key_id;
@@ -891,34 +894,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fmkey_sup;    // Shift+Meta+Up
+        return fc::Fmkey_sup;     // Shift+Meta+Up
 
       case fc::Fkey_down:
-        return fc::Fmkey_sdown;  // Shift+Meta+Down
+        return fc::Fmkey_sdown;   // Shift+Meta+Down
 
       case fc::Fkey_left:
-        return fc::Fmkey_sright; // Shift+Meta+Left
+        return fc::Fmkey_sright;  // Shift+Meta+Left
 
       case fc::Fkey_right:
-        return fc::Fmkey_sleft;  // Shift+Meta+Right
+        return fc::Fmkey_sleft;   // Shift+Meta+Right
 
       case fc::Fkey_ic:
-        return fc::Fmkey_sic;    // Shift+Meta+Ins
+        return fc::Fmkey_sic;     // Shift+Meta+Ins
 
       case fc::Fkey_dc:
-        return fc::Fmkey_sdc;    // Shift+Meta+Del
+        return fc::Fmkey_sdc;     // Shift+Meta+Del
 
       case fc::Fkey_home:
-        return fc::Fmkey_shome;  // Shift+Meta+Home
+        return fc::Fmkey_shome;   // Shift+Meta+Home
 
       case fc::Fkey_end:
-        return fc::Fmkey_send;   // Shift+Meta+End
+        return fc::Fmkey_send;    // Shift+Meta+End
 
       case fc::Fkey_ppage:
-        return fc::Fmkey_sppage; // Shift+Meta+PgUp
+        return fc::Fmkey_sppage;  // Shift+Meta+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fmkey_snpage; // Shift+Meta+PgDn
+        return fc::Fmkey_snpage;  // Shift+Meta+PgDn
 
       default:
         return key_id;
@@ -929,34 +932,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fcmkey_up;    // Ctrl+Meta+Up
+        return fc::Fcmkey_up;     // Ctrl+Meta+Up
 
       case fc::Fkey_down:
-        return fc::Fcmkey_down;  // Ctrl+Meta+Down
+        return fc::Fcmkey_down;   // Ctrl+Meta+Down
 
       case fc::Fkey_left:
-        return fc::Fcmkey_left;  // Ctrl+Meta+Left
+        return fc::Fcmkey_left;   // Ctrl+Meta+Left
 
       case fc::Fkey_right:
-        return fc::Fcmkey_right; // Ctrl+Meta+Right
+        return fc::Fcmkey_right;  // Ctrl+Meta+Right
 
       case fc::Fkey_ic:
-        return fc::Fcmkey_ic;    // Ctrl+Meta+Ins
+        return fc::Fcmkey_ic;     // Ctrl+Meta+Ins
 
       case fc::Fkey_dc:
-        return fc::Fcmkey_dc;    // Ctrl+Meta+Del
+        return fc::Fcmkey_dc;     // Ctrl+Meta+Del
 
       case fc::Fkey_home:
-        return fc::Fcmkey_home;  // Ctrl+Meta+Home
+        return fc::Fcmkey_home;   // Ctrl+Meta+Home
 
       case fc::Fkey_end:
-        return fc::Fcmkey_end;   // Ctrl+Meta+End
+        return fc::Fcmkey_end;    // Ctrl+Meta+End
 
       case fc::Fkey_ppage:
-        return fc::Fcmkey_ppage; // Ctrl+Meta+PgUp
+        return fc::Fcmkey_ppage;  // Ctrl+Meta+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fcmkey_npage; // Ctrl+Meta+PgDn
+        return fc::Fcmkey_npage;  // Ctrl+Meta+PgDn
 
       default:
         return key_id;
@@ -967,34 +970,34 @@ int FApplication::linuxModifierKeyCorrection (int& key_id)
     switch ( key_id )
     {
       case fc::Fkey_up:
-        return fc::Fcmkey_sup;    // Shift+Ctrl+Meta+Up
+        return fc::Fcmkey_sup;     // Shift+Ctrl+Meta+Up
 
       case fc::Fkey_down:
-        return fc::Fcmkey_sdown;  // Shift+Ctrl+Meta+Down
+        return fc::Fcmkey_sdown;   // Shift+Ctrl+Meta+Down
 
       case fc::Fkey_left:
-        return fc::Fcmkey_sleft;  // Shift+Ctrl+Meta+Left
+        return fc::Fcmkey_sleft;   // Shift+Ctrl+Meta+Left
 
       case fc::Fkey_right:
-        return fc::Fcmkey_sright; // Shift+Ctrl+Meta+Right
+        return fc::Fcmkey_sright;  // Shift+Ctrl+Meta+Right
 
       case fc::Fkey_ic:
-        return fc::Fcmkey_sic;    // Shift+Ctrl+Meta+Ins
+        return fc::Fcmkey_sic;     // Shift+Ctrl+Meta+Ins
 
       case fc::Fkey_dc:
-        return fc::Fcmkey_sdc;    // Shift+Ctrl+Meta+Del
+        return fc::Fcmkey_sdc;     // Shift+Ctrl+Meta+Del
 
       case fc::Fkey_home:
-        return fc::Fcmkey_shome;  // Shift+Ctrl+Meta+Home
+        return fc::Fcmkey_shome;   // Shift+Ctrl+Meta+Home
 
       case fc::Fkey_end:
-        return fc::Fcmkey_send;   // Shift+Ctrl+Meta+End
+        return fc::Fcmkey_send;    // Shift+Ctrl+Meta+End
 
       case fc::Fkey_ppage:
-        return fc::Fcmkey_sppage; // Shift+Ctrl+Meta+PgUp
+        return fc::Fcmkey_sppage;  // Shift+Ctrl+Meta+PgUp
 
       case fc::Fkey_npage:
-        return fc::Fcmkey_snpage; // Shift+Ctrl+Meta+PgDn
+        return fc::Fcmkey_snpage;  // Shift+Ctrl+Meta+PgDn
 
       default:
         return key_id;
@@ -1198,7 +1201,7 @@ bool FApplication::parseX11Mouse()
 
   x = uChar(x11_mouse[1] - 0x20);
   y = uChar(x11_mouse[2] - 0x20);
-  new_mouse_position.setPoint(x,y);
+  new_mouse_position.setPoint (x, y);
   // fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1293,7 +1296,7 @@ bool FApplication::parseSGRMouse()
     y = uChar(10 * y + (*p - '0'));
   }
 
-  new_mouse_position.setPoint(x,y);
+  new_mouse_position.setPoint (x, y);
   // fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1491,7 +1494,7 @@ bool FApplication::parseUrxvtMouse()
   if ( y > getLineNumber() )
     y = uChar(getLineNumber());
 
-  new_mouse_position.setPoint(x,y);
+  new_mouse_position.setPoint (x, y);
   // fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
 
@@ -1891,8 +1894,7 @@ void FApplication::processMouseEvent()
       clicked_widget = 0;
       sendEvent (scroll_over_widget, &wheel_ev);
     }
-
-  }
+  }  // end of if ( clicked_widget )
 
 #ifdef F_HAVE_LIBGPM
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
@@ -1920,7 +1922,7 @@ int FApplication::processTimerEvent()
   timeval currentTime;
   int activated = 0;
 
-  getCurrentTime (currentTime);
+  getCurrentTime (&currentTime);
 
   if ( isTimerInUpdating() )
     return 0;

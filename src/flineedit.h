@@ -41,97 +41,97 @@
 
 class FLineEdit : public FWidget
 {
- public:
-   // Enumeration
-   enum label_o
-   {
-     label_above = 0,
-     label_left = 1
-   };
+  public:
+    // Enumeration
+    enum label_o
+    {
+      label_above = 0,
+      label_left = 1
+    };
 
-   // Constructor
-   explicit FLineEdit (FWidget* = 0);
-   FLineEdit (const FString&, FWidget* = 0);
+    // Constructor
+    explicit FLineEdit (FWidget* = 0);
+    FLineEdit (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FLineEdit();
+    // Destructor
+    virtual ~FLineEdit();
 
-   // Accessors
-   const char* getClassName() const;
-   FString     getText() const;
-   int         getLabelOrientation();
+    // Accessors
+    const char* getClassName() const;
+    FString     getText() const;
+    int         getLabelOrientation();
 
-   // Mutators
-   void        setText (const FString&);
-   void        setLabelText (const FString&);
-   void        setLabelOrientation(const label_o);
-   bool        setEnable(bool);
-   bool        setEnable();
-   bool        unsetEnable();
-   bool        setDisable();
-   bool        setFocus(bool);
-   bool        setFocus();
-   bool        unsetFocus();
-   bool        setShadow(bool);
-   bool        setShadow();
-   bool        unsetShadow();
+    // Mutators
+    void        setText (const FString&);
+    void        setLabelText (const FString&);
+    void        setLabelOrientation(const label_o);
+    bool        setEnable(bool);
+    bool        setEnable();
+    bool        unsetEnable();
+    bool        setDisable();
+    bool        setFocus(bool);
+    bool        setFocus();
+    bool        unsetFocus();
+    bool        setShadow(bool);
+    bool        setShadow();
+    bool        unsetShadow();
 
-   // Inquiry
-   bool        hasShadow();
+    // Inquiry
+    bool        hasShadow();
 
-   // Methods
-   void        hide();
-   void        clearText();
+    // Methods
+    void        hide();
+    void        clearText();
 
-   // Event handlers
-   void        onKeyPress (FKeyEvent*);
-   void        onMouseDown (FMouseEvent*);
-   void        onMouseUp (FMouseEvent*);
-   void        onMouseMove (FMouseEvent*);
-   void        onTimer (FTimerEvent*);
-   void        onAccel (FAccelEvent*);
-   void        onHide (FHideEvent*);
-   void        onFocusIn (FFocusEvent*);
-   void        onFocusOut (FFocusEvent*);
+    // Event handlers
+    void        onKeyPress (FKeyEvent*);
+    void        onMouseDown (FMouseEvent*);
+    void        onMouseUp (FMouseEvent*);
+    void        onMouseMove (FMouseEvent*);
+    void        onTimer (FTimerEvent*);
+    void        onAccel (FAccelEvent*);
+    void        onHide (FHideEvent*);
+    void        onFocusIn (FFocusEvent*);
+    void        onFocusOut (FFocusEvent*);
 
- protected:
-   void        adjustLabel();
-   void        adjustSize();
+  protected:
+    void        adjustLabel();
+    void        adjustSize();
 
- private:
-   // Enumeration
-   enum dragScroll
-   {
-     noScroll    = 0,
-     scrollLeft  = 1,
-     scrollRight = 2
-   };
+  private:
+    // Enumeration
+    enum dragScroll
+    {
+      noScroll    = 0,
+      scrollLeft  = 1,
+      scrollRight = 2
+    };
 
-   // Disable copy constructor
-   FLineEdit (const FLineEdit&);
+    // Disable copy constructor
+    FLineEdit (const FLineEdit&);
 
-   // Disable assignment operator (=)
-   FLineEdit& operator = (const FLineEdit&);
+    // Disable assignment operator (=)
+    FLineEdit& operator = (const FLineEdit&);
 
-   // Methods
-   void        init();
-   bool        hasHotkey();
-   void        draw();
-   void        drawInputField();
-   void        processActivate();
-   void        processChanged();
+    // Methods
+    void        init();
+    bool        hasHotkey();
+    void        draw();
+    void        drawInputField();
+    void        processActivate();
+    void        processChanged();
 
-   // Data Members
-   FString     text;
-   FString     label_text;
-   FLabel*     label;
-   label_o     label_orientation;
-   dragScroll  drag_scroll;
-   bool        scroll_timer;
-   int         scroll_repeat;
-   bool        insert_mode;
-   int         cursor_pos;
-   int         text_offset;
+    // Data Members
+    FString     text;
+    FString     label_text;
+    FLabel*     label;
+    label_o     label_orientation;
+    dragScroll  drag_scroll;
+    bool        scroll_timer;
+    int         scroll_repeat;
+    bool        insert_mode;
+    int         cursor_pos;
+    int         text_offset;
 };
 #pragma pack(pop)
 

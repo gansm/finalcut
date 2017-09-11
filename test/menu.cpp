@@ -20,30 +20,30 @@
 
 class Menu : public FDialog
 {
- public:
-   // Constructor
-   explicit Menu (FWidget* = 0);
+  public:
+    // Constructor
+    explicit Menu (FWidget* = 0);
 
-   // Destructor
-  ~Menu();
+    // Destructor
+    ~Menu();
 
- private:
-   // Disable copy constructor
-   Menu (const Menu&);
+  private:
+    // Disable copy constructor
+    Menu (const Menu&);
 
-   // Disable assignment operator (=)
-   Menu& operator = (const Menu&);
+    // Disable assignment operator (=)
+    Menu& operator = (const Menu&);
 
-   // Methods
-   void defaultCallback (FMenuList*);
-   void adjustSize();
+    // Methods
+    void defaultCallback (FMenuList*);
+    void adjustSize();
 
-   // Event handler
-   void onClose (FCloseEvent*);
+    // Event handler
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_message (FWidget*, data_ptr);
-   void cb_exitApp (FWidget*, data_ptr);
+    // Callback methods
+    void cb_message (FWidget*, data_ptr);
+    void cb_exitApp (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -68,28 +68,28 @@ Menu::Menu (FWidget* parent)
 
   // "File" menu items
   FMenuItem* New     = new FMenuItem ("&New", File);
-  New->addAccelerator (fc::Fckey_n); // Ctrl + N
+  New->addAccelerator (fc::Fckey_n);  // Ctrl + N
   New->setStatusbarMessage ("Create a new file");
   FMenuItem* Open    = new FMenuItem ("&Open...", File);
-  Open->addAccelerator (fc::Fckey_o); // Ctrl + O
+  Open->addAccelerator (fc::Fckey_o);  // Ctrl + O
   Open->setStatusbarMessage ("Locate and open a text file");
   FMenuItem* Save    = new FMenuItem ("&Save", File);
-  Save->addAccelerator (fc::Fckey_s); // Ctrl + S
+  Save->addAccelerator (fc::Fckey_s);  // Ctrl + S
   Save->setStatusbarMessage ("Save the file");
   FMenuItem* SaveAs  = new FMenuItem ("&Save as...", File);
   SaveAs->setStatusbarMessage ("Save the current file under a different name");
   FMenuItem* Close   = new FMenuItem ("&Close", File);
-  Close->addAccelerator (fc::Fckey_w); // Ctrl + W
+  Close->addAccelerator (fc::Fckey_w);  // Ctrl + W
   Close->setStatusbarMessage ("Close the current file");
   FMenuItem* Line1   = new FMenuItem (File);
   Line1->setSeparator();
   FMenuItem* Print   = new FMenuItem ("&Print", File);
-  Print->addAccelerator (fc::Fckey_p); // Ctrl + P
+  Print->addAccelerator (fc::Fckey_p);  // Ctrl + P
   Print->setStatusbarMessage ("Print the current file");
   FMenuItem* Line2   = new FMenuItem (File);
   Line2->setSeparator();
   FMenuItem* Quit    = new FMenuItem ("&Quit", File);
-  Quit->addAccelerator (fc::Fmkey_x); // Meta/Alt + X
+  Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
   // "Edit" menu items
@@ -100,7 +100,8 @@ Menu::Menu (FWidget* parent)
   FMenuItem* Line3   = new FMenuItem (Edit);
   Line3->setSeparator();
   FMenuItem* Cut     = new FMenuItem (fc::Fckey_x, "Cu&t", Edit);
-  Cut->setStatusbarMessage ("Remove the input text and put it in the clipboard");
+  Cut->setStatusbarMessage ( "Remove the input text "
+                             "and put it in the clipboard" );
   FMenuItem* Copy    = new FMenuItem (fc::Fckey_c, "&Copy", Edit);
   Copy->setStatusbarMessage ("Copy the input text into the clipboad");
   FMenuItem* Paste   = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
@@ -184,19 +185,19 @@ Menu::Menu (FWidget* parent)
   // Headline labels
   FLabel* Headline1 = new FLabel(" Key ", this);
   Headline1->ignorePadding();
-  Headline1->setGeometry(3,2,5,1);
+  Headline1->setGeometry(3, 2, 5, 1);
   Headline1->setEmphasis();
 
   FLabel* Headline2 = new FLabel(" Function ", this);
   Headline2->ignorePadding();
-  Headline2->setGeometry(19,2,10,1);
+  Headline2->setGeometry(19, 2, 10, 1);
   Headline2->setEmphasis();
 
   // Info label
   FLabel* Info = new FLabel("<F10>            Activate menu bar\n"
                             "<Ctrl>+<Space>   Activate menu bar\n"
                             "<Meta>+<X>       Exit", this);
-  Info->setGeometry(2,1,36,3);
+  Info->setGeometry(2, 1, 36, 3);
 }
 
 //----------------------------------------------------------------------

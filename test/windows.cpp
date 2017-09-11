@@ -1,5 +1,7 @@
 // File: windows.cpp
 
+#include <vector>
+
 #include "fapplication.h"
 #include "fdialog.h"
 #include "fdialoglistmenu.h"
@@ -19,33 +21,33 @@
 
 class smallWindow : public FDialog
 {
- public:
-   // Constructor
-   explicit smallWindow (FWidget* = 0);
+  public:
+    // Constructor
+    explicit smallWindow (FWidget* = 0);
 
-   // Destructor
-  ~smallWindow();
+    // Destructor
+    ~smallWindow();
 
- private:
-   // Disable copy constructor
-   smallWindow (const smallWindow&);
+  private:
+    // Disable copy constructor
+    smallWindow (const smallWindow&);
 
-   // Disable assignment operator (=)
-   smallWindow& operator = (const smallWindow&);
+    // Disable assignment operator (=)
+    smallWindow& operator = (const smallWindow&);
 
-   // Method
-   void adjustSize();
+    // Method
+    void adjustSize();
 
-   // Event handlers
-   void onShow (FShowEvent*);
-   void onTimer (FTimerEvent*);
+    // Event handlers
+    void onShow (FShowEvent*);
+    void onTimer (FTimerEvent*);
 
-   // Data Members
-   FLabel* left_arrow;
-   FLabel* right_arrow;
-   FLabel* top_left_label;
-   FLabel* top_right_label;
-   FLabel* bottom_label;
+    // Data Members
+    FLabel* left_arrow;
+    FLabel* right_arrow;
+    FLabel* top_left_label;
+    FLabel* top_right_label;
+    FLabel* bottom_label;
 };
 #pragma pack(pop)
 
@@ -157,46 +159,46 @@ void smallWindow::onTimer (FTimerEvent*)
 
 class Window : public FDialog
 {
- public:
-   // Constructor
-   explicit Window (FWidget* = 0);
+  public:
+    // Constructor
+    explicit Window (FWidget* = 0);
 
-   // Destructor
-  ~Window();
+    // Destructor
+    ~Window();
 
- private:
-   // Typedef
-   typedef struct
-   {
-     bool     is_open;
-     FString* title;
-     FDialog* dgl;
-   }
-   win_data;
+  private:
+    // Typedef
+    typedef struct
+    {
+      bool     is_open;
+      FString* title;
+      FDialog* dgl;
+    }
+    win_data;
 
-   // Disable copy constructor
-   Window (const Window&);
+    // Disable copy constructor
+    Window (const Window&);
 
-   // Disable assignment operator (=)
-   Window& operator = (const Window&);
+    // Disable assignment operator (=)
+    Window& operator = (const Window&);
 
-   // Method
-   void activateWindow (FDialog*);
-   void adjustSize();
+    // Method
+    void activateWindow (FDialog*);
+    void adjustSize();
 
-   // Event handlers
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_createWindows (FWidget*, data_ptr);
-   void cb_closeWindows (FWidget*, data_ptr);
-   void cb_next (FWidget*, data_ptr);
-   void cb_previous (FWidget*, data_ptr);
-   void cb_exitApp (FWidget*, data_ptr);
-   void cb_destroyWindow (FWidget*, data_ptr);
+    // Callback methods
+    void cb_createWindows (FWidget*, data_ptr);
+    void cb_closeWindows (FWidget*, data_ptr);
+    void cb_next (FWidget*, data_ptr);
+    void cb_previous (FWidget*, data_ptr);
+    void cb_exitApp (FWidget*, data_ptr);
+    void cb_destroyWindow (FWidget*, data_ptr);
 
-   // Data Members
-   std::vector<win_data*> windows;
+    // Data Members
+    std::vector<win_data*> windows;
 };
 #pragma pack(pop)
 
@@ -230,18 +232,18 @@ Window::Window (FWidget* parent)
   Line1->setSeparator();
 
   FMenuItem* Next = new FMenuItem ("Ne&xt window", File);
-  Next->addAccelerator (fc::Fmkey_npage); // Meta/Alt + PgDn
+  Next->addAccelerator (fc::Fmkey_npage);  // Meta/Alt + PgDn
   Next->setStatusbarMessage ("Switch to the next window");
 
   FMenuItem* Previous = new FMenuItem ("&Previous window", File);
-  Previous->addAccelerator (fc::Fmkey_ppage); // Meta/Alt + PgUp
+  Previous->addAccelerator (fc::Fmkey_ppage);  // Meta/Alt + PgUp
   Previous->setStatusbarMessage ("Switch to the previous window");
 
   FMenuItem* Line2 = new FMenuItem (File);
   Line2->setSeparator();
 
   FMenuItem* Quit = new FMenuItem ("&Quit", File);
-  Quit->addAccelerator (fc::Fmkey_x); // Meta/Alt + X
+  Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
   // Statusbar at the bottom
@@ -353,7 +355,7 @@ void Window::activateWindow (FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  int w,h,X,Y,dx,dy;
+  int w, h, X, Y, dx, dy;
   std::vector<win_data*>::const_iterator iter, begin;
   w  = getRootWidget()->getWidth();
   h  = getRootWidget()->getHeight();
@@ -372,7 +374,7 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      int x,y,n;
+      int x, y, n;
       n = int(std::distance(begin, iter));
       x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       y = dy + 11 + int(n / 3) * 3;
@@ -405,7 +407,7 @@ void Window::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Window::cb_createWindows (FWidget*, data_ptr)
 {
-  int w,h,dx,dy;
+  int w, h, dx, dy;
   std::vector<win_data*>::const_iterator iter, begin;
   iter = begin = windows.begin();
   w = getRootWidget()->getWidth();

@@ -43,99 +43,99 @@ class FButtonGroup;
 
 class FToggleButton : public FWidget
 {
- public:
-   // Using-declaration
-   using FWidget::setGeometry;
+  public:
+    // Using-declaration
+    using FWidget::setGeometry;
 
-   // Constructors
-   explicit FToggleButton (FWidget* = 0);
-   FToggleButton (const FString&, FWidget* = 0);
+    // Constructors
+    explicit FToggleButton (FWidget* = 0);
+    FToggleButton (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FToggleButton();
+    // Destructor
+    virtual ~FToggleButton();
 
-   // Accessors
-   virtual const char* getClassName() const;
-   FString&      getText();
+    // Accessors
+    virtual const char* getClassName() const;
+    FString&      getText();
 
-   // Mutators
-   void          setGeometry (int, int, int, int, bool = true);
-   bool          setNoUnderline (bool);
-   bool          setNoUnderline();
-   bool          unsetNoUnderline();
-   bool          setEnable (bool);
-   bool          setEnable();
-   bool          unsetEnable();
-   bool          setDisable();
-   bool          setFocus (bool);
-   bool          setFocus();
-   bool          unsetFocus();
-   bool          setChecked (bool);
-   bool          setChecked();
-   bool          unsetChecked();
-   virtual void  setText (const FString&);
+    // Mutators
+    void          setGeometry (int, int, int, int, bool = true);
+    bool          setNoUnderline (bool);
+    bool          setNoUnderline();
+    bool          unsetNoUnderline();
+    bool          setEnable (bool);
+    bool          setEnable();
+    bool          unsetEnable();
+    bool          setDisable();
+    bool          setFocus (bool);
+    bool          setFocus();
+    bool          unsetFocus();
+    bool          setChecked (bool);
+    bool          setChecked();
+    bool          unsetChecked();
+    virtual void  setText (const FString&);
 
-   // Inquiries
-   bool          isChecked();
+    // Inquiries
+    bool          isChecked();
 
-   // Methods
-   void          hide();
+    // Methods
+    void          hide();
 
-   // Event handlers
-   void          onMouseDown (FMouseEvent*);
-   void          onMouseUp (FMouseEvent*);
-   void          onWheel (FWheelEvent*);
-   void          onAccel (FAccelEvent*);
-   void          onFocusIn (FFocusEvent*);
-   void          onFocusOut (FFocusEvent*);
+    // Event handlers
+    void          onMouseDown (FMouseEvent*);
+    void          onMouseUp (FMouseEvent*);
+    void          onWheel (FWheelEvent*);
+    void          onAccel (FAccelEvent*);
+    void          onFocusIn (FFocusEvent*);
+    void          onFocusOut (FFocusEvent*);
 
- protected:
-   // Accessor
-   uChar         getHotkey();
-   FButtonGroup* getGroup() const;
+  protected:
+    // Accessor
+    uChar         getHotkey();
+    FButtonGroup* getGroup() const;
 
-   // Mutator
-   void          setHotkeyAccelerator();
+    // Mutator
+    void          setHotkeyAccelerator();
 
-   // Inquiries
-   bool          isRadioButton() const;
-   bool          isCheckboxButton() const;
-   bool          hasGroup() const;
+    // Inquiries
+    bool          isRadioButton() const;
+    bool          isCheckboxButton() const;
+    bool          hasGroup() const;
 
-   // Methods
-   virtual void  draw();
-   void          drawLabel();
-   void          processClick();
-   void          processToggle();
+    // Methods
+    virtual void  draw();
+    void          drawLabel();
+    void          processClick();
+    void          processToggle();
 
-   // Event handler
-   virtual void onKeyPress (FKeyEvent*);
+    // Event handler
+    virtual void onKeyPress (FKeyEvent*);
 
-   // Data Members
-   bool          checked;
-   int           label_offset_pos;
-   int           button_width;  // plus margin spaces
+    // Data Members
+    bool          checked;
+    int           label_offset_pos;
+    int           button_width;  // plus margin spaces
 
- private:
-   // Disable copy constructor
-   FToggleButton (const FToggleButton&);
+  private:
+    // Disable copy constructor
+    FToggleButton (const FToggleButton&);
 
-   // Disable assignment operator (=)
-   FToggleButton& operator = (const FToggleButton&);
+    // Disable assignment operator (=)
+    FToggleButton& operator = (const FToggleButton&);
 
-   // Mutator
-   void          setGroup (FButtonGroup*);
+    // Mutator
+    void          setGroup (FButtonGroup*);
 
-   // Methods
-   void          init();
+    // Methods
+    void          init();
 
-   // Friend classes
-   friend class FButtonGroup;
+    // Friend classes
+    friend class FButtonGroup;
 
-   // Data Members
-   FButtonGroup* button_group;
-   bool          focus_inside_group;
-   FString       text;
+    // Data Members
+    FButtonGroup* button_group;
+    bool          focus_inside_group;
+    FString       text;
 };
 #pragma pack(pop)
 

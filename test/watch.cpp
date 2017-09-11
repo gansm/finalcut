@@ -17,42 +17,42 @@
 
 class watch : public FDialog
 {
- public:
-   // Constructor
-   explicit watch (FWidget* = 0);
+  public:
+    // Constructor
+    explicit watch (FWidget* = 0);
 
-   // Destructor
-  ~watch();
+    // Destructor
+    ~watch();
 
-   // Method
-   void printTime();
+    // Method
+    void printTime();
 
-   // Event handlers
-   void onTimer (FTimerEvent*);
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onTimer (FTimerEvent*);
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_clock (FWidget*, data_ptr);
-   void cb_seconds (FWidget*, data_ptr);
-   void cb_exitApp (FWidget*, data_ptr);
+    // Callback methods
+    void cb_clock (FWidget*, data_ptr);
+    void cb_seconds (FWidget*, data_ptr);
+    void cb_exitApp (FWidget*, data_ptr);
 
- protected:
-   // Method
-   void adjustSize();
+  protected:
+    // Method
+    void adjustSize();
 
- private:
-   // Disable copy constructor
-   watch (const watch&);
+  private:
+    // Disable copy constructor
+    watch (const watch&);
 
-   // Disable assignment operator (=)
-   watch& operator = (const watch&);
+    // Disable assignment operator (=)
+    watch& operator = (const watch&);
 
-   // Data Members
-   bool     sec;
-   FLabel*  time_label;
-   FLabel*  time_str;
-   FSwitch* clock_sw;
-   FSwitch* seconds_sw;
+    // Data Members
+    bool     sec;
+    FLabel*  time_label;
+    FLabel*  time_str;
+    FSwitch* clock_sw;
+    FSwitch* seconds_sw;
 };
 #pragma pack(pop)
 
@@ -119,16 +119,16 @@ watch::~watch()
 void watch::printTime()
 {
   FString str;
-  std::tm* now;
+  std::tm now;
   std::time_t t;
 
   t = std::time(0);  // get current time
-  now = std::localtime(&t);
+  localtime_r(&t, &now);
 
   if ( sec )
-    str.sprintf("%02d:%02d:%02d", now->tm_hour, now->tm_min, now->tm_sec);
+    str.sprintf("%02d:%02d:%02d", now.tm_hour, now.tm_min, now.tm_sec);
   else
-    str.sprintf("%02d:%02d   ", now->tm_hour, now->tm_min);
+    str.sprintf("%02d:%02d   ", now.tm_hour, now.tm_min);
 
   time_str->setText(str);
   time_str->redraw();

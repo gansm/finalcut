@@ -137,7 +137,7 @@ void FToolTip::calculateDimensions()
       max_line_width = len;
   }
 
-  h = int(text_num_lines) + 2 ;
+  h = int(text_num_lines) + 2;
   w = int(max_line_width + 4);
 
   if ( r )

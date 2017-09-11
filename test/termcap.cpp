@@ -1,7 +1,9 @@
-// File: opti-move.cpp
+// File: termcap.cpp
 
 #include <iomanip>
 #include <iostream>
+#include <string>
+
 #include "fapplication.h"
 #include "ftermcap.h"
 #include "fvterm.h"

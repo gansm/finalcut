@@ -28,6 +28,7 @@
 #ifndef FLABEL_H
 #define FLABEL_H
 
+#include <vector>
 #include "fwidget.h"
 
 
@@ -40,79 +41,79 @@
 
 class FLabel : public FWidget
 {
- public:
-   // Using-declaration
-   using FWidget::setEnable;
+  public:
+    // Using-declaration
+    using FWidget::setEnable;
 
-   // Constructor
-   explicit FLabel (FWidget* = 0);
-   FLabel (const FString&, FWidget* = 0);
+    // Constructor
+    explicit FLabel (FWidget* = 0);
+    FLabel (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FLabel();
+    // Destructor
+    virtual ~FLabel();
 
-   // Accessors
-   const char*        getClassName() const;
-   FTerm*             getAccelWidget();
-   fc::text_alignment getAlignment();
-   FString&           getText();
+    // Accessors
+    const char*        getClassName() const;
+    FTerm*             getAccelWidget();
+    fc::text_alignment getAlignment();
+    FString&           getText();
 
-   // Mutators
-   void               setAccelWidget (FWidget* = 0);
-   void               setAlignment(fc::text_alignment);
-   bool               setEmphasis(bool);
-   bool               setEmphasis();
-   bool               unsetEmphasis();
-   bool               setReverseMode(bool);
-   bool               setReverseMode();
-   bool               unsetReverseMode();
-   bool               setEnable (bool);
-   void               setNumber(long);
-   void               setText (const FString&);
+    // Mutators
+    void               setAccelWidget (FWidget* = 0);
+    void               setAlignment(fc::text_alignment);
+    bool               setEmphasis(bool);
+    bool               setEmphasis();
+    bool               unsetEmphasis();
+    bool               setReverseMode(bool);
+    bool               setReverseMode();
+    bool               unsetReverseMode();
+    bool               setEnable (bool);
+    void               setNumber(long);
+    void               setText (const FString&);
 
-   // Inquiries
-   bool               hasEmphasis();
-   bool               hasReverseMode();
+    // Inquiries
+    bool               hasEmphasis();
+    bool               hasReverseMode();
 
-   // Methods
-   void               hide();
+    // Methods
+    void               hide();
 
-   // Event handlers
-   void               onMouseDown (FMouseEvent*);
-   void               onAccel (FAccelEvent*);
+    // Event handlers
+    void               onMouseDown (FMouseEvent*);
+    void               onAccel (FAccelEvent*);
 
-   // Callback method
-   void               cb_accel_widget_destroyed (FWidget*, data_ptr);
+    // Callback method
+    void               cb_accel_widget_destroyed (FWidget*, data_ptr);
 
- private:
-   // Typedef
-   typedef std::vector<FString> multiLineText;
+  private:
+    // Typedef
+    typedef std::vector<FString> multiLineText;
 
-   // Disable copy constructor
-   FLabel (const FLabel&);
+    // Disable copy constructor
+    FLabel (const FLabel&);
 
-   // Disable assignment operator (=)
-   FLabel& operator = (const FLabel&);
+    // Disable assignment operator (=)
+    FLabel& operator = (const FLabel&);
 
-   // Methods
-   void               init();
-   uChar              getHotkey();
-   int                getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void               setHotkeyAccelerator();
-   int                getAlignOffset (int);
-   void               printLine (wchar_t*&, uInt, int, int = 0);
-   void               draw();
+    // Methods
+    void               init();
+    uChar              getHotkey();
+    int                getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+    void               setHotkeyAccelerator();
+    int                getAlignOffset (int);
+    void               printLine (wchar_t*&, uInt, int, int = 0);
+    void               draw();
 
-   // Data Members
-   multiLineText      multiline_text;
-   bool               multiline;
-   FString            text;
-   fc::text_alignment alignment;
-   short              emphasis_color;
-   short              ellipsis_color;
-   bool               emphasis;
-   bool               reverse_mode;
-   FWidget*           accel_widget;
+    // Data Members
+    multiLineText      multiline_text;
+    bool               multiline;
+    FString            text;
+    fc::text_alignment alignment;
+    short              emphasis_color;
+    short              ellipsis_color;
+    bool               emphasis;
+    bool               reverse_mode;
+    FWidget*           accel_widget;
 };
 #pragma pack(pop)
 

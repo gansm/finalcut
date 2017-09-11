@@ -16,36 +16,36 @@
 
 class scrollview : public FScrollView
 {
- public:
-   // Constructor
-   explicit scrollview (FWidget* = 0);
+  public:
+    // Constructor
+    explicit scrollview (FWidget* = 0);
 
-   // Destructor
-  ~scrollview  ();
+    // Destructor
+    ~scrollview  ();
 
-   // Mutator
-   void setScrollSize (int, int);
+    // Mutator
+    void setScrollSize (int, int);
 
- private:
-   // Disable copy constructor
-   scrollview (const scrollview&);
-   // Disable assignment operator (=)
-   scrollview& operator = (const scrollview&);
+  private:
+    // Disable copy constructor
+    scrollview (const scrollview&);
+    // Disable assignment operator (=)
+    scrollview& operator = (const scrollview&);
 
-   // Method
-   void draw();
+    // Method
+    void draw();
 
-   // Callback methods
-   void cb_go_east (FWidget*, data_ptr);
-   void cb_go_south (FWidget*, data_ptr);
-   void cb_go_west (FWidget*, data_ptr);
-   void cb_go_north (FWidget*, data_ptr);
+    // Callback methods
+    void cb_go_east (FWidget*, data_ptr);
+    void cb_go_south (FWidget*, data_ptr);
+    void cb_go_west (FWidget*, data_ptr);
+    void cb_go_north (FWidget*, data_ptr);
 
-   // Data Members
-   FButton* go_east;
-   FButton* go_south;
-   FButton* go_west;
-   FButton* go_north;
+    // Data Members
+    FButton* go_east;
+    FButton* go_south;
+    FButton* go_west;
+    FButton* go_north;
 };
 #pragma pack(pop)
 
@@ -176,18 +176,18 @@ void scrollview::cb_go_north (FWidget*, data_ptr)
 
 class scrollviewdemo : public FDialog
 {
- public:
-   // Constructor
-   explicit scrollviewdemo (FWidget* = 0);
+  public:
+    // Constructor
+    explicit scrollviewdemo (FWidget* = 0);
 
-   // Destructor
-  ~scrollviewdemo  ();
+    // Destructor
+    ~scrollviewdemo  ();
 
-   // Event handler
-   void onClose (FCloseEvent*);
+    // Event handler
+    void onClose (FCloseEvent*);
 
-   // Callback method
-   void cb_quit (FWidget* = 0, data_ptr = 0);
+    // Callback method
+    void cb_quit (FWidget* = 0, data_ptr = 0);
 };
 #pragma pack(pop)
 

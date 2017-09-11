@@ -272,7 +272,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       ev->accept();
       break;
 
-    case fc::Fkey_dc: // del key
+    case fc::Fkey_dc:  // del key
       if ( len > 0 && cursor_pos < len )
       {
         text.remove(uInt(cursor_pos), 1);
@@ -306,7 +306,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
       ev->accept();
       break;
 
-    case fc::Fkey_ic: // insert key
+    case fc::Fkey_ic:  // insert key
       insert_mode = not insert_mode;
 
       if ( insert_mode )

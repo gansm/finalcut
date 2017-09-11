@@ -8,16 +8,16 @@
 
 class keyboard : public FWidget
 {
- public:
-   // Constructor
-   explicit keyboard (FWidget* = 0);
+  public:
+    // Constructor
+    explicit keyboard (FWidget* = 0);
 
- protected:
-   // Event handlers
-   void onKeyPress (FKeyEvent*);
-   void onAccel (FAccelEvent*);
+  protected:
+    // Event handlers
+    void onKeyPress (FKeyEvent*);
+    void onAccel (FAccelEvent*);
 
-   void draw();
+    void draw();
 };
 
 //----------------------------------------------------------------------
@@ -58,7 +58,7 @@ void keyboard::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void keyboard::draw()
 {
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   print() << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";

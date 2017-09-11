@@ -12,7 +12,7 @@
 #define FOBJECT_H
 
 #include <stdint.h>
-#include <sys/time.h> // need for gettimeofday
+#include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>
 #include <cstring>
 #include <list>
@@ -22,24 +22,6 @@
 #include "fevent.h"
 #include "ftypes.h"
 
-#define null NULL
-
-typedef unsigned char  uChar;
-typedef unsigned int   uInt;
-typedef unsigned long  uLong;
-typedef uint8_t        uInt8;
-typedef uint16_t       uInt16;
-typedef uint32_t       uInt32;
-typedef uint64_t       uInt64;
-
-typedef signed int     sInt;
-typedef signed long    sLong;
-typedef int8_t         sInt8;
-typedef int16_t        sInt16;
-typedef int32_t        sInt32;
-typedef int64_t        sInt64;
-
-typedef long double    lDouble;
 
 //----------------------------------------------------------------------
 // class FObject
@@ -50,76 +32,76 @@ typedef long double    lDouble;
 
 class FObject
 {
- public:
-   // Typedef
-   typedef std::list<FObject*> FObjectList;
+  public:
+    // Typedef
+    typedef std::list<FObject*> FObjectList;
 
-   // Constructor
-   explicit FObject (FObject* = 0);
+    // Constructor
+    explicit FObject (FObject* = 0);
 
-   // Destructor
-   virtual ~FObject();
+    // Destructor
+    virtual ~FObject();
 
-   // Accessors
-   virtual const char* getClassName() const;
-   FObject*            getParent() const;
-   FObject*            getChild (int) const;
-   const FObjectList&  getChildren() const;
-   int                 numOfChildren() const;
+    // Accessors
+    virtual const char* getClassName() const;
+    FObject*            getParent() const;
+    FObject*            getChild (int) const;
+    const FObjectList&  getChildren() const;
+    int                 numOfChildren() const;
 
-   // Inquiries
-   bool                hasParent() const;
-   bool                hasChildren() const;
-   bool                isChild (FObject*) const;
-   bool                isDirectChild (FObject*) const;
-   bool                isWidget() const;
-   bool                isInstanceOf (const char*) const;
-   bool                isTimerInUpdating() const;
+    // Inquiries
+    bool                hasParent() const;
+    bool                hasChildren() const;
+    bool                isChild (FObject*) const;
+    bool                isDirectChild (FObject*) const;
+    bool                isWidget() const;
+    bool                isInstanceOf (const char*) const;
+    bool                isTimerInUpdating() const;
 
-   // Methods
-   void                removeParent();
-   void                addChild (FObject*);
-   void                delChild (FObject*);
+    // Methods
+    void                removeParent();
+    void                addChild (FObject*);
+    void                delChild (FObject*);
 
-   // Timer methods
-   static void         getCurrentTime (timeval&);
-   int                 addTimer (int);
-   bool                delTimer (int);
-   bool                delOwnTimer();
-   bool                delAllTimer();
+    // Timer methods
+    static void         getCurrentTime (timeval*);
+    int                 addTimer (int);
+    bool                delTimer (int);
+    bool                delOwnTimer();
+    bool                delAllTimer();
 
- protected:
-   struct timer_data
-   {
-     int       id;
-     timeval   interval;
-     timeval   timeout;
-     FObject*  object;
-   };
+  protected:
+    struct timer_data
+    {
+      int       id;
+      timeval   interval;
+      timeval   timeout;
+      FObject*  object;
+    };
 
-   // Typedef
-   typedef std::vector<timer_data> TimerList;
+    // Typedef
+    typedef std::vector<timer_data> TimerList;
 
-   // Event handler
-   virtual bool event (FEvent*);
-   virtual void onTimer (FTimerEvent*);
+    // Event handler
+    virtual bool event (FEvent*);
+    virtual void onTimer (FTimerEvent*);
 
-   // Data Members
-   static TimerList* timer_list;
-   bool              widget_object;
+    // Data Members
+    static TimerList* timer_list;
+    bool              widget_object;
 
- private:
-   // Disable copy constructor
-   FObject (const FObject&);
+  private:
+    // Disable copy constructor
+    FObject (const FObject&);
 
-   // Disable assignment operator (=)
-   FObject& operator = (const FObject&);
+    // Disable assignment operator (=)
+    FObject& operator = (const FObject&);
 
-   // Data Members
-   FObject*     parent_obj;
-   FObjectList  children_list;
-   bool         has_parent;
-   static bool  timer_modify_lock;
+    // Data Members
+    FObject*     parent_obj;
+    FObjectList  children_list;
+    bool         has_parent;
+    static bool  timer_modify_lock;
 };
 
 #pragma pack(pop)

@@ -553,7 +553,7 @@ void FButton::draw()
     for (int y = 1; y <= getHeight(); y++)
     {
       setPrintPos (1, y);
-      print (' '); // clear one left █
+      print (' ');  // clear one left █
     }
 
     d = 1;
@@ -610,7 +610,7 @@ void FButton::draw()
     for (int y = 0; y < getHeight(); y++)
     {
       setPrintPos (1 + d, 1 + y);
-      print (space); // full block █
+      print (space);  // full block █
     }
   }
 
@@ -632,7 +632,7 @@ void FButton::draw()
         setReverse(true);
 
       setPrintPos (1 + getWidth(), y);
-      print (' '); // clear right
+      print (' ');  // clear right
 
       if ( isMonochron() )
         setReverse(false);
@@ -654,17 +654,17 @@ void FButton::draw()
   setColor (button_fg, button_bg);
 
   for (x = 0; x < i; x++)
-    print (space); // █
+    print (space);  // █
 
   if ( hotkeypos == -1 )
-    setCursorPos (1 + margin + i + mono_1st_char, 1 + j ); // first character
+    setCursorPos (1 + margin + i + mono_1st_char, 1 + j );  // first character
   else
-    setCursorPos (1 + margin + i + hotkeypos, 1 + j ); // hotkey
+    setCursorPos (1 + margin + i + hotkeypos, 1 + j );  // hotkey
 
   if ( is_ActiveFocus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
-  for (int z = 0; x < i + length && z < getWidth(); z++,x++)
+  for (int z = 0; x < i + length && z < getWidth(); z++, x++)
   {
     if ( (z == hotkeypos) && is_Active )
     {
@@ -696,7 +696,7 @@ void FButton::draw()
     unsetBold();
 
   for (x = i + length; x < getWidth() - 1; x++)
-    print (space); // █
+    print (space);  // █
 
   if ( getHeight() >= 2 )
   {
@@ -705,14 +705,14 @@ void FButton::draw()
       setPrintPos (2 + d, 1 + i);
 
       for (int z = 1; z < getWidth(); z++)
-        print (space); // █
+        print (space);  // █
     }
     for (i = j + 1; i < getHeight(); i++)
     {
       setPrintPos (2 + d, 1 + i);
 
       for (int z = 1; z < getWidth(); z++)
-        print (space); // █
+        print (space);  // █
     }
   }
 
@@ -725,7 +725,7 @@ void FButton::draw()
       setColor ( parent_widget->getForegroundColor()
                , parent_widget->getBackgroundColor() );
 
-    print(' '); // restore background after button down
+    print(' ');  // restore background after button down
     drawShadow();
   }
 
@@ -760,7 +760,7 @@ void FButton::updateButtonColor()
     else
     {
       button_fg = getForegroundColor();
-      button_bg = getBackgroundColor() ;
+      button_bg = getBackgroundColor();
     }
   }
   else  // inactive

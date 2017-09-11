@@ -1,7 +1,8 @@
 // File: ui.cpp
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 
 #include "final.h"
 
@@ -15,32 +16,32 @@
 
 class ProgressDialog : public FDialog
 {
- public:
-   // Constructor
-   explicit ProgressDialog (FWidget* = 0);
-   // Destructor
-  ~ProgressDialog();
+  public:
+    // Constructor
+    explicit ProgressDialog (FWidget* = 0);
+    // Destructor
+    ~ProgressDialog();
 
- private:
-   // Disable copy constructor
-   ProgressDialog (const ProgressDialog&);
-   // Disable assignment operator (=)
-   ProgressDialog& operator = (const ProgressDialog&);
+  private:
+    // Disable copy constructor
+    ProgressDialog (const ProgressDialog&);
+    // Disable assignment operator (=)
+    ProgressDialog& operator = (const ProgressDialog&);
 
-   // Event handlers
-   void onShow (FShowEvent*);
-   void onTimer (FTimerEvent*);
+    // Event handlers
+    void onShow (FShowEvent*);
+    void onTimer (FTimerEvent*);
 
-   // Callback methods
-   void cb_reset_bar (FWidget*, data_ptr);
-   void cb_more_bar (FWidget*, data_ptr);
-   void cb_exit_bar (FWidget*, data_ptr);
+    // Callback methods
+    void cb_reset_bar (FWidget*, data_ptr);
+    void cb_more_bar (FWidget*, data_ptr);
+    void cb_exit_bar (FWidget*, data_ptr);
 
-   // Data Members
-   FProgressbar* progressBar;
-   FButton*      reset;
-   FButton*      more;
-   FButton*      quit;
+    // Data Members
+    FProgressbar* progressBar;
+    FButton*      reset;
+    FButton*      more;
+    FButton*      quit;
 };
 #pragma pack(pop)
 
@@ -97,7 +98,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-ProgressDialog::~ProgressDialog()
+ProgressDialog::~ProgressDialog()  // destructor
 {
   delOwnTimer();
   delCallback(quit);
@@ -170,24 +171,24 @@ void ProgressDialog::cb_exit_bar (FWidget*, data_ptr)
 
 class TextWindow : public FDialog
 {
- public:
-   // Constructor
-   explicit TextWindow (FWidget* = 0);
-   // Destructor
-  ~TextWindow();
+  public:
+    // Constructor
+    explicit TextWindow (FWidget* = 0);
+    // Destructor
+    ~TextWindow();
 
-   void append (const FString&);
+    void append (const FString&);
 
- private:
-   // Disable copy constructor
-   TextWindow (const TextWindow&);
-   // Disable assignment operator (=)
-   TextWindow& operator = (const TextWindow&);
+  private:
+    // Disable copy constructor
+    TextWindow (const TextWindow&);
+    // Disable assignment operator (=)
+    TextWindow& operator = (const TextWindow&);
 
-   void adjustSize();
+    void adjustSize();
 
-   // Data Members
-   FTextView* scrollText;
+    // Data Members
+    FTextView* scrollText;
 };
 #pragma pack(pop)
 
@@ -212,7 +213,7 @@ TextWindow::TextWindow (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-TextWindow::~TextWindow()
+TextWindow::~TextWindow()  // destructor
 { }
 
 //----------------------------------------------------------------------
@@ -238,46 +239,46 @@ void TextWindow::adjustSize()
 
 class MyDialog : public FDialog
 {
- public:
-   // Constructor
-   explicit MyDialog (FWidget* = 0);
-   // Destructor
-  ~MyDialog();
+  public:
+    // Constructor
+    explicit MyDialog (FWidget* = 0);
+    // Destructor
+    ~MyDialog();
 
- private:
-   // Disable copy constructor
-   MyDialog (const MyDialog&);
-   // Disable assignment operator (=)
-   MyDialog& operator = (const MyDialog&);
+  private:
+    // Disable copy constructor
+    MyDialog (const MyDialog&);
+    // Disable assignment operator (=)
+    MyDialog& operator = (const MyDialog&);
 
-   // Method
-   void adjustSize();
+    // Method
+    void adjustSize();
 
-   // Event handlers
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_noFunctionMsg (FWidget*, data_ptr);
-   void cb_about (FWidget*, data_ptr);
-   void cb_terminfo (FWidget*, data_ptr);
-   void cb_drives (FWidget*, data_ptr);
-   void cb_cutClipboard (FWidget*, data_ptr);
-   void cb_copyClipboard (FWidget*, data_ptr);
-   void cb_pasteClipboard (FWidget*, data_ptr);
-   void cb_clearInput (FWidget*, data_ptr);
-   void cb_input2buttonText (FWidget*, data_ptr);
-   void cb_setTitlebar (FWidget*, data_ptr);
-   void cb_ProgressBar (FWidget*, data_ptr);
-   void cb_updateNumber (FWidget*, data_ptr);
-   void cb_activateButton (FWidget*, data_ptr);
-   void cb_view (FWidget*, data_ptr);
-   void cb_setInput (FWidget*, data_ptr);
-   void cb_exitApp (FWidget*, data_ptr);
+    // Callback methods
+    void cb_noFunctionMsg (FWidget*, data_ptr);
+    void cb_about (FWidget*, data_ptr);
+    void cb_terminfo (FWidget*, data_ptr);
+    void cb_drives (FWidget*, data_ptr);
+    void cb_cutClipboard (FWidget*, data_ptr);
+    void cb_copyClipboard (FWidget*, data_ptr);
+    void cb_pasteClipboard (FWidget*, data_ptr);
+    void cb_clearInput (FWidget*, data_ptr);
+    void cb_input2buttonText (FWidget*, data_ptr);
+    void cb_setTitlebar (FWidget*, data_ptr);
+    void cb_ProgressBar (FWidget*, data_ptr);
+    void cb_updateNumber (FWidget*, data_ptr);
+    void cb_activateButton (FWidget*, data_ptr);
+    void cb_view (FWidget*, data_ptr);
+    void cb_setInput (FWidget*, data_ptr);
+    void cb_exitApp (FWidget*, data_ptr);
 
-   // Data Members
-   FLineEdit* myLineEdit;
-   FListBox*  myList;
-   FString    clipboard;
+    // Data Members
+    FLineEdit* myLineEdit;
+    FListBox*  myList;
+    FString    clipboard;
 };
 #pragma pack(pop)
 
@@ -308,7 +309,7 @@ MyDialog::MyDialog (FWidget* parent)
 
   // "File" menu items
   FMenuItem* Open    = new FMenuItem ("&Open...", File);
-  Open->addAccelerator (fc::Fckey_o); // Ctrl + O
+  Open->addAccelerator (fc::Fckey_o);  // Ctrl + O
   Open->setStatusbarMessage ("Locate and open a text file");
   FMenu* Recent   = new FMenu ("&System files", File);
   Recent->setStatusbarMessage ("View text file");
@@ -316,7 +317,7 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Line1   = new FMenuItem (File);
   Line1->setSeparator();
   FMenuItem* Quit    = new FMenuItem ("&Quit", File);
-  Quit->addAccelerator (fc::Fmkey_x); // Meta/Alt + X
+  Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
   // "Recent" menu items
@@ -332,7 +333,8 @@ MyDialog::MyDialog (FWidget* parent)
   FMenuItem* Line2   = new FMenuItem (Edit);
   Line2->setSeparator();
   FMenuItem* Cut     = new FMenuItem (fc::Fckey_x, "Cu&t", Edit);
-  Cut->setStatusbarMessage ("Remove the input text and put it in the clipboard");
+  Cut->setStatusbarMessage ( "Remove the input text"
+                             " and put it in the clipboard" );
   FMenuItem* Copy    = new FMenuItem (fc::Fckey_c, "&Copy", Edit);
   Copy->setStatusbarMessage ("Copy the input text into the clipboad");
   FMenuItem* Paste   = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
@@ -405,21 +407,21 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    dynamic_cast<FWidget::data_ptr>(File1)
+    static_cast<FWidget::data_ptr>(File1)
   );
 
   File2->addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    dynamic_cast<FWidget::data_ptr>(File2)
+    static_cast<FWidget::data_ptr>(File2)
   );
 
   File3->addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    dynamic_cast<FWidget::data_ptr>(File3)
+    static_cast<FWidget::data_ptr>(File3)
   );
 
   // Buttons
@@ -563,7 +565,7 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
-    dynamic_cast<FWidget::data_ptr>(myLineEdit)
+    static_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   MyButton5->addCallback
@@ -588,21 +590,21 @@ MyDialog::MyDialog (FWidget* parent)
   (
     "toggled",
     F_METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
-    dynamic_cast<FWidget::data_ptr>(MyButton5)
+    static_cast<FWidget::data_ptr>(MyButton5)
   );
 
   myList->addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_setInput),
-    dynamic_cast<FWidget::data_ptr>(myLineEdit)
+    static_cast<FWidget::data_ptr>(myLineEdit)
   );
 
   myList->addCallback
   (
     "row-selected",
     F_METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
-    dynamic_cast<FWidget::data_ptr>(tagged_count)
+    static_cast<FWidget::data_ptr>(tagged_count)
   );
 
   key_F1->addCallback
@@ -625,7 +627,7 @@ MyDialog::MyDialog (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-MyDialog::~MyDialog()
+MyDialog::~MyDialog()  // destructor
 { }
 
 //----------------------------------------------------------------------

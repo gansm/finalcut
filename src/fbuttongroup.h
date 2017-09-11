@@ -43,77 +43,77 @@ class FToggleButton;
 
 class FButtonGroup : public FScrollView
 {
- public:
-   // Constructors
-   explicit FButtonGroup (FWidget* = 0);
-   FButtonGroup (const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FButtonGroup (FWidget* = 0);
+    FButtonGroup (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FButtonGroup();
+    // Destructor
+    virtual ~FButtonGroup();
 
-   // Accessor
-   const char*    getClassName() const;
-   FToggleButton* getFirstButton();
-   FToggleButton* getLastButton();
-   FToggleButton* getButton (int) const;
-   uInt           getCount() const;
-   FString&       getText();
+    // Accessor
+    const char*    getClassName() const;
+    FToggleButton* getFirstButton();
+    FToggleButton* getLastButton();
+    FToggleButton* getButton (int) const;
+    uInt           getCount() const;
+    FString&       getText();
 
-   // Mutator
-   bool           setEnable(bool);
-   bool           setEnable();
-   bool           unsetEnable();
-   bool           setDisable();
-   void           setText (const FString&);
+    // Mutator
+    bool           setEnable(bool);
+    bool           setEnable();
+    bool           unsetEnable();
+    bool           setDisable();
+    void           setText (const FString&);
 
-   // Inquiries
-   bool           isChecked(int) const;
-   bool           hasFocusedButton() const;
-   bool           hasCheckedButton() const;
+    // Inquiries
+    bool           isChecked(int) const;
+    bool           hasFocusedButton() const;
+    bool           hasCheckedButton() const;
 
-   // Methods
-   void           hide();
-   void           insert (FToggleButton*);
-   void           remove (FToggleButton*);
-   void           checkScrollSize (FToggleButton*);
-   void           checkScrollSize (const FRect&);
+    // Methods
+    void           hide();
+    void           insert (FToggleButton*);
+    void           remove (FToggleButton*);
+    void           checkScrollSize (FToggleButton*);
+    void           checkScrollSize (const FRect&);
 
-   // Event handlers
-   void           onMouseDown (FMouseEvent*);
-   void           onAccel (FAccelEvent*);
-   void           onFocusIn (FFocusEvent*);
+    // Event handlers
+    void           onMouseDown (FMouseEvent*);
+    void           onAccel (FAccelEvent*);
+    void           onFocusIn (FFocusEvent*);
 
-   // Callback method
-   void           cb_buttonToggled (FWidget*, data_ptr);
+    // Callback method
+    void           cb_buttonToggled (FWidget*, data_ptr);
 
- protected:
-   // Accessor
-   uChar          getHotkey();
+  protected:
+    // Accessor
+    uChar          getHotkey();
 
-   // Mutator
-   void           setHotkeyAccelerator();
+    // Mutator
+    void           setHotkeyAccelerator();
 
-   // Methods
-   virtual void   draw();
-   void           drawLabel();
+    // Methods
+    virtual void   draw();
+    void           drawLabel();
 
- private:
-   // Disable copy constructor
-   FButtonGroup (const FButtonGroup&);
+  private:
+    // Disable copy constructor
+    FButtonGroup (const FButtonGroup&);
 
-   // Disable assignment operator (=)
-   FButtonGroup& operator = (const FButtonGroup&);
+    // Disable assignment operator (=)
+    FButtonGroup& operator = (const FButtonGroup&);
 
-   // Inquiries
-   bool           isRadioButton (FToggleButton*) const;
+    // Inquiries
+    bool           isRadioButton (FToggleButton*) const;
 
-   // Methods
-   void           init();
-   void           directFocus();
+    // Methods
+    void           init();
+    void           directFocus();
 
-   // Data Members
-   FString        text;
-   FObjectList    buttonlist;
+    // Data Members
+    FString        text;
+    FObjectList    buttonlist;
 };
 #pragma pack(pop)
 

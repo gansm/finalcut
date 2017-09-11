@@ -1,6 +1,8 @@
 // File: fmenulist.cpp
 // Provides: class FMenuList
 
+#include <vector>
+
 #include "fmenulist.h"
 
 //----------------------------------------------------------------------

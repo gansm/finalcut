@@ -1,8 +1,10 @@
 // File: foptimove.cpp
 // Provides: class FOptiMove
 
+#include <cstring>
+
 #include "foptimove.h"
-#include "string.h"
+
 
 //----------------------------------------------------------------------
 // class FOptiMove
@@ -45,7 +47,7 @@ FOptiMove::FOptiMove (int baud)
 }
 
 //----------------------------------------------------------------------
-FOptiMove::~FOptiMove() // destructor
+FOptiMove::~FOptiMove()  // destructor
 { }
 
 
@@ -620,24 +622,42 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 void FOptiMove::printDurations()
 {
-  std::cout << "            speed: " << baudrate << " baud\r\n";
-  std::cout << "    char_duration: " << char_duration << " ms\r\n";
-  std::cout << "      cursor_home: " << F_cursor_home.duration << " ms\r\n";
-  std::cout << "     cursor_to_ll: " << F_cursor_to_ll.duration << " ms\r\n";
-  std::cout << "  carriage_return: " << F_carriage_return.duration << " ms\r\n";
-  std::cout << "              tab: " << F_tab.duration << " ms\r\n";
-  std::cout << "         back_tab: " << F_back_tab.duration << " ms\r\n";
-  std::cout << "        cursor_up: " << F_cursor_up.duration << " ms\r\n";
-  std::cout << "      cursor_down: " << F_cursor_down.duration << " ms\r\n";
-  std::cout << "      cursor_left: " << F_cursor_left.duration << " ms\r\n";
-  std::cout << "     cursor_right: " << F_cursor_right.duration << " ms\r\n";
-  std::cout << "   cursor_address: " << F_cursor_address.duration << " ms\r\n";
-  std::cout << "   column_address: " << F_column_address.duration << " ms\r\n";
-  std::cout << "      row_address: " << F_row_address.duration << " ms\r\n";
-  std::cout << "   parm_up_cursor: " << F_parm_up_cursor.duration << " ms\r\n";
-  std::cout << " parm_down_cursor: " << F_parm_down_cursor.duration << " ms\r\n";
-  std::cout << " parm_left_cursor: " << F_parm_left_cursor.duration << " ms\r\n";
-  std::cout << "parm_right_cursor: " << F_parm_right_cursor.duration << " ms\r\n";
+  std::cout << "            speed: "
+            << baudrate << " baud\r\n";
+  std::cout << "    char_duration: "
+            << char_duration << " ms\r\n";
+  std::cout << "      cursor_home: "
+            << F_cursor_home.duration << " ms\r\n";
+  std::cout << "     cursor_to_ll: "
+            << F_cursor_to_ll.duration << " ms\r\n";
+  std::cout << "  carriage_return: "
+            << F_carriage_return.duration << " ms\r\n";
+  std::cout << "              tab: "
+            << F_tab.duration << " ms\r\n";
+  std::cout << "         back_tab: "
+            << F_back_tab.duration << " ms\r\n";
+  std::cout << "        cursor_up: "
+            << F_cursor_up.duration << " ms\r\n";
+  std::cout << "      cursor_down: "
+            << F_cursor_down.duration << " ms\r\n";
+  std::cout << "      cursor_left: "
+            << F_cursor_left.duration << " ms\r\n";
+  std::cout << "     cursor_right: "
+            << F_cursor_right.duration << " ms\r\n";
+  std::cout << "   cursor_address: "
+            << F_cursor_address.duration << " ms\r\n";
+  std::cout << "   column_address: "
+            << F_column_address.duration << " ms\r\n";
+  std::cout << "      row_address: "
+            << F_row_address.duration << " ms\r\n";
+  std::cout << "   parm_up_cursor: "
+            << F_parm_up_cursor.duration << " ms\r\n";
+  std::cout << " parm_down_cursor: "
+            << F_parm_down_cursor.duration << " ms\r\n";
+  std::cout << " parm_left_cursor: "
+            << F_parm_left_cursor.duration << " ms\r\n";
+  std::cout << "parm_right_cursor: "
+            << F_parm_right_cursor.duration << " ms\r\n";
 }
 
 
@@ -647,9 +667,9 @@ void FOptiMove::calculateCharDuration()
 {
   if ( baudrate != 0 )
   {
-    static const int baudbyte = 9; // = 7 bit + 1 parity + 1 stop
+    static const int baudbyte = 9;  // = 7 bit + 1 parity + 1 stop
     char_duration = (baudbyte * 1000 * 10)
-                    / (baudrate > 0 ? baudrate : 9600); // milliseconds
+                    / (baudrate > 0 ? baudrate : 9600);  // milliseconds
 
     if ( char_duration <= 0 )
       char_duration = 1;
@@ -707,7 +727,7 @@ int FOptiMove::capDurationToLength (int duration)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend (capability& o, int count, char* dst)
+int FOptiMove::repeatedAppend (const capability& o, int count, char* dst)
 {
   register std::size_t src_len;
   register std::size_t dst_len;
@@ -786,7 +806,7 @@ int FOptiMove::relativeMove ( char*& move
         vtime = repeatedAppend (F_cursor_down, num, move);
       }
     }
-    else // to_y < from_y
+    else  // to_y < from_y
     {
       num = from_y - to_y;
 
@@ -874,10 +894,9 @@ int FOptiMove::relativeMove ( char*& move
           std::strncpy (hmove, str, sizeof(move_buf) - 1);
           htime = htime_r;
         }
-
       }
     }
-    else // to_x < from_x
+    else  // to_x < from_x
     {
       num = from_x - to_x;
 
@@ -924,7 +943,6 @@ int FOptiMove::relativeMove ( char*& move
           std::strncpy (hmove, str, sizeof(move_buf) - 1);
           htime = htime_l;
         }
-
       }
     }
 
@@ -947,7 +965,8 @@ int FOptiMove::relativeMove ( char*& move
 inline bool FOptiMove::isWideMove ( int xold, int yold
                                   , int xnew, int ynew )
 {
-  return bool ( (xnew > MOVE_LIMIT)
-               && (xnew < screen_width - 1 - MOVE_LIMIT)
-               && (std::abs(xnew - xold) + std::abs(ynew - yold) > MOVE_LIMIT) );
+  return bool ( xnew > MOVE_LIMIT
+               && xnew < screen_width - 1 - MOVE_LIMIT
+               && std::abs(xnew - xold) + std::abs(ynew - yold)
+                  > MOVE_LIMIT );
 }

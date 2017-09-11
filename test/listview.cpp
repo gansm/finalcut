@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
 
 #include "fapplication.h"
 #include "fdialog.h"
@@ -18,24 +20,24 @@
 
 class Listview : public FDialog
 {
- public:
-   // Constructor
-   explicit Listview (FWidget* = 0);
-   // Destructor
-  ~Listview();
+  public:
+    // Constructor
+    explicit Listview (FWidget* = 0);
+    // Destructor
+    ~Listview();
 
- private:
-   // Disable copy constructor
-   Listview (const Listview&);
-   // Disable assignment operator (=)
-   Listview& operator = (const Listview&);
+  private:
+    // Disable copy constructor
+    Listview (const Listview&);
+    // Disable assignment operator (=)
+    Listview& operator = (const Listview&);
 
-   // Event handlers
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_exitApp (FWidget*, data_ptr);
-   void cb_showInMessagebox (FWidget*, data_ptr);
+    // Callback methods
+    void cb_exitApp (FWidget*, data_ptr);
+    void cb_showInMessagebox (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -133,7 +135,7 @@ Listview::Listview (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Listview::~Listview()
+Listview::~Listview()  // destructor
 { }
 
 //----------------------------------------------------------------------

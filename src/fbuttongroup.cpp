@@ -240,7 +240,8 @@ void FButtonGroup::insert (FToggleButton* button)
   // setChecked the first FRadioButton
   if ( buttonlist.size() == 1 )
   {
-    FToggleButton* first_button = static_cast<FToggleButton*>(*buttonlist.begin());
+    FToggleButton* first_button;
+    first_button = static_cast<FToggleButton*>(*buttonlist.begin());
 
     if ( isRadioButton(first_button) )
       first_button->setChecked();
@@ -254,8 +255,6 @@ void FButtonGroup::insert (FToggleButton* button)
     "toggled",
     F_METHOD_CALLBACK (this, &FButtonGroup::cb_buttonToggled)
   );
-
-  //checkScrollSize (button);
 }
 
 //----------------------------------------------------------------------

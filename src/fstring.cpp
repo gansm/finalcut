@@ -1,6 +1,9 @@
 // File: fstring.cpp
 // Provides: class FString
 
+#include <string>
+#include <vector>
+
 #include "fstring.h"
 
 // static class constant
@@ -500,12 +503,12 @@ uInt FString::getUTF8length() const
 //----------------------------------------------------------------------
 FString& FString::sprintf (const wchar_t* format, ...)
 {
-  static const int buf_size = 4096;
-  wchar_t buffer[buf_size];
+  static const int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE];
   va_list args;
 
   va_start (args, format);
-  std::vswprintf (buffer, buf_size, format, args);
+  std::vswprintf (buffer, BUFSIZE, format, args);
   va_end (args);
 
   _assign (buffer);
@@ -578,7 +581,7 @@ const wchar_t* FString::wc_str() const
 //----------------------------------------------------------------------
 const char* FString::c_str() const
 {
-  if ( string )
+  if ( length > 0 )
     return wc_to_c_str (string);
   else
     return 0;
@@ -808,7 +811,7 @@ double FString::toDouble() const
     if ( ret >= HUGE_VAL || ret <= -HUGE_VAL )
       throw std::overflow_error ("overflow");
 
-    if ( std::fabs(ret) < DBL_EPSILON ) // ret == 0.0l
+    if ( std::fabs(ret) < DBL_EPSILON )  // ret == 0.0l
       throw std::underflow_error ("underflow");
   }
 
@@ -1155,7 +1158,6 @@ FString& FString::setFormatedNumber (uLong num, char separator)
 
     if ( num && ++n % 3 == 0 )
       *--s = separator;
-
   }
   while ( num );
 

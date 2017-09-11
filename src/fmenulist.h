@@ -19,6 +19,8 @@
 #ifndef FMENULIST_H
 #define FMENULIST_H
 
+#include <vector>
+
 #include "fmenuitem.h"
 #include "fwidget.h"
 
@@ -32,46 +34,46 @@
 
 class FMenuList
 {
- public:
-   // Constructor
-   explicit FMenuList();
+  public:
+    // Constructor
+    explicit FMenuList();
 
-   // Destructor
-   virtual ~FMenuList();
+    // Destructor
+    virtual ~FMenuList();
 
-   // Accessors
-   virtual const char* getClassName() const;
-   uInt                getCount() const;
-   FMenuItem*          getItem (int) const;
-   FMenuItem*          getSelectedItem() const;
+    // Accessors
+    virtual const char* getClassName() const;
+    uInt                getCount() const;
+    FMenuItem*          getItem (int) const;
+    FMenuItem*          getSelectedItem() const;
 
-   // Mutators
-   void                enableItem (int);
-   void                disableItem (int);
-   void                setSelectedItem (FMenuItem*);
+    // Mutators
+    void                enableItem (int);
+    void                disableItem (int);
+    void                setSelectedItem (FMenuItem*);
 
-   // Inquiries
-   bool                isSelected (int) const;
-   bool                hasSelectedItem() const;
+    // Inquiries
+    bool                isSelected (int) const;
+    bool                hasSelectedItem() const;
 
-   // Methods
-   virtual void        insert (FMenuItem*);
-   virtual void        remove (FMenuItem*);
-   void                remove (int);
-   void                clear();
-   void                selectFirstItem();
-   void                unselectItem();
+    // Methods
+    virtual void        insert (FMenuItem*);
+    virtual void        remove (FMenuItem*);
+    void                remove (int);
+    void                clear();
+    void                selectFirstItem();
+    void                unselectItem();
 
- protected:
-   FMenuItem*              selected_item;
-   std::vector<FMenuItem*> item_list;
+  protected:
+    FMenuItem*              selected_item;
+    std::vector<FMenuItem*> item_list;
 
- private:
-   // Disable copy constructor
-   FMenuList (const FMenuList&);
+  private:
+    // Disable copy constructor
+    FMenuList (const FMenuList&);
 
-   // Disable assignment operator (=)
-   FMenuList& operator = (const FMenuList&);
+    // Disable assignment operator (=)
+    FMenuList& operator = (const FMenuList&);
 };
 #pragma pack(pop)
 

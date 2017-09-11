@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
 
 #include "fapplication.h"
 #include "fdialog.h"
@@ -18,23 +20,23 @@
 
 class Treeview : public FDialog
 {
- public:
-   // Constructor
-   explicit Treeview (FWidget* = 0);
-   // Destructor
-  ~Treeview();
+  public:
+    // Constructor
+    explicit Treeview (FWidget* = 0);
+    // Destructor
+    ~Treeview();
 
- private:
-   // Disable copy constructor
-   Treeview (const Treeview&);
-   // Disable assignment operator (=)
-   Treeview& operator = (const Treeview&);
+  private:
+    // Disable copy constructor
+    Treeview (const Treeview&);
+    // Disable assignment operator (=)
+    Treeview& operator = (const Treeview&);
 
-   // Event handlers
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_exitApp (FWidget*, data_ptr);
+    // Callback methods
+    void cb_exitApp (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -92,7 +94,7 @@ Treeview::Treeview (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Treeview::~Treeview()
+Treeview::~Treeview()  // destructor
 { }
 
 //----------------------------------------------------------------------

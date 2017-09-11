@@ -5,6 +5,8 @@
 
 #include <sys/types.h>
 
+#define null NULL
+
 typedef unsigned char  uChar;
 typedef unsigned int   uInt;
 typedef unsigned long  uLong;

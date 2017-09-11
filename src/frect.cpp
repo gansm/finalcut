@@ -1,6 +1,8 @@
 // File: frect.cpp
 // Provides: class FRect
 
+#include <algorithm>
+
 #include "frect.h"
 
 //----------------------------------------------------------------------
@@ -19,6 +21,7 @@ FRect::FRect (const FPoint& p1, const FPoint& p2)
 //----------------------------------------------------------------------
 FRect::~FRect()  // destructor
 { }
+
 
 // public methods of FRect
 //----------------------------------------------------------------------

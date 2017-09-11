@@ -12,8 +12,9 @@
 #ifndef FTERMBUFFER_H
 #define FTERMBUFFER_H
 
-#include <vector>
 #include <sstream>  // std::stringstream
+#include <string>
+#include <vector>
 
 #include "fvterm.h"
 #include "fstring.h"
@@ -28,50 +29,50 @@
 
 class FTermBuffer
 {
- public:
-   // Typedef
-   typedef FOptiAttr::char_data  char_data;
+  public:
+    // Typedef
+    typedef FOptiAttr::char_data  char_data;
 
-   // Constructor
-   explicit FTermBuffer();
+    // Constructor
+    explicit FTermBuffer();
 
-   // Destructor
-   virtual ~FTermBuffer();
+    // Destructor
+    virtual ~FTermBuffer();
 
-   // Overloaded operators
-   template<class type> FTermBuffer& operator << (const type&);
-   // Non-member operators
-   friend std::vector<char_data>& operator << ( std::vector<char_data>&
-                                              , const FTermBuffer& );
+    // Overloaded operators
+    template<class type> FTermBuffer& operator << (const type&);
+    // Non-member operators
+    friend std::vector<char_data>& operator << ( std::vector<char_data>&
+                                               , const FTermBuffer& );
 
-   // Accessors
-   virtual const char*    getClassName() const;
-   int                    getLength() const;
+    // Accessors
+    virtual const char*    getClassName() const;
+    int                    getLength() const;
 
-   // Inquiry
-   bool 	isEmpty () const;
+    // Inquiry
+    bool                   isEmpty() const;
 
-   // Methods
-   void                   clear();
-   int                    writef (const wchar_t*, ...);
-   int                    writef (const char*, ...)
-   #if defined(__clang__)
-     __attribute__((__format__ (__printf__, 2, 3)))
-   #elif defined(__GNUC__)
-     __attribute__ ((format (printf, 2, 3)))
-   #endif
-                          ;
-   int                    write (const std::wstring&);
-   int                    write (const wchar_t*);
-   int                    write (const char*);
-   int                    write (const std::string&);
-   int                    write (const FString&);
-   int                    write (int);
-   FTermBuffer&           write ();
-   std::vector<char_data> getBuffer();
+    // Methods
+    void                   clear();
+    int                    writef (const wchar_t*, ...);
+    int                    writef (const char*, ...)
+#if defined(__clang__)
+      __attribute__((__format__ (__printf__, 2, 3)))
+#elif defined(__GNUC__)
+      __attribute__ ((format (printf, 2, 3)))
+#endif
+                           ;
+    int                    write (const std::wstring&);
+    int                    write (const wchar_t*);
+    int                    write (const char*);
+    int                    write (const std::string&);
+    int                    write (const FString&);
+    int                    write (int);
+    FTermBuffer&           write ();
+    std::vector<char_data> getBuffer();
 
- private:
-   std::vector<char_data> data;
+  private:
+    std::vector<char_data> data;
 };
 
 #pragma pack(pop)

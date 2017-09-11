@@ -49,60 +49,60 @@
 
 class FMenuBar : public FWindow, public FMenuList
 {
- public:
-   // Constructor
-   explicit FMenuBar (FWidget* = 0);
+  public:
+    // Constructor
+    explicit FMenuBar (FWidget* = 0);
 
-   // Destructor
-   virtual ~FMenuBar();
+    // Destructor
+    virtual ~FMenuBar();
 
-   // Accessors
-   virtual const char* getClassName() const;
+    // Accessors
+    virtual const char* getClassName() const;
 
-   // Methods
-   void                hide();
-   void                resetMenu();
-   void                adjustSize();
+    // Methods
+    void                hide();
+    void                resetMenu();
+    void                adjustSize();
 
-   // Event handlers
-   void                onKeyPress (FKeyEvent*);
-   void                onMouseDown (FMouseEvent*);
-   void                onMouseUp (FMouseEvent*);
-   void                onMouseMove (FMouseEvent*);
-   void                onAccel (FAccelEvent*);
+    // Event handlers
+    void                onKeyPress (FKeyEvent*);
+    void                onMouseDown (FMouseEvent*);
+    void                onMouseUp (FMouseEvent*);
+    void                onMouseMove (FMouseEvent*);
+    void                onAccel (FAccelEvent*);
 
-   // Callback methods
-   void                cb_item_deactivated (FWidget*, data_ptr);
+    // Callback methods
+    void                cb_item_deactivated (FWidget*, data_ptr);
 
- private:
-   // Disable copy constructor
-   FMenuBar (const FMenuBar&);
+  private:
+    // Disable copy constructor
+    FMenuBar (const FMenuBar&);
 
-   // Disable assignment operator (=)
-   FMenuBar& operator  = (const FMenuBar&);
+    // Disable assignment operator (=)
+    FMenuBar& operator  = (const FMenuBar&);
 
-   // Inquiry
-   bool                isMenu (FMenuItem*) const;
+    // Inquiry
+    bool                isMenu (FMenuItem*) const;
 
-   // Methods
-   void                init();
-   void                calculateDimensions();
-   bool                selectNextItem();
-   bool                selectPrevItem();
-   bool                hotkeyMenu (FKeyEvent*&);
-   int                 getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
-   void                draw();
-   void                drawItems();
-   void                adjustItems();
-   void                leaveMenuBar();
+    // Methods
+    void                init();
+    void                calculateDimensions();
+    bool                selectNextItem();
+    bool                selectPrevItem();
+    bool                hotkeyMenu (FKeyEvent*&);
+    int                 getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+    void                draw();
+    void                drawItems();
+    void                adjustItems();
+    void                leaveMenuBar();
 
-   // Friend classes
-   friend class FMenu;
-   friend class FMenuItem;
+    // Friend classes
+    friend class FMenu;
+    friend class FMenuItem;
 
-   // Data Members
-   bool   mouse_down;
-   bool   drop_down;
+    // Data Members
+    bool   mouse_down;
+    bool   drop_down;
 };
 #pragma pack(pop)
 

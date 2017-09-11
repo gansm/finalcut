@@ -3,6 +3,7 @@
 #ifndef FKEYMAP_H
 #define FKEYMAP_H
 
+#include <string>
 
 #pragma pack(push)
 #pragma pack(1)
@@ -448,12 +449,12 @@ static keyname FkeyName[] =
   { fc::Fckey_e                   , "Ctrl+E" },
   { fc::Fckey_f                   , "Ctrl+F" },
   { fc::Fckey_g                   , "Ctrl+G" },
-  { fc::Fkey_erase                , "Backspace" }, // Ctrl+H
-  { fc::Fkey_tab                  , "Tab" },       // Ctrl+I
+  { fc::Fkey_erase                , "Backspace" },  // Ctrl+H
+  { fc::Fkey_tab                  , "Tab" },        // Ctrl+I
   { fc::Fckey_j                   , "Ctrl+J" },
   { fc::Fckey_h                   , "Ctrl+K" },
   { fc::Fckey_l                   , "Ctrl+L" },
-  { fc::Fkey_return               , "Return" },    // Ctrl+M
+  { fc::Fkey_return               , "Return" },     // Ctrl+M
   { fc::Fckey_n                   , "Ctrl+N" },
   { fc::Fckey_o                   , "Ctrl+O" },
   { fc::Fckey_p                   , "Ctrl+P" },
@@ -467,13 +468,13 @@ static keyname FkeyName[] =
   { fc::Fckey_x                   , "Ctrl+X" },
   { fc::Fckey_y                   , "Ctrl+Y" },
   { fc::Fckey_z                   , "Ctrl+Z" },
-  { fc::Fkey_escape               , "Esc" },       // Ctrl+[
+  { fc::Fkey_escape               , "Esc" },        // Ctrl+[
   { fc::Fckey_backslash           , "Ctrl+\\" },
   { fc::Fckey_right_square_bracket, "Ctrl+]" },
   { fc::Fckey_caret               , "Ctrl+^" },
   { fc::Fckey_underscore          , "Ctrl+_" },
   { fc::Fkey_space                , "Space" },
-  { fc::Fckey_space               , "Ctrl+Space" }, // Ctrl+(Space or @)
+  { fc::Fckey_space               , "Ctrl+Space" },  // Ctrl+(Space or @)
   { fc::Fkey_backspace            , "Backspace" },
   { fc::Fkey_catab                , "Clear-All-Tabs" },
   { fc::Fkey_clear                , "Clear-Screen" },

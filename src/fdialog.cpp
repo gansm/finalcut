@@ -1187,7 +1187,7 @@ void FDialog::drawBorder()
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x = 1; x < getWidth() - 1; x++) // low line _
+    for (int x = 1; x < getWidth() - 1; x++)  // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);
@@ -1204,7 +1204,7 @@ void FDialog::drawBorder()
 void FDialog::drawTitleBar()
 {
   static const int menu_btn = 3;
-  int i,x,length, zoom_btn;
+  int i, x, length, zoom_btn;
 
   // draw the title button
   setPrintPos (1, 1);
@@ -1325,7 +1325,7 @@ void FDialog::drawTitleBar()
         }
       }
     }
-    else // is not zoomed
+    else  // is not zoomed
     {
       if ( isNewFont() )
       {

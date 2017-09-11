@@ -8,17 +8,17 @@
 
 class timer : public FWidget
 {
- public:
-   // Constructor
-   explicit timer (FWidget* = 0);
+  public:
+    // Constructor
+    explicit timer (FWidget* = 0);
 
- protected:
-   // Method
-   void draw();
+  protected:
+    // Method
+    void draw();
 
-   // Event handlers
-   void onTimer (FTimerEvent*);
-   void onAccel (FAccelEvent*);
+    // Event handlers
+    void onTimer (FTimerEvent*);
+    void onAccel (FAccelEvent*);
 };
 
 //----------------------------------------------------------------------

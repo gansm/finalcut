@@ -1,3 +1,6 @@
+2017-09-11  Markus Gans  <guru.mail@muenster.de>
+	* Some code improvements 
+
 2017-09-09  Markus Gans  <guru.mail@muenster.de>
 	* Wrong UTF-8 string length fixed when attaching to FString
 

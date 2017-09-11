@@ -28,6 +28,8 @@
 #ifndef FTEXTVIEW_H
 #define FTEXTVIEW_H
 
+#include <vector>
+
 #include "fapplication.h"
 #include "fscrollbar.h"
 #include "fstatusbar.h"
@@ -44,78 +46,78 @@
 
 class FTextView : public FWidget
 {
- public:
-   // Using-declarations
-   using FWidget::setGeometry;
+  public:
+    // Using-declarations
+    using FWidget::setGeometry;
 
-   // Typedef
-   typedef std::vector<FString> stringLines;
+    // Typedef
+    typedef std::vector<FString> stringLines;
 
-   // Constructor
-   explicit FTextView (FWidget* = 0);
+    // Constructor
+    explicit FTextView (FWidget* = 0);
 
-   // Destructor
-  ~FTextView();
+    // Destructor
+    ~FTextView();
 
-   // Accessors
-   const char*        getClassName() const;
-   uInt               getColumns() const;
-   uInt               getRows() const;
-   const FString      getText() const;
-   const stringLines& getLines() const;
+    // Accessors
+    const char*        getClassName() const;
+    uInt               getColumns() const;
+    uInt               getRows() const;
+    const FString      getText() const;
+    const stringLines& getLines() const;
 
-   // Mutators
-   void               setGeometry (int, int, int, int, bool = true);
-   void               setPosition (int);
-   void               setText (const FString&);
+    // Mutators
+    void               setGeometry (int, int, int, int, bool = true);
+    void               setPosition (int);
+    void               setText (const FString&);
 
-   // Methods
-   void               hide();
-   void               append (const FString&);
-   void               insert (const FString&, int);
-   void               replaceRange (const FString&, int, int);
-   void               deleteRange (int, int);
-   void               deleteLine (int);
-   void               clear();
+    // Methods
+    void               hide();
+    void               append (const FString&);
+    void               insert (const FString&, int);
+    void               replaceRange (const FString&, int, int);
+    void               deleteRange (int, int);
+    void               deleteLine (int);
+    void               clear();
 
-   // Event handlers
-   void               onKeyPress (FKeyEvent*);
-   void               onMouseDown (FMouseEvent*);
-   void               onMouseUp (FMouseEvent*);
-   void               onMouseMove (FMouseEvent*);
-   void               onWheel (FWheelEvent*);
-   void               onFocusIn (FFocusEvent*);
-   void               onFocusOut (FFocusEvent*);
+    // Event handlers
+    void               onKeyPress (FKeyEvent*);
+    void               onMouseDown (FMouseEvent*);
+    void               onMouseUp (FMouseEvent*);
+    void               onMouseMove (FMouseEvent*);
+    void               onWheel (FWheelEvent*);
+    void               onFocusIn (FFocusEvent*);
+    void               onFocusOut (FFocusEvent*);
 
- protected:
-   // Method
-   void               adjustSize();
+  protected:
+    // Method
+    void               adjustSize();
 
- private:
-   // Disable copy constructor
-   FTextView (const FTextView&);
+  private:
+    // Disable copy constructor
+    FTextView (const FTextView&);
 
-   // Disable assignment operator (=)
-   FTextView& operator = (const FTextView&);
+    // Disable assignment operator (=)
+    FTextView& operator = (const FTextView&);
 
-   // Methods
-   void          init();
-   void          draw();
-   void          drawText();
-   void          processChanged();
+    // Methods
+    void          init();
+    void          draw();
+    void          drawText();
+    void          processChanged();
 
-   // Callback methods
-   void          cb_VBarChange (FWidget*, data_ptr);
-   void          cb_HBarChange (FWidget*, data_ptr);
+    // Callback methods
+    void          cb_VBarChange (FWidget*, data_ptr);
+    void          cb_HBarChange (FWidget*, data_ptr);
 
-   // Data Members
-   stringLines data;
-   FScrollbar* vbar;
-   FScrollbar* hbar;
-   int         xoffset;
-   int         yoffset;
-   int         nf_offset;
-   uInt        maxLineWidth;
+    // Data Members
+    stringLines data;
+    FScrollbar* vbar;
+    FScrollbar* hbar;
+    int         xoffset;
+    int         yoffset;
+    int         nf_offset;
+    uInt        maxLineWidth;
 };
 #pragma pack(pop)
 

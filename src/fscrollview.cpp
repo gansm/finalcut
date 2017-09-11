@@ -13,7 +13,7 @@
 //----------------------------------------------------------------------
 FScrollView::FScrollView (FWidget* parent)
   : FWidget(parent)
-  , scroll_geometry(1,1,1,1)
+  , scroll_geometry(1, 1, 1, 1)
   , viewport_geometry()
   , viewport(0)
   , vbar(0)
@@ -28,7 +28,7 @@ FScrollView::FScrollView (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FScrollView::~FScrollView() // destructor
+FScrollView::~FScrollView()  // destructor
 {
   delete vbar;
   delete hbar;
@@ -96,6 +96,8 @@ void FScrollView::setScrollHeight (int height)
 //----------------------------------------------------------------------
 void FScrollView::setScrollSize (int width, int height)
 {
+  int xoffset_end, yoffset_end;
+
   if ( width < getViewportWidth() )
     width = getViewportWidth();
 
@@ -117,10 +119,12 @@ void FScrollView::setScrollSize (int width, int height)
     child_print_area = viewport;
   }
 
+  xoffset_end = getScrollWidth() - getViewportWidth();
+  yoffset_end = getScrollHeight() - getViewportHeight();
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
-  setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - getScrollY()));
-  setRightPadding (1 - (getScrollWidth() - getViewportWidth() - getScrollX()) + nf_offset);
+  setBottomPadding (1 - (yoffset_end - getScrollY()));
+  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
 
   hbar->setMaximum (width - getViewportWidth());
   hbar->setPageSize (width, getViewportWidth());
@@ -335,8 +339,8 @@ void FScrollView::scrollTo (int x, int y)
   viewport->has_changes = true;
   setTopPadding (1 - yoffset);
   setLeftPadding (1 - xoffset);
-  setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - yoffset));
-  setRightPadding (1 - (getScrollWidth() - getViewportWidth() - xoffset) + nf_offset);
+  setBottomPadding (1 - (yoffset_end - yoffset));
+  setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
   copy2area();
   hbar->setValue (xoffset);
   vbar->setValue (yoffset);
@@ -468,8 +472,8 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
       viewport->has_changes = true;
       setTopPadding (1 - yoffset);
       setLeftPadding (1 - xoffset);
-      setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - yoffset));
-      setRightPadding (1 - (getScrollWidth() - getViewportWidth() - xoffset) + nf_offset);
+      setBottomPadding (1 - (yoffset_end - yoffset));
+      setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
       copy2area();
       hasChanges = true;
       vbar->setValue (yoffset);
@@ -489,6 +493,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
   bool   hasChanges = false;
   short& yoffset = viewport_geometry.y1_ref();
   short  yoffset_before = yoffset;
+  short  yoffset_end = short(getScrollHeight() - getViewportHeight());
   int    save_height = viewport_geometry.getHeight();
   int    wheel = ev->getWheel();
 
@@ -507,8 +512,6 @@ void FScrollView::onWheel (FWheelEvent* ev)
 
     case fc::WheelDown:
       {
-        short yoffset_end = short(getScrollHeight() - getViewportHeight());
-
         if ( yoffset_end < 0 )
           yoffset_end = 0;
 
@@ -531,7 +534,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
     viewport_geometry.setHeight(save_height);
     viewport->has_changes = true;
     setTopPadding (1 - yoffset);
-    setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - yoffset));
+    setBottomPadding (1 - (yoffset_end - yoffset));
     copy2area();
     hasChanges = true;
     vbar->setValue (yoffset);
@@ -712,8 +715,8 @@ void FScrollView::copy2area()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    char_data* vc; // viewport character
-    char_data* ac; // area character
+    char_data* vc;  // viewport character
+    char_data* ac;  // area character
     int v_line_len = viewport->width;
     int a_line_len = print_area->width + print_area->right_shadow;
     vc = &viewport->text[(dy + y) * v_line_len + dx];
@@ -756,6 +759,8 @@ inline FPoint FScrollView::getViewportCursorPos()
 //----------------------------------------------------------------------
 void FScrollView::init (FWidget* parent)
 {
+  int xoffset_end, yoffset_end;
+
   assert ( parent != 0 );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
@@ -792,11 +797,13 @@ void FScrollView::init (FWidget* parent)
     F_METHOD_CALLBACK (this, &FScrollView::cb_HBarChange)
   );
 
+  xoffset_end = getScrollWidth() - getViewportWidth();
+  yoffset_end = getScrollHeight() - getViewportHeight();
   nf_offset = isNewFont() ? 1 : 0;
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
-  setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - getScrollY()));
-  setRightPadding (1 - (getScrollWidth() - getViewportWidth() - getScrollX()) + nf_offset);
+  setBottomPadding (1 - (yoffset_end - getScrollY()));
+  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
 
   FPoint no_shadow(0,0);
   int w = getViewportWidth();
@@ -991,7 +998,7 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
     viewport_geometry.setHeight(save_height);
     viewport->has_changes = true;
     setTopPadding (1 - yoffset);
-    setBottomPadding (1 - (getScrollHeight() - getViewportHeight() - yoffset));
+    setBottomPadding (1 - (yoffset_end - yoffset));
     copy2area();
     hasChanges = true;
   }
@@ -1096,7 +1103,7 @@ void FScrollView::cb_HBarChange (FWidget*, data_ptr)
     viewport_geometry.setWidth(save_width);
     viewport->has_changes = true;
     setLeftPadding (1 - xoffset);
-    setRightPadding (1 - (getScrollWidth() - getViewportWidth() - xoffset) + nf_offset);
+    setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
     copy2area();
     hasChanges = true;
   }

@@ -2,6 +2,8 @@
 // Provides: class FListBoxItem
 //           class FListBox
 
+#include <algorithm>
+
 #include "fapplication.h"
 #include "flistbox.h"
 #include "fscrollbar.h"
@@ -38,7 +40,7 @@ FListBoxItem::FListBoxItem (const FString& txt, FWidget::data_ptr data)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::~FListBoxItem()
+FListBoxItem::~FListBoxItem()  // destructor
 { }
 
 // public methods of FListBoxItem
@@ -403,7 +405,7 @@ void FListBox::clear()
 //----------------------------------------------------------------------
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
+  static const int padding_space = 2;  // 1 leading space + 1 tailing space
   int element_count = int(getCount());
   int current_before = current;
   int xoffset_before = xoffset;
@@ -1306,8 +1308,8 @@ void FListBox::draw()
 
     for (int y = 2; y < getHeight(); y++)
     {
-      setPrintPos (getWidth(),y);
-      print (' '); // clear right side of the scrollbar
+      setPrintPos (getWidth(), y);
+      print (' ');  // clear right side of the scrollbar
     }
   }
 
@@ -1448,7 +1450,7 @@ void FListBox::drawList()
           setColor ( wc.selected_current_element_fg
                    , wc.selected_current_element_bg );
 
-        setCursorPos (3, 2 + int(y)); // first character
+        setCursorPos (3, 2 + int(y));  // first character
       }
       else
       {
@@ -1464,10 +1466,11 @@ void FListBox::drawList()
           if ( inc_len > 0 )  // incremental search
           {
             serach_mark = true;
-            setCursorPos (2 + b + int(inc_len), 2 + int(y)); // last found character
+            // Place the cursor on the last found character
+            setCursorPos (2 + b + int(inc_len), 2 + int(y));
           }
           else  // only highlighted
-            setCursorPos (3 + b, 2 + int(y)); // first character
+            setCursorPos (3 + b, 2 + int(y));  // first character
         }
         else
           setColor ( wc.current_element_fg
@@ -1793,7 +1796,7 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
-  static const int padding_space = 2; // 1 leading space + 1 tailing space
+  static const int padding_space = 2;  // 1 leading space + 1 tailing space
   FScrollbar::sType scrollType;
   int distance = 1;
   int xoffset_before = xoffset;

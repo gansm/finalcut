@@ -17,37 +17,37 @@
 
 class Transparent : public FDialog
 {
- public:
-   // Typedef and Enumeration
-   typedef enum ttype
-   {
-     transparent        = 0,
-     shadow             = 1,
-     inherit_background = 2
-   } trans_type;
+  public:
+    // Typedef and Enumeration
+    typedef enum ttype
+    {
+      transparent        = 0,
+      shadow             = 1,
+      inherit_background = 2
+    } trans_type;
 
- public:
-   // Constructor
-   explicit Transparent (FWidget* = 0, trans_type = transparent);
+  public:
+    // Constructor
+    explicit Transparent (FWidget* = 0, trans_type = transparent);
 
-   // Destructor
-  ~Transparent();
+    // Destructor
+    ~Transparent();
 
- private:
-   // Disable copy constructor
-   Transparent (const Transparent&);
+  private:
+    // Disable copy constructor
+    Transparent (const Transparent&);
 
-   // Disable assignment operator (=)
-   Transparent& operator = (const Transparent&);
+    // Disable assignment operator (=)
+    Transparent& operator = (const Transparent&);
 
-   // Method
-   void draw();
+    // Method
+    void draw();
 
-   // Event handlers
-   void onKeyPress (FKeyEvent* ev);
+    // Event handlers
+    void onKeyPress (FKeyEvent* ev);
 
-   // Data Members
-   trans_type type;
+    // Data Members
+    trans_type type;
 };
 #pragma pack(pop)
 
@@ -134,41 +134,41 @@ void Transparent::onKeyPress (FKeyEvent* ev)
 
 class MainWindow : public FDialog
 {
- private:
-   FString line1;
-   FString line2;
+  private:
+    FString line1;
+    FString line2;
 
- private:
-   // Disable copy constructor
-   MainWindow (const MainWindow&);
-   // Disable assignment operator (=)
-   MainWindow& operator = (const MainWindow&);
+  private:
+    // Disable copy constructor
+    MainWindow (const MainWindow&);
+    // Disable assignment operator (=)
+    MainWindow& operator = (const MainWindow&);
 
-   void draw();
+    void draw();
 
-   // Event handlers
-   void onClose (FCloseEvent*);
-   void onShow  (FShowEvent*);
-   void onTimer (FTimerEvent*);
-   void onKeyPress (FKeyEvent* ev)
-   {
-     if ( ! ev )
-       return;
+    // Event handlers
+    void onClose (FCloseEvent*);
+    void onShow  (FShowEvent*);
+    void onTimer (FTimerEvent*);
+    void onKeyPress (FKeyEvent* ev)
+    {
+      if ( ! ev )
+        return;
 
-     if ( ev->key() == 'q' )
-     {
-       close();
-       ev->accept();
-     }
-     else
-       FDialog::onKeyPress(ev);
-   }
+      if ( ev->key() == 'q' )
+      {
+        close();
+        ev->accept();
+      }
+      else
+        FDialog::onKeyPress(ev);
+    }
 
- public:
-   // Constructor
-   explicit MainWindow (FWidget* = 0);
-   // Destructor
-  ~MainWindow();
+  public:
+    // Constructor
+    explicit MainWindow (FWidget* = 0);
+    // Destructor
+    ~MainWindow();
 };
 #pragma pack(pop)
 
@@ -218,9 +218,9 @@ void MainWindow::draw()
     setReverse(true);
 
   setColor();
-  setPrintPos (2,4);
+  setPrintPos (2, 4);
   print(line1);
-  setPrintPos (2,5);
+  setPrintPos (2, 5);
   print(line2);
 
   if ( isMonochron() )

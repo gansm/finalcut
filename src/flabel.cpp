@@ -45,7 +45,7 @@ FLabel::FLabel (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FLabel::~FLabel() // destructor
+FLabel::~FLabel()  // destructor
 {
   delAccelerator();
 }

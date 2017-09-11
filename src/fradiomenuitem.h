@@ -45,28 +45,28 @@
 
 class FRadioMenuItem : public FMenuItem
 {
- public:
-   // Constructors
-   explicit FRadioMenuItem (FWidget* = 0);
-   FRadioMenuItem (const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FRadioMenuItem (FWidget* = 0);
+    FRadioMenuItem (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FRadioMenuItem();
+    // Destructor
+    virtual ~FRadioMenuItem();
 
-   // Accessor
-   const char* getClassName() const;
+    // Accessor
+    const char* getClassName() const;
 
- private:
-   // Disable copy constructor
-   FRadioMenuItem (const FRadioMenuItem&);
+  private:
+    // Disable copy constructor
+    FRadioMenuItem (const FRadioMenuItem&);
 
-   // Disable assignment operator (=)
-   FRadioMenuItem& operator = (const FRadioMenuItem&);
+    // Disable assignment operator (=)
+    FRadioMenuItem& operator = (const FRadioMenuItem&);
 
-   // Methods
-   void init (FWidget*);
-   void processToggle();
-   void processClicked();
+    // Methods
+    void init (FWidget*);
+    void processToggle();
+    void processClicked();
 };
 #pragma pack(pop)
 

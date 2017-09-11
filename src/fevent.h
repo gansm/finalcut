@@ -64,15 +64,15 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class FEvent // event base class
+class FEvent  // event base class
 {
- public:
-   explicit FEvent(int);
-   virtual ~FEvent();
-   int type() const;
+  public:
+    explicit FEvent(int);
+    virtual ~FEvent();
+    int type() const;
 
- protected:
-   int t;
+  protected:
+    int t;
 };
 
 #pragma pack(pop)
@@ -85,20 +85,20 @@ class FEvent // event base class
 #pragma pack(push)
 #pragma pack(1)
 
-class FKeyEvent : public FEvent        // keyboard event
+class FKeyEvent : public FEvent  // keyboard event
 {
- public:
-   FKeyEvent (int, int);
-  ~FKeyEvent();
+  public:
+    FKeyEvent (int, int);
+    ~FKeyEvent();
 
-   int  key() const;
-   bool isAccepted() const;
-   void accept();
-   void ignore();
+    int  key() const;
+    bool isAccepted() const;
+    void accept();
+    void ignore();
 
- protected:
-   int  k;
-   bool accpt;
+  protected:
+    int  k;
+    bool accpt;
 };
 
 #pragma pack(pop)
@@ -111,25 +111,25 @@ class FKeyEvent : public FEvent        // keyboard event
 #pragma pack(push)
 #pragma pack(1)
 
-class FMouseEvent : public FEvent   // mouse event
+class FMouseEvent : public FEvent  // mouse event
 {
- public:
-   FMouseEvent (int, const FPoint&, int);
-   FMouseEvent (int, const FPoint&, const FPoint&, int);
-  ~FMouseEvent();
+  public:
+    FMouseEvent (int, const FPoint&, int);
+    FMouseEvent (int, const FPoint&, const FPoint&, int);
+    ~FMouseEvent();
 
-   const FPoint& getPos() const;
-   const FPoint& getTermPos() const;
-   int getX() const;
-   int getY() const;
-   int getTermX() const;
-   int getTermY() const;
-   int getButton() const;
+    const FPoint& getPos() const;
+    const FPoint& getTermPos() const;
+    int getX() const;
+    int getY() const;
+    int getTermX() const;
+    int getTermY() const;
+    int getButton() const;
 
- protected:
-   FPoint p;
-   FPoint tp;
-   int b;
+  protected:
+    FPoint p;
+    FPoint tp;
+    int b;
 };
 
 #pragma pack(pop)
@@ -142,25 +142,25 @@ class FMouseEvent : public FEvent   // mouse event
 #pragma pack(push)
 #pragma pack(1)
 
-class FWheelEvent : public FEvent   // wheel event
+class FWheelEvent : public FEvent  // wheel event
 {
- public:
-   FWheelEvent (int, const FPoint&, int);
-   FWheelEvent (int, const FPoint&, const FPoint&, int);
-  ~FWheelEvent();
+  public:
+    FWheelEvent (int, const FPoint&, int);
+    FWheelEvent (int, const FPoint&, const FPoint&, int);
+    ~FWheelEvent();
 
-   const FPoint& getPos() const;
-   const FPoint& getTermPos() const;
-   int getX() const;
-   int getY() const;
-   int getTermX() const;
-   int getTermY() const;
-   int getWheel() const;
+    const FPoint& getPos() const;
+    const FPoint& getTermPos() const;
+    int getX() const;
+    int getY() const;
+    int getTermX() const;
+    int getTermY() const;
+    int getWheel() const;
 
- protected:
-   FPoint p;
-   FPoint tp;
-   int w;
+  protected:
+    FPoint p;
+    FPoint tp;
+    int w;
 };
 
 #pragma pack(pop)
@@ -173,22 +173,22 @@ class FWheelEvent : public FEvent   // wheel event
 #pragma pack(push)
 #pragma pack(1)
 
-class FFocusEvent : public FEvent        // focus event
+class FFocusEvent : public FEvent  // focus event
 {
- public:
-   explicit FFocusEvent (int);
-  ~FFocusEvent();
+  public:
+    explicit FFocusEvent (int);
+    ~FFocusEvent();
 
-   bool gotFocus()  const;
-   bool lostFocus() const;
-   fc::FocusTypes getFocusType() const;
-   void setFocusType(fc::FocusTypes);
-   bool isAccepted() const;
-   void accept();
-   void ignore();
- protected:
-   bool accpt;
-   fc::FocusTypes focus_type;
+    bool gotFocus()  const;
+    bool lostFocus() const;
+    fc::FocusTypes getFocusType() const;
+    void setFocusType(fc::FocusTypes);
+    bool isAccepted() const;
+    void accept();
+    void ignore();
+  protected:
+    bool accpt;
+    fc::FocusTypes focus_type;
 };
 
 #pragma pack(pop)
@@ -201,26 +201,26 @@ class FFocusEvent : public FEvent        // focus event
 #pragma pack(push)
 #pragma pack(1)
 
-class FAccelEvent : public FEvent    // focus event
+class FAccelEvent : public FEvent  // focus event
 {
- private:
-   // Disable copy constructor
-   FAccelEvent (const FAccelEvent&);
-   // Disable assignment operator (=)
-   FAccelEvent& operator = (const FAccelEvent&);
+  private:
+    // Disable copy constructor
+    FAccelEvent (const FAccelEvent&);
+    // Disable assignment operator (=)
+    FAccelEvent& operator = (const FAccelEvent&);
 
- public:
-   FAccelEvent (int, void*);
-  ~FAccelEvent();
+  public:
+    FAccelEvent (int, void*);
+    ~FAccelEvent();
 
-   void*    focusedWidget() const;
-   bool     isAccepted() const;
-   void     accept();
-   void     ignore();
+    void*    focusedWidget() const;
+    bool     isAccepted() const;
+    void     accept();
+    void     ignore();
 
- protected:
-   bool     accpt;
-   void*    focus_widget;
+  protected:
+    bool     accpt;
+    void*    focus_widget;
 };
 
 #pragma pack(pop)
@@ -230,18 +230,18 @@ class FAccelEvent : public FEvent    // focus event
 // class FResizeEvent
 //----------------------------------------------------------------------
 
-class FResizeEvent : public FEvent    // resize event
+class FResizeEvent : public FEvent  // resize event
 {
- public:
-   explicit FResizeEvent (int);
-  ~FResizeEvent();
+  public:
+    explicit FResizeEvent (int);
+    ~FResizeEvent();
 
-   bool isAccepted() const;
-   void accept();
-   void ignore();
+    bool isAccepted() const;
+    void accept();
+    void ignore();
 
- protected:
-   bool accpt;
+  protected:
+    bool accpt;
 };
 
 
@@ -250,11 +250,11 @@ class FResizeEvent : public FEvent    // resize event
 // class FShowEvent
 //----------------------------------------------------------------------
 
-class FShowEvent : public FEvent    // show event
+class FShowEvent : public FEvent  // show event
 {
- public:
-   explicit FShowEvent (int);
-  ~FShowEvent();
+  public:
+    explicit FShowEvent (int);
+    ~FShowEvent();
 };
 
 
@@ -263,11 +263,11 @@ class FShowEvent : public FEvent    // show event
 // class FHideEvent
 //----------------------------------------------------------------------
 
-class FHideEvent : public FEvent    // hide event
+class FHideEvent : public FEvent  // hide event
 {
- public:
-   explicit FHideEvent (int);
-  ~FHideEvent();
+  public:
+    explicit FHideEvent (int);
+    ~FHideEvent();
 };
 
 
@@ -276,18 +276,18 @@ class FHideEvent : public FEvent    // hide event
 // class FCloseEvent
 //----------------------------------------------------------------------
 
-class FCloseEvent : public FEvent   // close event
+class FCloseEvent : public FEvent  // close event
 {
- public:
-   explicit FCloseEvent(int);
-  ~FCloseEvent();
+  public:
+    explicit FCloseEvent(int);
+    ~FCloseEvent();
 
-   bool isAccepted() const;
-   void accept();
-   void ignore();
+    bool isAccepted() const;
+    void accept();
+    void ignore();
 
- protected:
-   bool accpt;
+  protected:
+    bool accpt;
 };
 
 
@@ -299,16 +299,16 @@ class FCloseEvent : public FEvent   // close event
 #pragma pack(push)
 #pragma pack(1)
 
-class FTimerEvent : public FEvent   // timer event
+class FTimerEvent : public FEvent  // timer event
 {
- public:
-   FTimerEvent(int, int);
-  ~FTimerEvent();
+  public:
+    FTimerEvent(int, int);
+    ~FTimerEvent();
 
-   int timerId() const;
+    int timerId() const;
 
- protected:
-   int id;
+  protected:
+    int id;
 };
 
 #pragma pack(pop)

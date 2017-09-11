@@ -1,6 +1,9 @@
 // File: ftermbuffer.cpp
 // Provides: class FTermBuffer
 
+#include <string>
+#include <vector>
+
 #include "ftermbuffer.h"
 
 
@@ -15,7 +18,7 @@ FTermBuffer::FTermBuffer()
 { }
 
 //----------------------------------------------------------------------
-FTermBuffer::~FTermBuffer() // destructor
+FTermBuffer::~FTermBuffer()  // destructor
 { }
 
 
@@ -24,12 +27,12 @@ FTermBuffer::~FTermBuffer() // destructor
 int FTermBuffer::writef (const wchar_t* format, ...)
 {
   assert ( format != 0 );
-  static const int buf_size = 1024;
-  wchar_t buffer[buf_size];
+  static const int BufSize = 1024;
+  wchar_t buffer[BufSize];
   va_list args;
 
   va_start (args, format);
-  std::vswprintf (buffer, buf_size, format, args);
+  std::vswprintf (buffer, BufSize, format, args);
   va_end (args);
 
   FString str(buffer);
@@ -116,7 +119,7 @@ int FTermBuffer::write (const FString& s)
   {
     while ( *p )
     {
-      char_data  nc; // next character
+      char_data  nc;  // next character
       nc = FVTerm::getAttribute();
       nc.code = *p;
       nc.attr.bit.no_changes = false;
@@ -126,7 +129,7 @@ int FTermBuffer::write (const FString& s)
 
       p++;
       len++;
-    } // end of while
+    }  // end of while
   }
 
   return len;
@@ -135,7 +138,7 @@ int FTermBuffer::write (const FString& s)
 //----------------------------------------------------------------------
 int FTermBuffer::write (register int c)
 {
-  char_data nc; // next character
+  char_data nc;  // next character
   nc = FVTerm::getAttribute();
   nc.code = c;
   nc.attr.bit.no_changes = false;
@@ -148,8 +151,9 @@ int FTermBuffer::write (register int c)
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-std::vector< FTermBuffer::char_data>& operator << ( std::vector<FTermBuffer::char_data>& termString
-                                                  , const FTermBuffer& buf )
+std::vector<FTermBuffer::char_data>& operator << \
+  ( std::vector<FTermBuffer::char_data>& termString
+  , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )
     termString.assign(buf.data.begin(), buf.data.end());

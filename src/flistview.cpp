@@ -2,6 +2,8 @@
 // Provides: class FListViewItem
 //           class FListView
 
+#include <vector>
+
 #include "fapplication.h"
 #include "flistview.h"
 #include "fscrollbar.h"
@@ -109,7 +111,7 @@ FListViewItem::FListViewItem ( const std::vector<FString>& cols
 }
 
 //----------------------------------------------------------------------
-FListViewItem::~FListViewItem()
+FListViewItem::~FListViewItem()  // destructor
 { }
 
 
@@ -1074,7 +1076,7 @@ void FListView::draw()
 
     for (int y = 2; y < getHeight(); y++)
     {
-      setPrintPos (getWidth(),y);
+      setPrintPos (getWidth(), y);
       print (' ');  // clear right side of the scrollbar
     }
   }
@@ -1233,7 +1235,7 @@ void FListView::drawList()
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
-        setCursorPos (3, 2 + int(y)); // first character
+        setCursorPos (3, 2 + int(y));  // first character
       }
       else
         setColor ( wc.current_element_fg

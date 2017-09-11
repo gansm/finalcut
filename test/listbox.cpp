@@ -1,6 +1,8 @@
 // File: listbox.cpp
 
 #include <iostream>
+#include <list>
+#include <map>
 #include <fstream>
 
 #include "fapplication.h"
@@ -49,26 +51,26 @@ FString& mapToString (std::map<FString, FString>::const_iterator iter)
 
 class Listbox : public FDialog
 {
- public:
-   // Constructor
-   explicit Listbox (FWidget* = 0);
-   // Destructor
-  ~Listbox();
+  public:
+    // Constructor
+    explicit Listbox (FWidget* = 0);
+    // Destructor
+    ~Listbox();
 
- private:
-   // Disable copy constructor
-   Listbox (const Listbox&);
-   // Disable assignment operator (=)
-   Listbox& operator = (const Listbox&);
+  private:
+    // Disable copy constructor
+    Listbox (const Listbox&);
+    // Disable assignment operator (=)
+    Listbox& operator = (const Listbox&);
 
-   // Event handlers
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onClose (FCloseEvent*);
 
-   // Callback method
-   void cb_exitApp (FWidget*, data_ptr);
+    // Callback method
+    void cb_exitApp (FWidget*, data_ptr);
 
-   // Data Member
-   std::list<double>* double_list;
+    // Data Member
+    std::list<double>* double_list;
 };
 #pragma pack(pop)
 
@@ -134,7 +136,7 @@ Listbox::Listbox (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-Listbox::~Listbox()
+Listbox::~Listbox()  // destructor
 {
   delete temp_str;
   delete double_list;

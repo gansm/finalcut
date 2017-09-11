@@ -1,6 +1,8 @@
 // File: fwidget.cpp
 // Provides: class FWidget
 
+#include <vector>
+
 #include "fapplication.h"
 #include "fmenubar.h"
 #include "fstatusbar.h"
@@ -44,19 +46,19 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   , focus(false)
   , focusable(true)
   , visible_cursor(true)
-  , widget_cursor_position(-1,-1)
+  , widget_cursor_position(-1, -1)
   , size_hints()
   , double_flatline_mask()
   , padding()
   , ignore_padding(false)
-  , wsize(1,1,1,1)
-  , adjust_wsize(1,1,1,1)
+  , wsize(1, 1, 1, 1)
+  , adjust_wsize(1, 1, 1, 1)
   , adjust_wsize_term()
   , adjust_wsize_shadow()
   , adjust_wsize_term_shadow()
   , offset()
   , client_offset()
-  , wshadow(0,0)
+  , wshadow(0, 0)
   , foreground_color(fc::Default)
   , background_color(fc::Default)
   , statusbar_message()
@@ -263,7 +265,6 @@ FPoint FWidget::getPrintPos()
   int cy = cur.getY();
   return FPoint ( cx - offset.getX1() - getX() + 1
                 , cy - offset.getY1() - getY() + 1 );
-
 }
 
 //----------------------------------------------------------------------
@@ -450,8 +451,8 @@ void FWidget::setPos (int x, int y, bool adjust)
       y = 1;
   }
 
-  wsize.setPos(x,y);
-  adjust_wsize.setPos(x,y);
+  wsize.setPos(x, y);
+  adjust_wsize.setPos(x, y);
 
   if ( adjust )
     adjustSize();
@@ -710,7 +711,7 @@ bool FWidget::setCursorPos (register int x, register int y)
 {
   // sets the input cursor position
 
-  widget_cursor_position.setPoint(x,y);
+  widget_cursor_position.setPoint(x, y);
 
   if ( (flags & fc::focus) == 0 || isWindowWidget() )
     return false;
@@ -857,7 +858,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
       if ( widget->isEnabled()
           && widget->isVisible()
           && ! widget->isWindowWidget()
-          && widget->getTermGeometry().contains(x,y) )
+          && widget->getTermGeometry().contains(x, y) )
       {
         FWidget* child = childWidgetAt(widget, x, y);
         return (child != 0) ? child : widget;
@@ -1405,8 +1406,8 @@ void FWidget::detectTermSize()
 //----------------------------------------------------------------------
 void FWidget::move (int dx, int dy)
 {
-  wsize.move(dx,dy);
-  adjust_wsize.move(dx,dy);
+  wsize.move(dx, dy);
+  adjust_wsize.move(dx, dy);
 }
 
 //----------------------------------------------------------------------
@@ -1482,8 +1483,8 @@ void FWidget::drawShadow()
     else if ( FWidget* p = getParentWidget() )
       setColor (wc.shadow_fg, p->getBackgroundColor());
 
-    block = fc::FullBlock; // █
-    print (fc::LowerHalfBlock); // ▄
+    block = fc::FullBlock;  // █
+    print (fc::LowerHalfBlock);  // ▄
 
     if ( isWindowWidget() )
       unsetInheritBackground();
@@ -1491,7 +1492,7 @@ void FWidget::drawShadow()
     for (int i = 1; i < getHeight(); i++)
     {
       setPrintPos (x2 + 1, y1 + i);
-      print (block); // █
+      print (block);  // █
     }
 
     setPrintPos (x1 + 1, y2 + 1);
@@ -1500,7 +1501,7 @@ void FWidget::drawShadow()
       setInheritBackground();
 
     for (int i = 1; i <= getWidth(); i++)
-      print (fc::UpperHalfBlock); // ▀
+      print (fc::UpperHalfBlock);  // ▀
 
     if ( isWindowWidget() )
       unsetInheritBackground();
@@ -1542,7 +1543,7 @@ void FWidget::clearShadow()
     setPrintPos (x1 + 1, y2 + 1);
 
     for (int i = 1; i <= getWidth(); i++)
-      print (' '); // clear ▀
+      print (' ');  // clear ▀
   }
 
   if ( isWindowWidget() )
@@ -1572,9 +1573,11 @@ void FWidget::drawFlatBorder()
     setPrintPos (x1 - 1, y1 + y + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
-      print (fc::NF_rev_border_line_right_and_left); // left+right line (on left side)
+      // left+right line (on left side)
+      print (fc::NF_rev_border_line_right_and_left);
     else
-      print (fc::NF_rev_border_line_right); // right line (on left side)
+      // right line (on left side)
+      print (fc::NF_rev_border_line_right);
   }
 
   setPrintPos (x2, y1 + 1);
@@ -1582,9 +1585,11 @@ void FWidget::drawFlatBorder()
   for (int y = 0; y < getHeight(); y++)
   {
     if ( double_flatline_mask.right[uLong(y)] )
-      print (fc::NF_rev_border_line_right_and_left); // left+right line (on right side)
+      // left+right line (on right side)
+      print (fc::NF_rev_border_line_right_and_left);
     else
-      print (fc::NF_border_line_left); // left line (on right side)
+      // left line (on right side)
+      print (fc::NF_border_line_left);
 
     setPrintPos (x2, y1 + y + 2);
   }
@@ -1594,9 +1599,11 @@ void FWidget::drawFlatBorder()
   for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
-      print (fc::NF_border_line_up_and_down); // top+bottom line (at top)
+      // top+bottom line (at top)
+      print (fc::NF_border_line_up_and_down);
     else
-      print (fc::NF_border_line_bottom); // bottom line (at top)
+      // bottom line (at top)
+      print (fc::NF_border_line_bottom);
   }
 
   setPrintPos (x1, y2);
@@ -1604,9 +1611,11 @@ void FWidget::drawFlatBorder()
   for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
-      print (fc::NF_border_line_up_and_down); // top+bottom line (at bottom)
+      // top+bottom line (at bottom)
+      print (fc::NF_border_line_up_and_down);
     else
-      print (fc::NF_border_line_upper); // top line (at bottom)
+      // top line (at bottom)
+      print (fc::NF_border_line_upper);
   }
 }
 
@@ -1697,61 +1706,61 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
   if ( isNewFont() )
   {
     setPrintPos (x1, y1);
-    print (fc::NF_border_corner_middle_upper_left); // ┌
+    print (fc::NF_border_corner_middle_upper_left);  // ┌
 
     for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
 
-    print (fc::NF_border_corner_middle_upper_right); // ┐
+    print (fc::NF_border_corner_middle_upper_right);  // ┐
 
     for (int y = y1 + 1; y <= y2; y++)
     {
       setPrintPos (x1, y);
-      print (fc::NF_border_line_left); // border left ⎸
+      print (fc::NF_border_line_left);  // border left ⎸
       setPrintPos (x2, y);
-      print (fc::NF_rev_border_line_right); // border right⎹
+      print (fc::NF_rev_border_line_right);  // border right⎹
     }
 
     setPrintPos (x1, y2);
-    print (fc::NF_border_corner_middle_lower_left); // └
+    print (fc::NF_border_corner_middle_lower_left);  // └
 
     for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
 
-    print (fc::NF_border_corner_middle_lower_right); // ┘
+    print (fc::NF_border_corner_middle_lower_right);  // ┘
   }
   else
   {
     setPrintPos (x1, y1);
-    print (fc::BoxDrawingsDownAndRight); // ┌
+    print (fc::BoxDrawingsDownAndRight);  // ┌
 
     for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
 
-    print (fc::BoxDrawingsDownAndLeft); // ┐
+    print (fc::BoxDrawingsDownAndLeft);  // ┐
 
     for (int y = y1 + 1; y < y2; y++)
     {
       setPrintPos (x1, y);
-      print (fc::BoxDrawingsVertical); // │
+      print (fc::BoxDrawingsVertical);  // │
       setPrintPos (x2, y);
-      print (fc::BoxDrawingsVertical); // │
+      print (fc::BoxDrawingsVertical);  // │
     }
 
     setPrintPos (x1, y2);
-    print (fc::BoxDrawingsUpAndRight); // └
+    print (fc::BoxDrawingsUpAndRight);  // └
 
     for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
 
-    print (fc::BoxDrawingsUpAndLeft); // ┘
+    print (fc::BoxDrawingsUpAndLeft);  // ┘
 
     for (int x = x1 + 1; x < x2; x++)
     {
       setPrintPos (x, y1);
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
       setPrintPos (x, y2);
-      print (fc::BoxDrawingsHorizontal); // ─
+      print (fc::BoxDrawingsHorizontal);  // ─
     }
   }
 }
@@ -2431,7 +2440,7 @@ void FWidget::setColorTheme()
   wc.tooltip_fg                        = fc::Black;
   wc.tooltip_bg                        = fc::Yellow;
   wc.shadow_fg                         = fc::Black;
-  wc.shadow_bg                         = fc::LightGray; // only for transparent shadow
+  wc.shadow_bg                         = fc::LightGray;  // only for transparent shadow
   wc.current_element_focus_fg          = fc::White;
   wc.current_element_focus_bg          = fc::Blue;
   wc.current_element_fg                = fc::LightGray;
@@ -2521,7 +2530,7 @@ void FWidget::setColorTheme()
     wc.tooltip_fg                        = fc::LightGray;
     wc.tooltip_bg                        = fc::Cyan;
     wc.shadow_fg                         = fc::Black;
-    wc.shadow_bg                         = fc::LightGray; // only for transparent shadow
+    wc.shadow_bg                         = fc::LightGray;  // only for transparent shadow
     wc.current_element_focus_fg          = fc::LightGray;
     wc.current_element_focus_bg          = fc::Red;
     wc.current_element_fg                = fc::LightGray;

@@ -14,38 +14,37 @@
 
 class AttribDlg : public FDialog
 {
- public:
-   // Constructor
-   explicit AttribDlg (FWidget* = 0);
+  public:
+    // Constructor
+    explicit AttribDlg (FWidget* = 0);
 
-   // Destructor
-  ~AttribDlg();
+    // Destructor
+    ~AttribDlg();
 
-   // Event handlers
-   void onAccel (FAccelEvent*);
-   void onWheel (FWheelEvent*);
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onAccel (FAccelEvent*);
+    void onWheel (FWheelEvent*);
+    void onClose (FCloseEvent*);
 
-   // Callback methods
-   void cb_next (FWidget* = 0, data_ptr = 0);
-   void cb_back (FWidget* = 0, data_ptr = 0);
+    // Callback methods
+    void cb_next (FWidget* = 0, data_ptr = 0);
+    void cb_back (FWidget* = 0, data_ptr = 0);
 
-   // Data Members
-   short bgcolor;
+    // Data Members
+    short bgcolor;
 
- private:
-   // Disable copy constructor
-   AttribDlg (const AttribDlg&);
-   // Disable assignment operator (=)
-   AttribDlg& operator = (const AttribDlg&);
+  private:
+    // Disable copy constructor
+    AttribDlg (const AttribDlg&);
+    // Disable assignment operator (=)
+    AttribDlg& operator = (const AttribDlg&);
 
-   // Method
-   void adjustSize();
+    // Method
+    void adjustSize();
 
-   // Data Members
-   FButton* next_button;
-   FButton* back_button;
-
+    // Data Members
+    FButton* next_button;
+    FButton* back_button;
 };
 #pragma pack(pop)
 
@@ -176,38 +175,38 @@ void AttribDlg::adjustSize()
 
 class AttribDemo : public FWidget
 {
- public:
-   // Constructor
-   explicit AttribDemo (FWidget* = 0);
+  public:
+    // Constructor
+    explicit AttribDemo (FWidget* = 0);
 
-   // Destructor
-  ~AttribDemo()
-   { }
+    // Destructor
+    ~AttribDemo()
+    { }
 
-   // Event handler
-   void onWheel (FWheelEvent* ev)
-   {
-     AttribDlg* p = dynamic_cast<AttribDlg*>(getParentWidget());
+    // Event handler
+    void onWheel (FWheelEvent* ev)
+    {
+      AttribDlg* p = static_cast<AttribDlg*>(getParentWidget());
 
-     if ( p )
-       p->onWheel(ev);
-   }
+      if ( p )
+        p->onWheel(ev);
+    }
 
- private:
-   // Methods
-   void printColorLine();
-   void printAltCharset();
-   void draw();
+  private:
+    // Methods
+    void printColorLine();
+    void printAltCharset();
+    void draw();
 
-   // Data Member
-   int colors;
+    // Data Member
+    int colors;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 AttribDemo::AttribDemo (FWidget* parent)
- : FWidget(parent)
- , colors(getMaxColor())
+  : FWidget(parent)
+  , colors(getMaxColor())
 {
   if ( isMonochron() )
     colors = 1;
@@ -402,7 +401,7 @@ int main (int argc, char* argv[])
   dialog->setShadow();
 
   AttribDemo* demo = new AttribDemo(dialog);
-  demo->setGeometry (1,1,67,19);
+  demo->setGeometry (1, 1, 67, 19);
 
   app.setMainWidget(dialog);
   dialog->show();

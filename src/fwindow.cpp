@@ -25,7 +25,7 @@ FWindow::FWindow(FWidget* parent)
 {
   setWindowWidget();
   FRect geometry = getTermGeometry();
-  geometry.move(-1,-1);
+  geometry.move(-1, -1);
   createArea (geometry, getShadow(), vwin);
   addWindow (this);
 }
@@ -261,12 +261,12 @@ void FWindow::drawBorder()
     int y2 = 1 + getHeight() - 1;
 
     setPrintPos (x1, y1);
-    print (fc::NF_border_corner_upper_left); // ⎡
+    print (fc::NF_border_corner_upper_left);  // ⎡
 
     for (int x = x1 + 1; x < x2; x++)
-      print (fc::NF_border_line_upper); // ¯
+      print (fc::NF_border_line_upper);  // ¯
 
-    print (fc::NF_rev_border_corner_upper_right); // ⎤
+    print (fc::NF_rev_border_corner_upper_right);  // ⎤
 
     for (int y = y1 + 1; y < y2; y++)
     {
@@ -282,7 +282,7 @@ void FWindow::drawBorder()
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x = 2; x < getWidth(); x++) // low line _
+    for (int x = 2; x < getWidth(); x++)  // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);
@@ -358,7 +358,7 @@ void FWindow::setWidth (int w, bool adjust)
   if ( isVirtualWindow() && getWidth() != old_width )
   {
     FRect geometry = getTermGeometry();
-    geometry.move(-1,-1);
+    geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
 }
@@ -372,7 +372,7 @@ void FWindow::setHeight (int h, bool adjust)
   if ( isVirtualWindow() && getHeight() != old_height )
   {
     FRect geometry = getTermGeometry();
-    geometry.move(-1,-1);
+    geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
 }
@@ -384,10 +384,11 @@ void FWindow::setSize (int w, int h, bool adjust)
   int old_height = getHeight();
   FWidget::setSize (w, h, adjust);
 
-  if ( isVirtualWindow() && (getWidth() != old_width || getHeight() != old_height) )
+  if ( isVirtualWindow()
+      && (getWidth() != old_width || getHeight() != old_height) )
   {
     FRect geometry = getTermGeometry();
-    geometry.move(-1,-1);
+    geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
 }
@@ -413,7 +414,7 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
   if ( getWidth() != old_width || getHeight() != old_height )
   {
     FRect geometry = getTermGeometry();
-    geometry.move(-1,-1);
+    geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
   else
@@ -429,7 +430,7 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 //----------------------------------------------------------------------
 void FWindow::move (int dx, int dy)
 {
-  FWidget::move (dx,dy);
+  FWidget::move (dx, dy);
 
   if ( isVirtualWindow() )
   {
@@ -456,12 +457,11 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( ! w->isWindowHidden()
-            && w->getTermGeometry().contains(x,y) )
+            && w->getTermGeometry().contains(x, y) )
           return w;
       }
     }
     while ( iter != begin );
-
   }
 
   return 0;
@@ -779,10 +779,11 @@ void FWindow::setShadowSize (int right, int bottom)
   new_right = getShadow().getX();
   new_bottom = getShadow().getY();
 
-  if ( isVirtualWindow() && (new_right != old_right || new_bottom != old_bottom) )
+  if ( isVirtualWindow()
+      && (new_right != old_right || new_bottom != old_bottom) )
   {
     FRect geometry = getTermGeometry();
-    geometry.move(-1,-1);
+    geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
 }

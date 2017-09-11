@@ -33,6 +33,8 @@
 #ifndef FTOOLTIP_H
 #define FTOOLTIP_H
 
+#include <vector>
+
 #include "fwindow.h"
 
 
@@ -45,50 +47,50 @@
 
 class FToolTip : public FWindow
 {
- public:
-   // Constructor
-   explicit FToolTip (FWidget* = 0);
-   FToolTip (const FString&, FWidget* = 0);
+  public:
+    // Constructor
+    explicit FToolTip (FWidget* = 0);
+    FToolTip (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FToolTip ();
+    // Destructor
+    virtual ~FToolTip ();
 
-   // Accessors
-   const char*   getClassName() const;
-   const FString getText() const;
+    // Accessors
+    const char*   getClassName() const;
+    const FString getText() const;
 
-   // Mutators
-   void          setText (const FString&);
+    // Mutators
+    void          setText (const FString&);
 
-   // Methods
-   virtual void  draw();
-   void          show();
-   void          hide();
+    // Methods
+    virtual void  draw();
+    void          show();
+    void          hide();
 
-   // Event handler
-   void          onMouseDown (FMouseEvent*);
+    // Event handler
+    void          onMouseDown (FMouseEvent*);
 
- private:
-   // Typedef
-   typedef std::vector<FString> textLines;
+  private:
+    // Typedef
+    typedef std::vector<FString> textLines;
 
-   // Disable copy constructor
-   FToolTip (const FToolTip&);
+    // Disable copy constructor
+    FToolTip (const FToolTip&);
 
-   // Disable assignment operator (=)
-   FToolTip& operator = (const FToolTip&);
+    // Disable assignment operator (=)
+    FToolTip& operator = (const FToolTip&);
 
-   // Methods
-   void          init();
-   void          calculateDimensions();
-   virtual void  adjustSize();
+    // Methods
+    void          init();
+    void          calculateDimensions();
+    virtual void  adjustSize();
 
-   // Data Members
-   FString       text;
-   FString*      text_components;
-   textLines     text_split;
-   uInt          max_line_width;
-   uInt          text_num_lines;
+    // Data Members
+    FString       text;
+    FString*      text_components;
+    textLines     text_split;
+    uInt          max_line_width;
+    uInt          text_num_lines;
 };
 #pragma pack(pop)
 

@@ -42,121 +42,121 @@
 
 class FScrollView : public FWidget
 {
- public:
-   // Using-declaration
-   using FWidget::setGeometry;
-   using FWidget::setPrintPos;
-   using FWidget::setPos;
+  public:
+    // Using-declaration
+    using FWidget::setGeometry;
+    using FWidget::setPrintPos;
+    using FWidget::setPos;
 
-   // Constructor
-   explicit FScrollView (FWidget* = 0);
+    // Constructor
+    explicit FScrollView (FWidget* = 0);
 
-   // Destructor
-   virtual ~FScrollView();
+    // Destructor
+    virtual ~FScrollView();
 
-   // Accessors
-   const char*       getClassName() const;
-   int               getViewportWidth() const;
-   int               getViewportHeight() const;
-   int               getScrollWidth() const;
-   int               getScrollHeight() const;
-   const FPoint      getScrollPos() const;
-   int               getScrollX() const;
-   int               getScrollY() const;
+    // Accessors
+    const char*       getClassName() const;
+    int               getViewportWidth() const;
+    int               getViewportHeight() const;
+    int               getScrollWidth() const;
+    int               getScrollHeight() const;
+    const FPoint      getScrollPos() const;
+    int               getScrollX() const;
+    int               getScrollY() const;
 
-   // Mutator
-   virtual void      setScrollWidth (int);
-   virtual void      setScrollHeight (int);
-   virtual void      setScrollSize (int, int);
-   virtual void      setX (int, bool = true);
-   virtual void      setY (int, bool = true);
-   virtual void      setPos (int, int, bool = true);
-   virtual void      setWidth (int, bool = true);
-   virtual void      setHeight (int, bool = true);
-   virtual void      setSize (int, int, bool = true);
-   void              setGeometry (int, int, int, int, bool = true);
-   void              setCursorPos (register int, register int);
-   void              setPrintPos (register int, register int);
-   bool              setViewportPrint (bool);
-   bool              setViewportPrint();
-   bool              unsetViewportPrint();
-   bool              setBorder (bool);
-   bool              setBorder();
-   bool              unsetBorder();
-   void              setHorizontalScrollBarMode (fc::scrollBarMode);
-   void              setVerticalScrollBarMode (fc::scrollBarMode);
+    // Mutator
+    virtual void      setScrollWidth (int);
+    virtual void      setScrollHeight (int);
+    virtual void      setScrollSize (int, int);
+    virtual void      setX (int, bool = true);
+    virtual void      setY (int, bool = true);
+    virtual void      setPos (int, int, bool = true);
+    virtual void      setWidth (int, bool = true);
+    virtual void      setHeight (int, bool = true);
+    virtual void      setSize (int, int, bool = true);
+    void              setGeometry (int, int, int, int, bool = true);
+    void              setCursorPos (register int, register int);
+    void              setPrintPos (register int, register int);
+    bool              setViewportPrint (bool);
+    bool              setViewportPrint();
+    bool              unsetViewportPrint();
+    bool              setBorder (bool);
+    bool              setBorder();
+    bool              unsetBorder();
+    void              setHorizontalScrollBarMode (fc::scrollBarMode);
+    void              setVerticalScrollBarMode (fc::scrollBarMode);
 
-   // Inquiries
-   bool              hasBorder();
-   bool              isViewportPrint();
+    // Inquiries
+    bool              hasBorder();
+    bool              isViewportPrint();
 
-   // Method
-   virtual void      clearArea (int = ' ');
-   void              scrollToX (int);
-   void              scrollToY (int);
-   void              scrollTo (const FPoint&);
-   void              scrollTo (int, int);
-   void              scrollBy (int, int);
-   virtual void      draw();
+    // Method
+    virtual void      clearArea (int = ' ');
+    void              scrollToX (int);
+    void              scrollToY (int);
+    void              scrollTo (const FPoint&);
+    void              scrollTo (int, int);
+    void              scrollBy (int, int);
+    virtual void      draw();
 
-   // Event handlers
-   void              onKeyPress (FKeyEvent*);
-   void              onWheel (FWheelEvent*);
-   void              onFocusIn (FFocusEvent*);
-   void              onChildFocusIn (FFocusEvent*);
-   void              onChildFocusOut (FFocusEvent*);
+    // Event handlers
+    void              onKeyPress (FKeyEvent*);
+    void              onWheel (FWheelEvent*);
+    void              onFocusIn (FFocusEvent*);
+    void              onChildFocusIn (FFocusEvent*);
+    void              onChildFocusOut (FFocusEvent*);
 
- protected:
-   // Using-declaration
-   using FVTerm::clearArea;
+  protected:
+    // Using-declaration
+    using FVTerm::clearArea;
 
-   // Accessor
-   term_area*        getPrintArea();
+    // Accessor
+    term_area*        getPrintArea();
 
-   // Method
-   void              adjustSize();
-   void              copy2area();
+    // Method
+    void              adjustSize();
+    void              copy2area();
 
- private:
-   // Constants
-   static const int vertical_border_spacing = 2;
-   static const int horizontal_border_spacing = 2;
+  private:
+    // Constants
+    static const int vertical_border_spacing = 2;
+    static const int horizontal_border_spacing = 2;
 
-   // Disable copy constructor
-   FScrollView (const FScrollView&);
+    // Disable copy constructor
+    FScrollView (const FScrollView&);
 
-   // Disable assignment operator (=)
-   FScrollView& operator = (const FScrollView&);
+    // Disable assignment operator (=)
+    FScrollView& operator = (const FScrollView&);
 
-   // Accessors
-   FPoint            getViewportCursorPos();
+    // Accessors
+    FPoint            getViewportCursorPos();
 
-   // Methods
-   void              init (FWidget*);
-   void              calculateScrollbarPos();
-   void              setHorizontalScrollBarVisibility();
-   void              setVerticalScrollBarVisibility();
-   void              setViewportCursor();
-   void              redrawHBar();
-   void              redrawVBar();
-   void              drawHBar();
-   void              drawVBar();
+    // Methods
+    void              init (FWidget*);
+    void              calculateScrollbarPos();
+    void              setHorizontalScrollBarVisibility();
+    void              setVerticalScrollBarVisibility();
+    void              setViewportCursor();
+    void              redrawHBar();
+    void              redrawVBar();
+    void              drawHBar();
+    void              drawVBar();
 
-   // Callback methods
-   void              cb_VBarChange (FWidget*, data_ptr);
-   void              cb_HBarChange (FWidget*, data_ptr);
+    // Callback methods
+    void              cb_VBarChange (FWidget*, data_ptr);
+    void              cb_HBarChange (FWidget*, data_ptr);
 
-   // Data Members
-   FRect             scroll_geometry;
-   FRect             viewport_geometry;
-   term_area*        viewport;  // virtual scroll content
-   FScrollbar*       vbar;
-   FScrollbar*       hbar;
-   int               nf_offset;
-   bool              border;
-   bool              use_own_print_area;
-   fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
-   fc::scrollBarMode hMode;
+    // Data Members
+    FRect             scroll_geometry;
+    FRect             viewport_geometry;
+    term_area*        viewport;  // virtual scroll content
+    FScrollbar*       vbar;
+    FScrollbar*       hbar;
+    int               nf_offset;
+    bool              border;
+    bool              use_own_print_area;
+    fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
+    fc::scrollBarMode hMode;
 };
 #pragma pack(pop)
 

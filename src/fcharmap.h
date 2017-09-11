@@ -109,45 +109,45 @@ const int lastCharItem = int(sizeof(character) / sizeof(character[0])) - 1;
 
 static int vt100_key_to_utf8[][2] =
 {
-  {fc::vt100_key_rarrow   , fc::BlackRightPointingPointer},    // ►
-  {fc::vt100_key_larrow   , fc::BlackLeftPointingPointer},     // ◄
-  {fc::vt100_key_uarrow   , fc::BlackUpPointingTriangle},      // ▲
-  {fc::vt100_key_darrow   , fc::BlackDownPointingTriangle},    // ▼
-  {fc::vt100_key_block    , fc::FullBlock},                    // █
-  {fc::vt100_key_nsup     , fc::SuperscriptLatinSmallLetterN}, // ⁿ
-  {fc::vt100_key_blackrect, fc::BlackVerticalRectangle},       // ▮
-  {fc::vt100_key_diamond  , fc::BlackDiamond},                 // ◆
-  {fc::vt100_key_ckboard  , fc::MediumShade},                  // ▒
-  {fc::vt100_key_htab     , fc::SymbolForHorizontalTab},       // ␉
-  {fc::vt100_key_ff       , fc::SymbolForFormFeed},            // ␌
-  {fc::vt100_key_cr       , fc::SymbolForCarriageReturn},      // ␍
-  {fc::vt100_key_lf       , fc::SymbolForLineFeed},            // ␊
-  {fc::vt100_key_degree   , fc::Degree},                       // °
-  {fc::vt100_key_plminus  , fc::PlusMinus},                    // ±
-  {fc::vt100_key_board    , fc::SymbolForNewline},             // ␤
-  {fc::vt100_key_lantern  , fc::SymbolForVerticalTab},         // ␋
-  {fc::vt100_key_lrcorner , fc::BoxDrawingsUpAndLeft},         // ┘
-  {fc::vt100_key_urcorner , fc::BoxDrawingsDownAndLeft},       // ┐
-  {fc::vt100_key_ulcorner , fc::BoxDrawingsDownAndRight},      // ┌
-  {fc::vt100_key_llcorner , fc::BoxDrawingsUpAndRight},        // └
-  {fc::vt100_key_plus     , fc::BoxDrawingsCross},             // ┼
-  {fc::vt100_key_s1       , fc::HorizontalScanLine1},          // ⎺
-  {fc::vt100_key_s3       , fc::HorizontalScanLine3},          // ⎻
-  {fc::vt100_key_hline    , fc::BoxDrawingsHorizontal},        // ─
-  {fc::vt100_key_s7       , fc::HorizontalScanLine7},          // ⎼
-  {fc::vt100_key_s9       , fc::HorizontalScanLine9},          // ⎽
-  {fc::vt100_key_ltee     , fc::BoxDrawingsVerticalAndRight},  // ├
-  {fc::vt100_key_rtee     , fc::BoxDrawingsVerticalAndLeft},   // ┤
-  {fc::vt100_key_btee     , fc::BoxDrawingsUpAndHorizontal},   // ┴
-  {fc::vt100_key_ttee     , fc::BoxDrawingsDownAndHorizontal}, // ┬
-  {fc::vt100_key_vline    , fc::BoxDrawingsVertical},          // │
-  {fc::vt100_key_lequal   , fc::LessThanOrEqualTo},            // ≤
-  {fc::vt100_key_gequal   , fc::GreaterThanOrEqualTo},         // ≥
-  {fc::vt100_key_pi       , fc::Pi},                           // π
-  {fc::vt100_key_nequal   , fc::NotEqualTo},                   // ≠
-  {fc::vt100_key_sterling , fc::Pound},                        // £
-  {fc::vt100_key_bullet   , fc::SmallBullet},                  // ·
-  {fc::vt100_key_diamond  , fc::Bullet}                        // ◆
+  {fc::vt100_key_rarrow   , fc::BlackRightPointingPointer},     // ►
+  {fc::vt100_key_larrow   , fc::BlackLeftPointingPointer},      // ◄
+  {fc::vt100_key_uarrow   , fc::BlackUpPointingTriangle},       // ▲
+  {fc::vt100_key_darrow   , fc::BlackDownPointingTriangle},     // ▼
+  {fc::vt100_key_block    , fc::FullBlock},                     // █
+  {fc::vt100_key_nsup     , fc::SuperscriptLatinSmallLetterN},  // ⁿ
+  {fc::vt100_key_blackrect, fc::BlackVerticalRectangle},        // ▮
+  {fc::vt100_key_diamond  , fc::BlackDiamond},                  // ◆
+  {fc::vt100_key_ckboard  , fc::MediumShade},                   // ▒
+  {fc::vt100_key_htab     , fc::SymbolForHorizontalTab},        // ␉
+  {fc::vt100_key_ff       , fc::SymbolForFormFeed},             // ␌
+  {fc::vt100_key_cr       , fc::SymbolForCarriageReturn},       // ␍
+  {fc::vt100_key_lf       , fc::SymbolForLineFeed},             // ␊
+  {fc::vt100_key_degree   , fc::Degree},                        // °
+  {fc::vt100_key_plminus  , fc::PlusMinus},                     // ±
+  {fc::vt100_key_board    , fc::SymbolForNewline},              // ␤
+  {fc::vt100_key_lantern  , fc::SymbolForVerticalTab},          // ␋
+  {fc::vt100_key_lrcorner , fc::BoxDrawingsUpAndLeft},          // ┘
+  {fc::vt100_key_urcorner , fc::BoxDrawingsDownAndLeft},        // ┐
+  {fc::vt100_key_ulcorner , fc::BoxDrawingsDownAndRight},       // ┌
+  {fc::vt100_key_llcorner , fc::BoxDrawingsUpAndRight},         // └
+  {fc::vt100_key_plus     , fc::BoxDrawingsCross},              // ┼
+  {fc::vt100_key_s1       , fc::HorizontalScanLine1},           // ⎺
+  {fc::vt100_key_s3       , fc::HorizontalScanLine3},           // ⎻
+  {fc::vt100_key_hline    , fc::BoxDrawingsHorizontal},         // ─
+  {fc::vt100_key_s7       , fc::HorizontalScanLine7},           // ⎼
+  {fc::vt100_key_s9       , fc::HorizontalScanLine9},           // ⎽
+  {fc::vt100_key_ltee     , fc::BoxDrawingsVerticalAndRight},   // ├
+  {fc::vt100_key_rtee     , fc::BoxDrawingsVerticalAndLeft},    // ┤
+  {fc::vt100_key_btee     , fc::BoxDrawingsUpAndHorizontal},    // ┴
+  {fc::vt100_key_ttee     , fc::BoxDrawingsDownAndHorizontal},  // ┬
+  {fc::vt100_key_vline    , fc::BoxDrawingsVertical},           // │
+  {fc::vt100_key_lequal   , fc::LessThanOrEqualTo},             // ≤
+  {fc::vt100_key_gequal   , fc::GreaterThanOrEqualTo},          // ≥
+  {fc::vt100_key_pi       , fc::Pi},                            // π
+  {fc::vt100_key_nequal   , fc::NotEqualTo},                    // ≠
+  {fc::vt100_key_sterling , fc::Pound},                         // £
+  {fc::vt100_key_bullet   , fc::SmallBullet},                   // ·
+  {fc::vt100_key_diamond  , fc::Bullet}                         // ◆
 };
 
 const int lastKeyItem = int ( sizeof(vt100_key_to_utf8)

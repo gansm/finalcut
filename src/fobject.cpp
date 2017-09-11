@@ -27,7 +27,6 @@ FObject::FObject (FObject* parent)
 
   if ( parent == 0 )
   {
-
     timer_modify_lock = false;
 
     if ( ! timer_list )
@@ -95,8 +94,6 @@ FObject::~FObject()  // destructor
       ++iter;
     }
   }
-
-
 }
 
 // public methods of FObject
@@ -159,27 +156,27 @@ void FObject::delChild (FObject* obj)
 }
 
 //----------------------------------------------------------------------
-void FObject::getCurrentTime (timeval &time)
+void FObject::getCurrentTime (timeval* time)
 {
-  gettimeofday(&time, 0);
+  gettimeofday(time, 0);
 
   // NTP fix
-  while ( time.tv_usec >= 1000000 )
+  while ( time->tv_usec >= 1000000 )
   {
-    time.tv_usec -= 1000000;
-    time.tv_sec++;
+    time->tv_usec -= 1000000;
+    time->tv_sec++;
   }
 
-  while ( time.tv_usec < 0 )
+  while ( time->tv_usec < 0 )
   {
-    if ( time.tv_sec > 0 )
+    if ( time->tv_sec > 0 )
     {
-      time.tv_usec += 1000000;
-      time.tv_sec--;
+      time->tv_usec += 1000000;
+      time->tv_sec--;
     }
     else
     {
-      time.tv_usec = 0;
+      time->tv_usec = 0;
       break;
     }
   }
@@ -232,7 +229,7 @@ int FObject::addTimer (int interval)
 
   time_interval.tv_sec  =  interval / 1000;
   time_interval.tv_usec = (interval % 1000) * 1000;
-  getCurrentTime (currentTime);
+  getCurrentTime (&currentTime);
   timeval timeout = currentTime + time_interval;
   timer_data t = { id, time_interval, timeout, this };
 

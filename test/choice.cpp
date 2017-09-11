@@ -26,7 +26,7 @@ void cb_quit (FWidget*, FWidget::data_ptr data)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  int x,y,w,h;
+  int x, y, w, h;
   FString label_text = "no OS";
 
   // Create the application object

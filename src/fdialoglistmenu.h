@@ -52,26 +52,26 @@
 
 class FDialogListMenu : public FMenu
 {
- public:
-   // Constructors
-   explicit FDialogListMenu (FWidget* = 0);
-   FDialogListMenu (const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FDialogListMenu (FWidget* = 0);
+    FDialogListMenu (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FDialogListMenu();
+    // Destructor
+    virtual ~FDialogListMenu();
 
-   // Accessors
-   virtual const char* getClassName() const;
+    // Accessors
+    virtual const char* getClassName() const;
 
- private:
-   // Disable copy constructor
-   FDialogListMenu (const FDialogListMenu&);
+  private:
+    // Disable copy constructor
+    FDialogListMenu (const FDialogListMenu&);
 
-   // Disable assignment operator (=)
-   FDialogListMenu& operator = (const FDialogListMenu&);
+    // Disable assignment operator (=)
+    FDialogListMenu& operator = (const FDialogListMenu&);
 
-   // Method
-   void init();
+    // Method
+    void init();
 };
 #pragma pack(pop)
 

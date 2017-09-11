@@ -45,28 +45,28 @@
 
 class FRadioButton : public FToggleButton
 {
- public:
-   // Constructors
-   explicit FRadioButton (FWidget* = 0);
-   FRadioButton (const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FRadioButton (FWidget* = 0);
+    FRadioButton (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FRadioButton();
+    // Destructor
+    virtual ~FRadioButton();
 
-   // Accessor
-   const char* getClassName() const;
+    // Accessor
+    const char* getClassName() const;
 
- private:
-   // Disable copy constructor
-   FRadioButton (const FRadioButton&);
+  private:
+    // Disable copy constructor
+    FRadioButton (const FRadioButton&);
 
-   // Disable assignment operator (=)
-   FRadioButton& operator = (const FRadioButton&);
+    // Disable assignment operator (=)
+    FRadioButton& operator = (const FRadioButton&);
 
-   // Methods
-   void init();
-   void draw();
-   void drawRadioButton();
+    // Methods
+    void init();
+    void draw();
+    void drawRadioButton();
 };
 #pragma pack(pop)
 

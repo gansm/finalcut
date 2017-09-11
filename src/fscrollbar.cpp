@@ -1,6 +1,8 @@
 // File: fscrollbar.cpp
 // Provides: class FScrollbar
 
+#include <algorithm>
+
 #include "fscrollbar.h"
 
 //----------------------------------------------------------------------
@@ -19,8 +21,8 @@ FScrollbar::FScrollbar(FWidget* parent)
   , slider_click_stop_pos(-1)
   , current_slider_pos(-1)
   , slider_pos(0)
-  , slider_length(18) // = bar_length
-  , bar_length(18)    // = length - 2
+  , slider_length(18)  // = bar_length
+  , bar_length(18)     // = length - 2
   , val(0)
   , min(0)
   , max(99)
@@ -46,8 +48,8 @@ FScrollbar::FScrollbar(int o, FWidget* parent)
   , slider_click_stop_pos(-1)
   , current_slider_pos(-1)
   , slider_pos(0)
-  , slider_length(18) // = bar_length
-  , bar_length(18)    // = length - 2
+  , slider_length(18)  // = bar_length
+  , bar_length(18)     // = length - 2
   , val(0)
   , min(0)
   , max(99)
@@ -62,7 +64,7 @@ FScrollbar::FScrollbar(int o, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FScrollbar::~FScrollbar()
+FScrollbar::~FScrollbar()  // destructor
 {
   delOwnTimer();
 }
@@ -163,7 +165,7 @@ void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
     setWidth(isNewFont() ? 2 : 1);
     setHeight(length);
   }
-  else // horizontal
+  else  // horizontal
   {
     setWidth(length);
     setHeight(1);
@@ -243,7 +245,7 @@ void FScrollbar::drawButtons()
       print (fc::NF_rev_down_arrow1);
       print (fc::NF_rev_down_arrow2);
     }
-    else // horizontal
+    else  // horizontal
     {
       print (fc::NF_rev_left_arrow1);
       print (fc::NF_rev_left_arrow2);
@@ -261,15 +263,15 @@ void FScrollbar::drawButtons()
 
     if ( bar_orientation == fc::vertical )
     {
-      print (fc::BlackUpPointingTriangle); // ▲
+      print (fc::BlackUpPointingTriangle);    // ▲
       setPrintPos (1, length);
-      print (fc::BlackDownPointingTriangle); // ▼
+      print (fc::BlackDownPointingTriangle);  // ▼
     }
-    else // horizontal
+    else  // horizontal
     {
-      print (fc::BlackLeftPointingPointer); // ◄
+      print (fc::BlackLeftPointingPointer);   // ◄
       setPrintPos (length, 1);
-      print (fc::BlackRightPointingPointer); // ►
+      print (fc::BlackRightPointingPointer);  // ►
     }
 
     if ( isMonochron() )
@@ -294,10 +296,10 @@ void FScrollbar::drawBar()
       setPrintPos (1, 1 + z);
 
       if ( isNewFont() )
-        print (fc::NF_border_line_left); // ⎸
+        print (fc::NF_border_line_left);  // ⎸
 
       if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade); // ▒
+        print (fc::MediumShade);  // ▒
       else
         print (' ');
     }
@@ -327,7 +329,7 @@ void FScrollbar::drawBar()
       setPrintPos (1, 1 + z);
 
       if ( isNewFont() )
-        print (fc::NF_border_line_left); // ⎸
+        print (fc::NF_border_line_left);  // ⎸
 
       if ( isMonochron() || max_color < 16 )
         print (fc::MediumShade);
@@ -348,9 +350,9 @@ void FScrollbar::drawBar()
     for (; z < slider_pos; z++)
     {
       if ( isNewFont() )
-        print (fc::NF_border_line_upper); // ¯
+        print (fc::NF_border_line_upper);  // ¯
       else if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade); // ▒
+        print (fc::MediumShade);  // ▒
       else
         print (' ');
     }
@@ -374,9 +376,9 @@ void FScrollbar::drawBar()
     for (; z <= bar_length; z++)
     {
       if ( isNewFont() )
-        print (fc::NF_border_line_upper); // ¯
+        print (fc::NF_border_line_upper);  // ¯
       else if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade); // ▒
+        print (fc::MediumShade);  // ▒
       else
         print (' ');
     }
@@ -638,7 +640,7 @@ FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
     }
     else if ( y == getHeight() )
     {
-      stype = FScrollbar::scrollStepForward; // increment button
+      stype = FScrollbar::scrollStepForward;  // increment button
     }
     else
       stype = FScrollbar::noScroll;

@@ -11,6 +11,10 @@
 #ifndef FTERMCAP_H
 #define FTERMCAP_H
 
+// FTermcap string macro
+#define TCAP(s)  tcap[(s)].string
+
+#include <string>
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -20,50 +24,50 @@
 
 class FTermcap
 {
- public:
-   // Typedef
-   typedef struct
-   {
-     char* string;
-     char  tname[3];
-   }
-   tcap_map;
+  public:
+    // Typedef
+    typedef struct
+    {
+      char* string;
+      char  tname[3];
+    }
+    tcap_map;
 
-   // Constructors
-   FTermcap()
-   { }
+    // Constructors
+    FTermcap()
+    { }
 
-   // Destructor
-  ~FTermcap()
-   { }
+    // Destructor
+    ~FTermcap()
+    { }
 
-   // Accessor
-   static tcap_map* getTermcapMap()
-   {
-     return tcap;
-   }
+    // Accessor
+    static tcap_map* getTermcapMap()
+    {
+      return tcap;
+    }
 
-   // Mutator
-   static void setTermcapMap (tcap_map* t)
-   {
-     tcap = t;
-   }
+    // Mutator
+    static void setTermcapMap (tcap_map* t)
+    {
+      tcap = t;
+    }
 
-   // Data Members
-   static bool background_color_erase;
-   static bool automatic_left_margin;
-   static bool automatic_right_margin;
-   static bool eat_nl_glitch;
-   static bool ansi_default_color;
-   static bool osc_support;
-   static bool no_utf8_acs_chars;
-   static int  max_color;
-   static int  tabstop;
-   static int  attr_without_color;
+    // Data Members
+    static bool background_color_erase;
+    static bool automatic_left_margin;
+    static bool automatic_right_margin;
+    static bool eat_nl_glitch;
+    static bool ansi_default_color;
+    static bool osc_support;
+    static bool no_utf8_acs_chars;
+    static int  max_color;
+    static int  tabstop;
+    static int  attr_without_color;
 
- private:
-   // Data Members
-   static tcap_map* tcap;
+  private:
+    // Data Members
+    static tcap_map* tcap;
 };
 #pragma pack(pop)
 

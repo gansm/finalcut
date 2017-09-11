@@ -1,6 +1,8 @@
 // File: fmenubar.cpp
 // Provides: class FMenuBar
 
+#include <vector>
+
 #include "fapplication.h"
 #include "fmenubar.h"
 #include "fstatusbar.h"
@@ -20,7 +22,7 @@ FMenuBar::FMenuBar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenuBar::~FMenuBar()
+FMenuBar::~FMenuBar()  // destructor
 {
   setMenuBar(0);
 }
@@ -428,7 +430,8 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             }
             catch (const std::bad_alloc& ex)
             {
-              std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+              std::cerr << "not enough memory to alloc "
+                        << ex.what() << std::endl;
             }
           }
         }

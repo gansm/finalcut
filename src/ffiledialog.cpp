@@ -1,7 +1,10 @@
 // File: ffiledialog.cpp
 // Provides: class FFileDialog
 
+#include <vector>
+
 #include "ffiledialog.h"
+
 
 // non-member functions
 //----------------------------------------------------------------------
@@ -230,7 +233,6 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
     default:
       break;
   }
-
 }
 
 //----------------------------------------------------------------------
@@ -268,7 +270,8 @@ int FFileDialog::readDir()
         continue;
       }
 
-      if ( dir[0] == '/' && dir[1] == '\0' && std::strcmp(next->d_name, "..") == 0  )
+      if ( dir[0] == '/' && dir[1] == '\0'
+          && std::strcmp(next->d_name, "..") == 0  )
         continue;
 
       dir_entry entry;
@@ -280,7 +283,9 @@ int FFileDialog::readDir()
         char resolved_path[MAXPATHLEN] = {};
         char symLink[MAXPATHLEN] = {};
         std::strncpy (symLink, dir, sizeof(symLink) - 1);
-        std::strncat (symLink, next->d_name, sizeof(symLink) - std::strlen(symLink) - 1);
+        std::strncat ( symLink
+                     , next->d_name
+                     , sizeof(symLink) - std::strlen(symLink) - 1);
 
         if ( realpath(symLink, resolved_path) != 0 )  // follow link
         {
@@ -310,7 +315,6 @@ int FFileDialog::readDir()
     }
     else
       break;
-
   }  // end while
 
   if ( closedir (directory_stream) != 0 )
@@ -326,11 +330,17 @@ int FFileDialog::readDir()
 
   dir_num = numOfDirs();
   // directories first
-  std::sort(dir_entries.begin() + start, dir_entries.end(), sortDirFirst);
+  std::sort ( dir_entries.begin() + start
+            , dir_entries.end()
+            , sortDirFirst );
   // sort directories by name
-  std::sort(dir_entries.begin() + start, dir_entries.begin() + dir_num, sortByName);
+  std::sort ( dir_entries.begin() + start
+            , dir_entries.begin() + dir_num
+            , sortByName );
   // sort files by name
-  std::sort(dir_entries.begin() + dir_num, dir_entries.end(), sortByName);
+  std::sort ( dir_entries.begin() + dir_num
+            , dir_entries.end()
+            , sortByName );
   // fill list with directory entries
   filebrowser->clear();
 
@@ -525,9 +535,9 @@ void FFileDialog::init()
     cancel->setGeometry(19, 10, 9, 1);
 
     if ( dlg_type == FFileDialog::Save )
-      open = new FButton("&Save",this);
+      open = new FButton("&Save", this);
     else
-      open = new FButton("&Open",this);
+      open = new FButton("&Open", this);
 
     open->setGeometry(30, 10, 9, 1);
     setGeometry (x, y, getWidth(), getHeight());
@@ -581,19 +591,18 @@ void FFileDialog::init()
 //----------------------------------------------------------------------
 char* FFileDialog::getHomeDir()
 {
-  struct passwd* pwd;
-  pwd = getpwuid( geteuid() );
+  struct passwd pwd;
+  struct passwd* pwd_ptr;
+  char buf[1024];
 
-  if ( ! pwd )
+  if ( getpwuid_r (geteuid(), &pwd, buf, sizeof(buf), &pwd_ptr) )
     return const_cast<char*>("");
   else
   {
-    pwd = getpwnam(pwd->pw_name);
-
-    if ( ! pwd )
+    if ( getpwnam_r (pwd.pw_name, &pwd, buf, sizeof(buf), &pwd_ptr) )
       return const_cast<char*>("");
     else
-      return pwd->pw_dir;
+      return pwd.pw_dir;
   }
 }
 
@@ -695,7 +704,8 @@ int FFileDialog::changeDir (const FString& dirname)
         {
           int i = 1;
           std::vector<dir_entry>::const_iterator iter, end;
-          const char* const baseName = basename(const_cast<char*>(lastdir.c_str()));
+          const char* const baseName = \
+            basename(const_cast<char*>(lastdir.c_str()));
           iter = dir_entries.begin();
           end = dir_entries.end();
 

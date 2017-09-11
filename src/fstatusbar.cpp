@@ -2,6 +2,8 @@
 // Provides: class FStatusKey
 //           class FStatusBar
 
+#include <vector>
+
 #include "fstatusbar.h"
 
 //----------------------------------------------------------------------
@@ -84,7 +86,7 @@ bool FStatusKey::setMouseFocus(bool on)
 //----------------------------------------------------------------------
 void FStatusKey::init (FWidget* parent)
 {
-  setGeometry (1,1,1,1);
+  setGeometry (1, 1, 1, 1);
 
   if ( parent && parent->isInstanceOf("FStatusBar") )
   {
@@ -120,7 +122,7 @@ FStatusBar::FStatusBar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FStatusBar::~FStatusBar()
+FStatusBar::~FStatusBar()  // destructor
 {
   // delete all keys
   if ( ! key_list.empty() )

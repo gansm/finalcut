@@ -1,6 +1,8 @@
 // File: fmenu.cpp
 // Provides: class FMenu
 
+#include <vector>
+
 #include "fapplication.h"
 #include "fdialog.h"
 #include "fmenu.h"
@@ -48,7 +50,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenu::~FMenu()
+FMenu::~FMenu()  // destructor
 {
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
@@ -299,7 +301,7 @@ void FMenu::onMouseDown (FMouseEvent* ev)
     iter = item_list.begin();
     end = item_list.end();
     mouse_pos = ev->getPos();
-    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+    mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
     while ( iter != end )
     {
@@ -404,7 +406,7 @@ void FMenu::onMouseUp (FMouseEvent* ev)
       iter = item_list.begin();
       end = item_list.end();
       mouse_pos = ev->getPos();
-      mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+      mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
       while ( iter != end )
       {
@@ -492,7 +494,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     iter = item_list.begin();
     end = item_list.end();
     mouse_pos = ev->getPos();
-    mouse_pos -= FPoint(getRightPadding(),getTopPadding());
+    mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
     if ( getTermGeometry().contains(ev->getTermPos()) )
       mouse_over_menu = true;
@@ -794,14 +796,14 @@ void FMenu::init(FWidget* parent)
   {
     if ( isMenuBar(parent) )
     {
-      FMenuBar* mbar = dynamic_cast<FMenuBar*>(parent);
+      FMenuBar* mbar = static_cast<FMenuBar*>(parent);
 
       if ( mbar )
         mbar->calculateDimensions();
     }
     else if ( isMenu(parent) )
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(parent);
+      FMenu* smenu = static_cast<FMenu*>(parent);
 
       if ( smenu )
         smenu->calculateDimensions();
@@ -820,7 +822,7 @@ void FMenu::calculateDimensions()
   std::vector<FMenuItem*>::const_iterator iter, end;
   iter = item_list.begin();
   end = item_list.end();
-  max_item_width = 10; // minimum width
+  max_item_width = 10;  // minimum width
 
   // find the maximum item width
   while ( iter != end )
@@ -994,11 +996,11 @@ bool FMenu::containsMenuStructure (int x, int y)
   // Check mouse click position for item, menu and all sub menus
   FMenuItem* si = getSelectedItem();
 
-  if ( getTermGeometry().contains(x,y) )
+  if ( getTermGeometry().contains(x, y) )
     return true;
   else if ( si && si->hasMenu() && open_sub_menu )
-    return si->getMenu()->containsMenuStructure(x,y);
-  else if ( item && item->getTermGeometry().contains(x,y) )
+    return si->getMenu()->containsMenuStructure(x, y);
+  else if ( item && item->getTermGeometry().contains(x, y) )
     return true;
   else
     return false;
@@ -1008,21 +1010,21 @@ bool FMenu::containsMenuStructure (int x, int y)
 FMenu* FMenu::superMenuAt (int x, int y)
 {
   // Check mouse click position for super menu
-  if ( getTermGeometry().contains(x,y) )
+  if ( getTermGeometry().contains(x, y) )
     return 0;
 
   FWidget* super = getSuperMenu();
 
   if ( super && isMenu(super) )
   {
-    if ( super->getTermGeometry().contains(x,y) )
-      return dynamic_cast<FMenu*>(super);
+    if ( super->getTermGeometry().contains(x, y) )
+      return static_cast<FMenu*>(super);
     else
     {
-      FMenu* smenu = dynamic_cast<FMenu*>(getSuperMenu());
+      FMenu* smenu = static_cast<FMenu*>(getSuperMenu());
 
       if ( smenu )
-        return smenu->superMenuAt(x,y);
+        return smenu->superMenuAt(x, y);
     }
   }
 
@@ -1312,16 +1314,16 @@ void FMenu::drawItems()
             if ( is_radio_btn )
             {
               if ( isNewFont() )
-                print (fc::NF_Bullet); // NF_Bullet ●
+                print (fc::NF_Bullet);  // NF_Bullet ●
               else
-                print (fc::Bullet);    // Bullet ●
+                print (fc::Bullet);     // Bullet ●
             }
             else
             {
               if ( isNewFont() )
-                print (fc::NF_check_mark);   // NF_check_mark ✓
+                print (fc::NF_check_mark);  // NF_check_mark ✓
               else
-                print (fc::SquareRoot);      // SquareRoot √
+                print (fc::SquareRoot);     // SquareRoot √
             }
           }
           else

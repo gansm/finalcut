@@ -40,97 +40,97 @@
 
 class FButton : public FWidget
 {
- public:
-   // Constructors
-   explicit FButton (FWidget* = 0);
-   FButton (const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FButton (FWidget* = 0);
+    FButton (const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FButton();
+    // Destructor
+    virtual ~FButton();
 
-   // Accessors
-   const char*  getClassName() const;
-   FString&     getText();
+    // Accessors
+    const char*  getClassName() const;
+    FString&     getText();
 
-   // Mutators
-   void         setForegroundColor (short);
-   void         setBackgroundColor (short);
-   void         setHotkeyForegroundColor (short);
-   void         setFocusForegroundColor (short);
-   void         setFocusBackgroundColor (short);
-   void         setInactiveForegroundColor (short);
-   void         setInactiveBackgroundColor (short);
-   bool         setNoUnderline(bool);
-   bool         setNoUnderline();
-   bool         unsetNoUnderline();
-   bool         setEnable(bool);
-   bool         setEnable();
-   bool         unsetEnable();
-   bool         setDisable();
-   bool         setFocus(bool);
-   bool         setFocus();
-   bool         unsetFocus();
-   bool         setFlat(bool);
-   bool         setFlat();
-   bool         unsetFlat();
-   bool         setShadow(bool);
-   bool         setShadow();
-   bool         unsetShadow();
-   bool         setDown(bool);
-   bool         setDown();
-   bool         setUp();
-   bool         setClickAnimation(bool);
-   bool         setClickAnimation();
-   bool         unsetClickAnimation();
-   void         setText (const FString&);
+    // Mutators
+    void         setForegroundColor (short);
+    void         setBackgroundColor (short);
+    void         setHotkeyForegroundColor (short);
+    void         setFocusForegroundColor (short);
+    void         setFocusBackgroundColor (short);
+    void         setInactiveForegroundColor (short);
+    void         setInactiveBackgroundColor (short);
+    bool         setNoUnderline(bool);
+    bool         setNoUnderline();
+    bool         unsetNoUnderline();
+    bool         setEnable(bool);
+    bool         setEnable();
+    bool         unsetEnable();
+    bool         setDisable();
+    bool         setFocus(bool);
+    bool         setFocus();
+    bool         unsetFocus();
+    bool         setFlat(bool);
+    bool         setFlat();
+    bool         unsetFlat();
+    bool         setShadow(bool);
+    bool         setShadow();
+    bool         unsetShadow();
+    bool         setDown(bool);
+    bool         setDown();
+    bool         setUp();
+    bool         setClickAnimation(bool);
+    bool         setClickAnimation();
+    bool         unsetClickAnimation();
+    void         setText (const FString&);
 
-   // Inquiries
-   bool         isFlat() const;
-   bool         isDown() const;
-   bool         hasShadow() const;
-   bool         hasClickAnimation();
+    // Inquiries
+    bool         isFlat() const;
+    bool         isDown() const;
+    bool         hasShadow() const;
+    bool         hasClickAnimation();
 
-   // Methods
-   void         hide();
+    // Methods
+    void         hide();
 
-   // Event handlers
-   void         onKeyPress (FKeyEvent*);
-   void         onMouseDown (FMouseEvent*);
-   void         onMouseUp (FMouseEvent*);
-   void         onMouseMove (FMouseEvent*);
-   void         onTimer (FTimerEvent*);
-   void         onAccel (FAccelEvent*);
-   void         onFocusIn (FFocusEvent*);
-   void         onFocusOut (FFocusEvent*);
+    // Event handlers
+    void         onKeyPress (FKeyEvent*);
+    void         onMouseDown (FMouseEvent*);
+    void         onMouseUp (FMouseEvent*);
+    void         onMouseMove (FMouseEvent*);
+    void         onTimer (FTimerEvent*);
+    void         onAccel (FAccelEvent*);
+    void         onFocusIn (FFocusEvent*);
+    void         onFocusOut (FFocusEvent*);
 
- private:
-   // Disable copy constructor
-   FButton (const FButton&);
+  private:
+    // Disable copy constructor
+    FButton (const FButton&);
 
-   // Disable assignment operator (=)
-   FButton& operator = (const FButton&);
+    // Disable assignment operator (=)
+    FButton& operator = (const FButton&);
 
-   // Methods
-   void         init();
-   uChar        getHotkey();
-   void         setHotkeyAccelerator();
-   void         detectHotkey();
-   void         draw();
-   void         updateButtonColor();
-   void         processClick();
+    // Methods
+    void         init();
+    uChar        getHotkey();
+    void         setHotkeyAccelerator();
+    void         detectHotkey();
+    void         draw();
+    void         updateButtonColor();
+    void         processClick();
 
-   // Data Members
-   FString      text;
-   bool         button_down;
-   bool         click_animation;
-   int          click_time;
-   short        button_fg;
-   short        button_bg;
-   short        button_hotkey_fg;
-   short        button_focus_fg;
-   short        button_focus_bg;
-   short        button_inactive_fg;
-   short        button_inactive_bg;
+    // Data Members
+    FString      text;
+    bool         button_down;
+    bool         click_animation;
+    int          click_time;
+    short        button_fg;
+    short        button_bg;
+    short        button_hotkey_fg;
+    short        button_focus_fg;
+    short        button_focus_bg;
+    short        button_inactive_fg;
+    short        button_inactive_bg;
 };
 #pragma pack(pop)
 

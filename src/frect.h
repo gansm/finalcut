@@ -24,82 +24,82 @@
 
 class FRect
 {
- public:
-   // Constructors
-   FRect ();
-   FRect (const FRect&);  // copy constructor
-   FRect (int, int, int, int);
-   FRect (const FPoint&, const FPoint&);
+  public:
+    // Constructors
+    FRect ();
+    FRect (const FRect&);  // copy constructor
+    FRect (int, int, int, int);
+    FRect (const FPoint&, const FPoint&);
 
-   // Destructor
-   virtual ~FRect();
+    // Destructor
+    virtual ~FRect();
 
-   // Overloaded operators
-   FRect& operator = (const FRect&);
+    // Overloaded operators
+    FRect& operator = (const FRect&);
 
-   friend FRect operator +  (const FRect&, const FPoint&);
-   friend FRect operator -  (const FRect&, const FPoint&);
-   friend bool  operator == (const FRect&, const FRect&);
-   friend bool  operator != (const FRect&, const FRect&);
+    friend FRect operator +  (const FRect&, const FPoint&);
+    friend FRect operator -  (const FRect&, const FPoint&);
+    friend bool  operator == (const FRect&, const FRect&);
+    friend bool  operator != (const FRect&, const FRect&);
 
-   // Accessors
-   virtual const char* getClassName();
-   int     getX1() const;
-   int     getY1() const;
-   int     getX2() const;
-   int     getY2() const;
-   int     getX() const;
-   int     getY() const;
-   FPoint  getPos() const;
-   FPoint  getUpperLeftPos() const;
-   FPoint  getUpperRightPos() const;
-   FPoint  getLowerLeftPos() const;
-   FPoint  getLowerRightPos() const;
-   int     getWidth() const;
-   int     getHeight() const;
+    // Accessors
+    virtual const char* getClassName();
+    int     getX1() const;
+    int     getY1() const;
+    int     getX2() const;
+    int     getY2() const;
+    int     getX() const;
+    int     getY() const;
+    FPoint  getPos() const;
+    FPoint  getUpperLeftPos() const;
+    FPoint  getUpperRightPos() const;
+    FPoint  getLowerLeftPos() const;
+    FPoint  getLowerRightPos() const;
+    int     getWidth() const;
+    int     getHeight() const;
 
-   // Mutators
-   void    setX1 (int);
-   void    setY1 (int);
-   void    setX2 (int);
-   void    setY2 (int);
-   void    setX (int);
-   void    setY (int);
-   void    setPos (int, int);
-   void    setPos (const FPoint&);
-   void    setWidth (int);
-   void    setHeight (int);
-   void    setSize (int, int);
-   void    setRect (const FRect&);
-   void    setRect (int, int, int, int);
-   void    setCoordinates (const FPoint&, const FPoint&);
-   void    setCoordinates (int, int, int, int);
+    // Mutators
+    void    setX1 (int);
+    void    setY1 (int);
+    void    setX2 (int);
+    void    setY2 (int);
+    void    setX (int);
+    void    setY (int);
+    void    setPos (int, int);
+    void    setPos (const FPoint&);
+    void    setWidth (int);
+    void    setHeight (int);
+    void    setSize (int, int);
+    void    setRect (const FRect&);
+    void    setRect (int, int, int, int);
+    void    setCoordinates (const FPoint&, const FPoint&);
+    void    setCoordinates (int, int, int, int);
 
-   // Inquiry
-   bool    isNull() const;
+    // Inquiry
+    bool    isNull() const;
 
-   // Coordinate references
-   short&  x1_ref();
-   short&  y1_ref();
-   short&  x2_ref();
-   short&  y2_ref();
+    // Coordinate references
+    short&  x1_ref();
+    short&  y1_ref();
+    short&  x2_ref();
+    short&  y2_ref();
 
-   // Methods
-   void    move (int, int);
-   void    move (const FPoint&);
-   bool    contains (int, int) const;
-   bool    contains (const FPoint&) const;
-   bool    contains (const FRect&) const;
-   bool    overlap  (const FRect&) const;
-   FRect   intersect (const FRect&) const;
-   FRect   combined (const FRect&) const;
+    // Methods
+    void    move (int, int);
+    void    move (const FPoint&);
+    bool    contains (int, int) const;
+    bool    contains (const FPoint&) const;
+    bool    contains (const FRect&) const;
+    bool    overlap  (const FRect&) const;
+    FRect   intersect (const FRect&) const;
+    FRect   combined (const FRect&) const;
 
- private:
-   // Data Members
-   short X1;
-   short Y1;
-   short X2;
-   short Y2;
+  private:
+    // Data Members
+    short X1;
+    short Y1;
+    short X2;
+    short Y2;
 };
 #pragma pack(pop)
 
@@ -159,23 +159,23 @@ inline int FRect::getY() const
 
 //----------------------------------------------------------------------
 inline FPoint FRect::getPos() const
-{ return FPoint(X1,Y1); }
+{ return FPoint(X1, Y1); }
 
 //----------------------------------------------------------------------
 inline FPoint FRect::getUpperLeftPos() const
-{ return FPoint(X1,Y1); }
+{ return FPoint(X1, Y1); }
 
 //----------------------------------------------------------------------
 inline FPoint FRect::getUpperRightPos() const
-{ return FPoint(X2,Y1); }
+{ return FPoint(X2, Y1); }
 
 //----------------------------------------------------------------------
 inline FPoint FRect::getLowerLeftPos() const
-{ return FPoint(X1,Y2); }
+{ return FPoint(X1, Y2); }
 
 //----------------------------------------------------------------------
 inline FPoint FRect::getLowerRightPos() const
-{ return FPoint(X2,Y2); }
+{ return FPoint(X2, Y2); }
 
 //----------------------------------------------------------------------
 inline int FRect::getWidth() const

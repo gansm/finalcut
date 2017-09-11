@@ -60,7 +60,7 @@ FOptiAttr::FOptiAttr()
 }
 
 //----------------------------------------------------------------------
-FOptiAttr::~FOptiAttr() // destructor
+FOptiAttr::~FOptiAttr()  // destructor
 { }
 
 

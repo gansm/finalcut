@@ -36,6 +36,8 @@
 #ifndef FSTATUSBAR_H
 #define FSTATUSBAR_H
 
+#include <vector>
+
 #include "fwindow.h"
 
 
@@ -51,60 +53,60 @@ class FStatusBar;
 
 class FStatusKey : public FWidget
 {
- public:
-   // Constructors
-   explicit FStatusKey (FWidget* = 0);
-   FStatusKey (int, const FString&, FWidget* = 0);
+  public:
+    // Constructors
+    explicit FStatusKey (FWidget* = 0);
+    FStatusKey (int, const FString&, FWidget* = 0);
 
-   // Destructor
-   virtual ~FStatusKey();
+    // Destructor
+    virtual ~FStatusKey();
 
-   // Accessors
-   virtual const char* getClassName() const;
-   virtual int         getKey() const;
-   virtual FString     getText() const;
+    // Accessors
+    virtual const char* getClassName() const;
+    virtual int         getKey() const;
+    virtual FString     getText() const;
 
-   // Mutators
-   void                setActive();
-   void                unsetActive();
-   bool                setMouseFocus(bool);
-   bool                setMouseFocus();
-   bool                unsetMouseFocus();
+    // Mutators
+    void                setActive();
+    void                unsetActive();
+    bool                setMouseFocus(bool);
+    bool                setMouseFocus();
+    bool                unsetMouseFocus();
 
-   // Inquiry
-   bool                isActivated() const;
-   bool                hasMouseFocus() const;
+    // Inquiry
+    bool                isActivated() const;
+    bool                hasMouseFocus() const;
 
-   // Event handler
-   void                onAccel (FAccelEvent*);
+    // Event handler
+    void                onAccel (FAccelEvent*);
 
- protected:
-   // Mutators
-   void                setKey (int);
-   void                setText (const FString&);
+  protected:
+    // Mutators
+    void                setKey (int);
+    void                setText (const FString&);
 
- private:
-   // Disable copy constructor
-   FStatusKey (const FStatusKey&);
+  private:
+    // Disable copy constructor
+    FStatusKey (const FStatusKey&);
 
-   // Disable assignment operator (=)
-   FStatusKey& operator = (const FStatusKey&);
+    // Disable assignment operator (=)
+    FStatusKey& operator = (const FStatusKey&);
 
-   // Methods
-   void                init (FWidget*);
-   void                processActivate();
-   FStatusBar*         getConnectedStatusbar() const;
-   void                setConnectedStatusbar (FStatusBar*);
+    // Methods
+    void                init (FWidget*);
+    void                processActivate();
+    FStatusBar*         getConnectedStatusbar() const;
+    void                setConnectedStatusbar (FStatusBar*);
 
-   // Friend class
-   friend class FStatusBar;
+    // Friend class
+    friend class FStatusBar;
 
-   // Data Members
-   int         key;
-   FString     text;
-   bool        active;
-   bool        mouse_focus;
-   FStatusBar* bar;
+    // Data Members
+    int         key;
+    FString     text;
+    bool        active;
+    bool        mouse_focus;
+    FStatusBar* bar;
 };
 #pragma pack(pop)
 
@@ -168,67 +170,67 @@ inline void FStatusKey::setConnectedStatusbar (FStatusBar* sb)
 
 class FStatusBar : public FWindow
 {
- public:
-   // Constructor
-   explicit FStatusBar (FWidget* = 0);
+  public:
+    // Constructor
+    explicit FStatusBar (FWidget* = 0);
 
-   // Destructor
-   virtual ~FStatusBar();
+    // Destructor
+    virtual ~FStatusBar();
 
-   // Accessors
-   virtual const char* getClassName() const;
-   FStatusKey*         getStatusKey (int) const;
-   FString             getMessage() const;
-   uInt                getCount() const;
+    // Accessors
+    virtual const char* getClassName() const;
+    FStatusKey*         getStatusKey (int) const;
+    FString             getMessage() const;
+    uInt                getCount() const;
 
-   // Mutators
-   void                activateKey (int);
-   void                deactivateKey (int);
-   void                setMessage (const FString&);
+    // Mutators
+    void                activateKey (int);
+    void                deactivateKey (int);
+    void                setMessage (const FString&);
 
-   // Inquiries
-   bool                isActivated (int) const;
-   bool                hasActivatedKey();
+    // Inquiries
+    bool                isActivated (int) const;
+    bool                hasActivatedKey();
 
-   // Methods
-   void                hide();
-   void                drawMessage();
-   void                clearMessage();
-   void                insert (FStatusKey*);
-   void                remove (FStatusKey*);
-   void                remove (int);
-   void                clear();
-   void                adjustSize();
+    // Methods
+    void                hide();
+    void                drawMessage();
+    void                clearMessage();
+    void                insert (FStatusKey*);
+    void                remove (FStatusKey*);
+    void                remove (int);
+    void                clear();
+    void                adjustSize();
 
-   // Event handlers
-   void                onMouseDown (FMouseEvent*);
-   void                onMouseUp (FMouseEvent*);
-   void                onMouseMove (FMouseEvent*);
+    // Event handlers
+    void                onMouseDown (FMouseEvent*);
+    void                onMouseUp (FMouseEvent*);
+    void                onMouseMove (FMouseEvent*);
 
-   // Callback method
-   void                cb_statuskey_activated (FWidget*, data_ptr);
+    // Callback method
+    void                cb_statuskey_activated (FWidget*, data_ptr);
 
- private:
-   // Typedef
-   typedef std::vector<FStatusKey*> keyList;
+  private:
+    // Typedef
+    typedef std::vector<FStatusKey*> keyList;
 
-   // Disable copy constructor
-   FStatusBar (const FStatusBar&);
+    // Disable copy constructor
+    FStatusBar (const FStatusBar&);
 
-   // Disable assignment operator (=)
-   FStatusBar& operator = (const FStatusBar&);
+    // Disable assignment operator (=)
+    FStatusBar& operator = (const FStatusBar&);
 
-   // Methods
-   void                init();
-   void                draw();
-   void                drawKeys();
+    // Methods
+    void                init();
+    void                draw();
+    void                drawKeys();
 
-   // Data Members
-   keyList             key_list;
-   FString             text;
-   bool                mouse_down;
-   int                 x;
-   int                 x_msg;
+    // Data Members
+    keyList             key_list;
+    FString             text;
+    bool                mouse_down;
+    int                 x;
+    int                 x_msg;
 };
 #pragma pack(pop)
 

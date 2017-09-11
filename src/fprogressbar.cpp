@@ -19,7 +19,7 @@ FProgressbar::FProgressbar(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FProgressbar::~FProgressbar()
+FProgressbar::~FProgressbar()  // destructor
 { }
 
 
@@ -214,7 +214,7 @@ void FProgressbar::drawBar()
     else
     {
       setColor (wc.progressbar_fg, wc.progressbar_bg);
-      print (fc::LeftHalfBlock); // ▌
+      print (fc::LeftHalfBlock);  // ▌
     }
 
     i++;

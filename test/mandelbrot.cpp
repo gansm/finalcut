@@ -13,21 +13,21 @@
 
 class Mandelbrot : public FDialog
 {
- public:
-   // Constructor
-   explicit Mandelbrot (FWidget* = 0);
+  public:
+    // Constructor
+    explicit Mandelbrot (FWidget* = 0);
 
-   // Destructor
-  ~Mandelbrot();
+    // Destructor
+    ~Mandelbrot();
 
-   // Event handlers
-   void onAccel (FAccelEvent*);
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onAccel (FAccelEvent*);
+    void onClose (FCloseEvent*);
 
- private:
-   // Methods
-   virtual void draw();
-   void adjustSize();
+  private:
+    // Methods
+    virtual void draw();
+    void adjustSize();
 };
 #pragma pack(pop)
 

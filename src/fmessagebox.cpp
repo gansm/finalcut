@@ -1,6 +1,8 @@
 // File: fmessagebox.cpp
 // Provides: class FMessageBox
 
+#include <algorithm>
+
 #include "fapplication.h"
 #include "fmessagebox.h"
 
@@ -426,7 +428,8 @@ void FMessageBox::draw()
 
   int head_offset = 0;
   int center_x = 0;
-  int msg_x = int((getWidth() - int(max_line_width)) / 2);  // center the whole block
+  // center the whole block
+  int msg_x = int((getWidth() - int(max_line_width)) / 2);
 
   if ( isMonochron() )
     setReverse(true);

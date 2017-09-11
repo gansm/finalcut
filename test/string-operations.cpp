@@ -1,11 +1,13 @@
 // File: string-operations.cpp
 
-#include <clocale>
-#include <iomanip>
-
 #include <langinfo.h>
 #include <term.h>
 #include <unistd.h>
+
+#include <clocale>
+#include <iomanip>
+#include <string>
+#include <vector>
 
 #include "fstring.h"
 
@@ -70,19 +72,23 @@ int main (int, char**)
   std::cout << "       add: " << add1 << std::endl;
 
   // Test: concatenate a FString and a c++ wide string (operator +)
-  const FString& add2 = FString("FString + ") + std::wstring(L"std::wstring");
+  const FString& add2 = FString("FString + ")
+                      + std::wstring(L"std::wstring");
   std::cout << "       add: " << add2 << std::endl;
 
   // Test: concatenate a FString and a wide string (operator +)
-  const FString& add3 = FString("FString + ") + const_cast<wchar_t*>(L"wchar_t*");
+  const FString& add3 = FString("FString + ")
+                      + const_cast<wchar_t*>(L"wchar_t*");
   std::cout << "       add: " << add3 << std::endl;
 
   // Test: concatenate a FString and a c++ string (operator +)
-  const FString& add4 = FString("FString + ") + std::string("std::string");
+  const FString& add4 = FString("FString + ")
+                      + std::string("std::string");
   std::cout << "       add: " << add4 << std::endl;
 
   // Test: concatenate a FString and a c-string (operator +)
-  const FString& add5 = FString("FString + ") + const_cast<char*>("char*");
+  const FString& add5 = FString("FString + ")
+                      + const_cast<char*>("char*");
   std::cout << "       add: " << add5 << std::endl;
 
   // Test: concatenate a FString and a wide character (operator +)
@@ -102,19 +108,23 @@ int main (int, char**)
   std::cout << "       add: " << add9 << std::endl;
 
   // Test: concatenate a c-string and a FString (operator +)
-  const FString& add10 = const_cast<char*>("char*") + FString(" + FString");
+  const FString& add10 = const_cast<char*>("char*")
+                       + FString(" + FString");
   std::cout << "       add: " << add10 << std::endl;
 
   // Test: concatenate a c++ string and a FString (operator +)
-  const FString& add11 = std::string("std::string") + FString(" + FString");
+  const FString& add11 = std::string("std::string")
+                       + FString(" + FString");
   std::cout << "       add: " << add11 << std::endl;
 
   // Test: concatenate a wide string and a FString (operator +)
-  const FString& add12 = const_cast<wchar_t*>(L"wchar_t*") + FString(" + FString");
+  const FString& add12 = const_cast<wchar_t*>(L"wchar_t*")
+                       + FString(" + FString");
   std::cout << "       add: " << add12 << std::endl;
 
   // Test: concatenate a c++ wide string and a FString (operator +)
-  const FString& add13 = std::wstring(L"std::wstring") + FString(" + FString");
+  const FString& add13 = std::wstring(L"std::wstring")
+                       + FString(" + FString");
   std::cout << "       add: " << add13 << std::endl;
 
   // Test: compare operators ==, <=, <, >=, >, !=
@@ -268,7 +278,7 @@ int main (int, char**)
 
   // Test: extract a substring of 27 characters from position 12
   std::cout << "      mid: \""
-            << alphabet.mid(13,27) << "\"" << std::endl;
+            << alphabet.mid(13, 27) << "\"" << std::endl;
 
   // Test: 11 characters from the right of the string
   std::cout << "    right: \""
@@ -288,12 +298,12 @@ int main (int, char**)
   }
 
   // Test: get character access at a specified index position
-  FString index(5); // string with five characters
+  FString index(5);  // string with five characters
   index = "index";
 
   try
   {
-    index[0] = L'I'; // write a wide character at position 0
+    index[0] = L'I';  // write a wide character at position 0
     printf ( "    index: [0] = %c ; [4] = %c\n"
            , char(index[0])
            , char(index[4]) );
@@ -327,7 +337,7 @@ int main (int, char**)
   // Test: remove 2 characters at position 7
   FString remove_std = "A fast remove";
   std::cout << "   remove: "
-            << remove_std.remove(7,2) << std::endl;
+            << remove_std.remove(7, 2) << std::endl;
 
   // Test: includes a substring (positive test)
   FString include_std = "string";

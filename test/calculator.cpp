@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <map>
 #include <stack>
 
 #include "fapplication.h"
@@ -25,19 +26,19 @@ const lDouble PI = 3.141592653589793238L;
 
 class Button : public FButton
 {
- public:
-   // Constructor
-   explicit Button (FWidget* = 0);
+  public:
+    // Constructor
+    explicit Button (FWidget* = 0);
 
-   // Method
-   void setChecked(bool);
+    // Method
+    void setChecked(bool);
 
-   // Event handler
-   void onKeyPress (FKeyEvent*);
+    // Event handler
+    void onKeyPress (FKeyEvent*);
 
- private:
-   // Data Member
-   bool checked;
+  private:
+    // Data Member
+    bool checked;
 };
 #pragma pack(pop)
 
@@ -93,93 +94,93 @@ void Button::onKeyPress (FKeyEvent* ev)
 
 class Calc : public FDialog
 {
- public:
-   // Constructor
-   explicit Calc (FWidget* parent=0);
+  public:
+    // Constructor
+    explicit Calc (FWidget* parent=0);
 
-   // Destructor
-  ~Calc();
+    // Destructor
+    ~Calc();
 
-   // Event handlers
-   void onKeyPress (FKeyEvent*);
-   void onAccel (FAccelEvent*);
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onKeyPress (FKeyEvent*);
+    void onAccel (FAccelEvent*);
+    void onClose (FCloseEvent*);
 
-   // Callback method
-   void cb_buttonClicked (FWidget*, data_ptr);
+    // Callback method
+    void cb_buttonClicked (FWidget*, data_ptr);
 
- private:
-   // Methods
-   void drawDispay();
-   virtual void draw();
-   bool isDataEntryKey(int);
-   bool isOperatorKey(int);
-   void setDisplay (lDouble);
-   void setInfixOperator(char);
-   void clearInfixOperator();
-   void calcInfixOperator();
-   void adjustSize();
+  private:
+    // Methods
+    void drawDispay();
+    virtual void draw();
+    bool isDataEntryKey(int);
+    bool isOperatorKey(int);
+    void setDisplay (lDouble);
+    void setInfixOperator(char);
+    void clearInfixOperator();
+    void calcInfixOperator();
+    void adjustSize();
 
-   // Data Members
-   bool error;
-   bool arcus_mode;
-   bool hyperbolic_mode;
+    // Data Members
+    bool error;
+    bool arcus_mode;
+    bool hyperbolic_mode;
 
-   enum button
-   {
-     Sine,
-     Cosine,
-     Tangent,
-     Reciprocal,
-     On,
-     Natural_logarithm,
-     Powers_of_e,
-     Power,
-     Square_root,
-     Divide,
-     Common_logarithm,
-     Powers_of_ten,
-     Parenthese_l,
-     Parenthese_r,
-     Multiply,
-     Hyperbolic,
-     Seven,
-     Eight,
-     Nine,
-     Subtract,
-     Arcus,
-     Four,
-     Five,
-     Six,
-     Add,
-     Pi,
-     One,
-     Two,
-     Three,
-     Percent,
-     Zero,
-     Decimal_point,
-     Change_sign,
-     Equals,
-     NUM_OF_BUTTONS
-   };
+    enum button
+    {
+      Sine,
+      Cosine,
+      Tangent,
+      Reciprocal,
+      On,
+      Natural_logarithm,
+      Powers_of_e,
+      Power,
+      Square_root,
+      Divide,
+      Common_logarithm,
+      Powers_of_ten,
+      Parenthese_l,
+      Parenthese_r,
+      Multiply,
+      Hyperbolic,
+      Seven,
+      Eight,
+      Nine,
+      Subtract,
+      Arcus,
+      Four,
+      Five,
+      Six,
+      Add,
+      Pi,
+      One,
+      Two,
+      Three,
+      Percent,
+      Zero,
+      Decimal_point,
+      Change_sign,
+      Equals,
+      NUM_OF_BUTTONS
+    };
 
-   lDouble a, b;
-   uInt    max_char;
-   int     last_key;
-   char    infix_operator;
-   char    last_infix_operator;
-   FString input;
-   int     button_no[Calc::NUM_OF_BUTTONS];
+    lDouble a, b;
+    uInt    max_char;
+    int     last_key;
+    char    infix_operator;
+    char    last_infix_operator;
+    FString input;
+    int     button_no[Calc::NUM_OF_BUTTONS];
 
-   struct stack_data
-   {
-     lDouble term;
-     char infix_operator;
-   };
+    struct stack_data
+    {
+      lDouble term;
+      char infix_operator;
+    };
 
-   std::stack<stack_data> bracket_stack;
-   std::map<Calc::button, Button*> calculator_buttons;
+    std::stack<stack_data> bracket_stack;
+    std::map<Calc::button, Button*> calculator_buttons;
 };
 #pragma pack(pop)
 
@@ -277,10 +278,9 @@ Calc::Calc (FWidget* parent)
     );
 
     calculator_buttons[button(key)] = btn;
-
   }
 
-  calculator_buttons[On]->addAccelerator(fc::Fkey_dc); // del key
+  calculator_buttons[On]->addAccelerator(fc::Fkey_dc);  // del key
   calculator_buttons[On]->setFocus();
   calculator_buttons[Pi]->addAccelerator('p');
   calculator_buttons[Power]->addAccelerator('^');
@@ -329,7 +329,7 @@ void Calc::drawDispay()
   if ( isMonochron() )
     setReverse(false);
 
-  setPrintPos (3,3);
+  setPrintPos (3, 3);
   print(display);
   print(L' ');
   setColor(wc.dialog_fg, wc.dialog_bg);
@@ -339,16 +339,16 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    FString bottom_line(33, wchar_t(fc::NF_border_line_bottom));
-    setPrintPos (3,2);
+    FString bottom_line (33, wchar_t(fc::NF_border_line_bottom));
+    setPrintPos (3, 2);
     print (bottom_line);
-    setPrintPos (2,3);
+    setPrintPos (2, 3);
     print (wchar_t(fc::NF_rev_border_line_right));
-    setPrintPos (36,3);
+    setPrintPos (36, 3);
     print (wchar_t(fc::NF_border_line_left));
-    FString top_bottom_line_5(5, wchar_t(fc::NF_border_line_up_and_down));
-    FString top_line_2(2, wchar_t(fc::NF_border_line_upper));
-    setPrintPos (3,4);
+    FString top_bottom_line_5 (5, wchar_t(fc::NF_border_line_up_and_down));
+    FString top_line_2 (2, wchar_t(fc::NF_border_line_upper));
+    setPrintPos (3, 4);
     print ( top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
           + top_bottom_line_5 + top_line_2
@@ -360,7 +360,7 @@ void Calc::drawDispay()
     FString separator = FString(wchar_t(fc::BoxDrawingsVerticalAndRight))
                       + FString(35, wchar_t(fc::BoxDrawingsHorizontal))
                       + FString(wchar_t(fc::BoxDrawingsVerticalAndLeft));
-    setPrintPos (1,4);
+    setPrintPos (1, 4);
     print(separator);
   }
 }
@@ -449,8 +449,6 @@ inline void Calc::clearInfixOperator()
 //----------------------------------------------------------------------
 void Calc::calcInfixOperator()
 {
-  using namespace std;
-
   switch ( infix_operator )
   {
     case '*':
@@ -576,8 +574,6 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
   lDouble* x;
   lDouble infinity = std::numeric_limits<lDouble>::infinity();
 
-  using namespace std;
-
   if ( infix_operator )
     x = &b;
   else
@@ -597,7 +593,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
           if ( errno == EDOM || errno == ERANGE )
             error = true;
 
-          if ( fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
+          if ( std::fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
             error = true;
         }
         else
@@ -633,7 +629,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
           if ( errno == EDOM || errno == ERANGE )
             error = true;
 
-          if ( fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
+          if ( std::fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
             error = true;
         }
         else
@@ -775,7 +771,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       break;
 
     case Powers_of_ten:  // 10ˣ
-      *x = std::pow(10,*x);
+      *x = std::pow(10, *x);
 
       if ( errno == EDOM || errno == ERANGE )
         error = true;
@@ -972,7 +968,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
 
     default:
       break;
-  } // end of switch
+  }  // end of switch
 
   if ( ! input.isEmpty() )
   {

@@ -15,32 +15,32 @@
 
 class ColorChooser : public FWidget
 {
- public:
-   // Constructor
-   explicit ColorChooser (FWidget* = 0);
+  public:
+    // Constructor
+    explicit ColorChooser (FWidget* = 0);
 
-   // Destructor
-  ~ColorChooser();
+    // Destructor
+    ~ColorChooser();
 
-   // Accessors
-   short getForeground();
-   short getBackground();
+    // Accessors
+    short getForeground();
+    short getBackground();
 
- private:
-   // Disable copy constructor
-   ColorChooser (const ColorChooser&);
-   // Disable assignment operator (=)
-   ColorChooser& operator = (const ColorChooser&);
+  private:
+    // Disable copy constructor
+    ColorChooser (const ColorChooser&);
+    // Disable assignment operator (=)
+    ColorChooser& operator = (const ColorChooser&);
 
-   // Method
-   void draw();
+    // Method
+    void draw();
 
-   // Event handler
-   void onMouseDown (FMouseEvent*);
+    // Event handler
+    void onMouseDown (FMouseEvent*);
 
-   // Data Members
-   short fg_color;
-   short bg_color;
+    // Data Members
+    short fg_color;
+    short bg_color;
 };
 #pragma pack(pop)
 
@@ -150,36 +150,36 @@ inline short ColorChooser::getBackground()
 
 class Brushes : public FWidget
 {
- public:
-   // Constructor
-   explicit Brushes (FWidget* = 0);
+  public:
+    // Constructor
+    explicit Brushes (FWidget* = 0);
 
-   // Destructor
-  ~Brushes();
+    // Destructor
+    ~Brushes();
 
-   // Accessor
-   wchar_t getBrush();
+    // Accessor
+    wchar_t getBrush();
 
-   // Mutators
-   void setForeground (short);
-   void setBackground (short);
+    // Mutators
+    void setForeground (short);
+    void setBackground (short);
 
- private:
-   // Disable copy constructor
-   Brushes (const Brushes&);
-   // Disable assignment operator (=)
-   Brushes& operator = (const Brushes&);
+  private:
+    // Disable copy constructor
+    Brushes (const Brushes&);
+    // Disable assignment operator (=)
+    Brushes& operator = (const Brushes&);
 
-   // Method
-   void draw();
+    // Method
+    void draw();
 
-   // Event handler
-   void onMouseDown (FMouseEvent*);
+    // Event handler
+    void onMouseDown (FMouseEvent*);
 
-   // Data Members
-   wchar_t brush;
-   short   fg_color;
-   short   bg_color;
+    // Data Members
+    wchar_t brush;
+    short   fg_color;
+    short   bg_color;
 };
 #pragma pack(pop)
 
@@ -285,46 +285,46 @@ inline void Brushes::setBackground (short color)
 
 class MouseDraw : public FDialog
 {
- public:
-   // Using-declaration
-   using FWidget::setGeometry;
+  public:
+    // Using-declaration
+    using FWidget::setGeometry;
 
-   // Constructor
-   explicit MouseDraw (FWidget* = 0);
+    // Constructor
+    explicit MouseDraw (FWidget* = 0);
 
-   // Destructor
-  ~MouseDraw();
+    // Destructor
+    ~MouseDraw();
 
-   // Methods
-   void setGeometry (int, int, int, int, bool = true);
+    // Methods
+    void setGeometry (int, int, int, int, bool = true);
 
-   // Event handlers
-   void onAccel (FAccelEvent*);
-   void onClose (FCloseEvent*);
+    // Event handlers
+    void onAccel (FAccelEvent*);
+    void onClose (FCloseEvent*);
 
- private:
-   // Disable copy constructor
-   MouseDraw (const MouseDraw&);
-   // Disable assignment operator (=)
-   MouseDraw& operator = (const MouseDraw&);
+  private:
+    // Disable copy constructor
+    MouseDraw (const MouseDraw&);
+    // Disable assignment operator (=)
+    MouseDraw& operator = (const MouseDraw&);
 
-   // Methods
-   virtual void draw();
-   void drawBrush (int, int, bool = false);
-   void drawCanvas();
-   void adjustSize();
+    // Methods
+    virtual void draw();
+    void drawBrush (int, int, bool = false);
+    void drawCanvas();
+    void adjustSize();
 
-   // Event handler
-   void onMouseDown (FMouseEvent*);
-   void onMouseMove (FMouseEvent*);
+    // Event handler
+    void onMouseDown (FMouseEvent*);
+    void onMouseMove (FMouseEvent*);
 
-   // Callback methods
-   void cb_colorChanged (FWidget*, data_ptr);
+    // Callback methods
+    void cb_colorChanged (FWidget*, data_ptr);
 
-   // Data Members
-   term_area*    canvas;
-   ColorChooser* c_chooser;
-   Brushes*      brush;
+    // Data Members
+    term_area*    canvas;
+    ColorChooser* c_chooser;
+    Brushes*      brush;
 };
 #pragma pack(pop)
 
@@ -337,7 +337,7 @@ MouseDraw::MouseDraw (FWidget* parent)
 {
   setText ("Drawing with the mouse");
   c_chooser = new ColorChooser(this);
-  c_chooser->setPos (1,1);
+  c_chooser->setPos (1, 1);
   c_chooser->addCallback
   (
     "clicked",
@@ -345,7 +345,7 @@ MouseDraw::MouseDraw (FWidget* parent)
   );
 
   brush = new Brushes(this);
-  brush->setPos (1,12);
+  brush->setPos (1, 12);
 
   FPoint no_shadow(0,0);
   FRect scroll_geometry(0, 0, 1, 1);
@@ -459,8 +459,8 @@ void MouseDraw::drawCanvas()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    char_data* cc; // canvas character
-    char_data* wc; // window character
+    char_data* cc;  // canvas character
+    char_data* wc;  // window character
     cc = &canvas->text[y * x_end];
     wc = &print_area->text[(ay + y) * w_line_len + ax];
     std::memcpy (wc, cc, sizeof(char_data) * unsigned(x_end));

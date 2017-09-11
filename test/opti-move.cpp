@@ -1,6 +1,8 @@
 // File: opti-move.cpp
 
 #include <iomanip>
+#include <string>
+
 #include "fapplication.h"
 #include "fvterm.h"
 

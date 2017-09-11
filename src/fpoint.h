@@ -20,45 +20,45 @@
 
 class FPoint
 {
- public:
-   // Constructors
-   FPoint ();
-   FPoint (const FPoint&);  // copy constructor
-   FPoint (int, int);
+  public:
+    // Constructors
+    FPoint ();
+    FPoint (const FPoint&);  // copy constructor
+    FPoint (int, int);
 
-   // Destructor
-   virtual ~FPoint();
+    // Destructor
+    virtual ~FPoint();
 
-   // Overloaded operators
-   FPoint& operator =  (const FPoint&);
-   FPoint& operator += (const FPoint&);
-   FPoint& operator -= (const FPoint&);
+    // Overloaded operators
+    FPoint& operator =  (const FPoint&);
+    FPoint& operator += (const FPoint&);
+    FPoint& operator -= (const FPoint&);
 
-   friend inline bool   operator == (const FPoint&, const FPoint&);
-   friend inline bool   operator != (const FPoint&, const FPoint&);
-   friend inline FPoint operator +  (const FPoint&, const FPoint&);
-   friend inline FPoint operator -  (const FPoint&, const FPoint&);
-   friend inline FPoint operator -  (const FPoint&);
+    friend inline bool   operator == (const FPoint&, const FPoint&);
+    friend inline bool   operator != (const FPoint&, const FPoint&);
+    friend inline FPoint operator +  (const FPoint&, const FPoint&);
+    friend inline FPoint operator -  (const FPoint&, const FPoint&);
+    friend inline FPoint operator -  (const FPoint&);
 
-   // Accessors
-   virtual const char* getClassName();
-   int     getX() const;
-   int     getY() const;
-   void    setX (int);
-   void    setY (int);
-   void    setPoint (int, int);
+    // Accessors
+    virtual const char* getClassName();
+    int     getX() const;
+    int     getY() const;
+    void    setX (int);
+    void    setY (int);
+    void    setPoint (int, int);
 
-   // Inquiry
-   bool    isNull() const;
+    // Inquiry
+    bool    isNull() const;
 
-   // Point references
-   short&  x_ref();
-   short&  y_ref();
+    // Point references
+    short&  x_ref();
+    short&  y_ref();
 
- private:
-   // Data Members
-   short xpos;
-   short ypos;
+  private:
+    // Data Members
+    short xpos;
+    short ypos;
 };
 #pragma pack(pop)
 
