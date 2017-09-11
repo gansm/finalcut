@@ -3699,7 +3699,8 @@ void FTerm::init()
     std::abort();
 
   // Get pathname of the terminal device
-  ttyname_r (stdout_no, term_name, sizeof(term_name));
+  if ( ! ttyname_r (stdout_no, term_name, sizeof(term_name)) )
+    term_name[0] = '\0';
 
 #if defined(__linux__)
   // initialize Linux console
