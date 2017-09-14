@@ -40,33 +40,31 @@ class FOptiAttr
       {
         struct
         {
+          // Attribute byte #0
+          uInt8 bold          : 1;  // bold
+          uInt8 dim           : 1;  // dim
+          uInt8 italic        : 1;  // italic
+          uInt8 underline     : 1;  // underline
+          uInt8 blink         : 1;  // blink
+          uInt8 reverse       : 1;  // reverse
+          uInt8 standout      : 1;  // standout
+          uInt8 invisible     : 1;  // invisible
           // Attribute byte #1
-          uChar bold          : 1;  // bold
-          uChar dim           : 1;  // dim
-          uChar italic        : 1;  // italic
-          uChar underline     : 1;  // underline
-          uChar blink         : 1;  // blink
-          uChar reverse       : 1;  // reverse
-          uChar standout      : 1;  // standout
-          uChar invisible     : 1;  // invisible
+          uInt8 protect       : 1;  // protect mode
+          uInt8 crossed_out   : 1;  // crossed out
+          uInt8 dbl_underline : 1;  // double underline
+          uInt8 alt_charset   : 1;  // alternate character set (vt100)
+          uInt8 pc_charset    : 1;  // pc character set (CP437)
+          uInt8 transparent   : 1;  // transparent
+          uInt8 trans_shadow  : 1;  // transparent shadow
+          uInt8 inherit_bg    : 1;  // inherit background
           // Attribute byte #2
-          uChar protect       : 1;  // protect mode
-          uChar crossed_out   : 1;  // crossed out
-          uChar dbl_underline : 1;  // double underline
-          uChar alt_charset   : 1;  // alternate character set (vt100)
-          uChar pc_charset    : 1;  // pc character set (CP437)
-          uChar transparent   : 1;  // transparent
-          uChar trans_shadow  : 1;  // transparent shadow
-          uChar inherit_bg    : 1;  // inherit background
-          // Attribute byte #3
-          uChar no_changes    : 1;  // no changes required
-          uChar printed       : 1;  // is printed to VTerm
-          uChar               : 6;  // padding bits
+          uInt8 no_changes    : 1;  // no changes required
+          uInt8 printed       : 1;  // is printed to VTerm
+          uInt8               : 6;  // padding bits
         } bit;
 
-        uChar byte1;
-        uChar byte2;
-        uChar byte3;
+        uInt8 byte[3];
       } attr;
     } char_data;
 
@@ -277,8 +275,8 @@ inline bool operator == ( const FOptiAttr::char_data& lhs,
   return lhs.code       == rhs.code
       && lhs.fg_color   == rhs.fg_color
       && lhs.bg_color   == rhs.bg_color
-      && lhs.attr.byte1 == rhs.attr.byte1
-      && lhs.attr.byte2 == rhs.attr.byte2;
+      && lhs.attr.byte[0] == rhs.attr.byte[0]
+      && lhs.attr.byte[1] == rhs.attr.byte[1];
 }
 
 //----------------------------------------------------------------------

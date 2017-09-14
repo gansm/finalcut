@@ -18,7 +18,7 @@
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
-  , column_value(item.column_value)
+  , column_list(item.column_list)
   , data_pointer(item.data_pointer)
   , visible_lines(1)
   , expandable(false)
@@ -31,83 +31,76 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem (FListViewItem* parent)
-  : FObject(parent)
-  , column_value()
+FListViewItem::FListViewItem (FObjectIterator parent_iter)
+  : FObject(0)
+  , column_list()
   , data_pointer(0)
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
 {
-  // Add the FListViewItem to the parent
-  if ( ! parent )
+  if ( *parent_iter )
+  {
+    if ( (*parent_iter)->isInstanceOf("FListView") )
+    {
+      // Add FListViewItem to a FListView parent
+      FListView* parent = static_cast<FListView*>(*parent_iter);
+      parent->addChild (this);
+      parent->insert (this);
+    }
+    else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
+    {
+      // Add FListViewItem to a FListViewItem parent
+      FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
+      parent->addChild (this);
+      parent->expandable = true;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+FListViewItem::FListViewItem ( const std::vector<FString>& cols
+                             , FWidget::data_ptr data
+                             , FObjectIterator parent_iter )
+  : FObject(0)
+  , column_list(cols)
+  , data_pointer(data)
+  , visible_lines(1)
+  , expandable(false)
+  , is_expand(false)
+{
+  if ( cols.empty() )
     return;
 
-  parent->addChild (this);
-  parent->expandable = true;
-}
-
-//----------------------------------------------------------------------
-FListViewItem::FListViewItem (FListView* parent)
-  : FObject(parent)
-  , column_value()
-  , data_pointer(0)
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-{
-  // Add the FListViewItem to the parent
-  if ( parent )
-    parent->insert (this);
-}
-
-//----------------------------------------------------------------------
-FListViewItem::FListViewItem ( const std::vector<FString>& cols
-                             , FWidget::data_ptr data
-                             , FListView* parent )
-  : FObject(parent)
-  , column_value(cols)
-  , data_pointer(data)
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-{
   // Replace the control codes characters
-  std::vector<FString>::iterator iter = column_value.begin();
+  std::vector<FString>::iterator iter = column_list.begin();
 
-  while ( iter != column_value.end() )
+  while ( iter != column_list.end() )
   {
     *iter = iter->replaceControlCodes();
     ++iter;
   }
 
-  // Add the FListViewItem to the parent
-  if ( parent )
-    parent->insert (this);
-}
+  if ( parent_iter == FObjectIterator(0) )
+    return;
 
-//----------------------------------------------------------------------
-FListViewItem::FListViewItem ( const std::vector<FString>& cols
-                             , FWidget::data_ptr data
-                             , FListViewItem* parent )
-  : FObject(parent)
-  , column_value(cols)
-  , data_pointer(data)
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-{
-  // Replace the control codes characters
-  std::vector<FString>::iterator iter = column_value.begin();
-
-  while ( iter != column_value.end() )
+  if ( *parent_iter )
   {
-    *iter = iter->replaceControlCodes();
-    ++iter;
+    if ( (*parent_iter)->isInstanceOf("FListView") )
+    {
+      // Add FListViewItem to a FListView parent
+      FListView* parent = static_cast<FListView*>(*parent_iter);
+      parent->addChild (this);
+      parent->insert (this);
+    }
+    else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
+    {
+      // Add FListViewItem to a FListViewItem parent
+      FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
+      parent->addChild (this);
+      parent->expandable = true;
+    }
   }
-
-  if ( parent )
-    parent->expandable = true;
 }
 
 //----------------------------------------------------------------------
@@ -120,20 +113,20 @@ FListViewItem::~FListViewItem()  // destructor
 FString FListViewItem::getText (int column) const
 {
   if ( column < 1
-     || column_value.empty()
-     || column > int(column_value.size()) )
+     || column_list.empty()
+     || column > int(column_list.size()) )
     return *fc::empty_string;
 
   column--;  // Convert column position to address offset (index)
-  return column_value[uInt(column)];
+  return column_list[uInt(column)];
 }
 
 //----------------------------------------------------------------------
 void FListViewItem::setText (int column, const FString& text)
 {
   if ( column < 1
-     || column_value.empty()
-     || column > int(column_value.size()) )
+     || column_list.empty()
+     || column > int(column_list.size()) )
     return;
 
   FObject* parent = getParent();
@@ -152,7 +145,7 @@ void FListViewItem::setText (int column, const FString& text)
     }
   }
 
-  column_value[uInt(column)] = text;
+  column_list[uInt(column)] = text;
 }
 
 //----------------------------------------------------------------------
@@ -197,7 +190,7 @@ int FListViewItem::getVisibleLines()
   }
 
   FObjectList children = this->getChildren();
-  FObjectList::const_iterator iter = children.begin();
+  constFObjectIterator iter = children.begin();
 
   while ( iter != children.end() )
   {
@@ -218,7 +211,9 @@ int FListViewItem::getVisibleLines()
 //----------------------------------------------------------------------
 FListView::FListView (FWidget* parent)
   : FWidget(parent)
-  , data()
+  , root()
+  , selflist()
+  , itemlist()
   , header()
   , headerline()
   , vbar(0)
@@ -295,7 +290,7 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
   // Set the alignment for a column
 
   if ( column < 1 || header.empty() || column > int(header.size()) )
-    {beep();return;}
+    return;
 
   column--;  // Convert column position to address offset (index)
   header[uInt(column)].alignment = align;
@@ -342,70 +337,107 @@ int FListView::addColumn (const FString& label, int width)
 }
 
 //----------------------------------------------------------------------
-void FListView::insert (FListViewItem* item)
+FObject::FObjectIterator FListView::insert ( FListViewItem* item
+                                           , FObjectIterator parent_iter )
 {
   static const int padding_space = 1;
   int  line_width = padding_space;  // leading space
   uInt column_idx = 0;
-  uInt entries = uInt(item->column_value.size());
-  headerItems::iterator iter;
+  uInt entries = uInt(item->column_list.size());
+  FObjectIterator item_iter;
+  headerItems::iterator header_iter;
 
-  iter = header.begin();
+  if ( parent_iter == FObjectIterator(0) )
+    return FObjectIterator(0);
 
-  while ( iter != header.end() )
+  header_iter = header.begin();
+
+  while ( header_iter != header.end() )
   {
-    int width = (*iter).width;
-    bool fixed_width = (*iter).fixed_width;
+    int width = (*header_iter).width;
+    bool fixed_width = (*header_iter).fixed_width;
 
     if ( ! fixed_width )
     {
       int len;
 
       if ( column_idx < entries )
-        len = int(item->column_value[column_idx].getLength());
+        len = int(item->column_list[column_idx].getLength());
       else
         len = 0;
 
       if ( len > width )
-        (*iter).width = len;
+        (*header_iter).width = len;
     }
 
-    line_width += (*iter).width + padding_space;  // width + tailing space
+    line_width += (*header_iter).width + padding_space;  // width + tailing space
     column_idx++;
-    ++iter;
+    ++header_iter;
   }
 
   recalculateHorizontalBar (line_width);
-  data.push_back (item);
 
-  int element_count = int(data.size());
+  if  ( parent_iter == root )
+  {
+    addChild (item);
+    itemlist.push_back (item);
+    item_iter = --itemlist.end();
+  }
+  else if ( *parent_iter )
+  {
+    if ( (*parent_iter)->isInstanceOf("FListView") )
+    {
+      // Add FListViewItem to a FListView parent
+      addChild (item);
+      FListView* parent = static_cast<FListView*>(*parent_iter);
+      parent->itemlist.push_back (item);
+      item_iter = --parent->itemlist.end();
+    }
+    else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
+    {
+      // Add FListViewItem to a FListViewItem parent
+      FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
+      parent->expandable = true;
+      parent->addChild (item);
+      FObjectList parent_obj = parent->getChildren();
+      item_iter = --parent_obj.end();
+    }
+  }
+
+  int element_count = int(itemlist.size());
   recalculateVerticalBar (element_count);
+  return item_iter;
 }
 
 //----------------------------------------------------------------------
-void FListView::insert ( const std::vector<FString>& cols
-                       , data_ptr d
-                       , FListView* parent )
+FObject::FObjectIterator FListView::insert ( const std::vector<FString>& cols
+                                           , data_ptr d
+                                           , FObjectIterator parent_iter )
 {
+  FListViewItem* item;
+
+  if ( ! *parent_iter )
+    parent_iter = root;
+
   try
   {
-    if ( parent == 0 )
-      new FListViewItem (cols, d, this);
-    else
-      new FListViewItem (cols, d, parent);
+    item = new FListViewItem (cols, d, FObjectIterator(0));
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
+    return FObjectIterator(0);
   }
+
+  return insert(item, parent_iter);
 }
 
 //----------------------------------------------------------------------
-void FListView::insert ( const std::vector<long>& cols
-                       , data_ptr d
-                       , FListView* parent )
+FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
+                                           , data_ptr d
+                                           , FObjectIterator parent_iter )
 {
+  FObjectIterator item_iter;
   std::vector<FString> str_cols;
 
   if ( ! cols.empty() )
@@ -414,16 +446,15 @@ void FListView::insert ( const std::vector<long>& cols
       str_cols.push_back (FString().setNumber(cols[i]));
   }
 
-  if ( parent == 0 )
-    insert (str_cols, d, this);
-  else
-    insert (str_cols, d, parent);
+  item_iter = insert (str_cols, d, parent_iter);
+
+  return item_iter;
 }
 
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  int element_count = int(data.size());
+  int element_count = int(itemlist.size());
   int current_before = current;
   int xoffset_before = xoffset;
   int xoffset_end = max_line_width - getClientWidth();
@@ -600,8 +631,8 @@ void FListView::onMouseDown (FMouseEvent* ev)
   {
     current = yoffset + mouse_y - 1;
 
-    if ( current > int(data.size()) )
-      current = int(data.size());
+    if ( current > int(itemlist.size()) )
+      current = int(itemlist.size());
 
     if ( isVisible() )
       drawList();
@@ -663,8 +694,8 @@ void FListView::onMouseMove (FMouseEvent* ev)
   {
     current = yoffset + mouse_y - 1;
 
-    if ( current > int(data.size()) )
-      current = int(data.size());
+    if ( current > int(itemlist.size()) )
+      current = int(itemlist.size());
 
     if ( isVisible() )
       drawList();
@@ -710,7 +741,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         && scroll_distance < getClientHeight() )
       scroll_distance++;
 
-    if ( ! scroll_timer && current < int(data.size()) )
+    if ( ! scroll_timer && current < int(itemlist.size()) )
     {
       scroll_timer = true;
       addTimer(scroll_repeat);
@@ -721,7 +752,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         drag_scroll = fc::scrollDown;
     }
 
-    if ( current == int(data.size()) )
+    if ( current == int(itemlist.size()) )
     {
       delOwnTimer();
       drag_scroll = fc::noScroll;
@@ -751,7 +782,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
   if ( mouse_x > 1 && mouse_x < getWidth()
       && mouse_y > 1 && mouse_y < getHeight() )
   {
-    if ( yoffset + mouse_y - 1 > int(data.size()) )
+    if ( yoffset + mouse_y - 1 > int(itemlist.size()) )
       return;
 
     processClick();
@@ -761,7 +792,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  int element_count = int(data.size());
+  int element_count = int(itemlist.size());
   int current_before = current;
   int yoffset_before = yoffset;
   int yoffset_end = element_count - getClientHeight();
@@ -832,7 +863,7 @@ void FListView::onTimer (FTimerEvent*)
 void FListView::onWheel (FWheelEvent* ev)
 {
   int element_count, current_before, yoffset_before, yoffset_end, wheel;
-  element_count = int(data.size());
+  element_count = int(itemlist.size());
   current_before = current;
   yoffset_before = yoffset;
   yoffset_end = element_count - getClientHeight();
@@ -933,7 +964,7 @@ void FListView::onFocusOut (FFocusEvent*)
 //----------------------------------------------------------------------
 void FListView::adjustYOffset()
 {
-  int element_count = int(data.size());
+  int element_count = int(itemlist.size());
 
   if ( yoffset > element_count - getClientHeight() )
     yoffset = element_count - getClientHeight();
@@ -955,7 +986,7 @@ void FListView::adjustSize()
   FWidget::adjustSize();
   adjustYOffset();
 
-  element_count = int(data.size());
+  element_count = int(itemlist.size());
   vbar->setMaximum (element_count - getClientHeight());
   vbar->setPageSize (element_count, getClientHeight());
   vbar->setX (getWidth());
@@ -984,6 +1015,9 @@ void FListView::adjustSize()
 //----------------------------------------------------------------------
 void FListView::init()
 {
+  selflist.push_back(this);
+  root = selflist.begin();
+
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
 
@@ -1203,17 +1237,17 @@ void FListView::drawList()
 {
   uInt start, end;
   bool isFocus;
-  listViewItems::const_iterator iter;
+  constFObjectIterator iter;
 
-  if ( data.empty() || getHeight() <= 2 || getWidth() <= 4 )
+  if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
   isFocus = ((flags & fc::focus) != 0);
   start   = 0;
   end     = uInt(getHeight() - 2);
 
-  if ( end > data.size() )
-    end = uInt(data.size());
+  if ( end > itemlist.size() )
+    end = uInt(itemlist.size());
 
   iter = index2iterator(int(start) + yoffset);
 
@@ -1222,6 +1256,7 @@ void FListView::drawList()
     bool isCurrentLine = bool( y + uInt(yoffset) + 1 == uInt(current) );
     setPrintPos (2, 2 + int(y));
     setColor (wc.list_fg, wc.list_bg);
+    FListViewItem* item = static_cast<FListViewItem*>(*iter);
 
     if ( isCurrentLine )
     {
@@ -1253,22 +1288,30 @@ void FListView::drawList()
     }
 
     // print the entry
-    FString line = " ";
+    FString line;
 
-    if ( tree_view /*&& (*iter)->expandable*/  )
+    if ( tree_view )
     {
-      line += "► ";
+      if ( item->expandable  )
+      {
+        line = wchar_t(fc::BlackRightPointingPointer);
+        line += L' ';
+      }
+      else
+        line = L"  ";
     }
+    else
+      line = L" ";
 
     // print columns
-    if ( ! (*iter)->column_value.empty() )
+    if ( ! item->column_list.empty() )
     {
-      for (uInt i = 0; i < (*iter)->column_value.size(); )
+      for (uInt i = 0; i < item->column_list.size(); )
       {
         static const int leading_space = 1;
         static const int ellipsis_length = 2;
 
-        const FString& text = (*iter)->column_value[i];
+        const FString& text = item->column_list[i];
         int width = header[i].width;
         uInt txt_length = text.getLength();
         // Increment the value of i for the column position
@@ -1277,29 +1320,34 @@ void FListView::drawList()
         fc::text_alignment align = getColumnAlignment(int(i));
         uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
 
+        if ( tree_view && i == 1 )
+        {
+          width--;
+        }
+
         // Insert alignment spaces
         if ( align_offset > 0 )
-          line += FString(align_offset, ' ');
+          line += FString(align_offset, L' ');
 
         if ( align_offset + txt_length <= uInt(width) )
         {
           // Insert text and tailing space
           line += text.left(width);
           line += FString ( leading_space + width
-                           - int(align_offset + txt_length), ' ');
+                           - int(align_offset + txt_length), L' ');
         }
         else if ( align == fc::alignRight )
         {
           // Ellipse right align text
-          line += FString ("..");
+          line += FString (L"..");
           line += text.right(width - ellipsis_length);
-          line += ' ';
+          line += L' ';
         }
         else
         {
           // Ellipse left align text and center text
           line += text.left(width - ellipsis_length);
-          line += FString (".. ");
+          line += FString (L".. ");
         }
       }
     }
@@ -1367,7 +1415,7 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;
-  int element_count = int(data.size());
+  int element_count = int(itemlist.size());
   int yoffset_before = yoffset;
   int yoffset_end = element_count - getClientHeight();
   scrollType = vbar->getScrollType();

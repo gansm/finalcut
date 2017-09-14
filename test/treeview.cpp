@@ -57,6 +57,9 @@ Treeview::Treeview (FWidget* parent)
   listView->setColumnAlignment (2, fc::alignRight);
   listView->setColumnAlignment (3, fc::alignRight);
 
+  // Activate tree view
+  listView->setTreeView();
+
   // Populate FListView with a list of items
   std::string continent[][3] =
   {
@@ -77,8 +80,11 @@ Treeview::Treeview (FWidget* parent)
     listView->insert (line);
   }
 
-  // Enable the tree view
-  listView->setTreeView();
+  std::string egypt[3] = { "Egypt", "94,666,000", "87" };
+  std::vector<FString> egypt_line (&egypt[0], &egypt[0] + 3);
+  FObjectIterator iter_africa = listView->insert (egypt_line);
+  listView->insert (egypt_line, iter_africa);
+
 
   // Quit button
   FButton* Quit = new FButton (this);

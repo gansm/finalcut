@@ -35,6 +35,8 @@ class FObject
   public:
     // Typedef
     typedef std::list<FObject*> FObjectList;
+    typedef FObjectList::iterator FObjectIterator;
+    typedef FObjectList::const_iterator constFObjectIterator;
 
     // Constructor
     explicit FObject (FObject* = 0);

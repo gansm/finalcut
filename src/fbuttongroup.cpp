@@ -34,7 +34,7 @@ FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButtonGroup::~FButtonGroup()  // destructor
 {
-  FObjectList::iterator iter;
+  FObjectIterator iter;
 
   if ( buttonlist.empty() )
     return;
@@ -54,7 +54,7 @@ FButtonGroup::~FButtonGroup()  // destructor
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getButton(int index) const
 {
-  FObjectList::const_iterator iter;
+  constFObjectIterator iter;
   index--;
 
   if ( buttonlist.empty() )
@@ -126,7 +126,7 @@ bool FButtonGroup::hasFocusedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
   iter = buttonlist.begin();
   end = buttonlist.end();
 
@@ -149,7 +149,7 @@ bool FButtonGroup::hasCheckedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
   iter = buttonlist.begin();
   end = buttonlist.end();
 
@@ -177,7 +177,7 @@ void FButtonGroup::hide()
 
   if ( ! buttonlist.empty() )
   {
-    FObjectList::const_iterator iter, end;
+    constFObjectIterator iter, end;
     iter = buttonlist.begin();
     end = buttonlist.end();
 
@@ -260,7 +260,7 @@ void FButtonGroup::insert (FToggleButton* button)
 //----------------------------------------------------------------------
 void FButtonGroup::remove (FToggleButton* button)
 {
-  FObjectList::iterator iter;
+  FObjectIterator iter;
 
   if ( ! button || buttonlist.empty() )
     return;
@@ -325,7 +325,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
   if ( hasCheckedButton() && ! buttonlist.empty() )
   {
-    FObjectList::const_iterator iter, end;
+    constFObjectIterator iter, end;
     iter = buttonlist.begin();
     end = buttonlist.end();
 
@@ -389,7 +389,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
 {
   FToggleButton* button = static_cast<FToggleButton*>(widget);
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
 
   if ( ! button->isChecked() )
     return;
@@ -600,7 +600,7 @@ void FButtonGroup::directFocus()
 
     if ( hasCheckedButton() && ! buttonlist.empty() )
     {
-      FObjectList::const_iterator iter, end;
+      constFObjectIterator iter, end;
       iter = buttonlist.begin();
       end = buttonlist.end();
 

@@ -92,11 +92,11 @@ inline bool operator != (const FPoint& p1, const FPoint& p2)
 
 //----------------------------------------------------------------------
 inline FPoint operator + (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos+p2.xpos, p1.ypos+p2.ypos); }
+{ return FPoint(p1.xpos + p2.xpos, p1.ypos + p2.ypos); }
 
 //----------------------------------------------------------------------
 inline FPoint operator - (const FPoint& p1, const FPoint& p2)
-{ return FPoint(p1.xpos-p2.xpos, p1.ypos-p2.ypos); }
+{ return FPoint(p1.xpos - p2.xpos, p1.ypos - p2.ypos); }
 
 //----------------------------------------------------------------------
 inline FPoint operator - (const FPoint& p)

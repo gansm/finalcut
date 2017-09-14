@@ -54,12 +54,10 @@ class FListViewItem : public FObject
     FListViewItem (const FListViewItem&);  // copy constructor
     explicit FListViewItem (FListViewItem*);
     explicit FListViewItem (FListView*);
+    explicit FListViewItem (FObjectIterator);
     FListViewItem ( const std::vector<FString>&
-                  , FWidget::data_ptr = 0
-                  , FListView* = 0 );
-    FListViewItem ( const std::vector<FString>&
-                  , FWidget::data_ptr = 0
-                  , FListViewItem* = 0 );
+                  , FWidget::data_ptr
+                  , FObjectIterator );
 
     // Destructor
     ~FListViewItem();
@@ -91,7 +89,7 @@ class FListViewItem : public FObject
     int          getVisibleLines();
 
     // Data Member
-    std::vector<FString> column_value;
+    std::vector<FString> column_list;
     FWidget::data_ptr    data_pointer;
     int                  visible_lines;
     bool                 expandable;
@@ -110,7 +108,7 @@ inline const char* FListViewItem::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
-{ return uInt(column_value.size()); }
+{ return uInt(column_list.size()); }
 
 //----------------------------------------------------------------------
 inline bool FListViewItem::isExpand()
@@ -131,9 +129,6 @@ inline bool FListViewItem::isExpandable()
 class FListView : public FWidget
 {
   public:
-    // Typedef
-    typedef std::vector<FListViewItem*> listViewItems;
-
     // Using-declaration
     using FWidget::setGeometry;
 
@@ -147,7 +142,7 @@ class FListView : public FWidget
     const char*        getClassName() const;
     fc::text_alignment getColumnAlignment (int) const;
     FString            getColumnText (int) const;
-    FListViewItem*     getCurrentItem() const;
+    FListViewItem*     getCurrentItem();
 
     // Mutators
     void               setGeometry (int, int, int, int, bool = true);
@@ -159,13 +154,22 @@ class FListView : public FWidget
 
     // Methods
     virtual int        addColumn (const FString&, int = USE_MAX_SIZE);
-    void               insert (FListViewItem*);
-    void               insert ( const std::vector<FString>&
-                              , data_ptr = 0
-                              , FListView* = 0 );
-    void               insert ( const std::vector<long>&
-                              , data_ptr = 0
-                              , FListView* = 0 );
+    FObjectIterator    insert (FListViewItem*);
+    FObjectIterator    insert (FListViewItem*, FObjectIterator);
+    FObjectIterator    insert ( const std::vector<FString>&
+                              , data_ptr = 0 );
+    FObjectIterator    insert ( const std::vector<FString>&
+                              , FObjectIterator );
+    FObjectIterator    insert ( const std::vector<FString>&
+                              , data_ptr
+                              , FObjectIterator );
+    FObjectIterator    insert ( const std::vector<long>&
+                              , data_ptr = 0 );
+    FObjectIterator    insert ( const std::vector<long>&
+                              , FObjectIterator );
+    FObjectIterator    insert ( const std::vector<long>&
+                              , data_ptr
+                              , FObjectIterator );
 
     // Event handlers
     void               onKeyPress (FKeyEvent*);
@@ -225,14 +229,16 @@ class FListView : public FWidget
     void               recalculateVerticalBar (int);
     void               processClick();
     void               processChanged();
-    listViewItems::iterator index2iterator (int);
+    FObjectIterator    index2iterator (int);
 
     // Callback methods
     void               cb_VBarChange (FWidget*, data_ptr);
     void               cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    listViewItems      data;
+    FObjectIterator    root;
+    FObjectList        selflist;
+    FObjectList        itemlist;
     headerItems        header;
     FTermBuffer        headerline;
     FScrollbar*        vbar;
@@ -260,8 +266,12 @@ inline const char* FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------
-inline FListViewItem* FListView::getCurrentItem() const
-{ return data[uInt(current-1)]; }
+inline FListViewItem* FListView::getCurrentItem()
+{
+  FObjectIterator iter = itemlist.begin();
+  std::advance (iter, current - 1);
+  return static_cast<FListViewItem*>(*iter);
+}
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
@@ -276,9 +286,35 @@ inline bool FListView::unsetTreeView()
 { return setTreeView(false); }
 
 //----------------------------------------------------------------------
-inline FListView::listViewItems::iterator FListView::index2iterator (int index)
+inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
+{ return insert (item, root); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator
+  FListView::insert ( const std::vector<FString>& cols, data_ptr d )
+{ return insert (cols, d, root); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator
+  FListView::insert ( const std::vector<FString>& cols
+                    , FObjectIterator parent_iter )
+{ return insert (cols, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator
+  FListView::insert ( const std::vector<long>& cols, data_ptr d )
+{ return insert (cols, d, root); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator
+  FListView::insert ( const std::vector<long>& cols
+                    , FObjectIterator parent_iter )
+{ return insert (cols, 0, parent_iter); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator FListView::index2iterator (int index)
 {
-  listViewItems::iterator iter = data.begin();
+  FObjectIterator iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
 }

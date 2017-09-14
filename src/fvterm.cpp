@@ -480,27 +480,12 @@ int FVTerm::print (term_area* area, const FString& s)
           int ay = area->cursor_y - 1;
 
           char_data  nc;  // next character
-          nc.code                   = *p;
-          nc.fg_color               = next_attribute.fg_color;
-          nc.bg_color               = next_attribute.bg_color;
-          nc.attr.bit.bold          = next_attribute.attr.bit.bold;
-          nc.attr.bit.dim           = next_attribute.attr.bit.dim;
-          nc.attr.bit.italic        = next_attribute.attr.bit.italic;
-          nc.attr.bit.underline     = next_attribute.attr.bit.underline;
-          nc.attr.bit.blink         = next_attribute.attr.bit.blink;
-          nc.attr.bit.reverse       = next_attribute.attr.bit.reverse;
-          nc.attr.bit.standout      = next_attribute.attr.bit.standout;
-          nc.attr.bit.invisible     = next_attribute.attr.bit.invisible;
-          nc.attr.bit.protect       = next_attribute.attr.bit.protect;
-          nc.attr.bit.crossed_out   = next_attribute.attr.bit.crossed_out;
-          nc.attr.bit.dbl_underline = next_attribute.attr.bit.dbl_underline;
-          nc.attr.bit.alt_charset   = next_attribute.attr.bit.alt_charset;
-          nc.attr.bit.pc_charset    = next_attribute.attr.bit.pc_charset;
-          nc.attr.bit.transparent   = next_attribute.attr.bit.transparent;
-          nc.attr.bit.trans_shadow  = next_attribute.attr.bit.trans_shadow;
-          nc.attr.bit.inherit_bg    = next_attribute.attr.bit.inherit_bg;
-          nc.attr.bit.no_changes    = false;
-          nc.attr.bit.printed       = false;
+          nc.code         = *p;
+          nc.fg_color     = next_attribute.fg_color;
+          nc.bg_color     = next_attribute.bg_color;
+          nc.attr.byte[0] = next_attribute.attr.byte[0];
+          nc.attr.byte[1] = next_attribute.attr.byte[1];
+          nc.attr.byte[2] = 0;
 
           if ( area->cursor_x > 0
               && area->cursor_y > 0
@@ -730,27 +715,12 @@ int FVTerm::print (term_area* area, register int c)
   ax     = area->cursor_x - 1;
   ay     = area->cursor_y - 1;
 
-  nc.code                   = c;
-  nc.fg_color               = next_attribute.fg_color;
-  nc.bg_color               = next_attribute.bg_color;
-  nc.attr.bit.bold          = next_attribute.attr.bit.bold;
-  nc.attr.bit.dim           = next_attribute.attr.bit.dim;
-  nc.attr.bit.italic        = next_attribute.attr.bit.italic;
-  nc.attr.bit.underline     = next_attribute.attr.bit.underline;
-  nc.attr.bit.blink         = next_attribute.attr.bit.blink;
-  nc.attr.bit.reverse       = next_attribute.attr.bit.reverse;
-  nc.attr.bit.standout      = next_attribute.attr.bit.standout;
-  nc.attr.bit.invisible     = next_attribute.attr.bit.invisible;
-  nc.attr.bit.protect       = next_attribute.attr.bit.protect;
-  nc.attr.bit.crossed_out   = next_attribute.attr.bit.crossed_out;
-  nc.attr.bit.dbl_underline = next_attribute.attr.bit.dbl_underline;
-  nc.attr.bit.alt_charset   = next_attribute.attr.bit.alt_charset;
-  nc.attr.bit.pc_charset    = next_attribute.attr.bit.pc_charset;
-  nc.attr.bit.transparent   = next_attribute.attr.bit.transparent;
-  nc.attr.bit.trans_shadow  = next_attribute.attr.bit.trans_shadow;
-  nc.attr.bit.inherit_bg    = next_attribute.attr.bit.inherit_bg;
-  nc.attr.bit.no_changes    = false;
-  nc.attr.bit.printed       = false;
+  nc.code         = c;
+  nc.fg_color     = next_attribute.fg_color;
+  nc.bg_color     = next_attribute.bg_color;
+  nc.attr.byte[0] = next_attribute.attr.byte[0];
+  nc.attr.byte[1] = next_attribute.attr.byte[1];
+  nc.attr.byte[2] = 0;
 
   if ( area->cursor_x > 0
       && area->cursor_y > 0
@@ -1024,27 +994,12 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   area->bottom_shadow = bsh;
   area->has_changes = false;
 
-  default_char.code                   = ' ';
-  default_char.fg_color               = fc::Default;
-  default_char.bg_color               = fc::Default;
-  default_char.attr.bit.bold          = 0;
-  default_char.attr.bit.dim           = 0;
-  default_char.attr.bit.italic        = 0;
-  default_char.attr.bit.underline     = 0;
-  default_char.attr.bit.blink         = 0;
-  default_char.attr.bit.reverse       = 0;
-  default_char.attr.bit.standout      = 0;
-  default_char.attr.bit.invisible     = 0;
-  default_char.attr.bit.protect       = 0;
-  default_char.attr.bit.crossed_out   = 0;
-  default_char.attr.bit.dbl_underline = 0;
-  default_char.attr.bit.alt_charset   = 0;
-  default_char.attr.bit.pc_charset    = 0;
-  default_char.attr.bit.transparent   = 0;
-  default_char.attr.bit.trans_shadow  = 0;
-  default_char.attr.bit.inherit_bg    = 0;
-  default_char.attr.bit.no_changes    = 0;
-  default_char.attr.bit.printed       = 0;
+  default_char.code         = ' ';
+  default_char.fg_color     = fc::Default;
+  default_char.bg_color     = fc::Default;
+  default_char.attr.byte[0] = 0;
+  default_char.attr.byte[1] = 0;
+  default_char.attr.byte[3] = 0;
 
   std::fill_n (area->text, area_size, default_char);
 

@@ -85,7 +85,7 @@ FObject::~FObject()  // destructor
 
   if ( ! children.empty() )
   {
-    FObjectList::const_iterator iter;
+    constFObjectIterator iter;
     iter = children.begin();
 
     while ( iter != children.end() )
@@ -108,7 +108,7 @@ FObject* FObject::getChild (int index) const
   if ( index < 0 || index >= numOfChildren() )
     return 0;
 
-  FObjectList::const_iterator iter;
+  constFObjectIterator iter;
   iter = children_list.begin();
   std::advance (iter, index);
   return *iter;

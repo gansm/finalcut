@@ -242,7 +242,7 @@ inline const char* FStatusBar::getClassName() const
 
 //----------------------------------------------------------------------
 inline FStatusKey* FStatusBar::getStatusKey (int index) const
-{ return key_list[uInt(index-1)]; }
+{ return key_list[uInt(index - 1)]; }
 
 //----------------------------------------------------------------------
 inline uInt FStatusBar::getCount() const
@@ -250,15 +250,15 @@ inline uInt FStatusBar::getCount() const
 
 //----------------------------------------------------------------------
 inline void FStatusBar::activateKey (int index)
-{ key_list[uInt(index-1)]->setActive(); }
+{ key_list[uInt(index - 1)]->setActive(); }
 
 //----------------------------------------------------------------------
 inline void FStatusBar::deactivateKey (int index)
-{ key_list[uInt(index-1)]->unsetActive(); }
+{ key_list[uInt(index - 1)]->unsetActive(); }
 
 //----------------------------------------------------------------------
 inline bool FStatusBar::isActivated(int index) const
-{ return key_list[uInt(index-1)]->isActivated(); }
+{ return key_list[uInt(index - 1)]->isActivated(); }
 
 //----------------------------------------------------------------------
 inline FString FStatusBar::getMessage() const

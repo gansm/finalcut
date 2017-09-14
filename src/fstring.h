@@ -360,7 +360,7 @@ inline wchar_t FString::front() const
 inline wchar_t FString::back() const
 {
   assert( ! isEmpty() );
-  return string[length-1];
+  return string[length - 1];
 }
 
 //----------------------------------------------------------------------

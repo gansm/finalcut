@@ -71,7 +71,7 @@ FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
 FListBox::FListBox (FWidget* parent)
   : FWidget(parent)
   , convertToItem(0)
-  , data()
+  , itemlist()
   , source_container(0)
   , conv_type(FListBox::no_convert)
   , vbar(0)
@@ -135,7 +135,7 @@ void FListBox::setCurrentItem (int index)
 //----------------------------------------------------------------------
 void FListBox::setCurrentItem (listBoxItems::iterator iter)
 {
-  int index = int(std::distance(data.begin(), iter) + 1);
+  int index = int(std::distance(itemlist.begin(), iter) + 1);
   setCurrentItem(index);
 }
 
@@ -274,7 +274,7 @@ void FListBox::insert (FListBoxItem listItem)
   bool has_brackets = bool(listItem.brackets);
   recalculateHorizontalBar (len, has_brackets);
 
-  data.push_back (listItem);
+  itemlist.push_back (listItem);
 
   int element_count = int(getCount());
   recalculateVerticalBar (element_count);
@@ -309,13 +309,13 @@ void FListBox::remove (int item)
   if ( int(getCount()) < item )
     return;
 
-  data.erase (data.begin() + item - 1);
+  itemlist.erase (itemlist.begin() + item - 1);
   element_count = int(getCount());
   max_line_width = 0;
 
-  listBoxItems::iterator iter = data.begin();
+  listBoxItems::iterator iter = itemlist.begin();
 
-  while ( iter != data.end() )
+  while ( iter != itemlist.end() )
   {
     int len = int(iter->getText().getLength());
 
@@ -356,7 +356,7 @@ void FListBox::clear()
   int size;
   char* blank;
 
-  data.clear();
+  itemlist.clear();
 
   current = 0;
   xoffset = 0;
@@ -556,9 +556,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
         {
           inc_search += L' ';
           bool inc_found = false;
-          listBoxItems::iterator iter = data.begin();
+          listBoxItems::iterator iter = itemlist.begin();
 
-          while ( iter != data.end() )
+          while ( iter != itemlist.end() )
           {
             if ( ! inc_found
                 && inc_search.toLower()
@@ -605,9 +605,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
           if ( inc_len > 1 )
           {
-            listBoxItems::iterator iter = data.begin();
+            listBoxItems::iterator iter = itemlist.begin();
 
-            while ( iter != data.end() )
+            while ( iter != itemlist.end() )
             {
               if ( inc_search.toLower()
                    == iter->getText().left(inc_len - 1).toLower() )
@@ -647,9 +647,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
         uInt inc_len = inc_search.getLength();
         bool inc_found = false;
-        listBoxItems::iterator iter = data.begin();
+        listBoxItems::iterator iter = itemlist.begin();
 
-        while ( iter != data.end() )
+        while ( iter != itemlist.end() )
         {
           if ( ! inc_found
               && inc_search.toLower()
@@ -1376,7 +1376,7 @@ void FListBox::drawList()
   bool isFocus;
   listBoxItems::iterator iter;
 
-  if ( data.empty() || getHeight() <= 2 || getWidth() <= 4 )
+  if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
   isFocus = ((flags & fc::focus) != 0);

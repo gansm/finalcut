@@ -233,7 +233,7 @@ class FListBox : public FWidget
                                  , int index );
 
     // Data Members
-    listBoxItems      data;
+    listBoxItems      itemlist;
     FWidget::data_ptr source_container;
     convert_type      conv_type;
     FScrollbar*       vbar;
@@ -267,7 +267,7 @@ inline FListBox::FListBox ( Iterator first
                           , FWidget* parent )
   : FWidget(parent)
   , convertToItem(0)
-  , data()
+  , itemlist()
   , source_container(0)
   , conv_type(FListBox::no_convert)
   , vbar(0)
@@ -305,7 +305,7 @@ inline FListBox::FListBox ( Container container
                           , FWidget* parent )
   : FWidget(parent)
   , convertToItem(0)
-  , data()
+  , itemlist()
   , source_container(0)
   , conv_type(FListBox::no_convert)
   , vbar(0)
@@ -337,7 +337,7 @@ inline const char* FListBox::getClassName() const
 
 //----------------------------------------------------------------------
 inline uInt FListBox::getCount() const
-{ return uInt(data.size()); }
+{ return uInt(itemlist.size()); }
 
 //----------------------------------------------------------------------
 inline FListBoxItem FListBox::getItem (int index)
@@ -451,7 +451,7 @@ void FListBox::insert (Container container, LazyConverter convert)
   size_t size = container->size();
 
   if ( size > 0 )
-    data.resize(size);
+    itemlist.resize(size);
 
   recalculateVerticalBar(int(size));
 }
@@ -459,7 +459,7 @@ void FListBox::insert (Container container, LazyConverter convert)
 //----------------------------------------------------------------------
 inline FListBox::listBoxItems::iterator FListBox::index2iterator (int index)
 {
-  listBoxItems::iterator iter = data.begin();
+  listBoxItems::iterator iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
 }

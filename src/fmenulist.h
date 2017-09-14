@@ -89,7 +89,7 @@ inline uInt FMenuList::getCount() const
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getItem (int index) const
-{ return (index > 0) ? item_list[uInt(index-1)] : 0; }
+{ return (index > 0) ? item_list[uInt(index - 1)] : 0; }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getSelectedItem() const
@@ -97,11 +97,11 @@ inline FMenuItem* FMenuList::getSelectedItem() const
 
 //----------------------------------------------------------------------
 inline void FMenuList::enableItem (int index)
-{ item_list[uInt(index-1)]->setEnable(); }
+{ item_list[uInt(index - 1)]->setEnable(); }
 
 //----------------------------------------------------------------------
 inline void FMenuList::disableItem (int index)
-{ item_list[uInt(index-1)]->unsetEnable(); }
+{ item_list[uInt(index - 1)]->unsetEnable(); }
 
 //----------------------------------------------------------------------
 inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
@@ -109,7 +109,7 @@ inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const
-{ return (index > 0) ? item_list[uInt(index-1)]->isSelected() : false; }
+{ return (index > 0) ? item_list[uInt(index - 1)]->isSelected() : false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::hasSelectedItem() const

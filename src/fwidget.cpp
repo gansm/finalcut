@@ -172,7 +172,7 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList children)
   if ( children.empty() )
     return 0;
 
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
   iter = children.begin();
   end = children.end();
 
@@ -198,7 +198,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList children)
   if ( children.empty() )
     return 0;
 
-  FObjectList::const_iterator iter, begin;
+  constFObjectIterator iter, begin;
   begin = children.begin();
   iter = children.end();
 
@@ -839,7 +839,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
   if ( p && p->hasChildren() )
   {
     FObjectList children;
-    FObjectList::const_iterator iter, end;
+    constFObjectIterator iter, end;
 
     children = p->getChildren();
     iter = children.begin();
@@ -875,7 +875,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 int FWidget::numOfFocusableChildren()
 {
   FObjectList children;
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
 
   if ( ! this->hasChildren() )
     return 0;
@@ -1100,25 +1100,11 @@ void FWidget::redraw()
   {
     // draw windows
     FOptiAttr::char_data default_char;
-    default_char.code                   = ' ';
-    default_char.fg_color               = fc::Black;
-    default_char.bg_color               = fc::Black;
-    default_char.attr.bit.bold          = 0;
-    default_char.attr.bit.dim           = 0;
-    default_char.attr.bit.italic        = 0;
-    default_char.attr.bit.underline     = 0;
-    default_char.attr.bit.blink         = 0;
-    default_char.attr.bit.reverse       = 0;
-    default_char.attr.bit.standout      = 0;
-    default_char.attr.bit.invisible     = 0;
-    default_char.attr.bit.protect       = 0;
-    default_char.attr.bit.crossed_out   = 0;
-    default_char.attr.bit.dbl_underline = 0;
-    default_char.attr.bit.alt_charset   = 0;
-    default_char.attr.bit.pc_charset    = 0;
-    default_char.attr.bit.transparent   = 0;
-    default_char.attr.bit.trans_shadow  = 0;
-    default_char.attr.bit.inherit_bg    = 0;
+    default_char.code         = ' ';
+    default_char.fg_color     = fc::Black;
+    default_char.bg_color     = fc::Black;
+    default_char.attr.byte[0] = 0;
+    default_char.attr.byte[1] = 0;
 
     if ( window_list && ! window_list->empty() )
     {
@@ -1148,7 +1134,7 @@ void FWidget::redraw()
     if ( this->hasChildren() )
     {
       FObjectList children;
-      FObjectList::const_iterator iter, end;
+      constFObjectIterator iter, end;
 
       children = this->getChildren();
       iter = children.begin();
@@ -1246,7 +1232,7 @@ void FWidget::show()
   if ( this->hasChildren() )
   {
     FObjectList children;
-    FObjectList::const_iterator iter, end;
+    constFObjectIterator iter, end;
 
     children = this->getChildren();
     iter = children.begin();
@@ -1303,7 +1289,7 @@ void FWidget::hide()
 bool FWidget::focusFirstChild()
 {
   FObjectList children;
-  FObjectList::const_iterator iter, end;
+  constFObjectIterator iter, end;
 
   if ( ! this->hasChildren() )
     return false;
@@ -1349,7 +1335,7 @@ bool FWidget::focusFirstChild()
 bool FWidget::focusLastChild()
 {
   FObjectList children;
-  FObjectList::const_iterator iter, begin;
+  constFObjectIterator iter, begin;
 
   if ( ! this->hasChildren() )
     return false;
@@ -1840,7 +1826,7 @@ void FWidget::adjustSize()
   if ( this->hasChildren() )
   {
     FObjectList children;
-    FObjectList::const_iterator iter, end;
+    constFObjectIterator iter, end;
 
     children = this->getChildren();
     iter = children.begin();
@@ -1896,7 +1882,7 @@ bool FWidget::focusNextChild()
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObjectList children;
-      FObjectList::iterator iter, end;
+      FObjectIterator iter, end;
 
       children = parent->getChildren();
       iter = children.begin();
@@ -1915,7 +1901,7 @@ bool FWidget::focusNextChild()
         if ( w == this )
         {
           FWidget* next = 0;
-          FObjectList::const_iterator next_element;
+          constFObjectIterator next_element;
           next_element = iter;
 
           do
@@ -1990,7 +1976,7 @@ bool FWidget::focusPrevChild()
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
       FObjectList children;
-      FObjectList::iterator iter, begin;
+      FObjectIterator iter, begin;
 
       children = parent->getChildren();
       iter  = children.end();
@@ -2008,7 +1994,7 @@ bool FWidget::focusPrevChild()
         if ( w == this )
         {
           FWidget* prev = 0;
-          FObjectList::const_iterator prev_element;
+          constFObjectIterator prev_element;
           prev_element = iter;
 
           do
