@@ -17,11 +17,9 @@ const FString*      fc::empty_string    = 0;
 FObject::FObject (FObject* parent)
   : widget_object(false)
   , parent_obj(parent)
-  , children_list()
+  , children_list()              // no children yet
   , has_parent(false)
 {
-  children_list.clear();         // no children yet
-
   if ( parent_obj )              // add object to parent
     parent_obj->addChild(this);
 

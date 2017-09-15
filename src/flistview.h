@@ -17,11 +17,11 @@
 //       ▕▁▁▁▁▁▁▁▁▏
 //            ▲
 //            │
-//       ▕▔▔▔▔▔▔▔▔▔▏
-//       ▕ FWidget ▏
-//       ▕▁▁▁▁▁▁▁▁▁▏
-//            ▲
-//            │
+//       ▕▔▔▔▔▔▔▔▔▔▏           ▕▔▔▔▔▔▔▔▔▔▏
+//       ▕ FWidget ▏           ▕ FObject ▏
+//       ▕▁▁▁▁▁▁▁▁▁▏           ▕▁▁▁▁▁▁▁▁▁▏
+//            ▲                     ▲
+//            │                     │
 //      ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
 //      ▕ FListView ▏- - - -▕ FListViewItem ▏
 //      ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
@@ -66,27 +66,30 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    const char*  getClassName() const;
-    uInt         getColumnCount() const;
-    FString      getText (int) const;
+    const char*      getClassName() const;
+    uInt             getColumnCount() const;
+    FString          getText (int) const;
 
     // Mutator
-    void         setText (int, const FString&);
+    void             setText (int, const FString&);
 
     // Inquiry
-    bool         isExpand();
+    bool             isExpand();
 
     // Methods
-    void         insert (FListViewItem*);
-    void         expand();
-    void         collapse();
+    FObjectIterator  insert (FListViewItem*);
+    FObjectIterator  insert (FListViewItem*, FObjectIterator);
+    void             expand();
+    void             collapse();
 
   private:
     // Inquiry
-    bool         isExpandable();
+    bool             isExpandable();
 
     // Methods
-    int          getVisibleLines();
+    FObjectIterator  appendItem (FListViewItem*);
+    void             replaceControlCodes();
+    int              getVisibleLines();
 
     // Data Member
     std::vector<FString> column_list;
@@ -140,6 +143,7 @@ class FListView : public FWidget
 
     // Accessors
     const char*        getClassName() const;
+    uInt               getCount() const;
     fc::text_alignment getColumnAlignment (int) const;
     FString            getColumnText (int) const;
     FListViewItem*     getCurrentItem();
@@ -225,11 +229,14 @@ class FListView : public FWidget
     void               draw();
     void               drawColumnLabels();
     void               drawList();
+    void               drawListLine (const FListViewItem*, bool, bool);
     void               recalculateHorizontalBar (int);
     void               recalculateVerticalBar (int);
+    FObjectIterator    appendItem (FListViewItem*);
     void               processClick();
     void               processChanged();
     FObjectIterator    index2iterator (int);
+    void               nextElement (FObjectIterator&);
 
     // Callback methods
     void               cb_VBarChange (FWidget*, data_ptr);
@@ -264,6 +271,10 @@ class FListView : public FWidget
 //----------------------------------------------------------------------
 inline const char* FListView::getClassName() const
 { return "FListView"; }
+
+//----------------------------------------------------------------------
+inline uInt FListView::getCount() const
+{ return uInt(itemlist.size()); }
 
 //----------------------------------------------------------------------
 inline FListViewItem* FListView::getCurrentItem()
@@ -317,6 +328,12 @@ inline FObject::FObjectIterator FListView::index2iterator (int index)
   FObjectIterator iter = itemlist.begin();
   std::advance (iter, index);
   return iter;
+}
+
+//----------------------------------------------------------------------
+inline void FListView::nextElement (FObjectIterator& iter)
+{
+  ++iter;
 }
 
 #endif  // FLISTVIEW_H

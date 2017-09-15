@@ -999,7 +999,7 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   default_char.bg_color     = fc::Default;
   default_char.attr.byte[0] = 0;
   default_char.attr.byte[1] = 0;
-  default_char.attr.byte[3] = 0;
+  default_char.attr.byte[2] = 0;
 
   std::fill_n (area->text, area_size, default_char);
 
