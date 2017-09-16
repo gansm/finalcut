@@ -185,7 +185,7 @@ void FTextView::insert (const FString& str, int pos)
   stringLines::iterator iter;
   stringLines text_split;
   FString s;
-  uLong end;
+  uLong num;
 
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
@@ -197,9 +197,9 @@ void FTextView::insert (const FString& str, int pos)
 
   iter = data.begin();
   text_split = s.split("\r\n");
-  end = text_split.size();
+  num = text_split.size();
 
-  for (uInt i = 0; i < end; i++)
+  for (uInt i = 0; i < num; i++)
   {
     uInt len;
     text_split[i] = text_split[i].removeBackspaces()
@@ -239,24 +239,24 @@ void FTextView::insert (const FString& str, int pos)
 }
 
 //----------------------------------------------------------------------
-void FTextView::replaceRange (const FString& str, int start, int end)
+void FTextView::replaceRange (const FString& str, int from, int to)
 {
   stringLines::iterator iter;
 
-  if ( start > end )
+  if ( from > to )
     return;
 
-  if ( start < 0 || start >= int(getRows()) )
+  if ( from < 0 || from >= int(getRows()) )
     return;
 
-  if ( end < 0 || end >= int(getRows()) )
+  if ( to < 0 || to >= int(getRows()) )
     return;
 
   iter = data.begin();
-  data.erase (iter + start, iter + end + 1);
+  data.erase (iter + from, iter + to + 1);
 
   if ( ! str.isNull() )
-    insert(str, start);
+    insert(str, from);
 }
 
 //----------------------------------------------------------------------
@@ -740,23 +740,22 @@ void FTextView::draw()
 //----------------------------------------------------------------------
 void FTextView::drawText()
 {
-  uInt start, end;
+  uInt num;
 
   if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
     return;
 
-  start = 0;
-  end = uInt(getHeight() + nf_offset - 2);
+  num = uInt(getHeight() + nf_offset - 2);
 
-  if ( end > getRows() )
-    end = getRows();
+  if ( num > getRows() )
+    num = getRows();
 
   setColor();
 
   if ( isMonochron() )
     setReverse(true);
 
-  for (uInt y = start; y < end; y++)
+  for (uInt y = 0; y < num; y++)
   {
     uInt i, len;
     FString line;

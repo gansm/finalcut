@@ -118,7 +118,7 @@ void FListViewItem::setText (int column, const FString& text)
 FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
-  if ( ! child || ! hasChildren() )
+  if ( ! child )
     return FObjectIterator(0);
 
   return appendItem(child);
@@ -174,8 +174,7 @@ FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
 {
   expandable = true;
   addChild (child);
-  FObjectList children = getChildren();
-  return --children.end();
+  return --FObject::end();
 }
 
 //----------------------------------------------------------------------
@@ -203,10 +202,9 @@ int FListViewItem::getVisibleLines()
     return visible_lines;
   }
 
-  FObjectList children = this->getChildren();
-  constFObjectIterator iter = children.begin();
+  constFObjectIterator iter = FObject::begin();
 
-  while ( iter != children.end() )
+  while ( iter != FObject::end() )
   {
     FListViewItem* child = static_cast<FListViewItem*>(*iter);
     visible_lines += child->getVisibleLines();

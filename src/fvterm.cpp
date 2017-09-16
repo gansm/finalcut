@@ -277,7 +277,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
   if ( ! print_area || print_area->preprocessing_call.empty() )
     return;
 
-  FPreprocessing::iterator iter, end;
+  FPreprocessing::iterator iter;
   iter = print_area->preprocessing_call.begin();
 
   while ( iter != print_area->preprocessing_call.end() )
@@ -820,7 +820,7 @@ bool FVTerm::isChildPrintArea() const
 
   if ( p_obj
       && p_obj->child_print_area
-      && p_obj->child_print_area == this->print_area )
+      && p_obj->child_print_area == print_area )
     return true;
   else
     return false;

@@ -79,14 +79,14 @@ FObject::~FObject()  // destructor
   }
 
   // delete children objects
-  FObjectList children = this->getChildren();
-
-  if ( ! children.empty() )
+  if ( hasChildren() )
   {
-    constFObjectIterator iter;
-    iter = children.begin();
+    constFObjectIterator iter, last;
+    FObjectList delete_list = children_list;
+    iter = delete_list.begin();
+    last = delete_list.end();
 
-    while ( iter != children.end() )
+    while ( iter != last )
     {
       delete (*iter);
       ++iter;
@@ -100,14 +100,14 @@ FObject* FObject::getChild (int index) const
 {
   index--;
 
-  if ( children_list.empty() )
+  if ( ! hasChildren() )
     return 0;
 
   if ( index < 0 || index >= numOfChildren() )
     return 0;
 
   constFObjectIterator iter;
-  iter = children_list.begin();
+  iter = begin();
   std::advance (iter, index);
   return *iter;
 }
@@ -146,7 +146,7 @@ void FObject::delChild (FObject* obj)
   if ( ! obj )
     return;
 
-  if ( ! children_list.empty() )
+  if ( hasChildren() )
   {
     obj->removeParent();
     children_list.remove(obj);
@@ -183,7 +183,7 @@ void FObject::getCurrentTime (timeval* time)
 //----------------------------------------------------------------------
 int FObject::addTimer (int interval)
 {
-  FObject::TimerList::iterator iter, end;
+  FObject::TimerList::iterator iter, last;
   timeval time_interval;
   timeval currentTime;
   int id = 1;
@@ -207,9 +207,9 @@ int FObject::addTimer (int interval)
   if ( ! timer_list->empty() )
   {
     iter = timer_list->begin();
-    end  = timer_list->end();
+    last = timer_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter).id == id )
       {
@@ -233,9 +233,9 @@ int FObject::addTimer (int interval)
 
   // insert in list sorted by timeout
   iter = timer_list->begin();
-  end  = timer_list->end();
+  last = timer_list->end();
 
-  while ( iter != end && (*iter).timeout < t.timeout )
+  while ( iter != last && (*iter).timeout < t.timeout )
     ++iter;
 
   timer_list->insert (iter, t);
@@ -247,19 +247,19 @@ int FObject::addTimer (int interval)
 //----------------------------------------------------------------------
 bool FObject::delTimer (int id)
 {
-  FObject::TimerList::iterator iter, end;
+  FObject::TimerList::iterator iter, last;
 
   if ( id <= 0 || id > int(timer_list->size()) )
     return false;
 
   timer_modify_lock = true;
   iter = timer_list->begin();
-  end  = timer_list->end();
+  last = timer_list->end();
 
-  while ( iter != end && (*iter).id != id )
+  while ( iter != last && (*iter).id != id )
     ++iter;
 
-  if ( iter != end )
+  if ( iter != last )
   {
     timer_list->erase(iter);
     timer_modify_lock = false;

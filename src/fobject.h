@@ -45,32 +45,36 @@ class FObject
     virtual ~FObject();
 
     // Accessors
-    virtual const char* getClassName() const;
-    FObject*            getParent() const;
-    FObject*            getChild (int) const;
-    const FObjectList&  getChildren() const;
-    int                 numOfChildren() const;
+    virtual const char*     getClassName() const;
+    FObject*                getParent() const;
+    FObject*                getChild (int) const;
+    const FObjectList&      getChildren() const;
+    int                     numOfChildren() const;
+    FObjectIterator         begin();
+    FObjectIterator         end();
+    constFObjectIterator    begin() const;
+    constFObjectIterator    end() const;
 
     // Inquiries
-    bool                hasParent() const;
-    bool                hasChildren() const;
-    bool                isChild (FObject*) const;
-    bool                isDirectChild (FObject*) const;
-    bool                isWidget() const;
-    bool                isInstanceOf (const char*) const;
-    bool                isTimerInUpdating() const;
+    bool                    hasParent() const;
+    bool                    hasChildren() const;
+    bool                    isChild (FObject*) const;
+    bool                    isDirectChild (FObject*) const;
+    bool                    isWidget() const;
+    bool                    isInstanceOf (const char*) const;
+    bool                    isTimerInUpdating() const;
 
     // Methods
-    void                removeParent();
-    void                addChild (FObject*);
-    void                delChild (FObject*);
+    void                    removeParent();
+    void                    addChild (FObject*);
+    void                    delChild (FObject*);
 
     // Timer methods
-    static void         getCurrentTime (timeval*);
-    int                 addTimer (int);
-    bool                delTimer (int);
-    bool                delOwnTimer();
-    bool                delAllTimer();
+    static void             getCurrentTime (timeval*);
+    int                     addTimer (int);
+    bool                    delTimer (int);
+    bool                    delOwnTimer();
+    bool                    delAllTimer();
 
   protected:
     struct timer_data
@@ -123,6 +127,22 @@ inline const FObject::FObjectList& FObject::getChildren() const
 //----------------------------------------------------------------------
 inline int FObject::numOfChildren() const
 { return int(children_list.size()); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator FObject::begin()
+{ return children_list.begin(); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator FObject::end()
+{ return children_list.end(); }
+
+//----------------------------------------------------------------------
+inline FObject::constFObjectIterator FObject::begin() const
+{ return children_list.begin(); }
+
+//----------------------------------------------------------------------
+inline FObject::constFObjectIterator FObject::end() const
+{ return children_list.end(); }
 
 //----------------------------------------------------------------------
 inline bool FObject::hasParent() const

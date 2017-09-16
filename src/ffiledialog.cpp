@@ -346,11 +346,11 @@ int FFileDialog::readDir()
 
   if ( ! dir_entries.empty() )
   {
-    std::vector<dir_entry>::const_iterator iter, end;
+    std::vector<dir_entry>::const_iterator iter, last;
     iter = dir_entries.begin();
-    end = dir_entries.end();
+    last = dir_entries.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter).type == DT_DIR )
         filebrowser->insert(FString((*iter).name), fc::SquareBrackets);
@@ -612,16 +612,16 @@ inline bool FFileDialog::pattern_match ( const char* const pattern
 //----------------------------------------------------------------------
 void FFileDialog::clear()
 {
-  std::vector<dir_entry>::const_iterator iter, end;
+  std::vector<dir_entry>::const_iterator iter, last;
 
   if ( dir_entries.empty() )
     return;
 
   // delete all directory entries;
   iter = dir_entries.begin();
-  end = dir_entries.end();
+  last = dir_entries.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     std::free ((*iter).name);
     ++iter;
@@ -637,11 +637,11 @@ int FFileDialog::numOfDirs()
     return 0;
 
   int n = 0;
-  std::vector<dir_entry>::const_iterator iter, end;
+  std::vector<dir_entry>::const_iterator iter, last;
   iter = dir_entries.begin();
-  end = dir_entries.end();
+  last = dir_entries.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter).type == DT_DIR && std::strcmp((*iter).name, ".") != 0 )
       n++;
@@ -685,13 +685,13 @@ int FFileDialog::changeDir (const FString& dirname)
         else if ( ! dir_entries.empty() )
         {
           int i = 1;
-          std::vector<dir_entry>::const_iterator iter, end;
+          std::vector<dir_entry>::const_iterator iter, last;
           const char* const baseName = \
             basename(const_cast<char*>(lastdir.c_str()));
           iter = dir_entries.begin();
-          end = dir_entries.end();
+          last = dir_entries.end();
 
-          while ( iter != end )
+          while ( iter != last )
           {
             if ( std::strcmp((*iter).name, baseName) == 0 )
             {
@@ -777,12 +777,12 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
     if ( ! dir_entries.empty() )
     {
-      std::vector<dir_entry>::const_iterator iter, end;
+      std::vector<dir_entry>::const_iterator iter, last;
       const FString& input = filename->getText().trim();
       iter = dir_entries.begin();
-      end = dir_entries.end();
+      last = dir_entries.end();
 
-      while ( iter != end )
+      while ( iter != last )
       {
         if ( (*iter).name && input && ! input.isNull()
             && std::strcmp((*iter).name, input) == 0

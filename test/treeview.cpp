@@ -80,9 +80,11 @@ Treeview::Treeview (FWidget* parent)
     listView->insert (line);
   }
 
+
+  FObjectIterator iter_africa = listView->beginOfList();
   std::string egypt[3] = { "Egypt", "94,666,000", "87" };
   std::vector<FString> egypt_line (&egypt[0], &egypt[0] + 3);
-  FObjectIterator iter_africa = listView->insert (egypt_line);
+  //FObjectIterator iter_africa = listView->insert (egypt_line);
   listView->insert (egypt_line, iter_africa);
 
 

@@ -174,6 +174,8 @@ class FListView : public FWidget
     FObjectIterator    insert ( const std::vector<long>&
                               , data_ptr
                               , FObjectIterator );
+    FObjectIterator    beginOfList();
+    FObjectIterator    endOfList();
 
     // Event handlers
     void               onKeyPress (FKeyEvent*);
@@ -323,6 +325,14 @@ inline FObject::FObjectIterator
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
+inline FObject::FObjectIterator FListView::beginOfList()
+{ return itemlist.begin(); }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectIterator FListView::endOfList()
+{ return itemlist.end(); }
+
+//----------------------------------------------------------------------
 inline FObject::FObjectIterator FListView::index2iterator (int index)
 {
   FObjectIterator iter = itemlist.begin();
@@ -333,7 +343,15 @@ inline FObject::FObjectIterator FListView::index2iterator (int index)
 //----------------------------------------------------------------------
 inline void FListView::nextElement (FObjectIterator& iter)
 {
-  ++iter;
+  FListViewItem* item = static_cast<FListViewItem*>(*iter);
+
+  if ( item->isExpandable() )
+  {
+    //iter = item->begin();
+    ++iter;
+  }
+  else
+    ++iter;
 }
 
 #endif  // FLISTVIEW_H

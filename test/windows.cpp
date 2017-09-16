@@ -356,7 +356,7 @@ void Window::activateWindow (FDialog* win)
 void Window::adjustSize()
 {
   int w, h, X, Y, dx, dy;
-  std::vector<win_data*>::const_iterator iter, begin;
+  std::vector<win_data*>::const_iterator iter, first;
   w  = getRootWidget()->getWidth();
   h  = getRootWidget()->getHeight();
   X  = int(1 + (w - 40) / 2);
@@ -368,14 +368,14 @@ void Window::adjustSize()
     Y = 2;
 
   setPos (X, Y);
-  iter = begin = windows.begin();
+  iter = first = windows.begin();
 
   while ( iter != windows.end() )
   {
     if ( (*iter)->is_open )
     {
       int x, y, n;
-      n = int(std::distance(begin, iter));
+      n = int(std::distance(first, iter));
       x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (x, y);
@@ -408,8 +408,8 @@ void Window::onClose (FCloseEvent* ev)
 void Window::cb_createWindows (FWidget*, data_ptr)
 {
   int w, h, dx, dy;
-  std::vector<win_data*>::const_iterator iter, begin;
-  iter = begin = windows.begin();
+  std::vector<win_data*>::const_iterator iter, first;
+  iter = first = windows.begin();
   w = getRootWidget()->getWidth();
   h = getRootWidget()->getHeight();
   dx = (w > 80) ? (w - 80) / 2 : 0;
@@ -425,7 +425,7 @@ void Window::cb_createWindows (FWidget*, data_ptr)
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);
-      n = int(std::distance(begin, iter));
+      n = int(std::distance(first, iter));
       x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
       y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (x, y, 20, 8);
@@ -453,9 +453,9 @@ void Window::cb_closeWindows (FWidget*, data_ptr)
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  widgetList::const_iterator iter, begin;
+  widgetList::const_iterator iter, first;
   iter = dialog_list->end();
-  begin = dialog_list->begin();
+  first = dialog_list->begin();
   activateWindow(this);
 
   do
@@ -465,7 +465,7 @@ void Window::cb_closeWindows (FWidget*, data_ptr)
     if ( (*iter) != this )
       (*iter)->close();
   }
-  while ( iter != begin );
+  while ( iter != first );
 }
 
 //----------------------------------------------------------------------

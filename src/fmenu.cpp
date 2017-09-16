@@ -293,17 +293,17 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 
   if ( ! item_list.empty() )
   {
-    std::vector<FMenuItem*>::const_iterator iter, end;
+    std::vector<FMenuItem*>::const_iterator iter, last;
     FMenu* show_sub_menu = 0;
     bool focus_changed = false;
     FPoint mouse_pos;
 
     iter = item_list.begin();
-    end = item_list.end();
+    last = item_list.end();
     mouse_pos = ev->getPos();
     mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
-    while ( iter != end )
+    while ( iter != last )
     {
       int x1, x2, y, mouse_x, mouse_y;
       x1 = (*iter)->getX();
@@ -401,14 +401,14 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 
     if ( ! item_list.empty() )
     {
-      std::vector<FMenuItem*>::const_iterator iter, end;
+      std::vector<FMenuItem*>::const_iterator iter, last;
       FPoint mouse_pos;
       iter = item_list.begin();
-      end = item_list.end();
+      last = item_list.end();
       mouse_pos = ev->getPos();
       mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
-      while ( iter != end )
+      while ( iter != last )
       {
         int x1, x2, y;
         x1 = (*iter)->getX();
@@ -480,7 +480,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
   if ( mouse_down && ! item_list.empty() )
   {
-    std::vector<FMenuItem*>::const_iterator iter, end;
+    std::vector<FMenuItem*>::const_iterator iter, last;
     FMenu* smenu = 0;
     bool focus_changed = false;
     bool mouse_over_menu = false;
@@ -492,7 +492,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     FPoint mouse_pos;
 
     iter = item_list.begin();
-    end = item_list.end();
+    last = item_list.end();
     mouse_pos = ev->getPos();
     mouse_pos -= FPoint(getRightPadding(), getTopPadding());
 
@@ -521,7 +521,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       mouse_over_menubar = true;
     }
 
-    while ( iter != end )
+    while ( iter != last )
     {
       int x1, x2, y, mouse_x, mouse_y;
       x1 = (*iter)->getX();
@@ -710,7 +710,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
 {
   FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter, last;
 
   if ( ! has_checkable_items )
     return;
@@ -722,9 +722,9 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
     return;
 
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter) != menuitem
         && (*iter)->isChecked()
@@ -819,13 +819,13 @@ void FMenu::init(FWidget* parent)
 void FMenu::calculateDimensions()
 {
   int item_X, item_Y, adjust_X;
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
   max_item_width = 10;  // minimum width
 
   // find the maximum item width
-  while ( iter != end )
+  while ( iter != last )
   {
     uInt item_width = (*iter)->getTextLength() + 2;
     int  accel_key  = (*iter)->accel_key;
@@ -860,7 +860,7 @@ void FMenu::calculateDimensions()
   item_X = 1;
   item_Y = 1;
 
-  while ( iter != end )
+  while ( iter != last )
   {
     (*iter)->setGeometry (item_X, item_Y, int(max_item_width), 1);
 
@@ -880,11 +880,11 @@ void FMenu::calculateDimensions()
 //----------------------------------------------------------------------
 void FMenu::adjustItems()
 {
-  std::vector<FMenuItem*>::const_iterator end, iter;
+  std::vector<FMenuItem*>::const_iterator last, iter;
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->hasMenu() )
     {
@@ -1034,11 +1034,11 @@ FMenu* FMenu::superMenuAt (int x, int y)
 //----------------------------------------------------------------------
 bool FMenu::selectNextItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->isSelected() )
     {
@@ -1084,9 +1084,9 @@ bool FMenu::selectNextItem()
 //----------------------------------------------------------------------
 bool FMenu::selectPrevItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter, begin;
+  std::vector<FMenuItem*>::const_iterator iter, first;
   iter = item_list.end();
-  begin = item_list.begin();
+  first = item_list.begin();
 
   do
   {
@@ -1127,7 +1127,7 @@ bool FMenu::selectPrevItem()
       break;
     }
   }
-  while ( iter != begin );
+  while ( iter != first );
 
   return true;
 }
@@ -1144,11 +1144,11 @@ void FMenu::keypressMenuBar (FKeyEvent*& ev)
 //----------------------------------------------------------------------
 bool FMenu::hotkeyMenu (FKeyEvent*& ev)
 {
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->hasHotkey() )
     {
@@ -1242,16 +1242,16 @@ void FMenu::draw()
 //----------------------------------------------------------------------
 void FMenu::drawItems()
 {
-  std::vector<FMenuItem*>::const_iterator iter, end;
+  std::vector<FMenuItem*>::const_iterator iter, last;
   int c = 0;
   int y = 0;
   iter = item_list.begin();
-  end = item_list.end();
+  last = item_list.end();
 
   if ( has_checkable_items )
     c = 1;
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->isSeparator() )
     {

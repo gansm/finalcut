@@ -1372,7 +1372,7 @@ void FListBox::drawLabel()
 void FListBox::drawList()
 {
   FString element;
-  uInt start, end, inc_len;
+  uInt start, num, inc_len;
   bool isFocus;
   listBoxItems::iterator iter;
 
@@ -1381,11 +1381,11 @@ void FListBox::drawList()
 
   isFocus = ((flags & fc::focus) != 0);
   start   = 0;
-  end     = uInt(getHeight() - 2);
+  num     = uInt(getHeight() - 2);
   inc_len = inc_search.getLength();
 
-  if ( end > getCount() )
-    end = getCount();
+  if ( num > getCount() )
+    num = getCount();
 
   if ( last_yoffset >= 0
       && last_yoffset == yoffset
@@ -1395,12 +1395,12 @@ void FListBox::drawList()
     uInt last_pos = uInt(current - yoffset) - 1;
     uInt current_pos = uInt(last_current - yoffset) - 1;
     start = std::min(last_pos, current_pos);
-    end = std::max(last_pos, current_pos) + 1;
+    num = std::max(last_pos, current_pos) + 1;
   }
 
   iter = index2iterator(int(start) + yoffset);
 
-  for (uInt y = start; y < end; y++)
+  for (uInt y = start; y < num; y++)
   {
     bool serach_mark = false;
     bool lineHasBrackets = hasBrackets(iter);

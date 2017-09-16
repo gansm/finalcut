@@ -154,11 +154,11 @@ bool FStatusBar::hasActivatedKey()
 {
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, end;
+    std::vector<FStatusKey*>::const_iterator iter, last;
     iter = key_list.begin();
-    end = key_list.end();
+    last = key_list.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter)->isActivated() )
         return true;
@@ -348,11 +348,11 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
     if ( ! key_list.empty() )
     {
-      std::vector<FStatusKey*>::const_iterator iter, end;
+      std::vector<FStatusKey*>::const_iterator iter, last;
       iter = key_list.begin();
-      end = key_list.end();
+      last = key_list.end();
 
-      while ( iter != end )
+      while ( iter != last )
       {
         (*iter)->unsetMouseFocus();
         ++iter;
@@ -370,12 +370,12 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, end;
+    std::vector<FStatusKey*>::const_iterator iter, last;
     int X = 1;
     iter = key_list.begin();
-    end = key_list.end();
+    last = key_list.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
 
@@ -416,12 +416,12 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
     if ( ! key_list.empty() )
     {
-      std::vector<FStatusKey*>::const_iterator iter, end;
+      std::vector<FStatusKey*>::const_iterator iter, last;
       int X = 1;
       iter = key_list.begin();
-      end = key_list.end();
+      last = key_list.end();
 
-      while ( iter != end )
+      while ( iter != last )
       {
         int x1, x2, kname_len, txt_length;
         x1 = X;
@@ -462,13 +462,13 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 
   if ( mouse_down && ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, end;
+    std::vector<FStatusKey*>::const_iterator iter, last;
     bool focus_changed = false;
     int X = 1;
     iter = key_list.begin();
-    end = key_list.end();
+    last = key_list.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
       x1 = X;
@@ -511,13 +511,13 @@ void FStatusBar::cb_statuskey_activated (FWidget* widget, data_ptr)
 {
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, end;
+    std::vector<FStatusKey*>::const_iterator iter, last;
     FStatusKey* statuskey = static_cast<FStatusKey*>(widget);
 
     iter = key_list.begin();
-    end = key_list.end();
+    last = key_list.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter) != statuskey && (*iter)->isActivated() )
         (*iter)->unsetActive();
@@ -562,7 +562,7 @@ void FStatusBar::draw()
 //----------------------------------------------------------------------
 void FStatusBar::drawKeys()
 {
-  std::vector<FStatusKey*>::const_iterator iter, end;
+  std::vector<FStatusKey*>::const_iterator iter, last;
   int screenWidth;
 
   screenWidth = getColumnNumber();
@@ -580,9 +580,9 @@ void FStatusBar::drawKeys()
     setReverse(true);
 
   iter = key_list.begin();
-  end = key_list.end();
+  last = key_list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     int kname_len = int(getKeyName((*iter)->getKey()).getLength());
 

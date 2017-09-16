@@ -1044,11 +1044,11 @@ bool FApplication::processAccelerator (const FWidget*& widget)
       && widget->accelerator_list
       && ! widget->accelerator_list->empty() )
   {
-    FWidget::Accelerators::const_iterator iter, end;
+    FWidget::Accelerators::const_iterator iter, last;
     iter = widget->accelerator_list->begin();
-    end = widget->accelerator_list->end();
+    last = widget->accelerator_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( quit_now || app_exit_loop )
         break;
@@ -1918,7 +1918,7 @@ void FApplication::processResizeEvent()
 //----------------------------------------------------------------------
 int FApplication::processTimerEvent()
 {
-  FObject::TimerList::iterator iter, end;
+  FObject::TimerList::iterator iter, last;
   timeval currentTime;
   int activated = 0;
 
@@ -1934,9 +1934,9 @@ int FApplication::processTimerEvent()
     return 0;
 
   iter = timer_list->begin();
-  end  = timer_list->end();
+  last  = timer_list->end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( ! (*iter).id
         || ! (*iter).object

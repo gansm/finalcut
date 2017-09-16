@@ -728,7 +728,7 @@ void FMenuItem::init (FWidget* parent)
                                       , this );
       }
 
-      this->addCallback
+      addCallback  // for this element
       (
         "deactivate",
         F_METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
@@ -789,8 +789,8 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
   if ( dialog_list && ! dialog_list->empty() )
   {
-    widgetList::const_iterator iter, begin;
-    iter = begin = dialog_list->begin();
+    widgetList::const_iterator iter, first;
+    iter = first = dialog_list->begin();
 
     while ( iter != dialog_list->end() && *iter )
     {
@@ -799,7 +799,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       if ( win )
       {
         FMenuItem* win_item;
-        int n = int(std::distance(begin, iter));
+        int n = int(std::distance(first, iter));
         // get the dialog title
         const FString& name = win->getText();
 

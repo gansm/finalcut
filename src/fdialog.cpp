@@ -249,11 +249,11 @@ void FDialog::setPos (int x, int y, bool)
   if ( window_list && ! window_list->empty() )
   {
     bool overlaid = false;
-    widgetList::const_iterator iter, end;
+    widgetList::const_iterator iter, last;
     iter = window_list->begin();
-    end  = window_list->end();
+    last = window_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( overlaid )
         putArea ((*iter)->getTermPos(), (*iter)->getVWin());
@@ -335,11 +335,11 @@ void FDialog::setSize (int w, int h, bool adjust)
   if ( window_list && ! window_list->empty() )
   {
     bool overlaid = false;
-    widgetList::const_iterator iter, end;
+    widgetList::const_iterator iter, last;
     iter = window_list->begin();
-    end  = window_list->end();
+    last = window_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( overlaid )
         putArea ((*iter)->getTermPos(), (*iter)->getVWin());
@@ -949,11 +949,11 @@ void FDialog::onWindowRaised (FEvent*)
   // handle always-on-top windows
   if ( always_on_top_list && ! always_on_top_list->empty() )
   {
-    widgetList::const_iterator iter, end;
+    widgetList::const_iterator iter, last;
     iter = always_on_top_list->begin();
-    end  = always_on_top_list->end();
+    last  = always_on_top_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       putArea ((*iter)->getTermPos(), (*iter)->getVWin());
       ++iter;
@@ -964,7 +964,7 @@ void FDialog::onWindowRaised (FEvent*)
 //----------------------------------------------------------------------
 void FDialog::onWindowLowered (FEvent*)
 {
-  widgetList::const_iterator iter, end;
+  widgetList::const_iterator iter, last;
 
   if ( ! window_list )
     return;
@@ -973,9 +973,9 @@ void FDialog::onWindowLowered (FEvent*)
     return;
 
   iter = window_list->begin();
-  end  = window_list->end();
+  last  = window_list->end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     putArea ((*iter)->getTermPos(), (*iter)->getVWin());
     ++iter;

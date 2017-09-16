@@ -45,7 +45,7 @@ void FRadioMenuItem::init (FWidget* parent)
     if ( menu_ptr )
       menu_ptr->has_checkable_items = true;
 
-    this->addCallback
+    addCallback  // for this element
     (
       "toggled",
       F_METHOD_CALLBACK (parent, &FMenu::cb_menuitem_toggled)

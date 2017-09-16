@@ -121,7 +121,7 @@ FWidget::~FWidget()  // destructor
 
   // finish the program
   if ( rootObject == this )
-    this->finish();
+    finish();
 }
 
 
@@ -167,16 +167,16 @@ FWidget* FWidget::getFocusWidget() const
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getFirstFocusableWidget (FObjectList children)
+FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
-  if ( children.empty() )
+  if ( list.empty() )
     return 0;
 
-  constFObjectIterator iter, end;
-  iter = children.begin();
-  end = children.end();
+  constFObjectIterator iter, last;
+  iter = list.begin();
+  last = list.end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->isWidget() )
     {
@@ -193,14 +193,14 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList children)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getLastFocusableWidget (FObjectList children)
+FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 {
-  if ( children.empty() )
+  if ( list.empty() )
     return 0;
 
-  constFObjectIterator iter, begin;
-  begin = children.begin();
-  iter = children.end();
+  constFObjectIterator iter, first;
+  first = list.begin();
+  iter = list.end();
 
   do
   {
@@ -214,7 +214,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList children)
     if ( child->isEnabled() && child->acceptFocus() )
       return child;
   }
-  while ( iter != begin );
+  while ( iter != first );
 
   return 0;
 }
@@ -838,14 +838,11 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 {
   if ( p && p->hasChildren() )
   {
-    FObjectList children;
-    constFObjectIterator iter, end;
+    constFObjectIterator iter, last;
+    iter = p->begin();
+    last = p->end();
 
-    children = p->getChildren();
-    iter = children.begin();
-    end  = children.end();
-
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( ! (*iter)->isWidget() )
       {
@@ -874,18 +871,16 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 //----------------------------------------------------------------------
 int FWidget::numOfFocusableChildren()
 {
-  FObjectList children;
-  constFObjectIterator iter, end;
+  constFObjectIterator iter, last;
 
-  if ( ! this->hasChildren() )
+  if ( ! hasChildren() )
     return 0;
 
   int num = 0;
-  children = this->getChildren();
-  iter = children.begin();
-  end  = children.end();
+  iter = FObject::begin();
+  last = FObject::end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( (*iter)->isWidget() )
     {
@@ -1022,11 +1017,11 @@ void FWidget::emitCallback (const FString& emit_signal)
   // function pointer
   if ( ! callback_objects.empty() )
   {
-    CallbackObjects::const_iterator iter, end;
+    CallbackObjects::const_iterator iter, last;
     iter = callback_objects.begin();
-    end = callback_objects.end();
+    last = callback_objects.end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( iter->cb_signal == emit_signal )
       {
@@ -1108,11 +1103,11 @@ void FWidget::redraw()
 
     if ( window_list && ! window_list->empty() )
     {
-      widgetList::const_iterator iter, end;
+      widgetList::const_iterator iter, last;
       iter = window_list->begin();
-      end  = window_list->end();
+      last  = window_list->end();
 
-      while ( iter != end )
+      while ( iter != last )
       {
         if ( (*iter)->isVisible() )
         {
@@ -1131,16 +1126,13 @@ void FWidget::redraw()
   else
   {
     // draw child elements
-    if ( this->hasChildren() )
+    if ( hasChildren() )
     {
-      FObjectList children;
-      constFObjectIterator iter, end;
+      constFObjectIterator iter, last;
+      iter = FObject::begin();
+      last = FObject::end();
 
-      children = this->getChildren();
-      iter = children.begin();
-      end  = children.end();
-
-      while ( iter != end )
+      while ( iter != last )
       {
         if ( (*iter)->isWidget() )
         {
@@ -1229,16 +1221,13 @@ void FWidget::show()
   draw();
   shown = true;
 
-  if ( this->hasChildren() )
+  if ( hasChildren() )
   {
-    FObjectList children;
-    constFObjectIterator iter, end;
+    constFObjectIterator iter, last;
+    iter = FObject::begin();
+    last = FObject::end();
 
-    children = this->getChildren();
-    iter = children.begin();
-    end  = children.end();
-
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter)->isWidget() )
       {
@@ -1288,17 +1277,15 @@ void FWidget::hide()
 //----------------------------------------------------------------------
 bool FWidget::focusFirstChild()
 {
-  FObjectList children;
-  constFObjectIterator iter, end;
+  constFObjectIterator iter, last;
 
-  if ( ! this->hasChildren() )
+  if ( ! hasChildren() )
     return false;
 
-  children = this->getChildren();
-  iter = children.begin();
-  end  = children.end();
+  iter = FObject::begin();
+  last = FObject::end();
 
-  while ( iter != end )
+  while ( iter != last )
   {
     if ( ! (*iter)->isWidget() )
     {
@@ -1334,15 +1321,13 @@ bool FWidget::focusFirstChild()
 //----------------------------------------------------------------------
 bool FWidget::focusLastChild()
 {
-  FObjectList children;
-  constFObjectIterator iter, begin;
+  constFObjectIterator iter, first;
 
-  if ( ! this->hasChildren() )
+  if ( ! hasChildren() )
     return false;
 
-  children = this->getChildren();
-  iter  = children.end();
-  begin = children.begin();
+  iter  = FObject::end();
+  first = FObject::begin();
 
   do
   {
@@ -1368,7 +1353,7 @@ bool FWidget::focusLastChild()
       return true;
     }
   }
-  while ( iter != begin );
+  while ( iter != first );
 
   return false;
 }
@@ -1823,16 +1808,13 @@ void FWidget::adjustSize()
     getTermY() - 2 + getHeight() - padding.bottom
   );
 
-  if ( this->hasChildren() )
+  if ( hasChildren() )
   {
-    FObjectList children;
-    constFObjectIterator iter, end;
+    constFObjectIterator iter, last;
+    iter = FObject::begin();
+    last = FObject::end();
 
-    children = this->getChildren();
-    iter = children.begin();
-    end  = children.end();
-
-    while ( iter != end )
+    while ( iter != last )
     {
       if ( (*iter)->isWidget() )
       {
@@ -1857,11 +1839,11 @@ void FWidget::adjustSizeGlobal()
 
   if ( window_list && ! window_list->empty() )
   {
-    widgetList::const_iterator iter, end;
+    widgetList::const_iterator iter, last;
     iter = window_list->begin();
-    end  = window_list->end();
+    last = window_list->end();
 
-    while ( iter != end )
+    while ( iter != last )
     {
       (*iter)->adjustSize();
       ++iter;
@@ -1881,14 +1863,11 @@ bool FWidget::focusNextChild()
 
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
-      FObjectList children;
-      FObjectIterator iter, end;
+      FObjectIterator iter, last;
+      iter = parent->begin();
+      last = parent->end();
 
-      children = parent->getChildren();
-      iter = children.begin();
-      end  = children.end();
-
-      while ( iter != end )
+      while ( iter != last )
       {
         if ( ! (*iter)->isWidget() )
         {
@@ -1908,8 +1887,8 @@ bool FWidget::focusNextChild()
           {
             ++next_element;
 
-            if ( next_element == children.end() )
-              next_element = children.begin();
+            if ( next_element == parent->end() )
+              next_element = parent->begin();
 
             if ( ! (*next_element)->isWidget() )
               continue;
@@ -1948,7 +1927,7 @@ bool FWidget::focusNextChild()
 
             if ( in.isAccepted() )
             {
-              this->redraw();
+              redraw();
               next->redraw();
               updateTerminal();
               flush_out();
@@ -1975,12 +1954,9 @@ bool FWidget::focusPrevChild()
 
     if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
     {
-      FObjectList children;
-      FObjectIterator iter, begin;
-
-      children = parent->getChildren();
-      iter  = children.end();
-      begin = children.begin();
+      FObjectIterator iter, first;
+      iter  = parent->end();
+      first = parent->begin();
 
       do
       {
@@ -2005,8 +1981,8 @@ bool FWidget::focusPrevChild()
               continue;
             }
 
-            if ( prev_element == children.begin() )
-              prev_element = children.end();
+            if ( prev_element == parent->begin() )
+              prev_element = parent->end();
 
             --prev_element;
             prev = static_cast<FWidget*>(*prev_element);
@@ -2043,7 +2019,7 @@ bool FWidget::focusPrevChild()
 
             if ( in.isAccepted() )
             {
-              this->redraw();
+              redraw();
               prev->redraw();
               updateTerminal();
               flush_out();
@@ -2053,7 +2029,7 @@ bool FWidget::focusPrevChild()
           break;
         }
       }
-      while ( iter != begin );
+      while ( iter != first );
     }
   }
 

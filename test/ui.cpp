@@ -53,7 +53,7 @@ ProgressDialog::ProgressDialog (FWidget* parent)
   , more()
   , quit()
 {
-  setGeometry (int((this->getParentWidget()->getWidth() - 40) / 2), 7, 40, 10);
+  setGeometry (int((getParentWidget()->getWidth() - 40) / 2), 7, 40, 10);
   setText("Progress bar");
   //setModal();
 
@@ -823,9 +823,9 @@ void MyDialog::cb_updateNumber (FWidget* widget, data_ptr data)
   FListBox* list = static_cast<FListBox*>(widget);
   FLabel* num = static_cast<FLabel*>(data);
   int select_num = 0;
-  uInt end = list->getCount();
+  uInt count = list->getCount();
 
-  for (uInt n = 1; n <= end; n++)
+  for (uInt n = 1; n <= count; n++)
     if ( list->isSelected(int(n)) )
       select_num++;
 

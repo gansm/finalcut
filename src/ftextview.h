@@ -140,8 +140,8 @@ inline const FTextView::stringLines& FTextView::getLines() const
 { return data; }
 
 //----------------------------------------------------------------------
-inline void FTextView::deleteRange (int start, int end)
-{ replaceRange (FString(), start, end); }
+inline void FTextView::deleteRange (int from, int to)
+{ replaceRange (FString(), from, to); }
 
 //----------------------------------------------------------------------
 inline void FTextView::deleteLine (int pos)
