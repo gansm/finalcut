@@ -1,11 +1,11 @@
 // File: os-choice.cpp
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fbuttongroup.h"
-#include "fdialog.h"
-#include "fradiobutton.h"
-#include "ftooltip.h"
+#include <final/fapplication.h>
+#include <final/fbutton.h>
+#include <final/fbuttongroup.h>
+#include <final/fdialog.h>
+#include <final/fradiobutton.h>
+#include <final/ftooltip.h>
 
 // function prototypes
 void cb_quit (FWidget*, FWidget::data_ptr);

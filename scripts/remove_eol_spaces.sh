@@ -1,7 +1,8 @@
 #!/bin/bash
 
 find ../src/ \
-     ../test/ \
+     ../include/final/ \
+     ../examples/ \
      -regextype posix-egrep \
      -regex ".*\.(cpp|h)$" \
      -exec sed -i 's/ *$//' "{}" \;

@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "fmenu.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/fdialog.h"
+#include "final/fmenu.h"
+#include "final/fstatusbar.h"
 
 //----------------------------------------------------------------------
 // class FMenu

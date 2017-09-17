@@ -1,8 +1,8 @@
 // File: ftooltip.cpp
 // Provides: class FToolTip
 
-#include "fapplication.h"
-#include "ftooltip.h"
+#include "final/fapplication.h"
+#include "final/ftooltip.h"
 
 
 //----------------------------------------------------------------------

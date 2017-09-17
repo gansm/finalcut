@@ -32,9 +32,9 @@
 
 #include <vector>
 
-#include "fscrollbar.h"
-#include "fstring.h"
-#include "fwidget.h"
+#include "final/fscrollbar.h"
+#include "final/fstring.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

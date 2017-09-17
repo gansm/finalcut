@@ -373,7 +373,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = fonts
-AM_CPPFLAGS = -Wall -Werror
+AM_CPPFLAGS = -I../include -Wall -Werror
 lib_LTLIBRARIES = libfinal.la
 libfinal_la_SOURCES = \
 	fstring.cpp \
@@ -419,52 +419,53 @@ libfinal_la_SOURCES = \
 libfinal_la_LDFLAGS = -version-info @SO_VERSION@
 finalcutincludedir = $(includedir)/final
 finalcutinclude_HEADERS = \
-	fapplication.h \
-	fbutton.h \
-	fbuttongroup.h \
-	fcharmap.h \
-	fcheckbox.h \
-	fconfig.h \
-	fswitch.h \
-	fdialog.h \
-	fc.h \
-	fevent.h \
-	ffiledialog.h \
-	final.h \
-	fkey_map.h \
-	flabel.h \
-	flineedit.h \
-	flistbox.h \
-	flistview.h \
-	fmenu.h \
-	fdialoglistmenu.h \
-	fmenubar.h \
-	fmenuitem.h \
-	fradiomenuitem.h \
-	fcheckmenuitem.h \
-	fmenulist.h \
-	fmessagebox.h \
-	ftooltip.h \
-	fobject.h \
-	fpoint.h \
-	foptiattr.h \
-	foptimove.h \
-	ftermbuffer.h \
-	fprogressbar.h \
-	fradiobutton.h \
-	frect.h \
-	fscrollbar.h \
-	fscrollview.h \
-	fstatusbar.h \
-	fstring.h \
-	ftcap_map.h \
-	ftermcap.h \
-	fterm.h \
-	fvterm.h \
-	ftextview.h \
-	ftogglebutton.h \
-	fwidget.h \
-	fwindow.h
+	../include/final/fapplication.h \
+	../include/final/fbutton.h \
+	../include/final/fbuttongroup.h \
+	../include/final/fcharmap.h \
+	../include/final/fcheckbox.h \
+	../include/final/fconfig.h \
+	../include/final/fswitch.h \
+	../include/final/fdialog.h \
+	../include/final/fc.h \
+	../include/final/ftypes.h \
+	../include/final/fevent.h \
+	../include/final/ffiledialog.h \
+	../include/final/final.h \
+	../include/final/fkey_map.h \
+	../include/final/flabel.h \
+	../include/final/flineedit.h \
+	../include/final/flistbox.h \
+	../include/final/flistview.h \
+	../include/final/fmenu.h \
+	../include/final/fdialoglistmenu.h \
+	../include/final/fmenubar.h \
+	../include/final/fmenuitem.h \
+	../include/final/fradiomenuitem.h \
+	../include/final/fcheckmenuitem.h \
+	../include/final/fmenulist.h \
+	../include/final/fmessagebox.h \
+	../include/final/ftooltip.h \
+	../include/final/fobject.h \
+	../include/final/fpoint.h \
+	../include/final/foptiattr.h \
+	../include/final/foptimove.h \
+	../include/final/ftermbuffer.h \
+	../include/final/fprogressbar.h \
+	../include/final/fradiobutton.h \
+	../include/final/frect.h \
+	../include/final/fscrollbar.h \
+	../include/final/fscrollview.h \
+	../include/final/fstatusbar.h \
+	../include/final/fstring.h \
+	../include/final/ftcap_map.h \
+	../include/final/ftermcap.h \
+	../include/final/fterm.h \
+	../include/final/fvterm.h \
+	../include/final/ftextview.h \
+	../include/final/ftogglebutton.h \
+	../include/final/fwidget.h \
+	../include/final/fwindow.h
 
 all: all-recursive
 

@@ -11,7 +11,7 @@
 #ifndef FC_H
 #define FC_H
 
-#include "fstring.h"
+#include "final/fstring.h"
 
 // ascii sequences
 #define ESC    "\033"     // Escape

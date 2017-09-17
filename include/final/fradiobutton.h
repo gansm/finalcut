@@ -33,7 +33,7 @@
 #ifndef FRADIOBUTTON_H
 #define FRADIOBUTTON_H
 
-#include "ftogglebutton.h"
+#include "final/ftogglebutton.h"
 
 
 //----------------------------------------------------------------------

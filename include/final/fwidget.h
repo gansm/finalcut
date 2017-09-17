@@ -73,7 +73,7 @@
 
 #include <vector>
 
-#include "fvterm.h"
+#include "final/fvterm.h"
 
 
 // Callback macros
@@ -697,7 +697,7 @@ inline bool FWidget::setDisable()
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool on)
-{ return visible_cursor = (on) ? true : ((hideable) ? false : true); }
+{ return visible_cursor = ( on ) ? true : (( hideable ) ? false : true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()

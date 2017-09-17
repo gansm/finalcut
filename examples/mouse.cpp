@@ -1,9 +1,9 @@
 // File: mouse.cpp
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "flabel.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/flabel.h>
+#include <final/fmessagebox.h>
 
 
 //----------------------------------------------------------------------

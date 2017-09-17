@@ -28,8 +28,8 @@
 #ifndef FLINEEDIT_H
 #define FLINEEDIT_H
 
-#include "fwidget.h"
-#include "flabel.h"
+#include "final/fwidget.h"
+#include "final/flabel.h"
 
 
 //----------------------------------------------------------------------

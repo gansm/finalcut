@@ -1,9 +1,9 @@
 // File: ftextview.cpp
 // Provides: class FTextView
 
-#include "fdialog.h"
-#include "fstatusbar.h"
-#include "ftextview.h"
+#include "final/fdialog.h"
+#include "final/fstatusbar.h"
+#include "final/ftextview.h"
 
 
 //----------------------------------------------------------------------
@@ -769,7 +769,7 @@ void FTextView::drawText()
     for (i = 0; i < len; i++)
     {
       wchar_t ch = line_str[i];
-      bool utf8 = (Encoding == fc::UTF8) ? true : false;
+      bool utf8 = ( Encoding == fc::UTF8 ) ? true : false;
 
       // only printable and 1 column per character
       if ( ( (utf8 && std::iswprint(wint_t(ch)))

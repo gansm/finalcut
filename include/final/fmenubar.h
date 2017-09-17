@@ -35,9 +35,9 @@
 #ifndef FMENUBAR_H
 #define FMENUBAR_H
 
-#include "fmenu.h"
-#include "fmenulist.h"
-#include "fwindow.h"
+#include "final/fmenu.h"
+#include "final/fmenulist.h"
+#include "final/fwindow.h"
 
 
 //----------------------------------------------------------------------

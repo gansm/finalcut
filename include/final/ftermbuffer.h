@@ -16,8 +16,8 @@
 #include <string>
 #include <vector>
 
-#include "fvterm.h"
-#include "fstring.h"
+#include "final/fvterm.h"
+#include "final/fstring.h"
 
 
 //----------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR="$PWD"
-cd ../test/.libs/ || exit
+cd ../examples/.libs/ || exit
 LD_LIBRARY_PATH=../../src/.libs/ ./ui
 gprof ./ui >./profile.txt
 rm ./gmon.out

@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "flistview.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/flistview.h>
+#include <final/fmessagebox.h>
 
 
 //----------------------------------------------------------------------

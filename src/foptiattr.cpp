@@ -1,8 +1,9 @@
 // File: foptiattr.cpp
 // Provides: class FOptiAttr
 
-#include "foptiattr.h"
 #include <cstring>
+
+#include "final/foptiattr.h"
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -736,7 +737,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
 inline bool FOptiAttr::setTermBold (char_data*& term)
 {
   if ( term && append_sequence(F_enter_bold_mode.cap) )
-    return (term->attr.bit.bold = true);
+    return (term->attr.bit.bold = true );
   else
     return false;
 }

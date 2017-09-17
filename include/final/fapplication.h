@@ -41,9 +41,9 @@
 #include <string>
 #include <utility>
 
-#include "fevent.h"
-#include "fwidget.h"
-#include "fwindow.h"
+#include "final/fevent.h"
+#include "final/fwidget.h"
+#include "final/fwindow.h"
 
 
 //----------------------------------------------------------------------

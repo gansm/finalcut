@@ -48,14 +48,14 @@
 #include <string>
 #include <vector>
 
-#include "fbutton.h"
-#include "fcheckbox.h"
-#include "fdialog.h"
-#include "flineedit.h"
-#include "flistbox.h"
-#include "fmessagebox.h"
-#include "fstatusbar.h"
-#include "fterm.h"
+#include "final/fbutton.h"
+#include "final/fcheckbox.h"
+#include "final/fdialog.h"
+#include "final/flineedit.h"
+#include "final/flistbox.h"
+#include "final/fmessagebox.h"
+#include "final/fstatusbar.h"
+#include "final/fterm.h"
 
 
 //----------------------------------------------------------------------

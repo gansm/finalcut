@@ -40,7 +40,7 @@
 #ifndef FDIALOGLISTMENU_H
 #define FDIALOGLISTMENU_H
 
-#include "fmenu.h"
+#include "final/fmenu.h"
 
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#include "fscrollbar.h"
+#include "final/fscrollbar.h"
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -131,7 +131,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 void FScrollbar::setOrientation (int o)
 {
   int nf = 0;
-  length = (getHeight() > getWidth()) ? getHeight() : getWidth();
+  length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();
 
   if ( o == fc::vertical && bar_orientation == fc::horizontal )
   {
@@ -158,7 +158,7 @@ void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
   FWidget::setGeometry (x, y, w, h, adjust);
 
   int nf = 0;
-  length = (h > w) ? h : w;
+  length = ( h > w ) ? h : w;
 
   if ( bar_orientation == fc::vertical )
   {

@@ -2,7 +2,7 @@
 // Provides: class FDialogListMenu
 
 
-#include "fdialoglistmenu.h"
+#include "final/fdialoglistmenu.h"
 
 //----------------------------------------------------------------------
 // class FDialogListMenu

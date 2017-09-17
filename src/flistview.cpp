@@ -4,11 +4,11 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "flistview.h"
-#include "fscrollbar.h"
-#include "fstatusbar.h"
-#include "ftermbuffer.h"
+#include "final/fapplication.h"
+#include "final/flistview.h"
+#include "final/fscrollbar.h"
+#include "final/fstatusbar.h"
+#include "final/ftermbuffer.h"
 
 //----------------------------------------------------------------------
 // class FListViewItem
@@ -1396,7 +1396,7 @@ void FListView::drawListLine ( const FListViewItem* item
   uInt i;
 
   for (i = 0; i < len; i++)
-    print (element_str[i]);
+    *this << element_str[i];
 
   for (; i < uInt(getWidth() - nf_offset - 2); i++)
     print (' ');

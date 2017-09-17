@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "fstatusbar.h"
+#include "final/fstatusbar.h"
 
 //----------------------------------------------------------------------
 // class FStatusKey
@@ -78,7 +78,7 @@ bool FStatusKey::setMouseFocus(bool on)
   if ( on == mouse_focus )
     return true;
 
-  return mouse_focus = (on) ? true : false;
+  return mouse_focus = ( on ) ? true : false;
 }
 
 

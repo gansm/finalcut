@@ -5,10 +5,10 @@
 #include <map>
 #include <fstream>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "flistbox.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/flistbox.h>
+#include <final/fmessagebox.h>
 
 
 // Global application object

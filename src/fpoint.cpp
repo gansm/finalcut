@@ -1,7 +1,7 @@
 // File: fpoint.cpp
 // Provides: class FPoint
 
-#include "fpoint.h"
+#include "final/fpoint.h"
 
 
 //----------------------------------------------------------------------

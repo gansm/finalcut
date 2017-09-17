@@ -53,8 +53,8 @@
 #ifndef FEVENT_H
 #define FEVENT_H
 
-#include "fc.h"
-#include "fpoint.h"
+#include "final/fc.h"
+#include "final/fpoint.h"
 
 
 //----------------------------------------------------------------------

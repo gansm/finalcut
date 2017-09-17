@@ -1,6 +1,6 @@
 // File: timer.cpp
 
-#include "final.h"
+#include <final/final.h>
 
 //----------------------------------------------------------------------
 // class timer

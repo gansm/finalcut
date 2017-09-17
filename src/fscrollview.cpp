@@ -1,8 +1,8 @@
 // File: fscrollview.cpp
 // Provides: class FScrollView
 
-#include "fscrollview.h"
-#include "fwindow.h"
+#include "final/fscrollview.h"
+#include "final/fwindow.h"
 
 
 //----------------------------------------------------------------------

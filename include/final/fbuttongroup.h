@@ -28,7 +28,7 @@
 #ifndef FBUTTONGROUP_H
 #define FBUTTONGROUP_H
 
-#include "fscrollview.h"
+#include "final/fscrollview.h"
 
 
 // class forward declaration

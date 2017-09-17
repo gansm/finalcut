@@ -1,8 +1,8 @@
 // File: fradiomenuitem.cpp
 // Provides: class FRadioMenuItem
 
-#include "fradiomenuitem.h"
-#include "fmenu.h"
+#include "final/fradiomenuitem.h"
+#include "final/fmenu.h"
 
 //----------------------------------------------------------------------
 // class FRadioMenuItem

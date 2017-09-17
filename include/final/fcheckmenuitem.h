@@ -33,7 +33,7 @@
 #ifndef FCHECKMENUITEM_H
 #define FCHECKMENUITEM_H
 
-#include "fmenuitem.h"
+#include "final/fmenuitem.h"
 
 
 //----------------------------------------------------------------------

@@ -28,7 +28,7 @@
 #ifndef FPROGRESSBAR_H
 #define FPROGRESSBAR_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

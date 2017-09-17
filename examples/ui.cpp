@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "final.h"
+#include <final/final.h>
 
 
 //----------------------------------------------------------------------

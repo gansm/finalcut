@@ -35,10 +35,10 @@
 #ifndef FMENU_H
 #define FMENU_H
 
-#include "fwindow.h"
-#include "fmenubar.h"
-#include "fmenulist.h"
-#include "fmenuitem.h"
+#include "final/fwindow.h"
+#include "final/fmenubar.h"
+#include "final/fmenulist.h"
+#include "final/fmenuitem.h"
 
 
 //----------------------------------------------------------------------

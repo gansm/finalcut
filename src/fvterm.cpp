@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "fapplication.h"
-#include "fvterm.h"
-#include "fwidget.h"
-#include "fwindow.h"
+#include "final/fapplication.h"
+#include "final/fvterm.h"
+#include "final/fwidget.h"
+#include "final/fwindow.h"
 
 // global FVTerm object
 static FVTerm* init_object = 0;
@@ -1571,8 +1571,6 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
   // Copies a block from the virtual terminal position to the given area
   int y_end;
   int length;
-  char_data* tc;  // terminal character
-  char_data* ac;  // area character
 
   if ( ! area )
     return;
@@ -1592,6 +1590,8 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
+    char_data* tc;  // terminal character
+    char_data* ac;  // area character
     tc = &vterm->text[(ay + y) * vterm->width + ax];
     ac = &area->text[y * area->width];
     std::memcpy (ac, tc, sizeof(char_data) * unsigned(length));
@@ -1619,8 +1619,6 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
 {
   // Copies a block from the virtual terminal rectangle to the given area
   int y_end, length, dx, dy;
-  char_data* tc;  // terminal character
-  char_data* ac;  // area character
 
   if ( ! area )
     return;
@@ -1646,6 +1644,8 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
 
   for (int _y = 0; _y < y_end; _y++)  // line loop
   {
+    char_data* tc;  // terminal character
+    char_data* ac;  // area character
     int line_len = area->width + area->right_shadow;
     tc = &vterm->text[(y + _y - 1) * vterm->width + x - 1];
     ac = &area->text[(dy + _y) * line_len + dx];
@@ -1793,7 +1793,6 @@ void FVTerm::scrollAreaForward (term_area* area)
   int y_max;
   char_data  nc;  // next character
   char_data* lc;  // last character
-  char_data* sc;  // source character
   char_data* dc;  // destination character
 
   if ( ! area )
@@ -1808,6 +1807,7 @@ void FVTerm::scrollAreaForward (term_area* area)
 
   for (int y = 0; y < y_max; y++)
   {
+    char_data* sc;  // source character
     int pos1 = y * total_width;
     int pos2 = (y + 1) * total_width;
     sc = &area->text[pos2];
@@ -1854,7 +1854,6 @@ void FVTerm::scrollAreaReverse (term_area* area)
   int y_max;
   char_data  nc;  // next character
   char_data* lc;  // last character
-  char_data* sc;  // source character
   char_data* dc;  // destination character
 
   if ( ! area )
@@ -1869,6 +1868,7 @@ void FVTerm::scrollAreaReverse (term_area* area)
 
   for (int y = y_max; y > 0; y--)
   {
+    char_data* sc;  // source character
     int pos1 = (y - 1) * total_width;
     int pos2 = y * total_width;
     sc = &area->text[pos1];
@@ -2361,8 +2361,6 @@ void FVTerm::updateTerminalLine (uInt y)
     bool draw_tailing_ws = false;
     char*& ce = TCAP(fc::t_clr_eol);
     char*& cb = TCAP(fc::t_clr_bol);
-    char*& ec = TCAP(fc::t_erase_chars);
-    char*& rp = TCAP(fc::t_repeat_char);
     bool ut = FTermcap::background_color_erase;
     char_data* first_char = &vt->text[y * uInt(vt->width)];
     char_data* last_char  = &vt->text[(y + 1) * uInt(vt->width) - 1];
@@ -2463,6 +2461,8 @@ void FVTerm::updateTerminalLine (uInt y)
       for (uInt x = xmin; x <= xmax; x++)
       {
         char_data* print_char;
+        char*& ec = TCAP(fc::t_erase_chars);
+        char*& rp = TCAP(fc::t_repeat_char);
         print_char = &vt->text[y * uInt(vt->width) + x];
         print_char->attr.bit.printed = true;
 

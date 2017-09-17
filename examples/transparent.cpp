@@ -1,11 +1,11 @@
 // File: transparent.cpp
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "flabel.h"
-#include "fmessagebox.h"
-#include "fstatusbar.h"
-#include "fstring.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/flabel.h>
+#include <final/fmessagebox.h>
+#include <final/fstatusbar.h>
+#include <final/fstring.h>
 
 
 //----------------------------------------------------------------------

@@ -33,7 +33,7 @@
 #ifndef FSWITCH_H
 #define FSWITCH_H
 
-#include "ftogglebutton.h"
+#include "final/ftogglebutton.h"
 
 
 //----------------------------------------------------------------------

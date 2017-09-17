@@ -1,9 +1,9 @@
 // File: term-attributes.cpp
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fdialog.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fbutton.h>
+#include <final/fdialog.h>
+#include <final/fmessagebox.h>
 
 //----------------------------------------------------------------------
 // class AttribDlg

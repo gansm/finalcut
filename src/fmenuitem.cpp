@@ -1,13 +1,14 @@
 // File: fmenuitem.cpp
 // Provides: class FMenuItem
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "fmenu.h"
-#include "fmenubar.h"
-#include "fmenulist.h"
-#include "fmenuitem.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/fdialog.h"
+#include "final/fmenu.h"
+#include "final/fmenubar.h"
+#include "final/fmenulist.h"
+#include "final/fmenuitem.h"
+#include "final/fstatusbar.h"
+
 
 //----------------------------------------------------------------------
 // class FMenuItem

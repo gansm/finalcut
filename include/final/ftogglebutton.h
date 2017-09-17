@@ -28,7 +28,7 @@
 #ifndef FTOGGLEBUTTON_H
 #define FTOGGLEBUTTON_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 
 // class forward declaration

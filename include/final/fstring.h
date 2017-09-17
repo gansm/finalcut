@@ -31,7 +31,7 @@
 #include <string>
 #include <vector>
 
-#include "ftypes.h"
+#include "final/ftypes.h"
 
 
 //----------------------------------------------------------------------
@@ -331,11 +331,11 @@ class FString
 // FString inline functions
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
-{ return ( ! string ); }
+{ return ! string; }
 
 //----------------------------------------------------------------------
 inline bool FString::isEmpty() const
-{ return (! string ) || (! *string); }
+{ return ( ! string ) || ( ! *string ); }
 
 //----------------------------------------------------------------------
 inline uInt FString::getLength() const

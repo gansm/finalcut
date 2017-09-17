@@ -2351,7 +2351,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 
-ac_config_commands="$ac_config_commands src/fconfig.h"
+ac_config_commands="$ac_config_commands include/final/fconfig.h"
 
 
 am__api_version='1.14'
@@ -16978,7 +16978,7 @@ SO_VERSION="3:0:3"
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/fonts/Makefile doc/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/fonts/Makefile doc/Makefile examples/Makefile"
 
 
 # use GPM (General Purpose Mouse)
@@ -18191,14 +18191,14 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
-    "src/fconfig.h") CONFIG_COMMANDS="$CONFIG_COMMANDS src/fconfig.h" ;;
+    "include/final/fconfig.h") CONFIG_COMMANDS="$CONFIG_COMMANDS include/final/fconfig.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/fonts/Makefile") CONFIG_FILES="$CONFIG_FILES src/fonts/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
+    "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -18794,7 +18794,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
-    "src/fconfig.h":C) ac_prefix_conf_OUT=`echo src/fconfig.h`
+    "include/final/fconfig.h":C) ac_prefix_conf_OUT=`echo include/final/fconfig.h`
 ac_prefix_conf_DEF=`echo _$ac_prefix_conf_OUT | sed -e "y:abcdefghijklmnopqrstuvwxyz:ABCDEFGHIJKLMNOPQRSTUVWXYZ:" -e "s/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]/_/g"`
 ac_prefix_conf_PKG=`echo F`
 ac_prefix_conf_LOW=`echo _$ac_prefix_conf_PKG | sed -e "y:ABCDEFGHIJKLMNOPQRSTUVWXYZ-:abcdefghijklmnopqrstuvwxyz_:"`

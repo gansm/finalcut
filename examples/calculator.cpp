@@ -11,9 +11,9 @@
 #include <map>
 #include <stack>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/fmessagebox.h>
 
 const lDouble PI = 3.141592653589793238L;
 
@@ -255,7 +255,7 @@ Calc::Calc (FWidget* parent)
     else
     {
       int x, y, n;
-      (key <= Three) ? n = 0 : n = 1;
+      ( key <= Three ) ? n = 0 : n = 1;
       x = (key + n) % 5 * 7 + 2;
       y = (key + n) / 5 * 2 + 3;
       btn->setGeometry(x, y, 5, 1);
@@ -564,7 +564,7 @@ void Calc::onClose (FCloseEvent* ev)
                                 FMessageBox::Yes,
                                 FMessageBox::No );
 
-  (ret == FMessageBox::Yes) ? ev->accept() : ev->ignore();
+  ( ret == FMessageBox::Yes ) ? ev->accept() : ev->ignore();
 }
 
 //----------------------------------------------------------------------

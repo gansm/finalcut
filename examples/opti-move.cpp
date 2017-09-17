@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <string>
 
-#include "fapplication.h"
-#include "fvterm.h"
+#include <final/fapplication.h>
+#include <final/fvterm.h>
 
 
 // global FVTerm object

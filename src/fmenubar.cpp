@@ -3,9 +3,10 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "fmenubar.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/fmenubar.h"
+#include "final/fstatusbar.h"
+
 
 //----------------------------------------------------------------------
 // class FMenuBar
@@ -423,16 +424,17 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
             try
             {
               _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-              menu->mouse_down = true;
-              setClickedWidget(menu);
-              menu->onMouseMove(_ev);
-              delete _ev;
             }
             catch (const std::bad_alloc& ex)
             {
               std::cerr << "not enough memory to alloc "
                         << ex.what() << std::endl;
             }
+
+            menu->mouse_down = true;
+            setClickedWidget(menu);
+            menu->onMouseMove(_ev);
+            delete _ev;
           }
         }
       }

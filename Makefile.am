@@ -6,7 +6,7 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src doc test
+SUBDIRS = src doc examples
 
 docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = AUTHORS COPYING ChangeLog

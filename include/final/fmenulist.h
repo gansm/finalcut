@@ -21,8 +21,8 @@
 
 #include <vector>
 
-#include "fmenuitem.h"
-#include "fwidget.h"
+#include "final/fmenuitem.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------
@@ -89,7 +89,7 @@ inline uInt FMenuList::getCount() const
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getItem (int index) const
-{ return (index > 0) ? item_list[uInt(index - 1)] : 0; }
+{ return ( index > 0 ) ? item_list[uInt(index - 1)] : 0; }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getSelectedItem() const
@@ -109,7 +109,7 @@ inline void FMenuList::setSelectedItem (FMenuItem* menuitem)
 
 //----------------------------------------------------------------------
 inline bool FMenuList::isSelected(int index) const
-{ return (index > 0) ? item_list[uInt(index - 1)]->isSelected() : false; }
+{ return ( index > 0 ) ? item_list[uInt(index - 1)]->isSelected() : false; }
 
 //----------------------------------------------------------------------
 inline bool FMenuList::hasSelectedItem() const

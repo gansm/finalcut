@@ -2,11 +2,11 @@
 
 #include <ctime>
 
-#include "fapplication.h"
-#include "flabel.h"
-#include "fdialog.h"
-#include "fmessagebox.h"
-#include "fswitch.h"
+#include <final/fapplication.h>
+#include <final/flabel.h>
+#include <final/fdialog.h>
+#include <final/fmessagebox.h>
+#include <final/fswitch.h>
 
 //----------------------------------------------------------------------
 // class watch

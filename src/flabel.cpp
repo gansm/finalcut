@@ -1,9 +1,9 @@
 // File: flabel.cpp
 // Provides: class FLabel
 
-#include "fapplication.h"
-#include "flabel.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/flabel.h"
+#include "final/fstatusbar.h"
 
 
 //----------------------------------------------------------------------

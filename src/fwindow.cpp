@@ -1,10 +1,10 @@
 // File: fwindow.cpp
 // Provides: class FWindow
 
-#include "fapplication.h"
-#include "fmenubar.h"
-#include "fstatusbar.h"
-#include "fwindow.h"
+#include "final/fapplication.h"
+#include "final/fmenubar.h"
+#include "final/fstatusbar.h"
+#include "final/fwindow.h"
 
 // static attributes
 FWindow* FWindow::previous_window = 0;
@@ -152,7 +152,7 @@ bool FWindow::activateWindow (bool on)
     active_area = getVWin();
   }
 
-  return window_active = (on) ? true : false;
+  return window_active = ( on ) ? true : false;
 }
 
 //----------------------------------------------------------------------

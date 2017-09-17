@@ -26,8 +26,9 @@
 #ifndef FVTERM_H
 #define FVTERM_H
 
-#include "fterm.h"
 #include <sstream>  // std::stringstream
+
+#include "final/fterm.h"
 
 // Preprocessing handler macro
 #define F_PREPROC_HANDLER(i,h) \

@@ -1,4 +1,4 @@
-test/.libs/* usr/lib/finalcut/examples
-test/*.cpp usr/lib/finalcut/examples
-test/Makefile.clang usr/lib/finalcut/examples
-test/Makefile.gcc usr/lib/finalcut/examples
+examples/.libs/* usr/lib/finalcut/examples
+examples/*.cpp usr/lib/finalcut/examples
+examples/Makefile.clang usr/lib/finalcut/examples
+examples/Makefile.gcc usr/lib/finalcut/examples

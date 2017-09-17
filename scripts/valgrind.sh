@@ -4,7 +4,7 @@
 
 if [ -z "$1" ]
 then
-  PROG="../test/.libs/ui"
+  PROG="../examples/.libs/ui"
 else
   PROG="$1"
 fi

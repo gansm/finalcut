@@ -1,7 +1,7 @@
 // File: hello.cpp
 
-#include "fapplication.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fmessagebox.h>
 
 
 int main (int argc, char* argv[])

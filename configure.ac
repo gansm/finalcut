@@ -6,7 +6,7 @@
 
 AC_INIT([finalcut], [0.3.0])
 AC_CONFIG_HEADER([config.h])
-AX_PREFIX_CONFIG_H([src/fconfig.h], [F])
+AX_PREFIX_CONFIG_H([include/final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([src/fobject.cpp])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
@@ -54,7 +54,7 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([Makefile src/Makefile src/fonts/Makefile doc/Makefile test/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/fonts/Makefile doc/Makefile examples/Makefile])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],

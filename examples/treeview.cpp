@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "flistview.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/flistview.h>
+#include <final/fmessagebox.h>
 
 
 //----------------------------------------------------------------------
@@ -87,6 +87,10 @@ Treeview::Treeview (FWidget* parent)
   //FObjectIterator iter_africa = listView->insert (egypt_line);
   listView->insert (egypt_line, iter_africa);
 
+  FListViewItem* item_africa = static_cast<FListViewItem*>(*iter_africa);
+  FObjectIterator iter_egypt = item_africa->begin();
+  FListViewItem* item_egypt = static_cast<FListViewItem*>(*iter_egypt);
+item_egypt = item_egypt;
 
   // Quit button
   FButton* Quit = new FButton (this);

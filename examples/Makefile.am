@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
-AM_CPPFLAGS = -Wall -Werror -I$(top_srcdir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 
 noinst_PROGRAMS = \
 	hello \

@@ -5,8 +5,9 @@
 # This is where make install will install the library
 VERSION = "0.3.0"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
-LIBDIR = /usr/local/lib64
-INCLUDEDIR = /usr/local/include/final
+LIBDIR = /usr/local/lib
+INCLUDEDIR1 = ../include/final
+INCLUDEDIR2 = /usr/local/include/final
 INCLUDE_HEADERS = \
 	fapplication.h \
 	fbuttongroup.h \
@@ -53,7 +54,7 @@ CXX = clang++
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
-INCLUDES = -I./
+INCLUDES = -I../include
 GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=$(VERSION)
 RM = rm -f
@@ -133,19 +134,19 @@ install: $(LIB)
 	ln -s -f $(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR)
 	ln -s -f $(LIB).$(MAJOR) $(LIBDIR)/libfinal.so
 	ldconfig
-	mkdir -p $(INCLUDEDIR)
+	mkdir -p $(INCLUDEDIR2)
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
-	  install -m 644 $$h $(INCLUDEDIR)/$$h; \
+	  install -m 644 $(INCLUDEDIR1)/$$h $(INCLUDEDIR2)/$$h; \
 	done
 
-uninstall: $(INCLUDE_HEADERS)
+uninstall: $(OBJS)
 	$(RM) $(LIBDIR)/$(LIB).$(VERSION) $(LIBDIR)/libfinal.so.$(MAJOR) $(LIBDIR)/libfinal.so
 	@list='$(INCLUDE_HEADERS)'; for h in $$list; \
 	do \
-	  $(RM) $(INCLUDEDIR)/$$h; \
+	  $(RM) $(INCLUDEDIR2)/$$h; \
 	done
-	rmdir $(INCLUDEDIR)
+	rmdir $(INCLUDEDIR2)
 
 .PHONY: clean dep
 clean:

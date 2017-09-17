@@ -1,3 +1,3 @@
 #!/bin/sh
 
-hte ../test/.libs/ui
+hte ../examples/.libs/ui

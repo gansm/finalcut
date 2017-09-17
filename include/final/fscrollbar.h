@@ -28,7 +28,7 @@
 #ifndef FSCROLLBAR_H
 #define FSCROLLBAR_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "fstring.h"
+#include <final/fstring.h>
 
 
 int main (int, char**)

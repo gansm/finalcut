@@ -33,7 +33,7 @@
 #ifndef FCHECKBOX_H
 #define FCHECKBOX_H
 
-#include "ftogglebutton.h"
+#include "final/ftogglebutton.h"
 
 
 //----------------------------------------------------------------------

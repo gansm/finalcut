@@ -1,12 +1,12 @@
 // File: input-dialog.cpp
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fbuttongroup.h"
-#include "fcheckbox.h"
-#include "fdialog.h"
-#include "flineedit.h"
-#include "fradiobutton.h"
+#include <final/fapplication.h>
+#include <final/fbutton.h>
+#include <final/fbuttongroup.h>
+#include <final/fcheckbox.h>
+#include <final/fdialog.h>
+#include <final/flineedit.h>
+#include <final/fradiobutton.h>
 
 // function prototypes
 void cb_quit (FWidget*, FWidget::data_ptr);

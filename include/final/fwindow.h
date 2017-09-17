@@ -36,7 +36,7 @@
 #ifndef FWINDOW_H
 #define FWINDOW_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

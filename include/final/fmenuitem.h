@@ -32,7 +32,7 @@
 #ifndef FMENUITEM_H
 #define FMENUITEM_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 // class forward declaration
 class FDialog;

@@ -27,7 +27,7 @@
 #ifndef FTERM_H
 #define FTERM_H
 
-#include <fconfig.h>
+#include "final/fconfig.h"
 
 #ifdef F_HAVE_LIBGPM
   #include <gpm.h>
@@ -67,14 +67,14 @@
 #include <queue>
 #include <string>
 
-#include "fc.h"
-#include "fobject.h"
-#include "foptiattr.h"
-#include "foptimove.h"
-#include "fpoint.h"
-#include "frect.h"
-#include "fstring.h"
-#include "ftermcap.h"
+#include "final/fc.h"
+#include "final/fobject.h"
+#include "final/foptiattr.h"
+#include "final/foptimove.h"
+#include "final/fpoint.h"
+#include "final/frect.h"
+#include "final/fstring.h"
+#include "final/ftermcap.h"
 
 
 #ifdef F_HAVE_LIBGPM
@@ -511,11 +511,11 @@ inline int FTerm::getMaxColor()
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
-{ return (answer_back) ? *answer_back : *fc::empty_string; }
+{ return ( answer_back ) ? *answer_back : *fc::empty_string; }
 
 //----------------------------------------------------------------------
 inline const FString& FTerm::getSecDAString()
-{ return (sec_da) ? *sec_da : *fc::empty_string; }
+{ return ( sec_da ) ? *sec_da : *fc::empty_string; }
 #endif
 
 //----------------------------------------------------------------------
@@ -620,7 +620,7 @@ inline bool FTerm::isUTF8_linux_terminal()
 
 //----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)
-{ return cursor_optimisation = (on) ? true : false; }
+{ return cursor_optimisation = ( on ) ? true : false; }
 
 //----------------------------------------------------------------------
 inline void FTerm::setXTermDefaultColors (bool on)

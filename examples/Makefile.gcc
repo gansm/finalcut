@@ -12,7 +12,7 @@ OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = -L../src -lfinal
-INCLUDES = -I../src -I/usr/include/final/
+INCLUDES = -I../include -I/usr/include/final
 RM = rm -f
 
 ifdef DEBUG

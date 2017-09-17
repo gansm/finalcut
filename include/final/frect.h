@@ -12,7 +12,7 @@
 #define FRECT_H
 
 #include <algorithm>
-#include "fpoint.h"
+#include "final/fpoint.h"
 
 
 //----------------------------------------------------------------------

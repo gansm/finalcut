@@ -32,10 +32,10 @@
 
 #include <vector>
 
-#include "fscrollbar.h"
-#include "fstring.h"
-#include "ftermbuffer.h"
-#include "fwidget.h"
+#include "final/fscrollbar.h"
+#include "final/fstring.h"
+#include "final/ftermbuffer.h"
+#include "final/fwidget.h"
 
 // class forward declaration
 class FListView;
@@ -288,7 +288,7 @@ inline FListViewItem* FListView::getCurrentItem()
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
-{ return tree_view = (on) ? true : false; }
+{ return tree_view = ( on ) ? true : false; }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()

@@ -40,9 +40,9 @@
 
 #include <cstring>
 
-#include "fbutton.h"
-#include "fdialog.h"
-#include "fterm.h"
+#include "final/fbutton.h"
+#include "final/fdialog.h"
+#include "final/fterm.h"
 
 
 //----------------------------------------------------------------------

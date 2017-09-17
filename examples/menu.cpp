@@ -1,14 +1,14 @@
 // File: menu.cpp
 
-#include "fapplication.h"
-#include "fcheckmenuitem.h"
-#include "fdialog.h"
-#include "flabel.h"
-#include "fmenubar.h"
-#include "fmenu.h"
-#include "fmessagebox.h"
-#include "fradiomenuitem.h"
-#include "fstatusbar.h"
+#include <final/fapplication.h>
+#include <final/fcheckmenuitem.h>
+#include <final/fdialog.h>
+#include <final/flabel.h>
+#include <final/fmenubar.h>
+#include <final/fmenu.h>
+#include <final/fmessagebox.h>
+#include <final/fradiomenuitem.h>
+#include <final/fstatusbar.h>
 
 
 //----------------------------------------------------------------------

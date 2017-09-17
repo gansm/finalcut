@@ -1,8 +1,8 @@
 // File: mandelbrot.cpp
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "fmessagebox.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/fmessagebox.h>
 
 //----------------------------------------------------------------------
 // class Mandelbrot

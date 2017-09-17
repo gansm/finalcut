@@ -4,10 +4,10 @@
 
 #include <algorithm>
 
-#include "fapplication.h"
-#include "flistbox.h"
-#include "fscrollbar.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/flistbox.h"
+#include "final/fscrollbar.h"
+#include "final/fstatusbar.h"
 
 
 //----------------------------------------------------------------------

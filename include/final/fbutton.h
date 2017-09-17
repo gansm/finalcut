@@ -28,7 +28,7 @@
 #ifndef FBUTTON_H
 #define FBUTTON_H
 
-#include "fwidget.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 
 #include <cstdio>
 
-#include "fevent.h"
+#include "final/fevent.h"
 
 
 //----------------------------------------------------------------------
@@ -185,13 +185,13 @@ FFocusEvent::~FFocusEvent()  // destructor
 //----------------------------------------------------------------------
 bool FFocusEvent::gotFocus() const
 {
-  return (type() == fc::FocusIn_Event);
+  return ( type() == fc::FocusIn_Event );
 }
 
 //----------------------------------------------------------------------
 bool FFocusEvent::lostFocus() const
 {
-  return (type() == fc::FocusOut_Event);
+  return ( type() == fc::FocusOut_Event );
 }
 
 //----------------------------------------------------------------------

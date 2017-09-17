@@ -1,9 +1,9 @@
 // File: dialog.cpp
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fdialog.h"
-#include "flabel.h"
+#include <final/fapplication.h>
+#include <final/fbutton.h>
+#include <final/fdialog.h>
+#include <final/flabel.h>
 
 // function prototype
 void cb_quit (FWidget*, FWidget::data_ptr);

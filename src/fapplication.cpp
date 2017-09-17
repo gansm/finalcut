@@ -3,10 +3,10 @@
 
 #include <string>
 
-#include "fapplication.h"
-#include "fmenu.h"
-#include "fstatusbar.h"
-#include "fwindow.h"
+#include "final/fapplication.h"
+#include "final/fmenu.h"
+#include "final/fstatusbar.h"
+#include "final/fwindow.h"
 
 // global application object
 static FApplication* rootObj = 0;
@@ -418,7 +418,7 @@ void FApplication::cmd_options ()
 int FApplication::gpmEvent (bool clear)
 {
   register int result;
-  register int max = (gpm_fd > stdin_no) ? gpm_fd : stdin_no;
+  register int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds;
   struct timeval tv;
 
@@ -463,7 +463,7 @@ inline bool FApplication::KeyPressed()
   if ( FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
 
-  return (result > 0);
+  return ( result > 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1673,7 +1673,7 @@ void FApplication::processMouseEvent()
     {
       // determine the widget at the current click position
       FWidget* child = childWidgetAt (window, mouse_position);
-      clicked_widget = (child != 0) ? child : window;
+      clicked_widget = ( child != 0 ) ? child : window;
     }
 
     // unset the move/size mode
@@ -1996,5 +1996,5 @@ bool FApplication::processNextEvent()
   sendQueuedEvents();
   num_events += processTimerEvent();
 
-  return (num_events > 0);
+  return ( num_events > 0 );
 }

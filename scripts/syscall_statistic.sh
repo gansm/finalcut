@@ -1,3 +1,3 @@
 #!/bin/sh
-strace -c ../test/.libs/ui
+strace -c ../examples/.libs/ui
 

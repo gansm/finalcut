@@ -29,7 +29,8 @@
 #define FLABEL_H
 
 #include <vector>
-#include "fwidget.h"
+
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

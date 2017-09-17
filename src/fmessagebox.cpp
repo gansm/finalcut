@@ -3,8 +3,8 @@
 
 #include <algorithm>
 
-#include "fapplication.h"
-#include "fmessagebox.h"
+#include "final/fapplication.h"
+#include "final/fmessagebox.h"
 
 
 static const char* const button_text[] =

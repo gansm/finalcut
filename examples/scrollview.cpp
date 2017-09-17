@@ -1,11 +1,11 @@
 // File: scrollview.cpp
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fdialog.h"
-#include "flabel.h"
-#include "fmessagebox.h"
-#include "fscrollview.h"
+#include <final/fapplication.h>
+#include <final/fbutton.h>
+#include <final/fdialog.h>
+#include <final/flabel.h>
+#include <final/fmessagebox.h>
+#include <final/fscrollview.h>
 
 //----------------------------------------------------------------------
 // class scrollview

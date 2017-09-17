@@ -3,7 +3,7 @@
 
 #include <cstring>
 
-#include "foptimove.h"
+#include "final/foptimove.h"
 
 
 //----------------------------------------------------------------------
@@ -958,7 +958,7 @@ int FOptiMove::relativeMove ( char*& move
     }
   }
 
-  return (vtime + htime);
+  return vtime + htime;
 }
 
 //----------------------------------------------------------------------

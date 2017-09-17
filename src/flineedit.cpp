@@ -1,9 +1,9 @@
 // File: flineedit.cpp
 // Provides: class FLineEdit
 
-#include "fapplication.h"
-#include "flineedit.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/flineedit.h"
+#include "final/fstatusbar.h"
 
 
 //----------------------------------------------------------------------

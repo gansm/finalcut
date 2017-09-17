@@ -1,9 +1,9 @@
 // File: fbutton.cpp
 // Provides: class FButton
 
-#include "fapplication.h"
-#include "fbutton.h"
-#include "fstatusbar.h"
+#include "final/fapplication.h"
+#include "final/fbutton.h"
+#include "final/fstatusbar.h"
 
 
 //----------------------------------------------------------------------

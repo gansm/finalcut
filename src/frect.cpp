@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#include "frect.h"
+#include "final/frect.h"
 
 //----------------------------------------------------------------------
 // class FRect

@@ -3,7 +3,7 @@
 #ifndef FTCAPMAP_H
 #define FTCAPMAP_H
 
-#include "ftermcap.h"
+#include "final/ftermcap.h"
 
 static FTermcap::tcap_map term_caps[] =
 {

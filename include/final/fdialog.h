@@ -33,10 +33,10 @@
 #ifndef FDIALOG_H
 #define FDIALOG_H
 
-#include "fmenu.h"
-#include "fmenuitem.h"
-#include "ftooltip.h"
-#include "fwindow.h"
+#include "final/fmenu.h"
+#include "final/fmenuitem.h"
+#include "final/ftooltip.h"
+#include "final/fwindow.h"
 
 
 //----------------------------------------------------------------------

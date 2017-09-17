@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "fstring.h"
+#include "final/fstring.h"
 
 // static class constant
 const char* const FString::bad_alloc_str = "not enough memory " \
@@ -238,7 +238,7 @@ FString& FString::operator = (const FString& s)
   else
     clear();
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -249,7 +249,7 @@ FString& FString::operator = (const std::wstring& s)
   else
     clear();
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -260,7 +260,7 @@ const FString& FString::operator = (const wchar_t* s)
   else
     clear();
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -276,7 +276,7 @@ FString& FString::operator = (const std::string& s)
   else
     clear();
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -292,7 +292,7 @@ const FString& FString::operator = (const char* s)
   else
     clear();
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -302,7 +302,7 @@ const FString& FString::operator = (const wchar_t c)
   s[0] = c;
   s[1] = L'\0';
   _assign (s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -312,28 +312,28 @@ const FString& FString::operator = (const char c)
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';
   _assign (s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator += (const FString& s)
 {
   _insert (length, s.length, s.string);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator += (const std::wstring& s)
 {
   _insert (length, uInt(s.length()), s.c_str());
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator += (const wchar_t* s)
 {
   _insert (length, uInt(std::wcslen(s)), s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -347,7 +347,7 @@ const FString& FString::operator += (const std::string& s)
     delete[] wc_string;
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -361,7 +361,7 @@ const FString& FString::operator += (const char* s)
     delete[] wc_string;
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -371,7 +371,7 @@ const FString& FString::operator += (const wchar_t c)
   s[0] = c;
   s[1] = L'\0';
   _insert (length, 1, s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -381,7 +381,7 @@ const FString& FString::operator += (const char c)
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';
   _insert (length, 1, s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -389,7 +389,7 @@ const FString FString::operator + (const FString& s)
 {
   FString tmp(string);
   tmp._insert (length, s.length, s.string);
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -397,7 +397,7 @@ const FString FString::operator + (const std::wstring& s)
 {
   FString tmp(string);
   tmp._insert (length, uInt(s.length()), s.c_str());
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -405,7 +405,7 @@ const FString FString::operator + (const wchar_t* s)
 {
   FString tmp(string);
   tmp._insert (length, uInt(std::wcslen(s)), s);
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -415,11 +415,11 @@ const FString FString::operator + (const std::string& s)
   wchar_t* wc_string = c_to_wc_str(s.c_str());
 
   if ( ! wc_string )
-    return (tmp);
+    return tmp;
 
   tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
   delete[] wc_string;
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -429,11 +429,11 @@ const FString FString::operator + (const char* s)
   wchar_t* wc_string = c_to_wc_str(s);
 
   if ( ! wc_string )
-    return (tmp);
+    return tmp;
 
   tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
   delete[] wc_string;
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -444,7 +444,7 @@ const FString FString::operator + (const wchar_t c)
   s[1] = L'\0';
   FString tmp(string);
   tmp._insert (length, 1, s);
-  return(tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -455,7 +455,7 @@ const FString FString::operator + (const char c)
   s[1] = L'\0';
   FString tmp(string);
   tmp._insert (length, 1, s);
-  return(tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -480,7 +480,7 @@ wchar_t& FString::operator [] (uInt pos)
 //----------------------------------------------------------------------
 const FString& FString::operator () ()
 {
-  return (*this);
+  return *this;
 }
 
 
@@ -512,7 +512,7 @@ FString& FString::sprintf (const wchar_t* format, ...)
   va_end (args);
 
   _assign (buffer);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -538,7 +538,7 @@ FString& FString::sprintf (const char* format, ...)
     catch (const std::bad_alloc& ex)
     {
       std::cerr << bad_alloc_str << ex.what() << std::endl;
-      return (*this);
+      return *this;
     }
 
     va_start (args, format);
@@ -557,7 +557,7 @@ FString& FString::sprintf (const char* format, ...)
   if ( buffer != buf )
     delete[] buffer;
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -569,13 +569,13 @@ FString FString::clear()
   length  = 0;
   bufsize = 0;
   string  = 0;
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 const wchar_t* FString::wc_str() const
 {
-  return (string);
+  return string;
 }
 
 //----------------------------------------------------------------------
@@ -872,7 +872,7 @@ FString FString::trim() const
 {
   // handle NULL and empty string
   if ( ! (string && *string) )
-    return (*this);
+    return *this;
 
   FString s(ltrim());
   return s.rtrim();
@@ -1001,7 +1001,7 @@ std::vector<FString> FString::split (const FString& delimiter)
 FString& FString::setString (const wchar_t* s)
 {
   _assign (s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -1015,7 +1015,7 @@ FString& FString::setString (const char* s)
     delete[] wc_string;
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -1187,7 +1187,7 @@ bool FString::operator < (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  return (std::wcscmp(string, s.string) < 0);
+  return ( std::wcscmp(string, s.string) < 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1247,7 +1247,7 @@ bool FString::operator <= (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  return (std::wcscmp(string, s.string) <= 0);
+  return ( std::wcscmp(string, s.string) <= 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1304,7 +1304,7 @@ bool FString::operator == (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  return (std::wcscmp(string, s.string) == 0);
+  return ( std::wcscmp(string, s.string) == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1361,7 +1361,7 @@ bool FString::operator != (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  return (std::wcscmp(string, s.string) != 0);
+  return ( std::wcscmp(string, s.string) != 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1421,7 +1421,7 @@ bool FString::operator >= (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  return (std::wcscmp(string, s.string) >= 0);
+  return ( std::wcscmp(string, s.string) >= 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1481,7 +1481,7 @@ bool FString::operator > (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  return (std::wcscmp(string, s.string) > 0);
+  return ( std::wcscmp(string, s.string) > 0 );
 }
 
 //----------------------------------------------------------------------
@@ -1534,7 +1534,7 @@ const FString& FString::insert (const FString& s, uInt pos)
     throw std::out_of_range("");
 
   _insert (pos, s.length, s.string);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -1545,25 +1545,25 @@ const FString& FString::insert (const wchar_t* s, uInt pos)
     throw std::out_of_range("");
 
   _insert (pos, uInt(std::wcslen(s)), s);
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::insert (const char* s, uInt pos)
 {
-  return (insert(FString(s), pos));
+  return insert(FString(s), pos);
 }
 
 //----------------------------------------------------------------------
 const FString& FString::insert (const wchar_t c, uInt pos)
 {
-  return (insert(FString(c), pos));
+  return insert(FString(c), pos);
 }
 
 //----------------------------------------------------------------------
 const FString& FString::insert (const char c, uInt pos)
 {
-  return (insert(FString(c), pos));
+  return insert(FString(c), pos);
 }
 
 //----------------------------------------------------------------------
@@ -2138,7 +2138,7 @@ const FString& FString::overwrite (const FString& s, uInt pos)
     _insert (length, pos + s.length - length, s.string + length - pos);
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -2156,7 +2156,7 @@ const FString& FString::overwrite (const wchar_t* s, uInt pos)
     _insert (length, pos + len - length, s + length - pos);
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -2167,7 +2167,7 @@ const FString& FString::overwrite (const wchar_t c, uInt pos)
     string[pos] = c;
   }
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -2176,19 +2176,19 @@ const FString& FString::remove (uInt pos, uInt len)
   assert ((pos < length) && ((pos + len) <= length));
   _remove (pos, len);
 
-  return (*this);
+  return *this;
 }
 
 //----------------------------------------------------------------------
 bool FString::includes (const FString& s)
 {
-  return (std::wcsstr(string, s.string) != 0);
+  return ( std::wcsstr(string, s.string) != 0 );
 }
 
 //----------------------------------------------------------------------
 bool FString::includes (const wchar_t* s)
 {
-  return (std::wcsstr(string, s) != 0);
+  return ( std::wcsstr(string, s) != 0 );
 }
 
 //----------------------------------------------------------------------
@@ -2202,7 +2202,7 @@ bool FString::includes (const char* s)
 
   ret = bool(std::wcsstr(string, wc_string) != 0);
   delete[] wc_string;
-  return (ret);
+  return ret;
 }
 
 //----------------------------------------------------------------------
@@ -2211,7 +2211,7 @@ bool FString::includes (const wchar_t c)
   wchar_t s[2];
   s[0] = c;
   s[1] = L'\0';
-  return (std::wcsstr(string, s) != 0);
+  return ( std::wcsstr(string, s) != 0 );
 }
 
 //----------------------------------------------------------------------
@@ -2220,7 +2220,7 @@ bool FString::includes (const char c)
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';
-  return (std::wcsstr(string, s) != 0);
+  return ( std::wcsstr(string, s) != 0 );
 }
 
 
@@ -2460,7 +2460,7 @@ inline wchar_t* FString::c_to_wc_str (const char* s) const
     try
     {
       // Generate a empty wide string (L"")
-      return (new wchar_t[1]());
+      return new wchar_t[1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -2540,7 +2540,7 @@ std::ostream& operator << (std::ostream& outstr, const FString& s)
   if ( s.length )
     outstr << s.wc_to_c_str( s.string );
 
-  return (outstr);
+  return outstr;
 }
 
 //----------------------------------------------------------------------
@@ -2558,7 +2558,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
     delete[] wc_str;
   }
 
-  return (instr);
+  return instr;
 }
 
 //----------------------------------------------------------------------
@@ -2567,7 +2567,7 @@ std::wostream& operator << (std::wostream& outstr, const FString& s)
   if ( s.length )
     outstr << s.string;
 
-  return (outstr);
+  return outstr;
 }
 
 //----------------------------------------------------------------------
@@ -2576,7 +2576,7 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
   wchar_t buf[FString::INPBUFFER + 1];
   instr.getline (buf, FString::INPBUFFER);
   s._assign (buf);
-  return (instr);
+  return instr;
 }
 
 //----------------------------------------------------------------------
@@ -2586,7 +2586,7 @@ const FString operator + (const FString& s1, const FString& s2)
   tmp._insert ( uInt(std::wcslen(s1.wc_str()))
               , uInt(std::wcslen(s2.wc_str()))
               , s2.wc_str() );
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2594,7 +2594,7 @@ const FString operator + (const FString& s, const wchar_t c)
 {
   FString tmp(s);
   tmp._insert ( uInt(std::wcslen(s.wc_str())), 1, &c);
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2604,7 +2604,7 @@ const FString operator + (const std::wstring& s1, const FString& s2)
   tmp._insert ( uInt(std::wcslen(s1.c_str()))
               , uInt(std::wcslen(s2.wc_str()))
               , s2.wc_str() );
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2614,7 +2614,7 @@ const FString operator + (const wchar_t* s1, const FString& s2)
   tmp._insert ( uInt(std::wcslen(s1))
               , uInt(std::wcslen(s2.wc_str()))
               , s2.wc_str() );
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2624,7 +2624,7 @@ const FString operator + (const std::string& s1, const FString& s2)
   tmp._insert ( tmp.getLength()
               , uInt(std::wcslen(s2.wc_str()))
               , s2.wc_str() );
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2634,7 +2634,7 @@ const FString operator + (const char* s1, const FString& s2)
   tmp._insert ( tmp.getLength()
               , uInt(std::wcslen(s2.wc_str()))
               , s2.wc_str() );
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2642,7 +2642,7 @@ const FString operator + (const wchar_t c, const FString& s)
 {
   FString tmp(c);
   tmp._insert (1, uInt(std::wcslen(s.wc_str())), s.wc_str());
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2650,7 +2650,7 @@ const FString operator + (const char c, const FString& s)
 {
   FString tmp(c);
   tmp._insert (1, uInt(std::wcslen(s.wc_str())), s.wc_str());
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2658,7 +2658,7 @@ const FString operator + (const wchar_t c, const std::wstring& s)
 {
   FString tmp(c);
   tmp._insert (1, uInt(s.length()), s.c_str());
-  return (tmp);
+  return tmp;
 }
 
 //----------------------------------------------------------------------
@@ -2669,5 +2669,5 @@ const FString operator + (const FString& s, const char c)
   tmp2[0] = wchar_t(c & 0xff);
   tmp2[1] = L'\0';
   tmp1._insert (s.length, 1, tmp2);
-  return (tmp1);
+  return tmp1;
 }

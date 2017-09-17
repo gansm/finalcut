@@ -1,8 +1,8 @@
 // File: fcheckmenuitem.cpp
 // Provides: class FCheckMenuItem
 
-#include "fcheckmenuitem.h"
-#include "fmenu.h"
+#include "final/fcheckmenuitem.h"
+#include "final/fmenu.h"
 
 //----------------------------------------------------------------------
 // class FCheckMenuItem

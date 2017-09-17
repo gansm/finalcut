@@ -33,7 +33,7 @@
 #ifndef FRADIOMENUITEM_H
 #define FRADIOMENUITEM_H
 
-#include "fmenuitem.h"
+#include "final/fmenuitem.h"
 
 
 //----------------------------------------------------------------------

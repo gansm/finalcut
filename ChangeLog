@@ -1,6 +1,7 @@
 2017-09-17  Markus Gans  <guru.mail@muenster.de>
 	* FObject has received the iterator child access methods 
 	  begin() and end()
+	* All include files were moved to a separate directory
 
 2017-09-15  Markus Gans  <guru.mail@muenster.de>
 	* Fix byte access in data type char_data

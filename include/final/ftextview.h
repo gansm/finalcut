@@ -30,11 +30,11 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "fscrollbar.h"
-#include "fstatusbar.h"
-#include "fstring.h"
-#include "fwidget.h"
+#include "final/fapplication.h"
+#include "final/fscrollbar.h"
+#include "final/fstatusbar.h"
+#include "final/fstring.h"
+#include "final/fwidget.h"
 
 
 //----------------------------------------------------------------------

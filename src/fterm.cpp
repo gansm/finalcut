@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "fterm.h"
-#include "fcharmap.h"
-#include "fkey_map.h"
-#include "ftcap_map.h"
+#include "final/fterm.h"
+#include "final/fcharmap.h"
+#include "final/fkey_map.h"
+#include "final/ftcap_map.h"
 
 #if defined(__linux__)
   #include "fonts/newfont.h"
@@ -265,7 +265,7 @@ bool FTerm::isKeyTimeout (timeval* time, register long timeout)
   }
 
   diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
-  return (diff_usec > timeout);
+  return ( diff_usec > timeout );
 }
 
 //----------------------------------------------------------------------
@@ -468,7 +468,7 @@ int FTerm::parseKeyString ( char buffer[]
     for (int i = 0; Fkey[i].tname[0] != 0; i++)
     {
       char* k = Fkey[i].string;
-      len = (k) ? int(std::strlen(k)) : 0;
+      len = ( k ) ? int(std::strlen(k)) : 0;
 
       if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
       {
@@ -887,7 +887,6 @@ const FString* FTerm::getXTermFont()
   {
     fd_set ifds;
     struct timeval tv;
-    char temp[150] = {};
 
     oscPrefix();
     putstring (OSC "50;?" BEL);  // get font
@@ -902,6 +901,8 @@ const FString* FTerm::getXTermFont()
     // read the terminal answer
     if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
     {
+      char temp[150] = {};
+
       if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
       {
         FString* xtermfont;
@@ -937,7 +938,6 @@ const FString* FTerm::getXTermTitle()
 
   fd_set ifds;
   struct timeval tv;
-  char temp[512] = {};
 
   putstring (CSI "21t");  // get title
   std::fflush(stdout);
@@ -950,6 +950,8 @@ const FString* FTerm::getXTermTitle()
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
   {
+    char temp[512] = {};
+
     if ( std::scanf("\033]l%[^\n]s", temp) == 1 )
     {
       std::size_t n = std::strlen(temp);
@@ -1918,7 +1920,7 @@ inline uInt16 FTerm::getInputStatusRegisterOne()
 
   // Miscellaneous output (read port)
   static const uInt16 misc_read = 0x3cc;
-  const uInt16 io_base = (inb(misc_read) & 0x01) ? 0x3d0 : 0x3b0;
+  const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 MDA (read port)
   // 0x3da : Input status 1 CGA (read port)
   return io_base + 0x0a;
@@ -2115,13 +2117,13 @@ void FTerm::getSystemTermType()
     if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
     {
       char* p;
-      char* type;
-      char* name;
       char  str[BUFSIZ];
 
       // read and parse the file
       while ( fgets(str, sizeof(str) - 1, fp) != 0 )
       {
+        char* name;
+        char* type;
         type = name = 0;  // 0 == not found
         p = str;
 
@@ -2694,7 +2696,6 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
 char* FTerm::parseSecDA (char*& current_termtype)
 {
   char* new_termtype = current_termtype;
-  bool  sec_da_supported = false;
 
   // The Linux console knows no Sec_DA
   if ( linux_terminal )
@@ -2714,6 +2715,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
   if ( sec_da->getLength() > 5 )
   {
     uLong num_components;
+    bool sec_da_supported = false;
 
     // remove the first 3 bytes ("\033[>")
     FString temp = sec_da->right(sec_da->getLength() - 3);

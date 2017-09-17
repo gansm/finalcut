@@ -3,10 +3,10 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "fmenubar.h"
-#include "fstatusbar.h"
-#include "fwidget.h"
+#include "final/fapplication.h"
+#include "final/fmenubar.h"
+#include "final/fstatusbar.h"
+#include "final/fwidget.h"
 
 
 // global FWidget object
@@ -338,7 +338,7 @@ bool FWidget::setEnable (bool on)
   else
     flags &= ~fc::active;
 
-  return enable = (on) ? true : false;
+  return enable = ( on ) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -391,7 +391,7 @@ bool FWidget::setFocus (bool on)
     window->setWindowFocusWidget(this);
   }
 
-  return focus = (on) ? true : false;
+  return focus = ( on ) ? true : false;
 }
 
 //----------------------------------------------------------------------
@@ -676,8 +676,8 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( ! isWindowWidget() )
   {
-    (x < 1) ? wsize.setX(1) : wsize.setX(x);
-    (y < 1) ? wsize.setY(1) : wsize.setY(y);
+    ( x < 1 ) ? wsize.setX(1) : wsize.setX(x);
+    ( y < 1 ) ? wsize.setY(1) : wsize.setY(y);
   }
   else
   {
@@ -685,8 +685,8 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
     wsize.setY(y);
   }
 
-  (w < 1) ? wsize.setWidth(1) : wsize.setWidth(w);
-  (h < 1) ? wsize.setHeight(1) : wsize.setHeight(h);
+  ( w < 1 ) ? wsize.setWidth(1) : wsize.setWidth(w);
+  ( h < 1 ) ? wsize.setHeight(1) : wsize.setHeight(h);
 
   adjust_wsize = wsize;
   term_x = getTermX();
@@ -858,7 +858,7 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
           && widget->getTermGeometry().contains(x, y) )
       {
         FWidget* child = childWidgetAt(widget, x, y);
-        return (child != 0) ? child : widget;
+        return ( child != 0 ) ? child : widget;
       }
 
       ++iter;

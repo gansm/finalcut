@@ -1,7 +1,7 @@
 // File: fprogressbar.cpp
 // Provides: class FProgressbar
 
-#include "fprogressbar.h"
+#include "final/fprogressbar.h"
 
 //----------------------------------------------------------------------
 // class FProgressbar

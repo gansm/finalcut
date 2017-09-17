@@ -2,15 +2,15 @@
 
 #include <vector>
 
-#include "fapplication.h"
-#include "fdialog.h"
-#include "fdialoglistmenu.h"
-#include "flabel.h"
-#include "fmenubar.h"
-#include "fmenu.h"
-#include "fmessagebox.h"
-#include "fstatusbar.h"
-#include "fstring.h"
+#include <final/fapplication.h>
+#include <final/fdialog.h>
+#include <final/fdialoglistmenu.h>
+#include <final/flabel.h>
+#include <final/fmenubar.h>
+#include <final/fmenu.h>
+#include <final/fmessagebox.h>
+#include <final/fstatusbar.h>
+#include <final/fstring.h>
 
 //----------------------------------------------------------------------
 // class smallWindow
@@ -361,8 +361,8 @@ void Window::adjustSize()
   h  = getRootWidget()->getHeight();
   X  = int(1 + (w - 40) / 2);
   Y  = int(1 + (h - 22) / 2);
-  dx = (w > 80) ? (w - 80) / 2 : 0;
-  dy = (h > 24) ? (h - 24) / 2 : 0;
+  dx = ( w > 80 ) ? (w - 80) / 2 : 0;
+  dy = ( h > 24 ) ? (h - 24) / 2 : 0;
 
   if ( Y < 2)
     Y = 2;
@@ -412,8 +412,8 @@ void Window::cb_createWindows (FWidget*, data_ptr)
   iter = first = windows.begin();
   w = getRootWidget()->getWidth();
   h = getRootWidget()->getHeight();
-  dx = (w > 80) ? (w - 80) / 2 : 0;
-  dy = (h > 24) ? (h - 24) / 2 : 0;
+  dx = ( w > 80 ) ? (w - 80) / 2 : 0;
+  dy = ( h > 24 ) ? (h - 24) / 2 : 0;
 
   while ( iter != windows.end() )
   {

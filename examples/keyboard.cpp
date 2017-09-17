@@ -1,6 +1,6 @@
 // File: keyboard.cpp
 
-#include "final.h"
+#include <final/final.h>
 
 //----------------------------------------------------------------------
 // class keyboard

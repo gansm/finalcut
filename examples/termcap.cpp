@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "fapplication.h"
-#include "ftermcap.h"
-#include "fvterm.h"
+#include <final/fapplication.h>
+#include <final/ftermcap.h>
+#include <final/fvterm.h>
 
 
 // global FVTerm object
