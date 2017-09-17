@@ -416,25 +416,23 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           if ( menu->getCount() > 0
               && menu_geometry.contains(ev->getTermPos()) )
           {
-            FMouseEvent* _ev;
             const FPoint& t = ev->getTermPos();
             const FPoint& p = menu->termToWidgetPos(t);
             int b = ev->getButton();
 
             try
             {
-              _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+              FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+              menu->mouse_down = true;
+              setClickedWidget(menu);
+              menu->onMouseMove(_ev);
+              delete _ev;
             }
             catch (const std::bad_alloc& ex)
             {
               std::cerr << "not enough memory to alloc "
                         << ex.what() << std::endl;
             }
-
-            menu->mouse_down = true;
-            setClickedWidget(menu);
-            menu->onMouseMove(_ev);
-            delete _ev;
           }
         }
       }
