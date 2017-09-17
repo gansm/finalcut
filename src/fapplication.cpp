@@ -497,7 +497,7 @@ void FApplication::processKeyboardEvent()
       widget->focusFirstChild();
   }
 
-  // empty the buffer on timeout
+  // Empty the buffer on timeout
   if ( fifo_in_use && widget->isKeyTimeout(&time_keypressed, key_timeout)  )
   {
     fifo_offset = 0;

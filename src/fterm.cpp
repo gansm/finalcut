@@ -903,7 +903,7 @@ const FString* FTerm::getXTermFont()
     {
       char temp[150] = {};
 
-      if ( std::scanf("\033]50;%[^\n]s", temp) == 1 )
+      if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
       {
         FString* xtermfont;
         std::size_t n = std::strlen(temp);
@@ -952,7 +952,7 @@ const FString* FTerm::getXTermTitle()
   {
     char temp[512] = {};
 
-    if ( std::scanf("\033]l%[^\n]s", temp) == 1 )
+    if ( std::scanf("\033]l%509[^\n]s", temp) == 1 )
     {
       std::size_t n = std::strlen(temp);
 
@@ -1009,7 +1009,7 @@ const FString FTerm::getXTermColorName (int color)
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
   {
-    if ( std::scanf("\033]4;%d;%[^\n]s", &color, temp) == 2 )
+    if ( std::scanf("\033]4;%10d;%509[^\n]s", &color, temp) == 2 )
     {
       std::size_t n = std::strlen(temp);
 
@@ -1536,7 +1536,7 @@ const FString FTerm::getSecDA()
 
   // read the answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1 )
-    if ( std::scanf("\033[>%d;%d;%dc", &a, &b, &c) == 3 )
+    if ( std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
       sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
   return sec_da_str;
