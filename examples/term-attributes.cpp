@@ -400,11 +400,14 @@ int main (int argc, char* argv[])
   dialog->addAccelerator('q');  // press 'q' to quit
   dialog->setShadow();
 
+  // Create the attribute demo widget as a child object from the dialog
   AttribDemo* demo = new AttribDemo(dialog);
   demo->setGeometry (1, 1, 67, 19);
 
+  // Set the dialog object as main widget
   app.setMainWidget(dialog);
-  dialog->show();
 
+  // Show and start the application
+  dialog->show();
   return app.exec();
 }

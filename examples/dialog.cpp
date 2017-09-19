@@ -58,7 +58,10 @@ int main (int argc, char* argv[])
     &app
   );
 
+  // Set dialog object as main widget
   app.setMainWidget(&dgl);
+
+  // Show and start the application
   dgl.show();
   return app.exec();
 }

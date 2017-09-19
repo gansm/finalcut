@@ -78,12 +78,19 @@ void timer::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
+  // Create the application object
   FApplication app(argc, argv);
   app.setForegroundColor(fc::Default);
   app.setBackgroundColor(fc::Default);
+
+  // Create a timer object t
   timer t(&app);
   t.addAccelerator('q');
+
+  // Set the timer object t as main widget
   app.setMainWidget(&t);
+
+  // Show and start the application
   t.show();
   return app.exec();
 }

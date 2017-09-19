@@ -38,7 +38,7 @@ FApplication::eventQueue* FApplication::event_queue = 0;
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(0, disable_alt_screen)
+  : FWidget(showParameterUsage(_argc,_argv), disable_alt_screen)
   , app_argc(_argc)
   , app_argv(_argv)
   , key(0)
@@ -290,14 +290,31 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
-void FApplication::print_cmd_Options ()
+FWidget* FApplication::showParameterUsage (const int& argc, char* argv[])
 {
-  std::printf ( "\nFinalCut Options:\n"
-    "  --encoding <name>           Sets the character encoding mode\n"
-    "                              {UTF8, VT100, PC, ASCII}\n"
-    "  --no-optimized-cursor       No cursor optimisation\n"
-    "  --vgafont                   Set the standard vga 8x16 font\n"
-    "  --newfont                   Enables the graphical font\n" );
+  if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
+                               || std::strcmp(argv[1], "-h") == 0 ) )
+  {
+    std::cout \
+      << "Generic options:" << std::endl
+      << "  -h, --help           "
+      << "       Display this help and exit" << std::endl
+      << std::endl
+      << "FinalCut Options:" << std::endl
+      << "  --encoding <name>    "
+      << "       Sets the character encoding mode" << std::endl
+      << "                       "
+      << "       {UTF8, VT100, PC, ASCII}" << std::endl
+      << "  --no-optimized-cursor"
+      << "       No cursor optimisation" << std::endl
+      << "  --vgafont            "
+      << "       Set the standard vga 8x16 font" << std::endl
+      << "  --newfont            "
+      << "       Enables the graphical font" << std::endl;
+        std::exit(EXIT_SUCCESS);
+  }
+
+  return 0;
 }
 
 
@@ -335,6 +352,7 @@ void FApplication::init()
   std::fill_n (urxvt_mouse, sizeof(urxvt_mouse), '\0');
   // init bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
+
   // interpret the command line options
   cmd_options();
 }

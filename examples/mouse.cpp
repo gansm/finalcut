@@ -532,7 +532,10 @@ int main (int argc, char* argv[])
   mouse_draw.setGeometry (12, 4, 60, 18);
   mouse_draw.addAccelerator('q');  // press 'q' to quit
 
+  // Set dialog object mouse_draw as main widget
   app.setMainWidget(&mouse_draw);
+
+  // Show and start the application
   mouse_draw.show();
   return app.exec();
 }

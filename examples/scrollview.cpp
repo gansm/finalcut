@@ -57,6 +57,7 @@ scrollview::scrollview (FWidget* parent)
   , go_west()
   , go_north()
 {
+  // Create the four navigation buttons
   go_east = new FButton(wchar_t(fc::BlackRightPointingPointer) , this);
   go_east->setGeometry (1, 1, 5, 1);
 
@@ -69,6 +70,7 @@ scrollview::scrollview (FWidget* parent)
   go_north = new FButton(wchar_t(fc::BlackUpPointingTriangle) , this);
   go_north->setGeometry (1, getScrollHeight() - 2, 5, 1);
 
+  // Add scroll function callbacks to the buttons
   go_east->addCallback
   (
     "clicked",
@@ -259,7 +261,10 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   scrollviewdemo svdemo(&app);
 
+  // Set dialog main_dlg as main widget
   app.setMainWidget(&svdemo);
+
+  // Show and start the application
   svdemo.show();
   return app.exec();
 }

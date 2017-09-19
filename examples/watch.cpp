@@ -215,7 +215,10 @@ int main (int argc, char* argv[])
   // Create a simple dialog box
   watch w(&app);
 
+  // Set dialog w as main widget
   app.setMainWidget(&w);
+
+  // Show and start the application
   w.show();
   return app.exec();
 }

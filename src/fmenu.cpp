@@ -797,16 +797,12 @@ void FMenu::init(FWidget* parent)
     if ( isMenuBar(parent) )
     {
       FMenuBar* mbar = static_cast<FMenuBar*>(parent);
-
-      if ( mbar )
-        mbar->calculateDimensions();
+      mbar->calculateDimensions();
     }
     else if ( isMenu(parent) )
     {
       FMenu* smenu = static_cast<FMenu*>(parent);
-
-      if ( smenu )
-        smenu->calculateDimensions();
+      smenu->calculateDimensions();
     }
 
     setSuperMenu(parent);

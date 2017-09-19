@@ -91,6 +91,7 @@ Treeview::Treeview (FWidget* parent)
   FObjectIterator iter_egypt = item_africa->begin();
   FListViewItem* item_egypt = static_cast<FListViewItem*>(*iter_egypt);
 item_egypt = item_egypt;
+item_africa->expand();
 
   // Quit button
   FButton* Quit = new FButton (this);
@@ -135,24 +136,19 @@ void Treeview::cb_exitApp (FWidget*, data_ptr)
 
 int main (int argc, char* argv[])
 {
-  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                   || std::strcmp(argv[1], "-h") == 0 ) )
-  {
-    std::cout << "Generic options:" << std::endl
-              << "  -h, --help                  "
-              << "Display this help and exit" << std::endl;
-    FApplication::print_cmd_Options();
-    std::exit(EXIT_SUCCESS);
-  }
-
+  // Create the application object
   FApplication app(argc, argv);
 
+  // Create main dialog object
   Treeview d(&app);
   d.setText (L"Continents");
   d.setGeometry (int(1 + (app.getWidth() - 37) / 2), 3, 37, 20);
   d.setShadow();
 
+  // Set dialog d as main widget
   app.setMainWidget(&d);
+
+  // Show and start the application
   d.show();
   return app.exec();
 }

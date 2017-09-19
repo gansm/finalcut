@@ -47,11 +47,11 @@ int main (int, char**)
   std::cout << "   cpp_str: \"" << cpp_str << "\"" << std::endl;
 
   // Test: copy a character
-  const FString& ch('c');
+  const FString ch('c');
   std::cout << "      char: '" << ch << "'" << std::endl;
 
   // Test: copy a wide character
-  const FString& wch(L'w');
+  const FString wch(L'w');
   std::cout << "   wchar_t: '" << wch << "'" << std::endl;
 
   // Test: utf-8 string

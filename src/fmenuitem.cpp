@@ -299,9 +299,7 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-
-    if ( smenu )
-      smenu->onKeyPress(ev);
+    smenu->onKeyPress(ev);
   }
 
   if ( isMenuBar(super_menu) )
@@ -330,23 +328,19 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
+    const FPoint& p2 = smenu->termToWidgetPos(t);
 
-    if ( smenu )
+    try
     {
-      const FPoint& p2 = smenu->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDoubleClick_Event
-                                           , p2, t, b );
-        smenu->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
+      FMouseEvent* _ev = new FMouseEvent ( fc::MouseDoubleClick_Event
+                                         , p2, t, b );
+      smenu->onMouseDoubleClick(_ev);
+      delete _ev;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc "
+                << ex.what() << std::endl;
     }
   }
 
@@ -409,23 +403,19 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
+    const FPoint& p2 = smenu->termToWidgetPos(t);
 
-    if ( smenu )
+    try
     {
-      const FPoint& p2 = smenu->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDown_Event
-                                           , p2, t, b );
-        smenu->onMouseDown(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
+      FMouseEvent* _ev = new FMouseEvent ( fc::MouseDown_Event
+                                         , p2, t, b );
+      smenu->onMouseDown(_ev);
+      delete _ev;
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc "
+                << ex.what() << std::endl;
     }
   }
 
@@ -488,40 +478,28 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-
-    if ( smenu )
-    {
-      const FPoint& p2 = smenu->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-      smenu->onMouseUp(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = smenu->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+    smenu->onMouseUp(_ev);
+    delete _ev;
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-    if ( mbar )
-    {
-      const FPoint& p2 = mbar->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-      mbar->onMouseUp(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = mbar->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+    mbar->onMouseUp(_ev);
+    delete _ev;
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-
-    if ( dgl )
-    {
-      const FPoint& p2 = dgl->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-      dgl->onMouseUp(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = dgl->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
+    dgl->onMouseUp(_ev);
+    delete _ev;
   }
 }
 
@@ -537,40 +515,28 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-
-    if ( smenu )
-    {
-      const FPoint& p2 = smenu->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-      smenu->onMouseMove(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = smenu->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+    smenu->onMouseMove(_ev);
+    delete _ev;
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-    if ( mbar )
-    {
-      const FPoint& p2 = mbar->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-      mbar->onMouseMove(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = mbar->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+    mbar->onMouseMove(_ev);
+    delete _ev;
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-
-    if ( dgl )
-    {
-      const FPoint& p2 = dgl->termToWidgetPos(t);
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-      dgl->onMouseMove(_ev);
-      delete _ev;
-    }
+    const FPoint& p2 = dgl->termToWidgetPos(t);
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
+    dgl->onMouseMove(_ev);
+    delete _ev;
   }
 }
 
@@ -587,9 +553,6 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   }
 
   FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-  if ( ! mbar )
-    return;
 
   if ( menu )
   {
@@ -635,6 +598,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     processClicked();
     mbar->drop_down = false;
   }
+
   ev->accept();
 }
 
@@ -653,9 +617,7 @@ void FMenuItem::onFocusOut (FFocusEvent*)
   if ( super_menu && isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-    if ( mbar )
-      mbar->redraw();
+    mbar->redraw();
   }
 
   if ( getStatusBar() )
@@ -703,45 +665,39 @@ void FMenuItem::init (FWidget* parent)
 
   setGeometry (1, 1, int(text_length + 2), 1, false);
 
-  if ( parent )
+  if ( ! parent )
+    return;
+
+  FMenuList* menu_list;
+  setSuperMenu (parent);
+
+  if ( accel_key  )
+    addAccelerator (accel_key);
+
+  menu_list = dynamic_cast<FMenuList*>(parent);
+
+  if ( menu_list )
+    menu_list->insert(this);
+
+  if ( isMenuBar(parent) )  // Parent is menubar
   {
-    FMenuList* menu_list;
-    setSuperMenu (parent);
+    FMenuBar* menubar_ptr = static_cast<FMenuBar*>(parent);
+    menubar_ptr->calculateDimensions();
 
-    if ( accel_key  )
-      addAccelerator (accel_key);
+    if ( hotkey )  // Meta + hotkey
+      menubar_ptr->addAccelerator ( fc::Fmkey_meta + std::tolower(hotkey)
+                                  , this );
 
-    menu_list = dynamic_cast<FMenuList*>(parent);
-
-    if ( menu_list )
-      menu_list->insert(this);
-
-    if ( isMenuBar(parent) )  // Parent is menubar
-    {
-      FMenuBar* menubar_ptr = static_cast<FMenuBar*>(parent);
-
-      if ( menubar_ptr )
-      {
-        menubar_ptr->calculateDimensions();
-
-        if ( hotkey )  // Meta + hotkey
-          menubar_ptr->addAccelerator ( fc::Fmkey_meta + std::tolower(hotkey)
-                                      , this );
-      }
-
-      addCallback  // for this element
-      (
-        "deactivate",
-        F_METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
-      );
-    }
-    else if ( isMenu(parent) )  // Parent is menu
-    {
-      FMenu* menu_ptr = static_cast<FMenu*>(parent);
-
-      if ( menu_ptr )
-        menu_ptr->calculateDimensions();
-    }
+    addCallback  // for this element
+    (
+      "deactivate",
+      F_METHOD_CALLBACK (parent, &FMenuBar::cb_item_deactivated)
+    );
+  }
+  else if ( isMenu(parent) )  // Parent is menu
+  {
+    FMenu* menu_ptr = static_cast<FMenu*>(parent);
+    menu_ptr->calculateDimensions();
   }
 }
 

@@ -911,16 +911,7 @@ int main (int argc, char* argv[])
   FString ver = F_VERSION;  // library version
   FString title = "The FINAL CUT " + ver + " (C) 2017 by Markus Gans";
 
-  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                   || std::strcmp(argv[1], "-h") == 0 ) )
-  {
-    std::cout << "Generic options:" << std::endl
-              << "  -h, --help                  "
-              << "Display this help and exit" << std::endl;
-    FApplication::print_cmd_Options();
-    std::exit(EXIT_SUCCESS);
-  }
-
+  // Create the application object app
   FApplication app(argc, argv);
   app.setXTermDefaultColors(true);
   app.setXTermTitle (title);
@@ -929,12 +920,20 @@ int main (int argc, char* argv[])
   //app.setTermSize(94,30);
   //app.setNewFont();
 
+  // Create main dialog object d
   MyDialog d(&app);
   d.setText (title);
   d.setGeometry (int((app.getWidth() - 56) / 2), 2, 56, app.getHeight() - 4);
   d.setShadow();
 
+  // Set the dialog object d as the main widget of the application.
+  // When you close the main widget, the application will be closed.
   app.setMainWidget(&d);
+
+  // Show the dialog d
   d.show();
+
+  // Start the application
+  // and return the result to the operating system
   return app.exec();
 }

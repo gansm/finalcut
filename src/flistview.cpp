@@ -88,6 +88,20 @@ FString FListViewItem::getText (int column) const
 }
 
 //----------------------------------------------------------------------
+uInt FListViewItem::getDepth() const
+{
+  FObject* parent = getParent();
+
+  if ( parent && parent->isInstanceOf("FListViewItem") )
+  {
+    FListViewItem* parent_item = static_cast<FListViewItem*>(parent);
+    return parent_item->getDepth() + 1;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
 void FListViewItem::setText (int column, const FString& text)
 {
   if ( column < 1
@@ -226,6 +240,7 @@ FListView::FListView (FWidget* parent)
   , root()
   , selflist()
   , itemlist()
+  , iter_path()
   , header()
   , headerline()
   , vbar(0)
@@ -408,6 +423,8 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
       item_iter = parent->appendItem (item);
     }
   }
+  else
+    item_iter = FObjectIterator(0);
 
   int element_count = int(getCount());
   recalculateVerticalBar (element_count);
@@ -1294,6 +1311,8 @@ void FListView::drawListLine ( const FListViewItem* item
                              , bool is_focus
                              , bool is_current )
 {
+  uInt indent = item->getDepth() << 1;  // indent = 2 * depth
+
   setColor (wc.list_fg, wc.list_bg);
 
   if ( is_current )
@@ -1329,13 +1348,24 @@ void FListView::drawListLine ( const FListViewItem* item
 
   if ( tree_view )
   {
+    if ( indent > 0 )
+      line = FString(indent, L' ');
+
     if ( item->expandable  )
     {
-      line = wchar_t(fc::BlackRightPointingPointer);
-      line += L' ';
+      if (item->is_expand )
+      {
+        line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
+        line += L' ';
+      }
+      else
+      {
+        line += wchar_t(fc::BlackRightPointingPointer);  // ►
+        line += L' ';
+      }
     }
     else
-      line = L"  ";
+      line += L"  ";
   }
   else
     line = L" ";
@@ -1359,6 +1389,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
       if ( tree_view && i == 1 )
       {
+        width -= indent;
         width--;
       }
 

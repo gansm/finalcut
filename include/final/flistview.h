@@ -30,6 +30,7 @@
 #ifndef FLISTVIEW_H
 #define FLISTVIEW_H
 
+#include <stack>
 #include <vector>
 
 #include "final/fscrollbar.h"
@@ -52,8 +53,6 @@ class FListViewItem : public FObject
   public:
     // Constructor
     FListViewItem (const FListViewItem&);  // copy constructor
-    explicit FListViewItem (FListViewItem*);
-    explicit FListViewItem (FListView*);
     explicit FListViewItem (FObjectIterator);
     FListViewItem ( const std::vector<FString>&
                   , FWidget::data_ptr
@@ -69,6 +68,7 @@ class FListViewItem : public FObject
     const char*      getClassName() const;
     uInt             getColumnCount() const;
     FString          getText (int) const;
+    uInt             getDepth() const;
 
     // Mutator
     void             setText (int, const FString&);
@@ -142,56 +142,56 @@ class FListView : public FWidget
     ~FListView();
 
     // Accessors
-    const char*        getClassName() const;
-    uInt               getCount() const;
-    fc::text_alignment getColumnAlignment (int) const;
-    FString            getColumnText (int) const;
-    FListViewItem*     getCurrentItem();
+    const char*          getClassName() const;
+    uInt                 getCount() const;
+    fc::text_alignment   getColumnAlignment (int) const;
+    FString              getColumnText (int) const;
+    FListViewItem*       getCurrentItem();
 
     // Mutators
-    void               setGeometry (int, int, int, int, bool = true);
-    void               setColumnAlignment (int, fc::text_alignment);
-    void               setColumnText (int, const FString&);
-    bool               setTreeView (bool);
-    bool               setTreeView();
-    bool               unsetTreeView();
+    void                 setGeometry (int, int, int, int, bool = true);
+    void                 setColumnAlignment (int, fc::text_alignment);
+    void                 setColumnText (int, const FString&);
+    bool                 setTreeView (bool);
+    bool                 setTreeView();
+    bool                 unsetTreeView();
 
     // Methods
-    virtual int        addColumn (const FString&, int = USE_MAX_SIZE);
-    FObjectIterator    insert (FListViewItem*);
-    FObjectIterator    insert (FListViewItem*, FObjectIterator);
-    FObjectIterator    insert ( const std::vector<FString>&
-                              , data_ptr = 0 );
-    FObjectIterator    insert ( const std::vector<FString>&
-                              , FObjectIterator );
-    FObjectIterator    insert ( const std::vector<FString>&
-                              , data_ptr
-                              , FObjectIterator );
-    FObjectIterator    insert ( const std::vector<long>&
-                              , data_ptr = 0 );
-    FObjectIterator    insert ( const std::vector<long>&
-                              , FObjectIterator );
-    FObjectIterator    insert ( const std::vector<long>&
-                              , data_ptr
-                              , FObjectIterator );
-    FObjectIterator    beginOfList();
-    FObjectIterator    endOfList();
+    virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
+    FObjectIterator      insert (FListViewItem*);
+    FObjectIterator      insert (FListViewItem*, FObjectIterator);
+    FObjectIterator      insert ( const std::vector<FString>&
+                                , data_ptr = 0 );
+    FObjectIterator      insert ( const std::vector<FString>&
+                                , FObjectIterator );
+    FObjectIterator      insert ( const std::vector<FString>&
+                                , data_ptr
+                                , FObjectIterator );
+    FObjectIterator      insert ( const std::vector<long>&
+                                , data_ptr = 0 );
+    FObjectIterator      insert ( const std::vector<long>&
+                                , FObjectIterator );
+    FObjectIterator      insert ( const std::vector<long>&
+                                , data_ptr
+                                , FObjectIterator );
+    FObjectIterator      beginOfList();
+    FObjectIterator      endOfList();
 
     // Event handlers
-    void               onKeyPress (FKeyEvent*);
-    void               onMouseDown (FMouseEvent*);
-    void               onMouseUp (FMouseEvent*);
-    void               onMouseMove (FMouseEvent*);
-    void               onMouseDoubleClick (FMouseEvent*);
-    void               onWheel (FWheelEvent*);
-    void               onTimer (FTimerEvent*);
-    void               onFocusIn (FFocusEvent*);
-    void               onFocusOut (FFocusEvent*);
+    void                 onKeyPress (FKeyEvent*);
+    void                 onMouseDown (FMouseEvent*);
+    void                 onMouseUp (FMouseEvent*);
+    void                 onMouseMove (FMouseEvent*);
+    void                 onMouseDoubleClick (FMouseEvent*);
+    void                 onWheel (FWheelEvent*);
+    void                 onTimer (FTimerEvent*);
+    void                 onFocusIn (FFocusEvent*);
+    void                 onFocusOut (FFocusEvent*);
 
   protected:
     // Methods
-    void               adjustYOffset();
-    void               adjustSize();
+    void                 adjustYOffset();
+    void                 adjustSize();
 
   private:
     // Typedef
@@ -215,6 +215,7 @@ class FListView : public FWidget
     };
 
     typedef std::vector<Header> headerItems;
+    typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constants
     static const int USE_MAX_SIZE = -1;
@@ -226,42 +227,43 @@ class FListView : public FWidget
     FListView& operator = (const FListView&);
 
     // Methods
-    void               init();
-    uInt               getAlignOffset (fc::text_alignment, uInt, uInt);
-    void               draw();
-    void               drawColumnLabels();
-    void               drawList();
-    void               drawListLine (const FListViewItem*, bool, bool);
-    void               recalculateHorizontalBar (int);
-    void               recalculateVerticalBar (int);
-    FObjectIterator    appendItem (FListViewItem*);
-    void               processClick();
-    void               processChanged();
-    FObjectIterator    index2iterator (int);
-    void               nextElement (FObjectIterator&);
+    void                 init();
+    uInt                 getAlignOffset (fc::text_alignment, uInt, uInt);
+    void                 draw();
+    void                 drawColumnLabels();
+    void                 drawList();
+    void                 drawListLine (const FListViewItem*, bool, bool);
+    void                 recalculateHorizontalBar (int);
+    void                 recalculateVerticalBar (int);
+    FObjectIterator      appendItem (FListViewItem*);
+    void                 processClick();
+    void                 processChanged();
+    FObjectIterator      index2iterator (int);
+    void                 nextElement (FObjectIterator&);
 
     // Callback methods
-    void               cb_VBarChange (FWidget*, data_ptr);
-    void               cb_HBarChange (FWidget*, data_ptr);
+    void                 cb_VBarChange (FWidget*, data_ptr);
+    void                 cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FObjectIterator    root;
-    FObjectList        selflist;
-    FObjectList        itemlist;
-    headerItems        header;
-    FTermBuffer        headerline;
-    FScrollbar*        vbar;
-    FScrollbar*        hbar;
-    fc::dragScroll     drag_scroll;
-    int                scroll_repeat;
-    int                scroll_distance;
-    bool               scroll_timer;
-    bool               tree_view;
-    int                current;
-    int                xoffset;
-    int                yoffset;
-    int                nf_offset;
-    int                max_line_width;
+    FObjectIterator      root;
+    FObjectList          selflist;
+    FObjectList          itemlist;
+    FObjectIteratorStack iter_path;
+    headerItems          header;
+    FTermBuffer          headerline;
+    FScrollbar*          vbar;
+    FScrollbar*          hbar;
+    fc::dragScroll       drag_scroll;
+    int                  scroll_repeat;
+    int                  scroll_distance;
+    bool                 scroll_timer;
+    bool                 tree_view;
+    int                  current;
+    int                  xoffset;
+    int                  yoffset;
+    int                  nf_offset;
+    int                  max_line_width;
 
     // Friend class
     friend class FListViewItem;
@@ -345,13 +347,27 @@ inline void FListView::nextElement (FObjectIterator& iter)
 {
   FListViewItem* item = static_cast<FListViewItem*>(*iter);
 
-  if ( item->isExpandable() )
+  if ( item->isExpandable() && item->isExpand() )
   {
-    //iter = item->begin();
-    ++iter;
+    iter_path.push(iter);
+    iter = item->begin();
   }
   else
+  {
     ++iter;
+
+    if ( ! iter_path.empty() )
+    {
+      FObjectIterator& parent_iter = iter_path.top();
+
+      if ( iter == (*parent_iter)->end() )
+      {
+        iter = parent_iter;
+        iter_path.pop();
+        ++iter;
+      }
+    }
+  }
 }
 
 #endif  // FLISTVIEW_H

@@ -85,8 +85,8 @@ class FApplication : public FWidget
     static void        queueEvent (const FObject*, const FEvent*);
     static void        sendQueuedEvents ();
     static bool        eventInQueue();
-    static bool        removeQueuedEvent(const FObject*);
-    static void        print_cmd_Options();
+    static bool        removeQueuedEvent (const FObject*);
+    static FWidget*    showParameterUsage (const int&, char*[]);
 
   private:
     // Typedefs and Enumerations

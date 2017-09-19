@@ -1,3 +1,6 @@
+2017-09-19  Markus Gans  <guru.mail@muenster.de>
+	* The command line help text is now available in all applications
+
 2017-09-17  Markus Gans  <guru.mail@muenster.de>
 	* FObject has received the iterator child access methods 
 	  begin() and end()

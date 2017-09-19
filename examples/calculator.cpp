@@ -1014,7 +1014,10 @@ int main (int argc, char* argv[])
   // Create a calculator object
   Calc calculator(&app);
 
+  // Set calculator object as main widget
   app.setMainWidget(&calculator);
+
+  // Show and start the application
   calculator.show();
   return app.exec();
 }

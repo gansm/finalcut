@@ -2,8 +2,8 @@
 
 if [ $# -gt 0 ]
 then
-  eval cppcheck --enable=all "$@"
+  eval cppcheck --force --enable=all -I../include/ "$@"
 else
-  eval cppcheck --enable=all ../include/final/ ../src/ ../examples/
+  eval cppcheck --force --enable=all -I../include/ ../src/ ../examples/
 fi
 

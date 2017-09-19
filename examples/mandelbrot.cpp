@@ -141,7 +141,10 @@ int main (int argc, char* argv[])
   mb.addAccelerator('q');  // press 'q' to quit
   mb.setShadow();
 
+  // Set the mandelbrot object as main widget
   app.setMainWidget(&mb);
+
+  // Show and start the application
   mb.show();
   return app.exec();
 }

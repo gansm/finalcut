@@ -41,9 +41,7 @@ void FRadioMenuItem::init (FWidget* parent)
   if ( isMenu(parent) )  // Parent is menu
   {
     FMenu* menu_ptr = static_cast<FMenu*>(parent);
-
-    if ( menu_ptr )
-      menu_ptr->has_checkable_items = true;
+    menu_ptr->has_checkable_items = true;
 
     addCallback  // for this element
     (

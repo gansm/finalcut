@@ -32,7 +32,7 @@ int main (int argc, char* argv[])
   // Create the application object
   FApplication app(argc, argv);
 
-  // Create a simple dialog box
+  // Create a simple modal dialog box
   FDialog* dgl = new FDialog(&app);
   dgl->setModal();
   dgl->setText ("UNIX select");

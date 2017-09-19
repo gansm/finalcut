@@ -132,20 +132,28 @@ int main (int argc, char* argv[])
 {
   int xmax, ymax;
 
+  // Create the application object
   FApplication app(argc, argv);
+
+  // Create a FVTerm object as virtual terminal
   terminal = new FVTerm(&app);
   xmax = terminal->getColumnNumber() - 1;
   ymax = terminal->getLineNumber() - 1;
   FString line(xmax + 1, '-');
 
+  // Place the cursor in the upper left corner
   terminal->setTermXY(0,0);
+  // Reset all terminal attributes
   terminal->setNormal();
+  // Clear the screen
   terminal->clearArea();
 
+  // Show the determined terminal name and text resolution
   std::cout << "Terminal: " << terminal->getTermType() << "\r\n";
   std::cout << " Columns: 0.." << xmax << "\r\n";
   std::cout << "   Lines: 0.." << ymax << "\r\n";
 
+  // Show the escape sequences for the following cursor movements
   std::cout << std::setw(38) << "Cursor move\r\n";
   std::cout << "    (From) -> (To)       ";
   std::cout << "escape sequence          ";
@@ -169,10 +177,13 @@ int main (int argc, char* argv[])
   move (3, 2, xmax, 2);
   move (5, 5, xmax - 5, ymax - 5);
 
+  // Waiting for keypress
   keyPressed();
 
+  // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
   terminal->printMoveDurations();
 
+  // Waiting for keypress
   keyPressed();
 }

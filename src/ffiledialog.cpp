@@ -241,7 +241,6 @@ int FFileDialog::readDir()
   int start, dir_num;
   const char* const dir = directory.c_str();
   const char* const filter = filter_pattern.c_str();
-  errno = 0;
   directory_stream = opendir(dir);
 
   if ( ! directory_stream )
@@ -254,37 +253,40 @@ int FFileDialog::readDir()
 
   while ( true )
   {
-    errno = 0;
-    struct dirent* next = readdir (directory_stream);
+    int retval;
+    struct dirent next;
+    struct dirent* result;
 
-    if ( next )
+    retval = readdir_r(directory_stream, &next, &result);
+
+    if ( result && retval == 0 )
     {
-      if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
+      if ( next.d_name[0] == '.' && next.d_name[1] == '\0' )
         continue;
 
       if ( ! show_hidden
-          && next->d_name[0] == '.'
-          && next->d_name[1] != '\0'
-          && next->d_name[1] != '.' )
+          && next.d_name[0] == '.'
+          && next.d_name[1] != '\0'
+          && next.d_name[1] != '.' )
       {
         continue;
       }
 
       if ( dir[0] == '/' && dir[1] == '\0'
-          && std::strcmp(next->d_name, "..") == 0  )
+          && std::strcmp(next.d_name, "..") == 0  )
         continue;
 
       dir_entry entry;
-      entry.name = strdup(next->d_name);
-      entry.type = next->d_type;
+      entry.name = strdup(next.d_name);
+      entry.type = next.d_type;
 
-      if ( next->d_type == DT_LNK )  // symbolic link
+      if ( next.d_type == DT_LNK )  // symbolic link
       {
         char resolved_path[MAXPATHLEN] = {};
         char symLink[MAXPATHLEN] = {};
         std::strncpy (symLink, dir, sizeof(symLink) - 1);
         std::strncat ( symLink
-                     , next->d_name
+                     , next.d_name
                      , sizeof(symLink) - std::strlen(symLink) - 1);
 
         if ( realpath(symLink, resolved_path) != 0 )  // follow link
@@ -306,11 +308,11 @@ int FFileDialog::readDir()
       else
         std::free(entry.name);
     }
-    else if (errno != 0)
+    else if ( retval > 0 )
     {
       FMessageBox::error (this, "Reading directory\n" + directory);
 
-      if ( errno != EOVERFLOW )
+      if ( retval == EBADF )  // Invalid directory stream descriptor
         break;
     }
     else

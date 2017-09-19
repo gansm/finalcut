@@ -567,24 +567,18 @@ void Window::cb_destroyWindow (FWidget*, data_ptr data)
 
 int main (int argc, char* argv[])
 {
-  if ( argv[1] && ( std::strcmp(argv[1], "--help") == 0
-                   || std::strcmp(argv[1], "-h") == 0 ) )
-  {
-    std::cout << "Generic options:" << std::endl
-              << "  -h, --help                  "
-              << "Display this help and exit" << std::endl;
-    FApplication::print_cmd_Options();
-    std::exit(EXIT_SUCCESS);
-  }
-
+  // Create the application object
   FApplication app (argc, argv);
 
+  // Create main dialog object
   Window main_dlg (&app);
   main_dlg.setText ("Main window");
   main_dlg.setGeometry (int(1 + (app.getWidth() - 40) / 2), 2, 40, 6);
 
+  // Set dialog main_dlg as main widget
   app.setMainWidget (&main_dlg);
-  main_dlg.show();
 
+  // Show and start the application
+  main_dlg.show();
   return app.exec();
 }

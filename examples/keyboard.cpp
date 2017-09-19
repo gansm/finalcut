@@ -70,12 +70,19 @@ void keyboard::draw()
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
+  // Create the application object
   FApplication app(argc, argv);
   app.setForegroundColor(fc::Default);
   app.setBackgroundColor(fc::Default);
+
+  // Create a keyboard object
   keyboard key(&app);
   key.addAccelerator('q');
+
+  // Set the keyboard object as main widget
   app.setMainWidget(&key);
+
+  // Show and start the application
   key.show();
   return app.exec();
 }
