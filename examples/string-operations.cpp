@@ -88,19 +88,52 @@ int main (int, char**)
   std::cout << " stream in: " << streamer9 << std::endl;
 
   // ...from long double
-  FString streamer10;
-  streamer10 << lDouble(0.333333333333333333L);
-  std::cout << " stream in: " << streamer10 << std::endl;
+  try
+  {
+    FString streamer10;
+    streamer10 << lDouble(0.333333333333333333L);
+    std::cout << " stream in: " << streamer10 << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // ...from double
-  FString streamer11;
-  streamer11 << double(0.11111111111);
-  std::cout << " stream in: " << streamer11 << std::endl;
+  try
+  {
+    FString streamer11;
+    streamer11 << double(0.11111111111);
+    std::cout << " stream in: " << streamer11 << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // ...from float
-  FString streamer12;
-  streamer12 << float(0.22222222);
-  std::cout << " stream in: " << streamer12 << std::endl;
+  try
+  {
+    FString streamer12;
+    streamer12 << float(0.22222222);
+    std::cout << " stream in: " << streamer12 << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // Test: Streaming from a FString (operator >>)...
 

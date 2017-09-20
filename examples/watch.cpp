@@ -9,20 +9,20 @@
 #include <final/fswitch.h>
 
 //----------------------------------------------------------------------
-// class watch
+// class Watch
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class watch : public FDialog
+class Watch : public FDialog
 {
   public:
     // Constructor
-    explicit watch (FWidget* = 0);
+    explicit Watch (FWidget* = 0);
 
     // Destructor
-    ~watch();
+    ~Watch();
 
     // Method
     void printTime();
@@ -42,10 +42,10 @@ class watch : public FDialog
 
   private:
     // Disable copy constructor
-    watch (const watch&);
+    Watch (const Watch&);
 
     // Disable assignment operator (=)
-    watch& operator = (const watch&);
+    Watch& operator = (const Watch&);
 
     // Data Members
     bool     sec;
@@ -57,7 +57,7 @@ class watch : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-watch::watch (FWidget* parent)
+Watch::Watch (FWidget* parent)
   : FDialog(parent)
   , sec(true)
   , time_label(0)
@@ -91,32 +91,32 @@ watch::watch (FWidget* parent)
   clock_sw->addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &watch::cb_clock)
+    F_METHOD_CALLBACK (this, &Watch::cb_clock)
   );
 
   // Connect switch signal "toggled" with a callback member function
   seconds_sw->addCallback
   (
     "toggled",
-    F_METHOD_CALLBACK (this, &watch::cb_seconds)
+    F_METHOD_CALLBACK (this, &Watch::cb_seconds)
   );
 
   // Connect button signal "clicked" with a callback member function
   quit_btn->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &watch::cb_exitApp)
+    F_METHOD_CALLBACK (this, &Watch::cb_exitApp)
   );
 }
 
 //----------------------------------------------------------------------
-watch::~watch()
+Watch::~Watch()
 {
   delOwnTimer();
 }
 
 //----------------------------------------------------------------------
-void watch::printTime()
+void Watch::printTime()
 {
   FString str;
   std::tm now;
@@ -135,13 +135,13 @@ void watch::printTime()
 }
 
 //----------------------------------------------------------------------
-void watch::onTimer (FTimerEvent*)
+void Watch::onTimer (FTimerEvent*)
 {
   printTime();
 }
 
 //----------------------------------------------------------------------
-void watch::onClose (FCloseEvent* ev)
+void Watch::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit"
                               , "Do you really want\n"
@@ -155,7 +155,7 @@ void watch::onClose (FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_clock (FWidget*, data_ptr)
+void Watch::cb_clock (FWidget*, data_ptr)
 {
   if ( clock_sw->isChecked() )
   {
@@ -171,7 +171,7 @@ void watch::cb_clock (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_seconds (FWidget*, data_ptr)
+void Watch::cb_seconds (FWidget*, data_ptr)
 {
   if ( seconds_sw->isChecked() )
     sec = true;
@@ -192,13 +192,13 @@ void watch::cb_seconds (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void watch::cb_exitApp (FWidget*, data_ptr)
+void Watch::cb_exitApp (FWidget*, data_ptr)
 {
   close();
 }
 
 //----------------------------------------------------------------------
-void watch::adjustSize()
+void Watch::adjustSize()
 {
   int pw = getParentWidget()->getWidth();
   setX (1 + (pw - 22) / 2, false);
@@ -214,7 +214,7 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
 
   // Create a simple dialog box
-  watch w(&app);
+  Watch w(&app);
 
   // Set dialog w as main widget
   app.setMainWidget(&w);
