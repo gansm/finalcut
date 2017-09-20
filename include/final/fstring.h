@@ -88,6 +88,32 @@ class FString
     const FString operator + (const wchar_t);
     const FString operator + (const char);
 
+    FString& operator << (const FString&);
+    FString& operator << (const wchar_t);
+    FString& operator << (const char);
+    FString& operator << (const sInt16);
+    FString& operator << (const uInt16);
+    FString& operator << (const int);
+    FString& operator << (const uInt);
+    FString& operator << (const long);
+    FString& operator << (const uLong);
+    FString& operator << (const float);
+    FString& operator << (const double);
+    FString& operator << (const lDouble);
+
+    const FString& operator >> (FString&);
+    const FString& operator >> (std::wstring&);
+    const FString& operator >> (wchar_t&);
+    const FString& operator >> (char&);
+    const FString& operator >> (sInt16&);
+    const FString& operator >> (uInt16&);
+    const FString& operator >> (int&);
+    const FString& operator >> (uInt&);
+    const FString& operator >> (long&);
+    const FString& operator >> (uLong&);
+    const FString& operator >> (double&);
+    const FString& operator >> (float&);
+
     wchar_t& operator [] (int);
     wchar_t& operator [] (uInt);
     const FString& operator () ();
@@ -138,11 +164,6 @@ class FString
     operator const char* () const { return c_str(); }
 
     // Non-member operators
-    friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
-    friend std::istream&  operator >> (std::istream& instr, FString& s);
-    friend std::wostream& operator << (std::wostream& outstr, const FString& s);
-    friend std::wistream& operator >> (std::wistream& instr, FString& s);
-
     friend const FString operator + (const FString&, const FString&);
     friend const FString operator + (const FString&, const wchar_t);
     friend const FString operator + (const std::wstring&, const FString&);
@@ -153,6 +174,11 @@ class FString
     friend const FString operator + (const char, const FString&);
     friend const FString operator + (const wchar_t, const std::wstring&);
     friend const FString operator + (const FString&, const char);
+
+    friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
+    friend std::istream&  operator >> (std::istream& instr, FString& s);
+    friend std::wostream& operator << (std::wostream& outstr, const FString& s);
+    friend std::wistream& operator >> (std::wistream& instr, FString& s);
 
     // inquiries
     bool isNull() const;
@@ -221,9 +247,9 @@ class FString
     FString& setNumber (uInt);
     FString& setNumber (long);
     FString& setNumber (uLong);
-    FString& setNumber (float, int = 8);
-    FString& setNumber (double, int = 11);
-    FString& setNumber (lDouble, int = 11);
+    FString& setNumber (float, int = FLT_DIG);
+    FString& setNumber (double, int = DBL_DIG);
+    FString& setNumber (lDouble, int = LDBL_DIG);
 
     FString& setFormatedNumber (sInt16, char = nl_langinfo(THOUSEP)[0]);
     FString& setFormatedNumber (uInt16, char = nl_langinfo(THOUSEP)[0]);

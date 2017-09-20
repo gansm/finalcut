@@ -205,7 +205,7 @@ int FMessageBox::info ( FWidget* parent
   try
   {
     mbox = new FMessageBox ( caption
-                           , FString().setNumber(num)
+                           , FString() << num
                            , button0, button1, button2
                            , parent );
   }

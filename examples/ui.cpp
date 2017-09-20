@@ -511,7 +511,7 @@ MyDialog::MyDialog (FWidget* parent)
   myList->setMultiSelection();
 
   for (int z = 1; z < 100; z++)
-    myList->insert (FString().setNumber(z) + L" placeholder");
+    myList->insert (FString() << z << L" placeholder");
 
   // Text labels
   FLabel* headline = new FLabel (this);
@@ -693,12 +693,13 @@ void MyDialog::cb_terminfo (FWidget*, data_ptr)
   int x = getColumnNumber();
   int y = getLineNumber();
   FMessageBox info1 ( "Environment"
-                    , "  Type: " + FString(getTermType()) + "\n"
-                      "  Name: " + FString(getTermName()) + "\n"
-                      "  Mode: " + FString(getEncoding()) + "\n"
-                      "  Size: " + FString().setNumber(x) + wchar_t(fc::Times)
-                                 + FString().setNumber(y) + "\n"
-                      "Colors: " + FString().setNumber(getMaxColor())
+                    , FString()
+                      << "  Type: " << getTermType() << "\n"
+                      << "  Name: " << getTermName() << "\n"
+                      << "  Mode: " << getEncoding() << "\n"
+                      << "  Size: " << x << wchar_t(fc::Times)
+                                    << y << "\n"
+                      << "Colors: " << getMaxColor()
                     , FMessageBox::Ok, 0, 0, this );
   info1.setHeadline("Terminal:");
   info1.exec();

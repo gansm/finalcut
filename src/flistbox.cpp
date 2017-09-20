@@ -298,7 +298,7 @@ void FListBox::insert ( long item
                       , bool s
                       , data_ptr d )
 {
-  insert (FString().setNumber(item), b, s, d);
+  insert (FString() << item, b, s, d);
 }
 
 //----------------------------------------------------------------------

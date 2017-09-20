@@ -459,6 +459,186 @@ const FString FString::operator + (const char c)
 }
 
 //----------------------------------------------------------------------
+FString& FString::operator << (const FString& s)
+{
+  _insert (length, s.length, s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const wchar_t c)
+{
+  FString s = FString(c);
+  _insert (length, s.length, s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const char c)
+{
+  FString s = FString(c);
+  _insert (length, s.length, s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const sInt16 num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const uInt16 num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const int num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const uInt num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const long num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const uLong num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const float num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const double num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (const lDouble num)
+{
+  FString numstr = FString().setNumber(num);
+  _insert (length, numstr.length, numstr.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (FString& s)
+{
+  s._insert (s.length, length, string);
+  _assign(s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (std::wstring& s)
+{
+  s += std::wstring(string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (wchar_t& c)
+{
+  c = ( length > 0 ) ? string[0] : L'\0';
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (char& c)
+{
+  c = ( length > 0 ) ? char(string[0] & 0xff) : '\0';
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (sInt16& num)
+{
+  num = toShort();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (uInt16& num)
+{
+  num = toUShort();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (int& num)
+{
+  num = toInt();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (uInt& num)
+{
+  num = toUInt();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (long& num)
+{
+  num = toLong();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (uLong& num)
+{
+  num = toULong();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (double& num)
+{
+  num = toDouble();
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FString& FString::operator >> (float& num)
+{
+  num = toFloat();
+  return *this;
+}
+
+//----------------------------------------------------------------------
 wchar_t& FString::operator [] (int pos)
 {
   FString& s = *this;
@@ -1076,27 +1256,33 @@ FString& FString::setNumber (uLong num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (lDouble num, int precision)
 {
-  register wchar_t *s;
+  register wchar_t* s;
   wchar_t format[20];  // = "%.<precision>Lg"
 
   s = &format[0];
   *s++ = L'%';
   *s++ = L'.';
 
+  // The precision can not have more than 2 digits
   if ( precision > 99 )
     precision = 99;
 
   if ( precision >= 10 )
   {
+    // The precision value is 2 digits long
     *s++ = precision / 10 + L'0';
     *s++ = precision % 10 + L'0';
   }
   else
+  {
+    // The precision value has only 1 digit
     *s++ = precision + L'0';
+  }
 
   *s++ = L'L';
   *s++ = L'g';
-  *s   = L'\0';
+  *s = L'\0';
+
   return sprintf(format, num);
 }
 
@@ -2535,51 +2721,6 @@ inline wchar_t* FString::extractToken ( wchar_t** rest
 
 // FString non-member operators
 //----------------------------------------------------------------------
-std::ostream& operator << (std::ostream& outstr, const FString& s)
-{
-  if ( s.length )
-    outstr << s.wc_to_c_str( s.string );
-
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-std::istream& operator >> (std::istream& instr, FString& s)
-{
-  const wchar_t* wc_str;
-  char buf[FString::INPBUFFER + 1];
-
-  instr.getline (buf, FString::INPBUFFER);
-  wc_str = s.c_to_wc_str(buf);
-
-  if ( wc_str )
-  {
-    s._assign (wc_str);
-    delete[] wc_str;
-  }
-
-  return instr;
-}
-
-//----------------------------------------------------------------------
-std::wostream& operator << (std::wostream& outstr, const FString& s)
-{
-  if ( s.length )
-    outstr << s.string;
-
-  return outstr;
-}
-
-//----------------------------------------------------------------------
-std::wistream& operator >> (std::wistream& instr, FString& s)
-{
-  wchar_t buf[FString::INPBUFFER + 1];
-  instr.getline (buf, FString::INPBUFFER);
-  s._assign (buf);
-  return instr;
-}
-
-//----------------------------------------------------------------------
 const FString operator + (const FString& s1, const FString& s2)
 {
   FString tmp(s1);
@@ -2670,4 +2811,49 @@ const FString operator + (const FString& s, const char c)
   tmp2[1] = L'\0';
   tmp1._insert (s.length, 1, tmp2);
   return tmp1;
+}
+
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, const FString& s)
+{
+  if ( s.length )
+    outstr << s.wc_to_c_str( s.string );
+
+  return outstr;
+}
+
+//----------------------------------------------------------------------
+std::istream& operator >> (std::istream& instr, FString& s)
+{
+  const wchar_t* wc_str;
+  char buf[FString::INPBUFFER + 1];
+
+  instr.getline (buf, FString::INPBUFFER);
+  wc_str = s.c_to_wc_str(buf);
+
+  if ( wc_str )
+  {
+    s._assign (wc_str);
+    delete[] wc_str;
+  }
+
+  return instr;
+}
+
+//----------------------------------------------------------------------
+std::wostream& operator << (std::wostream& outstr, const FString& s)
+{
+  if ( s.length )
+    outstr << s.string;
+
+  return outstr;
+}
+
+//----------------------------------------------------------------------
+std::wistream& operator >> (std::wistream& instr, FString& s)
+{
+  wchar_t buf[FString::INPBUFFER + 1];
+  instr.getline (buf, FString::INPBUFFER);
+  s._assign (buf);
+  return instr;
 }

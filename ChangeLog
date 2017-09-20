@@ -1,4 +1,8 @@
 2017-09-19  Markus Gans  <guru.mail@muenster.de>
+	* FString has now got its own streaming functionality for 
+	  inbound and outbound type conversion
+
+2017-09-19  Markus Gans  <guru.mail@muenster.de>
 	* The command line help text is now available in all applications
 
 2017-09-17  Markus Gans  <guru.mail@muenster.de>

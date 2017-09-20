@@ -26,7 +26,7 @@ void doubleToItem (FListBoxItem& item, FWidget::data_ptr container, int index)
   double_list_ptr dbllist = static_cast<double_list_ptr>(container);
   std::list<double>::iterator iter = dbllist->begin();
   std::advance (iter, index);
-  item.setText (FString().setNumber(*iter));
+  item.setText (FString() << *iter);
   item.setData (FWidget::data_ptr(&(*iter)));
 }
 

@@ -32,12 +32,117 @@ int main (int, char**)
 
   // Test: input stream (operator >>)
   FString in;
-  std::cout << "     Input: "; std::cin >> in;
+  std::cout << "     Input: ";
+  std::cin >> in;
   std::cout << "  instream >> " << in << std::endl;
 
   // Test: output stream (operator <<)
   const FString& out = L"A test string for 0 \x20ac";
   std::cout << " outstream << " << out << std::endl;
+
+  // Test: Streaming into a FString (operator <<)...
+
+  // ...from FStrings
+  FString streamer1;
+  streamer1 << FString("FStr") << FString("ing");
+  std::cout << " stream in: " << streamer1 << std::endl;
+
+  // ...from c++ wide string
+  FString streamer2;
+  streamer2 << std::wstring(L"std::wstring");
+  std::cout << " stream in: " << streamer2 << std::endl;
+
+  // ...from wide string
+  FString streamer3;
+  streamer3 << const_cast<wchar_t*>(L"wchar_t*");
+  std::cout << " stream in: " << streamer3 << std::endl;
+
+  // ...from c++ string
+  FString streamer4;
+  streamer4 << std::string("std::string");
+  std::cout << " stream in: " << streamer4 << std::endl;
+
+  // ...from c-string
+  FString streamer5;
+  streamer5 << const_cast<char*>("char*");
+  std::cout << " stream in: " << streamer5 << std::endl;
+
+  // ...from wide character
+  FString streamer6;
+  streamer6 << wchar_t(L'w');
+  std::cout << " stream in: " << streamer6 << std::endl;
+
+  // ...from character
+  FString streamer7;
+  streamer7 << char('c');
+  std::cout << " stream in: " << streamer7 << std::endl;
+
+  // ...from interger
+  FString streamer8;
+  streamer8 << int(-12345);
+  std::cout << " stream in: " << streamer8 << std::endl;
+
+  // ...from unsigned interger
+  FString streamer9;
+  streamer9 << uInt(54321);
+  std::cout << " stream in: " << streamer9 << std::endl;
+
+  // ...from long double
+  FString streamer10;
+  streamer10 << lDouble(0.333333333333333333L);
+  std::cout << " stream in: " << streamer10 << std::endl;
+
+  // ...from double
+  FString streamer11;
+  streamer11 << double(0.11111111111);
+  std::cout << " stream in: " << streamer11 << std::endl;
+
+  // ...from float
+  FString streamer12;
+  streamer12 << float(0.22222222);
+  std::cout << " stream in: " << streamer12 << std::endl;
+
+  // Test: Streaming from a FString (operator >>)...
+
+  // ...to FStrings
+  FString stream_fstring;
+  FString("FString") >> stream_fstring;
+  std::cout << "stream out: " << stream_fstring << std::endl;
+
+  // ...to c++ wide string
+  std::wstring stream_wstring;
+  FString("std::wstring") >> stream_wstring;
+  std::wcout << "stream out: " << stream_wstring << std::endl;
+
+  // ...to wide character
+  wchar_t stream_wchar_t = 0;
+  FString("w") >> stream_wchar_t;
+  std::wcout << "stream out: " << stream_wchar_t << std::endl;
+
+  // ...to character
+  char stream_char;
+  FString('c') >> stream_char;
+  std::cout << "stream out: " << stream_char << std::endl;
+
+  // ...to interger
+  int stream_int;
+  FString("-321") >> stream_int;
+  std::cout << "stream out: " << stream_int << std::endl;
+
+  // ...to unsigned interger
+  uInt stream_uint;
+  FString("123") >> stream_uint;
+  std::cout << "stream out: " << stream_uint << std::endl;
+
+  // ...to double
+  double stream_double;
+  FString("0.123456e+2") >> stream_double;
+  std::cout << "stream out: " << stream_double << std::endl;
+
+  // ...to float
+  float stream_float;
+  FString("0.123e-3") >> stream_float;
+  std::cout << "stream out: " << stream_float << std::endl;
 
   // Test: c-string output
   printf ("     c_str:  \"%s\"\n", out.c_str());
