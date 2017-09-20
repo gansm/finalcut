@@ -63,9 +63,9 @@ ColorChooser::ColorChooser (FWidget* parent)
   // Text label
   FLabel* headline = new FLabel (this);
   headline->setGeometry(1, 1, 8, 1);
-  headline->setText ("Color");
   headline->setEmphasis();
   headline->setAlignment (fc::alignCenter);
+  *headline << "Color";
 }
 
 //----------------------------------------------------------------------
@@ -203,9 +203,9 @@ Brushes::Brushes (FWidget* parent)
   // Text label
   FLabel* headline = new FLabel (this);
   headline->setGeometry(1, 1, 8, 1);
-  headline->setText ("Brush");
   headline->setEmphasis();
   headline->setAlignment (fc::alignCenter);
+  *headline << "Brush";
 }
 
 //----------------------------------------------------------------------

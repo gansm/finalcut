@@ -53,6 +53,19 @@ class FLabel : public FWidget
     // Destructor
     virtual ~FLabel();
 
+    // Overloaded operators
+    FLabel& operator = (const FString&);
+    FLabel& operator << (const FString&);
+    FLabel& operator << (const wchar_t);
+    FLabel& operator << (const uInt);
+    FLabel& operator << (const int);
+    FLabel& operator << (const uLong);
+    FLabel& operator << (const long);
+    FLabel& operator << (const float);
+    FLabel& operator << (const double);
+    FLabel& operator << (const lDouble);
+    const FLabel& operator >> (FString&);
+
     // Accessors
     const char*        getClassName() const;
     FTerm*             getAccelWidget();
@@ -69,7 +82,11 @@ class FLabel : public FWidget
     bool               setReverseMode();
     bool               unsetReverseMode();
     bool               setEnable (bool);
-    void               setNumber(long);
+    void               setNumber (uLong);
+    void               setNumber (long);
+    void               setNumber (float, int = FLT_DIG);
+    void               setNumber (double, int = DBL_DIG);
+    void               setNumber (lDouble, int = LDBL_DIG);
     void               setText (const FString&);
 
     // Inquiries
@@ -78,6 +95,7 @@ class FLabel : public FWidget
 
     // Methods
     void               hide();
+    void               clear();
 
     // Event handlers
     void               onMouseDown (FMouseEvent*);
@@ -153,11 +171,35 @@ inline bool FLabel::unsetReverseMode()
 { return setReverseMode(false); }
 
 //----------------------------------------------------------------------
+inline void FLabel::setNumber (uLong num)
+{ setText(FString().setNumber(num)); }
+
+//----------------------------------------------------------------------
+inline void FLabel::setNumber (long num)
+{ setText(FString().setNumber(num)); }
+
+//----------------------------------------------------------------------
+inline void FLabel::setNumber (float num, int precision)
+{ setText(FString().setNumber(num, precision)); }
+
+//----------------------------------------------------------------------
+inline void FLabel::setNumber (double num, int precision)
+{ setText(FString().setNumber(num, precision)); }
+
+//----------------------------------------------------------------------
+inline void FLabel::setNumber (lDouble num, int precision)
+{ setText(FString().setNumber(num, precision)); }
+
+//----------------------------------------------------------------------
 inline bool FLabel::hasEmphasis()
 { return emphasis; }
 
 //----------------------------------------------------------------------
 inline bool FLabel::hasReverseMode()
 { return reverse_mode; }
+
+//----------------------------------------------------------------------
+inline void FLabel::clear()
+{ text.clear(); }
 
 #endif  // FLABEL_H

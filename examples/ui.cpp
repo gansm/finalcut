@@ -516,16 +516,16 @@ MyDialog::MyDialog (FWidget* parent)
   // Text labels
   FLabel* headline = new FLabel (this);
   headline->setGeometry(21, 3, 10, 1);
-  headline->setText (L"List items");
   headline->setEmphasis();
   headline->setAlignment (fc::alignCenter);
+  *headline = L"List items";
 
   FLabel* tagged = new FLabel (L"Tagged:", this);
   tagged->setGeometry(21, 4, 7, 1);
 
   FLabel* tagged_count = new FLabel(this);
   tagged_count->setGeometry(29, 4, 5, 1);
-  tagged_count->setNumber(0);
+  *tagged_count << 0;
 
   FLabel* sum = new FLabel (L"Sum:", this);
   sum->setGeometry(21, 5, 7, 3);
@@ -533,7 +533,7 @@ MyDialog::MyDialog (FWidget* parent)
 
   FLabel* sum_count = new FLabel (this);
   sum_count->setGeometry(29, 5, 5, 3);
-  sum_count->setNumber (long(myList->getCount()));
+  *sum_count << myList->getCount();
 
   // Statusbar at the bottom
   FStatusBar* statusbar = new FStatusBar (this);
@@ -830,7 +830,8 @@ void MyDialog::cb_updateNumber (FWidget* widget, data_ptr data)
     if ( list->isSelected(int(n)) )
       select_num++;
 
-  num->setNumber(select_num);
+  num->clear();
+  *num << select_num;
   num->redraw();
 }
 

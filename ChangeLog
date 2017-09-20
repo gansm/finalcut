@@ -1,6 +1,7 @@
 2017-09-19  Markus Gans  <guru.mail@muenster.de>
 	* FString has now got its own streaming functionality for 
 	  inbound and outbound type conversion
+	* Added stream and assignment operator support for FLabel
 
 2017-09-19  Markus Gans  <guru.mail@muenster.de>
 	* The command line help text is now available in all applications

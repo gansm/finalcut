@@ -31,17 +31,17 @@ int main (int argc, char* argv[])
   dgl.setGeometry (4, 3, 41, 11);
 
   // Create text labels
-  FLabel label_1(&dgl),
-         label_2(&dgl);
+  FLabel label_1(&dgl);
+  FLabel label_2(&dgl);
 
-  label_1.setText ( wchar_t(fc::BlackUpPointingTriangle)
-                  + std::wstring(L"\n")
-                  + wchar_t(fc::BoxDrawingsUpAndRight)
-                  + FString(2, wchar_t(fc::BoxDrawingsHorizontal))
-                  + " Double click the title bar button," );
-  label_2.setText ( "press Q on the keyboard,\n"
-                    "or push the button below to exit\n"
-                    "the program." );
+  label_1 << wchar_t(fc::BlackUpPointingTriangle)
+          << std::wstring(L"\n")
+          << wchar_t(fc::BoxDrawingsUpAndRight)
+          << FString(2, wchar_t(fc::BoxDrawingsHorizontal))
+          << " Double click the title bar button,";
+  label_2 << "press Q on the keyboard,\n"
+          << "or push the button below to exit\n"
+          << "the program.";
 
   label_1.setGeometry (1, 1, 38, 2);
   label_2.setGeometry (5, 3, 34, 3);

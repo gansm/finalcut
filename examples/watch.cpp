@@ -130,7 +130,7 @@ void watch::printTime()
   else
     str.sprintf("%02d:%02d   ", now.tm_hour, now.tm_min);
 
-  time_str->setText(str);
+  *time_str = str;
   time_str->redraw();
 }
 
@@ -165,7 +165,7 @@ void watch::cb_clock (FWidget*, data_ptr)
   else
   {
     delAllTimer();
-    time_str->setText("--:--:--");
+    *time_str = "--:--:--";
     time_str->redraw();
   }
 }
@@ -183,9 +183,10 @@ void watch::cb_seconds (FWidget*, data_ptr)
   else
   {
     if ( sec )
-      time_str->setText("--:--:--");
+      *time_str = "--:--:--";
     else
-      time_str->setText("--:--   ");
+      *time_str = "--:--   ";
+
     time_str->redraw();
   }
 }

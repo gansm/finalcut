@@ -50,6 +50,98 @@ FLabel::~FLabel()  // destructor
   delAccelerator();
 }
 
+// FLabel operators
+//----------------------------------------------------------------------
+FLabel& FLabel::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const FString& s)
+{
+  setText(text + s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const wchar_t c)
+{
+  setText(text + c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const uInt num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const int num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const uLong num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const long num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const float num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const double num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (const lDouble num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FLabel& FLabel::operator >> (FString& s)
+{
+  s += text;
+  return *this;
+}
+
 
 // public methods of FLabel
 //----------------------------------------------------------------------
@@ -105,12 +197,6 @@ bool FLabel::setEnable (bool on)
     delAccelerator();
 
   return on;
-}
-
-//----------------------------------------------------------------------
-void FLabel::setNumber (long num)
-{
-  setText(FString().setNumber(num));
 }
 
 //----------------------------------------------------------------------
@@ -458,9 +544,6 @@ void FLabel::draw()
   wchar_t* LabelText;
   uInt length;
   int hotkeypos, align_offset;
-
-  if ( text.isNull() || text.isEmpty() )
-    return;
 
   if ( isMonochron() )
   {

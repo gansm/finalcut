@@ -220,8 +220,8 @@ scrollviewdemo::scrollviewdemo (FWidget* parent)
   // Text label
   FLabel* label = new FLabel (this);
   label->setGeometry(2, 1, 46, 1);
-  label->setText (L"Use scrollbars to change the viewport position");
   label->setEmphasis();
+  *label << L"Use scrollbars to change the viewport position";
 }
 
 //----------------------------------------------------------------------

@@ -468,7 +468,7 @@ FString& FString::operator << (const FString& s)
 //----------------------------------------------------------------------
 FString& FString::operator << (const wchar_t c)
 {
-  FString s = FString(c);
+  FString s(c);
   _insert (length, s.length, s.string);
   return *this;
 }
@@ -476,7 +476,7 @@ FString& FString::operator << (const wchar_t c)
 //----------------------------------------------------------------------
 FString& FString::operator << (const char c)
 {
-  FString s = FString(c);
+  FString s(c);
   _insert (length, s.length, s.string);
   return *this;
 }
@@ -2467,6 +2467,10 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
   if ( ! string )
   {
     // string is null
+
+    if ( len == 0 )  // String s is also a null string
+      return;
+
     length = len;
     bufsize = FWDBUFFER + length + 1;
 

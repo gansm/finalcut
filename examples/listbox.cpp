@@ -87,7 +87,7 @@ Listbox::Listbox (FWidget* parent)
   list1->setText ("FListBoxItem");
 
   for (int i=1; i < 30; i++)
-    list1->insert (L"----- " + FString().setNumber(i) + L" -----");
+    list1->insert (L"----- " + (FString() << i) + L" -----");
 
   // listbox 2
   double_list = new std::list<double>;

@@ -111,12 +111,12 @@ void smallWindow::adjustSize()
 {
   if ( isZoomed() )
   {
-    top_right_label->setText("unzoom");
+    *top_right_label = "unzoom";
     bottom_label->hide();
   }
   else
   {
-    top_right_label->setText("zoom");
+    *top_right_label = "zoom";
     bottom_label->setVisible();
   }
 
