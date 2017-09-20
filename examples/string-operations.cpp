@@ -168,14 +168,36 @@ int main (int, char**)
   std::cout << "stream out: " << stream_uint << std::endl;
 
   // ...to double
-  double stream_double;
-  FString("0.123456e+2") >> stream_double;
-  std::cout << "stream out: " << stream_double << std::endl;
+  try
+  {
+    double stream_double;
+    FString("0.123456e+2") >> stream_double;
+    std::cout << "stream out: " << stream_double << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // ...to float
-  float stream_float;
-  FString("0.123e-3") >> stream_float;
-  std::cout << "stream out: " << stream_float << std::endl;
+  try
+  {
+    float stream_float;
+    FString("0.123e-3") >> stream_float;
+    std::cout << "stream out: " << stream_float << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // Test: c-string output
   printf ("     c_str:  \"%s\"\n", out.c_str());
