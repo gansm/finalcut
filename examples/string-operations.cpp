@@ -88,52 +88,19 @@ int main (int, char**)
   std::cout << " stream in: " << streamer9 << std::endl;
 
   // ...from long double
-  try
-  {
-    FString streamer10;
-    streamer10 << lDouble(0.333333333333333333L);
-    std::cout << " stream in: " << streamer10 << std::endl;
-  }
-  catch (const std::invalid_argument& ex)
-  {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
-  }
-  catch (const std::exception& ex)
-  {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
-  }
+  FString streamer10;
+  streamer10 << lDouble(0.333333333333333333L);
+  std::cout << " stream in: " << streamer10 << std::endl;
 
   // ...from double
-  try
-  {
-    FString streamer11;
-    streamer11 << double(0.11111111111);
-    std::cout << " stream in: " << streamer11 << std::endl;
-  }
-  catch (const std::invalid_argument& ex)
-  {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
-  }
-  catch (const std::exception& ex)
-  {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
-  }
+  FString streamer11;
+  streamer11 << double(0.11111111111);
+  std::cout << " stream in: " << streamer11 << std::endl;
 
   // ...from float
-  try
-  {
-    FString streamer12;
-    streamer12 << float(0.22222222);
-    std::cout << " stream in: " << streamer12 << std::endl;
-  }
-  catch (const std::invalid_argument& ex)
-  {
-    std::cerr << "Invalid argument: " << ex.what() << std::endl;
-  }
-  catch (const std::exception& ex)
-  {
-    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
-  }
+  FString streamer12;
+  streamer12 << float(0.22222222);
+  std::cout << " stream in: " << streamer12 << std::endl;
 
   // Test: Streaming from a FString (operator >>)...
 
@@ -158,14 +125,44 @@ int main (int, char**)
   std::cout << "stream out: " << stream_char << std::endl;
 
   // ...to interger
-  int stream_int;
-  FString("-321") >> stream_int;
-  std::cout << "stream out: " << stream_int << std::endl;
+  try
+  {
+    int stream_int;
+    FString("-321") >> stream_int;
+    std::cout << "stream out: " << stream_int << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // ...to unsigned interger
-  uInt stream_uint;
-  FString("123") >> stream_uint;
-  std::cout << "stream out: " << stream_uint << std::endl;
+  try
+  {
+    uInt stream_uint;
+    FString("123") >> stream_uint;
+    std::cout << "stream out: " << stream_uint << std::endl;
+  }
+  catch (const std::invalid_argument& ex)
+  {
+    std::cerr << "Invalid argument: " << ex.what() << std::endl;
+  }
+  catch (const std::overflow_error& ex)
+  {
+    std::cerr << "overflow: " << ex.what() << std::endl;
+  }
+  catch (const std::exception& ex)
+  {
+    std::cerr << "Arithmetic error: " << ex.what() << std::endl;
+  }
 
   // ...to double
   try
