@@ -321,8 +321,8 @@ int main (int, char**)
   FString split_str = "a,b,c,d";
   std::cout << "     split: \""
             << split_str << "\" into substrings ->";
-  std::vector <FString> parts = split_str.split(",");
-  std::vector<FString>::iterator it, end;
+  FStringList parts = split_str.split(",");
+  FStringList::iterator it, end;
   end = parts.end();
 
   for (it = parts.begin(); it != end; ++it)

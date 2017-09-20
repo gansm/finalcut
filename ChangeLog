@@ -1,3 +1,6 @@
+2017-09-20  Markus Gans  <guru.mail@muenster.de>
+	* New data type FStringList introduced
+
 2017-09-19  Markus Gans  <guru.mail@muenster.de>
 	* FString has now got its own streaming functionality for 
 	  inbound and outbound type conversion

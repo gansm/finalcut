@@ -50,9 +50,6 @@ class FTextView : public FWidget
     // Using-declarations
     using FWidget::setGeometry;
 
-    // Typedef
-    typedef std::vector<FString> stringLines;
-
     // Constructor
     explicit FTextView (FWidget* = 0);
 
@@ -64,7 +61,7 @@ class FTextView : public FWidget
     uInt               getColumns() const;
     uInt               getRows() const;
     const FString      getText() const;
-    const stringLines& getLines() const;
+    const FStringList& getLines() const;
 
     // Mutators
     void               setGeometry (int, int, int, int, bool = true);
@@ -101,23 +98,23 @@ class FTextView : public FWidget
     FTextView& operator = (const FTextView&);
 
     // Methods
-    void          init();
-    void          draw();
-    void          drawText();
-    void          processChanged();
+    void               init();
+    void               draw();
+    void               drawText();
+    void               processChanged();
 
     // Callback methods
-    void          cb_VBarChange (FWidget*, data_ptr);
-    void          cb_HBarChange (FWidget*, data_ptr);
+    void               cb_VBarChange (FWidget*, data_ptr);
+    void               cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    stringLines data;
-    FScrollbar* vbar;
-    FScrollbar* hbar;
-    int         xoffset;
-    int         yoffset;
-    int         nf_offset;
-    uInt        maxLineWidth;
+    FStringList        data;
+    FScrollbar*        vbar;
+    FScrollbar*        hbar;
+    int                xoffset;
+    int                yoffset;
+    int                nf_offset;
+    uInt               maxLineWidth;
 };
 #pragma pack(pop)
 
@@ -136,7 +133,7 @@ inline uInt FTextView::getRows() const
 { return uInt(data.size()); }
 
 //----------------------------------------------------------------------
-inline const FTextView::stringLines& FTextView::getLines() const
+inline const FStringList& FTextView::getLines() const
 { return data; }
 
 //----------------------------------------------------------------------

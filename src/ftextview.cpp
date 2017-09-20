@@ -182,8 +182,8 @@ void FTextView::append (const FString& str)
 //----------------------------------------------------------------------
 void FTextView::insert (const FString& str, int pos)
 {
-  stringLines::iterator iter;
-  stringLines text_split;
+  FStringList::iterator iter;
+  FStringList text_split;
   FString s;
   uLong num;
 
@@ -241,7 +241,7 @@ void FTextView::insert (const FString& str, int pos)
 //----------------------------------------------------------------------
 void FTextView::replaceRange (const FString& str, int from, int to)
 {
-  stringLines::iterator iter;
+  FStringList::iterator iter;
 
   if ( from > to )
     return;

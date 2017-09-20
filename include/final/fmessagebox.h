@@ -122,9 +122,6 @@ class FMessageBox : public FDialog
     void          cb_processClick (FWidget*, data_ptr);
 
   private:
-    // Typedef
-    typedef std::vector<FString> textLines;
-
     // Methods
     void          init (int, int, int);
     void          calculateDimensions();
@@ -136,7 +133,7 @@ class FMessageBox : public FDialog
     FString       headline_text;
     FString       text;
     FString*      text_components;
-    textLines     text_split;
+    FStringList   text_split;
     uInt          max_line_width;
     bool          center_text;
     short         emphasis_color;

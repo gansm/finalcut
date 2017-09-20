@@ -105,9 +105,6 @@ class FLabel : public FWidget
     void               cb_accel_widget_destroyed (FWidget*, data_ptr);
 
   private:
-    // Typedef
-    typedef std::vector<FString> multiLineText;
-
     // Disable copy constructor
     FLabel (const FLabel&);
 
@@ -124,7 +121,7 @@ class FLabel : public FWidget
     void               draw();
 
     // Data Members
-    multiLineText      multiline_text;
+    FStringList        multiline_text;
     bool               multiline;
     FString            text;
     fc::text_alignment alignment;

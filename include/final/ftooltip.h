@@ -71,9 +71,6 @@ class FToolTip : public FWindow
     void          onMouseDown (FMouseEvent*);
 
   private:
-    // Typedef
-    typedef std::vector<FString> textLines;
-
     // Disable copy constructor
     FToolTip (const FToolTip&);
 
@@ -88,7 +85,7 @@ class FToolTip : public FWindow
     // Data Members
     FString       text;
     FString*      text_components;
-    textLines     text_split;
+    FStringList   text_split;
     uInt          max_line_width;
     uInt          text_num_lines;
 };

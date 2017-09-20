@@ -52,7 +52,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 }
 
 //----------------------------------------------------------------------
-FListViewItem::FListViewItem ( const std::vector<FString>& cols
+FListViewItem::FListViewItem ( const FStringList& cols
                              , FWidget::data_ptr data
                              , FObjectIterator parent_iter )
   : FObject(0)
@@ -195,7 +195,7 @@ FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
 void FListViewItem::replaceControlCodes()
 {
   // Replace the control codes characters
-  std::vector<FString>::iterator iter = column_list.begin();
+  FStringList::iterator iter = column_list.begin();
 
   while ( iter != column_list.end() )
   {
@@ -432,7 +432,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const std::vector<FString>& cols
+FObject::FObjectIterator FListView::insert ( const FStringList& cols
                                            , data_ptr d
                                            , FObjectIterator parent_iter )
 {
@@ -464,7 +464,7 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
                                            , FObjectIterator parent_iter )
 {
   FObjectIterator item_iter;
-  std::vector<FString> str_cols;
+  FStringList str_cols;
 
   if ( ! cols.empty() )
   {

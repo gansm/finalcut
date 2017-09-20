@@ -33,6 +33,11 @@
 
 #include "final/ftypes.h"
 
+// class forward declaration
+class FString;
+
+// Global typedef
+typedef std::vector<FString> FStringList;
 
 //----------------------------------------------------------------------
 // class FString
@@ -230,13 +235,13 @@ class FString
     FString mid (int, int) const;
     FString mid (uInt, uInt) const;
 
-    std::vector<FString> split (const FString&);
-    std::vector<FString> split (const std::wstring&);
-    std::vector<FString> split (const wchar_t*);
-    std::vector<FString> split (const std::string&);
-    std::vector<FString> split (const char*);
-    std::vector<FString> split (const wchar_t);
-    std::vector<FString> split (const char);
+    FStringList split (const FString&);
+    FStringList split (const std::wstring&);
+    FStringList split (const wchar_t*);
+    FStringList split (const std::string&);
+    FStringList split (const char*);
+    FStringList split (const wchar_t);
+    FStringList split (const char);
 
     FString& setString (const wchar_t*);
     FString& setString (const char*);
@@ -390,27 +395,27 @@ inline wchar_t FString::back() const
 }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const std::wstring& s)
+inline FStringList FString::split (const std::wstring& s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const wchar_t* s)
+inline FStringList FString::split (const wchar_t* s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const std::string& s)
+inline FStringList FString::split (const std::string& s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const char* s)
+inline FStringList FString::split (const char* s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const wchar_t c)
+inline FStringList FString::split (const wchar_t c)
 { return split(FString(c)); }
 
 //----------------------------------------------------------------------
-inline std::vector<FString> FString::split (const char c)
+inline FStringList FString::split (const char c)
 { return split(FString(c)); }
 
 //----------------------------------------------------------------------

@@ -54,7 +54,7 @@ class FListViewItem : public FObject
     // Constructor
     FListViewItem (const FListViewItem&);  // copy constructor
     explicit FListViewItem (FObjectIterator);
-    FListViewItem ( const std::vector<FString>&
+    FListViewItem ( const FStringList&
                   , FWidget::data_ptr
                   , FObjectIterator );
 
@@ -92,11 +92,11 @@ class FListViewItem : public FObject
     int              getVisibleLines();
 
     // Data Member
-    std::vector<FString> column_list;
-    FWidget::data_ptr    data_pointer;
-    int                  visible_lines;
-    bool                 expandable;
-    bool                 is_expand;
+    FStringList       column_list;
+    FWidget::data_ptr data_pointer;
+    int               visible_lines;
+    bool              expandable;
+    bool              is_expand;
 
     // Friend class
     friend class FListView;
@@ -160,11 +160,11 @@ class FListView : public FWidget
     virtual int          addColumn (const FString&, int = USE_MAX_SIZE);
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
-    FObjectIterator      insert ( const std::vector<FString>&
+    FObjectIterator      insert ( const FStringList&
                                 , data_ptr = 0 );
-    FObjectIterator      insert ( const std::vector<FString>&
+    FObjectIterator      insert ( const FStringList&
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<FString>&
+    FObjectIterator      insert ( const FStringList&
                                 , data_ptr
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
@@ -306,12 +306,12 @@ inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<FString>& cols, data_ptr d )
+  FListView::insert ( const FStringList& cols, data_ptr d )
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<FString>& cols
+  FListView::insert ( const FStringList& cols
                     , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 

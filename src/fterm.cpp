@@ -2722,16 +2722,16 @@ char* FTerm::parseSecDA (char*& current_termtype)
     // remove the last byte ("c")
     temp.remove(temp.getLength() - 1, 1);
     // split into components
-    std::vector<FString> sec_da_split = temp.split(';');
+    FStringList sec_da_list = temp.split(';');
 
-    num_components = sec_da_split.size();
+    num_components = sec_da_list.size();
 
     if ( num_components == 3 )
       sec_da_supported = true;
 
     if ( num_components >= 2 )
     {
-      const FString* sec_da_components = &sec_da_split[0];
+      const FString* sec_da_components = &sec_da_list[0];
 
       if ( ! sec_da_components[0].isEmpty() )
       {

@@ -1154,27 +1154,27 @@ FString FString::mid (uInt pos, uInt len) const
 }
 
 //----------------------------------------------------------------------
-std::vector<FString> FString::split (const FString& delimiter)
+FStringList FString::split (const FString& delimiter)
 {
   wchar_t* rest;
   wchar_t* token;
   FString s(string);
-  std::vector<FString> stringList;
+  FStringList string_list;
 
   // handle NULL and empty string
   if ( ! (string && *string) )
-    return stringList;
+    return string_list;
 
   rest = 0;
   token = extractToken(&rest, s.string, delimiter.wc_str());
 
   while ( token )
   {
-    stringList.push_back (FString(token));
+    string_list.push_back (FString(token));
     token = extractToken (&rest, 0, delimiter.wc_str());
   }
 
-  return stringList;
+  return string_list;
 }
 
 //----------------------------------------------------------------------
@@ -2217,7 +2217,7 @@ FString FString::replaceControlCodes() const
 FString FString::expandTabs (int tabstop) const
 {
   uLong last;
-  std::vector<FString> tab_split;
+  FStringList tab_split;
   FString instr(string);
   FString outstr;
 

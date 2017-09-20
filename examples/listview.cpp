@@ -111,7 +111,7 @@ Listview::Listview (FWidget* parent)
 
   for (int i = 0; i <= lastItem; i++)
   {
-    std::vector<FString> line (&weather[i][0], &weather[i][0] + 5);
+    FStringList line (&weather[i][0], &weather[i][0] + 5);
     listView->insert (line);
   }
 

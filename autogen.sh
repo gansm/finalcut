@@ -19,7 +19,7 @@ automake --add-missing --copy
 #autoreconf -v --install --force
 
 echo
-echo 'run "./configure ; make"'
+echo 'run "./configure --prefix=/usr && make"'
 echo
 
 # Generate Makefile from Makefile.in
