@@ -480,9 +480,9 @@ MyDialog::MyDialog (FWidget* parent)
   // A text input field
   myLineEdit = new FLineEdit (this);
   myLineEdit->setGeometry(22, 1, 10, 1);
-  myLineEdit->setText (FString("EnTry").toLower());
   myLineEdit->setLabelText (L"&Input");
   myLineEdit->setStatusbarMessage ("Press Enter to set the title");
+  *myLineEdit << FString("EnTry").toLower();
 
   // Buttons
   FButton* MyButton4 = new FButton (this);
@@ -759,7 +759,7 @@ void MyDialog::cb_cutClipboard (FWidget*, data_ptr)
     return;
 
   clipboard = myLineEdit->getText();
-  myLineEdit->clearText();
+  myLineEdit->clear();
   myLineEdit->redraw();
 }
 
@@ -778,7 +778,7 @@ void MyDialog::cb_pasteClipboard (FWidget*, data_ptr)
   if ( ! myLineEdit )
     return;
 
-  myLineEdit->setText(clipboard);
+  *myLineEdit = clipboard;
   myLineEdit->redraw();
 }
 
@@ -789,7 +789,7 @@ void MyDialog::cb_clearInput (FWidget*, data_ptr)
     return;
 
   clipboard.clear();
-  myLineEdit->clearText();
+  myLineEdit->clear();
   myLineEdit->redraw();
 }
 
@@ -806,8 +806,10 @@ void MyDialog::cb_input2buttonText (FWidget* widget, data_ptr data)
 void MyDialog::cb_setTitlebar (FWidget* widget, data_ptr)
 {
   FLineEdit* lineedit = static_cast<FLineEdit*>(widget);
-  lineedit->setXTermTitle(lineedit->getText());
-  setText(lineedit->getText());
+  FString title;
+  *lineedit >> title;
+  setXTermTitle(title);;
+  setText(title);
   redraw();
 }
 
@@ -893,7 +895,7 @@ void MyDialog::cb_setInput (FWidget* widget, data_ptr data)
 {
   FListBox* ListBox = static_cast<FListBox*>(widget);
   FLineEdit* lineedit = static_cast<FLineEdit*>(data);
-  lineedit->setText( ListBox->getItem(ListBox->currentItem()).getText() );
+  *lineedit = ListBox->getItem(ListBox->currentItem()).getText();
   lineedit->redraw();
 }
 

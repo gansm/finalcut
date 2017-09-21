@@ -53,6 +53,98 @@ FLineEdit::~FLineEdit()  // destructor
     setInsertCursorStyle();
 }
 
+// FLineEdit operators
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const FString& s)
+{
+  setText(text + s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const wchar_t c)
+{
+  setText(text + c);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const uInt num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const int num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const uLong num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const long num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const float num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const double num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (const lDouble num)
+{
+  FString num_str;
+  num_str << num;
+  setText(text + num_str);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+const FLineEdit& FLineEdit::operator >> (FString& s)
+{
+  s += text;
+  return *this;
+}
+
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
@@ -219,7 +311,7 @@ void FLineEdit::hide()
 }
 
 //----------------------------------------------------------------------
-void FLineEdit::clearText()
+void FLineEdit::clear()
 {
   text_offset = 0;
   cursor_pos = 0;

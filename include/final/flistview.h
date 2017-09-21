@@ -342,32 +342,4 @@ inline FObject::FObjectIterator FListView::index2iterator (int index)
   return iter;
 }
 
-//----------------------------------------------------------------------
-inline void FListView::nextElement (FObjectIterator& iter)
-{
-  FListViewItem* item = static_cast<FListViewItem*>(*iter);
-
-  if ( item->isExpandable() && item->isExpand() )
-  {
-    iter_path.push(iter);
-    iter = item->begin();
-  }
-  else
-  {
-    ++iter;
-
-    if ( ! iter_path.empty() )
-    {
-      FObjectIterator& parent_iter = iter_path.top();
-
-      if ( iter == (*parent_iter)->end() )
-      {
-        iter = parent_iter;
-        iter_path.pop();
-        ++iter;
-      }
-    }
-  }
-}
-
 #endif  // FLISTVIEW_H

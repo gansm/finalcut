@@ -66,6 +66,9 @@ class FListBoxItem
     void setText (const FString&);
     void setData (FWidget::data_ptr);
 
+    // Methods
+    void clear();
+
   private:
     // Friend classes
     friend class FListBox;
@@ -95,6 +98,10 @@ inline void FListBoxItem::setText (const FString& txt)
 //----------------------------------------------------------------------
 inline void FListBoxItem::setData (FWidget::data_ptr data)
 { data_pointer = data; }
+
+//----------------------------------------------------------------------
+inline void FListBoxItem::clear()
+{ text.clear(); }
 
 
 //----------------------------------------------------------------------

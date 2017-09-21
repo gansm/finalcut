@@ -1,7 +1,8 @@
-2017-09-20  Markus Gans  <guru.mail@muenster.de>
+2017-09-21  Markus Gans  <guru.mail@muenster.de>
 	* New data type FStringList introduced
+	* Stream and assignment operator support for FLineEdit
 
-2017-09-19  Markus Gans  <guru.mail@muenster.de>
+2017-09-20  Markus Gans  <guru.mail@muenster.de>
 	* FString has now got its own streaming functionality for 
 	  inbound and outbound type conversion
 	* Added stream and assignment operator support for FLabel

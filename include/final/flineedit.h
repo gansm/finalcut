@@ -56,6 +56,19 @@ class FLineEdit : public FWidget
     // Destructor
     virtual ~FLineEdit();
 
+    // Overloaded operators
+    FLineEdit& operator = (const FString&);
+    FLineEdit& operator << (const FString&);
+    FLineEdit& operator << (const wchar_t);
+    FLineEdit& operator << (const uInt);
+    FLineEdit& operator << (const int);
+    FLineEdit& operator << (const uLong);
+    FLineEdit& operator << (const long);
+    FLineEdit& operator << (const float);
+    FLineEdit& operator << (const double);
+    FLineEdit& operator << (const lDouble);
+    const FLineEdit& operator >> (FString&);
+
     // Accessors
     const char* getClassName() const;
     FString     getText() const;
@@ -81,7 +94,7 @@ class FLineEdit : public FWidget
 
     // Methods
     void        hide();
-    void        clearText();
+    void        clear();
 
     // Event handlers
     void        onKeyPress (FKeyEvent*);
