@@ -1,5 +1,23 @@
-// File: ftextview.cpp
-// Provides: class FTextView
+/************************************************************************
+* ftextview.cpp - Widget FTextView (a multiline text viewer)            *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2014-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include "final/fdialog.h"
 #include "final/fstatusbar.h"
@@ -427,9 +445,12 @@ void FTextView::onMouseDown (FMouseEvent* ev)
 
   parent = getParentWidget();
 
-  if ( parent
-      && parent->isDialogWidget()
-      && (dialog = static_cast<FDialog*>(parent)) != 0
+  if ( ! parent )
+    return;
+
+  dialog = static_cast<FDialog*>(parent);
+
+  if ( parent->isDialogWidget()
       && dialog->isResizeable()
       && ! dialog->isZoomed() )
   {
@@ -455,28 +476,28 @@ void FTextView::onMouseDown (FMouseEvent* ev)
 void FTextView::onMouseUp (FMouseEvent* ev)
 {
   FWidget* parent = getParentWidget();
-  FDialog* dialog;
 
-  if ( parent
-      && parent->isDialogWidget()
-      && (dialog = static_cast<FDialog*>(parent)) != 0
-      && dialog->isResizeable()
-      && ! dialog->isZoomed() )
+  if ( parent && parent->isDialogWidget() )
   {
-    int b = ev->getButton();
-    const FPoint& tp = ev->getTermPos();
-    const FPoint& p = parent->termToWidgetPos(tp);
-    parent->setFocus();
+    FDialog* dialog = static_cast<FDialog*>(parent);
 
-    try
+    if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev);
-      delete _ev;
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      int b = ev->getButton();
+      const FPoint& tp = ev->getTermPos();
+      const FPoint& p = parent->termToWidgetPos(tp);
+      parent->setFocus();
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -491,28 +512,28 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 void FTextView::onMouseMove (FMouseEvent* ev)
 {
   FWidget* parent = getParentWidget();
-  FDialog* dialog;
 
-  if ( parent
-      && parent->isDialogWidget()
-      && (dialog = static_cast<FDialog*>(parent)) != 0
-      && dialog->isResizeable()
-      && ! dialog->isZoomed() )
+  if ( parent && parent->isDialogWidget() )
   {
-    int b = ev->getButton();
-    const FPoint& tp = ev->getTermPos();
-    const FPoint& p = parent->termToWidgetPos(tp);
-    parent->setFocus();
+    FDialog* dialog = static_cast<FDialog*>(parent);
 
-    try
+    if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
-      FApplication::sendEvent (parent, _ev);
-      delete _ev;
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      int b = ev->getButton();
+      const FPoint& tp = ev->getTermPos();
+      const FPoint& p = parent->termToWidgetPos(tp);
+      parent->setFocus();
+
+      try
+      {
+        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev);
+        delete _ev;
+      }
+      catch (const std::bad_alloc& ex)
+      {
+        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      }
     }
   }
 }
@@ -532,7 +553,7 @@ void FTextView::onWheel (FWheelEvent* ev)
       yoffset -= 4;
 
       if ( yoffset < 0 )
-        yoffset=0;
+        yoffset = 0;
 
       break;
 
@@ -596,10 +617,10 @@ void FTextView::onFocusOut (FFocusEvent*)
 void FTextView::adjustSize()
 {
   FWidget::adjustSize();
-  int width     = getWidth();
-  int height    = getHeight();
-  int last_line = int(getRows());
-  int max_width = int(maxLineWidth);
+  int width     = getWidth()
+    , height    = getHeight()
+    , last_line = int(getRows())
+    , max_width = int(maxLineWidth);
 
   if ( xoffset >= max_width - width - nf_offset )
     xoffset = max_width - width - nf_offset - 1;
@@ -800,10 +821,10 @@ void FTextView::processChanged()
 void FTextView::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
-  int distance = 1;
-  int last_line = int(getRows());
-  int yoffset_before = yoffset;
-  int yoffset_end = last_line - getClientHeight();
+  int distance = 1
+    , last_line = int(getRows())
+    , yoffset_before = yoffset
+    , yoffset_end = last_line - getClientHeight();
   scrollType = vbar->getScrollType();
 
   switch ( int(scrollType) )
@@ -891,9 +912,9 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
 void FTextView::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
-  int distance = 1;
-  int xoffset_before = xoffset;
-  int xoffset_end = int(maxLineWidth) - getClientWidth();
+  int distance = 1
+    , xoffset_before = xoffset
+    , xoffset_end = int(maxLineWidth) - getClientWidth();
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -951,7 +972,7 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
       xoffset -= 4;
 
       if ( xoffset < 0 )
-        xoffset=0;
+        xoffset = 0;
 
       break;
 

@@ -1,5 +1,23 @@
-// File: fwidget.cpp
-// Provides: class FWidget
+/************************************************************************
+* fwidget.cpp - Intermediate base class for all widget objects          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
@@ -664,7 +682,8 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   // Sets the geometry of the widget relative to its parent
 
-  int term_x, term_y;
+  int term_x
+    , term_y;
 
   w = std::min (w, size_hints.max_width);
   w = std::max (w, size_hints.min_width);
@@ -1384,7 +1403,6 @@ void FWidget::move (int dx, int dy)
 //----------------------------------------------------------------------
 void FWidget::drawShadow()
 {
-  int x1, x2, y1, y2;
   bool trans_shadow = ((flags & fc::trans_shadow) != 0);
 
   if ( isMonochron() && ! trans_shadow )
@@ -1397,10 +1415,10 @@ void FWidget::drawShadow()
     return;
   }
 
-  x1 = 1;
-  x2 = getWidth();
-  y1 = 1;
-  y2 = getHeight();
+  int x1 = 1
+    , x2 = getWidth()
+    , y1 = 1
+    , y2 = getHeight();
 
   if ( trans_shadow )
   {
@@ -1482,15 +1500,13 @@ void FWidget::drawShadow()
 //----------------------------------------------------------------------
 void FWidget::clearShadow()
 {
-  int x1, x2, y1, y2;
-
   if ( isMonochron() )
     return;
 
-  x1 = 1;
-  x2 = getWidth();
-  y1 = 1;
-  y2 = getHeight();
+  int x1 = 1
+    , x2 = getWidth()
+    , y1 = 1
+    , y2 = getHeight();
 
   if ( isWindowWidget() )
   {
@@ -1524,15 +1540,13 @@ void FWidget::clearShadow()
 //----------------------------------------------------------------------
 void FWidget::drawFlatBorder()
 {
-  int x1, x2, y1, y2;
-
   if ( ! isNewFont() )
     return;
 
-  x1 = 1;
-  x2 = getWidth() + 1;
-  y1 = 0;
-  y2 = getHeight() + 1;
+  int x1 = 1
+    , x2 = getWidth() + 1
+    , y1 = 0
+    , y2 = getHeight() + 1;
 
   if ( FWidget* p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
@@ -1593,15 +1607,13 @@ void FWidget::drawFlatBorder()
 //----------------------------------------------------------------------
 void FWidget::clearFlatBorder()
 {
-  int x1, x2, y1, y2;
-
   if ( ! isNewFont() )
     return;
 
-  x1 = 1;
-  x2 = getWidth() + 1;
-  y1 = 0;
-  y2 = getHeight() + 1;
+  int x1 = 1
+    , x2 = getWidth() + 1
+    , y1 = 0
+    , y2 = getHeight() + 1;
 
   if ( FWidget* p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
@@ -1751,7 +1763,7 @@ void FWidget::setStatusBar (FStatusBar* sbar)
   if ( ! sbar || statusbar == sbar )
     return;
 
-  if ( statusbar && sbar != 0 )
+  if ( statusbar )
     delete statusbar;
 
   statusbar = sbar;

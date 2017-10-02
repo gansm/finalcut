@@ -1,5 +1,23 @@
-// File: fmenu.cpp
-// Provides: class FMenu
+/************************************************************************
+* fmenu.cpp - Widget FMenu                                              *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
@@ -305,12 +323,11 @@ void FMenu::onMouseDown (FMouseEvent* ev)
 
     while ( iter != last )
     {
-      int x1, x2, y, mouse_x, mouse_y;
-      x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth();
-      y  = (*iter)->getY();
-      mouse_x = mouse_pos.getX();
-      mouse_y = mouse_pos.getY();
+      int x1 = (*iter)->getX()
+        , x2 = (*iter)->getX() + (*iter)->getWidth()
+        , y  = (*iter)->getY()
+        , mouse_x = mouse_pos.getX()
+        , mouse_y = mouse_pos.getY();
 
       if ( mouse_x >= x1
           && mouse_x < x2
@@ -410,10 +427,9 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 
       while ( iter != last )
       {
-        int x1, x2, y;
-        x1 = (*iter)->getX();
-        x2 = (*iter)->getX() + (*iter)->getWidth();
-        y  = (*iter)->getY();
+        int x1 = (*iter)->getX()
+          , x2 = (*iter)->getX() + (*iter)->getWidth()
+          , y  = (*iter)->getY();
 
         if ( (*iter)->isSelected() )
         {
@@ -482,12 +498,12 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   {
     std::vector<FMenuItem*>::const_iterator iter, last;
     FMenu* smenu = 0;
-    bool focus_changed = false;
-    bool mouse_over_menu = false;
-    bool mouse_over_submenu = false;
-    bool mouse_over_supermenu = false;
-    bool mouse_over_menubar = false;
-    bool hide_sub_menu = false;
+    bool focus_changed = false
+      , mouse_over_menu = false
+      , mouse_over_submenu = false
+      , mouse_over_supermenu = false
+      , mouse_over_menubar = false
+      , hide_sub_menu = false;
     FMenu* show_sub_menu = 0;
     FPoint mouse_pos;
 
@@ -523,12 +539,11 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 
     while ( iter != last )
     {
-      int x1, x2, y, mouse_x, mouse_y;
-      x1 = (*iter)->getX();
-      x2 = (*iter)->getX() + (*iter)->getWidth();
-      y  = (*iter)->getY();
-      mouse_x = mouse_pos.getX();
-      mouse_y = mouse_pos.getY();
+      int x1 = (*iter)->getX()
+        , x2 = (*iter)->getX() + (*iter)->getWidth()
+        , y  = (*iter)->getY()
+        , mouse_x = mouse_pos.getX()
+        , mouse_y = mouse_pos.getY();
 
       if ( mouse_x >= x1
           && mouse_x < x2
@@ -814,7 +829,9 @@ void FMenu::init(FWidget* parent)
 //----------------------------------------------------------------------
 void FMenu::calculateDimensions()
 {
-  int item_X, item_Y, adjust_X;
+  int item_X
+    , item_Y
+    , adjust_X;
   std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
   last = item_list.end();
@@ -1261,14 +1278,14 @@ void FMenu::drawItems()
       FString txt;
       uInt txt_length;
       int  hotkeypos, to_char;
-      int  accel_key      = (*iter)->accel_key;
-      bool has_menu       = (*iter)->hasMenu();
-      bool is_enabled     = (*iter)->isEnabled();
-      bool is_checked     = (*iter)->isChecked();
-      bool is_checkable   = (*iter)->checkable;
-      bool is_radio_btn   = (*iter)->radio_button;
-      bool is_selected    = (*iter)->isSelected();
-      bool is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
+      int  accel_key     = (*iter)->accel_key;
+      bool has_menu      = (*iter)->hasMenu()
+        , is_enabled     = (*iter)->isEnabled()
+        , is_checked     = (*iter)->isChecked()
+        , is_checkable   = (*iter)->checkable
+        , is_radio_btn   = (*iter)->radio_button
+        , is_selected    = (*iter)->isSelected()
+        , is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
 
       if ( is_enabled )
       {

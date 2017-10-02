@@ -1,5 +1,23 @@
-// File: foptimove.cpp
-// Provides: class FOptiMove
+/************************************************************************
+* foptimove.cpp - Cursor movement optimization                          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <cstring>
 
@@ -473,9 +491,9 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   char* null_ptr = null_result;
   char* move_ptr = move_buf;
   char* move_xy;
-  int   method = 0;
-  int   new_time;
-  int   move_time = LONG_DURATION;
+  int   method = 0
+    ,   new_time
+    ,   move_time = LONG_DURATION;
 
   // Method 0: direct cursor addressing
   move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
@@ -696,7 +714,7 @@ int FOptiMove::capDuration (char*& cap, int affcnt)
     // check for delay with padding character
     if ( p[0] == '$' && p[1] == '<' && std::strchr(p, '>') )
     {
-      float num=0;
+      float num = 0;
 
       for (p += 2; *p != '>'; p++)
       {
@@ -763,9 +781,9 @@ int FOptiMove::relativeMove ( char*& move
                             , int from_x, int from_y
                             , int to_x, int to_y )
 {
-  int num;
-  int vtime = 0;
-  int htime = 0;
+  int num
+    , vtime = 0
+    , htime = 0;
 
   if ( move )
     move[0] = '\0';

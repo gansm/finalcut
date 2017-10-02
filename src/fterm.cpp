@@ -1,5 +1,23 @@
-// File: fterm.cpp
-// Provides: class FTerm
+/************************************************************************
+* fterm.cpp - Base class for terminal detection and control             *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2012-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <algorithm>
 #include <map>
@@ -213,7 +231,7 @@ FTerm::modifier_key& FTerm::getLinuxModifierKey()
   // fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));
 
-  // TIOCLINUX, subcode=6
+  // TIOCLINUX, subcode = 6
   if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
   {
     if ( subcode & (1 << KG_SHIFT) )
@@ -1325,12 +1343,11 @@ void FTerm::setPalette (short index, int r, int g, int b)
 
   if ( Ic || Ip )
   {
-    int rr, gg, bb;
     const char* color_str = "";
 
-    rr = (r * 1001) / 256;
-    gg = (g * 1001) / 256;
-    bb = (b * 1001) / 256;
+    int rr = (r * 1001) / 256
+      , gg = (g * 1001) / 256
+      , bb = (b * 1001) / 256;
 
     if ( Ic )
       color_str = tparm(Ic, index, rr, gg, bb, 0, 0, 0, 0, 0);
@@ -1521,7 +1538,9 @@ const FString FTerm::getSecDA()
 {
   FString sec_da_str = "";
 
-  int a=0, b=0, c=0;
+  int a = 0
+    , b = 0
+    , c = 0;
   fd_set ifds;
   struct timeval tv;
 
@@ -2032,18 +2051,15 @@ int FTerm::getFramebuffer_bpp ()
       return -1;
   }
 
-  if (fd >= 0)
+  if ( ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
+      && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
   {
-    if ( ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
-        && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
-    {
-      ::close(fd);
-      return int(fb_var.bits_per_pixel);
-    }
-    else
-    {
-      ::close(fd);
-    }
+    ::close(fd);
+    return int(fb_var.bits_per_pixel);
+  }
+  else
+  {
+    ::close(fd);
   }
 
   return -1;
@@ -2272,7 +2288,7 @@ int FTerm::setScreenFont ( uChar* fontdata, uInt count
     }
 
     for (uInt i = 0; i < count; i++)
-      std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line*32*i)
+      std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line * 32 * i)
                   , &fontdata[i * font.height]
                   , font.height);
   }
@@ -3004,11 +3020,12 @@ void FTerm::init_termcaps()
    *   captoinfo - convert all termcap descriptions into terminfo descriptions
    *   infocmp   - print out terminfo description from the current terminal
    */
-  static const int success       =  1;
-  static const int no_entry      =  0;
-  static const int db_not_found  = -1;
-  static const int not_available = -1;
-  static const int uninitialized = -2;
+  static const int
+      success       =  1
+    , no_entry      =  0
+    , db_not_found  = -1
+    , not_available = -1
+    , uninitialized = -2;
   static char term_buffer[2048];
   static char string_buf[2048];
   char* buffer = string_buf;
@@ -3976,7 +3993,7 @@ void FTerm::init()
 
     setPalette (fc::Black, 0x00, 0x00, 0x00);
     setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-    setPalette (fc::Green, 0x18, 0xb2, 0x18);
+    setPalette (fc::Green, 0x18, 0x78, 0x18);
     setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
     setPalette (fc::Red, 0xb2, 0x18, 0x18);
     setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);

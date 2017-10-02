@@ -1,27 +1,46 @@
-// File: fvterm.h
-// Provides: class FVTerm
-//
-//  Inheritance diagram
-//  ═══════════════════
-//
-// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
-// ▕ FObject ▏ ▕  FTerm  ▏
-// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
-//      ▲           ▲
-//      │           │
-//      └─────┬─────┘
-//            │
-//        ▕▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▔▔▏
-//        ▕ FVTerm ▏-┬- - - -▕ FString ▏
-//        ▕▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▏
-//                   :
-//                   :      *▕▔▔▔▔▔▔▔▔▏
-//                   :- - - -▕ FPoint ▏
-//                   :       ▕▁▁▁▁▁▁▁▁▏
-//                   :
-//                   :      *▕▔▔▔▔▔▔▔▏
-//                   └- - - -▕ FRect ▏
-//                           ▕▁▁▁▁▁▁▁▏
+/************************************************************************
+* fvterm.h - Virtual terminal implementation                            *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2016-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ * ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+ * ▕ FObject ▏ ▕  FTerm  ▏
+ * ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+ *      ▲           ▲
+ *      │           │
+ *      └─────┬─────┘
+ *            │
+ *        ▕▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▔▔▏
+ *        ▕ FVTerm ▏-┬- - - -▕ FString ▏
+ *        ▕▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▏
+ *                   :
+ *                   :      *▕▔▔▔▔▔▔▔▔▏
+ *                   :- - - -▕ FPoint ▏
+ *                   :       ▕▁▁▁▁▁▁▁▁▏
+ *                   :
+ *                   :      *▕▔▔▔▔▔▔▔▏
+ *                   └- - - -▕ FRect ▏
+ *                           ▕▁▁▁▁▁▁▁▏
+ */
 
 #ifndef FVTERM_H
 #define FVTERM_H
@@ -59,6 +78,8 @@ class FVTerm : public FObject, public FTerm
     typedef FOptiAttr::char_data  char_data;
     typedef void (FVTerm::*FPreprocessingHandler)();
 
+    struct term_area;  // forward declaration
+
     struct vterm_preprocessing
     {
       FVTerm*               instance;
@@ -66,58 +87,6 @@ class FVTerm : public FObject, public FTerm
     };
 
     typedef std::vector<vterm_preprocessing> FPreprocessing;
-
-    // define virtual terminal character properties
-    struct term_area
-    {
-      public:
-       term_area()
-       : offset_left (0)
-       , offset_top (0)
-       , width (-1)
-       , height (-1)
-       , right_shadow (0)
-       , bottom_shadow (0)
-       , cursor_x (0)
-       , cursor_y (0)
-       , input_cursor_x (-1)
-       , input_cursor_y (-1)
-       , widget()
-       , preprocessing_call()
-       , changes (0)
-       , text (0)
-       , input_cursor_visible (false)
-       , has_changes (false)
-       , visible (false)
-       { }
-
-      ~term_area()
-       { }
-
-       int offset_left;     // Distance from left terminal side
-       int offset_top;      // Distance from top of the terminal
-       int width;           // Window width
-       int height;          // Window height
-       int right_shadow;    // Right window shadow
-       int bottom_shadow;   // Bottom window shadow
-       int cursor_x;        // X-position for the next write operation
-       int cursor_y;        // Y-position for the next write operation
-       int input_cursor_x;  // X-position input cursor
-       int input_cursor_y;  // Y-position input cursor
-       FWidget* widget;     // Widget that owns this term_area
-       FPreprocessing preprocessing_call;
-       line_changes* changes;
-       char_data* text;     // Text data for the output
-       bool input_cursor_visible;
-       bool has_changes;
-       bool visible;
-
-     private:
-       // Disable copy constructor
-       term_area (const term_area&);
-       // Disable assignment operator (=)
-       term_area& operator = (const term_area&);
-    };
 
     enum covered_state
     {
@@ -418,8 +387,68 @@ class FVTerm : public FObject, public FTerm
     static bool             stop_terminal_updates;
     static int              skipped_terminal_update;
 };
-
 #pragma pack(pop)
+
+
+//----------------------------------------------------------------------
+// struct FVTerm::term_area
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+struct FVTerm::term_area  // define virtual terminal character properties
+{
+  public:
+   term_area()
+   : offset_left (0)
+   , offset_top (0)
+   , width (-1)
+   , height (-1)
+   , right_shadow (0)
+   , bottom_shadow (0)
+   , cursor_x (0)
+   , cursor_y (0)
+   , input_cursor_x (-1)
+   , input_cursor_y (-1)
+   , widget()
+   , preprocessing_call()
+   , changes (0)
+   , text (0)
+   , input_cursor_visible (false)
+   , has_changes (false)
+   , visible (false)
+   { }
+
+  ~term_area()
+   { }
+
+   int offset_left;     // Distance from left terminal side
+   int offset_top;      // Distance from top of the terminal
+   int width;           // Window width
+   int height;          // Window height
+   int right_shadow;    // Right window shadow
+   int bottom_shadow;   // Bottom window shadow
+   int cursor_x;        // X-position for the next write operation
+   int cursor_y;        // Y-position for the next write operation
+   int input_cursor_x;  // X-position input cursor
+   int input_cursor_y;  // Y-position input cursor
+   FWidget* widget;     // Widget that owns this term_area
+   FPreprocessing preprocessing_call;
+   line_changes* changes;
+   char_data* text;     // Text data for the output
+   bool input_cursor_visible;
+   bool has_changes;
+   bool visible;
+
+ private:
+   // Disable copy constructor
+   term_area (const term_area&);
+   // Disable assignment operator (=)
+   term_area& operator = (const term_area&);
+};
+#pragma pack(pop)
+
 
 // FVTerm inline functions
 //----------------------------------------------------------------------

@@ -1,4 +1,23 @@
-// File: scrollview.cpp
+/************************************************************************
+* scrollview.cpp - Shows client widgets in a scroll area                *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <final/fapplication.h>
 #include <final/fbutton.h>
@@ -7,30 +26,31 @@
 #include <final/fmessagebox.h>
 #include <final/fscrollview.h>
 
+
 //----------------------------------------------------------------------
-// class scrollview
+// class Scrollview
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class scrollview : public FScrollView
+class Scrollview : public FScrollView
 {
   public:
     // Constructor
-    explicit scrollview (FWidget* = 0);
+    explicit Scrollview (FWidget* = 0);
 
     // Destructor
-    ~scrollview  ();
+    ~Scrollview  ();
 
     // Mutator
     void setScrollSize (int, int);
 
   private:
     // Disable copy constructor
-    scrollview (const scrollview&);
+    Scrollview (const Scrollview&);
     // Disable assignment operator (=)
-    scrollview& operator = (const scrollview&);
+    Scrollview& operator = (const Scrollview&);
 
     // Method
     void draw();
@@ -50,7 +70,7 @@ class scrollview : public FScrollView
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-scrollview::scrollview (FWidget* parent)
+Scrollview::Scrollview (FWidget* parent)
   : FScrollView(parent)
   , go_east()
   , go_south()
@@ -74,34 +94,34 @@ scrollview::scrollview (FWidget* parent)
   go_east->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &scrollview::cb_go_east)
+    F_METHOD_CALLBACK (this, &Scrollview::cb_go_east)
   );
 
   go_south->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &scrollview::cb_go_south)
+    F_METHOD_CALLBACK (this, &Scrollview::cb_go_south)
   );
 
   go_west->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &scrollview::cb_go_west)
+    F_METHOD_CALLBACK (this, &Scrollview::cb_go_west)
   );
 
   go_north->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &scrollview::cb_go_north)
+    F_METHOD_CALLBACK (this, &Scrollview::cb_go_north)
   );
 }
 
 //----------------------------------------------------------------------
-scrollview::~scrollview()
+Scrollview::~Scrollview()
 { }
 
 //----------------------------------------------------------------------
-void scrollview::setScrollSize (int width, int height)
+void Scrollview::setScrollSize (int width, int height)
 {
   FScrollView::setScrollSize (width, height);
   go_south->setPos (width - 5, 1);
@@ -110,7 +130,7 @@ void scrollview::setScrollSize (int width, int height)
 }
 
 //----------------------------------------------------------------------
-void scrollview::draw()
+void Scrollview::draw()
 {
   if ( isMonochron() )
     setReverse(true);
@@ -133,7 +153,7 @@ void scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_east (FWidget*, data_ptr)
+void Scrollview::cb_go_east (FWidget*, data_ptr)
 {
   scrollToX (getScrollWidth() - getViewportWidth() + 1);
   go_south->setFocus();
@@ -142,7 +162,7 @@ void scrollview::cb_go_east (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_south (FWidget*, data_ptr)
+void Scrollview::cb_go_south (FWidget*, data_ptr)
 {
   scrollToY (getScrollHeight() - getViewportHeight() + 1);
   go_west->setFocus();
@@ -151,7 +171,7 @@ void scrollview::cb_go_south (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_west (FWidget*, data_ptr)
+void Scrollview::cb_go_west (FWidget*, data_ptr)
 {
   scrollToX (1);
   go_north->setFocus();
@@ -160,7 +180,7 @@ void scrollview::cb_go_west (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void scrollview::cb_go_north (FWidget*, data_ptr)
+void Scrollview::cb_go_north (FWidget*, data_ptr)
 {
   scrollToY (1);
   go_east->setFocus();
@@ -170,20 +190,20 @@ void scrollview::cb_go_north (FWidget*, data_ptr)
 
 
 //----------------------------------------------------------------------
-// class scrollviewdemo
+// class Scrollviewdemo
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class scrollviewdemo : public FDialog
+class Scrollviewdemo : public FDialog
 {
   public:
     // Constructor
-    explicit scrollviewdemo (FWidget* = 0);
+    explicit Scrollviewdemo (FWidget* = 0);
 
     // Destructor
-    ~scrollviewdemo  ();
+    ~Scrollviewdemo  ();
 
     // Event handler
     void onClose (FCloseEvent*);
@@ -195,14 +215,14 @@ class scrollviewdemo : public FDialog
 
 
 //----------------------------------------------------------------------
-scrollviewdemo::scrollviewdemo (FWidget* parent)
+Scrollviewdemo::Scrollviewdemo (FWidget* parent)
   : FDialog(parent)
 {
   setGeometry (16, 3, 50, 19);
   setText ("Scrolling viewport example");
 
   // The scrolling viewport widget
-  scrollview* sview = new scrollview (this);
+  Scrollview* sview = new Scrollview (this);
   sview->setGeometry(3, 2, 44, 12);
   sview->setScrollSize(188, 124);
 
@@ -214,7 +234,7 @@ scrollviewdemo::scrollviewdemo (FWidget* parent)
   button->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &scrollviewdemo::cb_quit)
+    F_METHOD_CALLBACK (this, &Scrollviewdemo::cb_quit)
   );
 
   // Text label
@@ -225,17 +245,17 @@ scrollviewdemo::scrollviewdemo (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-scrollviewdemo::~scrollviewdemo()
+Scrollviewdemo::~Scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void scrollviewdemo::cb_quit (FWidget*, data_ptr)
+void Scrollviewdemo::cb_quit (FWidget*, data_ptr)
 {
   close();
 }
 
 //----------------------------------------------------------------------
-void scrollviewdemo::onClose (FCloseEvent* ev)
+void Scrollviewdemo::onClose (FCloseEvent* ev)
 {
   int ret = FMessageBox::info ( this, "Quit"
                               , "Do you really want\n"
@@ -259,7 +279,7 @@ int main (int argc, char* argv[])
   FApplication app(argc, argv);
 
   // Create a simple dialog box
-  scrollviewdemo svdemo(&app);
+  Scrollviewdemo svdemo(&app);
 
   // Set dialog main_dlg as main widget
   app.setMainWidget(&svdemo);

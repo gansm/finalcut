@@ -1,16 +1,36 @@
-// File: timer.cpp
+/************************************************************************
+* timer.cpp - Using timer events                                        *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2014-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <final/final.h>
 
+
 //----------------------------------------------------------------------
-// class timer
+// class Timer
 //----------------------------------------------------------------------
 
-class timer : public FWidget
+class Timer : public FWidget
 {
   public:
     // Constructor
-    explicit timer (FWidget* = 0);
+    explicit Timer (FWidget* = 0);
 
   protected:
     // Method
@@ -22,7 +42,7 @@ class timer : public FWidget
 };
 
 //----------------------------------------------------------------------
-timer::timer (FWidget* parent)
+Timer::Timer (FWidget* parent)
   : FWidget(parent)
 {
   addTimer (60000);        // 1-minute timer
@@ -38,7 +58,7 @@ timer::timer (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-void timer::draw()
+void Timer::draw()
 {
   setPrintPos (1,1);
   print() << "---------------\n"
@@ -48,7 +68,7 @@ void timer::draw()
 }
 
 //----------------------------------------------------------------------
-void timer::onTimer (FTimerEvent* ev)
+void Timer::onTimer (FTimerEvent* ev)
 {
   bool is_last_line = false;
   int timer_id = ev->timerId();
@@ -66,7 +86,7 @@ void timer::onTimer (FTimerEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void timer::onAccel (FAccelEvent* ev)
+void Timer::onAccel (FAccelEvent* ev)
 {
   quit();
   ev->accept();
@@ -84,7 +104,7 @@ int main (int argc, char* argv[])
   app.setBackgroundColor(fc::Default);
 
   // Create a timer object t
-  timer t(&app);
+  Timer t(&app);
   t.addAccelerator('q');
 
   // Set the timer object t as main widget

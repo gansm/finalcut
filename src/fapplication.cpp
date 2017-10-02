@@ -1,5 +1,23 @@
-// File: fapplication.cpp
-// Provides: class FApplication
+/************************************************************************
+* fapplication.cpp - Manages the application events                     *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2013-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <string>
 
@@ -373,6 +391,7 @@ void FApplication::cmd_options ()
   while ( true )
   {
     int c, idx = 0;
+
     static struct option long_options[] =
     {
       {"encoding",            required_argument, 0,  0 },
@@ -381,6 +400,7 @@ void FApplication::cmd_options ()
       {"newfont",             no_argument,       0,  0 },
       {0,                     0,                 0,  0 }
     };
+
     opterr = 0;
     c = getopt_long ( app_argc
                     , app_argv
@@ -1262,7 +1282,7 @@ bool FApplication::parseSGRMouse()
   const FPoint& mouse_position = getMousePos();
   register char* p;
   int button;
-  uChar x, y;
+  short x, y;
 
   enum x11_ext_btn_states
   {
@@ -1303,7 +1323,7 @@ bool FApplication::parseSGRMouse()
   {
     if ( *p < '0' || *p > '9')
       return false;
-    x = uChar(10 * x + (*p - '0'));
+    x = short(10 * x + (*p - '0'));
   }
 
   while ( *p++ && *p != 'M' && *p != 'm' )
@@ -1311,7 +1331,7 @@ bool FApplication::parseSGRMouse()
     if ( *p < '0' || *p > '9')
       return false;
 
-    y = uChar(10 * y + (*p - '0'));
+    y = short(10 * y + (*p - '0'));
   }
 
   new_mouse_position.setPoint (x, y);
@@ -1431,7 +1451,7 @@ bool FApplication::parseUrxvtMouse()
   register bool x_neg;
   register bool y_neg;
   int button;
-  uChar x, y;
+  short x, y;
 
   enum urxvt_btn_states
   {
@@ -1481,7 +1501,7 @@ bool FApplication::parseUrxvtMouse()
     if ( *p < '0' || *p > '9')
       return false;
 
-    x = uChar(10 * x + (*p - '0'));
+    x = short(10 * x + (*p - '0'));
     p++;
   }
 
@@ -1496,7 +1516,7 @@ bool FApplication::parseUrxvtMouse()
     if ( *p < '0' || *p > '9')
       return false;
 
-    y = uChar(10 * y + (*p - '0'));
+    y = short(10 * y + (*p - '0'));
     p++;
   }
 
@@ -1507,10 +1527,10 @@ bool FApplication::parseUrxvtMouse()
     y = 1;
 
   if ( x > getColumnNumber() )
-    x = uChar(getColumnNumber());
+    x = short(getColumnNumber());
 
   if ( y > getLineNumber() )
-    y = uChar(getLineNumber());
+    y = short(getLineNumber());
 
   new_mouse_position.setPoint (x, y);
   // fill bit field with 0

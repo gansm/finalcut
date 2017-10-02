@@ -1,5 +1,23 @@
-// File: fvterm.cpp
-// Provides: class FVTerm
+/************************************************************************
+* fvterm.cpp - Virtual terminal implementation                          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2016-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <queue>
 #include <string>
@@ -330,6 +348,7 @@ int FVTerm::printf (const char* format, ...)
       std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
       return -1;
     }
+
     va_start (args, format);
     vsnprintf (buffer, uLong(len + 1), format, args);
     va_end (args);
@@ -1294,7 +1313,6 @@ void FVTerm::updateVTerm (term_area* area)
 {
   // Update area data on VTerm
 
-  int ax, ay, aw, ah, rsh, bsh, y_end, ol;
   char_data* tc;  // terminal character
   char_data* ac;  // area character
 
@@ -1320,13 +1338,14 @@ void FVTerm::updateVTerm (term_area* area)
     }
   }
 
-  ax  = area->offset_left;
-  ay  = area->offset_top;
-  aw  = area->width;
-  ah  = area->height;
-  rsh = area->right_shadow;
-  bsh = area->bottom_shadow;
-  ol  = 0;  // outside left
+  int ax  = area->offset_left
+    , ay  = area->offset_top
+    , aw  = area->width
+    , ah  = area->height
+    , rsh = area->right_shadow
+    , bsh = area->bottom_shadow
+    , ol  = 0  // outside left
+    , y_end;
 
   if ( ax < 0 )
   {
@@ -1360,16 +1379,15 @@ void FVTerm::updateVTerm (term_area* area)
 
       for (int x = line_xmin; x <= line_xmax; x++)  // column loop
       {
-        int gx, gy, line_len;
         covered_state is_covered;
         // global terminal positions
-        gx = ax + x;
-        gy = ay + y;
+        int gx = ax + x
+          , gy = ay + y;
 
         if ( gx < 0 || gy < 0 )
           continue;
 
-        line_len = aw + rsh;
+        int line_len = aw + rsh;
         ac = &area->text[y * line_len + x];
         tc = &vterm->text[gy * vterm->width + gx - ol];
 
@@ -1525,11 +1543,11 @@ bool FVTerm::updateVTermCursor (term_area* area)
 bool FVTerm::isInsideArea (int x, int y, term_area* area)
 {
   // Check whether the coordinates are within the area
-  int ax, ay, aw, ah;
-  ax  = 0;
-  ay  = 0;
-  aw  = area->width;
-  ah  = area->height;
+
+  int ax  = 0
+    , ay  = 0
+    , aw  = area->width
+    , ah  = area->height;
   FRect area_geometry(ax, ay, aw, ah);
 
   if ( area_geometry.contains(x, y) )
@@ -1618,13 +1636,14 @@ void FVTerm::getArea (const FRect& box, term_area* area)
 void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
 {
   // Copies a block from the virtual terminal rectangle to the given area
-  int y_end, length, dx, dy;
 
   if ( ! area )
     return;
 
-  dx = x - area->offset_left + 1;
-  dy = y - area->offset_top + 1;
+  int dx = x - area->offset_left + 1
+    , dy = y - area->offset_top + 1
+    , y_end
+    , length;
 
   if ( x < 0 || y < 0 )
     return;
@@ -1676,7 +1695,7 @@ void FVTerm::putArea (const FPoint& pos, term_area* area)
 void FVTerm::putArea (int ax, int ay, term_area* area)
 {
   // Copies the given area block to the virtual terminal position
-  int aw, ah, rsh, bsh, y_end, length, ol;
+
   char_data* tc;  // terminal character
   char_data* ac;  // area character
 
@@ -1688,11 +1707,14 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
 
   ax--;
   ay--;
-  aw   = area->width;
-  ah   = area->height;
-  rsh  = area->right_shadow;
-  bsh  = area->bottom_shadow;
-  ol   = 0;  // outside left
+
+  int aw   = area->width
+    , ah   = area->height
+    , rsh  = area->right_shadow
+    , bsh  = area->bottom_shadow
+    , ol   = 0  // outside left
+    , y_end
+    , length;
 
   if ( ax < 0 )
   {
@@ -1788,9 +1810,9 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
 void FVTerm::scrollAreaForward (term_area* area)
 {
   // Scrolls the entire area up line down
-  int total_width;
-  int length;
-  int y_max;
+  int total_width
+    , length
+    , y_max;
   char_data  nc;  // next character
   char_data* lc;  // last character
   char_data* dc;  // destination character
@@ -1849,9 +1871,9 @@ void FVTerm::scrollAreaForward (term_area* area)
 void FVTerm::scrollAreaReverse (term_area* area)
 {
   // Scrolls the entire area one line down
-  int total_width;
-  int length;
-  int y_max;
+  int total_width
+    , length
+    , y_max;
   char_data  nc;  // next character
   char_data* lc;  // last character
   char_data* dc;  // destination character

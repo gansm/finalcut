@@ -1,5 +1,23 @@
-// File: fwindow.cpp
-// Provides: class FWindow
+/************************************************************************
+* fwindow.cpp - Intermediate base class for all window objects          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include "final/fapplication.h"
 #include "final/fmenubar.h"
@@ -255,10 +273,10 @@ void FWindow::drawBorder()
 {
   if ( isNewFont() )
   {
-    int x1 = 1;
-    int x2 = 1 + getWidth() - 1;
-    int y1 = 1;
-    int y2 = 1 + getHeight() - 1;
+    int x1 = 1
+      , x2 = 1 + getWidth() - 1
+      , y1 = 1
+      , y2 = 1 + getHeight() - 1;
 
     setPrintPos (x1, y1);
     print (fc::NF_border_corner_upper_left);  // ⎡
@@ -398,10 +416,10 @@ void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   // Sets the geometry of the widget
 
-  int old_x = getX();
-  int old_y = getY();
-  int old_width = getWidth();
-  int old_height = getHeight();
+  int old_x = getX()
+    , old_y = getY()
+    , old_width = getWidth()
+    , old_height = getHeight();
 
   if ( y < 1 )
     y = 1;
@@ -772,12 +790,13 @@ bool FWindow::activatePrevWindow()
 //----------------------------------------------------------------------
 void FWindow::setShadowSize (int right, int bottom)
 {
-  int old_right, old_bottom, new_right, new_bottom;
-  old_right = getShadow().getX();
-  old_bottom = getShadow().getY();
+  int old_right  = getShadow().getX()
+    , old_bottom = getShadow().getY();
+
   FWidget::setShadowSize (right, bottom);
-  new_right = getShadow().getX();
-  new_bottom = getShadow().getY();
+
+  int new_right  = getShadow().getX()
+    , new_bottom = getShadow().getY();
 
   if ( isVirtualWindow()
       && (new_right != old_right || new_bottom != old_bottom) )

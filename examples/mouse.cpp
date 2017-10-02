@@ -1,4 +1,23 @@
-// File: mouse.cpp
+/************************************************************************
+* mouse.cpp - A small mouse-controlled drawing program                  *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <final/fapplication.h>
 #include <final/fdialog.h>
@@ -443,19 +462,17 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
 //----------------------------------------------------------------------
 void MouseDraw::drawCanvas()
 {
-  int ax, ay, y_end, x_end;
-
   if ( ! hasPrintArea() )
     FVTerm::getPrintArea();
 
   if ( ! (hasPrintArea() && canvas) )
     return;
 
-  ax = 9 + getTermX() - print_area->offset_left;
-  ay = 1 + getTermY() - print_area->offset_top;
-  y_end = canvas->height;
-  x_end = canvas->width;
-  int w_line_len = print_area->width + print_area->right_shadow;
+  int ax = 9 + getTermX() - print_area->offset_left
+    , ay = 1 + getTermY() - print_area->offset_top
+    , y_end = canvas->height
+    , x_end = canvas->width
+    , w_line_len = print_area->width + print_area->right_shadow;
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
@@ -478,10 +495,10 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::adjustSize()
 {
-  int w = 60;
-  int h = 18;
-  int x = 1 + (getParentWidget()->getWidth() - w) / 2;
-  int y = 1 + (getParentWidget()->getHeight() - h) / 2;
+  int w = 60
+    , h = 18
+    , x = 1 + (getParentWidget()->getWidth() - w) / 2
+    , y = 1 + (getParentWidget()->getHeight() - h) / 2;
   setGeometry (x, y, w, h, false);
   FDialog::adjustSize();
 }

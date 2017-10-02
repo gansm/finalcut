@@ -1,10 +1,28 @@
-// File: fstatusbar.cpp
-// Provides: class FStatusKey
-//           class FStatusBar
+/************************************************************************
+* fstatusbar.cpp - Widget FStatusBar and FStatusKey                     *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2014-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
 #include "final/fstatusbar.h"
+
 
 //----------------------------------------------------------------------
 // class FStatusKey
@@ -206,7 +224,7 @@ void FStatusBar::hide()
 //----------------------------------------------------------------------
 void FStatusBar::drawMessage()
 {
-  int  termWidth, space_offset;
+  int termWidth, space_offset;
   bool isLastActiveFocus, hasKeys;
 
   if ( ! (isVisible() ) )
@@ -377,14 +395,12 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
     while ( iter != last )
     {
-      int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
-
-      x1 = X;
-      kname_len = int(getKeyName((*iter)->getKey()).getLength());
-      txt_length = int((*iter)->getText().getLength());
-      x2 = x1 + kname_len + txt_length + 1;
-      mouse_x = ev->getX();
-      mouse_y = ev->getY();
+      int x1 = X
+        , kname_len = int(getKeyName((*iter)->getKey()).getLength())
+        , txt_length = int((*iter)->getText().getLength())
+        , x2 = x1 + kname_len + txt_length + 1
+        , mouse_x = ev->getX()
+        , mouse_y = ev->getY();
 
       if ( mouse_x >= x1
           && mouse_x <= x2
@@ -423,11 +439,10 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
       while ( iter != last )
       {
-        int x1, x2, kname_len, txt_length;
-        x1 = X;
-        kname_len = int(getKeyName((*iter)->getKey()).getLength());
-        txt_length = int((*iter)->getText().getLength());
-        x2 = x1 + kname_len + txt_length + 1;
+        int x1 = X
+          , kname_len = int(getKeyName((*iter)->getKey()).getLength())
+          , txt_length = int((*iter)->getText().getLength())
+          , x2 = x1 + kname_len + txt_length + 1;
 
         if ( (*iter)->hasMouseFocus() )
         {
@@ -470,13 +485,12 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 
     while ( iter != last )
     {
-      int x1, x2, mouse_x, mouse_y, kname_len, txt_length;
-      x1 = X;
-      kname_len = int(getKeyName((*iter)->getKey()).getLength());
-      txt_length = int((*iter)->getText().getLength());
-      x2 = x1 + kname_len + txt_length + 1;
-      mouse_x = ev->getX();
-      mouse_y = ev->getY();
+      int x1 = X
+        , kname_len = int(getKeyName((*iter)->getKey()).getLength())
+        , txt_length = int((*iter)->getText().getLength())
+        , x2 = x1 + kname_len + txt_length + 1
+        , mouse_x = ev->getX()
+        , mouse_y = ev->getY();
 
       if ( mouse_x >= x1
           && mouse_x <= x2

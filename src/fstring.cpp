@@ -1,5 +1,23 @@
-// File: fstring.cpp
-// Provides: class FString
+/************************************************************************
+* fstring.cpp - Unicode string class with UTF-8 support                 *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2012-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <string>
 #include <vector>
@@ -953,7 +971,7 @@ uLong FString::toULong() const
       throw std::overflow_error ("overflow");
     }
 
-    num = (num<<3)+(num<<1) + d;  // (10 * num) + d
+    num = (num << 3) + (num << 1) + d;  // (10 * num) + d
     p++;
   }
 
@@ -2579,7 +2597,9 @@ inline void FString::_remove (uInt pos, uInt len)
 //----------------------------------------------------------------------
 inline char* FString::wc_to_c_str (const wchar_t* s) const
 {
-  int mblength, size, dest_size;
+  int mblength
+    , size
+    , dest_size;
   const wchar_t* src;
 
   if ( ! s )  // handle NULL string
@@ -2638,7 +2658,9 @@ inline char* FString::wc_to_c_str (const wchar_t* s) const
 //----------------------------------------------------------------------
 inline wchar_t* FString::c_to_wc_str (const char* s) const
 {
-  int wclength, size, dest_size;
+  int wclength
+    , size
+    , dest_size;
   const char* src;
   wchar_t* dest;
 

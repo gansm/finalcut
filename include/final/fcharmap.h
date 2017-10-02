@@ -1,4 +1,23 @@
-// File: fcharmap.h
+/************************************************************************
+* fcharmap.h - Character mapping and encoding                           *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #ifndef FCHARMAP_H
 #define FCHARMAP_H
@@ -24,16 +43,16 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x00b0, 'f', 0xb0, 'o'},  // °  -  Degree
   {0x2022, '`', 0x04, '*'},  // •  -  Bullet
   {0x00b7, '`', 0xfa, '.'},  // ·  -  small Bullet
-  {0x25c6, '`', 0x04, '*'},  // ◆  -  BlackDiamond
-  {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline
-  {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab
-  {0x2409, 'b',  ' ', ' '},  // ␉  -  SymbolForHorizontalTab
-  {0x240c, 'c',  ' ', ' '},  // ␌  -  SymbolForFormFeed
-  {0x240d, 'd',  ' ', ' '},  // ␍  -  SymbolForCarriageReturn
-  {0x240a, 'e',  ' ', ' '},  // ␊  -  SymbolForLineFeed
+  {0x2666, '`', 0x04, '*'},  // ◆  -  BlackDiamondSuit
+  {0x2424, 'h',  ' ', ' '},  // ␤  -  SymbolForNewline (1)
+  {0x240b, 'i',  ' ', ' '},  // ␋  -  SymbolForVerticalTab (1)
+  {0x2409, 'b',  ' ', ' '},  // ␉  -  SymbolForHorizontalTab (1)
+  {0x240c, 'c',  ' ', ' '},  // ␌  -  SymbolForFormFeed (1)
+  {0x240d, 'd',  ' ', ' '},  // ␍  -  SymbolForCarriageReturn (1)
+  {0x240a, 'e',  ' ', ' '},  // ␊  -  SymbolForLineFeed (1)
   {0x2592, 'a', 0xb0, '#'},  // ▒  -  MediumShade
   {0x2588, '0', 0xdb, '#'},  // █  -  FullBlock
-  {0x25ae, '_', 0xfe, '#'},  // ▮  -  BlackVerticalRectangle
+  {0x25ae, '_', 0xfe, '#'},  // ▮  -  BlackVerticalRectangle (1)
   {0x258c,  0 , 0xdd, ' '},  // ▌  -  LeftHalfBlock
   {0x2590,  0 , 0xde, ' '},  // ▐  -  RightHalfBlock
   {0x2584,  0 , 0xdc, ' '},  // ▄  -  LowerHalfBlock
@@ -49,60 +68,67 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x2524, 'u', 0xb4, '+'},  // ┤  -  BoxDrawingsVerticalAndLeft
   {0x251c, 't', 0xc3, '+'},  // ├  -  BoxDrawingsVerticalAndRight
   {0x2534, 'v', 0xc1, '+'},  // ┴  -  BoxDrawingsUpAndHorizontal
-  {0x23ba, 'o',  '~', '~'},  // ⎺  -  HorizontalScanLine1
-  {0x23bb, 'p', 0xc4, '-'},  // ⎻  -  HorizontalScanLine3
-  {0x23bc, 'r', 0xc4, '-'},  // ⎼  -  HorizontalScanLine7
-  {0x23bd, 's',  '_', '_'},  // ⎽  -  HorizontalScanLine9
+  {0x23ba, 'o',  '~', '~'},  // ⎺  -  HorizontalScanLine1 (1)
+  {0x23bb, 'p', 0xc4, '-'},  // ⎻  -  HorizontalScanLine3 (1)
+  {0x23bc, 'r', 0xc4, '-'},  // ⎼  -  HorizontalScanLine7 (1)
+  {0x23bd, 's',  '_', '_'},  // ⎽  -  HorizontalScanLine9 (1)
   {0x25b2, '-', 0x1e, '^'},  // ▲  -  BlackUpPointingTriangle
   {0x25bc, '.', 0x1f, 'v'},  // ▼  -  BlackDownPointingTriangle
-  {0x25ba, '+', 0x10, '>'},  // ►  -  BlackRightPointingPointer
+  {0x25b6, '+', 0x10, '>'},  // ▶  -  BlackRightPointingTriangle
+  {0x25c0, ',', 0x11, '<'},  // ◀  -  BlackLeftPointingTriangle (1)
+  {0x25ba, '+', 0x10, '>'},  // ►  -  BlackRightPointingPointer (1)
   {0x25c4, ',', 0x11, '<'},  // ◄  -  BlackLeftPointingPointer
-  {0x1ab4,   0, 0xb4,   0},  // ⊐  -  NF_rev_left_arrow2
-  {0x1ab5,   0, 0xb5,   0},  // ►  -  NF_rev_right_arrow2
-  {0x1ab7,   0, 0xb7,   0},  // )  -  NF_radio_button3
-  {0x1ab8,   0, 0xb8,   0},  // ⎤  -  NF_rev_border_corner_upper_right
-  {0x1ab9,   0, 0xb9,   0},  // ⎹    -  NF_rev_border_line_right
-  {0x1aba,   0, 0xba,   0},  // ┤  -  NF_rev_border_line_vertical_left
-  {0x1abb,   0, 0xbb,   0},  // ⎦  -  NF_rev_border_corner_lower_right
-  {0x1abc,   0, 0xbc,   0},  // ⎸    -  NF_border_line_left
-  {0x1abd,   0, 0xbd,   0},  //⎹◣ -  NF_rev_up_arrow2
-  {0x1abe,   0, 0xbe,   0},  //⎹◤ -  NF_rev_down_arrow2
-  {0x1ac0,   0, 0xc0,   0},  // └  -  NF_border_corner_middle_lower_left
-  {0x1ac1,   0, 0xc1,   0},  // ◢⎸ -  NF_rev_up_arrow1
-  {0x1ac2,   0, 0xc2,   0},  // ◥⎸ -  NF_rev_down_arrow1
-  {0x1ac3,   0, 0xc3,   0},  // ├  -  NF_border_line_vertical_right
-  {0x1ac5,   0, 0xc5,   0},  // =  -  NF_border_line_up_and_down
-  {0x1ac6,   0, 0xc6,   0},  // =  -  NF_shadow_box_middle
-  {0x1ac7,   0, 0xc7,   0},  // =  -  NF_shadow_box_hdd
-  {0x1ac8,   0, 0xc8,   0},  // ◄  -  NF_rev_left_arrow1
-  {0x1ac9,   0, 0xc9,   0},  // ⊏  -  NF_rev_right_arrow1
-  {0x1aca,   0, 0xca,   0},  // [  -  NF_rev_menu_button1
-  {0x1acb,   0, 0xcb,   0},  // -  -  NF_rev_menu_button2
-  {0x1acc,   0, 0xcc,   0},  // ┌  -  NF_border_corner_middle_upper_left
-  {0x1acd,   0, 0xcd,   0},  // =  -  NF_shadow_box_cd
-  {0x1ace,   0, 0xce,   0},  // [  -  NF_shadow_box_left
-  {0x1acf,   0, 0xcf,   0},  // ┘  -  NF_border_corner_middle_lower_right
-  {0x1ad0,   0, 0xd0,   0},  // ┐  -  NF_border_corner_middle_upper_right
-  {0x1ad1,   0, 0xd1,   0},  // =  -  NF_shadow_box_net
-  {0x1ad2,   0, 0xd2,   0},  // ◢  -  NF_rev_up_pointing_triangle1
-  {0x1ad3,   0, 0xd3,   0},  // ⎣  -  NF_border_corner_lower_left
-  {0x1ad4,   0, 0xd4,   0},  // _  -  NF_border_line_bottom
-  {0x1ad5,   0, 0xd5,   0},  // O  -  NF_radio_button2
-  {0x1ad6,   0, 0xd6,   0},  // ●  -  NF_radio_button2_checked
-  {0x1ad7,   0, 0xd7,   0},  // ◥  -  NF_rev_down_pointing_triangle1
-  {0x1ad8,   0, 0xd8,   0},  // ¯  -  NF_border_line_upper
-  {0x1ad9,   0, 0xd9,   0},  // (  -  NF_radio_button1
-  {0x1ada,   0, 0xda,   0},  // ⎡  -  NF_border_corner_upper_left
-  {0x1adc,   0, 0xdc,   0},  // ✓  -  NF_shadow_box_checked
-  {0x1ae7,   0, 0xe7,   0},  // ║  -  NF_rev_border_line_right_and_left
-  {0x1ae8,   0, 0xe8,   0},  // ◣  -  NF_rev_up_pointing_triangle2
-  {0x1ae9,   0, 0xe9,   0},  // ◤  -  NF_rev_down_pointing_triangle2
-  {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3
-  {0x1af5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right
-  {0x1afb,   0, 0xfb,   0},  // ✓  -  NF_check_mark
+  {0x1ab4,   0, 0xb4,   0},  // ⊐  -  NF_rev_left_arrow2 (2)
+  {0x1ab5,   0, 0xb5,   0},  // ►  -  NF_rev_right_arrow2 (2)
+  {0x1ab7,   0, 0xb7,   0},  // )  -  NF_radio_button3 (2)
+  {0x1ab8,   0, 0xb8,   0},  // ⎤  -  NF_rev_border_corner_upper_right (2)
+  {0x1ab9,   0, 0xb9,   0},  // ⎹    -  NF_rev_border_line_right (2)
+  {0x1aba,   0, 0xba,   0},  // ┤  -  NF_rev_border_line_vertical_left (2)
+  {0x1abb,   0, 0xbb,   0},  // ⎦  -  NF_rev_border_corner_lower_right (2)
+  {0x1abc,   0, 0xbc,   0},  // ⎸    -  NF_border_line_left (2)
+  {0x1abd,   0, 0xbd,   0},  //⎹◣ -  NF_rev_up_arrow2 (2)
+  {0x1abe,   0, 0xbe,   0},  //⎹◤ -  NF_rev_down_arrow2 (2)
+  {0x1ac0,   0, 0xc0,   0},  // └  -  NF_border_corner_middle_lower_left (2)
+  {0x1ac1,   0, 0xc1,   0},  // ◢⎸ -  NF_rev_up_arrow1 (2)
+  {0x1ac2,   0, 0xc2,   0},  // ◥⎸ -  NF_rev_down_arrow1 (2)
+  {0x1ac3,   0, 0xc3,   0},  // ├  -  NF_border_line_vertical_right (2)
+  {0x1ac5,   0, 0xc5,   0},  // =  -  NF_border_line_up_and_down (2)
+  {0x1ac6,   0, 0xc6,   0},  // =  -  NF_shadow_box_middle (2)
+  {0x1ac7,   0, 0xc7,   0},  // =  -  NF_shadow_box_hdd (2)
+  {0x1ac8,   0, 0xc8,   0},  // ◄  -  NF_rev_left_arrow1 (2)
+  {0x1ac9,   0, 0xc9,   0},  // ⊏  -  NF_rev_right_arrow1 (2)
+  {0x1aca,   0, 0xca,   0},  // [  -  NF_rev_menu_button1 (2)
+  {0x1acb,   0, 0xcb,   0},  // -  -  NF_rev_menu_button2 (2)
+  {0x1acc,   0, 0xcc,   0},  // ┌  -  NF_border_corner_middle_upper_left (2)
+  {0x1acd,   0, 0xcd,   0},  // =  -  NF_shadow_box_cd (2)
+  {0x1ace,   0, 0xce,   0},  // [  -  NF_shadow_box_left (2)
+  {0x1acf,   0, 0xcf,   0},  // ┘  -  NF_border_corner_middle_lower_right (2)
+  {0x1ad0,   0, 0xd0,   0},  // ┐  -  NF_border_corner_middle_upper_right (2)
+  {0x1ad1,   0, 0xd1,   0},  // =  -  NF_shadow_box_net (2)
+  {0x1ad2,   0, 0xd2,   0},  // ◢  -  NF_rev_up_pointing_triangle1 (2)
+  {0x1ad3,   0, 0xd3,   0},  // ⎣  -  NF_border_corner_lower_left (2)
+  {0x1ad4,   0, 0xd4,   0},  // _  -  NF_border_line_bottom (2)
+  {0x1ad5,   0, 0xd5,   0},  // O  -  NF_radio_button2 (2)
+  {0x1ad6,   0, 0xd6,   0},  // ●  -  NF_radio_button2_checked (2)
+  {0x1ad7,   0, 0xd7,   0},  // ◥  -  NF_rev_down_pointing_triangle1 (2)
+  {0x1ad8,   0, 0xd8,   0},  // ¯  -  NF_border_line_upper (2)
+  {0x1ad9,   0, 0xd9,   0},  // (  -  NF_radio_button1 (2)
+  {0x1ada,   0, 0xda,   0},  // ⎡  -  NF_border_corner_upper_left (2)
+  {0x1adc,   0, 0xdc,   0},  // ✓  -  NF_shadow_box_checked (2)
+  {0x1ae7,   0, 0xe7,   0},  // ║  -  NF_rev_border_line_right_and_left (2)
+  {0x1ae8,   0, 0xe8,   0},  // ◣  -  NF_rev_up_pointing_triangle2 (2)
+  {0x1ae9,   0, 0xe9,   0},  // ◤  -  NF_rev_down_pointing_triangle2 (2)
+  {0x1af4,   0, 0xf4,   0},  // ]  -  NF_rev_menu_button3 (2)
+  {0x1af5,   0, 0xf5,   0},  // ]  -  NF_shadow_box_right (2)
+  {0x1afb,   0, 0xfb,   0},  // ✓  -  NF_check_mark (2)
   {0x221a,   0, 0xfb, 'x'},  // √  -  square root
   {0x25cf, '`', 0x04, '*'}   // ●  -  black circle
 };
+
+/*
+ * (1) Not defined in Windows Glyph List 4 (WGL4)
+ * (2) Only supported in use with newfont
+ */
 
 const int lastCharItem = int(sizeof(character) / sizeof(character[0])) - 1;
 
@@ -116,7 +142,7 @@ static int vt100_key_to_utf8[][2] =
   {fc::vt100_key_block    , fc::FullBlock},                     // █
   {fc::vt100_key_nsup     , fc::SuperscriptLatinSmallLetterN},  // ⁿ
   {fc::vt100_key_blackrect, fc::BlackVerticalRectangle},        // ▮
-  {fc::vt100_key_diamond  , fc::BlackDiamond},                  // ◆
+  {fc::vt100_key_diamond  , fc::BlackDiamondSuit},              // ◆
   {fc::vt100_key_ckboard  , fc::MediumShade},                   // ▒
   {fc::vt100_key_htab     , fc::SymbolForHorizontalTab},        // ␉
   {fc::vt100_key_ff       , fc::SymbolForFormFeed},             // ␌

@@ -1,5 +1,23 @@
-// File: fbutton.cpp
-// Provides: class FButton
+/************************************************************************
+* fbutton.cpp - Widget FButton                                          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2012-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include "final/fapplication.h"
 #include "final/fbutton.h"
@@ -494,16 +512,29 @@ inline void FButton::detectHotkey()
 //----------------------------------------------------------------------
 void FButton::draw()
 {
+  int active_focus
+    , d
+    , i
+    , j
+    , x
+    , mono_offset
+    , mono_1st_char
+    , margin
+    , length
+    , hotkeypos
+    , hotkey_offset
+    , space;
+  bool is_ActiveFocus
+    , is_Active
+    , is_Focus
+    , is_Flat
+    , is_NonFlatShadow
+    , is_NoUnderline;
   register wchar_t* src;
   register wchar_t* dest;
   wchar_t* ButtonText;
   FString txt;
   FWidget* parent_widget = getParentWidget();
-  int active_focus;
-  int d, i, j, x, mono_offset, mono_1st_char, margin;
-  int length, hotkeypos, hotkey_offset, space;
-  bool is_ActiveFocus, is_Active, is_Focus, is_Flat;
-  bool is_NonFlatShadow, is_NoUnderline;
 
   length = int(text.getLength());
   hotkeypos = -1;
@@ -648,7 +679,7 @@ void FButton::draw()
   if ( getHeight() >= 2 )
     j = int((getHeight() - 1) / 2);
   else
-    j=0;
+    j = 0;
 
   setPrintPos (1 + margin + d, 1 + j);
   setColor (button_fg, button_bg);

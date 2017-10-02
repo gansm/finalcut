@@ -1,4 +1,23 @@
-// File: windows.cpp
+/************************************************************************
+* windows.cpp - Shows window handling                                   *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2016-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
@@ -12,28 +31,29 @@
 #include <final/fstatusbar.h>
 #include <final/fstring.h>
 
+
 //----------------------------------------------------------------------
-// class smallWindow
+// class SmallWindow
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class smallWindow : public FDialog
+class SmallWindow : public FDialog
 {
   public:
     // Constructor
-    explicit smallWindow (FWidget* = 0);
+    explicit SmallWindow (FWidget* = 0);
 
     // Destructor
-    ~smallWindow();
+    ~SmallWindow();
 
   private:
     // Disable copy constructor
-    smallWindow (const smallWindow&);
+    SmallWindow (const SmallWindow&);
 
     // Disable assignment operator (=)
-    smallWindow& operator = (const smallWindow&);
+    SmallWindow& operator = (const SmallWindow&);
 
     // Method
     void adjustSize();
@@ -52,7 +72,7 @@ class smallWindow : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-smallWindow::smallWindow (FWidget* parent)
+SmallWindow::SmallWindow (FWidget* parent)
   : FDialog(parent)
   , left_arrow()
   , right_arrow()
@@ -101,13 +121,13 @@ smallWindow::smallWindow (FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-smallWindow::~smallWindow()
+SmallWindow::~SmallWindow()
 {
   delOwnTimer();
 }
 
 //----------------------------------------------------------------------
-void smallWindow::adjustSize()
+void SmallWindow::adjustSize()
 {
   if ( isZoomed() )
   {
@@ -127,13 +147,13 @@ void smallWindow::adjustSize()
 }
 
 //----------------------------------------------------------------------
-void smallWindow::onShow (FShowEvent*)
+void SmallWindow::onShow (FShowEvent*)
 {
   addTimer(1000);
 }
 
 //----------------------------------------------------------------------
-void smallWindow::onTimer (FTimerEvent*)
+void SmallWindow::onTimer (FTimerEvent*)
 {
   left_arrow->unsetEmphasis();
   left_arrow->redraw();
@@ -355,16 +375,15 @@ void Window::activateWindow (FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  int w, h, X, Y, dx, dy;
   std::vector<win_data*>::const_iterator iter, first;
-  w  = getRootWidget()->getWidth();
-  h  = getRootWidget()->getHeight();
-  X  = int(1 + (w - 40) / 2);
-  Y  = int(1 + (h - 22) / 2);
-  dx = ( w > 80 ) ? (w - 80) / 2 : 0;
-  dy = ( h > 24 ) ? (h - 24) / 2 : 0;
+  int w  = getRootWidget()->getWidth()
+    , h  = getRootWidget()->getHeight()
+    , X  = int(1 + (w - 40) / 2)
+    , Y  = int(1 + (h - 22) / 2)
+    , dx = ( w > 80 ) ? (w - 80) / 2 : 0
+    , dy = ( h > 24 ) ? (h - 24) / 2 : 0;
 
-  if ( Y < 2)
+  if ( Y < 2 )
     Y = 2;
 
   setPos (X, Y);
@@ -374,10 +393,9 @@ void Window::adjustSize()
   {
     if ( (*iter)->is_open )
     {
-      int x, y, n;
-      n = int(std::distance(first, iter));
-      x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
-      y = dy + 11 + int(n / 3) * 3;
+      int n = int(std::distance(first, iter))
+        , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
+        , y = dy + 11 + int(n / 3) * 3;
       (*iter)->dgl->setPos (x, y);
     }
 
@@ -407,27 +425,25 @@ void Window::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Window::cb_createWindows (FWidget*, data_ptr)
 {
-  int w, h, dx, dy;
   std::vector<win_data*>::const_iterator iter, first;
   iter = first = windows.begin();
-  w = getRootWidget()->getWidth();
-  h = getRootWidget()->getHeight();
-  dx = ( w > 80 ) ? (w - 80) / 2 : 0;
-  dy = ( h > 24 ) ? (h - 24) / 2 : 0;
+  int w = getRootWidget()->getWidth()
+    , h = getRootWidget()->getHeight()
+    , dx = ( w > 80 ) ? (w - 80) / 2 : 0
+    , dy = ( h > 24 ) ? (h - 24) / 2 : 0;
 
   while ( iter != windows.end() )
   {
     if ( ! (*iter)->is_open )
     {
-      int x, y, n;
       win_data* win_dat = *iter;
-      FDialog* win = new smallWindow(this);
+      FDialog* win = new SmallWindow(this);
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);
-      n = int(std::distance(first, iter));
-      x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3;
-      y = dy + 11 + int(n / 3) * 3;
+      int n = int(std::distance(first, iter))
+        , x = dx + 5 + (n % 3) * 25 + int(n / 3) * 3
+        , y = dy + 11 + int(n / 3) * 3;
       win->setGeometry (x, y, 20, 8);
       win->setMinimumSize (20, 8);
       win->setResizeable();

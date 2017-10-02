@@ -1,12 +1,31 @@
-// File: fc.h
-// Provides: class fc
-//
-//  Standalone class
-//  ════════════════
-//
-//  ▕▔▔▔▔▔▔▔▔▏
-//  ▕   fc   ▏
-//  ▕▁▁▁▁▁▁▁▁▏
+/************************************************************************
+* fc.h - Implements global constants and enumerations                   *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2015-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
+
+/*  Standalone class
+ *  ════════════════
+ *
+ *  ▕▔▔▔▔▔▔▔▔▏
+ *  ▕   fc   ▏
+ *  ▕▁▁▁▁▁▁▁▁▏
+ */
 
 #ifndef FC_H
 #define FC_H
@@ -147,15 +166,15 @@ class fc
       PlusMinus                           = 0x00b1,  // ±
       Times                               = 0x00d7,  // ×
       Degree                              = 0x00b0,  // °
-      BlackVerticalRectangle              = 0x25ae,  // ▮
+      BlackVerticalRectangle              = 0x25ae,  // ▮ (1)
       SmallBullet                         = 0x00b7,  // ·
-      BlackDiamond                        = 0x25c6,  // ◆
-      SymbolForNewline                    = 0x2424,  // ␤
-      SymbolForVerticalTab                = 0x240b,  // ␋
-      SymbolForHorizontalTab              = 0x2409,  // ␉
-      SymbolForFormFeed                   = 0x240c,  // ␌
-      SymbolForCarriageReturn             = 0x240d,  // ␍
-      SymbolForLineFeed                   = 0x240a,  // ␊
+      BlackDiamondSuit                    = 0x2666,  // ◆
+      SymbolForNewline                    = 0x2424,  // ␤ (1)
+      SymbolForVerticalTab                = 0x240b,  // ␋ (1)
+      SymbolForHorizontalTab              = 0x2409,  // ␉ (1)
+      SymbolForFormFeed                   = 0x240c,  // ␌ (1)
+      SymbolForCarriageReturn             = 0x240d,  // ␍ (1)
+      SymbolForLineFeed                   = 0x240a,  // ␊ (1)
       MediumShade                         = 0x2592,  // ▒
       BoxDrawingsHorizontal               = 0x2500,  // ─
       BoxDrawingsVertical                 = 0x2502,  // │
@@ -168,12 +187,14 @@ class fc
       BoxDrawingsVerticalAndLeft          = 0x2524,  // ┤
       BoxDrawingsVerticalAndRight         = 0x251c,  // ├
       BoxDrawingsUpAndHorizontal          = 0x2534,  // ┴
-      HorizontalScanLine1                 = 0x23ba,  // ⎺
-      HorizontalScanLine3                 = 0x23bb,  // ⎻
-      HorizontalScanLine7                 = 0x23bc,  // ⎼
-      HorizontalScanLine9                 = 0x23bd,  // ⎽
+      HorizontalScanLine1                 = 0x23ba,  // ⎺ (1)
+      HorizontalScanLine3                 = 0x23bb,  // ⎻ (1)
+      HorizontalScanLine7                 = 0x23bc,  // ⎼ (1)
+      HorizontalScanLine9                 = 0x23bd,  // ⎽ (1)
       BlackUpPointingTriangle             = 0x25b2,  // ▲
       BlackDownPointingTriangle           = 0x25bc,  // ▼
+      BlackRightPointingTriangle          = 0x25b6,  // ▶ (1)
+      BlackLeftPointingTriangle           = 0x25c0,  // ◀ (1)
       BlackRightPointingPointer           = 0x25ba,  // ►
       BlackLeftPointingPointer            = 0x25c4,  // ◄
       Bullet                              = 0x2022,  // •
@@ -182,52 +203,56 @@ class fc
       LowerHalfBlock                      = 0x2584,  // ▄
       LeftHalfBlock                       = 0x258c,  // ▌
       RightHalfBlock                      = 0x2590,  // ▐
-      NF_rev_left_arrow2                  = 0x1ab4,  // ⊐
-      NF_rev_right_arrow2                 = 0x1ab5,  // ►
-      NF_radio_button3                    = 0x1ab7,  // )
-      NF_rev_border_corner_upper_right    = 0x1ab8,  // ⎤
-      NF_rev_border_line_right            = 0x1ab9,  // ⎹
-      NF_rev_border_line_vertical_left    = 0x1aba,  // ┤
-      NF_rev_border_corner_lower_right    = 0x1abb,  // ⎦
-      NF_border_line_left                 = 0x1abc,  // ⎸
-      NF_rev_up_arrow2                    = 0x1abd,  //⎹◣
-      NF_rev_down_arrow2                  = 0x1abe,  //⎹◤
-      NF_border_corner_middle_lower_left  = 0x1ac0,  // └
-      NF_rev_up_arrow1                    = 0x1ac1,  // ◢⎸
-      NF_rev_down_arrow1                  = 0x1ac2,  // ◥⎸
-      NF_border_line_vertical_right       = 0x1ac3,  // ├
-      NF_border_line_up_and_down          = 0x1ac5,  // ニ
-      NF_shadow_box_middle                = 0x1ac6,  // ニ
-      NF_shadow_box_hdd                   = 0x1ac7,  // ニ
-      NF_rev_left_arrow1                  = 0x1ac8,  // ◄
-      NF_rev_right_arrow1                 = 0x1ac9,  // ⊏
-      NF_rev_menu_button1                 = 0x1aca,  // [
-      NF_rev_menu_button2                 = 0x1acb,  // -
-      NF_border_corner_middle_upper_left  = 0x1acc,  // ┌
-      NF_shadow_box_cd                    = 0x1acd,  // ニ
-      NF_shadow_box_left                  = 0x1ace,  // [
-      NF_border_corner_middle_lower_right = 0x1acf,  //  ┘
-      NF_border_corner_middle_upper_right = 0x1ad0,  //  ┐
-      NF_shadow_box_net                   = 0x1ad1,  // ニ
-      NF_rev_up_pointing_triangle1        = 0x1ad2,  // ◢
-      NF_border_corner_lower_left         = 0x1ad3,  // ⎣
-      NF_border_line_bottom               = 0x1ad4,  // _
-      NF_radio_button2                    = 0x1ad5,  // ⁐
-      NF_radio_button2_checked            = 0x1ad6,  // ●
-      NF_rev_down_pointing_triangle1      = 0x1ad7,  // ◥
-      NF_border_line_upper                = 0x1ad8,  // ¯
-      NF_radio_button1                    = 0x1ad9,  // (
-      NF_border_corner_upper_left         = 0x1ada,  // ⎡
-      NF_shadow_box_checked               = 0x1adc,  // ✓
-      NF_rev_border_line_right_and_left   = 0x1ae7,  // ||
-      NF_rev_up_pointing_triangle2        = 0x1ae8,  // ◣
-      NF_rev_down_pointing_triangle2      = 0x1ae9,  // ◤
-      NF_rev_menu_button3                 = 0x1af4,  // ]
-      NF_shadow_box_right                 = 0x1af5,  // ]
-      NF_Bullet                           = 0x1af9,  // ●
-      NF_check_mark                       = 0x1afb,  // ✓
+      NF_rev_left_arrow2                  = 0x1ab4,  // ⊐ (2)
+      NF_rev_right_arrow2                 = 0x1ab5,  // ► (2)
+      NF_radio_button3                    = 0x1ab7,  // ) (2)
+      NF_rev_border_corner_upper_right    = 0x1ab8,  // ⎤ (2)
+      NF_rev_border_line_right            = 0x1ab9,  // ⎹ (2)
+      NF_rev_border_line_vertical_left    = 0x1aba,  // ┤ (2)
+      NF_rev_border_corner_lower_right    = 0x1abb,  // ⎦ (2)
+      NF_border_line_left                 = 0x1abc,  // ⎸ (2)
+      NF_rev_up_arrow2                    = 0x1abd,  //⎹◣ (2)
+      NF_rev_down_arrow2                  = 0x1abe,  //⎹◤ (2)
+      NF_border_corner_middle_lower_left  = 0x1ac0,  // └ (2)
+      NF_rev_up_arrow1                    = 0x1ac1,  // ◢⎸ (2)
+      NF_rev_down_arrow1                  = 0x1ac2,  // ◥⎸ (2)
+      NF_border_line_vertical_right       = 0x1ac3,  // ├ (2)
+      NF_border_line_up_and_down          = 0x1ac5,  // ニ (2)
+      NF_shadow_box_middle                = 0x1ac6,  // ニ (2)
+      NF_shadow_box_hdd                   = 0x1ac7,  // ニ (2)
+      NF_rev_left_arrow1                  = 0x1ac8,  // ◄ (2)
+      NF_rev_right_arrow1                 = 0x1ac9,  // ⊏ (2)
+      NF_rev_menu_button1                 = 0x1aca,  // [ (2)
+      NF_rev_menu_button2                 = 0x1acb,  // - (2)
+      NF_border_corner_middle_upper_left  = 0x1acc,  // ┌ (2)
+      NF_shadow_box_cd                    = 0x1acd,  // ニ (2)
+      NF_shadow_box_left                  = 0x1ace,  // [ (2)
+      NF_border_corner_middle_lower_right = 0x1acf,  //  ┘ (2)
+      NF_border_corner_middle_upper_right = 0x1ad0,  //  ┐ (2)
+      NF_shadow_box_net                   = 0x1ad1,  // ニ (2)
+      NF_rev_up_pointing_triangle1        = 0x1ad2,  // ◢ (2)
+      NF_border_corner_lower_left         = 0x1ad3,  // ⎣ (2)
+      NF_border_line_bottom               = 0x1ad4,  // _ (2)
+      NF_radio_button2                    = 0x1ad5,  // ⁐ (2)
+      NF_radio_button2_checked            = 0x1ad6,  // ● (2)
+      NF_rev_down_pointing_triangle1      = 0x1ad7,  // ◥ (2)
+      NF_border_line_upper                = 0x1ad8,  // ¯ (2)
+      NF_radio_button1                    = 0x1ad9,  // ( (2)
+      NF_border_corner_upper_left         = 0x1ada,  // ⎡ (2)
+      NF_shadow_box_checked               = 0x1adc,  // ✓ (2)
+      NF_rev_border_line_right_and_left   = 0x1ae7,  // || (2)
+      NF_rev_up_pointing_triangle2        = 0x1ae8,  // ◣ (2)
+      NF_rev_down_pointing_triangle2      = 0x1ae9,  // ◤ (2)
+      NF_rev_menu_button3                 = 0x1af4,  // ] (2)
+      NF_shadow_box_right                 = 0x1af5,  // ] (2)
+      NF_Bullet                           = 0x1af9,  // ● (2)
+      NF_check_mark                       = 0x1afb,  // ✓ (2)
       SquareRoot                          = 0x221a   // √
     };
+    /*
+     * (1) Not defined in Windows Glyph List 4 (WGL4)
+     * (2) Only supported in use with newfont
+     */
 
     // keyboard - single keys
     enum keys

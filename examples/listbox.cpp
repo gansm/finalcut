@@ -1,4 +1,23 @@
-// File: listbox.cpp
+/************************************************************************
+* listbox.cpp - Example for using a FListBox widget                     *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <iostream>
 #include <list>
@@ -86,13 +105,13 @@ Listbox::Listbox (FWidget* parent)
   list1->setGeometry(2, 1, 18, 10);
   list1->setText ("FListBoxItem");
 
-  for (int i=1; i < 30; i++)
+  for (int i = 1; i < 30; i++)
     list1->insert (L"----- " + (FString() << i) + L" -----");
 
   // listbox 2
   double_list = new std::list<double>;
 
-  for (double i=1; i<=15; i++)
+  for (double i = 1; i<=15; i++)
     double_list->push_back(2 * i + (i / 100));
 
   FListBox* list2 = new FListBox (this);

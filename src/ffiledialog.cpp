@@ -1,5 +1,23 @@
-// File: ffiledialog.cpp
-// Provides: class FFileDialog
+/************************************************************************
+* ffiledialog.cpp - Widget FFileDialog (a file chooser dialog)          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2014-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
@@ -326,9 +344,9 @@ int FFileDialog::readDir()
   }
 
   if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
-    start=1;
+    start = 1;
   else
-    start=0;
+    start = 0;
 
   dir_num = numOfDirs();
   // directories first
@@ -457,7 +475,11 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  int h, X, Y, max_width, max_height;
+  int h
+    , X
+    , Y
+    , max_width
+    , max_height;
   FWidget* root_widget = getRootWidget();
 
   if ( root_widget )

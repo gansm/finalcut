@@ -1,5 +1,24 @@
-// File: fscrollview.cpp
-// Provides: class FScrollView
+/************************************************************************
+* fscrollview.cpp - Widget FScrollView (a scrolling area with on-demand *
+*                   scroll bars)                                        *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include "final/fscrollview.h"
 #include "final/fwindow.h"
@@ -96,7 +115,8 @@ void FScrollView::setScrollHeight (int height)
 //----------------------------------------------------------------------
 void FScrollView::setScrollSize (int width, int height)
 {
-  int xoffset_end, yoffset_end;
+  int xoffset_end
+    , yoffset_end;
 
   if ( width < getViewportWidth() )
     width = getViewportWidth();
@@ -506,7 +526,7 @@ void FScrollView::onWheel (FWheelEvent* ev)
       yoffset -= 4;
 
       if ( yoffset < 0 )
-        yoffset=0;
+        yoffset = 0;
 
       break;
 
@@ -588,11 +608,12 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   if ( ! vp_geometry.contains(widget_geometry) )
   {
-    int x, y;
-    int vx = vp_geometry.getX();
-    int vy = vp_geometry.getY();
-    int wx = widget_geometry.getX();
-    int wy = widget_geometry.getY();
+    int x
+      , y
+      , vx = vp_geometry.getX()
+      , vy = vp_geometry.getY()
+      , wx = widget_geometry.getX()
+      , wy = widget_geometry.getY();
 
     if ( wx > vx )
       x = widget_geometry.getX2() - vp_geometry.getWidth() + 1;
@@ -659,10 +680,10 @@ FVTerm::term_area* FScrollView::getPrintArea()
 void FScrollView::adjustSize()
 {
   FWidget::adjustSize();
-  int width   = getWidth();
-  int height  = getHeight();
-  int xoffset = viewport_geometry.getX();
-  int yoffset = viewport_geometry.getY();
+  int width   = getWidth()
+    , height  = getHeight()
+    , xoffset = viewport_geometry.getX()
+    , yoffset = viewport_geometry.getY();
 
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
@@ -695,8 +716,6 @@ void FScrollView::copy2area()
 {
   // copy viewport to area
 
-  int ax, ay, dx, dy, y_end, x_end;
-
   if ( ! hasPrintArea() )
     FVTerm::getPrintArea();
 
@@ -706,12 +725,12 @@ void FScrollView::copy2area()
   if ( ! viewport->has_changes )
     return;
 
-  ax = getTermX() - print_area->offset_left;
-  ay = getTermY() - print_area->offset_top;
-  dx = viewport_geometry.getX();
-  dy = viewport_geometry.getY();
-  y_end = getViewportHeight();
-  x_end = getViewportWidth();
+  int ax = getTermX() - print_area->offset_left
+    , ay = getTermY() - print_area->offset_top
+    , dx = viewport_geometry.getX()
+    , dy = viewport_geometry.getY()
+    , y_end = getViewportHeight()
+    , x_end = getViewportWidth();
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
@@ -744,11 +763,11 @@ inline FPoint FScrollView::getViewportCursorPos()
 
   if ( window )
   {
-    int widget_offsetX = getTermX() - window->getTermX();
-    int widget_offsetY = getTermY() - window->getTermY();
-    int x = widget_offsetX + viewport->input_cursor_x
-          - viewport_geometry.getX();
-    int y = widget_offsetY + viewport->input_cursor_y
+    int widget_offsetX = getTermX() - window->getTermX()
+      , widget_offsetY = getTermY() - window->getTermY()
+      , x = widget_offsetX + viewport->input_cursor_x
+          - viewport_geometry.getX()
+      , y = widget_offsetY + viewport->input_cursor_y
           - viewport_geometry.getY();
     return FPoint (x, y);
   }
@@ -759,7 +778,8 @@ inline FPoint FScrollView::getViewportCursorPos()
 //----------------------------------------------------------------------
 void FScrollView::init (FWidget* parent)
 {
-  int xoffset_end, yoffset_end;
+  int xoffset_end
+    , yoffset_end;
 
   assert ( parent != 0 );
   assert ( ! parent->isInstanceOf("FScrollView") );
@@ -974,7 +994,7 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
       yoffset -= 4;
 
       if ( yoffset < 0 )
-        yoffset=0;
+        yoffset = 0;
 
       break;
 
@@ -1082,7 +1102,7 @@ void FScrollView::cb_HBarChange (FWidget*, data_ptr)
       xoffset -= 4;
 
       if ( xoffset < 0 )
-        xoffset=0;
+        xoffset = 0;
 
       break;
 

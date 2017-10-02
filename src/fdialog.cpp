@@ -1,5 +1,23 @@
-// File: fdialog.cpp
-// Provides: class FDialog
+/************************************************************************
+* fdialog.cpp - Widget FDialog                                          *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2012-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include "final/fapplication.h"
 #include "final/fdialog.h"
@@ -178,7 +196,7 @@ int FDialog::exec()
 //----------------------------------------------------------------------
 void FDialog::setPos (int x, int y, bool)
 {
-  int dx, dy, old_x, old_y, rsw, bsh, width, height;
+  int rsw, bsh, width, height;
   FRect old_geometry;
 
   if ( getX() == x && getY() == y )
@@ -194,10 +212,10 @@ void FDialog::setPos (int x, int y, bool)
   if ( isZoomed() )
     return;
 
-  dx = getX() - x;
-  dy = getY() - y;
-  old_x = getTermX();
-  old_y = getTermY();
+  int dx = getX() - x
+    , dy = getY() - y
+    , old_x = getTermX()
+    , old_y = getTermY();
   const FPoint& shadow = getShadow();
   rsw = shadow.getX();  // right shadow width;
   bsh = shadow.getY();  // bottom shadow height
@@ -291,7 +309,6 @@ void FDialog::move (int dx, int dy)
 //----------------------------------------------------------------------
 void FDialog::setSize (int w, int h, bool adjust)
 {
-  int x, y, dw, dh, old_width, old_height, rsw, bsh;
 
   if ( getWidth() == w && getHeight() == h )
     return;
@@ -299,15 +316,15 @@ void FDialog::setSize (int w, int h, bool adjust)
   if ( isZoomed() )
     return;
 
-  x = getTermX();
-  y = getTermY();
-  old_width = getWidth();
-  old_height = getHeight();
-  dw = old_width - w;
-  dh = old_height - h;
+  int x = getTermX()
+    , y = getTermY()
+    , old_width = getWidth()
+    , old_height = getHeight()
+    , dw = old_width - w
+    , dh = old_height - h;
   const FPoint& shadow = getShadow();
-  rsw = shadow.getX();  // right shadow width;
-  bsh = shadow.getY();  // bottom shadow height
+  int rsw = shadow.getX();  // right shadow width;
+  int bsh = shadow.getY();  // bottom shadow height
 
   FWindow::setSize (w, h, adjust);
 
@@ -529,9 +546,9 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  int mouse_x = ev->getX();
-  int mouse_y = ev->getY();
-  int zoom_btn;
+  int mouse_x = ev->getX()
+    , mouse_y = ev->getY()
+    , zoom_btn;
 
   if ( ! isResizeable() )
     zoom_btn = 0;
@@ -651,10 +668,10 @@ void FDialog::onMouseUp (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::LeftButton )
   {
-    int mouse_x    = ev->getX();
-    int mouse_y    = ev->getY();
-    int titlebar_x = titlebar_click_pos.getX();
-    int titlebar_y = titlebar_click_pos.getY();
+    int mouse_x    = ev->getX()
+      , mouse_y    = ev->getY()
+      , titlebar_x = titlebar_click_pos.getX()
+      , titlebar_y = titlebar_click_pos.getY();
 
     if ( ! titlebar_click_pos.isNull()
         && titlebar_x > getTermX() + 3
@@ -689,10 +706,10 @@ void FDialog::onMouseUp (FMouseEvent* ev)
     {
       FWidget* r = getRootWidget();
       resize_click_pos = ev->getTermPos();
-      int x2 = resize_click_pos.getX();
-      int y2 = resize_click_pos.getY();
-      int x2_offset = 0;
-      int y2_offset = 0;
+      int x2 = resize_click_pos.getX()
+        , y2 = resize_click_pos.getY()
+        , x2_offset = 0
+        , y2_offset = 0;
 
       if ( r )
       {
@@ -800,10 +817,10 @@ void FDialog::onMouseMove (FMouseEvent* ev)
     {
       FWidget* r = getRootWidget();
       resize_click_pos = ev->getTermPos();
-      int x2 = resize_click_pos.getX();
-      int y2 = resize_click_pos.getY();
-      int x2_offset = 0;
-      int y2_offset = 0;
+      int x2 = resize_click_pos.getX()
+        , y2 = resize_click_pos.getY()
+        , x2_offset = 0
+        , y2_offset = 0;
 
       if ( r )
       {
@@ -832,7 +849,11 @@ void FDialog::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  int x, y, mouse_x, mouse_y, zoom_btn;
+  int x
+    , y
+    , mouse_x
+    , mouse_y
+    , zoom_btn;
 
   if ( ev->getButton() != fc::LeftButton )
     return;
@@ -1160,10 +1181,10 @@ void FDialog::init()
 //----------------------------------------------------------------------
 void FDialog::drawBorder()
 {
-  int x1 = 1;
-  int x2 = 1 + getWidth() - 1;
-  int y1 = 2;
-  int y2 = 1 + getHeight() - 1;
+  int x1 = 1
+    , x2 = 1 + getWidth() - 1
+    , y1 = 2
+    , y2 = 1 + getHeight() - 1;
 
   if ( (getMoveSizeWidget() == this || ! resize_click_pos.isNull())
       && ! isZoomed() )
@@ -1204,7 +1225,10 @@ void FDialog::drawBorder()
 void FDialog::drawTitleBar()
 {
   static const int menu_btn = 3;
-  int i, x, length, zoom_btn;
+  int i
+    , x
+    , length
+    , zoom_btn;
 
   // draw the title button
   setPrintPos (1, 1);

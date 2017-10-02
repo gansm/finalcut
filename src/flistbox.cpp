@@ -1,6 +1,23 @@
-// File: flistbox.cpp
-// Provides: class FListBoxItem
-//           class FListBox
+/************************************************************************
+* flistbox.cpp - Widget FListBox and FListBoxItem                       *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2014-2017 Markus Gans                                       *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <algorithm>
 
@@ -406,13 +423,14 @@ void FListBox::clear()
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   static const int padding_space = 2;  // 1 leading space + 1 tailing space
-  int element_count = int(getCount());
-  int current_before = current;
-  int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth() + padding_space;
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
-  int key = ev->key();
+  int element_count = int(getCount())
+    , current_before = current
+    , xoffset_before = xoffset
+    , xoffset_end = max_line_width - getClientWidth() + padding_space
+    , yoffset_before = yoffset
+    , yoffset_end = element_count - getClientHeight()
+    , pagesize = getClientHeight() - 1
+    , key = ev->key();
 
   switch ( key )
   {
@@ -427,7 +445,7 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       current--;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
         yoffset--;
@@ -473,17 +491,17 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_ppage:
-      current -= getClientHeight() - 1;
+      current -= pagesize;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
       {
-        yoffset -= getClientHeight() - 1;
+        yoffset -= pagesize;
 
         if ( yoffset < 0 )
-          yoffset=0;
+          yoffset = 0;
       }
 
       inc_search.clear();
@@ -491,14 +509,14 @@ void FListBox::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_npage:
-      current += getClientHeight() - 1;
+      current += pagesize;
 
       if ( current > element_count )
         current = element_count;
 
       if ( current - yoffset > getClientHeight() )
       {
-        yoffset += getClientHeight() - 1;
+        yoffset += pagesize;
 
         if ( yoffset > yoffset_end )
           yoffset = yoffset_end;
@@ -710,7 +728,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseDown (FMouseEvent* ev)
 {
-  int yoffset_before, mouse_x, mouse_y;
+  int yoffset_before
+    , mouse_x
+    , mouse_y;
 
   if ( ev->getButton() != fc::LeftButton
       && ev->getButton() != fc::RightButton )
@@ -811,7 +831,10 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseMove (FMouseEvent* ev)
 {
-  int current_before, yoffset_before, mouse_x, mouse_y;
+  int current_before
+    , yoffset_before
+    , mouse_x
+    , mouse_y;
 
   if ( ev->getButton() != fc::LeftButton
       && ev->getButton() != fc::RightButton )
@@ -966,10 +989,10 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onTimer (FTimerEvent*)
 {
-  int element_count = int(getCount());
-  int current_before = current;
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
+  int element_count = int(getCount())
+    , current_before = current
+    , yoffset_before = yoffset
+    , yoffset_end = element_count - getClientHeight();
 
   switch ( int(drag_scroll) )
   {
@@ -978,7 +1001,7 @@ void FListBox::onTimer (FTimerEvent*)
 
     case fc::scrollUp:
     case fc::scrollUpSelect:
-      if ( current_before == 1)
+      if ( current_before == 1 )
       {
         drag_scroll = fc::noScroll;
         return;
@@ -987,13 +1010,13 @@ void FListBox::onTimer (FTimerEvent*)
       current -= scroll_distance;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
         yoffset -= scroll_distance;
 
       if ( yoffset < 0 )
-        yoffset=0;
+        yoffset = 0;
       break;
 
     case fc::scrollDown:
@@ -1040,7 +1063,7 @@ void FListBox::onTimer (FTimerEvent*)
         to = current;
       }
 
-      for (int i=from; i <= to; i++)
+      for (int i = from; i <= to; i++)
       {
         if ( mouse_select )
         {
@@ -1073,11 +1096,12 @@ void FListBox::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListBox::onWheel (FWheelEvent* ev)
 {
-  int element_count, current_before, yoffset_before, yoffset_end, wheel;
-  element_count = int(getCount());
-  current_before = current;
-  yoffset_before = yoffset;
-  yoffset_end = element_count - getClientHeight();
+  int wheel
+    , element_count = int(getCount())
+    , current_before = current
+    , yoffset_before = yoffset
+    , yoffset_end = element_count - getClientHeight()
+    , pagesize = 4;
 
   if ( yoffset_end < 0 )
     yoffset_end = 0;
@@ -1098,18 +1122,18 @@ void FListBox::onWheel (FWheelEvent* ev)
       if ( yoffset == 0 )
         break;
 
-      yoffset -= 4;
+      yoffset -= pagesize;
 
       if ( yoffset < 0 )
       {
-        current -= 4 + yoffset;
-        yoffset=0;
+        current -= pagesize + yoffset;
+        yoffset = 0;
       }
       else
-        current -= 4;
+        current -= pagesize;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       inc_search.clear();
       break;
@@ -1118,15 +1142,15 @@ void FListBox::onWheel (FWheelEvent* ev)
       if ( yoffset == yoffset_end )
         break;
 
-      yoffset += 4;
+      yoffset += pagesize;
 
       if ( yoffset > yoffset_end )
       {
-        current += 4 - (yoffset - yoffset_end);
+        current += pagesize - (yoffset - yoffset_end);
         yoffset = yoffset_end;
       }
       else
-        current += 4;
+        current += pagesize;
 
       if ( current > element_count )
         current = element_count;
@@ -1186,6 +1210,9 @@ void FListBox::onFocusOut (FFocusEvent*)
 void FListBox::adjustYOffset()
 {
   int element_count = int(getCount());
+
+  if ( element_count == 0 )
+    return;
 
   if ( yoffset > element_count - getClientHeight() )
     yoffset = element_count - getClientHeight();
@@ -1402,10 +1429,10 @@ void FListBox::drawList()
 
   for (uInt y = start; y < num; y++)
   {
-    bool serach_mark = false;
-    bool lineHasBrackets = hasBrackets(iter);
-    bool isLineSelected = isSelected(iter);
-    bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+    bool serach_mark = false
+      , lineHasBrackets = hasBrackets(iter)
+      , isLineSelected = isSelected(iter)
+      , isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
 
     if ( conv_type == lazy_convert && iter->getText().isNull() )
     {
@@ -1497,13 +1524,13 @@ void FListBox::drawList()
     if ( lineHasBrackets )
     {
       int full_length;
-      uInt len;
-      uInt i = 0;
-      uInt b = 0;
+      uInt len
+        , i = 0
+        , b = 0;
 
       if ( xoffset == 0 )
       {
-        b=1;
+        b = 1;
 
         switch ( iter->brackets )
         {
@@ -1690,10 +1717,10 @@ void FListBox::processChanged()
 void FListBox::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
-  int distance = 1;
-  int element_count = int(getCount());
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
+  int distance = 1
+    , element_count = int(getCount())
+    , yoffset_before = yoffset
+    , yoffset_end = element_count - getClientHeight();
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -1708,7 +1735,7 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
       current -= distance;
 
       if ( current < 1 )
-        current=1;
+        current = 1;
 
       if ( current <= yoffset )
         yoffset -= distance;
@@ -1798,9 +1825,10 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
   static const int padding_space = 2;  // 1 leading space + 1 tailing space
   FScrollbar::sType scrollType;
-  int distance = 1;
-  int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth() + padding_space;
+  int distance = 1
+    , pagesize = 4
+    , xoffset_before = xoffset
+    , xoffset_end = max_line_width - getClientWidth() + padding_space;
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -1854,7 +1882,7 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
       if ( xoffset == 0 )
         break;
 
-      xoffset -= 4;
+      xoffset -= pagesize;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -1865,7 +1893,7 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
       if ( xoffset == xoffset_end )
         break;
 
-      xoffset += 4;
+      xoffset += pagesize;
 
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;
