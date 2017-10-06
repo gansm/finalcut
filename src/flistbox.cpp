@@ -1211,7 +1211,10 @@ void FListBox::adjustYOffset()
 {
   int element_count = int(getCount());
 
-  if ( element_count == 0 )
+  if ( getClientHeight() < 0 )
+   beep();
+  
+  if ( element_count == 0 || getClientHeight() <= 0 )
     return;
 
   if ( yoffset > element_count - getClientHeight() )
@@ -1427,7 +1430,7 @@ void FListBox::drawList()
 
   iter = index2iterator(int(start) + yoffset);
 
-  for (uInt y = start; y < num; y++)
+  for (uInt y = start; y < num && iter != itemlist.end() ; y++)
   {
     bool serach_mark = false
       , lineHasBrackets = hasBrackets(iter)
@@ -1579,7 +1582,7 @@ void FListBox::drawList()
 
       full_length = int(getString(iter).getLength());
 
-      if ( b + i < uInt(getWidth() - nf_offset - 4)
+      if ( b + i < uInt(getWidth() - nf_offset - 4 )
           && xoffset <= full_length + 1 )
       {
         if ( serach_mark && i == inc_len )

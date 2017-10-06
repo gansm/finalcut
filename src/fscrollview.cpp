@@ -732,6 +732,14 @@ void FScrollView::copy2area()
     , y_end = getViewportHeight()
     , x_end = getViewportWidth();
 
+  // viewport width does not fit into the print_area
+  if ( print_area->width <= ax + x_end )
+    x_end = print_area->width - ax;
+
+  // viewport height does not fit into the print_area
+  if ( print_area->height <= ay + y_end )
+    y_end = print_area->height - ay;
+
   for (int y = 0; y < y_end; y++)  // line loop
   {
     char_data* vc;  // viewport character

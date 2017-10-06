@@ -467,7 +467,7 @@ int FApplication::gpmEvent (bool clear)
   tv.tv_usec = 100000;  // 100 ms
   result = select (max + 1, &ifds, 0, 0, &tv);
 
-  if ( FD_ISSET(stdin_no, &ifds) )
+  if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
   {
     if ( clear )
       FD_CLR (stdin_no, &ifds);
@@ -475,10 +475,10 @@ int FApplication::gpmEvent (bool clear)
     return keyboard_event;
   }
 
-  if ( clear && FD_ISSET(gpm_fd, &ifds) )
+  if ( clear && result > 0 && FD_ISSET(gpm_fd, &ifds) )
     FD_CLR (gpm_fd, &ifds);
 
-  if (result > 0)
+  if ( result > 0 )
     return mouse_event;
   else
     return no_event;
@@ -498,7 +498,7 @@ inline bool FApplication::KeyPressed()
   tv.tv_usec = 100000;  // 100 ms
   result = select (stdin_no + 1, &ifds, 0, 0, &tv);
 
-  if ( FD_ISSET(stdin_no, &ifds) )
+  if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
     FD_CLR (stdin_no, &ifds);
 
   return ( result > 0 );
@@ -1582,9 +1582,9 @@ bool FApplication::processGpmEvent()
     if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
       b_state.mouse_moved = true;
 
-    if ( gpm_ev.wdy > 0)
+    if ( gpm_ev.wdy > 0 )
       b_state.wheel_up = Pressed;
-    else if ( gpm_ev.wdy < 0)
+    else if ( gpm_ev.wdy < 0 )
       b_state.wheel_down = Pressed;
 
     switch ( gpm_ev.type & 0x0f )

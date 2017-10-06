@@ -433,6 +433,7 @@ class FTerm
     static FTermcap::tcap_map* tcap;
 
     static bool           mouse_support;
+    static bool           decscusr_support;
     static bool           terminal_detection;
     static bool           raw_mode;
     static bool           input_data_pending;

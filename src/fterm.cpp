@@ -57,6 +57,7 @@ int      FTerm::cursor_addres_lengths;
 uInt     FTerm::baudrate;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
+bool     FTerm::decscusr_support;
 bool     FTerm::terminal_detection;
 bool     FTerm::raw_mode;
 bool     FTerm::input_data_pending;
@@ -543,11 +544,11 @@ int FTerm::parseKeyString ( char buffer[]
   {
     char utf8char[4] = {};  // init array with '\0'
 
-    if ((firstchar & 0xe0) == 0xc0)
+    if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;
-    else if ((firstchar & 0xf0) == 0xe0)
+    else if ( (firstchar & 0xf0) == 0xe0 )
       len = 3;
-    else if ((firstchar & 0xf8) == 0xf0)
+    else if ( (firstchar & 0xf8) == 0xf0 )
       len = 4;
 
     for (n = 0; n < len ; n++)
@@ -917,7 +918,7 @@ const FString* FTerm::getXTermFont()
     tv.tv_usec = 150000;  // 150 ms
 
     // read the terminal answer
-    if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
+    if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     {
       char temp[150] = {};
 
@@ -966,7 +967,7 @@ const FString* FTerm::getXTermTitle()
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
   {
     char temp[512] = {};
 
@@ -1025,7 +1026,7 @@ const FString FTerm::getXTermColorName (int color)
   tv.tv_usec = 150000;  // 150 ms
 
   // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
   {
     if ( std::scanf("\033]4;%10d;%509[^\n]s", &color, temp) == 2 )
     {
@@ -1051,13 +1052,16 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
 
+  if ( (gnome_terminal && ! decscusr_support) || kde_konsole )
+    return;
+
+
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( isFreeBSDConsole() )
     return;
 #endif
 
-  if ( (xterm_terminal || mintty_terminal)
-      && ! (gnome_terminal || kde_konsole) )
+  if ( xterm_terminal || mintty_terminal || decscusr_support )
   {
     putstringf (CSI "%d q", style);
     std::fflush(stdout);
@@ -1168,6 +1172,9 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 //----------------------------------------------------------------------
 void FTerm::setXTermDefaults()
 {
+  if ( putty_terminal )
+    return;
+
   setXTermMouseBackground("rgb:ffff/ffff/ffff");
   setXTermMouseForeground ("rgb:0000/0000/0000");
 
@@ -1188,6 +1195,10 @@ void FTerm::setXTermDefaults()
 void FTerm::resetXTermColors()
 {
   // Reset the entire color table
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1201,6 +1212,10 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1214,6 +1229,10 @@ void FTerm::resetXTermForeground()
 void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1227,6 +1246,10 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1240,6 +1263,10 @@ void FTerm::resetXTermCursorColor()
 void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1253,6 +1280,10 @@ void FTerm::resetXTermMouseForeground()
 void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1266,6 +1297,10 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
+
+  if ( putty_terminal )
+    return;
+
   if ( xterm_terminal || screen_terminal
       || urxvt_terminal || FTermcap::osc_support )
   {
@@ -1279,6 +1314,9 @@ void FTerm::resetXTermHighlightBackground()
 //----------------------------------------------------------------------
 void FTerm::resetXTermDefaults()
 {
+  if ( putty_terminal )
+    return;
+
   setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
   resetXTermMouseForeground();
   resetXTermMouseBackground();
@@ -1526,7 +1564,7 @@ const FString FTerm::getAnswerbackMsg()
   tv.tv_usec = 150000;  // 150 ms
 
   // read the answerback message
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0)
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     if ( std::fgets (temp, sizeof(temp) - 1, stdin) != 0 )
       answerback = temp;
 
@@ -1595,20 +1633,20 @@ int FTerm::putchar_ASCII (register int c)
 //----------------------------------------------------------------------
 int FTerm::putchar_UTF8 (register int c)
 {
-  if (c < 0x80)
+  if ( c < 0x80 )
   {
     // 1 Byte (7-bit): 0xxxxxxx
     std::putchar (c);
     return 1;
   }
-  else if (c < 0x800)
+  else if ( c < 0x800 )
   {
     // 2 byte (11-bit): 110xxxxx 10xxxxxx
     std::putchar (0xc0 | (c >> 6) );
     std::putchar (0x80 | (c & 0x3f) );
     return 2;
   }
-  else if (c < 0x10000)
+  else if ( c < 0x10000 )
   {
     // 3 byte (16-bit): 1110xxxx 10xxxxxx 10xxxxxx
     std::putchar (0xe0 | (c >> 12) );
@@ -1616,7 +1654,7 @@ int FTerm::putchar_UTF8 (register int c)
     std::putchar (0x80 | (c & 0x3f) );
     return 3;
   }
-  else if (c < 0x200000)
+  else if ( c < 0x200000 )
   {
     // 4 byte (21-bit): 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
     std::putchar (0xf0 | (c >> 18) );
@@ -1638,27 +1676,27 @@ int FTerm::UTF8decode (const char utf8[])
   {
     register uChar ch = uChar(utf8[i]);
 
-    if ((ch & 0xc0) == 0x80)
+    if ( (ch & 0xc0) == 0x80 )
     {
       // byte 2..4 = 10xxxxxx
       ucs = (ucs << 6) | (ch & 0x3f);
     }
-    else if (ch < 128)
+    else if ( ch < 128 )
     {
       // byte 1 = 0xxxxxxx (1 byte mapping)
       ucs = ch & 0xff;
     }
-    else if ((ch & 0xe0) == 0xc0)
+    else if ( (ch & 0xe0) == 0xc0 )
     {
       // byte 1 = 110xxxxx (2 byte mapping)
       ucs = ch & 0x1f;
     }
-    else if ((ch & 0xf0) == 0xe0)
+    else if ( (ch & 0xf0) == 0xe0 )
     {
       // byte 1 = 1110xxxx (3 byte mapping)
       ucs = ch & 0x0f;
     }
-    else if ((ch & 0xf8) == 0xf0)
+    else if ( (ch & 0xf8) == 0xf0 )
     {
       // byte 1 = 11110xxx (4 byte mapping)
       ucs = ch & 0x07;
@@ -2072,13 +2110,13 @@ int FTerm::openConsole()
   if ( fd_tty >= 0 )  // console is already opened
     return 0;
 
-  if ( *term_name && (fd_tty = open (term_name, O_RDWR, 0)) < 0)
-    if ( (fd_tty = open("/proc/self/fd/0", O_RDWR, 0)) < 0)
-      if ( (fd_tty = open("/dev/tty", O_RDWR, 0)) < 0)
-        if ( (fd_tty = open("/dev/tty0", O_RDWR, 0)) < 0)
-          if ( (fd_tty = open("/dev/vc/0", O_RDWR, 0)) < 0)
-            if ( (fd_tty = open("/dev/systty", O_RDWR, 0)) < 0)
-              if ( (fd_tty = open("/dev/console", O_RDWR, 0)) < 0)
+  if ( *term_name && (fd_tty = open (term_name, O_RDWR, 0)) < 0 )
+    if ( (fd_tty = open("/proc/self/fd/0", O_RDWR, 0)) < 0 )
+      if ( (fd_tty = open("/dev/tty", O_RDWR, 0)) < 0 )
+        if ( (fd_tty = open("/dev/tty0", O_RDWR, 0)) < 0 )
+          if ( (fd_tty = open("/dev/vc/0", O_RDWR, 0)) < 0 )
+            if ( (fd_tty = open("/dev/systty", O_RDWR, 0)) < 0 )
+              if ( (fd_tty = open("/dev/console", O_RDWR, 0)) < 0 )
                 return -1;  // No file descriptor referring to the console
   return 0;
 }
@@ -2457,7 +2495,7 @@ bool FTerm::setFreeBSDAltKey (uInt key)
   // map to meta key
   keymap.key[left_alt].map[0] = key;
 
-  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0))
+  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0) )
     return false;
   else
     return true;
@@ -2719,7 +2757,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
   try
   {
-    // secondary device attributes (SEC_DA) <- decTerminalID string
+    // Secondary device attributes (SEC_DA) <- decTerminalID string
     sec_da = new FString(getSecDA());
   }
   catch (const std::bad_alloc& ex)
@@ -2742,6 +2780,8 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
     num_components = sec_da_list.size();
 
+    // The second device attribute (SEC_DA) always has 3 parameters,
+    // otherwise it usually has a copy of the device attribute (primary DA)
     if ( num_components == 3 )
       sec_da_supported = true;
 
@@ -2797,6 +2837,10 @@ char* FTerm::parseSecDA (char*& current_termtype)
               // Each gnome-terminal should be able to use 256 colors
               color256 = true;
               new_termtype = const_cast<char*>("gnome-256color");
+
+              // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
+              if ( terminal_id_version >= 4000 )
+                decscusr_support = true;
             }
             break;
 
@@ -3145,8 +3189,9 @@ void FTerm::init_termcaps()
     FTermcap::attr_without_color = 0;
 
   // PuTTY has NC=22 however, it can show underline and reverse
+  // and since version 0.71 is the dim attribute is also supported
   if ( putty_terminal )
-    FTermcap::attr_without_color = 16;
+    FTermcap::attr_without_color = 0;
 
   // get termcap strings
   // -------------------
@@ -3241,17 +3286,33 @@ void FTerm::init_termcaps()
 
     TCAP(fc::t_set_a_foreground) = \
       const_cast<char*>(CSI "%?%p1%{8}%<"
-                        "%t3%p1%d"
-                        "%e%p1%{16}%<"
-                        "%t9%p1%{8}%-%d"
-                        "%e38;5;%p1%d%;m");
+                            "%t3%p1%d"
+                            "%e%p1%{16}%<"
+                            "%t9%p1%{8}%-%d"
+                            "%e38;5;%p1%d%;m");
 
     TCAP(fc::t_set_a_background) = \
       const_cast<char*>(CSI "%?%p1%{8}%<"
-                        "%t4%p1%d"
-                        "%e%p1%{16}%<"
-                        "%t10%p1%{8}%-%d"
-                        "%e48;5;%p1%d%;m");
+                            "%t4%p1%d"
+                            "%e%p1%{16}%<"
+                            "%t10%p1%{8}%-%d"
+                            "%e48;5;%p1%d%;m");
+
+    TCAP(fc::t_set_attributes) = \
+      const_cast<char*>(CSI "0"
+                            "%?%p1%p6%|%t;1%;"
+                            "%?%p5%t;2%;"  // since putty 0.71
+                            "%?%p2%t;4%;"
+                            "%?%p1%p3%|%t;7%;"
+                            "%?%p4%t;5%;m"
+                            "%?%p9%t\016%e\017%;");
+    // PuTTY 0.71 or higher
+    TCAP(fc::t_enter_dim_mode) = \
+      const_cast<char*>(CSI "2m");
+
+    // PuTTY 0.71 or higher
+    TCAP(fc::t_exit_dim_mode) = \
+    const_cast<char*>(CSI "22m");
 
     if ( ! TCAP(fc::t_clr_bol) )
       TCAP(fc::t_clr_bol) = \
@@ -3276,14 +3337,6 @@ void FTerm::init_termcaps()
     if ( ! TCAP(fc::t_enable_acs) )
       TCAP(fc::t_enable_acs) = \
         const_cast<char*>(ESC "(B" ESC ")0");
-
-    if ( ! TCAP(fc::t_set_attributes) )
-      TCAP(fc::t_set_attributes) = \
-        const_cast<char*>(CSI "0%?%p1%p6%|"
-                              "%t;1%;%?%p2%t;"
-                              "4%;%?%p1%p3%|"
-                              "%t;7%;%?%p4%t;"
-                              "5%;m%?%p9%t\016%e\017%;");
 
     if ( ! TCAP(fc::t_enter_am_mode) )
       TCAP(fc::t_enter_am_mode) = \
@@ -3419,11 +3472,12 @@ void FTerm::init_termcaps()
                         "v\301w\302x\263"
                         "y\363z\362~\371");
       TCAP(fc::t_set_attributes) = \
-        const_cast<char*>(CSI "0%?%p1%p6%|"
-                              "%t;1%;%?%p2%t;"
-                              "4%;%?%p1%p3%|"
-                              "%t;7%;%?%p4%t;"
-                              "5%;m%?%p9%t\016%e\017%;");
+        const_cast<char*>(CSI "0"
+                              "%?%p1%p6%|%t;1%;"
+                              "%?%p2%t;4%;"
+                              "%?%p1%p3%|%t;7%;"
+                              "%?%p4%t;5%;m"
+                              "%?%p9%t\016%e\017%;");
     FTermcap::attr_without_color = 18;
   }
 #endif
@@ -3683,6 +3737,7 @@ void FTerm::init()
   no_half_block_character = \
   ascii_console           = \
   mouse_support           = \
+  decscusr_support        = \
   force_vt100             = \
   tera_terminal           = \
   kterm_terminal          = \
@@ -3804,7 +3859,10 @@ void FTerm::init()
     {
       if ( ! getXTermColorName(256).isEmpty() )
       {
-        new_termtype = const_cast<char*>("xterm-256color");
+        if ( putty_terminal )
+          new_termtype = const_cast<char*>("putty-256color");
+        else
+          new_termtype = const_cast<char*>("xterm-256color");
       }
       else if ( ! getXTermColorName(87).isEmpty() )
       {

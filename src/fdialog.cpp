@@ -1186,7 +1186,7 @@ void FDialog::drawBorder()
     , y1 = 2
     , y2 = 1 + getHeight() - 1;
 
-  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isNull())
+  if ( (getMoveSizeWidget() == this || ! resize_click_pos.isNull() )
       && ! isZoomed() )
     setColor (wc.dialog_resize_fg, getBackgroundColor());
   else

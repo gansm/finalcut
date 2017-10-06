@@ -607,7 +607,7 @@ void FLineEdit::onTimer (FTimerEvent*)
       return;
 
     case FLineEdit::scrollLeft:
-      if ( text_offset == 0)
+      if ( text_offset == 0 )
       {
         drag_scroll = FLineEdit::noScroll;
         return;

@@ -669,7 +669,7 @@ wchar_t& FString::operator [] (uInt pos)
 {
   assert ( (pos < length) && "Invalid index position!" );
 
-  if (pos >= length)
+  if ( pos >= length )
     throw std::out_of_range("");
 
   return string[pos];
@@ -1079,7 +1079,7 @@ FString FString::trim() const
 //----------------------------------------------------------------------
 FString FString::left (int len) const
 {
-  if ( len > 0)
+  if ( len > 0 )
     return left (uInt(len));
   else
     return left (uInt(0));
@@ -1107,7 +1107,7 @@ FString FString::left (uInt len) const
 //----------------------------------------------------------------------
 FString FString::right (int len) const
 {
-  if ( len > 0)
+  if ( len > 0 )
     return right (uInt(len));
   else
     return right (uInt(0));
@@ -2332,7 +2332,7 @@ FString FString::removeBackspaces() const
 //----------------------------------------------------------------------
 const FString& FString::overwrite (const FString& s, uInt pos)
 {
-  if (length >= (pos + s.length))
+  if ( length >= (pos + s.length) )
   {
     std::wcsncpy (string + pos, s.string, s.length);
   }
@@ -2350,7 +2350,7 @@ const FString& FString::overwrite (const wchar_t* s, uInt pos)
 {
   uInt len = uInt(std::wcslen(s));
 
-  if (length >= (pos +len) )
+  if ( length >= (pos +len) )
   {
     std::wcsncpy (string + pos, s, len);
   }

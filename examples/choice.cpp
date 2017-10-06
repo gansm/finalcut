@@ -1,5 +1,5 @@
 /************************************************************************
-* os-choice.cpp - FButtonGroup with scroll view                         *
+* choice.cpp - FButtonGroup with scroll view                            *
 *                                                                       *
 * This file is part of the Final Cut widget toolkit                     *
 *                                                                       *
@@ -61,7 +61,7 @@ int main (int argc, char* argv[])
   y = (app.getLineNumber() - h) / 2;
   dgl->setGeometry (x, y, w, h);
 
-  // Create another button group
+  // Create a button group
   FButtonGroup* checkButtonGroup = new FButtonGroup("choice", dgl);
   checkButtonGroup->setGeometry (2, 1, 16, 7);
 
