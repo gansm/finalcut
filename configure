@@ -18795,7 +18795,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
   case $ac_file$ac_mode in
     "include/final/fconfig.h":C) ac_prefix_conf_OUT=`echo include/final/fconfig.h`
-ac_prefix_conf_DEF=`echo _$ac_prefix_conf_OUT | sed -e "y:abcdefghijklmnopqrstuvwxyz:ABCDEFGHIJKLMNOPQRSTUVWXYZ:" -e "s/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]/_/g"`
+ac_prefix_conf_DEF=`echo $ac_prefix_conf_OUT | sed -e "y:abcdefghijklmnopqrstuvwxyz:ABCDEFGHIJKLMNOPQRSTUVWXYZ:" -e "s/[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]/_/g"`
 ac_prefix_conf_PKG=`echo F`
 ac_prefix_conf_LOW=`echo _$ac_prefix_conf_PKG | sed -e "y:ABCDEFGHIJKLMNOPQRSTUVWXYZ-:abcdefghijklmnopqrstuvwxyz_:"`
 ac_prefix_conf_UPP=`echo $ac_prefix_conf_PKG | sed -e "y:abcdefghijklmnopqrstuvwxyz-:ABCDEFGHIJKLMNOPQRSTUVWXYZ_:"  -e "/^[0123456789]/s/^/_/"`
@@ -18839,11 +18839,11 @@ $as_echo "$as_me: creating $ac_prefix_conf_OUT - prefix $ac_prefix_conf_UPP for 
     # now executing _script on _DEF input to create _OUT output file
     echo "#ifndef $ac_prefix_conf_DEF"      >$tmp/pconfig.h
     echo "#define $ac_prefix_conf_DEF 1" >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
+    echo '' >>$tmp/pconfig.h
     echo /'*' $ac_prefix_conf_OUT. Generated automatically at end of configure. '*'/ >>$tmp/pconfig.h
 
     sed -f conftest.prefix $ac_prefix_conf_INP >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
+    echo '' >>$tmp/pconfig.h
     echo '/* once:' $ac_prefix_conf_DEF '*/' >>$tmp/pconfig.h
     echo "#endif" >>$tmp/pconfig.h
     if cmp -s $ac_prefix_conf_OUT $tmp/pconfig.h 2>/dev/null; then

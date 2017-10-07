@@ -129,7 +129,7 @@ AS_VAR_PUSHDEF([_INP],[ac_prefix_conf_INP])dnl
 m4_pushdef([_script],[conftest.prefix])dnl
 m4_pushdef([_symbol],[m4_cr_Letters[]m4_cr_digits[]_])dnl
 _OUT=`echo m4_default([$1], [$PACKAGE-config.h])`
-_DEF=`echo _$_OUT | sed -e "y:m4_cr_letters:m4_cr_LETTERS[]:" -e "s/@<:@^m4_cr_Letters@:>@/_/g"`
+_DEF=`echo $_OUT | sed -e "y:m4_cr_letters:m4_cr_LETTERS[]:" -e "s/@<:@^m4_cr_Letters@:>@/_/g"`
 _PKG=`echo m4_default([$2], [$PACKAGE])`
 _LOW=`echo _$_PKG | sed -e "y:m4_cr_LETTERS-:m4_cr_letters[]_:"`
 _UPP=`echo $_PKG | sed -e "y:m4_cr_letters-:m4_cr_LETTERS[]_:"  -e "/^@<:@m4_cr_digits@:>@/s/^/_/"`
@@ -172,11 +172,11 @@ else
     # now executing _script on _DEF input to create _OUT output file
     echo "@%:@ifndef $_DEF"      >$tmp/pconfig.h
     echo "@%:@def[]ine $_DEF 1" >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
+    echo '' >>$tmp/pconfig.h
     echo /'*' $_OUT. Generated automatically at end of configure. '*'/ >>$tmp/pconfig.h
 
     sed -f _script $_INP >>$tmp/pconfig.h
-    echo ' ' >>$tmp/pconfig.h
+    echo '' >>$tmp/pconfig.h
     echo '/* once:' $_DEF '*/' >>$tmp/pconfig.h
     echo "@%:@endif" >>$tmp/pconfig.h
     if cmp -s $_OUT $tmp/pconfig.h 2>/dev/null; then
