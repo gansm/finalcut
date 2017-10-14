@@ -1,6 +1,23 @@
-// File: flistview.cpp
-// Provides: class FListViewItem
-//           class FListView
+/************************************************************************
+* flistview.cpp - Widget FListView and FListViewItem                    *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
 
 #include <vector>
 
@@ -41,7 +58,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (FObjectIterator parent_iter)
-  : FObject(0)
+  : FObject((*parent_iter)->getParent())
   , column_list()
   , data_pointer(0)
   , visible_lines(1)
@@ -79,8 +96,8 @@ FListViewItem::~FListViewItem()  // destructor
 FString FListViewItem::getText (int column) const
 {
   if ( column < 1
-     || column_list.empty()
-     || column > int(column_list.size()) )
+      || column_list.empty()
+      || column > int(column_list.size()) )
     return *fc::empty_string;
 
   column--;  // Convert column position to address offset (index)
@@ -105,8 +122,8 @@ uInt FListViewItem::getDepth() const
 void FListViewItem::setText (int column, const FString& text)
 {
   if ( column < 1
-     || column_list.empty()
-     || column > int(column_list.size()) )
+      || column_list.empty()
+      || column > int(column_list.size()) )
     return;
 
   FObject* parent = getParent();
@@ -180,6 +197,7 @@ void FListViewItem::collapse()
     return;
 
   is_expand = false;
+  visible_lines = 1;
 }
 
 // private methods of FListView
@@ -187,7 +205,9 @@ void FListViewItem::collapse()
 FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
 {
   expandable = true;
+  resetVisibleLineCounter();
   addChild (child);
+  // Return iterator to child/last element
   return --FObject::end();
 }
 
@@ -228,6 +248,177 @@ int FListViewItem::getVisibleLines()
   return visible_lines;
 }
 
+//----------------------------------------------------------------------
+void FListViewItem::resetVisibleLineCounter()
+{
+  visible_lines = 0;
+  FObject* parent = getParent();
+
+  if ( parent && parent->isInstanceOf("FListViewItem") )
+  {
+    FListViewItem* parent_item = static_cast<FListViewItem*>(parent);
+    return parent_item->resetVisibleLineCounter();
+  }
+}
+
+
+//----------------------------------------------------------------------
+// class FListViewIterator
+//----------------------------------------------------------------------
+
+// constructor and destructor
+//----------------------------------------------------------------------
+FListViewIterator::FListViewIterator ()
+  : iter_path()
+  , node()
+  , position(0)
+{ }
+
+//----------------------------------------------------------------------
+FListViewIterator::FListViewIterator (FObjectIterator iter)
+  : iter_path()
+  , node(iter)
+  , position(0)
+{ }
+
+//----------------------------------------------------------------------
+FListViewIterator::~FListViewIterator()  // destructor
+{ }
+
+// FListViewIterator operators
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator ++ ()  // prefix
+{
+  nextElement(node);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator FListViewIterator::operator ++ (int)  // postfix
+{
+  FListViewIterator tmp = *this;
+  ++(*this);
+  return tmp;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator -- ()  // prefix
+{
+  prevElement(node);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator FListViewIterator::operator -- (int)  // postfix
+{
+  FListViewIterator tmp = *this;
+  --(*this);
+  return tmp;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator += (int n)
+{
+  while ( n > 0 )
+  {
+    nextElement(node);
+    n--;
+  }
+
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FListViewIterator& FListViewIterator::operator -= (int n)
+{
+  while ( n > 0 )
+  {
+    prevElement(node);
+    n--;
+  }
+
+  return *this;
+}
+
+// private methods of FListViewIterator
+//----------------------------------------------------------------------
+void FListViewIterator::nextElement (FObjectIterator& iter)
+{
+  FListViewItem* item = static_cast<FListViewItem*>(*iter);
+
+  if ( item->isExpandable() && item->isExpand() )
+  {
+    iter_path.push(iter);
+    iter = item->begin();
+    position++;
+  }
+  else
+  {
+    ++iter;
+    position++;
+
+    if ( ! iter_path.empty() )
+    {
+      FObjectIterator& parent_iter = iter_path.top();
+
+      if ( iter == (*parent_iter)->end() )
+      {
+        iter = parent_iter;
+        iter_path.pop();
+        ++iter;
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FListViewIterator::prevElement (FObjectIterator& iter)
+{
+  FListViewItem* item;
+  FObjectIterator start_iter = iter;
+
+  if ( ! iter_path.empty() )
+  {
+    FObjectIterator& parent_iter = iter_path.top();
+
+    if ( start_iter == (*parent_iter)->begin() )
+    {
+      iter = parent_iter;
+      position--;
+      iter_path.pop();
+      return;
+    }
+  }
+
+  --iter;
+  item = static_cast<FListViewItem*>(*iter);
+
+  if ( iter == start_iter )
+    return;
+  else
+    position--;
+
+  while ( item->isExpandable() && item->isExpand() )
+  {
+    iter_path.push(iter);
+    iter = item->end();
+    --iter;
+    item = static_cast<FListViewItem*>(*iter);
+  }
+}
+
+//----------------------------------------------------------------------
+void FListViewIterator::parentElement()
+{
+  if ( iter_path.empty() )
+    return;
+
+  FObjectIterator& parent_iter = iter_path.top();
+
+  while ( node != parent_iter )
+    prevElement(node);
+}
+
 
 //----------------------------------------------------------------------
 // class FListView
@@ -240,7 +431,9 @@ FListView::FListView (FWidget* parent)
   , root()
   , selflist()
   , itemlist()
-  , iter_path()
+  , current_iter()
+  , first_visible_line()
+  , last_visible_line()
   , header()
   , headerline()
   , vbar(0)
@@ -250,9 +443,7 @@ FListView::FListView (FWidget* parent)
   , scroll_distance(1)
   , scroll_timer(false)
   , tree_view(false)
-  , current(0)
   , xoffset(0)
-  , yoffset(0)
   , nf_offset(0)
   , max_line_width(1)
 {
@@ -268,6 +459,22 @@ FListView::~FListView()  // destructor
 }
 
 // public methods of FListView
+//----------------------------------------------------------------------
+uInt FListView::getCount()
+{
+  int n = 0;
+  FObjectIterator iter = itemlist.begin();
+
+  while ( iter != itemlist.end() )
+  {
+    FListViewItem* item = static_cast<FListViewItem*>(*iter);
+    n += item->getVisibleLines();
+    ++iter;
+  }
+
+  return uInt(n);
+}
+
 //----------------------------------------------------------------------
 fc::text_alignment FListView::getColumnAlignment (int column) const
 {
@@ -377,6 +584,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
   if ( parent_iter == FObjectIterator(0) )
     return FObjectIterator(0);
 
+  // Determine the line width
   header_iter = header.begin();
 
   while ( header_iter != header.end() )
@@ -422,9 +630,19 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
       FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
       item_iter = parent->appendItem (item);
     }
+    else
+      item_iter = FObjectIterator(0);
   }
   else
     item_iter = FObjectIterator(0);
+
+  if ( itemlist.size() == 1 )
+  {
+    // Select first item on insert
+    current_iter = itemlist.begin();
+    // The visible area of the list begins with the first element
+    first_visible_line = itemlist.begin();
+  }
 
   int element_count = int(getCount());
   recalculateVerticalBar (element_count);
@@ -480,13 +698,14 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  int element_count = int(getCount());
-  int current_before = current;
-  int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth();
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
-  int key = ev->key();
+  int element_count = int(getCount())
+    , position_before = current_iter.getPosition()
+    , xoffset_before = xoffset
+    , xoffset_end = max_line_width - getClientWidth()
+    , first_line_position_before = first_visible_line.getPosition()
+    , pagesize = getClientHeight() - 1
+    , key = ev->key();
+  FListViewItem* item = getCurrentItem();
 
   switch ( key )
   {
@@ -497,133 +716,154 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_up:
-      current--;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-        yoffset--;
+      stepBackward();
 
       ev->accept();
       break;
 
     case fc::Fkey_down:
-      current++;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset++;
+      stepForward();
 
       ev->accept();
       break;
 
     case fc::Fkey_left:
-      xoffset--;
+      if ( xoffset == 0 )
+      {
+        if ( item->isExpandable() && item->isExpand() )
+        {
+          // Collapse element
+          item->collapse();
+          adjustSize();
+          int element_count = int(getCount());
+          recalculateVerticalBar (element_count);
+          // Force vertical scrollbar redraw
+          first_line_position_before = -1;
+        }
+        else if ( item->hasParent() )
+        {
+          // Jump to parent element
+          FObject* parent = item->getParent();
 
-      if ( xoffset < 0 )
-        xoffset = 0;
+          if ( parent->isInstanceOf("FListViewItem") )
+          {
+            current_iter.parentElement();
+
+            if ( current_iter.getPosition() < first_line_position_before )
+            {
+              int difference = position_before - current_iter.getPosition();
+
+              if ( first_visible_line.getPosition() - difference >= 0 )
+              {
+                first_visible_line -= difference;
+                last_visible_line -= difference;
+              }
+              else
+              {
+                int d = first_visible_line.getPosition();
+                first_visible_line -= d;
+                last_visible_line -= d;
+              }
+            }
+          }
+        }
+      }
+      else
+      {
+        // Scroll left
+        xoffset--;
+
+        if ( xoffset < 0 )
+          xoffset = 0;
+      }
 
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      xoffset++;
+      if ( item->isExpandable() && ! item->isExpand() )
+      {
+        // Expand element
+        item->expand();
+        adjustSize();
+        // Force vertical scrollbar redraw
+        first_line_position_before = -1;
+      }
+      else
+      {
+        // Scroll right
+        xoffset++;
 
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
+        if ( xoffset > xoffset_end )
+          xoffset = xoffset_end;
 
-      if ( xoffset < 0 )
-        xoffset = 0;
+        if ( xoffset < 0 )
+          xoffset = 0;
+      }
 
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
-      current -= getClientHeight() - 1;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-      {
-        yoffset -= getClientHeight() - 1;
-
-        if ( yoffset < 0 )
-          yoffset = 0;
-      }
+      stepBackward(pagesize);
 
       ev->accept();
       break;
 
     case fc::Fkey_npage:
-      current += getClientHeight() - 1;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-      {
-        yoffset += getClientHeight() - 1;
-
-        if ( yoffset > yoffset_end )
-          yoffset = yoffset_end;
-      }
+      stepForward(pagesize);
 
       ev->accept();
       break;
 
     case fc::Fkey_home:
-      current = 1;
-      yoffset = 0;
+      {
+        current_iter -= current_iter.getPosition();
+        int difference = first_visible_line.getPosition();
+        first_visible_line -= difference;
+        last_visible_line -= difference;
+      }
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      current = element_count;
-
-      if ( current > getClientHeight() )
-        yoffset = yoffset_end;
+      {
+        current_iter += element_count - current_iter.getPosition() - 1;
+        int difference = element_count - last_visible_line.getPosition() - 1;
+        first_visible_line += difference;
+        last_visible_line += difference;
+      }
 
       ev->accept();
       break;
 
     case int('+'):
-      {
-        FListViewItem* item = getCurrentItem();
-        item->expand();
-        ev->accept();
-      }
+      item->expand();
+      adjustSize();
+      ev->accept();
       break;
 
     case int('-'):
-      {
-        FListViewItem* item = getCurrentItem();
-        item->collapse();
-        ev->accept();
-      }
+      item->collapse();
+      adjustSize();
+      ev->accept();
       break;
 
     default:
       ev->ignore();
   }
 
-  if ( current_before != current )
+  if ( position_before != current_iter.getPosition() )
     processChanged();
 
   if ( ev->isAccepted() )
   {
     if ( isVisible() )
-    {
-      drawColumnLabels();
-      drawList();
-    }
+      draw();
 
-    vbar->setValue (yoffset);
+    vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( vbar->isVisible() && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     hbar->setValue (xoffset);
@@ -639,8 +879,6 @@ void FListView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseDown (FMouseEvent* ev)
 {
-  int yoffset_before, mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton
       && ev->getButton() != fc::RightButton )
   {
@@ -664,24 +902,28 @@ void FListView::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  yoffset_before = yoffset;
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int first_line_position_before = first_visible_line.getPosition()
+    , mouse_x = ev->getX()
+    , mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
       && mouse_y > 1 && mouse_y < getHeight() )
   {
-    current = yoffset + mouse_y - 1;
+    int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
-    if ( current > int(getCount()) )
-      current = int(getCount());
+    if ( new_pos < int(getCount()) )
+    {
+      current_iter = first_visible_line;
+      current_iter += mouse_y - 2;
+    }
 
     if ( isVisible() )
       drawList();
 
-    vbar->setValue (yoffset);
+    vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( vbar->isVisible()
+        && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -716,8 +958,6 @@ void FListView::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseMove (FMouseEvent* ev)
 {
-  int yoffset_before, mouse_x, mouse_y;
-
   if ( ev->getButton() != fc::LeftButton
       && ev->getButton() != fc::RightButton )
   {
@@ -727,24 +967,28 @@ void FListView::onMouseMove (FMouseEvent* ev)
   if ( ev->getButton() == fc::RightButton )
     return;
 
-  yoffset_before = yoffset;
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int first_line_position_before = first_visible_line.getPosition()
+    , mouse_x = ev->getX()
+    , mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
       && mouse_y > 1 && mouse_y < getHeight() )
   {
-    current = yoffset + mouse_y - 1;
+    int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
-    if ( current > int(getCount()) )
-      current = int(getCount());
+    if ( new_pos < int(getCount()) )
+    {
+      current_iter = first_visible_line;
+      current_iter += mouse_y - 2;
+    }
 
     if ( isVisible() )
       drawList();
 
-    vbar->setValue (yoffset);
+    vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( vbar->isVisible()
+        && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -759,7 +1003,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         && scroll_distance < getClientHeight() )
       scroll_distance++;
 
-    if ( ! scroll_timer && current > 1 )
+    if ( ! scroll_timer && current_iter.getPosition() > 0 )
     {
       scroll_timer = true;
       addTimer(scroll_repeat);
@@ -770,7 +1014,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         drag_scroll = fc::scrollUp;
     }
 
-    if ( current == 1 )
+    if ( current_iter.getPosition() == 0 )
     {
       delOwnTimer();
       drag_scroll = fc::noScroll;
@@ -783,7 +1027,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         && scroll_distance < getClientHeight() )
       scroll_distance++;
 
-    if ( ! scroll_timer && current < int(getCount()) )
+    if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
     {
       scroll_timer = true;
       addTimer(scroll_repeat);
@@ -794,7 +1038,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
         drag_scroll = fc::scrollDown;
     }
 
-    if ( current == int(getCount()) )
+    if ( current_iter.getPosition() - 1 == int(getCount()) )
     {
       delOwnTimer();
       drag_scroll = fc::noScroll;
@@ -824,7 +1068,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
   if ( mouse_x > 1 && mouse_x < getWidth()
       && mouse_y > 1 && mouse_y < getHeight() )
   {
-    if ( yoffset + mouse_y - 1 > int(getCount()) )
+    if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
     processClick();
@@ -834,10 +1078,9 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  int element_count = int(getCount());
-  int current_before = current;
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
+  int element_count = int(getCount())
+    , position_before = current_iter.getPosition()
+    , first_line_position_before = first_visible_line.getPosition();
 
   switch ( int(drag_scroll) )
   {
@@ -846,43 +1089,24 @@ void FListView::onTimer (FTimerEvent*)
 
     case fc::scrollUp:
     case fc::scrollUpSelect:
-      if ( current_before == 1)
+      if ( position_before == 0 )
       {
         drag_scroll = fc::noScroll;
         return;
       }
 
-      current -= scroll_distance;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-        yoffset -= scroll_distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
+      stepBackward(scroll_distance);
       break;
 
     case fc::scrollDown:
     case fc::scrollDownSelect:
-      if ( current_before == element_count )
+      if ( position_before + 1 == element_count )
       {
         drag_scroll = fc::noScroll;
         return;
       }
 
-      current += scroll_distance;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset += scroll_distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
+      stepForward(scroll_distance);
       break;
 
     default:
@@ -892,9 +1116,9 @@ void FListView::onTimer (FTimerEvent*)
   if ( isVisible() )
     drawList();
 
-  vbar->setValue (yoffset);
+  vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible() && yoffset_before != yoffset )
+  if ( vbar->isVisible() && first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
   updateTerminal();
@@ -904,14 +1128,11 @@ void FListView::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListView::onWheel (FWheelEvent* ev)
 {
-  int element_count, current_before, yoffset_before, yoffset_end, wheel;
-  element_count = int(getCount());
-  current_before = current;
-  yoffset_before = yoffset;
-  yoffset_end = element_count - getClientHeight();
-
-  if ( yoffset_end < 0 )
-    yoffset_end = 0;
+  int wheel
+    , element_count = int(getCount())
+    , position_before = current_iter.getPosition()
+    , first_line_position_before = first_visible_line.getPosition()
+    , pagesize = 4;
 
   wheel = ev->getWheel();
 
@@ -926,40 +1147,48 @@ void FListView::onWheel (FWheelEvent* ev)
   switch ( wheel )
   {
     case fc::WheelUp:
-      if ( yoffset == 0 )
+      if ( current_iter.getPosition() == 0 )
         break;
 
-      yoffset -= 4;
-
-      if ( yoffset < 0 )
+      if ( first_visible_line.getPosition() - pagesize >= 0 )
       {
-        current -= 4 + yoffset;
-        yoffset=0;
+        current_iter -= pagesize;
+        first_visible_line -= pagesize;
+        last_visible_line -= pagesize;
       }
       else
-        current -= 4;
-
-      if ( current < 1 )
-        current=1;
+      {
+        // Save relative position from the top line
+        int ry = current_iter.getPosition() - first_visible_line.getPosition();
+        int difference = first_visible_line.getPosition();
+        first_visible_line -= difference;
+        last_visible_line -= difference;
+        current_iter = first_visible_line;
+        current_iter += ry;
+      }
 
       break;
 
     case fc::WheelDown:
-      if ( yoffset == yoffset_end )
+      if ( current_iter.getPosition() + 1 == element_count )
         break;
 
-      yoffset += 4;
-
-      if ( yoffset > yoffset_end )
+      if ( last_visible_line.getPosition() + pagesize < element_count )
       {
-        current += 4 - (yoffset - yoffset_end);
-        yoffset = yoffset_end;
+        current_iter += pagesize;
+        first_visible_line += pagesize;
+        last_visible_line += pagesize;
       }
       else
-        current += 4;
-
-      if ( current > element_count )
-        current = element_count;
+      {
+        // Save relative position from the top line
+        int ry = current_iter.getPosition() - first_visible_line.getPosition();
+        int differenz = element_count - last_visible_line.getPosition() - 1;
+        first_visible_line += differenz;
+        last_visible_line += differenz;
+        current_iter = first_visible_line;
+        current_iter += ry;
+      }
 
       break;
 
@@ -967,15 +1196,16 @@ void FListView::onWheel (FWheelEvent* ev)
       break;
   }
 
-  if ( current_before != current )
+  if ( position_before != current_iter.getPosition() )
     processChanged();
 
   if ( isVisible() )
     drawList();
 
-  vbar->setValue (yoffset);
+  vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible() && yoffset_before != yoffset )
+  if ( vbar->isVisible()
+    && first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
   updateTerminal();
@@ -1004,21 +1234,49 @@ void FListView::onFocusOut (FFocusEvent*)
 
 // protected methods of FListView
 //----------------------------------------------------------------------
-void FListView::adjustYOffset()
+void FListView::adjustViewport()
 {
   int element_count = int(getCount());
 
+  if ( element_count == 0 || getClientHeight() <= 0 )
+    return;
+
+  if ( element_count < getClientHeight() )
+  {
+    first_visible_line = itemlist.begin();
+    last_visible_line = first_visible_line;
+    last_visible_line += element_count - 1;
+  }
+
+/*
   if ( yoffset > element_count - getClientHeight() )
     yoffset = element_count - getClientHeight();
 
   if ( yoffset < 0 )
-    yoffset = 0;
+    yoffset = 0;*/
 
-  if ( current < yoffset )
-    current = yoffset;
+//setTermXY(1,1); ::printf("(%d > %d)", first_visible_line.getPosition(),element_count - getClientHeight() - 1); fflush(stdout); sleep(1);
 
-  if ( yoffset < current - getClientHeight() )
-    yoffset = current - getClientHeight();
+  if ( first_visible_line.getPosition() > element_count - getClientHeight()  )
+  {
+    int difference = first_visible_line.getPosition() - (element_count - getClientHeight());
+
+    if ( first_visible_line.getPosition() - difference + 1 > 0 )
+    {
+      first_visible_line -= difference;
+      last_visible_line -= difference;
+    }
+  }
+
+/*
+  if ( current_iter.getPosition() < first_visible_line.getPosition() )
+    current_iter = first_visible_line;
+
+  if ( first_visible_line.getPosition() < current_iter.getPosition() - getClientHeight() )
+  {
+    first_visible_line = current_iter;
+    first_visible_line -= getClientHeight();
+  }*/
 }
 
 //----------------------------------------------------------------------
@@ -1026,7 +1284,7 @@ void FListView::adjustSize()
 {
   int element_count;
   FWidget::adjustSize();
-  adjustYOffset();
+  adjustViewport();
 
   element_count = int(getCount());
   vbar->setMaximum (element_count - getClientHeight());
@@ -1046,7 +1304,7 @@ void FListView::adjustSize()
   else
     vbar->setVisible();
 
-  if ( max_line_width < getClientWidth() - 1 )
+  if ( max_line_width <= getClientWidth() )
     hbar->hide();
   else
     hbar->setVisible();
@@ -1133,8 +1391,8 @@ void FListView::draw()
 {
   bool isFocus;
 
-  if ( current < 1 )
-    current = 1;
+  if ( current_iter.getPosition() < 1 )
+    current_iter = itemlist.begin();
 
   setColor();
 
@@ -1279,7 +1537,7 @@ void FListView::drawList()
 {
   uInt page_height, y;
   bool is_focus;
-  FObjectIterator iter;
+  FListViewIterator iter;
 
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
@@ -1287,11 +1545,11 @@ void FListView::drawList()
   y           = 0;
   page_height = uInt(getHeight() - 2);
   is_focus    = ((flags & fc::focus) != 0);
-  iter        = index2iterator(yoffset);
+  iter = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
   {
-    bool is_current_line = bool( y + uInt(yoffset) + 1 == uInt(current) );
+    bool is_current_line = bool( iter == current_iter );
     const FListViewItem* item = static_cast<FListViewItem*>(*iter);
     setPrintPos (2, 2 + int(y));
 
@@ -1301,8 +1559,20 @@ void FListView::drawList()
     if ( is_focus && is_current_line )
       setCursorPos (3, 2 + int(y));  // first character
 
+    last_visible_line = iter;
     y++;
-    nextElement(iter);
+    ++iter;
+  }
+
+  // Reset color
+  setColor();
+
+  // Clean empty space after last element
+  while ( y < uInt(getClientHeight()) )
+  {
+    setPrintPos (2, 2 + int(y));
+    print (FString(getClientWidth(), ' '));
+    y++;
   }
 }
 
@@ -1353,7 +1623,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
     if ( item->expandable  )
     {
-      if (item->is_expand )
+      if ( item->is_expand )
       {
         line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
         line += L' ';
@@ -1484,31 +1754,154 @@ void FListView::processChanged()
 }
 
 //----------------------------------------------------------------------
-void FListView::nextElement (FObjectIterator& iter)
+void FListView::stepForward()
 {
-  FListViewItem* item = static_cast<FListViewItem*>(*iter);
-
-  if ( item->isExpandable() && item->isExpand() )
+  if ( current_iter == last_visible_line )
   {
-    iter_path.push(iter);
-    iter = item->begin();
+    ++last_visible_line;
+
+    if ( last_visible_line == itemlist.end() )
+      --last_visible_line;
+    else
+      ++first_visible_line;
+  }
+
+  ++current_iter;
+
+  if ( current_iter == itemlist.end() )
+    --current_iter;
+}
+
+//----------------------------------------------------------------------
+void FListView::stepBackward()
+{
+  if ( current_iter == first_visible_line
+      && current_iter != itemlist.begin() )
+  {
+    --first_visible_line;
+    --last_visible_line;
+  }
+
+  if ( current_iter != itemlist.begin() )
+    --current_iter;
+}
+
+//----------------------------------------------------------------------
+void FListView::stepForward (int distance)
+{
+  int element_count = int(getCount());
+
+  if ( current_iter.getPosition() + 1 == element_count )
+    return;
+
+  if ( current_iter.getPosition() + distance < element_count )
+  {
+    current_iter += distance;
   }
   else
   {
-    ++iter;
+    current_iter += element_count - current_iter.getPosition() - 1;
+  }
 
-    if ( ! iter_path.empty() )
+  if ( current_iter.getPosition() > last_visible_line.getPosition() )
+  {
+    if ( last_visible_line.getPosition() + distance < element_count )
     {
-      FObjectIterator& parent_iter = iter_path.top();
-
-      if ( iter == (*parent_iter)->end() )
-      {
-        iter = parent_iter;
-        iter_path.pop();
-        ++iter;
-      }
+      first_visible_line += distance;
+      last_visible_line += distance;
+    }
+    else
+    {
+      int differenz = element_count - last_visible_line.getPosition() - 1;
+      first_visible_line += differenz;
+      last_visible_line += differenz;
     }
   }
+}
+
+//----------------------------------------------------------------------
+void FListView::stepBackward (int distance)
+{
+  if ( current_iter.getPosition() == 0 )
+   return;
+
+  if ( current_iter.getPosition() - distance >= 0 )
+  {
+    current_iter -= distance;
+  }
+  else
+  {
+    current_iter -= current_iter.getPosition();
+  }
+
+  if ( current_iter.getPosition() < first_visible_line.getPosition() )
+  {
+    if ( first_visible_line.getPosition() - distance >= 0 )
+    {
+      first_visible_line -= distance;
+      last_visible_line -= distance;
+    }
+    else
+    {
+      int difference = first_visible_line.getPosition();
+      first_visible_line -= difference;
+      last_visible_line -= difference;
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FListView::scrollToX (int x)
+{
+  int xoffset_end = max_line_width - getClientWidth();
+
+  if ( xoffset == x )
+    return;
+
+  xoffset = x;
+
+  if ( xoffset > xoffset_end )
+    xoffset = xoffset_end;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+}
+
+//----------------------------------------------------------------------
+void FListView::scrollToY (int y)
+{
+  int pagesize = getClientHeight() - 1;
+  int element_count = int(getCount());
+
+  if ( first_visible_line.getPosition() == y )
+    return;
+
+  // Save relative position from the top line
+  int ry = current_iter.getPosition() - first_visible_line.getPosition();
+
+  if ( y + pagesize <= element_count )
+  {
+    first_visible_line = itemlist.begin();
+    first_visible_line += y;
+    current_iter = first_visible_line;
+    current_iter += ry;
+    last_visible_line = first_visible_line;
+    last_visible_line += pagesize;
+  }
+  else
+  {
+    int differenz = element_count - last_visible_line.getPosition() - 1;
+    current_iter += differenz;
+    first_visible_line += differenz;
+    last_visible_line += differenz;
+  }
+}
+
+//----------------------------------------------------------------------
+void FListView::scrollTo (int x, int y)
+{
+  scrollToX(x);
+  scrollToY(y);
 }
 
 //----------------------------------------------------------------------
@@ -1516,9 +1909,8 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1;
-  int element_count = int(getCount());
-  int yoffset_before = yoffset;
-  int yoffset_end = element_count - getClientHeight();
+  int first_line_position_before = first_visible_line.getPosition();
+
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -1530,59 +1922,20 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepBackward:
-      current -= distance;
-
-      if ( current < 1 )
-        current=1;
-
-      if ( current <= yoffset )
-        yoffset -= distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      stepBackward(distance);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepForward:
-      current += distance;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset += distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
+      stepForward(distance);
       break;
 
     case FScrollbar::scrollJump:
     {
-      int val = vbar->getValue();
-
-      if ( yoffset == val )
-        break;
-
-      int c = current - yoffset;
-      yoffset = val;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
-      current = yoffset + c;
-
-      if ( current < yoffset )
-        current = yoffset;
-
-      if ( current > element_count )
-        current = element_count;
+      int value = vbar->getValue();
+      scrollToY (value);
 
       break;
     }
@@ -1608,9 +1961,10 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
   if ( scrollType >= FScrollbar::scrollStepBackward
       && scrollType <= FScrollbar::scrollPageForward )
   {
-    vbar->setValue (yoffset);
+    vbar->setValue (first_visible_line.getPosition());
 
-    if ( vbar->isVisible() && yoffset_before != yoffset )
+    if ( vbar->isVisible()
+        && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -1622,9 +1976,10 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 void FListView::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
-  int distance = 1;
-  int xoffset_before = xoffset;
-  int xoffset_end = max_line_width - getClientWidth();
+  int distance = 1
+    , pagesize = 4
+    , xoffset_before = xoffset
+    , xoffset_end = max_line_width - getClientWidth();
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -1658,19 +2013,8 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
 
     case FScrollbar::scrollJump:
     {
-      int val = hbar->getValue();
-
-      if ( xoffset == val )
-        break;
-
-      xoffset = val;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      int value = hbar->getValue();
+      scrollToX(value);
       break;
     }
 
@@ -1678,7 +2022,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       if ( xoffset == 0 )
         break;
 
-      xoffset -= 4;
+      xoffset -= pagesize;
 
       if ( xoffset < 0 )
         xoffset = 0;
@@ -1689,7 +2033,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       if ( xoffset == xoffset_end )
         break;
 
-      xoffset += 4;
+      xoffset += pagesize;
 
       if ( xoffset > xoffset_end )
         xoffset = xoffset_end;

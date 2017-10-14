@@ -1212,8 +1212,8 @@ void FListBox::adjustYOffset()
   int element_count = int(getCount());
 
   if ( getClientHeight() < 0 )
-   beep();
-  
+   return;
+
   if ( element_count == 0 || getClientHeight() <= 0 )
     return;
 

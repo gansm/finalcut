@@ -1,31 +1,48 @@
-// File: flistview.h
-// Provides: class FListViewItem
-//           class FListView
-//
-//  Inheritance diagram
-//  ═══════════════════
-//
-// ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
-// ▕ FObject ▏ ▕  FTerm  ▏
-// ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
-//      ▲           ▲
-//      │           │
-//      └─────┬─────┘
-//            │
-//       ▕▔▔▔▔▔▔▔▔▏
-//       ▕ FVTerm ▏
-//       ▕▁▁▁▁▁▁▁▁▏
-//            ▲
-//            │
-//       ▕▔▔▔▔▔▔▔▔▔▏           ▕▔▔▔▔▔▔▔▔▔▏
-//       ▕ FWidget ▏           ▕ FObject ▏
-//       ▕▁▁▁▁▁▁▁▁▁▏           ▕▁▁▁▁▁▁▁▁▁▏
-//            ▲                     ▲
-//            │                     │
-//      ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
-//      ▕ FListView ▏- - - -▕ FListViewItem ▏
-//      ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
-//
+/************************************************************************
+* flistview.h - Widget FListView and FListViewItem                      *
+*                                                                       *
+* This file is part of the Final Cut widget toolkit                     *
+*                                                                       *
+* Copyright 2017 Markus Gans                                            *
+*                                                                       *
+* The Final Cut is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by  *
+* the Free Software Foundation; either version 3 of the License, or     *
+* (at your option) any later version.                                   *
+*                                                                       *
+* The Final Cut is distributed in the hope that it will be useful,      *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+* GNU General Public License for more details.                          *
+*                                                                       *
+* You should have received a copy of the GNU General Public License     *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+************************************************************************/
+
+/*  Inheritance diagram
+ *  ═══════════════════
+ *
+ * ▕▔▔▔▔▔▔▔▔▔▏ ▕▔▔▔▔▔▔▔▔▔▏
+ * ▕ FObject ▏ ▕  FTerm  ▏
+ * ▕▁▁▁▁▁▁▁▁▁▏ ▕▁▁▁▁▁▁▁▁▁▏
+ *      ▲           ▲
+ *      │           │
+ *      └─────┬─────┘
+ *            │
+ *       ▕▔▔▔▔▔▔▔▔▏
+ *       ▕ FVTerm ▏
+ *       ▕▁▁▁▁▁▁▁▁▏
+ *            ▲
+ *            │
+ *       ▕▔▔▔▔▔▔▔▔▔▏           ▕▔▔▔▔▔▔▔▔▔▏
+ *       ▕ FWidget ▏           ▕ FObject ▏
+ *       ▕▁▁▁▁▁▁▁▁▁▏           ▕▁▁▁▁▁▁▁▁▁▏
+ *            ▲                     ▲
+ *            │                     │
+ *      ▕▔▔▔▔▔▔▔▔▔▔▔▏1     *▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *      ▕ FListView ▏- - - -▕ FListViewItem ▏
+ *      ▕▁▁▁▁▁▁▁▁▁▁▁▏       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
 #ifndef FLISTVIEW_H
 #define FLISTVIEW_H
@@ -90,6 +107,7 @@ class FListViewItem : public FObject
     FObjectIterator  appendItem (FListViewItem*);
     void             replaceControlCodes();
     int              getVisibleLines();
+    void             resetVisibleLineCounter();
 
     // Data Member
     FStringList       column_list;
@@ -100,6 +118,7 @@ class FListViewItem : public FObject
 
     // Friend class
     friend class FListView;
+    friend class FListViewIterator;
 };
 #pragma pack(pop)
 
@@ -123,6 +142,86 @@ inline bool FListViewItem::isExpandable()
 
 
 //----------------------------------------------------------------------
+// class FListViewIterator
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FListViewIterator
+{
+  public:
+    // Typedefs
+    typedef std::list<FObject*>         FObjectList;
+    typedef FObjectList::iterator       FObjectIterator;
+    typedef std::stack<FObjectIterator> FObjectIteratorStack;
+
+    // Constructor
+    FListViewIterator ();
+    FListViewIterator (FObjectIterator);
+
+    // Destructor
+    ~FListViewIterator();
+
+    // Overloaded operators
+    FListViewIterator& operator ++ ();     // prefix
+    FListViewIterator  operator ++ (int);  // postfix
+    FListViewIterator& operator -- ();     // prefix
+    FListViewIterator  operator -- (int);  // postfix
+    FListViewIterator& operator += (int);
+    FListViewIterator& operator -= (int);
+    FObject*&          operator * () const;
+    FObject*           operator -> () const;
+    bool               operator == (const FListViewIterator&) const;
+    bool               operator != (const FListViewIterator&) const;
+
+    // Accessor
+    const char*        getClassName() const;
+    int                getPosition() const;
+
+    // Methods
+    void parentElement();
+
+  private:
+    // Methods
+    void nextElement (FObjectIterator&);
+    void prevElement (FObjectIterator&);
+
+    // Data Members
+    FObjectIteratorStack iter_path;
+    FObjectIterator      node;
+    int                  position;
+};
+#pragma pack(pop)
+
+
+// FListViewIterator inline functions
+//----------------------------------------------------------------------
+inline FObject*& FListViewIterator::operator * () const
+{ return *node; }
+
+//----------------------------------------------------------------------
+inline FObject* FListViewIterator::operator -> () const
+{ return *node; }
+
+//----------------------------------------------------------------------
+inline bool FListViewIterator::operator == (const FListViewIterator& rhs) const
+{ return node == rhs.node; }
+
+//----------------------------------------------------------------------
+inline bool FListViewIterator::operator != (const FListViewIterator& rhs) const
+{ return node != rhs.node; }
+
+//----------------------------------------------------------------------
+inline const char* FListViewIterator::getClassName() const
+{ return "FListViewIterator"; }
+
+//----------------------------------------------------------------------
+inline int FListViewIterator::getPosition() const
+{ return position; }
+
+
+//----------------------------------------------------------------------
 // class FListView
 //----------------------------------------------------------------------
 
@@ -143,7 +242,7 @@ class FListView : public FWidget
 
     // Accessors
     const char*          getClassName() const;
-    uInt                 getCount() const;
+    uInt                 getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
     FListViewItem*       getCurrentItem();
@@ -190,32 +289,13 @@ class FListView : public FWidget
 
   protected:
     // Methods
-    void                 adjustYOffset();
+    void                 adjustViewport();
     void                 adjustSize();
 
   private:
     // Typedef
-    struct Header
-    {
-     public:
-       Header()
-       : name()
-       , width (0)
-       , fixed_width (false)
-       , alignment (fc::alignLeft)
-       { }
-
-      ~Header()
-       { }
-
-       FString name;
-       int width;
-       bool fixed_width;
-       fc::text_alignment alignment;
-    };
-
+    struct Header;  // forward declaration
     typedef std::vector<Header> headerItems;
-    typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constants
     static const int USE_MAX_SIZE = -1;
@@ -238,8 +318,14 @@ class FListView : public FWidget
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
-    FObjectIterator      index2iterator (int);
-    void                 nextElement (FObjectIterator&);
+    void                 stepForward();
+    void                 stepBackward();
+    void                 stepForward (int);
+    void                 stepBackward (int);
+    void                 scrollToX (int);
+    void                 scrollToY (int);
+    void                 scrollTo (const FPoint &);
+    void                 scrollTo (int, int);
 
     // Callback methods
     void                 cb_VBarChange (FWidget*, data_ptr);
@@ -249,7 +335,9 @@ class FListView : public FWidget
     FObjectIterator      root;
     FObjectList          selflist;
     FObjectList          itemlist;
-    FObjectIteratorStack iter_path;
+    FListViewIterator    current_iter;
+    FListViewIterator    first_visible_line;
+    FListViewIterator    last_visible_line;
     headerItems          header;
     FTermBuffer          headerline;
     FScrollbar*          vbar;
@@ -259,14 +347,39 @@ class FListView : public FWidget
     int                  scroll_distance;
     bool                 scroll_timer;
     bool                 tree_view;
-    int                  current;
     int                  xoffset;
-    int                  yoffset;
     int                  nf_offset;
     int                  max_line_width;
 
     // Friend class
     friend class FListViewItem;
+};
+#pragma pack(pop)
+
+
+//----------------------------------------------------------------------
+// struct FListView::Header
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+struct FListView::Header
+{
+  public:
+    Header()
+      : name()
+      , width (0)
+      , fixed_width (false)
+      , alignment (fc::alignLeft)
+    { }
+
+    ~Header()
+    { }
+
+    FString name;
+    int width;
+    bool fixed_width;
+    fc::text_alignment alignment;
 };
 #pragma pack(pop)
 
@@ -277,16 +390,8 @@ inline const char* FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------
-inline uInt FListView::getCount() const
-{ return uInt(itemlist.size()); }
-
-//----------------------------------------------------------------------
 inline FListViewItem* FListView::getCurrentItem()
-{
-  FObjectIterator iter = itemlist.begin();
-  std::advance (iter, current - 1);
-  return static_cast<FListViewItem*>(*iter);
-}
+{ return static_cast<FListViewItem*>(*current_iter); }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
@@ -335,11 +440,7 @@ inline FObject::FObjectIterator FListView::endOfList()
 { return itemlist.end(); }
 
 //----------------------------------------------------------------------
-inline FObject::FObjectIterator FListView::index2iterator (int index)
-{
-  FObjectIterator iter = itemlist.begin();
-  std::advance (iter, index);
-  return iter;
-}
+inline void FListView::scrollTo (const FPoint& pos)
+{ scrollTo(pos.getX(), pos.getY()); }
 
 #endif  // FLISTVIEW_H

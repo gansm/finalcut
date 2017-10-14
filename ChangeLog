@@ -1,5 +1,8 @@
-2017-10-02  Markus Gans  <guru.mail@muenster.de>
+2017-10-14  Markus Gans  <guru.mail@muenster.de>
 	* Fixed a bug in the FObject check of parent objects
+	* Replace the deprecated readdir_r function (CVE-2013-4237)
+	* First implementation of a tree view in the FListView 
+	  class (alpha state)
 
 2017-10-02  Markus Gans  <guru.mail@muenster.de>
 	* DECSCUSR - Set Cursor Style support for VTE >= 0.40.0 and 
