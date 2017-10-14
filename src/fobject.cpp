@@ -154,7 +154,7 @@ void FObject::addChild (FObject* obj)
     obj->parent_obj->delChild(obj);
 
   obj->parent_obj = this;
-
+  obj->has_parent = true;
   children_list.push_back(obj);
 }
 

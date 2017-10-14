@@ -1346,7 +1346,7 @@ void FMenu::drawItems()
             if ( getEncoding() == "ASCII" )
               print ('-');
             else
-              print (fc::SmallBullet);
+              print (fc::SmallBullet);  // ·
 
             setColor();
           }

@@ -189,7 +189,10 @@ inline bool FObject::isTimerInUpdating() const
 
 //----------------------------------------------------------------------
 inline void FObject::removeParent()
-{ parent_obj = 0; }
+{
+  parent_obj = 0;
+  has_parent = false;
+}
 
 
 //----------------------------------------------------------------------

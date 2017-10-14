@@ -1,4 +1,7 @@
 2017-10-02  Markus Gans  <guru.mail@muenster.de>
+	* Fixed a bug in the FObject check of parent objects
+
+2017-10-02  Markus Gans  <guru.mail@muenster.de>
 	* DECSCUSR - Set Cursor Style support for VTE >= 0.40.0 and 
 	  gnome-terminal >= 3.16
 	* Checks if the FScrollview viewport fits into the print area
