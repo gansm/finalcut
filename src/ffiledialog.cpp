@@ -271,40 +271,37 @@ int FFileDialog::readDir()
 
   while ( true )
   {
-    int retval;
-    struct dirent next;
-    struct dirent* result;
+    errno = 0;
+    struct dirent* next = readdir(directory_stream);
 
-    retval = readdir_r(directory_stream, &next, &result);
-
-    if ( result && retval == 0 )
+    if ( next )
     {
-      if ( next.d_name[0] == '.' && next.d_name[1] == '\0' )
+      if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
         continue;
 
       if ( ! show_hidden
-          && next.d_name[0] == '.'
-          && next.d_name[1] != '\0'
-          && next.d_name[1] != '.' )
+          && next->d_name[0] == '.'
+          && next->d_name[1] != '\0'
+          && next->d_name[1] != '.' )
       {
         continue;
       }
 
       if ( dir[0] == '/' && dir[1] == '\0'
-          && std::strcmp(next.d_name, "..") == 0  )
+          && std::strcmp(next->d_name, "..") == 0  )
         continue;
 
       dir_entry entry;
-      entry.name = strdup(next.d_name);
-      entry.type = next.d_type;
+      entry.name = strdup(next->d_name);
+      entry.type = next->d_type;
 
-      if ( next.d_type == DT_LNK )  // symbolic link
+      if ( next->d_type == DT_LNK )  // symbolic link
       {
         char resolved_path[MAXPATHLEN] = {};
         char symLink[MAXPATHLEN] = {};
         std::strncpy (symLink, dir, sizeof(symLink) - 1);
         std::strncat ( symLink
-                     , next.d_name
+                     , next->d_name
                      , sizeof(symLink) - std::strlen(symLink) - 1);
 
         if ( realpath(symLink, resolved_path) != 0 )  // follow link
@@ -326,18 +323,18 @@ int FFileDialog::readDir()
       else
         std::free(entry.name);
     }
-    else if ( retval > 0 )
+    else if ( errno != 0 )
     {
       FMessageBox::error (this, "Reading directory\n" + directory);
 
-      if ( retval == EBADF )  // Invalid directory stream descriptor
+      if ( errno == EOVERFLOW )  // Value too large to be stored in data type
         break;
     }
     else
       break;
   }  // end while
 
-  if ( closedir (directory_stream) != 0 )
+  if ( closedir(directory_stream) != 0 )
   {
     FMessageBox::error (this, "Closing directory\n" + directory);
     return -2;
