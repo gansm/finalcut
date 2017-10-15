@@ -35,13 +35,15 @@ const FString*      fc::empty_string    = 0;
 FObject::FObject (FObject* parent)
   : widget_object(false)
   , parent_obj(parent)
-  , children_list()              // no children yet
+  , children_list()            // no children yet
   , has_parent(false)
 {
-  if ( parent_obj )              // add object to parent
-    parent_obj->addChild(this);
-
-  if ( parent == 0 )
+  if ( parent )                // add object to parent
+  {
+    parent->addChild(this);
+    has_parent = true;
+  }
+  else
   {
     timer_modify_lock = false;
 
@@ -71,17 +73,11 @@ FObject::FObject (FObject* parent)
       }
     }
   }
-  else
-    has_parent = true;
 }
 
 //----------------------------------------------------------------------
 FObject::~FObject()  // destructor
 {
-  if ( parent_obj )
-    parent_obj->delChild(this);
-
-  parent_obj = 0;
   delOwnTimer();  // delete all timers of this object
 
   if ( ! has_parent && timer_list )
@@ -110,6 +106,11 @@ FObject::~FObject()  // destructor
       ++iter;
     }
   }
+
+  if ( parent_obj )
+    parent_obj->delChild(this);
+
+  parent_obj = 0;
 }
 
 // public methods of FObject

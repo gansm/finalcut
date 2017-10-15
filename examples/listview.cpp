@@ -182,11 +182,11 @@ void Listview::cb_showInMessagebox (FWidget* widget, data_ptr)
 {
   FListView* listView = static_cast<FListView*>(widget);
   FListViewItem* item = listView->getCurrentItem();
-  FMessageBox info ( "Weather in " + item->getText(0)
-                   , "  Condition: " + item->getText(1) + "\n"
-                     "Temperature: " + item->getText(2) + "\n"
-                     "   Humidity: " + item->getText(3) + "\n"
-                     "   Pressure: " + item->getText(4)
+  FMessageBox info ( "Weather in " + item->getText(1)
+                   , "  Condition: " + item->getText(2) + "\n"
+                     "Temperature: " + item->getText(3) + "\n"
+                     "   Humidity: " + item->getText(4) + "\n"
+                     "   Pressure: " + item->getText(5)
                    , FMessageBox::Ok, 0, 0, this );
   info.show();
 }

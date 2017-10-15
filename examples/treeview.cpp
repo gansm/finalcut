@@ -168,25 +168,25 @@ Treeview::Treeview (FWidget* parent)
 
   static TreeItem europe[] =
   {
-    { "Austria",	"8,794,267",	"104.0", 0 },
-    { "Belarus",	"9,498,700",	"45.8", 0 },
-    { "Bulgaria",	"7,101,859",	"64.9", 0 },
-    { "Czech Republic",	"10,610,947",	"134.0", 0 },
-    { "Finland",	"5,506,312",	"16.0", 0 },
-    { "France",	"66,991,000",	"103.0", 0 },
-    { "Germany",	"82,175,700",	"227.0", 0 },
-    { "Greece",	"11,183,716",	"82.0", 0 },
-    { "Hungary",	"9,797,561",	"105.3", 0 },
-    { "Iceland",	"332,529",	"3.2", 0 },
-    { "Italy",	"60,589,445",	"201.3", 0 },
-    { "Norway",	"5,267,146",	"15.8", 0 },
-    { "Poland",	"38,634,007",	"123.0", 0 },
-    { "Portugal",	"10,309,573",	"115.0", 0 },
-    { "Romania",	"19,638,000",	"84.4", 0 },
-    { "Serbia",	"7,058,322",	"91.1", 0 },
-    { "Spain", "46,468,102",	"92.0", 0 },
-    { "Sweden",	"10,065,389",	"22.0", 0 },
-    { "United Kingdom",	"65,648,000", "270.7", 0 },
+    { "Austria", "8,794,267", "104.0", 0 },
+    { "Belarus", "9,498,700", "45.8", 0 },
+    { "Bulgaria", "7,101,859", "64.9", 0 },
+    { "Czech Republic", "10,610,947", "134.0", 0 },
+    { "Finland", "5,506,312", "16.0", 0 },
+    { "France", "66,991,000", "103.0", 0 },
+    { "Germany", "82,175,700", "227.0", 0 },
+    { "Greece", "11,183,716", "82.0", 0 },
+    { "Hungary", "9,797,561", "105.3", 0 },
+    { "Iceland", "332,529", "3.2", 0 },
+    { "Italy", "60,589,445", "201.3", 0 },
+    { "Norway", "5,267,146", "15.8", 0 },
+    { "Poland", "38,634,007", "123.0", 0 },
+    { "Portugal", "10,309,573", "115.0", 0 },
+    { "Romania", "19,638,000", "84.4", 0 },
+    { "Serbia", "7,058,322", "91.1", 0 },
+    { "Spain", "46,468,102", "92.0", 0 },
+    { "Sweden", "10,065,389", "22.0", 0 },
+    { "United Kingdom", "65,648,000", "270.7", 0 },
     { 0, 0, 0, 0 }
   };
 
@@ -265,12 +265,6 @@ Treeview::Treeview (FWidget* parent)
 
     continent_list++;
   }
-
-  FObjectIterator iter = listView->beginOfList();
-  FObjectIterator iter_africa = iter++;
-  FListViewItem* item_africa = static_cast<FListViewItem*>(*iter_africa);
-  item_africa->expand();
-
 
   // Quit button
   Quit = new FButton (this);

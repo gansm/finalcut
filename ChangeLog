@@ -1,3 +1,6 @@
+2017-10-15  Markus Gans  <guru.mail@muenster.de>
+	* FObject double free prevention of fc::empty_string
+
 2017-10-14  Markus Gans  <guru.mail@muenster.de>
 	* Fixed a bug in the FObject check of parent objects
 	* Replace the deprecated readdir_r function (CVE-2013-4237)
