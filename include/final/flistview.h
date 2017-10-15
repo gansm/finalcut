@@ -318,6 +318,7 @@ class FListView : public FWidget
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
+    void                 setRelativePosition (int);
     void                 stepForward();
     void                 stepBackward();
     void                 stepForward (int);

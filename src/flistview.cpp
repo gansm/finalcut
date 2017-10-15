@@ -912,10 +912,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
     if ( new_pos < int(getCount()) )
-    {
-      current_iter = first_visible_line;
-      current_iter += mouse_y - 2;
-    }
+      setRelativePosition (mouse_y - 2);
 
     if ( isVisible() )
       drawList();
@@ -977,10 +974,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
     if ( new_pos < int(getCount()) )
-    {
-      current_iter = first_visible_line;
-      current_iter += mouse_y - 2;
-    }
+      setRelativePosition (mouse_y - 2);
 
     if ( isVisible() )
       drawList();
@@ -1158,13 +1152,13 @@ void FListView::onWheel (FWheelEvent* ev)
       }
       else
       {
-        // Save relative position from the top line
+        // Save relative position from the first line
         int ry = current_iter.getPosition() - first_visible_line.getPosition();
+        // Save difference from top
         int difference = first_visible_line.getPosition();
         first_visible_line -= difference;
         last_visible_line -= difference;
-        current_iter = first_visible_line;
-        current_iter += ry;
+        setRelativePosition(ry);
       }
 
       break;
@@ -1181,13 +1175,13 @@ void FListView::onWheel (FWheelEvent* ev)
       }
       else
       {
-        // Save relative position from the top line
+        // Save relative position from the first line
         int ry = current_iter.getPosition() - first_visible_line.getPosition();
+        // Save difference from bottom
         int differenz = element_count - last_visible_line.getPosition() - 1;
         first_visible_line += differenz;
         last_visible_line += differenz;
-        current_iter = first_visible_line;
-        current_iter += ry;
+        setRelativePosition(ry);
       }
 
       break;
@@ -1754,6 +1748,13 @@ void FListView::processChanged()
 }
 
 //----------------------------------------------------------------------
+void FListView::setRelativePosition (int ry)
+{
+  current_iter = first_visible_line;
+  current_iter += ry;
+}
+
+//----------------------------------------------------------------------
 void FListView::stepForward()
 {
   if ( current_iter == last_visible_line )
@@ -1883,8 +1884,7 @@ void FListView::scrollToY (int y)
   {
     first_visible_line = itemlist.begin();
     first_visible_line += y;
-    current_iter = first_visible_line;
-    current_iter += ry;
+    setRelativePosition (ry);
     last_visible_line = first_visible_line;
     last_visible_line += pagesize;
   }
