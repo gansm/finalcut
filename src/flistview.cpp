@@ -1065,6 +1065,21 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
+    FListViewItem* item = getCurrentItem();
+
+    if ( item->isExpandable() )
+    {
+      if ( item->isExpand() )
+        item->collapse();
+      else
+        item->expand();
+
+      adjustSize();
+
+      if ( isVisible() )
+        draw();
+    }
+
     processClick();
   }
 }
@@ -1231,29 +1246,22 @@ void FListView::onFocusOut (FFocusEvent*)
 void FListView::adjustViewport()
 {
   int element_count = int(getCount());
+  int height = getClientHeight();
 
-  if ( element_count == 0 || getClientHeight() <= 0 )
+  if ( element_count == 0 || height <= 0 )
     return;
 
-  if ( element_count < getClientHeight() )
+  if ( element_count < height )
   {
     first_visible_line = itemlist.begin();
     last_visible_line = first_visible_line;
     last_visible_line += element_count - 1;
   }
 
-/*
-  if ( yoffset > element_count - getClientHeight() )
-    yoffset = element_count - getClientHeight();
-
-  if ( yoffset < 0 )
-    yoffset = 0;*/
-
-//setTermXY(1,1); ::printf("(%d > %d)", first_visible_line.getPosition(),element_count - getClientHeight() - 1); fflush(stdout); sleep(1);
-
-  if ( first_visible_line.getPosition() > element_count - getClientHeight()  )
+  if ( first_visible_line.getPosition() > element_count - height  )
   {
-    int difference = first_visible_line.getPosition() - (element_count - getClientHeight());
+    int difference = first_visible_line.getPosition()
+                   - (element_count - height);
 
     if ( first_visible_line.getPosition() - difference + 1 > 0 )
     {
@@ -1262,15 +1270,17 @@ void FListView::adjustViewport()
     }
   }
 
-/*
-  if ( current_iter.getPosition() < first_visible_line.getPosition() )
-    current_iter = first_visible_line;
+  int max_last_visible_line = first_visible_line.getPosition()
+                            + height - 1;
 
-  if ( first_visible_line.getPosition() < current_iter.getPosition() - getClientHeight() )
+  if ( last_visible_line.getPosition() > max_last_visible_line )
   {
-    first_visible_line = current_iter;
-    first_visible_line -= getClientHeight();
-  }*/
+    last_visible_line = first_visible_line;
+    last_visible_line += height - 1;
+  }
+
+  if ( current_iter.getPosition() > last_visible_line.getPosition() )
+    current_iter = last_visible_line;
 }
 
 //----------------------------------------------------------------------

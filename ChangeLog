@@ -1,3 +1,7 @@
+2017-10-18  Markus Gans  <guru.mail@muenster.de>
+	* Expand or collapse a tree element with a double-click
+	* FListView::adjustViewport() improved
+
 2017-10-15  Markus Gans  <guru.mail@muenster.de>
 	* FObject double free prevention of fc::empty_string
 
