@@ -8,17 +8,6 @@ Improvements
 
 Missing Features
 ~~~~~~~~~~~~~~~~
-- list/tree view with Columns
-     - FListView()
----------------------------------------
-     /
-     ├──► bin
-     ├──▼ usr
-     │  ├──► bin
-     │  ├──► lib
-     │  └──► local
-     └──► tmp
----------------------------------------
 
 - The FSlider() widget
    . . . . . . . . .
