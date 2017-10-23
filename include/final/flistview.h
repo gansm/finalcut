@@ -91,7 +91,7 @@ class FListViewItem : public FObject
     void             setText (int, const FString&);
 
     // Inquiry
-    bool             isExpand();
+    bool             isExpand() const;
 
     // Methods
     FObjectIterator  insert (FListViewItem*);
@@ -101,7 +101,7 @@ class FListViewItem : public FObject
 
   private:
     // Inquiry
-    bool             isExpandable();
+    bool             isExpandable() const;
 
     // Methods
     FObjectIterator  appendItem (FListViewItem*);
@@ -133,11 +133,11 @@ inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_list.size()); }
 
 //----------------------------------------------------------------------
-inline bool FListViewItem::isExpand()
+inline bool FListViewItem::isExpand() const
 { return is_expand; }
 
 //----------------------------------------------------------------------
-inline bool FListViewItem::isExpandable()
+inline bool FListViewItem::isExpandable() const
 { return expandable; }
 
 
@@ -348,6 +348,7 @@ class FListView : public FWidget
     int                  scroll_distance;
     bool                 scroll_timer;
     bool                 tree_view;
+    FPoint               clicked_expander_pos;
     int                  xoffset;
     int                  nf_offset;
     int                  max_line_width;

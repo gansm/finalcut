@@ -443,6 +443,7 @@ FListView::FListView (FWidget* parent)
   , scroll_distance(1)
   , scroll_timer(false)
   , tree_view(false)
+  , clicked_expander_pos(-1, -1)
   , xoffset(0)
   , nf_offset(0)
   , max_line_width(1)
@@ -706,6 +707,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
     , pagesize = getClientHeight() - 1
     , key = ev->key();
   FListViewItem* item = getCurrentItem();
+  clicked_expander_pos.setPoint(-1, -1);
 
   switch ( key )
   {
@@ -879,14 +881,11 @@ void FListView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onMouseDown (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
+    clicked_expander_pos.setPoint(-1, -1);
     return;
   }
-
-  if ( ev->getButton() == fc::RightButton )
-    return;
 
   if ( ! hasFocus() )
   {
@@ -913,6 +912,15 @@ void FListView::onMouseDown (FMouseEvent* ev)
 
     if ( new_pos < int(getCount()) )
       setRelativePosition (mouse_y - 2);
+
+    if ( tree_view )
+    {
+      const FListViewItem* item = getCurrentItem();
+      int indent = int(item->getDepth() << 1);  // indent = 2 * depth
+
+      if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
+        clicked_expander_pos = ev->getPos();
+    }
 
     if ( isVisible() )
       drawList();
@@ -947,22 +955,39 @@ void FListView::onMouseUp (FMouseEvent* ev)
     if ( mouse_x > 1 && mouse_x < getWidth()
         && mouse_y > 1 && mouse_y < getHeight() )
     {
+      if ( tree_view )
+      {
+        FListViewItem* item = getCurrentItem();
+
+        if ( item->isExpandable() && clicked_expander_pos == ev->getPos() )
+        {
+          if ( item->isExpand() )
+            item->collapse();
+          else
+            item->expand();
+
+          adjustSize();
+
+          if ( isVisible() )
+            draw();
+        }
+      }
+
       processChanged();
     }
   }
+
+  clicked_expander_pos.setPoint(-1, -1);
 }
 
 //----------------------------------------------------------------------
 void FListView::onMouseMove (FMouseEvent* ev)
 {
-  if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != fc::LeftButton )
   {
+    clicked_expander_pos.setPoint(-1, -1);
     return;
   }
-
-  if ( ev->getButton() == fc::RightButton )
-    return;
 
   int first_line_position_before = first_visible_line.getPosition()
     , mouse_x = ev->getX()
@@ -1082,6 +1107,8 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
     processClick();
   }
+
+  clicked_expander_pos.setPoint(-1, -1);
 }
 
 //----------------------------------------------------------------------
