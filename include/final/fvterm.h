@@ -29,17 +29,17 @@
  *      │           │
  *      └─────┬─────┘
  *            │
- *        ▕▔▔▔▔▔▔▔▔▏1       *▕▔▔▔▔▔▔▔▔▔▏
- *        ▕ FVTerm ▏-┬- - - -▕ FString ▏
- *        ▕▁▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▏
- *                   :
- *                   :      *▕▔▔▔▔▔▔▔▔▏
- *                   :- - - -▕ FPoint ▏
- *                   :       ▕▁▁▁▁▁▁▁▁▏
- *                   :
- *                   :      *▕▔▔▔▔▔▔▔▏
- *                   └- - - -▕ FRect ▏
- *                           ▕▁▁▁▁▁▁▁▏
+ *        ▕▔▔▔▔▔▔▔▔▏1         *▕▔▔▔▔▔▔▔▔▔▏
+ *        ▕ FVTerm ▏- - -┬- - -▕ FString ▏
+ *        ▕▁▁▁▁▁▁▁▁▏     :     ▕▁▁▁▁▁▁▁▁▁▏
+ *                       :
+ *                       :    *▕▔▔▔▔▔▔▔▔▏
+ *                       :- - -▕ FPoint ▏
+ *                       :     ▕▁▁▁▁▁▁▁▁▏
+ *                       :
+ *                       :    *▕▔▔▔▔▔▔▔▏
+ *                       └- - -▕ FRect ▏
+ *                             ▕▁▁▁▁▁▁▁▏
  */
 
 #ifndef FVTERM_H
@@ -51,7 +51,7 @@
 
 // Preprocessing handler macro
 #define F_PREPROC_HANDLER(i,h) \
-           reinterpret_cast<FVTerm*>((i)) \
+           static_cast<FVTerm*>((i)) \
          , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
 
 // class forward declaration
@@ -64,7 +64,7 @@ class FWidget;
 #pragma pack(push)
 #pragma pack(1)
 
-class FVTerm : public FObject, public FTerm
+class FVTerm : public FTerm
 {
   public:
     // Typedefs and Enumeration
@@ -96,7 +96,7 @@ class FVTerm : public FObject, public FTerm
     };
 
     // Constructor
-    explicit FVTerm (FVTerm* = 0, bool = false);
+    explicit FVTerm (bool, bool = false);
 
     // Destructor
    ~FVTerm();
@@ -257,7 +257,6 @@ class FVTerm : public FObject, public FTerm
     // Inquiries
     bool                 hasPrintArea() const;
     bool                 hasChildPrintArea() const;
-    bool                 isChildPrintArea() const;
     bool                 isVirtualWindow() const;
 
     // Mutator

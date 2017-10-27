@@ -53,7 +53,8 @@ bool                   FWidget::hideable;
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FVTerm(parent, disable_alt_screen)
+  : FObject(parent)
+  , FVTerm(!parent, disable_alt_screen)
   , accelerator_list(0)
   , flags(0)
   , callback_objects()
@@ -1757,6 +1758,52 @@ void FWidget::quit()
 
 
 // protected methods of FWidget
+//----------------------------------------------------------------------
+FVTerm::term_area* FWidget::getPrintArea()
+{
+  // returns the print area of this object
+
+  if ( print_area )
+    return print_area;
+  else
+  {
+    FWidget* obj = this;
+    FWidget* p_obj = static_cast<FWidget*>(obj->getParent());
+
+    while ( ! obj->vwin && ! obj->child_print_area && p_obj )
+    {
+      obj = p_obj;
+      p_obj = static_cast<FWidget*>(p_obj->getParent());
+    }
+
+    if ( obj->vwin )
+    {
+      print_area = obj->vwin;
+      return print_area;
+    }
+    else if ( obj->child_print_area )
+    {
+      print_area = obj->child_print_area;
+      return print_area;
+    }
+  }
+
+  return vdesktop;
+}
+
+//----------------------------------------------------------------------
+bool FWidget::isChildPrintArea() const
+{
+  FWidget* p_obj = static_cast<FWidget*>(getParent());
+
+  if ( p_obj
+      && p_obj->child_print_area
+      && p_obj->child_print_area == print_area )
+    return true;
+  else
+    return false;
+}
+
 //----------------------------------------------------------------------
 void FWidget::setStatusBar (FStatusBar* sbar)
 {

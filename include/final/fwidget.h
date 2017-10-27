@@ -114,7 +114,7 @@ class FMenuBar;
 #pragma pack(push)
 #pragma pack(1)
 
-class FWidget : public FVTerm
+class FWidget : public FObject, public FVTerm
 {
   public:
      // Using-declaration
@@ -317,6 +317,12 @@ class FWidget : public FVTerm
     // Typedefs
     typedef std::vector<callback_data> CallbackObjects;
     typedef std::vector<member_callback_data> MemberCallbackObjects;
+
+    // Accessor
+    term_area*         getPrintArea();
+
+    // Inquiry
+    bool               isChildPrintArea() const;
 
     // Mutators
     virtual void       setStatusBar (FStatusBar*);

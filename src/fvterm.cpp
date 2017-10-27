@@ -55,19 +55,16 @@ FVTerm::char_data    FVTerm::next_attribute;
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FVTerm::FVTerm (FVTerm* parent, bool disable_alt_screen)
-  : FObject(parent)
-  , FTerm(disable_alt_screen)
+FVTerm::FVTerm (bool initialize, bool disable_alt_screen)
+  : FTerm(disable_alt_screen)
   , print_area(0)
   , child_print_area(0)
   , vwin(0)
 {
   terminal_update_complete = false;
 
-  if ( ! parent )
-  {
+  if ( initialize )
     init();
-  }
 }
 
 //----------------------------------------------------------------------
@@ -808,41 +805,19 @@ FVTerm::term_area* FVTerm::getPrintArea()
     return print_area;
   else
   {
-    FVTerm* obj = static_cast<FVTerm*>(this);
-    FVTerm* p_obj = static_cast<FVTerm*>(obj->getParent());
-
-    while ( ! obj->vwin && ! obj->child_print_area && p_obj )
+    if ( vwin )
     {
-      obj = p_obj;
-      p_obj = static_cast<FVTerm*>(p_obj->getParent());
-    }
-
-    if ( obj->vwin )
-    {
-      print_area = obj->vwin;
+      print_area = vwin;
       return print_area;
     }
-    else if ( obj->child_print_area )
+    else if ( child_print_area )
     {
-      print_area = obj->child_print_area;
+      print_area = child_print_area;
       return print_area;
     }
   }
 
   return vdesktop;
-}
-
-//----------------------------------------------------------------------
-bool FVTerm::isChildPrintArea() const
-{
-  FVTerm* p_obj = static_cast<FVTerm*>(getParent());
-
-  if ( p_obj
-      && p_obj->child_print_area
-      && p_obj->child_print_area == print_area )
-    return true;
-  else
-    return false;
 }
 
 //----------------------------------------------------------------------

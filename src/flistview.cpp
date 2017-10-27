@@ -737,7 +737,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
           // Collapse element
           item->collapse();
           adjustSize();
-          int element_count = int(getCount());
+          element_count = int(getCount());
           recalculateVerticalBar (element_count);
           // Force vertical scrollbar redraw
           first_line_position_before = -1;

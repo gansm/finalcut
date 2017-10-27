@@ -149,13 +149,14 @@ void move (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
+  bool init = true;
   int xmax, ymax;
 
   // Create the application object
   FApplication app(argc, argv);
 
   // Create a FVTerm object as virtual terminal
-  terminal = new FVTerm(&app);
+  terminal = new FVTerm(init);
   xmax = terminal->getColumnNumber() - 1;
   ymax = terminal->getLineNumber() - 1;
   FString line(xmax + 1, '-');

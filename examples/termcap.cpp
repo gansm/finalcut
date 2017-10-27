@@ -106,9 +106,10 @@ void tcapString (const std::string& name, const char* cap_str)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
+  bool init = true;
   bool disable_alt_screen = true;
   FApplication app (argc, argv, disable_alt_screen);
-  terminal = new FVTerm(&app);
+  terminal = new FVTerm(init);
 
   FTermcap::tcap_map* tcap = 0;
   tcap = FTermcap::getTermcapMap();
