@@ -1,3 +1,6 @@
+2017-10-29  Markus Gans  <guru.mail@muenster.de>
+	* Adaptation of the inheritance diagrams in the header files
+
 2017-10-27  Markus Gans  <guru.mail@muenster.de>
 	* FWidget now inherits directly from FObject 
 
