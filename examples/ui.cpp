@@ -292,7 +292,6 @@ class MyDialog : public FDialog
     void cb_activateButton (FWidget*, data_ptr);
     void cb_view (FWidget*, data_ptr);
     void cb_setInput (FWidget*, data_ptr);
-    void cb_exitApp (FWidget*, data_ptr);
 
     // Data Members
     FLineEdit* myLineEdit;
@@ -377,7 +376,7 @@ MyDialog::MyDialog (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   Cut->addCallback
@@ -596,7 +595,7 @@ MyDialog::MyDialog (FWidget* parent)
   MyButton6->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   myLineEdit->addCallback
@@ -641,7 +640,7 @@ MyDialog::MyDialog (FWidget* parent)
   key_F3->addCallback
   (
     "activate",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 }
 
@@ -916,12 +915,6 @@ void MyDialog::cb_setInput (FWidget* widget, data_ptr data)
   FLineEdit* lineedit = static_cast<FLineEdit*>(data);
   *lineedit = ListBox->getItem(ListBox->currentItem()).getText();
   lineedit->redraw();
-}
-
-//----------------------------------------------------------------------
-void MyDialog::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 

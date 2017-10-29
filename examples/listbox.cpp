@@ -85,9 +85,6 @@ class Listbox : public FDialog
     // Event handlers
     void onClose (FCloseEvent*);
 
-    // Callback method
-    void cb_exitApp (FWidget*, data_ptr);
-
     // Data Member
     std::list<double>* double_list;
 };
@@ -150,7 +147,7 @@ Listbox::Listbox (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Listbox::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 }
 
@@ -173,12 +170,6 @@ void Listbox::onClose (FCloseEvent* ev)
     ev->accept();
   else
     ev->ignore();
-}
-
-//----------------------------------------------------------------------
-void Listbox::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 

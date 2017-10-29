@@ -54,8 +54,7 @@ class Listview : public FDialog
     // Event handlers
     void onClose (FCloseEvent*);
 
-    // Callback methods
-    void cb_exitApp (FWidget*, data_ptr);
+    // Callback method
     void cb_showInMessagebox (FWidget*, data_ptr);
 };
 #pragma pack(pop)
@@ -143,7 +142,7 @@ Listview::Listview (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Listview::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   listView->addCallback
@@ -169,12 +168,6 @@ void Listview::onClose (FCloseEvent* ev)
     ev->accept();
   else
     ev->ignore();
-}
-
-//----------------------------------------------------------------------
-void Listview::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 //----------------------------------------------------------------------

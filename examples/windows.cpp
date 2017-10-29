@@ -214,7 +214,6 @@ class Window : public FDialog
     void cb_closeWindows (FWidget*, data_ptr);
     void cb_next (FWidget*, data_ptr);
     void cb_previous (FWidget*, data_ptr);
-    void cb_exitApp (FWidget*, data_ptr);
     void cb_destroyWindow (FWidget*, data_ptr);
 
     // Data Members
@@ -311,7 +310,7 @@ Window::Window (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   // Add button callback
@@ -330,7 +329,7 @@ Window::Window (FWidget* parent)
   QuitButton->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   for (int n = 1; n <= 6; n++)
@@ -559,12 +558,6 @@ void Window::cb_previous (FWidget*, data_ptr)
     }
   }
   while ( iter != dialog_list->begin() );
-}
-
-//----------------------------------------------------------------------
-void Window::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 //----------------------------------------------------------------------

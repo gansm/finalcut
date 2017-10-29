@@ -107,6 +107,9 @@ class FApplication : public FWidget
     static bool        removeQueuedEvent (const FObject*);
     static FWidget*    showParameterUsage (const int&, char*[]);
 
+    // Callback method
+    void cb_exitApp (FWidget*, data_ptr);
+
   private:
     // Typedefs and Enumerations
     typedef std::pair<const FObject*, const FEvent*> eventPair;
@@ -255,6 +258,10 @@ inline FWidget* FApplication::getMainWidget() const
 //----------------------------------------------------------------------
 inline FWidget* FApplication::getFocusWidget() const
 { return focus_widget; }
+
+//----------------------------------------------------------------------
+inline void FApplication::cb_exitApp (FWidget*, data_ptr)
+{ close(); }
 
 
 #endif  // FAPPLICATION_H

@@ -60,9 +60,8 @@ class Menu : public FDialog
     // Event handler
     void onClose (FCloseEvent*);
 
-    // Callback methods
+    // Callback method
     void cb_message (FWidget*, data_ptr);
-    void cb_exitApp (FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
@@ -194,7 +193,7 @@ Menu::Menu (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Menu::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
   // Statusbar at the bottom
@@ -283,12 +282,6 @@ void Menu::cb_message (FWidget* widget, data_ptr)
   FString text = menuitem->getText();
   text = text.replace('&', "");
   FMessageBox::info (this, "Info", "You have chosen \"" + text + "\"");
-}
-
-//----------------------------------------------------------------------
-void Menu::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 

@@ -60,9 +60,6 @@ class Treeview : public FDialog
     // Event handlers
     void onClose (FCloseEvent*);
 
-    // Callback methods
-    void cb_exitApp (FWidget*, data_ptr);
-
     // Data Members
     FListView* listView;
     FButton*   Quit;
@@ -275,7 +272,7 @@ Treeview::Treeview (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Treeview::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 }
 
@@ -318,11 +315,6 @@ void Treeview::onClose (FCloseEvent* ev)
     ev->ignore();
 }
 
-//----------------------------------------------------------------------
-void Treeview::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
-}
 
 //----------------------------------------------------------------------
 //                               main part

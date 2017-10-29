@@ -54,7 +54,6 @@ class Watch : public FDialog
     // Callback methods
     void cb_clock (FWidget*, data_ptr);
     void cb_seconds (FWidget*, data_ptr);
-    void cb_exitApp (FWidget*, data_ptr);
 
   protected:
     // Method
@@ -125,7 +124,7 @@ Watch::Watch (FWidget* parent)
   quit_btn->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &Watch::cb_exitApp)
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 }
 
@@ -209,12 +208,6 @@ void Watch::cb_seconds (FWidget*, data_ptr)
 
     time_str->redraw();
   }
-}
-
-//----------------------------------------------------------------------
-void Watch::cb_exitApp (FWidget*, data_ptr)
-{
-  close();
 }
 
 //----------------------------------------------------------------------
