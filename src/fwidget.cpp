@@ -53,8 +53,8 @@ bool                   FWidget::hideable;
 // constructors and destructor
 //----------------------------------------------------------------------
 FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
-  : FObject(parent)
-  , FVTerm(!parent, disable_alt_screen)
+  : FVTerm(bool(! parent), disable_alt_screen)
+  , FObject(parent)
   , accelerator_list(0)
   , flags(0)
   , callback_objects()
@@ -1767,14 +1767,15 @@ FVTerm::term_area* FWidget::getPrintArea()
     return print_area;
   else
   {
-    FWidget* obj = this;
-    FWidget* p_obj = static_cast<FWidget*>(obj->getParent());
+    FWidget* obj;
+    FWidget* p_obj = this;
 
-    while ( ! obj->vwin && ! obj->child_print_area && p_obj )
+    do
     {
       obj = p_obj;
-      p_obj = static_cast<FWidget*>(p_obj->getParent());
+      p_obj = static_cast<FWidget*>(obj->getParent());
     }
+    while ( ! obj->vwin && ! obj->child_print_area && p_obj );
 
     if ( obj->vwin )
     {
@@ -1789,6 +1790,25 @@ FVTerm::term_area* FWidget::getPrintArea()
   }
 
   return vdesktop;
+}
+
+//----------------------------------------------------------------------
+void FWidget::addPreprocessingHandler ( FVTerm* instance
+                                      , FPreprocessingHandler handler )
+{
+  if ( ! print_area )
+    FWidget::getPrintArea();
+
+  FVTerm::addPreprocessingHandler (instance, handler);
+}
+
+//----------------------------------------------------------------------
+void FWidget::delPreprocessingHandler (FVTerm* instance)
+{
+  if ( ! print_area )
+    FWidget::getPrintArea();
+
+  FVTerm::delPreprocessingHandler (instance);
 }
 
 //----------------------------------------------------------------------

@@ -668,7 +668,7 @@ FVTerm::term_area* FScrollView::getPrintArea()
   if ( use_own_print_area || ! viewport )
   {
     child_print_area = 0;
-    term_area* area = FVTerm::getPrintArea();
+    term_area* area = FWidget::getPrintArea();
     child_print_area = viewport;
     return area;
   }
@@ -717,7 +717,7 @@ void FScrollView::copy2area()
   // copy viewport to area
 
   if ( ! hasPrintArea() )
-    FVTerm::getPrintArea();
+    FWidget::getPrintArea();
 
   if ( ! (hasPrintArea() && viewport) )
     return;

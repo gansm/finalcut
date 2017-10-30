@@ -213,9 +213,9 @@ class FVTerm : public FTerm
     static void         putVTerm();
     static void         updateTerminal (bool);
     static void         updateTerminal();
-    void                addPreprocessingHandler ( FVTerm*
+    virtual void        addPreprocessingHandler ( FVTerm*
                                                 , FPreprocessingHandler );
-    void                delPreprocessingHandler (FVTerm*);
+    virtual void        delPreprocessingHandler (FVTerm*);
 
     int                 printf (const wchar_t*, ...);
     int                 printf (const char*, ...)

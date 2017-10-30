@@ -2207,8 +2207,8 @@ void FVTerm::flush_out()
 void FVTerm::init()
 {
   init_object   = this;
-  vterm         =  0;
-  vdesktop      =  0;
+  vterm         = 0;
+  vdesktop      = 0;
 
   try
   {

@@ -114,7 +114,7 @@ class FMenuBar;
 #pragma pack(push)
 #pragma pack(1)
 
-class FWidget : public FObject, public FVTerm
+class FWidget : public FVTerm, public FObject
 {
   public:
      // Using-declaration
@@ -320,6 +320,9 @@ class FWidget : public FObject, public FVTerm
 
     // Accessor
     term_area*         getPrintArea();
+    void               addPreprocessingHandler ( FVTerm*
+                                               , FPreprocessingHandler );
+    void               delPreprocessingHandler (FVTerm*);
 
     // Inquiry
     bool               isChildPrintArea() const;
