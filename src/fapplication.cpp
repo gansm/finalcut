@@ -23,6 +23,7 @@
 
 #include "final/fapplication.h"
 #include "final/fmenu.h"
+#include "final/fmessagebox.h"
 #include "final/fstatusbar.h"
 #include "final/fwindow.h"
 
@@ -329,12 +330,25 @@ FWidget* FApplication::showParameterUsage (const int& argc, char* argv[])
       << "       Set the standard vga 8x16 font" << std::endl
       << "  --newfont            "
       << "       Enables the graphical font" << std::endl;
-        std::exit(EXIT_SUCCESS);
+    std::exit(EXIT_SUCCESS);
   }
 
   return 0;
 }
 
+//----------------------------------------------------------------------
+void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
+{
+  int ret = FMessageBox::info ( w, "Quit"
+                              , "Do you really want\n"
+                                "to quit the program ?"
+                              , FMessageBox::Yes
+                              , FMessageBox::No );
+  if ( ret == FMessageBox::Yes )
+    ev->accept();
+  else
+    ev->ignore();
+}
 
 // private methods of FApplication
 //----------------------------------------------------------------------

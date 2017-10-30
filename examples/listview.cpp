@@ -159,15 +159,7 @@ Listview::~Listview()  // destructor
 //----------------------------------------------------------------------
 void Listview::onClose (FCloseEvent* ev)
 {
-  int ret = FMessageBox::info ( this, "Quit"
-                              , "Do you really want\n"
-                                "to quit the program ?"
-                              , FMessageBox::Yes
-                              , FMessageBox::No );
-  if ( ret == FMessageBox::Yes )
-    ev->accept();
-  else
-    ev->ignore();
+  FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------

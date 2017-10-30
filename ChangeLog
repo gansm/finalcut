@@ -1,5 +1,6 @@
 2017-10-30  Markus Gans  <guru.mail@muenster.de>
 	* Fix scrollview functionality with new inheritance structure
+	* Add a standardized close confirmation dialog
 
 2017-10-29  Markus Gans  <guru.mail@muenster.de>
 	* Adaptation of the inheritance diagrams in the header files

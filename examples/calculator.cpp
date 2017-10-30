@@ -574,13 +574,7 @@ void Calc::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void Calc::onClose (FCloseEvent* ev)
 {
-  int ret = FMessageBox::info ( this, "Quit",
-                                "Do you really want\n"
-                                "to quit the program ?",
-                                FMessageBox::Yes,
-                                FMessageBox::No );
-
-  ( ret == FMessageBox::Yes ) ? ev->accept() : ev->ignore();
+  FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------

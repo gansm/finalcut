@@ -106,6 +106,7 @@ class FApplication : public FWidget
     static bool        eventInQueue();
     static bool        removeQueuedEvent (const FObject*);
     static FWidget*    showParameterUsage (const int&, char*[]);
+    static void        closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
     void cb_exitApp (FWidget*, data_ptr);
