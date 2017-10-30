@@ -30,6 +30,10 @@
 #ifndef FTERMCAP_H
 #define FTERMCAP_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 // FTermcap string macro
 #define TCAP(s)  tcap[(s)].string
 

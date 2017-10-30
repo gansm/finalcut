@@ -19,10 +19,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include <final/fapplication.h>
-#include <final/fbutton.h>
-#include <final/fdialog.h>
-#include <final/fmessagebox.h>
+#include <final/final.h>
+
 
 //----------------------------------------------------------------------
 // class AttribDlg

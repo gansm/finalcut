@@ -30,6 +30,10 @@
 #ifndef FTERMBUFFER_H
 #define FTERMBUFFER_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <sstream>  // std::stringstream
 #include <string>
 #include <vector>

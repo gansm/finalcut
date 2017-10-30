@@ -22,6 +22,10 @@
 #ifndef FTCAPMAP_H
 #define FTCAPMAP_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/ftermcap.h"
 
 static FTermcap::tcap_map term_caps[] =

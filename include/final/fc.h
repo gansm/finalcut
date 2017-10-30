@@ -30,6 +30,10 @@
 #ifndef FC_H
 #define FC_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/fstring.h"
 
 // ascii sequences

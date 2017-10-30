@@ -20,12 +20,7 @@
 ************************************************************************/
 
 #include <ctime>
-
-#include <final/fapplication.h>
-#include <final/flabel.h>
-#include <final/fdialog.h>
-#include <final/fmessagebox.h>
-#include <final/fswitch.h>
+#include <final/final.h>
 
 
 //----------------------------------------------------------------------

@@ -24,10 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <final/fapplication.h>
-#include <final/fdialog.h>
-#include <final/flistview.h>
-#include <final/fmessagebox.h>
+#include <final/final.h>
 
 
 //----------------------------------------------------------------------

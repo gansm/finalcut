@@ -23,9 +23,7 @@
 #include <iostream>
 #include <string>
 
-#include <final/fapplication.h>
-#include <final/ftermcap.h>
-#include <final/fvterm.h>
+#include <final/final.h>
 
 
 // global FVTerm object
@@ -106,32 +104,31 @@ void tcapString (const std::string& name, const char* cap_str)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  bool init = true;
   bool disable_alt_screen = true;
-  FApplication app (argc, argv, disable_alt_screen);
-  terminal = new FVTerm(init);
+  FApplication TermApp (argc, argv, disable_alt_screen);
+
+  // Pointer to the global virtual terminal object
+  terminal = static_cast<FVTerm*>(&TermApp);
 
   FTermcap::tcap_map* tcap = 0;
   tcap = FTermcap::getTermcapMap();
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
-  std::cout << "Terminal: " << terminal->getTermType() << "\r\n";
+  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
 
 #if DEBUG
   std::cout << "\n.------------------- debug -------------------\r\n";
   std::cout << "| after init_256colorTerminal(): "
-            << terminal->termtype_256color << "\r\n";
+            << TermApp.termtype_256color << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
-            << terminal->termtype_Answerback << "\r\n";
+            << TermApp.termtype_Answerback << "\r\n";
   std::cout << "|            after parseSecDA(): "
-            << terminal->termtype_SecDA << "\r\n";
+            << TermApp.termtype_SecDA << "\r\n";
 
-  if ( const FString& s = terminal->getAnswerbackString() )
+  if ( const FString& s = TermApp.getAnswerbackString() )
     tcapString ("|         The answerback String", s);
 
-
-
-  if (  const FString& s = terminal->getSecDAString() )
+  if (  const FString& s = TermApp.getSecDAString() )
     tcapString ("|              The SecDA String", s);
 
   std::cout << "`------------------- debug -------------------\r\n";

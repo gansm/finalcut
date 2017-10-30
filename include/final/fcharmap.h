@@ -22,6 +22,10 @@
 #ifndef FCHARMAP_H
 #define FCHARMAP_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 static uInt character[][fc::NUM_OF_ENCODINGS] =
 {
   //  .--------------------- Unicode (UTF-8)

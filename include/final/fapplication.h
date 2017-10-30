@@ -55,6 +55,10 @@
 #ifndef FAPPLICATION_H
 #define FAPPLICATION_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <getopt.h>
 #include <deque>
 #include <string>

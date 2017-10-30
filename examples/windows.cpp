@@ -20,16 +20,7 @@
 ************************************************************************/
 
 #include <vector>
-
-#include <final/fapplication.h>
-#include <final/fdialog.h>
-#include <final/fdialoglistmenu.h>
-#include <final/flabel.h>
-#include <final/fmenubar.h>
-#include <final/fmenu.h>
-#include <final/fmessagebox.h>
-#include <final/fstatusbar.h>
-#include <final/fstring.h>
+#include <final/final.h>
 
 
 //----------------------------------------------------------------------

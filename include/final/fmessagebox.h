@@ -57,6 +57,10 @@
 #ifndef FMESSAGEBOX_H
 #define FMESSAGEBOX_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <cstring>
 
 #include "final/fbutton.h"

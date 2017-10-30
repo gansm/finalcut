@@ -23,6 +23,8 @@
 #ifndef FINAL_H
 #define FINAL_H
 
+#define USE_FINAL_H
+
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>
 #include <final/fbutton.h>
@@ -34,6 +36,7 @@
 #include <final/flabel.h>
 #include <final/flineedit.h>
 #include <final/flistbox.h>
+#include <final/flistview.h>
 #include <final/fmenubar.h>
 #include <final/fmenu.h>
 #include <final/fmenuitem.h>
@@ -51,5 +54,7 @@
 #include <final/ftextview.h>
 #include <final/ftooltip.h>
 #include <final/fwidget.h>
+
+#undef USE_FINAL_H
 
 #endif  // FINAL_H

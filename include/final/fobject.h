@@ -30,6 +30,10 @@
 #ifndef FOBJECT_H
 #define FOBJECT_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <stdint.h>
 #include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>

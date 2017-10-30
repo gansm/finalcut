@@ -22,8 +22,7 @@
 #include <iomanip>
 #include <string>
 
-#include <final/fapplication.h>
-#include <final/fvterm.h>
+#include <final/final.h>
 
 
 // global FVTerm object
@@ -149,27 +148,28 @@ void move (int xold, int yold, int xnew, int ynew)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  bool init = true;
   int xmax, ymax;
 
   // Create the application object
-  FApplication app(argc, argv);
+  FApplication TermApp(argc, argv);
 
-  // Create a FVTerm object as virtual terminal
-  terminal = new FVTerm(init);
-  xmax = terminal->getColumnNumber() - 1;
-  ymax = terminal->getLineNumber() - 1;
+  // Pointer to the global virtual terminal object
+  terminal = static_cast<FVTerm*>(&TermApp);
+
+  // Get screen dimension
+  xmax = TermApp.getColumnNumber() - 1;
+  ymax = TermApp.getLineNumber() - 1;
   FString line(xmax + 1, '-');
 
   // Place the cursor in the upper left corner
-  terminal->setTermXY(0,0);
+  TermApp.setTermXY(0,0);
   // Reset all terminal attributes
-  terminal->setNormal();
+  TermApp.setNormal();
   // Clear the screen
-  terminal->clearArea();
+  TermApp.clearArea();
 
   // Show the determined terminal name and text resolution
-  std::cout << "Terminal: " << terminal->getTermType() << "\r\n";
+  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
   std::cout << " Columns: 0.." << xmax << "\r\n";
   std::cout << "   Lines: 0.." << ymax << "\r\n";
 
@@ -202,7 +202,7 @@ int main (int argc, char* argv[])
 
   // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
-  terminal->printMoveDurations();
+  TermApp.printMoveDurations();
 
   // Waiting for keypress
   keyPressed();

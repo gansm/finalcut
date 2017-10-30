@@ -24,10 +24,7 @@
 #include <map>
 #include <fstream>
 
-#include <final/fapplication.h>
-#include <final/fdialog.h>
-#include <final/flistbox.h>
-#include <final/fmessagebox.h>
+#include <final/final.h>
 
 
 // Global application object

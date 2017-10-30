@@ -54,6 +54,10 @@
 #ifndef FMENU_H
 #define FMENU_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/fwindow.h"
 #include "final/fmenubar.h"
 #include "final/fmenulist.h"

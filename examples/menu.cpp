@@ -19,15 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 ************************************************************************/
 
-#include <final/fapplication.h>
-#include <final/fcheckmenuitem.h>
-#include <final/fdialog.h>
-#include <final/flabel.h>
-#include <final/fmenubar.h>
-#include <final/fmenu.h>
-#include <final/fmessagebox.h>
-#include <final/fradiomenuitem.h>
-#include <final/fstatusbar.h>
+#include <final/final.h>
 
 
 //----------------------------------------------------------------------

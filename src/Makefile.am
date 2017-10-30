@@ -4,7 +4,7 @@
 
 SUBDIRS = fonts
 
-AM_CPPFLAGS = -I../include -Wall -Werror
+AM_CPPFLAGS = -I../include -Wall -Werror -DCOMPILE_FINAL_CUT
 
 lib_LTLIBRARIES = libfinal.la
 

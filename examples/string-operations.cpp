@@ -20,7 +20,6 @@
 ************************************************************************/
 
 #include <langinfo.h>
-#include <term.h>
 #include <unistd.h>
 
 #include <clocale>
@@ -28,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include <final/fstring.h>
+#include <final/final.h>
 
 
 int main (int, char**)

@@ -30,6 +30,10 @@
 #ifndef FOPTIATTR_H
 #define FOPTIATTR_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <assert.h>
 #include <term.h>     // need for tparm
 

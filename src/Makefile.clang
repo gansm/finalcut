@@ -51,7 +51,7 @@ INCLUDE_HEADERS = \
 
 # compiler parameter
 CXX = clang++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -I../include
@@ -153,7 +153,7 @@ clean:
 	$(RM) $(LIB)* $(OBJS) .depend *.gch *.plist *~
 
 dep:
-	$(CXX) $(INCLUDES) -MM *.cpp >.depend
+	$(CXX) $(INCLUDES) -DCOMPILE_FINAL_CUT -MM *.cpp >.depend
 
 #
 # include .depend if it exists

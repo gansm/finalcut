@@ -52,6 +52,10 @@
 #ifndef FDIALOG_H
 #define FDIALOG_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/fmenu.h"
 #include "final/fmenuitem.h"
 #include "final/ftooltip.h"

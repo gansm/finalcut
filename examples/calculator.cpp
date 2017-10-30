@@ -26,9 +26,7 @@
 #include <map>
 #include <stack>
 
-#include <final/fapplication.h>
-#include <final/fdialog.h>
-#include <final/fmessagebox.h>
+#include <final/final.h>
 
 const lDouble PI = 3.141592653589793238L;
 

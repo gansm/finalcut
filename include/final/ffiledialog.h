@@ -57,6 +57,10 @@
 #ifndef FFILEDIALOG_H
 #define FFILEDIALOG_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include <sys/param.h>
 
 #include <dirent.h>
