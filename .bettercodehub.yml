@@ -1,0 +1,7 @@
+exclude:
+- /ltmain.sh
+component_depth: 1
+languages:
+- cpp
+- script
+
