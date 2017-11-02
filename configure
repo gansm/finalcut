@@ -16978,7 +16978,7 @@ SO_VERSION="3:0:3"
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/fonts/Makefile doc/Makefile examples/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile"
 
 
 # use GPM (General Purpose Mouse)
@@ -18196,7 +18196,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/fonts/Makefile") CONFIG_FILES="$CONFIG_FILES src/fonts/Makefile" ;;
+    "fonts/Makefile") CONFIG_FILES="$CONFIG_FILES fonts/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
 

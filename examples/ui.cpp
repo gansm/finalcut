@@ -271,6 +271,9 @@ class MyDialog : public FDialog
     MyDialog& operator = (const MyDialog&);
 
     // Method
+    void initMenu();
+    void initStatusBar();
+    void initWidgets();
     void adjustSize();
 
     // Event handlers
@@ -307,10 +310,22 @@ MyDialog::MyDialog (FWidget* parent)
   , myList()
   , clipboard()
 {
-  // menu bar
+  initMenu();       // Initialize the program menu
+  initStatusBar();  // Initialize the status bar
+  initWidgets();    // Initialize the dialog widgets
+}
+
+//----------------------------------------------------------------------
+MyDialog::~MyDialog()  // destructor
+{ }
+
+//----------------------------------------------------------------------
+void MyDialog::initMenu()
+{
+  // Menu bar
   FMenuBar* Menubar  = new FMenuBar (this);
 
-  // menu bar items
+  // Menu bar items
   FMenu* File        = new FMenu ("&File", Menubar);
   File->setStatusbarMessage ("File management commands");
   FMenu* Edit        = new FMenu ("&Edit", Menubar);
@@ -441,7 +456,42 @@ MyDialog::MyDialog (FWidget* parent)
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
     static_cast<FWidget::data_ptr>(File3)
   );
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initStatusBar()
+{
+  // Statusbar at the bottom
+  FStatusBar* statusbar = new FStatusBar (this);
+
+  // Statusbar keys
+  FStatusKey* key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
+  FStatusKey* key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
+  FStatusKey* key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
+
+  // Add some function callbacks
+  key_F1->addCallback
+  (
+    "activate",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_about)
+  );
+
+  key_F2->addCallback
+  (
+    "activate",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view)
+  );
+
+  key_F3->addCallback
+  (
+    "activate",
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+  );
+}
+
+//----------------------------------------------------------------------
+void MyDialog::initWidgets()
+{
   // Buttons
   FButton* MyButton1 = new FButton (this);
   MyButton1->setGeometry(3, 3, 5, 1);
@@ -553,13 +603,6 @@ MyDialog::MyDialog (FWidget* parent)
   sum_count->setGeometry(29, 5, 5, 3);
   *sum_count << myList->getCount();
 
-  // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar (this);
-  // Statusbar keys
-  FStatusKey* key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
-  FStatusKey* key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
-  FStatusKey* key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
-
   // Add some function callbacks
   MyButton1->addCallback
   (
@@ -624,29 +667,7 @@ MyDialog::MyDialog (FWidget* parent)
     F_METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
     static_cast<FWidget::data_ptr>(tagged_count)
   );
-
-  key_F1->addCallback
-  (
-    "activate",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_about)
-  );
-
-  key_F2->addCallback
-  (
-    "activate",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_view)
-  );
-
-  key_F3->addCallback
-  (
-    "activate",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
-  );
 }
-
-//----------------------------------------------------------------------
-MyDialog::~MyDialog()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
@@ -916,7 +937,7 @@ void MyDialog::cb_setInput (FWidget* widget, data_ptr data)
 
 int main (int argc, char* argv[])
 {
-  FString ver = F_VERSION;  // library version
+  FString ver = F_VERSION;  // Library version
   FString title = "The FINAL CUT " + ver + " (C) 2017 by Markus Gans";
 
   // Create the application object app
@@ -924,8 +945,13 @@ int main (int argc, char* argv[])
   app.setXTermDefaultColors(true);
   app.setXTermTitle (title);
 
+  // Force vt100 encoding
   //app.setEncoding("VT100");
+
+  // Sets the terminal size to 94×30
   //app.setTermSize(94,30);
+
+  // Enable the final cut graphical font
   //app.setNewFont();
 
   // Create main dialog object d

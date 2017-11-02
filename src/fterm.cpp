@@ -30,9 +30,9 @@
 #include "final/ftcap_map.h"
 
 #if defined(__linux__)
-  #include "fonts/newfont.h"
-  #include "fonts/unicodemap.h"
-  #include "fonts/vgafont.h"
+  #include "../fonts/newfont.h"
+  #include "../fonts/unicodemap.h"
+  #include "../fonts/vgafont.h"
 #endif
 
 // global FTerm object
@@ -1010,11 +1010,6 @@ const FString FTerm::getXTermColorName (int color)
 
   fd_set ifds;
   struct timeval tv;
-  int c = color;
-  int digits = 0;
-
-  while ( c /= 10 )
-    digits++;
 
   char temp[512] = {};
   putstringf (OSC "4;%d;?" BEL, color);  // get color

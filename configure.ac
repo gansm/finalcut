@@ -54,7 +54,7 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([Makefile src/Makefile src/fonts/Makefile doc/Makefile examples/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],

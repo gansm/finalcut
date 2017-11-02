@@ -1733,7 +1733,6 @@ bool FString::operator > (const char c) const
 //----------------------------------------------------------------------
 const FString& FString::insert (const FString& s, uInt pos)
 {
-  // assert (pos <= length);
   if ( pos >= length )
     throw std::out_of_range("");
 
@@ -1744,7 +1743,6 @@ const FString& FString::insert (const FString& s, uInt pos)
 //----------------------------------------------------------------------
 const FString& FString::insert (const wchar_t* s, uInt pos)
 {
-  // assert (pos <= length);
   if ( pos >= length )
     throw std::out_of_range("");
 

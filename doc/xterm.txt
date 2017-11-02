@@ -1,0 +1,20 @@
+Recommended settings for the xterm terminal emulator
+----------------------------------------------------
+
+The final cut can only support all xterm features if the following
+settings in the ~/.Xresources (or ~/.Xdefaults) resource file
+are defined:
+
+XTerm*termName:               xterm-256color
+
+*VT100.allowTcapOps:          true
+*VT100.allowWindowOps:        true
+*VT100.allowTitleOps:         true
+*VT100.allowFontOps:          true
+*VT100.metaSendsEscape:       true
+
+! Mouse cursor settings
+XTerm*pointerShape:           left_ptr
+XTerm*pointerColor:           #000000
+XTerm*pointerColorBackground: #eeeeee
+

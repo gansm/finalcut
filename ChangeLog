@@ -1,3 +1,6 @@
+2017-11-02  Markus Gans  <guru.mail@muenster.de>
+	* Move fonts into the root directory 
+
 2017-10-30  Markus Gans  <guru.mail@muenster.de>
 	* Fix scrollview functionality with new inheritance structure
 	* Add a standardized close confirmation dialog

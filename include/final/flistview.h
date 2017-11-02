@@ -86,34 +86,35 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    const char*      getClassName() const;
-    uInt             getColumnCount() const;
-    FString          getText (int) const;
-    uInt             getDepth() const;
+    const char*       getClassName() const;
+    uInt              getColumnCount() const;
+    FString           getText (int) const;
+    uInt              getDepth() const;
 
     // Mutator
-    void             setText (int, const FString&);
+    void              setText (int, const FString&);
+
 
     // Inquiry
-    bool             isExpand() const;
+    bool              isExpand() const;
 
     // Methods
-    FObjectIterator  insert (FListViewItem*);
-    FObjectIterator  insert (FListViewItem*, FObjectIterator);
-    void             expand();
-    void             collapse();
+    FObjectIterator   insert (FListViewItem*);
+    FObjectIterator   insert (FListViewItem*, FObjectIterator);
+    void              expand();
+    void              collapse();
 
   private:
     // Inquiry
-    bool             isExpandable() const;
+    bool              isExpandable() const;
 
     // Methods
-    FObjectIterator  appendItem (FListViewItem*);
-    void             replaceControlCodes();
-    int              getVisibleLines();
-    void             resetVisibleLineCounter();
+    FObjectIterator   appendItem (FListViewItem*);
+    void              replaceControlCodes();
+    int               getVisibleLines();
+    void              resetVisibleLineCounter();
 
-    // Data Member
+    // Data Members
     FStringList       column_list;
     FWidget::data_ptr data_pointer;
     int               visible_lines;

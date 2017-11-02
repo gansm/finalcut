@@ -2,8 +2,6 @@
 # Makefile.am  -  The Final Cut library
 #----------------------------------------------------------------------
 
-SUBDIRS = fonts
-
 AM_CPPFLAGS = -I../include -Wall -Werror -DCOMPILE_FINAL_CUT
 
 lib_LTLIBRARIES = libfinal.la

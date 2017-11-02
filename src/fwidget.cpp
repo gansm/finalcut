@@ -1504,10 +1504,8 @@ void FWidget::clearShadow()
   if ( isMonochron() )
     return;
 
-  int x1 = 1
-    , x2 = getWidth()
-    , y1 = 1
-    , y2 = getHeight();
+  int w = getWidth()
+    , h = getHeight();
 
   if ( isWindowWidget() )
   {
@@ -1517,18 +1515,18 @@ void FWidget::clearShadow()
   else if ( FWidget* p = getParentWidget() )
     setColor (wc.shadow_fg, p->getBackgroundColor());
 
-  if ( x2 <= offset.getX2() )
+  if ( w <= offset.getX2() )
   {
-    for (int i = 0; i < getHeight(); i++)
+    for (int i = 1; i <= getHeight(); i++)
     {
-      setPrintPos (x2 + 1, y1 + i);
+      setPrintPos (w + 1, i);
       print  (' ');  // clear █
     }
   }
 
-  if ( y2 <= offset.getY2() )
+  if ( h <= offset.getY2() )
   {
-    setPrintPos (x1 + 1, y2 + 1);
+    setPrintPos (2, h + 1);
 
     for (int i = 1; i <= getWidth(); i++)
       print (' ');  // clear ▀

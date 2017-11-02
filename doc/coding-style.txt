@@ -7,7 +7,7 @@ Formatting
 * A new line should begin after 72 (max. 80) characters
 * Use 2 spaces indent. Do not use tabs!
 * Leave a space after the keywords if, switch, while, do, for, and return
-* Use one blank line before and afte a for, if, switch, 
+* Use one blank line before and after a for, if, switch, 
   while, do..while code block
 * In parameter lists, leave a space after each comma
 

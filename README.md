@@ -9,7 +9,7 @@
 &#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
 
 ### Installation
-```
+```bash
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
 > ./configure --prefix=/usr
