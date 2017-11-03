@@ -1555,7 +1555,7 @@ void FListView::drawColumnLabels()
   first = h.begin() + xoffset;
 
   if ( int(h.size()) <= getClientWidth() )
-    last = h.end();// - 1;
+    last = h.end();
   else
   {
     int len = getClientWidth() + xoffset - 1;

@@ -114,7 +114,11 @@ SmallWindow::SmallWindow (FWidget* parent)
 //----------------------------------------------------------------------
 SmallWindow::~SmallWindow()
 {
+  // Remove own timer
   delOwnTimer();
+
+  // Remove all callbacks before Window::cb_destroyWindow() will be called
+  delCallbacks();
 }
 
 //----------------------------------------------------------------------
@@ -181,9 +185,9 @@ class Window : public FDialog
     // Typedef
     typedef struct
     {
-      bool     is_open;
+      bool is_open;
       FString* title;
-      FDialog* dgl;
+      SmallWindow* dgl;
     }
     win_data;
 
@@ -416,7 +420,7 @@ void Window::cb_createWindows (FWidget*, data_ptr)
     if ( ! (*iter)->is_open )
     {
       win_data* win_dat = *iter;
-      FDialog* win = new SmallWindow(this);
+      SmallWindow* win = new SmallWindow(this);
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(*(win_dat)->title);

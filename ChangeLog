@@ -1,3 +1,8 @@
+2017-11-03  Markus Gans  <guru.mail@muenster.de>
+	* Small NewFont improvements
+	* Fixed bug: The window example called a callback method after 
+	  the child data was deleted
+
 2017-11-02  Markus Gans  <guru.mail@muenster.de>
 	* Move fonts into the root directory 
 

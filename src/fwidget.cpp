@@ -114,6 +114,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
 FWidget::~FWidget()  // destructor
 {
   processDestroy();
+  delCallbacks();
   FApplication::removeQueuedEvent(this);
 
   // unset clicked widget
@@ -1003,7 +1004,7 @@ void FWidget::delCallback (FWidget* cb_instance)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::delCallbacks()
+void FWidget::delCallbacks()
 {
   // delete all callbacks from this widget
 
