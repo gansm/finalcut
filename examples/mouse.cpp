@@ -410,17 +410,33 @@ void MouseDraw::draw()
   int y_max = getHeight();
   FDialog::draw();
   setColor();
-  setPrintPos (10, 2);
-  print (wchar_t(fc::BoxDrawingsDownAndHorizontal));
-
-  for (int y = 3; y < y_max; y++)
+  
+  if ( isNewFont() )
   {
-    setPrintPos (10, y);
-    print (wchar_t(fc::BoxDrawingsVertical));
+    for (int y = 2; y < y_max; y++)
+    {
+      setPrintPos (10, y);
+      print (wchar_t(fc::NF_rev_border_line_right));
+    }
+
+    setPrintPos (10, y_max);
+    print (wchar_t(fc::NF_rev_border_corner_lower_right));
+  }
+  else
+  {
+    setPrintPos (10, 2);
+    print (wchar_t(fc::BoxDrawingsDownAndHorizontal));
+
+    for (int y = 3; y < y_max; y++)
+    {
+      setPrintPos (10, y);
+      print (wchar_t(fc::BoxDrawingsVertical));
+    }
+
+    setPrintPos (10, y_max);
+    print (wchar_t(fc::BoxDrawingsUpAndHorizontal));
   }
 
-  setPrintPos (10, y_max);
-  print (wchar_t(fc::BoxDrawingsUpAndHorizontal));
   drawCanvas();
 }
 

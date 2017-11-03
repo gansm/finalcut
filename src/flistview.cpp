@@ -733,7 +733,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_left:
       if ( xoffset == 0 )
       {
-        if ( item->isExpandable() && item->isExpand() )
+        if ( tree_view && item->isExpandable() && item->isExpand() )
         {
           // Collapse element
           item->collapse();
@@ -784,7 +784,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_right:
-      if ( item->isExpandable() && ! item->isExpand() )
+      if ( tree_view && item->isExpandable() && ! item->isExpand() )
       {
         // Expand element
         item->expand();
@@ -841,15 +841,21 @@ void FListView::onKeyPress (FKeyEvent* ev)
       break;
 
     case int('+'):
-      item->expand();
-      adjustSize();
-      ev->accept();
+      if ( tree_view && item->isExpandable() && ! item->isExpand() )
+      {
+        item->expand();
+        adjustSize();
+        ev->accept();
+      }
       break;
 
     case int('-'):
-      item->collapse();
-      adjustSize();
-      ev->accept();
+      if ( tree_view && item->isExpandable() && item->isExpand() )
+      {
+        item->collapse();
+        adjustSize();
+        ev->accept();
+      }
       break;
 
     default:
@@ -1093,7 +1099,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 
     FListViewItem* item = getCurrentItem();
 
-    if ( item->isExpandable() )
+    if ( tree_view && item->isExpandable() )
     {
       if ( item->isExpand() )
         item->collapse();
@@ -1549,7 +1555,7 @@ void FListView::drawColumnLabels()
   first = h.begin() + xoffset;
 
   if ( int(h.size()) <= getClientWidth() )
-    last = h.end() - 1;
+    last = h.end();// - 1;
   else
   {
     int len = getClientWidth() + xoffset - 1;

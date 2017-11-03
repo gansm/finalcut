@@ -4,13 +4,13 @@ Simply start your program with the parameter `--newfont`.
 
 ### How can I use the new graphical font under X11?
 
-The use of the new graphical font under X11 is only possible with 
+The use of the new graphical font under X11 is only possible with
 the terminal emulators 
 [xterm](http://invisible-island.net/xterm/xterm.html)
 or 
-[urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html), 
-because only these terminal emulators can change the font by 
-using an escape sequence.  For an xterm, the "[Allow Font Ops](doc/xterm.txt)" 
+[urxvt](http://software.schmorp.de/pkg/rxvt-unicode.html),
+because only these terminal emulators can change the font by
+using an escape sequence.  For an xterm, the "[Allow Font Ops](../doc/xterm.txt)"
 option must be set.
 
 #### Install the gzip compressed X11 pcf bitmap font 8x16graph.pcf.gz on your xserver:
@@ -18,7 +18,7 @@ option must be set.
 1. Create as user root the font directory<br />
 `mkdir /usr/share/fonts/X11/misc/finalcut/`
 
-2. Copy the files 8x16graph.pcf.gz, fonts.dir and fonts.alias 
+2. Copy the files 8x16graph.pcf.gz, fonts.dir and fonts.alias
 into the just created directory<br />
 `cp 8x16graph.pcf.gz fonts.dir fonts.alias /usr/share/fonts/X11/misc/finalcut/`
 

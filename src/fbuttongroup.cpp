@@ -71,7 +71,7 @@ FButtonGroup::~FButtonGroup()  // destructor
 
 // public methods of FButtonGroup
 //----------------------------------------------------------------------
-FToggleButton* FButtonGroup::getButton(int index) const
+FToggleButton* FButtonGroup::getButton (int index) const
 {
   constFObjectIterator iter;
   index--;
@@ -546,6 +546,7 @@ void FButtonGroup::drawLabel()
       i++;
       src++;
     }
+
     *dest++ = *src++;
   }
 

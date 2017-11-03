@@ -89,7 +89,8 @@ void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   // Set the toggle button geometry
 
-  int min_width = button_width + int(text.getLength());
+  int hotkey_mark = ( getHotkey() ) ? 1 : 0;
+  int min_width = button_width + int(text.getLength()) - hotkey_mark;
 
   if ( w < min_width )
     w = min_width;
@@ -199,7 +200,9 @@ bool FToggleButton::setChecked (bool on)
 void FToggleButton::setText (const FString& txt)
 {
   text = txt;
-  setWidth(button_width + int(text.getLength()));
+  int hotkey_mark = ( getHotkey() ) ? 1 : 0;
+
+  setWidth(button_width + int(text.getLength()) - hotkey_mark);
 
   if ( isEnabled() )
   {

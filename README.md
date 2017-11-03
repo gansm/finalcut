@@ -33,7 +33,8 @@ The C++ class design was inspired by the Qt framework. It provides common contro
 
 newfont
 -------
-A new text font for X11 and the Linux console.
+A [graphical text font](fonts/) for X11 and the Linux console.
+
 ![](doc/newfont1.png)
 
 ![](doc/newfont2.png)
@@ -204,3 +205,8 @@ Class digramm
                                                        └──┤ FRadioMenuItem ├---┘
                                                           └────────────────┘
 </pre>
+
+Please send bug reports to
+--------------------------
+https://github.com/gansm/finalcut/issues
+

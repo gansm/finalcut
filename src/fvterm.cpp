@@ -2737,9 +2737,17 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
     else if ( Encoding == fc::PC )
     {
       next_char->attr.bit.pc_charset = true;
-                                         // Character 0x00..0x1f
-      if ( isXTerminal() && hasUTF8() && ch_enc < 0x20 )
-        next_char->code = int(charEncode(code, fc::ASCII));
+
+      if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
+      {
+        if ( hasUTF8() )
+          next_char->code = int(charEncode(code, fc::ASCII));
+        else
+        {
+          next_char->code += 0x5f;
+          next_char->attr.bit.alt_charset = true;
+        }
+      }
     }
   }
 }
