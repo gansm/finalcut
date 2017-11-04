@@ -8,9 +8,9 @@ Name:		finalcut
 %define         libname libfinal
 %define         libsoname %{libname}0
 
-Version:	0.3.0
+Version:	0.4.0
 Release:	%{buildno}
-License:	GPL-3.0
+License:	LGPL-3.0
 Summary:	The Final Cut 
 Url:		https://github.com/gansm/finalcut/
 Group:		System/Libraries
@@ -137,6 +137,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{libname}.a
 
 %changelog
+* Sat Nov 04 2017 Markus Gans <guru.mail@muenster.de> - 0.4.0-1
+- Release (version 0.4.0)
+
 * Sat Nov 27 2016 Markus Gans <guru.mail@muenster.de> - 0.3.0-1
 - Release (version 0.3.0)
 

@@ -1,23 +1,24 @@
-/************************************************************************
-* flistview.cpp - Widget FListView and FListViewItem                    *
-*                                                                       *
-* This file is part of the Final Cut widget toolkit                     *
-*                                                                       *
-* Copyright 2017 Markus Gans                                            *
-*                                                                       *
-* The Final Cut is free software; you can redistribute it and/or modify *
-* it under the terms of the GNU General Public License as published by  *
-* the Free Software Foundation; either version 3 of the License, or     *
-* (at your option) any later version.                                   *
-*                                                                       *
-* The Final Cut is distributed in the hope that it will be useful,      *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-* GNU General Public License for more details.                          *
-*                                                                       *
-* You should have received a copy of the GNU General Public License     *
-* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
-************************************************************************/
+/***********************************************************************
+* flistview.cpp - Widget FListView and FListViewItem                   *
+*                                                                      *
+* This file is part of the Final Cut widget toolkit                    *
+*                                                                      *
+* Copyright 2017 Markus Gans                                           *
+*                                                                      *
+* The Final Cut is free software; you can redistribute it and/or       *
+* modify it under the terms of the GNU Lesser General Public License   *
+* as published by the Free Software Foundation; either version 3 of    *
+* the License, or (at your option) any later version.                  *
+*                                                                      *
+* The Final Cut is distributed in the hope that it will be useful,     *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+* GNU Lesser General Public License for more details.                  *
+*                                                                      *
+* You should have received a copy of the GNU Lesser General Public     *
+* License along with this program.  If not, see                        *
+* <http://www.gnu.org/licenses/>.                                      *
+***********************************************************************/
 
 #include <vector>
 
@@ -27,6 +28,8 @@
 #include "final/fstatusbar.h"
 #include "final/ftermbuffer.h"
 
+// Global null FObject iterator
+static FObject::FObjectIterator null_iter;
 
 //----------------------------------------------------------------------
 // class FListViewItem
@@ -151,7 +154,7 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
   if ( ! child )
-    return FObjectIterator(0);
+    return null_iter;
 
   return appendItem(child);
 }
@@ -160,8 +163,8 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
                                                , FObjectIterator parent_iter )
 {
-  if ( parent_iter == FObjectIterator(0) )
-    return FObjectIterator(0);
+  if ( parent_iter == null_iter )
+    return null_iter;
 
   if ( *parent_iter )
   {
@@ -179,7 +182,7 @@ FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
     }
   }
 
-  return FObjectIterator(0);
+  return null_iter;
 }
 
 //----------------------------------------------------------------------
@@ -583,8 +586,8 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
   FObjectIterator item_iter;
   headerItems::iterator header_iter;
 
-  if ( parent_iter == FObjectIterator(0) )
-    return FObjectIterator(0);
+  if ( parent_iter == null_iter )
+    return null_iter;
 
   // Determine the line width
   header_iter = header.begin();
@@ -633,10 +636,10 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
       item_iter = parent->appendItem (item);
     }
     else
-      item_iter = FObjectIterator(0);
+      item_iter = null_iter;
   }
   else
-    item_iter = FObjectIterator(0);
+    item_iter = null_iter;
 
   if ( itemlist.size() == 1 )
   {
@@ -658,20 +661,20 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 {
   FListViewItem* item;
 
-  if ( cols.empty() || parent_iter == FObjectIterator(0) )
-    return FObjectIterator(0);
+  if ( cols.empty() || parent_iter == null_iter )
+    return null_iter;
 
   if ( ! *parent_iter )
     parent_iter = root;
 
   try
   {
-    item = new FListViewItem (cols, d, FObjectIterator(0));
+    item = new FListViewItem (cols, d, null_iter);
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return FObjectIterator(0);
+    return null_iter;
   }
 
   item->replaceControlCodes();
@@ -1355,6 +1358,7 @@ void FListView::init()
 {
   selflist.push_back(this);
   root = selflist.begin();
+  null_iter = selflist.end();
 
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);

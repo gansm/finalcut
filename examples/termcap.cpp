@@ -1,23 +1,24 @@
-/************************************************************************
-* termcap.cpp - Show the used termcap variables                         *
-*                                                                       *
-* This file is part of the Final Cut widget toolkit                     *
-*                                                                       *
-* Copyright 2017 Markus Gans                                            *
-*                                                                       *
-* The Final Cut is free software; you can redistribute it and/or modify *
-* it under the terms of the GNU General Public License as published by  *
-* the Free Software Foundation; either version 3 of the License, or     *
-* (at your option) any later version.                                   *
-*                                                                       *
-* The Final Cut is distributed in the hope that it will be useful,      *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-* GNU General Public License for more details.                          *
-*                                                                       *
-* You should have received a copy of the GNU General Public License     *
-* along with this program.  If not, see <http://www.gnu.org/licenses/>. *
-************************************************************************/
+/***********************************************************************
+* termcap.cpp - Show the used termcap variables                        *
+*                                                                      *
+* This file is part of the Final Cut widget toolkit                    *
+*                                                                      *
+* Copyright 2017 Markus Gans                                           *
+*                                                                      *
+* The Final Cut is free software; you can redistribute it and/or       *
+* modify it under the terms of the GNU Lesser General Public License   *
+* as published by the Free Software Foundation; either version 3 of    *
+* the License, or (at your option) any later version.                  *
+*                                                                      *
+* The Final Cut is distributed in the hope that it will be useful,     *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+* GNU Lesser General Public License for more details.                  *
+*                                                                      *
+* You should have received a copy of the GNU Lesser General Public     *
+* License along with this program.  If not, see                        *
+* <http://www.gnu.org/licenses/>.                                      *
+***********************************************************************/
 
 #include <iomanip>
 #include <iostream>
@@ -71,9 +72,9 @@ void tcapString (const std::string& name, const char* cap_str)
 
   for (uInt i = 0; i < len; i++)
   {
-    char c = cap_str[i];
+    uChar c = uChar(cap_str[i]);
 
-    if ( c < 0 )
+    if ( c > 127 )
     {
       std::ostringstream o;
       o << std::oct << int(uChar(c));
