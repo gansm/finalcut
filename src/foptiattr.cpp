@@ -535,13 +535,13 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   detectSwitchOn (term, next);
   detectSwitchOff (term, next);
 
-  // look for no changes
-  if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
-    return 0;
-
   // Simulate invisible characters
   if ( ! F_enter_secure_mode.cap && next->attr.bit.invisible )
     next->code = ' ';
+
+  // look for no changes
+  if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
+    return 0;
 
   if ( cygwin_terminal && (term->fg_color > 7 || term->bg_color > 7) )
   {
