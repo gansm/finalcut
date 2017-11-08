@@ -539,6 +539,10 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
     return 0;
 
+  // Simulate invisible characters
+  if ( ! F_enter_secure_mode.cap && next->attr.bit.invisible )
+    next->code = ' ';
+
   if ( cygwin_terminal && (term->fg_color > 7 || term->bg_color > 7) )
   {
     // reset blink and bold mode from colors > 7
