@@ -47,11 +47,5 @@ matrix:
       - ./build.sh coverage
       - make V=1 -j10
     after_success:
-      - coveralls --gcov-options '\-lp' \
-          --exclude debian \
-          --exclude doc \
-          --exclude icon \
-          --exclude logo \
-          --exclude m4 \
-          --exclude scripts
+      - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts
 
