@@ -8,8 +8,6 @@ install:
   - uname -a
   - sudo apt-get update
   - sudo apt-get -y install autotools-dev automake autoconf autoconf-archive libtool libglib2.0-dev libncurses5-dev libgpm-dev gperf
-  - git clone git://github.com/gansm/finalcut.git
-  - cd finalcut
 
 env:
   global:
@@ -34,6 +32,8 @@ matrix:
         build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
+    script:
+      - autoreconf -v --install --force && ./configure --prefix=/usr && make -j10 && make check
 
   #
   # Coveralls
@@ -48,10 +48,10 @@ matrix:
       - make V=1 -j10
     after_success:
       - coveralls --gcov-options '\-lp' \
-          -exclude debian \
-          -exclude doc \
-          -exclude icon \
-          -exclude logo \
-          -exclude m4 \
-          -exclude scripts
+          --exclude debian \
+          --exclude doc \
+          --exclude icon \
+          --exclude logo \
+          --exclude m4 \
+          --exclude scripts
 
