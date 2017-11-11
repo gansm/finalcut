@@ -46,6 +46,8 @@ matrix:
     script:
       - ./build.sh coverage
       - make V=1 -j10
+      - echo input | examples/string-operations 
+      - examples/termcap
     after_success:
       - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts
 
