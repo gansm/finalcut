@@ -1,3 +1,6 @@
+2017-11-11  Markus Gans  <guru.mail@muenster.de>
+	* Improved code coverage tests
+
 2017-11-08  Markus Gans  <guru.mail@muenster.de>
 	* Simulate invisible characters on terminals that do not 
 	  support this attribute
