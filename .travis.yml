@@ -38,3 +38,23 @@ script:
 
 sudo: required
 
+  #
+  # Coveralls
+  #
+  - os: linux
+    env:
+      - TEST="Coveralls"
+    before_install:
+      - pip install --user cpp-coveralls
+    script:
+      - ./build.sh coverage
+      - make V=1 -j10
+    after_success:
+      - coveralls --gcov-options '\-lp' \
+          -exclude debian \
+          -exclude doc \
+          -exclude icon \
+          -exclude logo \
+          -exclude m4 \
+          -exclude scripts
+

@@ -81,4 +81,18 @@ then
                [LIBS="$LIBS -lprofiler"])
 fi
 
+# code coverage
+AC_ARG_WITH([gcov],
+            [AS_HELP_STRING([--with-gcov], [build for code coverage testing])],
+ 	    [with_gcov=yes],
+            [with_gcov=no])
+if test "x$with_gcov" = "xyes"
+then
+  AC_CHECK_LIB([gcov],
+               [main],
+               [LIBS="$LIBS -lgcov"])
+  AM_CXXFLAGS="-fprofile-arcs -ftest-coverage $AM_CXXFLAGS"
+  AC_SUBST([AM_CXXFLAGS])
+fi
+
 AC_OUTPUT

@@ -51,3 +51,6 @@ scrollview_SOURCES = scrollview.cpp
 windows_SOURCES = windows.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
+
+clean-local:
+	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete

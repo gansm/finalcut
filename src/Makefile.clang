@@ -150,7 +150,7 @@ uninstall: $(OBJS)
 
 .PHONY: clean dep
 clean:
-	$(RM) $(LIB)* $(OBJS) .depend *.gch *.plist *~
+	$(RM) $(LIB)* $(OBJS) .depend *.gcno *.gcda *.gch *.plist *~
 
 dep:
 	$(CXX) $(INCLUDES) -DCOMPILE_FINAL_CUT -MM *.cpp >.depend

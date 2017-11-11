@@ -36,5 +36,5 @@ profile:
 
 .PHONY: clean 
 clean:
-	$(RM) $(SRCS:%.cpp=%) *~
+	$(RM) $(SRCS:%.cpp=%) *.gcno *.gcda *~
 

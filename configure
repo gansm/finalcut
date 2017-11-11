@@ -633,6 +633,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+AM_CXXFLAGS
 LIBTOOL_DEPS
 SO_VERSION
 CXXCPP
@@ -769,6 +770,7 @@ with_sysroot
 enable_libtool_lock
 with_gpm
 with_profiler
+with_gcov
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1434,6 +1436,7 @@ Optional Packages:
                         (or the compiler's sysroot if not specified).
   --without-gpm           Disable GPM mouse support
   --with-profiler         build extra google profiler binaries
+  --with-gcov             build for code coverage testing
 
 Some influential environment variables:
   CC          C compiler command
@@ -17081,6 +17084,55 @@ $as_echo "$ac_cv_lib_profiler_ProfilerFlush" >&6; }
 if test "x$ac_cv_lib_profiler_ProfilerFlush" = xyes; then :
   LIBS="$LIBS -lprofiler"
 fi
+
+fi
+
+# code coverage
+
+# Check whether --with-gcov was given.
+if test "${with_gcov+set}" = set; then :
+  withval=$with_gcov; with_gcov=yes
+else
+  with_gcov=no
+fi
+
+if test "x$with_gcov" = "xyes"
+then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgcov" >&5
+$as_echo_n "checking for main in -lgcov... " >&6; }
+if ${ac_cv_lib_gcov_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgcov  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gcov_main=yes
+else
+  ac_cv_lib_gcov_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gcov_main" >&5
+$as_echo "$ac_cv_lib_gcov_main" >&6; }
+if test "x$ac_cv_lib_gcov_main" = xyes; then :
+  LIBS="$LIBS -lgcov"
+fi
+
+  AM_CXXFLAGS="-fprofile-arcs -ftest-coverage $AM_CXXFLAGS"
 
 fi
 

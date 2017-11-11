@@ -2,6 +2,9 @@
 
 #CXX="clang++"
 PREFIX="/usr"
+RED="\\033[0;31m"
+GREEN="\\033[0;32m"
+NORMAL="\\033[m"
 
 # Get number of logical processor cores
 if command -v getconf >/dev/null 2>&1
@@ -22,27 +25,51 @@ test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
 # Build commands
 case "$1" in
   "--release"|"release")
-    ./configure --prefix="$PREFIX"
+    if ! ./configure --prefix="$PREFIX"
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
   "--debug"|"debug")
-    ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
   "--fulldebug"|"fulldebug")
-    ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -Weffc++ -pedantic -pedantic-errors -Wextra -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wpadded -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -fstack-protector -Wstrict-aliasing -Wstrict-aliasing=3 -Wswitch -Wswitch-enum -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wsign-promo -Woverloaded-virtual -Wstrict-null-sentinel -fext-numeric-literals -Wreorder -Wnoexcept -Wnarrowing -Wliteral-suffix -Wctor-dtor-privacy"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -Weffc++ -pedantic -pedantic-errors -Wextra -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wpadded -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -fstack-protector -Wstrict-aliasing -Wstrict-aliasing=3 -Wswitch -Wswitch-enum -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wsign-promo -Woverloaded-virtual -Wstrict-null-sentinel -fext-numeric-literals -Wreorder -Wnoexcept -Wnarrowing -Wliteral-suffix -Wctor-dtor-privacy"
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
   "--profile"|"profile")
-    ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -pg -O0 -DDEBUG -W -Wall -pedantic"
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
   "--cpu-profiler"|"cpu-profiler")
-    ./configure --prefix="$PREFIX" --with-profiler
+    if ! ./configure --prefix="$PREFIX" --with-profiler
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
-  "--gcov"|"gcov")
-    ./configure --prefix="$PREFIX" CXXFLAGS="-fprofile-arcs -ftest-coverage"
+  "--coverage"|"coverage")
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-gcov
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
     ;;
 
   "--help"|"help"|*)
@@ -55,13 +82,21 @@ case "$1" in
     echo "  fulldebug     Compile with all warning options"
     echo "  profile       Compile with profile option (analysis with gprof)"
     echo "  cpu-profiler  Link with Google cpu performance profiler"
-    echo "  gcov          Compile with options for coverage analysis with gcov"
+    echo "  coverage      Compile with options for coverage analysis with gcov"
     echo "  help          Show this help"
-    exit 1
+    exit
     ;;
 esac
 
 JOBS="$((CPU_COUNT/2))"
 test "$JOBS" -eq 0 && JOBS=1
-make V=1 -j$JOBS
+
+if make V=1 -j$JOBS
+then
+  echo "${GREEN}Successful compiled${NORMAL}"
+else
+  echo "${RED}Error on compile!${NORMAL}" 1>&2
+  exit 1
+fi
+
 # make install

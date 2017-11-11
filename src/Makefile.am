@@ -100,6 +100,9 @@ finalcutinclude_HEADERS = \
 	../include/final/fwidget.h \
 	../include/final/fwindow.h
 
+clean-local:
+	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
+
 #uninstall:
 #	rm -R -f $(includedir)/final
 

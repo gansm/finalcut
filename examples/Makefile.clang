@@ -36,5 +36,5 @@ profile:
 
 .PHONY: clean
 clean:
-	$(RM) $(SRCS:%.cpp=%) *.gch *.plist *~
+	$(RM) $(SRCS:%.cpp=%) *.gcno *.gcda *.gch *.plist *~
 
