@@ -110,7 +110,8 @@ class FApplication : public FWidget
     static void        sendQueuedEvents ();
     static bool        eventInQueue();
     static bool        removeQueuedEvent (const FObject*);
-    static FWidget*    showParameterUsage (const int&, char*[]);
+    static FWidget*    processParameters (const int&, char*[]);
+    static void        showParameterUsage ();
     static void        closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
@@ -148,8 +149,7 @@ class FApplication : public FWidget
 
     // Methods
     void               init();
-    void               setExitMessage (std::string);
-    void               cmd_options();
+    static void        cmd_options (const int&, char*[]);
 
 #ifdef F_HAVE_LIBGPM
     int                gpmEvent (bool = true);

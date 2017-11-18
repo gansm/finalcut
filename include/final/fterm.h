@@ -260,8 +260,9 @@ class FTerm
     static void           resetBeep();
     static void           beep();
 
-    static void           setEncoding (std::string);
-    static std::string    getEncoding();
+    static void           setEncoding (fc::encoding);
+    static fc::encoding   getEncoding();
+    static std::string    getEncodingString();
 
     static bool           scrollTermForward();
     static bool           scrollTermReverse();
@@ -300,9 +301,6 @@ class FTerm
     static void           initFreeBSDConsoleCharMap();
 #endif
 
-    static void           initCygwinCharMap();
-    static void           initTeraTermCharMap();
-
     static bool           charEncodable (uInt);
     static uInt           charEncode (uInt);
     static uInt           charEncode (uInt, fc::encoding);
@@ -324,6 +322,7 @@ class FTerm
     static FPoint&        getMousePos();
     static void           setMousePos (const FPoint&);
     static void           setMousePos (short, short);
+    static void           exitWithMessage (std::string);
 
     // Data Members
     static int            stdin_no;
@@ -340,8 +339,32 @@ class FTerm
     static bool           cursor_optimisation;
     static bool           xterm_default_colors;
     static bool           use_alternate_screen;
-    static fc::encoding   Encoding;
+    static fc::encoding   term_encoding;
     static char           exit_message[8192];
+
+    static struct initializationValues
+    {
+      public:
+        initializationValues()
+        : terminal_detection(true)
+        , cursor_optimisation(true)
+        , color_change(true)
+        , vgafont(false)
+        , newfont(false)
+        , encoding(fc::UNKNOWN)
+        { }
+
+        ~initializationValues()
+        { }
+
+        uInt8 terminal_detection  : 1;
+        uInt8 cursor_optimisation : 1;
+        uInt8 color_change        : 1;
+        uInt8 vgafont             : 1;
+        uInt8 newfont             : 1;
+        uInt8                     : 3;  // padding bits
+        fc::encoding encoding;
+    } init_values;
 
   private:
     // Typedefs
@@ -418,6 +441,9 @@ class FTerm
 #endif
 
     static uInt           getBaudRate (const struct termios*);
+    static void           init_global_values();
+    static void           detectTerminal();
+    static void           termtypeAnalysis();
     static char*          init_256colorTerminal();
     static char*          parseAnswerbackMsg (char*&);
     static char*          parseSecDA (char*&);
@@ -425,11 +451,18 @@ class FTerm
     static void           oscPostfix();
     static void           init_alt_charset();
     static void           init_pc_charset();
+    static void           init_cygwin_charmap();
+    static void           init_teraterm_charmap();
     static void           init_termcaps();
+    static void           init_locale();
     static void           init_encoding();
+    static void           redefineColorPalette();
+    static void           restoreColorPalette();
     void                  init();
     void                  finish();
     static uInt           cp437_to_unicode (uChar);
+    static void           setSignalHandler();
+    static void           resetSignalHandler();
     static void           signal_handler (int);
 
     // Data Members

@@ -114,7 +114,7 @@ FPoint*  FTerm::mouse        = 0;
 FRect*   FTerm::term         = 0;
 
 char                   FTerm::exit_message[8192]        = "";
-fc::encoding           FTerm::Encoding;
+fc::encoding           FTerm::term_encoding;
 const FString*         FTerm::xterm_font                = 0;
 const FString*         FTerm::xterm_title               = 0;
 const FString*         FTerm::answer_back               = 0;
@@ -136,6 +136,7 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
+FTerm::initializationValues FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 
@@ -175,12 +176,7 @@ FTerm::FTerm (bool disable_alt_screen)
 FTerm::~FTerm()  // destructor
 {
   if ( init_term_object == this )
-  {
     finish();
-
-    if ( exit_message[0] )
-      std::fprintf (stderr, "Warning: %s\n", exit_message);
-  }
 }
 
 
@@ -607,7 +603,7 @@ bool FTerm::setVGAFont()
     std::fflush(stdout);
     NewFont = false;
     pc_charset_console = true;
-    Encoding = fc::PC;
+    term_encoding = fc::PC;
 
     if ( xterm_terminal && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
@@ -644,7 +640,7 @@ bool FTerm::setVGAFont()
       VGAFont = false;
 
     pc_charset_console = true;
-    Encoding = fc::PC;
+    term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;
   }
 #endif
@@ -678,7 +674,7 @@ bool FTerm::setNewFont()
     oscPostfix();
     std::fflush(stdout);
     pc_charset_console = true;
-    Encoding = fc::PC;
+    term_encoding = fc::PC;
 
     if ( xterm_terminal && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
@@ -715,7 +711,7 @@ bool FTerm::setNewFont()
     }
 
     pc_charset_console = true;
-    Encoding = fc::PC;
+    term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
 #endif
@@ -1370,6 +1366,8 @@ void FTerm::resetColorMap()
 //----------------------------------------------------------------------
 void FTerm::setPalette (short index, int r, int g, int b)
 {
+  // Redefine the color palette
+
   char*& Ic = TCAP(fc::t_initialize_color);
   char*& Ip = TCAP(fc::t_initialize_pair);
 
@@ -1451,28 +1449,20 @@ void FTerm::beep()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setEncoding (std::string enc)
+void FTerm::setEncoding (fc::encoding enc)
 {
-  std::map<std::string,fc::encoding>::const_iterator it;
+  if ( FTermcap::no_utf8_acs_chars && isUTF8() && enc == fc::VT100 )
+    enc = fc::UTF8;
 
-  if ( FTermcap::no_utf8_acs_chars && isUTF8() && enc == "VT100" )
-    enc = "UTF8";
+  term_encoding = enc;
 
-  // available encodings: "UTF8", "VT100", "PC" and "ASCII"
-  it = encoding_set->find(enc);
-
-  if ( it == encoding_set->end() )  // not found
-    return;
-
-  Encoding = it->second;
-
-  assert ( Encoding == fc::UTF8
-          || Encoding == fc::VT100
-          || Encoding == fc::PC
-          || Encoding == fc::ASCII );
+  assert ( term_encoding == fc::UTF8
+          || term_encoding == fc::VT100
+          || term_encoding == fc::PC
+          || term_encoding == fc::ASCII );
 
   // set the new Fputchar function pointer
-  switch ( int(Encoding) )
+  switch ( term_encoding )
   {
     case fc::UTF8:
       Fputchar = &FTerm::putchar_UTF8;
@@ -1493,7 +1483,7 @@ void FTerm::setEncoding (std::string enc)
 
   if ( linux_terminal )
   {
-    if ( Encoding == fc::VT100 || Encoding == fc::PC )
+    if ( term_encoding == fc::VT100 || term_encoding == fc::PC )
     {
       char* empty = 0;
       opti_move->set_tabular (empty);
@@ -1504,13 +1494,19 @@ void FTerm::setEncoding (std::string enc)
 }
 
 //----------------------------------------------------------------------
-std::string FTerm::getEncoding()
+fc::encoding FTerm::getEncoding()
+{
+  return term_encoding;
+}
+
+//----------------------------------------------------------------------
+std::string FTerm::getEncodingString()
 {
   std::map<std::string,fc::encoding>::const_iterator it, end;
   end = encoding_set->end();
 
   for (it = encoding_set->begin(); it != end; ++it )
-    if ( it->second == Encoding )
+    if ( it->second == term_encoding )
       return it->first;
 
   return "";
@@ -1776,36 +1772,6 @@ void FTerm::initFreeBSDConsoleCharMap()
 #endif
 
 //----------------------------------------------------------------------
-void FTerm::initCygwinCharMap()
-{
-  // Replace don't printable characters in a Cygwin terminal
-
-  if ( ! cygwin_terminal )
-    return;
-
-  for (int i = 0; i <= lastCharItem; i++ )
-  {
-    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle      // ▲
-        || character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
-        || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
-      character[i][fc::PC] = character[i][fc::ASCII];
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::initTeraTermCharMap()
-{
-  // Tera Term can't print ascii characters < 0x20
-
-  if ( ! tera_terminal )
-    return;
-
-  for (int i = 0; i <= lastCharItem; i++ )
-    if ( character[i][fc::PC] < 0x20 )
-      character[i][fc::PC] = character[i][fc::ASCII];
-}
-
-//----------------------------------------------------------------------
 bool FTerm::charEncodable (uInt c)
 {
   uInt ch = charEncode(c);
@@ -1815,7 +1781,7 @@ bool FTerm::charEncodable (uInt c)
 //----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c)
 {
-  return charEncode (c, Encoding);
+  return charEncode (c, term_encoding);
 }
 
 //----------------------------------------------------------------------
@@ -1924,6 +1890,28 @@ bool FTerm::gpmMouse (bool on)
   return on;
 }
 #endif  // F_HAVE_LIBGPM
+
+//----------------------------------------------------------------------
+void FTerm::exitWithMessage (std::string message)
+{
+  // Set the exit_message for the atexit-handler
+  snprintf ( exit_message
+           , sizeof(exit_message)
+           , "%s"
+           , message.c_str() );
+
+  // Exit the programm
+  if ( init_term_object )
+    init_term_object->finish();
+
+  std::fflush (stderr);
+  std::fflush (stdout);
+
+  if ( exit_message[0] )
+    std::fprintf (stderr, "Warning: %s\n", exit_message);
+
+  exit (EXIT_FAILURE);
+}
 
 
 // private methods of FTerm
@@ -2435,7 +2423,6 @@ void FTerm::initLinuxConsole()
 {
   // initialize Linux console
 
-  fd_tty = -1;
   screen_unicode_map.entries = 0;
   screen_font.data = 0;
 
@@ -2604,6 +2591,208 @@ uInt FTerm::getBaudRate (const struct termios* termios_p)
   outspeed[B230400] = 230400;  // 230,400 baud
 
   return outspeed[cfgetospeed(termios_p)];
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_global_values()
+{
+  // Initialize global values
+
+  // Teletype (tty) file descriptor is still undefined
+  fd_tty = -1;
+
+  // Preset to false
+  utf8_console            = \
+  utf8_input              = \
+  utf8_state              = \
+  utf8_linux_terminal     = \
+  pc_charset_console      = \
+  vt100_console           = \
+  NewFont                 = \
+  VGAFont                 = \
+  no_shadow_character     = \
+  no_half_block_character = \
+  ascii_console           = \
+  mouse_support           = \
+  decscusr_support        = \
+  force_vt100             = \
+  tera_terminal           = \
+  kterm_terminal          = \
+  gnome_terminal          = \
+  kde_konsole             = \
+  ansi_terminal           = \
+  rxvt_terminal           = \
+  urxvt_terminal          = \
+  mlterm_terminal         = \
+  mintty_terminal         = \
+  openbsd_terminal        = \
+  screen_terminal         = \
+  tmux_terminal           = \
+  xterm_default_colors    = false;
+
+  // Preset to true
+  cursor_optimisation     = \
+  terminal_detection      = true;
+
+  // assertion: programm start in cooked mode
+  raw_mode                = \
+  input_data_pending      = \
+  non_blocking_stdin      = false;
+
+  // init arrays with '\0'
+  std::fill_n (exit_message, sizeof(exit_message), '\0');
+}
+
+//----------------------------------------------------------------------
+void FTerm::detectTerminal()
+{
+  // Terminal detection
+
+  char* new_termtype = 0;
+
+  if ( ! terminal_detection )
+  {
+    struct termios t;
+    tcgetattr (stdin_no, &t);
+    t.c_cc[VTIME] = 1;  // Timeout in deciseconds
+    t.c_cc[VMIN]  = 0;  // Minimum number of characters
+    tcsetattr (stdin_no, TCSANOW, &t);
+  }
+  else
+  {
+    struct termios t;
+    tcgetattr (stdin_no, &t);
+    t.c_lflag &= uInt(~(ICANON | ECHO));
+    t.c_cc[VTIME] = 1;  // Timeout in deciseconds
+    t.c_cc[VMIN]  = 0;  // Minimum number of characters
+    tcsetattr (stdin_no, TCSANOW, &t);
+
+    // Initialize 256 colors terminals
+    new_termtype = init_256colorTerminal();
+
+    // Identify the terminal via the answerback-message
+    new_termtype = parseAnswerbackMsg (new_termtype);
+
+    // Identify the terminal via the secondary device attributes (SEC_DA)
+    new_termtype = parseSecDA (new_termtype);
+
+    // Determine xterm maximum number of colors via OSC 4
+    if ( ! color256
+        && ! cygwin_terminal
+        && ! tera_terminal
+        && ! linux_terminal
+        && ! netbsd_terminal
+        && ! getXTermColorName(0).isEmpty() )
+    {
+      if ( ! getXTermColorName(256).isEmpty() )
+      {
+        if ( putty_terminal )
+          new_termtype = const_cast<char*>("putty-256color");
+        else
+          new_termtype = const_cast<char*>("xterm-256color");
+      }
+      else if ( ! getXTermColorName(87).isEmpty() )
+      {
+        new_termtype = const_cast<char*>("xterm-88color");
+      }
+      else if ( ! getXTermColorName(15).isEmpty() )
+      {
+        new_termtype = const_cast<char*>("xterm-16color");
+      }
+    }
+
+    if ( cygwin_terminal
+        || putty_terminal
+        || tera_terminal
+        || rxvt_terminal )
+    {
+      FTermcap::max_color = 16;
+    }
+
+  #if defined(__linux__)
+    if ( linux_terminal && openConsole() == 0 )
+    {
+      if ( isLinuxConsole() )
+      {
+        if ( setBlinkAsIntensity(true) == 0 )
+          FTermcap::max_color = 16;
+        else
+          FTermcap::max_color = 8;
+      }
+
+      closeConsole();
+      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
+    }
+
+    if ( linux_terminal && getFramebuffer_bpp() >= 4 )
+      FTermcap::max_color = 16;
+  #endif
+
+  #if defined(__FreeBSD__) || defined(__DragonFly__)
+    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
+  #endif
+
+    t.c_lflag |= uInt(ICANON | ECHO);
+    tcsetattr(stdin_no, TCSADRAIN, &t);
+  }
+
+  //
+  // Additional termtype analysis
+  //
+
+  // Test if the terminal is a xterm
+  if ( std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
+      || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
+  {
+    xterm_terminal = true;
+
+    // Each xterm should be able to use at least 16 colors
+    if ( ! new_termtype && std::strlen(termtype) == 5 )
+      new_termtype = const_cast<char*>("xterm-16color");
+  }
+  else
+    xterm_terminal = false;
+
+  // set the new environment variable TERM
+  if ( new_termtype )
+  {
+    setenv(const_cast<char*>("TERM"), new_termtype, 1);
+    std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::termtypeAnalysis()
+{
+  // Cygwin console
+  if ( std::strncmp(termtype, "cygwin", 6) == 0 )
+    cygwin_terminal = true;
+  else
+    cygwin_terminal = false;
+
+  // rxvt terminal emulator (native MS Window System port) on cygwin
+  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+    rxvt_terminal = true;
+
+  // Ansi terminal
+  if ( std::strncmp(termtype, "ansi", 4) == 0 )
+  {
+    terminal_detection = false;
+    ansi_terminal = true;
+  }
+
+  // Linux console
+  if ( std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0
+      || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+    linux_terminal = true;
+  else
+    linux_terminal = false;
+
+  // NetBSD workstation console
+  if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
+    netbsd_terminal = true;
+  else
+    netbsd_terminal = false;
 }
 
 //----------------------------------------------------------------------
@@ -3047,6 +3236,36 @@ void FTerm::init_pc_charset()
 
   if ( reinit )
     opti_attr->init();
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_cygwin_charmap()
+{
+  // Replace don't printable characters in a Cygwin terminal
+
+  if ( ! cygwin_terminal )
+    return;
+
+  for (int i = 0; i <= lastCharItem; i++ )
+  {
+    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle      // ▲
+        || character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
+        || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
+      character[i][fc::PC] = character[i][fc::ASCII];
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_teraterm_charmap()
+{
+  // Tera Term can't print ascii characters < 0x20
+
+  if ( ! tera_terminal )
+    return;
+
+  for (int i = 0; i <= lastCharItem; i++ )
+    if ( character[i][fc::PC] < 0x20 )
+      character[i][fc::PC] = character[i][fc::ASCII];
 }
 
 //----------------------------------------------------------------------
@@ -3621,18 +3840,64 @@ void FTerm::init_termcaps()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_locale()
+{
+  // Init current locale
+  locale_name = std::setlocale (LC_ALL, "");
+  locale_name = std::setlocale (LC_NUMERIC, "");
+
+  // Get XTERM_LOCALE
+  locale_xterm = std::getenv("XTERM_LOCALE");
+
+  // set LC_ALL to XTERM_LOCALE
+  if ( locale_xterm )
+    locale_name = std::setlocale (LC_ALL, locale_xterm);
+
+  // TeraTerm can not show UTF-8 character
+  if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
+  // Try to found a meaningful content for locale_name
+  if ( locale_name )
+    locale_name = std::setlocale (LC_CTYPE, 0);
+  else
+  {
+    locale_name = std::getenv("LC_ALL");
+
+    if ( ! locale_name )
+    {
+      locale_name = std::getenv("LC_CTYPE");
+
+      if ( ! locale_name )
+        locale_name = std::getenv("LANG");
+    }
+  }
+
+  // Fallback to C
+  if ( ! locale_name )
+    locale_name = const_cast<char*>("C");
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_encoding()
 {
   // detect encoding and set the Fputchar function pointer
 
+  // Define the encoding set
+  (*encoding_set)["UTF8"]  = fc::UTF8;
+  (*encoding_set)["UTF-8"] = fc::UTF8;
+  (*encoding_set)["VT100"] = fc::VT100;
+  (*encoding_set)["PC"]    = fc::PC;
+  (*encoding_set)["ASCII"] = fc::ASCII;
+
   if ( isatty(stdout_no)
       && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
-    utf8_console = true;
-    Encoding = fc::UTF8;
-    Fputchar = &FTerm::putchar_UTF8;  // function pointer
-    utf8_state = true;
-    utf8_input = true;
+    utf8_console  = true;
+    term_encoding = fc::UTF8;
+    Fputchar      = &FTerm::putchar_UTF8;  // function pointer
+    utf8_state    = true;
+    utf8_input    = true;
     setUTF8(true);
   }
   else if ( isatty(stdout_no)
@@ -3640,14 +3905,14 @@ void FTerm::init_encoding()
            && (TCAP(fc::t_exit_alt_charset_mode) != 0) )
   {
     vt100_console = true;
-    Encoding = fc::VT100;
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    term_encoding = fc::VT100;
+    Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
   else
   {
     ascii_console = true;
-    Encoding = fc::ASCII;
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    term_encoding = fc::ASCII;
+    Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
 
   init_pc_charset();
@@ -3659,8 +3924,8 @@ void FTerm::init_encoding()
       || (tera_terminal && ! utf8_state) )
   {
     pc_charset_console = true;
-    Encoding = fc::PC;
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    term_encoding      = fc::PC;
+    Fputchar           = &FTerm::putchar_ASCII;  // function pointer
 
     if ( linux_terminal && utf8_console )
     {
@@ -3676,14 +3941,14 @@ void FTerm::init_encoding()
   if ( force_vt100 )
   {
     vt100_console = true;
-    Encoding = fc::VT100;
-    Fputchar = &FTerm::putchar_ASCII;  // function pointer
+    term_encoding = fc::VT100;
+    Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
 
   // In some alternative character sets, a tab character prints a '○'
   // on the terminal and does not move the cursor to the next tab stop
   // position
-  if ( Encoding == fc::VT100 || Encoding == fc::PC )
+  if ( term_encoding == fc::VT100 || term_encoding == fc::PC )
   {
     char* empty = 0;
     opti_move->set_tabular (empty);
@@ -3691,12 +3956,58 @@ void FTerm::init_encoding()
 }
 
 //----------------------------------------------------------------------
+void FTerm::redefineColorPalette()
+{
+  if ( FTermcap::max_color >= 16
+      && ! cygwin_terminal
+      && ! kde_konsole
+      && ! tera_terminal
+      && ! ansi_terminal )
+  {
+    resetColorMap();
+    saveColorMap();
+
+    setPalette (fc::Black, 0x00, 0x00, 0x00);
+    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
+    setPalette (fc::Green, 0x18, 0x78, 0x18);
+    setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
+    setPalette (fc::Red, 0xb2, 0x18, 0x18);
+    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+    setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
+    setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
+    setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
+    setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
+    setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
+    setPalette (fc::LightRed, 0xed, 0x57, 0x31);
+    setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
+    setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
+    setPalette (fc::White, 0xff, 0xff, 0xff);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::restoreColorPalette()
+{
+  if ( FTermcap::max_color >= 16
+      && ! (kde_konsole || tera_terminal || ansi_terminal) )
+  {
+    // Reset screen settings
+    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+    setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
+    setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
+    setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
+    setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
+
+    resetXTermColors();
+    resetColorMap();
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::init()
 {
-  char* new_termtype = 0;
-  term_initialized = true;
   init_term_object = this;
-  fd_tty = -1;
 
   try
   {
@@ -3713,56 +4024,17 @@ void FTerm::init()
     std::abort();
   }
 
-  // Define the encoding set
-  (*encoding_set)["UTF8"]  = fc::UTF8;
-  (*encoding_set)["UTF-8"] = fc::UTF8;
-  (*encoding_set)["VT100"] = fc::VT100;
-  (*encoding_set)["PC"]    = fc::PC;
-  (*encoding_set)["ASCII"] = fc::ASCII;
+  // Initialize global values for all objects
+  init_global_values();
 
-  // Preset to false
-  utf8_console            = \
-  utf8_input              = \
-  utf8_state              = \
-  utf8_linux_terminal     = \
-  pc_charset_console      = \
-  vt100_console           = \
-  NewFont                 = \
-  VGAFont                 = \
-  no_shadow_character     = \
-  no_half_block_character = \
-  ascii_console           = \
-  mouse_support           = \
-  decscusr_support        = \
-  force_vt100             = \
-  tera_terminal           = \
-  kterm_terminal          = \
-  gnome_terminal          = \
-  kde_konsole             = \
-  ansi_terminal           = \
-  rxvt_terminal           = \
-  urxvt_terminal          = \
-  mlterm_terminal         = \
-  mintty_terminal         = \
-  openbsd_terminal        = \
-  screen_terminal         = \
-  tmux_terminal           = \
-  xterm_default_colors    = false;
+  if ( ! init_values.terminal_detection )
+    terminal_detection = false;
 
-  // Preset to true
-  cursor_optimisation     = \
-  terminal_detection      = true;
-
-  // assertion: programm start in cooked mode
-  raw_mode                = \
-  input_data_pending      = \
-  non_blocking_stdin      = false;
-
-  // init arrays with '\0'
-  std::fill_n (exit_message, sizeof(exit_message), '\0');
-
+  // Get file descriptor for standard input and standard output
   stdin_no  = fileno(stdin);
   stdout_no = fileno(stdout);
+
+  // Get the stdin file status flags
   stdin_status_flags = fcntl(stdin_no, F_GETFL);
 
   if ( stdin_status_flags == -1 )
@@ -3799,173 +4071,24 @@ void FTerm::init()
   // Set the variable 'termtype' to the predefined type of the terminal
   getSystemTermType();
 
-  if ( std::strncmp(termtype, "cygwin", 6) == 0 )
-    cygwin_terminal = true;
-  else
-    cygwin_terminal = false;
-
-  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    rxvt_terminal = true;
-
-  if ( std::strncmp(termtype, "ansi", 4) == 0 )
-  {
-    terminal_detection = false;
-    ansi_terminal = true;
-  }
-
-  // Test for Linux console
-  if ( std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-      || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
-    linux_terminal = true;
-  else
-    linux_terminal = false;
-
-  // Test for NetBSD workstation console
-  if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
-    netbsd_terminal = true;
-  else
-    netbsd_terminal = false;
+  // Analysis the termtype
+  termtypeAnalysis();
 
   // Terminal detection
-  if ( terminal_detection )
-  {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-    t.c_lflag &= uInt(~(ICANON | ECHO));
-    t.c_cc[VTIME] = 1;  // Timeout in deciseconds
-    t.c_cc[VMIN]  = 0;  // Minimum number of characters
-    tcsetattr (stdin_no, TCSANOW, &t);
-
-    // Initialize 256 colors terminals
-    new_termtype = init_256colorTerminal();
-
-    // Identify the terminal via the answerback-message
-    new_termtype = parseAnswerbackMsg (new_termtype);
-
-    // Identify the terminal via the secondary device attributes (SEC_DA)
-    new_termtype = parseSecDA (new_termtype);
-
-    // Determine xterm maximum number of colors via OSC 4
-    if ( ! color256
-        && ! cygwin_terminal
-        && ! tera_terminal
-        && ! linux_terminal
-        && ! netbsd_terminal
-        && ! getXTermColorName(0).isEmpty() )
-    {
-      if ( ! getXTermColorName(256).isEmpty() )
-      {
-        if ( putty_terminal )
-          new_termtype = const_cast<char*>("putty-256color");
-        else
-          new_termtype = const_cast<char*>("xterm-256color");
-      }
-      else if ( ! getXTermColorName(87).isEmpty() )
-      {
-        new_termtype = const_cast<char*>("xterm-88color");
-      }
-      else if ( ! getXTermColorName(15).isEmpty() )
-      {
-        new_termtype = const_cast<char*>("xterm-16color");
-      }
-    }
-
-    if ( cygwin_terminal
-        || putty_terminal
-        || tera_terminal
-        || rxvt_terminal )
-    {
-      FTermcap::max_color = 16;
-    }
-
-#if defined(__linux__)
-    if ( linux_terminal && openConsole() == 0 )
-    {
-      if ( isLinuxConsole() )
-      {
-        if ( setBlinkAsIntensity(true) == 0 )
-          FTermcap::max_color = 16;
-        else
-          FTermcap::max_color = 8;
-      }
-
-      closeConsole();
-      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
-    }
-
-    if ( linux_terminal && getFramebuffer_bpp() >= 4 )
-      FTermcap::max_color = 16;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
-#endif
-
-    t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr(stdin_no, TCSADRAIN, &t);
-  }
-
-  // Test if the terminal is a xterm
-  if ( std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-      || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
-  {
-    xterm_terminal = true;
-
-    // Each xterm should be able to use at least 16 colors
-    if ( ! new_termtype && std::strlen(termtype) == 5 )
-      new_termtype = const_cast<char*>("xterm-16color");
-  }
-  else
-    xterm_terminal = false;
-
-  // set the new environment variable TERM
-  if ( new_termtype )
-  {
-    setenv(const_cast<char*>("TERM"), new_termtype, 1);
-    std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
-  }
+  detectTerminal();
 
   // Initializes variables for the current terminal
   init_termcaps();
   init_alt_charset();
 
-  // init current locale
-  locale_name = std::setlocale (LC_ALL, "");
-  locale_name = std::setlocale (LC_NUMERIC, "");
-
-  // get XTERM_LOCALE
-  locale_xterm = std::getenv("XTERM_LOCALE");
-
-  // set LC_ALL to XTERM_LOCALE
-  if ( locale_xterm )
-    locale_name = std::setlocale (LC_ALL, locale_xterm);
-
-  // TeraTerm can not show UTF-8 character
-  if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
-    locale_name = std::setlocale (LC_ALL, "C");
-
-  // try to found a meaningful content for locale_name
-  if ( locale_name )
-    locale_name = std::setlocale (LC_CTYPE, 0);
-  else
-  {
-    locale_name = std::getenv("LC_ALL");
-
-    if ( ! locale_name )
-    {
-      locale_name = std::getenv("LC_CTYPE");
-
-      if ( ! locale_name )
-        locale_name = std::getenv("LANG");
-    }
-  }
-
-  // Fallback to C
-  if ( ! locale_name )
-    locale_name = const_cast<char*>("C");
+  // Initializes locale information
+  init_locale();
 
   // Detect environment and set encoding
   init_encoding();
+
+  if ( init_values.encoding != fc::UNKNOWN )
+    setEncoding(init_values.encoding);
 
 #ifdef F_HAVE_LIBGPM
 
@@ -4031,111 +4154,89 @@ void FTerm::init()
     setKDECursor(fc::UnderlineCursor);
 
   if ( cygwin_terminal )
-    initCygwinCharMap();
+    init_cygwin_charmap();
 
   if ( tera_terminal )
-    initTeraTermCharMap();
+    init_teraterm_charmap();
 
-  if ( FTermcap::max_color >= 16
-      && ! cygwin_terminal
-      && ! kde_konsole
-      && ! tera_terminal
-      && ! ansi_terminal )
-  {
-    resetColorMap();
-    saveColorMap();
-
-    setPalette (fc::Black, 0x00, 0x00, 0x00);
-    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-    setPalette (fc::Green, 0x18, 0x78, 0x18);
-    setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
-    setPalette (fc::Red, 0xb2, 0x18, 0x18);
-    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-    setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
-    setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
-    setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
-    setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
-    setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-    setPalette (fc::LightRed, 0xed, 0x57, 0x31);
-    setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
-    setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
-    setPalette (fc::White, 0xff, 0xff, 0xff);
-  }
+  // Redefine the color palette
+  if ( init_values.color_change )
+    redefineColorPalette();
 
   // set 200 Hz beep (100 ms)
   setBeep(200, 100);
 
-  signal(SIGTERM,  FTerm::signal_handler);  // Termination signal
-  signal(SIGQUIT,  FTerm::signal_handler);  // Quit from keyboard (Ctrl-\)
-  signal(SIGINT,   FTerm::signal_handler);  // Keyboard interrupt (Ctrl-C)
-  signal(SIGABRT,  FTerm::signal_handler);  // Abort signal from abort(3)
-  signal(SIGILL,   FTerm::signal_handler);  // Illegal Instruction
-  signal(SIGSEGV,  FTerm::signal_handler);  // Invalid memory reference
-  signal(SIGWINCH, FTerm::signal_handler);  // Window resize signal
+  // Set FTerm signal handler
+  setSignalHandler();
+
+  if ( ! init_values.cursor_optimisation )
+    setCursorOptimisation (false);
+
+  if ( init_values.vgafont )
+  {
+    bool ret = setVGAFont();
+
+    if ( ! ret )
+      exitWithMessage ("VGAfont is not supported by this terminal");
+  }
+
+  if ( init_values.newfont )
+  {
+    bool ret = setNewFont();
+
+    if ( ! ret )
+      exitWithMessage ("Newfont is not supported by this terminal");
+  }
 
   // turn off hardware echo
   noHardwareEcho();
 
   // switch to the raw mode
   setRawMode();
+
+  // The terminal is now initialized
+  term_initialized = true;
 }
 
 //----------------------------------------------------------------------
 void FTerm::finish()
 {
-  // set default signal handler
-  signal(SIGWINCH, SIG_DFL);  // Window resize signal
-  signal(SIGSEGV,  SIG_DFL);  // Invalid memory reference
-  signal(SIGILL,   SIG_DFL);  // Illegal Instruction
-  signal(SIGABRT,  SIG_DFL);  // Abort signal from abort(3)
-  signal(SIGINT,   SIG_DFL);  // Keyboard interrupt (Ctrl-C)
-  signal(SIGQUIT,  SIG_DFL);  // Quit from keyboard (Ctrl-\)
-  signal(SIGTERM,  SIG_DFL);  // Termination signal
+  // Set default signal handler
+  resetSignalHandler();
 
   if ( xterm_title && xterm_terminal && ! rxvt_terminal )
     setXTermTitle (*xterm_title);
 
-  // restore the saved termios settings
+  // Restore the saved termios settings
   restoreTTYsettings();
 
-  // turn off all attributes
+  // Turn off all attributes
   if ( TCAP(fc::t_exit_attribute_mode) )
   {
     putstring (TCAP(fc::t_exit_attribute_mode));
     std::fflush(stdout);
   }
 
-  // turn off pc charset mode
+  // Turn off pc charset mode
   if ( TCAP(fc::t_exit_pc_charset_mode) )
   {
     putstring (TCAP(fc::t_exit_pc_charset_mode));
     std::fflush(stdout);
   }
 
-  // reset xterm color settings to default values
+  // Reset xterm color settings to default values
   resetXTermDefaults();
 
-  // set xterm full block cursor
+  // Set xterm full block cursor
   setXTermCursorStyle(fc::steady_block);
 
-  if ( FTermcap::max_color >= 16
-      && ! (kde_konsole || tera_terminal || ansi_terminal) )
-  {
-    // reset screen settings
-    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
-    setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
-    setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
-    setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
-    setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
-
-    resetXTermColors();
-    resetColorMap();
-  }
+  // Restore the color palette
+  if ( init_values.color_change )
+    restoreColorPalette();
 
   if ( mintty_terminal )
   {
-    // switch to normal escape key mode
+    // Switch to normal escape key mode
     putstring (CSI "?7727l");
     std::fflush(stdout);
   }
@@ -4162,11 +4263,11 @@ void FTerm::finish()
 
   resetBeep();
 
-  // disable xterm mouse support
+  // Disable xterm mouse support
   if ( mouse_support )
     disableXTermMouse();
 
-  // deactivate meta key sends escape
+  // Deactivate meta key sends escape
   if ( xterm_terminal )
     xtermMetaSendsESC(false);
 
@@ -4260,6 +4361,30 @@ uInt FTerm::cp437_to_unicode (uChar c)
   }
 
   return ucs;
+}
+
+//----------------------------------------------------------------------
+void FTerm::setSignalHandler()
+{
+  signal(SIGTERM,  FTerm::signal_handler);  // Termination signal
+  signal(SIGQUIT,  FTerm::signal_handler);  // Quit from keyboard (Ctrl-\)
+  signal(SIGINT,   FTerm::signal_handler);  // Keyboard interrupt (Ctrl-C)
+  signal(SIGABRT,  FTerm::signal_handler);  // Abort signal from abort(3)
+  signal(SIGILL,   FTerm::signal_handler);  // Illegal Instruction
+  signal(SIGSEGV,  FTerm::signal_handler);  // Invalid memory reference
+  signal(SIGWINCH, FTerm::signal_handler);  // Window resize signal
+}
+
+//----------------------------------------------------------------------
+void FTerm::resetSignalHandler()
+{
+  signal(SIGWINCH, SIG_DFL);  // Window resize signal
+  signal(SIGSEGV,  SIG_DFL);  // Invalid memory reference
+  signal(SIGILL,   SIG_DFL);  // Illegal Instruction
+  signal(SIGABRT,  SIG_DFL);  // Abort signal from abort(3)
+  signal(SIGINT,   SIG_DFL);  // Keyboard interrupt (Ctrl-C)
+  signal(SIGQUIT,  SIG_DFL);  // Quit from keyboard (Ctrl-\)
+  signal(SIGTERM,  SIG_DFL);  // Termination signal
 }
 
 //----------------------------------------------------------------------

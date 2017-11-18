@@ -1411,8 +1411,8 @@ void FWidget::drawShadow()
   if ( isMonochron() && ! trans_shadow )
     return;
 
-  if ( (Encoding == fc::VT100 && ! trans_shadow)
-      || (Encoding == fc::ASCII && ! trans_shadow) )
+  if ( (term_encoding == fc::VT100 && ! trans_shadow)
+      || (term_encoding == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();
     return;

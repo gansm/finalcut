@@ -58,7 +58,7 @@ FApplication::eventQueue* FApplication::event_queue = 0;
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(showParameterUsage(_argc,_argv), disable_alt_screen)
+  : FWidget(processParameters(_argc,_argv), disable_alt_screen)
   , app_argc(_argc)
   , app_argv(_argv)
   , key(0)
@@ -310,31 +310,42 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
 }
 
 //----------------------------------------------------------------------
-FWidget* FApplication::showParameterUsage (const int& argc, char* argv[])
+FWidget* FApplication::processParameters (const int& argc, char* argv[])
 {
   if ( argc > 0 && argv[1] && ( std::strcmp(argv[1], "--help") == 0
                                || std::strcmp(argv[1], "-h") == 0 ) )
   {
-    std::cout \
-      << "Generic options:" << std::endl
-      << "  -h, --help           "
-      << "       Display this help and exit" << std::endl
-      << std::endl
-      << "FinalCut Options:" << std::endl
-      << "  --encoding <name>    "
-      << "       Sets the character encoding mode" << std::endl
-      << "                       "
-      << "       {UTF8, VT100, PC, ASCII}" << std::endl
-      << "  --no-optimized-cursor"
-      << "       No cursor optimisation" << std::endl
-      << "  --vgafont            "
-      << "       Set the standard vga 8x16 font" << std::endl
-      << "  --newfont            "
-      << "       Enables the graphical font" << std::endl;
-    std::exit(EXIT_SUCCESS);
+    showParameterUsage();
   }
 
+  cmd_options (argc, argv);
   return 0;
+}
+
+//----------------------------------------------------------------------
+void FApplication::showParameterUsage()
+{
+  std::cout \
+    << "Generic options:" << std::endl
+    << "  -h, --help           "
+    << "       Display this help and exit" << std::endl
+    << std::endl
+    << "FinalCut Options:" << std::endl
+    << "  --encoding <name>    "
+    << "       Sets the character encoding mode" << std::endl
+    << "                       "
+    << "       {UTF8, VT100, PC, ASCII}" << std::endl
+    << "  --no-optimized-cursor  "
+    << "     Disable cursor optimization" << std::endl
+    << "  --no-terminal-detection"
+    << "     Disable terminal detection" << std::endl
+    << "  --no-color-change      "
+    << "     Do not redefine the color palette" << std::endl
+    << "  --vgafont              "
+    << "     Set the standard vga 8x16 font" << std::endl
+    << "  --newfont              "
+    << "     Enables the graphical font" << std::endl;
+  std::exit(EXIT_SUCCESS);
 }
 
 //----------------------------------------------------------------------
@@ -385,40 +396,31 @@ void FApplication::init()
   std::fill_n (urxvt_mouse, sizeof(urxvt_mouse), '\0');
   // init bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
+}
 
+//----------------------------------------------------------------------
+void FApplication::cmd_options (const int& argc, char* argv[])
+{
   // interpret the command line options
-  cmd_options();
-}
 
-//----------------------------------------------------------------------
-void FApplication::setExitMessage (std::string message)
-{
-  quit_now = true;
-  snprintf ( FTerm::exit_message
-           , sizeof(FTerm::exit_message)
-           , "%s"
-           , message.c_str() );
-}
-
-//----------------------------------------------------------------------
-void FApplication::cmd_options ()
-{
   while ( true )
   {
     int c, idx = 0;
 
     static struct option long_options[] =
     {
-      {"encoding",            required_argument, 0,  0 },
-      {"no-optimized-cursor", no_argument,       0,  0 },
-      {"vgafont",             no_argument,       0,  0 },
-      {"newfont",             no_argument,       0,  0 },
-      {0,                     0,                 0,  0 }
+      {"encoding",              required_argument, 0,  0 },
+      {"no-optimized-cursor",   no_argument,       0,  0 },
+      {"no-terminal-detection", no_argument,       0,  0 },
+      {"no-color-change",       no_argument,       0,  0 },
+      {"vgafont",               no_argument,       0,  0 },
+      {"newfont",               no_argument,       0,  0 },
+      {0,                       0,                 0,  0 }
     };
 
     opterr = 0;
-    c = getopt_long ( app_argc
-                    , app_argv
+    c = getopt_long ( argc
+                    , argv
                     , ""
                     , long_options
                     , &idx );
@@ -432,36 +434,35 @@ void FApplication::cmd_options ()
         FString encoding(optarg);
         encoding = encoding.toUpper();
 
-        if ( encoding.includes("UTF8")
-            || encoding.includes("VT100")
-            || encoding.includes("PC")
-            || encoding.includes("ASCII") )
-        {
-          setEncoding(encoding.c_str());
-        }
+        if ( encoding.includes("UTF8") )
+          init_values.encoding = fc::UTF8;
+        else if ( encoding.includes("VT100") )
+          init_values.encoding = fc::VT100;
+        else if ( encoding.includes("PC") )
+          init_values.encoding = fc::PC;
+        else if ( encoding.includes("ASCII") )
+          init_values.encoding = fc::ASCII;
+        else if ( encoding.includes("HELP") )
+          showParameterUsage();
         else
-          setExitMessage ( "Unknown encoding "
-                         + std::string(encoding.c_str()) );
+          exitWithMessage ( "Unknown encoding "
+                          + std::string(encoding.c_str()) );
       }
 
       if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
-        setCursorOptimisation (false);
+        init_values.cursor_optimisation = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
+        init_values.terminal_detection = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
+        init_values.color_change = false;
 
       if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
-      {
-        bool ret = setVGAFont();
-
-        if ( ! ret )
-          setExitMessage ("VGAfont is not supported by this terminal");
-      }
+        init_values.vgafont = true;
 
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
-      {
-        bool ret = setNewFont();
-
-        if ( ! ret )
-          setExitMessage ("Newfont is not supported by this terminal");
-      }
+        init_values.newfont = true;
     }
   }
 }

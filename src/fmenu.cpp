@@ -1344,7 +1344,7 @@ void FMenu::drawItems()
           {
             setColor (wc.menu_inactive_fg, getBackgroundColor());
 
-            if ( getEncoding() == "ASCII" )
+            if ( getEncoding() == fc::ASCII )
               print ('-');
             else
               print (fc::SmallBullet);  // ·

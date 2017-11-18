@@ -2717,7 +2717,7 @@ inline void FVTerm::newFontChanges (char_data*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::charsetChanges (char_data*& next_char)
 {
-  if ( Encoding == fc::UTF8 )
+  if ( term_encoding == fc::UTF8 )
     return;
 
   uInt code = uInt(next_char->code);
@@ -2733,9 +2733,9 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
 
     next_char->code = int(ch_enc);
 
-    if ( Encoding == fc::VT100 )
+    if ( term_encoding == fc::VT100 )
       next_char->attr.bit.alt_charset = true;
-    else if ( Encoding == fc::PC )
+    else if ( term_encoding == fc::PC )
     {
       next_char->attr.bit.pc_charset = true;
 

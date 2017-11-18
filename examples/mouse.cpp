@@ -411,7 +411,7 @@ void MouseDraw::draw()
   int y_max = getHeight();
   FDialog::draw();
   setColor();
-  
+
   if ( isNewFont() )
   {
     for (int y = 2; y < y_max; y++)

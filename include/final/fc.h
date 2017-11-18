@@ -112,7 +112,8 @@ class fc
       VT100,
       PC,
       ASCII,
-      NUM_OF_ENCODINGS  // number of items
+      NUM_OF_ENCODINGS,  // number of items
+      UNKNOWN
     };
 
     // VT100 line graphic keys
