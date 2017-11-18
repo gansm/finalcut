@@ -1,19 +1,37 @@
 language: cpp
+dist: trusty
 sudo: required
 compiler:
   - gcc
 
-install:
-  - lsb_release -a
-  - uname -a
-  - sudo apt-get update
-  - sudo apt-get -y install autotools-dev automake autoconf autoconf-archive libtool libglib2.0-dev libncurses5-dev libgpm-dev gperf
+addons:
+  apt:
+    packages:
+     - autotools-dev
+     - automake
+     - autoconf
+     - autoconf-archive
+     - libtool
+     - libglib2.0-dev
+     - libncurses5-dev
+     - libgpm-dev
+     - gperf
 
 env:
   global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "HzE/Yc8AWHTnZYFIfgKI9uFLlrKBw8L7cucRRYGzVyS1YGijjuchIeFxl4ahUCW6/pwvj4Wh9JUL1pOm+mB89XRSMSCGXN7gkFA73DB1Eq/oNdoDQbzKJeMYEP+WhPUuwTGClukRsjN48v35Nc2DJ4bGwasOjwOElZZKgNe/XrF7ok9eI1atcIl4BaxjnjNIyG9A1+MKhjUkT+FnPuqjXXz02RWD7E0IC94CK665LjdDZsnsRGf3sKBr1ZyI4uQmFmZ8W/7DxSsW1xkhtTOyY+QxQ8+CqSfiBgREwU2bPQuM/rAdAISvLk+1zMOja60B2YHTNreVi4Jj0FAQUKto9feC2QZTTrX+jv6NQEyH4XilMak9vBHKpCb6MFhHgDO4puXTur1OzGY1dtHQeQ72Ap2aAy0pPJruqeYzd9K80cSTDhqcOywt+dwja7lrPEVhqltKXFXSviLj6531to1PQBVi+Uw3uMbdo1twtkvW0SRgqq2h8OzD6SWsdI63nurQxK0qpGFnE2/N5pWxOHud6Me8G6ZBYeTRNKMrHroGoKrUr4CwgB80SKR0qj7Yga3HnJLkKwEUmRnK1gA2MD/td8IT4QAf10VI7J5P1rullZ7zK0eVnE+bHHgyd5XJkgspaXezYVPPh2hNLwREXztU3DfQgrzwjuQ4aBEGiYgcGMU="
+  # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+  #   via the "travis encrypt" command using the project repo's public key
+  - secure: |-
+      HzE/Yc8AWHTnZYFIfgKI9uFLlrKBw8L7cucRRYGzVyS1YGijjuchIeFxl4ahUCW6/pwvj4
+      Wh9JUL1pOm+mB89XRSMSCGXN7gkFA73DB1Eq/oNdoDQbzKJeMYEP+WhPUuwTGClukRsjN4
+      8v35Nc2DJ4bGwasOjwOElZZKgNe/XrF7ok9eI1atcIl4BaxjnjNIyG9A1+MKhjUkT+FnPu
+      qjXXz02RWD7E0IC94CK665LjdDZsnsRGf3sKBr1ZyI4uQmFmZ8W/7DxSsW1xkhtTOyY+Qx
+      Q8+CqSfiBgREwU2bPQuM/rAdAISvLk+1zMOja60B2YHTNreVi4Jj0FAQUKto9feC2QZTTr
+      X+jv6NQEyH4XilMak9vBHKpCb6MFhHgDO4puXTur1OzGY1dtHQeQ72Ap2aAy0pPJruqeYz
+      d9K80cSTDhqcOywt+dwja7lrPEVhqltKXFXSviLj6531to1PQBVi+Uw3uMbdo1twtkvW0S
+      Rgqq2h8OzD6SWsdI63nurQxK0qpGFnE2/N5pWxOHud6Me8G6ZBYeTRNKMrHroGoKrUr4Cw
+      gB80SKR0qj7Yga3HnJLkKwEUmRnK1gA2MD/td8IT4QAf10VI7J5P1rullZ7zK0eVnE+bHH
+      gyd5XJkgspaXezYVPPh2hNLwREXztU3DfQgrzwjuQ4aBEGiYgcGMU=
 
 matrix:
   include:
@@ -32,8 +50,14 @@ matrix:
         build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr && make clean"
         build_command: "make V=1 -j10"
         branch_pattern: master
+    before_install:
+      - lsb_release -a
+      - uname -a
     script:
-      - autoreconf -v --install --force && ./configure --prefix=/usr && make -j10 && make check
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+      - make check
 
   #
   # Coveralls
@@ -42,6 +66,8 @@ matrix:
     env:
       - TEST="Coveralls"
     before_install:
+      - lsb_release -a
+      - uname -a
       - pip install --user cpp-coveralls
     script:
       - ./build.sh coverage
@@ -50,4 +76,18 @@ matrix:
       - examples/termcap
     after_success:
       - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts
+
+  #
+  # macOS
+  #
+  - os: osx
+    env:
+      - TEST="macOS"
+    before_install:
+      - uname -a
+    script:
+      - autoreconf -v --install --force
+      - ./configure --prefix=/usr
+      - make -j10
+      - make check
 

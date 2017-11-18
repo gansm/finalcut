@@ -454,6 +454,12 @@ class FTerm
     static void           init_cygwin_charmap();
     static void           init_teraterm_charmap();
     static void           init_termcaps();
+    static void           init_termcaps_booleans();
+    static void           init_termcaps_numeric();
+    static void           init_termcaps_strings (char*&);
+    static void           init_termcaps_keys (char*&);
+    static void           init_OptiMove();
+    static void           init_OptiAttr();
     static void           init_locale();
     static void           init_encoding();
     static void           redefineColorPalette();

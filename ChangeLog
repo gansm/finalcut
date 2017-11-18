@@ -2,6 +2,7 @@
 	* Improved command line paramenter handling
 	* New command line paramenter --no-terminal-detection
 	* New command line paramenter --no-color-change
+	* Splitting init_termcaps() into multiple submethods
 
 2017-11-11  Markus Gans  <guru.mail@muenster.de>
 	* Improved code coverage tests
