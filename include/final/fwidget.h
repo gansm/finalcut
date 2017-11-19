@@ -474,6 +474,8 @@ class FWidget : public FVTerm, public FObject
     void               processDestroy();
     virtual void       draw();
     static void        setColorTheme();
+    static void        set8ColorTheme();
+    static void        set16ColorTheme();
 
     // Data Members
     bool               enable;

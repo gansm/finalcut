@@ -3833,7 +3833,8 @@ void FTerm::init_OptiMove()
 //----------------------------------------------------------------------
 void FTerm::init_OptiAttr()
 {
-  // Attribute settings
+  // Setting video attribute optimization 
+
   opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
   opti_attr->set_enter_bold_mode (TCAP(fc::t_enter_bold_mode));
   opti_attr->set_exit_bold_mode (TCAP(fc::t_exit_bold_mode));

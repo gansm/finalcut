@@ -273,7 +273,9 @@ class MyDialog : public FDialog
 
     // Method
     void initMenu();
+    void initMenuCallbacks();
     void initStatusBar();
+    void initStatusBarCallbacks();
     void initWidgets();
     void adjustSize();
 
@@ -298,6 +300,18 @@ class MyDialog : public FDialog
     void cb_setInput (FWidget*, data_ptr);
 
     // Data Members
+    FMenuItem* Open;
+    FMenuItem* Quit;
+    FMenuItem* File1;
+    FMenuItem* File2;
+    FMenuItem* File3;
+    FMenuItem* Cut;
+    FMenuItem* Copy;
+    FMenuItem* Paste;
+    FMenuItem* Clear;
+    FMenuItem* Env;
+    FMenuItem* Drive;
+    FMenuItem* Help;
     FLineEdit* myLineEdit;
     FListBox*  myList;
     FString    clipboard;
@@ -311,9 +325,11 @@ MyDialog::MyDialog (FWidget* parent)
   , myList()
   , clipboard()
 {
-  initMenu();       // Initialize the program menu
-  initStatusBar();  // Initialize the status bar
-  initWidgets();    // Initialize the dialog widgets
+  initMenu();                // Initialize the program menu
+  initMenuCallbacks();       // Initialize program menu callbacks
+  initStatusBar();           // Initialize the status bar
+  initStatusBarCallbacks();  // Initialize status bar callbacks
+  initWidgets();             // Initialize the dialog widgets
 }
 
 //----------------------------------------------------------------------
@@ -338,11 +354,11 @@ void MyDialog::initMenu()
   Options->setDisable();
   FDialogListMenu* Window = new FDialogListMenu ("&Window", Menubar);
   Window->setStatusbarMessage ("List of all the active dialogs");
-  FMenuItem* Help    = new FMenuItem ("&Help", Menubar);
+  Help = new FMenuItem ("&Help", Menubar);
   Help->setStatusbarMessage ("Show version and copyright information");
 
   // "File" menu items
-  FMenuItem* Open    = new FMenuItem ("&Open...", File);
+  Open = new FMenuItem ("&Open...", File);
   Open->addAccelerator (fc::Fckey_o);  // Ctrl + O
   Open->setStatusbarMessage ("Locate and open a text file");
   FMenu* Recent   = new FMenu ("&System files", File);
@@ -350,14 +366,14 @@ void MyDialog::initMenu()
 
   FMenuItem* Line1   = new FMenuItem (File);
   Line1->setSeparator();
-  FMenuItem* Quit    = new FMenuItem ("&Quit", File);
+  Quit = new FMenuItem ("&Quit", File);
   Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
   // "Recent" menu items
-  FMenuItem* File1 = new FMenuItem ("/etc/services", Recent);
-  FMenuItem* File2 = new FMenuItem ("/etc/fstab", Recent);
-  FMenuItem* File3 = new FMenuItem ("/etc/passwd", Recent);
+  File1 = new FMenuItem ("/etc/services", Recent);
+  File2 = new FMenuItem ("/etc/fstab", Recent);
+  File3 = new FMenuItem ("/etc/passwd", Recent);
 
   // "Edit" menu items
   FMenuItem* Undo    = new FMenuItem (fc::Fckey_z, "Undo", Edit);
@@ -366,23 +382,28 @@ void MyDialog::initMenu()
   Redo->setDisable();
   FMenuItem* Line2   = new FMenuItem (Edit);
   Line2->setSeparator();
-  FMenuItem* Cut     = new FMenuItem (fc::Fckey_x, "Cu&t", Edit);
+  Cut = new FMenuItem (fc::Fckey_x, "Cu&t", Edit);
   Cut->setStatusbarMessage ( "Remove the input text"
                              " and put it in the clipboard" );
-  FMenuItem* Copy    = new FMenuItem (fc::Fckey_c, "&Copy", Edit);
+  Copy= new FMenuItem (fc::Fckey_c, "&Copy", Edit);
   Copy->setStatusbarMessage ("Copy the input text into the clipboad");
-  FMenuItem* Paste   = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
+  Paste = new FMenuItem (fc::Fckey_v, "&Paste", Edit);
   Paste->setStatusbarMessage ("Insert text form clipboard");
-  FMenuItem* Clear   = new FMenuItem (fc::Fkey_dc, "C&lear", Edit);
+  Clear = new FMenuItem (fc::Fkey_dc, "C&lear", Edit);
   Clear->setStatusbarMessage ("Delete input text");
 
   // "View" menu items
-  FMenuItem* Env     = new FMenuItem ("&Terminal...", View);
+  Env = new FMenuItem ("&Terminal...", View);
   Env->setStatusbarMessage ("Informations about this terminal");
-  FMenuItem* Drive   = new FMenuItem ("&Drive symbols...", View);
+  Drive = new FMenuItem ("&Drive symbols...", View);
   Drive->setStatusbarMessage ("Show drive symbols");
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initMenuCallbacks()
+{
   // Menu function callbacks
+
   Open->addCallback
   (
     "clicked",
@@ -469,8 +490,13 @@ void MyDialog::initStatusBar()
   FStatusKey* key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
   FStatusKey* key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
   FStatusKey* key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initStatusBarCallbacks()
+{
   // Add some function callbacks
+
   key_F1->addCallback
   (
     "activate",

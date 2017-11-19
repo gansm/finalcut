@@ -31,12 +31,14 @@
 #include <final/final.h>
 
 
-int main (int, char**)
+void init()
 {
-  printf ("----------------[ terminal ]-------------------\n");
+  std::cout << "----------------[ terminal ]-------------------"
+            << std::endl;
 
   // init current locale
-  printf ("    Locale: %s\n", std::setlocale(LC_CTYPE, "") );
+  std::cout << "    Locale: " << std::setlocale(LC_CTYPE, "")
+            << std::endl;
 
   if ( isatty(1) && ! std::strcmp(nl_langinfo(CODESET), "ANSI_X3.4-1968") )
   {
@@ -44,21 +46,32 @@ int main (int, char**)
     std::setlocale(LC_ALL, "C");
   }
 
-  printf ("   Codeset: %s\n", nl_langinfo(CODESET));
-
+  std::cout << "   Codeset: " << nl_langinfo(CODESET) << std::endl;
   std::cout << "--------------[ FString test ]-----------------"
             << std::endl;
+}
 
+//----------------------------------------------------------------------
+void inputStreamExample()
+{
   // Test: input stream (operator >>)
   FString in;
   std::cout << "     Input: ";
   std::cin >> in;
   std::cout << "  instream >> " << in << std::endl;
+}
 
+//----------------------------------------------------------------------
+void outputStreamExample()
+{
   // Test: output stream (operator <<)
   const FString& out = L"A test string for 0 \x20ac";
   std::cout << " outstream << " << out << std::endl;
+}
 
+//----------------------------------------------------------------------
+void streamingIntoFStringExample()
+{
   // Test: Streaming into a FString (operator <<)...
 
   // ...from FStrings
@@ -120,7 +133,11 @@ int main (int, char**)
   FString streamer12;
   streamer12 << float(0.22222222);
   std::cout << " stream in: " << streamer12 << std::endl;
+}
 
+//----------------------------------------------------------------------
+void streamingFromFStringExample()
+{
   // Test: Streaming from a FString (operator >>)...
 
   // ...to FStrings
@@ -214,10 +231,19 @@ int main (int, char**)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
+}
 
+//----------------------------------------------------------------------
+void CStringOutputExample()
+{
   // Test: c-string output
+  const FString& out = L"A test string for 0 \x20ac";
   printf ("     c_str:  \"%s\"\n", out.c_str());
+}
 
+//----------------------------------------------------------------------
+void copyIntoFString()
+{
   // Test: copy a c++ string
   const FString& cpp_str( std::string("c++ String") );
   std::cout << "   cpp_str: \"" << cpp_str << "\"" << std::endl;
@@ -229,12 +255,20 @@ int main (int, char**)
   // Test: copy a wide character
   const FString wch(L'w');
   std::cout << "   wchar_t: '" << wch << "'" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void utf8StringOutputExample()
+{
   // Test: utf-8 string
   const FString& len = "длина́";
   std::cout << "    length: \"" << len << "\" has "
             << len.getLength() << " characters" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void letterCaseExample()
+{
   // Test: convert uppercase letter to lowercase
   const FString& lower = FString(L"InPut").toLower();
   std::wcout << L"   toLower: " << lower << std::endl;
@@ -242,7 +276,11 @@ int main (int, char**)
   // Test: convert lowercase letter to uppercase
   const FString& upper = FString("inPut").toUpper();
   std::cout << "   toUpper: " << upper << std::endl;
+}
 
+//----------------------------------------------------------------------
+void stringConcatenationExample()
+{
   // Test: concatenate two FStrings (operator +)
   const FString& add1 = FString("FString + ") + FString("FString");
   std::cout << "       add: " << add1 << std::endl;
@@ -302,7 +340,11 @@ int main (int, char**)
   const FString& add13 = std::wstring(L"std::wstring")
                        + FString(" + FString");
   std::cout << "       add: " << add13 << std::endl;
+}
 
+//----------------------------------------------------------------------
+void stringCompareExample()
+{
   // Test: compare operators ==, <=, <, >=, >, !=
   const FString& cmp = "compare";
 
@@ -335,7 +377,11 @@ int main (int, char**)
     std::cout << "       cmp: != Ok" << std::endl;
   else
     std::cout << "       cmp: != Not Ok" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void stringSplittingExample()
+{
   // Test: split a string with a delimiter and returns a vector (array)
   FString split_str = "a,b,c,d";
   std::cout << "     split: \""
@@ -348,13 +394,21 @@ int main (int, char**)
     std::cout << " \"" << (*it) << "\"";
 
   std::cout << std::endl;
+}
 
+//----------------------------------------------------------------------
+void fromatStringExample()
+{
   // Test: format a string with sprintf
   FString formatStr = "";
   std::cout << " formatted: "
             << formatStr.sprintf("sqrt(%d) = %d", 16, 4)
             << std::endl;
+}
 
+//----------------------------------------------------------------------
+void convertToNumberExample()
+{
   // Test: convert a string to a unsigned long interger
   try
   {
@@ -404,7 +458,11 @@ int main (int, char**)
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
+}
 
+//----------------------------------------------------------------------
+void convertNumberToStringExample()
+{
   // Test: convert integer and double value to a string
   FString num1, num2, num3;
   num1.setNumber(137);
@@ -416,7 +474,11 @@ int main (int, char**)
             << num2 << " (signed)"      << std::endl;
   std::cout << " setNumber:  "
             << num3 << " (long double)" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void formatedNumberExample()
+{
   // Test: convert and format a integer number with thousand separator
   std::setlocale (LC_NUMERIC, "");
   FString fnum1, fnum2;
@@ -433,7 +495,11 @@ int main (int, char**)
             << fnum1 << " (unsigned)" << std::endl;
   std::cout << "setFormatedNumber: "
             << fnum2 << " (signed)"   << std::endl;
+}
 
+//----------------------------------------------------------------------
+void trimExample()
+{
   // Test: remove whitespace from the end of a string
   const FString& trim_str = "  A string \t";
   std::wcout << "    rtrim: \""
@@ -446,9 +512,14 @@ int main (int, char**)
   // Test: remove whitespace from the beginning and end of a string
   std::cout << "     trim: \""
             << trim_str.trim()  << "\"" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void substringExample()
+{
   // Test: 11 characters from the left of the string
-  const FString& alphabet = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
+  const FString& alphabet = "a b c d e f g h i j k l m "
+                            "n o p q r s t u v w x y z";
   std::cout << "     left: \""
             << alphabet.left(11)   << "\"" << std::endl;
 
@@ -459,7 +530,11 @@ int main (int, char**)
   // Test: 11 characters from the right of the string
   std::cout << "    right: \""
             << alphabet.right(11)  << "\"" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void insertExample()
+{
   // Test: insert a string at index position 7
   FString insert_str = "I am a string";
 
@@ -472,7 +547,11 @@ int main (int, char**)
   {
     std::cerr << "Out of Range error: " << ex.what() << std::endl;
   }
+}
 
+//----------------------------------------------------------------------
+void indexExample()
+{
   // Test: get character access at a specified index position
   FString index(5);  // string with five characters
   index = "index";
@@ -488,7 +567,11 @@ int main (int, char**)
   {
     std::cerr << "Out of Range error: " << ex.what() << std::endl;
   }
+}
 
+//----------------------------------------------------------------------
+void iteratorExample()
+{
   // Test: character access with std::iterator
   const FString& stringIterator = "iterator";
   FString::iterator iter;
@@ -504,17 +587,29 @@ int main (int, char**)
   std::cout << "  (front='" << char(stringIterator.front())
             << "', back='" << char(stringIterator.back())
             << "')" << std::endl;
+}
 
+//----------------------------------------------------------------------
+void overwriteExample()
+{
   // Test: overwrite string at position 10 with "for t"
   FString overwrite_std = "Overwrite the rest";
   std::cout << "overwrite: "
             << overwrite_std.overwrite("for t", 10) << std::endl;
+}
 
+//----------------------------------------------------------------------
+void removeExample()
+{
   // Test: remove 2 characters at position 7
   FString remove_std = "A fast remove";
   std::cout << "   remove: "
             << remove_std.remove(7, 2) << std::endl;
+}
 
+//----------------------------------------------------------------------
+void substringIncludeExample()
+{
   // Test: includes a substring (positive test)
   FString include_std = "string";
 
@@ -536,25 +631,78 @@ int main (int, char**)
     std::cout << " includes: \""
               << include_std << "\" includes no \"data\" "
               << std::endl;
+}
 
+//----------------------------------------------------------------------
+void replaceExample()
+{
   // Test: find and replace a substring
   FString source_str = "computer and software";
   const FString& replace_str = source_str.replace("computer", "hard-");
   std::cout << "  replace: "
             << replace_str << std::endl;
+}
 
+//----------------------------------------------------------------------
+void tabToSpaceExample()
+{
   // Test: convert tabs to spaces
   const FString& tab_str = "1234\t5678";
   std::cout << "      tab: "
             << tab_str.expandTabs() << std::endl;
+}
 
+//----------------------------------------------------------------------
+void backspaceControlCharacterExample()
+{
   // Test: backspaces remove characters in the string
   const FString& bs_str = "t\b\bTesT\bt";
   std::cout << "backspace: "
             << bs_str.removeBackspaces() << std::endl;
+}
 
+//----------------------------------------------------------------------
+void deleteControlCharacterExample()
+{
   // Test: delete characters remove characters in the string
   const FString& del_str = "apple \177\177\177pietree";
   std::cout << "   delete: "
             << del_str.removeDel() << std::endl;
+}
+
+//----------------------------------------------------------------------
+//                               main part
+//----------------------------------------------------------------------
+int main (int, char**)
+{
+  init();
+
+  // Some FString examples
+  inputStreamExample();
+  outputStreamExample();
+  streamingIntoFStringExample();
+  streamingFromFStringExample();
+  CStringOutputExample();
+  copyIntoFString();
+  utf8StringOutputExample();
+  letterCaseExample();
+  stringConcatenationExample();
+  stringCompareExample();
+  stringSplittingExample();
+  fromatStringExample();
+  convertToNumberExample();
+  convertNumberToStringExample();
+  formatedNumberExample();
+  trimExample();
+  substringExample();
+  insertExample();
+  indexExample();
+  iteratorExample();
+  overwriteExample();
+  removeExample();
+  substringIncludeExample();
+  replaceExample();
+  tabToSpaceExample();
+  backspaceControlCharacterExample();
+  deleteControlCharacterExample();
 }

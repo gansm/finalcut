@@ -2465,6 +2465,111 @@ void FWidget::draw()
 //----------------------------------------------------------------------
 void FWidget::setColorTheme()
 {
+  if ( getMaxColor() < 16 )  // for 8 color mode
+  {
+    set8ColorTheme();
+  }
+  else
+  {
+    set16ColorTheme();
+
+    if ( isKdeTerminal() )
+      wc.term_bg = fc::SteelBlue3;  
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::set8ColorTheme()
+{
+  wc.term_fg                           = fc::Black;
+  wc.term_bg                           = fc::Blue;
+  wc.list_fg                           = fc::Black;
+  wc.list_bg                           = fc::LightGray;
+  wc.selected_list_fg                  = fc::Blue;
+  wc.selected_list_bg                  = fc::LightGray;
+  wc.dialog_fg                         = fc::Black;
+  wc.dialog_resize_fg                  = fc::Red;
+  wc.dialog_emphasis_fg                = fc::Blue;
+  wc.dialog_bg                         = fc::LightGray;
+  wc.error_box_fg                      = fc::Black;
+  wc.error_box_emphasis_fg             = fc::Red;
+  wc.error_box_bg                      = fc::LightGray;
+  wc.tooltip_fg                        = fc::LightGray;
+  wc.tooltip_bg                        = fc::Cyan;
+  wc.shadow_fg                         = fc::Black;
+  wc.shadow_bg                         = fc::LightGray;  // only for transparent shadow
+  wc.current_element_focus_fg          = fc::LightGray;
+  wc.current_element_focus_bg          = fc::Red;
+  wc.current_element_fg                = fc::LightGray;
+  wc.current_element_bg                = fc::Blue;
+  wc.current_inc_search_element_fg     = fc::Brown;
+  wc.selected_current_element_focus_fg = fc::Blue;
+  wc.selected_current_element_focus_bg = fc::Red;
+  wc.selected_current_element_fg       = fc::Cyan;
+  wc.selected_current_element_bg       = fc::Blue;
+  wc.label_fg                          = fc::Black;
+  wc.label_bg                          = fc::LightGray;
+  wc.label_inactive_fg                 = fc::Cyan;
+  wc.label_inactive_bg                 = fc::LightGray;
+  wc.label_hotkey_fg                   = fc::Red;
+  wc.label_hotkey_bg                   = fc::LightGray;
+  wc.label_emphasis_fg                 = fc::Blue;
+  wc.label_ellipsis_fg                 = fc::Black;
+  wc.inputfield_active_focus_fg        = fc::LightGray;
+  wc.inputfield_active_focus_bg        = fc::Blue;
+  wc.inputfield_active_fg              = fc::Black;
+  wc.inputfield_active_bg              = fc::Cyan;
+  wc.inputfield_inactive_fg            = fc::Black;
+  wc.inputfield_inactive_bg            = fc::LightGray;
+  wc.toggle_button_active_focus_fg     = fc::LightGray;
+  wc.toggle_button_active_focus_bg     = fc::Red;
+  wc.toggle_button_active_fg           = fc::Black;
+  wc.toggle_button_active_bg           = fc::LightGray;
+  wc.toggle_button_inactive_fg         = fc::Cyan;
+  wc.toggle_button_inactive_bg         = fc::LightGray;
+  wc.button_active_focus_fg            = fc::LightGray;
+  wc.button_active_focus_bg            = fc::Red;
+  wc.button_active_fg                  = fc::LightGray;
+  wc.button_active_bg                  = fc::Blue;
+  wc.button_inactive_fg                = fc::Black;
+  wc.button_inactive_bg                = fc::Blue;
+  wc.button_hotkey_fg                  = fc::LightGray;
+  wc.titlebar_active_fg                = fc::LightGray;
+  wc.titlebar_active_bg                = fc::Red;
+  wc.titlebar_inactive_fg              = fc::Black;
+  wc.titlebar_inactive_bg              = fc::LightGray;
+  wc.titlebar_button_fg                = fc::Black;
+  wc.titlebar_button_bg                = fc::LightGray;
+  wc.titlebar_button_focus_fg          = fc::LightGray;
+  wc.titlebar_button_focus_bg          = fc::Black;
+  wc.menu_active_focus_fg              = fc::LightGray;
+  wc.menu_active_focus_bg              = fc::Blue;
+  wc.menu_active_fg                    = fc::Black;
+  wc.menu_active_bg                    = fc::LightGray;
+  wc.menu_inactive_fg                  = fc::Cyan;
+  wc.menu_inactive_bg                  = fc::LightGray;
+  wc.menu_hotkey_fg                    = fc::Red;
+  wc.menu_hotkey_bg                    = fc::LightGray;
+  wc.statusbar_fg                      = fc::Black;
+  wc.statusbar_bg                      = fc::LightGray;
+  wc.statusbar_hotkey_fg               = fc::Red;
+  wc.statusbar_hotkey_bg               = fc::LightGray;
+  wc.statusbar_separator_fg            = fc::Black;
+  wc.statusbar_active_fg               = fc::LightGray;
+  wc.statusbar_active_bg               = fc::Black;
+  wc.statusbar_active_hotkey_fg        = fc::Red;
+  wc.statusbar_active_hotkey_bg        = fc::Black;
+  wc.scrollbar_fg                      = fc::Black;
+  wc.scrollbar_bg                      = fc::LightGray;
+  wc.scrollbar_button_fg               = fc::Black;
+  wc.scrollbar_button_bg               = fc::LightGray;
+  wc.progressbar_fg                    = fc::Blue;
+  wc.progressbar_bg                    = fc::LightGray;
+}
+
+//----------------------------------------------------------------------
+void FWidget::set16ColorTheme()
+{
   wc.term_fg                           = fc::Black;
   wc.term_bg                           = fc::LightBlue;
   wc.list_fg                           = fc::Black;
@@ -2549,95 +2654,4 @@ void FWidget::setColorTheme()
   wc.scrollbar_button_bg               = fc::LightGray;
   wc.progressbar_fg                    = fc::DarkGray;
   wc.progressbar_bg                    = fc::LightBlue;
-
-  if ( isKdeTerminal() )
-    wc.term_bg = fc::SteelBlue3;
-
-  if ( getMaxColor() < 16 )  // for 8 color mode
-  {
-    wc.term_fg                           = fc::Black;
-    wc.term_bg                           = fc::Blue;
-    wc.list_fg                           = fc::Black;
-    wc.list_bg                           = fc::LightGray;
-    wc.selected_list_fg                  = fc::Blue;
-    wc.selected_list_bg                  = fc::LightGray;
-    wc.dialog_fg                         = fc::Black;
-    wc.dialog_resize_fg                  = fc::Red;
-    wc.dialog_emphasis_fg                = fc::Blue;
-    wc.dialog_bg                         = fc::LightGray;
-    wc.error_box_fg                      = fc::Black;
-    wc.error_box_emphasis_fg             = fc::Red;
-    wc.error_box_bg                      = fc::LightGray;
-    wc.tooltip_fg                        = fc::LightGray;
-    wc.tooltip_bg                        = fc::Cyan;
-    wc.shadow_fg                         = fc::Black;
-    wc.shadow_bg                         = fc::LightGray;  // only for transparent shadow
-    wc.current_element_focus_fg          = fc::LightGray;
-    wc.current_element_focus_bg          = fc::Red;
-    wc.current_element_fg                = fc::LightGray;
-    wc.current_element_bg                = fc::Blue;
-    wc.current_inc_search_element_fg     = fc::Brown;
-    wc.selected_current_element_focus_fg = fc::Blue;
-    wc.selected_current_element_focus_bg = fc::Red;
-    wc.selected_current_element_fg       = fc::Cyan;
-    wc.selected_current_element_bg       = fc::Blue;
-    wc.label_fg                          = fc::Black;
-    wc.label_bg                          = fc::LightGray;
-    wc.label_inactive_fg                 = fc::Cyan;
-    wc.label_inactive_bg                 = fc::LightGray;
-    wc.label_hotkey_fg                   = fc::Red;
-    wc.label_hotkey_bg                   = fc::LightGray;
-    wc.label_emphasis_fg                 = fc::Blue;
-    wc.label_ellipsis_fg                 = fc::Black;
-    wc.inputfield_active_focus_fg        = fc::LightGray;
-    wc.inputfield_active_focus_bg        = fc::Blue;
-    wc.inputfield_active_fg              = fc::Black;
-    wc.inputfield_active_bg              = fc::Cyan;
-    wc.inputfield_inactive_fg            = fc::Black;
-    wc.inputfield_inactive_bg            = fc::LightGray;
-    wc.toggle_button_active_focus_fg     = fc::LightGray;
-    wc.toggle_button_active_focus_bg     = fc::Red;
-    wc.toggle_button_active_fg           = fc::Black;
-    wc.toggle_button_active_bg           = fc::LightGray;
-    wc.toggle_button_inactive_fg         = fc::Cyan;
-    wc.toggle_button_inactive_bg         = fc::LightGray;
-    wc.button_active_focus_fg            = fc::LightGray;
-    wc.button_active_focus_bg            = fc::Red;
-    wc.button_active_fg                  = fc::LightGray;
-    wc.button_active_bg                  = fc::Blue;
-    wc.button_inactive_fg                = fc::Black;
-    wc.button_inactive_bg                = fc::Blue;
-    wc.button_hotkey_fg                  = fc::LightGray;
-    wc.titlebar_active_fg                = fc::LightGray;
-    wc.titlebar_active_bg                = fc::Red;
-    wc.titlebar_inactive_fg              = fc::Black;
-    wc.titlebar_inactive_bg              = fc::LightGray;
-    wc.titlebar_button_fg                = fc::Black;
-    wc.titlebar_button_bg                = fc::LightGray;
-    wc.titlebar_button_focus_fg          = fc::LightGray;
-    wc.titlebar_button_focus_bg          = fc::Black;
-    wc.menu_active_focus_fg              = fc::LightGray;
-    wc.menu_active_focus_bg              = fc::Blue;
-    wc.menu_active_fg                    = fc::Black;
-    wc.menu_active_bg                    = fc::LightGray;
-    wc.menu_inactive_fg                  = fc::Cyan;
-    wc.menu_inactive_bg                  = fc::LightGray;
-    wc.menu_hotkey_fg                    = fc::Red;
-    wc.menu_hotkey_bg                    = fc::LightGray;
-    wc.statusbar_fg                      = fc::Black;
-    wc.statusbar_bg                      = fc::LightGray;
-    wc.statusbar_hotkey_fg               = fc::Red;
-    wc.statusbar_hotkey_bg               = fc::LightGray;
-    wc.statusbar_separator_fg            = fc::Black;
-    wc.statusbar_active_fg               = fc::LightGray;
-    wc.statusbar_active_bg               = fc::Black;
-    wc.statusbar_active_hotkey_fg        = fc::Red;
-    wc.statusbar_active_hotkey_bg        = fc::Black;
-    wc.scrollbar_fg                      = fc::Black;
-    wc.scrollbar_bg                      = fc::LightGray;
-    wc.scrollbar_button_fg               = fc::Black;
-    wc.scrollbar_button_bg               = fc::LightGray;
-    wc.progressbar_fg                    = fc::Blue;
-    wc.progressbar_bg                    = fc::LightGray;
-  }
 }
