@@ -300,21 +300,24 @@ class MyDialog : public FDialog
     void cb_setInput (FWidget*, data_ptr);
 
     // Data Members
-    FMenuItem* Open;
-    FMenuItem* Quit;
-    FMenuItem* File1;
-    FMenuItem* File2;
-    FMenuItem* File3;
-    FMenuItem* Cut;
-    FMenuItem* Copy;
-    FMenuItem* Paste;
-    FMenuItem* Clear;
-    FMenuItem* Env;
-    FMenuItem* Drive;
-    FMenuItem* Help;
-    FLineEdit* myLineEdit;
-    FListBox*  myList;
-    FString    clipboard;
+    FMenuItem*  Open;
+    FMenuItem*  Quit;
+    FMenuItem*  File1;
+    FMenuItem*  File2;
+    FMenuItem*  File3;
+    FMenuItem*  Cut;
+    FMenuItem*  Copy;
+    FMenuItem*  Paste;
+    FMenuItem*  Clear;
+    FMenuItem*  Env;
+    FMenuItem*  Drive;
+    FMenuItem*  Help;
+    FStatusKey* key_F1;
+    FStatusKey* key_F2;
+    FStatusKey* key_F3;
+    FLineEdit*  myLineEdit;
+    FListBox*   myList;
+    FString     clipboard;
 };
 #pragma pack(pop)
 
@@ -487,9 +490,9 @@ void MyDialog::initStatusBar()
   FStatusBar* statusbar = new FStatusBar (this);
 
   // Statusbar keys
-  FStatusKey* key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
-  FStatusKey* key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
-  FStatusKey* key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
+  key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
+  key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
+  key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
 }
 
 //----------------------------------------------------------------------
