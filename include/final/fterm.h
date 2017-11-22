@@ -60,7 +60,11 @@
 #if defined(__linux__)
   #include <linux/fb.h>        // Linux framebuffer console
   #include <linux/keyboard.h>  // need for gpm keyboard modifiers
-  #include <sys/io.h>          // <asm/io.h> is deprecated
+
+  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+    #include <sys/io.h>        // <asm/io.h> is deprecated
+  #endif
+
   #include <sys/kd.h>
 #endif
 
@@ -400,12 +404,14 @@ class FTerm
 
     // Methods
 #if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     static uInt16         getInputStatusRegisterOne();
     static uChar          readAttributeController (uChar);
     static void           writeAttributeController (uChar, uChar);
     static uChar          getAttributeMode();
     static void           setAttributeMode (uChar);
     static int            setBlinkAsIntensity (bool);
+#endif
     static int            getFramebuffer_bpp();
 #endif
 

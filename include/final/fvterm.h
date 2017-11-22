@@ -244,6 +244,8 @@ class FVTerm : public FTerm
     int                 print (term_area*, const std::vector<char_data>&);
     int                 print (int);
     int                 print (term_area*, int);
+    int                 print (char_data&);
+    int                 print (term_area*, char_data&);
     FVTerm&             print();
 
   protected:

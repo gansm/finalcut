@@ -1954,6 +1954,7 @@ bool FTerm::isWSConsConsole()
 #endif
 
 #if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
 //----------------------------------------------------------------------
 inline uInt16 FTerm::getInputStatusRegisterOne()
 {
@@ -2052,6 +2053,7 @@ int FTerm::setBlinkAsIntensity (bool on)
 
   return 0;
 }
+#endif
 
 //----------------------------------------------------------------------
 int FTerm::getFramebuffer_bpp ()
@@ -2709,7 +2711,10 @@ void FTerm::detectTerminal()
       FTermcap::max_color = 16;
     }
 
-  #if defined(__linux__)
+  // Initialize Linux console
+#if defined(__linux__)
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+    // Enable 16 background colors
     if ( linux_terminal && openConsole() == 0 )
     {
       if ( isLinuxConsole() )
@@ -2721,16 +2726,22 @@ void FTerm::detectTerminal()
       }
 
       closeConsole();
-      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
     }
 
-    if ( linux_terminal && getFramebuffer_bpp() >= 4 )
-      FTermcap::max_color = 16;
-  #endif
+    if ( linux_terminal )
+    {
+      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
 
-  #if defined(__FreeBSD__) || defined(__DragonFly__)
+      if ( getFramebuffer_bpp() >= 4 )
+        FTermcap::max_color = 16;
+    }
+#endif
+#endif
+
+    // Initialize FreeBSD console cursor
+#if defined(__FreeBSD__) || defined(__DragonFly__)
     setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
-  #endif
+#endif
 
     t.c_lflag |= uInt(ICANON | ECHO);
     tcsetattr(stdin_no, TCSADRAIN, &t);
@@ -3833,7 +3844,7 @@ void FTerm::init_OptiMove()
 //----------------------------------------------------------------------
 void FTerm::init_OptiAttr()
 {
-  // Setting video attribute optimization 
+  // Setting video attribute optimization
 
   opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
   opti_attr->set_enter_bold_mode (TCAP(fc::t_enter_bold_mode));
@@ -4287,7 +4298,9 @@ void FTerm::finish()
 #if defined(__linux__)
   if ( linux_terminal )
   {
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     setBlinkAsIntensity (false);
+#endif
     setLinuxConsoleCursorStyle (fc::default_cursor, false);
   }
 #endif

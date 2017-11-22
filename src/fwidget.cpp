@@ -2474,7 +2474,7 @@ void FWidget::setColorTheme()
     set16ColorTheme();
 
     if ( isKdeTerminal() )
-      wc.term_bg = fc::SteelBlue3;  
+      wc.term_bg = fc::SteelBlue3;
   }
 }
 

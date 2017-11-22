@@ -277,6 +277,7 @@ class MyDialog : public FDialog
     void initStatusBar();
     void initStatusBarCallbacks();
     void initWidgets();
+    void initWidgetsCallbacks();
     void adjustSize();
 
     // Event handlers
@@ -300,24 +301,32 @@ class MyDialog : public FDialog
     void cb_setInput (FWidget*, data_ptr);
 
     // Data Members
-    FMenuItem*  Open;
-    FMenuItem*  Quit;
-    FMenuItem*  File1;
-    FMenuItem*  File2;
-    FMenuItem*  File3;
-    FMenuItem*  Cut;
-    FMenuItem*  Copy;
-    FMenuItem*  Paste;
-    FMenuItem*  Clear;
-    FMenuItem*  Env;
-    FMenuItem*  Drive;
-    FMenuItem*  Help;
-    FStatusKey* key_F1;
-    FStatusKey* key_F2;
-    FStatusKey* key_F3;
-    FLineEdit*  myLineEdit;
-    FListBox*   myList;
-    FString     clipboard;
+    FMenuItem*    Open;
+    FMenuItem*    Quit;
+    FMenuItem*    File1;
+    FMenuItem*    File2;
+    FMenuItem*    File3;
+    FMenuItem*    Cut;
+    FMenuItem*    Copy;
+    FMenuItem*    Paste;
+    FMenuItem*    Clear;
+    FMenuItem*    Env;
+    FMenuItem*    Drive;
+    FMenuItem*    Help;
+    FStatusKey*   key_F1;
+    FStatusKey*   key_F2;
+    FStatusKey*   key_F3;
+    FButton*      MyButton1;
+    FButton*      MyButton2;
+    FButton*      MyButton3;
+    FButton*      MyButton4;
+    FButton*      MyButton5;
+    FButton*      MyButton6;
+    FRadioButton* radio1;
+    FLabel*       tagged_count;
+    FLineEdit*    myLineEdit;
+    FListBox*     myList;
+    FString       clipboard;
 };
 #pragma pack(pop)
 
@@ -333,6 +342,7 @@ MyDialog::MyDialog (FWidget* parent)
   initStatusBar();           // Initialize the status bar
   initStatusBarCallbacks();  // Initialize status bar callbacks
   initWidgets();             // Initialize the dialog widgets
+  initWidgetsCallbacks();    // Initialize dialog widget callbacks
 }
 
 //----------------------------------------------------------------------
@@ -523,7 +533,7 @@ void MyDialog::initStatusBarCallbacks()
 void MyDialog::initWidgets()
 {
   // Buttons
-  FButton* MyButton1 = new FButton (this);
+  MyButton1 = new FButton (this);
   MyButton1->setGeometry(3, 3, 5, 1);
   MyButton1->setText (L"&SIN");
   MyButton1->setStatusbarMessage ("Sine function");
@@ -531,7 +541,7 @@ void MyDialog::initWidgets()
   MyButton1->setFlat();
   MyButton1->setDoubleFlatLine (fc::bottom);
 
-  FButton* MyButton2 = new FButton (this);
+  MyButton2 = new FButton (this);
   MyButton2->setGeometry(3, 5, 5, 1);
   MyButton2->setText (L"&COS");
   MyButton2->setStatusbarMessage ("Cosine function");
@@ -539,7 +549,7 @@ void MyDialog::initWidgets()
   MyButton2->setFlat();
   MyButton2->setDoubleFlatLine (fc::top);
 
-  FButton* MyButton3 = new FButton (this);
+  MyButton3 = new FButton (this);
   MyButton3->setGeometry(10, 3, 5, 3);
   MyButton3->setText (L"&=");
   MyButton3->setStatusbarMessage ("Equal");
@@ -551,7 +561,7 @@ void MyDialog::initWidgets()
   radioButtonGroup->setGeometry(3, 8, 14, 4);
   //radioButtonGroup->unsetBorder();
 
-  FRadioButton* radio1 = new FRadioButton ("E&nable", radioButtonGroup);
+  radio1 = new FRadioButton ("E&nable", radioButtonGroup);
   radio1->setGeometry(1, 1, 10, 1);
   radio1->setStatusbarMessage ("Enable button Test");
 
@@ -583,19 +593,19 @@ void MyDialog::initWidgets()
   *myLineEdit << FString("EnTry").toLower();
 
   // Buttons
-  FButton* MyButton4 = new FButton (this);
+  MyButton4 = new FButton (this);
   MyButton4->setGeometry(20, 8, 12, 1);
   MyButton4->setText (L"&Get input");
   MyButton4->setStatusbarMessage ("Take text from input field");
   MyButton4->setFocus();
 
-  FButton* MyButton5 = new FButton (this);
+  MyButton5 = new FButton (this);
   MyButton5->setGeometry(20, 11, 12, 1);
   MyButton5->setText (L"&Test");
   MyButton5->setStatusbarMessage ("Progressbar testing dialog");
   MyButton5->setDisable();
 
-  FButton* MyButton6 = new FButton (this);
+  MyButton6 = new FButton (this);
   MyButton6->setGeometry(20, 14, 12, 1);
   MyButton6->setText (L"&Quit");
   MyButton6->setStatusbarMessage ("Exit the program");
@@ -621,7 +631,7 @@ void MyDialog::initWidgets()
   FLabel* tagged = new FLabel (L"Tagged:", this);
   tagged->setGeometry(21, 4, 7, 1);
 
-  FLabel* tagged_count = new FLabel(this);
+  tagged_count = new FLabel(this);
   tagged_count->setGeometry(29, 4, 5, 1);
   *tagged_count << 0;
 
@@ -632,8 +642,13 @@ void MyDialog::initWidgets()
   FLabel* sum_count = new FLabel (this);
   sum_count->setGeometry(29, 5, 5, 3);
   *sum_count << myList->getCount();
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initWidgetsCallbacks()
+{
   // Add some function callbacks
+
   MyButton1->addCallback
   (
     "clicked",

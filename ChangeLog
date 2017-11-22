@@ -1,3 +1,6 @@
+2017-11-22  Markus Gans  <guru.mail@muenster.de>
+	* Remove duplicated code in FVTerm::print
+
 2017-11-19  Markus Gans  <guru.mail@muenster.de>
 	* Splitting the FString example into sub-functions to make 
 	  the code more comprehensible
