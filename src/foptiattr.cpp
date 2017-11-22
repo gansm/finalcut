@@ -566,46 +566,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
           unsetTermAltCharset(term);
       }
       else
-      {
-        if ( off.attr.bit.pc_charset )
-          unsetTermPCcharset(term);
-
-        if ( off.attr.bit.alt_charset )
-          unsetTermAltCharset(term);
-
-        if ( off.attr.bit.bold )
-          unsetTermBold(term);
-
-        if ( off.attr.bit.dim )
-          unsetTermDim(term);
-
-        if ( off.attr.bit.italic )
-          unsetTermItalic(term);
-
-        if ( off.attr.bit.underline )
-          unsetTermUnderline(term);
-
-        if ( off.attr.bit.blink )
-          unsetTermBlink(term);
-
-        if ( off.attr.bit.reverse )
-          unsetTermReverse(term);
-
-        if ( off.attr.bit.standout )
-          unsetTermStandout(term);
-
-        if ( off.attr.bit.invisible )
-          unsetTermInvisible(term);
-
-        if ( off.attr.bit.protect )
-          unsetTermProtected(term);
-
-        if ( off.attr.bit.crossed_out )
-          unsetTermCrossedOut(term);
-
-        if ( off.attr.bit.dbl_underline )
-          unsetTermDoubleUnderline(term);
-      }
+        setAttributesOff(term);
     }
 
     if ( colorChange(term, next) )
@@ -659,45 +620,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   }
   else
   {
-    if ( off.attr.bit.pc_charset )
-      unsetTermPCcharset(term);
-
-    if ( off.attr.bit.alt_charset )
-      unsetTermAltCharset(term);
-
-    if ( off.attr.bit.bold )
-      unsetTermBold(term);
-
-    if ( off.attr.bit.dim )
-      unsetTermDim(term);
-
-    if ( off.attr.bit.italic )
-      unsetTermItalic(term);
-
-    if ( off.attr.bit.underline )
-      unsetTermUnderline(term);
-
-    if ( off.attr.bit.blink )
-      unsetTermBlink(term);
-
-    if ( off.attr.bit.reverse )
-      unsetTermReverse(term);
-
-    if ( off.attr.bit.standout )
-      unsetTermStandout(term);
-
-    if ( off.attr.bit.invisible )
-      unsetTermInvisible(term);
-
-    if ( off.attr.bit.protect )
-      unsetTermProtected(term);
-
-    if ( off.attr.bit.crossed_out )
-      unsetTermCrossedOut(term);
-
-    if ( off.attr.bit.dbl_underline )
-      unsetTermDoubleUnderline(term);
-
+    setAttributesOff(term);
     detectSwitchOff (term, next);
 
     if ( switchOff() )
@@ -707,45 +630,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
       change_color (term, next);
 
     detectSwitchOn (term, next);
-
-    if ( on.attr.bit.alt_charset )
-      setTermAltCharset(term);
-
-    if ( on.attr.bit.pc_charset )
-      setTermPCcharset(term);
-
-    if ( on.attr.bit.bold )
-      setTermBold(term);
-
-    if ( on.attr.bit.dim )
-      setTermDim(term);
-
-    if ( on.attr.bit.italic )
-      setTermItalic(term);
-
-    if ( on.attr.bit.underline )
-      setTermUnderline(term);
-
-    if ( on.attr.bit.blink )
-      setTermBlink(term);
-
-    if ( on.attr.bit.reverse )
-      setTermReverse(term);
-
-    if ( on.attr.bit.standout )
-      setTermStandout(term);
-
-    if ( on.attr.bit.invisible )
-      setTermInvisible(term);
-
-    if ( on.attr.bit.protect )
-      setTermProtected(term);
-
-    if ( on.attr.bit.crossed_out )
-      setTermCrossedOut(term);
-
-    if ( on.attr.bit.dbl_underline )
-      setTermDoubleUnderline(term);
+    setAttributesOn(term);
   }
 
   if ( term && fake_reverse )
@@ -1169,6 +1054,92 @@ bool FOptiAttr::setTermDefaultColor (char_data*& term)
   }
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::setAttributesOn (char_data*& term)
+{
+  if ( on.attr.bit.alt_charset )
+    setTermAltCharset(term);
+
+  if ( on.attr.bit.pc_charset )
+    setTermPCcharset(term);
+
+  if ( on.attr.bit.bold )
+    setTermBold(term);
+
+  if ( on.attr.bit.dim )
+    setTermDim(term);
+
+  if ( on.attr.bit.italic )
+    setTermItalic(term);
+
+  if ( on.attr.bit.underline )
+    setTermUnderline(term);
+
+  if ( on.attr.bit.blink )
+    setTermBlink(term);
+
+  if ( on.attr.bit.reverse )
+    setTermReverse(term);
+
+  if ( on.attr.bit.standout )
+    setTermStandout(term);
+
+  if ( on.attr.bit.invisible )
+    setTermInvisible(term);
+
+  if ( on.attr.bit.protect )
+    setTermProtected(term);
+
+  if ( on.attr.bit.crossed_out )
+    setTermCrossedOut(term);
+
+  if ( on.attr.bit.dbl_underline )
+    setTermDoubleUnderline(term);
+}
+
+//----------------------------------------------------------------------
+void FOptiAttr::setAttributesOff (char_data*& term)
+{
+  if ( off.attr.bit.pc_charset )
+    unsetTermPCcharset(term);
+
+  if ( off.attr.bit.alt_charset )
+    unsetTermAltCharset(term);
+
+  if ( off.attr.bit.bold )
+    unsetTermBold(term);
+
+  if ( off.attr.bit.dim )
+    unsetTermDim(term);
+
+  if ( off.attr.bit.italic )
+    unsetTermItalic(term);
+
+  if ( off.attr.bit.underline )
+    unsetTermUnderline(term);
+
+  if ( off.attr.bit.blink )
+    unsetTermBlink(term);
+
+  if ( off.attr.bit.reverse )
+    unsetTermReverse(term);
+
+  if ( off.attr.bit.standout )
+    unsetTermStandout(term);
+
+  if ( off.attr.bit.invisible )
+    unsetTermInvisible(term);
+
+  if ( off.attr.bit.protect )
+    unsetTermProtected(term);
+
+  if ( off.attr.bit.crossed_out )
+    unsetTermCrossedOut(term);
+
+  if ( off.attr.bit.dbl_underline )
+    unsetTermDoubleUnderline(term);
 }
 
 //----------------------------------------------------------------------

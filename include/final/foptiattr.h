@@ -218,6 +218,8 @@ class FOptiAttr
     bool  setTermPCcharset (char_data*&);
     bool  unsetTermPCcharset (char_data*&);
     bool  setTermDefaultColor (char_data*&);
+    void  setAttributesOn (char_data*&);
+    void  setAttributesOff (char_data*&);
 
     // Inquiries
     static bool  hasColor (char_data*&);

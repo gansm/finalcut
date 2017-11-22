@@ -1,3 +1,6 @@
+2017-11-23  Markus Gans  <guru.mail@muenster.de>
+	* Remove duplicated code from FOptiAttr::changeAttribute
+
 2017-11-22  Markus Gans  <guru.mail@muenster.de>
 	* Remove duplicated code in FVTerm::print
 
