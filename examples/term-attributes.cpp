@@ -205,6 +205,19 @@ class AttribDemo : public FWidget
     // Methods
     void printColorLine();
     void printAltCharset();
+    void printDim();
+    void printNormal();
+    void printBold();
+    void printBoldDim();
+    void printItalic();
+    void printUnderline();
+    void printDblUnderline();
+    void printCrossesOut();
+    void printBlink();
+    void printReverse();
+    void printStandout();
+    void printInvisible();
+    void printProtected();
     void draw();
 
     // Data Member
@@ -267,6 +280,124 @@ void AttribDemo::printAltCharset()
 }
 
 //----------------------------------------------------------------------
+void AttribDemo::printDim()
+{
+  print("              Dim: ");
+  setDim();
+  printColorLine();
+  unsetDim();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printNormal()
+{
+  print("           Normal: ");
+  setNormal();
+  printColorLine();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printBold()
+{
+  print("             Bold: ");
+  setBold();
+  printColorLine();
+  unsetBold();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printBoldDim()
+{
+  print("         Bold+Dim: ");
+  setBold();
+  setDim();
+  printColorLine();
+  unsetDim();
+  unsetBold();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printItalic()
+{
+  print("           Italic: ");
+  setItalic();
+  printColorLine();
+  unsetItalic();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printUnderline()
+{
+  print("        Underline: ");
+  setUnderline();
+  printColorLine();
+  unsetUnderline();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printDblUnderline()
+{
+  print(" Double underline: ");
+  setDoubleUnderline();
+  printColorLine();
+  unsetDoubleUnderline();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printCrossesOut()
+{
+  print("      Crossed-out: ");
+  setCrossedOut();
+  printColorLine();
+  unsetCrossedOut();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printBlink()
+{
+  print("            Blink: ");
+  setBlink();
+  printColorLine();
+  unsetBlink();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printReverse()
+{
+  print("          Reverse: ");
+  setReverse();
+  printColorLine();
+  unsetReverse();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printStandout()
+{
+  print("         Standout: ");
+  setStandout();
+  printColorLine();
+  unsetStandout();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printInvisible()
+{
+  print("        Invisible: ");
+  setInvisible();
+  printColorLine();
+  unsetInvisible();
+}
+
+//----------------------------------------------------------------------
+void AttribDemo::printProtected()
+{
+  print("        Protected: ");
+  setProtected();
+  printColorLine();
+  unsetProtected();
+}
+
+//----------------------------------------------------------------------
 void AttribDemo::draw()
 {
   // test alternate character set
@@ -282,95 +413,55 @@ void AttribDemo::draw()
     switch (y)
     {
       case 0:
-        print("              Dim: ");
-        setDim();
-        printColorLine();
-        unsetDim();
+        printDim();
         break;
 
       case 1:
-        print("           Normal: ");
-        setNormal();
-        printColorLine();
+        printNormal();
         break;
 
       case 2:
-        print("             Bold: ");
-        setBold();
-        printColorLine();
-        unsetBold();
+        printBold();
         break;
 
       case 3:
-        print("         Bold+Dim: ");
-        setBold();
-        setDim();
-        printColorLine();
-        unsetDim();
-        unsetBold();
+        printBoldDim();
         break;
 
       case 4:
-        print("           Italic: ");
-        setItalic();
-        printColorLine();
-        unsetItalic();
+        printItalic();
         break;
 
       case 5:
-        print("        Underline: ");
-        setUnderline();
-        printColorLine();
-        unsetUnderline();
+        printUnderline();
         break;
 
       case 6:
-        print(" Double underline: ");
-        setDoubleUnderline();
-        printColorLine();
-        unsetDoubleUnderline();
+        printDblUnderline();
         break;
 
       case 7:
-        print("      Crossed-out: ");
-        setCrossedOut();
-        printColorLine();
-        unsetCrossedOut();
+        printCrossesOut();
         break;
 
       case 8:
-        print("            Blink: ");
-        setBlink();
-        printColorLine();
-        unsetBlink();
+        printBlink();
         break;
 
       case 9:
-        print("          Reverse: ");
-        setReverse();
-        printColorLine();
-        unsetReverse();
+        printReverse();
         break;
 
       case 10:
-        print("         Standout: ");
-        setStandout();
-        printColorLine();
-        unsetStandout();
+        printStandout();
         break;
 
       case 11:
-        print("        Invisible: ");
-        setInvisible();
-        printColorLine();
-        unsetInvisible();
+        printInvisible();
         break;
 
       case 12:
-        print("        Protected: ");
-        setProtected();
-        printColorLine();
-        unsetProtected();
+        printProtected();
         break;
     }
   }

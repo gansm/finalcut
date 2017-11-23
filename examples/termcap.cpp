@@ -99,26 +99,15 @@ void tcapString (const std::string& name, const char* cap_str)
   std::cout << "\r\n";
 }
 
-
 //----------------------------------------------------------------------
-//                               main part
-//----------------------------------------------------------------------
-int main (int argc, char* argv[])
+void debug (FApplication& TermApp)
 {
-  bool disable_alt_screen = true;
-  FApplication TermApp (argc, argv, disable_alt_screen);
-
-  // Pointer to the global virtual terminal object
-  terminal = static_cast<FVTerm*>(&TermApp);
-
-  FTermcap::tcap_map* tcap = 0;
-  tcap = FTermcap::getTermcapMap();
-
-  std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
-  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
-
 #if DEBUG
   std::cout << "\n.------------------- debug -------------------\r\n";
+#if defined(__linux__)
+  std::cout << "|               Framebuffer bpp: "
+            << TermApp.framebuffer_bpp << "\r\n";
+#endif
   std::cout << "| after init_256colorTerminal(): "
             << TermApp.termtype_256color << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
@@ -134,7 +123,11 @@ int main (int argc, char* argv[])
 
   std::cout << "`------------------- debug -------------------\r\n";
 #endif
+}
 
+//----------------------------------------------------------------------
+void booleans()
+{
   std::cout << "\r\n[Booleans]\r\n";
   tcapBooleans ( "background_color_erase"
                , FTermcap::background_color_erase );
@@ -150,7 +143,11 @@ int main (int argc, char* argv[])
                , FTermcap::osc_support );
   tcapBooleans ( "no_utf8_acs_chars"
                , FTermcap::no_utf8_acs_chars );
+}
 
+//----------------------------------------------------------------------
+void numeric()
+{
   std::cout << "\r\n[Numeric]\r\n";
   tcapNumeric ("max_color"
               , FTermcap::max_color);
@@ -158,7 +155,11 @@ int main (int argc, char* argv[])
               , FTermcap::tabstop);
   tcapNumeric ("attr_without_color"
               , FTermcap::attr_without_color);
+}
 
+//----------------------------------------------------------------------
+void string(FTermcap::tcap_map*& tcap)
+{
   std::cout << "\r\n[String]\r\n";
   tcapString ("t_bell"
              , tcap[fc::t_bell].string);
@@ -324,4 +325,28 @@ int main (int argc, char* argv[])
              , tcap[fc::t_keypad_local].string);
   tcapString ("t_key_mouse"
              , tcap[fc::t_key_mouse].string);
+}
+
+//----------------------------------------------------------------------
+//                               main part
+//----------------------------------------------------------------------
+int main (int argc, char* argv[])
+{
+  bool disable_alt_screen = true;
+  FApplication TermApp (argc, argv, disable_alt_screen);
+
+  // Pointer to the global virtual terminal object
+  terminal = static_cast<FVTerm*>(&TermApp);
+
+  FTermcap::tcap_map* tcap = 0;
+  tcap = FTermcap::getTermcapMap();
+
+  std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
+  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
+
+  debug (TermApp);
+
+  booleans();
+  numeric();
+  string(tcap);
 }

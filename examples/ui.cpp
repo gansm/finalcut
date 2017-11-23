@@ -772,7 +772,7 @@ void MyDialog::cb_terminfo (FWidget*, data_ptr)
                     , FString()
                       << "  Type: " << getTermType() << "\n"
                       << "  Name: " << getTermName() << "\n"
-                      << "  Mode: " << getEncoding() << "\n"
+                      << "  Mode: " << getEncodingString() << "\n"
                       << "  Size: " << x << wchar_t(fc::Times)
                                     << y << "\n"
                       << "Colors: " << getMaxColor()

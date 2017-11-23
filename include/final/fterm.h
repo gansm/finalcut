@@ -290,9 +290,10 @@ class FTerm
     static int            UTF8decode (const char[]);
 
 #if DEBUG
-    static char termtype_256color[256];
-    static char termtype_Answerback[256];
-    static char termtype_SecDA[256];
+    static char           termtype_256color[256];
+    static char           termtype_Answerback[256];
+    static char           termtype_SecDA[256];
+    static int            framebuffer_bpp;
 #endif
 
   protected:

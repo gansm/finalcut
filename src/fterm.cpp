@@ -106,6 +106,7 @@ char     FTerm::term_name[256] = {};
 char     FTerm::termtype_256color[256]   = {};
 char     FTerm::termtype_Answerback[256] = {};
 char     FTerm::termtype_SecDA[256]      = {};
+int      FTerm::framebuffer_bpp = -1;
 #endif
 
 char*    FTerm::locale_name  = 0;
@@ -2711,7 +2712,7 @@ void FTerm::detectTerminal()
       FTermcap::max_color = 16;
     }
 
-  // Initialize Linux console
+    // Initialize Linux console
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     // Enable 16 background colors
@@ -2730,10 +2731,18 @@ void FTerm::detectTerminal()
 
     if ( linux_terminal )
     {
+      // Underline cursor
       setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
 
-      if ( getFramebuffer_bpp() >= 4 )
+      // Framebuffer color depth in bits per pixel
+      int bpp = getFramebuffer_bpp();
+
+      if ( bpp >= 4 )
         FTermcap::max_color = 16;
+
+#if DEBUG
+      framebuffer_bpp = bpp;
+#endif
     }
 #endif
 #endif
