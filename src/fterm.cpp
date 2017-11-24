@@ -2033,6 +2033,10 @@ int FTerm::setBlinkAsIntensity (bool on)
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
 
+  // Test if the blink-bit is used by the screen font (512 characters)
+  if ( screen_font.charcount > 256 )
+    return -1;
+
   if ( getuid() != 0 )  // Direct hardware access requires root privileges
     return -2;
 
@@ -2249,6 +2253,7 @@ int FTerm::getScreenFont()
   font.width = 32;
   font.height = 32;
   font.charcount = 512;
+
   // initialize with 0
   try
   {
@@ -2431,11 +2436,21 @@ void FTerm::initLinuxConsole()
 
   if ( openConsole() == 0 )
   {
-    if ( isLinuxConsole() )
+    linux_terminal = isLinuxConsole();
+
+    if ( linux_terminal )
     {
       getUnicodeMap();
       getScreenFont();
+      
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
+      // Enable 16 background colors
+      if ( setBlinkAsIntensity(true) == 0 )
+        FTermcap::max_color = 16;
+      else
+        FTermcap::max_color = 8;
     }
+#endif
 
     detectTermSize();
     closeConsole();
@@ -2444,6 +2459,22 @@ void FTerm::initLinuxConsole()
   {
     std::cerr << "can not open the console.\n";
     std::abort();
+  }
+
+  if ( linux_terminal )
+  {
+    // Underline cursor
+    setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
+
+    // Framebuffer color depth in bits per pixel
+    int bpp = getFramebuffer_bpp();
+
+    if ( bpp >= 4 )
+      FTermcap::max_color = 16;
+
+#if DEBUG
+    framebuffer_bpp = bpp;
+#endif
   }
 }
 #endif
@@ -2711,41 +2742,6 @@ void FTerm::detectTerminal()
     {
       FTermcap::max_color = 16;
     }
-
-    // Initialize Linux console
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    // Enable 16 background colors
-    if ( linux_terminal && openConsole() == 0 )
-    {
-      if ( isLinuxConsole() )
-      {
-        if ( setBlinkAsIntensity(true) == 0 )
-          FTermcap::max_color = 16;
-        else
-          FTermcap::max_color = 8;
-      }
-
-      closeConsole();
-    }
-
-    if ( linux_terminal )
-    {
-      // Underline cursor
-      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
-
-      // Framebuffer color depth in bits per pixel
-      int bpp = getFramebuffer_bpp();
-
-      if ( bpp >= 4 )
-        FTermcap::max_color = 16;
-
-#if DEBUG
-      framebuffer_bpp = bpp;
-#endif
-    }
-#endif
-#endif
 
     // Initialize FreeBSD console cursor
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -4021,8 +4017,7 @@ void FTerm::init_encoding()
 //----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
-  if ( FTermcap::max_color >= 16
-      && ! cygwin_terminal
+  if ( ! cygwin_terminal
       && ! kde_konsole
       && ! tera_terminal
       && ! ansi_terminal )
@@ -4030,37 +4025,55 @@ void FTerm::redefineColorPalette()
     resetColorMap();
     saveColorMap();
 
-    setPalette (fc::Black, 0x00, 0x00, 0x00);
-    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-    setPalette (fc::Green, 0x18, 0x78, 0x18);
-    setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
-    setPalette (fc::Red, 0xb2, 0x18, 0x18);
-    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-    setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
-    setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
-    setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
-    setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
-    setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-    setPalette (fc::LightRed, 0xed, 0x57, 0x31);
-    setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
-    setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
-    setPalette (fc::White, 0xff, 0xff, 0xff);
+    if ( FTermcap::max_color >= 16 )
+    {
+      setPalette (fc::Black, 0x00, 0x00, 0x00);
+      setPalette (fc::Blue, 0x22, 0x22, 0xb2);
+      setPalette (fc::Green, 0x18, 0x78, 0x18);
+      setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
+      setPalette (fc::Red, 0xb2, 0x18, 0x18);
+      setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+      setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+      setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
+      setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
+      setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
+      setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
+      setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
+      setPalette (fc::LightRed, 0xed, 0x57, 0x31);
+      setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
+      setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
+      setPalette (fc::White, 0xff, 0xff, 0xff);
+    }
+    else  // 8 colors
+    {
+      setPalette (fc::Black, 0x00, 0x00, 0x00);
+      setPalette (fc::Blue, 0x22, 0x22, 0xb2);
+      setPalette (fc::Green, 0x18, 0x78, 0x18);
+      setPalette (fc::Cyan, 0x66, 0x66, 0xff);
+      setPalette (fc::Red, 0xb2, 0x18, 0x18);
+      setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+      setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+      setPalette (fc::LightGray, 0xd0, 0xd0, 0xd0);
+    }
   }
 }
 
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( FTermcap::max_color >= 16
-      && ! (kde_konsole || tera_terminal || ansi_terminal) )
+  if ( ! (kde_konsole || tera_terminal || ansi_terminal) )
   {
     // Reset screen settings
-    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
-    setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
-    setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
-    setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
-    setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
+    if ( FTermcap::max_color >= 16 )
+    {
+      setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+      setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
+      setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
+      setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
+      setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
+    }
+    else  // 8 colors
+      setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
 
     resetXTermColors();
     resetColorMap();
