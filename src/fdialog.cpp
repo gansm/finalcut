@@ -426,7 +426,8 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     updateTerminal();
   }
 
-  if ( ev->key() == fc::Fckey_caret )  // Ctrl+^ (Ctrl+6)
+  if ( ev->key() == fc::Fckey_caret   // Ctrl+^ (Ctrl+6)
+      || ev->key() == fc::Fkey_f22 )  // Shift+F10
   {
     ev->accept();
     // open the titlebar menu

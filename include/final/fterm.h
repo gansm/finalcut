@@ -452,6 +452,7 @@ class FTerm
     static void           detectTerminal();
     static void           termtypeAnalysis();
     static char*          init_256colorTerminal();
+    static char*          determineMaxColor (char*&);
     static char*          parseAnswerbackMsg (char*&);
     static char*          parseSecDA (char*&);
     static void           oscPrefix();
@@ -464,6 +465,19 @@ class FTerm
     static void           init_termcaps_booleans();
     static void           init_termcaps_numeric();
     static void           init_termcaps_strings (char*&);
+    static void           init_termcaps_quirks();
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    static void           init_termcaps_freebsd_quirks();
+#endif
+    static void           init_termcaps_cygwin_quirks();
+    static void           init_termcaps_linux_quirks();
+    static void           init_termcaps_xterm_quirks();
+    static void           init_termcaps_rxvt_quirks();
+    static void           init_termcaps_vte_quirks();
+    static void           init_termcaps_putty_quirks();
+    static void           init_termcaps_teraterm_quirks();
+    static void           init_termcaps_screen_quirks();
+    static void           init_termcaps_general_quirks();
     static void           init_termcaps_keys (char*&);
     static void           init_OptiMove();
     static void           init_OptiAttr();

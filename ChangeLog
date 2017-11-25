@@ -1,4 +1,7 @@
 2017-11-24  Markus Gans  <guru.mail@muenster.de>
+	* Splitting quirks in serperate methods
+
+2017-11-24  Markus Gans  <guru.mail@muenster.de>
 	* Detects Linux console font with 512 characters and 
 	  reduces the number of colors to 8
 	* Color palette defined for 8 colors

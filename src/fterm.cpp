@@ -2442,15 +2442,27 @@ void FTerm::initLinuxConsole()
     {
       getUnicodeMap();
       getScreenFont();
-      
+
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
       // Enable 16 background colors
       if ( setBlinkAsIntensity(true) == 0 )
         FTermcap::max_color = 16;
       else
         FTermcap::max_color = 8;
-    }
 #endif
+      // Underline cursor
+      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
+
+      // Framebuffer color depth in bits per pixel
+      int bpp = getFramebuffer_bpp();
+
+      if ( bpp >= 4 )
+        FTermcap::max_color = 16;
+
+#if DEBUG
+    framebuffer_bpp = bpp;
+#endif
+    }
 
     detectTermSize();
     closeConsole();
@@ -2459,22 +2471,6 @@ void FTerm::initLinuxConsole()
   {
     std::cerr << "can not open the console.\n";
     std::abort();
-  }
-
-  if ( linux_terminal )
-  {
-    // Underline cursor
-    setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
-
-    // Framebuffer color depth in bits per pixel
-    int bpp = getFramebuffer_bpp();
-
-    if ( bpp >= 4 )
-      FTermcap::max_color = 16;
-
-#if DEBUG
-    framebuffer_bpp = bpp;
-#endif
   }
 }
 #endif
@@ -2542,6 +2538,9 @@ void FTerm::initFreeBSDConsole()
 
     // map meta key to left alt key
     setFreeBSDAlt2Meta();
+
+    // Initialize FreeBSD console cursor
+    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
   }
 }
 #endif
@@ -2710,30 +2709,8 @@ void FTerm::detectTerminal()
     // Identify the terminal via the secondary device attributes (SEC_DA)
     new_termtype = parseSecDA (new_termtype);
 
-    // Determine xterm maximum number of colors via OSC 4
-    if ( ! color256
-        && ! cygwin_terminal
-        && ! tera_terminal
-        && ! linux_terminal
-        && ! netbsd_terminal
-        && ! getXTermColorName(0).isEmpty() )
-    {
-      if ( ! getXTermColorName(256).isEmpty() )
-      {
-        if ( putty_terminal )
-          new_termtype = const_cast<char*>("putty-256color");
-        else
-          new_termtype = const_cast<char*>("xterm-256color");
-      }
-      else if ( ! getXTermColorName(87).isEmpty() )
-      {
-        new_termtype = const_cast<char*>("xterm-88color");
-      }
-      else if ( ! getXTermColorName(15).isEmpty() )
-      {
-        new_termtype = const_cast<char*>("xterm-16color");
-      }
-    }
+    // Determines the maximum number of colors
+    new_termtype = determineMaxColor(new_termtype);
 
     if ( cygwin_terminal
         || putty_terminal
@@ -2742,11 +2719,6 @@ void FTerm::detectTerminal()
     {
       FTermcap::max_color = 16;
     }
-
-    // Initialize FreeBSD console cursor
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
-#endif
 
     t.c_lflag |= uInt(ICANON | ECHO);
     tcsetattr(stdin_no, TCSADRAIN, &t);
@@ -2901,6 +2873,40 @@ char* FTerm::init_256colorTerminal()
                  , new_termtype
                  , std::strlen(new_termtype) + 1 );
 #endif
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::determineMaxColor (char*& current_termtype)
+{
+  // Determine xterm maximum number of colors via OSC 4
+
+  char* new_termtype = current_termtype;
+
+  if ( ! color256
+      && ! cygwin_terminal
+      && ! tera_terminal
+      && ! linux_terminal
+      && ! netbsd_terminal
+      && ! getXTermColorName(0).isEmpty() )
+  {
+    if ( ! getXTermColorName(256).isEmpty() )
+    {
+      if ( putty_terminal )
+        new_termtype = const_cast<char*>("putty-256color");
+      else
+        new_termtype = const_cast<char*>("xterm-256color");
+    }
+    else if ( ! getXTermColorName(87).isEmpty() )
+    {
+      new_termtype = const_cast<char*>("xterm-88color");
+    }
+    else if ( ! getXTermColorName(15).isEmpty() )
+    {
+      new_termtype = const_cast<char*>("xterm-16color");
+    }
+  }
 
   return new_termtype;
 }
@@ -3367,6 +3373,9 @@ void FTerm::init_termcaps()
   // Get termcap strings
   init_termcaps_strings(buffer);
 
+  // Fix terminal quirks
+  init_termcaps_quirks();
+
   // Get termcap keys
   init_termcaps_keys(buffer);
 
@@ -3403,18 +3412,12 @@ void FTerm::init_termcaps_booleans()
 
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
   FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
-
-  // Tera Term eat_nl_glitch fix
-  if ( tera_terminal )
-    FTermcap::eat_nl_glitch = true;
 }
 
 //----------------------------------------------------------------------
 void FTerm::init_termcaps_numeric()
 {
   // Get termcap numeric
-
-  static const int not_available = -1;
 
   // Maximum number of colors on screen
   FTermcap::max_color = std::max( FTermcap::max_color
@@ -3431,23 +3434,8 @@ void FTerm::init_termcaps_numeric()
   // Get initial spacing for hardware tab stop
   FTermcap::tabstop = tgetnum(const_cast<char*>("it"));
 
-  if ( FTermcap::tabstop == not_available )
-    FTermcap::tabstop = 8;
-
   // Get video attributes that cannot be used with colors
   FTermcap::attr_without_color = tgetnum(const_cast<char*>("NC"));
-
-  if ( FTermcap::attr_without_color == not_available )
-    FTermcap::attr_without_color = 0;
-
-  // gnome-terminal has NC=16 however, it can use the dim attribute
-  if ( gnome_terminal )
-    FTermcap::attr_without_color = 0;
-
-  // PuTTY has NC=22 however, it can show underline and reverse
-  // and since version 0.71 is the dim attribute is also supported
-  if ( putty_terminal )
-    FTermcap::attr_without_color = 0;
 }
 
 //----------------------------------------------------------------------
@@ -3458,24 +3446,179 @@ void FTerm::init_termcaps_strings (char*& buffer)
   // Read termcap output strings
   for (int i = 0; tcap[i].tname[0] != 0; i++)
     tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+}
 
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_quirks()
+{
+  if ( cygwin_terminal )
+  {
+    init_termcaps_cygwin_quirks();
+  }
+  else if ( linux_terminal )
+  {
+    init_termcaps_linux_quirks();
+  }
+  else if ( rxvt_terminal )
+  {
+    init_termcaps_rxvt_quirks();
+  }
+  else if ( gnome_terminal )
+  {
+    init_termcaps_vte_quirks();
+  }
+  else if ( tera_terminal )
+  {
+    init_termcaps_teraterm_quirks();
+  }
+  else if ( putty_terminal )
+  {
+    init_termcaps_putty_quirks();
+  }
+  else if ( screen_terminal )
+  {
+    init_termcaps_screen_quirks();
+  }
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  else if ( isFreeBSDConsole() )
+  {
+    init_termcaps_freebsd_quirks()
+  }
+#endif
+
+  // xterm and compatible terminals
+  if ( xterm_terminal && ! putty_terminal )
+    init_termcaps_xterm_quirks();
+
+  // Fixes general quirks
+  init_termcaps_general_quirks();
+}
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+//----------------------------------------------------------------------
+static void FTerm::init_termcaps_freebsd_quirks()
+{
+  // FreeBSD console fixes
+
+  TCAP(fc::t_acs_chars) = \
+    const_cast<char*>("-\036.\0370\333"
+                      "a\260f\370g\361"
+                      "h\261j\331k\277"
+                      "l\332m\300n\305"
+                      "q\304t\303u\264"
+                      "v\301w\302x\263"
+                      "y\363z\362~\371");
+
+    TCAP(fc::t_set_attributes) = \
+      const_cast<char*>(CSI "0"
+                            "%?%p1%p6%|%t;1%;"
+                            "%?%p2%t;4%;"
+                            "%?%p1%p3%|%t;7%;"
+                            "%?%p4%t;5%;m"
+                            "%?%p9%t\016%e\017%;");
+
+  FTermcap::attr_without_color = 18;
+}  
+#endif
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_cygwin_quirks()
+{
   // Set invisible cursor for cygwin terminal
-  if ( cygwin_terminal && ! TCAP(fc::t_cursor_invisible) )
+  if ( ! TCAP(fc::t_cursor_invisible) )
     TCAP(fc::t_cursor_invisible) = \
       const_cast<char*>(CSI "?25l");
 
   // Set visible cursor for cygwin terminal
-  if ( cygwin_terminal && ! TCAP(fc::t_cursor_visible) )
+  if ( ! TCAP(fc::t_cursor_visible) )
     TCAP(fc::t_cursor_visible) = \
       const_cast<char*>(CSI "?25h");
 
   // Set ansi blink for cygwin terminal
-  if ( cygwin_terminal && ! TCAP(fc::t_enter_blink_mode) )
+  if ( ! TCAP(fc::t_enter_blink_mode) )
     TCAP(fc::t_enter_blink_mode) = \
       const_cast<char*>(CSI "5m");
 
+  // Set background color erase for cygwin terminal
+  FTermcap::background_color_erase = true;
+
+  // Set ansi foreground and background color
+  if ( FTermcap::max_color > 8 )
+  {
+    TCAP(fc::t_set_a_foreground) = \
+      const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+    TCAP(fc::t_set_a_background) = \
+      const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+  }
+  else
+  {
+    TCAP(fc::t_set_a_foreground) = \
+      const_cast<char*>(CSI "3%p1%dm");
+    TCAP(fc::t_set_a_background) = \
+      const_cast<char*>(CSI "4%p1%dm");
+  }
+
+  TCAP(fc::t_orig_pair) = \
+    const_cast<char*>(CSI "39;49;25m");
+
+  // Avoid dim + underline
+  TCAP(fc::t_enter_dim_mode)       = 0;
+  TCAP(fc::t_exit_dim_mode)        = 0;
+  TCAP(fc::t_enter_underline_mode) = 0;
+  TCAP(fc::t_exit_underline_mode)  = 0;
+  FTermcap::attr_without_color     = 18;
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_linux_quirks()
+{
+  // Set ansi foreground and background color
+
+  if ( FTermcap::max_color > 8 )
+  {
+    TCAP(fc::t_set_a_foreground) = \
+      const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+    TCAP(fc::t_set_a_background) = \
+      const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+  }
+  else
+  {
+    TCAP(fc::t_set_a_foreground) = \
+      const_cast<char*>(CSI "3%p1%dm");
+    TCAP(fc::t_set_a_background) = \
+      const_cast<char*>(CSI "4%p1%dm");
+  }
+
+  TCAP(fc::t_orig_pair) = \
+    const_cast<char*>(CSI "39;49;25m");
+
+  // Avoid dim + underline
+  TCAP(fc::t_enter_dim_mode)       = 0;
+  TCAP(fc::t_exit_dim_mode)        = 0;
+  TCAP(fc::t_enter_underline_mode) = 0;
+  TCAP(fc::t_exit_underline_mode)  = 0;
+  FTermcap::attr_without_color     = 18;
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_xterm_quirks()
+{
+  // Fallback if "Ic" is not found
+  if ( ! TCAP(fc::t_initialize_color) )
+  {
+    TCAP(fc::t_initialize_color) = \
+      const_cast<char*>(OSC "4;%p1%d;rgb:"
+                        "%p2%{255}%*%{1000}%/%2.2X/"
+                        "%p3%{255}%*%{1000}%/%2.2X/"
+                        "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_rxvt_quirks()
+{
   // Set enter/exit alternative charset mode for rxvt terminal
-  if ( rxvt_terminal && std::strncmp(termtype, "rxvt-16color", 12) == 0 )
+  if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
     TCAP(fc::t_enter_alt_charset_mode) = \
       const_cast<char*>(ESC "(0");
@@ -3483,140 +3626,165 @@ void FTerm::init_termcaps_strings (char*& buffer)
       const_cast<char*>(ESC "(B");
   }
 
-  // set exit underline for gnome terminal
-  if ( gnome_terminal )
-    TCAP(fc::t_exit_underline_mode) = \
-      const_cast<char*>(CSI "24m");
-
-  // Set background color erase for cygwin terminal
-  if ( cygwin_terminal )
-    FTermcap::background_color_erase = true;
-
   // Set ansi foreground and background color
-  if ( linux_terminal || cygwin_terminal )
-  {
-    if ( FTermcap::max_color > 8 )
-    {
-      TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
-      TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
-    }
-    else
-    {
-      TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%dm");
-      TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%dm");
-    }
-
-    TCAP(fc::t_orig_pair) = \
-      const_cast<char*>(CSI "39;49;25m");
-
-    // Avoid dim + underline
-    TCAP(fc::t_enter_dim_mode)       = 0;
-    TCAP(fc::t_exit_dim_mode)        = 0;
-    TCAP(fc::t_enter_underline_mode) = 0;
-    TCAP(fc::t_exit_underline_mode)  = 0;
-    FTermcap::attr_without_color     = 18;
-  }
-  else if ( rxvt_terminal && ! urxvt_terminal )
+  if ( ! urxvt_terminal )
   {
     TCAP(fc::t_set_a_foreground) = \
       const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
     TCAP(fc::t_set_a_background) = \
       const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
   }
-  else if ( tera_terminal )
-  {
-    TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "38;5;%p1%dm");
-    TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "48;5;%p1%dm");
-    TCAP(fc::t_exit_attribute_mode) = \
-      const_cast<char*>(CSI "0m" SI);
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_vte_quirks()
+{
+  // gnome-terminal has NC=16 however, it can use the dim attribute
+  FTermcap::attr_without_color = 0;
+
+  // set exit underline for gnome terminal
+  TCAP(fc::t_exit_underline_mode) = \
+    const_cast<char*>(CSI "24m");
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_putty_quirks()
+{
+  FTermcap::background_color_erase = true;
+  FTermcap::osc_support = true;
+
+  // PuTTY has NC=22 however, it can show underline and reverse
+  // and since version 0.71 is the dim attribute is also supported
+  FTermcap::attr_without_color = 0;
+
+  // Set ansi foreground and background color
+  TCAP(fc::t_set_a_foreground) = \
+    const_cast<char*>(CSI "%?%p1%{8}%<"
+                          "%t3%p1%d"
+                          "%e%p1%{16}%<"
+                          "%t9%p1%{8}%-%d"
+                          "%e38;5;%p1%d%;m");
+
+  TCAP(fc::t_set_a_background) = \
+    const_cast<char*>(CSI "%?%p1%{8}%<"
+                          "%t4%p1%d"
+                          "%e%p1%{16}%<"
+                          "%t10%p1%{8}%-%d"
+                          "%e48;5;%p1%d%;m");
+
+  TCAP(fc::t_set_attributes) = \
+    const_cast<char*>(CSI "0"
+                          "%?%p1%p6%|%t;1%;"
+                          "%?%p5%t;2%;"  // since putty 0.71
+                          "%?%p2%t;4%;"
+                          "%?%p1%p3%|%t;7%;"
+                          "%?%p4%t;5%;m"
+                          "%?%p9%t\016%e\017%;");
+  // PuTTY 0.71 or higher
+  TCAP(fc::t_enter_dim_mode) = \
+    const_cast<char*>(CSI "2m");
+
+  // PuTTY 0.71 or higher
+  TCAP(fc::t_exit_dim_mode) = \
+  const_cast<char*>(CSI "22m");
+
+  if ( ! TCAP(fc::t_clr_bol) )
+    TCAP(fc::t_clr_bol) = \
+      const_cast<char*>(CSI "1K");
+
+  if ( ! TCAP(fc::t_orig_pair) )
     TCAP(fc::t_orig_pair) = \
       const_cast<char*>(CSI "39;49m");
-  }
-  else if ( putty_terminal )
+
+  if ( ! TCAP(fc::t_orig_colors) )
+    TCAP(fc::t_orig_colors) = \
+      const_cast<char*>(OSC "R");
+
+  if ( ! TCAP(fc::t_column_address) )
+    TCAP(fc::t_column_address) = \
+      const_cast<char*>(CSI "%i%p1%dG");
+
+  if ( ! TCAP(fc::t_row_address) )
+    TCAP(fc::t_row_address) = \
+      const_cast<char*>(CSI "%i%p1%dd");
+
+  if ( ! TCAP(fc::t_enable_acs) )
+    TCAP(fc::t_enable_acs) = \
+      const_cast<char*>(ESC "(B" ESC ")0");
+
+  if ( ! TCAP(fc::t_enter_am_mode) )
+    TCAP(fc::t_enter_am_mode) = \
+      const_cast<char*>(CSI "?7h");
+
+  if ( ! TCAP(fc::t_exit_am_mode) )
+    TCAP(fc::t_exit_am_mode) = \
+      const_cast<char*>(CSI "?7l");
+
+  if ( ! TCAP(fc::t_enter_pc_charset_mode) )
+    TCAP(fc::t_enter_pc_charset_mode) = \
+      const_cast<char*>(CSI "11m");
+
+  if ( ! TCAP(fc::t_exit_pc_charset_mode) )
+    TCAP(fc::t_exit_pc_charset_mode) = \
+      const_cast<char*>(CSI "10m");
+
+  if ( ! TCAP(fc::t_key_mouse) )
+    TCAP(fc::t_key_mouse) = \
+      const_cast<char*>(CSI "M");
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_teraterm_quirks()
+{
+  // Tera Term eat_nl_glitch fix
+  FTermcap::eat_nl_glitch = true;
+
+  // Tera Term color settings
+  TCAP(fc::t_set_a_foreground) = \
+    const_cast<char*>(CSI "38;5;%p1%dm");
+  TCAP(fc::t_set_a_background) = \
+    const_cast<char*>(CSI "48;5;%p1%dm");
+  TCAP(fc::t_exit_attribute_mode) = \
+    const_cast<char*>(CSI "0m" SI);
+  TCAP(fc::t_orig_pair) = \
+    const_cast<char*>(CSI "39;49m");
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_screen_quirks()
+{
+  // Fallback if "Ic" is not found
+  if ( ! TCAP(fc::t_initialize_color) )
   {
-    FTermcap::background_color_erase = true;
-    FTermcap::osc_support = true;
-
-    TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<"
-                            "%t3%p1%d"
-                            "%e%p1%{16}%<"
-                            "%t9%p1%{8}%-%d"
-                            "%e38;5;%p1%d%;m");
-
-    TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<"
-                            "%t4%p1%d"
-                            "%e%p1%{16}%<"
-                            "%t10%p1%{8}%-%d"
-                            "%e48;5;%p1%d%;m");
-
-    TCAP(fc::t_set_attributes) = \
-      const_cast<char*>(CSI "0"
-                            "%?%p1%p6%|%t;1%;"
-                            "%?%p5%t;2%;"  // since putty 0.71
-                            "%?%p2%t;4%;"
-                            "%?%p1%p3%|%t;7%;"
-                            "%?%p4%t;5%;m"
-                            "%?%p9%t\016%e\017%;");
-    // PuTTY 0.71 or higher
-    TCAP(fc::t_enter_dim_mode) = \
-      const_cast<char*>(CSI "2m");
-
-    // PuTTY 0.71 or higher
-    TCAP(fc::t_exit_dim_mode) = \
-    const_cast<char*>(CSI "22m");
-
-    if ( ! TCAP(fc::t_clr_bol) )
-      TCAP(fc::t_clr_bol) = \
-        const_cast<char*>(CSI "1K");
-
-    if ( ! TCAP(fc::t_orig_pair) )
-      TCAP(fc::t_orig_pair) = \
-        const_cast<char*>(CSI "39;49m");
-
-    if ( ! TCAP(fc::t_orig_colors) )
-      TCAP(fc::t_orig_colors) = \
-        const_cast<char*>(OSC "R");
-
-    if ( ! TCAP(fc::t_column_address) )
-      TCAP(fc::t_column_address) = \
-        const_cast<char*>(CSI "%i%p1%dG");
-
-    if ( ! TCAP(fc::t_row_address) )
-      TCAP(fc::t_row_address) = \
-        const_cast<char*>(CSI "%i%p1%dd");
-
-    if ( ! TCAP(fc::t_enable_acs) )
-      TCAP(fc::t_enable_acs) = \
-        const_cast<char*>(ESC "(B" ESC ")0");
-
-    if ( ! TCAP(fc::t_enter_am_mode) )
-      TCAP(fc::t_enter_am_mode) = \
-        const_cast<char*>(CSI "?7h");
-
-    if ( ! TCAP(fc::t_exit_am_mode) )
-      TCAP(fc::t_exit_am_mode) = \
-        const_cast<char*>(CSI "?7l");
-
-    if ( ! TCAP(fc::t_enter_pc_charset_mode) )
-      TCAP(fc::t_enter_pc_charset_mode) = \
-        const_cast<char*>(CSI "11m");
-
-    if ( ! TCAP(fc::t_exit_pc_charset_mode) )
-      TCAP(fc::t_exit_pc_charset_mode) = \
-        const_cast<char*>(CSI "10m");
-
-    if ( ! TCAP(fc::t_key_mouse) )
-      TCAP(fc::t_key_mouse) = \
-        const_cast<char*>(CSI "M");
+    if ( tmux_terminal )
+    {
+      TCAP(fc::t_initialize_color) = \
+        const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
+                          "%p2%{255}%*%{1000}%/%2.2X/"
+                          "%p3%{255}%*%{1000}%/%2.2X/"
+                          "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+    }
+    else
+    {
+      TCAP(fc::t_initialize_color) = \
+        const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
+                          "%p2%{255}%*%{1000}%/%2.2X/"
+                          "%p3%{255}%*%{1000}%/%2.2X/"
+                          "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+    }
   }
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_general_quirks()
+{
+  static const int not_available = -1;
+
+  if ( FTermcap::tabstop == not_available )
+    FTermcap::tabstop = 8;
+
+  if ( FTermcap::attr_without_color == not_available )
+    FTermcap::attr_without_color = 0;
 
   // Fallback if "AF" is not found
   if ( ! TCAP(fc::t_set_a_foreground) )
@@ -3631,41 +3799,11 @@ void FTerm::init_termcaps_strings (char*& buffer)
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
-    if ( screen_terminal )
-    {
-      if ( tmux_terminal )
-      {
-        TCAP(fc::t_initialize_color) = \
-          const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                            "%p2%{255}%*%{1000}%/%2.2X/"
-                            "%p3%{255}%*%{1000}%/%2.2X/"
-                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-      }
-      else
-      {
-        TCAP(fc::t_initialize_color) = \
-          const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
-                            "%p2%{255}%*%{1000}%/%2.2X/"
-                            "%p3%{255}%*%{1000}%/%2.2X/"
-                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-      }
-    }
-    else if ( xterm_terminal && ! putty_terminal )
-    {
-      TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(OSC "4;%p1%d;rgb:"
-                          "%p2%{255}%*%{1000}%/%2.2X/"
-                          "%p3%{255}%*%{1000}%/%2.2X/"
-                          "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
-    }
-    else
-    {
-      TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(OSC "P%p1%x"
-                          "%p2%{255}%*%{1000}%/%02x"
-                          "%p3%{255}%*%{1000}%/%02x"
-                          "%p4%{255}%*%{1000}%/%02x");
-    }
+    TCAP(fc::t_initialize_color) = \
+      const_cast<char*>(OSC "P%p1%x"
+                        "%p2%{255}%*%{1000}%/%02x"
+                        "%p3%{255}%*%{1000}%/%02x"
+                        "%p4%{255}%*%{1000}%/%02x");
   }
 
   // Fallback if "ti" is not found
@@ -3718,28 +3856,6 @@ void FTerm::init_termcaps_strings (char*& buffer)
     TCAP(fc::t_exit_crossed_out_mode) = \
       const_cast<char*>(CSI "29m");
   }
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  if ( isFreeBSDConsole() )
-  {
-    TCAP(fc::t_acs_chars) = \
-      const_cast<char*>("-\036.\0370\333"
-                        "a\260f\370g\361"
-                        "h\261j\331k\277"
-                        "l\332m\300n\305"
-                        "q\304t\303u\264"
-                        "v\301w\302x\263"
-                        "y\363z\362~\371");
-      TCAP(fc::t_set_attributes) = \
-        const_cast<char*>(CSI "0"
-                              "%?%p1%p6%|%t;1%;"
-                              "%?%p2%t;4%;"
-                              "%?%p1%p3%|%t;7%;"
-                              "%?%p4%t;5%;m"
-                              "%?%p9%t\016%e\017%;");
-    FTermcap::attr_without_color = 18;
-  }
-#endif
 }
 
 //----------------------------------------------------------------------
@@ -3794,6 +3910,7 @@ void FTerm::init_termcaps_keys (char*& buffer)
 
       if ( std::strncmp(Fkey[i].tname, "krx", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "C");  // Key right
+
 
       if ( std::strncmp(Fkey[i].tname, "klx", 3) == 0 )
         Fkey[i].string = const_cast<char*>(CSI "D");  // Key left
