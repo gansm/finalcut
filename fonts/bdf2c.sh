@@ -22,7 +22,7 @@ FONTFILE="8x16graph.bdf"
   | while IFS=$'\n'; read -r LINE
   do
     echo "$LINE /* $N */"
-    let N++
+    (( N++ ))
   done
 
   echo -e "};"

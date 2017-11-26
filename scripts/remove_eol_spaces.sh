@@ -4,6 +4,6 @@ find ../src/ \
      ../include/final/ \
      ../examples/ \
      -regextype posix-egrep \
-     -regex ".*\.(cpp|h)$" \
+     -regex ".*\\.(cpp|h)$" \
      -exec sed -i 's/ *$//' "{}" \;
 

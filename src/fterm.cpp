@@ -3518,7 +3518,7 @@ static void FTerm::init_termcaps_freebsd_quirks()
                             "%?%p9%t\016%e\017%;");
 
   FTermcap::attr_without_color = 18;
-}  
+}
 #endif
 
 //----------------------------------------------------------------------
@@ -4016,6 +4016,26 @@ void FTerm::init_OptiAttr()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_font()
+{
+  if ( init_values.vgafont )
+  {
+    bool ret = setVGAFont();
+
+    if ( ! ret )
+      exitWithMessage ("VGAfont is not supported by this terminal");
+  }
+
+  if ( init_values.newfont )
+  {
+    bool ret = setNewFont();
+
+    if ( ! ret )
+      exitWithMessage ("Newfont is not supported by this terminal");
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_locale()
 {
   // Init current locale
@@ -4198,6 +4218,54 @@ void FTerm::restoreColorPalette()
 }
 
 //----------------------------------------------------------------------
+void FTerm::enableMouse()
+{
+#ifdef F_HAVE_LIBGPM
+  // Enable the linux general purpose mouse (gpm) server
+  gpm_mouse_enabled = enableGpmMouse();
+#endif
+
+  // Enable xterm mouse support
+  if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
+  {
+    mouse_support = true;
+    enableXTermMouse();
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::disableMouse()
+{
+  // Disable xterm mouse support
+  if ( mouse_support )
+    disableXTermMouse();
+
+#ifdef F_HAVE_LIBGPM
+  // Disable the linux general purpose mouse (gpm) server
+  if ( gpm_mouse_enabled )
+    disableGpmMouse();
+#endif
+}
+
+//----------------------------------------------------------------------
+void FTerm::captureXTermFontAndTitle()
+{
+  if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
+  {
+    struct termios t;
+    tcgetattr (stdin_no, &t);
+    t.c_lflag &= uInt(~(ICANON | ECHO));
+    tcsetattr (stdin_no, TCSANOW, &t);
+
+    xterm_font  = getXTermFont();
+    xterm_title = getXTermTitle();
+
+    t.c_lflag |= uInt(ICANON | ECHO);
+    tcsetattr (stdin_no, TCSADRAIN, &t);
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::init()
 {
   init_term_object = this;
@@ -4238,18 +4306,24 @@ void FTerm::init()
     term_name[0] = '\0';
 
 #if defined(__linux__)
+
   // initialize Linux console
   initLinuxConsole();
+
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
+
   // Initialize BSD console
   initFreeBSDConsole();
+
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
+
   // Initialize wscons console
   initWSConsConsole();
+
 #endif
 
   // Save termios settings
@@ -4283,19 +4357,8 @@ void FTerm::init()
   if ( init_values.encoding != fc::UNKNOWN )
     setEncoding(init_values.encoding);
 
-#ifdef F_HAVE_LIBGPM
-
-  // Enable the linux general purpose mouse (gpm) server
-  gpm_mouse_enabled = enableGpmMouse();
-
-#endif
-
-  // xterm mouse support
-  if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
-  {
-    mouse_support = true;
-    enableXTermMouse();
-  }
+  // Enable the terminal mouse support
+  enableMouse();
 
   // activate meta key sends escape
   if ( xterm_terminal )
@@ -4329,19 +4392,8 @@ void FTerm::init()
     std::fflush(stdout);
   }
 
-  if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
-  {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-    t.c_lflag &= uInt(~(ICANON | ECHO));
-    tcsetattr (stdin_no, TCSANOW, &t);
-
-    xterm_font  = getXTermFont();
-    xterm_title = getXTermTitle();
-
-    t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr (stdin_no, TCSADRAIN, &t);
-  }
+  // Save the used xterm font and window title
+  captureXTermFontAndTitle();
 
   if ( kde_konsole )
     setKDECursor(fc::UnderlineCursor);
@@ -4365,21 +4417,9 @@ void FTerm::init()
   if ( ! init_values.cursor_optimisation )
     setCursorOptimisation (false);
 
-  if ( init_values.vgafont )
-  {
-    bool ret = setVGAFont();
-
-    if ( ! ret )
-      exitWithMessage ("VGAfont is not supported by this terminal");
-  }
-
-  if ( init_values.newfont )
-  {
-    bool ret = setNewFont();
-
-    if ( ! ret )
-      exitWithMessage ("Newfont is not supported by this terminal");
-  }
+  // Activate the VGA or the new graphic font
+  // (depending on the initialization values)
+  init_font();
 
   // turn off hardware echo
   noHardwareEcho();
@@ -4458,20 +4498,12 @@ void FTerm::finish()
 
   resetBeep();
 
-  // Disable xterm mouse support
-  if ( mouse_support )
-    disableXTermMouse();
+  // Disable the terminal mouse support
+  disableMouse();
 
   // Deactivate meta key sends escape
   if ( xterm_terminal )
     xtermMetaSendsESC(false);
-
-#ifdef F_HAVE_LIBGPM
-
-  if ( gpm_mouse_enabled )
-    disableGpmMouse();  // Disable gpm server
-
-#endif
 
   // restores the screen and the cursor position
   if ( use_alternate_screen && TCAP(fc::t_exit_ca_mode) )

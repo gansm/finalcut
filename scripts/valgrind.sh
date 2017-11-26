@@ -13,7 +13,7 @@ fi
 test ! -x "$PROG" && echo "No executable file not found" && exit -1
 
 # ELF executable file?
-ELFMAGIC="$(echo -e "\x7fELF")"
+ELFMAGIC="$(echo -e "\\x7fELF")"
 MAGIC="$(dd bs=1 count=4 if="$PROG" 2>/dev/null)"
 test "$MAGIC" != "$ELFMAGIC" && echo "No ELF executable file" && exit -2
 

@@ -20,7 +20,7 @@ FONTFILE="8x16std"
       echo "$LINE"
     else
       echo "$LINE  /* $N */"  | sed -e 's/\([0-9]\)  \/\*/\1   \/*/'
-      let N++
+      (( N++ ))
     fi
   done
 

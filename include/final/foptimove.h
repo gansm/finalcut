@@ -121,6 +121,13 @@ class FOptiMove
     int  repeatedAppend (const capability&, int, char*);
     int  relativeMove (char*&, int, int, int, int);
     bool isWideMove (int, int, int, int);
+    bool isMethod0Faster (int&, int, int);
+    bool isMethod1Faster (int&, int, int, int, int);
+    bool isMethod2Faster (int&, int, int, int);
+    bool isMethod3Faster (int&, int, int);
+    bool isMethod4Faster (int&, int, int);
+    bool isMethod5Faster (int&, int, int, int);
+    void moveByMethod (int, int, int, int, int);
 
     // Data Members
     capability F_cursor_home;

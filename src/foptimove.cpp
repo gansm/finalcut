@@ -488,23 +488,12 @@ int FOptiMove::set_clr_eol (char*& cap)
 //----------------------------------------------------------------------
 char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
-  char  null_result[sizeof(move_buf)];
-  char* null_ptr = null_result;
-  char* move_ptr = move_buf;
-  char* move_xy;
-  int   method = 0
-    ,   new_time
-    ,   move_time = LONG_DURATION;
+  int   method = 0;
+  int   move_time = LONG_DURATION;
 
   // Method 0: direct cursor addressing
-  move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
-
-  if ( move_xy )
+  if ( isMethod0Faster(move_time, xnew, ynew) )
   {
-    method = 0;
-    std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
-    move_time = F_cursor_address.duration;
-
     if ( xold < 0
         || yold < 0
         || isWideMove (xold, yold, xnew, ynew) )
@@ -514,123 +503,27 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   }
 
   // Method 1: local movement
-  if ( xold >= 0 && yold >= 0 )
-  {
-    new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
-
-    if ( new_time < LONG_DURATION && new_time < move_time )
-    {
-      method = 1;
-      move_time = new_time;
-    }
-  }
+  if ( isMethod1Faster(move_time, xold, yold, xnew, ynew) )
+    method = 1;
 
   // Method 2: carriage-return + local movement
-  if ( yold >= 0 && F_carriage_return.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
-
-    if ( new_time < LONG_DURATION
-        && F_carriage_return.duration + new_time < move_time )
-    {
-      method = 2;
-      move_time = F_carriage_return.duration + new_time;
-    }
-  }
+  if ( isMethod2Faster(move_time, yold, xnew, ynew) )
+    method = 2;
 
   // Method 3: home-cursor + local movement
-  if ( F_cursor_home.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
-
-    if ( new_time < LONG_DURATION
-        && F_cursor_home.duration + new_time < move_time )
-    {
-      method = 3;
-      move_time = F_cursor_home.duration + new_time;
-    }
-  }
+  if ( isMethod3Faster(move_time, xnew, ynew) )
+    method = 3;
 
   // Method 4: home-down + local movement
-  if ( F_cursor_to_ll.cap )
-  {
-    new_time = relativeMove (null_ptr, 0, screen_height - 1, xnew, ynew);
-
-    if ( new_time < LONG_DURATION
-        && F_cursor_to_ll.duration + new_time < move_time )
-    {
-      method = 4;
-      move_time = F_cursor_to_ll.duration + new_time;
-    }
-  }
+  if ( isMethod4Faster(move_time, xnew, ynew) )
+    method = 4;
 
   // Method 5: left margin for wrap to right-hand side
-  if ( automatic_left_margin
-      && ! eat_nl_glitch
-      && yold > 0
-      && F_cursor_left.cap )
-  {
-    new_time = relativeMove (null_ptr, screen_width - 1, yold - 1, xnew, ynew);
+  if ( isMethod5Faster(move_time, yold, xnew, ynew) )
+    method = 5;
 
-    if ( new_time < LONG_DURATION
-        && F_carriage_return.cap
-        && F_carriage_return.duration
-         + F_cursor_left.duration + new_time < move_time )
-    {
-      method = 5;
-      move_time = F_carriage_return.duration
-                + F_cursor_left.duration + new_time;
-    }
-  }
-
-  if ( method )
-  {
-    switch ( method )
-    {
-      case 1:
-        relativeMove (move_ptr, xold, yold, xnew, ynew);
-        break;
-
-      case 2:
-        if ( F_carriage_return.cap )
-        {
-          std::strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
-          move_ptr += F_carriage_return.length;
-          relativeMove (move_ptr, 0, yold, xnew, ynew);
-        }
-        break;
-
-      case 3:
-        std::strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
-        move_ptr += F_cursor_home.length;
-        relativeMove (move_ptr, 0, 0, xnew, ynew);
-        break;
-
-      case 4:
-        std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
-        move_ptr += F_cursor_to_ll.length;
-        relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
-        break;
-
-      case 5:
-        move_buf[0] = '\0';
-
-        if ( xold >= 0 )
-          std::strncat ( move_ptr
-                       , F_carriage_return.cap
-                       , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
-
-        std::strncat ( move_ptr
-                     , F_cursor_left.cap
-                     , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
-        move_ptr += std::strlen(move_buf);
-        relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
-        break;
-
-      default:
-        break;
-    }
-  }
+  // Copy the escape sequence for the chosen method in move_buf
+  moveByMethod (method, xold, yold, xnew, ynew);
 
   if ( move_time < LONG_DURATION )
     return move_buf;
@@ -988,4 +881,201 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
                && xnew < screen_width - 1 - MOVE_LIMIT
                && std::abs(xnew - xold) + std::abs(ynew - yold)
                   > MOVE_LIMIT );
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod0Faster ( int& move_time
+                                       , int xnew, int ynew )
+{
+  // Test method 0: direct cursor addressing
+  char* move_xy = tgoto(F_cursor_address.cap, xnew, ynew);
+
+  if ( move_xy )
+  {
+    char* move_ptr = move_buf;
+    std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
+    move_time = F_cursor_address.duration;
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod1Faster ( int& move_time
+                                       , int xold, int yold
+                                       , int xnew, int ynew )
+{
+  // Test method 1: local movement
+
+  if ( xold >= 0 && yold >= 0 )
+  {
+    char  null_result[sizeof(move_buf)];
+    char* null_ptr = null_result;
+    int   new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
+
+    if ( new_time < LONG_DURATION && new_time < move_time )
+    {
+      move_time = new_time;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod2Faster ( int& move_time
+                                       , int yold
+                                       , int xnew, int ynew )
+{
+  // Test method 2: carriage-return + local movement
+
+  if ( yold >= 0 && F_carriage_return.cap )
+  {
+    char  null_result[sizeof(move_buf)];
+    char* null_ptr = null_result;
+    int   new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
+
+    if ( new_time < LONG_DURATION
+        && F_carriage_return.duration + new_time < move_time )
+    {
+      move_time = F_carriage_return.duration + new_time;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod3Faster ( int& move_time
+                                       , int xnew, int ynew )
+{
+  // Test method 3: home-cursor + local movement
+
+  if ( F_cursor_home.cap )
+  {
+    char  null_result[sizeof(move_buf)];
+    char* null_ptr = null_result;
+    int   new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
+
+    if ( new_time < LONG_DURATION
+        && F_cursor_home.duration + new_time < move_time )
+    {
+      move_time = F_cursor_home.duration + new_time;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod4Faster ( int& move_time
+                                       , int xnew, int ynew )
+{
+  // Test method 4: home-down + local movement
+  if ( F_cursor_to_ll.cap )
+  {
+    char  null_result[sizeof(move_buf)];
+    char* null_ptr = null_result;
+    int   new_time = relativeMove ( null_ptr
+                                  , 0, screen_height - 1
+                                  , xnew, ynew );
+
+    if ( new_time < LONG_DURATION
+        && F_cursor_to_ll.duration + new_time < move_time )
+    {
+      move_time = F_cursor_to_ll.duration + new_time;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FOptiMove::isMethod5Faster ( int& move_time
+                                       , int yold
+                                       , int xnew, int ynew )
+{
+  // Test method 5: left margin for wrap to right-hand side
+  if ( automatic_left_margin
+      && ! eat_nl_glitch
+      && yold > 0
+      && F_cursor_left.cap )
+  {
+    char  null_result[sizeof(move_buf)];
+    char* null_ptr = null_result;
+    int   new_time = relativeMove ( null_ptr
+                                  , screen_width - 1, yold - 1
+                                  , xnew, ynew );
+
+    if ( new_time < LONG_DURATION
+        && F_carriage_return.cap
+        && F_carriage_return.duration
+         + F_cursor_left.duration + new_time < move_time )
+    {
+      move_time = F_carriage_return.duration
+                + F_cursor_left.duration + new_time;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+void FOptiMove::moveByMethod ( int method
+                             , int xold, int yold
+                             , int xnew, int ynew )
+{
+  char* move_ptr = move_buf;
+
+  switch ( method )
+  {
+    case 1:
+      relativeMove (move_ptr, xold, yold, xnew, ynew);
+      break;
+
+    case 2:
+      if ( F_carriage_return.cap )
+      {
+        std::strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
+        move_ptr += F_carriage_return.length;
+        relativeMove (move_ptr, 0, yold, xnew, ynew);
+      }
+      break;
+
+    case 3:
+      std::strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
+      move_ptr += F_cursor_home.length;
+      relativeMove (move_ptr, 0, 0, xnew, ynew);
+      break;
+
+    case 4:
+      std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
+      move_ptr += F_cursor_to_ll.length;
+      relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
+      break;
+
+    case 5:
+      move_buf[0] = '\0';
+
+      if ( xold >= 0 )
+        std::strncat ( move_ptr
+                     , F_carriage_return.cap
+                     , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+
+      std::strncat ( move_ptr
+                   , F_cursor_left.cap
+                   , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+      move_ptr += std::strlen(move_buf);
+      relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
+      break;
+
+    default:
+      break;
+  }
 }

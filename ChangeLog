@@ -1,4 +1,8 @@
-2017-11-24  Markus Gans  <guru.mail@muenster.de>
+2017-11-26  Markus Gans  <guru.mail@muenster.de>
+	* Better code readability by splitting FOptiMove::moveCursor 
+	  into sub-functions
+
+2017-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Splitting quirks in serperate methods
 
 2017-11-24  Markus Gans  <guru.mail@muenster.de>

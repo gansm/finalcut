@@ -481,10 +481,14 @@ class FTerm
     static void           init_termcaps_keys (char*&);
     static void           init_OptiMove();
     static void           init_OptiAttr();
+    static void           init_font();
     static void           init_locale();
     static void           init_encoding();
     static void           redefineColorPalette();
     static void           restoreColorPalette();
+    static void           enableMouse();
+    static void           disableMouse();
+    static void           captureXTermFontAndTitle();
     void                  init();
     void                  finish();
     static uInt           cp437_to_unicode (uChar);
