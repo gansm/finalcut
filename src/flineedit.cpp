@@ -234,8 +234,8 @@ bool FLineEdit::setFocus (bool on)
 bool FLineEdit::setShadow (bool on)
 {
   if ( on
-      && term_encoding != fc::VT100
-      && term_encoding != fc::ASCII )
+    && term_encoding != fc::VT100
+    && term_encoding != fc::ASCII )
   {
     flags |= fc::shadow;
     setShadowSize(1,1);
@@ -364,7 +364,7 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
         cursor_pos = len;
 
       if ( cursor_pos - text_offset >= getWidth() - 2
-          && text_offset <= len - getWidth() + 1 )
+        && text_offset <= len - getWidth() + 1 )
         text_offset++;
 
       ev->accept();
@@ -473,8 +473,8 @@ void FLineEdit::onKeyPress (FKeyEvent* ev)
   // end of switch
 
   if ( ev->isAccepted()
-      && key != fc::Fkey_return
-      && key != fc::Fkey_enter )
+    && key != fc::Fkey_return
+    && key != fc::Fkey_enter )
   {
     drawInputField();
     updateTerminal();
@@ -730,7 +730,7 @@ void FLineEdit::adjustLabel()
     label_length--;
 
   assert ( label_orientation == label_above
-          || label_orientation == label_left );
+        || label_orientation == label_left );
 
   switch ( label_orientation )
   {

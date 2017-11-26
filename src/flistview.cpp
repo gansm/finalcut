@@ -100,8 +100,8 @@ FListViewItem::~FListViewItem()  // destructor
 FString FListViewItem::getText (int column) const
 {
   if ( column < 1
-      || column_list.empty()
-      || column > int(column_list.size()) )
+    || column_list.empty()
+    || column > int(column_list.size()) )
     return *fc::empty_string;
 
   column--;  // Convert column position to address offset (index)
@@ -126,8 +126,8 @@ uInt FListViewItem::getDepth() const
 void FListViewItem::setText (int column, const FString& text)
 {
   if ( column < 1
-      || column_list.empty()
-      || column > int(column_list.size()) )
+    || column_list.empty()
+    || column > int(column_list.size()) )
     return;
 
   FObject* parent = getParent();
@@ -916,7 +916,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
     , mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
-      && mouse_y > 1 && mouse_y < getHeight() )
+    && mouse_y > 1 && mouse_y < getHeight() )
   {
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -938,7 +938,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
     vbar->setValue (first_visible_line.getPosition());
 
     if ( vbar->isVisible()
-        && first_line_position_before != first_visible_line.getPosition() )
+      && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -963,7 +963,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
     int mouse_y = ev->getY();
 
     if ( mouse_x > 1 && mouse_x < getWidth()
-        && mouse_y > 1 && mouse_y < getHeight() )
+      && mouse_y > 1 && mouse_y < getHeight() )
     {
       if ( tree_view )
       {
@@ -1004,7 +1004,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
     , mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
-      && mouse_y > 1 && mouse_y < getHeight() )
+    && mouse_y > 1 && mouse_y < getHeight() )
   {
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1017,7 +1017,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
     vbar->setValue (first_visible_line.getPosition());
 
     if ( vbar->isVisible()
-        && first_line_position_before != first_visible_line.getPosition() )
+      && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -1029,7 +1029,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
   {
     // drag up
     if ( drag_scroll != fc::noScroll
-        && scroll_distance < getClientHeight() )
+      && scroll_distance < getClientHeight() )
       scroll_distance++;
 
     if ( ! scroll_timer && current_iter.getPosition() > 0 )
@@ -1053,7 +1053,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
   {
     // drag down
     if ( drag_scroll != fc::noScroll
-        && scroll_distance < getClientHeight() )
+      && scroll_distance < getClientHeight() )
       scroll_distance++;
 
     if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
@@ -1095,7 +1095,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
   mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
-      && mouse_y > 1 && mouse_y < getHeight() )
+    && mouse_y > 1 && mouse_y < getHeight() )
   {
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
@@ -1164,7 +1164,8 @@ void FListView::onTimer (FTimerEvent*)
 
   vbar->setValue (first_visible_line.getPosition());
 
-  if ( vbar->isVisible() && first_line_position_before != first_visible_line.getPosition() )
+  if ( vbar->isVisible()
+    && first_line_position_before != first_visible_line.getPosition() )
     vbar->drawBar();
 
   updateTerminal();
@@ -1496,9 +1497,9 @@ void FListView::drawColumnLabels()
   uInt txt_length;
 
   if ( header.empty()
-      || getHeight() <= 2
-      || getWidth() <= 4
-      || max_line_width < 1 )
+    || getHeight() <= 2
+    || getWidth() <= 4
+    || max_line_width < 1 )
     return;
 
   iter = header.begin();
@@ -1825,7 +1826,7 @@ void FListView::stepForward()
 void FListView::stepBackward()
 {
   if ( current_iter == first_visible_line
-      && current_iter != itemlist.begin() )
+    && current_iter != itemlist.begin() )
   {
     --first_visible_line;
     --last_visible_line;
@@ -2007,12 +2008,12 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
     drawList();
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollPageForward )
+    && scrollType <= FScrollbar::scrollPageForward )
   {
     vbar->setValue (first_visible_line.getPosition());
 
     if ( vbar->isVisible()
-        && first_line_position_before != first_visible_line.getPosition() )
+      && first_line_position_before != first_visible_line.getPosition() )
       vbar->drawBar();
 
     updateTerminal();
@@ -2098,7 +2099,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown )
+    && scrollType <= FScrollbar::scrollWheelDown )
   {
     hbar->setValue (xoffset);
 

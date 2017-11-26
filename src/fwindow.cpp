@@ -404,7 +404,7 @@ void FWindow::setSize (int w, int h, bool adjust)
   FWidget::setSize (w, h, adjust);
 
   if ( isVirtualWindow()
-      && (getWidth() != old_width || getHeight() != old_height) )
+    && (getWidth() != old_width || getHeight() != old_height) )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1, -1);
@@ -476,7 +476,7 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( ! w->isWindowHidden()
-            && w->getTermGeometry().contains(x, y) )
+          && w->getTermGeometry().contains(x, y) )
           return w;
       }
     }
@@ -627,7 +627,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     return false;
 
   if ( (window_list->back()->getFlags() & fc::modal) != 0
-      && ! obj->isMenuWidget() )
+    && ! obj->isMenuWidget() )
     return false;
 
   iter = window_list->begin();
@@ -737,10 +737,10 @@ void FWindow::switchToPrevWindow()
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( w
-            && w != active_window
-            && ! (w->isWindowHidden() || w->isWindowActive())
-            && w != static_cast<FWindow*>(getStatusBar())
-            && w != static_cast<FWindow*>(getMenuBar()) )
+          && w != active_window
+          && ! (w->isWindowHidden() || w->isWindowActive())
+          && w != static_cast<FWindow*>(getStatusBar())
+          && w != static_cast<FWindow*>(getMenuBar()) )
         {
           setActiveWindow(w);
           break;
@@ -800,7 +800,7 @@ void FWindow::setShadowSize (int right, int bottom)
     , new_bottom = getShadow().getY();
 
   if ( isVirtualWindow()
-      && (new_right != old_right || new_bottom != old_bottom) )
+    && (new_right != old_right || new_bottom != old_bottom) )
   {
     FRect geometry = getTermGeometry();
     geometry.move(-1, -1);

@@ -416,7 +416,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   int mouse_x, mouse_y;
 
   if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::MiddleButton )
+    && ev->getButton() != fc::MiddleButton )
     return;
 
   if ( min == max )
@@ -439,7 +439,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     if ( bar_orientation == fc::vertical )
     {
       if ( mouse_y > slider_pos + 1
-         && mouse_y <= slider_pos + slider_length + 1 )
+        && mouse_y <= slider_pos + slider_length + 1 )
         slider_click_pos = mouse_y;  // on slider
     }
     else  // horizontal
@@ -447,13 +447,13 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
       if ( isNewFont() )
       {
         if ( mouse_x > slider_pos + 2
-           && mouse_x <= slider_pos + slider_length + 2 )
+          && mouse_x <= slider_pos + slider_length + 2 )
           slider_click_pos = mouse_x;  // on slider
       }
       else
       {
         if ( mouse_x > slider_pos + 1
-           && mouse_x <= slider_pos + slider_length + 1 )
+          && mouse_x <= slider_pos + slider_length + 1 )
           slider_click_pos = mouse_x;  // on slider
       }
     }
@@ -463,7 +463,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
   }
 
   if ( scroll_type == FScrollbar::scrollPageBackward
-      || scroll_type == FScrollbar::scrollPageForward )
+    || scroll_type == FScrollbar::scrollPageForward )
   {
     if ( bar_orientation == fc::vertical )
       slider_click_stop_pos = mouse_y - 2;
@@ -477,7 +477,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     slider_click_stop_pos = -1;
 
   if ( scroll_type >= FScrollbar::scrollStepBackward
-      && scroll_type <= FScrollbar::scrollPageForward )
+    && scroll_type <= FScrollbar::scrollPageForward )
   {
     processScroll();
     threshold_reached = false;
@@ -489,7 +489,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 void FScrollbar::onMouseUp (FMouseEvent* ev)
 {
   if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::MiddleButton )
+    && ev->getButton() != fc::MiddleButton )
     return;
 
   slider_click_pos = -1;
@@ -507,7 +507,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   int mouse_x, mouse_y, new_scroll_type;
 
   if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::MiddleButton )
+    && ev->getButton() != fc::MiddleButton )
     return;
 
   mouse_x = ev->getX();
@@ -551,7 +551,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
   }
 
   if ( mouse_x < 1 || mouse_x > getWidth()
-      || mouse_y < 1 || mouse_y > getHeight() )
+    || mouse_y < 1 || mouse_y > getHeight() )
   {
     delOwnTimer();
   }
@@ -599,13 +599,13 @@ void FScrollbar::onTimer (FTimerEvent*)
   }
 
   if ( ( scroll_type == FScrollbar::scrollPageBackward
-        && slider_pos < slider_click_stop_pos )
-      || ( scroll_type == FScrollbar::scrollPageForward
-          && slider_pos + slider_length > slider_click_stop_pos ) )
+      && slider_pos < slider_click_stop_pos )
+    || ( scroll_type == FScrollbar::scrollPageForward
+      && slider_pos + slider_length > slider_click_stop_pos ) )
   {
     // Scroll to the end
     if ( scroll_type == FScrollbar::scrollPageForward
-        && slider_pos + slider_length > slider_click_stop_pos )
+      && slider_pos + slider_length > slider_click_stop_pos )
     {
       setValue(max);
       processScroll();
@@ -724,7 +724,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       if ( y >1 && y < getHeight() )
       {
         new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
-                              / double(bar_length - slider_length) ) );
+                             / double(bar_length - slider_length) ) );
       }
       else
         return;
@@ -736,7 +736,7 @@ void FScrollbar::processMiddleButton (int x, int y)
       if ( x > 1 + nf && x < getWidth() - nf )
       {
         new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
-                              / double(bar_length - slider_length) ) );
+                             / double(bar_length - slider_length) ) );
       }
       else
         return;

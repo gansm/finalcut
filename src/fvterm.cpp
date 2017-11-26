@@ -244,7 +244,7 @@ void FVTerm::updateTerminal()
   // Updates pending changes to the terminal
 
   if ( stop_terminal_updates
-      || static_cast<FApplication*>(init_object)->isQuit() )
+    || static_cast<FApplication*>(init_object)->isQuit() )
     return;
 
   if ( ! force_terminal_update )
@@ -638,9 +638,9 @@ int FVTerm::print (term_area* area, char_data& term_char)
   ay     = area->cursor_y - 1;
 
   if ( area->cursor_x > 0
-      && area->cursor_y > 0
-      && ax < area->width + area->right_shadow
-      && ay < area->height + area->bottom_shadow )
+    && area->cursor_y > 0
+    && ax < area->width + area->right_shadow
+    && ay < area->height + area->bottom_shadow )
   {
     char_data* ac;  // area character
     int line_len = area->width + area->right_shadow;
@@ -648,17 +648,17 @@ int FVTerm::print (term_area* area, char_data& term_char)
 
     if ( *ac != nc )  // compare with an overloaded operator
     {
-      if (   ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
-          || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
-          || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
+      if ( ( ! ac->attr.bit.transparent  && nc.attr.bit.transparent )
+        || ( ! ac->attr.bit.trans_shadow && nc.attr.bit.trans_shadow )
+        || ( ! ac->attr.bit.inherit_bg   && nc.attr.bit.inherit_bg ) )
       {
         // add one transparent character form line
         area->changes[ay].trans_count++;
       }
 
-      if (   ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
-          || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
-          || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
+      if ( ( ac->attr.bit.transparent  && ! nc.attr.bit.transparent )
+        || ( ac->attr.bit.trans_shadow && ! nc.attr.bit.trans_shadow )
+        || ( ac->attr.bit.inherit_bg   && ! nc.attr.bit.inherit_bg ) )
       {
         // remove one transparent character from line
         area->changes[ay].trans_count--;
@@ -830,9 +830,9 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
     return;
 
   if ( width == area->width
-      && height == area->height
-      && rsw == area->right_shadow
-      && bsh == area->bottom_shadow )
+    && height == area->height
+    && rsw == area->right_shadow
+    && bsh == area->bottom_shadow )
   {
     if ( offset_left != area->offset_left )
       area->offset_left = offset_left;
@@ -1023,11 +1023,11 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
                 s_ch.attr.bit.standout = false;
 
                 if ( s_ch.code == fc::LowerHalfBlock
-                    || s_ch.code == fc::UpperHalfBlock
-                    || s_ch.code == fc::LeftHalfBlock
-                    || s_ch.code == fc::RightHalfBlock
-                    || s_ch.code == fc::MediumShade
-                    || s_ch.code == fc::FullBlock )
+                  || s_ch.code == fc::UpperHalfBlock
+                  || s_ch.code == fc::LeftHalfBlock
+                  || s_ch.code == fc::RightHalfBlock
+                  || s_ch.code == fc::MediumShade
+                  || s_ch.code == fc::FullBlock )
                   s_ch.code = ' ';
 
                 sc = &s_ch;
@@ -1172,7 +1172,7 @@ void FVTerm::updateVTerm()
       while ( iter2 != end2 )
       {
         if ( iter2->instance->child_print_area
-            && iter2->instance->child_print_area->has_changes )
+          && iter2->instance->child_print_area->has_changes )
         {
           updateVTerm(win);
           iter2->instance->child_print_area->has_changes = false;
@@ -1284,11 +1284,11 @@ void FVTerm::updateVTerm (term_area* area)
             ch.attr.bit.standout = false;
 
             if ( ch.code == fc::LowerHalfBlock
-                || ch.code == fc::UpperHalfBlock
-                || ch.code == fc::LeftHalfBlock
-                || ch.code == fc::RightHalfBlock
-                || ch.code == fc::MediumShade
-                || ch.code == fc::FullBlock )
+              || ch.code == fc::UpperHalfBlock
+              || ch.code == fc::LeftHalfBlock
+              || ch.code == fc::RightHalfBlock
+              || ch.code == fc::MediumShade
+              || ch.code == fc::FullBlock )
               ch.code = ' ';
 
             ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
@@ -1315,11 +1315,11 @@ void FVTerm::updateVTerm (term_area* area)
               ch.attr.bit.standout = false;
 
               if ( ch.code == fc::LowerHalfBlock
-                  || ch.code == fc::UpperHalfBlock
-                  || ch.code == fc::LeftHalfBlock
-                  || ch.code == fc::RightHalfBlock
-                  || ch.code == fc::MediumShade
-                  || ch.code == fc::FullBlock )
+                || ch.code == fc::UpperHalfBlock
+                || ch.code == fc::LeftHalfBlock
+                || ch.code == fc::RightHalfBlock
+                || ch.code == fc::MediumShade
+                || ch.code == fc::FullBlock )
                 ch.code = ' ';
 
               ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
@@ -1402,8 +1402,8 @@ bool FVTerm::updateVTermCursor (term_area* area)
     y  = ay + cy;
 
     if ( isInsideArea(cx, cy, area)
-        && isInsideTerminal(x, y)
-        && isCovered(x, y, area) == non_covered )
+      && isInsideTerminal(x, y)
+      && isCovered(x, y, area) == non_covered )
     {
       vterm->input_cursor_x = x;
       vterm->input_cursor_y = y;
@@ -1651,11 +1651,11 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
             ch.attr.bit.standout = false;
 
             if ( ch.code == fc::LowerHalfBlock
-                || ch.code == fc::UpperHalfBlock
-                || ch.code == fc::LeftHalfBlock
-                || ch.code == fc::RightHalfBlock
-                || ch.code == fc::MediumShade
-                || ch.code == fc::FullBlock )
+              || ch.code == fc::UpperHalfBlock
+              || ch.code == fc::LeftHalfBlock
+              || ch.code == fc::RightHalfBlock
+              || ch.code == fc::MediumShade
+              || ch.code == fc::FullBlock )
               ch.code = ' ';
 
             std::memcpy (tc, &ch, sizeof(char_data));
@@ -1878,8 +1878,8 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     area->changes[i].xmax = w - 1;
 
     if ( nc.attr.bit.transparent
-        || nc.attr.bit.trans_shadow
-        || nc.attr.bit.inherit_bg )
+      || nc.attr.bit.trans_shadow
+      || nc.attr.bit.inherit_bg )
       area->changes[i].trans_count = w;
     else if ( area->right_shadow != 0 )
       area->changes[i].trans_count = uInt(area->right_shadow);
@@ -2210,7 +2210,7 @@ bool FVTerm::clearTerm (int fillchar)
   appendAttributes(next);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
-      || fillchar != ' ' )
+    || fillchar != ' ' )
   {
     return false;
   }
@@ -2282,8 +2282,8 @@ void FVTerm::updateTerminalLine (uInt y)
       }
 
       if ( beginning_whitespace == uInt(vt->width) - xmin
-          && (ut || normal)
-          && clr_eol_length < int(beginning_whitespace) )
+        && (ut || normal)
+        && clr_eol_length < int(beginning_whitespace) )
         is_eol_clean = true;
     }
 
@@ -2306,8 +2306,8 @@ void FVTerm::updateTerminalLine (uInt y)
         }
 
         if ( leading_whitespace > xmin
-            && (ut || normal)
-            && clr_bol_length < int(leading_whitespace) )
+          && (ut || normal)
+          && clr_bol_length < int(leading_whitespace) )
         {
           draw_leading_ws = true;
           xmin = leading_whitespace - 1;
@@ -2331,8 +2331,8 @@ void FVTerm::updateTerminalLine (uInt y)
         }
 
         if ( tailing_whitespace > uInt(vt->width) - xmax
-            && (ut || normal)
-            && clr_bol_length < int(tailing_whitespace) )
+          && (ut || normal)
+          && clr_bol_length < int(tailing_whitespace) )
         {
           draw_tailing_ws = true;
           xmax = uInt(vt->width) - tailing_whitespace;
@@ -2414,7 +2414,7 @@ void FVTerm::updateTerminalLine (uInt y)
             uInt start_pos = x;
 
             if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
-                && (ut || normal) )
+              && (ut || normal) )
             {
               appendAttributes (print_char);
               appendOutputBuffer (tparm(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -2461,7 +2461,7 @@ void FVTerm::updateTerminalLine (uInt y)
             uInt start_pos = x;
 
             if ( repetitions > uInt(repeat_char_length)
-                && print_char->code < 128 )
+              && print_char->code < 128 )
             {
               newFontChanges (print_char);
               charsetChanges (print_char);
@@ -2661,7 +2661,7 @@ inline void FVTerm::appendCharacter (char_data*& next_char)
   int term_height = vterm->height - 1;
 
   if ( term_pos->getX() == term_width
-      && term_pos->getY() == term_height )
+    && term_pos->getY() == term_height )
     appendLowerRight (next_char);
   else
     appendChar (next_char);

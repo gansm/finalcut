@@ -129,7 +129,7 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
           drop_down = true;
         }
         else if ( ev->key() == fc::Fkey_return
-                 || ev->key() == fc::Fkey_enter )
+               || ev->key() == fc::Fkey_enter )
         {
           unselectItem();
           redraw();
@@ -377,8 +377,8 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       x2 = (*iter)->getX() + (*iter)->getWidth();
 
       if ( mouse_x >= x1
-          && mouse_x < x2
-          && mouse_y == 1 )
+        && mouse_x < x2
+        && mouse_y == 1 )
       {
         // Mouse pointer over item
         if ( (*iter)->isEnabled() && ! (*iter)->isSelected() )
@@ -414,8 +414,8 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
       else
       {
         if ( mouse_over_menubar
-            && (*iter)->isEnabled()
-            && (*iter)->isSelected() )
+          && (*iter)->isEnabled()
+          && (*iter)->isSelected() )
         {
           // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
@@ -433,7 +433,7 @@ void FMenuBar::onMouseMove (FMouseEvent* ev)
           const FRect& menu_geometry = menu->getTermGeometry();
 
           if ( menu->getCount() > 0
-              && menu_geometry.contains(ev->getTermPos()) )
+            && menu_geometry.contains(ev->getTermPos()) )
           {
             const FPoint& t = ev->getTermPos();
             const FPoint& p = menu->termToWidgetPos(t);
@@ -572,9 +572,9 @@ bool FMenuBar::selectNextItem()
 
         next = static_cast<FMenuItem*>(*next_element);
       } while ( ! next->isEnabled()
-               || ! next->acceptFocus()
-               || ! next->isVisible()
-               || next->isSeparator() );
+             || ! next->acceptFocus()
+             || ! next->isVisible()
+             || next->isSeparator() );
 
       if ( next == *iter )
         return false;
@@ -639,9 +639,9 @@ bool FMenuBar::selectPrevItem()
         prev = static_cast<FMenuItem*>(*prev_element);
       }
       while ( ! prev->isEnabled()
-             || ! prev->acceptFocus()
-             || ! prev->isVisible()
-             || prev->isSeparator() );
+           || ! prev->acceptFocus()
+           || ! prev->isVisible()
+           || prev->isSeparator() );
 
       if ( prev == *iter )
         return false;
@@ -879,8 +879,8 @@ void FMenuBar::drawItems()
       if ( ! std::iswprint(wint_t(item_text[z])) )
       {
         if ( ! isNewFont()
-            && ( int(item_text[z]) < fc::NF_rev_left_arrow2
-                || int(item_text[z]) > fc::NF_check_mark ) )
+          && ( int(item_text[z]) < fc::NF_rev_left_arrow2
+            || int(item_text[z]) > fc::NF_check_mark ) )
         {
           item_text[z] = L' ';
         }

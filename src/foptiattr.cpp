@@ -1184,8 +1184,8 @@ inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
   if ( term && next )
   {
     return bool ( fake_reverse
-                 || term->fg_color != next->fg_color
-                 || term->bg_color != next->bg_color );
+               || term->fg_color != next->fg_color
+               || term->bg_color != next->bg_color );
   }
 
   return false;
@@ -1320,7 +1320,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     if ( ansi_default_color )
     {
       if ( fg == Default && term->fg_color != Default
-          && bg == Default && term->bg_color != Default )
+        && bg == Default && term->bg_color != Default )
       {
         setTermDefaultColor(term);
       }
@@ -1369,21 +1369,21 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     short ansi_bg = vga2ansi(bg);
 
     if ( term->fg_color != fg
-        && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+      && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
 
     if ( term->bg_color != bg
-        && (color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+      && (color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
   }
   else if ( Sf && Sb )
   {
     if ( term->fg_color != fg
-        && (color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+      && (color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
 
     if ( term->bg_color != bg
-        && (color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
+      && (color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
   }
   else if ( sp )

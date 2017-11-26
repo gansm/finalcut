@@ -495,8 +495,8 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
   if ( isMethod0Faster(move_time, xnew, ynew) )
   {
     if ( xold < 0
-        || yold < 0
-        || isWideMove (xold, yold, xnew, ynew) )
+      || yold < 0
+      || isWideMove (xold, yold, xnew, ynew) )
     {
       return ( move_time < LONG_DURATION ) ? move_buf : 0;
     }
@@ -878,9 +878,9 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
                                   , int xnew, int ynew )
 {
   return bool ( xnew > MOVE_LIMIT
-               && xnew < screen_width - 1 - MOVE_LIMIT
-               && std::abs(xnew - xold) + std::abs(ynew - yold)
-                  > MOVE_LIMIT );
+             && xnew < screen_width - 1 - MOVE_LIMIT
+             && std::abs(xnew - xold) + std::abs(ynew - yold)
+              > MOVE_LIMIT );
 }
 
 //----------------------------------------------------------------------
@@ -938,7 +938,7 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
     int   new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
 
     if ( new_time < LONG_DURATION
-        && F_carriage_return.duration + new_time < move_time )
+      && F_carriage_return.duration + new_time < move_time )
     {
       move_time = F_carriage_return.duration + new_time;
       return true;
@@ -961,7 +961,7 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
     int   new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
 
     if ( new_time < LONG_DURATION
-        && F_cursor_home.duration + new_time < move_time )
+      && F_cursor_home.duration + new_time < move_time )
     {
       move_time = F_cursor_home.duration + new_time;
       return true;
@@ -985,7 +985,7 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
                                   , xnew, ynew );
 
     if ( new_time < LONG_DURATION
-        && F_cursor_to_ll.duration + new_time < move_time )
+      && F_cursor_to_ll.duration + new_time < move_time )
     {
       move_time = F_cursor_to_ll.duration + new_time;
       return true;
@@ -1002,9 +1002,9 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
 {
   // Test method 5: left margin for wrap to right-hand side
   if ( automatic_left_margin
-      && ! eat_nl_glitch
-      && yold > 0
-      && F_cursor_left.cap )
+    && ! eat_nl_glitch
+    && yold > 0
+    && F_cursor_left.cap )
   {
     char  null_result[sizeof(move_buf)];
     char* null_ptr = null_result;
@@ -1013,9 +1013,9 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
                                   , xnew, ynew );
 
     if ( new_time < LONG_DURATION
-        && F_carriage_return.cap
-        && F_carriage_return.duration
-         + F_cursor_left.duration + new_time < move_time )
+      && F_carriage_return.cap
+      && F_carriage_return.duration
+       + F_cursor_left.duration + new_time < move_time )
     {
       move_time = F_carriage_return.duration
                 + F_cursor_left.duration + new_time;

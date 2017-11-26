@@ -223,11 +223,11 @@ void Menu::defaultCallback (FMenuList* mb)
     FMenuItem* item = mb->getItem(int(i));
 
     if ( item
-        && item->isEnabled()
-        && item->acceptFocus()
-        && item->isVisible()
-        && ! item->isSeparator()
-        && item->getText() != "&Quit" )
+      && item->isEnabled()
+      && item->acceptFocus()
+      && item->isVisible()
+      && ! item->isSeparator()
+      && item->getText() != "&Quit" )
     {
       // Add the callback function
       item->addCallback

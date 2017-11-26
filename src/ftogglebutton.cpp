@@ -398,14 +398,14 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
     redraw();
   }
   else if ( this == getGroup()->getLastButton()
-           && out_ev->getFocusType() == fc::FocusNextWidget )
+         && out_ev->getFocusType() == fc::FocusNextWidget )
   {
     out_ev->ignore();
     getGroup()->focusNextChild();
     redraw();
   }
   else if ( this == getGroup()->getFirstButton()
-           && out_ev->getFocusType() == fc::FocusPreviousWidget )
+         && out_ev->getFocusType() == fc::FocusPreviousWidget )
   {
     out_ev->ignore();
     getGroup()->focusPrevChild();

@@ -331,16 +331,16 @@ void FMenu::onMouseDown (FMouseEvent* ev)
         , mouse_y = mouse_pos.getY();
 
       if ( mouse_x >= x1
-          && mouse_x < x2
-          && mouse_y == y )
+        && mouse_x < x2
+        && mouse_y == y )
       {
         // Mouse pointer over item
         if ( hasSelectedItem() )
         {
           FMenuItem* sel_item = getSelectedItem();
           if ( sel_item
-              && sel_item->hasMenu()
-              && sel_item->getMenu() == open_sub_menu )
+            && sel_item->hasMenu()
+            && sel_item->getMenu() == open_sub_menu )
           {
             if ( sel_item != *iter )
               hideSubMenus();
@@ -438,8 +438,8 @@ void FMenu::onMouseUp (FMouseEvent* ev)
           int mouse_y = mouse_pos.getY();
 
           if ( mouse_x >= x1
-              && mouse_x < x2
-              && mouse_y == y )
+            && mouse_x < x2
+            && mouse_y == y )
           {
             // Mouse pointer over item
             if ( (*iter)->hasMenu() )
@@ -532,8 +532,8 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     }
 
     if ( getMenuBar()
-        && isMenuBar(getMenuBar())
-        && getMenuBar()->getTermGeometry().contains(ev->getTermPos()) )
+      && isMenuBar(getMenuBar())
+      && getMenuBar()->getTermGeometry().contains(ev->getTermPos()) )
     {
       mouse_over_menubar = true;
     }
@@ -547,12 +547,12 @@ void FMenu::onMouseMove (FMouseEvent* ev)
         , mouse_y = mouse_pos.getY();
 
       if ( mouse_x >= x1
-          && mouse_x < x2
-          && mouse_y == y )
+        && mouse_x < x2
+        && mouse_y == y )
       {
         if ( (*iter)->isEnabled()
-            && ! (*iter)->isSelected()
-            && ! (*iter)->isSeparator() )
+          && ! (*iter)->isSelected()
+          && ! (*iter)->isSeparator() )
         {
           // Mouse pointer over item
           FWidget* focused_widget = getFocusWidget();
@@ -585,9 +585,9 @@ void FMenu::onMouseMove (FMouseEvent* ev)
       else
       {
         if ( mouse_over_menu
-            && (*iter)->isEnabled()
-            && (*iter)->isSelected()
-            && ! mouse_over_submenu )
+          && (*iter)->isEnabled()
+          && (*iter)->isSelected()
+          && ! mouse_over_submenu )
         {
           // Unselect selected item without mouse focus
           (*iter)->unsetSelected();
@@ -743,8 +743,8 @@ void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
   while ( iter != last )
   {
     if ( (*iter) != menuitem
-        && (*iter)->isChecked()
-        && isRadioMenuItem(*iter) )
+      && (*iter)->isChecked()
+      && isRadioMenuItem(*iter) )
     {
       (*iter)->unsetChecked();
     }
@@ -1067,10 +1067,10 @@ bool FMenu::selectNextItem()
           next_element = item_list.begin();
         next = static_cast<FMenuItem*>(*next_element);
       }
-      while (   ! next->isEnabled()
-             || ! next->acceptFocus()
-             || ! next->isVisible()
-             || next->isSeparator() );
+      while ( ! next->isEnabled()
+           || ! next->acceptFocus()
+           || ! next->isVisible()
+           || next->isSeparator() );
 
       if ( next == *iter )
         return false;
@@ -1119,10 +1119,10 @@ bool FMenu::selectPrevItem()
         --prev_element;
         prev = static_cast<FMenuItem*>(*prev_element);
       }
-      while (   ! prev->isEnabled()
-             || ! prev->acceptFocus()
-             || ! prev->isVisible()
-             || prev->isSeparator() );
+      while ( ! prev->isEnabled()
+           || ! prev->acceptFocus()
+           || ! prev->isVisible()
+           || prev->isSeparator() );
 
       if ( prev == *iter )
         return false;
@@ -1406,9 +1406,9 @@ void FMenu::drawItems()
         if ( ! std::iswprint(wint_t(item_text[z])) )
         {
           if ( ! isNewFont()
-              && ( int(item_text[z]) < fc::NF_rev_left_arrow2
-                  || int(item_text[z]) > fc::NF_check_mark )
-              && ! charEncodable(uInt(item_text[z])) )
+            && ( int(item_text[z]) < fc::NF_rev_left_arrow2
+              || int(item_text[z]) > fc::NF_check_mark )
+            && ! charEncodable(uInt(item_text[z])) )
           {
             item_text[z] = L' ';
           }

@@ -180,8 +180,8 @@ void FLabel::setAccelWidget (FWidget* widget)
 void FLabel::setAlignment (fc::text_alignment align)
 {
   if ( align != fc::alignLeft
-      && align != fc::alignCenter
-      && align != fc::alignRight )
+    && align != fc::alignCenter
+    && align != fc::alignRight )
     alignment = fc::alignLeft;
   else
     alignment = align;
@@ -513,11 +513,12 @@ void FLabel::printLine ( wchar_t*& line
     if ( ! std::iswprint(wint_t(line[z])) )
     {
       if ( ! isNewFont() && ( int(line[z]) < fc::NF_rev_left_arrow2
-                             || int(line[z]) > fc::NF_check_mark ) )
+                           || int(line[z]) > fc::NF_check_mark ) )
       {
         line[z] = L' ';
       }
     }
+
     if ( (z == hotkeypos) && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);

@@ -79,8 +79,8 @@ void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
 bool FProgressbar::setShadow (bool on)
 {
   if ( on
-      && term_encoding != fc::VT100
-      && term_encoding != fc::ASCII )
+    && term_encoding != fc::VT100
+    && term_encoding != fc::ASCII )
   {
     flags |= fc::shadow;
     setShadowSize(1,1);
@@ -219,8 +219,7 @@ void FProgressbar::drawBar()
 
   if ( percentage > 0.0f && trunc(length) < bar_length )
   {
-    if ( round(length) > trunc(length)
-        || getMaxColor() < 16 )
+    if ( round(length) > trunc(length) || getMaxColor() < 16 )
     {
       if ( isMonochron() )
       {

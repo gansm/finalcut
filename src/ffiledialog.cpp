@@ -281,15 +281,15 @@ int FFileDialog::readDir()
         continue;
 
       if ( ! show_hidden
-          && next->d_name[0] == '.'
-          && next->d_name[1] != '\0'
-          && next->d_name[1] != '.' )
+        && next->d_name[0] == '.'
+        && next->d_name[1] != '\0'
+        && next->d_name[1] != '.' )
       {
         continue;
       }
 
       if ( dir[0] == '/' && dir[1] == '\0'
-          && std::strcmp(next->d_name, "..") == 0  )
+        && std::strcmp(next->d_name, "..") == 0  )
         continue;
 
       dir_entry entry;
@@ -775,7 +775,7 @@ const FString FFileDialog::getHomeDir()
 void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 {
   if ( filename->getText().includes('*')
-      || filename->getText().includes('?') )
+    || filename->getText().includes('?') )
   {
     setFilter(filename->getText());
     readDir();
@@ -788,8 +788,8 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
     filebrowser->redraw();
   }
   else if ( filename->getText().trim() == FString("..")
-           || filename->getText().includes('/')
-           || filename->getText().includes('~') )
+         || filename->getText().includes('/')
+         || filename->getText().includes('~') )
   {
     changeDir(filename->getText().trim());
   }
@@ -807,8 +807,8 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
       while ( iter != last )
       {
         if ( (*iter).name && input && ! input.isNull()
-            && std::strcmp((*iter).name, input) == 0
-            && (*iter).type == DT_DIR )
+          && std::strcmp((*iter).name, input) == 0
+          && (*iter).type == DT_DIR )
         {
           found = true;
           changeDir(input);

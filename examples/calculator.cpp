@@ -687,7 +687,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
         else
           // Test if (x / 180) != 0 and x / 90 == 0
           if ( std::fabs(std::fmod(*x, 180.0L)) > LDBL_EPSILON
-              && std::fabs(std::fmod(*x, 90.0L)) < LDBL_EPSILON )
+            && std::fabs(std::fmod(*x, 90.0L)) < LDBL_EPSILON )
             error = true;
           else if ( std::fabs(std::fmod(*x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
             *x = 0.0L;
@@ -987,8 +987,8 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
     {
       // remove trailing zeros
       while ( ! input.includes(L'e')
-             && input.includes(L'.')
-             && input.back() == L'0' )
+         && input.includes(L'.')
+         && input.back() == L'0' )
         input = input.left(input.getLength() - 1);
     }
   }

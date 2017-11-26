@@ -298,9 +298,9 @@ class FOptiAttr
 inline bool operator == ( const FOptiAttr::char_data& lhs,
                           const FOptiAttr::char_data& rhs )
 {
-  return lhs.code       == rhs.code
-      && lhs.fg_color   == rhs.fg_color
-      && lhs.bg_color   == rhs.bg_color
+  return lhs.code         == rhs.code
+      && lhs.fg_color     == rhs.fg_color
+      && lhs.bg_color     == rhs.bg_color
       && lhs.attr.byte[0] == rhs.attr.byte[0]
       && lhs.attr.byte[1] == rhs.attr.byte[1];
 }

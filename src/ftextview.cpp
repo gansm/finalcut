@@ -452,8 +452,8 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   dialog = static_cast<FDialog*>(parent);
 
   if ( parent->isDialogWidget()
-      && dialog->isResizeable()
-      && ! dialog->isZoomed() )
+    && dialog->isResizeable()
+    && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
     const FPoint& tp = ev->getTermPos();
@@ -716,12 +716,12 @@ void FTextView::draw()
     setReverse(true);
 
   if ( parent
-      && parent->isDialogWidget()
-      && isPaddingIgnored()
-      && getGeometry() == FRect ( 1
-                                , 2
-                                , parent->getWidth()
-                                , parent->getHeight() - 1) )
+    && parent->isDialogWidget()
+    && isPaddingIgnored()
+    && getGeometry() == FRect ( 1
+                              , 2
+                              , parent->getWidth()
+                              , parent->getHeight() - 1) )
   {
     is_text_dialog = true;
   }
@@ -795,7 +795,7 @@ void FTextView::drawText()
 
       // only printable and 1 column per character
       if ( ( (utf8 && std::iswprint(wint_t(ch)))
-            || (!utf8 && ch < 256 && std::isprint(ch)) )
+          || (!utf8 && ch < 256 && std::isprint(ch)) )
           && wcwidth(ch) == 1 )
       {
         print (ch);
@@ -898,7 +898,7 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollPageForward )
+    && scrollType <= FScrollbar::scrollPageForward )
   {
     vbar->setValue (yoffset);
 
@@ -996,7 +996,7 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown )
+    && scrollType <= FScrollbar::scrollWheelDown )
   {
     hbar->setValue (xoffset);
 

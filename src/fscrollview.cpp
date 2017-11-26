@@ -240,7 +240,7 @@ void FScrollView::setSize (int w, int h, bool adjust)
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth()
-      || getScrollHeight() < getViewportHeight() )
+    || getScrollHeight() < getViewportHeight() )
     setScrollSize (getViewportWidth(), getViewportHeight());
 }
 
@@ -257,7 +257,7 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth()
-      || getScrollHeight() < getViewportHeight() )
+    || getScrollHeight() < getViewportHeight() )
   {
     setScrollSize (getViewportWidth(), getViewportHeight());
   }
@@ -486,7 +486,7 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
     bool hasChanges = false;
 
     if ( isVisible() && viewport
-        && (xoffset_before != xoffset || yoffset_before != yoffset) )
+      && (xoffset_before != xoffset || yoffset_before != yoffset) )
     {
       viewport_geometry.setWidth(save_width);
       viewport_geometry.setHeight(save_height);
@@ -933,7 +933,7 @@ void FScrollView::setViewportCursor()
   print_area->input_cursor_y = window_cursor_pos.getY();
 
   if ( viewport->input_cursor_visible
-      && viewport_geometry.contains(cursor_pos) )
+    && viewport_geometry.contains(cursor_pos) )
     print_area->input_cursor_visible = true;
   else
     print_area->input_cursor_visible = false;
@@ -1033,8 +1033,8 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown
-      && hasChanges )
+    && scrollType <= FScrollbar::scrollWheelDown
+    && hasChanges )
   {
     vbar->setValue (yoffset);
     drawVBar();
@@ -1138,8 +1138,8 @@ void FScrollView::cb_HBarChange (FWidget*, data_ptr)
   }
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-      && scrollType <= FScrollbar::scrollWheelDown
-      && hasChanges )
+    && scrollType <= FScrollbar::scrollWheelDown
+    && hasChanges )
   {
     hbar->setValue (xoffset);
     drawHBar();

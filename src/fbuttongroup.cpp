@@ -425,8 +425,8 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
     FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button != button
-        && toggle_button->isChecked()
-        && isRadioButton(toggle_button) )
+      && toggle_button->isChecked()
+      && isRadioButton(toggle_button) )
     {
       toggle_button->unsetChecked();
 

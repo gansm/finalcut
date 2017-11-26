@@ -472,13 +472,13 @@ int FTerm::parseKeyString ( char buffer[]
 
     // SGR mouse tracking
     if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-        && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
+      && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
       return fc::Fkey_extended_mouse;
 
     // urxvt mouse tracking
     if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
-        && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-        && buffer[buf_len - 1] == 'M' )
+      && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
+      && buffer[buf_len - 1] == 'M' )
       return fc::Fkey_urxvt_mouse;
 
     // look for termcap keys
@@ -511,8 +511,8 @@ int FTerm::parseKeyString ( char buffer[]
       if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
       {
         if ( len == 2 && ( buffer[1] == 'O'
-                          || buffer[1] == '['
-                          || buffer[1] == ']' ) )
+                        || buffer[1] == '['
+                        || buffer[1] == ']' ) )
         {
           if ( ! isKeyTimeout(time_keypressed, key_timeout) )
             return NEED_MORE_DATA;
@@ -586,11 +586,11 @@ bool FTerm::setVGAFont()
     return VGAFont;
 
   if ( gnome_terminal
-      || kde_konsole
-      || putty_terminal
-      || tera_terminal
-      || cygwin_terminal
-      || mintty_terminal )
+    || kde_konsole
+    || putty_terminal
+    || tera_terminal
+    || cygwin_terminal
+    || mintty_terminal )
     return false;
 
   VGAFont = true;
@@ -658,15 +658,15 @@ bool FTerm::setNewFont()
     return true;
 
   if ( gnome_terminal
-      || kde_konsole
-      || putty_terminal
-      || tera_terminal
-      || cygwin_terminal
-      || mintty_terminal )
+    || kde_konsole
+    || putty_terminal
+    || tera_terminal
+    || cygwin_terminal
+    || mintty_terminal )
     return false;
 
   if ( xterm_terminal || screen_terminal
-      || urxvt_terminal || FTermcap::osc_support )
+    || urxvt_terminal || FTermcap::osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
@@ -735,7 +735,7 @@ bool FTerm::setOldFont()
   VGAFont = false;
 
   if ( xterm_terminal || screen_terminal
-      || urxvt_terminal || FTermcap::osc_support )
+    || urxvt_terminal || FTermcap::osc_support )
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
     {
@@ -1066,8 +1066,8 @@ void FTerm::setXTermTitle (const FString& title)
 {
   // Set the xterm title
   if ( xterm_terminal || screen_terminal
-      || mintty_terminal || putty_terminal
-      || FTermcap::osc_support )
+    || mintty_terminal || putty_terminal
+    || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "0;%s" BEL, title.c_str());
@@ -1081,8 +1081,8 @@ void FTerm::setXTermForeground (const FString& fg)
 {
   // Set the VT100 text foreground color
   if ( xterm_terminal || screen_terminal
-      || mintty_terminal || mlterm_terminal
-      || FTermcap::osc_support )
+    || mintty_terminal || mlterm_terminal
+    || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "10;%s" BEL, fg.c_str());
@@ -1096,8 +1096,8 @@ void FTerm::setXTermBackground (const FString& bg)
 {
   // Set the VT100 text background color
   if ( xterm_terminal || screen_terminal
-      || mintty_terminal || mlterm_terminal
-      || FTermcap::osc_support )
+    || mintty_terminal || mlterm_terminal
+    || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "11;%s" BEL, bg.c_str());
@@ -1111,8 +1111,8 @@ void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
   if ( xterm_terminal || screen_terminal
-      || mintty_terminal || urxvt_terminal
-      || FTermcap::osc_support )
+    || mintty_terminal || urxvt_terminal
+    || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "12;%s" BEL, cc.c_str());
@@ -1126,7 +1126,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
   if ( xterm_terminal || screen_terminal
-      || urxvt_terminal || FTermcap::osc_support )
+    || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
@@ -1153,7 +1153,7 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
   if ( xterm_terminal || screen_terminal
-      || urxvt_terminal || FTermcap::osc_support )
+    || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
@@ -1175,7 +1175,7 @@ void FTerm::setXTermDefaults()
     setXTermCursorColor("rgb:ffff/ffff/ffff");
 
   if ( xterm_default_colors
-      && ! (mintty_terminal || rxvt_terminal || screen_terminal) )
+    && ! (mintty_terminal || rxvt_terminal || screen_terminal) )
   {
     // mintty and rxvt can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
@@ -1295,7 +1295,7 @@ void FTerm::resetXTermHighlightBackground()
     return;
 
   if ( xterm_terminal || screen_terminal
-      || urxvt_terminal || FTermcap::osc_support )
+    || urxvt_terminal || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "117" BEL);
@@ -1393,8 +1393,8 @@ void FTerm::setPalette (short index, int r, int g, int b)
   {
 /*  // direct vga-register set
     if ( r>=0 && r<256
-        && g>=0 && g<256
-        && b>=0 && b<256 )
+      && g>=0 && g<256
+      && b>=0 && b<256 )
     {
       map.d[index].red = r;
       map.d[index].green = g;
@@ -1458,9 +1458,9 @@ void FTerm::setEncoding (fc::encoding enc)
   term_encoding = enc;
 
   assert ( term_encoding == fc::UTF8
-          || term_encoding == fc::VT100
-          || term_encoding == fc::PC
-          || term_encoding == fc::ASCII );
+        || term_encoding == fc::VT100
+        || term_encoding == fc::PC
+        || term_encoding == fc::ASCII );
 
   // set the new Fputchar function pointer
   switch ( term_encoding )
@@ -1740,8 +1740,8 @@ void FTerm::initLinuxConsoleCharMap()
   c3 = fc::FullBlock;
 
   if ( charEncode(c1, fc::PC) == charEncode(c1, fc::ASCII)
-      || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
-      || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
+    || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
+    || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
   {
     no_shadow_character = true;
   }
@@ -1750,7 +1750,7 @@ void FTerm::initLinuxConsoleCharMap()
   c5 = fc::LeftHalfBlock;
 
   if ( charEncode(c4, fc::PC) == charEncode(c4, fc::ASCII)
-      || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
+    || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
   {
     no_half_block_character = true;
   }
@@ -1923,8 +1923,8 @@ int FTerm::isLinuxConsole()
   char arg = 0;
   // get keyboard type an compare
   return ( isatty (fd_tty)
-          && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
-          && ((arg == KB_101) || (arg == KB_84)) );
+        && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
+        && ((arg == KB_101) || (arg == KB_84)) );
 }
 #endif
 
@@ -2081,7 +2081,7 @@ int FTerm::getFramebuffer_bpp ()
   }
 
   if ( ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
-      && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
+    && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
   {
     ::close(fd);
     return int(fb_var.bits_per_pixel);
@@ -2713,9 +2713,9 @@ void FTerm::detectTerminal()
     new_termtype = determineMaxColor(new_termtype);
 
     if ( cygwin_terminal
-        || putty_terminal
-        || tera_terminal
-        || rxvt_terminal )
+      || putty_terminal
+      || tera_terminal
+      || rxvt_terminal )
     {
       FTermcap::max_color = 16;
     }
@@ -2730,7 +2730,7 @@ void FTerm::detectTerminal()
 
   // Test if the terminal is a xterm
   if ( std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-      || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
+    || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
   {
     xterm_terminal = true;
 
@@ -2771,7 +2771,7 @@ void FTerm::termtypeAnalysis()
 
   // Linux console
   if ( std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-      || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+    || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
     linux_terminal = true;
   else
     linux_terminal = false;
@@ -2841,8 +2841,8 @@ char* FTerm::init_256colorTerminal()
     }
 
     if ( std::strncmp(termtype, "rxvt", 4) != 0
-        && s1
-        && std::strncmp(s1, "rxvt-xpm", 8) == 0 )
+      && s1
+      && std::strncmp(s1, "rxvt-xpm", 8) == 0 )
     {
       new_termtype = const_cast<char*>("rxvt-256color");
       rxvt_terminal = true;
@@ -2885,11 +2885,11 @@ char* FTerm::determineMaxColor (char*& current_termtype)
   char* new_termtype = current_termtype;
 
   if ( ! color256
-      && ! cygwin_terminal
-      && ! tera_terminal
-      && ! linux_terminal
-      && ! netbsd_terminal
-      && ! getXTermColorName(0).isEmpty() )
+    && ! cygwin_terminal
+    && ! tera_terminal
+    && ! linux_terminal
+    && ! netbsd_terminal
+    && ! getXTermColorName(0).isEmpty() )
   {
     if ( ! getXTermColorName(256).isEmpty() )
     {
@@ -3098,7 +3098,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
             force_vt100 = true;  // this rxvt terminal support on utf-8
 
             if ( std::strncmp(termtype, "rxvt-", 5) != 0
-                && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+              && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
               new_termtype = const_cast<char*>("rxvt-16color");
             break;
 
@@ -3270,9 +3270,9 @@ void FTerm::init_cygwin_charmap()
 
   for (int i = 0; i <= lastCharItem; i++ )
   {
-    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle      // ▲
-        || character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
-        || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
+    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
+      || character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
+      || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
       character[i][fc::PC] = character[i][fc::ASCII];
   }
 }
@@ -3823,7 +3823,7 @@ void FTerm::init_termcaps_general_quirks()
 
   // Test for standard ECMA-48 (ANSI X3.64) terminal
   if ( TCAP(fc::t_exit_underline_mode)
-      && std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) == 0 )
+    && std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) == 0 )
   {
     // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
     TCAP(fc::t_enter_dbl_underline_mode) = \
@@ -3897,8 +3897,8 @@ void FTerm::init_termcaps_keys (char*& buffer)
   char* key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
 
   if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
-      || ( TCAP(fc::t_cursor_up)
-          && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
+    || ( TCAP(fc::t_cursor_up)
+      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {
     for (int i = 0; Fkey[i].tname[0] != 0; i++)
     {
@@ -4087,7 +4087,7 @@ void FTerm::init_encoding()
   (*encoding_set)["ASCII"] = fc::ASCII;
 
   if ( isatty(stdout_no)
-      && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
     utf8_console  = true;
     term_encoding = fc::UTF8;
@@ -4097,8 +4097,8 @@ void FTerm::init_encoding()
     setUTF8(true);
   }
   else if ( isatty(stdout_no)
-           && (std::strlen(termtype) > 0)
-           && (TCAP(fc::t_exit_alt_charset_mode) != 0) )
+         && (std::strlen(termtype) > 0)
+         && (TCAP(fc::t_exit_alt_charset_mode) != 0) )
   {
     vt100_console = true;
     term_encoding = fc::VT100;
@@ -4114,10 +4114,10 @@ void FTerm::init_encoding()
   init_pc_charset();
 
   if ( linux_terminal
-      || cygwin_terminal
-      || NewFont
-      || (putty_terminal && ! utf8_state)
-      || (tera_terminal && ! utf8_state) )
+    || cygwin_terminal
+    || NewFont
+    || (putty_terminal && ! utf8_state)
+    || (tera_terminal && ! utf8_state) )
   {
     pc_charset_console = true;
     term_encoding      = fc::PC;
@@ -4155,9 +4155,9 @@ void FTerm::init_encoding()
 void FTerm::redefineColorPalette()
 {
   if ( ! cygwin_terminal
-      && ! kde_konsole
-      && ! tera_terminal
-      && ! ansi_terminal )
+    && ! kde_konsole
+    && ! tera_terminal
+    && ! ansi_terminal )
   {
     resetColorMap();
     saveColorMap();

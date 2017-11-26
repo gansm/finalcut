@@ -494,9 +494,9 @@ void Window::cb_next (FWidget*, data_ptr)
 
         next = static_cast<FDialog*>(*next_element);
       } while ( ! next->isEnabled()
-               || ! next->acceptFocus()
-               || ! next->isVisible()
-               || ! next->isWindowWidget() );
+             || ! next->acceptFocus()
+             || ! next->isVisible()
+             || ! next->isWindowWidget() );
 
       activateWindow(next);
       break;
@@ -520,7 +520,7 @@ void Window::cb_previous (FWidget*, data_ptr)
     --iter;
 
     if ( (*iter)->isDialogWidget()
-        && static_cast<FWindow*>(*iter)->isWindowActive() )
+      && static_cast<FWindow*>(*iter)->isWindowActive() )
     {
       FDialog* prev;
       widgetList::const_iterator prev_element;
@@ -534,9 +534,9 @@ void Window::cb_previous (FWidget*, data_ptr)
         --prev_element;
         prev = static_cast<FDialog*>(*prev_element);
       } while ( ! prev->isEnabled()
-               || ! prev->acceptFocus()
-               || ! prev->isVisible()
-               || ! prev->isWindowWidget() );
+             || ! prev->acceptFocus()
+             || ! prev->isVisible()
+             || ! prev->isWindowWidget() );
 
       activateWindow(prev);
       break;

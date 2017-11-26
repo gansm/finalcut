@@ -243,7 +243,7 @@ void FStatusBar::drawMessage()
   {
     std::vector<FStatusKey*>::const_iterator iter = key_list.end();
     isLastActiveFocus = bool ( (*(iter - 1))->isActivated()
-                              || (*(iter - 1))->hasMouseFocus() );
+                            || (*(iter - 1))->hasMouseFocus() );
   }
   else
     isLastActiveFocus = false;
@@ -404,9 +404,9 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
         , mouse_y = ev->getY();
 
       if ( mouse_x >= x1
-          && mouse_x <= x2
-          && mouse_y == 1
-          && ! (*iter)->hasMouseFocus() )
+        && mouse_x <= x2
+        && mouse_y == 1
+        && ! (*iter)->hasMouseFocus() )
       {
         (*iter)->setMouseFocus();
         redraw();
@@ -494,8 +494,8 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
         , mouse_y = ev->getY();
 
       if ( mouse_x >= x1
-          && mouse_x <= x2
-          && mouse_y == 1 )
+        && mouse_x <= x2
+        && mouse_y == 1 )
       {
         if ( ! (*iter)->hasMouseFocus() )
         {
@@ -663,9 +663,9 @@ void FStatusBar::drawKeys()
         }
 
         if ( iter + 1 != key_list.end()
-            && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
-            && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
-             < screenWidth )
+          && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
+          && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
+           < screenWidth )
         {
           // next element is active
           if ( isMonochron() )

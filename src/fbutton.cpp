@@ -206,8 +206,8 @@ bool FButton::setFlat (bool on)
 bool FButton::setShadow (bool on)
 {
   if ( on
-      && term_encoding != fc::VT100
-      && term_encoding != fc::ASCII )
+    && term_encoding != fc::VT100
+    && term_encoding != fc::ASCII )
   {
     flags |= fc::shadow;
     setShadowSize(1,1);
@@ -650,8 +650,8 @@ void FButton::draw()
     drawFlatBorder();
 
   if ( ! button_down
-      && ! isNewFont()
-      && (is_Flat || ! hasShadow() || isMonochron()) )
+    && ! isNewFont()
+    && (is_Flat || ! hasShadow() || isMonochron()) )
   {
     // clear the right █ from button down
     if ( parent_widget )
