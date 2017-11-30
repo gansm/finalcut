@@ -987,8 +987,8 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
     {
       // remove trailing zeros
       while ( ! input.includes(L'e')
-         && input.includes(L'.')
-         && input.back() == L'0' )
+           && input.includes(L'.')
+           && input.back() == L'0' )
         input = input.left(input.getLength() - 1);
     }
   }

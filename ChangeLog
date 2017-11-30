@@ -1,3 +1,6 @@
+2017-11-30  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FVTerm::updateTerminalLine
+
 2017-11-26  Markus Gans  <guru.mail@muenster.de>
 	* Better code readability by splitting FOptiMove::moveCursor 
 	  into sub-functions

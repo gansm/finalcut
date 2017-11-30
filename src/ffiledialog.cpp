@@ -709,7 +709,7 @@ int FFileDialog::changeDir (const FString& dirname)
           int i = 1;
           std::vector<dir_entry>::const_iterator iter, last;
           const char* const baseName = \
-            basename(const_cast<char*>(lastdir.c_str()));
+              basename(const_cast<char*>(lastdir.c_str()));
           iter = dir_entries.begin();
           last = dir_entries.end();
 

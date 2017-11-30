@@ -343,8 +343,15 @@ class FVTerm : public FTerm
     term_area*    vwin;                    // virtual window
 
   private:
-    // Typedef
+    // Typedef and Enumeration
     typedef FTermcap::tcap_map termcap_map;
+
+    enum exit_state
+    {
+      not_used,
+      used,
+      line_completely_printed
+    };
 
     // Constants
     static const uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
@@ -363,6 +370,14 @@ class FVTerm : public FTerm
     void                    init();
     void                    finish();
     static bool             clearTerm (int = ' ');
+    static bool             canClearToEOL (uInt, uInt);
+    static bool             canClearLeadingWS (uInt&, uInt);
+    static bool             canClearTailingWS (uInt&, uInt);
+    static bool             skipUnchangedCharacters (uInt&, uInt, uInt);
+    static void             printRange (uInt, uInt, uInt, bool);
+    static exit_state       eraseCharacters (uInt&, uInt, uInt, bool);
+    static exit_state       repeatCharacter (uInt&, uInt, uInt);
+    static void             cursorWrap();
     static void             updateTerminalLine (uInt);
     static bool             updateTerminalCursor();
     static bool             isInsideTerminal (int, int);

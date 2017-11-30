@@ -202,12 +202,12 @@ class FTerm
 
 #if defined(__linux__)
     static void           setLinuxConsoleCursorStyle \
-                            (fc::linuxConsoleCursorStyle, bool);
+                              (fc::linuxConsoleCursorStyle, bool);
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     static void           setFreeBSDConsoleCursorStyle \
-                            (fc::freebsdConsoleCursorStyle, bool);
+                              (fc::freebsdConsoleCursorStyle, bool);
 #endif
 
     static void           setTTY (const termios&);

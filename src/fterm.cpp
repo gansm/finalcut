@@ -3220,13 +3220,13 @@ void FTerm::init_pc_charset()
       {
         // Select iso8859-1 + null mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-          const_cast<char*>(ESC "%@" ESC "(U");
+            const_cast<char*>(ESC "%@" ESC "(U");
       }
       else
       {
         // Select null mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-          const_cast<char*>(ESC "(U");
+            const_cast<char*>(ESC "(U");
       }
 
       opti_attr->set_enter_pc_charset_mode \
@@ -3241,17 +3241,17 @@ void FTerm::init_pc_charset()
       {
         // Select ascii mapping + utf8
         TCAP(fc::t_exit_pc_charset_mode) = \
-          const_cast<char*>(ESC "(B" ESC "%G");
+            const_cast<char*>(ESC "(B" ESC "%G");
       }
       else
       {
         // Select ascii mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-          const_cast<char*>(ESC "(B");
+            const_cast<char*>(ESC "(B");
       }
 
       opti_attr->set_exit_pc_charset_mode \
-        (TCAP(fc::t_exit_pc_charset_mode));
+          (TCAP(fc::t_exit_pc_charset_mode));
       reinit = true;
     }
   }
@@ -3501,21 +3501,21 @@ static void FTerm::init_termcaps_freebsd_quirks()
   // FreeBSD console fixes
 
   TCAP(fc::t_acs_chars) = \
-    const_cast<char*>("-\036.\0370\333"
-                      "a\260f\370g\361"
-                      "h\261j\331k\277"
-                      "l\332m\300n\305"
-                      "q\304t\303u\264"
-                      "v\301w\302x\263"
-                      "y\363z\362~\371");
+      const_cast<char*>("-\036.\0370\333"
+                        "a\260f\370g\361"
+                        "h\261j\331k\277"
+                        "l\332m\300n\305"
+                        "q\304t\303u\264"
+                        "v\301w\302x\263"
+                        "y\363z\362~\371");
 
     TCAP(fc::t_set_attributes) = \
-      const_cast<char*>(CSI "0"
-                            "%?%p1%p6%|%t;1%;"
-                            "%?%p2%t;4%;"
-                            "%?%p1%p3%|%t;7%;"
-                            "%?%p4%t;5%;m"
-                            "%?%p9%t\016%e\017%;");
+        const_cast<char*>(CSI "0"
+                              "%?%p1%p6%|%t;1%;"
+                              "%?%p2%t;4%;"
+                              "%?%p1%p3%|%t;7%;"
+                              "%?%p4%t;5%;m"
+                              "%?%p9%t\016%e\017%;");
 
   FTermcap::attr_without_color = 18;
 }
@@ -3527,17 +3527,17 @@ void FTerm::init_termcaps_cygwin_quirks()
   // Set invisible cursor for cygwin terminal
   if ( ! TCAP(fc::t_cursor_invisible) )
     TCAP(fc::t_cursor_invisible) = \
-      const_cast<char*>(CSI "?25l");
+        const_cast<char*>(CSI "?25l");
 
   // Set visible cursor for cygwin terminal
   if ( ! TCAP(fc::t_cursor_visible) )
     TCAP(fc::t_cursor_visible) = \
-      const_cast<char*>(CSI "?25h");
+        const_cast<char*>(CSI "?25h");
 
   // Set ansi blink for cygwin terminal
   if ( ! TCAP(fc::t_enter_blink_mode) )
     TCAP(fc::t_enter_blink_mode) = \
-      const_cast<char*>(CSI "5m");
+        const_cast<char*>(CSI "5m");
 
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
@@ -3546,20 +3546,20 @@ void FTerm::init_termcaps_cygwin_quirks()
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
   }
   else
   {
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "3%p1%dm");
+        const_cast<char*>(CSI "3%p1%dm");
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "4%p1%dm");
+        const_cast<char*>(CSI "4%p1%dm");
   }
 
   TCAP(fc::t_orig_pair) = \
-    const_cast<char*>(CSI "39;49;25m");
+      const_cast<char*>(CSI "39;49;25m");
 
   // Avoid dim + underline
   TCAP(fc::t_enter_dim_mode)       = 0;
@@ -3577,20 +3577,20 @@ void FTerm::init_termcaps_linux_quirks()
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
   }
   else
   {
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "3%p1%dm");
+        const_cast<char*>(CSI "3%p1%dm");
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "4%p1%dm");
+        const_cast<char*>(CSI "4%p1%dm");
   }
 
   TCAP(fc::t_orig_pair) = \
-    const_cast<char*>(CSI "39;49;25m");
+      const_cast<char*>(CSI "39;49;25m");
 
   // Avoid dim + underline
   TCAP(fc::t_enter_dim_mode)       = 0;
@@ -3607,10 +3607,10 @@ void FTerm::init_termcaps_xterm_quirks()
   if ( ! TCAP(fc::t_initialize_color) )
   {
     TCAP(fc::t_initialize_color) = \
-      const_cast<char*>(OSC "4;%p1%d;rgb:"
-                        "%p2%{255}%*%{1000}%/%2.2X/"
-                        "%p3%{255}%*%{1000}%/%2.2X/"
-                        "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
+        const_cast<char*>(OSC "4;%p1%d;rgb:"
+                          "%p2%{255}%*%{1000}%/%2.2X/"
+                          "%p3%{255}%*%{1000}%/%2.2X/"
+                          "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
   }
 }
 
@@ -3621,18 +3621,18 @@ void FTerm::init_termcaps_rxvt_quirks()
   if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
     TCAP(fc::t_enter_alt_charset_mode) = \
-      const_cast<char*>(ESC "(0");
+        const_cast<char*>(ESC "(0");
     TCAP(fc::t_exit_alt_charset_mode)  = \
-      const_cast<char*>(ESC "(B");
+        const_cast<char*>(ESC "(B");
   }
 
   // Set ansi foreground and background color
   if ( ! urxvt_terminal )
   {
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
+        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
+        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
   }
 }
 
@@ -3644,7 +3644,7 @@ void FTerm::init_termcaps_vte_quirks()
 
   // set exit underline for gnome terminal
   TCAP(fc::t_exit_underline_mode) = \
-    const_cast<char*>(CSI "24m");
+      const_cast<char*>(CSI "24m");
 }
 
 //----------------------------------------------------------------------
@@ -3659,78 +3659,78 @@ void FTerm::init_termcaps_putty_quirks()
 
   // Set ansi foreground and background color
   TCAP(fc::t_set_a_foreground) = \
-    const_cast<char*>(CSI "%?%p1%{8}%<"
-                          "%t3%p1%d"
-                          "%e%p1%{16}%<"
-                          "%t9%p1%{8}%-%d"
-                          "%e38;5;%p1%d%;m");
+      const_cast<char*>(CSI "%?%p1%{8}%<"
+                            "%t3%p1%d"
+                            "%e%p1%{16}%<"
+                            "%t9%p1%{8}%-%d"
+                            "%e38;5;%p1%d%;m");
 
   TCAP(fc::t_set_a_background) = \
-    const_cast<char*>(CSI "%?%p1%{8}%<"
-                          "%t4%p1%d"
-                          "%e%p1%{16}%<"
-                          "%t10%p1%{8}%-%d"
-                          "%e48;5;%p1%d%;m");
+      const_cast<char*>(CSI "%?%p1%{8}%<"
+                            "%t4%p1%d"
+                            "%e%p1%{16}%<"
+                            "%t10%p1%{8}%-%d"
+                            "%e48;5;%p1%d%;m");
 
   TCAP(fc::t_set_attributes) = \
-    const_cast<char*>(CSI "0"
-                          "%?%p1%p6%|%t;1%;"
-                          "%?%p5%t;2%;"  // since putty 0.71
-                          "%?%p2%t;4%;"
-                          "%?%p1%p3%|%t;7%;"
-                          "%?%p4%t;5%;m"
-                          "%?%p9%t\016%e\017%;");
+      const_cast<char*>(CSI "0"
+                            "%?%p1%p6%|%t;1%;"
+                            "%?%p5%t;2%;"  // since putty 0.71
+                            "%?%p2%t;4%;"
+                            "%?%p1%p3%|%t;7%;"
+                            "%?%p4%t;5%;m"
+                            "%?%p9%t\016%e\017%;");
   // PuTTY 0.71 or higher
   TCAP(fc::t_enter_dim_mode) = \
-    const_cast<char*>(CSI "2m");
+      const_cast<char*>(CSI "2m");
 
   // PuTTY 0.71 or higher
   TCAP(fc::t_exit_dim_mode) = \
-  const_cast<char*>(CSI "22m");
+      const_cast<char*>(CSI "22m");
 
   if ( ! TCAP(fc::t_clr_bol) )
     TCAP(fc::t_clr_bol) = \
-      const_cast<char*>(CSI "1K");
+        const_cast<char*>(CSI "1K");
 
   if ( ! TCAP(fc::t_orig_pair) )
     TCAP(fc::t_orig_pair) = \
-      const_cast<char*>(CSI "39;49m");
+        const_cast<char*>(CSI "39;49m");
 
   if ( ! TCAP(fc::t_orig_colors) )
     TCAP(fc::t_orig_colors) = \
-      const_cast<char*>(OSC "R");
+        const_cast<char*>(OSC "R");
 
   if ( ! TCAP(fc::t_column_address) )
     TCAP(fc::t_column_address) = \
-      const_cast<char*>(CSI "%i%p1%dG");
+        const_cast<char*>(CSI "%i%p1%dG");
 
   if ( ! TCAP(fc::t_row_address) )
     TCAP(fc::t_row_address) = \
-      const_cast<char*>(CSI "%i%p1%dd");
+        const_cast<char*>(CSI "%i%p1%dd");
 
   if ( ! TCAP(fc::t_enable_acs) )
     TCAP(fc::t_enable_acs) = \
-      const_cast<char*>(ESC "(B" ESC ")0");
+        const_cast<char*>(ESC "(B" ESC ")0");
 
   if ( ! TCAP(fc::t_enter_am_mode) )
     TCAP(fc::t_enter_am_mode) = \
-      const_cast<char*>(CSI "?7h");
+        const_cast<char*>(CSI "?7h");
 
   if ( ! TCAP(fc::t_exit_am_mode) )
     TCAP(fc::t_exit_am_mode) = \
-      const_cast<char*>(CSI "?7l");
+        const_cast<char*>(CSI "?7l");
 
   if ( ! TCAP(fc::t_enter_pc_charset_mode) )
     TCAP(fc::t_enter_pc_charset_mode) = \
-      const_cast<char*>(CSI "11m");
+        const_cast<char*>(CSI "11m");
 
   if ( ! TCAP(fc::t_exit_pc_charset_mode) )
     TCAP(fc::t_exit_pc_charset_mode) = \
-      const_cast<char*>(CSI "10m");
+        const_cast<char*>(CSI "10m");
 
   if ( ! TCAP(fc::t_key_mouse) )
     TCAP(fc::t_key_mouse) = \
-      const_cast<char*>(CSI "M");
+        const_cast<char*>(CSI "M");
 }
 
 //----------------------------------------------------------------------
@@ -3741,13 +3741,13 @@ void FTerm::init_termcaps_teraterm_quirks()
 
   // Tera Term color settings
   TCAP(fc::t_set_a_foreground) = \
-    const_cast<char*>(CSI "38;5;%p1%dm");
+      const_cast<char*>(CSI "38;5;%p1%dm");
   TCAP(fc::t_set_a_background) = \
-    const_cast<char*>(CSI "48;5;%p1%dm");
+      const_cast<char*>(CSI "48;5;%p1%dm");
   TCAP(fc::t_exit_attribute_mode) = \
-    const_cast<char*>(CSI "0m" SI);
+      const_cast<char*>(CSI "0m" SI);
   TCAP(fc::t_orig_pair) = \
-    const_cast<char*>(CSI "39;49m");
+      const_cast<char*>(CSI "39;49m");
 }
 
 //----------------------------------------------------------------------
@@ -3759,18 +3759,18 @@ void FTerm::init_termcaps_screen_quirks()
     if ( tmux_terminal )
     {
       TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                          "%p2%{255}%*%{1000}%/%2.2X/"
-                          "%p3%{255}%*%{1000}%/%2.2X/"
-                          "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+          const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
+                            "%p2%{255}%*%{1000}%/%2.2X/"
+                            "%p3%{255}%*%{1000}%/%2.2X/"
+                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
     }
     else
     {
       TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
-                          "%p2%{255}%*%{1000}%/%2.2X/"
-                          "%p3%{255}%*%{1000}%/%2.2X/"
-                          "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+          const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
+                            "%p2%{255}%*%{1000}%/%2.2X/"
+                            "%p3%{255}%*%{1000}%/%2.2X/"
+                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
     }
   }
 }
@@ -3789,37 +3789,37 @@ void FTerm::init_termcaps_general_quirks()
   // Fallback if "AF" is not found
   if ( ! TCAP(fc::t_set_a_foreground) )
     TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "3%p1%dm");
+        const_cast<char*>(CSI "3%p1%dm");
 
   // Fallback if "AB" is not found
   if ( ! TCAP(fc::t_set_a_background) )
     TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "4%p1%dm");
+        const_cast<char*>(CSI "4%p1%dm");
 
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
     TCAP(fc::t_initialize_color) = \
-      const_cast<char*>(OSC "P%p1%x"
-                        "%p2%{255}%*%{1000}%/%02x"
-                        "%p3%{255}%*%{1000}%/%02x"
-                        "%p4%{255}%*%{1000}%/%02x");
+        const_cast<char*>(OSC "P%p1%x"
+                          "%p2%{255}%*%{1000}%/%02x"
+                          "%p3%{255}%*%{1000}%/%02x"
+                          "%p4%{255}%*%{1000}%/%02x");
   }
 
   // Fallback if "ti" is not found
   if ( ! TCAP(fc::t_enter_ca_mode) )
     TCAP(fc::t_enter_ca_mode) = \
-      const_cast<char*>(ESC "7" CSI "?47h");
+        const_cast<char*>(ESC "7" CSI "?47h");
 
   // Fallback if "te" is not found
   if ( ! TCAP(fc::t_exit_ca_mode) )
     TCAP(fc::t_exit_ca_mode) = \
-      const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
+        const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
 
   // Set ansi move if "cm" is not found
   if ( ! TCAP(fc::t_cursor_address) )
     TCAP(fc::t_cursor_address) = \
-      const_cast<char*>(CSI "%i%p1%d;%p2%dH");
+        const_cast<char*>(CSI "%i%p1%d;%p2%dH");
 
   // Test for standard ECMA-48 (ANSI X3.64) terminal
   if ( TCAP(fc::t_exit_underline_mode)
@@ -3827,34 +3827,34 @@ void FTerm::init_termcaps_general_quirks()
   {
     // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
     TCAP(fc::t_enter_dbl_underline_mode) = \
-      const_cast<char*>(CSI "21m");  // Exit single underline, too
+        const_cast<char*>(CSI "21m");  // Exit single underline, too
 
     TCAP(fc::t_exit_dbl_underline_mode) = \
-      const_cast<char*>(CSI "24m");
+        const_cast<char*>(CSI "24m");
 
     TCAP(fc::t_exit_bold_mode) = \
-      const_cast<char*>(CSI "22m");  // Exit dim, too
+        const_cast<char*>(CSI "22m");  // Exit dim, too
 
     TCAP(fc::t_exit_dim_mode) = \
-      const_cast<char*>(CSI "22m");
+        const_cast<char*>(CSI "22m");
 
     TCAP(fc::t_exit_underline_mode) = \
-      const_cast<char*>(CSI "24m");
+        const_cast<char*>(CSI "24m");
 
     TCAP(fc::t_exit_blink_mode) = \
-      const_cast<char*>(CSI "25m");
+        const_cast<char*>(CSI "25m");
 
     TCAP(fc::t_exit_reverse_mode) = \
-      const_cast<char*>(CSI "27m");
+        const_cast<char*>(CSI "27m");
 
     TCAP(fc::t_exit_secure_mode) = \
-      const_cast<char*>(CSI "28m");
+        const_cast<char*>(CSI "28m");
 
     TCAP(fc::t_enter_crossed_out_mode) = \
-      const_cast<char*>(CSI "9m");
+        const_cast<char*>(CSI "9m");
 
     TCAP(fc::t_exit_crossed_out_mode) = \
-      const_cast<char*>(CSI "29m");
+        const_cast<char*>(CSI "29m");
   }
 }
 
@@ -3946,7 +3946,7 @@ void FTerm::init_OptiMove()
   opti_move->set_cursor_left (TCAP(fc::t_cursor_left));
   opti_move->set_cursor_right (TCAP(fc::t_cursor_right));
   cursor_addres_lengths = \
-    opti_move->set_cursor_address (TCAP(fc::t_cursor_address));
+      opti_move->set_cursor_address (TCAP(fc::t_cursor_address));
   opti_move->set_column_address (TCAP(fc::t_column_address));
   opti_move->set_row_address (TCAP(fc::t_row_address));
   opti_move->set_parm_up_cursor (TCAP(fc::t_parm_up_cursor));
@@ -3956,9 +3956,9 @@ void FTerm::init_OptiMove()
   opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
   opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
   erase_ch_length = \
-    opti_move->set_erase_chars (TCAP(fc::t_erase_chars));
+      opti_move->set_erase_chars (TCAP(fc::t_erase_chars));
   repeat_char_length = \
-    opti_move->set_repeat_char (TCAP(fc::t_repeat_char));
+      opti_move->set_repeat_char (TCAP(fc::t_repeat_char));
   clr_bol_length = opti_move->set_clr_bol (TCAP(fc::t_clr_bol));
   clr_eol_length = opti_move->set_clr_eol (TCAP(fc::t_clr_eol));
 }
