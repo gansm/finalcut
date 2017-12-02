@@ -123,6 +123,7 @@ class FTerm
     // Typedefs
     typedef FOptiAttr::char_data  char_data;
 
+#if defined(__linux__)
     static struct modifier_key  // bit field
     {
       uChar shift  : 1;  // 0..1
@@ -131,6 +132,7 @@ class FTerm
       uChar alt    : 1;  // 0..1
       uChar        : 4;  // padding bits
     } mod_key;
+#endif
 
     // Constructor
     explicit FTerm (bool = false);

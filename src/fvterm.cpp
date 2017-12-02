@@ -1061,6 +1061,8 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
 FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
                                         , term_area* area )
 {
+  // Determines the covered state for the given position
+
   return isCovered (pos.getX(), pos.getY(), area);
 }
 
@@ -1068,6 +1070,8 @@ FVTerm::covered_state FVTerm::isCovered ( const FPoint& pos
 FVTerm::covered_state FVTerm::isCovered ( int x, int y
                                         , term_area* area )
 {
+  // Determines the covered state for the given position
+
   bool found;
   covered_state is_covered;
   FWidget* w;
@@ -1126,6 +1130,151 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
   }
 
   return is_covered;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateOverlappedColor ( term_area* area
+                                   , int x, int y, int tx, int ty )
+{
+  // Add the overlapping color to this character
+
+  int& aw  = area->width;
+  int& rsh = area->right_shadow;
+  int line_len = aw + rsh;
+  // Area character
+  char_data* ac = &area->text[y * line_len + x];
+  // Terminal character
+  char_data* tc = &vterm->text[ty * vterm->width + tx];
+  // New character
+  char_data nc;
+  std::memcpy (&nc, ac, sizeof(char_data));
+  // Overlapped character
+  char_data oc = getOverlappedCharacter (tx + 1, ty + 1, area->widget);
+  nc.fg_color = oc.fg_color;
+  nc.bg_color = oc.bg_color;
+  nc.attr.bit.reverse  = false;
+  nc.attr.bit.standout = false;
+
+  if ( nc.code == fc::LowerHalfBlock
+    || nc.code == fc::UpperHalfBlock
+    || nc.code == fc::LeftHalfBlock
+    || nc.code == fc::RightHalfBlock
+    || nc.code == fc::MediumShade
+    || nc.code == fc::FullBlock )
+    nc.code = ' ';
+
+  nc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == nc);
+  std::memcpy (tc, &nc, sizeof(char_data));
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateOverlappedCharacter (term_area* area, int tx, int ty)
+{
+  // Restore one character on vterm
+
+  // Terminal character
+  char_data* tc = &vterm->text[ty * vterm->width + tx];
+  // Overlapped character
+  char_data oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  oc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == oc);
+  std::memcpy (tc, &oc, sizeof(char_data));
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateShadedCharacter ( term_area* area
+                                   , int x, int y, int tx, int ty )
+{
+  // Get covered character + add the current color
+
+  int& aw  = area->width;
+  int& rsh = area->right_shadow;
+  int line_len = aw + rsh;
+  // Area character
+  char_data* ac = &area->text[y * line_len + x];
+  // Terminal character
+  char_data* tc = &vterm->text[ty * vterm->width + tx];
+  // Overlapped character
+  char_data oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  oc.fg_color = ac->fg_color;
+  oc.bg_color = ac->bg_color;
+  oc.attr.bit.reverse  = false;
+  oc.attr.bit.standout = false;
+
+  if ( oc.code == fc::LowerHalfBlock
+    || oc.code == fc::UpperHalfBlock
+    || oc.code == fc::LeftHalfBlock
+    || oc.code == fc::RightHalfBlock
+    || oc.code == fc::MediumShade
+    || oc.code == fc::FullBlock )
+    oc.code = ' ';
+
+  oc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == oc);
+  std::memcpy (tc, &oc, sizeof(char_data));
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateInheritBackground ( term_area* area
+                                     , int x, int y, int tx, int ty )
+{
+  // Add the covered background to this character
+
+  int& aw  = area->width;
+  int& rsh = area->right_shadow;
+  int line_len = aw + rsh;
+  // Area character
+  char_data* ac = &area->text[y * line_len + x];
+  // Terminal character
+  char_data* tc = &vterm->text[ty * vterm->width + tx];
+  // New character
+  char_data nc;
+  std::memcpy (&nc, ac, sizeof(char_data));
+  // Covered character
+  char_data cc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  nc.bg_color = cc.bg_color;
+  nc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == nc);
+  std::memcpy (tc, &nc, sizeof(char_data));
+}
+
+//----------------------------------------------------------------------
+void FVTerm::updateCharacter ( term_area* area
+                             , int x, int y, int tx, int ty )
+{
+  // Copy a area character to the virtual terminal
+
+  int& aw  = area->width;
+  int& rsh = area->right_shadow;
+  int line_len = aw + rsh;
+  // Area character
+  char_data* ac = &area->text[y * line_len + x];
+  // Terminal character
+  char_data* tc = &vterm->text[ty * vterm->width + tx];
+  std::memcpy (tc, ac, sizeof(char_data));
+
+  if ( tc->attr.bit.printed && *tc == *ac )
+    tc->attr.bit.no_changes = true;
+  else
+    tc->attr.bit.no_changes = false;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::callPreprocessingHandler (term_area* area)
+{
+  // Call preprocessing handler
+
+  if ( ! area->preprocessing_call.empty() )
+  {
+    FPreprocessing::const_iterator iter, end;
+    iter = area->preprocessing_call.begin();
+    end = area->preprocessing_call.end();
+
+    while ( iter != end )
+    {
+      FPreprocessingHandler handler = iter->handler;
+      // call the preprocessing handler
+      (iter->instance->*handler)();
+      ++iter;
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1190,7 +1339,6 @@ void FVTerm::updateVTerm (term_area* area)
 {
   // Update area data on VTerm
 
-  char_data* tc;  // terminal character
   char_data* ac;  // area character
 
   if ( ! area )
@@ -1199,21 +1347,8 @@ void FVTerm::updateVTerm (term_area* area)
   if ( ! area->visible )
     return;
 
-  // Call preprocessing handler
-  if ( ! area->preprocessing_call.empty() )
-  {
-    FPreprocessing::const_iterator iter, end;
-    iter = area->preprocessing_call.begin();
-    end = area->preprocessing_call.end();
-
-    while ( iter != end )
-    {
-      FPreprocessingHandler handler = iter->handler;
-      // call the preprocessing handler
-      (iter->instance->*handler)();
-      ++iter;
-    }
-  }
+  // Call the processing handler methods
+  callPreprocessingHandler(area);
 
   int ax  = area->offset_left
     , ay  = area->offset_top
@@ -1266,87 +1401,33 @@ void FVTerm::updateVTerm (term_area* area)
 
         int line_len = aw + rsh;
         ac = &area->text[y * line_len + x];
-        tc = &vterm->text[gy * vterm->width + gx - ol];
+        gx -= ol;
 
-        is_covered = isCovered(gx - ol, gy, area);  // get covered state
+        is_covered = isCovered(gx, gy, area);  // get covered state
 
         if ( is_covered != fully_covered )
         {
           if ( is_covered == half_covered )
           {
-            // add the overlapping color to this character
-            char_data ch, oc;
-            std::memcpy (&ch, ac, sizeof(char_data));
-            oc = getOverlappedCharacter (gx + 1 - ol, gy + 1, area->widget);
-            ch.fg_color = oc.fg_color;
-            ch.bg_color = oc.bg_color;
-            ch.attr.bit.reverse  = false;
-            ch.attr.bit.standout = false;
-
-            if ( ch.code == fc::LowerHalfBlock
-              || ch.code == fc::UpperHalfBlock
-              || ch.code == fc::LeftHalfBlock
-              || ch.code == fc::RightHalfBlock
-              || ch.code == fc::MediumShade
-              || ch.code == fc::FullBlock )
-              ch.code = ' ';
-
-            ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
-            std::memcpy (tc, &ch, sizeof(char_data));
+            updateOverlappedColor(area, x, y, gx, gy);
           }
           else if ( ac->attr.bit.transparent )   // transparent
           {
-            // restore one character on vterm
-            char_data ch;
-            ch = getCoveredCharacter (gx + 1 - ol, gy + 1, area->widget);
-            ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
-            std::memcpy (tc, &ch, sizeof(char_data));
+            updateOverlappedCharacter(area, gx, gy);
           }
           else  // not transparent
           {
             if ( ac->attr.bit.trans_shadow )  // transparent shadow
             {
-              // get covered character + add the current color
-              char_data ch;
-              ch = getCoveredCharacter (gx + 1 - ol, gy + 1, area->widget);
-              ch.fg_color = ac->fg_color;
-              ch.bg_color = ac->bg_color;
-              ch.attr.bit.reverse  = false;
-              ch.attr.bit.standout = false;
-
-              if ( ch.code == fc::LowerHalfBlock
-                || ch.code == fc::UpperHalfBlock
-                || ch.code == fc::LeftHalfBlock
-                || ch.code == fc::RightHalfBlock
-                || ch.code == fc::MediumShade
-                || ch.code == fc::FullBlock )
-                ch.code = ' ';
-
-              ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
-              std::memcpy (tc, &ch, sizeof(char_data));
+              updateShadedCharacter (area, x, y, gx, gy);
             }
             else if ( ac->attr.bit.inherit_bg )
             {
-              // add the covered background to this character
-              char_data ch, cc;
-              std::memcpy (&ch, ac, sizeof(char_data));
-              cc = getCoveredCharacter (gx + 1 - ol, gy + 1, area->widget);
-              ch.bg_color = cc.bg_color;
-              ch.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == ch);
-              std::memcpy (tc, &ch, sizeof(char_data));
+              updateInheritBackground (area, x, y, gx, gy);
             }
             else  // default
             {
-              if ( tc->attr.bit.printed && *tc == *ac )
-              {
-                std::memcpy (tc, ac, sizeof(char_data));
-                tc->attr.bit.no_changes = true;
-              }
-              else
-              {
-                std::memcpy (tc, ac, sizeof(char_data));
-                tc->attr.bit.no_changes = false;
-              }
+              updateCharacter (area, x, y, gx, gy);
             }
           }
 

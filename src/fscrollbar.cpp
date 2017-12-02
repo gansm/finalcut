@@ -240,7 +240,7 @@ void FScrollbar::calculateSliderValues()
   }
 
   slider_pos = int( round ( double((bar_length - slider_length) * val)
-                           / double(max - min) ) );
+                          / double(max - min) ) );
 
   if ( slider_pos < 0 )
     slider_pos = 0;

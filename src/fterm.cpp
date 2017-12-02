@@ -225,7 +225,9 @@ const FString FTerm::getKeyName (int keynum)
 //----------------------------------------------------------------------
 FTerm::modifier_key& FTerm::getLinuxModifierKey()
 {
-  static const char subcode = 6;
+  // Get Linux console shift state
+
+  char subcode = 6;  // Shift state command + return value
 
   // fill bit field with 0
   std::memset (&mod_key, 0x00, sizeof(mod_key));

@@ -664,7 +664,7 @@ void FWidget::setTermOffsetWithPadding()
   offset.setCoordinates ( r->getLeftPadding()
                         , r->getTopPadding()
                         , r->getWidth() - 1 - r->getRightPadding()
-                        , r->getHeight() - 1  - r->getBottomPadding() );
+                        , r->getHeight() - 1 - r->getBottomPadding() );
 }
 
 //----------------------------------------------------------------------

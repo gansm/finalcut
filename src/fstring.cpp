@@ -2543,7 +2543,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t* s)
       for (x = 0 ; x < len; x++)          // insert string
         sptr[y++] = s[x];
 
-      for (x = pos; x < length + 1; x++)  // right side  + '\0'
+      for (x = pos; x < length + 1; x++)  // right side + '\0'
         sptr[y++] = string[x];
 
       length += len;
@@ -2584,7 +2584,7 @@ inline void FString::_remove (uInt pos, uInt len)
     for (x = 0; x < pos; x++)             // left side
       sptr[y++] = string[x];
 
-    for (x = pos + len; x < length + 1; x++)  // right side  + '\0'
+    for (x = pos + len; x < length + 1; x++)  // right side + '\0'
       sptr[y++] = string[x];
 
     delete[](string);                   // delete old string

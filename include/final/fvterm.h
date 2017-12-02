@@ -296,6 +296,16 @@ class FVTerm : public FTerm
     static covered_state isCovered ( int, int
                                    , term_area* );
 
+    static void          updateOverlappedColor ( term_area*
+                                               , int, int, int, int );
+    static void          updateOverlappedCharacter (term_area*, int, int);
+    static void          updateShadedCharacter ( term_area*
+                                               , int, int, int, int );
+    static void          updateInheritBackground ( term_area*
+                                                 , int, int, int, int );
+    static void          updateCharacter ( term_area*
+                                         , int, int, int, int );
+    static void          callPreprocessingHandler (term_area*);
     static void          updateVTerm();
     static void          updateVTerm (term_area*);
     static bool          updateVTermCursor (term_area*);

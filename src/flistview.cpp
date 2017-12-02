@@ -1715,7 +1715,7 @@ void FListView::drawListLine ( const FListViewItem* item
         // Insert text and tailing space
         line += text.left(width);
         line += FString ( leading_space + width
-                         - int(align_offset + txt_length), L' ');
+                        - int(align_offset + txt_length), L' ');
       }
       else if ( align == fc::alignRight )
       {

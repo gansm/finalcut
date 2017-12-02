@@ -160,7 +160,14 @@ class FApplication : public FWidget
     ssize_t            readKey();
     void               processKeyboardEvent();
 #if defined(__linux__)
-    int                linuxModifierKeyCorrection (const int&);
+    static int         linuxShiftKeyCorrection (const int&);
+    static int         linuxCtrlKeyCorrection (const int&);
+    static int         linuxAltKeyCorrection (const int&);
+    static int         linuxShiftCtrlKeyCorrection (const int&);
+    static int         linuxShiftAltKeyCorrection (const int&);
+    static int         linuxCtrlAltKeyCorrection (const int&);
+    static int         linuxShiftCtrlAltKeyCorrection (const int&);
+    static int         linuxModifierKeyCorrection (const int&);
 #endif
     bool               processDialogSwitchAccelerator();
     bool               processAccelerator (const FWidget*&);
