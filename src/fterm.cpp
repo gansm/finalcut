@@ -122,7 +122,6 @@ const FString*         FTerm::answer_back               = 0;
 const FString*         FTerm::sec_da                    = 0;
 FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
-FTerm::modifier_key    FTerm::mod_key;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set              = 0;
@@ -142,6 +141,7 @@ fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 
 #if defined(__linux__)
+  FTerm::modifier_key  FTerm::mod_key;
   console_font_op      FTerm::screen_font;
   unimapdesc           FTerm::screen_unicode_map;
 #endif
