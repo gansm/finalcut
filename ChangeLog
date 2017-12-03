@@ -1,4 +1,8 @@
 2017-12-02  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FListBox::drawList and FListBox::onKeyPress
+	* Refactoring FWidget::event
+
+2017-12-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FApplication::linuxModifierKeyCorrection and
 	  FVTerm::updateVTerm
 	* Fix getLinuxModifierKey() subcode value as non-const

@@ -423,279 +423,84 @@ void FListBox::clear()
 //----------------------------------------------------------------------
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 tailing space
-  int element_count = int(getCount())
-    , current_before = current
+  int current_before = current
     , xoffset_before = xoffset
-    , xoffset_end = max_line_width - getClientWidth() + padding_space
     , yoffset_before = yoffset
-    , yoffset_end = element_count - getClientHeight()
-    , pagesize = getClientHeight() - 1
     , key = ev->key();
 
   switch ( key )
   {
     case fc::Fkey_return:
     case fc::Fkey_enter:
-      processClick();
-      inc_search.clear();
+      keyEnter();
       ev->accept();
       break;
 
     case fc::Fkey_up:
-      current--;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-        yoffset--;
-
-      inc_search.clear();
+      keyUp();
       ev->accept();
       break;
 
     case fc::Fkey_down:
-      current++;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset++;
-
-      inc_search.clear();
+      keyDown();
       ev->accept();
       break;
 
     case fc::Fkey_left:
-      xoffset--;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
-      inc_search.clear();
+      keyLeft();
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      xoffset++;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
-      inc_search.clear();
+      keyRight();
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
-      current -= pagesize;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-      {
-        yoffset -= pagesize;
-
-        if ( yoffset < 0 )
-          yoffset = 0;
-      }
-
-      inc_search.clear();
+      keyPgUp();
       ev->accept();
       break;
 
     case fc::Fkey_npage:
-      current += pagesize;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-      {
-        yoffset += pagesize;
-
-        if ( yoffset > yoffset_end )
-          yoffset = yoffset_end;
-      }
-
-      inc_search.clear();
+      keyPgDn();
       ev->accept();
       break;
 
     case fc::Fkey_home:
-      current = 1;
-      yoffset = 0;
-      inc_search.clear();
+      keyHome();
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      current = element_count;
-
-      if ( current > getClientHeight() )
-        yoffset = yoffset_end;
-
-      inc_search.clear();
+      keyEnd();
       ev->accept();
       break;
 
     case fc::Fkey_ic:  // insert key
-      if ( isMultiSelection() )
-      {
-        if ( isSelected(current) )
-          unselectItem(current);
-        else
-          selectItem(current);
-
-        processSelect();
-        current++;
-
-        if ( current > element_count )
-          current = element_count;
-
-        if ( current - yoffset >= getHeight() - 1 )
-          yoffset++;
-
+      if ( keyInsert() )
         ev->accept();
-      }
-
-      inc_search.clear();
       break;
 
     case fc::Fkey_space:
-      {
-        uInt inc_len = inc_search.getLength();
-
-        if ( inc_len > 0 )
-        {
-          inc_search += L' ';
-          bool inc_found = false;
-          listBoxItems::iterator iter = itemlist.begin();
-
-          while ( iter != itemlist.end() )
-          {
-            if ( ! inc_found
-              && inc_search.toLower()
-              == iter->getText().left(inc_len + 1).toLower() )
-            {
-              setCurrentItem(iter);
-              inc_found = true;
-              break;
-            }
-
-            ++iter;
-          }
-
-          if ( ! inc_found )
-          {
-            inc_search.remove(inc_len, 1);
-            ev->ignore();
-          }
-          else
-            ev->accept();
-        }
-        else if ( isMultiSelection() )
-        {
-          if ( isSelected(current) )
-            unselectItem(current);
-          else
-            selectItem(current);
-
-          processSelect();
-          inc_search.clear();
-          ev->accept();
-        }
-      }
+      if ( keySpace() )
+        ev->accept();
       break;
 
     case fc::Fkey_erase:
     case fc::Fkey_backspace:
-      {
-        uInt inc_len = inc_search.getLength();
-
-        if ( inc_len > 0 )
-        {
-          inc_search.remove(inc_len - 1, 1);
-
-          if ( inc_len > 1 )
-          {
-            listBoxItems::iterator iter = itemlist.begin();
-
-            while ( iter != itemlist.end() )
-            {
-              if ( inc_search.toLower()
-                   == iter->getText().left(inc_len - 1).toLower() )
-              {
-                setCurrentItem(iter);
-                break;
-              }
-
-              ++iter;
-            }
-          }
-
-          ev->accept();
-        }
-        else
-          ev->ignore();
-      }
+      if ( keyBackspace() )
+        ev->accept();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      if ( inc_search.getLength() > 0 )
-      {
-        inc_search.clear();
+      if ( keyEsc() )
         ev->accept();
-      }
       break;
 
     default:
-      if ( key > 0x20 && key <= 0x10fff )
-      {
-        // incremental search
-        if ( inc_search.getLength() == 0 )
-          inc_search = wchar_t(key);
-        else
-          inc_search += wchar_t(key);
-
-        uInt inc_len = inc_search.getLength();
-        bool inc_found = false;
-        listBoxItems::iterator iter = itemlist.begin();
-
-        while ( iter != itemlist.end() )
-        {
-          if ( ! inc_found
-            && inc_search.toLower()
-            == iter->getText().left(inc_len).toLower() )
-          {
-            setCurrentItem(iter);
-            inc_found = true;
-            break;
-          }
-
-          ++iter;
-        }
-
-        if ( ! inc_found )
-        {
-          inc_search.remove(inc_len - 1, 1);
-
-          if ( inc_len == 1 )
-            ev->ignore();
-          else
-            ev->accept();
-        }
-        else
-          ev->accept();
-      }
-      else
-        ev->ignore();
+      if ( keyIncSearchInput(key) )
+        ev->accept();
   }
 
   if ( current_before != current )
@@ -708,21 +513,9 @@ void FListBox::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
-    if ( isVisible() )
-      drawList();
-
-    vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() && yoffset_before != yoffset )
-      vbar->drawBar();
-
-    hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() && xoffset_before != xoffset )
-      hbar->drawBar();
-
-    updateTerminal();
-    flush_out();
+    bool draw_vbar = yoffset_before != yoffset;
+    bool draw_hbar = xoffset_before != xoffset;
+    updateDrawing (draw_vbar, draw_hbar);
   }
 }
 
@@ -1402,18 +1195,14 @@ void FListBox::drawLabel()
 //----------------------------------------------------------------------
 void FListBox::drawList()
 {
-  FString element;
-  uInt start, num, inc_len;
-  bool isFocus;
+  uInt start, num;
   listBoxItems::iterator iter;
 
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  isFocus = ((flags & fc::focus) != 0);
-  start   = 0;
-  num     = uInt(getHeight() - 2);
-  inc_len = inc_search.getLength();
+  start = 0;
+  num   = uInt(getHeight() - 2);
 
   if ( num > getCount() )
     num = getCount();
@@ -1433,237 +1222,294 @@ void FListBox::drawList()
 
   for (uInt y = start; y < num && iter != itemlist.end() ; y++)
   {
-    bool serach_mark = false
-      , lineHasBrackets = hasBrackets(iter)
-      , isLineSelected = isSelected(iter)
-      , isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+    bool serach_mark = false;
+    bool lineHasBrackets = hasBrackets(iter);
 
-    if ( conv_type == lazy_convert && iter->getText().isNull() )
-    {
-      convertToItem (*iter, source_container, int(y) + yoffset);
-      int len = int(iter->text.getLength());
-      recalculateHorizontalBar (len, lineHasBrackets);
+    // Import data via lazy conversion
+    lazyConvert (iter, int(y));
 
-      if ( hbar->isVisible() )
-        hbar->redraw();
-    }
-
-    setPrintPos (2, 2 + int(y));
-
-    if ( isLineSelected )
-    {
-      if ( isMonochron() )
-        setBold();
-      else
-        setColor (wc.selected_list_fg, wc.selected_list_bg);
-    }
-    else
-    {
-      if ( isMonochron() )
-        unsetBold();
-      else
-        setColor (wc.list_fg, wc.list_bg);
-    }
-
-    if ( isCurrentLine )
-    {
-      if ( isFocus && getMaxColor() < 16 )
-        setBold();
-
-      if ( isLineSelected )
-      {
-        if ( isMonochron() )
-          setBold();
-        else if ( isFocus )
-          setColor ( wc.selected_current_element_focus_fg
-                   , wc.selected_current_element_focus_bg );
-        else
-          setColor ( wc.selected_current_element_fg
-                   , wc.selected_current_element_bg );
-
-        setCursorPos (3, 2 + int(y));  // first character
-      }
-      else
-      {
-        if ( isMonochron() )
-          unsetBold();
-
-        if ( isFocus )
-        {
-          setColor ( wc.current_element_focus_fg
-                   , wc.current_element_focus_bg );
-          int b = ( lineHasBrackets ) ? 1: 0;
-
-          if ( inc_len > 0 )  // incremental search
-          {
-            serach_mark = true;
-            // Place the cursor on the last found character
-            setCursorPos (2 + b + int(inc_len), 2 + int(y));
-          }
-          else  // only highlighted
-            setCursorPos (3 + b, 2 + int(y));  // first character
-        }
-        else
-          setColor ( wc.current_element_fg
-                   , wc.current_element_bg );
-      }
-
-      if ( isMonochron() )
-        setReverse(false);
-    }
-    else
-    {
-      if ( isMonochron() )
-        setReverse(true);
-      else if ( isFocus && getMaxColor() < 16 )
-        unsetBold();
-    }
+    // Set screen position and attributes
+    setLineAttributes ( int(y), isSelected(iter), lineHasBrackets
+                      , serach_mark );
 
     // print the entry
-    if ( isMonochron() && isCurrentLine )
-      print ('>');
-    else
-      print (' ');
-
     if ( lineHasBrackets )
     {
-      int full_length;
-      uInt len
-        , i = 0
-        , b = 0;
-
-      if ( xoffset == 0 )
-      {
-        b = 1;
-
-        switch ( iter->brackets )
-        {
-          case fc::NoBrackets:
-            break;
-
-          case fc::SquareBrackets:
-            print ('[');
-            break;
-
-          case fc::Parenthesis:
-            print ('(');
-            break;
-
-          case fc::CurlyBrackets:
-            print ('{');
-            break;
-
-          case fc::AngleBrackets:
-            print ('<');
-            break;
-        }
-
-        element = getString(iter).mid ( uInt(1 + xoffset)
-                                      , uInt(getWidth() - nf_offset - 5) );
-      }
-      else
-        element = getString(iter).mid ( uInt(xoffset)
-                                      , uInt(getWidth() - nf_offset - 4) );
-
-      const wchar_t* const& element_str = element.wc_str();
-      len = element.getLength();
-
-      for (; i < len; i++)
-      {
-        if ( serach_mark && i == 0 )
-          setColor ( wc.current_inc_search_element_fg
-                   , wc.current_element_focus_bg );
-
-        if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg
-                   , wc.current_element_focus_bg );
-
-        print (element_str[i]);
-      }
-
-      full_length = int(getString(iter).getLength());
-
-      if ( b + i < uInt(getWidth() - nf_offset - 4 )
-        && xoffset <= full_length + 1 )
-      {
-        if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg
-                   , wc.current_element_focus_bg );
-
-        switch ( iter->brackets )
-        {
-          case fc::NoBrackets:
-            break;
-
-          case fc::SquareBrackets:
-            print (']');
-            break;
-
-          case fc::Parenthesis:
-            print (')');
-            break;
-
-          case fc::CurlyBrackets:
-            print ('}');
-            break;
-
-          case fc::AngleBrackets:
-            print ('>');
-            break;
-        }
-
-        i++;
-      }
-
-      if ( isMonochron() && isCurrentLine )
-      {
-        print ('<');
-        i++;
-      }
-
-      for (; b + i < uInt(getWidth() - nf_offset - 3); i++)
-        print (' ');
+      drawListBracketsLine (int(y), iter, serach_mark);
     }
     else  // line has no brackets
     {
-      uInt i, len;
-      element = getString(iter).mid ( uInt(1 + xoffset)
-                                    , uInt(getWidth() - nf_offset - 4) );
-      const wchar_t* const& element_str = element.wc_str();
-      len = element.getLength();
-
-      if ( serach_mark )
-        setColor ( wc.current_inc_search_element_fg
-                 , wc.current_element_focus_bg );
-
-      for (i = 0; i < len; i++)
-      {
-        if ( serach_mark && i == inc_len )
-          setColor ( wc.current_element_focus_fg
-                   , wc.current_element_focus_bg );
-
-        print (element_str[i]);
-      }
-
-      if ( isMonochron() && isCurrentLine )
-      {
-        print ('<');
-        i++;
-      }
-
-      for (; i < uInt(getWidth() - nf_offset - 3); i++)
-        print (' ');
+      drawListLine (int(y), iter, serach_mark);
     }
 
     ++iter;
   }
 
+  unsetAttributes();
+  last_yoffset = yoffset;
+  last_current = current;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::drawListLine ( int y, listBoxItems::iterator iter
+                            , bool serach_mark )
+{
+  uInt i, len;
+  uInt inc_len = inc_search.getLength();
+  bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+  FString element;
+  element = getString(iter).mid ( uInt(1 + xoffset)
+                                , uInt(getWidth() - nf_offset - 4) );
+  const wchar_t* const& element_str = element.wc_str();
+  len = element.getLength();
+
+  if ( isMonochron() && isCurrentLine )
+    print ('>');
+  else
+    print (' ');
+
+  if ( serach_mark )
+    setColor ( wc.current_inc_search_element_fg
+             , wc.current_element_focus_bg );
+
+  for (i = 0; i < len; i++)
+  {
+    if ( serach_mark && i == inc_len )
+      setColor ( wc.current_element_focus_fg
+               , wc.current_element_focus_bg );
+
+    print (element_str[i]);
+  }
+
+  if ( isMonochron() && isCurrentLine )
+  {
+    print ('<');
+    i++;
+  }
+
+  for (; i < uInt(getWidth() - nf_offset - 3); i++)
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::drawListBracketsLine ( int y, listBoxItems::iterator iter
+                                    , bool serach_mark )
+{
+  int full_length;
+  FString element;
+  uInt len
+     , inc_len = inc_search.getLength()
+     , i = 0
+     , b = 0;
+  bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+
+  if ( isMonochron() && isCurrentLine )
+    print ('>');
+  else
+    print (' ');
+
+  if ( xoffset == 0 )
+  {
+    b = 1;
+
+    switch ( iter->brackets )
+    {
+      case fc::NoBrackets:
+        break;
+
+      case fc::SquareBrackets:
+        print ('[');
+        break;
+
+      case fc::Parenthesis:
+        print ('(');
+        break;
+
+      case fc::CurlyBrackets:
+        print ('{');
+        break;
+
+      case fc::AngleBrackets:
+        print ('<');
+        break;
+    }
+
+    element = getString(iter).mid ( uInt(1 + xoffset)
+                                  , uInt(getWidth() - nf_offset - 5) );
+  }
+  else
+    element = getString(iter).mid ( uInt(xoffset)
+                                  , uInt(getWidth() - nf_offset - 4) );
+
+  const wchar_t* const& element_str = element.wc_str();
+  len = element.getLength();
+
+  for (; i < len; i++)
+  {
+    if ( serach_mark && i == 0 )
+      setColor ( wc.current_inc_search_element_fg
+               , wc.current_element_focus_bg );
+
+    if ( serach_mark && i == inc_len )
+      setColor ( wc.current_element_focus_fg
+               , wc.current_element_focus_bg );
+
+    print (element_str[i]);
+  }
+
+  full_length = int(getString(iter).getLength());
+
+  if ( b + i < uInt(getWidth() - nf_offset - 4 )
+    && xoffset <= full_length + 1 )
+  {
+    if ( serach_mark && i == inc_len )
+      setColor ( wc.current_element_focus_fg
+               , wc.current_element_focus_bg );
+
+    switch ( iter->brackets )
+    {
+      case fc::NoBrackets:
+        break;
+
+      case fc::SquareBrackets:
+        print (']');
+        break;
+
+      case fc::Parenthesis:
+        print (')');
+        break;
+
+      case fc::CurlyBrackets:
+        print ('}');
+        break;
+
+      case fc::AngleBrackets:
+        print ('>');
+        break;
+    }
+
+    i++;
+  }
+
+  if ( isMonochron() && isCurrentLine )
+  {
+    print ('<');
+    i++;
+  }
+
+  for (; b + i < uInt(getWidth() - nf_offset - 3); i++)
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::setLineAttributes ( int y
+                                        , bool isLineSelected
+                                        , bool lineHasBrackets
+                                        , bool& serach_mark )
+{
+  bool isFocus = ((flags & fc::focus) != 0)
+     , isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+  uInt inc_len = inc_search.getLength();
+
+  setPrintPos (2, 2 + int(y));
+
+  if ( isLineSelected )
+  {
+    if ( isMonochron() )
+      setBold();
+    else
+      setColor (wc.selected_list_fg, wc.selected_list_bg);
+  }
+  else
+  {
+    if ( isMonochron() )
+      unsetBold();
+    else
+      setColor (wc.list_fg, wc.list_bg);
+  }
+
+  if ( isCurrentLine )
+  {
+    if ( isFocus && getMaxColor() < 16 )
+      setBold();
+
+    if ( isLineSelected )
+    {
+      if ( isMonochron() )
+        setBold();
+      else if ( isFocus )
+        setColor ( wc.selected_current_element_focus_fg
+                 , wc.selected_current_element_focus_bg );
+      else
+        setColor ( wc.selected_current_element_fg
+                 , wc.selected_current_element_bg );
+
+      setCursorPos (3, 2 + int(y));  // first character
+    }
+    else
+    {
+      if ( isMonochron() )
+        unsetBold();
+
+      if ( isFocus )
+      {
+        setColor ( wc.current_element_focus_fg
+                 , wc.current_element_focus_bg );
+        int b = ( lineHasBrackets ) ? 1: 0;
+
+        if ( inc_len > 0 )  // incremental search
+        {
+          serach_mark = true;
+          // Place the cursor on the last found character
+          setCursorPos (2 + b + int(inc_len), 2 + int(y));
+        }
+        else  // only highlighted
+          setCursorPos (3 + b, 2 + int(y));  // first character
+      }
+      else
+        setColor ( wc.current_element_fg
+                 , wc.current_element_bg );
+    }
+
+    if ( isMonochron() )
+      setReverse(false);
+  }
+  else
+  {
+    if ( isMonochron() )
+      setReverse(true);
+    else if ( isFocus && getMaxColor() < 16 )
+      unsetBold();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::unsetAttributes()
+{
   if ( isMonochron() )  // unset for the last element
     setReverse(false);
 
   unsetBold();
-  last_yoffset = yoffset;
-  last_current = current;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
+{
+  if ( isVisible() )
+    drawList();
+
+  vbar->setValue (yoffset);
+
+  if ( vbar->isVisible() && draw_vbar )
+    vbar->drawBar();
+
+  hbar->setValue (xoffset);
+
+  if ( hbar->isVisible() && draw_hbar )
+    hbar->drawBar();
+
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------
@@ -1672,20 +1518,21 @@ void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
   if ( has_brackets )
     len += 2;
 
-  if ( len > max_line_width )
+  if ( len <= max_line_width )
+    return;
+
+  max_line_width = len;
+
+  if ( len >= getWidth() - nf_offset - 3 )
   {
-    max_line_width = len;
+    hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
+    hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
+    hbar->calculateSliderValues();
 
-    if ( len >= getWidth() - nf_offset - 3 )
-    {
-      hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
-      hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
-      hbar->calculateSliderValues();
-
-      if ( ! hbar->isVisible() )
-        hbar->setVisible();
-    }
+    if ( ! hbar->isVisible() )
+      hbar->setVisible();
   }
+
 }
 
 //----------------------------------------------------------------------
@@ -1697,6 +1544,292 @@ void FListBox::recalculateVerticalBar (int element_count)
 
   if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
     vbar->setVisible();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyUp()
+{
+  current--;
+
+  if ( current < 1 )
+    current = 1;
+
+  if ( current <= yoffset )
+    yoffset--;
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyDown()
+{
+  int element_count = int(getCount());
+  current++;
+
+  if ( current > element_count )
+    current = element_count;
+
+  if ( current - yoffset > getClientHeight() )
+    yoffset++;
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyLeft()
+{
+  xoffset--;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyRight()
+{
+  static const int padding_space = 2;  // 1 leading space + 1 tailing space
+  int xoffset_end = max_line_width - getClientWidth() + padding_space;
+  xoffset++;
+
+  if ( xoffset > xoffset_end )
+    xoffset = xoffset_end;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyPgUp()
+{
+  int pagesize = getClientHeight() - 1;
+  current -= pagesize;
+
+  if ( current < 1 )
+    current = 1;
+
+  if ( current <= yoffset )
+  {
+    yoffset -= pagesize;
+
+    if ( yoffset < 0 )
+      yoffset = 0;
+  }
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyPgDn()
+{
+  int element_count = int(getCount());
+  int yoffset_end = element_count - getClientHeight();
+  int pagesize = getClientHeight() - 1;
+  current += pagesize;
+
+  if ( current > element_count )
+    current = element_count;
+
+  if ( current - yoffset > getClientHeight() )
+  {
+    yoffset += pagesize;
+
+    if ( yoffset > yoffset_end )
+      yoffset = yoffset_end;
+  }
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyHome()
+{
+  current = 1;
+  yoffset = 0;
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyEnd()
+{
+  int element_count = int(getCount());
+  int yoffset_end = element_count - getClientHeight();
+  current = element_count;
+
+  if ( current > getClientHeight() )
+    yoffset = yoffset_end;
+
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline bool FListBox::keyEsc()
+{
+  if ( inc_search.getLength() > 0 )
+  {
+    inc_search.clear();
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyEnter()
+{
+  processClick();
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline bool FListBox::keySpace()
+{
+  uInt inc_len = inc_search.getLength();
+
+  if ( inc_len > 0 )
+  {
+    inc_search += L' ';
+    bool inc_found = false;
+    listBoxItems::iterator iter = itemlist.begin();
+
+    while ( iter != itemlist.end() )
+    {
+      if ( ! inc_found
+        && inc_search.toLower()
+        == iter->getText().left(inc_len + 1).toLower() )
+      {
+        setCurrentItem(iter);
+        inc_found = true;
+        break;
+      }
+
+      ++iter;
+    }
+
+    if ( ! inc_found )
+    {
+      inc_search.remove(inc_len, 1);
+      return false;
+    }
+  }
+  else if ( isMultiSelection() )
+  {
+    if ( isSelected(current) )
+      unselectItem(current);
+    else
+      selectItem(current);
+
+    processSelect();
+    inc_search.clear();
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline bool FListBox::keyInsert()
+{
+  if ( isMultiSelection() )
+  {
+    int element_count = int(getCount());
+
+    if ( isSelected(current) )
+      unselectItem(current);
+    else
+      selectItem(current);
+
+    processSelect();
+    current++;
+
+    if ( current > element_count )
+      current = element_count;
+
+    if ( current - yoffset >= getHeight() - 1 )
+      yoffset++;
+
+    return true;
+  }
+
+  inc_search.clear();
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FListBox::keyBackspace()
+{
+  uInt inc_len = inc_search.getLength();
+
+  if ( inc_len > 0 )
+  {
+    inc_search.remove(inc_len - 1, 1);
+
+    if ( inc_len > 1 )
+    {
+      listBoxItems::iterator iter = itemlist.begin();
+
+      while ( iter != itemlist.end() )
+      {
+        if ( inc_search.toLower()
+             == iter->getText().left(inc_len - 1).toLower() )
+        {
+          setCurrentItem(iter);
+          break;
+        }
+
+        ++iter;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FListBox::keyIncSearchInput (int key)
+{
+  if ( key <= 0x20 || key > 0x10fff )
+    return false;
+
+  // incremental search
+  if ( inc_search.getLength() == 0 )
+    inc_search = wchar_t(key);
+  else
+    inc_search += wchar_t(key);
+
+  uInt inc_len = inc_search.getLength();
+  bool inc_found = false;
+  listBoxItems::iterator iter = itemlist.begin();
+
+  while ( iter != itemlist.end() )
+  {
+    if ( ! inc_found
+      && inc_search.toLower()
+      == iter->getText().left(inc_len).toLower() )
+    {
+      setCurrentItem(iter);
+      inc_found = true;
+      break;
+    }
+
+    ++iter;
+  }
+
+  if ( ! inc_found )
+  {
+    inc_search.remove(inc_len - 1, 1);
+
+    if ( inc_len == 1 )
+      return false;
+    else
+      return true;
+  }
+
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -1715,6 +1848,20 @@ void FListBox::processSelect()
 void FListBox::processChanged()
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
+{
+  if ( conv_type != lazy_convert || ! iter->getText().isNull() )
+    return;
+
+  convertToItem (*iter, source_container, y + yoffset);
+  int len = int(iter->text.getLength());
+  recalculateHorizontalBar (len, hasBrackets(iter));
+
+  if ( hbar->isVisible() )
+    hbar->redraw();
 }
 
 //----------------------------------------------------------------------

@@ -471,6 +471,8 @@ class FWidget : public FVTerm, public FObject
     void               init();
     void               finish();
     void               insufficientSpaceAdjust();
+    void               KeyPressEvent (FKeyEvent*);
+    void               KeyDownEvent (FKeyEvent*);
     void               processDestroy();
     virtual void       draw();
     static void        setColorTheme();

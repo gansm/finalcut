@@ -1257,6 +1257,49 @@ void FVTerm::updateCharacter ( term_area* area
 }
 
 //----------------------------------------------------------------------
+bool FVTerm::updateVTermCharacter ( term_area* area
+                                  , int x, int y, int tx, int ty )
+{
+  int& aw  = area->width;
+  int& rsh = area->right_shadow;
+  int line_len = aw + rsh;
+  // Area character
+  char_data* ac = &area->text[y * line_len + x];
+
+  // Get covered state
+  covered_state is_covered = isCovered(tx, ty, area);
+
+  if ( is_covered == fully_covered )
+    return false;
+
+  if ( is_covered == half_covered )
+  {
+    updateOverlappedColor(area, x, y, tx, ty);
+  }
+  else if ( ac->attr.bit.transparent )   // Transparent
+  {
+    updateOverlappedCharacter(area, tx, ty);
+  }
+  else  // Not transparent
+  {
+    if ( ac->attr.bit.trans_shadow )  // Transparent shadow
+    {
+      updateShadedCharacter (area, x, y, tx, ty);
+    }
+    else if ( ac->attr.bit.inherit_bg )
+    {
+      updateInheritBackground (area, x, y, tx, ty);
+    }
+    else  // Default
+    {
+      updateCharacter (area, x, y, tx, ty);
+    }
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::callPreprocessingHandler (term_area* area)
 {
   // Call preprocessing handler
@@ -1339,25 +1382,20 @@ void FVTerm::updateVTerm (term_area* area)
 {
   // Update area data on VTerm
 
-  char_data* ac;  // area character
-
-  if ( ! area )
-    return;
-
-  if ( ! area->visible )
-    return;
-
-  // Call the processing handler methods
-  callPreprocessingHandler(area);
-
   int ax  = area->offset_left
     , ay  = area->offset_top
     , aw  = area->width
     , ah  = area->height
     , rsh = area->right_shadow
     , bsh = area->bottom_shadow
-    , ol  = 0  // outside left
+    , ol  = 0  // Outside left
     , y_end;
+
+  if ( ! area || ! area->visible )
+    return;
+
+  // Call the processing handler methods
+  callPreprocessingHandler(area);
 
   if ( ax < 0 )
   {
@@ -1370,88 +1408,57 @@ void FVTerm::updateVTerm (term_area* area)
   else
     y_end = ah + bsh;
 
-  for (int y = 0; y < y_end; y++)  // line loop
+  for (int y = 0; y < y_end; y++)  // Line loop
   {
+    int _xmin, _xmax;
+    bool modified = false;
     int line_xmin = int(area->changes[y].xmin);
     int line_xmax = int(area->changes[y].xmax);
 
-    if ( line_xmin <= line_xmax )
+    if ( line_xmin > line_xmax )
+      continue;
+
+    if ( ax == 0 )
+      line_xmin = ol;
+
+    if ( aw + rsh + ax - ol >= vterm->width )
+      line_xmax = vterm->width + ol - ax - 1;
+
+    if ( ax + line_xmin >= vterm->width )
+      continue;
+
+    for (int x = line_xmin; x <= line_xmax; x++)  // Column loop
     {
-      int _xmin, _xmax;
-      bool modified = false;
+      // Global terminal positions
+      int tx = ax + x
+        , ty = ay + y;
 
-      if ( ax == 0 )
-        line_xmin = ol;
-
-      if ( aw + rsh + ax - ol >= vterm->width )
-        line_xmax = vterm->width + ol - ax - 1;
-
-      if ( ax + line_xmin >= vterm->width )
+      if ( tx < 0 || ty < 0 )
         continue;
 
-      for (int x = line_xmin; x <= line_xmax; x++)  // column loop
-      {
-        covered_state is_covered;
-        // global terminal positions
-        int gx = ax + x
-          , gy = ay + y;
+      tx -= ol;
 
-        if ( gx < 0 || gy < 0 )
-          continue;
+      if ( updateVTermCharacter (area, x, y, tx, ty) )
+        modified = true;
 
-        int line_len = aw + rsh;
-        ac = &area->text[y * line_len + x];
-        gx -= ol;
-
-        is_covered = isCovered(gx, gy, area);  // get covered state
-
-        if ( is_covered != fully_covered )
-        {
-          if ( is_covered == half_covered )
-          {
-            updateOverlappedColor(area, x, y, gx, gy);
-          }
-          else if ( ac->attr.bit.transparent )   // transparent
-          {
-            updateOverlappedCharacter(area, gx, gy);
-          }
-          else  // not transparent
-          {
-            if ( ac->attr.bit.trans_shadow )  // transparent shadow
-            {
-              updateShadedCharacter (area, x, y, gx, gy);
-            }
-            else if ( ac->attr.bit.inherit_bg )
-            {
-              updateInheritBackground (area, x, y, gx, gy);
-            }
-            else  // default
-            {
-              updateCharacter (area, x, y, gx, gy);
-            }
-          }
-
-          modified = true;
-        }
-        else if ( ! modified )
-          line_xmin++;  // don't update covered character
-      }
-
-      _xmin = ax + line_xmin - ol;
-      _xmax = ax + line_xmax;
-
-      if ( _xmin < short(vterm->changes[ay + y].xmin) )
-        vterm->changes[ay + y].xmin = uInt(_xmin);
-
-      if ( _xmax >= vterm->width )
-        _xmax = vterm->width - 1;
-
-      if ( _xmax > short(vterm->changes[ay + y].xmax) )
-        vterm->changes[ay + y].xmax = uInt(_xmax);
-
-      area->changes[y].xmin = uInt(aw + rsh);
-      area->changes[y].xmax = 0;
+      if ( ! modified )
+        line_xmin++;  // Don't update covered character
     }
+
+    _xmin = ax + line_xmin - ol;
+    _xmax = ax + line_xmax;
+
+    if ( _xmin < short(vterm->changes[ay + y].xmin) )
+      vterm->changes[ay + y].xmin = uInt(_xmin);
+
+    if ( _xmax >= vterm->width )
+      _xmax = vterm->width - 1;
+
+    if ( _xmax > short(vterm->changes[ay + y].xmax) )
+      vterm->changes[ay + y].xmax = uInt(_xmax);
+
+    area->changes[y].xmin = uInt(aw + rsh);
+    area->changes[y].xmax = 0;
   }
 
   updateVTermCursor(area);

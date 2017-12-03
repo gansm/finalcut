@@ -1204,96 +1204,72 @@ inline void FOptiAttr::resetColor (char_data*& attr)
 //----------------------------------------------------------------------
 inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
 {
-  // ignore attributes which can not combined with a color
+  // Ignore attributes which can not combined with a color
 
-  enum attr_modes
-  {
-    standout_mode    = 1,
-    underline_mode   = 2,
-    reverse_mode     = 4,
-    blink_mode       = 8,
-    dim_mode         = 16,
-    bold_mode        = 32,
-    invisible_mode   = 64,
-    protected_mode   = 128,
-    alt_charset_mode = 256,
-    horizontal_mode  = 512,
-    left_mode        = 1024,
-    low_mode         = 2048,
-    right_mode       = 4096,
-    top_mode         = 8192,
-    vertical_mode    = 16384,
-    italic_mode      = 32768,
-    no_mode          = 65536
-  };
-
-  if ( ! attr )
+  if ( ! attr || ! hasColor(attr) || attr_without_color <= 0 )
     return;
 
-  if ( hasColor(attr) && attr_without_color > 0 )
+  for (int bit = 1; bit < no_mode; bit <<= 1)
   {
-    for (int bit = 1; bit < no_mode; bit <<= 1)
+    switch ( bit & attr_without_color )
     {
-      switch ( bit & attr_without_color )
-      {
-        case standout_mode:
-          if ( attr->attr.bit.standout )
-            attr->attr.bit.standout = false;
-          break;
+      case standout_mode:
+        if ( attr->attr.bit.standout )
+          attr->attr.bit.standout = false;
+        break;
 
-        case underline_mode:
-          if ( attr->attr.bit.underline )
-            attr->attr.bit.underline = false;
-          break;
+      case underline_mode:
+        if ( attr->attr.bit.underline )
+          attr->attr.bit.underline = false;
+        break;
 
-        case reverse_mode:
-          if ( attr->attr.bit.reverse )
-          {
-            attr->attr.bit.reverse = false;
+      case reverse_mode:
+        if ( attr->attr.bit.reverse )
+        {
+          attr->attr.bit.reverse = false;
 
-            if ( attr->fg_color != attr->bg_color )
-              fake_reverse = true;
-          }
-          break;
+          if ( attr->fg_color != attr->bg_color )
+            fake_reverse = true;
+        }
+        break;
 
-        case blink_mode:
-          if ( attr->attr.bit.blink )
-            attr->attr.bit.blink = false;
-          break;
+      case blink_mode:
+        if ( attr->attr.bit.blink )
+          attr->attr.bit.blink = false;
+        break;
 
-        case dim_mode:
-          if ( attr->attr.bit.dim )
-            attr->attr.bit.dim = false;
-          break;
+      case dim_mode:
+        if ( attr->attr.bit.dim )
+          attr->attr.bit.dim = false;
+        break;
 
-        case bold_mode:
-          if ( attr->attr.bit.bold )
-            attr->attr.bit.bold = false;
-          break;
+      case bold_mode:
+        if ( attr->attr.bit.bold )
+          attr->attr.bit.bold = false;
+        break;
 
-        case invisible_mode:
-          if ( attr->attr.bit.invisible )
-            attr->attr.bit.invisible = false;
-          break;
+      case invisible_mode:
+        if ( attr->attr.bit.invisible )
+          attr->attr.bit.invisible = false;
+        break;
 
-        case protected_mode:
-          if ( attr->attr.bit.protect )
-            attr->attr.bit.protect = false;
-          break;
+      case protected_mode:
+        if ( attr->attr.bit.protect )
+          attr->attr.bit.protect = false;
+        break;
 
-        case alt_charset_mode:
-          if ( attr->attr.bit.alt_charset )
-            attr->attr.bit.alt_charset = false;
-          break;
+      case alt_charset_mode:
+        if ( attr->attr.bit.alt_charset )
+          attr->attr.bit.alt_charset = false;
+        break;
 
-        case italic_mode:
-          if ( attr->attr.bit.italic )
-            attr->attr.bit.italic = false;
-          break;
+      case italic_mode:
+        if ( attr->attr.bit.italic )
+          attr->attr.bit.italic = false;
+        break;
 
-        default:
-          break;
-      }
+      default:
+        break;
     }
   }
 }

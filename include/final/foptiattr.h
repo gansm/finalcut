@@ -179,6 +179,27 @@ class FOptiAttr
       LightGray = 7
     };
 
+    enum attr_modes
+    {
+      standout_mode    = 1,
+      underline_mode   = 2,
+      reverse_mode     = 4,
+      blink_mode       = 8,
+      dim_mode         = 16,
+      bold_mode        = 32,
+      invisible_mode   = 64,
+      protected_mode   = 128,
+      alt_charset_mode = 256,
+      horizontal_mode  = 512,
+      left_mode        = 1024,
+      low_mode         = 2048,
+      right_mode       = 4096,
+      top_mode         = 8192,
+      vertical_mode    = 16384,
+      italic_mode      = 32768,
+      no_mode          = 65536
+    };
+
     // Disable copy constructor
     FOptiAttr (const FOptiAttr&);
 

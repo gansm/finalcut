@@ -319,11 +319,18 @@ class FListView : public FWidget
     void                 drawColumnLabels();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
+    void                 updateDrawing (bool, bool);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
+    void                 keyLeft (int&);
+    void                 keyRight (int&);
+    void                 keyHome();
+    void                 keyEnd();
+    bool                 keyPlus();
+    bool                 keyMinus();
     void                 setRelativePosition (int);
     void                 stepForward();
     void                 stepBackward();

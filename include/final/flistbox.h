@@ -246,11 +246,31 @@ class FListBox : public FWidget
     void        draw();
     void        drawLabel();
     void        drawList();
+    void        drawListLine (int, listBoxItems::iterator, bool);
+    void        drawListBracketsLine (int, listBoxItems::iterator, bool);
+    void        setLineAttributes (int, bool, bool, bool&);
+    void        unsetAttributes();
+    void        updateDrawing (bool, bool);
     void        recalculateHorizontalBar (int, bool);
     void        recalculateVerticalBar (int);
+    void        keyUp();
+    void        keyDown();
+    void        keyLeft();
+    void        keyRight();
+    void        keyPgUp();
+    void        keyPgDn();
+    void        keyHome();
+    void        keyEnd();
+    bool        keyEsc();
+    void        keyEnter();
+    bool        keySpace();
+    bool        keyInsert();
+    bool        keyBackspace();
+    bool        keyIncSearchInput (int);
     void        processClick();
     void        processSelect();
     void        processChanged();
+    void        lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (int);
 
     // Callback methods

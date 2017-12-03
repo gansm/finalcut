@@ -2121,43 +2121,7 @@ bool FWidget::event (FEvent* ev)
   switch ( ev->type() )
   {
     case fc::KeyPress_Event:
-      {
-        FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
-        bool accpt_focus = false;
-
-        if ( kev->key() == fc::Fkey_tab )
-          accpt_focus = focusNextChild();
-        else if ( kev->key() == fc::Fkey_btab )
-          accpt_focus = focusPrevChild();
-
-        if ( accpt_focus )
-          break;
-
-        FWidget* widget = this;
-
-        while ( widget )
-        {
-          widget->onKeyPress(kev);
-
-          if ( ! kev->isAccepted() )
-          {
-            if ( kev->key() == fc::Fkey_right
-              || kev->key() == fc::Fkey_down )
-              accpt_focus = focusNextChild();
-            else if ( kev->key() == fc::Fkey_left
-                   || kev->key() == fc::Fkey_up )
-              accpt_focus = focusPrevChild();
-
-            if ( accpt_focus )
-              break;
-          }
-
-          if ( kev->isAccepted() || widget->isRootWidget() )
-            break;
-
-          widget = widget->getParentWidget();
-        }
-      }
+      KeyPressEvent ( static_cast<FKeyEvent*>(ev) );
       break;
 
     case fc::KeyUp_Event:
@@ -2165,20 +2129,7 @@ bool FWidget::event (FEvent* ev)
       break;
 
     case fc::KeyDown_Event:
-      {
-        FKeyEvent* kev = static_cast<FKeyEvent*>(ev);
-        FWidget* widget = this;
-
-        while ( widget )
-        {
-          widget->onKeyDown(kev);
-
-          if ( kev->isAccepted() || widget->isRootWidget() )
-            break;
-
-          widget = widget->getParentWidget();
-        }
-      }
+      KeyDownEvent ( static_cast<FKeyEvent*>(ev) );
       break;
 
     case fc::MouseDown_Event:
@@ -2244,6 +2195,7 @@ bool FWidget::event (FEvent* ev)
     default:
       return false;
   }
+
   return true;
 }
 
@@ -2456,6 +2408,61 @@ inline void FWidget::insufficientSpaceAdjust()
 
   if ( getHeight() <= 0 )
     adjust_wsize.setHeight(1);
+}
+
+//----------------------------------------------------------------------
+void FWidget::KeyPressEvent (FKeyEvent* kev)
+{
+  bool accpt_focus = false;
+
+  if ( kev->key() == fc::Fkey_tab )
+    accpt_focus = focusNextChild();
+  else if ( kev->key() == fc::Fkey_btab )
+    accpt_focus = focusPrevChild();
+
+  if ( accpt_focus )
+    return;
+
+  FWidget* widget = this;
+
+  while ( widget )
+  {
+    widget->onKeyPress(kev);
+
+    if ( ! kev->isAccepted() )
+    {
+      if ( kev->key() == fc::Fkey_right
+        || kev->key() == fc::Fkey_down )
+        accpt_focus = focusNextChild();
+      else if ( kev->key() == fc::Fkey_left
+             || kev->key() == fc::Fkey_up )
+        accpt_focus = focusPrevChild();
+
+      if ( accpt_focus )
+        return;
+    }
+
+    if ( kev->isAccepted() || widget->isRootWidget() )
+      return;
+
+    widget = widget->getParentWidget();
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::KeyDownEvent (FKeyEvent* kev)
+{
+  FWidget* widget = this;
+
+  while ( widget )
+  {
+    widget->onKeyDown(kev);
+
+    if ( kev->isAccepted() || widget->isRootWidget() )
+      break;
+
+    widget = widget->getParentWidget();
+  }
 }
 
 //----------------------------------------------------------------------

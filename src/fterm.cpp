@@ -136,7 +136,7 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-FTerm::initializationValues FTerm::init_values;
+FTerm::initializationValues   FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 

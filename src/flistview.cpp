@@ -703,14 +703,11 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
 //----------------------------------------------------------------------
 void FListView::onKeyPress (FKeyEvent* ev)
 {
-  int element_count = int(getCount())
-    , position_before = current_iter.getPosition()
+  int position_before = current_iter.getPosition()
     , xoffset_before = xoffset
-    , xoffset_end = max_line_width - getClientWidth()
     , first_line_position_before = first_visible_line.getPosition()
     , pagesize = getClientHeight() - 1
     , key = ev->key();
-  FListViewItem* item = getCurrentItem();
   clicked_expander_pos.setPoint(-1, -1);
 
   switch ( key )
@@ -723,142 +720,52 @@ void FListView::onKeyPress (FKeyEvent* ev)
 
     case fc::Fkey_up:
       stepBackward();
-
       ev->accept();
       break;
 
     case fc::Fkey_down:
       stepForward();
-
       ev->accept();
       break;
 
     case fc::Fkey_left:
-      if ( xoffset == 0 )
-      {
-        if ( tree_view && item->isExpandable() && item->isExpand() )
-        {
-          // Collapse element
-          item->collapse();
-          adjustSize();
-          element_count = int(getCount());
-          recalculateVerticalBar (element_count);
-          // Force vertical scrollbar redraw
-          first_line_position_before = -1;
-        }
-        else if ( item->hasParent() )
-        {
-          // Jump to parent element
-          FObject* parent = item->getParent();
-
-          if ( parent->isInstanceOf("FListViewItem") )
-          {
-            current_iter.parentElement();
-
-            if ( current_iter.getPosition() < first_line_position_before )
-            {
-              int difference = position_before - current_iter.getPosition();
-
-              if ( first_visible_line.getPosition() - difference >= 0 )
-              {
-                first_visible_line -= difference;
-                last_visible_line -= difference;
-              }
-              else
-              {
-                int d = first_visible_line.getPosition();
-                first_visible_line -= d;
-                last_visible_line -= d;
-              }
-            }
-          }
-        }
-      }
-      else
-      {
-        // Scroll left
-        xoffset--;
-
-        if ( xoffset < 0 )
-          xoffset = 0;
-      }
-
+      keyLeft (first_line_position_before);
       ev->accept();
       break;
 
     case fc::Fkey_right:
-      if ( tree_view && item->isExpandable() && ! item->isExpand() )
-      {
-        // Expand element
-        item->expand();
-        adjustSize();
-        // Force vertical scrollbar redraw
-        first_line_position_before = -1;
-      }
-      else
-      {
-        // Scroll right
-        xoffset++;
-
-        if ( xoffset > xoffset_end )
-          xoffset = xoffset_end;
-
-        if ( xoffset < 0 )
-          xoffset = 0;
-      }
-
+      keyRight(first_line_position_before);
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
       stepBackward(pagesize);
-
       ev->accept();
       break;
 
     case fc::Fkey_npage:
       stepForward(pagesize);
-
       ev->accept();
       break;
 
     case fc::Fkey_home:
-      {
-        current_iter -= current_iter.getPosition();
-        int difference = first_visible_line.getPosition();
-        first_visible_line -= difference;
-        last_visible_line -= difference;
-      }
+      keyHome();
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      {
-        current_iter += element_count - current_iter.getPosition() - 1;
-        int difference = element_count - last_visible_line.getPosition() - 1;
-        first_visible_line += difference;
-        last_visible_line += difference;
-      }
-
+      keyEnd();
       ev->accept();
       break;
 
     case int('+'):
-      if ( tree_view && item->isExpandable() && ! item->isExpand() )
-      {
-        item->expand();
-        adjustSize();
+      if ( keyPlus() )
         ev->accept();
-      }
       break;
 
     case int('-'):
-      if ( tree_view && item->isExpandable() && item->isExpand() )
-      {
-        item->collapse();
-        adjustSize();
+      if ( keyMinus() )
         ev->accept();
-      }
       break;
 
     default:
@@ -870,21 +777,10 @@ void FListView::onKeyPress (FKeyEvent* ev)
 
   if ( ev->isAccepted() )
   {
-    if ( isVisible() )
-      draw();
-
-    vbar->setValue (first_visible_line.getPosition());
-
-    if ( vbar->isVisible() && first_line_position_before != first_visible_line.getPosition() )
-      vbar->drawBar();
-
-    hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() && xoffset_before != xoffset )
-      hbar->drawBar();
-
-    updateTerminal();
-    flush_out();
+    bool draw_vbar = first_line_position_before
+                  != first_visible_line.getPosition();
+    bool draw_hbar = xoffset_before != xoffset;
+    updateDrawing (draw_vbar, draw_hbar);
   }
 }
 
@@ -1747,6 +1643,26 @@ void FListView::drawListLine ( const FListViewItem* item
 }
 
 //----------------------------------------------------------------------
+void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
+{
+  if ( isVisible() )
+    draw();
+
+  vbar->setValue (first_visible_line.getPosition());
+
+  if ( vbar->isVisible() && draw_vbar )
+    vbar->drawBar();
+
+  hbar->setValue (xoffset);
+
+  if ( hbar->isVisible() && draw_hbar )
+    hbar->drawBar();
+
+  updateTerminal();
+  flush_out();
+}
+
+//----------------------------------------------------------------------
 void FListView::recalculateHorizontalBar (int len)
 {
   if ( len <= max_line_width )
@@ -1794,6 +1710,139 @@ void FListView::processClick()
 void FListView::processChanged()
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+inline void FListView::keyLeft (int& first_line_position_before)
+{
+  int element_count = int(getCount());
+  int position_before = current_iter.getPosition();
+  FListViewItem* item = getCurrentItem();
+
+  if ( xoffset == 0 )
+  {
+    if ( tree_view && item->isExpandable() && item->isExpand() )
+    {
+      // Collapse element
+      item->collapse();
+      adjustSize();
+      element_count = int(getCount());
+      recalculateVerticalBar (element_count);
+      // Force vertical scrollbar redraw
+      first_line_position_before = -1;
+    }
+    else if ( item->hasParent() )
+    {
+      // Jump to parent element
+      FObject* parent = item->getParent();
+
+      if ( parent->isInstanceOf("FListViewItem") )
+      {
+        current_iter.parentElement();
+
+        if ( current_iter.getPosition() < first_line_position_before )
+        {
+          int difference = position_before - current_iter.getPosition();
+
+          if ( first_visible_line.getPosition() - difference >= 0 )
+          {
+            first_visible_line -= difference;
+            last_visible_line -= difference;
+          }
+          else
+          {
+            int d = first_visible_line.getPosition();
+            first_visible_line -= d;
+            last_visible_line -= d;
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    // Scroll left
+    xoffset--;
+
+    if ( xoffset < 0 )
+      xoffset = 0;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListView::keyRight (int& first_line_position_before)
+{
+  int xoffset_end = max_line_width - getClientWidth();
+  FListViewItem* item = getCurrentItem();
+
+  if ( tree_view && item->isExpandable() && ! item->isExpand() )
+  {
+    // Expand element
+    item->expand();
+    adjustSize();
+    // Force vertical scrollbar redraw
+    first_line_position_before = -1;
+  }
+  else
+  {
+    // Scroll right
+    xoffset++;
+
+    if ( xoffset > xoffset_end )
+      xoffset = xoffset_end;
+
+    if ( xoffset < 0 )
+      xoffset = 0;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListView::keyHome()
+{
+  current_iter -= current_iter.getPosition();
+  int difference = first_visible_line.getPosition();
+  first_visible_line -= difference;
+  last_visible_line -= difference;
+}
+
+//----------------------------------------------------------------------
+inline void FListView::keyEnd()
+{
+  int element_count = int(getCount());
+  current_iter += element_count - current_iter.getPosition() - 1;
+  int difference = element_count - last_visible_line.getPosition() - 1;
+  first_visible_line += difference;
+  last_visible_line += difference;
+}
+
+//----------------------------------------------------------------------
+inline bool FListView::keyPlus()
+{
+  FListViewItem* item = getCurrentItem();
+
+  if ( tree_view && item->isExpandable() && ! item->isExpand() )
+  {
+    item->expand();
+    adjustSize();
+    return true;
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FListView::keyMinus()
+{
+  FListViewItem* item = getCurrentItem();
+
+  if ( tree_view && item->isExpandable() && item->isExpand() )
+  {
+    item->collapse();
+    adjustSize();
+    return true;
+  }
+
+  return false;
 }
 
 //----------------------------------------------------------------------

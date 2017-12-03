@@ -305,6 +305,8 @@ class FVTerm : public FTerm
                                                  , int, int, int, int );
     static void          updateCharacter ( term_area*
                                          , int, int, int, int );
+    static bool          updateVTermCharacter ( term_area*
+                                              , int, int, int, int );
     static void          callPreprocessingHandler (term_area*);
     static void          updateVTerm();
     static void          updateVTerm (term_area*);
