@@ -1382,6 +1382,9 @@ void FVTerm::updateVTerm (term_area* area)
 {
   // Update area data on VTerm
 
+  if ( ! area || ! area->visible )
+    return;
+
   int ax  = area->offset_left
     , ay  = area->offset_top
     , aw  = area->width
@@ -1390,9 +1393,6 @@ void FVTerm::updateVTerm (term_area* area)
     , bsh = area->bottom_shadow
     , ol  = 0  // Outside left
     , y_end;
-
-  if ( ! area || ! area->visible )
-    return;
 
   // Call the processing handler methods
   callPreprocessingHandler(area);
