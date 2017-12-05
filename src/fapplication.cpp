@@ -1715,7 +1715,7 @@ bool FApplication::processGpmEvent()
 #endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
-void FApplication::processMouseEvent()
+bool FApplication::getMouseEvent()
 {
   bool Event = false;
 
@@ -1725,14 +1725,14 @@ void FApplication::processMouseEvent()
     && sgr_mouse[0] == '\0'
     && urxvt_mouse[0] == '\0' )
   {
-    return;
+    return false;
   }
 #else
   if ( x11_mouse[0] == '\0'
     && sgr_mouse[0] == '\0'
     && urxvt_mouse[0] == '\0' )
   {
-    return;
+    return false;
   }
 #endif
 
@@ -1751,247 +1751,364 @@ void FApplication::processMouseEvent()
     Event = parseUrxvtMouse();
 
   if ( ! Event )
+    return false;
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+FWidget*& FApplication::determineClickedWidget()
+{
+  if ( clicked_widget )
+    return clicked_widget;
+
+  if ( b_state.left_button != Pressed
+    && b_state.left_button != DoubleClick
+    && b_state.right_button != Pressed
+    && b_state.middle_button != Pressed
+    && b_state.wheel_up != Pressed
+    && b_state.wheel_down != Pressed )
+    return clicked_widget;
+
+  const FPoint& mouse_position = getMousePos();
+
+  // Determine the window object on the current click position
+  FWidget* window = FWindow::getWindowWidgetAt (mouse_position);
+
+  if ( window )
+  {
+    // Determine the widget at the current click position
+    FWidget* child = childWidgetAt (window, mouse_position);
+    clicked_widget = ( child != 0 ) ? child : window;
+  }
+
+  return clicked_widget;
+}
+
+//----------------------------------------------------------------------
+void FApplication::unsetMoveSizeMode()
+{
+  // Unset the move/size mode
+  if ( move_size_widget )
+  {
+    FWidget* w = move_size_widget;
+    move_size_widget = 0;
+    w->redraw();
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::closeOpenMenu()
+{
+  // Close the open menu
+
+  if ( ! open_menu || b_state.mouse_moved )
+    return;
+
+  FMenu* menu = static_cast<FMenu*>(open_menu);
+  const FPoint& mouse_position = getMousePos();
+
+  if ( menu && menu->containsMenuStructure(mouse_position) )
+    return;
+
+  bool is_window_menu;
+  FWidget* super = menu->getSuperMenu();
+
+  if ( super && menu->isWindowsMenu(super) )
+    is_window_menu = true;
+  else
+    is_window_menu = false;
+
+  menu->unselectItem();
+  menu->hide();
+  menu->hideSubMenus();
+  menu->hideSuperMenus();
+
+  // No widget was been clicked and the menu is no dialog menu
+  if ( ! (clicked_widget || is_window_menu) )
+    FWindow::switchToPrevWindow();
+
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+
+  updateTerminal();
+  flush_out();
+}
+
+//----------------------------------------------------------------------
+void FApplication::unselectMenubarItems()
+{
+  // Unselect the menu bar items
+
+  if ( open_menu || b_state.mouse_moved )
+    return;
+
+  FMenuBar* menubar = getMenuBar();
+
+  if ( ! menubar )
+    return;
+
+  if ( ! menubar->hasSelectedItem() )
     return;
 
   const FPoint& mouse_position = getMousePos();
 
-  if ( ! clicked_widget
-    && ( b_state.left_button == Pressed
-      || b_state.left_button == DoubleClick
-      || b_state.right_button == Pressed
-      || b_state.middle_button == Pressed
-      || b_state.wheel_up == Pressed
-      || b_state.wheel_down == Pressed ) )
+  if ( ! getMenuBar()->getTermGeometry().contains(mouse_position) )
   {
-    // determine the window object on the current click position
-    FWidget* window = FWindow::getWindowWidgetAt (mouse_position);
+    if ( getStatusBar() )
+      getStatusBar()->clearMessage();
 
-    if ( window )
-    {
-      // determine the widget at the current click position
-      FWidget* child = childWidgetAt (window, mouse_position);
-      clicked_widget = ( child != 0 ) ? child : window;
-    }
+    getMenuBar()->resetMenu();
+    getMenuBar()->redraw();
 
-    // unset the move/size mode
-    if ( move_size_widget )
-    {
-      FWidget* w = move_size_widget;
-      move_size_widget = 0;
-      w->redraw();
-    }
+    // No widget was been clicked
+    if ( ! clicked_widget )
+      FWindow::switchToPrevWindow();
+
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+
+    updateTerminal();
+    flush_out();
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendMouseEvent()
+{
+  if ( ! clicked_widget )
+    return;
+
+  FPoint widgetMousePos;
+  const FPoint& mouse_position = getMousePos();
+  int key_state = 0;
+
+  if ( b_state.shift_button == Pressed )
+    key_state |= fc::ShiftButton;
+
+  if ( b_state.meta_button == Pressed )
+    key_state |= fc::MetaButton;
+
+  if ( b_state.control_button == Pressed )
+    key_state |= fc::ControlButton;
+
+  widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
+
+  if ( b_state.mouse_moved )
+  {
+    sendMouseMoveEvent (widgetMousePos, mouse_position, key_state);
+  }
+  else
+  {
+    sendMouseLeftClickEvent (widgetMousePos, mouse_position, key_state);
+    sendMouseRightClickEvent (widgetMousePos, mouse_position, key_state);
+    sendMouseMiddleClickEvent (widgetMousePos, mouse_position, key_state);
   }
 
-  // close the open menu
-  if ( open_menu && ! b_state.mouse_moved )
+  sendWheelEvent (widgetMousePos, mouse_position);
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
+                                      , const FPoint& mouse_position
+                                      , int key_state )
+{
+  if ( b_state.left_button == Pressed )
   {
-    FMenu* menu = static_cast<FMenu*>(open_menu);
-
-    if ( ! menu->containsMenuStructure(mouse_position) )
-    {
-      bool is_window_menu;
-      FWidget* super = menu->getSuperMenu();
-
-      if ( super && menu->isWindowsMenu(super) )
-        is_window_menu = true;
-      else
-        is_window_menu = false;
-
-      menu->unselectItem();
-      menu->hide();
-      menu->hideSubMenus();
-      menu->hideSuperMenus();
-
-      // No widget was been clicked and the menu is no dialog menu
-      if ( ! (clicked_widget || is_window_menu) )
-        FWindow::switchToPrevWindow();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      updateTerminal();
-      flush_out();
-    }
+    FMouseEvent m_down_ev ( fc::MouseMove_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::LeftButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
   }
 
-  // unselected menu bar item
-  if ( ! open_menu && getMenuBar()
-    && getMenuBar()->hasSelectedItem()
-    && ! b_state.mouse_moved )
+  if ( b_state.right_button == Pressed )
   {
-    if ( ! getMenuBar()->getTermGeometry().contains(mouse_position) )
-    {
-      if ( getStatusBar() )
-        getStatusBar()->clearMessage();
-
-      getMenuBar()->resetMenu();
-      getMenuBar()->redraw();
-
-      // No widget was been clicked
-      if ( ! clicked_widget )
-        FWindow::switchToPrevWindow();
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      updateTerminal();
-      flush_out();
-    }
+    FMouseEvent m_down_ev ( fc::MouseMove_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::RightButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
   }
 
-  if ( clicked_widget )
+  if ( b_state.middle_button == Pressed )
   {
-    FPoint widgetMousePos;
-    int key_state = 0;
+    FMouseEvent m_down_ev ( fc::MouseMove_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::MiddleButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
+  }
+}
 
-    if ( b_state.shift_button == Pressed )
-      key_state |= fc::ShiftButton;
-
-    if ( b_state.meta_button == Pressed )
-      key_state |= fc::MetaButton;
-
-    if ( b_state.control_button == Pressed )
-      key_state |= fc::ControlButton;
-
-    widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
-
-    if ( b_state.mouse_moved )
-    {
-      if ( b_state.left_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseMove_Event
+//----------------------------------------------------------------------
+void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
+                                           , const FPoint& mouse_position
+                                           , int key_state )
+{
+  if ( b_state.left_button == DoubleClick )
+  {
+    FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
                               , widgetMousePos
                               , mouse_position
                               , fc::LeftButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-      }
+    sendEvent (clicked_widget, &m_dblclick_ev);
+  }
+  else if ( b_state.left_button == Pressed )
+  {
+    FMouseEvent m_down_ev ( fc::MouseDown_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::LeftButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
+  }
+  else if ( b_state.left_button == Released )
+  {
+    FMouseEvent m_up_ev ( fc::MouseUp_Event
+                        , widgetMousePos
+                        , mouse_position
+                        , fc::LeftButton | key_state );
+    FWidget* released_widget = clicked_widget;
 
-      if ( b_state.right_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseMove_Event
-                              , widgetMousePos
-                              , mouse_position
-                              , fc::RightButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-      }
-
-      if ( b_state.middle_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseMove_Event
-                              , widgetMousePos
-                              , mouse_position
-                              , fc::MiddleButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-      }
-    }
-    else
-    {
-      if ( b_state.left_button == DoubleClick )
-      {
-        FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
-                                  , widgetMousePos
-                                  , mouse_position
-                                  , fc::LeftButton | key_state );
-        sendEvent (clicked_widget, &m_dblclick_ev);
-      }
-      else if ( b_state.left_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , widgetMousePos
-                              , mouse_position
-                              , fc::LeftButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-      }
-      else if ( b_state.left_button == Released )
-      {
-        FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , widgetMousePos
-                            , mouse_position
-                            , fc::LeftButton | key_state );
-        FWidget* released_widget = clicked_widget;
-
-        if ( b_state.right_button != Pressed
-          && b_state.middle_button != Pressed )
-          clicked_widget = 0;
-
-        sendEvent (released_widget, &m_up_ev);
-      }
-
-      if ( b_state.right_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , widgetMousePos
-                              , mouse_position
-                              , fc::RightButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-      }
-      else if ( b_state.right_button == Released )
-      {
-        FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , widgetMousePos
-                            , mouse_position
-                            , fc::RightButton | key_state );
-        FWidget* released_widget = clicked_widget;
-
-        if ( b_state.left_button != Pressed
-          && b_state.middle_button != Pressed )
-          clicked_widget = 0;
-
-        sendEvent (released_widget, &m_up_ev);
-      }
-
-      if ( b_state.middle_button == Pressed )
-      {
-        FMouseEvent m_down_ev ( fc::MouseDown_Event
-                              , widgetMousePos
-                              , mouse_position
-                              , fc::MiddleButton | key_state );
-        sendEvent (clicked_widget, &m_down_ev);
-
-        // gnome-terminal sends no released on middle click
-        if ( isGnomeTerminal() )
-          clicked_widget = 0;
-      }
-      else if ( b_state.middle_button == Released )
-      {
-        FMouseEvent m_up_ev ( fc::MouseUp_Event
-                            , widgetMousePos
-                            , mouse_position
-                            , fc::MiddleButton | key_state );
-        FWidget* released_widget = clicked_widget;
-
-        if ( b_state.right_button != Pressed
-          && b_state.left_button != Pressed )
-        {
-          clicked_widget = 0;
-        }
-
-        sendEvent (released_widget, &m_up_ev);
-      }
-    }
-
-    if ( b_state.wheel_up == Pressed )
-    {
-      FWheelEvent wheel_ev ( fc::MouseWheel_Event
-                           , widgetMousePos
-                           , mouse_position
-                           , fc::WheelUp );
-      FWidget* scroll_over_widget = clicked_widget;
+    if ( b_state.right_button != Pressed
+      && b_state.middle_button != Pressed )
       clicked_widget = 0;
-      sendEvent(scroll_over_widget, &wheel_ev);
+
+    sendEvent (released_widget, &m_up_ev);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
+                                            , const FPoint& mouse_position
+                                            , int key_state )
+{
+  if ( b_state.right_button == Pressed )
+  {
+    FMouseEvent m_down_ev ( fc::MouseDown_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::RightButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
+  }
+  else if ( b_state.right_button == Released )
+  {
+    FMouseEvent m_up_ev ( fc::MouseUp_Event
+                        , widgetMousePos
+                        , mouse_position
+                        , fc::RightButton | key_state );
+    FWidget* released_widget = clicked_widget;
+
+    if ( b_state.left_button != Pressed
+      && b_state.middle_button != Pressed )
+      clicked_widget = 0;
+
+    sendEvent (released_widget, &m_up_ev);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
+                                             , const FPoint& mouse_position
+                                             , int key_state )
+{
+  if ( b_state.middle_button == Pressed )
+  {
+    FMouseEvent m_down_ev ( fc::MouseDown_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::MiddleButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
+
+    // gnome-terminal sends no released on middle click
+    if ( isGnomeTerminal() )
+      clicked_widget = 0;
+  }
+  else if ( b_state.middle_button == Released )
+  {
+    FMouseEvent m_up_ev ( fc::MouseUp_Event
+                        , widgetMousePos
+                        , mouse_position
+                        , fc::MiddleButton | key_state );
+    FWidget* released_widget = clicked_widget;
+
+    if ( b_state.right_button != Pressed
+      && b_state.left_button != Pressed )
+    {
+      clicked_widget = 0;
     }
 
-    if ( b_state.wheel_down == Pressed )
-    {
-      FWheelEvent wheel_ev ( fc::MouseWheel_Event
-                           , widgetMousePos
-                           , mouse_position
-                           , fc::WheelDown );
-      FWidget* scroll_over_widget = clicked_widget;
+    sendEvent (released_widget, &m_up_ev);
+  }
+
+  if ( b_state.middle_button == Pressed )
+  {
+    FMouseEvent m_down_ev ( fc::MouseDown_Event
+                          , widgetMousePos
+                          , mouse_position
+                          , fc::MiddleButton | key_state );
+    sendEvent (clicked_widget, &m_down_ev);
+
+    // gnome-terminal sends no released on middle click
+    if ( isGnomeTerminal() )
       clicked_widget = 0;
-      sendEvent (scroll_over_widget, &wheel_ev);
+  }
+  else if ( b_state.middle_button == Released )
+  {
+    FMouseEvent m_up_ev ( fc::MouseUp_Event
+                        , widgetMousePos
+                        , mouse_position
+                        , fc::MiddleButton | key_state );
+    FWidget* released_widget = clicked_widget;
+
+    if ( b_state.right_button != Pressed
+      && b_state.left_button != Pressed )
+    {
+      clicked_widget = 0;
     }
-  }  // end of if ( clicked_widget )
+
+    sendEvent (released_widget, &m_up_ev);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
+                                  , const FPoint& mouse_position )
+{
+  if ( b_state.wheel_up == Pressed )
+  {
+    FWheelEvent wheel_ev ( fc::MouseWheel_Event
+                         , widgetMousePos
+                         , mouse_position
+                         , fc::WheelUp );
+    FWidget* scroll_over_widget = clicked_widget;
+    clicked_widget = 0;
+    sendEvent(scroll_over_widget, &wheel_ev);
+  }
+
+  if ( b_state.wheel_down == Pressed )
+  {
+    FWheelEvent wheel_ev ( fc::MouseWheel_Event
+                         , widgetMousePos
+                         , mouse_position
+                         , fc::WheelDown );
+    FWidget* scroll_over_widget = clicked_widget;
+    clicked_widget = 0;
+    sendEvent (scroll_over_widget, &wheel_ev);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::processMouseEvent()
+{
+  if ( ! getMouseEvent() )
+    return;
+
+  determineClickedWidget();
+  unsetMoveSizeMode();
+  closeOpenMenu();
+  unselectMenubarItems();
+  sendMouseEvent();
 
 #ifdef F_HAVE_LIBGPM
   if ( isGpmMouseEnabled() && gpm_ev.x != -1 )

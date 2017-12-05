@@ -159,6 +159,7 @@ class FApplication : public FWidget
     bool               KeyPressed();
     ssize_t            readKey();
     void               processKeyboardEvent();
+
 #if defined(__linux__)
     static int         linuxShiftKeyCorrection (const int&);
     static int         linuxCtrlKeyCorrection (const int&);
@@ -169,12 +170,32 @@ class FApplication : public FWidget
     static int         linuxShiftCtrlAltKeyCorrection (const int&);
     static int         linuxModifierKeyCorrection (const int&);
 #endif
+
     bool               processDialogSwitchAccelerator();
     bool               processAccelerator (const FWidget*&);
     void               getX11ButtonState (int);
     bool               parseX11Mouse();
     bool               parseSGRMouse();
     bool               parseUrxvtMouse();
+    bool               getMouseEvent();
+    FWidget*&          determineClickedWidget();
+    void               unsetMoveSizeMode();
+    void               closeOpenMenu();
+    void               unselectMenubarItems();
+    void               sendMouseEvent();
+    void               sendMouseMoveEvent ( const FPoint&
+                                          , const FPoint&
+                                          , int );
+    void               sendMouseLeftClickEvent ( const FPoint&
+                                               , const FPoint&
+                                               , int );
+    void               sendMouseRightClickEvent ( const FPoint&
+                                                , const FPoint&
+                                                , int );
+    void               sendMouseMiddleClickEvent ( const FPoint&
+                                                 , const FPoint&
+                                                 , int );
+    void               sendWheelEvent (const FPoint&, const FPoint&);
     void               processMouseEvent();
     void               processResizeEvent();
     int                processTimerEvent();
