@@ -158,6 +158,17 @@ class FApplication : public FWidget
 
     bool               KeyPressed();
     ssize_t            readKey();
+    FWidget*           findKeyboardWidget();
+    bool               getKeyPressedState();
+    void               keyboardBufferTimeout (FWidget*);
+    void               readRawX11MouseData();
+    void               readRawExtendedMouseData();
+    void               readRawUrxvtMouseData();
+    void               sendEscapeKeyPressEvent (FWidget*);
+    bool               sendKeyDownEvent (FWidget*);
+    bool               sendKeyPressEvent (FWidget*);
+    bool               sendKeyUpEvent (FWidget*);
+    void               sendKeyboardAccelerator();
     void               processKeyboardEvent();
 
 #if defined(__linux__)

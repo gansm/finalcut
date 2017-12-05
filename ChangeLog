@@ -1,5 +1,6 @@
 2017-12-05  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FApplication::processMouseEvent
+	* Refactoring FApplication::processKeyboardEvent
 
 2017-12-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FListBox::drawList and FListBox::onKeyPress

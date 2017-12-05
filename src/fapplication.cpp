@@ -531,9 +531,8 @@ inline ssize_t FApplication::readKey()
 }
 
 //----------------------------------------------------------------------
-void FApplication::processKeyboardEvent()
+inline FWidget* FApplication::findKeyboardWidget()
 {
-  bool isKeyPressed = false;
   FWidget* widget = 0;
 
   if ( focus_widget )
@@ -551,17 +550,25 @@ void FApplication::processKeyboardEvent()
       widget->focusFirstChild();
   }
 
+  return widget;
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::keyboardBufferTimeout (FWidget*)
+{
   // Empty the buffer on timeout
-  if ( fifo_in_use && widget->isKeyTimeout(&time_keypressed, key_timeout)  )
+  if ( fifo_in_use && isKeyTimeout(&time_keypressed, key_timeout)  )
   {
     fifo_offset = 0;
     key = 0;
     std::fill_n (fifo_buf, fifo_buf_size, '\0');
     fifo_in_use = false;
   }
+}
 
-  flush_out();
-
+//----------------------------------------------------------------------
+inline bool FApplication::getKeyPressedState()
+{
 #ifdef F_HAVE_LIBGPM
 
   if ( isGpmMouseEnabled() )
@@ -576,20 +583,181 @@ void FApplication::processKeyboardEvent()
         break;
 
       case keyboard_event:
-        isKeyPressed = true;
+        return true;
 
       default:
-        break;
+        return false;
     }
   }
-  else
-    isKeyPressed = KeyPressed();
-
-#else  // without gpm
-
-  isKeyPressed = KeyPressed();
 
 #endif  // F_HAVE_LIBGPM
+
+  return KeyPressed();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::readRawX11MouseData()
+{
+  static const int len = 6;
+  int n;
+  x11_mouse[0] = fifo_buf[3];
+  x11_mouse[1] = fifo_buf[4];
+  x11_mouse[2] = fifo_buf[5];
+  x11_mouse[3] = '\0';
+
+  // Remove founded entry
+  for (n = len; n < fifo_buf_size; n++)
+    fifo_buf[n - len] = fifo_buf[n];
+
+  n = fifo_buf_size - len - 1;
+
+  // Fill rest with '\0'
+  for (; n < fifo_buf_size; n++)
+    fifo_buf[n - len] = '\0';
+
+  unprocessedInput() = bool(fifo_buf[0] != '\0');
+  processMouseEvent();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::readRawExtendedMouseData()
+{
+  int len = int(std::strlen(fifo_buf));
+  int n = 3;
+
+  while ( n < len && n < fifo_buf_size )
+  {
+    sgr_mouse[n - 3] = fifo_buf[n];
+    n++;
+
+    if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+      len = n + 1;
+  }
+
+  sgr_mouse[n - 3] = '\0';
+
+  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+    fifo_buf[n - len] = fifo_buf[n];
+
+  n = fifo_buf_size - len - 1;
+
+  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
+    fifo_buf[n - len] = '\0';
+
+  unprocessedInput() = bool(fifo_buf[0] != '\0');
+  processMouseEvent();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::readRawUrxvtMouseData()
+{
+  int len = int(std::strlen(fifo_buf));
+  int n = 2;
+
+  while ( n < len && n < fifo_buf_size )
+  {
+    urxvt_mouse[n - 2] = fifo_buf[n];
+    n++;
+
+    if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
+      len = n + 1;
+  }
+
+  urxvt_mouse[n - 2] = '\0';
+
+  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+    fifo_buf[n - len] = fifo_buf[n];
+
+  n = fifo_buf_size - len - 1;
+
+  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
+    fifo_buf[n - len] = '\0';
+
+  unprocessedInput() = bool(fifo_buf[0] != '\0');
+  processMouseEvent();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::sendEscapeKeyPressEvent (FWidget* widget)
+{
+  // Send an escape key press event if there is only one 0x1b
+  // in the buffer and the timeout is reached
+
+  if ( fifo_in_use
+    && fifo_offset == 1
+    && fifo_buf[0] == 0x1b
+    && fifo_buf[1] == 0x00
+    && isKeyTimeout(&time_keypressed, key_timeout) )
+  {
+    FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
+    sendEvent (widget, &k_press_ev);
+    unprocessedInput() = false;
+  }
+}
+
+//----------------------------------------------------------------------
+inline bool FApplication::sendKeyDownEvent (FWidget* widget)
+{
+  // Send key down event
+  FKeyEvent k_down_ev (fc::KeyDown_Event, key);
+  sendEvent (widget, &k_down_ev);
+  return k_down_ev.isAccepted();
+}
+
+//----------------------------------------------------------------------
+inline bool FApplication::sendKeyPressEvent (FWidget* widget)
+{
+  // Send key press event
+  FKeyEvent k_press_ev (fc::KeyPress_Event, key);
+  sendEvent (widget, &k_press_ev);
+  return k_press_ev.isAccepted();
+}
+
+//----------------------------------------------------------------------
+inline bool FApplication::sendKeyUpEvent (FWidget* widget)
+{
+  // Send key up event
+  FKeyEvent k_up_ev (fc::KeyUp_Event, key);
+  sendEvent (widget, &k_up_ev);
+  return k_up_ev.isAccepted();
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::sendKeyboardAccelerator()
+{
+  if ( open_menu )
+    return;
+
+  // Switch to a specific dialog with Meta + 1..9
+  bool accpt = processDialogSwitchAccelerator();
+
+  // Windows keyboard accelerator
+  if ( ! accpt )
+  {
+    const FWidget* window = active_window;
+
+    if ( window )
+      accpt = processAccelerator (window);
+  }
+
+  // Global keyboard accelerator
+  if ( ! accpt )
+  {
+    const FWidget* root_widget = getRootWidget();
+
+    if ( root_widget )
+      processAccelerator (root_widget);
+  }
+}
+
+//----------------------------------------------------------------------
+void FApplication::processKeyboardEvent()
+{
+  bool isKeyPressed = false;
+  FWidget* widget = findKeyboardWidget();
+  keyboardBufferTimeout(widget);
+  flush_out();
+  isKeyPressed = getKeyPressedState();
 
   if ( isKeyPressed )
   {
@@ -634,123 +802,24 @@ void FApplication::processKeyboardEvent()
               break;
 
             case fc::Fkey_mouse:
-              {
-                static const int len = 6;
-                int n;
-                x11_mouse[0] = fifo_buf[3];
-                x11_mouse[1] = fifo_buf[4];
-                x11_mouse[2] = fifo_buf[5];
-                x11_mouse[3] = '\0';
-
-                // Remove founded entry
-                for (n = len; n < fifo_buf_size; n++)
-                  fifo_buf[n - len] = fifo_buf[n];
-
-                n = fifo_buf_size - len - 1;
-
-                // Fill rest with '\0'
-                for (; n < fifo_buf_size; n++)
-                  fifo_buf[n - len] = '\0';
-
-                unprocessedInput() = bool(fifo_buf[0] != '\0');
-                processMouseEvent();
-              }
+              readRawX11MouseData();
               break;
 
             case fc::Fkey_extended_mouse:
-              {
-                int len = int(std::strlen(fifo_buf));
-                int n = 3;
-
-                while ( n < len && n < fifo_buf_size )
-                {
-                  sgr_mouse[n - 3] = fifo_buf[n];
-                  n++;
-
-                  if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-                    len = n + 1;
-                }
-
-                sgr_mouse[n - 3] = '\0';
-
-                for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-                  fifo_buf[n - len] = fifo_buf[n];
-
-                n = fifo_buf_size - len - 1;
-
-                for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-                  fifo_buf[n - len] = '\0';
-
-                unprocessedInput() = bool(fifo_buf[0] != '\0');
-                processMouseEvent();
-              }
+              readRawExtendedMouseData();
               break;
 
             case fc::Fkey_urxvt_mouse:
-              {
-                int len = int(std::strlen(fifo_buf));
-                int n = 2;
-
-                while ( n < len && n < fifo_buf_size )
-                {
-                  urxvt_mouse[n - 2] = fifo_buf[n];
-                  n++;
-
-                  if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-                    len = n + 1;
-                }
-
-                urxvt_mouse[n - 2] = '\0';
-
-                for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-                  fifo_buf[n - len] = fifo_buf[n];
-
-                n = fifo_buf_size - len - 1;
-
-                for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-                  fifo_buf[n - len] = '\0';
-
-                unprocessedInput() = bool(fifo_buf[0] != '\0');
-                processMouseEvent();
-              }
+              readRawUrxvtMouseData();
               break;
 
             default:
-              {
-                // send key down event
-                FKeyEvent k_down_ev (fc::KeyDown_Event, key);
-                sendEvent (widget, &k_down_ev);
+              bool acceptKeyDown = sendKeyDownEvent (widget);
+              bool acceptKeyPress = sendKeyPressEvent (widget);
 
-                // send key press event
-                FKeyEvent k_press_ev (fc::KeyPress_Event, key);
-                sendEvent (widget, &k_press_ev);
+              if ( ! (acceptKeyDown || acceptKeyPress) )
+                sendKeyboardAccelerator();
 
-                if ( ! open_menu
-                  && ! k_press_ev.isAccepted()
-                  && ! k_down_ev.isAccepted() )
-                {
-                  // switch to a specific dialog with Meta + 1..9
-                  bool accpt = processDialogSwitchAccelerator();
-
-                  // windows keyboard accelerator
-                  if ( ! accpt )
-                  {
-                    const FWidget* window = active_window;
-
-                    if ( window )
-                      accpt = processAccelerator (window);
-                  }
-
-                  // global keyboard accelerator
-                  if ( ! accpt )
-                  {
-                    const FWidget* root_widget = getRootWidget();
-
-                    if ( root_widget )
-                      processAccelerator (root_widget);
-                  }
-                }
-              }
               break;
           }  // end of switch
         }
@@ -758,9 +827,8 @@ void FApplication::processKeyboardEvent()
         fifo_offset = int(std::strlen(fifo_buf));
       }
 
-      // send key up event
-      FKeyEvent k_up_ev (fc::KeyUp_Event, key);
-      sendEvent (widget, &k_up_ev);
+      // Send key up event
+      sendKeyUpEvent (widget);
       key = 0;
     }
 
@@ -768,16 +836,7 @@ void FApplication::processKeyboardEvent()
   }
 
   // special case: Esc key
-  if ( fifo_in_use
-    && fifo_offset == 1
-    && fifo_buf[0] == 0x1b
-    && fifo_buf[1] == 0x00
-    && isKeyTimeout(&time_keypressed, key_timeout) )
-  {
-    FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
-    sendEvent (widget, &k_press_ev);
-    unprocessedInput() = false;
-  }
+  sendEscapeKeyPressEvent (widget);
 }
 
 #if defined(__linux__)
