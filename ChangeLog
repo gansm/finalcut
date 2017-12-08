@@ -1,3 +1,7 @@
+2017-12-08  Markus Gans  <guru.mail@muenster.de>
+	* More individual arithmetic operations methods in 
+	  the implementation of the calculator example
+
 2017-12-05  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FApplication::processMouseEvent
 	* Refactoring FApplication::processKeyboardEvent

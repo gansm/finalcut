@@ -2338,7 +2338,6 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   // => clear to end of line
 
   term_area*& vt = vterm;
-  bool&  ut = FTermcap::background_color_erase;
   char*& ce = TCAP(fc::t_clr_eol);
   char_data* min_char = &vt->text[y * uInt(vt->width) + xmin];
 
@@ -2346,6 +2345,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   {
     uInt beginning_whitespace = 1;
     bool normal = isNormal(min_char);
+    bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = xmin + 1; x < uInt(vt->width); x++)
     {
@@ -2677,7 +2677,6 @@ void FVTerm::updateTerminalLine (uInt y)
     bool draw_leading_ws = false;
     bool draw_tailing_ws = false;
     char*& ce = TCAP(fc::t_clr_eol);
-    char*& cb = TCAP(fc::t_clr_bol);
     char_data* first_char = &vt->text[y * uInt(vt->width)];
     char_data* last_char  = &vt->text[(y + 1) * uInt(vt->width) - 1];
     char_data* min_char   = &vt->text[y * uInt(vt->width) + xmin];
@@ -2706,6 +2705,7 @@ void FVTerm::updateTerminalLine (uInt y)
     {
       if ( draw_leading_ws )
       {
+        char*& cb = TCAP(fc::t_clr_bol);
         appendAttributes (first_char);
         appendOutputBuffer (cb);
         markAsPrinted (0, xmin, y);

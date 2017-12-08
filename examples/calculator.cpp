@@ -117,30 +117,15 @@ class Calc : public FDialog
     ~Calc();
 
     // Event handlers
-    void onKeyPress (FKeyEvent*);
-    void onAccel (FAccelEvent*);
-    void onClose (FCloseEvent*);
+    void     onKeyPress (FKeyEvent*);
+    void     onAccel (FAccelEvent*);
+    void     onClose (FCloseEvent*);
 
     // Callback method
-    void cb_buttonClicked (FWidget*, data_ptr);
+    void     cb_buttonClicked (FWidget*, data_ptr);
 
   private:
-    // Methods
-    void drawDispay();
-    virtual void draw();
-    bool isDataEntryKey(int);
-    bool isOperatorKey(int);
-    void setDisplay (lDouble);
-    void setInfixOperator(char);
-    void clearInfixOperator();
-    void calcInfixOperator();
-    void adjustSize();
-
-    // Data Members
-    bool error;
-    bool arcus_mode;
-    bool hyperbolic_mode;
-
+    // Enumeration
     enum button
     {
       Sine,
@@ -180,7 +165,59 @@ class Calc : public FDialog
       NUM_OF_BUTTONS
     };
 
+    // Methods
+    void     drawDispay();
+    virtual void draw();
+    void     clear();
+    void     zero();
+    void     one();
+    void     two();
+    void     three();
+    void     four();
+    void     five();
+    void     six();
+    void     seven();
+    void     eight();
+    void     nine();
+    void     add();
+    void     subtract();
+    void     multiply();
+    void     divide();
+    void     equals();
+    void     change_sign (lDouble&);
+    void     radix_point();
+    void     reciprocal (lDouble&);
+    void     percent (lDouble&);
+    void     pi (lDouble&);
+    void     open_bracket();
+    void     close_bracket();
+    void     log_e (lDouble&);
+    void     power_e (lDouble&);
+    void     log_10 (lDouble&);
+    void     power_10 (lDouble&);
+    void     power (lDouble&);
+    void     square_root (lDouble&);
+    void     hyperbolic (lDouble&);
+    void     arcus (lDouble&);
+    void     sine (lDouble&);
+    void     cosine (lDouble&);
+    void     tangent (lDouble&);
+    bool     isDataEntryKey (int);
+    bool     isOperatorKey (int);
+    lDouble& getValue();
+    void     setDisplay (lDouble);
+    void     setInfixOperator (char);
+    void     clearInfixOperator();
+    void     calcInfixOperator();
+    void     adjustSize();
+
+    // Data Members
+    bool error;
+    bool arcus_mode;
+    bool hyperbolic_mode;
+
     lDouble a, b;
+    lDouble infinity;
     uInt    max_char;
     int     last_key;
     char    infix_operator;
@@ -207,7 +244,8 @@ Calc::Calc (FWidget* parent)
   , hyperbolic_mode(false)
   , a(0.0L)
   , b(0.0L)
-  , max_char(32)
+  , infinity(std::numeric_limits<lDouble>::infinity())
+  , max_char(33)
   , last_key(-1)
   , infix_operator('\0')
   , last_infix_operator('\0')
@@ -256,9 +294,9 @@ Calc::Calc (FWidget* parent)
   };
 
   std::setlocale(LC_NUMERIC, "C");
-  setText ("calculator");
+  setText ("Calculator");
   setGeometry (19, 6, 37, 18);
-  addAccelerator('q');  // press 'q' to quit
+  addAccelerator('q');  // Press 'q' to quit
 
   for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
@@ -295,7 +333,7 @@ Calc::Calc (FWidget* parent)
     calculator_buttons[button(key)] = btn;
   }
 
-  calculator_buttons[On]->addAccelerator(fc::Fkey_dc);  // del key
+  calculator_buttons[On]->addAccelerator(fc::Fkey_dc);  // Del key
   calculator_buttons[On]->setFocus();
   calculator_buttons[Pi]->addAccelerator('p');
   calculator_buttons[Power]->addAccelerator('^');
@@ -381,6 +419,456 @@ void Calc::drawDispay()
 }
 
 //----------------------------------------------------------------------
+void Calc::clear()
+{
+  error = false;
+  arcus_mode = false;
+  hyperbolic_mode = false;
+  calculator_buttons[Arcus]->setChecked(false);
+  calculator_buttons[Hyperbolic]->setChecked(false);
+  input = "";
+  clearInfixOperator();
+  last_infix_operator = '\0';
+  a = b = 0.0L;
+}
+
+//----------------------------------------------------------------------
+void Calc::zero()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '0';
+  else
+    input = '0';
+
+}
+
+//----------------------------------------------------------------------
+void Calc::one()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '1';
+  else
+    input = '1';
+}
+
+//----------------------------------------------------------------------
+void Calc::two()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '2';
+  else
+    input = '2';
+}
+
+//----------------------------------------------------------------------
+void Calc::three()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '3';
+  else
+    input = '3';
+}
+
+//----------------------------------------------------------------------
+void Calc::four()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '4';
+  else
+    input = '4';
+}
+
+//----------------------------------------------------------------------
+void Calc::five()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '5';
+  else
+    input = '5';
+}
+
+//----------------------------------------------------------------------
+void Calc::six()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '6';
+  else
+    input = '6';
+}
+
+//----------------------------------------------------------------------
+void Calc::seven()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '7';
+  else
+    input = '7';
+}
+
+//----------------------------------------------------------------------
+void Calc::eight()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '8';
+  else
+    input = '8';
+}
+
+//----------------------------------------------------------------------
+void Calc::nine()
+{
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key) )
+    input += '9';
+  else
+    input = '9';
+}
+
+//----------------------------------------------------------------------
+void Calc::add()
+{
+  if ( ! isOperatorKey(last_key) )
+    calcInfixOperator();
+
+  setDisplay(a);
+  setInfixOperator('+');
+}
+
+//----------------------------------------------------------------------
+void Calc::subtract()
+{
+  if ( ! isOperatorKey(last_key) )
+    calcInfixOperator();
+
+  setDisplay(a);
+  setInfixOperator('-');
+}
+
+//----------------------------------------------------------------------
+void Calc::multiply()
+{
+ if ( ! isOperatorKey(last_key) )
+   calcInfixOperator();
+
+  setDisplay(a);
+  setInfixOperator('*');
+}
+
+//----------------------------------------------------------------------
+void Calc::divide()
+{
+  if ( ! isOperatorKey(last_key) )
+    calcInfixOperator();
+
+  setDisplay(a);
+  setInfixOperator('/');
+}
+
+//----------------------------------------------------------------------
+void Calc::equals()
+{
+  infix_operator = last_infix_operator;
+  calcInfixOperator();
+  setDisplay(a);
+}
+
+//----------------------------------------------------------------------
+void Calc::change_sign (lDouble& x)
+{
+  x *= -1.0L;
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::radix_point()
+{
+  if ( ! input.includes('.') )
+    input += '.';
+}
+
+//----------------------------------------------------------------------
+void Calc::reciprocal (lDouble& x)
+{
+  if ( std::fabs(x) < LDBL_EPSILON )  // x == 0
+    error = true;
+  else
+  {
+    x = 1 / x;
+    setDisplay(x);
+  }
+}
+
+//----------------------------------------------------------------------
+void Calc::percent (lDouble& x)
+{
+  infix_operator = last_infix_operator;
+  x /= 100.0L;
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::pi (lDouble& x)
+{
+  x = PI;
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::open_bracket()
+{
+  stack_data d = { a, infix_operator };
+  bracket_stack.push(d);
+  clearInfixOperator();
+  input = "";
+  a = b = 0.0L;
+  setDisplay(a);
+}
+
+//----------------------------------------------------------------------
+void Calc::close_bracket()
+{
+  if ( bracket_stack.empty() )
+    return;
+
+  calcInfixOperator();
+  setDisplay(a);
+  stack_data d = bracket_stack.top();
+  bracket_stack.pop();
+  b = d.term;
+  infix_operator = d.infix_operator;
+  last_infix_operator = infix_operator;
+}
+
+//----------------------------------------------------------------------
+void Calc::log_e (lDouble& x)
+{
+  x = std::log(x);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::power_e (lDouble& x)
+{
+  x = std::exp(x);
+
+  if ( errno == ERANGE )
+    error = true;
+
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::log_10 (lDouble& x)
+{
+  x = std::log10(x);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::power_10 (lDouble& x)
+{
+  x = std::pow(10, x);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::power (lDouble& x)
+{
+  if ( ! isOperatorKey(last_key) )
+    calcInfixOperator();
+
+  setDisplay(x);
+  setInfixOperator('^');
+}
+
+//----------------------------------------------------------------------
+void Calc::square_root (lDouble& x)
+{
+  x = std::sqrt(x);
+
+  if ( errno == EDOM || errno == ERANGE )
+    error = true;
+
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::hyperbolic (lDouble& x)
+{
+  hyperbolic_mode = ! hyperbolic_mode;
+  calculator_buttons[Hyperbolic]->setChecked(hyperbolic_mode);
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::arcus (lDouble& x)
+{
+  arcus_mode = ! arcus_mode;
+  calculator_buttons[Arcus]->setChecked(arcus_mode);
+  setDisplay(x);
+}
+
+//----------------------------------------------------------------------
+void Calc::sine (lDouble& x)
+{
+ if ( hyperbolic_mode )
+  {
+    if ( arcus_mode )
+    {
+      x = std::log(x + std::sqrt(x * x + 1));
+
+      if ( errno == EDOM || errno == ERANGE )
+        error = true;
+
+      if ( std::fabs(x - infinity) < LDBL_EPSILON )  // x = ∞
+        error = true;
+    }
+    else
+      x = std::sinh(x);
+  }
+  else
+  {
+    if ( arcus_mode )
+      x = std::asin(x) * 180.0L / PI;
+    else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
+      x = 0.0L;
+    else
+      x = std::sin(x * PI / 180.0L);
+  }
+
+  if ( errno == EDOM )
+    error = true;
+
+  setDisplay(x);
+  arcus_mode = false;
+  hyperbolic_mode = false;
+  calculator_buttons[Arcus]->setChecked(false);
+  calculator_buttons[Hyperbolic]->setChecked(false);
+}
+
+//----------------------------------------------------------------------
+void Calc::cosine (lDouble& x)
+{
+  if ( hyperbolic_mode )
+  {
+    if ( arcus_mode )
+    {
+      x = std::log(x + std::sqrt(x * x - 1));
+
+      if ( errno == EDOM || errno == ERANGE )
+        error = true;
+
+      if ( std::fabs(x - infinity) < LDBL_EPSILON )  // x = ∞
+        error = true;
+    }
+    else
+      x = std::cosh(x);
+  }
+  else
+  {
+    if ( arcus_mode )
+      x = std::acos(x) * 180.0L / PI;
+    else if ( std::fabs(std::fmod(x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
+      x = 0.0L;
+    else
+      x = std::cos(x * PI / 180.0L);
+  }
+
+  if ( errno == EDOM )
+    error = true;
+
+  setDisplay(x);
+  arcus_mode = false;
+  hyperbolic_mode = false;
+  calculator_buttons[Arcus]->setChecked(false);
+  calculator_buttons[Hyperbolic]->setChecked(false);
+}
+
+//----------------------------------------------------------------------
+void Calc::tangent (lDouble& x)
+{
+  if ( hyperbolic_mode )
+  {
+    if ( arcus_mode )
+      if ( x < 1 )
+      {
+        x = 0.5L * std::log((1 + x) / (1 - x));
+
+        if ( errno == EDOM || errno == ERANGE )
+          error = true;
+      }
+      else
+        error = true;
+    else
+      x = std::tanh(x);
+  }
+  else
+  {
+    if ( arcus_mode )
+      x = std::atan(x) * 180.0L / PI;
+    else
+      // Test if (x / 180) != 0 and x / 90 == 0
+      if ( std::fabs(std::fmod(x, 180.0L)) > LDBL_EPSILON
+        && std::fabs(std::fmod(x, 90.0L)) < LDBL_EPSILON )
+        error = true;
+      else if ( std::fabs(std::fmod(x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
+        x = 0.0L;
+      else
+        x = std::tan(x * PI / 180.0L);
+  }
+
+  if ( errno == EDOM )
+    error = true;
+
+  setDisplay(x);
+  arcus_mode = false;
+  hyperbolic_mode = false;
+  calculator_buttons[Arcus]->setChecked(false);
+  calculator_buttons[Hyperbolic]->setChecked(false);
+}
+
+//----------------------------------------------------------------------
 void Calc::draw()
 {
   setBold();
@@ -394,7 +882,7 @@ void Calc::draw()
 //----------------------------------------------------------------------
 bool Calc::isDataEntryKey (int key)
 {
-  // test if key is in {'.', '0'..'9'}
+  // Test if key is in {'.', '0'..'9'}
   int data_entry_keys[] =
   {
     Decimal_point,
@@ -421,7 +909,7 @@ bool Calc::isDataEntryKey (int key)
 //----------------------------------------------------------------------
 bool Calc::isOperatorKey(int key)
 {
-  // test if key is in {'*', '/', '+', '-', '^', '='}
+  // Test if key is in {'*', '/', '+', '-', '^', '='}
   int operators[] =
   {
     Multiply,
@@ -438,6 +926,15 @@ bool Calc::isOperatorKey(int key)
     return true;
   else
     return false;
+}
+
+//----------------------------------------------------------------------
+lDouble& Calc::getValue()
+{
+  if ( infix_operator )
+    return b;
+  else
+    return a;
 }
 
 //----------------------------------------------------------------------
@@ -579,400 +1076,145 @@ void Calc::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Calc::cb_buttonClicked (FWidget*, data_ptr data)
 {
-  int key;
-  lDouble* x;
-  lDouble infinity = std::numeric_limits<lDouble>::infinity();
-
-  if ( infix_operator )
-    x = &b;
-  else
-    x = &a;
-
-  key = *(static_cast<int*>(data));
+  lDouble& x = getValue();
+  int key = *(static_cast<int*>(data));
 
   switch ( key )
   {
-    case Sine:  // sin
-      if ( hyperbolic_mode )
-      {
-        if ( arcus_mode )
-        {
-          *x = std::log(*x + std::sqrt((*x) * (*x) + 1));
-
-          if ( errno == EDOM || errno == ERANGE )
-            error = true;
-
-          if ( std::fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
-            error = true;
-        }
-        else
-          *x = std::sinh(*x);
-      }
-      else
-      {
-        if ( arcus_mode )
-          *x = std::asin(*x) * 180.0L / PI;
-        else if ( std::fabs(std::fmod(*x, 180.0L)) < LDBL_EPSILON )  // x / 180 = 0
-          *x = 0.0L;
-        else
-          *x = std::sin(*x * PI / 180.0L);
-      }
-
-      if ( errno == EDOM )
-        error = true;
-
-      setDisplay(*x);
-      arcus_mode = false;
-      hyperbolic_mode = false;
-      calculator_buttons[Arcus]->setChecked(false);
-      calculator_buttons[Hyperbolic]->setChecked(false);
+    case Sine:
+      sine(x);          // sin
       break;
 
-    case Cosine:  // cos
-      if ( hyperbolic_mode )
-      {
-        if ( arcus_mode )
-        {
-          *x = std::log(*x + std::sqrt((*x) * (*x) - 1));
-
-          if ( errno == EDOM || errno == ERANGE )
-            error = true;
-
-          if ( std::fabs(*x - infinity) < LDBL_EPSILON )  // x = ∞
-            error = true;
-        }
-        else
-          *x = std::cosh(*x);
-      }
-      else
-      {
-        if ( arcus_mode )
-          *x = std::acos(*x) * 180.0L / PI;
-        else if ( std::fabs(std::fmod(*x - 90.0L, 180.0L)) < LDBL_EPSILON )  // (x - 90) / 180 == 0
-          *x = 0.0L;
-        else
-          *x = std::cos(*x * PI / 180.0L);
-      }
-
-      if ( errno == EDOM )
-        error = true;
-
-      setDisplay(*x);
-      arcus_mode = false;
-      hyperbolic_mode = false;
-      calculator_buttons[Arcus]->setChecked(false);
-      calculator_buttons[Hyperbolic]->setChecked(false);
+    case Cosine:
+      cosine(x);        // cos
       break;
 
-    case Tangent:  // tan
-      if ( hyperbolic_mode )
-      {
-        if ( arcus_mode )
-          if ( *x < 1 )
-          {
-            *x = 0.5L * std::log((1 + (*x)) / (1 - (*x)));
-
-            if ( errno == EDOM || errno == ERANGE )
-              error = true;
-          }
-          else
-            error = true;
-        else
-          *x = std::tanh(*x);
-      }
-      else
-      {
-        if ( arcus_mode )
-          *x = std::atan(*x) * 180.0L / PI;
-        else
-          // Test if (x / 180) != 0 and x / 90 == 0
-          if ( std::fabs(std::fmod(*x, 180.0L)) > LDBL_EPSILON
-            && std::fabs(std::fmod(*x, 90.0L)) < LDBL_EPSILON )
-            error = true;
-          else if ( std::fabs(std::fmod(*x, 180.0L)) < LDBL_EPSILON )  // x / 180 == 0
-            *x = 0.0L;
-          else
-            *x = std::tan(*x * PI / 180.0L);
-      }
-
-      if ( errno == EDOM )
-        error = true;
-
-      setDisplay(*x);
-      arcus_mode = false;
-      hyperbolic_mode = false;
-      calculator_buttons[Arcus]->setChecked(false);
-      calculator_buttons[Hyperbolic]->setChecked(false);
+    case Tangent:
+      tangent(x);       // tan
       break;
 
-    case Reciprocal:  // 1 / x
-      if ( std::fabs(*x) < LDBL_EPSILON )  // x == 0
-        error = true;
-      else
-      {
-        *x = 1 / (*x);
-        setDisplay(*x);
-      }
+    case Reciprocal:
+      reciprocal(x);    // 1 / x
       break;
 
     case On:
-      error = false;
-      arcus_mode = false;
-      hyperbolic_mode = false;
-      calculator_buttons[Arcus]->setChecked(false);
-      calculator_buttons[Hyperbolic]->setChecked(false);
-      input = "";
-      clearInfixOperator();
-      last_infix_operator = '\0';
-      a = b = 0.0L;
+      clear();
       break;
 
-    case Natural_logarithm:  // ln
-      *x = std::log(*x);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      setDisplay(*x);
+    case Natural_logarithm:
+      log_e(x);         // ln
       break;
 
-    case Powers_of_e:  // eˣ
-      *x = std::exp(*x);
-
-      if ( errno == ERANGE )
-        error = true;
-
-      setDisplay(*x);
+    case Powers_of_e:
+      power_e(x);       // eˣ
       break;
 
-    case Power:  // yˣ
-      if ( ! isOperatorKey(last_key) )
-        calcInfixOperator();
-
-      setDisplay(*x);
-      setInfixOperator('^');
+    case Power:
+      power(x);         // yˣ
       break;
 
-    case Square_root:  // sqrt
-      *x = std::sqrt(*x);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      setDisplay(*x);
+    case Square_root:
+      square_root(x);   // sqrt
       break;
 
-    case Divide:  // ÷
-      if ( ! isOperatorKey(last_key) )
-        calcInfixOperator();
-
-      setDisplay(a);
-      setInfixOperator('/');
+    case Divide:
+      divide();         // ÷
       break;
 
-    case Common_logarithm:  // lg
-      *x = std::log10(*x);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      setDisplay(*x);
+    case Common_logarithm:
+      log_10(x);        // lg
       break;
 
-    case Powers_of_ten:  // 10ˣ
-      *x = std::pow(10, *x);
-
-      if ( errno == EDOM || errno == ERANGE )
-        error = true;
-
-      setDisplay(*x);
+    case Powers_of_ten:
+      power_10(x);      // 10ˣ
       break;
 
-    case Parenthese_l:  // (
-      {
-        stack_data d = { a, infix_operator };
-        bracket_stack.push(d);
-        clearInfixOperator();
-        input = "";
-        a = b = 0.0L;
-        setDisplay(a);
-      }
+    case Parenthese_l:
+      open_bracket();   // (
       break;
 
-    case Parenthese_r:  // )
-      if ( ! bracket_stack.empty() )
-      {
-        calcInfixOperator();
-        setDisplay(a);
-        stack_data d = bracket_stack.top();
-        bracket_stack.pop();
-        b = d.term;
-        infix_operator = d.infix_operator;
-        last_infix_operator = infix_operator;
-      }
+    case Parenthese_r:
+      close_bracket();  // )
       break;
 
-    case Multiply:  // *
-      if ( ! isOperatorKey(last_key) )
-        calcInfixOperator();
-
-      setDisplay(a);
-      setInfixOperator('*');
+    case Multiply:
+      multiply();       // *
       break;
 
-    case Hyperbolic:  // hyp
-      hyperbolic_mode = ! hyperbolic_mode;
-      calculator_buttons[Hyperbolic]->setChecked(hyperbolic_mode);
-      setDisplay(*x);
+    case Hyperbolic:
+      hyperbolic(x);    // hyp
       break;
 
-    case Seven:  // 7
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '7';
-        else
-          input = '7';
-      }
+    case Seven:
+      seven();          // 7
       break;
 
-    case Eight:  // 8
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '8';
-        else
-          input = '8';
-      }
+    case Eight:
+      eight();          // 8
       break;
 
-    case Nine:  // 9
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '9';
-        else
-          input = '9';
-      }
+    case Nine:
+      nine();           // 9
       break;
 
-    case Subtract:  // -
-      if ( ! isOperatorKey(last_key) )
-        calcInfixOperator();
-
-      setDisplay(a);
-      setInfixOperator('-');
+    case Subtract:
+      subtract();       // -
       break;
 
-    case Arcus:  // arc
-      arcus_mode = ! arcus_mode;
-      calculator_buttons[Arcus]->setChecked(arcus_mode);
-      setDisplay(*x);
+    case Arcus:
+      arcus(x);         // arc
       break;
 
-    case Four:  // 4
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '4';
-        else
-          input = '4';
-      }
+    case Four:
+      four();           // 4
       break;
 
-    case Five:  // 5
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '5';
-        else
-          input = '5';
-      }
+    case Five:
+      five();           // 5
       break;
 
-    case Six:  // 6
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '6';
-        else
-          input = '6';
-      }
+    case Six:
+      six();            // 6
       break;
 
-    case Add:  // +
-      if ( ! isOperatorKey(last_key) )
-        calcInfixOperator();
-
-      setDisplay(a);
-      setInfixOperator('+');
+    case Add:
+      add();            // +
       break;
 
-    case Pi:  // π
-      *x = PI;
-      setDisplay(*x);
+    case Pi:
+      pi(x);            // π
       break;
 
-    case One:  // 1
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '1';
-        else
-          input = '1';
-      }
+    case One:
+      one();            // 1
       break;
 
-    case Two:  // 2
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '2';
-        else
-          input = '2';
-      }
+    case Two:
+      two();            // 2
       break;
 
-    case Three:  // 3
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '3';
-        else
-          input = '3';
-      }
+    case Three:
+      three();          // 3
       break;
 
-    case Percent:  // %
-      infix_operator = last_infix_operator;
-      *x /= 100.0L;
-      setDisplay(*x);
+    case Percent:
+      percent(x);       // %
       break;
 
-    case Zero:  // 0
-      if ( input.getLength() < max_char )
-      {
-        if ( isDataEntryKey(last_key) )
-          input += '0';
-        else
-          input = '0';
-      }
+    case Zero:
+      zero();           // 0
       break;
 
-    case Decimal_point:  // .
-      if ( ! input.includes('.') )
-        input += '.';
+    case Decimal_point:
+      radix_point();    // .
       break;
 
-    case Change_sign:  // ±
-      *x *= -1.0L;
-      setDisplay(*x);
+    case Change_sign:
+      change_sign(x);   // ±
       break;
 
-    case Equals:  // =
-      infix_operator = last_infix_operator;
-      calcInfixOperator();
-      setDisplay(a);
+    case Equals:
+      equals();         // =
       break;
 
     default:
@@ -982,7 +1224,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
   if ( ! input.isEmpty() )
   {
     if ( isDataEntryKey(key) )
-      *x = lDouble(input.toDouble());
+      x = lDouble(input.toDouble());
     else
     {
       // remove trailing zeros
@@ -1011,6 +1253,7 @@ void Calc::adjustSize()
   setY (1 + (ph - getHeight()) / 2, false);
   FDialog::adjustSize();
 }
+
 
 //----------------------------------------------------------------------
 //                               main part
