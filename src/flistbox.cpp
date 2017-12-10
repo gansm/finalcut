@@ -1251,12 +1251,13 @@ void FListBox::drawList()
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::drawListLine ( int y, listBoxItems::iterator iter
-                            , bool serach_mark )
+inline void FListBox::drawListLine ( int y
+                                   , listBoxItems::iterator iter
+                                   , bool serach_mark )
 {
   uInt i, len;
   uInt inc_len = inc_search.getLength();
-  bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+  bool isCurrentLine = bool(y + yoffset + 1 == current);
   FString element;
   element = getString(iter).mid ( uInt(1 + xoffset)
                                 , uInt(getWidth() - nf_offset - 4) );
@@ -1292,8 +1293,9 @@ inline void FListBox::drawListLine ( int y, listBoxItems::iterator iter
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::drawListBracketsLine ( int y, listBoxItems::iterator iter
-                                    , bool serach_mark )
+inline void FListBox::drawListBracketsLine ( int y
+                                           , listBoxItems::iterator iter
+                                           , bool serach_mark )
 {
   int full_length;
   FString element;
@@ -1301,7 +1303,7 @@ inline void FListBox::drawListBracketsLine ( int y, listBoxItems::iterator iter
      , inc_len = inc_search.getLength()
      , i = 0
      , b = 0;
-  bool isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+  bool isCurrentLine = bool(y + yoffset + 1 == current);
 
   if ( isMonochron() && isCurrentLine )
     print ('>');
@@ -1408,7 +1410,7 @@ inline void FListBox::setLineAttributes ( int y
                                         , bool& serach_mark )
 {
   bool isFocus = ((flags & fc::focus) != 0)
-     , isCurrentLine = bool(y + uInt(yoffset) + 1 == uInt(current));
+     , isCurrentLine = bool(y + yoffset + 1 == current);
   uInt inc_len = inc_search.getLength();
 
   setPrintPos (2, 2 + int(y));

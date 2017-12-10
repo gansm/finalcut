@@ -1480,7 +1480,8 @@ void FTerm::setEncoding (fc::encoding enc)
       break;
 
     case fc::ASCII:
-    default:
+    case fc::UNKNOWN:
+    case fc::NUM_OF_ENCODINGS:
       Fputchar = &FTerm::putchar_ASCII;
   }
 
@@ -1913,7 +1914,7 @@ void FTerm::exitWithMessage (std::string message)
   if ( exit_message[0] )
     std::fprintf (stderr, "Warning: %s\n", exit_message);
 
-  exit (EXIT_FAILURE);
+  std::exit (EXIT_FAILURE);
 }
 
 

@@ -122,6 +122,21 @@ class FMenu : public FWindow, public FMenuList
     void                cb_menuitem_toggled (FWidget*, data_ptr);
 
   private:
+    // Typedef
+    typedef struct
+    {
+      uChar focus_changed        : 1;
+      uChar hide_sub_menu        : 1;
+      uChar mouse_over_menu      : 1;
+      uChar mouse_over_submenu   : 1;
+      uChar mouse_over_supermenu : 1;
+      uChar mouse_over_menubar   : 1;
+      uChar                      : 2;  // padding bits
+    } mouseStates;
+
+    // Constants
+    static const bool SELECT_ITEM = true;
+
     // Disable copy constructor
     FMenu (const FMenu&);
 
@@ -140,15 +155,28 @@ class FMenu : public FWindow, public FMenuList
     bool         isMenu (FWidget*) const;
     bool         isRadioMenuItem (FWidget*) const;
     bool         isSubMenu() const;
+    bool         isMouseOverMenu (const FPoint&);
+    bool         isMouseOverSubmenu (const FPoint&);
+    bool         isMouseOverSuperMenu (const FPoint&);
+    bool         isMouseOverMenuBar (const FPoint&);
 
     // Methods
     void         init(FWidget*);
     void         calculateDimensions();
     void         adjustItems();
     int          adjustX(int);
-    void         openSubMenu (FMenu*);
+    void         openSubMenu (FMenu*, bool = false);
+    void         closeOpenedSubMenu();
     void         hideSubMenus();
     void         hideSuperMenus();
+    bool         mouseDownOverList (FPoint);
+    bool         mouseUpOverList (FPoint);
+    bool         mouseMoveOverList (FPoint, mouseStates&);
+    void         mouseUpOverBorder();
+    void         mouseMoveOverBorder (mouseStates&);
+    void         passEventToSubMenu (FMouseEvent*& ev);
+    void         passEventToSuperMenu (FMouseEvent*& ev);
+    void         passEventToMenuBar (FMouseEvent*& ev);
     bool         containsMenuStructure (const FPoint&);
     bool         containsMenuStructure (int, int);
     FMenu*       superMenuAt (const FPoint&);
@@ -174,7 +202,8 @@ class FMenu : public FWindow, public FMenuList
     // Data Members
     FMenuItem*   item;
     FWidget*     super_menu;
-    FMenu*       open_sub_menu;
+    FMenu*       opened_sub_menu;
+    FMenu*       shown_sub_menu;
     uInt         max_item_width;
     bool         mouse_down;
     bool         has_checkable_items;

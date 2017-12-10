@@ -329,8 +329,11 @@ class FTerm
     static FPoint&        getMousePos();
     static void           setMousePos (const FPoint&);
     static void           setMousePos (short, short);
-    static void           exitWithMessage (std::string);
-
+    static void           exitWithMessage (std::string)
+    #if defined(__clang__) || defined(__GNUC__)
+      __attribute__((noreturn))
+    #endif
+                          ;
     // Data Members
     static int            stdin_no;
     static int            stdout_no;
@@ -352,17 +355,15 @@ class FTerm
     static struct initializationValues
     {
       public:
-        initializationValues()
-        : terminal_detection(true)
-        , cursor_optimisation(true)
-        , color_change(true)
-        , vgafont(false)
-        , newfont(false)
-        , encoding(fc::UNKNOWN)
-        { }
-
-        ~initializationValues()
-        { }
+        void setDefault()
+        {
+          terminal_detection = true;
+          cursor_optimisation = true;
+          color_change = true;
+          vgafont = false;
+          newfont = false;
+          encoding = fc::UNKNOWN;
+        }
 
         uInt8 terminal_detection  : 1;
         uInt8 cursor_optimisation : 1;

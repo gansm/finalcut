@@ -2373,7 +2373,6 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   // => clear from xmin to beginning of line
 
   term_area*& vt = vterm;
-  bool&  ut = FTermcap::background_color_erase;
   char*& cb = TCAP(fc::t_clr_bol);
   char_data* first_char = &vt->text[y * uInt(vt->width)];
 
@@ -2381,6 +2380,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   {
     uInt leading_whitespace = 1;
     bool normal = isNormal(first_char);
+    bool&  ut = FTermcap::background_color_erase;
 
     for (uInt x = 1; x < uInt(vt->width); x++)
     {

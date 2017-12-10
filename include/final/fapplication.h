@@ -111,7 +111,11 @@ class FApplication : public FWidget
     static bool        eventInQueue();
     static bool        removeQueuedEvent (const FObject*);
     static FWidget*    processParameters (const int&, char*[]);
-    static void        showParameterUsage ();
+    static void        showParameterUsage ()
+    #if defined(__clang__) || defined(__GNUC__)
+      __attribute__((noreturn))
+    #endif
+                       ;
     static void        closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method

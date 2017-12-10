@@ -1,3 +1,6 @@
+2017-12-10  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring of the FMenu mouse event handler
+
 2017-12-08  Markus Gans  <guru.mail@muenster.de>
 	* More individual arithmetic operations methods in 
 	  the implementation of the calculator example

@@ -1037,7 +1037,8 @@ void Calc::onKeyPress (FKeyEvent* ev)
         else
           input = input.left(input.getLength() - 1);
 
-        a = lDouble(std::atof(input.c_str()));
+        lDouble& x = getValue();
+        x = lDouble(std::atof(input.c_str()));
         drawDispay();
         updateTerminal();
       }

@@ -318,6 +318,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
     showParameterUsage();
   }
 
+  init_values.setDefault();
   cmd_options (argc, argv);
   return 0;
 }
@@ -753,7 +754,7 @@ inline void FApplication::sendKeyboardAccelerator()
 //----------------------------------------------------------------------
 void FApplication::processKeyboardEvent()
 {
-  bool isKeyPressed = false;
+  bool isKeyPressed;
   FWidget* widget = findKeyboardWidget();
   keyboardBufferTimeout(widget);
   flush_out();
