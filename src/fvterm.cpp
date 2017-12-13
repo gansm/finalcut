@@ -2380,7 +2380,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   {
     uInt leading_whitespace = 1;
     bool normal = isNormal(first_char);
-    bool&  ut = FTermcap::background_color_erase;
+    bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = 1; x < uInt(vt->width); x++)
     {
@@ -2411,7 +2411,6 @@ bool FVTerm::canClearTailingWS (uInt& xmax, uInt y)
   // => clear from xmax to end of line
 
   term_area*& vt = vterm;
-  bool&  ut = FTermcap::background_color_erase;
   char*& ce = TCAP(fc::t_clr_eol);
   char_data* last_char = &vt->text[(y + 1) * uInt(vt->width) - 1];
 
@@ -2419,6 +2418,7 @@ bool FVTerm::canClearTailingWS (uInt& xmax, uInt y)
   {
     uInt tailing_whitespace = 1;
     bool normal = isNormal(last_char);
+    bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = uInt(vt->width) - 1; x >  0 ; x--)
     {

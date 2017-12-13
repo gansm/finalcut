@@ -85,7 +85,12 @@
 #include <langinfo.h>
 #include <term.h>              // termcap
 #include <termios.h>
-#include <ttyent.h>
+
+#if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
+  #include <ttyent.h>
+#endif
+
+
 #include <unistd.h>
 
 #include <clocale>
@@ -188,6 +193,7 @@ class FTerm
     static bool           isGnomeTerminal();
     static bool           isKtermTerminal();
     static bool           isTeraTerm();
+    static bool           isSunTerminal();
     static bool           isCygwinTerminal();
     static bool           isMinttyTerm();
     static bool           isLinuxTerm();
@@ -479,6 +485,7 @@ class FTerm
     static void           init_termcaps_vte_quirks();
     static void           init_termcaps_putty_quirks();
     static void           init_termcaps_teraterm_quirks();
+    static void           init_termcaps_sun_quirks();
     static void           init_termcaps_screen_quirks();
     static void           init_termcaps_general_quirks();
     static void           init_termcaps_keys (char*&);
@@ -531,6 +538,7 @@ class FTerm
     static bool           gnome_terminal;
     static bool           kterm_terminal;
     static bool           tera_terminal;
+    static bool           sun_terminal;
     static bool           cygwin_terminal;
     static bool           mintty_terminal;
     static bool           linux_terminal;
@@ -545,6 +553,7 @@ class FTerm
     static FRect*         term;      // current terminal geometry
     static FPoint*        mouse;     // mouse click position
 
+    static int            gnome_terminal_id;
     static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
@@ -673,6 +682,10 @@ inline bool FTerm::isKtermTerminal()
 //----------------------------------------------------------------------
 inline bool FTerm::isTeraTerm()
 { return tera_terminal; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isSunTerminal()
+{ return sun_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isCygwinTerminal()

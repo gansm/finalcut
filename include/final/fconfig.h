@@ -24,6 +24,21 @@
 #define F_HAVE_FCNTL_H 1
 #endif
 
+/* Define to 1 if you have the `geteuid' function. */
+#ifndef F_HAVE_GETEUID
+#define F_HAVE_GETEUID 1
+#endif
+
+/* Define to 1 if you have the `getttynam' function. */
+#ifndef F_HAVE_GETTTYNAM
+#define F_HAVE_GETTTYNAM 1
+#endif
+
+/* Define to 1 if you have the `getuid' function. */
+#ifndef F_HAVE_GETUID
+#define F_HAVE_GETUID 1
+#endif
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #ifndef F_HAVE_INTTYPES_H
 #define F_HAVE_INTTYPES_H 1
@@ -58,6 +73,11 @@
 /* Define to 1 if you have the <queue> header file. */
 /* #undef HAVE_QUEUE */
 
+/* Define to 1 if you have the `select' function. */
+#ifndef F_HAVE_SELECT
+#define F_HAVE_SELECT 1
+#endif
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #ifndef F_HAVE_STDINT_H
 #define F_HAVE_STDINT_H 1
@@ -68,6 +88,11 @@
 #define F_HAVE_STDLIB_H 1
 #endif
 
+/* Define to 1 if you have the `strdup' function. */
+#ifndef F_HAVE_STRDUP
+#define F_HAVE_STRDUP 1
+#endif
+
 /* Define to 1 if you have the <strings.h> header file. */
 #ifndef F_HAVE_STRINGS_H
 #define F_HAVE_STRINGS_H 1
@@ -76,6 +101,11 @@
 /* Define to 1 if you have the <string.h> header file. */
 #ifndef F_HAVE_STRING_H
 #define F_HAVE_STRING_H 1
+#endif
+
+/* Define to 1 if you have the `strstr' function. */
+#ifndef F_HAVE_STRSTR
+#define F_HAVE_STRSTR 1
 #endif
 
 /* Define to 1 if you have the <sys/io.h> header file. */
@@ -113,6 +143,11 @@
 #define F_HAVE_TERM_H 1
 #endif
 
+/* Define to 1 if you have the <ttyent.h> header file. */
+#ifndef F_HAVE_TTYENT_H
+#define F_HAVE_TTYENT_H 1
+#endif
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #ifndef F_HAVE_UNISTD_H
 #define F_HAVE_UNISTD_H 1
@@ -120,6 +155,11 @@
 
 /* Define to 1 if you have the <vector> header file. */
 /* #undef HAVE_VECTOR */
+
+/* Define to 1 if you have the `vsnprintf' function. */
+#ifndef F_HAVE_VSNPRINTF
+#define F_HAVE_VSNPRINTF 1
+#endif
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */

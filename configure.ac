@@ -24,6 +24,7 @@ AC_CHECK_HEADERS( \
 		 langinfo.h \
 		 term.h \
 		 termios.h \
+		 ttyent.h \
 		 unistd.h \
 		 cmath \
 		 csignal \
@@ -32,6 +33,16 @@ AC_CHECK_HEADERS( \
 		 map \
 		 queue \
 		 vector)
+
+# Checks for library functions.
+AC_CHECK_FUNCS( \
+		getuid \
+		geteuid \
+		getttynam \
+		select \
+		strdup \
+		strstr \
+		vsnprintf )
 
 # Checks for 'tgetent'
 AC_SEARCH_LIBS([tgetent], [termcap tinfo curses ncurses])

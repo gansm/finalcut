@@ -49,6 +49,7 @@ int (*FTerm::Fputchar)(int);
 int      FTerm::stdin_no;
 int      FTerm::stdout_no;
 int      FTerm::fd_tty;
+int      FTerm::gnome_terminal_id;
 int      FTerm::stdin_status_flags;
 int      FTerm::erase_ch_length;
 int      FTerm::repeat_char_length;
@@ -76,6 +77,7 @@ bool     FTerm::kde_konsole;
 bool     FTerm::gnome_terminal;
 bool     FTerm::kterm_terminal;
 bool     FTerm::tera_terminal;
+bool     FTerm::sun_terminal;
 bool     FTerm::cygwin_terminal;
 bool     FTerm::mintty_terminal;
 bool     FTerm::linux_terminal;
@@ -1191,6 +1193,9 @@ void FTerm::resetXTermColors()
 {
   // Reset the entire color table
 
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
+
   if ( putty_terminal )
     return;
 
@@ -1207,6 +1212,9 @@ void FTerm::resetXTermColors()
 void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
+
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
 
   if ( putty_terminal )
     return;
@@ -1225,6 +1233,9 @@ void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
 
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
+
   if ( putty_terminal )
     return;
 
@@ -1241,6 +1252,9 @@ void FTerm::resetXTermBackground()
 void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
+
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
 
   if ( putty_terminal )
     return;
@@ -1259,6 +1273,9 @@ void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
 
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
+
   if ( putty_terminal )
     return;
 
@@ -1276,6 +1293,9 @@ void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
 
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
+
   if ( putty_terminal )
     return;
 
@@ -1292,6 +1312,9 @@ void FTerm::resetXTermMouseBackground()
 void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
+
+  if ( gnome_terminal && gnome_terminal_id < 3502 )
+    return;
 
   if ( putty_terminal )
     return;
@@ -2198,6 +2221,8 @@ void FTerm::getSystemTermType()
       std::fclose(fp);
     }
 
+#if F_HAVE_GETTTYNAM
+
     // Analyse /etc/ttys
     // --------------------
     struct ttyent* ttys_entryt;
@@ -2216,6 +2241,7 @@ void FTerm::getSystemTermType()
     }
 
     endttyent();
+#endif
   }
 
   // use vt100 if not found
@@ -2637,6 +2663,11 @@ void FTerm::init_global_values()
   // Teletype (tty) file descriptor is still undefined
   fd_tty = -1;
 
+  // Gnome terminal id from SecDA
+  // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
+  //                      a.b.c  = a * 100 +  b * 100 + c
+  gnome_terminal_id = 0;
+
   // Preset to false
   utf8_console            = \
   utf8_input              = \
@@ -2653,6 +2684,7 @@ void FTerm::init_global_values()
   decscusr_support        = \
   force_vt100             = \
   tera_terminal           = \
+  sun_terminal            = \
   kterm_terminal          = \
   gnome_terminal          = \
   kde_konsole             = \
@@ -2677,6 +2709,9 @@ void FTerm::init_global_values()
 
   // init arrays with '\0'
   std::fill_n (exit_message, sizeof(exit_message), '\0');
+
+  if ( ! init_values.terminal_detection )
+    terminal_detection = false;
 }
 
 //----------------------------------------------------------------------
@@ -2770,6 +2805,13 @@ void FTerm::termtypeAnalysis()
   {
     terminal_detection = false;
     ansi_terminal = true;
+  }
+
+  // Sun Microsystems workstation console
+  if ( std::strncmp(termtype, "sun", 3) == 0 )
+  {
+    terminal_detection = false;
+    sun_terminal = true;
   }
 
   // Linux console
@@ -3047,9 +3089,10 @@ char* FTerm::parseSecDA (char*& current_termtype)
               // Each gnome-terminal should be able to use 256 colors
               color256 = true;
               new_termtype = const_cast<char*>("gnome-256color");
+              gnome_terminal_id = terminal_id_version;
 
               // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
-              if ( terminal_id_version >= 4000 )
+              if ( gnome_terminal_id >= 4000 )
                 decscusr_support = true;
             }
             break;
@@ -3474,6 +3517,10 @@ void FTerm::init_termcaps_quirks()
   {
     init_termcaps_teraterm_quirks();
   }
+  else if ( sun_terminal )
+  {
+    init_termcaps_sun_quirks();
+  }
   else if ( putty_terminal )
   {
     init_termcaps_putty_quirks();
@@ -3751,6 +3798,13 @@ void FTerm::init_termcaps_teraterm_quirks()
       const_cast<char*>(CSI "0m" SI);
   TCAP(fc::t_orig_pair) = \
       const_cast<char*>(CSI "39;49m");
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_sun_quirks()
+{
+  // Sun Microsystems workstation console eat_nl_glitch fix
+  FTermcap::eat_nl_glitch = true;
 }
 
 //----------------------------------------------------------------------
@@ -4056,6 +4110,11 @@ void FTerm::init_locale()
   if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = std::setlocale (LC_ALL, "C");
 
+  // Sun (color) workstation console can't show UTF-8 character
+  if ( std::strncmp(termtype, "sun", 3) == 0
+    && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
   // Try to found a meaningful content for locale_name
   if ( locale_name )
     locale_name = std::setlocale (LC_CTYPE, 0);
@@ -4157,67 +4216,71 @@ void FTerm::init_encoding()
 //----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
-  if ( ! cygwin_terminal
-    && ! kde_konsole
-    && ! tera_terminal
-    && ! ansi_terminal )
-  {
-    resetColorMap();
-    saveColorMap();
+  if ( cygwin_terminal
+    || kde_konsole
+    || tera_terminal
+    || sun_terminal
+    || ansi_terminal )
+    return;
 
-    if ( FTermcap::max_color >= 16 )
-    {
-      setPalette (fc::Black, 0x00, 0x00, 0x00);
-      setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-      setPalette (fc::Green, 0x18, 0x78, 0x18);
-      setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
-      setPalette (fc::Red, 0xb2, 0x18, 0x18);
-      setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-      setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-      setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
-      setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
-      setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
-      setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
-      setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-      setPalette (fc::LightRed, 0xed, 0x57, 0x31);
-      setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
-      setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
-      setPalette (fc::White, 0xff, 0xff, 0xff);
-    }
-    else  // 8 colors
-    {
-      setPalette (fc::Black, 0x00, 0x00, 0x00);
-      setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-      setPalette (fc::Green, 0x18, 0x78, 0x18);
-      setPalette (fc::Cyan, 0x66, 0x66, 0xff);
-      setPalette (fc::Red, 0xb2, 0x18, 0x18);
-      setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-      setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-      setPalette (fc::LightGray, 0xd0, 0xd0, 0xd0);
-    }
+  resetColorMap();
+  saveColorMap();
+
+  if ( FTermcap::max_color >= 16 )
+  {
+    setPalette (fc::Black, 0x00, 0x00, 0x00);
+    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
+    setPalette (fc::Green, 0x18, 0x78, 0x18);
+    setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
+    setPalette (fc::Red, 0xb2, 0x18, 0x18);
+    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+    setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
+    setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
+    setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
+    setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
+    setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
+    setPalette (fc::LightRed, 0xed, 0x57, 0x31);
+    setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
+    setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
+    setPalette (fc::White, 0xff, 0xff, 0xff);
+  }
+  else  // 8 colors
+  {
+    setPalette (fc::Black, 0x00, 0x00, 0x00);
+    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
+    setPalette (fc::Green, 0x18, 0x78, 0x18);
+    setPalette (fc::Cyan, 0x66, 0x66, 0xff);
+    setPalette (fc::Red, 0xb2, 0x18, 0x18);
+    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
+    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
+    setPalette (fc::LightGray, 0xe0, 0xe0, 0xe0);
   }
 }
 
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( ! (kde_konsole || tera_terminal || ansi_terminal) )
-  {
-    // Reset screen settings
-    if ( FTermcap::max_color >= 16 )
-    {
-      setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
-      setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
-      setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
-      setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
-      setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
-    }
-    else  // 8 colors
-      setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+  if ( kde_konsole
+    || tera_terminal
+    || sun_terminal
+    || ansi_terminal )
+    return;
 
-    resetXTermColors();
-    resetColorMap();
+  // Reset screen settings
+  if ( FTermcap::max_color >= 16 )
+  {
+    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+    setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
+    setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
+    setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
+    setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
   }
+  else  // 8 colors
+    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+
+  resetXTermColors();
+  resetColorMap();
 }
 
 //----------------------------------------------------------------------
@@ -4291,9 +4354,6 @@ void FTerm::init()
   // Initialize global values for all objects
   init_global_values();
 
-  if ( ! init_values.terminal_detection )
-    terminal_detection = false;
-
   // Get file descriptor for standard input and standard output
   stdin_no  = fileno(stdin);
   stdout_no = fileno(stdout);
@@ -4363,32 +4423,35 @@ void FTerm::init()
   // Enable the terminal mouse support
   enableMouse();
 
-  // activate meta key sends escape
+  // Activate meta key sends escape
   if ( xterm_terminal )
     xtermMetaSendsESC(true);
 
-  // enter 'keyboard_transmit' mode
+  // Enter 'keyboard_transmit' mode
   if ( TCAP(fc::t_keypad_xmit) )
   {
     putstring (TCAP(fc::t_keypad_xmit));
     std::fflush(stdout);
   }
 
-  // save current cursor position
-  if ( use_alternate_screen && TCAP(fc::t_save_cursor) )
+  if ( use_alternate_screen )
   {
-    putstring (TCAP(fc::t_save_cursor));
-    std::fflush(stdout);
+    // Save current cursor position
+    if ( TCAP(fc::t_save_cursor) )
+    {
+      putstring (TCAP(fc::t_save_cursor));
+      std::fflush(stdout);
+    }
+
+    // Saves the screen and the cursor position
+    if ( TCAP(fc::t_enter_ca_mode) )
+    {
+      putstring (TCAP(fc::t_enter_ca_mode));
+      std::fflush(stdout);
+    }
   }
 
-  // saves the screen and the cursor position
-  if ( use_alternate_screen && TCAP(fc::t_enter_ca_mode) )
-  {
-    putstring (TCAP(fc::t_enter_ca_mode));
-    std::fflush(stdout);
-  }
-
-  // enable alternate charset
+  // Enable alternate charset
   if ( TCAP(fc::t_enable_acs) )
   {
     putstring (TCAP(fc::t_enable_acs));
@@ -4424,10 +4487,10 @@ void FTerm::init()
   // (depending on the initialization values)
   init_font();
 
-  // turn off hardware echo
+  // Turn off hardware echo
   noHardwareEcho();
 
-  // switch to the raw mode
+  // Switch to the raw mode
   setRawMode();
 
   // The terminal is now initialized
@@ -4508,18 +4571,21 @@ void FTerm::finish()
   if ( xterm_terminal )
     xtermMetaSendsESC(false);
 
-  // restores the screen and the cursor position
-  if ( use_alternate_screen && TCAP(fc::t_exit_ca_mode) )
+  if ( use_alternate_screen )
   {
-    putstring (TCAP(fc::t_exit_ca_mode));
-    std::fflush(stdout);
-  }
+    // restores the screen and the cursor position
+    if ( TCAP(fc::t_exit_ca_mode) )
+    {
+      putstring (TCAP(fc::t_exit_ca_mode));
+      std::fflush(stdout);
+    }
 
-  // restore cursor to position of last save_cursor
-  if ( use_alternate_screen && TCAP(fc::t_restore_cursor) )
-  {
-    putstring (TCAP(fc::t_restore_cursor));
-    std::fflush(stdout);
+    // restore cursor to position of last save_cursor
+    if ( TCAP(fc::t_restore_cursor) )
+    {
+      putstring (TCAP(fc::t_restore_cursor));
+      std::fflush(stdout);
+    }
   }
 
   // leave 'keyboard_transmit' mode
