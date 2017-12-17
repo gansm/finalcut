@@ -25,7 +25,7 @@
 // static class attributes
 bool                FObject::timer_modify_lock;
 FObject::TimerList* FObject::timer_list = 0;
-const FString*      fc::empty_string    = 0;
+const FString* fc::emptyFString::empty_string = 0;
 
 //----------------------------------------------------------------------
 // class FObject
@@ -60,26 +60,13 @@ FObject::FObject (FObject* parent)
         return;
       }
     }
-
-    if ( ! fc::empty_string )
-    {
-      try
-      {
-        fc::empty_string = new FString("");
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-        return;
-      }
-    }
   }
 }
 
 //----------------------------------------------------------------------
 FObject::~FObject()  // destructor
 {
-  delOwnTimer();  // delete all timers of this object
+  delOwnTimer();  // Delete all timers of this object
 
   if ( ! has_parent && timer_list )
   {
@@ -87,13 +74,10 @@ FObject::~FObject()  // destructor
     timer_list = 0;
   }
 
-  if ( ! has_parent && fc::empty_string )
-  {
-    delete fc::empty_string;
-    fc::empty_string = 0;
-  }
+  if ( ! has_parent && ! fc::emptyFString::isNull() )
+    fc::emptyFString::clear();
 
-  // delete children objects
+  // Delete children objects
   if ( hasChildren() )
   {
     constFObjectIterator iter, last;

@@ -82,7 +82,7 @@ FApplication::FApplication ( const int& _argc
 
   if ( ! (_argc && _argv) )
   {
-    static char* empty = const_cast<char*>("");
+    static char* empty = C_STR("");
     app_argc = 0;
     app_argv = static_cast<char**>(&empty);
   }
@@ -410,13 +410,13 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
     static struct option long_options[] =
     {
-      {"encoding",              required_argument, 0,  0 },
-      {"no-optimized-cursor",   no_argument,       0,  0 },
-      {"no-terminal-detection", no_argument,       0,  0 },
-      {"no-color-change",       no_argument,       0,  0 },
-      {"vgafont",               no_argument,       0,  0 },
-      {"newfont",               no_argument,       0,  0 },
-      {0,                       0,                 0,  0 }
+      {C_STR("encoding"),              required_argument, 0,  0 },
+      {C_STR("no-optimized-cursor"),   no_argument,       0,  0 },
+      {C_STR("no-terminal-detection"), no_argument,       0,  0 },
+      {C_STR("no-color-change"),       no_argument,       0,  0 },
+      {C_STR("vgafont"),               no_argument,       0,  0 },
+      {C_STR("newfont"),               no_argument,       0,  0 },
+      {0,                              0,                 0,  0 }
     };
 
     opterr = 0;

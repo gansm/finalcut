@@ -35,16 +35,17 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <stdint.h>
 #include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>
 #include <cstring>
 #include <list>
 #include <vector>
 
+#include "final/emptyfstring.h"
 #include "final/fc.h"
 #include "final/fevent.h"
 #include "final/ftypes.h"
+
 
 
 //----------------------------------------------------------------------

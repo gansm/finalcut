@@ -8,6 +8,7 @@ FONTFILE="8x16graph.bdf"
   echo -e "// newfont.h\\n"
   echo -e "#ifndef FNEWFONT_H"
   echo -e "#define FNEWFONT_H\\n"
+  echo -e "namespace fc\\n{"
   echo -e "\\nstatic unsigned char __8x16graph[] =\\n{"
 
   grep -A${HEIGHT} ^BITMAP "$FONTFILE" \
@@ -26,6 +27,7 @@ FONTFILE="8x16graph.bdf"
   done
 
   echo -e "};"
+  echo -e "\\n}  // namespace fc"
   echo -e "\\n#endif  // FNEWFONT_H"
 ) > newfont.h
 

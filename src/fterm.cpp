@@ -127,7 +127,7 @@ FOptiAttr*             FTerm::opti_attr                 = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set              = 0;
-FTerm::termcap_map*    FTerm::tcap                      = term_caps;
+FTerm::termcap_map*    FTerm::tcap                      = fc::term_caps;
 bool                   FTermcap::background_color_erase = false;
 bool                   FTermcap::automatic_left_margin  = false;
 bool                   FTermcap::automatic_right_margin = false;
@@ -213,9 +213,9 @@ int FTerm::getColumnNumber()
 //----------------------------------------------------------------------
 const FString FTerm::getKeyName (int keynum)
 {
-  for (int i = 0; FkeyName[i].string[0] != 0; i++)
-    if ( FkeyName[i].num && FkeyName[i].num == keynum )
-      return FString(FkeyName[i].string);
+  for (int i = 0; fc::FkeyName[i].string[0] != 0; i++)
+    if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
+      return FString(fc::FkeyName[i].string);
 
   if ( keynum > 32 && keynum < 127 )
     return FString(char(keynum));
@@ -486,9 +486,9 @@ int FTerm::parseKeyString ( char buffer[]
       return fc::Fkey_urxvt_mouse;
 
     // look for termcap keys
-    for (int i = 0; Fkey[i].tname[0] != 0; i++)
+    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
     {
-      char* k = Fkey[i].string;
+      char* k = fc::Fkey[i].string;
       len = ( k ) ? int(std::strlen(k)) : 0;
 
       if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
@@ -502,14 +502,14 @@ int FTerm::parseKeyString ( char buffer[]
           buffer[n - len] = '\0';
 
         input_data_pending = bool(buffer[0] != '\0');
-        return Fkey[i].num;
+        return fc::Fkey[i].num;
       }
     }
 
     // look for meta keys
-    for (int i = 0; Fmetakey[i].string[0] != 0; i++)
+    for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
     {
-      char* kmeta = Fmetakey[i].string;  // The string is never null
+      char* kmeta = fc::Fmetakey[i].string;  // The string is never null
       len = int(std::strlen(kmeta));
 
       if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
@@ -530,7 +530,7 @@ int FTerm::parseKeyString ( char buffer[]
           buffer[n - len] = '\0';
 
         input_data_pending = bool(buffer[0] != '\0');
-        return Fmetakey[i].num;
+        return fc::Fmetakey[i].num;
       }
     }
 
@@ -623,16 +623,16 @@ bool FTerm::setVGAFont()
       if ( isLinuxConsole() )
       {
         // standard vga font 8x16
-        int ret = setScreenFont(__8x16std, 256, 8, 16);
+        int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
 
         if ( ret != 0 )
           VGAFont = false;
 
         // unicode character mapping
         struct unimapdesc unimap;
-        unimap.entry_ct = uChar ( sizeof(unicode_cp437_pairs)
+        unimap.entry_ct = uChar ( sizeof(fc::unicode_cp437_pairs)
                                 / sizeof(unipair) );
-        unimap.entries = &unicode_cp437_pairs[0];
+        unimap.entries = &fc::unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
       else
@@ -699,15 +699,15 @@ bool FTerm::setNewFont()
         int ret;
 
         // Set the graphical font 8x16
-        ret = setScreenFont(__8x16graph, 256, 8, 16);
+        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);
 
         if ( ret != 0 )
           NewFont = false;
 
         // unicode character mapping
-        unimap.entry_ct = uInt16 ( sizeof(unicode_cp437_pairs)
+        unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
                                  / sizeof(unipair) );
-        unimap.entries = &unicode_cp437_pairs[0];
+        unimap.entries = &fc::unicode_cp437_pairs[0];
         setUnicodeMap(&unimap);
       }
 
@@ -1051,7 +1051,6 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 
   if ( (gnome_terminal && ! decscusr_support) || kde_konsole )
     return;
-
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( isFreeBSDConsole() )
@@ -1631,14 +1630,29 @@ void FTerm::putstringf (const char* const format, ...)
   vsnprintf (buffer, sizeof(buf), format, args);
   va_end (args);
 
-  tputs (buffer, 1, std::putchar);
+  tputs (buffer, 1, FTerm::putchar_ASCII);
 }
 
 //----------------------------------------------------------------------
 inline void FTerm::putstring (const char* const s, int affcnt)
 {
-  tputs (s, affcnt, std::putchar);
+#if defined(__sun) && defined(__SVR4)
+  tputs (C_STR(s), affcnt, FTerm::putchar_ASCII);
+#else
+  tputs (s, affcnt, FTerm::putchar_ASCII);
+#endif
 }
+
+#if defined(__sun) && defined(__SVR4)
+//----------------------------------------------------------------------
+int FTerm::putchar_ASCII (register char c)
+{
+  if ( std::putchar(c) == EOF )
+    return 0;
+  else
+    return 1;
+}
+#endif
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (register int c)
@@ -1743,13 +1757,13 @@ void FTerm::initLinuxConsoleCharMap()
 
   if ( screen_unicode_map.entry_ct != 0 )
   {
-    for (int i = 0; i <= lastCharItem; i++ )
+    for (int i = 0; i <= fc::lastCharItem; i++ )
     {
       bool found = false;
 
       for (uInt n = 0; n < screen_unicode_map.entry_ct; n++)
       {
-        if ( character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
+        if ( fc::character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
         {
           found = true;
           break;
@@ -1757,7 +1771,7 @@ void FTerm::initLinuxConsoleCharMap()
       }
 
       if ( ! found )
-        character[i][fc::PC] = character[i][fc::ASCII];
+        fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
     }
   }
 
@@ -1792,7 +1806,7 @@ void FTerm::initFreeBSDConsoleCharMap()
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (int i = 0; i <= lastCharItem; i++ )
+  for (int i = 0; i <= fc::lastCharItem; i++ )
     if ( character[i][fc::PC] < 0x1c )
       character[i][fc::PC] = character[i][fc::ASCII];
 }
@@ -1814,11 +1828,11 @@ uInt FTerm::charEncode (uInt c)
 //----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c, fc::encoding enc)
 {
-  for (uInt i = 0; i <= uInt(lastCharItem); i++)
+  for (uInt i = 0; i <= uInt(fc::lastCharItem); i++)
   {
-    if ( character[i][0] == c )
+    if ( fc::character[i][0] == c )
     {
-      c = character[i][enc];
+      c = fc::character[i][enc];
       break;
     }
   }
@@ -2093,14 +2107,14 @@ int FTerm::getFramebuffer_bpp ()
   struct fb_var_screeninfo fb_var;
   struct fb_fix_screeninfo fb_fix;
 
-  const char* fb = const_cast<char*>("/dev/fb/0");
+  const char* fb = C_STR("/dev/fb/0");
 
   if ( (fd = open(fb, O_RDWR)) < 0 )
   {
     if ( errno != ENOENT && errno != ENOTDIR )
       return -1;
 
-    fb = const_cast<char*>("/dev/fb0");
+    fb = C_STR("/dev/fb0");
 
     if ( (fd = open(fb, O_RDWR)) < 0 )
       return -1;
@@ -2157,7 +2171,7 @@ int FTerm::closeConsole()
 void FTerm::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
-  const char* const& term_env = std::getenv(const_cast<char*>("TERM"));
+  const char* const& term_env = std::getenv(C_STR("TERM"));
 
   if ( term_env )
   {
@@ -2245,7 +2259,7 @@ void FTerm::getSystemTermType()
   }
 
   // use vt100 if not found
-  std::strncpy (termtype, const_cast<char*>("vt100"), 6);
+  std::strncpy (termtype, C_STR("vt100"), 6);
 }
 
 //----------------------------------------------------------------------
@@ -2767,14 +2781,14 @@ void FTerm::detectTerminal()
   //
 
   // Test if the terminal is a xterm
-  if ( std::strncmp(termtype, const_cast<char*>("xterm"), 5) == 0
-    || std::strncmp(termtype, const_cast<char*>("Eterm"), 5) == 0 )
+  if ( std::strncmp(termtype, C_STR("xterm"), 5) == 0
+    || std::strncmp(termtype, C_STR("Eterm"), 5) == 0 )
   {
     xterm_terminal = true;
 
     // Each xterm should be able to use at least 16 colors
     if ( ! new_termtype && std::strlen(termtype) == 5 )
-      new_termtype = const_cast<char*>("xterm-16color");
+      new_termtype = C_STR("xterm-16color");
   }
   else
     xterm_terminal = false;
@@ -2782,7 +2796,7 @@ void FTerm::detectTerminal()
   // set the new environment variable TERM
   if ( new_termtype )
   {
-    setenv(const_cast<char*>("TERM"), new_termtype, 1);
+    setenv(C_STR("TERM"), new_termtype, 1);
     std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
   }
 }
@@ -2815,14 +2829,14 @@ void FTerm::termtypeAnalysis()
   }
 
   // Linux console
-  if ( std::strncmp(termtype, const_cast<char*>("linux"), 5) == 0
-    || std::strncmp(termtype, const_cast<char*>("con"), 3) == 0 )
+  if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
+    || std::strncmp(termtype, C_STR("con"), 3) == 0 )
     linux_terminal = true;
   else
     linux_terminal = false;
 
   // NetBSD workstation console
-  if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
+  if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
     netbsd_terminal = true;
   else
     netbsd_terminal = false;
@@ -2864,11 +2878,11 @@ char* FTerm::init_256colorTerminal()
   if ( std::strlen(local256) > 0 )
   {
     if ( std::strncmp(termtype, "xterm", 5) == 0 )
-      new_termtype = const_cast<char*>("xterm-256color");
+      new_termtype = C_STR("xterm-256color");
 
     if ( std::strncmp(termtype, "screen", 6) == 0 )
     {
-      new_termtype = const_cast<char*>("screen-256color");
+      new_termtype = C_STR("screen-256color");
       screen_terminal = true;
       char* tmux = std::getenv("TMUX");
 
@@ -2877,11 +2891,11 @@ char* FTerm::init_256colorTerminal()
     }
 
     if ( std::strncmp(termtype, "Eterm", 5) == 0 )
-      new_termtype = const_cast<char*>("Eterm-256color");
+      new_termtype = C_STR("Eterm-256color");
 
     if ( std::strncmp(termtype, "mlterm", 6) == 0 )
     {
-      new_termtype = const_cast<char*>("mlterm-256color");
+      new_termtype = C_STR("mlterm-256color");
       mlterm_terminal = true;
     }
 
@@ -2889,7 +2903,7 @@ char* FTerm::init_256colorTerminal()
       && s1
       && std::strncmp(s1, "rxvt-xpm", 8) == 0 )
     {
-      new_termtype = const_cast<char*>("rxvt-256color");
+      new_termtype = C_STR("rxvt-256color");
       rxvt_terminal = true;
     }
 
@@ -2909,7 +2923,7 @@ char* FTerm::init_256colorTerminal()
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
     if ( ! screen_terminal )
-      new_termtype = const_cast<char*>("gnome-256color");
+      new_termtype = C_STR("gnome-256color");
   }
 
 #if DEBUG
@@ -2939,17 +2953,17 @@ char* FTerm::determineMaxColor (char*& current_termtype)
     if ( ! getXTermColorName(256).isEmpty() )
     {
       if ( putty_terminal )
-        new_termtype = const_cast<char*>("putty-256color");
+        new_termtype = C_STR("putty-256color");
       else
-        new_termtype = const_cast<char*>("xterm-256color");
+        new_termtype = C_STR("xterm-256color");
     }
     else if ( ! getXTermColorName(87).isEmpty() )
     {
-      new_termtype = const_cast<char*>("xterm-88color");
+      new_termtype = C_STR("xterm-88color");
     }
     else if ( ! getXTermColorName(15).isEmpty() )
     {
-      new_termtype = const_cast<char*>("xterm-16color");
+      new_termtype = C_STR("xterm-16color");
     }
   }
 
@@ -2977,9 +2991,9 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
     putty_terminal = true;
 
     if ( color256 )
-      new_termtype = const_cast<char*>("putty-256color");
+      new_termtype = C_STR("putty-256color");
     else
-      new_termtype = const_cast<char*>("putty");
+      new_termtype = C_STR("putty");
   }
   else
     putty_terminal = false;
@@ -3088,7 +3102,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
               gnome_terminal = true;
               // Each gnome-terminal should be able to use 256 colors
               color256 = true;
-              new_termtype = const_cast<char*>("gnome-256color");
+              new_termtype = C_STR("gnome-256color");
               gnome_terminal_id = terminal_id_version;
 
               // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
@@ -3106,12 +3120,12 @@ char* FTerm::parseSecDA (char*& current_termtype)
             if ( terminal_id_version == 20 && isWSConsConsole() )
             {
               // NetBSD/OpenBSD workstation console
-              if ( std::strncmp(termtype, const_cast<char*>("wsvt25"), 6) == 0 )
+              if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
                 netbsd_terminal = true;
-              else if ( std::strncmp(termtype, const_cast<char*>("vt220"), 5) == 0 )
+              else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
               {
                 openbsd_terminal = true;
-                new_termtype = const_cast<char*>("pccon");
+                new_termtype = C_STR("pccon");
               }
             }
             break;
@@ -3124,12 +3138,12 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
           case 32:  // Tera Term
             tera_terminal = true;
-            new_termtype = const_cast<char*>("teraterm");
+            new_termtype = C_STR("teraterm");
             break;
 
           case 77:  // mintty
             mintty_terminal = true;
-            new_termtype = const_cast<char*>("xterm-256color");
+            new_termtype = C_STR("xterm-256color");
             // switch to application escape key mode
             putstring (CSI "?7727h");
             std::fflush(stdout);
@@ -3145,7 +3159,7 @@ char* FTerm::parseSecDA (char*& current_termtype)
 
             if ( std::strncmp(termtype, "rxvt-", 5) != 0
               && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-              new_termtype = const_cast<char*>("rxvt-16color");
+              new_termtype = C_STR("rxvt-16color");
             break;
 
           case 85:  // rxvt-unicode
@@ -3155,9 +3169,9 @@ char* FTerm::parseSecDA (char*& current_termtype)
             if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
             {
               if ( color256 )
-                new_termtype = const_cast<char*>("rxvt-256color");
+                new_termtype = C_STR("rxvt-256color");
               else
-                new_termtype = const_cast<char*>("rxvt");
+                new_termtype = C_STR("rxvt");
             }
             break;
 
@@ -3226,24 +3240,24 @@ void FTerm::init_alt_charset()
   };
 
   // update array 'character' with discovered vt100 pairs
-  for (int n = 0; n <= lastKeyItem; n++ )
+  for (int n = 0; n <= fc::lastKeyItem; n++ )
   {
-    uChar keyChar = uChar(vt100_key_to_utf8[n][vt100_key]);
+    uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar((*vt100_alt_char)[ keyChar ]);
-    uInt utf8char = uInt(vt100_key_to_utf8[n][utf8_char]);
+    uInt utf8char = uInt(fc::vt100_key_to_utf8[n][utf8_char]);
     fc::encoding num = fc::NUM_OF_ENCODINGS;
 
-    uInt* p = std::find ( character[0]
-                        , character[lastCharItem] + num
+    uInt* p = std::find ( fc::character[0]
+                        , fc::character[fc::lastCharItem] + num
                         , utf8char );
-    if ( p != character[lastCharItem] + num )  // found in character
+    if ( p != fc::character[fc::lastCharItem] + num )  // found in character
     {
-      int item = int(std::distance(character[0], p) / num);
+      int item = int(std::distance(fc::character[0], p) / num);
 
       if ( altChar )
-        character[item][fc::VT100] = altChar;  // update alternate character set
+        fc::character[item][fc::VT100] = altChar;  // update alternate character set
       else
-        character[item][fc::VT100] = 0;  // delete vt100 char in character
+        fc::character[item][fc::VT100] = 0;  // delete vt100 char in character
     }
   }
 }
@@ -3266,13 +3280,13 @@ void FTerm::init_pc_charset()
       {
         // Select iso8859-1 + null mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-            const_cast<char*>(ESC "%@" ESC "(U");
+            C_STR(ESC "%@" ESC "(U");
       }
       else
       {
         // Select null mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-            const_cast<char*>(ESC "(U");
+            C_STR(ESC "(U");
       }
 
       opti_attr->set_enter_pc_charset_mode \
@@ -3287,13 +3301,13 @@ void FTerm::init_pc_charset()
       {
         // Select ascii mapping + utf8
         TCAP(fc::t_exit_pc_charset_mode) = \
-            const_cast<char*>(ESC "(B" ESC "%G");
+            C_STR(ESC "(B" ESC "%G");
       }
       else
       {
         // Select ascii mapping
         TCAP(fc::t_enter_pc_charset_mode) = \
-            const_cast<char*>(ESC "(B");
+            C_STR(ESC "(B");
       }
 
       opti_attr->set_exit_pc_charset_mode \
@@ -3314,12 +3328,12 @@ void FTerm::init_cygwin_charmap()
   if ( ! cygwin_terminal )
     return;
 
-  for (int i = 0; i <= lastCharItem; i++ )
+  for (int i = 0; i <= fc::lastCharItem; i++ )
   {
-    if ( character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
-      || character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
-      || character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
-      character[i][fc::PC] = character[i][fc::ASCII];
+    if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
+      || fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
+      || fc::character[i][fc::UTF8] == fc::SquareRoot )  // SquareRoot √
+      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
   }
 }
 
@@ -3331,9 +3345,9 @@ void FTerm::init_teraterm_charmap()
   if ( ! tera_terminal )
     return;
 
-  for (int i = 0; i <= lastCharItem; i++ )
-    if ( character[i][fc::PC] < 0x20 )
-      character[i][fc::PC] = character[i][fc::ASCII];
+  for (int i = 0; i <= fc::lastCharItem; i++ )
+    if ( fc::character[i][fc::PC] < 0x20 )
+      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
 
 //----------------------------------------------------------------------
@@ -3369,27 +3383,27 @@ void FTerm::init_termcaps()
   if ( status != success && color256 )
   {
     // use "xterm-256color" as fallback if not found
-    std::strncpy (termtype, const_cast<char*>("xterm-256color"), 15);
+    std::strncpy (termtype, C_STR("xterm-256color"), 15);
     status = tgetent(term_buffer, termtype);
   }
 
   if ( status != success )
   {
     // use "xterm" as fallback if not found
-    std::strncpy (termtype, const_cast<char*>("xterm"), 6);
+    std::strncpy (termtype, C_STR("xterm"), 6);
     status = tgetent(term_buffer, termtype);
 
     if ( status != success )
     {
       // use "ansi" as fallback if not found
-      std::strncpy (termtype, const_cast<char*>("ansi"), 5);
+      std::strncpy (termtype, C_STR("ansi"), 5);
       status = tgetent(term_buffer, termtype);
       ansi_terminal = true;
 
       if ( status != success )
       {
         // use "vt100" as fallback if not found
-        std::strncpy (termtype, const_cast<char*>("vt100"), 6);
+        std::strncpy (termtype, C_STR("vt100"), 6);
         status = tgetent(term_buffer, termtype);
         ansi_terminal = false;
       }
@@ -3438,26 +3452,26 @@ void FTerm::init_termcaps_booleans()
   // Get termcap booleans
 
   // Screen erased with the background color
-  FTermcap::background_color_erase = tgetflag(const_cast<char*>("ut"));
+  FTermcap::background_color_erase = tgetflag(C_STR("ut"));
 
   // t_cursor_left wraps from column 0 to last column
-  FTermcap::automatic_left_margin = tgetflag(const_cast<char*>("bw"));
+  FTermcap::automatic_left_margin = tgetflag(C_STR("bw"));
 
   // Terminal has auto-matic margins
-  FTermcap::automatic_right_margin = tgetflag(const_cast<char*>("am"));
+  FTermcap::automatic_right_margin = tgetflag(C_STR("am"));
 
   // NewLine ignored after 80 cols
-  FTermcap::eat_nl_glitch = tgetflag(const_cast<char*>("xn"));
+  FTermcap::eat_nl_glitch = tgetflag(C_STR("xn"));
 
   // Terminal supports ANSI set default fg and bg color
-  FTermcap::ansi_default_color = tgetflag(const_cast<char*>("AX"));
+  FTermcap::ansi_default_color = tgetflag(C_STR("AX"));
 
   // Terminal supports operating system commands (OSC)
   // OSC = Esc + ']'
-  FTermcap::osc_support = tgetflag(const_cast<char*>("XT"));
+  FTermcap::osc_support = tgetflag(C_STR("XT"));
 
   // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
-  FTermcap::no_utf8_acs_chars = bool(tgetnum(const_cast<char*>("U8")) != 0);
+  FTermcap::no_utf8_acs_chars = bool(tgetnum(C_STR("U8")) != 0);
 }
 
 //----------------------------------------------------------------------
@@ -3467,7 +3481,7 @@ void FTerm::init_termcaps_numeric()
 
   // Maximum number of colors on screen
   FTermcap::max_color = std::max( FTermcap::max_color
-                                , tgetnum(const_cast<char*>("Co")) );
+                                , tgetnum(C_STR("Co")) );
 
   if ( FTermcap::max_color < 0 )
     FTermcap::max_color = 1;
@@ -3478,10 +3492,10 @@ void FTerm::init_termcaps_numeric()
     monochron = false;
 
   // Get initial spacing for hardware tab stop
-  FTermcap::tabstop = tgetnum(const_cast<char*>("it"));
+  FTermcap::tabstop = tgetnum(C_STR("it"));
 
   // Get video attributes that cannot be used with colors
-  FTermcap::attr_without_color = tgetnum(const_cast<char*>("NC"));
+  FTermcap::attr_without_color = tgetnum(C_STR("NC"));
 }
 
 //----------------------------------------------------------------------
@@ -3551,21 +3565,21 @@ static void FTerm::init_termcaps_freebsd_quirks()
   // FreeBSD console fixes
 
   TCAP(fc::t_acs_chars) = \
-      const_cast<char*>("-\036.\0370\333"
-                        "a\260f\370g\361"
-                        "h\261j\331k\277"
-                        "l\332m\300n\305"
-                        "q\304t\303u\264"
-                        "v\301w\302x\263"
-                        "y\363z\362~\371");
+      C_STR("-\036.\0370\333"
+            "a\260f\370g\361"
+            "h\261j\331k\277"
+            "l\332m\300n\305"
+            "q\304t\303u\264"
+            "v\301w\302x\263"
+            "y\363z\362~\371");
 
     TCAP(fc::t_set_attributes) = \
-        const_cast<char*>(CSI "0"
-                              "%?%p1%p6%|%t;1%;"
-                              "%?%p2%t;4%;"
-                              "%?%p1%p3%|%t;7%;"
-                              "%?%p4%t;5%;m"
-                              "%?%p9%t\016%e\017%;");
+        C_STR(CSI "0"
+                  "%?%p1%p6%|%t;1%;"
+                  "%?%p2%t;4%;"
+                  "%?%p1%p3%|%t;7%;"
+                  "%?%p4%t;5%;m"
+                  "%?%p9%t\016%e\017%;");
 
   FTermcap::attr_without_color = 18;
 }
@@ -3577,17 +3591,17 @@ void FTerm::init_termcaps_cygwin_quirks()
   // Set invisible cursor for cygwin terminal
   if ( ! TCAP(fc::t_cursor_invisible) )
     TCAP(fc::t_cursor_invisible) = \
-        const_cast<char*>(CSI "?25l");
+        C_STR(CSI "?25l");
 
   // Set visible cursor for cygwin terminal
   if ( ! TCAP(fc::t_cursor_visible) )
     TCAP(fc::t_cursor_visible) = \
-        const_cast<char*>(CSI "?25h");
+        C_STR(CSI "?25h");
 
   // Set ansi blink for cygwin terminal
   if ( ! TCAP(fc::t_enter_blink_mode) )
     TCAP(fc::t_enter_blink_mode) = \
-        const_cast<char*>(CSI "5m");
+        C_STR(CSI "5m");
 
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
@@ -3596,20 +3610,20 @@ void FTerm::init_termcaps_cygwin_quirks()
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+        C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
   }
   else
   {
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%dm");
+        C_STR(CSI "3%p1%dm");
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%dm");
+        C_STR(CSI "4%p1%dm");
   }
 
   TCAP(fc::t_orig_pair) = \
-      const_cast<char*>(CSI "39;49;25m");
+      C_STR(CSI "39;49;25m");
 
   // Avoid dim + underline
   TCAP(fc::t_enter_dim_mode)       = 0;
@@ -3627,20 +3641,20 @@ void FTerm::init_termcaps_linux_quirks()
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+        C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
   }
   else
   {
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%dm");
+        C_STR(CSI "3%p1%dm");
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%dm");
+        C_STR(CSI "4%p1%dm");
   }
 
   TCAP(fc::t_orig_pair) = \
-      const_cast<char*>(CSI "39;49;25m");
+      C_STR(CSI "39;49;25m");
 
   // Avoid dim + underline
   TCAP(fc::t_enter_dim_mode)       = 0;
@@ -3657,11 +3671,21 @@ void FTerm::init_termcaps_xterm_quirks()
   if ( ! TCAP(fc::t_initialize_color) )
   {
     TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(OSC "4;%p1%d;rgb:"
-                          "%p2%{255}%*%{1000}%/%2.2X/"
-                          "%p3%{255}%*%{1000}%/%2.2X/"
-                          "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
+        C_STR(OSC "4;%p1%d;rgb:"
+                  "%p2%{255}%*%{1000}%/%2.2X/"
+                  "%p3%{255}%*%{1000}%/%2.2X/"
+                  "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
   }
+
+  // Fallback if "vi" is not found
+  if ( ! TCAP(fc::t_cursor_invisible) )
+    TCAP(fc::t_cursor_invisible) = \
+        C_STR(CSI "?25l");
+
+  // Fallback if "ve" is not found
+  if ( ! TCAP(fc::t_cursor_normal) )
+    TCAP(fc::t_cursor_normal) = \
+        C_STR(CSI "?12l" CSI "?25h");
 }
 
 //----------------------------------------------------------------------
@@ -3671,18 +3695,18 @@ void FTerm::init_termcaps_rxvt_quirks()
   if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
     TCAP(fc::t_enter_alt_charset_mode) = \
-        const_cast<char*>(ESC "(0");
+        C_STR(ESC "(0");
     TCAP(fc::t_exit_alt_charset_mode)  = \
-        const_cast<char*>(ESC "(B");
+        C_STR(ESC "(B");
   }
 
   // Set ansi foreground and background color
   if ( ! urxvt_terminal )
   {
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
+        C_STR(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
+        C_STR(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
   }
 }
 
@@ -3694,7 +3718,7 @@ void FTerm::init_termcaps_vte_quirks()
 
   // set exit underline for gnome terminal
   TCAP(fc::t_exit_underline_mode) = \
-      const_cast<char*>(CSI "24m");
+      C_STR(CSI "24m");
 }
 
 //----------------------------------------------------------------------
@@ -3709,78 +3733,78 @@ void FTerm::init_termcaps_putty_quirks()
 
   // Set ansi foreground and background color
   TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<"
-                            "%t3%p1%d"
-                            "%e%p1%{16}%<"
-                            "%t9%p1%{8}%-%d"
-                            "%e38;5;%p1%d%;m");
+      C_STR(CSI "%?%p1%{8}%<"
+                "%t3%p1%d"
+                "%e%p1%{16}%<"
+                "%t9%p1%{8}%-%d"
+                "%e38;5;%p1%d%;m");
 
   TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "%?%p1%{8}%<"
-                            "%t4%p1%d"
-                            "%e%p1%{16}%<"
-                            "%t10%p1%{8}%-%d"
-                            "%e48;5;%p1%d%;m");
+      C_STR(CSI "%?%p1%{8}%<"
+                "%t4%p1%d"
+                "%e%p1%{16}%<"
+                "%t10%p1%{8}%-%d"
+                "%e48;5;%p1%d%;m");
 
   TCAP(fc::t_set_attributes) = \
-      const_cast<char*>(CSI "0"
-                            "%?%p1%p6%|%t;1%;"
-                            "%?%p5%t;2%;"  // since putty 0.71
-                            "%?%p2%t;4%;"
-                            "%?%p1%p3%|%t;7%;"
-                            "%?%p4%t;5%;m"
-                            "%?%p9%t\016%e\017%;");
+      C_STR(CSI "0"
+                "%?%p1%p6%|%t;1%;"
+                "%?%p5%t;2%;"  // since putty 0.71
+                "%?%p2%t;4%;"
+                "%?%p1%p3%|%t;7%;"
+                "%?%p4%t;5%;m"
+                "%?%p9%t\016%e\017%;");
   // PuTTY 0.71 or higher
   TCAP(fc::t_enter_dim_mode) = \
-      const_cast<char*>(CSI "2m");
+      C_STR(CSI "2m");
 
   // PuTTY 0.71 or higher
   TCAP(fc::t_exit_dim_mode) = \
-      const_cast<char*>(CSI "22m");
+      C_STR(CSI "22m");
 
   if ( ! TCAP(fc::t_clr_bol) )
     TCAP(fc::t_clr_bol) = \
-        const_cast<char*>(CSI "1K");
+        C_STR(CSI "1K");
 
   if ( ! TCAP(fc::t_orig_pair) )
     TCAP(fc::t_orig_pair) = \
-        const_cast<char*>(CSI "39;49m");
+        C_STR(CSI "39;49m");
 
   if ( ! TCAP(fc::t_orig_colors) )
     TCAP(fc::t_orig_colors) = \
-        const_cast<char*>(OSC "R");
+        C_STR(OSC "R");
 
   if ( ! TCAP(fc::t_column_address) )
     TCAP(fc::t_column_address) = \
-        const_cast<char*>(CSI "%i%p1%dG");
+        C_STR(CSI "%i%p1%dG");
 
   if ( ! TCAP(fc::t_row_address) )
     TCAP(fc::t_row_address) = \
-        const_cast<char*>(CSI "%i%p1%dd");
+        C_STR(CSI "%i%p1%dd");
 
   if ( ! TCAP(fc::t_enable_acs) )
     TCAP(fc::t_enable_acs) = \
-        const_cast<char*>(ESC "(B" ESC ")0");
+        C_STR(ESC "(B" ESC ")0");
 
   if ( ! TCAP(fc::t_enter_am_mode) )
     TCAP(fc::t_enter_am_mode) = \
-        const_cast<char*>(CSI "?7h");
+        C_STR(CSI "?7h");
 
   if ( ! TCAP(fc::t_exit_am_mode) )
     TCAP(fc::t_exit_am_mode) = \
-        const_cast<char*>(CSI "?7l");
+        C_STR(CSI "?7l");
 
   if ( ! TCAP(fc::t_enter_pc_charset_mode) )
     TCAP(fc::t_enter_pc_charset_mode) = \
-        const_cast<char*>(CSI "11m");
+        C_STR(CSI "11m");
 
   if ( ! TCAP(fc::t_exit_pc_charset_mode) )
     TCAP(fc::t_exit_pc_charset_mode) = \
-        const_cast<char*>(CSI "10m");
+        C_STR(CSI "10m");
 
   if ( ! TCAP(fc::t_key_mouse) )
     TCAP(fc::t_key_mouse) = \
-        const_cast<char*>(CSI "M");
+        C_STR(CSI "M");
 }
 
 //----------------------------------------------------------------------
@@ -3791,13 +3815,13 @@ void FTerm::init_termcaps_teraterm_quirks()
 
   // Tera Term color settings
   TCAP(fc::t_set_a_foreground) = \
-      const_cast<char*>(CSI "38;5;%p1%dm");
+      C_STR(CSI "38;5;%p1%dm");
   TCAP(fc::t_set_a_background) = \
-      const_cast<char*>(CSI "48;5;%p1%dm");
+      C_STR(CSI "48;5;%p1%dm");
   TCAP(fc::t_exit_attribute_mode) = \
-      const_cast<char*>(CSI "0m" SI);
+      C_STR(CSI "0m" SI);
   TCAP(fc::t_orig_pair) = \
-      const_cast<char*>(CSI "39;49m");
+      C_STR(CSI "39;49m");
 }
 
 //----------------------------------------------------------------------
@@ -3816,18 +3840,18 @@ void FTerm::init_termcaps_screen_quirks()
     if ( tmux_terminal )
     {
       TCAP(fc::t_initialize_color) = \
-          const_cast<char*>(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                            "%p2%{255}%*%{1000}%/%2.2X/"
-                            "%p3%{255}%*%{1000}%/%2.2X/"
-                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+          C_STR(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
+                "%p2%{255}%*%{1000}%/%2.2X/"
+                "%p3%{255}%*%{1000}%/%2.2X/"
+                "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
     }
     else
     {
       TCAP(fc::t_initialize_color) = \
-          const_cast<char*>(ESC "P" OSC "4;%p1%d;rgb:"
-                            "%p2%{255}%*%{1000}%/%2.2X/"
-                            "%p3%{255}%*%{1000}%/%2.2X/"
-                            "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
+          C_STR(ESC "P" OSC "4;%p1%d;rgb:"
+                "%p2%{255}%*%{1000}%/%2.2X/"
+                "%p3%{255}%*%{1000}%/%2.2X/"
+                "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
     }
   }
 }
@@ -3846,37 +3870,37 @@ void FTerm::init_termcaps_general_quirks()
   // Fallback if "AF" is not found
   if ( ! TCAP(fc::t_set_a_foreground) )
     TCAP(fc::t_set_a_foreground) = \
-        const_cast<char*>(CSI "3%p1%dm");
+        C_STR(CSI "3%p1%dm");
 
   // Fallback if "AB" is not found
   if ( ! TCAP(fc::t_set_a_background) )
     TCAP(fc::t_set_a_background) = \
-        const_cast<char*>(CSI "4%p1%dm");
+        C_STR(CSI "4%p1%dm");
 
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
     TCAP(fc::t_initialize_color) = \
-        const_cast<char*>(OSC "P%p1%x"
-                          "%p2%{255}%*%{1000}%/%02x"
-                          "%p3%{255}%*%{1000}%/%02x"
-                          "%p4%{255}%*%{1000}%/%02x");
+        C_STR(OSC "P%p1%x"
+                  "%p2%{255}%*%{1000}%/%02x"
+                  "%p3%{255}%*%{1000}%/%02x"
+                  "%p4%{255}%*%{1000}%/%02x");
   }
 
   // Fallback if "ti" is not found
   if ( ! TCAP(fc::t_enter_ca_mode) )
     TCAP(fc::t_enter_ca_mode) = \
-        const_cast<char*>(ESC "7" CSI "?47h");
+        C_STR(ESC "7" CSI "?47h");
 
   // Fallback if "te" is not found
   if ( ! TCAP(fc::t_exit_ca_mode) )
     TCAP(fc::t_exit_ca_mode) = \
-        const_cast<char*>(CSI "?47l" ESC "8" CSI "m");
+        C_STR(CSI "?47l" ESC "8" CSI "m");
 
   // Set ansi move if "cm" is not found
   if ( ! TCAP(fc::t_cursor_address) )
     TCAP(fc::t_cursor_address) = \
-        const_cast<char*>(CSI "%i%p1%d;%p2%dH");
+        C_STR(CSI "%i%p1%d;%p2%dH");
 
   // Test for standard ECMA-48 (ANSI X3.64) terminal
   if ( TCAP(fc::t_exit_underline_mode)
@@ -3884,34 +3908,34 @@ void FTerm::init_termcaps_general_quirks()
   {
     // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
     TCAP(fc::t_enter_dbl_underline_mode) = \
-        const_cast<char*>(CSI "21m");  // Exit single underline, too
+        C_STR(CSI "21m");  // Exit single underline, too
 
     TCAP(fc::t_exit_dbl_underline_mode) = \
-        const_cast<char*>(CSI "24m");
+        C_STR(CSI "24m");
 
     TCAP(fc::t_exit_bold_mode) = \
-        const_cast<char*>(CSI "22m");  // Exit dim, too
+        C_STR(CSI "22m");  // Exit dim, too
 
     TCAP(fc::t_exit_dim_mode) = \
-        const_cast<char*>(CSI "22m");
+        C_STR(CSI "22m");
 
     TCAP(fc::t_exit_underline_mode) = \
-        const_cast<char*>(CSI "24m");
+        C_STR(CSI "24m");
 
     TCAP(fc::t_exit_blink_mode) = \
-        const_cast<char*>(CSI "25m");
+        C_STR(CSI "25m");
 
     TCAP(fc::t_exit_reverse_mode) = \
-        const_cast<char*>(CSI "27m");
+        C_STR(CSI "27m");
 
     TCAP(fc::t_exit_secure_mode) = \
-        const_cast<char*>(CSI "28m");
+        C_STR(CSI "28m");
 
     TCAP(fc::t_enter_crossed_out_mode) = \
-        const_cast<char*>(CSI "9m");
+        C_STR(CSI "9m");
 
     TCAP(fc::t_exit_crossed_out_mode) = \
-        const_cast<char*>(CSI "29m");
+        C_STR(CSI "29m");
   }
 }
 
@@ -3920,69 +3944,68 @@ void FTerm::init_termcaps_keys (char*& buffer)
 {
   // Read termcap key strings
 
-  for (int i = 0; Fkey[i].tname[0] != 0; i++)
+  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
   {
-    Fkey[i].string = tgetstr(Fkey[i].tname, &buffer);
+    fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
 
     // Fallback for rxvt with TERM=xterm
-    if ( std::strncmp(Fkey[i].tname, "khx", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "7~");  // Home key
+    if ( std::strncmp(fc::Fkey[i].tname, "khx", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "7~");  // Home key
 
-    if ( std::strncmp(Fkey[i].tname, "@7x", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "8~");  // End key
+    if ( std::strncmp(fc::Fkey[i].tname, "@7x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "8~");  // End key
 
-    if ( std::strncmp(Fkey[i].tname, "k1x", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "11~");  // F1
+    if ( std::strncmp(fc::Fkey[i].tname, "k1x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "11~");  // F1
 
-    if ( std::strncmp(Fkey[i].tname, "k2x", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "12~");  // F2
+    if ( std::strncmp(fc::Fkey[i].tname, "k2x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "12~");  // F2
 
-    if ( std::strncmp(Fkey[i].tname, "k3x", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "13~");  // F3
+    if ( std::strncmp(fc::Fkey[i].tname, "k3x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "13~");  // F3
 
-    if ( std::strncmp(Fkey[i].tname, "k4x", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "14~");  // F4
+    if ( std::strncmp(fc::Fkey[i].tname, "k4x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "14~");  // F4
 
     // Fallback for TERM=ansi
-    if ( std::strncmp(Fkey[i].tname, "@7X", 3) == 0 )
-      Fkey[i].string = const_cast<char*>(CSI "K");  // End key
+    if ( std::strncmp(fc::Fkey[i].tname, "@7X", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "K");  // End key
   }
 
   // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
   // http://www.unix.com/shell-programming-scripting/..
   //      ..110380-using-arrow-keys-shell-scripts.html
-  char* key_up_string = tgetstr(const_cast<char*>("ku"), &buffer);
+  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
 
   if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
     || ( TCAP(fc::t_cursor_up)
       && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {
-    for (int i = 0; Fkey[i].tname[0] != 0; i++)
+    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
     {
-      if ( std::strncmp(Fkey[i].tname, "kux", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "A");  // Key up
+      if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "A");  // Key up
 
-      if ( std::strncmp(Fkey[i].tname, "kdx", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "B");  // Key down
+      if ( std::strncmp(fc::Fkey[i].tname, "kdx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "B");  // Key down
 
-      if ( std::strncmp(Fkey[i].tname, "krx", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "C");  // Key right
+      if ( std::strncmp(fc::Fkey[i].tname, "krx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "C");  // Key right
 
+      if ( std::strncmp(fc::Fkey[i].tname, "klx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "D");  // Key left
 
-      if ( std::strncmp(Fkey[i].tname, "klx", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(CSI "D");  // Key left
+      if ( std::strncmp(fc::Fkey[i].tname, "k1X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OP");  // PF1
 
-      if ( std::strncmp(Fkey[i].tname, "k1X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(ESC "OP");  // PF1
+      if ( std::strncmp(fc::Fkey[i].tname, "k2X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OQ");  // PF2
 
-      if ( std::strncmp(Fkey[i].tname, "k2X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(ESC "OQ");  // PF2
+      if ( std::strncmp(fc::Fkey[i].tname, "k3X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OR");  // PF3
 
-      if ( std::strncmp(Fkey[i].tname, "k3X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(ESC "OR");  // PF3
-
-      if ( std::strncmp(Fkey[i].tname, "k4X", 3) == 0 )
-        Fkey[i].string = const_cast<char*>(ESC "OS");  // PF4
+      if ( std::strncmp(fc::Fkey[i].tname, "k4X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OS");  // PF4
     }
   }
 }
@@ -4133,7 +4156,7 @@ void FTerm::init_locale()
 
   // Fallback to C
   if ( ! locale_name )
-    locale_name = const_cast<char*>("C");
+    locale_name = C_STR("C");
 }
 
 //----------------------------------------------------------------------
@@ -4647,11 +4670,11 @@ uInt FTerm::cp437_to_unicode (uChar c)
 {
   register uInt ucs = uInt(c);
 
-  for (register uInt i = 0; i <= lastCP437Item; i++)
+  for (register uInt i = 0; i <= fc::lastCP437Item; i++)
   {
-    if ( cp437_to_ucs[i][0] == c )  // found
+    if ( fc::cp437_to_ucs[i][0] == c )  // found
     {
-      ucs = cp437_to_ucs[i][1];
+      ucs = fc::cp437_to_ucs[i][1];
       break;
     }
   }

@@ -29,6 +29,9 @@
 
 #include "final/ftermcap.h"
 
+namespace fc
+{
+
 static FTermcap::tcap_map term_caps[] =
 {
  // .------------- term string
@@ -132,5 +135,7 @@ static FTermcap::tcap_map term_caps[] =
  *
  * "XX", "Us" and "Ue" are unofficial and they are only used here.
  */
+
+}  // namespace fc
 
 #endif  // FTCAPMAP_H

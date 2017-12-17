@@ -29,6 +29,9 @@
 
 #include <string>
 
+namespace fc
+{
+
 #pragma pack(push)
 #pragma pack(1)
 
@@ -851,5 +854,7 @@ static keyname FkeyName[] =
   { fc::Fmkey_tilde               , "Meta+~" },
   { 0                             , "\0" }
 };
+
+}  // namespace fc
 
 #endif  // FKEYMAP_H

@@ -234,7 +234,9 @@ class FString
     FString clear();
 
     const wchar_t* wc_str() const;
+    wchar_t* wc_str();
     const char* c_str() const;
+    char* c_str();
     const std::string toString() const;
 
     FString toLower()  const;

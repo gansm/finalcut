@@ -597,7 +597,7 @@ bool FButtonGroup::isRadioButton (FToggleButton* button) const
     return false;
 
   return bool ( std::strcmp ( button->getClassName()
-                            , const_cast<char*>("FRadioButton") ) == 0 );
+                            , C_STR("FRadioButton") ) == 0 );
 }
 
 //----------------------------------------------------------------------

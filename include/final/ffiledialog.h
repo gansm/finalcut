@@ -147,7 +147,15 @@ class FFileDialog : public FDialog
     struct dir_entry
     {
       char* name;
-      uChar type;
+      // Type of file
+      uChar fifo             : 1;
+      uChar character_device : 1;
+      uChar directory        : 1;
+      uChar block_device     : 1;
+      uChar regular_file     : 1;
+      uChar symbolic_link    : 1;
+      uChar socket           : 1;
+      uChar                  : 1;  // padding bits
     };
 
     typedef std::vector<dir_entry> dirEntries;
@@ -157,6 +165,7 @@ class FFileDialog : public FDialog
     inline bool   pattern_match (const char* const, char*&);
     void          clear();
     int           numOfDirs();
+    void          sortDir();
     int           changeDir (const FString&);
     void          printPath (const FString&);
     static const FString getHomeDir();

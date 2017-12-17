@@ -39,7 +39,22 @@
 #endif
 
 #include <assert.h>
-#include <term.h>  // need for tparm
+
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif
+
+  #include <term.h>  // need for tparm
+#else
+  #include <term.h>  // need for tparm
+#endif
 
 #include <cctype>
 #include <climits>

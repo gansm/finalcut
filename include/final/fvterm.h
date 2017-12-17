@@ -403,6 +403,11 @@ class FVTerm : public FTerm
     static int              appendLowerRight (char_data*&);
     static void             appendOutputBuffer (const std::string&);
     static void             appendOutputBuffer (const char*&);
+
+#if defined(__sun) && defined(__SVR4)
+    static int              appendOutputBuffer (char);
+#endif
+
     static int              appendOutputBuffer (int);
 
     // Data Members

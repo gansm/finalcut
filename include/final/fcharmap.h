@@ -27,6 +27,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+namespace fc
+{
+
 static uInt character[][fc::NUM_OF_ENCODINGS] =
 {
   //  .--------------------- Unicode (UTF-8)
@@ -319,6 +322,6 @@ static uInt cp437_to_ucs[][2] =
 
 const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
                                 / sizeof(cp437_to_ucs[0]) ) - 1;
-
+}  // namespace fc
 
 #endif  // FCHARMAP_H

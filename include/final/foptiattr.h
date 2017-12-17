@@ -35,12 +35,31 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+// Typecast to c-string
+#define C_STR const_cast<char*>
+
 #include <assert.h>
-#include <term.h>     // need for tparm
+
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif
+
+  #include <term.h>   // need for tparm
+#else
+  #include <term.h>   // need for tparm
+#endif
 
 #include <algorithm>  // need for std::swap
 
 #include "final/fc.h"
+#include "final/ftypes.h"
 
 
 //----------------------------------------------------------------------

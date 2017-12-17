@@ -102,7 +102,7 @@ FString FListViewItem::getText (int column) const
   if ( column < 1
     || column_list.empty()
     || column > int(column_list.size()) )
-    return *fc::empty_string;
+    return fc::emptyFString::get();
 
   column--;  // Convert column position to address offset (index)
   return column_list[uInt(column)];
@@ -498,7 +498,7 @@ FString FListView::getColumnText (int column) const
   // Get the text of column
 
   if ( column < 1 || header.empty() || column > int(header.size()) )
-    return *fc::empty_string;
+    return fc::emptyFString::get();
 
   column--;  // Convert column position to address offset (index)
   return header[uInt(column)].name;

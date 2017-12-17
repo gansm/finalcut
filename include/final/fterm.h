@@ -51,6 +51,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+// Typecast to c-string
+#define C_STR const_cast<char*>
+
 #include "final/fconfig.h"
 
 #ifdef F_HAVE_LIBGPM
@@ -83,8 +86,23 @@
 
 #include <fcntl.h>
 #include <langinfo.h>
-#include <term.h>              // termcap
 #include <termios.h>
+
+#if defined(__sun) && defined(__SVR4)
+  #include <termio.h>
+  typedef struct termio SGTTY;
+  typedef struct termios SGTTYS;
+
+  #ifdef _LP64
+    typedef unsigned int chtype;
+  #else
+    typedef unsigned long chtype;
+  #endif
+
+  #include <term.h>              // termcap
+#else
+  #include <term.h>              // termcap
+#endif
 
 #if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
   #include <ttyent.h>
@@ -293,6 +311,11 @@ class FTerm
 #endif
                           ;
     static void           putstring (const char* const, int = 1);
+
+#if defined(__sun) && defined(__SVR4)
+    static int            putchar_ASCII (register char);
+#endif
+
     static int            putchar_ASCII (register int);
     static int            putchar_UTF8  (register int);
     static int            UTF8decode (const char[]);
@@ -612,11 +635,11 @@ inline int FTerm::getMaxColor()
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
-{ return ( answer_back ) ? *answer_back : *fc::empty_string; }
+{ return ( answer_back ) ? *answer_back : fc::emptyFString::get(); }
 
 //----------------------------------------------------------------------
 inline const FString& FTerm::getSecDAString()
-{ return ( sec_da ) ? *sec_da : *fc::empty_string; }
+{ return ( sec_da ) ? *sec_da : fc::emptyFString::get(); }
 #endif
 
 //----------------------------------------------------------------------

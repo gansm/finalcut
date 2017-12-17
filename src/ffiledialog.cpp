@@ -39,7 +39,7 @@ bool sortDirFirst ( const FFileDialog::dir_entry& lhs
                   , const FFileDialog::dir_entry& rhs )
 {
   // sort directories first
-  if ( lhs.type == DT_DIR && rhs.type != DT_DIR )
+  if ( lhs.directory && ! rhs.directory )
     return true;
   else
     return false;
@@ -164,7 +164,7 @@ const FString FFileDialog::getSelectedFile() const
 {
   uLong n = uLong(filebrowser->currentItem() - 1);
 
-  if ( dir_entries[n].type == DT_DIR )
+  if ( dir_entries[n].directory )
     return FString("");
   else
     return FString(dir_entries[n].name);
@@ -257,7 +257,6 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 int FFileDialog::readDir()
 {
-  int start, dir_num;
   const char* const dir = directory.c_str();
   const char* const filter = filter_pattern.c_str();
   directory_stream = opendir(dir);
@@ -294,9 +293,28 @@ int FFileDialog::readDir()
 
       dir_entry entry;
       entry.name = strdup(next->d_name);
-      entry.type = next->d_type;
 
-      if ( next->d_type == DT_LNK )  // symbolic link
+#if defined _DIRENT_HAVE_D_TYPE || defined HAVE_STRUCT_DIRENT_D_TYPE
+      entry.fifo             = (next->d_type & DT_FIFO) == DT_FIFO;
+      entry.character_device = (next->d_type & DT_CHR ) == DT_CHR;
+      entry.directory        = (next->d_type & DT_DIR ) == DT_DIR;
+      entry.block_device     = (next->d_type & DT_BLK ) == DT_BLK;
+      entry.regular_file     = (next->d_type & DT_REG ) == DT_REG;
+      entry.symbolic_link    = (next->d_type & DT_LNK ) == DT_LNK;
+      entry.socket           = (next->d_type & DT_SOCK) == DT_SOCK;
+#else
+      struct stat s;
+      stat (entry.name, &s);
+      entry.fifo             = S_ISFIFO (s.st_mode);
+      entry.character_device = S_ISCHR (s.st_mode);
+      entry.directory        = S_ISDIR (s.st_mode);
+      entry.block_device     = S_ISBLK (s.st_mode);
+      entry.regular_file     = S_ISREG (s.st_mode);
+      entry.symbolic_link    = S_ISLNK (s.st_mode);
+      entry.socket           = S_ISSOCK (s.st_mode);
+#endif
+
+      if ( entry.symbolic_link )  // symbolic link
       {
         char resolved_path[MAXPATHLEN] = {};
         char symLink[MAXPATHLEN] = {};
@@ -312,12 +330,12 @@ int FFileDialog::readDir()
           if ( lstat(resolved_path, &sb) == 0 )
           {
             if ( S_ISDIR(sb.st_mode) )
-              entry.type = DT_DIR;
+              entry.directory = true;
           }
         }
       }
 
-      if ( entry.type == DT_DIR )
+      if ( entry.directory )
         dir_entries.push_back (entry);
       else if ( pattern_match(filter, entry.name) )
         dir_entries.push_back (entry);
@@ -341,24 +359,8 @@ int FFileDialog::readDir()
     return -2;
   }
 
-  if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
-    start = 1;
-  else
-    start = 0;
+  sortDir();
 
-  dir_num = numOfDirs();
-  // directories first
-  std::sort ( dir_entries.begin() + start
-            , dir_entries.end()
-            , sortDirFirst );
-  // sort directories by name
-  std::sort ( dir_entries.begin() + start
-            , dir_entries.begin() + dir_num
-            , sortByName );
-  // sort files by name
-  std::sort ( dir_entries.begin() + dir_num
-            , dir_entries.end()
-            , sortByName );
   // fill list with directory entries
   filebrowser->clear();
 
@@ -370,7 +372,7 @@ int FFileDialog::readDir()
 
     while ( iter != last )
     {
-      if ( (*iter).type == DT_DIR )
+      if ( (*iter).directory )
         filebrowser->insert(FString((*iter).name), fc::SquareBrackets);
       else
         filebrowser->insert(FString((*iter).name));
@@ -665,13 +667,38 @@ int FFileDialog::numOfDirs()
 
   while ( iter != last )
   {
-    if ( (*iter).type == DT_DIR && std::strcmp((*iter).name, ".") != 0 )
+    if ( (*iter).directory && std::strcmp((*iter).name, ".") != 0 )
       n++;
 
     ++iter;
   }
 
   return n;
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::sortDir()
+{
+  int start, dir_num;
+
+  if ( std::strcmp((*dir_entries.begin()).name, "..") == 0 )
+    start = 1;
+  else
+    start = 0;
+
+  dir_num = numOfDirs();
+  // directories first
+  std::sort ( dir_entries.begin() + start
+            , dir_entries.end()
+            , sortDirFirst );
+  // sort directories by name
+  std::sort ( dir_entries.begin() + start
+            , dir_entries.begin() + dir_num
+            , sortByName );
+  // sort files by name
+  std::sort ( dir_entries.begin() + dir_num
+            , dir_entries.end()
+            , sortByName );
 }
 
 //----------------------------------------------------------------------
@@ -709,7 +736,7 @@ int FFileDialog::changeDir (const FString& dirname)
           int i = 1;
           std::vector<dir_entry>::const_iterator iter, last;
           const char* const baseName = \
-              basename(const_cast<char*>(lastdir.c_str()));
+              basename(C_STR(lastdir.c_str()));
           iter = dir_entries.begin();
           last = dir_entries.end();
 
@@ -731,7 +758,7 @@ int FFileDialog::changeDir (const FString& dirname)
       {
         FString firstname = dir_entries[0].name;
 
-        if ( dir_entries[0].type == DT_DIR )
+        if ( dir_entries[0].directory )
           filename->setText(firstname + '/');
         else
           filename->setText(firstname);
@@ -808,7 +835,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
       {
         if ( (*iter).name && input && ! input.isNull()
           && std::strcmp((*iter).name, input) == 0
-          && (*iter).type == DT_DIR )
+          && (*iter).directory )
         {
           found = true;
           changeDir(input);
@@ -834,7 +861,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 
   const FString& name = dir_entries[uLong(n - 1)].name;
 
-  if ( dir_entries[uLong(n - 1)].type == DT_DIR )
+  if ( dir_entries[uLong(n - 1)].directory )
     filename->setText( name + '/' );
   else
     filename->setText( name );
@@ -847,7 +874,7 @@ void FFileDialog::cb_processClicked (FWidget*, data_ptr)
 {
   const uLong n = uLong(filebrowser->currentItem() - 1);
 
-  if ( dir_entries[n].type == DT_DIR )
+  if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);
   else
     done (FDialog::Accept);

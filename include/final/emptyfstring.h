@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftypes.h - Implements global data types                              *
+* emptyfstring.h - Creates an empty FString object                     *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2015-2017 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,34 +20,74 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#ifndef FTYPES_H
-#define FTYPES_H
+#ifndef EMPTYFSTRING_H
+#define EMPTYFSTRING_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <stdint.h>
-#include <sys/types.h>
+#include "final/fstring.h"
 
-#define null NULL
+namespace fc
+{
 
-typedef unsigned char  uChar;
-typedef unsigned int   uInt;
-typedef unsigned long  uLong;
-typedef uint8_t        uInt8;
-typedef uint16_t       uInt16;
-typedef uint32_t       uInt32;
-typedef uint64_t       uInt64;
+//----------------------------------------------------------------------
+// class emptyFString
+//----------------------------------------------------------------------
+class emptyFString
+{
+public:
+  emptyFString()
+  { }
 
-typedef signed int     sInt;
-typedef signed long    sLong;
-typedef int8_t         sInt8;
-typedef int16_t        sInt16;
-typedef int32_t        sInt32;
-typedef int64_t        sInt64;
+  static bool isNull();
+  static const FString& get();
+  static void clear();
 
-typedef long double    lDouble;
+private:
+  // Disable copy constructor
+  emptyFString (const emptyFString&);
 
-#endif  // FTYPES_H
+  // Disable assignment operator (=)
+  emptyFString& operator = (const emptyFString&);
 
+  // Data Member
+  static const FString* empty_string;
+};
+
+// emptyFString inline functions
+//----------------------------------------------------------------------
+inline bool emptyFString::isNull()
+{
+  return ( empty_string ) ? false : true;
+}
+
+//----------------------------------------------------------------------
+inline const FString& emptyFString::get()
+{
+  if ( ! empty_string )
+  {
+    try
+    {
+      empty_string = new FString("");
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    }
+  }
+
+  return *empty_string;
+}
+
+//----------------------------------------------------------------------
+inline void emptyFString::clear()
+{
+  delete empty_string;
+  empty_string = 0;
+}
+
+}  // namespace fc
+
+#endif  // EMPTYFSTRING_H

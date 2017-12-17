@@ -91,7 +91,15 @@ esac
 JOBS="$((CPU_COUNT/2))"
 test "$JOBS" -eq 0 && JOBS=1
 
-if make V=1 -j$JOBS
+if make -h 2<&1 | grep -q "\\-\\-jobs"
+then
+  MAKE="make V=1 -j$JOBS"
+else
+  MAKE="make V=1"
+fi
+
+
+if $MAKE
 then
   echo "${GREEN}Successful compiled${NORMAL}"
 else

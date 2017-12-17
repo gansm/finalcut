@@ -2521,7 +2521,6 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
   // Erase a number of characters to draw simple whitespaces
 
   term_area*& vt = vterm;
-  bool&  ut = FTermcap::background_color_erase;
   char*& ec = TCAP(fc::t_erase_chars);
   char_data* print_char = &vt->text[y * uInt(vt->width) + x];
 
@@ -2549,6 +2548,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
   else
   {
     uInt start_pos = x;
+    bool& ut = FTermcap::background_color_erase;
 
     if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
       && (ut || normal) )
@@ -2963,15 +2963,37 @@ int FVTerm::appendLowerRight (char_data*& screen_char)
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const std::string& s)
 {
+#if defined(__sun) && defined(__SVR4)
+  char* c_string = C_STR(s.c_str());
+#else
   const char* const& c_string = s.c_str();
+#endif
+
   tputs (c_string, 1, appendOutputBuffer);
 }
 
 //----------------------------------------------------------------------
 inline void FVTerm::appendOutputBuffer (const char*& s)
 {
+#if defined(__sun) && defined(__SVR4)
+  tputs (C_STR(s), 1, appendOutputBuffer);
+#else
   tputs (s, 1, appendOutputBuffer);
+#endif
 }
+
+#if defined(__sun) && defined(__SVR4)
+//----------------------------------------------------------------------
+int FVTerm::appendOutputBuffer (char ch)
+{
+  output_buffer->push(ch);
+
+  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
+    flush_out();
+
+  return ch;
+}
+#endif
 
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (int ch)

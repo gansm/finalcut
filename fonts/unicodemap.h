@@ -3,6 +3,9 @@
 #ifndef FUNICODEMAP_H
 #define FUNICODEMAP_H
 
+namespace fc
+{
+
 static struct unipair unicode_cp437_pairs[] =
 {
   //  .----------- unicode
@@ -312,5 +315,7 @@ static struct unipair unicode_cp437_pairs[] =
   {0xf804, 0x5f},
   {0xfffd, 0xfe}
 };
+
+}  // namespace fc
 
 #endif  // FUNICODEMAP_H

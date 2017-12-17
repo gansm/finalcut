@@ -774,12 +774,35 @@ FString FString::clear()
 //----------------------------------------------------------------------
 const wchar_t* FString::wc_str() const
 {
+  // Returns a constant wide character string
+
+  return string;
+}
+
+//----------------------------------------------------------------------
+wchar_t* FString::wc_str()
+{
+  // Returns a wide character string
+
   return string;
 }
 
 //----------------------------------------------------------------------
 const char* FString::c_str() const
 {
+  // Returns a constant c-string
+
+  if ( length > 0 )
+    return wc_to_c_str (string);
+  else
+    return 0;
+}
+
+//----------------------------------------------------------------------
+char* FString::c_str()
+{
+  // Returns a c-string
+
   if ( length > 0 )
     return wc_to_c_str (string);
   else
