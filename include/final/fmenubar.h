@@ -114,7 +114,7 @@ class FMenuBar : public FWindow, public FMenuList
     bool                selectNextItem();
     bool                selectPrevItem();
     bool                hotkeyMenu (FKeyEvent*&);
-    int                 getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+    int                 getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void                draw();
     void                drawItems();
     void                adjustItems();

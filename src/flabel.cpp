@@ -419,7 +419,7 @@ uChar FLabel::getHotkey()
 }
 
 //----------------------------------------------------------------------
-int FLabel::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
+int FLabel::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -487,7 +487,7 @@ int FLabel::getAlignOffset (int length)
 }
 
 //----------------------------------------------------------------------
-void FLabel::printLine ( wchar_t*& line
+void FLabel::printLine ( wchar_t line[]
                        , uInt length
                        , int  hotkeypos
                        , int  align_offset )
@@ -549,7 +549,7 @@ void FLabel::printLine ( wchar_t*& line
   else if ( align_offset + to_char < getWidth() )
   {
     int len = getWidth() - align_offset - to_char;
-    print (FString(len, ' '));  // tailing spaces
+    print (FString(len, ' '));  // trailing spaces
   }
 
   if ( hasReverseMode() )
@@ -559,8 +559,6 @@ void FLabel::printLine ( wchar_t*& line
 //----------------------------------------------------------------------
 void FLabel::draw()
 {
-  wchar_t* src;
-  wchar_t* dest;
   wchar_t* LabelText;
   uInt length;
   int hotkeypos, align_offset;
@@ -600,8 +598,8 @@ void FLabel::draw()
         return;
       }
 
-      src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-      dest = const_cast<wchar_t*>(LabelText);
+      wchar_t* src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
+      wchar_t* dest = const_cast<wchar_t*>(LabelText);
 
       if ( ! hotkey_printed )
         hotkeypos = getHotkeyPos(src, dest, length);
@@ -641,9 +639,7 @@ void FLabel::draw()
       return;
     }
 
-    src  = const_cast<wchar_t*>(text.wc_str());
-    dest = const_cast<wchar_t*>(LabelText);
-    hotkeypos = getHotkeyPos (src, dest, length);
+    hotkeypos = getHotkeyPos (text.wc_str(), LabelText, length);
 
     if ( hotkeypos != -1 )
       length--;

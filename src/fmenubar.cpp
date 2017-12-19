@@ -744,7 +744,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-int FMenuBar::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
+int FMenuBar::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -793,17 +793,15 @@ void FMenuBar::drawItems()
 
   while ( iter != last )
   {
-    wchar_t* src;
-    wchar_t* dest;
     wchar_t* item_text;
     FString txt;
     uInt txt_length;
     int  hotkeypos
-      , startpos
-      , to_char;
+       , startpos
+       , to_char;
     bool is_active
-      , is_selected
-      , is_noUnderline;
+       , is_selected
+       , is_noUnderline;
 
     startpos = x + 1;
     is_active = (*iter)->isEnabled();
@@ -853,15 +851,12 @@ void FMenuBar::drawItems()
       return;
     }
 
-    src  = const_cast<wchar_t*>(txt.wc_str());
-    dest = const_cast<wchar_t*>(item_text);
-
     if ( x - 1 <= screenWidth )
       to_char = int(txt_length);
     else
       to_char = int(txt_length) - (screenWidth - x - 1);
 
-    hotkeypos = getHotkeyPos (src, dest, txt_length);
+    hotkeypos = getHotkeyPos (txt.wc_str(), item_text, txt_length);
 
     if ( hotkeypos != -1 )
     {

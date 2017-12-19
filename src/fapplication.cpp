@@ -1868,7 +1868,7 @@ void FApplication::closeOpenMenu()
   FMenu* menu = static_cast<FMenu*>(open_menu);
   const FPoint& mouse_position = getMousePos();
 
-  if ( menu && menu->containsMenuStructure(mouse_position) )
+  if ( menu->containsMenuStructure(mouse_position) )
     return;
 
   bool is_window_menu;

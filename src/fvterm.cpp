@@ -2405,9 +2405,9 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::canClearTailingWS (uInt& xmax, uInt y)
+bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
 {
-  // Line has tailing whitespace
+  // Line has trailing whitespace
   // => clear from xmax to end of line
 
   term_area*& vt = vterm;
@@ -2416,7 +2416,7 @@ bool FVTerm::canClearTailingWS (uInt& xmax, uInt y)
 
   if ( ce && last_char->code == ' ' )
   {
-    uInt tailing_whitespace = 1;
+    uInt trailing_whitespace = 1;
     bool normal = isNormal(last_char);
     bool& ut = FTermcap::background_color_erase;
 
@@ -2425,16 +2425,16 @@ bool FVTerm::canClearTailingWS (uInt& xmax, uInt y)
       char_data* ch = &vt->text[y * uInt(vt->width) + x];
 
       if ( *last_char == *ch )
-        tailing_whitespace++;
+        trailing_whitespace++;
       else
         break;
     }
 
-    if ( tailing_whitespace > uInt(vt->width) - xmax
+    if ( trailing_whitespace > uInt(vt->width) - xmax
       && (ut || normal)
-      && clr_bol_length < int(tailing_whitespace) )
+      && clr_bol_length < int(trailing_whitespace) )
     {
-      xmax = uInt(vt->width) - tailing_whitespace;
+      xmax = uInt(vt->width) - trailing_whitespace;
       return true;
     }
   }
@@ -2478,7 +2478,7 @@ bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
 
 //----------------------------------------------------------------------
 void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
-                        , bool draw_tailing_ws )
+                        , bool draw_trailing_ws )
 {
   for (uInt x = xmin; x <= xmax; x++)
   {
@@ -2497,7 +2497,7 @@ void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
     if ( ec && print_char->code == ' ' )
     {
       exit_state erase_state = \
-          eraseCharacters(x, xmax, y, draw_tailing_ws);
+          eraseCharacters(x, xmax, y, draw_trailing_ws);
 
       if ( erase_state == line_completely_printed )
         break;
@@ -2516,7 +2516,7 @@ void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
 }
 //----------------------------------------------------------------------
 FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
-                                           , bool draw_tailing_ws )
+                                           , bool draw_trailing_ws )
 {
   // Erase a number of characters to draw simple whitespaces
 
@@ -2556,7 +2556,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
       appendAttributes (print_char);
       appendOutputBuffer (tparm(ec, whitespace, 0, 0, 0, 0, 0, 0, 0, 0));
 
-      if ( x + whitespace - 1 < xmax || draw_tailing_ws )
+      if ( x + whitespace - 1 < xmax || draw_trailing_ws )
         setTermXY (int(x + whitespace), int(y));
       else
         return line_completely_printed;
@@ -2675,7 +2675,7 @@ void FVTerm::updateTerminalLine (uInt y)
   if ( xmin <= xmax )
   {
     bool draw_leading_ws = false;
-    bool draw_tailing_ws = false;
+    bool draw_trailing_ws = false;
     char*& ce = TCAP(fc::t_clr_eol);
     char_data* first_char = &vt->text[y * uInt(vt->width)];
     char_data* last_char  = &vt->text[(y + 1) * uInt(vt->width) - 1];
@@ -2689,8 +2689,8 @@ void FVTerm::updateTerminalLine (uInt y)
       // leading whitespace
       draw_leading_ws = canClearLeadingWS (xmin, y);
 
-      // tailing whitespace
-      draw_tailing_ws = canClearTailingWS (xmax, y);
+      // trailing whitespace
+      draw_trailing_ws = canClearTrailingWS (xmax, y);
     }
 
     setTermXY (int(xmin), int(y));
@@ -2711,9 +2711,9 @@ void FVTerm::updateTerminalLine (uInt y)
         markAsPrinted (0, xmin, y);
       }
 
-      printRange (xmin, xmax, y, draw_tailing_ws);
+      printRange (xmin, xmax, y, draw_trailing_ws);
 
-      if ( draw_tailing_ws )
+      if ( draw_trailing_ws )
       {
         appendAttributes (last_char);
         appendOutputBuffer (ce);
@@ -2973,7 +2973,7 @@ inline void FVTerm::appendOutputBuffer (const std::string& s)
 }
 
 //----------------------------------------------------------------------
-inline void FVTerm::appendOutputBuffer (const char*& s)
+inline void FVTerm::appendOutputBuffer (const char s[])
 {
 #if defined(__sun) && defined(__SVR4)
   tputs (C_STR(s), 1, appendOutputBuffer);
@@ -2993,8 +2993,7 @@ int FVTerm::appendOutputBuffer (char ch)
 
   return ch;
 }
-#endif
-
+#else
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (int ch)
 {
@@ -3005,3 +3004,4 @@ int FVTerm::appendOutputBuffer (int ch)
 
   return ch;
 }
+#endif

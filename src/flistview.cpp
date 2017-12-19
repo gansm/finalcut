@@ -610,7 +610,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
         (*header_iter).width = len;
     }
 
-    line_width += (*header_iter).width + padding_space;  // width + tailing space
+    line_width += (*header_iter).width + padding_space;  // width + trailing space
     column_idx++;
     ++header_iter;
   }
@@ -1385,7 +1385,7 @@ void FListView::draw()
 void FListView::drawColumnLabels()
 {
   static const int leading_space = 1;
-  static const int tailing_space = 1;
+  static const int trailing_space = 1;
   static const int ellipsis_length = 2;
   std::vector<char_data>::const_iterator first, last;
   headerItems::const_iterator iter;
@@ -1427,12 +1427,12 @@ void FListView::drawColumnLabels()
       headerline << txt;
 
       if ( txt_length < uInt(column_width) )
-        headerline << ' ';  // tailing space
+        headerline << ' ';  // trailing space
 
-      if ( txt_length + tailing_space < uInt(column_width) )
+      if ( txt_length + trailing_space < uInt(column_width) )
       {
         setColor();
-        const FString line ( uInt(column_width) - tailing_space - txt_length
+        const FString line ( uInt(column_width) - trailing_space - txt_length
                            , wchar_t(fc::BoxDrawingsHorizontal) );
         headerline << line;  // horizontal line
       }
@@ -1608,7 +1608,7 @@ void FListView::drawListLine ( const FListViewItem* item
 
       if ( align_offset + txt_length <= uInt(width) )
       {
-        // Insert text and tailing space
+        // Insert text and trailing space
         line += text.left(width);
         line += FString ( leading_space + width
                         - int(align_offset + txt_length), L' ');

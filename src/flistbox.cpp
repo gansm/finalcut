@@ -1591,7 +1591,7 @@ inline void FListBox::keyLeft()
 //----------------------------------------------------------------------
 inline void FListBox::keyRight()
 {
-  static const int padding_space = 2;  // 1 leading space + 1 tailing space
+  static const int padding_space = 2;  // 1 leading space + 1 trailing space
   int xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset++;
 
@@ -1976,7 +1976,7 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 tailing space
+  static const int padding_space = 2;  // 1 leading space + 1 trailing space
   FScrollbar::sType scrollType;
   int distance = 1
     , pagesize = 4

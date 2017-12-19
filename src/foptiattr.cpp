@@ -86,7 +86,7 @@ FOptiAttr::~FOptiAttr()  // destructor
 
 // public methods of FOptiAttr
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_bold_mode (char*& cap)
+void FOptiAttr::set_enter_bold_mode (char cap[])
 {
   if ( cap )
   {
@@ -96,7 +96,7 @@ void FOptiAttr::set_enter_bold_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_bold_mode (char*& cap)
+void FOptiAttr::set_exit_bold_mode (char cap[])
 {
   if ( cap )
   {
@@ -106,7 +106,7 @@ void FOptiAttr::set_exit_bold_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dim_mode (char*& cap)
+void FOptiAttr::set_enter_dim_mode (char cap[])
 {
   if ( cap )
   {
@@ -116,7 +116,7 @@ void FOptiAttr::set_enter_dim_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dim_mode (char*& cap)
+void FOptiAttr::set_exit_dim_mode (char cap[])
 {
   if ( cap )
   {
@@ -126,7 +126,7 @@ void FOptiAttr::set_exit_dim_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_italics_mode (char*& cap)
+void FOptiAttr::set_enter_italics_mode (char cap[])
 {
   if ( cap )
   {
@@ -136,7 +136,7 @@ void FOptiAttr::set_enter_italics_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_italics_mode (char*& cap)
+void FOptiAttr::set_exit_italics_mode (char cap[])
 {
   if ( cap )
   {
@@ -146,7 +146,7 @@ void FOptiAttr::set_exit_italics_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_underline_mode (char*& cap)
+void FOptiAttr::set_enter_underline_mode (char cap[])
 {
   if ( cap )
   {
@@ -156,7 +156,7 @@ void FOptiAttr::set_enter_underline_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_underline_mode (char*& cap)
+void FOptiAttr::set_exit_underline_mode (char cap[])
 {
   if ( cap )
   {
@@ -166,7 +166,7 @@ void FOptiAttr::set_exit_underline_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_blink_mode (char*& cap)
+void FOptiAttr::set_enter_blink_mode (char cap[])
 {
   if ( cap )
   {
@@ -176,7 +176,7 @@ void FOptiAttr::set_enter_blink_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_blink_mode (char*& cap)
+void FOptiAttr::set_exit_blink_mode (char cap[])
 {
   if ( cap )
   {
@@ -186,7 +186,7 @@ void FOptiAttr::set_exit_blink_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_reverse_mode (char*& cap)
+void FOptiAttr::set_enter_reverse_mode (char cap[])
 {
   if ( cap )
   {
@@ -196,7 +196,7 @@ void FOptiAttr::set_enter_reverse_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_reverse_mode (char*& cap)
+void FOptiAttr::set_exit_reverse_mode (char cap[])
 {
   if ( cap )
   {
@@ -206,7 +206,7 @@ void FOptiAttr::set_exit_reverse_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_secure_mode (char*& cap)
+void FOptiAttr::set_enter_secure_mode (char cap[])
 {
   if ( cap )
   {
@@ -216,7 +216,7 @@ void FOptiAttr::set_enter_secure_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_secure_mode (char*& cap)
+void FOptiAttr::set_exit_secure_mode (char cap[])
 {
   if ( cap )
   {
@@ -226,7 +226,7 @@ void FOptiAttr::set_exit_secure_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_protected_mode (char*& cap)
+void FOptiAttr::set_enter_protected_mode (char cap[])
 {
   if ( cap )
   {
@@ -236,7 +236,7 @@ void FOptiAttr::set_enter_protected_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_protected_mode (char*& cap)
+void FOptiAttr::set_exit_protected_mode (char cap[])
 {
   if ( cap )
   {
@@ -246,7 +246,7 @@ void FOptiAttr::set_exit_protected_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_crossed_out_mode (char*& cap)
+void FOptiAttr::set_enter_crossed_out_mode (char cap[])
 {
   if ( cap )
   {
@@ -256,7 +256,7 @@ void FOptiAttr::set_enter_crossed_out_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_crossed_out_mode (char*& cap)
+void FOptiAttr::set_exit_crossed_out_mode (char cap[])
 {
   if ( cap )
   {
@@ -266,7 +266,7 @@ void FOptiAttr::set_exit_crossed_out_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_dbl_underline_mode (char*& cap)
+void FOptiAttr::set_enter_dbl_underline_mode (char cap[])
 {
   if ( cap )
   {
@@ -276,7 +276,7 @@ void FOptiAttr::set_enter_dbl_underline_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_dbl_underline_mode (char*& cap)
+void FOptiAttr::set_exit_dbl_underline_mode (char cap[])
 {
   if ( cap )
   {
@@ -286,7 +286,7 @@ void FOptiAttr::set_exit_dbl_underline_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_standout_mode (char*& cap)
+void FOptiAttr::set_enter_standout_mode (char cap[])
 {
   if ( cap )
   {
@@ -296,7 +296,7 @@ void FOptiAttr::set_enter_standout_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_standout_mode (char*& cap)
+void FOptiAttr::set_exit_standout_mode (char cap[])
 {
   if ( cap )
   {
@@ -306,7 +306,7 @@ void FOptiAttr::set_exit_standout_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_set_attributes (char*& cap)
+void FOptiAttr::set_set_attributes (char cap[])
 {
   if ( cap )
   {
@@ -316,7 +316,7 @@ void FOptiAttr::set_set_attributes (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_attribute_mode (char*& cap)
+void FOptiAttr::set_exit_attribute_mode (char cap[])
 {
   if ( cap )
   {
@@ -326,7 +326,7 @@ void FOptiAttr::set_exit_attribute_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_alt_charset_mode (char*& cap)
+void FOptiAttr::set_enter_alt_charset_mode (char cap[])
 {
   if ( cap )
   {
@@ -336,7 +336,7 @@ void FOptiAttr::set_enter_alt_charset_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_alt_charset_mode (char*& cap)
+void FOptiAttr::set_exit_alt_charset_mode (char cap[])
 {
   if ( cap )
   {
@@ -346,7 +346,7 @@ void FOptiAttr::set_exit_alt_charset_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_enter_pc_charset_mode (char*& cap)
+void FOptiAttr::set_enter_pc_charset_mode (char cap[])
 {
   if ( cap )
   {
@@ -356,7 +356,7 @@ void FOptiAttr::set_enter_pc_charset_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_exit_pc_charset_mode (char*& cap)
+void FOptiAttr::set_exit_pc_charset_mode (char cap[])
 {
   if ( cap )
   {
@@ -366,7 +366,7 @@ void FOptiAttr::set_exit_pc_charset_mode (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_foreground_color (char*& cap)
+void FOptiAttr::set_a_foreground_color (char cap[])
 {
   if ( cap )
   {
@@ -376,7 +376,7 @@ void FOptiAttr::set_a_foreground_color (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_a_background_color (char*& cap)
+void FOptiAttr::set_a_background_color (char cap[])
 {
   if ( cap )
   {
@@ -386,7 +386,7 @@ void FOptiAttr::set_a_background_color (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_foreground_color (char*& cap)
+void FOptiAttr::set_foreground_color (char cap[])
 {
   if ( cap )
   {
@@ -396,7 +396,7 @@ void FOptiAttr::set_foreground_color (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_background_color (char*& cap)
+void FOptiAttr::set_background_color (char cap[])
 {
   if ( cap )
   {
@@ -406,7 +406,7 @@ void FOptiAttr::set_background_color (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_term_color_pair (char*& cap)
+void FOptiAttr::set_term_color_pair (char cap[])
 {
   if ( cap )
   {
@@ -416,7 +416,7 @@ void FOptiAttr::set_term_color_pair (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_pair (char*& cap)
+void FOptiAttr::set_orig_pair (char cap[])
 {
   if ( cap )
   {
@@ -426,7 +426,7 @@ void FOptiAttr::set_orig_pair (char*& cap)
 }
 
 //----------------------------------------------------------------------
-void FOptiAttr::set_orig_orig_colors (char*& cap)
+void FOptiAttr::set_orig_orig_colors (char cap[])
 {
   if ( cap )
   {
@@ -1407,7 +1407,7 @@ inline void FOptiAttr::reset (char_data*& attr)
 }
 
 //----------------------------------------------------------------------
-bool FOptiAttr::caused_reset_attributes (char*& cap, uChar test)
+bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
 {
   // test if "cap" reset all attributes
   char* ue = F_exit_underline_mode.cap;
@@ -1492,7 +1492,7 @@ inline bool FOptiAttr::switchOff()
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::append_sequence (char*& seq)
+inline bool FOptiAttr::append_sequence (char seq[])
 {
   if ( seq )
   {
@@ -1504,7 +1504,7 @@ inline bool FOptiAttr::append_sequence (char*& seq)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::replace_sequence (char*& seq)
+inline bool FOptiAttr::replace_sequence (char seq[])
 {
   if ( seq )
   {

@@ -134,6 +134,14 @@ class FMenu : public FWindow, public FMenuList
       uChar                      : 2;  // padding bits
     } mouseStates;
 
+    typedef struct
+    {
+      wchar_t* text;
+      int length;
+      int hotkeypos;
+      bool no_underline;
+    } menuText;
+
     // Constants
     static const bool SELECT_ITEM = true;
 
@@ -156,7 +164,7 @@ class FMenu : public FWindow, public FMenuList
     bool         isRadioMenuItem (FWidget*) const;
     bool         isSubMenu() const;
     bool         isMouseOverMenu (const FPoint&);
-    bool         isMouseOverSubmenu (const FPoint&);
+    bool         isMouseOverSubMenu (const FPoint&);
     bool         isMouseOverSuperMenu (const FPoint&);
     bool         isMouseOverMenuBar (const FPoint&);
 
@@ -185,10 +193,18 @@ class FMenu : public FWindow, public FMenuList
     bool         selectPrevItem();
     void         keypressMenuBar (FKeyEvent*&);
     bool         hotkeyMenu (FKeyEvent*&);
-    int          getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void         draw();
     void         drawItems();
     void         drawSeparator(int);
+    void         drawMenuLine (FMenuItem*, int);
+    void         drawCheckMarkPrefix (FMenuItem*);
+    void         drawMenuText (menuText&);
+    void         drawSubMenuIndicator (int&);
+    void         drawAcceleratorKey (int&, int);
+    void         drawTrailingSpaces (int);
+    void         setLineAttributes (FMenuItem*, int);
+    void         setCursorToHotkeyPosition (FMenuItem*, int);
     void         processActivate();
 
     // Friend classes

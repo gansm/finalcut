@@ -97,7 +97,7 @@ void FOptiMove::setTermSize (int w, int h)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_home (char*& cap)
+int FOptiMove::set_cursor_home (char cap[])
 {
   if ( cap )
   {
@@ -116,7 +116,7 @@ int FOptiMove::set_cursor_home (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_to_ll (char*& cap)
+int FOptiMove::set_cursor_to_ll (char cap[])
 {
   if ( cap )
   {
@@ -135,7 +135,7 @@ int FOptiMove::set_cursor_to_ll (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_carriage_return (char*& cap)
+int FOptiMove::set_carriage_return (char cap[])
 {
   if ( cap )
   {
@@ -154,7 +154,7 @@ int FOptiMove::set_carriage_return (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_tabular (char*& cap)
+int FOptiMove::set_tabular (char cap[])
 {
   if ( cap )
   {
@@ -173,7 +173,7 @@ int FOptiMove::set_tabular (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_back_tab (char*& cap)
+int FOptiMove::set_back_tab (char cap[])
 {
   if ( cap )
   {
@@ -192,7 +192,7 @@ int FOptiMove::set_back_tab (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_up (char*& cap)
+int FOptiMove::set_cursor_up (char cap[])
 {
   if ( cap )
   {
@@ -211,7 +211,7 @@ int FOptiMove::set_cursor_up (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_down (char*& cap)
+int FOptiMove::set_cursor_down (char cap[])
 {
   if ( cap )
   {
@@ -230,7 +230,7 @@ int FOptiMove::set_cursor_down (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_left (char*& cap)
+int FOptiMove::set_cursor_left (char cap[])
 {
   if ( cap )
   {
@@ -249,7 +249,7 @@ int FOptiMove::set_cursor_left (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_right (char*& cap)
+int FOptiMove::set_cursor_right (char cap[])
 {
   if ( cap )
   {
@@ -268,7 +268,7 @@ int FOptiMove::set_cursor_right (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_cursor_address (char*& cap)
+int FOptiMove::set_cursor_address (char cap[])
 {
   if ( cap )
   {
@@ -288,7 +288,7 @@ int FOptiMove::set_cursor_address (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_column_address (char*& cap)
+int FOptiMove::set_column_address (char cap[])
 {
   if ( cap )
   {
@@ -308,7 +308,7 @@ int FOptiMove::set_column_address (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_row_address (char*& cap)
+int FOptiMove::set_row_address (char cap[])
 {
   if ( cap )
   {
@@ -328,7 +328,7 @@ int FOptiMove::set_row_address (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_parm_up_cursor (char*& cap)
+int FOptiMove::set_parm_up_cursor (char cap[])
 {
   if ( cap )
   {
@@ -348,7 +348,7 @@ int FOptiMove::set_parm_up_cursor (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_parm_down_cursor (char*& cap)
+int FOptiMove::set_parm_down_cursor (char cap[])
 {
   if ( cap )
   {
@@ -368,7 +368,7 @@ int FOptiMove::set_parm_down_cursor (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_parm_left_cursor (char*& cap)
+int FOptiMove::set_parm_left_cursor (char cap[])
 {
   if ( cap )
   {
@@ -388,7 +388,7 @@ int FOptiMove::set_parm_left_cursor (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_parm_right_cursor (char*& cap)
+int FOptiMove::set_parm_right_cursor (char cap[])
 {
   if ( cap )
   {
@@ -408,7 +408,7 @@ int FOptiMove::set_parm_right_cursor (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_erase_chars (char*& cap)
+int FOptiMove::set_erase_chars (char cap[])
 {
   if ( cap )
   {
@@ -428,7 +428,7 @@ int FOptiMove::set_erase_chars (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_repeat_char (char*& cap)
+int FOptiMove::set_repeat_char (char cap[])
 {
   if ( cap )
   {
@@ -448,7 +448,7 @@ int FOptiMove::set_repeat_char (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_clr_bol (char*& cap)
+int FOptiMove::set_clr_bol (char cap[])
 {
   if ( cap )
   {
@@ -467,7 +467,7 @@ int FOptiMove::set_clr_bol (char*& cap)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::set_clr_eol (char*& cap)
+int FOptiMove::set_clr_eol (char cap[])
 {
   if ( cap )
   {
@@ -591,7 +591,7 @@ void FOptiMove::calculateCharDuration()
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::capDuration (char*& cap, int affcnt)
+int FOptiMove::capDuration (char cap[], int affcnt)
 {
   // calculate the duration in milliseconds of a given operation
   // cap    - the term capability
@@ -671,7 +671,7 @@ int FOptiMove::repeatedAppend (const capability& o, int count, char* dst)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::relativeMove ( char*& move
+int FOptiMove::relativeMove ( char move[]
                             , int from_x, int from_y
                             , int to_x, int to_y )
 {

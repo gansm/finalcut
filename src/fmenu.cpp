@@ -364,7 +364,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     return;
 
   state.mouse_over_menu      = isMouseOverMenu (ev->getTermPos());
-  state.mouse_over_submenu   = isMouseOverSubmenu (ev->getTermPos());
+  state.mouse_over_submenu   = isMouseOverSubMenu (ev->getTermPos());
   state.mouse_over_supermenu = isMouseOverSuperMenu (ev->getTermPos());
   state.mouse_over_menubar   = isMouseOverMenuBar (ev->getTermPos());
 
@@ -488,7 +488,7 @@ bool FMenu::isMouseOverMenu (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::isMouseOverSubmenu (const FPoint& termpos)
+bool FMenu::isMouseOverSubMenu (const FPoint& termpos)
 {
   if ( opened_sub_menu )
   {
@@ -1294,7 +1294,7 @@ bool FMenu::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-int FMenu::getHotkeyPos (wchar_t*& src, wchar_t*& dest, uInt length)
+int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -1338,218 +1338,16 @@ void FMenu::draw()
 void FMenu::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
-  int c = 0;
   int y = 0;
   iter = item_list.begin();
   last = item_list.end();
 
-  if ( has_checkable_items )
-    c = 1;
-
   while ( iter != last )
   {
     if ( (*iter)->isSeparator() )
-    {
       drawSeparator(y);
-    }
     else
-    {
-      wchar_t* src;
-      wchar_t* dest;
-      wchar_t* item_text;
-      FString txt;
-      uInt txt_length;
-      int  hotkeypos, to_char;
-      int  accel_key     = (*iter)->accel_key;
-      bool has_menu      = (*iter)->hasMenu()
-        , is_enabled     = (*iter)->isEnabled()
-        , is_checked     = (*iter)->isChecked()
-        , is_checkable   = (*iter)->checkable
-        , is_radio_btn   = (*iter)->radio_button
-        , is_selected    = (*iter)->isSelected()
-        , is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
-
-      if ( is_enabled )
-      {
-        if ( is_selected )
-        {
-          setForegroundColor (wc.menu_active_focus_fg);
-          setBackgroundColor (wc.menu_active_focus_bg);
-
-          if ( isMonochron() )
-            setReverse(false);
-        }
-        else
-        {
-          setForegroundColor (wc.menu_active_fg);
-          setBackgroundColor (wc.menu_active_bg);
-
-          if ( isMonochron() )
-            setReverse(true);
-        }
-      }
-      else
-      {
-        setForegroundColor (wc.menu_inactive_fg);
-        setBackgroundColor (wc.menu_inactive_bg);
-
-        if ( isMonochron() )
-          setReverse(true);
-      }
-
-      setPrintPos (2, 2 + y);
-      setColor();
-
-      if ( has_checkable_items )
-      {
-        if ( is_checkable )
-        {
-          if ( is_checked )
-          {
-            if ( is_radio_btn )
-            {
-              if ( isNewFont() )
-                print (fc::NF_Bullet);  // NF_Bullet ●
-              else
-                print (fc::Bullet);     // Bullet ●
-            }
-            else
-            {
-              if ( isNewFont() )
-                print (fc::NF_check_mark);  // NF_check_mark ✓
-              else
-                print (fc::SquareRoot);     // SquareRoot √
-            }
-          }
-          else
-          {
-            setColor (wc.menu_inactive_fg, getBackgroundColor());
-
-            if ( getEncoding() == fc::ASCII )
-              print ('-');
-            else
-              print (fc::SmallBullet);  // ·
-
-            setColor();
-          }
-        }
-        else
-          print (' ');
-      }
-
-      print (' ');
-      txt = (*iter)->getText();
-      txt_length = uInt(txt.getLength());
-
-      try
-      {
-        item_text = new wchar_t[txt_length + 1]();
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-        return;
-      }
-
-      src  = const_cast<wchar_t*>(txt.wc_str());
-      dest = const_cast<wchar_t*>(item_text);
-      to_char = int(txt_length);
-      hotkeypos = getHotkeyPos (src, dest, txt_length);
-
-      if ( hotkeypos == -1 )
-      {
-        // set cursor to the first character
-        if ( is_selected )
-        {
-          if ( is_checkable )
-            (*iter)->setCursorPos (3, 1);
-          else
-            (*iter)->setCursorPos (2, 1);
-        }
-      }
-      else
-      {
-        if ( is_selected )
-        {
-          // set cursor to the hotkey position
-          if ( is_checkable )
-            (*iter)->setCursorPos (3 + hotkeypos, 1);
-          else
-            (*iter)->setCursorPos (2 + hotkeypos, 1);
-        }
-
-        txt_length--;
-        to_char--;
-      }
-
-      for (int z = 0; z < to_char; z++)
-      {
-        if ( ! std::iswprint(wint_t(item_text[z])) )
-        {
-          if ( ! isNewFont()
-            && ( int(item_text[z]) < fc::NF_rev_left_arrow2
-              || int(item_text[z]) > fc::NF_check_mark )
-            && ! charEncodable(uInt(item_text[z])) )
-          {
-            item_text[z] = L' ';
-          }
-        }
-
-        if ( (z == hotkeypos) && is_enabled && ! is_selected )
-        {
-          setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
-
-          if ( ! is_noUnderline )
-            setUnderline();
-
-          print (item_text[z]);
-
-          if ( ! is_noUnderline )
-            unsetUnderline();
-
-          setColor();
-        }
-        else
-          print (item_text[z]);
-      }
-
-      if ( has_menu )
-      {
-        int len = int(max_item_width) - (to_char + c + 3);
-
-        if ( len > 0 )
-        {
-          print (FString(len, wchar_t(' ')));
-          // BlackRightPointingPointer ►
-          print (wchar_t(fc::BlackRightPointingPointer));
-          to_char = int(max_item_width) - (c + 2);
-        }
-      }
-      else if ( accel_key )
-      {
-        FString accel_name (getKeyName(accel_key));
-        int accel_len = int(accel_name.getLength());
-        int len = int(max_item_width) - (to_char + accel_len + c + 2);
-
-        if ( len > 0 )
-        {
-          FString spaces (len, wchar_t(' '));
-          print (spaces + accel_name);
-          to_char = int(max_item_width) - (c + 2);
-        }
-      }
-
-      if ( is_selected )
-      {
-        for (uInt i = uInt(to_char + c); i < max_item_width - 1; i++)
-          print (' ');
-      }
-
-      if ( isMonochron() && is_enabled && is_selected )
-        setReverse(true);
-
-      delete[] item_text;
-    }
+      drawMenuLine (*iter, y);
 
     ++iter;
     y++;
@@ -1582,6 +1380,260 @@ inline void FMenu::drawSeparator(int y)
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
+{
+  FString txt = menuitem->getText();
+  menuText txtdata;
+  uInt txt_length  = uInt(txt.getLength());
+  int  hotkeypos;
+  int  to_char     = int(txt_length);
+  int  accel_key   = menuitem->accel_key;
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
+
+  // Set screen position and attributes
+  setLineAttributes (menuitem, y);
+
+  // Draw check mark prefix for checkable items
+  drawCheckMarkPrefix (menuitem);
+
+  // Print leading blank space
+  print (' ');
+
+  try
+  {
+    txtdata.text = new wchar_t[txt_length + 1]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
+  hotkeypos = getHotkeyPos(txt.wc_str(), txtdata.text, txt_length);
+
+  if ( hotkeypos != -1 )
+    to_char--;
+
+  txtdata.length = to_char;
+  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+  setCursorToHotkeyPosition (menuitem, hotkeypos);
+
+  if ( ! is_enabled || is_selected )
+    txtdata.hotkeypos = -1;
+  else
+    txtdata.hotkeypos = hotkeypos;
+
+  drawMenuText (txtdata);
+
+  if ( menuitem->hasMenu() )
+    drawSubMenuIndicator (to_char);
+  else if ( accel_key )
+    drawAcceleratorKey (to_char, accel_key);
+
+  // Draw the trailing spaces of the selected line
+  if ( is_selected )
+    drawTrailingSpaces (to_char);
+
+  if ( isMonochron() && is_enabled && is_selected )
+    setReverse(true);
+
+  delete[] txtdata.text;
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
+{
+  bool is_checked   = menuitem->isChecked();
+  bool is_checkable = menuitem->checkable;
+  bool is_radio_btn = menuitem->radio_button;
+
+  if ( ! has_checkable_items )
+    return;
+
+  if ( is_checkable )
+  {
+    if ( is_checked )
+    {
+      if ( is_radio_btn )
+      {
+        if ( isNewFont() )
+          print (fc::NF_Bullet);  // NF_Bullet ●
+        else
+          print (fc::Bullet);     // Bullet ●
+      }
+      else
+      {
+        if ( isNewFont() )
+          print (fc::NF_check_mark);  // NF_check_mark ✓
+        else
+          print (fc::SquareRoot);     // SquareRoot √
+      }
+    }
+    else
+    {
+      setColor (wc.menu_inactive_fg, getBackgroundColor());
+
+      if ( getEncoding() == fc::ASCII )
+        print ('-');
+      else
+        print (fc::SmallBullet);  // ·
+
+      setColor();
+    }
+  }
+  else
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawMenuText (menuText& data)
+{
+  // Print menu text
+
+  for (int z = 0; z < data.length; z++)
+  {
+    if ( ! std::iswprint(wint_t(data.text[z])) )
+    {
+      if ( ! isNewFont()
+        && ( int(data.text[z]) < fc::NF_rev_left_arrow2
+          || int(data.text[z]) > fc::NF_check_mark )
+        && ! charEncodable(uInt(data.text[z])) )
+      {
+        data.text[z] = L' ';
+      }
+    }
+
+    if ( z == data.hotkeypos )
+    {
+      setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+
+      if ( ! data.no_underline )
+        setUnderline();
+
+      print (data.text[z]);
+
+      if ( ! data.no_underline )
+        unsetUnderline();
+
+      setColor();
+    }
+    else
+      print (data.text[z]);
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawSubMenuIndicator (int& startpos)
+{
+  int c = ( has_checkable_items ) ? 1 : 0;
+  int len = int(max_item_width) - (startpos + c + 3);
+
+  if ( len > 0 )
+  {
+    // Print filling blank spaces
+    print (FString(len, wchar_t(' ')));
+    // Print BlackRightPointingPointer ►
+    print (wchar_t(fc::BlackRightPointingPointer));
+    startpos = int(max_item_width) - (c + 2);
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawAcceleratorKey (int& startpos, int accel_key)
+{
+  FString accel_name (getKeyName(accel_key));
+  int c = ( has_checkable_items ) ? 1 : 0;
+  int accel_len = int(accel_name.getLength());
+  int len = int(max_item_width) - (startpos + accel_len + c + 2);
+
+  if ( len > 0 )
+  {
+    // Print filling blank spaces + accelerator key name
+    FString spaces (len, wchar_t(' '));
+    print (spaces + accel_name);
+    startpos = int(max_item_width) - (c + 2);
+  }
+}
+
+//----------------------------------------------------------------------
+void FMenu::drawTrailingSpaces (int startpos)
+{
+  int c = ( has_checkable_items ) ? 1 : 0;
+  // Print trailing blank space
+  for (uInt i = uInt(startpos + c); i < max_item_width - 1; i++)
+    print (' ');
+}
+
+//----------------------------------------------------------------------
+void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
+{
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
+
+  if ( is_enabled )
+  {
+    if ( is_selected )
+    {
+      setForegroundColor (wc.menu_active_focus_fg);
+      setBackgroundColor (wc.menu_active_focus_bg);
+
+      if ( isMonochron() )
+        setReverse(false);
+    }
+    else
+    {
+      setForegroundColor (wc.menu_active_fg);
+      setBackgroundColor (wc.menu_active_bg);
+
+      if ( isMonochron() )
+        setReverse(true);
+    }
+  }
+  else
+  {
+    setForegroundColor (wc.menu_inactive_fg);
+    setBackgroundColor (wc.menu_inactive_bg);
+
+    if ( isMonochron() )
+      setReverse(true);
+  }
+
+  setPrintPos (2, 2 + y);
+  setColor();
+}
+
+//----------------------------------------------------------------------
+void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem, int hotkeypos)
+{
+  bool is_checkable = menuitem->checkable;
+  bool is_selected  = menuitem->isSelected();
+
+  if ( hotkeypos == -1 )
+  {
+    // set cursor to the first character
+    if ( is_selected )
+    {
+      if ( is_checkable )
+        menuitem->setCursorPos (3, 1);
+      else
+        menuitem->setCursorPos (2, 1);
+    }
+  }
+  else
+  {
+    if ( is_selected )
+    {
+      // set cursor to the hotkey position
+      if ( is_checkable )
+        menuitem->setCursorPos (3 + hotkeypos, 1);
+      else
+        menuitem->setCursorPos (2 + hotkeypos, 1);
+    }
+  }
 }
 
 //----------------------------------------------------------------------

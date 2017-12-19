@@ -1,3 +1,6 @@
+2017-12-19  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FMenu::drawItems
+
 2017-12-17  Markus Gans  <guru.mail@muenster.de>
 	* The Final Cut now also compiles under Solaris
 

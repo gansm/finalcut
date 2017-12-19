@@ -138,10 +138,10 @@ class FLabel : public FWidget
     // Methods
     void               init();
     uChar              getHotkey();
-    int                getHotkeyPos (wchar_t*&, wchar_t*&, uInt);
+    int                getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void               setHotkeyAccelerator();
     int                getAlignOffset (int);
-    void               printLine (wchar_t*&, uInt, int, int = 0);
+    void               printLine (wchar_t[], uInt, int, int = 0);
     void               draw();
 
     // Data Members

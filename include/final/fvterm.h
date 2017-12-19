@@ -384,7 +384,7 @@ class FVTerm : public FTerm
     static bool             clearTerm (int = ' ');
     static bool             canClearToEOL (uInt, uInt);
     static bool             canClearLeadingWS (uInt&, uInt);
-    static bool             canClearTailingWS (uInt&, uInt);
+    static bool             canClearTrailingWS (uInt&, uInt);
     static bool             skipUnchangedCharacters (uInt&, uInt, uInt);
     static void             printRange (uInt, uInt, uInt, bool);
     static exit_state       eraseCharacters (uInt&, uInt, uInt, bool);
@@ -402,13 +402,13 @@ class FVTerm : public FTerm
     static void             appendAttributes (char_data*&);
     static int              appendLowerRight (char_data*&);
     static void             appendOutputBuffer (const std::string&);
-    static void             appendOutputBuffer (const char*&);
+    static void             appendOutputBuffer (const char[]);
 
 #if defined(__sun) && defined(__SVR4)
     static int              appendOutputBuffer (char);
-#endif
-
+#else
     static int              appendOutputBuffer (int);
+#endif
 
     // Data Members
     static std::queue<int>* output_buffer;

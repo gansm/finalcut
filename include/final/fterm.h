@@ -484,9 +484,9 @@ class FTerm
     static void           detectTerminal();
     static void           termtypeAnalysis();
     static char*          init_256colorTerminal();
-    static char*          determineMaxColor (char*&);
-    static char*          parseAnswerbackMsg (char*&);
-    static char*          parseSecDA (char*&);
+    static char*          determineMaxColor (char[]);
+    static char*          parseAnswerbackMsg (char[]);
+    static char*          parseSecDA (char[]);
     static void           oscPrefix();
     static void           oscPostfix();
     static void           init_alt_charset();

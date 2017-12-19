@@ -614,7 +614,7 @@ void FFileDialog::init()
 
 //----------------------------------------------------------------------
 inline bool FFileDialog::pattern_match ( const char* const pattern
-                                       , char*& fname )
+                                       , char fname[] )
 {
   char search[128] = {};
 

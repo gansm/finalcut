@@ -162,7 +162,7 @@ class FFileDialog : public FDialog
 
     // Method
     void          init();
-    inline bool   pattern_match (const char* const, char*&);
+    inline bool   pattern_match (const char* const, char[]);
     void          clear();
     int           numOfDirs();
     void          sortDir();

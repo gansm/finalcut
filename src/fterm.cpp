@@ -2937,7 +2937,7 @@ char* FTerm::init_256colorTerminal()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::determineMaxColor (char*& current_termtype)
+char* FTerm::determineMaxColor (char current_termtype[])
 {
   // Determine xterm maximum number of colors via OSC 4
 
@@ -2971,7 +2971,7 @@ char* FTerm::determineMaxColor (char*& current_termtype)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::parseAnswerbackMsg (char*& current_termtype)
+char* FTerm::parseAnswerbackMsg (char current_termtype[])
 {
   char* new_termtype = current_termtype;
 
@@ -3013,7 +3013,7 @@ char* FTerm::parseAnswerbackMsg (char*& current_termtype)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::parseSecDA (char*& current_termtype)
+char* FTerm::parseSecDA (char current_termtype[])
 {
   char* new_termtype = current_termtype;
 
@@ -4497,7 +4497,7 @@ void FTerm::init()
   if ( init_values.color_change )
     redefineColorPalette();
 
-  // set 200 Hz beep (100 ms)
+  // Set 200 Hz beep (100 ms)
   setBeep(200, 100);
 
   // Set FTerm signal handler
