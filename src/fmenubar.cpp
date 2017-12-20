@@ -37,6 +37,7 @@ FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
   , mouse_down(false)
   , drop_down(false)
+  , screenWidth(80)
 {
   init();
 }
@@ -52,7 +53,6 @@ FMenuBar::~FMenuBar()  // destructor
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  int screenWidth;
   short fg, bg;
   char* blank;
 
@@ -776,9 +776,7 @@ void FMenuBar::draw()
 void FMenuBar::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
-  int screenWidth;
   int x = 1;
-  screenWidth = getColumnNumber();
 
   if ( item_list.empty() )
     return;
@@ -788,151 +786,197 @@ void FMenuBar::drawItems()
   if ( isMonochron() )
     setReverse(true);
 
+  screenWidth = getColumnNumber();
   iter = item_list.begin();
   last = item_list.end();
 
   while ( iter != last )
   {
-    wchar_t* item_text;
-    FString txt;
-    uInt txt_length;
-    int  hotkeypos
-       , startpos
-       , to_char;
-    bool is_active
-       , is_selected
-       , is_noUnderline;
-
-    startpos = x + 1;
-    is_active = (*iter)->isEnabled();
-    is_selected = (*iter)->isSelected();
-    is_noUnderline = (((*iter)->getFlags() & fc::no_underline) != 0);
-
-    if ( is_active )
-    {
-      if ( is_selected )
-      {
-        if ( isMonochron() )
-          setReverse(false);
-
-        setForegroundColor (wc.menu_active_focus_fg);
-        setBackgroundColor (wc.menu_active_focus_bg);
-      }
-      else
-      {
-        setForegroundColor (wc.menu_active_fg);
-        setBackgroundColor (wc.menu_active_bg);
-      }
-    }
-    else
-    {
-      setForegroundColor (wc.menu_inactive_fg);
-      setBackgroundColor (wc.menu_inactive_bg);
-    }
-
-    setColor();
-
-    if ( x < screenWidth )
-    {
-      x++;
-      print (' ');
-    }
-
-    txt = (*iter)->getText();
-    txt_length = uInt(txt.getLength());
-
-    try
-    {
-      item_text = new wchar_t[txt_length + 1]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return;
-    }
-
-    if ( x - 1 <= screenWidth )
-      to_char = int(txt_length);
-    else
-      to_char = int(txt_length) - (screenWidth - x - 1);
-
-    hotkeypos = getHotkeyPos (txt.wc_str(), item_text, txt_length);
-
-    if ( hotkeypos != -1 )
-    {
-      txt_length--;
-      to_char--;
-    }
-
-    x += int(txt_length);
-
-    for (int z = 0; z < to_char; z++)
-    {
-      if ( startpos > screenWidth - z )
-        break;
-
-      if ( ! std::iswprint(wint_t(item_text[z])) )
-      {
-        if ( ! isNewFont()
-          && ( int(item_text[z]) < fc::NF_rev_left_arrow2
-            || int(item_text[z]) > fc::NF_check_mark ) )
-        {
-          item_text[z] = L' ';
-        }
-      }
-
-      if ( (z == hotkeypos) && is_active && ! is_selected )
-      {
-        setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
-
-        if ( ! is_noUnderline )
-          setUnderline();
-
-        print (item_text[z]);
-
-        if ( ! is_noUnderline )
-          unsetUnderline();
-
-        setColor();
-      }
-      else
-        print (item_text[z]);
-    }
-
-    if ( x > screenWidth + 1 )
-    {
-      if ( startpos < screenWidth )
-      {
-        setPrintPos (screenWidth - 1, 1);
-        print ("..");
-      }
-      else if ( startpos - 1 <= screenWidth )
-      {
-        setPrintPos (screenWidth, 1);
-        print (' ');
-      }
-    }
-
-    if ( x < screenWidth )
-    {
-      x++;
-      print (' ');
-    }
-
-    setColor (wc.menu_active_fg, wc.menu_active_bg);
-
-    if ( isMonochron() && is_active && is_selected )
-      setReverse(true);
-
-    delete[] item_text;
+    drawItem (*iter, x);
     ++iter;
   }
 
+  // Print spaces to end of line
   for (; x <= screenWidth; x++)
     print (' ');
 
   if ( isMonochron() )
     setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
+{
+  FString txt = menuitem->getText();
+  menuText txtdata;
+  uInt txt_length = txt.getLength();
+  int  hotkeypos;
+  int  to_char;
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
+
+  txtdata.startpos = x + 1;
+  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+
+  // Set screen attributes
+  setLineAttributes (menuitem);
+  drawLeadingSpace (x);
+
+  try
+  {
+    txtdata.text = new wchar_t[txt_length + 1]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
+  if ( x - 1 <= screenWidth )
+    to_char = int(txt_length);
+  else
+    to_char = int(txt_length) - (screenWidth - x - 1);
+
+  hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
+
+  if ( hotkeypos != -1 )
+  {
+    txt_length--;
+    to_char--;
+  }
+
+  txtdata.length = to_char;
+  x += int(txt_length);
+
+  if ( ! is_enabled || is_selected )
+    txtdata.hotkeypos = -1;
+  else
+    txtdata.hotkeypos = hotkeypos;
+
+  drawMenuText (txtdata);
+  drawEllipsis (txtdata, x);
+  drawTrailingSpace (x);
+
+  setColor (wc.menu_active_fg, wc.menu_active_bg);
+
+  if ( isMonochron() && is_enabled && is_selected )
+    setReverse(true);
+
+  delete[] txtdata.text;
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::setLineAttributes (FMenuItem* menuitem)
+{
+  bool is_enabled  = menuitem->isEnabled();
+  bool is_selected = menuitem->isSelected();
+
+  if ( is_enabled )
+  {
+    if ( is_selected )
+    {
+      if ( isMonochron() )
+        setReverse(false);
+
+      setForegroundColor (wc.menu_active_focus_fg);
+      setBackgroundColor (wc.menu_active_focus_bg);
+    }
+    else
+    {
+      setForegroundColor (wc.menu_active_fg);
+      setBackgroundColor (wc.menu_active_bg);
+    }
+  }
+  else
+  {
+    setForegroundColor (wc.menu_inactive_fg);
+    setBackgroundColor (wc.menu_inactive_bg);
+  }
+
+  setColor();
+}
+
+//----------------------------------------------------------------------
+void FMenuBar::drawMenuText (menuText& data)
+{
+  // Print menu text
+
+  for (int z = 0; z < data.length; z++)
+  {
+    if ( data.startpos > screenWidth - z )
+      break;
+
+    if ( ! std::iswprint(wint_t(data.text[z])) )
+    {
+      if ( ! isNewFont()
+        && ( int(data.text[z]) < fc::NF_rev_left_arrow2
+          || int(data.text[z]) > fc::NF_check_mark ) )
+      {
+        data.text[z] = L' ';
+      }
+    }
+
+    if ( z == data.hotkeypos )
+    {
+      setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
+
+      if ( ! data.no_underline )
+        setUnderline();
+
+      print (data.text[z]);
+
+      if ( ! data.no_underline )
+        unsetUnderline();
+
+      setColor();
+    }
+    else
+      print (data.text[z]);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FMenuBar::drawEllipsis (menuText& txtdata, int x)
+{
+  if ( x > screenWidth + 1 )
+  {
+    if ( txtdata.startpos < screenWidth )
+    {
+      // Print ellipsis
+      setPrintPos (screenWidth - 1, 1);
+      print ("..");
+    }
+    else if ( txtdata.startpos - 1 <= screenWidth )
+    {
+      // Hide first character from text
+      setPrintPos (screenWidth, 1);
+      print (' ');
+    }
+    }
+}
+
+//----------------------------------------------------------------------
+inline void FMenuBar::drawLeadingSpace (int& x)
+{
+  // Print a leading blank space
+
+  if ( x < screenWidth )
+  {
+    x++;
+    print (' ');
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FMenuBar::drawTrailingSpace (int& x)
+{
+  // Print a trailing blank space
+
+  if ( x < screenWidth )
+  {
+    x++;
+    print (' ');
+  }
 }
 
 //----------------------------------------------------------------------

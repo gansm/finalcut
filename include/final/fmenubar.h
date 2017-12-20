@@ -99,6 +99,16 @@ class FMenuBar : public FWindow, public FMenuList
     void                cb_item_deactivated (FWidget*, data_ptr);
 
   private:
+    // Typedef
+    typedef struct
+    {
+      wchar_t* text;
+      int length;
+      int startpos;
+      int hotkeypos;
+      bool no_underline;
+    } menuText;
+
     // Disable copy constructor
     FMenuBar (const FMenuBar&);
 
@@ -117,6 +127,12 @@ class FMenuBar : public FWindow, public FMenuList
     int                 getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void                draw();
     void                drawItems();
+    void                drawItem (FMenuItem*, int&);
+    void                setLineAttributes (FMenuItem*);
+    void                drawMenuText (menuText&);
+    void                drawEllipsis (menuText&, int);
+    void                drawLeadingSpace (int&);
+    void                drawTrailingSpace (int&);
     void                adjustItems();
     void                leaveMenuBar();
 
@@ -127,6 +143,7 @@ class FMenuBar : public FWindow, public FMenuList
     // Data Members
     bool   mouse_down;
     bool   drop_down;
+    int    screenWidth;
 };
 #pragma pack(pop)
 

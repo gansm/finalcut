@@ -281,6 +281,7 @@ void FStatusBar::drawMessage()
         print (getMessage());
       else
       {
+        // Print ellipsis
         print ( getMessage().left(uInt(msg_length + termWidth - x - 1)) );
         print ("..");
       }
@@ -629,6 +630,7 @@ void FStatusBar::drawKeys()
         }
         else
         {
+          // Print ellipsis
           print ( (*iter)->getText()
                           .left(uInt(txt_length + screenWidth - x - 1)) );
           print ("..");
@@ -657,6 +659,7 @@ void FStatusBar::drawKeys()
           print ((*iter)->getText());
         else
         {
+          // Print ellipsis
           print ( (*iter)->getText()
                           .left(uInt(txt_length + screenWidth - x - 1)) );
           print ("..");

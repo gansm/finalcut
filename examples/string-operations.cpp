@@ -30,7 +30,39 @@
 
 #include <final/final.h>
 
+// function prototype
+void init();
+void inputStreamExample();
+void outputStreamExample();
+void streamingIntoFStringExample();
+void streamingFromFStringExample();
+void CStringOutputExample();
+void copyIntoFString();
+void utf8StringOutputExample();
+void letterCaseExample();
+void stringConcatenationExample();
+void stringCompareExample();
+void stringSplittingExample();
+void fromatStringExample();
+void convertToNumberExample();
+void convertNumberToStringExample();
+void formatedNumberExample();
+void trimExample();
+void substringExample();
+void insertExample();
+void indexExample();
+void iteratorExample();
+void overwriteExample();
+void removeExample();
+void substringIncludeExample();
+void replaceExample();
+void tabToSpaceExample();
+void backspaceControlCharacterExample();
+void deleteControlCharacterExample();
 
+//----------------------------------------------------------------------
+// functions
+//----------------------------------------------------------------------
 void init()
 {
   std::cout << "----------------[ terminal ]-------------------"

@@ -2,6 +2,7 @@ exclude:
 - /fonts/newfont.h
 - /fonts/vgafont.h
 - /fonts/unicodemap.h
+- /build.sh
 - /ltmain.sh
 component_depth: 3
 languages:

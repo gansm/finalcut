@@ -1186,6 +1186,7 @@ void FListBox::drawLabel()
     print (txt);
   else
   {
+    // Print ellipsis
     print (text.left(uInt(getClientWidth() - 2)));
     setColor (wc.label_ellipsis_fg, wc.label_bg);
     print("..");

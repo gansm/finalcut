@@ -1,3 +1,6 @@
+2017-12-21  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FMenuBar::drawItems
+
 2017-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FMenu::drawItems
 

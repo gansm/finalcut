@@ -196,7 +196,7 @@ class FMenu : public FWindow, public FMenuList
     int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void         draw();
     void         drawItems();
-    void         drawSeparator(int);
+    void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);
     void         drawCheckMarkPrefix (FMenuItem*);
     void         drawMenuText (menuText&);

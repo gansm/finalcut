@@ -1301,26 +1301,27 @@ void FDialog::drawTitleBar()
   for (x = 1; x <= i; x++)
     print (' ');
 
-  // the title bar text
+  // Print title bar text
   if ( tb_text )
   {
     if ( length <= getWidth() - menu_btn - zoom_btn )
       print (tb_text);
     else
     {
+      // Print ellipsis
       print (tb_text.left(getWidth() - menu_btn - zoom_btn - 2));
       print ("..");
     }
   }
 
-  // fill the rest of the bar
+  // Fill the rest of the bar
   for ( ; x + 1 + length < getWidth() - zoom_btn - 1; x++)
     print (' ');
 
   if ( getMaxColor() < 16 )
     unsetBold();
 
-  // draw the zoom/unzoom button
+  // Draw the zoom/unzoom button
   if ( isResizeable() )
   {
     if ( zoom_button_pressed )
@@ -1379,7 +1380,7 @@ void FDialog::drawTitleBar()
   if ( isMonochron() )
     setReverse(false);
 
-/* print the number of window in stack */
+/* Print the number of window in stack */
 //setPrintPos (getWidth() - 2, 1);
 //printf ("(%d)", getWindowLayer(this));
 }

@@ -1296,7 +1296,7 @@ bool FMenu::hotkeyMenu (FKeyEvent*& ev)
 //----------------------------------------------------------------------
 int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 {
-  // find hotkey position in string
+  // Find hotkey position in string
   // + generate a new string without the '&'-sign
   int hotkeypos = -1;
   wchar_t* txt = src;
@@ -1319,7 +1319,7 @@ int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 //----------------------------------------------------------------------
 void FMenu::draw()
 {
-  // fill the background
+  // Fill the background
   setColor (wc.menu_active_fg, wc.menu_active_bg);
 
   if ( isMonochron() )
@@ -1345,7 +1345,7 @@ void FMenu::drawItems()
   while ( iter != last )
   {
     if ( (*iter)->isSeparator() )
-      drawSeparator(y);
+      drawSeparator (y);
     else
       drawMenuLine (*iter, y);
 
@@ -1355,7 +1355,7 @@ void FMenu::drawItems()
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawSeparator(int y)
+inline void FMenu::drawSeparator (int y)
 {
   setPrintPos (1, 2 + y);
   setColor (wc.menu_active_fg, wc.menu_active_bg);

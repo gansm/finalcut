@@ -542,14 +542,16 @@ void FLabel::printLine ( wchar_t line[]
 
   if ( length > uInt(getWidth()) )
   {
+    // Print ellipsis
     setColor (ellipsis_color, getBackgroundColor());
     print ("..");
     setColor();
   }
   else if ( align_offset + to_char < getWidth() )
   {
+    // Print trailing spaces
     int len = getWidth() - align_offset - to_char;
-    print (FString(len, ' '));  // trailing spaces
+    print (FString(len, ' '));
   }
 
   if ( hasReverseMode() )

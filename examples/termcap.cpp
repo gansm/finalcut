@@ -34,7 +34,10 @@ static FVTerm* terminal;
 void tcapBooleans (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char*);
-
+void debug (FApplication&);
+void booleans();
+void numeric();
+void string(FTermcap::tcap_map*&);
 
 //----------------------------------------------------------------------
 // functions
@@ -77,7 +80,7 @@ void tcapString (const std::string& name, const char* cap_str)
     if ( c > 127 )
     {
       std::ostringstream o;
-      o << std::oct << int(uChar(c));
+      o << std::oct << int(c);
       sequence += "\\";
       sequence += o.str();
     }
@@ -88,11 +91,11 @@ void tcapString (const std::string& name, const char* cap_str)
       else
       {
         sequence += '^';
-        sequence += c + 64;
+        sequence += char(c + 64);
       }
     }
     else
-      sequence += c;
+      sequence += char(c);
   }
 
   std::cout << sequence << " ";

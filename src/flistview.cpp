@@ -1439,6 +1439,7 @@ void FListView::drawColumnLabels()
     }
     else
     {
+      // Print ellipsis
       headerline << ' ';
       headerline << text.left(uInt(width - ellipsis_length));
       setColor (wc.label_ellipsis_fg, wc.label_bg);
