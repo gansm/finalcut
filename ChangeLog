@@ -1,5 +1,6 @@
 2017-12-21  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FMenuBar::drawItems
+	* (de)allocation functions in FTerm
 
 2017-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FMenu::drawItems

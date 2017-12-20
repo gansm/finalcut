@@ -4355,10 +4355,8 @@ void FTerm::captureXTermFontAndTitle()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init()
+inline void FTerm::allocationValues()
 {
-  init_term_object = this;
-
   try
   {
     opti_move      = new FOptiMove();
@@ -4373,8 +4371,49 @@ void FTerm::init()
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
     std::abort();
   }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::deallocationValues()
+{
+  if ( encoding_set )
+    delete encoding_set;
+
+  if ( vt100_alt_char )
+    delete vt100_alt_char;
+
+  if ( sec_da )
+    delete sec_da;
+
+  if ( answer_back )
+    delete answer_back;
+
+  if ( xterm_title )
+    delete xterm_title;
+
+  if ( xterm_font )
+    delete xterm_font;
+
+  if ( mouse )
+    delete mouse;
+
+  if ( term )
+    delete term;
+
+  if ( opti_attr )
+    delete opti_attr;
+
+  if ( opti_move )
+    delete opti_move;
+}
+
+//----------------------------------------------------------------------
+void FTerm::init()
+{
+  init_term_object = this;
 
   // Initialize global values for all objects
+  allocationValues();
   init_global_values();
 
   // Get file descriptor for standard input and standard output
@@ -4634,35 +4673,7 @@ void FTerm::finish()
   }
 #endif
 
-  if ( encoding_set )
-    delete encoding_set;
-
-  if ( vt100_alt_char )
-    delete vt100_alt_char;
-
-  if ( sec_da )
-    delete sec_da;
-
-  if ( answer_back )
-    delete answer_back;
-
-  if ( xterm_title )
-    delete xterm_title;
-
-  if ( xterm_font )
-    delete xterm_font;
-
-  if ( mouse )
-    delete mouse;
-
-  if ( term )
-    delete term;
-
-  if ( opti_attr )
-    delete opti_attr;
-
-  if ( opti_move )
-    delete opti_move;
+  deallocationValues();
 }
 
 //----------------------------------------------------------------------

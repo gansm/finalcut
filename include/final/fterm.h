@@ -522,6 +522,8 @@ class FTerm
     static void           enableMouse();
     static void           disableMouse();
     static void           captureXTermFontAndTitle();
+    void                  allocationValues();
+    void                  deallocationValues();
     void                  init();
     void                  finish();
     static uInt           cp437_to_unicode (uChar);
