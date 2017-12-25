@@ -561,7 +561,7 @@ void FLabel::printLine ( wchar_t line[]
 //----------------------------------------------------------------------
 void FLabel::draw()
 {
-  wchar_t* LabelText;
+  wchar_t* label_text;
   uInt length;
   int hotkeypos, align_offset;
 
@@ -592,7 +592,7 @@ void FLabel::draw()
 
       try
       {
-        LabelText = new wchar_t[length + 1]();
+        label_text = new wchar_t[length + 1]();
       }
       catch (const std::bad_alloc& ex)
       {
@@ -601,7 +601,7 @@ void FLabel::draw()
       }
 
       wchar_t* src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-      wchar_t* dest = const_cast<wchar_t*>(LabelText);
+      wchar_t* dest = const_cast<wchar_t*>(label_text);
 
       if ( ! hotkey_printed )
         hotkeypos = getHotkeyPos(src, dest, length);
@@ -613,18 +613,18 @@ void FLabel::draw()
       if ( hotkeypos != -1 )
       {
         align_offset = getAlignOffset (int(length - 1));
-        printLine (LabelText, length - 1, hotkeypos, align_offset);
+        printLine (label_text, length - 1, hotkeypos, align_offset);
         hotkey_printed = true;
         hotkeypos = -1;
       }
       else
       {
         align_offset = getAlignOffset (int(length));
-        printLine (LabelText, length, -1, align_offset);
+        printLine (label_text, length, -1, align_offset);
       }
 
       y++;
-      delete[] LabelText;
+      delete[] label_text;
     }
   }
   else
@@ -633,7 +633,7 @@ void FLabel::draw()
 
     try
     {
-      LabelText = new wchar_t[length + 1]();
+      label_text = new wchar_t[length + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -641,15 +641,15 @@ void FLabel::draw()
       return;
     }
 
-    hotkeypos = getHotkeyPos (text.wc_str(), LabelText, length);
+    hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
 
     if ( hotkeypos != -1 )
       length--;
 
     setPrintPos (1,1);
     align_offset = getAlignOffset (int(length));
-    printLine (LabelText, length, hotkeypos, align_offset);
-    delete[] LabelText;
+    printLine (label_text, length, hotkeypos, align_offset);
+    delete[] label_text;
   }
 
   if ( isMonochron() )

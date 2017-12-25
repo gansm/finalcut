@@ -1618,7 +1618,7 @@ const FString FTerm::getSecDA()
 }
 
 //----------------------------------------------------------------------
-void FTerm::putstringf (const char* const format, ...)
+void FTerm::putstringf (const char format[], ...)
 {
   assert ( format != 0 );
   char  buf[512];
@@ -1634,7 +1634,7 @@ void FTerm::putstringf (const char* const format, ...)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::putstring (const char* const s, int affcnt)
+inline void FTerm::putstring (const char s[], int affcnt)
 {
 #if defined(__sun) && defined(__SVR4)
   tputs (C_STR(s), affcnt, FTerm::putchar_ASCII);
@@ -2137,19 +2137,29 @@ int FTerm::getFramebuffer_bpp ()
 
 //----------------------------------------------------------------------
 int FTerm::openConsole()
-{
+{ 
+  static const char* terminal_devices[] =
+  {
+    "/proc/self/fd/0",
+    "/dev/tty",
+    "/dev/tty0",
+    "/dev/vc/0",
+    "/dev/systty",
+    "/dev/console",
+    0
+  };
+
   if ( fd_tty >= 0 )  // console is already opened
     return 0;
 
-  if ( *term_name && (fd_tty = open (term_name, O_RDWR, 0)) < 0 )
-    if ( (fd_tty = open("/proc/self/fd/0", O_RDWR, 0)) < 0 )
-      if ( (fd_tty = open("/dev/tty", O_RDWR, 0)) < 0 )
-        if ( (fd_tty = open("/dev/tty0", O_RDWR, 0)) < 0 )
-          if ( (fd_tty = open("/dev/vc/0", O_RDWR, 0)) < 0 )
-            if ( (fd_tty = open("/dev/systty", O_RDWR, 0)) < 0 )
-              if ( (fd_tty = open("/dev/console", O_RDWR, 0)) < 0 )
-                return -1;  // No file descriptor referring to the console
-  return 0;
+  if ( ! *term_name )
+    return 0;
+
+  for (int i = 0; terminal_devices[i] != 0; i++)
+    if ( (fd_tty = open(terminal_devices[i], O_RDWR, 0)) >= 0 )
+      return 0;
+
+  return -1;  // No file descriptor referring to the console
 }
 
 //----------------------------------------------------------------------
@@ -2324,7 +2334,7 @@ int FTerm::getScreenFont()
 }
 
 //----------------------------------------------------------------------
-int FTerm::setScreenFont ( uChar* fontdata, uInt count
+int FTerm::setScreenFont ( uChar fontdata[], uInt count
                          , uInt fontwidth, uInt fontheight
                          , bool direct)
 {

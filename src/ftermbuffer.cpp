@@ -43,7 +43,7 @@ FTermBuffer::~FTermBuffer()  // destructor
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
-int FTermBuffer::writef (const wchar_t* format, ...)
+int FTermBuffer::writef (const wchar_t format[], ...)
 {
   assert ( format != 0 );
   static const int BufSize = 1024;
@@ -59,7 +59,7 @@ int FTermBuffer::writef (const wchar_t* format, ...)
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::writef (const char* format, ...)
+int FTermBuffer::writef (const char format[], ...)
 {
   assert ( format != 0 );
   int   len;
@@ -106,14 +106,14 @@ int FTermBuffer::write (const std::wstring& s)
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (const wchar_t* s)
+int FTermBuffer::write (const wchar_t s[])
 {
   assert ( s != 0 );
   return write (FString(s));
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (const char* s)
+int FTermBuffer::write (const char s[])
 {
   assert ( s != 0 );
   FString str(s);

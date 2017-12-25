@@ -805,7 +805,7 @@ void FMenuBar::drawItems()
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
+inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
@@ -866,7 +866,7 @@ void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::setLineAttributes (FMenuItem* menuitem)
+inline void FMenuBar::setLineAttributes (FMenuItem* menuitem)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -897,7 +897,7 @@ void FMenuBar::setLineAttributes (FMenuItem* menuitem)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::drawMenuText (menuText& data)
+inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 

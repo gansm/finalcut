@@ -559,6 +559,9 @@ void FButtonGroup::drawLabel()
   else
     FWidget::setPrintPos (0, 1);
 
+  if ( isMonochron() )
+    setReverse(true);
+
   if ( isEnabled() )
     setColor(wc.label_emphasis_fg, wc.label_bg);
   else
@@ -583,6 +586,9 @@ void FButtonGroup::drawLabel()
     else
       print ( LabelText[z] );
   }
+
+  if ( isMonochron() )
+    setReverse(true);
 
   setViewportPrint();
   delete[] LabelText;

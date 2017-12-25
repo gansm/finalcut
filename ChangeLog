@@ -1,4 +1,8 @@
 2017-12-21  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FButton::draw
+	* Passing more strings by reference
+
+2017-12-21  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FMenuBar::drawItems
 	* (de)allocation functions in FTerm
 

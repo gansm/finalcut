@@ -77,8 +77,8 @@ class FTermBuffer
 
     // Methods
     void                   clear();
-    int                    writef (const wchar_t*, ...);
-    int                    writef (const char*, ...)
+    int                    writef (const wchar_t[], ...);
+    int                    writef (const char[], ...)
 #if defined(__clang__)
       __attribute__((__format__ (__printf__, 2, 3)))
 #elif defined(__GNUC__)
@@ -86,8 +86,8 @@ class FTermBuffer
 #endif
                            ;
     int                    write (const std::wstring&);
-    int                    write (const wchar_t*);
-    int                    write (const char*);
+    int                    write (const wchar_t[]);
+    int                    write (const char[]);
     int                    write (const std::string&);
     int                    write (const FString&);
     int                    write (int);

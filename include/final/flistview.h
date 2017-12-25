@@ -226,7 +226,6 @@ inline const char* FListViewIterator::getClassName() const
 inline int FListViewIterator::getPosition() const
 { return position; }
 
-
 //----------------------------------------------------------------------
 // class FListView
 //----------------------------------------------------------------------
@@ -292,6 +291,9 @@ class FListView : public FWidget
     void                 onTimer (FTimerEvent*);
     void                 onFocusIn (FFocusEvent*);
     void                 onFocusOut (FFocusEvent*);
+
+    // Data Members
+    static FObjectIterator null_iter;
 
   protected:
     // Methods

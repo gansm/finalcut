@@ -28,8 +28,8 @@
 #include "final/fstatusbar.h"
 #include "final/ftermbuffer.h"
 
-// Global null FObject iterator
-static FObject::FObjectIterator null_iter;
+// Static class attribute
+FObject::FObjectIterator FListView::null_iter;
 
 //----------------------------------------------------------------------
 // class FListViewItem
@@ -154,7 +154,7 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 {
   // Add a FListViewItem as child element
   if ( ! child )
-    return null_iter;
+    return FListView::null_iter;
 
   return appendItem(child);
 }
@@ -163,8 +163,8 @@ FObject::FObjectIterator FListViewItem::insert (FListViewItem* child)
 FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
                                                , FObjectIterator parent_iter )
 {
-  if ( parent_iter == null_iter )
-    return null_iter;
+  if ( parent_iter == FListView::null_iter )
+    return FListView::null_iter;
 
   if ( *parent_iter )
   {
@@ -182,7 +182,7 @@ FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
     }
   }
 
-  return null_iter;
+  return FListView::null_iter;
 }
 
 //----------------------------------------------------------------------
@@ -586,8 +586,8 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
   FObjectIterator item_iter;
   headerItems::iterator header_iter;
 
-  if ( parent_iter == null_iter )
-    return null_iter;
+  if ( parent_iter == FListView::null_iter )
+    return FListView::null_iter;
 
   // Determine the line width
   header_iter = header.begin();
@@ -636,10 +636,10 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
       item_iter = parent->appendItem (item);
     }
     else
-      item_iter = null_iter;
+      item_iter = FListView::null_iter;
   }
   else
-    item_iter = null_iter;
+    item_iter = FListView::null_iter;
 
   if ( itemlist.size() == 1 )
   {
@@ -661,20 +661,20 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 {
   FListViewItem* item;
 
-  if ( cols.empty() || parent_iter == null_iter )
-    return null_iter;
+  if ( cols.empty() || parent_iter == FListView::null_iter )
+    return FListView::null_iter;
 
   if ( ! *parent_iter )
     parent_iter = root;
 
   try
   {
-    item = new FListViewItem (cols, d, null_iter);
+    item = new FListViewItem (cols, d, FListView::null_iter);
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return null_iter;
+    return FListView::null_iter;
   }
 
   item->replaceControlCodes();

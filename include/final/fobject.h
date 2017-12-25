@@ -86,7 +86,7 @@ class FObject
     bool                    isChild (FObject*) const;
     bool                    isDirectChild (FObject*) const;
     bool                    isWidget() const;
-    bool                    isInstanceOf (const char*) const;
+    bool                    isInstanceOf (const char[]) const;
     bool                    isTimerInUpdating() const;
 
     // Methods
@@ -186,7 +186,7 @@ inline bool FObject::isWidget() const
 { return widget_object; }
 
 //----------------------------------------------------------------------
-inline bool FObject::isInstanceOf (const char* classname) const
+inline bool FObject::isInstanceOf (const char classname[]) const
 { return ( classname ) ? bool(strcmp(classname, getClassName()) == 0) : false; }
 
 //----------------------------------------------------------------------

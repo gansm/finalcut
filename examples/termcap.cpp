@@ -33,7 +33,7 @@ static FVTerm* terminal;
 // function prototype
 void tcapBooleans (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
-void tcapString (const std::string&, const char*);
+void tcapString (const std::string&, const char[]);
 void debug (FApplication&);
 void booleans();
 void numeric();
@@ -59,7 +59,7 @@ void tcapNumeric (const std::string& name, int cap_num)
 }
 
 //----------------------------------------------------------------------
-void tcapString (const std::string& name, const char* cap_str)
+void tcapString (const std::string& name, const char cap_str[])
 {
   uInt len;
   std::string sequence;

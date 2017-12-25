@@ -136,10 +136,19 @@ class FButton : public FWidget
 
     // Methods
     void         init();
+    void         getButtonState();
     uChar        getHotkey();
     void         setHotkeyAccelerator();
     void         detectHotkey();
+    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    int          clickAnimationIndent (FWidget*);
+    void         clearRightMargin (FWidget*);
+    void         drawMarginLeft();
+    void         drawMarginRight();
+    void         drawTopBottomBackground();
+    void         drawButtonTextLine (wchar_t[]);
     void         draw();
+    void         updateStatusBar();
     void         updateButtonColor();
     void         processClick();
 
@@ -148,6 +157,12 @@ class FButton : public FWidget
     bool         button_down;
     bool         click_animation;
     int          click_time;
+    int          indent;
+    int          space;
+    int          center_offset;
+    int          vcenter_offset;
+    int          txtlength;
+    int          hotkeypos;
     short        button_fg;
     short        button_bg;
     short        button_hotkey_fg;
@@ -155,6 +170,17 @@ class FButton : public FWidget
     short        button_focus_bg;
     short        button_inactive_fg;
     short        button_inactive_bg;
+
+    struct state
+    {
+      uChar focus           : 1;
+      uChar active_focus    : 1;
+      uChar active          : 1;
+      uChar flat            : 1;
+      uChar non_flat_shadow : 1;
+      uChar no_underline    : 1;
+      uChar                 : 2;  // padding bits
+    } is; 
 };
 #pragma pack(pop)
 

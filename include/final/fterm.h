@@ -303,14 +303,14 @@ class FTerm
     // function pointer -> static function
     static int            (*Fputchar)(int);
 
-    static void           putstringf (const char* const, ...)
+    static void           putstringf (const char[], ...)
 #if defined(__clang__)
       __attribute__((__format__ (__printf__, 1, 2)))
 #elif defined(__GNUC__)
       __attribute__ ((format (printf, 1, 2)))
 #endif
                           ;
-    static void           putstring (const char* const, int = 1);
+    static void           putstring (const char[], int = 1);
 
 #if defined(__sun) && defined(__SVR4)
     static int            putchar_ASCII (register char);
@@ -456,7 +456,7 @@ class FTerm
 
 #if defined(__linux__)
     static int            getScreenFont();
-    static int            setScreenFont ( uChar*, uInt, uInt, uInt
+    static int            setScreenFont ( uChar[], uInt, uInt, uInt
                                         , bool = false );
     static int            setUnicodeMap (struct unimapdesc*);
     static int            getUnicodeMap ();

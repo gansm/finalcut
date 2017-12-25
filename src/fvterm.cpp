@@ -306,7 +306,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::printf (const wchar_t* format, ...)
+int FVTerm::printf (const wchar_t format[], ...)
 {
   assert ( format != 0 );
   static const int BufSize = 1024;
@@ -322,7 +322,7 @@ int FVTerm::printf (const wchar_t* format, ...)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::printf (const char* format, ...)
+int FVTerm::printf (const char format[], ...)
 {
   assert ( format != 0 );
   int   len;
@@ -377,14 +377,14 @@ int FVTerm::print (term_area* area, const std::wstring& s)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (const wchar_t* s)
+int FVTerm::print (const wchar_t s[])
 {
   assert ( s != 0 );
   return print (FString(s));
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (term_area* area, const wchar_t* s)
+int FVTerm::print (term_area* area, const wchar_t s[])
 {
   assert ( area != 0 );
   assert ( s != 0 );
@@ -392,7 +392,7 @@ int FVTerm::print (term_area* area, const wchar_t* s)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (const char* s)
+int FVTerm::print (const char s[])
 {
   assert ( s != 0 );
   FString str(s);
@@ -400,7 +400,7 @@ int FVTerm::print (const char* s)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (term_area* area, const char* s)
+int FVTerm::print (term_area* area, const char s[])
 {
   assert ( area != 0 );
   assert ( s != 0 );

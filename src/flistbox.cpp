@@ -1259,14 +1259,15 @@ inline void FListBox::drawListLine ( int y
   uInt i, len;
   uInt inc_len = inc_search.getLength();
   bool isCurrentLine = bool(y + yoffset + 1 == current);
+  bool isFocus = ((flags & fc::focus) != 0);
   FString element;
   element = getString(iter).mid ( uInt(1 + xoffset)
                                 , uInt(getWidth() - nf_offset - 4) );
   const wchar_t* const& element_str = element.wc_str();
   len = element.getLength();
 
-  if ( isMonochron() && isCurrentLine )
-    print ('>');
+  if ( isMonochron() && isCurrentLine && isFocus )
+    print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
 
@@ -1276,21 +1277,73 @@ inline void FListBox::drawListLine ( int y
 
   for (i = 0; i < len; i++)
   {
-    if ( serach_mark && i == inc_len )
+    if ( serach_mark && i == inc_len && isFocus  )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
     print (element_str[i]);
   }
 
-  if ( isMonochron() && isCurrentLine )
+  if ( isMonochron() && isCurrentLine  && isFocus )
   {
-    print ('<');
+    print (fc::BlackLeftPointingPointer);   // ◄
     i++;
   }
 
   for (; i < uInt(getWidth() - nf_offset - 3); i++)
     print (' ');
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::printLeftBracket (fc::brackets_type bracket_type)
+{
+  switch ( bracket_type )
+  {
+    case fc::NoBrackets:
+      break;
+
+    case fc::SquareBrackets:
+      print ('[');
+      break;
+
+    case fc::Parenthesis:
+      print ('(');
+      break;
+
+    case fc::CurlyBrackets:
+      print ('{');
+      break;
+
+    case fc::AngleBrackets:
+      print ('<');
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::printRightBracket (fc::brackets_type bracket_type)
+{
+  switch ( bracket_type )
+  {
+    case fc::NoBrackets:
+      break;
+
+    case fc::SquareBrackets:
+      print (']');
+      break;
+
+    case fc::Parenthesis:
+      print (')');
+      break;
+
+    case fc::CurlyBrackets:
+      print ('}');
+      break;
+
+    case fc::AngleBrackets:
+      print ('>');
+      break;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1305,37 +1358,17 @@ inline void FListBox::drawListBracketsLine ( int y
      , i = 0
      , b = 0;
   bool isCurrentLine = bool(y + yoffset + 1 == current);
+  bool isFocus = ((flags & fc::focus) != 0);
 
-  if ( isMonochron() && isCurrentLine )
-    print ('>');
+  if ( isMonochron() && isCurrentLine && isFocus )
+    print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
 
   if ( xoffset == 0 )
   {
     b = 1;
-
-    switch ( iter->brackets )
-    {
-      case fc::NoBrackets:
-        break;
-
-      case fc::SquareBrackets:
-        print ('[');
-        break;
-
-      case fc::Parenthesis:
-        print ('(');
-        break;
-
-      case fc::CurlyBrackets:
-        print ('{');
-        break;
-
-      case fc::AngleBrackets:
-        print ('<');
-        break;
-    }
+    printLeftBracket (iter->brackets);
 
     element = getString(iter).mid ( uInt(1 + xoffset)
                                   , uInt(getWidth() - nf_offset - 5) );
@@ -1369,34 +1402,13 @@ inline void FListBox::drawListBracketsLine ( int y
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
-    switch ( iter->brackets )
-    {
-      case fc::NoBrackets:
-        break;
-
-      case fc::SquareBrackets:
-        print (']');
-        break;
-
-      case fc::Parenthesis:
-        print (')');
-        break;
-
-      case fc::CurlyBrackets:
-        print ('}');
-        break;
-
-      case fc::AngleBrackets:
-        print ('>');
-        break;
-    }
-
+    printRightBracket (iter->brackets);
     i++;
   }
 
-  if ( isMonochron() && isCurrentLine )
+  if ( isMonochron() && isCurrentLine && isFocus )
   {
-    print ('<');
+    print (fc::BlackLeftPointingPointer);   // ◄
     i++;
   }
 

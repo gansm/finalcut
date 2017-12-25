@@ -84,9 +84,9 @@ class FString
     FString (uInt, char);
     FString (const FString&);       // implicit conversion copy constructor
     FString (const std::wstring&);  // implicit conversion constructor
-    FString (const wchar_t*);       // implicit conversion constructor
+    FString (const wchar_t[]);      // implicit conversion constructor
     FString (const std::string&);   // implicit conversion constructor
-    FString (const char*);          // implicit conversion constructor
+    FString (const char[]);         // implicit conversion constructor
     FString (const wchar_t);        // implicit conversion constructor
     FString (const char);           // implicit conversion constructor
 
@@ -96,25 +96,25 @@ class FString
     // Overloaded operators
     FString& operator = (const FString&);
     FString& operator = (const std::wstring&);
-    const FString& operator = (const wchar_t*);
+    const FString& operator = (const wchar_t[]);
     FString& operator = (const std::string&);
-    const FString& operator = (const char*);
+    const FString& operator = (const char[]);
     const FString& operator = (const wchar_t);
     const FString& operator = (const char);
 
     const FString& operator += (const FString&);
     const FString& operator += (const std::wstring&);
-    const FString& operator += (const wchar_t*);
+    const FString& operator += (const wchar_t[]);
     const FString& operator += (const std::string&);
-    const FString& operator += (const char*);
+    const FString& operator += (const char[]);
     const FString& operator += (const wchar_t);
     const FString& operator += (const char);
 
     const FString operator + (const FString&);
     const FString operator + (const std::wstring&);
-    const FString operator + (const wchar_t*);
+    const FString operator + (const wchar_t[]);
     const FString operator + (const std::string&);
-    const FString operator + (const char*);
+    const FString operator + (const char[]);
     const FString operator + (const wchar_t);
     const FString operator + (const char);
 
@@ -150,44 +150,44 @@ class FString
 
     bool operator <  (const FString&) const;
     bool operator <  (const std::wstring&) const;
-    bool operator <  (const wchar_t*) const;
+    bool operator <  (const wchar_t[]) const;
     bool operator <  (const std::string&) const;
-    bool operator <  (const char*) const;
+    bool operator <  (const char[]) const;
     bool operator <  (const wchar_t) const;
     bool operator <  (const char) const;
     bool operator <= (const FString&) const;
     bool operator <= (const std::wstring&) const;
-    bool operator <= (const wchar_t*) const;
+    bool operator <= (const wchar_t[]) const;
     bool operator <= (const std::string&) const;
-    bool operator <= (const char*) const;
+    bool operator <= (const char[]) const;
     bool operator <= (const wchar_t) const;
     bool operator <= (const char) const;
     bool operator == (const FString&) const;
     bool operator == (const std::wstring&) const;
-    bool operator == (const wchar_t*) const;
+    bool operator == (const wchar_t[]) const;
     bool operator == (const std::string&) const;
-    bool operator == (const char*) const;
+    bool operator == (const char[]) const;
     bool operator == (const wchar_t) const;
     bool operator == (const char) const;
     bool operator != (const FString&) const;
     bool operator != (const std::wstring&) const;
-    bool operator != (const wchar_t*) const;
+    bool operator != (const wchar_t[]) const;
     bool operator != (const std::string&) const;
-    bool operator != (const char*) const;
+    bool operator != (const char[]) const;
     bool operator != (const wchar_t) const;
     bool operator != (const char) const;
     bool operator >= (const FString&) const;
     bool operator >= (const std::wstring&) const;
-    bool operator >= (const wchar_t*) const;
+    bool operator >= (const wchar_t[]) const;
     bool operator >= (const std::string&) const;
-    bool operator >= (const char*) const;
+    bool operator >= (const char[]) const;
     bool operator >= (const wchar_t) const;
     bool operator >= (const char) const;
     bool operator >  (const FString&) const;
     bool operator >  (const std::wstring&) const;
-    bool operator >  (const wchar_t*) const;
+    bool operator >  (const wchar_t[]) const;
     bool operator >  (const std::string&) const;
-    bool operator >  (const char*) const;
+    bool operator >  (const char[]) const;
     bool operator >  (const wchar_t) const;
     bool operator >  (const char) const;
 
@@ -197,9 +197,9 @@ class FString
     friend const FString operator + (const FString&, const FString&);
     friend const FString operator + (const FString&, const wchar_t);
     friend const FString operator + (const std::wstring&, const FString&);
-    friend const FString operator + (const wchar_t*, const FString&);
+    friend const FString operator + (const wchar_t[], const FString&);
     friend const FString operator + (const std::string&, const FString&);
-    friend const FString operator + (const char*, const FString&);
+    friend const FString operator + (const char[], const FString&);
     friend const FString operator + (const wchar_t, const FString&);
     friend const FString operator + (const char, const FString&);
     friend const FString operator + (const wchar_t, const std::wstring&);
@@ -223,8 +223,8 @@ class FString
     wchar_t  front() const;
     wchar_t  back()  const;
 
-    FString& sprintf (const wchar_t*, ...);
-    FString& sprintf (const char*, ...)
+    FString& sprintf (const wchar_t[], ...);
+    FString& sprintf (const char[], ...)
 #if defined(__clang__)
       __attribute__((__format__ (__printf__, 2, 3)))
 #elif defined(__GNUC__)
@@ -264,14 +264,14 @@ class FString
 
     FStringList split (const FString&);
     FStringList split (const std::wstring&);
-    FStringList split (const wchar_t*);
+    FStringList split (const wchar_t[]);
     FStringList split (const std::string&);
-    FStringList split (const char*);
+    FStringList split (const char[]);
     FStringList split (const wchar_t);
     FStringList split (const char);
 
-    FString& setString (const wchar_t*);
-    FString& setString (const char*);
+    FString& setString (const wchar_t[]);
+    FString& setString (const char[]);
 
     FString& setNumber (sInt16);
     FString& setNumber (uInt16);
@@ -291,58 +291,58 @@ class FString
     FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
 
     const FString& insert (const FString&, uInt);
-    const FString& insert (const wchar_t*, uInt);
-    const FString& insert (const char*, uInt);
+    const FString& insert (const wchar_t[], uInt);
+    const FString& insert (const char[], uInt);
     const FString& insert (const wchar_t, uInt);
     const FString& insert (const char, uInt);
 
     FString replace (const FString&, const FString&);
     FString replace (const FString&, const std::wstring&);
-    FString replace (const FString&, const wchar_t*);
+    FString replace (const FString&, const wchar_t[]);
     FString replace (const FString&, const std::string&);
-    FString replace (const FString&, const char*);
+    FString replace (const FString&, const char[]);
     FString replace (const FString&, const wchar_t);
     FString replace (const FString&, const char);
     FString replace (const std::wstring&, const FString&);
     FString replace (const std::wstring&, const std::wstring&);
-    FString replace (const std::wstring&, const wchar_t*);
+    FString replace (const std::wstring&, const wchar_t[]);
     FString replace (const std::wstring&, const std::string&);
-    FString replace (const std::wstring&, const char*);
+    FString replace (const std::wstring&, const char[]);
     FString replace (const std::wstring&, const wchar_t);
     FString replace (const std::wstring&, const char);
     FString replace (const std::string&, const FString&);
     FString replace (const std::string&, const std::wstring&);
-    FString replace (const std::string&, const wchar_t*);
+    FString replace (const std::string&, const wchar_t[]);
     FString replace (const std::string&, const std::string&);
-    FString replace (const std::string&, const char*);
+    FString replace (const std::string&, const char[]);
     FString replace (const std::string&, const wchar_t);
     FString replace (const std::string&, const char);
-    FString replace (const wchar_t*, const FString&);
-    FString replace (const wchar_t*, const std::wstring&);
-    FString replace (const wchar_t*, const wchar_t*);
-    FString replace (const wchar_t*, const std::string&);
-    FString replace (const wchar_t*, const char*);
-    FString replace (const wchar_t*, const wchar_t);
-    FString replace (const wchar_t*, const char);
-    FString replace (const char*, const FString&);
-    FString replace (const char*, const std::wstring&);
-    FString replace (const char*, const wchar_t*);
-    FString replace (const char*, const std::string&);
-    FString replace (const char*, const char*);
-    FString replace (const char*, const wchar_t);
-    FString replace (const char*, const char);
+    FString replace (const wchar_t[], const FString&);
+    FString replace (const wchar_t[], const std::wstring&);
+    FString replace (const wchar_t[], const wchar_t[]);
+    FString replace (const wchar_t[], const std::string&);
+    FString replace (const wchar_t[], const char[]);
+    FString replace (const wchar_t[], const wchar_t);
+    FString replace (const wchar_t[], const char);
+    FString replace (const char[], const FString&);
+    FString replace (const char[], const std::wstring&);
+    FString replace (const char[], const wchar_t[]);
+    FString replace (const char[], const std::string&);
+    FString replace (const char[], const char[]);
+    FString replace (const char[], const wchar_t);
+    FString replace (const char[], const char);
     FString replace (const wchar_t, const FString&);
     FString replace (const wchar_t, const std::wstring&);
-    FString replace (const wchar_t, const wchar_t*);
+    FString replace (const wchar_t, const wchar_t[]);
     FString replace (const wchar_t, const std::string&);
-    FString replace (const wchar_t, const char*);
+    FString replace (const wchar_t, const char[]);
     FString replace (const wchar_t, const wchar_t);
     FString replace (const wchar_t, const char);
     FString replace (const char, const FString&);
     FString replace (const char, const std::wstring&);
-    FString replace (const char, const wchar_t*);
+    FString replace (const char, const wchar_t[]);
     FString replace (const char, const std::string&);
-    FString replace (const char, const char*);
+    FString replace (const char, const char[]);
     FString replace (const char, const wchar_t);
     FString replace (const char, const char);
 
@@ -352,13 +352,13 @@ class FString
     FString removeBackspaces() const;
 
     const FString& overwrite (const FString&, uInt);
-    const FString& overwrite (const wchar_t*, uInt);
+    const FString& overwrite (const wchar_t[], uInt);
     const FString& overwrite (const wchar_t, uInt);
 
     const FString& remove (uInt, uInt);
     bool  includes (const FString&);
-    bool  includes (const wchar_t*);
-    bool  includes (const char*);
+    bool  includes (const wchar_t[]);
+    bool  includes (const char[]);
     bool  includes (const wchar_t);
     bool  includes (const char);
 
@@ -371,12 +371,12 @@ class FString
 
     // Methods
     void     initLength (uInt);
-    void     _assign (const wchar_t*);
-    void     _insert (uInt, uInt, const wchar_t*);
+    void     _assign (const wchar_t[]);
+    void     _insert (uInt, uInt, const wchar_t[]);
     void     _remove (uInt, uInt);
-    char*    wc_to_c_str (const wchar_t*) const;
-    wchar_t* c_to_wc_str (const char*) const;
-    wchar_t* extractToken (wchar_t**, const wchar_t*, const wchar_t*);
+    char*    wc_to_c_str (const wchar_t[]) const;
+    wchar_t* c_to_wc_str (const char[]) const;
+    wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data Members
     wchar_t*      string;
@@ -426,7 +426,7 @@ inline FStringList FString::split (const std::wstring& s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline FStringList FString::split (const wchar_t* s)
+inline FStringList FString::split (const wchar_t s[])
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
@@ -434,7 +434,7 @@ inline FStringList FString::split (const std::string& s)
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------
-inline FStringList FString::split (const char* s)
+inline FStringList FString::split (const char s[])
 { return split(FString(s)); }
 
 //----------------------------------------------------------------------

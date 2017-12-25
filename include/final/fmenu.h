@@ -204,7 +204,7 @@ class FMenu : public FWindow, public FMenuList
     void         drawAcceleratorKey (int&, int);
     void         drawTrailingSpaces (int);
     void         setLineAttributes (FMenuItem*, int);
-    void         setCursorToHotkeyPosition (FMenuItem*, int);
+    void         setCursorToHotkeyPosition (FMenuItem*);
     void         processActivate();
 
     // Friend classes
@@ -221,6 +221,7 @@ class FMenu : public FWindow, public FMenuList
     FMenu*       opened_sub_menu;
     FMenu*       shown_sub_menu;
     uInt         max_item_width;
+    int          hotkeypos;
     bool         mouse_down;
     bool         has_checkable_items;
 };

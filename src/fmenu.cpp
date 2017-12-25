@@ -40,6 +40,7 @@ FMenu::FMenu(FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
+  , hotkeypos(-1)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -54,6 +55,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
+  , hotkeypos(-1)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -1298,14 +1300,14 @@ int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 {
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
-  int hotkeypos = -1;
+  int pos = -1;
   wchar_t* txt = src;
 
   for (uInt i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
+    if ( i < length && txt[i] == L'&' && pos == -1 )
     {
-      hotkeypos = int(i);
+      pos = int(i);
       i++;
       src++;
     }
@@ -1313,7 +1315,7 @@ int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
     *dest++ = *src++;
   }
 
-  return hotkeypos;
+  return pos;
 }
 
 //----------------------------------------------------------------------
@@ -1383,12 +1385,11 @@ inline void FMenu::drawSeparator (int y)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
+inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
   uInt txt_length  = uInt(txt.getLength());
-  int  hotkeypos;
   int  to_char     = int(txt_length);
   int  accel_key   = menuitem->accel_key;
   bool is_enabled  = menuitem->isEnabled();
@@ -1420,7 +1421,7 @@ void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 
   txtdata.length = to_char;
   txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
-  setCursorToHotkeyPosition (menuitem, hotkeypos);
+  setCursorToHotkeyPosition (menuitem);
 
   if ( ! is_enabled || is_selected )
     txtdata.hotkeypos = -1;
@@ -1445,7 +1446,7 @@ void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
+inline void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
 {
   bool is_checked   = menuitem->isChecked();
   bool is_checkable = menuitem->checkable;
@@ -1490,7 +1491,7 @@ void FMenu::drawCheckMarkPrefix (FMenuItem* menuitem)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawMenuText (menuText& data)
+inline void FMenu::drawMenuText (menuText& data)
 {
   // Print menu text
 
@@ -1527,7 +1528,7 @@ void FMenu::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawSubMenuIndicator (int& startpos)
+inline void FMenu::drawSubMenuIndicator (int& startpos)
 {
   int c = ( has_checkable_items ) ? 1 : 0;
   int len = int(max_item_width) - (startpos + c + 3);
@@ -1543,7 +1544,7 @@ void FMenu::drawSubMenuIndicator (int& startpos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawAcceleratorKey (int& startpos, int accel_key)
+inline void FMenu::drawAcceleratorKey (int& startpos, int accel_key)
 {
   FString accel_name (getKeyName(accel_key));
   int c = ( has_checkable_items ) ? 1 : 0;
@@ -1560,7 +1561,7 @@ void FMenu::drawAcceleratorKey (int& startpos, int accel_key)
 }
 
 //----------------------------------------------------------------------
-void FMenu::drawTrailingSpaces (int startpos)
+inline void FMenu::drawTrailingSpaces (int startpos)
 {
   int c = ( has_checkable_items ) ? 1 : 0;
   // Print trailing blank space
@@ -1569,7 +1570,7 @@ void FMenu::drawTrailingSpaces (int startpos)
 }
 
 //----------------------------------------------------------------------
-void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
+inline void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
 {
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -1607,7 +1608,7 @@ void FMenu::setLineAttributes (FMenuItem* menuitem, int y)
 }
 
 //----------------------------------------------------------------------
-void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem, int hotkeypos)
+inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
 {
   bool is_checkable = menuitem->checkable;
   bool is_selected  = menuitem->isSelected();
