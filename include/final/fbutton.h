@@ -180,7 +180,7 @@ class FButton : public FWidget
       uChar non_flat_shadow : 1;
       uChar no_underline    : 1;
       uChar                 : 2;  // padding bits
-    } is; 
+    } is;
 };
 #pragma pack(pop)
 

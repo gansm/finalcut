@@ -414,6 +414,16 @@ class FTerm
       uChar blue;
     } dacreg;
 
+    typedef struct
+    {
+      char* string1;
+      char* string2;
+      char* string3;
+      char* string4;
+      char* string5;
+      char* string6;
+    } colorEnv;
+
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
 
@@ -483,6 +493,8 @@ class FTerm
     static void           init_global_values();
     static void           detectTerminal();
     static void           termtypeAnalysis();
+    static bool           get256colorEnvString (colorEnv&);
+    static char*          termtype_256color_quirks (colorEnv&);
     static char*          init_256colorTerminal();
     static char*          determineMaxColor (char[]);
     static char*          parseAnswerbackMsg (char[]);

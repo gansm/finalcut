@@ -1,4 +1,13 @@
-2017-12-21  Markus Gans  <guru.mail@muenster.de>
+2017-12-27  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FLineEdit::onKeyPress
+	* Refactoring FMenu::onKeyPress
+	* Refactoring FDialog::onKeyPress
+	* Refactoring FDialog::drawTitleBar
+	* New FDialog methods moveUp(), moveDown(), moveLeft(), 
+	  moveRight(), reduceHeight(), expandHeight(), reduceWidth(), 
+	  and expandWidth()
+
+2017-12-25  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FButton::draw
 	* Passing more strings by reference
 

@@ -118,7 +118,15 @@ class FDialog : public FWindow
     int                 exec();
     void                setPos (int, int, bool = true);
     void                move (int, int);
+    bool                moveUp (int);
+    bool                moveDown (int);
+    bool                moveLeft (int);
+    bool                moveRight (int);
     void                setSize (int, int, bool = true);
+    bool                reduceHeight (int);
+    bool                expandHeight (int);
+    bool                reduceWidth (int);
+    bool                expandWidth (int);
     void                activateDialog();
 
     // Event handlers
@@ -145,6 +153,10 @@ class FDialog : public FWindow
     virtual void        onClose (FCloseEvent*);
 
   private:
+    // Constant
+    static const int  MENU_BTN = 3;
+    static const bool PRINT_WIN_NUMBER = false;  // Only for debug
+
     // Using-declaration
     using FWidget::drawBorder;
 
@@ -158,10 +170,16 @@ class FDialog : public FWindow
     void                init();
     virtual void        drawBorder();
     void                drawTitleBar();
+    void                drawBarButton();
+    void                drawZoomButton();
+    void                drawTextBar();
     void                leaveMenu();
     void                openMenu();
     void                selectFirstMenuItem();
     void                setZoomItem();
+    void                moveSizeKey (FKeyEvent*);
+    void                acceptMoveSize();
+    void                cancelMoveSize();
     static void         addDialog (FWidget*);
     static void         delDialog (FWidget*);
 
@@ -175,6 +193,8 @@ class FDialog : public FWindow
     int                 result_code;
     bool                zoom_button_pressed;
     bool                zoom_button_active;
+    bool                setPos_error;
+    bool                setSize_error;
     FPoint              titlebar_click_pos;
     FPoint              resize_click_pos;
     FRect               save_geometry;  // required by keyboard move/size

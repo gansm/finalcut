@@ -155,6 +155,15 @@ class FLineEdit : public FWidget
     bool        hasHotkey();
     void        draw();
     void        drawInputField();
+    void        keyLeft();
+    void        keyRight();
+    void        keyHome();
+    void        keyEnd();
+    void        keyDel();
+    void        keyBackspace();
+    void        keyInsert();
+    void        keyEnter();
+    bool        keyInput (int);
     void        processActivate();
     void        processChanged();
 

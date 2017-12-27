@@ -2137,7 +2137,7 @@ int FTerm::getFramebuffer_bpp ()
 
 //----------------------------------------------------------------------
 int FTerm::openConsole()
-{ 
+{
   static const char* terminal_devices[] =
   {
     "/proc/self/fd/0",
@@ -2853,88 +2853,107 @@ void FTerm::termtypeAnalysis()
 }
 
 //----------------------------------------------------------------------
+bool FTerm::get256colorEnvString(colorEnv& env)
+{
+  // Enable 256 color capabilities
+  env.string1 = std::getenv("COLORTERM");
+  env.string2 = std::getenv("VTE_VERSION");
+  env.string3 = std::getenv("XTERM_VERSION");
+  env.string4 = std::getenv("ROXTERM_ID");
+  env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
+  env.string6 = std::getenv("KONSOLE_DCOP");
+
+  if ( env.string1 != 0 )
+    return true;
+
+  if ( env.string2 != 0 )
+    return true;
+
+  if ( env.string3 != 0 )
+    return true;
+
+  if ( env.string4 != 0 )
+    return true;
+
+  if ( env.string5 != 0 )
+    return true;
+
+  if ( env.string6 != 0 )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::termtype_256color_quirks (colorEnv& env)
+{
+  char* new_termtype = 0;
+
+  if ( ! color256 )
+    return new_termtype;
+
+  if ( std::strncmp(termtype, "xterm", 5) == 0 )
+    new_termtype = C_STR("xterm-256color");
+
+  if ( std::strncmp(termtype, "screen", 6) == 0 )
+  {
+    new_termtype = C_STR("screen-256color");
+    screen_terminal = true;
+    char* tmux = std::getenv("TMUX");
+
+    if ( tmux && std::strlen(tmux) != 0 )
+      tmux_terminal = true;
+  }
+
+  if ( std::strncmp(termtype, "Eterm", 5) == 0 )
+    new_termtype = C_STR("Eterm-256color");
+
+  if ( std::strncmp(termtype, "mlterm", 6) == 0 )
+  {
+    new_termtype = C_STR("mlterm-256color");
+    mlterm_terminal = true;
+  }
+
+  if ( std::strncmp(termtype, "rxvt", 4) != 0
+    && env.string1
+    && std::strncmp(env.string1, "rxvt-xpm", 8) == 0 )
+  {
+    new_termtype = C_STR("rxvt-256color");
+    rxvt_terminal = true;
+  }
+
+  if ( (env.string5 && std::strlen(env.string5) > 0)
+    || (env.string6 && std::strlen(env.string6) > 0) )
+    kde_konsole = true;
+
+  if ( (env.string1 && std::strncmp(env.string1, "gnome-terminal", 14) == 0)
+    || env.string2 )
+  {
+    gnome_terminal = true;
+    // Each gnome-terminal should be able to use 256 colors
+    color256 = true;
+
+    if ( ! screen_terminal )
+      new_termtype = C_STR("gnome-256color");
+  }
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
 char* FTerm::init_256colorTerminal()
 {
-  char local256[80] = "";
   char* new_termtype = 0;
-  char *s1, *s2, *s3, *s4, *s5, *s6;
+  colorEnv env;
 
-  // Enable 256 color capabilities
-  s1 = std::getenv("COLORTERM");
-  s2 = std::getenv("VTE_VERSION");
-  s3 = std::getenv("XTERM_VERSION");
-  s4 = std::getenv("ROXTERM_ID");
-  s5 = std::getenv("KONSOLE_DBUS_SESSION");
-  s6 = std::getenv("KONSOLE_DCOP");
-
-  if ( s1 != 0 )
-    std::strncat (local256, s1, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( s2 != 0 )
-    std::strncat (local256, s2, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( s3 != 0 )
-    std::strncat (local256, s3, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( s4 != 0 )
-    std::strncat (local256, s4, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( s5 != 0 )
-    std::strncat (local256, s5, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( s6 != 0 )
-    std::strncat (local256, s6, sizeof(local256) - std::strlen(local256) - 1);
-
-  if ( std::strlen(local256) > 0 )
-  {
-    if ( std::strncmp(termtype, "xterm", 5) == 0 )
-      new_termtype = C_STR("xterm-256color");
-
-    if ( std::strncmp(termtype, "screen", 6) == 0 )
-    {
-      new_termtype = C_STR("screen-256color");
-      screen_terminal = true;
-      char* tmux = std::getenv("TMUX");
-
-      if ( tmux && std::strlen(tmux) != 0 )
-        tmux_terminal = true;
-    }
-
-    if ( std::strncmp(termtype, "Eterm", 5) == 0 )
-      new_termtype = C_STR("Eterm-256color");
-
-    if ( std::strncmp(termtype, "mlterm", 6) == 0 )
-    {
-      new_termtype = C_STR("mlterm-256color");
-      mlterm_terminal = true;
-    }
-
-    if ( std::strncmp(termtype, "rxvt", 4) != 0
-      && s1
-      && std::strncmp(s1, "rxvt-xpm", 8) == 0 )
-    {
-      new_termtype = C_STR("rxvt-256color");
-      rxvt_terminal = true;
-    }
-
+  if ( get256colorEnvString(env) )
     color256 = true;
-  }
   else if ( std::strstr (termtype, "256color") )
     color256 = true;
   else
     color256 = false;
 
-  if ( (s5 && std::strlen(s5) > 0) || (s6 && std::strlen(s6) > 0) )
-    kde_konsole = true;
-
-  if ( (s1 && std::strncmp(s1, "gnome-terminal", 14) == 0) || s2 )
-  {
-    gnome_terminal = true;
-    // Each gnome-terminal should be able to use 256 colors
-    color256 = true;
-    if ( ! screen_terminal )
-      new_termtype = C_STR("gnome-256color");
-  }
+  new_termtype = termtype_256color_quirks(env);
 
 #if DEBUG
   if ( new_termtype )

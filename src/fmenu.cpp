@@ -162,100 +162,30 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 
   switch ( ev->key() )
   {
-    case fc::Fkey_return:
-    case fc::Fkey_enter:
-      if ( hasSelectedItem() )
-      {
-        FMenuItem* sel_item = getSelectedItem();
-
-        if ( sel_item->hasMenu() )
-          openSubMenu (sel_item->getMenu(), SELECT_ITEM);
-        else
-        {
-          unselectItem();
-          hide();
-          hideSuperMenus();
-          sel_item->processClicked();
-        }
-      }
-      break;
-
     case fc::Fkey_up:
-      selectPrevItem();
+      keyUp();
       break;
 
     case fc::Fkey_down:
-      selectNextItem();
+      keyDown();
       break;
 
     case fc::Fkey_left:
-      if ( isSubMenu() )
-      {
-        FMenu* smenu = static_cast<FMenu*>(getSuperMenu());
-        hideSubMenus();
-        hide();
-
-        if ( smenu->getSelectedItem() )
-          smenu->getSelectedItem()->setFocus();
-
-        smenu->redraw();
-
-        if ( getStatusBar() )
-          getStatusBar()->drawMessage();
-
-        updateTerminal();
-        flush_out();
-      }
-      else
-        keypressMenuBar(ev);  // select previous menu
+      keyLeft(ev);
       break;
 
     case fc::Fkey_right:
-      if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
-      {
-        FMenu* sub_menu = getSelectedItem()->getMenu();
+      keyRight(ev);
+      break;
 
-        if ( ! sub_menu->isVisible() )
-          openSubMenu (sub_menu, SELECT_ITEM);
-        else
-          keypressMenuBar(ev);  // select next menu
-      }
-      else
-        keypressMenuBar(ev);  // select next menu
+    case fc::Fkey_return:
+    case fc::Fkey_enter:
+      keyEnter();
       break;
 
     case fc::Fkey_escape:
     case fc::Fkey_escape_mintty:
-      unselectItem();
-      hideSubMenus();
-      hide();
-
-      if ( isSubMenu() )
-      {
-        FMenu* smenu = static_cast<FMenu*>(getSuperMenu());
-
-        if ( smenu->getSelectedItem() )
-          smenu->getSelectedItem()->setFocus();
-
-        smenu->redraw();
-      }
-      else
-      {
-        FWidget* super = getSuperMenu();
-        hideSuperMenus();
-
-        if ( getStatusBar() )
-          getStatusBar()->clearMessage();
-
-        if ( ! (super && isWindowsMenu(super)) )
-          switchToPrevWindow();
-      }
-
-      if ( getStatusBar() )
-        getStatusBar()->drawMessage();
-
-      updateTerminal();
-      flush_out();
+      keyEscape();
       break;
 
     case fc::Fmkey_1:
@@ -1230,7 +1160,7 @@ bool FMenu::selectPrevItem()
 }
 
 //----------------------------------------------------------------------
-void FMenu::keypressMenuBar (FKeyEvent*& ev)
+void FMenu::keypressMenuBar (FKeyEvent* ev)
 {
   FMenuBar* mbar = getMenuBar();
 
@@ -1239,7 +1169,7 @@ void FMenu::keypressMenuBar (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::hotkeyMenu (FKeyEvent*& ev)
+bool FMenu::hotkeyMenu (FKeyEvent* ev)
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
@@ -1635,6 +1565,113 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
         menuitem->setCursorPos (2 + hotkeypos, 1);
     }
   }
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyUp()
+{
+  selectPrevItem();
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyDown()
+{
+  selectNextItem();
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyLeft (FKeyEvent* ev)
+{
+  if ( isSubMenu() )
+  {
+    FMenu* smenu = static_cast<FMenu*>(getSuperMenu());
+    hideSubMenus();
+    hide();
+
+    if ( smenu->getSelectedItem() )
+      smenu->getSelectedItem()->setFocus();
+
+    smenu->redraw();
+
+    if ( getStatusBar() )
+      getStatusBar()->drawMessage();
+
+    updateTerminal();
+    flush_out();
+  }
+  else
+    keypressMenuBar(ev);  // select previous menu
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyRight (FKeyEvent* ev)
+{
+  if ( hasSelectedItem() && getSelectedItem()->hasMenu() )
+  {
+    FMenu* sub_menu = getSelectedItem()->getMenu();
+
+    if ( ! sub_menu->isVisible() )
+      openSubMenu (sub_menu, SELECT_ITEM);
+    else
+      keypressMenuBar(ev);  // select next menu
+  }
+  else
+    keypressMenuBar(ev);  // select next menu
+
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyEnter()
+{
+  if ( ! hasSelectedItem() )
+    return;
+
+  FMenuItem* sel_item = getSelectedItem();
+
+  if ( sel_item->hasMenu() )
+    openSubMenu (sel_item->getMenu(), SELECT_ITEM);
+  else
+  {
+    unselectItem();
+    hide();
+    hideSuperMenus();
+    sel_item->processClicked();
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FMenu::keyEscape()
+{
+  unselectItem();
+  hideSubMenus();
+  hide();
+
+  if ( isSubMenu() )
+  {
+    FMenu* smenu = static_cast<FMenu*>(getSuperMenu());
+
+    if ( smenu->getSelectedItem() )
+      smenu->getSelectedItem()->setFocus();
+
+    smenu->redraw();
+  }
+  else
+  {
+    FWidget* super = getSuperMenu();
+    hideSuperMenus();
+
+    if ( getStatusBar() )
+      getStatusBar()->clearMessage();
+
+    if ( ! (super && isWindowsMenu(super)) )
+      switchToPrevWindow();
+  }
+
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+
+  updateTerminal();
+  flush_out();
 }
 
 //----------------------------------------------------------------------

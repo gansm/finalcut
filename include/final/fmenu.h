@@ -191,8 +191,8 @@ class FMenu : public FWindow, public FMenuList
     FMenu*       superMenuAt (int, int);
     bool         selectNextItem();
     bool         selectPrevItem();
-    void         keypressMenuBar (FKeyEvent*&);
-    bool         hotkeyMenu (FKeyEvent*&);
+    void         keypressMenuBar (FKeyEvent*);
+    bool         hotkeyMenu (FKeyEvent*);
     int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void         draw();
     void         drawItems();
@@ -205,6 +205,12 @@ class FMenu : public FWindow, public FMenuList
     void         drawTrailingSpaces (int);
     void         setLineAttributes (FMenuItem*, int);
     void         setCursorToHotkeyPosition (FMenuItem*);
+    void         keyUp();
+    void         keyDown();
+    void         keyLeft (FKeyEvent*);
+    void         keyRight (FKeyEvent*);
+    void         keyEnter();
+    void         keyEscape();
     void         processActivate();
 
     // Friend classes

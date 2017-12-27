@@ -546,7 +546,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   if ( cygwin_terminal && (term->fg_color > 7 || term->bg_color > 7) )
   {
     // reset blink and bold mode from colors > 7
-    char* rst = C_STR(CSI "m");
+    char rst[] = CSI "m";
     append_sequence (rst);
     reset(term);
   }
@@ -1046,7 +1046,7 @@ bool FOptiAttr::setTermDefaultColor (char_data*& term)
   }
   else if ( ansi_default_color )
   {
-    char* sgr_39_49 = C_STR(CSI "39;49m");
+    char sgr_39_49[] = CSI "39;49m";
     append_sequence (sgr_39_49);
     term->fg_color = Default;
     term->bg_color = Default;
@@ -1302,7 +1302,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
       }
       else if ( fg == Default && term->fg_color != Default )
       {
-        char* sgr_39 = C_STR(CSI "39m");
+        char sgr_39[] = CSI "39m";
         append_sequence (sgr_39);
         term->fg_color = Default;
       }

@@ -37,6 +37,8 @@ FDialog::FDialog (FWidget* parent)
   , result_code(FDialog::Reject)
   , zoom_button_pressed(false)
   , zoom_button_active(false)
+  , setPos_error(false)
+  , setSize_error(false)
   , titlebar_click_pos()
   , resize_click_pos()
   , save_geometry()
@@ -57,6 +59,8 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
   , result_code(FDialog::Reject)
   , zoom_button_pressed(false)
   , zoom_button_active(false)
+  , setPos_error(false)
+  , setSize_error(false)
   , titlebar_click_pos()
   , resize_click_pos()
   , save_geometry()
@@ -199,19 +203,29 @@ void FDialog::setPos (int x, int y, bool)
 {
   int rsw, bsh, width, height;
   FRect old_geometry;
+  setPos_error = false;
 
   if ( getX() == x && getY() == y )
+  {
+    setPos_error = true;
     return;
+  }
 
   width = getWidth();
   height = getHeight();
 
   // Avoid to move widget completely outside the terminal
   if ( x + width <= 1 || x > getMaxWidth() || y < 1 || y > getMaxHeight() )
+  {
+    setPos_error = true;
     return;
+  }
 
   if ( isZoomed() )
+  {
+    setPos_error = true;
     return;
+  }
 
   int dx = getX() - x
     , dy = getY() - y
@@ -302,20 +316,55 @@ void FDialog::setPos (int x, int y, bool)
 }
 
 //----------------------------------------------------------------------
-void FDialog::move (int dx, int dy)
+inline void FDialog::move (int dx, int dy)
 {
   setPos (getX() + dx, getY() + dy);
 }
 
 //----------------------------------------------------------------------
+inline bool FDialog::moveUp (int n)
+{
+  move (0, -n);
+  return ! setPos_error;
+}
+
+//----------------------------------------------------------------------
+inline bool FDialog::moveDown (int n)
+{
+  move (0, n);
+  return ! setPos_error;
+}
+
+//----------------------------------------------------------------------
+inline bool FDialog::moveLeft (int n)
+{
+  move (-n, 0);
+  return ! setPos_error;
+}
+
+//----------------------------------------------------------------------
+inline bool FDialog::moveRight (int n)
+{
+  move (n, 0);
+  return ! setPos_error;
+}
+
+//----------------------------------------------------------------------
 void FDialog::setSize (int w, int h, bool adjust)
 {
+  setSize_error = false;
 
   if ( getWidth() == w && getHeight() == h )
+  {
+    setSize_error = true;
     return;
+  }
 
   if ( isZoomed() )
+  {
+    setSize_error = true;
     return;
+  }
 
   int x = getTermX()
     , y = getTermY()
@@ -381,6 +430,46 @@ void FDialog::setSize (int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
+bool FDialog::reduceHeight (int n)
+{
+  if ( ! isResizeable() )
+    return false;
+
+  setSize (getWidth(), getHeight() - n);
+  return ! setSize_error;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::expandHeight (int n)
+{
+  if ( ! isResizeable() || getHeight() + getY() > getMaxHeight() )
+    return false;
+
+  setSize (getWidth(), getHeight() + n);
+  return ! setSize_error;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::reduceWidth (int n)
+{
+  if ( ! isResizeable() )
+    return false;
+
+  setSize (getWidth() - n, getHeight());
+  return ! setSize_error;
+}
+
+//----------------------------------------------------------------------
+bool FDialog::expandWidth (int n)
+{
+  if ( ! isResizeable() || getWidth() + getX() > getMaxWidth() )
+    return false;
+
+  setSize (getWidth() + n, getHeight());
+  return ! setSize_error;
+}
+
+//----------------------------------------------------------------------
 void FDialog::activateDialog()
 {
   FWidget* old_focus = FWidget::getFocusWidget();
@@ -437,98 +526,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   }
 
   if ( getMoveSizeWidget() )
-  {
-    switch ( ev->key() )
-    {
-      case fc::Fkey_up:
-        move (0, -1);
-        ev->accept();
-        break;
-
-      case fc::Fkey_down:
-        move (0, 1);
-        ev->accept();
-        break;
-
-      case fc::Fkey_left:
-        move (-1, 0);
-        ev->accept();
-        break;
-
-      case fc::Fkey_right:
-        move (1, 0);
-        ev->accept();
-        break;
-
-      case fc::Fmkey_up:
-      case fc::Fkey_sr:
-        if ( isResizeable() )
-        {
-          setSize (getWidth(), getHeight() - 1);
-          ev->accept();
-        }
-        break;
-
-      case fc::Fmkey_down:
-      case fc::Fkey_sf:
-        if ( isResizeable() && getHeight() + getY() <= getMaxHeight() )
-        {
-          setSize (getWidth(), getHeight() + 1);
-          ev->accept();
-        }
-        break;
-
-      case fc::Fmkey_left:
-      case fc::Fkey_sleft:
-        if ( isResizeable() )
-        {
-          setSize (getWidth() - 1, getHeight());
-          ev->accept();
-        }
-        break;
-
-      case fc::Fmkey_right:
-      case fc::Fkey_sright:
-        if ( isResizeable() && getWidth() + getX() <= getMaxWidth() )
-        {
-          setSize (getWidth() + 1, getHeight());
-          ev->accept();
-        }
-        break;
-
-      case fc::Fkey_return:
-      case fc::Fkey_enter:
-        setMoveSizeWidget(0);
-
-        if ( tooltip )
-          delete tooltip;
-
-        tooltip = 0;
-        redraw();
-        ev->accept();
-        break;
-
-      case fc::Fkey_escape:
-      case fc::Fkey_escape_mintty:
-        setMoveSizeWidget(0);
-
-        if ( tooltip )
-          delete tooltip;
-
-        tooltip = 0;
-        setPos (save_geometry.getPos());
-
-        if ( isResizeable() )
-          setSize (save_geometry.getWidth(), save_geometry.getHeight());
-
-        redraw();
-        ev->accept();
-        return;
-
-      default:
-        break;
-    }
-  }
+    moveSizeKey(ev);
 
   if ( this == getMainWidget() )
     return;
@@ -1226,13 +1224,30 @@ void FDialog::drawBorder()
 //----------------------------------------------------------------------
 void FDialog::drawTitleBar()
 {
-  static const int menu_btn = 3;
-  int i
-    , x
-    , length
-    , zoom_btn;
+  // Draw the title button
+  drawBarButton();
+  // Print the text bar
+  drawTextBar();
+  // Draw the zoom/unzoom button
+  drawZoomButton();
 
-  // draw the title button
+  if ( isMonochron() )
+    setReverse(false);
+
+#if DEBUG
+  if ( PRINT_WIN_NUMBER )
+  {
+    // Print the number of window in stack
+    setPrintPos (getWidth() - 2, 1);
+    printf ("(%d)", getWindowLayer(this));
+  }
+#endif
+}
+
+//----------------------------------------------------------------------
+void FDialog::drawBarButton()
+{
+  // Print the title button
   setPrintPos (1, 1);
 
   if ( dialog_menu && dialog_menu->isVisible() )
@@ -1277,8 +1292,78 @@ void FDialog::drawTitleBar()
 
     print (' ');
   }
+}
 
+//----------------------------------------------------------------------
+void FDialog::drawZoomButton()
+{
+  // Draw the zoom/unzoom button
+
+  if ( ! isResizeable() )
+    return;
+
+  if ( zoom_button_pressed )
+    setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
+  else
+    setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
+
+  if ( isZoomed() )
+  {
+    if ( isNewFont() )
+    {
+      print (fc::NF_rev_down_pointing_triangle1);
+      print (fc::NF_rev_down_pointing_triangle2);
+    }
+    else
+    {
+      if ( isMonochron() )
+      {
+        print ('[');
+        print (fc::BlackDownPointingTriangle);  // ▼
+        print (']');
+      }
+      else
+      {
+        print (' ');
+        print (fc::BlackDownPointingTriangle);  // ▼
+        print (' ');
+      }
+    }
+  }
+  else  // is not zoomed
+  {
+    if ( isNewFont() )
+    {
+      print (fc::NF_rev_up_pointing_triangle1);
+      print (fc::NF_rev_up_pointing_triangle2);
+    }
+    else
+    {
+      if ( isMonochron() )
+      {
+        print ('[');
+        print (fc::BlackUpPointingTriangle);  // ▲
+        print (']');
+      }
+      else
+      {
+        print (' ');
+        print (fc::BlackUpPointingTriangle);  // ▲
+        print (' ');
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FDialog::drawTextBar()
+{
   // fill with spaces (left of the title)
+  int center_offset
+    , zoom_btn
+    , length
+    , x;
+
   if ( getMaxColor() < 16 )
     setBold();
 
@@ -1295,21 +1380,20 @@ void FDialog::drawTitleBar()
     zoom_btn = 3;
 
   length = int(tb_text.getLength());
-  i = getWidth() - length - menu_btn - zoom_btn;
-  i = int(i/2);
+  center_offset = int((getWidth() - length - MENU_BTN - zoom_btn) / 2);
 
-  for (x = 1; x <= i; x++)
+  for (x = 1; x <= center_offset; x++)
     print (' ');
 
   // Print title bar text
   if ( tb_text )
   {
-    if ( length <= getWidth() - menu_btn - zoom_btn )
+    if ( length <= getWidth() - MENU_BTN - zoom_btn )
       print (tb_text);
     else
     {
       // Print ellipsis
-      print (tb_text.left(getWidth() - menu_btn - zoom_btn - 2));
+      print (tb_text.left(getWidth() - MENU_BTN - zoom_btn - 2));
       print ("..");
     }
   }
@@ -1320,69 +1404,6 @@ void FDialog::drawTitleBar()
 
   if ( getMaxColor() < 16 )
     unsetBold();
-
-  // Draw the zoom/unzoom button
-  if ( isResizeable() )
-  {
-    if ( zoom_button_pressed )
-      setColor (wc.titlebar_button_focus_fg, wc.titlebar_button_focus_bg);
-    else
-      setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
-
-    if ( isZoomed() )
-    {
-      if ( isNewFont() )
-      {
-        print (fc::NF_rev_down_pointing_triangle1);
-        print (fc::NF_rev_down_pointing_triangle2);
-      }
-      else
-      {
-        if ( isMonochron() )
-        {
-          print ('[');
-          print (fc::BlackDownPointingTriangle);  // ▼
-          print (']');
-        }
-        else
-        {
-          print (' ');
-          print (fc::BlackDownPointingTriangle);  // ▼
-          print (' ');
-        }
-      }
-    }
-    else  // is not zoomed
-    {
-      if ( isNewFont() )
-      {
-        print (fc::NF_rev_up_pointing_triangle1);
-        print (fc::NF_rev_up_pointing_triangle2);
-      }
-      else
-      {
-        if ( isMonochron() )
-        {
-          print ('[');
-          print (fc::BlackUpPointingTriangle);  // ▲
-          print (']');
-        }
-        else
-        {
-          print (' ');
-          print (fc::BlackUpPointingTriangle);  // ▲
-          print (' ');
-        }
-      }
-    }
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-
-/* Print the number of window in stack */
-//setPrintPos (getWidth() - 2, 1);
-//printf ("(%d)", getWindowLayer(this));
 }
 
 //----------------------------------------------------------------------
@@ -1464,6 +1485,101 @@ void FDialog::setZoomItem()
     zoom_item->setStatusbarMessage ("Enlarge the window to the entire desktop");
     move_size_item->setEnable();
   }
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::moveSizeKey (FKeyEvent* ev)
+{
+  switch ( ev->key() )
+  {
+    case fc::Fkey_up:
+      if ( moveUp(1) )
+        ev->accept();
+      break;
+
+    case fc::Fkey_down:
+      if ( moveDown(1) )
+        ev->accept();
+      break;
+
+    case fc::Fkey_left:
+      if ( moveLeft(1) )
+        ev->accept();
+      break;
+
+    case fc::Fkey_right:
+      if ( moveRight(1) )
+        ev->accept();
+      break;
+
+    case fc::Fmkey_up:
+    case fc::Fkey_sr:
+      if ( reduceHeight(1) )
+        ev->accept();
+      break;
+
+    case fc::Fmkey_down:
+    case fc::Fkey_sf:
+      if ( expandHeight(1) )
+        ev->accept();
+      break;
+
+    case fc::Fmkey_left:
+    case fc::Fkey_sleft:
+      if ( reduceWidth(1) )
+        ev->accept();
+      break;
+
+    case fc::Fmkey_right:
+    case fc::Fkey_sright:
+      if ( expandWidth(1) )
+        ev->accept();
+      break;
+
+    case fc::Fkey_return:
+    case fc::Fkey_enter:
+      acceptMoveSize();
+      ev->accept();
+      break;
+
+    case fc::Fkey_escape:
+    case fc::Fkey_escape_mintty:
+      cancelMoveSize();
+      ev->accept();
+      return;
+
+    default:
+      break;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::acceptMoveSize()
+{
+  setMoveSizeWidget(0);
+
+  if ( tooltip )
+    delete tooltip;
+
+  tooltip = 0;
+  redraw();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::cancelMoveSize()
+{
+  setMoveSizeWidget(0);
+
+  if ( tooltip )
+    delete tooltip;
+
+  tooltip = 0;
+  setPos (save_geometry.getPos());
+
+  if ( isResizeable() )
+    setSize (save_geometry.getWidth(), save_geometry.getHeight());
+
+  redraw();
 }
 
 //----------------------------------------------------------------------

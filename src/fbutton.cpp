@@ -690,7 +690,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
 
   if ( ! is.active && isMonochron() )
    setReverse(true);  // Light background
-   
+
   if ( is.active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
@@ -760,12 +760,12 @@ void FButton::draw()
   if ( isMonochron() )
     setReverse(true);  // Light background
 
-  // Click animation preprocessing 
+  // Click animation preprocessing
   indent = clickAnimationIndent (parent_widget);
 
   // Clear right margin after animation
   clearRightMargin (parent_widget);
-  
+
   if ( ! is.active && isMonochron() )
     space = fc::MediumShade;  // ▒ simulates greyed out at Monochron
 
