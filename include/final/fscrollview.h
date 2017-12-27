@@ -179,6 +179,7 @@ class FScrollView : public FWidget
     int               nf_offset;
     bool              border;
     bool              use_own_print_area;
+    bool              update_scrollbar;
     fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
     fc::scrollBarMode hMode;
 };

@@ -1,4 +1,6 @@
 2017-12-27  Markus Gans  <guru.mail@muenster.de>
+	* Generalize scroll functions in FScrollView
+	* Refactoring FScrollbar::drawBar
 	* Refactoring FLineEdit::onKeyPress
 	* Refactoring FMenu::onKeyPress
 	* Refactoring FDialog::onKeyPress

@@ -106,7 +106,7 @@ void FScrollbar::setMaximum (int maximum)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setRange(int minimum, int maximum)
+void FScrollbar::setRange (int minimum, int maximum)
 {
   min = minimum;
   max = maximum;
@@ -166,6 +166,7 @@ void FScrollbar::setOrientation (int o)
     if ( isNewFont() )
       nf = 2;
   }
+
   slider_length = bar_length = length - nf - 2;
   bar_orientation = o;
 }
@@ -249,165 +250,122 @@ void FScrollbar::calculateSliderValues()
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::drawButtons()
+void FScrollbar::drawVerticalBar()
 {
-  setColor (wc.scrollbar_button_fg, wc.scrollbar_button_bg);
+  int z;
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (z = 1; z <= slider_pos; z++)
+  {
+    setPrintPos (1, 1 + z);
+
+    if ( isNewFont() )
+      print (fc::NF_border_line_left);  // ⎸
+
+    if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);  // ▒
+    else
+      print (' ');
+  }
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (z = 1; z <= slider_length; z++)
+  {
+    setPrintPos (1, 1 + slider_pos + z);
+
+    if ( isNewFont() )
+      print (' ');
+
+    print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+
+  for (z = slider_pos + slider_length + 1; z <= bar_length; z++)
+  {
+    setPrintPos (1, 1 + z);
+
+    if ( isNewFont() )
+      print (fc::NF_border_line_left);  // ⎸
+
+    if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);
+    else
+      print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::drawHorizontalBar()
+{
+  int z;
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
-  {
-    setPrintPos (1,1);
-
-    if ( bar_orientation == fc::vertical )
-    {
-      print (fc::NF_rev_up_arrow1);
-      print (fc::NF_rev_up_arrow2);
-      setPrintPos (1, length);
-      print (fc::NF_rev_down_arrow1);
-      print (fc::NF_rev_down_arrow2);
-    }
-    else  // horizontal
-    {
-      print (fc::NF_rev_left_arrow1);
-      print (fc::NF_rev_left_arrow2);
-      setPrintPos (length - 1, 1);
-      print (fc::NF_rev_right_arrow1);
-      print (fc::NF_rev_right_arrow2);
-    }
-  }
+    setPrintPos (3, 1);
   else
+    setPrintPos (2, 1);
+
+  for (; z < slider_pos; z++)
   {
-    setPrintPos (1,1);
-
-    if ( isMonochron() )
-      setReverse(true);
-
-    if ( bar_orientation == fc::vertical )
-    {
-      print (fc::BlackUpPointingTriangle);    // ▲
-      setPrintPos (1, length);
-      print (fc::BlackDownPointingTriangle);  // ▼
-    }
-    else  // horizontal
-    {
-      print (fc::BlackLeftPointingPointer);   // ◄
-      setPrintPos (length, 1);
-      print (fc::BlackRightPointingPointer);  // ►
-    }
-
-    if ( isMonochron() )
-      setReverse(false);
+    if ( isNewFont() )
+      print (fc::NF_border_line_upper);  // ¯
+    else if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);  // ▒
+    else
+      print (' ');
   }
+
+  setColor (wc.scrollbar_bg, wc.scrollbar_fg);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  for (z = 0; z < slider_length; z++)
+    print (' ');
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  setColor (wc.scrollbar_fg, wc.scrollbar_bg);
+  z = slider_pos + slider_length + 1;
+
+  for (; z <= bar_length; z++)
+  {
+    if ( isNewFont() )
+      print (fc::NF_border_line_upper);  // ¯
+    else if ( isMonochron() || max_color < 16 )
+      print (fc::MediumShade);  // ▒
+    else
+      print (' ');
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::drawBar()
 {
-  int z;
-
   if ( slider_pos == current_slider_pos || length < 3 )
     return;
 
   if ( bar_orientation == fc::vertical )
-  {
-    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-    for (z = 1; z <= slider_pos; z++)
-    {
-      setPrintPos (1, 1 + z);
-
-      if ( isNewFont() )
-        print (fc::NF_border_line_left);  // ⎸
-
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (' ');
-    }
-
-    setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-    if ( isMonochron() )
-      setReverse(false);
-
-    for (z = 1; z <= slider_length; z++)
-    {
-      setPrintPos (1, 1 + slider_pos + z);
-
-      if ( isNewFont() )
-        print (' ');
-
-      print (' ');
-    }
-
-    if ( isMonochron() )
-      setReverse(true);
-
-    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-
-    for (z = slider_pos + slider_length + 1; z <= bar_length; z++)
-    {
-      setPrintPos (1, 1 + z);
-
-      if ( isNewFont() )
-        print (fc::NF_border_line_left);  // ⎸
-
-      if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);
-      else
-        print (' ');
-    }
-  }
+    drawVerticalBar();
   else  // horizontal
-  {
-    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-    z = 0;
-
-    if ( isNewFont() )
-      setPrintPos (3 + z, 1);
-    else
-      setPrintPos (2 + z, 1);
-
-    for (; z < slider_pos; z++)
-    {
-      if ( isNewFont() )
-        print (fc::NF_border_line_upper);  // ¯
-      else if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (' ');
-    }
-
-    setColor (wc.scrollbar_bg, wc.scrollbar_fg);
-
-    if ( isMonochron() )
-      setReverse(false);
-
-    z = 0;
-
-    for (; z < slider_length; z++)
-      print (' ');
-
-    if ( isMonochron() )
-      setReverse(true);
-
-    setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-    z = slider_pos + slider_length + 1;
-
-    for (; z <= bar_length; z++)
-    {
-      if ( isNewFont() )
-        print (fc::NF_border_line_upper);  // ¯
-      else if ( isMonochron() || max_color < 16 )
-        print (fc::MediumShade);  // ▒
-      else
-        print (' ');
-    }
-  }
+    drawHorizontalBar();
 
   current_slider_pos = slider_pos;
-
-  if ( isMonochron() )
-    setReverse(false);
 }
 
 //----------------------------------------------------------------------
@@ -431,7 +389,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     return;
   }
 
-  // process LeftButton
+  // Process left button
   scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::noScroll )
@@ -519,7 +477,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     return;
   }
 
-  // process LeftButton
+  // Process left button
   new_scroll_type = getClickedScrollType(mouse_x, mouse_y);
 
   if ( scroll_type == FScrollbar::scrollJump )
@@ -637,6 +595,57 @@ void FScrollbar::draw()
   drawButtons();
   current_slider_pos = -1;
   drawBar();
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::drawButtons()
+{
+  setColor (wc.scrollbar_button_fg, wc.scrollbar_button_bg);
+
+  if ( isNewFont() )
+  {
+    setPrintPos (1,1);
+
+    if ( bar_orientation == fc::vertical )
+    {
+      print (fc::NF_rev_up_arrow1);
+      print (fc::NF_rev_up_arrow2);
+      setPrintPos (1, length);
+      print (fc::NF_rev_down_arrow1);
+      print (fc::NF_rev_down_arrow2);
+    }
+    else  // horizontal
+    {
+      print (fc::NF_rev_left_arrow1);
+      print (fc::NF_rev_left_arrow2);
+      setPrintPos (length - 1, 1);
+      print (fc::NF_rev_right_arrow1);
+      print (fc::NF_rev_right_arrow2);
+    }
+  }
+  else
+  {
+    setPrintPos (1,1);
+
+    if ( isMonochron() )
+      setReverse(true);
+
+    if ( bar_orientation == fc::vertical )
+    {
+      print (fc::BlackUpPointingTriangle);    // ▲
+      setPrintPos (1, length);
+      print (fc::BlackDownPointingTriangle);  // ▼
+    }
+    else  // horizontal
+    {
+      print (fc::BlackLeftPointingPointer);   // ◄
+      setPrintPos (length, 1);
+      print (fc::BlackRightPointingPointer);  // ►
+    }
+
+    if ( isMonochron() )
+      setReverse(false);
+  }
 }
 
 //----------------------------------------------------------------------

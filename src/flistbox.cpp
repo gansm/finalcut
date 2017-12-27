@@ -195,7 +195,7 @@ void FListBox::setGeometry (int x, int y, int w, int h, bool adjust)
   if ( isNewFont() )
   {
     vbar->setGeometry (getWidth(), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, getHeight(), getWidth() - 2, 1);
+    hbar->setGeometry (1, getHeight(), getWidth() - 2 - nf_offset, 1);
   }
   else
   {
@@ -1041,7 +1041,7 @@ void FListBox::adjustSize()
   hbar->setMaximum (max_line_width - getClientWidth() + 2);
   hbar->setPageSize (max_line_width, getClientWidth() - 2);
   hbar->setY (getHeight());
-  hbar->setWidth (getClientWidth(), false);
+  hbar->setWidth (getClientWidth() + nf_offset, false);
   hbar->resize();
 
   if ( element_count <= getClientHeight() )
