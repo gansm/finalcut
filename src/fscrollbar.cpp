@@ -308,7 +308,7 @@ void FScrollbar::drawVerticalBar()
 //----------------------------------------------------------------------
 void FScrollbar::drawHorizontalBar()
 {
-  int z;
+  int z = 0;
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
