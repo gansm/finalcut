@@ -316,7 +316,7 @@ void FDialog::setPos (int x, int y, bool)
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::move (int dx, int dy)
+void FDialog::move (int dx, int dy)
 {
   setPos (getX() + dx, getY() + dy);
 }
