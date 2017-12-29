@@ -472,6 +472,9 @@ bool FDialog::expandWidth (int n)
 //----------------------------------------------------------------------
 void FDialog::activateDialog()
 {
+  if ( isWindowActive() )
+    return;
+
   FWidget* old_focus = FWidget::getFocusWidget();
   FWidget* win_focus = getWindowFocusWidget();
   setActiveWindow(this);
@@ -507,13 +510,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
   if ( ! isEnabled() )
     return;
 
-  // cancel resize by mouse
-  if ( ! resize_click_pos.isNull() )
-  {
-    resize_click_pos.setPoint (0,0);
-    drawBorder();
-    updateTerminal();
-  }
+  cancelMouseResize();
 
   if ( ev->key() == fc::Fckey_caret  // Ctrl+^ (Ctrl+6)
     || ev->key() == fc::Fkey_f22 )   // Shift+F10
@@ -525,6 +522,7 @@ void FDialog::onKeyPress (FKeyEvent* ev)
     selectFirstMenuItem();
   }
 
+  // Dialog move and resize functions
   if ( getMoveSizeWidget() )
     moveSizeKey(ev);
 
@@ -546,131 +544,77 @@ void FDialog::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::onMouseDown (FMouseEvent* ev)
 {
-  int mouse_x = ev->getX()
-    , mouse_y = ev->getY()
-    , zoom_btn;
-
-  if ( ! isResizeable() )
-    zoom_btn = 0;
-  else if ( isNewFont() )
-    zoom_btn = 2;
-  else
-    zoom_btn = 3;
-
-  if ( zoom_button_pressed || zoom_button_active )
+  mouseStates ms =
   {
-    zoom_button_pressed = false;
-    zoom_button_active = false;
-    drawTitleBar();
-  }
+    ev->getX(),
+    ev->getY(),
+    ev->getTermPos(),
+    getZoomButtonWidth(),
+    false  // mouse_over_menu
+  };
+
+  deactivateZoomButton();
 
   if ( ev->getButton() == fc::LeftButton )
   {
-    bool has_raised;
+    // Click on titlebar or window: raise + activate
+    raiseActivateDialog();
 
-    // click on titlebar or window: raise + activate
-    if ( mouse_x >= 4 && mouse_x <= getWidth() - zoom_btn && mouse_y == 1 )
+    if ( ms.mouse_x >= 4
+      && ms.mouse_x <= getWidth() - ms.zoom_btn
+      && ms.mouse_y == 1 )
       titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
     else
       titlebar_click_pos.setPoint (0,0);
 
-    has_raised = raiseWindow();
-
-    if ( ! isWindowActive() )
-      activateDialog();
-
-    if ( has_raised )
-      redraw();
-
-    // click on titlebar menu button
-    if ( mouse_x < 4 && mouse_y == 1 )
+    // Click on titlebar menu button
+    if ( ms.mouse_x < 4 && ms.mouse_y == 1 )
       openMenu();
-    else if ( mouse_x > getWidth() - zoom_btn && mouse_y == 1 )
-    {
-      zoom_button_pressed = true;
-      zoom_button_active = true;
-      drawTitleBar();
-    }
-
-    // click on the lower right resize corner
-    if ( isResizeable()
-      && ( (mouse_x == getWidth() && mouse_y == getHeight())
-        || (mouse_x == getWidth() - 1 && mouse_y == getHeight())
-        || (mouse_x == getWidth() && mouse_y == getHeight() - 1) ) )
-    {
-      resize_click_pos = ev->getTermPos();
-      FPoint lower_right_pos = getTermGeometry().getLowerRightPos();
-
-      if ( ev->getTermPos() != lower_right_pos )
-      {
-        FPoint deltaPos = ev->getTermPos() - lower_right_pos;
-        int w = lower_right_pos.getX() + deltaPos.getX() - getTermX() + 1;
-        int h = lower_right_pos.getY() + deltaPos.getY() - getTermY() + 1;
-        setSize (w, h);
-      }
-      else
-        drawBorder();
-    }
     else
-      resize_click_pos.setPoint (0,0);
+      activateZoomButton(ms);
+
+    // Click on the lower right resize corner
+    resizeMouseDown(ms);
   }
   else  // ev->getButton() != fc::LeftButton
   {
-    // click on titlebar menu button
-    if ( mouse_x < 4 && mouse_y == 1 && dialog_menu->isVisible() )
+    // Click on titlebar menu button
+    if ( ms.mouse_x < 4 && ms.mouse_y == 1
+      && dialog_menu->isVisible() )
       leaveMenu();  // close menu
 
-    // cancel resize
-    if ( ! resize_click_pos.isNull() )
-    {
-      resize_click_pos.setPoint (0,0);
-      drawBorder();
-      updateTerminal();
-    }
+    cancelMouseResize();  // Cancel resize
   }
 
-  if ( ev->getButton() == fc::RightButton )
-  {
-    // click on titlebar: just activate
-    if ( mouse_x >= 4 && mouse_x <= getWidth() && mouse_y == 1 )
-    {
-      if ( ! isWindowActive() )
-        activateDialog();
-    }
-  }
+  // Click on titlebar: just activate
+  if ( ev->getButton() == fc::RightButton
+    && ms.mouse_x >= 4
+    && ms.mouse_x <= getWidth()
+    && ms.mouse_y == 1 )
+      activateDialog();
 
-  if ( ev->getButton() == fc::MiddleButton )
-  {
-    // click on titlebar: lower + activate
-    if ( mouse_x >= 4 && mouse_x <= getWidth() && mouse_y == 1 )
-    {
-      bool has_lowered = lowerWindow();
-
-      if ( ! isWindowActive() )
-        activateDialog();
-      else if ( has_lowered )
-        updateTerminal();
-    }
-  }
+  // Click on titlebar: lower + activate
+  if ( ev->getButton() == fc::MiddleButton
+    && ms.mouse_x >= 4 && ms.mouse_x <= getWidth()
+    && ms.mouse_y == 1 )
+      lowerActivateDialog();
 }
 
 //----------------------------------------------------------------------
 void FDialog::onMouseUp (FMouseEvent* ev)
 {
-  int zoom_btn;
-
-  if ( ! isResizeable() )
-    zoom_btn = 0;
-  else if ( isNewFont() )
-    zoom_btn = 2;
-  else
-    zoom_btn = 3;
+  mouseStates ms =
+  {
+    ev->getX(),
+    ev->getY(),
+    ev->getTermPos(),
+    getZoomButtonWidth(),
+    false  // mouse_over_menu
+  };
 
   if ( ev->getButton() == fc::LeftButton )
   {
-    int mouse_x    = ev->getX()
-      , mouse_y    = ev->getY()
-      , titlebar_x = titlebar_click_pos.getX()
+    int titlebar_x = titlebar_click_pos.getX()
       , titlebar_y = titlebar_click_pos.getY();
 
     if ( ! titlebar_click_pos.isNull()
@@ -678,204 +622,87 @@ void FDialog::onMouseUp (FMouseEvent* ev)
       && titlebar_x < getTermX() + getWidth()
       && titlebar_y == getTermY() )
     {
-      FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
+      FPoint deltaPos = ms.termPos - titlebar_click_pos;
       move (deltaPos);
-      titlebar_click_pos = ev->getTermPos();
+      titlebar_click_pos = ms.termPos;
     }
 
-    // click on titlebar menu button
-    if ( mouse_x < 4
-      && mouse_y == 1
+    // Click on titlebar menu button
+    if ( ms.mouse_x < 4
+      && ms.mouse_y == 1
       && dialog_menu->isVisible()
       && ! dialog_menu->hasSelectedItem() )
     {
       // Sets focus to the first item
       selectFirstMenuItem();
     }
-    else if ( mouse_x > getWidth() - zoom_btn
-           && mouse_y == 1
-           && zoom_button_pressed )
+    else
     {
-      // zoom to maximum or restore the window size
-      zoomWindow();
-      setZoomItem();
+      // Zoom to maximum or restore the window size
+      pressZoomButton(ms);
     }
 
-    // resize the dialog
-    if ( isResizeable() && ! resize_click_pos.isNull() )
-    {
-      FWidget* r = getRootWidget();
-      resize_click_pos = ev->getTermPos();
-      int x2 = resize_click_pos.getX()
-        , y2 = resize_click_pos.getY()
-        , x2_offset = 0
-        , y2_offset = 0;
-
-      if ( r )
-      {
-        x2_offset = r->getLeftPadding();
-        y2_offset = r->getTopPadding();
-      }
-
-      if ( ev->getTermPos() != getTermGeometry().getLowerRightPos() )
-      {
-        int w, h;
-        FPoint deltaPos = ev->getTermPos() - resize_click_pos;
-
-        if ( x2 - x2_offset <= getMaxWidth() )
-          w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
-        else
-          w = getMaxWidth() - getTermX() + x2_offset + 1;
-
-        if ( y2 - y2_offset <= getMaxHeight() )
-          h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
-        else
-          h = getMaxHeight() - getTermY() + y2_offset + 1;
-
-        setSize (w, h);
-      }
-
-      // reset the border color
-      resize_click_pos.setPoint (0,0);
-
-      // redraw() is required to draw the standard (black) border
-      // and client objects with ignorePadding() option.
-      redraw();
-    }
+    // Resize the dialog
+    resizeMouseUpMove (ms, true);
   }
 
-  if ( zoom_button_pressed || zoom_button_active )
-  {
-    zoom_button_pressed = false;
-    zoom_button_active = false;
-    drawTitleBar();
-  }
+  deactivateZoomButton();
 }
 
 //----------------------------------------------------------------------
 void FDialog::onMouseMove (FMouseEvent* ev)
 {
-  int zoom_btn;
-
-  if ( ! isResizeable() )
-    zoom_btn = 0;
-  else if ( isNewFont() )
-    zoom_btn = 2;
-  else
-    zoom_btn = 3;
-
-  if ( ev->getButton() == fc::LeftButton )
+  mouseStates ms =
   {
-    int mouse_x = ev->getX();
-    int mouse_y = ev->getY();
+    ev->getX(),
+    ev->getY(),
+    ev->getTermPos(),
+    getZoomButtonWidth(),
+    isMouseOverMenu(ev->getTermPos())
+  };
 
-    if ( ! titlebar_click_pos.isNull() )
-    {
-      FPoint deltaPos = ev->getTermPos() - titlebar_click_pos;
-      move (deltaPos);
-      titlebar_click_pos = ev->getTermPos();
-    }
+  if ( ev->getButton() != fc::LeftButton )
+    return;
 
-    if ( dialog_menu->isVisible() && dialog_menu->isShown() )
-    {
-      // Mouse event handover to the menu
-      const FRect& menu_geometry = dialog_menu->getTermGeometry();
-
-      if ( dialog_menu->getCount() > 0
-        && menu_geometry.contains(ev->getTermPos()) )
-      {
-        const FPoint& g = ev->getTermPos();
-        const FPoint& p = dialog_menu->termToWidgetPos(g);
-        int b = ev->getButton();
-
-        try
-        {
-          FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
-          dialog_menu->mouse_down = true;
-          setClickedWidget(dialog_menu);
-          dialog_menu->onMouseMove(_ev);
-          delete _ev;
-        }
-        catch (const std::bad_alloc& ex)
-        {
-          std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-          return;
-        }
-      }
-    }
-
-    if ( mouse_x > getWidth() - zoom_btn && mouse_y == 1 && zoom_button_active )
-      zoom_button_pressed = true;
-    else if ( zoom_button_pressed )
-      zoom_button_pressed = false;
-
-    drawTitleBar();
-
-    // resize the dialog
-    if ( isResizeable() && ! resize_click_pos.isNull()
-      && ev->getTermPos() != getTermGeometry().getLowerRightPos() )
-    {
-      FWidget* r = getRootWidget();
-      resize_click_pos = ev->getTermPos();
-      int x2 = resize_click_pos.getX()
-        , y2 = resize_click_pos.getY()
-        , x2_offset = 0
-        , y2_offset = 0;
-
-      if ( r )
-      {
-        x2_offset = r->getLeftPadding();
-        y2_offset = r->getTopPadding();
-      }
-
-      int w, h;
-      FPoint deltaPos = ev->getTermPos() - resize_click_pos;
-
-      if ( x2 - x2_offset <= getMaxWidth() )
-        w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
-      else
-        w = getMaxWidth() - getTermX() + x2_offset + 1;
-
-      if ( y2 - y2_offset <= getMaxHeight() )
-        h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
-      else
-        h = getMaxHeight() - getTermY() + y2_offset + 1;
-
-      setSize (w, h);
-    }
+  if ( ! titlebar_click_pos.isNull() )
+  {
+    FPoint deltaPos = ms.termPos - titlebar_click_pos;
+    move (deltaPos);
+    titlebar_click_pos = ms.termPos;
   }
+
+  // Mouse event handover to the menu
+  if ( ms.mouse_over_menu )
+    passEventToSubMenu (ms, ev);
+
+  leaveZoomButton(ms);    // Check zoom button pressed
+  resizeMouseUpMove(ms);  // Resize the dialog
 }
 
 //----------------------------------------------------------------------
 void FDialog::onMouseDoubleClick (FMouseEvent* ev)
 {
-  int x
-    , y
-    , mouse_x
-    , mouse_y
-    , zoom_btn;
+  mouseStates ms =
+  {
+    ev->getX(),
+    ev->getY(),
+    ev->getTermPos(),
+    getZoomButtonWidth(),
+    false  // mouse_over_menu
+  };
+  int x, y;
 
   if ( ev->getButton() != fc::LeftButton )
     return;
 
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
-
-  if ( ! isResizeable() )
-    zoom_btn = 0;
-  else if ( isNewFont() )
-    zoom_btn = 2;
-  else
-    zoom_btn = 3;
-
   x = getTermX();
   y = getTermY();
   FRect title_button(x, y, 3, 1);
-  FPoint tPos = ev->getTermPos();
+  FPoint tPos = ms.termPos;
 
   if ( title_button.contains(tPos) )
   {
-    // double click on title button
+    // Double click on title button
     FWidget* window_focus_widget;
     dialog_menu->unselectItem();
     dialog_menu->hide();
@@ -894,11 +721,11 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
       close();
   }
   else if ( isResizeable()
-         && mouse_x >= 4
-         && mouse_x <= getWidth() - zoom_btn
-         && mouse_y == 1 )
+         && ms.mouse_x >= 4
+         && ms.mouse_x <= getWidth() - ms.zoom_btn
+         && ms.mouse_y == 1 )
   {
-    // double click on titlebar
+    // Double click on titlebar
     zoomWindow();  // window zoom/unzoom
     setZoomItem();
   }
@@ -967,7 +794,7 @@ void FDialog::onWindowRaised (FEvent*)
 
   putArea (getTermPos(), vwin);
 
-  // handle always-on-top windows
+  // Handle always-on-top windows
   if ( always_on_top_list && ! always_on_top_list->empty() )
   {
     widgetList::const_iterator iter, last;
@@ -994,7 +821,7 @@ void FDialog::onWindowLowered (FEvent*)
     return;
 
   iter = window_list->begin();
-  last  = window_list->end();
+  last = window_list->end();
 
   while ( iter != last )
   {
@@ -1021,7 +848,7 @@ void FDialog::draw()
     tooltip = 0;
   }
 
-  // fill the background
+  // Fill the background
   setColor();
 
   if ( isMonochron() )
@@ -1075,7 +902,7 @@ void FDialog::init()
   setRightPadding(1);
   ignorePadding();
   setDialogWidget();
-  // initialize geometry values
+  // Initialize geometry values
   setGeometry (1, 1, 10, 10, false);
   setMinimumSize (15, 4);
   addDialog(this);
@@ -1197,22 +1024,22 @@ void FDialog::drawBorder()
     for (int y = y1; y < y2; y++)
     {
       setPrintPos (x1, y);
-      // border left ⎸
+      // Border left ⎸
       print (fc::NF_border_line_left);
       setPrintPos (x2, y);
-      // border right⎹
+      // Border right⎹
       print (fc::NF_rev_border_line_right);
     }
 
     setPrintPos (x1, y2);
-    // lower left corner border ⎣
+    // Lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
     for (int x = 1; x < getWidth() - 1; x++)  // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);
-    // lower right corner border ⎦
+    // Lower right corner border ⎦
     print (fc::NF_rev_border_corner_lower_right);
   }
   else
@@ -1358,7 +1185,7 @@ void FDialog::drawZoomButton()
 //----------------------------------------------------------------------
 void FDialog::drawTextBar()
 {
-  // fill with spaces (left of the title)
+  // Fill with spaces (left of the title)
   int center_offset
     , zoom_btn
     , length
@@ -1372,13 +1199,7 @@ void FDialog::drawTextBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  if ( ! isResizeable() )
-    zoom_btn = 0;
-  else if ( isNewFont() )
-    zoom_btn = 2;
-  else
-    zoom_btn = 3;
-
+  zoom_btn = getZoomButtonWidth();
   length = int(tb_text.getLength());
   center_offset = int((getWidth() - length - MENU_BTN - zoom_btn) / 2);
 
@@ -1429,7 +1250,7 @@ void FDialog::leaveMenu()
 //----------------------------------------------------------------------
 void FDialog::openMenu()
 {
-  // open the titlebar menu
+  // Open the titlebar menu
   if ( ! dialog_menu )
     return;
 
@@ -1453,7 +1274,7 @@ void FDialog::openMenu()
 //----------------------------------------------------------------------
 void FDialog::selectFirstMenuItem()
 {
-  // focus to the first enabled menu item
+  // Focus to the first enabled menu item
   FMenuItem* first_item;
   dialog_menu->selectFirstItem();
   first_item = dialog_menu->getSelectedItem();
@@ -1484,6 +1305,110 @@ void FDialog::setZoomItem()
     zoom_item->setText ("&Zoom");
     zoom_item->setStatusbarMessage ("Enlarge the window to the entire desktop");
     move_size_item->setEnable();
+  }
+}
+
+//----------------------------------------------------------------------
+inline int FDialog::getZoomButtonWidth()
+{
+  if ( ! isResizeable() )
+    return 0;
+  else if ( isNewFont() )
+    return 2;
+  else
+    return 3;
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::deactivateZoomButton()
+{
+  if ( ! zoom_button_pressed && ! zoom_button_active )
+    return;
+
+  zoom_button_pressed = false;
+  zoom_button_active = false;
+  drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::activateZoomButton (mouseStates& ms)
+{
+  if ( ms.mouse_x <= getWidth() - ms.zoom_btn
+    || ms.mouse_y != 1 )
+    return;
+
+  zoom_button_pressed = true;
+  zoom_button_active = true;
+  drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::leaveZoomButton (mouseStates& ms)
+{
+  bool zoom_button_pressed_before = zoom_button_pressed;
+
+  if ( ms.mouse_x > getWidth() - ms.zoom_btn
+    && ms.mouse_x <= getWidth()
+    && ms.mouse_y == 1
+    && zoom_button_active )
+    zoom_button_pressed = true;
+  else if ( zoom_button_pressed )
+    zoom_button_pressed = false;
+
+  if ( zoom_button_pressed_before != zoom_button_pressed )
+    drawTitleBar();
+}
+
+//----------------------------------------------------------------------
+void FDialog::pressZoomButton (mouseStates& ms)
+{
+  if ( ms.mouse_x <= getWidth() - ms.zoom_btn
+    || ms.mouse_y != 1
+    || ! zoom_button_pressed )
+    return;
+
+  // Zoom to maximum or restore the window size
+  zoomWindow();
+  setZoomItem();
+}
+
+//----------------------------------------------------------------------
+inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
+{
+  const FRect& menu_geometry = dialog_menu->getTermGeometry();
+
+  if ( dialog_menu->getCount() > 0 && menu_geometry.contains(termpos) )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::passEventToSubMenu ( mouseStates& ms
+                                        , FMouseEvent* ev )
+{
+  // Mouse event handover to the dialog menu
+  if ( ! ms.mouse_over_menu
+    || ! dialog_menu->isVisible()
+    || ! dialog_menu->isShown() )
+    return;
+
+  const FPoint& g = ms.termPos;
+  const FPoint& p = dialog_menu->termToWidgetPos(g);
+  int b = ev->getButton();
+
+  try
+  {
+    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+    dialog_menu->mouse_down = true;
+    setClickedWidget(dialog_menu);
+    dialog_menu->onMouseMove(_ev);
+    delete _ev;
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
   }
 }
 
@@ -1554,6 +1479,116 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
+inline void FDialog::raiseActivateDialog()
+{
+  bool has_raised = raiseWindow();
+  activateDialog();
+
+  if ( has_raised )
+    redraw();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::lowerActivateDialog()
+{
+  bool has_lowered = lowerWindow();
+
+  if ( ! isWindowActive() )
+    activateDialog();
+  else if ( has_lowered )
+    updateTerminal();
+}
+
+//----------------------------------------------------------------------
+void FDialog::resizeMouseDown (mouseStates& ms)
+{
+  // Click on the lower right resize corner
+
+  if ( isResizeable()
+    && ( (ms.mouse_x == getWidth() && ms.mouse_y == getHeight())
+      || (ms.mouse_x == getWidth() - 1 && ms.mouse_y == getHeight())
+      || (ms.mouse_x == getWidth() && ms.mouse_y == getHeight() - 1) ) )
+  {
+    resize_click_pos = ms.termPos;
+    FPoint lower_right_pos = getTermGeometry().getLowerRightPos();
+
+    if ( ms.termPos != lower_right_pos )
+    {
+      FPoint deltaPos = ms.termPos - lower_right_pos;
+      int w = lower_right_pos.getX() + deltaPos.getX() - getTermX() + 1;
+      int h = lower_right_pos.getY() + deltaPos.getY() - getTermY() + 1;
+      setSize (w, h);
+    }
+    else
+      drawBorder();
+  }
+  else
+    resize_click_pos.setPoint (0,0);
+}
+
+//----------------------------------------------------------------------
+void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
+{
+  // Resize the dialog
+  if ( isResizeable() && ! resize_click_pos.isNull() )
+  {
+    FWidget* r = getRootWidget();
+    resize_click_pos = ms.termPos;
+    int x2 = resize_click_pos.getX()
+      , y2 = resize_click_pos.getY()
+      , x2_offset = 0
+      , y2_offset = 0;
+
+    if ( r )
+    {
+      x2_offset = r->getLeftPadding();
+      y2_offset = r->getTopPadding();
+    }
+
+    if ( ms.termPos != getTermGeometry().getLowerRightPos() )
+    {
+      int w, h;
+      FPoint deltaPos = ms.termPos - resize_click_pos;
+
+      if ( x2 - x2_offset <= getMaxWidth() )
+        w = resize_click_pos.getX() + deltaPos.getX() - getTermX() + 1;
+      else
+        w = getMaxWidth() - getTermX() + x2_offset + 1;
+
+      if ( y2 - y2_offset <= getMaxHeight() )
+        h = resize_click_pos.getY() + deltaPos.getY() - getTermY() + 1;
+      else
+        h = getMaxHeight() - getTermY() + y2_offset + 1;
+
+      setSize (w, h);
+    }
+
+    if ( mouse_up )
+    {
+      // Reset the border color
+      resize_click_pos.setPoint (0,0);
+
+      // redraw() is required to draw the standard (black) border
+      // and client objects with ignorePadding() option.
+      redraw();
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+void FDialog::cancelMouseResize()
+{
+  // Cancel resize by mouse
+
+  if ( resize_click_pos.isNull() )
+    return;
+
+  resize_click_pos.setPoint (0,0);
+  drawBorder();
+  updateTerminal();
+}
+
+//----------------------------------------------------------------------
 inline void FDialog::acceptMoveSize()
 {
   setMoveSizeWidget(0);
@@ -1585,7 +1620,7 @@ inline void FDialog::cancelMoveSize()
 //----------------------------------------------------------------------
 void FDialog::addDialog (FWidget* obj)
 {
-  // add the dialog object obj to the dialog list
+  // Add the dialog object obj to the dialog list
   if ( dialog_list )
     dialog_list->push_back(obj);
 }
@@ -1593,7 +1628,7 @@ void FDialog::addDialog (FWidget* obj)
 //----------------------------------------------------------------------
 void FDialog::delDialog (FWidget* obj)
 {
-  // delete the dialog object obj from the dialog list
+  // Delete the dialog object obj from the dialog list
   if ( ! dialog_list || dialog_list->empty() )
     return;
 

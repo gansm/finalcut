@@ -281,11 +281,6 @@ void FMenu::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseMove (FMouseEvent* ev)
 {
-  mouseStates state;
-  // Set all state flags to false
-  std::memset (&state, 0, sizeof(state));
-  shown_sub_menu = 0;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
@@ -295,38 +290,45 @@ void FMenu::onMouseMove (FMouseEvent* ev)
   if ( !  mouse_down || item_list.empty() )
     return;
 
-  state.mouse_over_menu      = isMouseOverMenu (ev->getTermPos());
-  state.mouse_over_submenu   = isMouseOverSubMenu (ev->getTermPos());
-  state.mouse_over_supermenu = isMouseOverSuperMenu (ev->getTermPos());
-  state.mouse_over_menubar   = isMouseOverMenuBar (ev->getTermPos());
+  mouseStates ms =
+  {
+    false,  // focus_changed
+    false,  // hide_sub_menu
+    isMouseOverMenu (ev->getTermPos()),
+    isMouseOverSubMenu (ev->getTermPos()),
+    isMouseOverSuperMenu (ev->getTermPos()),
+    isMouseOverMenuBar (ev->getTermPos())
+  };
+
+  shown_sub_menu = 0;
 
   // Mouse pointer over an entry in the menu list
-  mouseMoveOverList (ev->getPos(), state);
+  mouseMoveOverList (ev->getPos(), ms);
 
-  if ( state.mouse_over_submenu )
+  if ( ms.mouse_over_submenu )
   {
     passEventToSubMenu(ev);  // Event handover to sub-menu
     return;
   }
 
-  if ( ! state.mouse_over_menu && state.mouse_over_supermenu )
+  if ( ! ms.mouse_over_menu && ms.mouse_over_supermenu )
   {
     passEventToSuperMenu(ev);  // Event handover to super-menu
     return;
   }
 
-  if ( state.mouse_over_menubar )
+  if ( ms.mouse_over_menubar )
   {
     passEventToMenuBar(ev);  // Event handover to the menu bar
     return;
   }
 
-  if ( ! hasSelectedItem() && state.mouse_over_menu )
+  if ( ! hasSelectedItem() && ms.mouse_over_menu )
   {
-    mouseMoveOverBorder(state);  // Mouse is over border or separator
+    mouseMoveOverBorder(ms);  // Mouse is over border or separator
   }
 
-  if ( state.focus_changed )
+  if ( ms.focus_changed )
     redraw();
 
   if ( shown_sub_menu )
@@ -334,7 +336,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     closeOpenedSubMenu();
     openSubMenu (shown_sub_menu);
   }
-  else if ( state.hide_sub_menu )
+  else if ( ms.hide_sub_menu )
   {
     closeOpenedSubMenu();
     updateTerminal();
@@ -833,7 +835,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
 }
 
 //----------------------------------------------------------------------
-bool FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& state)
+bool FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& ms)
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
   bool isOverList = false;
@@ -880,9 +882,9 @@ bool FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& state)
             shown_sub_menu = sub_menu;
         }
         else if ( opened_sub_menu )
-          state.hide_sub_menu = true;
+          ms.hide_sub_menu = true;
 
-        state.focus_changed = true;
+        ms.focus_changed = true;
       }
 
       if ( ! (*iter)->isSeparator() )
@@ -890,10 +892,10 @@ bool FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& state)
     }
     else
     {
-      if ( state.mouse_over_menu
+      if ( ms.mouse_over_menu
         && (*iter)->isEnabled()
         && (*iter)->isSelected()
-        && ! state.mouse_over_submenu )
+        && ! ms.mouse_over_submenu )
       {
         // Unselect selected item without mouse focus
         (*iter)->unsetSelected();
@@ -902,7 +904,7 @@ bool FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& state)
         if ( getSelectedItem() == *iter )
           setSelectedItem(0);
 
-        state.focus_changed = true;
+        ms.focus_changed = true;
       }
     }
 
@@ -923,7 +925,7 @@ void FMenu::mouseUpOverBorder()
 }
 
 //----------------------------------------------------------------------
-void FMenu::mouseMoveOverBorder (mouseStates& state)
+void FMenu::mouseMoveOverBorder (mouseStates& ms)
 {
   // Mouse is moved over border or separator line
 
@@ -940,7 +942,7 @@ void FMenu::mouseMoveOverBorder (mouseStates& state)
   }
 
   if ( opened_sub_menu )
-    state.hide_sub_menu = true;
+    ms.hide_sub_menu = true;
 }
 
 //----------------------------------------------------------------------

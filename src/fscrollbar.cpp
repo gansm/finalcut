@@ -308,7 +308,7 @@ void FScrollbar::drawVerticalBar()
 //----------------------------------------------------------------------
 void FScrollbar::drawHorizontalBar()
 {
-  int z = 0;
+  int z;
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
   if ( isNewFont() )
@@ -316,7 +316,7 @@ void FScrollbar::drawHorizontalBar()
   else
     setPrintPos (2, 1);
 
-  for (; z < slider_pos; z++)
+  for (z = 0; z < slider_pos; z++)
   {
     if ( isNewFont() )
       print (fc::NF_border_line_upper);  // ¯

@@ -1716,7 +1716,6 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 inline void FListView::keyLeft (int& first_line_position_before)
 {
-  int element_count = int(getCount());
   int position_before = current_iter.getPosition();
   FListViewItem* item = getCurrentItem();
 
@@ -1727,7 +1726,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
       // Collapse element
       item->collapse();
       adjustSize();
-      element_count = int(getCount());
+      int element_count = int(getCount());
       recalculateVerticalBar (element_count);
       // Force vertical scrollbar redraw
       first_line_position_before = -1;

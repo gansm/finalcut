@@ -654,7 +654,7 @@ inline bool FOptiAttr::setTermBold (char_data*& term)
 inline bool FOptiAttr::unsetTermBold (char_data*& term)
 {
   // Back to normal intensity (turns off bold + dim)
-  if ( append_sequence(F_exit_bold_mode.cap) )
+  if ( term && append_sequence(F_exit_bold_mode.cap) )
   {
     if ( F_exit_bold_mode.caused_reset )
       reset(term);

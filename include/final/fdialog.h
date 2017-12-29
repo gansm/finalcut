@@ -153,6 +153,16 @@ class FDialog : public FWindow
     virtual void        onClose (FCloseEvent*);
 
   private:
+    // Typedef
+    typedef struct
+    {
+      int    mouse_x;
+      int    mouse_y;
+      FPoint termPos;
+      int    zoom_btn;
+      bool   mouse_over_menu;
+    } mouseStates;
+
     // Constant
     static const int  MENU_BTN = 3;
     static const bool PRINT_WIN_NUMBER = false;  // Only for debug
@@ -177,7 +187,19 @@ class FDialog : public FWindow
     void                openMenu();
     void                selectFirstMenuItem();
     void                setZoomItem();
+    int                 getZoomButtonWidth();
+    void                activateZoomButton (mouseStates&);
+    void                deactivateZoomButton();
+    void                leaveZoomButton (mouseStates&);
+    void                pressZoomButton (mouseStates&);
+    bool                isMouseOverMenu (const FPoint&);
+    void                passEventToSubMenu (mouseStates&, FMouseEvent*);
     void                moveSizeKey (FKeyEvent*);
+    void                raiseActivateDialog();
+    void                lowerActivateDialog();
+    void                resizeMouseDown (mouseStates&);
+    void                resizeMouseUpMove (mouseStates&, bool = false);
+    void                cancelMouseResize();
     void                acceptMoveSize();
     void                cancelMoveSize();
     static void         addDialog (FWidget*);

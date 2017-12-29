@@ -1,3 +1,6 @@
+2017-12-29  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring of the FDialog mouse event handler
+
 2017-12-27  Markus Gans  <guru.mail@muenster.de>
 	* Generalize scroll functions in FScrollView
 	* Refactoring FScrollbar::drawBar
