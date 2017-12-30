@@ -52,8 +52,6 @@ Timer::Timer (FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  resetXTermForeground();
-  resetXTermBackground();
   wc.term_fg = fc::Default;
   wc.term_bg = fc::Default;
 }
@@ -74,7 +72,7 @@ void Timer::onTimer (FTimerEvent* ev)
   bool is_last_line = false;
   int timer_id = ev->timerId();
 
-  if ( getPrintPos().getY() == getLineNumber() )
+  if ( getPrintPos().getY() == getDesktopHeight() )
     is_last_line = true;
 
   setColor (short(1 + timer_id), fc::Default);

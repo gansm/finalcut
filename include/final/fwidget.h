@@ -181,6 +181,8 @@ class FWidget : public FVTerm, public FObject
     const FRect&       getGeometryWithShadow();
     const FRect&       getTermGeometry();
     const FRect&       getTermGeometryWithShadow();
+    int                getDesktopWidth();
+    int                getDesktopHeight();
     int                getFlags() const;
     FPoint             getCursorPos();
     FPoint             getPrintPos();
@@ -707,6 +709,14 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
   );
   return adjust_wsize_term_shadow;
 }
+
+//----------------------------------------------------------------------
+inline int FWidget::getDesktopWidth()
+{ return getColumnNumber(); }
+
+//----------------------------------------------------------------------
+inline int FWidget::getDesktopHeight()
+{ return getLineNumber(); }
 
 //----------------------------------------------------------------------
 inline int FWidget::getFlags() const

@@ -73,8 +73,6 @@ AttribDlg::AttribDlg (FWidget* parent)
   , next_button()
   , back_button()
 {
-  resetXTermForeground();
-  resetXTermBackground();
   setText ( "A terminal attributes test ("
           + FString(getTermType())
           + ")");

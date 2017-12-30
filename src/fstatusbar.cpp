@@ -200,7 +200,7 @@ void FStatusBar::hide()
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
-  screenWidth = getColumnNumber();
+  screenWidth = getDesktopWidth();
 
   if ( screenWidth < 0 )
     return;
@@ -235,7 +235,7 @@ void FStatusBar::drawMessage()
     return;
 
   x = x_msg;
-  termWidth = getColumnNumber();
+  termWidth = getDesktopWidth();
   space_offset = 1;
   hasKeys = bool(! key_list.empty());
 
@@ -352,7 +352,7 @@ void FStatusBar::clear()
 //----------------------------------------------------------------------
 void FStatusBar::adjustSize()
 {
-  setGeometry (1, getLineNumber(), getColumnNumber(), 1, false);
+  setGeometry (1, getDesktopHeight(), getDesktopWidth(), 1, false);
 }
 
 //----------------------------------------------------------------------
@@ -581,7 +581,7 @@ void FStatusBar::drawKeys()
   std::vector<FStatusKey*>::const_iterator iter, last;
   int screenWidth;
 
-  screenWidth = getColumnNumber();
+  screenWidth = getDesktopWidth();
   x = 1;
 
   if ( key_list.empty() )

@@ -789,8 +789,8 @@ void MyDialog::cb_about (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_terminfo (FWidget*, data_ptr)
 {
-  int x = getColumnNumber();
-  int y = getLineNumber();
+  int x = getDesktopWidth();
+  int y = getDesktopHeight();
   FMessageBox info1 ( "Environment"
                     , FString()
                       << "  Type: " << getTermType() << "\n"

@@ -1385,14 +1385,14 @@ void FWidget::detectTermSize()
 {
   FWidget* r = rootObject;
   FTerm::detectTermSize();
-  r->adjust_wsize.setRect (1, 1, getColumnNumber(), getLineNumber());
-  r->offset.setRect (0, 0, getColumnNumber(), getLineNumber());
+  r->adjust_wsize.setRect (1, 1, getDesktopWidth(), getDesktopHeight());
+  r->offset.setRect (0, 0, getDesktopWidth(), getDesktopHeight());
   r->client_offset.setCoordinates
   (
     r->padding.left,
     r->padding.top,
-    getColumnNumber() - 1 - r->padding.right,
-    getLineNumber() - 1 - r->padding.bottom
+    getDesktopWidth() - 1 - r->padding.right,
+    getDesktopHeight() - 1 - r->padding.bottom
   );
 }
 
@@ -2303,9 +2303,9 @@ void FWidget::init()
 
   // Determine width and height of the terminal
   detectTermSize();
-  wsize.setRect(1, 1, getColumnNumber(), getLineNumber());
+  wsize.setRect(1, 1, getDesktopWidth(), getDesktopHeight());
   adjust_wsize = wsize;
-  offset.setRect(0, 0, getColumnNumber(), getLineNumber());
+  offset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
   client_offset = offset;
 
   double_flatline_mask.top.resize (uLong(getWidth()), false);

@@ -1645,11 +1645,11 @@ bool FApplication::parseUrxvtMouse()
   if ( y_neg || y == 0 )
     y = 1;
 
-  if ( x > getColumnNumber() )
-    x = short(getColumnNumber());
+  if ( x > getDesktopWidth() )
+    x = short(getDesktopWidth());
 
-  if ( y > getLineNumber() )
-    y = short(getLineNumber());
+  if ( y > getDesktopHeight() )
+    y = short(getDesktopHeight());
 
   new_mouse_position.setPoint (x, y);
   // fill bit field with 0

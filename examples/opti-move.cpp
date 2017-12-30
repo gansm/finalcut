@@ -26,8 +26,11 @@
 #include <final/final.h>
 
 
-// global FVTerm object
+// Global FVTerm object
 static FVTerm* terminal;
+
+// Global FApplication object
+static FApplication* app;
 
 // function prototype
 bool keyPressed();
@@ -63,8 +66,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  int term_width  = terminal->getColumnNumber();
-  int term_height = terminal->getLineNumber();
+  int term_width  = app->getDesktopWidth();
+  int term_height = app->getDesktopHeight();
 
   if ( x < 0 )
     x = 0;
@@ -156,10 +159,11 @@ int main (int argc, char* argv[])
 
   // Pointer to the global virtual terminal object
   terminal = static_cast<FVTerm*>(&TermApp);
+  app = &TermApp;
 
   // Get screen dimension
-  xmax = TermApp.getColumnNumber() - 1;
-  ymax = TermApp.getLineNumber() - 1;
+  xmax = TermApp.getDesktopWidth() - 1;
+  ymax = TermApp.getDesktopHeight() - 1;
   FString line(xmax + 1, '-');
 
   // Place the cursor in the upper left corner

@@ -74,16 +74,16 @@ Scrollview::Scrollview (FWidget* parent)
   , go_north()
 {
   // Create the four navigation buttons
-  go_east = new FButton(wchar_t(fc::BlackRightPointingPointer) , this);
+  go_east = new FButton(wchar_t(fc::BlackRightPointingPointer), this);
   go_east->setGeometry (1, 1, 5, 1);
 
-  go_south = new FButton(wchar_t(fc::BlackDownPointingTriangle) , this);
+  go_south = new FButton(wchar_t(fc::BlackDownPointingTriangle), this);
   go_south->setGeometry (getScrollWidth() - 5, 1, 5, 1);
 
-  go_west = new FButton(wchar_t(fc::BlackLeftPointingPointer) , this);
+  go_west = new FButton(wchar_t(fc::BlackLeftPointingPointer), this);
   go_west->setGeometry (getScrollWidth() - 5, getScrollHeight() - 2, 5, 1);
 
-  go_north = new FButton(wchar_t(fc::BlackUpPointingTriangle) , this);
+  go_north = new FButton(wchar_t(fc::BlackUpPointingTriangle), this);
   go_north->setGeometry (1, getScrollHeight() - 2, 5, 1);
 
   // Add scroll function callbacks to the buttons
@@ -199,7 +199,7 @@ class Scrollviewdemo : public FDialog
     explicit Scrollviewdemo (FWidget* = 0);
 
     // Destructor
-    ~Scrollviewdemo  ();
+    ~Scrollviewdemo();
 
     // Event handler
     void onClose (FCloseEvent*);

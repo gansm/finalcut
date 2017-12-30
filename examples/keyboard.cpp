@@ -44,8 +44,6 @@ class Keyboard : public FWidget
 Keyboard::Keyboard (FWidget* parent)
   : FWidget(parent)
 {
-  resetXTermForeground();
-  resetXTermBackground();
   wc.term_fg = fc::Default;
   wc.term_bg = fc::Default;
 }
@@ -56,7 +54,7 @@ void Keyboard::onKeyPress (FKeyEvent* ev)
   int key_id = ev->key();
   bool is_last_line = false;
 
-  if ( getPrintPos().getY() == getLineNumber() )
+  if ( getPrintPos().getY() == getDesktopHeight() )
     is_last_line = true;
 
   print() << "Key " << getKeyName(key_id).c_str()

@@ -60,7 +60,7 @@ void FMenuBar::hide()
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
-  screenWidth = getColumnNumber();
+  screenWidth = getDesktopWidth();
 
   if ( screenWidth < 0 )
     return;
@@ -92,7 +92,7 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::adjustSize()
 {
-  setGeometry (1, 1, getColumnNumber(), 1, false);
+  setGeometry (1, 1, getDesktopWidth(), 1, false);
   adjustItems();
 }
 
@@ -786,7 +786,7 @@ void FMenuBar::drawItems()
   if ( isMonochron() )
     setReverse(true);
 
-  screenWidth = getColumnNumber();
+  screenWidth = getDesktopWidth();
   iter = item_list.begin();
   last = item_list.end();
 

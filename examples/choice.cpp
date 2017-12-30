@@ -54,8 +54,8 @@ int main (int argc, char* argv[])
   dgl->setText ("UNIX select");
   w = 20;
   h = 13;
-  x = (app.getColumnNumber() - w) / 2;
-  y = (app.getLineNumber() - h) / 2;
+  x = (app.getDesktopWidth() - w) / 2;
+  y = (app.getDesktopHeight() - h) / 2;
   dgl->setGeometry (x, y, w, h);
 
   // Create a button group

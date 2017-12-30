@@ -125,7 +125,9 @@ class Calc : public FDialog
     void     cb_buttonClicked (FWidget*, data_ptr);
 
   private:
-    // Enumeration
+    // Typedef and Enumeration
+    typedef void (Calc::*keyFunction)(lDouble&);  // Method pointer
+
     enum button
     {
       Sine,
@@ -166,50 +168,52 @@ class Calc : public FDialog
     };
 
     // Methods
-    void     drawDispay();
-    virtual void draw();
-    void     clear();
-    void     zero();
-    void     one();
-    void     two();
-    void     three();
-    void     four();
-    void     five();
-    void     six();
-    void     seven();
-    void     eight();
-    void     nine();
-    void     add();
-    void     subtract();
-    void     multiply();
-    void     divide();
-    void     equals();
-    void     change_sign (lDouble&);
-    void     radix_point();
-    void     reciprocal (lDouble&);
-    void     percent (lDouble&);
-    void     pi (lDouble&);
-    void     open_bracket();
-    void     close_bracket();
-    void     log_e (lDouble&);
-    void     power_e (lDouble&);
-    void     log_10 (lDouble&);
-    void     power_10 (lDouble&);
-    void     power (lDouble&);
-    void     square_root (lDouble&);
-    void     hyperbolic (lDouble&);
-    void     arcus (lDouble&);
-    void     sine (lDouble&);
-    void     cosine (lDouble&);
-    void     tangent (lDouble&);
-    bool     isDataEntryKey (int);
-    bool     isOperatorKey (int);
-    lDouble& getValue();
-    void     setDisplay (lDouble);
-    void     setInfixOperator (char);
-    void     clearInfixOperator();
-    void     calcInfixOperator();
-    void     adjustSize();
+    void           drawDispay();
+    virtual void   draw();
+    void           clear (lDouble&);
+    void           zero (lDouble&);
+    void           one (lDouble&);
+    void           two (lDouble&);
+    void           three (lDouble&);
+    void           four (lDouble&);
+    void           five (lDouble&);
+    void           six (lDouble&);
+    void           seven (lDouble&);
+    void           eight (lDouble&);
+    void           nine (lDouble&);
+    void           add (lDouble&);
+    void           subtract (lDouble&);
+    void           multiply (lDouble&);
+    void           divide (lDouble&);
+    void           equals (lDouble&);
+    void           change_sign (lDouble&);
+    void           radix_point(lDouble&);
+    void           reciprocal (lDouble&);
+    void           percent (lDouble&);
+    void           pi (lDouble&);
+    void           open_bracket (lDouble&);
+    void           close_bracket (lDouble&);
+    void           log_e (lDouble&);
+    void           power_e (lDouble&);
+    void           log_10 (lDouble&);
+    void           power_10 (lDouble&);
+    void           power (lDouble&);
+    void           square_root (lDouble&);
+    void           hyperbolic (lDouble&);
+    void           arcus (lDouble&);
+    void           sine (lDouble&);
+    void           cosine (lDouble&);
+    void           tangent (lDouble&);
+    bool           isDataEntryKey (int);
+    bool           isOperatorKey (int);
+    lDouble&       getValue();
+    void           setDisplay (lDouble);
+    void           setInfixOperator (char);
+    void           clearInfixOperator();
+    void           calcInfixOperator();
+    void           adjustSize();
+    const wchar_t* getButtonText (int);
+    void           mapKeyFunctions();
 
     // Data Members
     bool error;
@@ -233,6 +237,7 @@ class Calc : public FDialog
 
     std::stack<stack_data> bracket_stack;
     std::map<Calc::button, Button*> calculator_buttons;
+    std::map<Calc::button, keyFunction> key_map;
 };
 #pragma pack(pop)
 
@@ -252,47 +257,10 @@ Calc::Calc (FWidget* parent)
   , input("")
   , bracket_stack()
   , calculator_buttons()
+  , key_map()
 {
+  mapKeyFunctions();
   clearInfixOperator();
-
-  const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
-  {
-    L"&Sin",
-    L"&Cos",
-    L"&Tan",
-    L"1/&x",
-    L"&On",
-    L"L&n",
-    L"&e\x02e3",
-    L"&y\x02e3",
-    L"Sq&r",
-    L"&\xf7",
-    L"&Lg",
-    L"10&\x02e3",
-    L"&(",
-    L"&)",
-    L"&\xd7",
-    L"&Hyp",
-    L"&7",
-    L"&8",
-    L"&9",
-    L"&-",
-    L"&Arc",
-    L"&4",
-    L"&5",
-    L"&6",
-    L"&+",
-    L"&\x03c0",
-    L"&1",
-    L"&2",
-    L"&3",
-    L"&%",
-    L"&0",
-    L"&.",
-    L"&±",
-    L"&="
-  };
-
   std::setlocale(LC_NUMERIC, "C");
   setText ("Calculator");
   setGeometry (19, 6, 37, 18);
@@ -316,7 +284,7 @@ Calc::Calc (FWidget* parent)
 
     btn->setFlat();
     btn->setNoUnderline();
-    btn->setText(button_text[key]);
+    btn->setText(getButtonText(key));
     btn->setDoubleFlatLine(fc::top);
     btn->setDoubleFlatLine(fc::bottom);
 
@@ -419,7 +387,7 @@ void Calc::drawDispay()
 }
 
 //----------------------------------------------------------------------
-void Calc::clear()
+void Calc::clear (lDouble&)
 {
   error = false;
   arcus_mode = false;
@@ -433,7 +401,7 @@ void Calc::clear()
 }
 
 //----------------------------------------------------------------------
-void Calc::zero()
+void Calc::zero (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -446,7 +414,7 @@ void Calc::zero()
 }
 
 //----------------------------------------------------------------------
-void Calc::one()
+void Calc::one (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -458,7 +426,7 @@ void Calc::one()
 }
 
 //----------------------------------------------------------------------
-void Calc::two()
+void Calc::two (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -470,7 +438,7 @@ void Calc::two()
 }
 
 //----------------------------------------------------------------------
-void Calc::three()
+void Calc::three (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -482,7 +450,7 @@ void Calc::three()
 }
 
 //----------------------------------------------------------------------
-void Calc::four()
+void Calc::four (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -494,7 +462,7 @@ void Calc::four()
 }
 
 //----------------------------------------------------------------------
-void Calc::five()
+void Calc::five (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -506,7 +474,7 @@ void Calc::five()
 }
 
 //----------------------------------------------------------------------
-void Calc::six()
+void Calc::six (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -518,7 +486,7 @@ void Calc::six()
 }
 
 //----------------------------------------------------------------------
-void Calc::seven()
+void Calc::seven (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -530,7 +498,7 @@ void Calc::seven()
 }
 
 //----------------------------------------------------------------------
-void Calc::eight()
+void Calc::eight (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -542,7 +510,7 @@ void Calc::eight()
 }
 
 //----------------------------------------------------------------------
-void Calc::nine()
+void Calc::nine (lDouble&)
 {
   if ( input.getLength() >= max_char )
     return;
@@ -554,7 +522,7 @@ void Calc::nine()
 }
 
 //----------------------------------------------------------------------
-void Calc::add()
+void Calc::add (lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -564,7 +532,7 @@ void Calc::add()
 }
 
 //----------------------------------------------------------------------
-void Calc::subtract()
+void Calc::subtract (lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -574,7 +542,7 @@ void Calc::subtract()
 }
 
 //----------------------------------------------------------------------
-void Calc::multiply()
+void Calc::multiply (lDouble&)
 {
  if ( ! isOperatorKey(last_key) )
    calcInfixOperator();
@@ -584,7 +552,7 @@ void Calc::multiply()
 }
 
 //----------------------------------------------------------------------
-void Calc::divide()
+void Calc::divide (lDouble&)
 {
   if ( ! isOperatorKey(last_key) )
     calcInfixOperator();
@@ -594,7 +562,7 @@ void Calc::divide()
 }
 
 //----------------------------------------------------------------------
-void Calc::equals()
+void Calc::equals (lDouble&)
 {
   infix_operator = last_infix_operator;
   calcInfixOperator();
@@ -609,10 +577,18 @@ void Calc::change_sign (lDouble& x)
 }
 
 //----------------------------------------------------------------------
-void Calc::radix_point()
+void Calc::radix_point (lDouble&)
 {
-  if ( ! input.includes('.') )
+  if ( input.getLength() >= max_char )
+    return;
+
+  if ( isDataEntryKey(last_key)
+    && ! input.isNull()
+    && ! input.isEmpty()
+    && ! input.includes('.') )
     input += '.';
+  else
+    input = "0.";
 }
 
 //----------------------------------------------------------------------
@@ -643,7 +619,7 @@ void Calc::pi (lDouble& x)
 }
 
 //----------------------------------------------------------------------
-void Calc::open_bracket()
+void Calc::open_bracket (lDouble&)
 {
   stack_data d = { a, infix_operator };
   bracket_stack.push(d);
@@ -654,7 +630,7 @@ void Calc::open_bracket()
 }
 
 //----------------------------------------------------------------------
-void Calc::close_bracket()
+void Calc::close_bracket (lDouble&)
 {
   if ( bracket_stack.empty() )
     return;
@@ -1017,6 +993,7 @@ void Calc::calcInfixOperator()
     default:
       break;
   }
+
   clearInfixOperator();
 }
 
@@ -1032,13 +1009,19 @@ void Calc::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_backspace:
       if ( len > 0 )
       {
-        if ( len == 1 )
-          input = "";
-        else
-          input = input.left(input.getLength() - 1);
-
         lDouble& x = getValue();
-        x = lDouble(std::atof(input.c_str()));
+
+        if ( len == 1 )
+        {
+          input = "";
+          x = 0.0L;
+        }
+        else
+        {
+          input = input.left(input.getLength() - 1);
+          x = lDouble(std::atof(input.c_str()));
+        }
+
         drawDispay();
         updateTerminal();
       }
@@ -1078,149 +1061,10 @@ void Calc::onClose (FCloseEvent* ev)
 void Calc::cb_buttonClicked (FWidget*, data_ptr data)
 {
   lDouble& x = getValue();
-  int key = *(static_cast<int*>(data));
+  Calc::button key = *(static_cast<Calc::button*>(data));
 
-  switch ( key )
-  {
-    case Sine:
-      sine(x);          // sin
-      break;
-
-    case Cosine:
-      cosine(x);        // cos
-      break;
-
-    case Tangent:
-      tangent(x);       // tan
-      break;
-
-    case Reciprocal:
-      reciprocal(x);    // 1 / x
-      break;
-
-    case On:
-      clear();
-      break;
-
-    case Natural_logarithm:
-      log_e(x);         // ln
-      break;
-
-    case Powers_of_e:
-      power_e(x);       // eˣ
-      break;
-
-    case Power:
-      power(x);         // yˣ
-      break;
-
-    case Square_root:
-      square_root(x);   // sqrt
-      break;
-
-    case Divide:
-      divide();         // ÷
-      break;
-
-    case Common_logarithm:
-      log_10(x);        // lg
-      break;
-
-    case Powers_of_ten:
-      power_10(x);      // 10ˣ
-      break;
-
-    case Parenthese_l:
-      open_bracket();   // (
-      break;
-
-    case Parenthese_r:
-      close_bracket();  // )
-      break;
-
-    case Multiply:
-      multiply();       // *
-      break;
-
-    case Hyperbolic:
-      hyperbolic(x);    // hyp
-      break;
-
-    case Seven:
-      seven();          // 7
-      break;
-
-    case Eight:
-      eight();          // 8
-      break;
-
-    case Nine:
-      nine();           // 9
-      break;
-
-    case Subtract:
-      subtract();       // -
-      break;
-
-    case Arcus:
-      arcus(x);         // arc
-      break;
-
-    case Four:
-      four();           // 4
-      break;
-
-    case Five:
-      five();           // 5
-      break;
-
-    case Six:
-      six();            // 6
-      break;
-
-    case Add:
-      add();            // +
-      break;
-
-    case Pi:
-      pi(x);            // π
-      break;
-
-    case One:
-      one();            // 1
-      break;
-
-    case Two:
-      two();            // 2
-      break;
-
-    case Three:
-      three();          // 3
-      break;
-
-    case Percent:
-      percent(x);       // %
-      break;
-
-    case Zero:
-      zero();           // 0
-      break;
-
-    case Decimal_point:
-      radix_point();    // .
-      break;
-
-    case Change_sign:
-      change_sign(x);   // ±
-      break;
-
-    case Equals:
-      equals();         // =
-      break;
-
-    default:
-      break;
-  }  // end of switch
+  // Call the key function
+  (this->*key_map[key])(x);
 
   if ( ! input.isEmpty() )
   {
@@ -1228,7 +1072,7 @@ void Calc::cb_buttonClicked (FWidget*, data_ptr data)
       x = lDouble(input.toDouble());
     else
     {
-      // remove trailing zeros
+      // Remove trailing zeros
       while ( ! input.includes(L'e')
            && input.includes(L'.')
            && input.back() == L'0' )
@@ -1253,6 +1097,89 @@ void Calc::adjustSize()
   setX (1 + (pw - getWidth()) / 2, false);
   setY (1 + (ph - getHeight()) / 2, false);
   FDialog::adjustSize();
+}
+
+//----------------------------------------------------------------------
+const wchar_t* Calc::getButtonText (int key)
+{
+  static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
+  {
+    L"&Sin",
+    L"&Cos",
+    L"&Tan",
+    L"1/&x",
+    L"&On",
+    L"L&n",
+    L"&e\x02e3",
+    L"&y\x02e3",
+    L"Sq&r",
+    L"&\xf7",
+    L"&Lg",
+    L"10&\x02e3",
+    L"&(",
+    L"&)",
+    L"&\xd7",
+    L"&Hyp",
+    L"&7",
+    L"&8",
+    L"&9",
+    L"&-",
+    L"&Arc",
+    L"&4",
+    L"&5",
+    L"&6",
+    L"&+",
+    L"&\x03c0",
+    L"&1",
+    L"&2",
+    L"&3",
+    L"&%",
+    L"&0",
+    L"&.",
+    L"&±",
+    L"&="
+  };
+
+  return button_text[key];
+}
+
+//----------------------------------------------------------------------
+void Calc::mapKeyFunctions()
+{
+  key_map[Sine] = &Calc::sine;                   // sin
+  key_map[Cosine] = &Calc::cosine;               // cos
+  key_map[Tangent] = &Calc::tangent;             // tan
+  key_map[Reciprocal] = &Calc::reciprocal;       // 1/x
+  key_map[On] = &Calc::clear;                    // On
+  key_map[Natural_logarithm] = &Calc::log_e;     // ln
+  key_map[Powers_of_e] = &Calc::power_e;         // eˣ
+  key_map[Power] = &Calc::power;                 // yˣ
+  key_map[Square_root] = &Calc::square_root;     // sqrt
+  key_map[Divide] = &Calc::divide;               // ÷
+  key_map[Common_logarithm] = &Calc::log_10;     // lg
+  key_map[Powers_of_ten] = &Calc::power_10;      // 10ˣ
+  key_map[Parenthese_l] = &Calc::open_bracket;   // (
+  key_map[Parenthese_r] = &Calc::close_bracket;  // )
+  key_map[Multiply] = &Calc::multiply;           // *
+  key_map[Hyperbolic] = &Calc::hyperbolic;       // hyp
+  key_map[Seven] = &Calc::seven;                 // 7
+  key_map[Eight] = &Calc::eight;                 // 8
+  key_map[Nine] = &Calc::nine;                   // 9
+  key_map[Subtract] = &Calc::subtract;           // -
+  key_map[Arcus] = &Calc::arcus;                 // arc
+  key_map[Four] = &Calc::four;                   // 4
+  key_map[Five] = &Calc::five;                   // 5
+  key_map[Six] = &Calc::six;                     // 6
+  key_map[Add] = &Calc::add;                     // +
+  key_map[Pi] = &Calc::pi;                       // π
+  key_map[One] = &Calc::one;                     // 1
+  key_map[Two] = &Calc::two;                     // 2
+  key_map[Three] = &Calc::three;                 // 3
+  key_map[Percent] = &Calc::percent;             // %
+  key_map[Zero] = &Calc::zero;                   // 0
+  key_map[Decimal_point] = &Calc::radix_point;   // .
+  key_map[Change_sign] = &Calc::change_sign;     // ±
+  key_map[Equals] = &Calc::equals;               // =
 }
 
 
