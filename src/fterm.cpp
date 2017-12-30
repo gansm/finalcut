@@ -3189,6 +3189,8 @@ char* FTerm::parseSecDA (char current_termtype[])
             if ( std::strncmp(termtype, "rxvt-", 5) != 0
               && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
               new_termtype = C_STR("rxvt-16color");
+            else
+              new_termtype = termtype;
             break;
 
           case 85:  // rxvt-unicode
@@ -3202,11 +3204,20 @@ char* FTerm::parseSecDA (char current_termtype[])
               else
                 new_termtype = C_STR("rxvt");
             }
+            else
+              new_termtype = termtype;
             break;
 
           default:
             break;
         }
+
+        // Correct false assumptions
+        if ( gnome_terminal && terminal_id_type != 1 )
+          gnome_terminal = false;
+
+        if ( kde_konsole && terminal_id_type != 0 )
+          kde_konsole = false;
       }
     }
   }

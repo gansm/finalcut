@@ -535,19 +535,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
     return;
 
-  if ( ! hasFocus() )
-  {
-    FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
-    setFocus();
-
-    if ( focused_widget )
-      focused_widget->redraw();
-
-    if ( getStatusBar() )
-      getStatusBar()->drawMessage();
-  }
+  getWidgetFocus();
 
   yoffset_before = yoffset;
   mouse_x = ev->getX();
@@ -556,31 +544,16 @@ void FListBox::onMouseDown (FMouseEvent* ev)
   if ( mouse_x > 1 && mouse_x < getWidth()
     && mouse_y > 1 && mouse_y < getHeight() )
   {
+    int element_count = int(getCount());
     current = yoffset + mouse_y - 1;
 
-    if ( current > int(getCount()) )
-      current = int(getCount());
+    if ( current > element_count )
+      current = element_count;
+
     inc_search.clear();
 
     if ( ev->getButton() == fc::RightButton )
-    {
-      if ( isMultiSelection() )
-      {
-        if ( isSelected(current) )
-        {
-          mouse_select = false;
-          unselectItem(current);
-        }
-        else
-        {
-          mouse_select = true;
-          selectItem(current);
-        }
-
-        processSelect();
-        secect_from_item = current;
-      }
-    }
+      multiSelection(current);
 
     if ( isVisible() )
       drawList();
@@ -599,12 +572,7 @@ void FListBox::onMouseDown (FMouseEvent* ev)
 void FListBox::onMouseUp (FMouseEvent* ev)
 {
   if ( drag_scroll != fc::noScroll )
-  {
-    delOwnTimer();
-    drag_scroll = fc::noScroll;
-    scroll_distance = 1;
-    scroll_timer = false;
-  }
+    stopDragScroll();
 
   if ( ev->getButton() == fc::LeftButton )
   {
@@ -625,67 +593,34 @@ void FListBox::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onMouseMove (FMouseEvent* ev)
 {
-  int current_before
-    , yoffset_before
-    , mouse_x
-    , mouse_y;
-
   if ( ev->getButton() != fc::LeftButton
     && ev->getButton() != fc::RightButton )
-  {
     return;
-  }
 
   if ( ev->getButton() == fc::RightButton && ! isMultiSelection() )
     return;
 
-  current_before = current;
-  yoffset_before = yoffset;
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  int current_before = current;
+  int yoffset_before = yoffset;
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( mouse_x > 1 && mouse_x < getWidth()
     && mouse_y > 1 && mouse_y < getHeight() )
   {
+    int element_count = int(getCount());
     current = yoffset + mouse_y - 1;
 
-    if ( current > int(getCount()) )
-      current = int(getCount());
+    if ( current > element_count )
+      current = element_count;
 
     inc_search.clear();
 
-    // handle multiple selections
+    // Handle multiple selections
     if ( ev->getButton() == fc::RightButton
-      && isMultiSelection()
       && current_before != current )
     {
-      int from, to;
-
-      if ( secect_from_item > current )
-      {
-        from = current;
-        to = secect_from_item - 1;
-      }
-      else
-      {
-        from = secect_from_item + 1;
-        to = current;
-      }
-      for (int i = from; i <= to; i++)
-      {
-        if ( mouse_select )
-        {
-          selectItem(i);
-          processSelect();
-        }
-        else
-        {
-          unselectItem(i);
-          processSelect();
-        }
-      }
-
-      secect_from_item = current;
+      multiSelectionUpTo(current);
     }
 
     if ( isVisible() )
@@ -700,63 +635,13 @@ void FListBox::onMouseMove (FMouseEvent* ev)
     flush_out();
   }
 
-  // auto-scrolling when dragging mouse outside the widget
+  // Auto-scrolling when dragging mouse outside the widget
   if ( mouse_y < 2 )
-  {
-    // drag up
-    if ( drag_scroll != fc::noScroll
-      && scroll_distance < getClientHeight() )
-      scroll_distance++;
-
-    if ( ! scroll_timer && current > 1 )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-
-      if ( ev->getButton() == fc::RightButton )
-        drag_scroll = fc::scrollUpSelect;
-      else
-        drag_scroll = fc::scrollUp;
-    }
-
-    if ( current == 1 )
-    {
-      delOwnTimer();
-      drag_scroll = fc::noScroll;
-    }
-  }
+    dragUp (ev->getButton());
   else if ( mouse_y >= getHeight() )
-  {
-    // drag down
-    if ( drag_scroll != fc::noScroll
-      && scroll_distance < getClientHeight() )
-      scroll_distance++;
-
-    if ( ! scroll_timer && current < int(getCount()) )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-
-      if ( ev->getButton() == fc::RightButton )
-        drag_scroll = fc::scrollDownSelect;
-      else
-        drag_scroll = fc::scrollDown;
-    }
-
-    if ( current == int(getCount()) )
-    {
-      delOwnTimer();
-      drag_scroll = fc::noScroll;
-    }
-  }
+    dragDown (ev->getButton());
   else
-  {
-    // no dragging
-    delOwnTimer();
-    scroll_timer = false;
-    scroll_distance = 1;
-    drag_scroll = fc::noScroll;
-  }
+    stopDragScroll();
 }
 
 //----------------------------------------------------------------------
@@ -783,10 +668,8 @@ void FListBox::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListBox::onTimer (FTimerEvent*)
 {
-  int element_count = int(getCount())
-    , current_before = current
-    , yoffset_before = yoffset
-    , yoffset_end = element_count - getClientHeight();
+  int current_before = current;
+  int yoffset_before = yoffset;
 
   switch ( int(drag_scroll) )
   {
@@ -795,84 +678,28 @@ void FListBox::onTimer (FTimerEvent*)
 
     case fc::scrollUp:
     case fc::scrollUpSelect:
-      if ( current_before == 1 )
-      {
-        drag_scroll = fc::noScroll;
+      if ( ! dragScrollUp() )
         return;
-      }
-
-      current -= scroll_distance;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-        yoffset -= scroll_distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
       break;
 
     case fc::scrollDown:
     case fc::scrollDownSelect:
-      if ( current_before == element_count )
-      {
-        drag_scroll = fc::noScroll;
+      if ( ! dragScrollDown() )
         return;
-      }
-
-      current += scroll_distance;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset += scroll_distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
       break;
 
     default:
       break;
   }
 
-  // handle multiple selections
-  if ( drag_scroll == fc::scrollUpSelect
-    || drag_scroll == fc::scrollDownSelect )
+  if ( current_before != current )
   {
-    if ( isMultiSelection() && current_before != current )
-    {
-      int from, to;
+    inc_search.clear();
 
-      if ( secect_from_item > current )
-      {
-        from = current;
-        to = secect_from_item - 1;
-      }
-      else
-      {
-        from = secect_from_item + 1;
-        to = current;
-      }
-
-      for (int i = from; i <= to; i++)
-      {
-        if ( mouse_select )
-        {
-          selectItem(i);
-          processSelect();
-        }
-        else
-        {
-          unselectItem(i);
-          processSelect();
-        }
-      }
-
-      secect_from_item = current;
-    }
+    // Handle multiple selections
+    if ( drag_scroll == fc::scrollUpSelect
+      || drag_scroll == fc::scrollDownSelect )
+      multiSelectionUpTo(current);
   }
 
   if ( isVisible() )
@@ -891,65 +718,23 @@ void FListBox::onTimer (FTimerEvent*)
 void FListBox::onWheel (FWheelEvent* ev)
 {
   int wheel
-    , element_count = int(getCount())
     , current_before = current
     , yoffset_before = yoffset
-    , yoffset_end = element_count - getClientHeight()
     , pagesize = 4;
-
-  if ( yoffset_end < 0 )
-    yoffset_end = 0;
 
   wheel = ev->getWheel();
 
   if ( drag_scroll != fc::noScroll )
-  {
-    delOwnTimer();
-    scroll_timer = false;
-    scroll_distance = 1;
-    drag_scroll = fc::noScroll;
-  }
+    stopDragScroll();
 
   switch ( wheel )
   {
     case fc::WheelUp:
-      if ( yoffset == 0 )
-        break;
-
-      yoffset -= pagesize;
-
-      if ( yoffset < 0 )
-      {
-        current -= pagesize + yoffset;
-        yoffset = 0;
-      }
-      else
-        current -= pagesize;
-
-      if ( current < 1 )
-        current = 1;
-
-      inc_search.clear();
+      wheelUp (pagesize);
       break;
 
     case fc::WheelDown:
-      if ( yoffset == yoffset_end )
-        break;
-
-      yoffset += pagesize;
-
-      if ( yoffset > yoffset_end )
-      {
-        current += pagesize - (yoffset - yoffset_end);
-        yoffset = yoffset_end;
-      }
-      else
-        current += pagesize;
-
-      if ( current > element_count )
-        current = element_count;
-
-      inc_search.clear();
+      wheelDown (pagesize);
       break;
 
     default:
@@ -958,6 +743,7 @@ void FListBox::onWheel (FWheelEvent* ev)
 
   if ( current_before != current )
   {
+    inc_search.clear();
     processChanged();
 
     if ( ! isMultiSelection() )
@@ -1562,58 +1348,354 @@ void FListBox::recalculateVerticalBar (int element_count)
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyUp()
+inline void FListBox::getWidgetFocus()
 {
-  current--;
+  if ( hasFocus() )
+    return;
+
+  FWidget* focused_widget = getFocusWidget();
+  FFocusEvent out (fc::FocusOut_Event);
+  FApplication::queueEvent(focused_widget, &out);
+  setFocus();
+
+  if ( focused_widget )
+    focused_widget->redraw();
+
+  if ( getStatusBar() )
+    getStatusBar()->drawMessage();
+}
+
+//----------------------------------------------------------------------
+void FListBox::multiSelection (int pos)
+{
+  if ( ! isMultiSelection() )
+    return;
+
+  if ( isSelected(pos) )
+  {
+    mouse_select = false;
+    unselectItem(pos);
+  }
+  else
+  {
+    mouse_select = true;
+    selectItem(pos);
+  }
+
+  processSelect();
+  secect_from_item = pos;
+}
+
+//----------------------------------------------------------------------
+void FListBox::multiSelectionUpTo (int pos)
+{
+  int from, to;
+
+  if ( ! isMultiSelection() )
+    return;
+
+  if ( secect_from_item > pos )
+  {
+    from = pos;
+    to = secect_from_item - 1;
+  }
+  else
+  {
+    from = secect_from_item + 1;
+    to = pos;
+  }
+
+  for (int i = from; i <= to; i++)
+  {
+    if ( mouse_select )
+    {
+      selectItem(i);
+      processSelect();
+    }
+    else
+    {
+      unselectItem(i);
+      processSelect();
+    }
+  }
+
+  secect_from_item = pos;
+}
+
+//----------------------------------------------------------------------
+void FListBox::wheelUp (int pagesize)
+{
+  if ( yoffset == 0 )
+    return;
+
+  yoffset -= pagesize;
+
+  if ( yoffset < 0 )
+  {
+    current -= pagesize + yoffset;
+    yoffset = 0;
+  }
+  else
+    current -= pagesize;
+
+  if ( current < 1 )
+    current = 1;
+}
+
+//----------------------------------------------------------------------
+void FListBox::wheelDown (int pagesize)
+{
+  int element_count = int(getCount());
+  int yoffset_end = element_count - getClientHeight();
+
+  if ( yoffset_end < 0 )
+    yoffset_end = 0;
+
+  if ( yoffset == yoffset_end )
+    return;
+
+  yoffset += pagesize;
+
+  if ( yoffset > yoffset_end )
+  {
+    current += pagesize - (yoffset - yoffset_end);
+    yoffset = yoffset_end;
+  }
+  else
+    current += pagesize;
+
+  if ( current > element_count )
+    current = element_count;
+}
+
+//----------------------------------------------------------------------
+bool FListBox::dragScrollUp()
+{
+  if ( current == 1 )
+  {
+    drag_scroll = fc::noScroll;
+    return false;
+  }
+
+  prevListItem (scroll_distance);
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FListBox::dragScrollDown()
+{
+  int element_count = int(getCount());
+
+  if ( current == element_count )
+  {
+    drag_scroll = fc::noScroll;
+    return false;
+  }
+
+  nextListItem (scroll_distance);
+  return true;
+}
+
+//----------------------------------------------------------------------
+void FListBox::dragUp (int mouse_button)
+{
+  if ( drag_scroll != fc::noScroll
+    && scroll_distance < getClientHeight() )
+    scroll_distance++;
+
+  if ( ! scroll_timer && current > 1 )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+
+    if ( mouse_button == fc::RightButton )
+      drag_scroll = fc::scrollUpSelect;
+    else
+      drag_scroll = fc::scrollUp;
+  }
+
+  if ( current == 1 )
+  {
+    delOwnTimer();
+    drag_scroll = fc::noScroll;
+  }
+}
+
+//----------------------------------------------------------------------
+void FListBox::dragDown (int mouse_button)
+{
+  if ( drag_scroll != fc::noScroll
+    && scroll_distance < getClientHeight() )
+    scroll_distance++;
+
+  if ( ! scroll_timer && current < int(getCount()) )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+
+    if ( mouse_button == fc::RightButton )
+      drag_scroll = fc::scrollDownSelect;
+    else
+      drag_scroll = fc::scrollDown;
+  }
+
+  if ( current == int(getCount()) )
+  {
+    delOwnTimer();
+    drag_scroll = fc::noScroll;
+  }
+}
+
+//----------------------------------------------------------------------
+void FListBox::stopDragScroll()
+{
+  delOwnTimer();
+  drag_scroll = fc::noScroll;
+  scroll_distance = 1;
+  scroll_timer = false;
+}
+
+//----------------------------------------------------------------------
+void FListBox::prevListItem (int distance)
+{
+  if ( current == 1 )
+    return;
+
+  current -= distance;
 
   if ( current < 1 )
     current = 1;
 
   if ( current <= yoffset )
-    yoffset--;
+  {
+    yoffset -= distance;
 
-  inc_search.clear();
+    if ( yoffset < 0 )
+      yoffset = 0;
+  }
 }
 
 //----------------------------------------------------------------------
-inline void FListBox::keyDown()
+void FListBox::nextListItem (int distance)
 {
   int element_count = int(getCount());
-  current++;
+  int yoffset_end = element_count - getClientHeight();
+
+  if ( current == element_count )
+    return;
+
+  current += distance;
 
   if ( current > element_count )
     current = element_count;
 
   if ( current - yoffset > getClientHeight() )
-    yoffset++;
+  {
+    yoffset += distance;
 
-  inc_search.clear();
+    if ( yoffset > yoffset_end )
+      yoffset = yoffset_end;
+  }
 }
-
 //----------------------------------------------------------------------
-inline void FListBox::keyLeft()
-{
-  xoffset--;
-
-  if ( xoffset < 0 )
-    xoffset = 0;
-
-  inc_search.clear();
-}
-
-//----------------------------------------------------------------------
-inline void FListBox::keyRight()
+void FListBox::scrollToX (int val)
 {
   static const int padding_space = 2;  // 1 leading space + 1 trailing space
   int xoffset_end = max_line_width - getClientWidth() + padding_space;
-  xoffset++;
+
+  if ( xoffset == val )
+    return;
+
+  xoffset = val;
 
   if ( xoffset > xoffset_end )
     xoffset = xoffset_end;
 
   if ( xoffset < 0 )
     xoffset = 0;
+}
 
+//----------------------------------------------------------------------
+void FListBox::scrollToY (int val)
+{
+  int element_count = int(getCount());
+  int yoffset_end = element_count - getClientHeight();
+
+  if ( yoffset == val )
+    return;
+
+  int c = current - yoffset;
+  yoffset = val;
+
+  if ( yoffset > yoffset_end )
+    yoffset = yoffset_end;
+
+  if ( yoffset < 0 )
+    yoffset = 0;
+
+  current = yoffset + c;
+
+  if ( current < yoffset )
+    current = yoffset;
+
+  if ( current > element_count )
+    current = element_count;
+}
+
+//----------------------------------------------------------------------
+void FListBox::scrollLeft (int distance)
+{
+  if ( xoffset == 0 )
+    return;
+
+  xoffset -= distance;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+}
+
+//----------------------------------------------------------------------
+void FListBox::scrollRight (int distance)
+{
+  static const int padding_space = 2;  // 1 leading space + 1 trailing space
+  int xoffset_end = max_line_width - getClientWidth() + padding_space;
+  xoffset += distance;
+
+  if ( xoffset == xoffset_end )
+    return;
+
+  if ( xoffset > xoffset_end )
+    xoffset = xoffset_end;
+
+  if ( xoffset < 0 )
+    xoffset = 0;
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyUp()
+{
+  prevListItem (1);
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyDown()
+{
+  nextListItem (1);
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyLeft()
+{
+  scrollLeft(1);
+  inc_search.clear();
+}
+
+//----------------------------------------------------------------------
+inline void FListBox::keyRight()
+{
+  scrollRight(1);
   inc_search.clear();
 }
 
@@ -1621,41 +1703,15 @@ inline void FListBox::keyRight()
 inline void FListBox::keyPgUp()
 {
   int pagesize = getClientHeight() - 1;
-  current -= pagesize;
-
-  if ( current < 1 )
-    current = 1;
-
-  if ( current <= yoffset )
-  {
-    yoffset -= pagesize;
-
-    if ( yoffset < 0 )
-      yoffset = 0;
-  }
-
+  prevListItem (pagesize);
   inc_search.clear();
 }
 
 //----------------------------------------------------------------------
 inline void FListBox::keyPgDn()
 {
-  int element_count = int(getCount());
-  int yoffset_end = element_count - getClientHeight();
   int pagesize = getClientHeight() - 1;
-  current += pagesize;
-
-  if ( current > element_count )
-    current = element_count;
-
-  if ( current - yoffset > getClientHeight() )
-  {
-    yoffset += pagesize;
-
-    if ( yoffset > yoffset_end )
-      yoffset = yoffset_end;
-  }
-
+  nextListItem (pagesize);
   inc_search.clear();
 }
 
@@ -1884,9 +1940,9 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType;
   int distance = 1
-    , element_count = int(getCount())
-    , yoffset_before = yoffset
-    , yoffset_end = element_count - getClientHeight();
+    , pagesize = 4
+    , current_before = current
+    , yoffset_before = yoffset;
   scrollType = vbar->getScrollType();
 
   switch ( scrollType )
@@ -1898,83 +1954,43 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepBackward:
-      current -= distance;
-
-      if ( current < 1 )
-        current = 1;
-
-      if ( current <= yoffset )
-        yoffset -= distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      prevListItem (distance);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepForward:
-      current += distance;
-
-      if ( current > element_count )
-        current = element_count;
-
-      if ( current - yoffset > getClientHeight() )
-        yoffset += distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
+      nextListItem (distance);
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int val = vbar->getValue();
-
-      if ( yoffset == val )
-        break;
-
-      int c = current - yoffset;
-      yoffset = val;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
-      current = yoffset + c;
-
-      if ( current < yoffset )
-        current = yoffset;
-
-      if ( current > element_count )
-        current = element_count;
-
+      scrollToY (vbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
-      onWheel(&wheel_ev);
-    }
-    break;
+      wheelUp (pagesize);
+      break;
 
     case FScrollbar::scrollWheelDown:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
-      onWheel(&wheel_ev);
-    }
-    break;
+      wheelDown (pagesize);
+      break;
+  }
+
+  if ( current_before != current )
+  {
+    inc_search.clear();
+    processChanged();
+
+    if ( ! isMultiSelection() )
+      processSelect();
   }
 
   if ( isVisible() )
     drawList();
 
   if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollPageForward )
+    && scrollType <= FScrollbar::scrollWheelDown )
   {
     vbar->setValue (yoffset);
 
@@ -1993,8 +2009,7 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
   FScrollbar::sType scrollType;
   int distance = 1
     , pagesize = 4
-    , xoffset_before = xoffset
-    , xoffset_end = max_line_width - getClientWidth() + padding_space;
+    , xoffset_before = xoffset;
   scrollType = hbar->getScrollType();
 
   switch ( scrollType )
@@ -2006,66 +2021,31 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
       distance = getClientWidth() - padding_space;
       // fall through
     case FScrollbar::scrollStepBackward:
-      xoffset -= distance;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
+      scrollLeft (distance);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientWidth() - padding_space;
       // fall through
     case FScrollbar::scrollStepForward:
-      xoffset += distance;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollRight (distance);
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int val = hbar->getValue();
-
-      if ( xoffset == val )
-        break;
-
-      xoffset = val;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollToX (hbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
-      if ( xoffset == 0 )
-        break;
-
-      xoffset -= pagesize;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollLeft (pagesize);
       break;
 
     case FScrollbar::scrollWheelDown:
-      if ( xoffset == xoffset_end )
-        break;
-
-      xoffset += pagesize;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
+      scrollRight (pagesize);
       break;
   }
+
+  if ( xoffset_before != xoffset )
+    inc_search.clear();
 
   if ( isVisible() )
   {
