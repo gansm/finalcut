@@ -1,5 +1,6 @@
-2017-12-30  Markus Gans  <guru.mail@muenster.de>
+2017-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of the FListBox mouse event handler
+	* Refactoring of the FMenuBar mouse event handler
 	* Replace the switch-case in the calculator example by an STL map 
 	  with method pointers
 

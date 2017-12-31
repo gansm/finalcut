@@ -134,6 +134,14 @@ class FMenuBar : public FWindow, public FMenuList
     void                drawLeadingSpace (int&);
     void                drawTrailingSpace (int&);
     void                adjustItems();
+    bool                activateMenu (FMenuItem*);
+    bool                clickItem (FMenuItem*);
+    void                unselectMenuItem (FMenuItem*);
+    void                selectMenuItem (FMenuItem*);
+    void                mouseDownOverList (FMouseEvent*);
+    void                mouseUpOverList (FMouseEvent*);
+    void                mouseMoveOverList (FMouseEvent*);
+    void                passEventToMenu (FMouseEvent*&);
     void                leaveMenuBar();
 
     // Friend classes
@@ -143,6 +151,7 @@ class FMenuBar : public FWindow, public FMenuList
     // Data Members
     bool   mouse_down;
     bool   drop_down;
+    bool   focus_changed;
     int    screenWidth;
 };
 #pragma pack(pop)
