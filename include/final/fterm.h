@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -414,16 +414,6 @@ class FTerm
       uChar blue;
     } dacreg;
 
-    typedef struct
-    {
-      char* string1;
-      char* string2;
-      char* string3;
-      char* string4;
-      char* string5;
-      char* string6;
-    } colorEnv;
-
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
 
@@ -493,12 +483,21 @@ class FTerm
     static void           init_global_values();
     static void           detectTerminal();
     static void           termtypeAnalysis();
-    static bool           get256colorEnvString (colorEnv&);
-    static char*          termtype_256color_quirks (colorEnv&);
+    static bool           get256colorEnvString();
+    static char*          termtype_256color_quirks();
     static char*          init_256colorTerminal();
     static char*          determineMaxColor (char[]);
     static char*          parseAnswerbackMsg (char[]);
     static char*          parseSecDA (char[]);
+    static char*          secDA_Analysis (char[]);
+    static char*          secDA_Analysis_0 (char[]);
+    static char*          secDA_Analysis_1 (char[]);
+    static char*          secDA_Analysis_24 (char[]);
+    static char*          secDA_Analysis_32 (char[]);
+    static char*          secDA_Analysis_77 (char[]);
+    static char*          secDA_Analysis_82 (char[]);
+    static char*          secDA_Analysis_83 (char[]);
+    static char*          secDA_Analysis_85 (char[]);
     static void           oscPrefix();
     static void           oscPostfix();
     static void           init_alt_charset();
@@ -616,6 +615,29 @@ class FTerm
     static const FString* xterm_title;
     static const FString* answer_back;
     static const FString* sec_da;
+
+    static struct colorEnv
+    {
+      char* string1;
+      char* string2;
+      char* string3;
+      char* string4;
+      char* string5;
+      char* string6;
+    } color_env;
+
+    static struct secondaryDA
+    {
+      secondaryDA()
+      : terminal_id_type (-1)
+      , terminal_id_version (-1)
+      , terminal_id_hardware (-1)
+      { }
+
+      int terminal_id_type;
+      int terminal_id_version;
+      int terminal_id_hardware;
+    } secondary_da;
 
     struct
     {

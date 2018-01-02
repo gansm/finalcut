@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -138,6 +138,8 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
+FTerm::secondaryDA            FTerm::secondary_da;
+FTerm::colorEnv               FTerm::color_env;
 FTerm::initializationValues   FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
@@ -493,9 +495,7 @@ int FTerm::parseKeyString ( char buffer[]
 
       if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
       {
-        n = len;
-
-        for (; n < buf_size; n++)   // Remove founded entry
+        for (n = len; n < buf_size; n++)   // Remove founded entry
           buffer[n - len] = buffer[n];
 
         for (; n - len < len; n++)    // Fill rest with '\0'
@@ -521,9 +521,8 @@ int FTerm::parseKeyString ( char buffer[]
           if ( ! isKeyTimeout(time_keypressed, key_timeout) )
             return NEED_MORE_DATA;
         }
-        n = len;
 
-        for (; n < buf_size; n++)    // Remove founded entry
+        for (n = len; n < buf_size; n++)    // Remove founded entry
           buffer[n - len] = buffer[n];
 
         for (; n - len < len; n++)     // Fill rest with '\0'
@@ -561,9 +560,7 @@ int FTerm::parseKeyString ( char buffer[]
   else
     key = uChar(buffer[0] & 0xff);
 
-  n = len;
-
-  for (; n < buf_size; n++)  // remove the key from the buffer front
+  for (n = len; n < buf_size; n++)  // remove the key from the buffer front
     buffer[n - len] = buffer[n];
 
   for (n = n - len; n < buf_size; n++)   // fill the rest with '\0' bytes
@@ -1476,9 +1473,6 @@ void FTerm::beep()
 //----------------------------------------------------------------------
 void FTerm::setEncoding (fc::encoding enc)
 {
-  if ( FTermcap::no_utf8_acs_chars && isUTF8() && enc == fc::VT100 )
-    enc = fc::UTF8;
-
   term_encoding = enc;
 
   assert ( term_encoding == fc::UTF8
@@ -1486,7 +1480,7 @@ void FTerm::setEncoding (fc::encoding enc)
         || term_encoding == fc::PC
         || term_encoding == fc::ASCII );
 
-  // set the new Fputchar function pointer
+  // Set the new Fputchar function pointer
   switch ( term_encoding )
   {
     case fc::UTF8:
@@ -1573,7 +1567,7 @@ const FString FTerm::getAnswerbackMsg()
   struct timeval tv;
   char temp[10] = {};
 
-  std::putchar (ENQ[0]);  // send enquiry character
+  std::putchar (ENQ[0]);  // Send enquiry character
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
@@ -1581,7 +1575,7 @@ const FString FTerm::getAnswerbackMsg()
   tv.tv_sec  = 0;
   tv.tv_usec = 150000;  // 150 ms
 
-  // read the answerback message
+  // Read the answerback message
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     if ( std::fgets (temp, sizeof(temp) - 1, stdin) != 0 )
       answerback = temp;
@@ -1600,7 +1594,7 @@ const FString FTerm::getSecDA()
   fd_set ifds;
   struct timeval tv;
 
-  // get the secondary device attributes
+  // Get the secondary device attributes
   putstring (SECDA);
   std::fflush(stdout);
 
@@ -1609,7 +1603,7 @@ const FString FTerm::getSecDA()
   tv.tv_sec  = 0;
   tv.tv_usec = 600000;  // 600 ms
 
-  // read the answer
+  // Read the answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1 )
     if ( std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
       sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
@@ -2060,7 +2054,7 @@ inline uChar FTerm::getAttributeMode()
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::setAttributeMode(uChar data)
+inline void FTerm::setAttributeMode (uChar data)
 {
   // Sets the attribute mode value from the vga attribute controller
   static const uChar attrib_mode = 0x10;
@@ -2726,12 +2720,12 @@ void FTerm::init_global_values()
   cursor_optimisation     = \
   terminal_detection      = true;
 
-  // assertion: programm start in cooked mode
+  // Assertion: programm start in cooked mode
   raw_mode                = \
   input_data_pending      = \
   non_blocking_stdin      = false;
 
-  // init arrays with '\0'
+  // Init arrays with '\0'
   std::fill_n (exit_message, sizeof(exit_message), '\0');
 
   if ( ! init_values.terminal_detection )
@@ -2838,6 +2832,13 @@ void FTerm::termtypeAnalysis()
     sun_terminal = true;
   }
 
+  // Kterm
+  if ( std::strncmp(termtype, "kterm", 5) == 0 )
+  {
+    terminal_detection = false;
+    kterm_terminal = true;
+  }
+
   // Linux console
   if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
     || std::strncmp(termtype, C_STR("con"), 3) == 0 )
@@ -2853,39 +2854,39 @@ void FTerm::termtypeAnalysis()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::get256colorEnvString(colorEnv& env)
+bool FTerm::get256colorEnvString()
 {
   // Enable 256 color capabilities
-  env.string1 = std::getenv("COLORTERM");
-  env.string2 = std::getenv("VTE_VERSION");
-  env.string3 = std::getenv("XTERM_VERSION");
-  env.string4 = std::getenv("ROXTERM_ID");
-  env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
-  env.string6 = std::getenv("KONSOLE_DCOP");
+  color_env.string1 = std::getenv("COLORTERM");
+  color_env.string2 = std::getenv("VTE_VERSION");
+  color_env.string3 = std::getenv("XTERM_VERSION");
+  color_env.string4 = std::getenv("ROXTERM_ID");
+  color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
+  color_env.string6 = std::getenv("KONSOLE_DCOP");
 
-  if ( env.string1 != 0 )
+  if ( color_env.string1 != 0 )
     return true;
 
-  if ( env.string2 != 0 )
+  if ( color_env.string2 != 0 )
     return true;
 
-  if ( env.string3 != 0 )
+  if ( color_env.string3 != 0 )
     return true;
 
-  if ( env.string4 != 0 )
+  if ( color_env.string4 != 0 )
     return true;
 
-  if ( env.string5 != 0 )
+  if ( color_env.string5 != 0 )
     return true;
 
-  if ( env.string6 != 0 )
+  if ( color_env.string6 != 0 )
     return true;
 
   return false;
 }
 
 //----------------------------------------------------------------------
-char* FTerm::termtype_256color_quirks (colorEnv& env)
+char* FTerm::termtype_256color_quirks()
 {
   char* new_termtype = 0;
 
@@ -2915,19 +2916,19 @@ char* FTerm::termtype_256color_quirks (colorEnv& env)
   }
 
   if ( std::strncmp(termtype, "rxvt", 4) != 0
-    && env.string1
-    && std::strncmp(env.string1, "rxvt-xpm", 8) == 0 )
+    && color_env.string1
+    && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
   {
     new_termtype = C_STR("rxvt-256color");
     rxvt_terminal = true;
   }
 
-  if ( (env.string5 && std::strlen(env.string5) > 0)
-    || (env.string6 && std::strlen(env.string6) > 0) )
+  if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
+    || (color_env.string6 && std::strlen(color_env.string6) > 0) )
     kde_konsole = true;
 
-  if ( (env.string1 && std::strncmp(env.string1, "gnome-terminal", 14) == 0)
-    || env.string2 )
+  if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
+    || color_env.string2 )
   {
     gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
@@ -2944,16 +2945,15 @@ char* FTerm::termtype_256color_quirks (colorEnv& env)
 char* FTerm::init_256colorTerminal()
 {
   char* new_termtype = 0;
-  colorEnv env;
 
-  if ( get256colorEnvString(env) )
+  if ( get256colorEnvString() )
     color256 = true;
   else if ( std::strstr (termtype, "256color") )
     color256 = true;
   else
     color256 = false;
 
-  new_termtype = termtype_256color_quirks(env);
+  new_termtype = termtype_256color_quirks();
 
 #if DEBUG
   if ( new_termtype )
@@ -3044,11 +3044,9 @@ char* FTerm::parseAnswerbackMsg (char current_termtype[])
 //----------------------------------------------------------------------
 char* FTerm::parseSecDA (char current_termtype[])
 {
-  char* new_termtype = current_termtype;
-
   // The Linux console knows no Sec_DA
   if ( linux_terminal )
-    return new_termtype;
+    return current_termtype;
 
   try
   {
@@ -3057,170 +3055,69 @@ char* FTerm::parseSecDA (char current_termtype[])
   }
   catch (const std::bad_alloc& ex)
   {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return new_termtype;
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return current_termtype;
   }
 
-  if ( sec_da->getLength() > 5 )
+  if ( sec_da->getLength() < 6 )
+    return current_termtype;
+
+  // remove the first 3 bytes ("\033[>")
+  FString temp = sec_da->right(sec_da->getLength() - 3);
+  // remove the last byte ("c")
+  temp.remove(temp.getLength() - 1, 1);
+  // split into components
+  FStringList sec_da_list = temp.split(';');
+
+  uLong num_components = sec_da_list.size();
+
+  // The second device attribute (SEC_DA) always has 3 parameters,
+  // otherwise it usually has a copy of the device attribute (primary DA)
+  if ( num_components < 3 )
+    return current_termtype;
+
+  const FString* sec_da_components = &sec_da_list[0];
+
+  if ( sec_da_components[0].isEmpty() )
+    return current_termtype;
+
+  // Read the terminal type
+  try
   {
-    uLong num_components;
-    bool sec_da_supported = false;
-
-    // remove the first 3 bytes ("\033[>")
-    FString temp = sec_da->right(sec_da->getLength() - 3);
-    // remove the last byte ("c")
-    temp.remove(temp.getLength() - 1, 1);
-    // split into components
-    FStringList sec_da_list = temp.split(';');
-
-    num_components = sec_da_list.size();
-
-    // The second device attribute (SEC_DA) always has 3 parameters,
-    // otherwise it usually has a copy of the device attribute (primary DA)
-    if ( num_components == 3 )
-      sec_da_supported = true;
-
-    if ( num_components >= 2 )
-    {
-      const FString* sec_da_components = &sec_da_list[0];
-
-      if ( ! sec_da_components[0].isEmpty() )
-      {
-        int terminal_id_type, terminal_id_version;
-
-        // Read the terminal type
-        try
-        {
-          terminal_id_type = sec_da_components[0].toInt();
-        }
-        catch (const std::exception&)
-        {
-          terminal_id_type = -1;
-        }
-
-        // Read the terminal (firmware) version
-        try
-        {
-          if ( sec_da_components[1] )
-            terminal_id_version = sec_da_components[1].toInt();
-          else
-            terminal_id_version = -1;
-        }
-        catch (const std::exception&)
-        {
-          terminal_id_version = -1;
-        }
-
-        switch ( terminal_id_type )
-        {
-          case 0:  // DEC VT100
-            if ( terminal_id_version == 115 )
-              kde_konsole = true;
-            else if ( terminal_id_version == 136 )
-              putty_terminal = true;  // PuTTY
-            break;
-
-          case 1:  // DEC VT220
-            if ( ! sec_da_supported )
-            {
-              if ( terminal_id_version ==  2 )  // also used by apple terminal
-                kterm_terminal = true;  // kterm
-            }
-            else if ( terminal_id_version > 1000 )
-            {
-              gnome_terminal = true;
-              // Each gnome-terminal should be able to use 256 colors
-              color256 = true;
-              new_termtype = C_STR("gnome-256color");
-              gnome_terminal_id = terminal_id_version;
-
-              // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
-              if ( gnome_terminal_id >= 4000 )
-                decscusr_support = true;
-            }
-            break;
-
-          case 2:   // DEC VT240
-          case 18:  // DEC VT330
-          case 19:  // DEC VT340
-
-          case 24:  // DEC VT320
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-            if ( terminal_id_version == 20 && isWSConsConsole() )
-            {
-              // NetBSD/OpenBSD workstation console
-              if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
-                netbsd_terminal = true;
-              else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
-              {
-                openbsd_terminal = true;
-                new_termtype = C_STR("pccon");
-              }
-            }
-            break;
-#endif
-          case 41:  // DEC VT420
-          case 61:  // DEC VT510
-          case 64:  // DEC VT520
-          case 65:  // DEC VT525
-            break;
-
-          case 32:  // Tera Term
-            tera_terminal = true;
-            new_termtype = C_STR("teraterm");
-            break;
-
-          case 77:  // mintty
-            mintty_terminal = true;
-            new_termtype = C_STR("xterm-256color");
-            // switch to application escape key mode
-            putstring (CSI "?7727h");
-            std::fflush(stdout);
-            break;
-
-          case 83:  // screen
-            screen_terminal = true;
-            break;
-
-          case 82:  // rxvt
-            rxvt_terminal = true;
-            force_vt100 = true;  // this rxvt terminal support on utf-8
-
-            if ( std::strncmp(termtype, "rxvt-", 5) != 0
-              && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-              new_termtype = C_STR("rxvt-16color");
-            else
-              new_termtype = termtype;
-            break;
-
-          case 85:  // rxvt-unicode
-            rxvt_terminal = true;
-            urxvt_terminal = true;
-
-            if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
-            {
-              if ( color256 )
-                new_termtype = C_STR("rxvt-256color");
-              else
-                new_termtype = C_STR("rxvt");
-            }
-            else
-              new_termtype = termtype;
-            break;
-
-          default:
-            break;
-        }
-
-        // Correct false assumptions
-        if ( gnome_terminal && terminal_id_type != 1 )
-          gnome_terminal = false;
-
-        if ( kde_konsole && terminal_id_type != 0 )
-          kde_konsole = false;
-      }
-    }
+    secondary_da.terminal_id_type = sec_da_components[0].toInt();
   }
+  catch (const std::exception&)
+  {
+    secondary_da.terminal_id_type = -1;
+  }
+
+  // Read the terminal (firmware) version
+  try
+  {
+    if ( sec_da_components[1] )
+      secondary_da.terminal_id_version = sec_da_components[1].toInt();
+    else
+      secondary_da.terminal_id_version = -1;
+  }
+  catch (const std::exception&)
+  {
+    secondary_da.terminal_id_version = -1;
+  }
+
+  // Read the terminal hardware option
+  try
+  {
+    if ( sec_da_components[2] )
+      secondary_da.terminal_id_hardware = sec_da_components[2].toInt();
+    else
+      secondary_da.terminal_id_hardware = -1;
+  }
+  catch (const std::exception&)
+  {
+    secondary_da.terminal_id_hardware = -1;
+  }
+
+  char* new_termtype = secDA_Analysis(current_termtype);
 
 #if DEBUG
   if ( new_termtype )
@@ -3228,6 +3125,208 @@ char* FTerm::parseSecDA (char current_termtype[])
                  , new_termtype
                  , std::strlen(new_termtype) + 1 );
 #endif
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+char* FTerm::secDA_Analysis (char current_termtype[])
+{
+  char* new_termtype = current_termtype;
+
+  switch ( secondary_da.terminal_id_type )
+  {
+    case 0:  // DEC VT100
+      new_termtype = secDA_Analysis_0(current_termtype);
+      break;
+
+    case 1:  // DEC VT220
+      new_termtype = secDA_Analysis_1(current_termtype);
+      break;
+
+    case 2:   // DEC VT240
+    case 18:  // DEC VT330
+    case 19:  // DEC VT340
+
+    case 24:  // DEC VT320
+      new_termtype = secDA_Analysis_24(current_termtype);
+      break;
+
+    case 41:  // DEC VT420
+    case 61:  // DEC VT510
+    case 64:  // DEC VT520
+    case 65:  // DEC VT525
+      break;
+
+    case 32:  // Tera Term
+      new_termtype = secDA_Analysis_32(current_termtype);
+      break;
+
+    case 77:  // mintty
+      new_termtype = secDA_Analysis_77(current_termtype);
+      break;
+
+    case 82:  // rxvt
+      new_termtype = secDA_Analysis_82(current_termtype);
+      break;
+
+    case 83:  // screen
+      new_termtype = secDA_Analysis_83(current_termtype);
+      break;
+
+    case 85:  // rxvt-unicode
+      new_termtype = secDA_Analysis_85(current_termtype);
+      break;
+
+    default:
+      break;
+  }
+
+  // Correct false assumptions
+  if ( gnome_terminal && secondary_da.terminal_id_type != 1 )
+    gnome_terminal = false;
+
+  if ( kde_konsole && secondary_da.terminal_id_type != 0 )
+    kde_konsole = false;
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_0 (char current_termtype[])
+{
+  // Terminal ID 0 - DEC VT100
+
+  char* new_termtype = current_termtype;
+
+  if ( secondary_da.terminal_id_version == 115 )
+    kde_konsole = true;
+  else if ( secondary_da.terminal_id_version == 136 )
+    putty_terminal = true;  // PuTTY
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_1 (char current_termtype[])
+{
+  // Terminal ID 1 - DEC VT220 
+
+  char* new_termtype = current_termtype;
+
+  if ( secondary_da.terminal_id_version > 1000 )
+  {
+    gnome_terminal = true;
+    // Each gnome-terminal should be able to use 256 colors
+    color256 = true;
+    new_termtype = C_STR("gnome-256color");
+    gnome_terminal_id = secondary_da.terminal_id_version;
+
+    // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
+    if ( gnome_terminal_id >= 4000 )
+      decscusr_support = true;
+  }
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_24 (char current_termtype[])
+{
+  // Terminal ID 24 - DEC VT320
+
+  char* new_termtype = current_termtype;
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+
+  if ( secondary_da.terminal_id_version == 20 && isWSConsConsole() )
+  {
+    // NetBSD/OpenBSD workstation console
+    if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
+      netbsd_terminal = true;
+    else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
+    {
+      openbsd_terminal = true;
+      new_termtype = C_STR("pccon");
+    }
+  }
+
+#endif
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_32 (char current_termtype[])
+{
+  // Terminal ID 32 - Tera Term
+
+  char* new_termtype = current_termtype;
+  tera_terminal = true;
+  new_termtype = C_STR("teraterm");
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_77 (char current_termtype[])
+{
+  // Terminal ID 77 - mintty
+
+  char* new_termtype = current_termtype;
+  mintty_terminal = true;
+  new_termtype = C_STR("xterm-256color");
+  // switch to application escape key mode
+  putstring (CSI "?7727h");
+  std::fflush(stdout);
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_82 (char current_termtype[])
+{
+  // Terminal ID 82 - rxvt
+
+  char* new_termtype = current_termtype;
+  rxvt_terminal = true;
+  force_vt100 = true;  // This rxvt terminal does not support utf-8
+
+  if ( std::strncmp(termtype, "rxvt-", 5) != 0
+    && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
+    new_termtype = C_STR("rxvt-16color");
+  else
+    new_termtype = termtype;
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_83 (char current_termtype[])
+{
+  // Terminal ID 83 - screen
+
+  char* new_termtype = current_termtype;
+  screen_terminal = true;
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTerm::secDA_Analysis_85 (char current_termtype[])
+{
+  // Terminal ID 85 - rxvt-unicode
+
+  char* new_termtype = current_termtype;
+  rxvt_terminal = true;
+  urxvt_terminal = true;
+
+  if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
+  {
+    if ( color256 )
+      new_termtype = C_STR("rxvt-256color");
+    else
+      new_termtype = C_STR("rxvt");
+  }
+  else
+    new_termtype = termtype;
 
   return new_termtype;
 }
@@ -3260,7 +3359,7 @@ void FTerm::oscPostfix()
 //----------------------------------------------------------------------
 void FTerm::init_alt_charset()
 {
-  // read the used vt100 pairs
+  // Read the used vt100 pairs
 
   if ( TCAP(fc::t_acs_chars) )
   {
@@ -3279,7 +3378,7 @@ void FTerm::init_alt_charset()
     utf8_char = 1
   };
 
-  // update array 'character' with discovered vt100 pairs
+  // Update array 'character' with discovered vt100 pairs
   for (int n = 0; n <= fc::lastKeyItem; n++ )
   {
     uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
@@ -3313,7 +3412,7 @@ void FTerm::init_pc_charset()
 
   if ( gnome_terminal || linux_terminal )
   {
-    // fallback if tcap "S2" is not found
+    // Fallback if tcap "S2" is not found
     if ( ! TCAP(fc::t_enter_pc_charset_mode) )
     {
       if ( utf8_console )
@@ -3334,7 +3433,7 @@ void FTerm::init_pc_charset()
       reinit = true;
     }
 
-    // fallback if tcap "S3" is not found
+    // Fallback if tcap "S3" is not found
     if ( ! TCAP(fc::t_exit_pc_charset_mode) )
     {
       if ( utf8_console )
@@ -4173,6 +4272,10 @@ void FTerm::init_locale()
   if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = std::setlocale (LC_ALL, "C");
 
+  // Kterm
+  if ( kterm_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+    locale_name = std::setlocale (LC_ALL, "C");
+
   // Sun (color) workstation console can't show UTF-8 character
   if ( std::strncmp(termtype, "sun", 3) == 0
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
@@ -4263,6 +4366,13 @@ void FTerm::init_encoding()
   {
     vt100_console = true;
     term_encoding = fc::VT100;
+    Fputchar      = &FTerm::putchar_ASCII;  // function pointer
+  }
+  else if ( FTermcap::no_utf8_acs_chars && isUTF8()
+         && term_encoding == fc::VT100 )
+  {
+    ascii_console = true;
+    term_encoding = fc::ASCII;
     Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
 
@@ -4520,7 +4630,9 @@ void FTerm::init()
   init_encoding();
 
   if ( init_values.encoding != fc::UNKNOWN )
+  {
     setEncoding(init_values.encoding);
+  }
 
   // Enable the terminal mouse support
   enableMouse();

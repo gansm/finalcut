@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -2639,12 +2639,10 @@ void FVTerm::cursorWrap()
 {
   // Wrap the cursor
   term_area*& vt = vterm;
-  int term_width = vt->width - 1;
-  int term_height = vt->height - 1;
 
-  if ( term_pos->getX() > term_width )
+  if ( term_pos->getX() >= vt->width )
   {
-    if ( term_pos->getY() == term_height )
+    if ( term_pos->getY() == vt->height - 1 )
       term_pos->x_ref()--;
     else
     {
@@ -2845,6 +2843,9 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
     else if ( term_encoding == fc::PC )
     {
       next_char->attr.bit.pc_charset = true;
+
+      if ( isPuttyTerminal() )
+        return;
 
       if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
       {

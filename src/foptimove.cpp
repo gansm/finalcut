@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -639,7 +639,9 @@ int FOptiMove::capDurationToLength (int duration)
 }
 
 //----------------------------------------------------------------------
-int FOptiMove::repeatedAppend (const capability& o, int count, char* dst)
+int FOptiMove::repeatedAppend ( const capability& o
+                              , volatile int count
+                              , char* dst )
 {
   register std::size_t src_len;
   register std::size_t dst_len;

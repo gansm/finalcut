@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -75,16 +75,14 @@ FButtonGroup::~FButtonGroup()  // destructor
 FToggleButton* FButtonGroup::getButton (int index) const
 {
   constFObjectIterator iter;
-  index--;
-
   if ( buttonlist.empty() )
     return 0;
 
-  if ( index < 0 || index >= int(getCount()) )
+  if ( index <= 0 || index > int(getCount()) )
     return 0;
 
   iter = buttonlist.begin();
-  std::advance (iter, index);
+  std::advance (iter, index - 1);
   return static_cast<FToggleButton*>(*iter);
 }
 

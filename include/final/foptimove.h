@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -133,7 +133,7 @@ class FOptiMove
     void calculateCharDuration();
     int  capDuration (char[], int);
     int  capDurationToLength (int);
-    int  repeatedAppend (const capability&, int, char*);
+    int  repeatedAppend (const capability&, volatile int, char*);
     int  relativeMove (char[], int, int, int, int);
     bool isWideMove (int, int, int, int);
     bool isMethod0Faster (int&, int, int);

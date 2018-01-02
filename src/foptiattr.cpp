@@ -1214,13 +1214,11 @@ inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
     switch ( bit & attr_without_color )
     {
       case standout_mode:
-        if ( attr->attr.bit.standout )
-          attr->attr.bit.standout = false;
+        attr->attr.bit.standout = false;
         break;
 
       case underline_mode:
-        if ( attr->attr.bit.underline )
-          attr->attr.bit.underline = false;
+        attr->attr.bit.underline = false;
         break;
 
       case reverse_mode:
@@ -1234,38 +1232,31 @@ inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
         break;
 
       case blink_mode:
-        if ( attr->attr.bit.blink )
-          attr->attr.bit.blink = false;
+        attr->attr.bit.blink = false;
         break;
 
       case dim_mode:
-        if ( attr->attr.bit.dim )
-          attr->attr.bit.dim = false;
+        attr->attr.bit.dim = false;
         break;
 
       case bold_mode:
-        if ( attr->attr.bit.bold )
-          attr->attr.bit.bold = false;
+        attr->attr.bit.bold = false;
         break;
 
       case invisible_mode:
-        if ( attr->attr.bit.invisible )
-          attr->attr.bit.invisible = false;
+        attr->attr.bit.invisible = false;
         break;
 
       case protected_mode:
-        if ( attr->attr.bit.protect )
-          attr->attr.bit.protect = false;
+        attr->attr.bit.protect = false;
         break;
 
       case alt_charset_mode:
-        if ( attr->attr.bit.alt_charset )
-          attr->attr.bit.alt_charset = false;
+        attr->attr.bit.alt_charset = false;
         break;
 
       case italic_mode:
-        if ( attr->attr.bit.italic )
-          attr->attr.bit.italic = false;
+        attr->attr.bit.italic = false;
         break;
 
       default:

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2013-2017 Markus Gans                                      *
+* Copyright 2013-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -335,7 +335,7 @@ void FApplication::showParameterUsage()
     << "  --encoding <name>    "
     << "       Sets the character encoding mode" << std::endl
     << "                       "
-    << "       {UTF8, VT100, PC, ASCII}" << std::endl
+    << "       {utf8, vt100, pc, ascii}" << std::endl
     << "  --no-optimized-cursor  "
     << "     Disable cursor optimization" << std::endl
     << "  --no-terminal-detection"
@@ -433,17 +433,17 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       if ( std::strcmp(long_options[idx].name, "encoding") == 0 )
       {
         FString encoding(optarg);
-        encoding = encoding.toUpper();
+        encoding = encoding.toLower();
 
-        if ( encoding.includes("UTF8") )
+        if ( encoding.includes("utf8") )
           init_values.encoding = fc::UTF8;
-        else if ( encoding.includes("VT100") )
+        else if ( encoding.includes("vt100") )
           init_values.encoding = fc::VT100;
-        else if ( encoding.includes("PC") )
+        else if ( encoding.includes("pc") )
           init_values.encoding = fc::PC;
-        else if ( encoding.includes("ASCII") )
+        else if ( encoding.includes("ascii") )
           init_values.encoding = fc::ASCII;
-        else if ( encoding.includes("HELP") )
+        else if ( encoding.includes("help") )
           showParameterUsage();
         else
           exitWithMessage ( "Unknown encoding "

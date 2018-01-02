@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -724,7 +724,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     }
   }
 
-  if ( txtlength > getWidth() - 2 )
+  if ( txtlength >= getWidth() - 1 )
   {
     // Print ellipsis
     setPrintPos (getWidth() + indent - 2, 1);

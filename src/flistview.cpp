@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -321,7 +321,7 @@ FListViewIterator FListViewIterator::operator -- (int)  // postfix
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator += (int n)
+FListViewIterator& FListViewIterator::operator += (volatile int n)
 {
   while ( n > 0 )
   {
@@ -333,7 +333,7 @@ FListViewIterator& FListViewIterator::operator += (int n)
 }
 
 //----------------------------------------------------------------------
-FListViewIterator& FListViewIterator::operator -= (int n)
+FListViewIterator& FListViewIterator::operator -= (volatile int n)
 {
   while ( n > 0 )
   {
@@ -1093,7 +1093,7 @@ void FListView::onWheel (FWheelEvent* ev)
       if ( current_iter.getPosition() == 0 )
         break;
 
-      if ( first_visible_line.getPosition() - pagesize >= 0 )
+      if ( first_visible_line.getPosition() >= pagesize )
       {
         current_iter -= pagesize;
         first_visible_line -= pagesize;
@@ -1116,7 +1116,7 @@ void FListView::onWheel (FWheelEvent* ev)
       if ( current_iter.getPosition() + 1 == element_count )
         break;
 
-      if ( last_visible_line.getPosition() + pagesize < element_count )
+      if ( last_visible_line.getPosition() < element_count - pagesize )
       {
         current_iter += pagesize;
         first_visible_line += pagesize;
@@ -1197,17 +1197,17 @@ void FListView::adjustViewport()
     int difference = first_visible_line.getPosition()
                    - (element_count - height);
 
-    if ( first_visible_line.getPosition() - difference + 1 > 0 )
+    if ( first_visible_line.getPosition() >= difference )
     {
       first_visible_line -= difference;
       last_visible_line -= difference;
     }
   }
 
-  int max_last_visible_line = first_visible_line.getPosition()
-                            + height - 1;
+  int after_last_visible_line = first_visible_line.getPosition()
+                              + height;
 
-  if ( last_visible_line.getPosition() > max_last_visible_line )
+  if ( last_visible_line.getPosition() >= after_last_visible_line )
   {
     last_visible_line = first_visible_line;
     last_visible_line += height - 1;
