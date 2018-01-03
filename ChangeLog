@@ -1,4 +1,5 @@
 2017-01-02  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FOptiMove::relativeMove
 	* Refactoring attribute settings in FOptiAttr
 	* Refactoring FTerm::parseKeyString and timeout settings
 

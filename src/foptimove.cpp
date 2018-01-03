@@ -677,71 +677,15 @@ int FOptiMove::relativeMove ( char move[]
                             , int from_x, int from_y
                             , int to_x, int to_y )
 {
-  int num
-    , vtime = 0
-    , htime = 0;
+  int vtime = 0;
+  int htime = 0;
 
   if ( move )
     move[0] = '\0';
 
   if ( to_y != from_y )  // vertical move
   {
-    vtime = LONG_DURATION;
-
-    if ( F_row_address.cap )
-    {
-      if ( move )
-        std::strncpy ( move
-                     , tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
-                     , sizeof(move_buf) - 1 );
-
-      vtime = F_row_address.duration;
-    }
-
-    if ( to_y > from_y )
-    {
-      num = to_y - from_y;
-
-      if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
-      {
-        if ( move )
-          std::strncpy ( move
-                       , tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                       , sizeof(move_buf) - 1 );
-
-        vtime = F_parm_down_cursor.duration;
-      }
-
-      if ( F_cursor_down.cap && (num * F_cursor_down.duration < vtime) )
-      {
-        if ( move )
-          move[0] = '\0';
-
-        vtime = repeatedAppend (F_cursor_down, num, move);
-      }
-    }
-    else  // to_y < from_y
-    {
-      num = from_y - to_y;
-
-      if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
-      {
-        if ( move )
-          std::strncpy ( move
-                       , tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                       , sizeof(move_buf) - 1 );
-
-        vtime = F_parm_up_cursor.duration;
-      }
-
-      if ( F_cursor_up.cap && (num * F_cursor_up.duration < vtime) )
-      {
-        if ( move )
-          move[0] = '\0';
-
-        vtime = repeatedAppend (F_cursor_up, num, move);
-      }
-    }
+    vtime = verticalMove (move, from_y, to_y);
 
     if ( vtime >= LONG_DURATION )
       return LONG_DURATION;
@@ -749,116 +693,8 @@ int FOptiMove::relativeMove ( char move[]
 
   if ( to_x != from_x )  // horizontal move
   {
-    char str[sizeof(move_buf)] = {};
     char hmove[sizeof(move_buf)] = {};
-    htime = LONG_DURATION;
-
-    if ( F_column_address.cap )
-    {
-      std::strncat ( hmove
-                   , tparm(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , sizeof(hmove) - std::strlen(hmove) - 1 );
-      htime = F_column_address.duration;
-    }
-
-    if ( to_x > from_x )
-    {
-      num = to_x - from_x;
-
-      if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
-      {
-        std::strncat ( hmove
-                     , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                     , sizeof(hmove) - std::strlen(hmove) - 1 );
-        htime = F_parm_right_cursor.duration;
-      }
-
-      if ( F_cursor_right.cap )
-      {
-        int htime_r = 0;
-        str[0] = '\0';
-
-        // try to use tab
-        if ( tabstop > 0 && F_tab.cap )
-        {
-          int pos = from_x;
-
-          while ( true )
-          {
-            int tab_pos = pos + tabstop - (pos % tabstop);
-
-            if ( tab_pos > to_x )
-              break;
-
-            htime_r += repeatedAppend (F_tab, 1, str);
-
-            if ( htime_r >= LONG_DURATION )
-              break;
-
-            pos = tab_pos;
-          }
-
-          num = to_x - pos;
-        }
-
-        htime_r += repeatedAppend (F_cursor_right, num, str);
-
-        if ( htime_r < htime )
-        {
-          std::strncpy (hmove, str, sizeof(move_buf) - 1);
-          htime = htime_r;
-        }
-      }
-    }
-    else  // to_x < from_x
-    {
-      num = from_x - to_x;
-
-      if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
-      {
-        std::strncat ( hmove
-                     , tparm(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                     , sizeof(hmove) - std::strlen(hmove) - 1 );
-        htime = F_parm_left_cursor.duration;
-      }
-
-      if ( F_cursor_left.cap )
-      {
-        int htime_l = 0;
-        str[0] = '\0';
-
-        // try to use backward tab
-        if ( tabstop > 0 && F_back_tab.cap )
-        {
-          int pos = from_x;
-
-          while ( true )
-          {
-            int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
-
-            if ( tab_pos < to_x )
-              break;
-
-            htime_l += repeatedAppend (F_back_tab, 1, str);
-
-            if ( htime_l >= LONG_DURATION )
-              break;
-
-            pos = tab_pos;
-          }
-
-          num = pos - to_x;
-        }
-
-        htime_l += repeatedAppend (F_cursor_left, num, str);
-
-        if ( htime_l < htime )
-        {
-          std::strncpy (hmove, str, sizeof(move_buf) - 1);
-          htime = htime_l;
-        }
-      }
-    }
+    htime = horizontalMove (hmove, from_x, to_x);
 
     if ( htime >= LONG_DURATION )
       return LONG_DURATION;
@@ -873,6 +709,185 @@ int FOptiMove::relativeMove ( char move[]
   }
 
   return vtime + htime;
+}
+
+//----------------------------------------------------------------------
+inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
+{
+  int vtime = LONG_DURATION;
+
+  if ( F_row_address.cap )
+  {
+    if ( move )
+      std::strncpy ( move
+                   , tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , sizeof(move_buf) - 1 );
+
+    vtime = F_row_address.duration;
+  }
+
+  if ( to_y > from_y )
+  {
+    int num = to_y - from_y;
+
+    if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
+    {
+      if ( move )
+        std::strncpy ( move
+                     , tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                     , sizeof(move_buf) - 1 );
+
+      vtime = F_parm_down_cursor.duration;
+    }
+
+    if ( F_cursor_down.cap && (num * F_cursor_down.duration < vtime) )
+    {
+      if ( move )
+        move[0] = '\0';
+
+      vtime = repeatedAppend (F_cursor_down, num, move);
+    }
+  }
+  else  // to_y < from_y
+  {
+    int num = from_y - to_y;
+
+    if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
+    {
+      if ( move )
+        std::strncpy ( move
+                     , tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                     , sizeof(move_buf) - 1 );
+
+      vtime = F_parm_up_cursor.duration;
+    }
+
+    if ( F_cursor_up.cap && (num * F_cursor_up.duration < vtime) )
+    {
+      if ( move )
+        move[0] = '\0';
+
+      vtime = repeatedAppend (F_cursor_up, num, move);
+    }
+  }
+
+  return vtime;
+}
+
+//----------------------------------------------------------------------
+inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
+{
+  char str[sizeof(move_buf)] = {};
+  int htime = LONG_DURATION;
+
+  if ( F_column_address.cap )
+  {
+    std::strncat ( hmove
+                 , tparm(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
+                 , sizeof(hmove) - std::strlen(hmove) - 1 );
+    htime = F_column_address.duration;
+  }
+
+  if ( to_x > from_x )
+  {
+    int num = to_x - from_x;
+
+    if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
+    {
+      std::strncat ( hmove
+                   , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , sizeof(hmove) - std::strlen(hmove) - 1 );
+      htime = F_parm_right_cursor.duration;
+    }
+
+    if ( F_cursor_right.cap )
+    {
+      int htime_r = 0;
+      str[0] = '\0';
+
+      // try to use tab
+      if ( tabstop > 0 && F_tab.cap )
+      {
+        int pos = from_x;
+
+        while ( true )
+        {
+          int tab_pos = pos + tabstop - (pos % tabstop);
+
+          if ( tab_pos > to_x )
+            break;
+
+          htime_r += repeatedAppend (F_tab, 1, str);
+
+          if ( htime_r >= LONG_DURATION )
+            break;
+
+          pos = tab_pos;
+        }
+
+        num = to_x - pos;
+      }
+
+      htime_r += repeatedAppend (F_cursor_right, num, str);
+
+      if ( htime_r < htime )
+      {
+        std::strncpy (hmove, str, sizeof(move_buf) - 1);
+        htime = htime_r;
+      }
+    }
+  }
+  else  // to_x < from_x
+  {
+    int num = from_x - to_x;
+
+    if ( F_parm_left_cursor.cap && F_parm_left_cursor.duration < htime )
+    {
+      std::strncat ( hmove
+                   , tparm(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
+                   , sizeof(hmove) - std::strlen(hmove) - 1 );
+      htime = F_parm_left_cursor.duration;
+    }
+
+    if ( F_cursor_left.cap )
+    {
+      int htime_l = 0;
+      str[0] = '\0';
+
+      // try to use backward tab
+      if ( tabstop > 0 && F_back_tab.cap )
+      {
+        int pos = from_x;
+
+        while ( true )
+        {
+          int tab_pos = ( pos > 0 ) ? ((pos - 1) / tabstop) * tabstop : -1;
+
+          if ( tab_pos < to_x )
+            break;
+
+          htime_l += repeatedAppend (F_back_tab, 1, str);
+
+          if ( htime_l >= LONG_DURATION )
+            break;
+
+          pos = tab_pos;
+        }
+
+        num = pos - to_x;
+      }
+
+      htime_l += repeatedAppend (F_cursor_left, num, str);
+
+      if ( htime_l < htime )
+      {
+        std::strncpy (hmove, str, sizeof(move_buf) - 1);
+        htime = htime_l;
+      }
+    }
+  }
+
+  return htime;
 }
 
 //----------------------------------------------------------------------

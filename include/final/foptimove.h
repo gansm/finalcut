@@ -135,6 +135,8 @@ class FOptiMove
     int  capDurationToLength (int);
     int  repeatedAppend (const capability&, volatile int, char*);
     int  relativeMove (char[], int, int, int, int);
+    int  verticalMove (char[], int, int);
+    int  horizontalMove (char[], int, int);
     bool isWideMove (int, int, int, int);
     bool isMethod0Faster (int&, int, int);
     bool isMethod1Faster (int&, int, int, int, int);
