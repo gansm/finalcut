@@ -539,98 +539,23 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   if ( ! F_enter_secure_mode.cap && next->attr.bit.invisible )
     next->code = ' ';
 
-  // look for no changes
+  // Look for no changes
   if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
     return 0;
 
-  if ( cygwin_terminal && (term->fg_color > 7 || term->bg_color > 7) )
-  {
-    // reset blink and bold mode from colors > 7
-    char rst[] = CSI "m";
-    append_sequence (rst);
-    reset(term);
-  }
+  preProcessing_cygwin_quirks(term);
 
   if ( hasNoAttribute(next) )
   {
-    if ( hasAttribute(term) )
-    {
-      if ( F_exit_attribute_mode.cap )
-      {
-        unsetTermAttributes(term);
-
-        if ( off.attr.bit.pc_charset )
-          unsetTermPCcharset(term);
-
-        if ( off.attr.bit.alt_charset )
-          unsetTermAltCharset(term);
-      }
-      else
-        setAttributesOff(term);
-    }
-
-    if ( colorChange(term, next) )
-      change_color (term, next);
+    deactivateAttributes (term, next);
   }
   else if ( F_set_attributes.cap && ! term->attr.bit.pc_charset )
   {
-    if ( switchOn() || switchOff() )
-      setTermAttributes ( term
-                        , next->attr.bit.standout
-                        , next->attr.bit.underline
-                        , next->attr.bit.reverse
-                        , next->attr.bit.blink
-                        , next->attr.bit.dim
-                        , next->attr.bit.bold
-                        , next->attr.bit.invisible
-                        , next->attr.bit.protect
-                        , next->attr.bit.alt_charset );
-
-    if ( off.attr.bit.pc_charset )
-      unsetTermPCcharset(term);
-
-    if ( next->attr.bit.italic )
-      setTermItalic(term);
-
-    if ( next->attr.bit.crossed_out )
-      setTermCrossedOut(term);
-
-    if ( next->attr.bit.dbl_underline )
-      setTermDoubleUnderline(term);
-
-    if ( next->attr.bit.pc_charset )
-      setTermPCcharset(term);
-
-    if ( colorChange(term, next) )
-    {
-      change_color(term, next);
-
-      if ( cygwin_terminal )
-      {
-        if ( next->attr.bit.bold )
-          setTermBold(term);
-
-        if ( next->attr.bit.reverse )
-          setTermReverse(term);
-
-        if ( next->attr.bit.standout )
-          setTermStandout(term);
-      }
-    }
+    changeAttributeSGR (term, next);
   }
   else
   {
-    setAttributesOff(term);
-    detectSwitchOff (term, next);
-
-    if ( switchOff() )
-      unsetTermAttributes(term);
-
-    if ( colorChange(term, next) )
-      change_color (term, next);
-
-    detectSwitchOn (term, next);
-    setAttributesOn(term);
+    changeAttributeSeparately (term, next);
   }
 
   if ( term && fake_reverse )
@@ -1266,14 +1191,123 @@ inline void FOptiAttr::prevent_no_color_video_attributes (char_data*& attr)
 }
 
 //----------------------------------------------------------------------
+inline void FOptiAttr::preProcessing_cygwin_quirks (char_data*& term)
+{
+  // Cygwin bold color fix pre processing
+
+  if ( ! cygwin_terminal )
+    return;
+
+  if ( term->fg_color > 7 || term->bg_color > 7 )
+  {
+    // Reset blink and bold mode from colors > 7
+    char rst[] = CSI "m";
+    append_sequence (rst);
+    reset(term);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::postProcessing_cygwin_quirks ( char_data*& term
+                                                    , char_data*& next )
+{
+  // Cygwin bold color fix post processing
+
+  if ( ! cygwin_terminal )
+    return;
+
+  if ( next->attr.bit.bold )
+    setTermBold(term);
+
+  if ( next->attr.bit.reverse )
+    setTermReverse(term);
+
+  if ( next->attr.bit.standout )
+    setTermStandout(term);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::deactivateAttributes ( char_data*& term
+                                            , char_data*& next )
+{
+  if ( hasAttribute(term) )
+  {
+    if ( F_exit_attribute_mode.cap )
+    {
+      unsetTermAttributes(term);
+
+      if ( off.attr.bit.pc_charset )
+        unsetTermPCcharset(term);
+
+      if ( off.attr.bit.alt_charset )
+        unsetTermAltCharset(term);
+    }
+    else
+      setAttributesOff(term);
+  }
+
+  if ( colorChange(term, next) )
+    change_color (term, next);
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::changeAttributeSGR ( char_data*& term
+                                          , char_data*& next )
+{
+  if ( switchOn() || switchOff() )
+    setTermAttributes ( term
+                      , next->attr.bit.standout
+                      , next->attr.bit.underline
+                      , next->attr.bit.reverse
+                      , next->attr.bit.blink
+                      , next->attr.bit.dim
+                      , next->attr.bit.bold
+                      , next->attr.bit.invisible
+                      , next->attr.bit.protect
+                      , next->attr.bit.alt_charset );
+
+  if ( off.attr.bit.pc_charset )
+    unsetTermPCcharset(term);
+
+  if ( next->attr.bit.italic )
+    setTermItalic(term);
+
+  if ( next->attr.bit.crossed_out )
+    setTermCrossedOut(term);
+
+  if ( next->attr.bit.dbl_underline )
+    setTermDoubleUnderline(term);
+
+  if ( next->attr.bit.pc_charset )
+    setTermPCcharset(term);
+
+  if ( colorChange(term, next) )
+  {
+    change_color(term, next);
+    postProcessing_cygwin_quirks(term, next);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::changeAttributeSeparately ( char_data*& term
+                                                 , char_data*& next )
+{
+  setAttributesOff(term);
+  detectSwitchOff (term, next);
+
+  if ( switchOff() )
+    unsetTermAttributes(term);
+
+  if ( colorChange(term, next) )
+    change_color (term, next);
+
+  detectSwitchOn (term, next);
+  setAttributesOn(term);
+}
+
+//----------------------------------------------------------------------
 void FOptiAttr::change_color (char_data*& term, char_data*& next)
 {
-  char* color_str;
-  char* AF = F_set_a_foreground.cap;
-  char* AB = F_set_a_background.cap;
-  char* Sf = F_set_foreground.cap;
-  char* Sb = F_set_background.cap;
-  char* sp = F_set_color_pair.cap;
   short fg, bg;
 
   if ( monochron || ! (term && next) )
@@ -1283,41 +1317,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   bg = next->bg_color;
 
   if ( fg == Default || bg == Default )
-  {
-    if ( ansi_default_color )
-    {
-      if ( fg == Default && term->fg_color != Default
-        && bg == Default && term->bg_color != Default )
-      {
-        setTermDefaultColor(term);
-      }
-      else if ( fg == Default && term->fg_color != Default )
-      {
-        char sgr_39[] = CSI "39m";
-        append_sequence (sgr_39);
-        term->fg_color = Default;
-      }
-      else if ( bg == Default && term->bg_color != Default )
-      {
-        char* sgr_49;
-        char* op = F_orig_pair.cap;
-
-        if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
-          sgr_49 = C_STR(CSI "49;25m");
-        else
-          sgr_49 = C_STR(CSI "49m");
-
-        append_sequence (sgr_49);
-        term->bg_color = Default;
-      }
-    }
-    else if ( ! setTermDefaultColor(term) )
-    {
-      // fallback to gray on black
-      fg = next->fg_color = LightGray;
-      bg = next->bg_color = Black;
-    }
-  }
+    change_to_default_color (term, next, fg, bg);
 
   if ( ! fake_reverse && fg < 0 && bg < 0 )
     return;
@@ -1329,6 +1329,63 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     if ( fg == Default || bg == Default )
       setTermDefaultColor(term);
   }
+
+  change_current_color (term, fg, bg);
+
+  term->fg_color = next->fg_color;
+  term->bg_color = next->bg_color;
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::change_to_default_color ( char_data*& term
+                                               , char_data*& next
+                                               , short& fg, short& bg )
+{
+  if ( ansi_default_color )
+  {
+    if ( fg == Default && term->fg_color != Default
+      && bg == Default && term->bg_color != Default )
+    {
+      setTermDefaultColor(term);
+    }
+    else if ( fg == Default && term->fg_color != Default )
+    {
+      char sgr_39[] = CSI "39m";
+      append_sequence (sgr_39);
+      term->fg_color = Default;
+    }
+    else if ( bg == Default && term->bg_color != Default )
+    {
+      char* sgr_49;
+      char* op = F_orig_pair.cap;
+
+      if ( op && std::strncmp (op, CSI "39;49;25m", 11) == 0 )
+        sgr_49 = C_STR(CSI "49;25m");
+      else
+        sgr_49 = C_STR(CSI "49m");
+
+      append_sequence (sgr_49);
+      term->bg_color = Default;
+    }
+  }
+  else if ( ! setTermDefaultColor(term) )
+  {
+    // Fallback to gray on black
+    fg = next->fg_color = LightGray;
+    bg = next->bg_color = Black;
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FOptiAttr::change_current_color ( char_data*& term
+                                            , short fg, short bg )
+{
+  char* color_str;
+  char* AF = F_set_a_foreground.cap;
+  char* AB = F_set_a_background.cap;
+  char* Sf = F_set_foreground.cap;
+  char* Sb = F_set_background.cap;
+  char* sp = F_set_color_pair.cap;
 
   if ( AF && AB )
   {
@@ -1361,9 +1418,6 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
     if ( (color_str = tparm(sp, fg, bg, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
   }
-
-  term->fg_color = next->fg_color;
-  term->bg_color = next->bg_color;
 }
 
 //----------------------------------------------------------------------

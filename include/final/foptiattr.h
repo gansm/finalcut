@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -270,7 +270,14 @@ class FOptiAttr
     bool  colorChange (char_data*&, char_data*&);
     void  resetColor (char_data*&);
     void  prevent_no_color_video_attributes (char_data*&);
+    void  preProcessing_cygwin_quirks (char_data*&);
+    void  postProcessing_cygwin_quirks (char_data*&, char_data*&);
+    void  deactivateAttributes (char_data*&, char_data*&);
+    void  changeAttributeSGR (char_data*&, char_data*&);
+    void  changeAttributeSeparately (char_data*&, char_data*&);
     void  change_color (char_data*&, char_data*&);
+    void  change_to_default_color (char_data*&, char_data*&, short&, short&);
+    void  change_current_color (char_data*&, short, short);
     void  resetAttribute (char_data*&);
     void  reset (char_data*&);
     bool  caused_reset_attributes (char[], uChar = all_tests);

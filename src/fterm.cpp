@@ -4867,7 +4867,7 @@ inline int FTerm::getMetaKey ( char buffer[]
 }
 
 //----------------------------------------------------------------------
-int FTerm::getSingleKey (char buffer[], int buf_size)
+inline int FTerm::getSingleKey (char buffer[], int buf_size)
 {
   register uChar firstchar = uChar(buffer[0]);
   int key, n, len;
