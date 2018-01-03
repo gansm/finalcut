@@ -1,4 +1,7 @@
 2017-01-02  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FTerm::parseKeyString and timeout settings
+
+2017-01-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of secondary device attributes parsing
         * Small menu improvements
 

@@ -57,6 +57,8 @@ int      FTerm::clr_bol_length;
 int      FTerm::clr_eol_length;
 int      FTerm::cursor_addres_lengths;
 uInt     FTerm::baudrate;
+long     FTerm::key_timeout;
+long     FTerm::dblclick_interval;
 bool     FTerm::resize_term;
 bool     FTerm::mouse_support;
 bool     FTerm::decscusr_support;
@@ -271,27 +273,6 @@ fc::freebsdConsoleCursorStyle FTerm::getFreeBSDConsoleCursorStyle()
 #endif
 
 //----------------------------------------------------------------------
-bool FTerm::isKeyTimeout (timeval* time, register long timeout)
-{
-  register long diff_usec;
-  struct timeval now;
-  struct timeval diff;
-
-  FObject::getCurrentTime(&now);
-  diff.tv_sec = now.tv_sec - time->tv_sec;
-  diff.tv_usec = now.tv_usec - time->tv_usec;
-
-  if ( diff.tv_usec < 0 )
-  {
-    diff.tv_sec--;
-    diff.tv_usec += 1000000;
-  }
-
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
-  return ( diff_usec > timeout );
-}
-
-//----------------------------------------------------------------------
 bool FTerm::isNormal (char_data*& ch)
 {
   return opti_attr->isNormal(ch);
@@ -465,113 +446,30 @@ int FTerm::parseKeyString ( char buffer[]
                           , int buf_size
                           , timeval* time_keypressed )
 {
-  static const long key_timeout = 100000;  // 100 ms
-  register uChar firstchar = uChar(buffer[0]);
-  register std::size_t buf_len = std::strlen(buffer);
-  int key, len, n;
+  uChar firstchar = uChar(buffer[0]);
 
   if ( firstchar == ESC[0] )
   {
-    // x11 mouse tracking
-    if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
-      return fc::Fkey_mouse;
+    int key = getMouseProtocolKey(buffer);
 
-    // SGR mouse tracking
-    if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-      && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
-      return fc::Fkey_extended_mouse;
+    if ( key > 0 )
+      return key;
 
-    // urxvt mouse tracking
-    if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
-      && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-      && buffer[buf_len - 1] == 'M' )
-      return fc::Fkey_urxvt_mouse;
+    key = getTermcapKey(buffer, buf_size);
 
-    // look for termcap keys
-    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
-    {
-      char* k = fc::Fkey[i].string;
-      len = ( k ) ? int(std::strlen(k)) : 0;
+    if ( key > 0 )
+      return key;
 
-      if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
-      {
-        for (n = len; n < buf_size; n++)   // Remove founded entry
-          buffer[n - len] = buffer[n];
+    key = getMetaKey(buffer, buf_size, time_keypressed);
 
-        for (; n - len < len; n++)    // Fill rest with '\0'
-          buffer[n - len] = '\0';
+    if ( key > 0 )
+      return key;
 
-        input_data_pending = bool(buffer[0] != '\0');
-        return fc::Fkey[i].num;
-      }
-    }
-
-    // look for meta keys
-    for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
-    {
-      char* kmeta = fc::Fmetakey[i].string;  // The string is never null
-      len = int(std::strlen(kmeta));
-
-      if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
-      {
-        if ( len == 2 && ( buffer[1] == 'O'
-                        || buffer[1] == '['
-                        || buffer[1] == ']' ) )
-        {
-          if ( ! isKeyTimeout(time_keypressed, key_timeout) )
-            return NEED_MORE_DATA;
-        }
-
-        for (n = len; n < buf_size; n++)    // Remove founded entry
-          buffer[n - len] = buffer[n];
-
-        for (; n - len < len; n++)     // Fill rest with '\0'
-          buffer[n - len] = '\0';
-
-        input_data_pending = bool(buffer[0] != '\0');
-        return fc::Fmetakey[i].num;
-      }
-    }
-
-    if ( ! isKeyTimeout(time_keypressed, key_timeout) )
+    if ( ! isKeypressTimeout(time_keypressed) )
       return NEED_MORE_DATA;
   }
 
-  // look for utf-8 character
-
-  len = 1;
-
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
-  {
-    char utf8char[4] = {};  // init array with '\0'
-
-    if ( (firstchar & 0xe0) == 0xc0 )
-      len = 2;
-    else if ( (firstchar & 0xf0) == 0xe0 )
-      len = 3;
-    else if ( (firstchar & 0xf8) == 0xf0 )
-      len = 4;
-
-    for (n = 0; n < len ; n++)
-      utf8char[n] = char(buffer[n] & 0xff);
-
-    key = UTF8decode(utf8char);
-  }
-  else
-    key = uChar(buffer[0] & 0xff);
-
-  for (n = len; n < buf_size; n++)  // remove the key from the buffer front
-    buffer[n - len] = buffer[n];
-
-  for (n = n - len; n < buf_size; n++)   // fill the rest with '\0' bytes
-    buffer[n] = '\0';
-
-  input_data_pending = bool(buffer[0] != '\0');
-
-  if ( key == 0 )  // Ctrl+Space or Ctrl+@
-    key = fc::Fckey_space;
-
-  return int(key == 127 ? fc::Fkey_backspace : key);
+  return getSingleKey(buffer, buf_size);
 }
 
 //----------------------------------------------------------------------
@@ -1951,6 +1849,27 @@ void FTerm::exitWithMessage (std::string message)
 
 // private methods of FTerm
 //----------------------------------------------------------------------
+bool FTerm::isTimeout (timeval* time, register long timeout)
+{
+  register long diff_usec;
+  struct timeval now;
+  struct timeval diff;
+
+  FObject::getCurrentTime(&now);
+  diff.tv_sec = now.tv_sec - time->tv_sec;
+  diff.tv_usec = now.tv_usec - time->tv_usec;
+
+  if ( diff.tv_usec < 0 )
+  {
+    diff.tv_sec--;
+    diff.tv_usec += 1000000;
+  }
+
+  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  return ( diff_usec > timeout );
+}
+
+//----------------------------------------------------------------------
 #if defined(__linux__)
 int FTerm::isLinuxConsole()
 {
@@ -2686,6 +2605,12 @@ void FTerm::init_global_values()
   //                      a.b.c  = a * 100 +  b * 100 + c
   gnome_terminal_id = 0;
 
+  // Set default timeout for keypress
+  key_timeout = 100000;  // 100 ms
+
+  // Set the default double click interval
+  dblclick_interval = 500000;  // 500 ms
+
   // Preset to false
   utf8_console            = \
   utf8_input              = \
@@ -2727,6 +2652,10 @@ void FTerm::init_global_values()
 
   // Init arrays with '\0'
   std::fill_n (exit_message, sizeof(exit_message), '\0');
+
+  // Initialize the structs
+  color_env.setDefault();
+  secondary_da.setDefault();
 
   if ( ! init_values.terminal_detection )
     terminal_detection = false;
@@ -3210,7 +3139,7 @@ inline char* FTerm::secDA_Analysis_0 (char current_termtype[])
 //----------------------------------------------------------------------
 inline char* FTerm::secDA_Analysis_1 (char current_termtype[])
 {
-  // Terminal ID 1 - DEC VT220 
+  // Terminal ID 1 - DEC VT220
 
   char* new_termtype = current_termtype;
 
@@ -4405,7 +4334,7 @@ void FTerm::redefineColorPalette()
     setPalette (fc::Blue, 0x22, 0x22, 0xb2);
     setPalette (fc::Green, 0x18, 0x78, 0x18);
     setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
-    setPalette (fc::Red, 0xb2, 0x18, 0x18);
+    setPalette (fc::Red, 0xba, 0x1a, 0x1a);
     setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
     setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
     setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
@@ -4413,7 +4342,7 @@ void FTerm::redefineColorPalette()
     setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
     setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
     setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-    setPalette (fc::LightRed, 0xed, 0x57, 0x31);
+    setPalette (fc::LightRed, 0xee, 0x44, 0x44);
     setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
     setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
     setPalette (fc::White, 0xff, 0xff, 0xff);
@@ -4843,6 +4772,139 @@ uInt FTerm::cp437_to_unicode (uChar c)
   }
 
   return ucs;
+}
+
+//----------------------------------------------------------------------
+inline int FTerm::getMouseProtocolKey (char buffer[])
+{
+  // Looking for mouse string in the key buffer
+  register std::size_t buf_len = std::strlen(buffer);
+
+  // x11 mouse tracking
+  if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
+    return fc::Fkey_mouse;
+
+  // SGR mouse tracking
+  if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
+    && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
+    return fc::Fkey_extended_mouse;
+
+  // urxvt mouse tracking
+  if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
+    && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
+    && buffer[buf_len - 1] == 'M' )
+    return fc::Fkey_urxvt_mouse;
+
+  return -1;
+}
+
+//----------------------------------------------------------------------
+inline int FTerm::getTermcapKey (char buffer[], int buf_size)
+{
+  // Looking for termcap key strings in the buffer
+  assert ( buf_size > 0 );
+
+  register int len, n;
+
+  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  {
+    char* k = fc::Fkey[i].string;
+    len = ( k ) ? int(std::strlen(k)) : 0;
+
+    if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
+    {
+      for (n = len; n < buf_size; n++)  // Remove founded entry
+        buffer[n - len] = buffer[n];
+
+      for (; n - len < len; n++)  // Fill rest with '\0'
+        buffer[n - len] = '\0';
+
+      input_data_pending = bool(buffer[0] != '\0');
+      return fc::Fkey[i].num;
+    }
+  }
+
+  return -1;
+}
+
+//----------------------------------------------------------------------
+inline int FTerm::getMetaKey ( char buffer[]
+                             , int buf_size
+                             , timeval* time_keypressed )
+{
+  // Looking for meta key strings in the buffer
+  assert ( buf_size > 0 );
+
+  register int len, n;
+
+  for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
+  {
+    char* kmeta = fc::Fmetakey[i].string;  // The string is never null
+    len = int(std::strlen(kmeta));
+
+    if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
+    {
+      if ( len == 2 && ( buffer[1] == 'O'
+                      || buffer[1] == '['
+                      || buffer[1] == ']' ) )
+      {
+        if ( ! isKeypressTimeout(time_keypressed) )
+          return NEED_MORE_DATA;
+      }
+
+      for (n = len; n < buf_size; n++)  // Remove founded entry
+        buffer[n - len] = buffer[n];
+
+      for (; n - len < len; n++)  // Fill rest with '\0'
+        buffer[n - len] = '\0';
+
+      input_data_pending = bool(buffer[0] != '\0');
+      return fc::Fmetakey[i].num;
+    }
+  }
+
+  return -1;
+}
+
+//----------------------------------------------------------------------
+int FTerm::getSingleKey (char buffer[], int buf_size)
+{
+  register uChar firstchar = uChar(buffer[0]);
+  int key, n, len;
+  len = 1;
+
+  // Look for a utf-8 character
+  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
+  {
+    char utf8char[4] = {};  // Init array with '\0'
+
+    if ( (firstchar & 0xe0) == 0xc0 )
+      len = 2;
+    else if ( (firstchar & 0xf0) == 0xe0 )
+      len = 3;
+    else if ( (firstchar & 0xf8) == 0xf0 )
+      len = 4;
+
+    for (int i = 0; i < len ; i++)
+      utf8char[i] = char(buffer[i] & 0xff);
+
+    key = UTF8decode(utf8char);
+  }
+  else
+    key = uChar(buffer[0] & 0xff);
+
+  for (n = len; n < buf_size; n++)  // Remove the key from the buffer front
+    buffer[n - len] = buffer[n];
+
+  for (n = n - len; n < buf_size; n++)   // Fill the rest with '\0' bytes
+    buffer[n] = '\0';
+
+  input_data_pending = bool(buffer[0] != '\0');
+
+  if ( key == 0 )  // Ctrl+Space or Ctrl+@
+    key = fc::Fckey_space;
+
+  return int(key == 127 ? fc::Fkey_backspace : key);
 }
 
 //----------------------------------------------------------------------

@@ -80,6 +80,12 @@ FApplication::FApplication ( const int& _argc
         && "FApplication: There should be only one application object" );
   rootObj = this;
 
+  // Set the keyboard keypress timeout
+  setKeypressTimeout (key_timeout);
+
+  // Set the double click interval
+  setDblclickInterval (dblclick_interval);
+
   if ( ! (_argc && _argv) )
   {
     static char* empty = C_STR("");
@@ -558,7 +564,7 @@ inline FWidget* FApplication::findKeyboardWidget()
 inline void FApplication::keyboardBufferTimeout (FWidget*)
 {
   // Empty the buffer on timeout
-  if ( fifo_in_use && isKeyTimeout(&time_keypressed, key_timeout)  )
+  if ( fifo_in_use && isKeypressTimeout(&time_keypressed)  )
   {
     fifo_offset = 0;
     key = 0;
@@ -688,7 +694,7 @@ inline void FApplication::sendEscapeKeyPressEvent (FWidget* widget)
     && fifo_offset == 1
     && fifo_buf[0] == 0x1b
     && fifo_buf[1] == 0x00
-    && isKeyTimeout(&time_keypressed, key_timeout) )
+    && isKeypressTimeout(&time_keypressed) )
   {
     FKeyEvent k_press_ev (fc::KeyPress_Event, fc::Fkey_escape);
     sendEvent (widget, &k_press_ev);
@@ -783,7 +789,7 @@ void FApplication::processKeyboardEvent()
       }
 
       // read the rest from the fifo buffer
-      while ( ! widget->isKeyTimeout(&time_keypressed, key_timeout)
+      while ( ! widget->isKeypressTimeout(&time_keypressed)
            && fifo_offset > 0
            && key != NEED_MORE_DATA )
       {
@@ -1265,7 +1271,7 @@ void FApplication::getX11ButtonState (int button)
     case button1_pressed_move:
       if ( mouse_position == new_mouse_position
         && x11_button_state == all_buttons_released
-        && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
+        && ! isDblclickTimeout(&time_mousepressed) )
       {
         time_mousepressed.tv_sec = 0;
         time_mousepressed.tv_usec = 0;
@@ -1481,7 +1487,7 @@ bool FApplication::parseSGRMouse()
       case button1_move:
         if ( mouse_position == new_mouse_position
           && (((x11_button_state & 0x80) >> 2) + 'M') == released
-          && ! isKeyTimeout(&time_mousepressed, dblclick_interval) )
+          && ! isDblclickTimeout(&time_mousepressed) )
         {
           time_mousepressed.tv_sec = 0;
           time_mousepressed.tv_usec = 0;

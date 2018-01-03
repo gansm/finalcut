@@ -193,7 +193,8 @@ class FTerm
 #endif
 
     // Inquiries
-    static bool           isKeyTimeout (timeval*, register long);
+    static bool           isKeypressTimeout (timeval*);
+    static bool           isDblclickTimeout (timeval*);
     static bool           isNormal (char_data*&);
     static bool           isRaw();
     static bool           hasPCcharset();
@@ -236,6 +237,8 @@ class FTerm
                               (fc::freebsdConsoleCursorStyle, bool);
 #endif
 
+    static void           setKeypressTimeout (const long);
+    static void           setDblclickInterval (const long);
     static void           setTTY (const termios&);
     static void           noHardwareEcho();
     static bool           setRawMode (bool);
@@ -423,6 +426,8 @@ class FTerm
     FTerm& operator = (const FTerm&);
 
     // Inquiries
+    static bool           isTimeout (timeval*, register long);
+
 #if defined(__linux__)
     static int            isLinuxConsole();
 #endif
@@ -538,6 +543,10 @@ class FTerm
     void                  init();
     void                  finish();
     static uInt           cp437_to_unicode (uChar);
+    static int            getMouseProtocolKey (char[]);
+    static int            getTermcapKey (char[], int);
+    static int            getMetaKey (char[], int, timeval*);
+    static int            getSingleKey (char[], int);
     static void           setSignalHandler();
     static void           resetSignalHandler();
     static void           signal_handler (int);
@@ -586,13 +595,15 @@ class FTerm
     static char           term_name[256];
     static char*          locale_name;
     static char*          locale_xterm;
-    static FRect*         term;      // current terminal geometry
-    static FPoint*        mouse;     // mouse click position
+    static FRect*         term;     // current terminal geometry
+    static FPoint*        mouse;    // mouse click position
 
     static int            gnome_terminal_id;
     static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
+    static long           key_timeout;
+    static long           dblclick_interval;
     static bool           resize_term;
 
     static struct         termios term_init;
@@ -618,6 +629,16 @@ class FTerm
 
     static struct colorEnv
     {
+      void setDefault()
+      {
+        string1 = 0;
+        string2 = 0;
+        string3 = 0;
+        string4 = 0;
+        string5 = 0;
+        string6 = 0;
+      }
+
       char* string1;
       char* string2;
       char* string3;
@@ -628,11 +649,12 @@ class FTerm
 
     static struct secondaryDA
     {
-      secondaryDA()
-      : terminal_id_type (-1)
-      , terminal_id_version (-1)
-      , terminal_id_hardware (-1)
-      { }
+      void setDefault()
+      {
+        terminal_id_type = -1;
+        terminal_id_version = -1;
+        terminal_id_hardware = -1;
+      }
 
       int terminal_id_type;
       int terminal_id_version;
@@ -677,6 +699,14 @@ inline const FString& FTerm::getAnswerbackString()
 inline const FString& FTerm::getSecDAString()
 { return ( sec_da ) ? *sec_da : fc::emptyFString::get(); }
 #endif
+
+//----------------------------------------------------------------------
+inline bool FTerm::isKeypressTimeout (timeval* time)
+{ return isTimeout (time, key_timeout); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isDblclickTimeout (timeval* time)
+{ return isTimeout (time, dblclick_interval); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
@@ -789,6 +819,14 @@ inline bool FTerm::setCursorOptimisation (bool on)
 //----------------------------------------------------------------------
 inline void FTerm::setXTermDefaultColors (bool on)
 { xterm_default_colors = on; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setKeypressTimeout (const long timeout)
+{ key_timeout = timeout; }
+
+//----------------------------------------------------------------------
+inline void FTerm::setDblclickInterval (const long timeout)
+{ dblclick_interval = timeout; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setRawMode()
