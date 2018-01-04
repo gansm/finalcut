@@ -516,7 +516,7 @@ void FListBox::insert (Container container, LazyConverter convert)
   conv_type = lazy_convert;
   source_container = container;
   convertToItem = convert;
-  size_t size = container->size();
+  std::size_t size = container->size();
 
   if ( size > 0 )
     itemlist.resize(size);

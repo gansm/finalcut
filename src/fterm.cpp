@@ -3186,22 +3186,22 @@ inline char* FTerm::secDA_Analysis_24 (char current_termtype[])
 }
 
 //----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_32 (char current_termtype[])
+inline char* FTerm::secDA_Analysis_32 (char[])
 {
   // Terminal ID 32 - Tera Term
 
-  char* new_termtype = current_termtype;
+  char* new_termtype;
   tera_terminal = true;
   new_termtype = C_STR("teraterm");
   return new_termtype;
 }
 
 //----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_77 (char current_termtype[])
+inline char* FTerm::secDA_Analysis_77 (char[])
 {
   // Terminal ID 77 - mintty
 
-  char* new_termtype = current_termtype;
+  char* new_termtype;
   mintty_terminal = true;
   new_termtype = C_STR("xterm-256color");
   // switch to application escape key mode
@@ -4804,15 +4804,15 @@ inline int FTerm::getTermcapKey (char buffer[], int buf_size)
   // Looking for termcap key strings in the buffer
   assert ( buf_size > 0 );
 
-  register int len, n;
-
   for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
   {
     char* k = fc::Fkey[i].string;
-    len = ( k ) ? int(std::strlen(k)) : 0;
+    register int len = ( k ) ? int(std::strlen(k)) : 0;
 
     if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
     {
+      register int n;
+
       for (n = len; n < buf_size; n++)  // Remove founded entry
         buffer[n - len] = buffer[n];
 

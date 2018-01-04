@@ -112,6 +112,9 @@ class FOptiMove
     void  printDurations();
 
   private:
+    // Constant
+    static const std::size_t BUF_SIZE = 512;
+
     // Typedefs
     typedef unsigned char uChar;
     typedef unsigned int  uInt;
@@ -147,36 +150,36 @@ class FOptiMove
     void moveByMethod (int, int, int, int, int);
 
     // Data Members
-    capability F_cursor_home;
-    capability F_carriage_return;
-    capability F_cursor_to_ll;
-    capability F_tab;
-    capability F_back_tab;
-    capability F_cursor_up;
-    capability F_cursor_down;
-    capability F_cursor_left;
-    capability F_cursor_right;
-    capability F_cursor_address;
-    capability F_column_address;
-    capability F_row_address;
-    capability F_parm_up_cursor;
-    capability F_parm_down_cursor;
-    capability F_parm_left_cursor;
-    capability F_parm_right_cursor;
-    capability F_erase_chars;
-    capability F_repeat_char;
-    capability F_clr_bol;
-    capability F_clr_eol;
+    capability  F_cursor_home;
+    capability  F_carriage_return;
+    capability  F_cursor_to_ll;
+    capability  F_tab;
+    capability  F_back_tab;
+    capability  F_cursor_up;
+    capability  F_cursor_down;
+    capability  F_cursor_left;
+    capability  F_cursor_right;
+    capability  F_cursor_address;
+    capability  F_column_address;
+    capability  F_row_address;
+    capability  F_parm_up_cursor;
+    capability  F_parm_down_cursor;
+    capability  F_parm_left_cursor;
+    capability  F_parm_right_cursor;
+    capability  F_erase_chars;
+    capability  F_repeat_char;
+    capability  F_clr_bol;
+    capability  F_clr_eol;
 
-    bool       automatic_left_margin;
-    bool       eat_nl_glitch;
+    bool        automatic_left_margin;
+    bool        eat_nl_glitch;
 
-    char       move_buf[512];
-    int        char_duration;
-    int        baudrate;
-    int        tabstop;
-    int        screen_width;
-    int        screen_height;
+    char        move_buf[BUF_SIZE];
+    int         char_duration;
+    int         baudrate;
+    int         tabstop;
+    int         screen_width;
+    int         screen_height;
 };
 #pragma pack(pop)
 

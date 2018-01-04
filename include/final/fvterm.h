@@ -329,6 +329,9 @@ class FVTerm : public FTerm
     static void          scrollAreaReverse (term_area*);
     static void          clearArea (term_area*, int = ' ');
 
+    static char_data     generateCharacter (const FPoint&);
+    static char_data     generateCharacter (int, int);
+
     static char_data     getCharacter ( character_type
                                       , const FPoint&
                                       , FVTerm* );

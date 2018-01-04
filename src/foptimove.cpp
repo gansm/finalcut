@@ -651,7 +651,7 @@ int FOptiMove::repeatedAppend ( const capability& o
   dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;
   total = 0;
 
-  if ( (dst_len + uInt(count) * src_len) < sizeof(move_buf) - 1 )
+  if ( (dst_len + uInt(count) * src_len) < BUF_SIZE - 1 )
   {
     total += count * o.duration;
 
@@ -693,7 +693,7 @@ int FOptiMove::relativeMove ( char move[]
 
   if ( to_x != from_x )  // horizontal move
   {
-    char hmove[sizeof(move_buf)] = {};
+    char hmove[BUF_SIZE] = {};
     htime = horizontalMove (hmove, from_x, to_x);
 
     if ( htime >= LONG_DURATION )
@@ -702,9 +702,9 @@ int FOptiMove::relativeMove ( char move[]
     if ( move )
     {
       if ( *move )
-        std::strncat (move, hmove, sizeof(move_buf) - std::strlen(move) - 1);
+        std::strncat (move, hmove, BUF_SIZE - std::strlen(move) - 1);
       else
-        std::strncpy (move, hmove, sizeof(move_buf) - 1);
+        std::strncpy (move, hmove, BUF_SIZE - 1);
     }
   }
 
@@ -721,7 +721,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
     if ( move )
       std::strncpy ( move
                    , tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , sizeof(move_buf) - 1 );
+                   , BUF_SIZE - 1 );
 
     vtime = F_row_address.duration;
   }
@@ -735,7 +735,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
       if ( move )
         std::strncpy ( move
                      , tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                     , sizeof(move_buf) - 1 );
+                     , BUF_SIZE - 1 );
 
       vtime = F_parm_down_cursor.duration;
     }
@@ -757,7 +757,7 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
       if ( move )
         std::strncpy ( move
                      , tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                     , sizeof(move_buf) - 1 );
+                     , BUF_SIZE - 1 );
 
       vtime = F_parm_up_cursor.duration;
     }
@@ -777,14 +777,14 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
 //----------------------------------------------------------------------
 inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 {
-  char str[sizeof(move_buf)] = {};
+  char str[BUF_SIZE] = {};
   int htime = LONG_DURATION;
 
   if ( F_column_address.cap )
   {
     std::strncat ( hmove
                  , tparm(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , sizeof(hmove) - std::strlen(hmove) - 1 );
+                 , BUF_SIZE - std::strlen(hmove) - 1 );
     htime = F_column_address.duration;
   }
 
@@ -796,7 +796,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
     {
       std::strncat ( hmove
                    , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , sizeof(hmove) - std::strlen(hmove) - 1 );
+                   , BUF_SIZE - std::strlen(hmove) - 1 );
       htime = F_parm_right_cursor.duration;
     }
 
@@ -832,7 +832,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 
       if ( htime_r < htime )
       {
-        std::strncpy (hmove, str, sizeof(move_buf) - 1);
+        std::strncpy (hmove, str, BUF_SIZE - 1);
         htime = htime_r;
       }
     }
@@ -845,7 +845,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
     {
       std::strncat ( hmove
                    , tparm(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , sizeof(hmove) - std::strlen(hmove) - 1 );
+                   , BUF_SIZE - std::strlen(hmove) - 1 );
       htime = F_parm_left_cursor.duration;
     }
 
@@ -881,7 +881,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 
       if ( htime_l < htime )
       {
-        std::strncpy (hmove, str, sizeof(move_buf) - 1);
+        std::strncpy (hmove, str, BUF_SIZE - 1);
         htime = htime_l;
       }
     }
@@ -910,7 +910,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
   if ( move_xy )
   {
     char* move_ptr = move_buf;
-    std::strncpy (move_ptr, move_xy, sizeof(move_buf) - 1);
+    std::strncpy (move_ptr, move_xy, BUF_SIZE - 1);
     move_time = F_cursor_address.duration;
     return true;
   }
@@ -927,7 +927,7 @@ inline bool FOptiMove::isMethod1Faster ( int& move_time
 
   if ( xold >= 0 && yold >= 0 )
   {
-    char  null_result[sizeof(move_buf)];
+    char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove (null_ptr, xold, yold, xnew, ynew);
 
@@ -950,7 +950,7 @@ inline bool FOptiMove::isMethod2Faster ( int& move_time
 
   if ( yold >= 0 && F_carriage_return.cap )
   {
-    char  null_result[sizeof(move_buf)];
+    char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove (null_ptr, 0, yold, xnew, ynew);
 
@@ -973,7 +973,7 @@ inline bool FOptiMove::isMethod3Faster ( int& move_time
 
   if ( F_cursor_home.cap )
   {
-    char  null_result[sizeof(move_buf)];
+    char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove (null_ptr, 0, 0, xnew, ynew);
 
@@ -995,7 +995,7 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
   // Test method 4: home-down + local movement
   if ( F_cursor_to_ll.cap )
   {
-    char  null_result[sizeof(move_buf)];
+    char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove ( null_ptr
                                   , 0, screen_height - 1
@@ -1023,7 +1023,7 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     && yold > 0
     && F_cursor_left.cap )
   {
-    char  null_result[sizeof(move_buf)];
+    char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove ( null_ptr
                                   , screen_width - 1, yold - 1
@@ -1059,20 +1059,20 @@ void FOptiMove::moveByMethod ( int method
     case 2:
       if ( F_carriage_return.cap )
       {
-        std::strncpy (move_ptr, F_carriage_return.cap, sizeof(move_buf) - 1);
+        std::strncpy (move_ptr, F_carriage_return.cap, BUF_SIZE - 1);
         move_ptr += F_carriage_return.length;
         relativeMove (move_ptr, 0, yold, xnew, ynew);
       }
       break;
 
     case 3:
-      std::strncpy (move_ptr, F_cursor_home.cap, sizeof(move_buf) - 1);
+      std::strncpy (move_ptr, F_cursor_home.cap, BUF_SIZE - 1);
       move_ptr += F_cursor_home.length;
       relativeMove (move_ptr, 0, 0, xnew, ynew);
       break;
 
     case 4:
-      std::strncpy (move_ptr, F_cursor_to_ll.cap, sizeof(move_buf) - 1);
+      std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE - 1);
       move_ptr += F_cursor_to_ll.length;
       relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
       break;
@@ -1083,11 +1083,11 @@ void FOptiMove::moveByMethod ( int method
       if ( xold >= 0 )
         std::strncat ( move_ptr
                      , F_carriage_return.cap
-                     , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+                     , BUF_SIZE - std::strlen(move_ptr) - 1 );
 
       std::strncat ( move_ptr
                    , F_cursor_left.cap
-                   , sizeof(move_buf) - std::strlen(move_ptr) - 1 );
+                   , BUF_SIZE - std::strlen(move_ptr) - 1 );
       move_ptr += std::strlen(move_buf);
       relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
       break;

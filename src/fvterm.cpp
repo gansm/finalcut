@@ -942,11 +942,8 @@ void FVTerm::restoreVTerm (const FRect& box)
 //----------------------------------------------------------------------
 void FVTerm::restoreVTerm (int x, int y, int w, int h)
 {
-  char_data* tc;    // terminal character
-  char_data* sc;    // shown character
-  char_data  s_ch;  // shadow character
-  char_data  i_ch;  // inherit background character
-  FWidget*   widget;
+  char_data* tc;  // terminal character
+  char_data  sc;  // shown character
 
   x--;
   y--;
@@ -972,88 +969,23 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
   if ( h < 0 )
     return;
 
-  widget = static_cast<FWidget*>(vterm->widget);
-
-  for (register int ty = 0; ty < h; ty++)
+  for (int ty = 0; ty < h; ty++)
   {
-    for (register int tx = 0; tx < w; tx++)
+    int ypos = y + ty;
+
+    for (int tx = 0; tx < w; tx++)
     {
-      tc = &vterm->text[(y + ty) * vterm->width + (x + tx)];
-      sc = &vdesktop->text[(y + ty) * vdesktop->width + (x + tx)];
-
-      if ( widget->window_list && ! widget->window_list->empty() )
-      {
-        FWidget::widgetList::const_iterator iter, end;
-        iter = widget->window_list->begin();
-        end  = widget->window_list->end();
-
-        for (; iter != end; ++iter)
-        {
-          term_area* win = (*iter)->getVWin();
-
-          if ( ! win )
-            continue;
-
-          if ( ! win->visible )
-            continue;
-
-          int win_x = win->offset_left;
-          int win_y = win->offset_top;
-          FRect geometry ( win_x
-                         , win_y
-                         , win->width + win->right_shadow
-                         , win->height + win->bottom_shadow );
-
-          // window visible and contains current character
-          if ( geometry.contains(tx + x, ty + y) )
-          {
-            char_data* tmp;
-            int line_len = win->width + win->right_shadow;
-            tmp = &win->text[(ty + y - win_y) * line_len + (tx + x - win_x)];
-
-            if ( ! tmp->attr.bit.transparent )   // current character not transparent
-            {
-              if ( tmp->attr.bit.trans_shadow )  // transparent shadow
-              {
-                // keep the current vterm character
-                std::memcpy (&s_ch, sc, sizeof(char_data));
-                s_ch.fg_color = tmp->fg_color;
-                s_ch.bg_color = tmp->bg_color;
-                s_ch.attr.bit.reverse  = false;
-                s_ch.attr.bit.standout = false;
-
-                if ( s_ch.code == fc::LowerHalfBlock
-                  || s_ch.code == fc::UpperHalfBlock
-                  || s_ch.code == fc::LeftHalfBlock
-                  || s_ch.code == fc::RightHalfBlock
-                  || s_ch.code == fc::MediumShade
-                  || s_ch.code == fc::FullBlock )
-                  s_ch.code = ' ';
-
-                sc = &s_ch;
-              }
-              else if ( tmp->attr.bit.inherit_bg )
-              {
-                // add the covered background to this character
-                std::memcpy (&i_ch, tmp, sizeof(char_data));
-                i_ch.bg_color = sc->bg_color;  // last background color;
-                sc = &i_ch;
-              }
-              else  // default
-                sc = tmp;
-            }
-          }
-        }
-      }
-
-      std::memcpy (tc, sc, sizeof(char_data));
-
-      if ( short(vterm->changes[y + ty].xmin) > x )
-        vterm->changes[y + ty].xmin = uInt(x);
-
-      if ( short(vterm->changes[y + ty].xmax) < x + w - 1 )
-        vterm->changes[y + ty].xmax = uInt(x + w - 1);
+      int xpos = x + tx;
+      tc = &vterm->text[ypos * vterm->width + xpos];
+      sc = generateCharacter(xpos, ypos);
+      std::memcpy (tc, &sc, sizeof(char_data));
     }
+
+    if ( short(vterm->changes[ypos].xmin) > x )
+      vterm->changes[ypos].xmin = uInt(x);
+
+    if ( short(vterm->changes[ypos].xmax) < x + w - 1 )
+      vterm->changes[ypos].xmax = uInt(x + w - 1);
   }
 }
 
@@ -1673,11 +1605,11 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
   ax--;
   ay--;
 
-  int aw   = area->width
-    , ah   = area->height
-    , rsh  = area->right_shadow
-    , bsh  = area->bottom_shadow
-    , ol   = 0  // outside left
+  int aw  = area->width
+    , ah  = area->height
+    , rsh = area->right_shadow
+    , bsh = area->bottom_shadow
+    , ol  = 0  // outside left
     , y_end
     , length;
 
@@ -1987,6 +1919,90 @@ void FVTerm::clearArea (term_area* area, int fillchar)
 }
 
 //----------------------------------------------------------------------
+FVTerm::char_data FVTerm::generateCharacter (const FPoint& pos)
+{
+  // Generates characters for a given position considering all areas
+  return generateCharacter (pos.getX(), pos.getY());
+}
+
+//----------------------------------------------------------------------
+FVTerm::char_data FVTerm::generateCharacter (int x, int y)
+{
+  // Generates characters for a given position considering all areas
+  FWidget::widgetList::const_iterator iter, end;
+  char_data* sc;    // shown character
+  char_data  s_ch;  // shadow character
+  char_data  i_ch;  // inherit background character
+  FWidget*   widget;
+
+  widget = static_cast<FWidget*>(vterm->widget);
+  sc = &vdesktop->text[y * vdesktop->width + x];
+
+  if ( ! widget->window_list || widget->window_list->empty() )
+    return *sc;
+
+  iter = widget->window_list->begin();
+  end  = widget->window_list->end();
+
+  for (; iter != end; ++iter)
+  {
+    term_area* win = (*iter)->getVWin();
+
+    if ( ! win || ! win->visible )
+      continue;
+
+    int win_x = win->offset_left;
+    int win_y = win->offset_top;
+    FRect geometry ( win_x
+                   , win_y
+                   , win->width + win->right_shadow
+                   , win->height + win->bottom_shadow );
+
+    // Window is visible and contains current character
+    if ( geometry.contains(x, y) )
+    {
+      char_data* tmp;
+      int line_len = win->width + win->right_shadow;
+      tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
+
+      if ( ! tmp->attr.bit.transparent )   // Current character not transparent
+      {
+        if ( tmp->attr.bit.trans_shadow )  // Transparent shadow
+        {
+          // Keep the current vterm character
+          std::memcpy (&s_ch, sc, sizeof(char_data));
+          s_ch.fg_color = tmp->fg_color;
+          s_ch.bg_color = tmp->bg_color;
+          s_ch.attr.bit.reverse  = false;
+          s_ch.attr.bit.standout = false;
+
+          if ( s_ch.code == fc::LowerHalfBlock
+            || s_ch.code == fc::UpperHalfBlock
+            || s_ch.code == fc::LeftHalfBlock
+            || s_ch.code == fc::RightHalfBlock
+            || s_ch.code == fc::MediumShade
+            || s_ch.code == fc::FullBlock )
+            s_ch.code = ' ';
+
+          sc = &s_ch;
+        }
+        else if ( tmp->attr.bit.inherit_bg )
+        {
+          // Add the covered background to this character
+          std::memcpy (&i_ch, tmp, sizeof(char_data));
+          i_ch.bg_color = sc->bg_color;  // Last background color
+          sc = &i_ch;
+        }
+        else  // Default
+          sc = tmp;
+      }
+    }
+  }
+
+  return *sc;
+}
+
+//----------------------------------------------------------------------
 FVTerm::char_data FVTerm::getCharacter ( character_type type
                                        , const FPoint& pos
                                        , FVTerm* obj )
@@ -2031,7 +2047,7 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
   if ( w->window_list && ! w->window_list->empty() )
   {
     FWidget::widgetList::const_iterator iter, end;
-    // get the window layer of this object
+    // Get the window layer of this object
     int layer = FWindow::getWindowLayer(w);
     iter = w->window_list->begin();
     end  = w->window_list->end();
@@ -2064,19 +2080,19 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
                        , win->width + win->right_shadow
                        , win->height + win->bottom_shadow );
 
-        // window visible and contains current character
+        // Window visible and contains current character
         if ( geometry.contains(x, y) )
         {
           char_data* tmp;
           int line_len = win->width + win->right_shadow;
           tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
 
-          // current character not transparent
+          // Current character not transparent
           if ( ! tmp->attr.bit.transparent )
           {
             if ( tmp->attr.bit.trans_shadow )  // transparent shadow
             {
-              // keep the current vterm character
+              // Keep the current vterm character
               std::memcpy (&s_ch, cc, sizeof(char_data));
               s_ch.fg_color = tmp->fg_color;
               s_ch.bg_color = tmp->bg_color;
@@ -2086,7 +2102,7 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
             }
             else if ( tmp->attr.bit.inherit_bg )
             {
-              // add the covered background to this character
+              // Add the covered background to this character
               std::memcpy (&i_ch, tmp, sizeof(char_data));
               i_ch.bg_color = cc->bg_color;  // last background color
               cc = &i_ch;

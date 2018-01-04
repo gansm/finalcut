@@ -21,7 +21,7 @@ EXTRA_DIST = \
 	textview.png \
 	TODO \
 	vt100_line_drawing_graphics.png \
-	VTerm.txt \
+	virtual-terminal.txt \
 	xgraphics
 
 doc_DATA = \
@@ -41,5 +41,5 @@ doc_DATA = \
 	textview.png \
 	TODO \
 	vt100_line_drawing_graphics.png \
-	VTerm.txt \
+	virtual-terminal.txt \
 	xgraphics

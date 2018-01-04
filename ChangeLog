@@ -1,4 +1,8 @@
-2017-01-02  Markus Gans  <guru.mail@muenster.de>
+2017-01-05  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FVTerm::restoreVTerm
+	* Fixed buffer size in FOptiMove
+
+2017-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FOptiMove::relativeMove
 	* Refactoring attribute settings in FOptiAttr
 	* Refactoring FTerm::parseKeyString and timeout settings
