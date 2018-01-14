@@ -8,6 +8,7 @@
 *.gcov
 *.gcno
 *.gcda
+stamp-h1
 _configs.sed
 config.guess
 config.h.in~

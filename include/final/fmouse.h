@@ -199,7 +199,7 @@ class FMouseGPM : public FMouse
     virtual ~FMouseGPM();
 
     // Accessors
-    const char*          getClassName() const;
+    virtual const char*  getClassName() const;
 
     // Mutators
     void                 setStdinNo(int);
@@ -239,10 +239,6 @@ class FMouseGPM : public FMouse
 #endif
 
 //----------------------------------------------------------------------
-inline const char* FMouseGPM::getClassName() const
-{ return "FMouseGPM"; }
-
-//----------------------------------------------------------------------
 inline bool FMouseGPM::enableGpmMouse()
 { return gpmMouse(true); }
 
@@ -272,7 +268,7 @@ class FMouseX11 : public FMouse
     virtual ~FMouseX11();
 
     // Accessors
-    const char*  getClassName() const;
+    virtual const char*  getClassName() const;
 
     // Inquiry
     virtual bool         hasData();
@@ -317,10 +313,6 @@ class FMouseX11 : public FMouse
 };
 #pragma pack(pop)
 
-//----------------------------------------------------------------------
-inline const char* FMouseX11::getClassName() const
-{ return "FMouseX11"; }
-
 
 //----------------------------------------------------------------------
 // class FMouseSGR
@@ -339,7 +331,7 @@ class FMouseSGR : public FMouse
     virtual ~FMouseSGR();
 
     // Accessors
-    const char*  getClassName() const;
+    virtual const char* getClassName() const;
 
     // Inquiry
     virtual bool hasData();
@@ -384,10 +376,6 @@ class FMouseSGR : public FMouse
 };
 #pragma pack(pop)
 
-//----------------------------------------------------------------------
-inline const char* FMouseSGR::getClassName() const
-{ return "FMouseSGR"; }
-
 
 //----------------------------------------------------------------------
 // class FMouseUrxvt
@@ -406,7 +394,7 @@ class FMouseUrxvt : public FMouse
     virtual ~FMouseUrxvt();
 
     // Accessors
-    const char*  getClassName() const;
+    virtual const char* getClassName() const;
 
     // Inquiry
     virtual bool hasData();
@@ -451,10 +439,6 @@ class FMouseUrxvt : public FMouse
 };
 #pragma pack(pop)
 
-//----------------------------------------------------------------------
-inline const char* FMouseUrxvt::getClassName() const
-{ return "FMouseUrxvt"; }
-
 
 //----------------------------------------------------------------------
 // class FMouseControl
@@ -472,50 +456,49 @@ class FMouseControl
     virtual ~FMouseControl();
 
     // Accessors
-    const char*     getClassName() const;
-    FPoint&         getPos();
-    void            clearEvent();
+    virtual const char* getClassName() const;
+    FPoint&             getPos();
+    void                clearEvent();
 
     // Mutators
-    void            setStdinNo (int);
-    void            setMaxWidth (short);
-    void            setMaxHeight (short);
-    void            useGpmMouse (bool = true);
-    void            useXtermMouse (bool = true);
+    void                setStdinNo (int);
+    void                setMaxWidth (short);
+    void                setMaxHeight (short);
+    void                useGpmMouse (bool = true);
+    void                useXtermMouse (bool = true);
 
     // Inquiries
-    bool            hasData();
-    bool            hasEvent();
-    bool            isLeftButtonPressed();
-    bool            isLeftButtonReleased();
-    bool            isLeftButtonDoubleClick();
-    bool            isRightButtonPressed();
-    bool            isRightButtonReleased();
-    bool            isMiddleButtonPressed();
-    bool            isMiddleButtonReleased();
-    bool            isShiftKeyPressed();
-    bool            isControlKeyPressed();
-    bool            isMetaKeyPressed();
-    bool            isWheelUp();
-    bool            isWheelDown();
-    bool            isMoved();
-    bool            isInputDataPending();
-    bool            isGpmMouseEnabled();
+    bool                hasData();
+    bool                hasEvent();
+    bool                isLeftButtonPressed();
+    bool                isLeftButtonReleased();
+    bool                isLeftButtonDoubleClick();
+    bool                isRightButtonPressed();
+    bool                isRightButtonReleased();
+    bool                isMiddleButtonPressed();
+    bool                isMiddleButtonReleased();
+    bool                isShiftKeyPressed();
+    bool                isControlKeyPressed();
+    bool                isMetaKeyPressed();
+    bool                isWheelUp();
+    bool                isWheelDown();
+    bool                isMoved();
+    bool                isInputDataPending();
+    bool                isGpmMouseEnabled();
 
     // Methods
-    void            enable();
-    void            disable();
-    void            xtermMouse (bool);
-    void            enableXTermMouse();
-    void            disableXTermMouse();
-    virtual void    setRawData (FMouse::mouse_type, char[], int);
-    virtual void    processEvent (struct timeval* time);
-    bool            getGpmKeyPressed (bool);
-    void            drawGpmPointer();
+    void                enable();
+    void                disable();
+    void                xtermMouse (bool);
+    void                enableXTermMouse();
+    void                disableXTermMouse();
+    virtual void        setRawData (FMouse::mouse_type, char[], int);
+    virtual void        processEvent (struct timeval* time);
+    bool                getGpmKeyPressed (bool);
+    void                drawGpmPointer();
 
   private:
-    std::map<FMouse::mouse_type, FMouse*> mouse_protocol;
-    std::map<FMouse::mouse_type, FMouse*>::iterator iter;
+
 
     // Accessor
     FMouse*         getMouseWithData();
@@ -523,6 +506,8 @@ class FMouseControl
     void            putstring (const char[], int = 1);
 
     // Data Member
+    std::map<FMouse::mouse_type, FMouse*> mouse_protocol;
+    std::map<FMouse::mouse_type, FMouse*>::iterator iter;
     FPoint zero_point;
     bool   use_gpm_mouse;
     bool   use_xterm_mouse;

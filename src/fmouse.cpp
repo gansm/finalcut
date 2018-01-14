@@ -239,6 +239,12 @@ FMouseGPM::~FMouseGPM()  // destructor
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
+const char* FMouseGPM::getClassName() const
+{
+  return "FMouseGPM";
+}
+
+//----------------------------------------------------------------------
 void FMouseGPM::setStdinNo (int file_descriptor)
 {
   stdin_no = file_descriptor;
@@ -460,6 +466,12 @@ FMouseX11::~FMouseX11()  // destructor
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
+const char* FMouseX11::getClassName() const
+{
+  return "FMouseX11";
+}
+
+//----------------------------------------------------------------------
 bool FMouseX11::hasData()
 {
   return bool(x11_mouse[0]);
@@ -653,6 +665,12 @@ FMouseSGR::~FMouseSGR()  // destructor
 
 
 // public methods of FMouseSGR
+//----------------------------------------------------------------------
+const char* FMouseSGR::getClassName() const
+{
+  return "FMouseSGR";
+}
+
 //----------------------------------------------------------------------
 bool FMouseSGR::hasData()
 {
@@ -896,6 +914,12 @@ FMouseUrxvt::~FMouseUrxvt()  // destructor
 
 
 // public methods of FMouseUrxvt
+//----------------------------------------------------------------------
+const char* FMouseUrxvt::getClassName() const
+{
+  return "FMouseUrxvt";
+}
+
 //----------------------------------------------------------------------
 bool FMouseUrxvt::hasData()
 {
@@ -1148,7 +1172,9 @@ void FMouseUrxvt::setButtonState (int button, struct timeval* time)
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseControl::FMouseControl()
-  : zero_point(0,0)
+  : mouse_protocol()
+  , iter()
+  , zero_point(0,0)
   , use_gpm_mouse(false)
   , use_xterm_mouse(false)
 {
