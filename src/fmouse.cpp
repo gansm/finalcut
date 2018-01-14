@@ -1036,7 +1036,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
     y = 1;
 
   if ( x > max_width )
-    x = max_height;
+    x = max_width;
 
   if ( y > max_height )
     y = max_height;
