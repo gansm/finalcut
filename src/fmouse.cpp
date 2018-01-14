@@ -185,7 +185,11 @@ inline FMouse* FMouse::createMouseObject (mouse_type mt)
       return 0;
 
     case gpm:
+#ifdef F_HAVE_LIBGPM
       return new FMouseGPM;
+#else
+      break;
+#endif
 
     case x11:
       return new FMouseX11;
@@ -1466,11 +1470,13 @@ void FMouseControl::enable()
 {
   if ( use_gpm_mouse )
   {
+#ifdef F_HAVE_LIBGPM
     FMouse* mouse = mouse_protocol[FMouse::gpm];
     FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       use_gpm_mouse = gpm_mouse->enableGpmMouse();
+#endif
   }
 
   if ( use_xterm_mouse )
@@ -1482,11 +1488,13 @@ void FMouseControl::disable()
 {
   if ( use_gpm_mouse )
   {
+#ifdef F_HAVE_LIBGPM
     FMouse* mouse = mouse_protocol[FMouse::gpm];
     FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       gpm_mouse->disableGpmMouse();
+#endif
   }
 
   if ( use_xterm_mouse )

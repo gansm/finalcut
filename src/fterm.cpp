@@ -1533,7 +1533,7 @@ void FTerm::putstringf (const char format[], ...)
 }
 
 //----------------------------------------------------------------------
-inline void FTerm::putstring (const char s[], int affcnt)
+void FTerm::putstring (const char s[], int affcnt)
 {
 #if defined(__sun) && defined(__SVR4)
   tputs (C_STR(s), affcnt, FTerm::putchar_ASCII);

@@ -236,7 +236,7 @@ class FMouseGPM : public FMouse
     int                stdin_no;
 };
 #pragma pack(pop)
-#endif
+
 
 //----------------------------------------------------------------------
 inline bool FMouseGPM::enableGpmMouse()
@@ -249,7 +249,7 @@ inline bool FMouseGPM::disableGpmMouse()
 //----------------------------------------------------------------------
 inline bool FMouseGPM::isGpmMouseEnabled()
 { return gpm_mouse_enabled; }
-
+#endif
 
 //----------------------------------------------------------------------
 // class FMouseX11
@@ -498,8 +498,6 @@ class FMouseControl
     void                drawGpmPointer();
 
   private:
-
-
     // Accessor
     FMouse*         getMouseWithData();
     FMouse*         getMouseWithEvent();
