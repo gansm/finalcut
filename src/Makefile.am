@@ -23,6 +23,7 @@ libfinal_la_SOURCES = \
 	flistbox.cpp \
 	flistview.cpp \
 	fmenu.cpp \
+	fmouse.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
@@ -71,6 +72,7 @@ finalcutinclude_HEADERS = \
 	../include/final/flistbox.h \
 	../include/final/flistview.h \
 	../include/final/fmenu.h \
+	../include/final/fmouse.h \
 	../include/final/fdialoglistmenu.h \
 	../include/final/fmenubar.h \
 	../include/final/fmenuitem.h \

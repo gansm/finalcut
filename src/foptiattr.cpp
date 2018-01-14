@@ -558,7 +558,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
     changeAttributeSeparately (term, next);
   }
 
-  if ( term && fake_reverse )
+  if ( fake_reverse )
     term->attr.bit.reverse = true;
 
   return attr_buf;

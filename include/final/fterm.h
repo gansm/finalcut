@@ -56,13 +56,8 @@
 
 #include "final/fconfig.h"
 
-#ifdef F_HAVE_LIBGPM
-  #include <gpm.h>
-#endif
-
 #if defined(__linux__)
   #include <linux/fb.h>        // Linux framebuffer console
-  #include <linux/keyboard.h>  // need for gpm keyboard modifiers
 
   #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     #include <sys/io.h>        // <asm/io.h> is deprecated
@@ -88,6 +83,7 @@
 #include <langinfo.h>
 #include <termios.h>
 
+
 #if defined(__sun) && defined(__SVR4)
   #include <termio.h>
   typedef struct termio SGTTY;
@@ -102,6 +98,10 @@
   #include <term.h>              // termcap
 #else
   #include <term.h>              // termcap
+#endif
+
+#ifdef F_HAVE_LIBGPM
+  #undef buttons  // from term.h
 #endif
 
 #if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
@@ -119,6 +119,7 @@
 #include <string>
 
 #include "final/fc.h"
+#include "final/fmouse.h"
 #include "final/fobject.h"
 #include "final/foptiattr.h"
 #include "final/foptimove.h"
@@ -126,11 +127,6 @@
 #include "final/frect.h"
 #include "final/fstring.h"
 #include "final/ftermcap.h"
-
-
-#ifdef F_HAVE_LIBGPM
-  #undef buttons  // from term.h
-#endif
 
 
 //----------------------------------------------------------------------
@@ -169,6 +165,7 @@ class FTerm
     static int            getLineNumber();
     static int            getColumnNumber();
     static const FString  getKeyName (int);
+    static FMouseControl* getMouseControl();
 
 #if defined(__linux__)
     static modifier_key&  getLinuxModifierKey();
@@ -194,7 +191,6 @@ class FTerm
 
     // Inquiries
     static bool           isKeypressTimeout (timeval*);
-    static bool           isDblclickTimeout (timeval*);
     static bool           isNormal (char_data*&);
     static bool           isRaw();
     static bool           hasPCcharset();
@@ -348,19 +344,6 @@ class FTerm
     static bool           hasChangedTermSize();
     static void           changeTermSizeFinished();
     static void           xtermMetaSendsESC (bool);
-    static void           xtermMouse (bool);
-    static void           enableXTermMouse();
-    static void           disableXTermMouse();
-
-#ifdef F_HAVE_LIBGPM
-    static bool           gpmMouse (bool);
-    static bool           enableGpmMouse();
-    static bool           disableGpmMouse();
-    static bool           isGpmMouseEnabled();
-#endif  // F_HAVE_LIBGPM
-    static FPoint&        getMousePos();
-    static void           setMousePos (const FPoint&);
-    static void           setMousePos (short, short);
     static void           exitWithMessage (std::string)
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
@@ -424,9 +407,6 @@ class FTerm
     FTerm (const FTerm&);
     // Disable assignment operator (=)
     FTerm& operator = (const FTerm&);
-
-    // Inquiries
-    static bool           isTimeout (timeval*, register long);
 
 #if defined(__linux__)
     static int            isLinuxConsole();
@@ -556,13 +536,11 @@ class FTerm
     static std::map <std::string,fc::encoding>* encoding_set;
     static FTermcap::tcap_map* tcap;
 
-    static bool           mouse_support;
     static bool           decscusr_support;
     static bool           terminal_detection;
     static bool           raw_mode;
     static bool           input_data_pending;
     static bool           non_blocking_stdin;
-    static bool           gpm_mouse_enabled;
     static bool           pc_charset_console;
     static bool           utf8_input;
     static bool           utf8_state;
@@ -596,7 +574,6 @@ class FTerm
     static char*          locale_name;
     static char*          locale_xterm;
     static FRect*         term;     // current terminal geometry
-    static FPoint*        mouse;    // mouse click position
 
     static int            gnome_terminal_id;
     static int            stdin_status_flags;
@@ -622,6 +599,7 @@ class FTerm
 
     static FOptiMove*     opti_move;
     static FOptiAttr*     opti_attr;
+    static FMouseControl* mouse;
     static const FString* xterm_font;
     static const FString* xterm_title;
     static const FString* answer_back;
@@ -702,11 +680,7 @@ inline const FString& FTerm::getSecDAString()
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKeypressTimeout (timeval* time)
-{ return isTimeout (time, key_timeout); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isDblclickTimeout (timeval* time)
-{ return isTimeout (time, dblclick_interval); }
+{ return FObject::isTimeout (time, key_timeout); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRaw()
@@ -867,40 +841,6 @@ inline bool FTerm::hasChangedTermSize()
 //----------------------------------------------------------------------
 inline void FTerm::changeTermSizeFinished()
 { resize_term = false; }
-
-//----------------------------------------------------------------------
-inline void FTerm::enableXTermMouse()
-{ xtermMouse(true); }
-
-//----------------------------------------------------------------------
-inline void FTerm::disableXTermMouse()
-{ xtermMouse(false); }
-
-#ifdef F_HAVE_LIBGPM
-//----------------------------------------------------------------------
-inline bool FTerm::enableGpmMouse()
-{ return gpmMouse(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::disableGpmMouse()
-{ return gpmMouse(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isGpmMouseEnabled()
-{ return gpm_mouse_enabled; }
-#endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
-inline FPoint& FTerm::getMousePos()
-{ return *mouse; }
-
-//----------------------------------------------------------------------
-inline void FTerm::setMousePos (const FPoint& m)
-{ *mouse = m; }
-
-//----------------------------------------------------------------------
-inline void FTerm::setMousePos (short x, short y)
-{ mouse->setPoint (x, y); }
 
 
 #endif  // FTERM_H

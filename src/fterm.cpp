@@ -60,13 +60,11 @@ uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
 long     FTerm::dblclick_interval;
 bool     FTerm::resize_term;
-bool     FTerm::mouse_support;
 bool     FTerm::decscusr_support;
 bool     FTerm::terminal_detection;
 bool     FTerm::raw_mode;
 bool     FTerm::input_data_pending;
 bool     FTerm::non_blocking_stdin;
-bool     FTerm::gpm_mouse_enabled;
 bool     FTerm::color256;
 bool     FTerm::monochron;
 bool     FTerm::xterm_terminal;
@@ -115,7 +113,6 @@ int      FTerm::framebuffer_bpp = -1;
 
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
-FPoint*  FTerm::mouse        = 0;
 FRect*   FTerm::term         = 0;
 
 char                   FTerm::exit_message[8192]        = "";
@@ -126,6 +123,7 @@ const FString*         FTerm::answer_back               = 0;
 const FString*         FTerm::sec_da                    = 0;
 FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
+FMouseControl*         FTerm::mouse                     = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
                        FTerm::encoding_set              = 0;
@@ -225,6 +223,15 @@ const FString FTerm::getKeyName (int keynum)
     return FString(char(keynum));
 
   return FString("");
+}
+
+//----------------------------------------------------------------------
+FMouseControl* FTerm::getMouseControl()
+{
+  if ( mouse )
+    return mouse;
+  else
+    return 0;
 }
 
 #if defined(__linux__)
@@ -1754,77 +1761,6 @@ void FTerm::xtermMetaSendsESC (bool on)
 }
 
 //----------------------------------------------------------------------
-void FTerm::xtermMouse (bool on)
-{
-  // activate/deactivate the xterm mouse support
-  if ( ! mouse_support )
-    return;
-
-  if ( on )
-    putstring (CSI "?1001s"    // save old highlight mouse tracking
-               CSI "?1000h"    // enable x11 mouse tracking
-               CSI "?1002h"    // enable cell motion mouse tracking
-               CSI "?1015h"    // enable urxvt mouse mode
-               CSI "?1006h");  // enable SGR mouse mode
-  else
-    putstring (CSI "?1006l"    // disable SGR mouse mode
-               CSI "?1015l"    // disable urxvt mouse mode
-               CSI "?1002l"    // disable cell motion mouse tracking
-               CSI "?1000l"    // disable x11 mouse tracking
-               CSI "?1001r");  // restore old highlight mouse tracking
-
-  std::fflush(stdout);
-}
-
-
-#ifdef F_HAVE_LIBGPM
-//----------------------------------------------------------------------
-bool FTerm::gpmMouse (bool on)
-{
-  // activate/deactivate the gpm mouse support
-  if ( ! linux_terminal )
-    return false;
-
-  if ( openConsole() == 0 )
-  {
-    if ( ! isLinuxConsole() )
-      return false;
-
-    closeConsole();
-  }
-
-  if ( on )
-  {
-    Gpm_Connect conn;
-    conn.eventMask   = uInt16(~GPM_MOVE);
-    conn.defaultMask = GPM_MOVE;
-    conn.maxMod      = uInt16(~0);
-    conn.minMod      = 0;
-    Gpm_Open(&conn, 0);
-
-    switch ( gpm_fd )
-    {
-      case -1:
-        return false;
-
-      case -2:
-        Gpm_Close();
-        return false;
-
-      default:
-        break;
-    }
-  }
-  else
-  {
-    Gpm_Close();
-  }
-
-  return on;
-}
-#endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
 void FTerm::exitWithMessage (std::string message)
 {
   // Set the exit_message for the atexit-handler
@@ -1848,27 +1784,6 @@ void FTerm::exitWithMessage (std::string message)
 
 
 // private methods of FTerm
-//----------------------------------------------------------------------
-bool FTerm::isTimeout (timeval* time, register long timeout)
-{
-  register long diff_usec;
-  struct timeval now;
-  struct timeval diff;
-
-  FObject::getCurrentTime(&now);
-  diff.tv_sec = now.tv_sec - time->tv_sec;
-  diff.tv_usec = now.tv_usec - time->tv_usec;
-
-  if ( diff.tv_usec < 0 )
-  {
-    diff.tv_sec--;
-    diff.tv_usec += 1000000;
-  }
-
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
-  return ( diff_usec > timeout );
-}
-
 //----------------------------------------------------------------------
 #if defined(__linux__)
 int FTerm::isLinuxConsole()
@@ -2623,7 +2538,6 @@ void FTerm::init_global_values()
   no_shadow_character     = \
   no_half_block_character = \
   ascii_console           = \
-  mouse_support           = \
   decscusr_support        = \
   force_vt100             = \
   tera_terminal           = \
@@ -4388,31 +4302,33 @@ void FTerm::restoreColorPalette()
 //----------------------------------------------------------------------
 void FTerm::enableMouse()
 {
-#ifdef F_HAVE_LIBGPM
-  // Enable the linux general purpose mouse (gpm) server
-  gpm_mouse_enabled = enableGpmMouse();
-#endif
+  bool gpm_mouse = false;
+  bool xterm_mouse = false;
 
-  // Enable xterm mouse support
-  if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
+  if ( linux_terminal && openConsole() == 0 )
   {
-    mouse_support = true;
-    enableXTermMouse();
+    if ( isLinuxConsole() )
+      gpm_mouse = true;
+
+    closeConsole();
   }
+
+  if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
+    xterm_mouse = true;
+
+  mouse->setMaxWidth (short(getColumnNumber()));
+  mouse->setMaxHeight (short(getLineNumber()));
+  // Enable the linux general purpose mouse (gpm) server
+  mouse->useGpmMouse (gpm_mouse);
+  // Enable xterm mouse support
+  mouse->useXtermMouse (xterm_mouse);
+  mouse->enable();
 }
 
 //----------------------------------------------------------------------
 void FTerm::disableMouse()
 {
-  // Disable xterm mouse support
-  if ( mouse_support )
-    disableXTermMouse();
-
-#ifdef F_HAVE_LIBGPM
-  // Disable the linux general purpose mouse (gpm) server
-  if ( gpm_mouse_enabled )
-    disableGpmMouse();
-#endif
+  mouse->disable();
 }
 
 //----------------------------------------------------------------------
@@ -4440,8 +4356,8 @@ inline void FTerm::allocationValues()
   {
     opti_move      = new FOptiMove();
     opti_attr      = new FOptiAttr();
+    mouse          = new FMouseControl();
     term           = new FRect(0, 0, 0, 0);
-    mouse          = new FPoint(0, 0);
     vt100_alt_char = new std::map<uChar, uChar>;
     encoding_set   = new std::map<std::string, fc::encoding>;
   }
@@ -4473,11 +4389,11 @@ inline void FTerm::deallocationValues()
   if ( xterm_font )
     delete xterm_font;
 
-  if ( mouse )
-    delete mouse;
-
   if ( term )
     delete term;
+
+  if ( mouse )
+    delete mouse;
 
   if ( opti_attr )
     delete opti_attr;
@@ -4835,15 +4751,15 @@ inline int FTerm::getMetaKey ( char buffer[]
   // Looking for meta key strings in the buffer
   assert ( buf_size > 0 );
 
-  register int len, n;
-
   for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
   {
     char* kmeta = fc::Fmetakey[i].string;  // The string is never null
-    len = int(std::strlen(kmeta));
+    register int len = int(std::strlen(kmeta));
 
     if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
     {
+      register int n;
+
       if ( len == 2 && ( buffer[1] == 'O'
                       || buffer[1] == '['
                       || buffer[1] == ']' ) )

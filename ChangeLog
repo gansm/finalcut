@@ -1,3 +1,6 @@
+2017-01-14  Markus Gans  <guru.mail@muenster.de>
+	* Mouse functions are now in a separate class
+
 2017-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FVTerm::restoreVTerm
 	* Fixed buffer size in FOptiMove

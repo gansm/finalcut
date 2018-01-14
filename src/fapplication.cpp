@@ -42,8 +42,6 @@ FWidget* FApplication::focus_widget     = 0;  // has keyboard input focus
 FWidget* FApplication::clicked_widget   = 0;  // is focused by click
 FWidget* FApplication::open_menu        = 0;  // currently open menu
 FWidget* FApplication::move_size_widget = 0;  // move/size by keyboard
-FPoint*  FApplication::zero_point       = 0;  // zero point (x=0, y=0)
-uChar    FApplication::x11_button_state = 0x03;
 int      FApplication::quit_code        = 0;
 bool     FApplication::quit_now         = false;
 
@@ -62,19 +60,12 @@ FApplication::FApplication ( const int& _argc
   , app_argc(_argc)
   , app_argv(_argv)
   , key(0)
-#ifdef F_HAVE_LIBGPM
-  , gpm_ev()
-  , gpmMouseEvent(false)
-#endif
-  , b_state()
   , fifo_offset(0)
   , fifo_in_use(false)
   , fifo_buf_size(sizeof(fifo_buf))
   , key_timeout(100000)        // 100 ms
   , dblclick_interval(500000)  // 500 ms
   , time_keypressed()
-  , time_mousepressed()
-  , new_mouse_position()
 {
   assert ( ! rootObj
         && "FApplication: There should be only one application object" );
@@ -99,9 +90,6 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  if ( zero_point )
-    delete zero_point;
-
   if ( event_queue )
     delete event_queue;
 
@@ -376,17 +364,14 @@ void FApplication::init()
   // init keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
-  time_mousepressed.tv_sec = 0;
-  time_mousepressed.tv_usec = 0;
-  x11_button_state = 0x23;
 
-#ifdef F_HAVE_LIBGPM
-  gpm_ev.x = -1;
-#endif
+  FMouseControl* mouse = getMouseControl();
+
+  if ( mouse )
+    mouse->setStdinNo(stdin_no);
 
   try
   {
-    zero_point = new FPoint (0,0);
     event_queue = new eventQueue;
   }
   catch (const std::bad_alloc& ex)
@@ -398,11 +383,6 @@ void FApplication::init()
   // init arrays with '\0'
   std::fill_n (k_buf, sizeof(k_buf), '\0');
   std::fill_n (fifo_buf, fifo_buf_size, '\0');
-  std::fill_n (x11_mouse, sizeof(x11_mouse), '\0');
-  std::fill_n (sgr_mouse, sizeof(sgr_mouse), '\0');
-  std::fill_n (urxvt_mouse, sizeof(urxvt_mouse), '\0');
-  // init bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
 }
 
 //----------------------------------------------------------------------
@@ -475,40 +455,6 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 }
 
 //----------------------------------------------------------------------
-#ifdef F_HAVE_LIBGPM
-int FApplication::gpmEvent (bool clear)
-{
-  register int result;
-  register int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
-  fd_set ifds;
-  struct timeval tv;
-
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  FD_SET(gpm_fd, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 100000;  // 100 ms
-  result = select (max + 1, &ifds, 0, 0, &tv);
-
-  if ( result > 0 && FD_ISSET(stdin_no, &ifds) )
-  {
-    if ( clear )
-      FD_CLR (stdin_no, &ifds);
-
-    return keyboard_event;
-  }
-
-  if ( clear && result > 0 && FD_ISSET(gpm_fd, &ifds) )
-    FD_CLR (gpm_fd, &ifds);
-
-  if ( result > 0 )
-    return mouse_event;
-  else
-    return no_event;
-}
-#endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
 inline bool FApplication::KeyPressed()
 {
   register int result;
@@ -576,112 +522,12 @@ inline void FApplication::keyboardBufferTimeout (FWidget*)
 //----------------------------------------------------------------------
 inline bool FApplication::getKeyPressedState()
 {
-#ifdef F_HAVE_LIBGPM
+  FMouseControl* mouse = getMouseControl();
 
-  if ( isGpmMouseEnabled() )
-  {
-    gpmMouseEvent = false;
-    int type = gpmEvent();
-
-    switch ( type )
-    {
-      case mouse_event:
-        gpmMouseEvent = true;
-        break;
-
-      case keyboard_event:
-        return true;
-
-      default:
-        return false;
-    }
-  }
-
-#endif  // F_HAVE_LIBGPM
+  if ( mouse && mouse->isGpmMouseEnabled() )
+    return mouse->getGpmKeyPressed(unprocessedInput());
 
   return KeyPressed();
-}
-
-//----------------------------------------------------------------------
-inline void FApplication::readRawX11MouseData()
-{
-  static const int len = 6;
-  int n;
-  x11_mouse[0] = fifo_buf[3];
-  x11_mouse[1] = fifo_buf[4];
-  x11_mouse[2] = fifo_buf[5];
-  x11_mouse[3] = '\0';
-
-  // Remove founded entry
-  for (n = len; n < fifo_buf_size; n++)
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len - 1;
-
-  // Fill rest with '\0'
-  for (; n < fifo_buf_size; n++)
-    fifo_buf[n - len] = '\0';
-
-  unprocessedInput() = bool(fifo_buf[0] != '\0');
-  processMouseEvent();
-}
-
-//----------------------------------------------------------------------
-inline void FApplication::readRawExtendedMouseData()
-{
-  int len = int(std::strlen(fifo_buf));
-  int n = 3;
-
-  while ( n < len && n < fifo_buf_size )
-  {
-    sgr_mouse[n - 3] = fifo_buf[n];
-    n++;
-
-    if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-      len = n + 1;
-  }
-
-  sgr_mouse[n - 3] = '\0';
-
-  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len - 1;
-
-  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-    fifo_buf[n - len] = '\0';
-
-  unprocessedInput() = bool(fifo_buf[0] != '\0');
-  processMouseEvent();
-}
-
-//----------------------------------------------------------------------
-inline void FApplication::readRawUrxvtMouseData()
-{
-  int len = int(std::strlen(fifo_buf));
-  int n = 2;
-
-  while ( n < len && n < fifo_buf_size )
-  {
-    urxvt_mouse[n - 2] = fifo_buf[n];
-    n++;
-
-    if ( fifo_buf[n] == 'M' || fifo_buf[n] == 'm' )
-      len = n + 1;
-  }
-
-  urxvt_mouse[n - 2] = '\0';
-
-  for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
-    fifo_buf[n - len] = fifo_buf[n];
-
-  n = fifo_buf_size - len - 1;
-
-  for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-    fifo_buf[n - len] = '\0';
-
-  unprocessedInput() = bool(fifo_buf[0] != '\0');
-  processMouseEvent();
 }
 
 //----------------------------------------------------------------------
@@ -762,6 +608,7 @@ void FApplication::processKeyboardEvent()
 {
   bool isKeyPressed;
   FWidget* widget = findKeyboardWidget();
+  FMouseControl* mouse = getMouseControl();
   keyboardBufferTimeout(widget);
   flush_out();
   isKeyPressed = getKeyPressedState();
@@ -770,7 +617,6 @@ void FApplication::processKeyboardEvent()
   {
     register ssize_t bytesread;
     widget->getCurrentTime (&time_keypressed);
-    x11_mouse[0] = sgr_mouse[0] = urxvt_mouse[0] = '\0';
 
     if ( quit_now || app_exit_loop )
       return;
@@ -809,15 +655,30 @@ void FApplication::processKeyboardEvent()
               break;
 
             case fc::Fkey_mouse:
-              readRawX11MouseData();
+              if ( mouse )
+              {
+                mouse->setRawData (FMouse::x11, fifo_buf, sizeof(fifo_buf));
+                unprocessedInput() = mouse->isInputDataPending();
+                processMouseEvent();
+              }
               break;
 
             case fc::Fkey_extended_mouse:
-              readRawExtendedMouseData();
+              if ( mouse )
+              {
+                mouse->setRawData (FMouse::sgr, fifo_buf, sizeof(fifo_buf));
+                unprocessedInput() = mouse->isInputDataPending();
+                processMouseEvent();
+              }
               break;
 
             case fc::Fkey_urxvt_mouse:
-              readRawUrxvtMouseData();
+              if ( mouse )
+              {
+                mouse->setRawData (FMouse::urxvt, fifo_buf, sizeof(fifo_buf));
+                unprocessedInput() = mouse->isInputDataPending();
+                processMouseEvent();
+              }
               break;
 
             default:
@@ -1240,586 +1101,19 @@ bool FApplication::processAccelerator (const FWidget*& widget)
 }
 
 //----------------------------------------------------------------------
-void FApplication::getX11ButtonState (int button)
-{
-  // get the x11 and urxvt mouse button state
-  const FPoint& mouse_position = getMousePos();
-
-  enum btn_states
-  {
-    key_shift            = 0x04,
-    key_meta             = 0x08,
-    key_ctrl             = 0x10,
-    key_button_mask      = 0x1c,
-    button1_pressed      = 0x20,
-    button2_pressed      = 0x21,
-    button3_pressed      = 0x22,
-    all_buttons_released = 0x23,
-    button1_pressed_move = 0x40,
-    button2_pressed_move = 0x41,
-    button3_pressed_move = 0x42,
-    button_mask          = 0x63,
-    button_up            = 0x60,
-    button_down          = 0x61,
-    button_up_move       = 0x60,
-    button_down_move     = 0x61
-  };
-
-  switch ( button )
-  {
-    case button1_pressed:
-    case button1_pressed_move:
-      if ( mouse_position == new_mouse_position
-        && x11_button_state == all_buttons_released
-        && ! isDblclickTimeout(&time_mousepressed) )
-      {
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.left_button = DoubleClick;
-      }
-      else
-      {
-        time_mousepressed = time_keypressed;  // save click time
-        b_state.left_button = Pressed;
-      }
-      break;
-
-    case button2_pressed:
-    case button2_pressed_move:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.middle_button = Pressed;
-      break;
-
-    case button3_pressed:
-    case button3_pressed_move:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.right_button = Pressed;
-      break;
-
-    case all_buttons_released:
-      switch ( x11_button_state & button_mask )
-      {
-        case button1_pressed:
-        case button1_pressed_move:
-          b_state.left_button = Released;
-          break;
-
-        case button2_pressed:
-        case button2_pressed_move:
-          b_state.middle_button = Released;
-          break;
-
-        case button3_pressed:
-        case button3_pressed_move:
-          b_state.right_button = Released;
-          break;
-
-        default:
-          break;
-      }
-      break;
-
-    case button_up:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.wheel_up = Pressed;
-      break;
-
-    case button_down:
-      time_mousepressed.tv_sec = 0;
-      time_mousepressed.tv_usec = 0;
-      b_state.wheel_down = Pressed;
-      break;
-
-      default:
-        break;
-  }
-}
-
-//----------------------------------------------------------------------
-bool FApplication::parseX11Mouse()
-{
-  const FPoint& mouse_position = getMousePos();
-  uChar x, y;
-
-  enum x11_btn_states
-  {
-    key_shift            = 0x04,
-    key_meta             = 0x08,
-    key_ctrl             = 0x10,
-    key_button_mask      = 0x1c,
-    button1_pressed      = 0x20,
-    button2_pressed      = 0x21,
-    button3_pressed      = 0x22,
-    all_buttons_released = 0x23,
-    button1_pressed_move = 0x40,
-    button2_pressed_move = 0x41,
-    button3_pressed_move = 0x42,
-    button_mask          = 0x63,
-    button_up            = 0x60,
-    button_down          = 0x61
-  };
-
-  x = uChar(x11_mouse[1] - 0x20);
-  y = uChar(x11_mouse[2] - 0x20);
-  new_mouse_position.setPoint (x, y);
-  // fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
-
-  if ( (x11_mouse[0] & key_shift) == key_shift )
-    b_state.shift_button = Pressed;
-
-  if ( (x11_mouse[0] & key_meta) == key_meta )
-    b_state.meta_button = Pressed;
-
-  if ( (x11_mouse[0] & key_ctrl) == key_ctrl )
-    b_state.control_button = Pressed;
-
-  if ( (x11_mouse[0] & button_mask) >= button1_pressed_move
-    && (x11_mouse[0] & button_mask) <= button3_pressed_move
-    && mouse_position != *zero_point )
-  {
-    b_state.mouse_moved = true;
-  }
-
-  getX11ButtonState (x11_mouse[0] & button_mask);
-
-  if ( uChar(x11_mouse[1]) == mouse_position.getX() + 0x20
-    && uChar(x11_mouse[2]) == mouse_position.getY() + 0x20
-    && b_state.wheel_up != Pressed
-    && b_state.wheel_down != Pressed
-    && uChar(x11_mouse[0]) == x11_button_state )
-  {
-    return false;
-  }
-
-  setMousePos (x, y);
-  x11_button_state = uChar(x11_mouse[0]);
-  x11_mouse[0] = '\0';
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FApplication::parseSGRMouse()
-{
-  const FPoint& mouse_position = getMousePos();
-  register char* p;
-  int button;
-  short x, y;
-
-  enum x11_ext_btn_states
-  {
-    key_shift       = 0x04,
-    key_meta        = 0x08,
-    key_ctrl        = 0x10,
-    key_button_mask = 0x1c,
-    button1         = 0x00,
-    button2         = 0x01,
-    button3         = 0x02,
-    button1_move    = 0x20,
-    button2_move    = 0x21,
-    button3_move    = 0x22,
-    button_mask     = 0x63,
-    button_up       = 0x40,
-    button_down     = 0x41,
-    pressed         = 'M',
-    released        = 'm'
-  };
-
-  x = 0;
-  y = 0;
-  button = 0;
-
-  // parse the SGR mouse string
-  p = sgr_mouse;
-
-  while ( *p && *p != ';' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-
-    button = 10 * button + (*p - '0');
-    p++;
-  }
-
-  while ( *p++ && *p != ';' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-    x = short(10 * x + (*p - '0'));
-  }
-
-  while ( *p++ && *p != 'M' && *p != 'm' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-
-    y = short(10 * y + (*p - '0'));
-  }
-
-  new_mouse_position.setPoint (x, y);
-  // fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
-
-  if ( (button & key_shift) == key_shift )
-    b_state.shift_button = Pressed;
-
-  if ( (button & key_meta) == key_meta )
-    b_state.meta_button = Pressed;
-
-  if ( (button & key_ctrl) == key_ctrl )
-    b_state.control_button = Pressed;
-
-  if ( (button & button_mask) >= button1_move
-    && (button & button_mask) <= button3_move
-    && mouse_position != *zero_point )
-  {
-    b_state.mouse_moved = true;
-  }
-
-  if ( *p == pressed )
-  {
-    switch ( button & button_mask )
-    {
-      case button1:
-      case button1_move:
-        if ( mouse_position == new_mouse_position
-          && (((x11_button_state & 0x80) >> 2) + 'M') == released
-          && ! isDblclickTimeout(&time_mousepressed) )
-        {
-          time_mousepressed.tv_sec = 0;
-          time_mousepressed.tv_usec = 0;
-          b_state.left_button = DoubleClick;
-        }
-        else
-        {
-          time_mousepressed = time_keypressed;  // save click time
-          b_state.left_button = Pressed;
-        }
-        break;
-
-      case button2:
-      case button2_move:
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.middle_button = Pressed;
-        break;
-
-      case button3:
-      case button3_move:
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.right_button = Pressed;
-        break;
-
-      case button_up:
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.wheel_up = Pressed;
-        break;
-
-      case button_down:
-        time_mousepressed.tv_sec = 0;
-        time_mousepressed.tv_usec = 0;
-        b_state.wheel_down = Pressed;
-        break;
-
-      default:
-        break;
-    }
-  }
-  else  // *p == released
-  {
-    switch ( button & button_mask )
-    {
-      case button1:
-      case button1_move:
-        b_state.left_button = Released;
-        break;
-
-      case button2:
-      case button2_move:
-        b_state.middle_button = Released;
-        break;
-
-      case button3:
-      case button3_move:
-        b_state.right_button = Released;
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  if ( mouse_position == new_mouse_position
-    && b_state.wheel_up != Pressed
-    && b_state.wheel_down != Pressed
-    && x11_button_state == uChar(((*p & 0x20) << 2) + button) )
-  {
-    return false;
-  }
-
-  setMousePos (x, y);
-  x11_button_state = uChar(((*p & 0x20) << 2) + button);
-  sgr_mouse[0] = '\0';
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FApplication::parseUrxvtMouse()
-{
-  const FPoint& mouse_position = getMousePos();
-  register char* p;
-  register bool x_neg;
-  register bool y_neg;
-  int button;
-  short x, y;
-
-  enum urxvt_btn_states
-  {
-    key_shift            = 0x04,
-    key_meta             = 0x08,
-    key_ctrl             = 0x10,
-    key_button_mask      = 0x1c,
-    button1_pressed      = 0x20,
-    button2_pressed      = 0x21,
-    button3_pressed      = 0x22,
-    all_buttons_released = 0x23,
-    button1_pressed_move = 0x40,
-    button2_pressed_move = 0x41,
-    button3_pressed_move = 0x42,
-    button_mask          = 0x63,
-    button_up            = 0x60,
-    button_down          = 0x61,
-    button_up_move       = 0x60,
-    button_down_move     = 0x61
-  };
-  x = 0;
-  y = 0;
-  button = 0;
-
-  // parse the SGR mouse string
-  p = urxvt_mouse;
-  x_neg = false;
-  y_neg = false;
-
-  while ( *p && *p != ';' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-
-    button = 10 * button + (*p - '0');
-    p++;
-  }
-
-  if ( *++p == '-' )
-  {
-    p++;
-    x_neg = true;
-  }
-
-  while ( *p && *p != ';' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-
-    x = short(10 * x + (*p - '0'));
-    p++;
-  }
-
-  if ( *++p == '-' )
-  {
-    p++;
-    y_neg = true;
-  }
-
-  while ( *p && *p != 'M' )
-  {
-    if ( *p < '0' || *p > '9')
-      return false;
-
-    y = short(10 * y + (*p - '0'));
-    p++;
-  }
-
-  if ( x_neg || x == 0 )
-    x = 1;
-
-  if ( y_neg || y == 0 )
-    y = 1;
-
-  if ( x > getDesktopWidth() )
-    x = short(getDesktopWidth());
-
-  if ( y > getDesktopHeight() )
-    y = short(getDesktopHeight());
-
-  new_mouse_position.setPoint (x, y);
-  // fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
-
-  if ( (button & key_shift) == key_shift )
-    b_state.shift_button = Pressed;
-
-  if ( (button & key_meta) == key_meta )
-    b_state.meta_button = Pressed;
-
-  if ( (button & key_ctrl) == key_ctrl )
-    b_state.control_button = Pressed;
-
-  if ( (button & button_mask) >= button1_pressed_move
-    && (button & button_mask) <= button3_pressed_move
-    && mouse_position != *zero_point )
-  {
-    b_state.mouse_moved = true;
-  }
-
-  getX11ButtonState (button & button_mask);
-
-  if ( mouse_position == new_mouse_position
-    && b_state.wheel_up != Pressed
-    && b_state.wheel_down != Pressed
-    && x11_button_state == uChar(button) )
-  {
-    return false;
-  }
-
-  setMousePos (x, y);
-  x11_button_state = uChar(button);
-  urxvt_mouse[0] = '\0';
-  return true;
-}
-
-//----------------------------------------------------------------------
-#ifdef F_HAVE_LIBGPM
-bool FApplication::processGpmEvent()
-{
-  // fill bit field with 0
-  std::memset(&b_state, 0x00, sizeof(b_state));
-
-  if ( Gpm_GetEvent(&gpm_ev) == 1 )
-  {
-    Gpm_FitEvent (&gpm_ev);
-
-    if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
-      b_state.mouse_moved = true;
-
-    if ( gpm_ev.wdy > 0 )
-      b_state.wheel_up = Pressed;
-    else if ( gpm_ev.wdy < 0 )
-      b_state.wheel_down = Pressed;
-
-    switch ( gpm_ev.type & 0x0f )
-    {
-      case GPM_DOWN:
-      case GPM_DRAG:
-        if ( gpm_ev.buttons & GPM_B_LEFT )
-        {
-          if ( gpm_ev.type & GPM_DOUBLE )
-            b_state.left_button = DoubleClick;
-          else
-            b_state.left_button = Pressed;
-        }
-
-        if ( gpm_ev.buttons & GPM_B_MIDDLE )
-          b_state.middle_button = Pressed;
-
-        if ( gpm_ev.buttons & GPM_B_RIGHT )
-          b_state.right_button = Pressed;
-
-        if ( gpm_ev.buttons & GPM_B_UP )
-          b_state.wheel_up = Pressed;
-
-        if ( gpm_ev.buttons & GPM_B_DOWN )
-          b_state.wheel_down = Pressed;
-
-        // keyboard modifiers
-        if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
-          b_state.shift_button = Pressed;
-
-        if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
-          b_state.meta_button = Pressed;
-
-        if ( gpm_ev.modifiers & (1 << KG_CTRL) )
-          b_state.control_button = Pressed;
-
-        break;
-
-      case GPM_UP:
-        if ( gpm_ev.buttons & GPM_B_LEFT )
-          b_state.left_button = Released;
-
-        if ( gpm_ev.buttons & GPM_B_MIDDLE )
-          b_state.middle_button = Released;
-
-        if ( gpm_ev.buttons & GPM_B_RIGHT )
-          b_state.right_button = Released;
-
-      default:
-        break;
-    }
-
-    setMousePos (gpm_ev.x, gpm_ev.y);
-
-    if ( gpmEvent(false) == mouse_event )
-      unprocessedInput() = true;
-    else
-      unprocessedInput() = false;
-
-    GPM_DRAWPOINTER(&gpm_ev);
-    gpmMouseEvent = false;
-
-    return true;
-  }
-
-  gpmMouseEvent = false;
-  return false;
-}
-#endif  // F_HAVE_LIBGPM
-
-//----------------------------------------------------------------------
 bool FApplication::getMouseEvent()
 {
-  bool Event = false;
+  bool mouse_event_occurred = false;
+  FMouseControl* mouse = getMouseControl();
 
-#ifdef F_HAVE_LIBGPM
-  if ( ! gpmMouseEvent
-    && x11_mouse[0] == '\0'
-    && sgr_mouse[0] == '\0'
-    && urxvt_mouse[0] == '\0' )
+  if ( mouse && mouse->hasData() )
   {
-    return false;
+    mouse->processEvent (&time_keypressed);
+    unprocessedInput() = mouse->isInputDataPending();
+    mouse_event_occurred = mouse->hasEvent();
   }
-#else
-  if ( x11_mouse[0] == '\0'
-    && sgr_mouse[0] == '\0'
-    && urxvt_mouse[0] == '\0' )
-  {
-    return false;
-  }
-#endif
 
-#ifdef F_HAVE_LIBGPM
-  if ( gpmMouseEvent )
-    Event = processGpmEvent();
-#endif
-
-  if ( x11_mouse[0] )
-    Event = parseX11Mouse();
-
-  if ( sgr_mouse[0] )
-    Event = parseSGRMouse();
-
-  if ( urxvt_mouse[0] )
-    Event = parseUrxvtMouse();
-
-  if ( ! Event )
-    return false;
-
-  return true;
+  return mouse_event_occurred;
 }
 
 //----------------------------------------------------------------------
@@ -1828,15 +1122,20 @@ FWidget*& FApplication::determineClickedWidget()
   if ( clicked_widget )
     return clicked_widget;
 
-  if ( b_state.left_button != Pressed
-    && b_state.left_button != DoubleClick
-    && b_state.right_button != Pressed
-    && b_state.middle_button != Pressed
-    && b_state.wheel_up != Pressed
-    && b_state.wheel_down != Pressed )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
     return clicked_widget;
 
-  const FPoint& mouse_position = getMousePos();
+  if ( ! mouse->isLeftButtonPressed()
+    && ! mouse->isLeftButtonDoubleClick()
+    && ! mouse->isRightButtonPressed()
+    && ! mouse->isMiddleButtonPressed()
+    && ! mouse->isWheelUp()
+    && ! mouse->isWheelDown() )
+    return clicked_widget;
+
+  const FPoint& mouse_position = mouse->getPos();
 
   // Determine the window object on the current click position
   FWidget* window = FWindow::getWindowWidgetAt (mouse_position);
@@ -1868,14 +1167,20 @@ void FApplication::closeOpenMenu()
 {
   // Close the open menu
 
-  if ( ! open_menu || b_state.mouse_moved )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! open_menu || ( mouse && mouse->isMoved()) )
     return;
 
   FMenu* menu = static_cast<FMenu*>(open_menu);
-  const FPoint& mouse_position = getMousePos();
 
-  if ( menu->containsMenuStructure(mouse_position) )
-    return;
+  if ( mouse )
+  {
+    const FPoint& mouse_position = mouse->getPos();
+
+    if ( menu->containsMenuStructure(mouse_position) )
+      return;
+  }
 
   bool is_window_menu;
   FWidget* super = menu->getSuperMenu();
@@ -1906,7 +1211,9 @@ void FApplication::unselectMenubarItems()
 {
   // Unselect the menu bar items
 
-  if ( open_menu || b_state.mouse_moved )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( open_menu || (mouse && mouse->isMoved()) )
     return;
 
   FMenuBar* menubar = getMenuBar();
@@ -1917,7 +1224,10 @@ void FApplication::unselectMenubarItems()
   if ( ! menubar->hasSelectedItem() )
     return;
 
-  const FPoint& mouse_position = getMousePos();
+  if ( ! mouse )
+    return;
+
+  const FPoint& mouse_position = mouse->getPos();
 
   if ( ! getMenuBar()->getTermGeometry().contains(mouse_position) )
   {
@@ -1945,22 +1255,27 @@ void FApplication::sendMouseEvent()
   if ( ! clicked_widget )
     return;
 
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
   FPoint widgetMousePos;
-  const FPoint& mouse_position = getMousePos();
+  const FPoint& mouse_position = mouse->getPos();
   int key_state = 0;
 
-  if ( b_state.shift_button == Pressed )
+  if ( mouse->isShiftKeyPressed() )
     key_state |= fc::ShiftButton;
 
-  if ( b_state.meta_button == Pressed )
-    key_state |= fc::MetaButton;
-
-  if ( b_state.control_button == Pressed )
+  if ( mouse->isControlKeyPressed() )
     key_state |= fc::ControlButton;
+
+  if ( mouse->isMetaKeyPressed() )
+    key_state |= fc::MetaButton;
 
   widgetMousePos = clicked_widget->termToWidgetPos(mouse_position);
 
-  if ( b_state.mouse_moved )
+  if ( mouse->isMoved() )
   {
     sendMouseMoveEvent (widgetMousePos, mouse_position, key_state);
   }
@@ -1972,6 +1287,7 @@ void FApplication::sendMouseEvent()
   }
 
   sendWheelEvent (widgetMousePos, mouse_position);
+  mouse->clearEvent();
 }
 
 //----------------------------------------------------------------------
@@ -1979,7 +1295,12 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
                                       , int key_state )
 {
-  if ( b_state.left_button == Pressed )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
+  if ( mouse->isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
@@ -1988,7 +1309,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
     sendEvent (clicked_widget, &m_down_ev);
   }
 
-  if ( b_state.right_button == Pressed )
+  if ( mouse->isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
@@ -1997,7 +1318,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
     sendEvent (clicked_widget, &m_down_ev);
   }
 
-  if ( b_state.middle_button == Pressed )
+  if ( mouse->isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseMove_Event
                           , widgetMousePos
@@ -2012,7 +1333,12 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
                                            , int key_state )
 {
-  if ( b_state.left_button == DoubleClick )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
+  if ( mouse->isLeftButtonDoubleClick() )
   {
     FMouseEvent m_dblclick_ev ( fc::MouseDoubleClick_Event
                               , widgetMousePos
@@ -2020,7 +1346,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                               , fc::LeftButton | key_state );
     sendEvent (clicked_widget, &m_dblclick_ev);
   }
-  else if ( b_state.left_button == Pressed )
+  else if ( mouse->isLeftButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
@@ -2028,7 +1354,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                           , fc::LeftButton | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
-  else if ( b_state.left_button == Released )
+  else if ( mouse->isLeftButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
@@ -2036,8 +1362,8 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                         , fc::LeftButton | key_state );
     FWidget* released_widget = clicked_widget;
 
-    if ( b_state.right_button != Pressed
-      && b_state.middle_button != Pressed )
+    if ( ! mouse->isRightButtonPressed()
+      && ! mouse->isMiddleButtonPressed() )
       clicked_widget = 0;
 
     sendEvent (released_widget, &m_up_ev);
@@ -2049,7 +1375,12 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
                                             , int key_state )
 {
-  if ( b_state.right_button == Pressed )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
+  if ( mouse->isRightButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
@@ -2057,7 +1388,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                           , fc::RightButton | key_state );
     sendEvent (clicked_widget, &m_down_ev);
   }
-  else if ( b_state.right_button == Released )
+  else if ( mouse->isRightButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
@@ -2065,8 +1396,8 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                         , fc::RightButton | key_state );
     FWidget* released_widget = clicked_widget;
 
-    if ( b_state.left_button != Pressed
-      && b_state.middle_button != Pressed )
+    if ( ! mouse->isLeftButtonPressed()
+      && ! mouse->isMiddleButtonPressed() )
       clicked_widget = 0;
 
     sendEvent (released_widget, &m_up_ev);
@@ -2078,7 +1409,12 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
                                              , int key_state )
 {
-  if ( b_state.middle_button == Pressed )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
+  if ( mouse->isMiddleButtonPressed() )
   {
     FMouseEvent m_down_ev ( fc::MouseDown_Event
                           , widgetMousePos
@@ -2090,7 +1426,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
     if ( isGnomeTerminal() )
       clicked_widget = 0;
   }
-  else if ( b_state.middle_button == Released )
+  else if ( mouse->isMiddleButtonReleased() )
   {
     FMouseEvent m_up_ev ( fc::MouseUp_Event
                         , widgetMousePos
@@ -2098,37 +1434,8 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                         , fc::MiddleButton | key_state );
     FWidget* released_widget = clicked_widget;
 
-    if ( b_state.right_button != Pressed
-      && b_state.left_button != Pressed )
-    {
-      clicked_widget = 0;
-    }
-
-    sendEvent (released_widget, &m_up_ev);
-  }
-
-  if ( b_state.middle_button == Pressed )
-  {
-    FMouseEvent m_down_ev ( fc::MouseDown_Event
-                          , widgetMousePos
-                          , mouse_position
-                          , fc::MiddleButton | key_state );
-    sendEvent (clicked_widget, &m_down_ev);
-
-    // gnome-terminal sends no released on middle click
-    if ( isGnomeTerminal() )
-      clicked_widget = 0;
-  }
-  else if ( b_state.middle_button == Released )
-  {
-    FMouseEvent m_up_ev ( fc::MouseUp_Event
-                        , widgetMousePos
-                        , mouse_position
-                        , fc::MiddleButton | key_state );
-    FWidget* released_widget = clicked_widget;
-
-    if ( b_state.right_button != Pressed
-      && b_state.left_button != Pressed )
+    if ( ! mouse->isLeftButtonPressed()
+      && ! mouse->isRightButtonPressed() )
     {
       clicked_widget = 0;
     }
@@ -2141,7 +1448,12 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                                   , const FPoint& mouse_position )
 {
-  if ( b_state.wheel_up == Pressed )
+  FMouseControl* mouse = getMouseControl();
+
+  if ( ! mouse )
+    return;
+
+  if ( mouse->isWheelUp() )
   {
     FWheelEvent wheel_ev ( fc::MouseWheel_Event
                          , widgetMousePos
@@ -2152,7 +1464,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
     sendEvent(scroll_over_widget, &wheel_ev);
   }
 
-  if ( b_state.wheel_down == Pressed )
+  if ( mouse->isWheelDown() )
   {
     FWheelEvent wheel_ev ( fc::MouseWheel_Event
                          , widgetMousePos
@@ -2167,6 +1479,8 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent()
 {
+  FMouseControl* mouse = getMouseControl();
+
   if ( ! getMouseEvent() )
     return;
 
@@ -2176,10 +1490,8 @@ void FApplication::processMouseEvent()
   unselectMenubarItems();
   sendMouseEvent();
 
-#ifdef F_HAVE_LIBGPM
-  if ( isGpmMouseEnabled() && gpm_ev.x != -1 )
-    GPM_DRAWPOINTER(&gpm_ev);
-#endif
+  if ( mouse )
+    mouse->drawGpmPointer();
 }
 
 //----------------------------------------------------------------------

@@ -183,6 +183,27 @@ void FObject::getCurrentTime (timeval* time)
 }
 
 //----------------------------------------------------------------------
+bool FObject::isTimeout (timeval* time, register long timeout)
+{
+  register long diff_usec;
+  struct timeval now;
+  struct timeval diff;
+
+  FObject::getCurrentTime(&now);
+  diff.tv_sec = now.tv_sec - time->tv_sec;
+  diff.tv_usec = now.tv_usec - time->tv_usec;
+
+  if ( diff.tv_usec < 0 )
+  {
+    diff.tv_sec--;
+    diff.tv_usec += 1000000;
+  }
+
+  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  return ( diff_usec > timeout );
+}
+
+//----------------------------------------------------------------------
 int FObject::addTimer (int interval)
 {
   FObject::TimerList::iterator iter, last;

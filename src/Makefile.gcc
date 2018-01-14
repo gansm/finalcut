@@ -23,6 +23,7 @@ INCLUDE_HEADERS = \
 	flistbox.h \
 	flistview.h \
 	fmenu.h \
+	fmouse.h \
 	fdialoglistmenu.h \
 	fmenubar.h \
 	fradiomenuitem.h \
@@ -76,6 +77,7 @@ OBJS = \
 	flistbox.o \
 	flistview.o \
 	fmenu.o \
+	fmouse.o \
 	fdialoglistmenu.o \
 	fmenubar.o \
 	fmenuitem.o \

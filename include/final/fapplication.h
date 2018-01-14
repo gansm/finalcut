@@ -126,22 +126,6 @@ class FApplication : public FWidget
     typedef std::pair<const FObject*, const FEvent*> eventPair;
     typedef std::deque<eventPair> eventQueue;
 
-    enum btn_state
-    {
-      Pressed     = 1,
-      Released    = 2,
-      DoubleClick = 3
-    };
-
-#ifdef F_HAVE_LIBGPM
-    enum gpmEventType
-    {
-      no_event       = 0,
-      keyboard_event = 1,
-      mouse_event    = 2
-    };
-#endif
-
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
 
@@ -154,20 +138,11 @@ class FApplication : public FWidget
     // Methods
     void               init();
     static void        cmd_options (const int&, char*[]);
-
-#ifdef F_HAVE_LIBGPM
-    int                gpmEvent (bool = true);
-    bool               processGpmEvent();
-#endif
-
     bool               KeyPressed();
     ssize_t            readKey();
     FWidget*           findKeyboardWidget();
     bool               getKeyPressedState();
     void               keyboardBufferTimeout (FWidget*);
-    void               readRawX11MouseData();
-    void               readRawExtendedMouseData();
-    void               readRawUrxvtMouseData();
     void               sendEscapeKeyPressEvent (FWidget*);
     bool               sendKeyDownEvent (FWidget*);
     bool               sendKeyPressEvent (FWidget*);
@@ -188,10 +163,6 @@ class FApplication : public FWidget
 
     bool               processDialogSwitchAccelerator();
     bool               processAccelerator (const FWidget*&);
-    void               getX11ButtonState (int);
-    bool               parseX11Mouse();
-    bool               parseSGRMouse();
-    bool               parseUrxvtMouse();
     bool               getMouseEvent();
     FWidget*&          determineClickedWidget();
     void               unsetMoveSizeMode();
@@ -221,30 +192,7 @@ class FApplication : public FWidget
     int                app_argc;
     char**             app_argv;
     int                key;
-
-#ifdef F_HAVE_LIBGPM
-    Gpm_Event          gpm_ev;
-    bool               gpmMouseEvent;
-#endif
-
-    struct button_state  // bit field
-    {
-      uChar left_button    : 2;  // 0..3
-      uChar right_button   : 2;  // 0..3
-      uChar middle_button  : 2;  // 0..3
-      uChar shift_button   : 1;  // 0..1
-      uChar control_button : 1;  // 0..1
-      uChar meta_button    : 1;  // 0..1
-      uChar wheel_up       : 1;  // 0..1
-      uChar wheel_down     : 1;  // 0..1
-      uChar mouse_moved    : 1;  // 0..1
-      uChar                : 4;  // padding bits
-    } b_state;
-
     char               k_buf[1024];
-    char               x11_mouse[4];
-    char               sgr_mouse[13];
-    char               urxvt_mouse[13];
     char               fifo_buf[512];
     int                fifo_offset;
     bool               fifo_in_use;
@@ -252,15 +200,11 @@ class FApplication : public FWidget
     long               key_timeout;
     long               dblclick_interval;
     struct timeval     time_keypressed;
-    struct timeval     time_mousepressed;
-    FPoint             new_mouse_position;
     static eventQueue* event_queue;
     static int         quit_code;
     static bool        quit_now;
     static int         loop_level;
     static bool        process_timer_event;
-    static FPoint*     zero_point;
-    static uChar       x11_button_state;
     static FWidget*    move_size_widget;
     static FWidget*    main_widget;
     static FWidget*    active_window;

@@ -401,6 +401,7 @@ void FButton::onMouseMove (FMouseEvent* ev)
 void FButton::onTimer (FTimerEvent* ev)
 {
   delTimer(ev->timerId());
+  clearShadow();
   setUp();
 }
 
@@ -587,9 +588,7 @@ inline int FButton::clickAnimationIndent (FWidget* parent_widget)
 //----------------------------------------------------------------------
 inline void FButton::clearRightMargin (FWidget* parent_widget)
 {
-  if ( button_down
-    || isNewFont()
-    || ( ! is.flat && hasShadow() && ! isMonochron()) )
+  if ( button_down || isNewFont() )
     return;
 
   // Restore the right background after button down
