@@ -58,7 +58,6 @@ int      FTerm::clr_eol_length;
 int      FTerm::cursor_addres_lengths;
 uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
-long     FTerm::dblclick_interval;
 bool     FTerm::resize_term;
 bool     FTerm::decscusr_support;
 bool     FTerm::terminal_detection;
@@ -323,6 +322,12 @@ void FTerm::setFreeBSDConsoleCursorStyle ( fc::freebsdConsoleCursorStyle style
   ioctl(0, CONS_CURSORTYPE, &style);
 }
 #endif
+
+//----------------------------------------------------------------------
+void FTerm::setDblclickInterval (const long timeout)
+{
+  mouse->setDblclickInterval(timeout);
+}
 
 //----------------------------------------------------------------------
 void FTerm::setTTY (const termios& t)
@@ -2523,9 +2528,6 @@ void FTerm::init_global_values()
   // Set default timeout for keypress
   key_timeout = 100000;  // 100 ms
 
-  // Set the default double click interval
-  dblclick_interval = 500000;  // 500 ms
-
   // Preset to false
   utf8_console            = \
   utf8_input              = \
@@ -3588,38 +3590,15 @@ void FTerm::init_termcaps_cygwin_quirks()
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
 
-  // Set ansi foreground and background color
-  if ( FTermcap::max_color > 8 )
-  {
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
-  }
-  else
-  {
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%dm");
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "4%p1%dm");
-  }
-
-  TCAP(fc::t_orig_pair) = \
-      C_STR(CSI "39;49;25m");
-
-  // Avoid dim + underline
-  TCAP(fc::t_enter_dim_mode)       = 0;
-  TCAP(fc::t_exit_dim_mode)        = 0;
-  TCAP(fc::t_enter_underline_mode) = 0;
-  TCAP(fc::t_exit_underline_mode)  = 0;
-  FTermcap::attr_without_color     = 18;
+  init_termcaps_linux_quirks();
 }
 
 //----------------------------------------------------------------------
 void FTerm::init_termcaps_linux_quirks()
 {
-  // Set ansi foreground and background color
+  /* Same settings are used by cygwin */
 
+  // Set ansi foreground and background color
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
@@ -4305,6 +4284,7 @@ void FTerm::enableMouse()
   bool gpm_mouse = false;
   bool xterm_mouse = false;
 
+#if defined(__linux__)
   if ( linux_terminal && openConsole() == 0 )
   {
     if ( isLinuxConsole() )
@@ -4312,6 +4292,7 @@ void FTerm::enableMouse()
 
     closeConsole();
   }
+#endif
 
   if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
     xterm_mouse = true;

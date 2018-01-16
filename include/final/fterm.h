@@ -580,7 +580,6 @@ class FTerm
     static int            fd_tty;
     static uInt           baudrate;
     static long           key_timeout;
-    static long           dblclick_interval;
     static bool           resize_term;
 
     static struct         termios term_init;
@@ -797,10 +796,6 @@ inline void FTerm::setXTermDefaultColors (bool on)
 //----------------------------------------------------------------------
 inline void FTerm::setKeypressTimeout (const long timeout)
 { key_timeout = timeout; }
-
-//----------------------------------------------------------------------
-inline void FTerm::setDblclickInterval (const long timeout)
-{ dblclick_interval = timeout; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setRawMode()

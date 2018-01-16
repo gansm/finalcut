@@ -74,8 +74,11 @@ FApplication::FApplication ( const int& _argc
   // Set the keyboard keypress timeout
   setKeypressTimeout (key_timeout);
 
-  // Set the double click interval
-  setDblclickInterval (dblclick_interval);
+  // Set the default double click interval
+  FMouseControl* mouse = getMouseControl();
+
+  if ( mouse )
+    mouse->setDblclickInterval (dblclick_interval);
 
   if ( ! (_argc && _argv) )
   {

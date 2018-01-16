@@ -112,6 +112,7 @@ class FMouse
     // Mutators
     void                setMaxWidth (short);
     void                setMaxHeight (short);
+    void                setDblclickInterval (const long);
 
     // Inquiries
     virtual bool        hasData() = 0;
@@ -464,6 +465,7 @@ class FMouseControl
     void                setStdinNo (int);
     void                setMaxWidth (short);
     void                setMaxHeight (short);
+    void                setDblclickInterval (const long);
     void                useGpmMouse (bool = true);
     void                useXtermMouse (bool = true);
 
@@ -499,9 +501,9 @@ class FMouseControl
 
   private:
     // Accessor
-    FMouse*         getMouseWithData();
-    FMouse*         getMouseWithEvent();
-    void            putstring (const char[], int = 1);
+    FMouse*             getMouseWithData();
+    FMouse*             getMouseWithEvent();
+    void                putstring (const char[], int = 1);
 
     // Data Member
     std::map<FMouse::mouse_type, FMouse*> mouse_protocol;

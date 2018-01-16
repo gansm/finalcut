@@ -88,6 +88,12 @@ inline void FMouse::setMaxHeight (short y_max)
 }
 
 //----------------------------------------------------------------------
+inline void FMouse::setDblclickInterval (const long timeout)
+{
+  dblclick_interval = timeout;
+}
+
+//----------------------------------------------------------------------
 inline bool FMouse::hasEvent()
 {
   return mouse_event_occurred;
@@ -1251,6 +1257,20 @@ void FMouseControl::setMaxWidth (short x_max)
 void FMouseControl::setMaxHeight (short y_max)
 {
   mouse_protocol[FMouse::urxvt]->setMaxHeight(y_max);
+}
+
+//----------------------------------------------------------------------
+void FMouseControl::setDblclickInterval (const long timeout)
+{
+  iter = mouse_protocol.begin();
+
+  while ( iter != mouse_protocol.end() )
+  {
+    if ( iter->second )
+      return iter->second->setDblclickInterval(timeout);
+
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
