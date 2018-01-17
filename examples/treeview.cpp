@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -54,6 +54,12 @@ class Treeview : public FDialog
 
     // Method
     void adjustSize();
+    TreeItem* getAfrica();
+    TreeItem* getAsia();
+    TreeItem* getEurope();
+    TreeItem* getNorthAmerica();
+    TreeItem* getSouthAmerica();
+    TreeItem* getOceania();
 
     // Event handlers
     void onClose (FCloseEvent*);
@@ -88,28 +94,8 @@ struct Treeview::TreeItem
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Treeview::Treeview (FWidget* parent)
-  : FDialog(parent)
-  , listView()
-  , Quit()
+Treeview::TreeItem* Treeview::getAfrica()
 {
-  // Create FListView object
-  listView = new FListView (this);
-  listView->setGeometry(2, 1, 53, 14);
-
-  // Add columns to the view
-  listView->addColumn ("Name", 23);
-  listView->addColumn ("Population");
-  listView->addColumn ("Density/km²");
-
-  // Set right alignment for the second and third column
-  listView->setColumnAlignment (2, fc::alignRight);
-  listView->setColumnAlignment (3, fc::alignRight);
-
-  // Activate tree view
-  listView->setTreeView();
-
-  // Populate FListView with a list of items
   static TreeItem africa[] =
   {
     { "Algeria", "40,400,000", "15.9", 0 },
@@ -137,6 +123,12 @@ Treeview::Treeview (FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
+  return africa;
+}
+
+//----------------------------------------------------------------------
+Treeview::TreeItem* Treeview::getAsia()
+{
   static TreeItem asia[] =
   {
     { "Afghanistan", "34,656,032", "49.88", 0 },
@@ -161,6 +153,12 @@ Treeview::Treeview (FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
+  return asia;
+}
+
+//----------------------------------------------------------------------
+Treeview::TreeItem* Treeview::getEurope()
+{
   static TreeItem europe[] =
   {
     { "Austria", "8,794,267", "104.0", 0 },
@@ -185,6 +183,12 @@ Treeview::Treeview (FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
+  return europe;
+}
+
+//----------------------------------------------------------------------
+Treeview::TreeItem* Treeview::getNorthAmerica()
+{
   static TreeItem north_america[] =
   {
     { "Canada", "35,151,728", "3.92", 0 },
@@ -198,6 +202,12 @@ Treeview::Treeview (FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
+  return north_america;
+}
+
+//----------------------------------------------------------------------
+Treeview::TreeItem* Treeview::getSouthAmerica()
+{
   static TreeItem south_america[] =
   {
     { "Argentina", "43,847,430", "14.4", 0 },
@@ -213,6 +223,12 @@ Treeview::Treeview (FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
+  return south_america;
+}
+
+//----------------------------------------------------------------------
+Treeview::TreeItem* Treeview::getOceania()
+{
   static TreeItem oceania[] =
   {
     { "Australia", "24,675,900", "3.2", 0 },
@@ -230,6 +246,39 @@ Treeview::Treeview (FWidget* parent)
     { "Kiribati", "110,136", "152.0", 0 },
     { 0, 0, 0, 0 }
   };
+
+  return oceania;
+}
+
+//----------------------------------------------------------------------
+Treeview::Treeview (FWidget* parent)
+  : FDialog(parent)
+  , listView()
+  , Quit()
+{
+  // Create FListView object
+  listView = new FListView (this);
+  listView->setGeometry(2, 1, 53, 14);
+
+  // Add columns to the view
+  listView->addColumn ("Name", 23);
+  listView->addColumn ("Population");
+  listView->addColumn ("Density/km²");
+
+  // Set right alignment for the second and third column
+  listView->setColumnAlignment (2, fc::alignRight);
+  listView->setColumnAlignment (3, fc::alignRight);
+
+  // Activate tree view
+  listView->setTreeView();
+
+  // Populate FListView with a list of items
+  TreeItem* africa        = getAfrica();
+  TreeItem* asia          = getAsia();
+  TreeItem* europe        = getEurope();
+  TreeItem* north_america = getNorthAmerica();
+  TreeItem* south_america = getSouthAmerica();
+  TreeItem* oceania       = getOceania();
 
   static TreeItem continent[] =
   {
