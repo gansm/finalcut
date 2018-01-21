@@ -369,8 +369,8 @@ void FScrollView::scrollTo (int x, int y)
   if ( changeX )
   {
     viewport_geometry.setWidth(save_width);
-    setTopPadding (1 - yoffset);
-    setBottomPadding (1 - (yoffset_end - yoffset));
+    setLeftPadding (1 - xoffset);
+    setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
 
     if ( update_scrollbar )
     {
@@ -382,8 +382,8 @@ void FScrollView::scrollTo (int x, int y)
   if ( changeY )
   {
     viewport_geometry.setHeight(save_height);
-    setLeftPadding (1 - xoffset);
-    setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
+    setTopPadding (1 - yoffset);
+    setBottomPadding (1 - (yoffset_end - yoffset));
 
     if ( update_scrollbar )
     {

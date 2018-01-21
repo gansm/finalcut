@@ -321,6 +321,8 @@ class FListView : public FWidget
     void                 drawColumnLabels();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
+    void                 setLineAttributes (bool, bool);
+    FString              getLinePrefix (const FListViewItem*, uInt);
     void                 updateDrawing (bool, bool);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);

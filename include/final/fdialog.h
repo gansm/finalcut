@@ -178,6 +178,7 @@ class FDialog : public FWindow
 
     // Methods
     void                init();
+    void                initDialogMenu();
     virtual void        drawBorder();
     void                drawTitleBar();
     void                drawBarButton();

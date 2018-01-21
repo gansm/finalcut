@@ -134,6 +134,8 @@ FStatusBar::FStatusBar(FWidget* parent)
   , key_list()
   , text("")
   , mouse_down()
+  , screenWidth(80)
+  , keyname_len(0)
   , x(-1)
   , x_msg(-1)
 {
@@ -578,8 +580,7 @@ void FStatusBar::draw()
 //----------------------------------------------------------------------
 void FStatusBar::drawKeys()
 {
-  std::vector<FStatusKey*>::const_iterator iter, last;
-  int screenWidth;
+  keyList::const_iterator iter, last;
 
   screenWidth = getDesktopWidth();
   x = 1;
@@ -600,101 +601,14 @@ void FStatusBar::drawKeys()
 
   while ( iter != last )
   {
-    int kname_len = int(getKeyName((*iter)->getKey()).getLength());
+    keyname_len = int(getKeyName((*iter)->getKey()).getLength());
 
-    if ( x + kname_len + 2 < screenWidth )
+    if ( x + keyname_len + 2 < screenWidth )
     {
       if ( (*iter)->isActivated() || (*iter)->hasMouseFocus() )
-      {
-        int txt_length;
-        if ( isMonochron() )
-          setReverse(false);
-
-        setColor ( wc.statusbar_active_hotkey_fg
-                 , wc.statusbar_active_hotkey_bg );
-        x++;
-        print (' ');
-        x += kname_len;
-        print (getKeyName((*iter)->getKey()));
-        setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
-        x++;
-        print ('-');
-        txt_length = int((*iter)->getText().getLength());
-        x += txt_length;
-
-        if ( x <= screenWidth )
-        {
-          print ((*iter)->getText());
-          x++;
-          print (fc::RightHalfBlock);  // ▌
-        }
-        else
-        {
-          // Print ellipsis
-          print ( (*iter)->getText()
-                          .left(uInt(txt_length + screenWidth - x - 1)) );
-          print ("..");
-        }
-
-        if ( isMonochron() )
-          setReverse(true);
-      }
+        drawActiveKey (iter);
       else
-      {
-        int txt_length;
-
-        // not active
-        setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
-        x++;
-        print (' ');
-        x += kname_len;
-        print (getKeyName((*iter)->getKey()));
-        setColor (wc.statusbar_fg, wc.statusbar_bg);
-        x++;
-        print ('-');
-        txt_length = int((*iter)->getText().getLength());
-        x += txt_length;
-
-        if ( x - 1 <= screenWidth )
-          print ((*iter)->getText());
-        else
-        {
-          // Print ellipsis
-          print ( (*iter)->getText()
-                          .left(uInt(txt_length + screenWidth - x - 1)) );
-          print ("..");
-        }
-
-        if ( iter + 1 != key_list.end()
-          && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
-          && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
-           < screenWidth )
-        {
-          // next element is active
-          if ( isMonochron() )
-            setReverse(false);
-
-          if ( no_half_block_character )
-            print (' ');
-          else
-          {
-            setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
-            print (fc::LeftHalfBlock);  // ▐
-          }
-
-          x++;
-
-          if ( isMonochron() )
-            setReverse(true);
-        }
-        else if ( iter + 1 != key_list.end() && x < screenWidth )
-        {
-          // not the last element
-          setColor (wc.statusbar_separator_fg, wc.statusbar_bg);
-          x++;
-          print (fc::BoxDrawingsVertical);  // │
-        }
-      }
+        drawKey (iter);
     }
     else
     {
@@ -703,10 +617,114 @@ void FStatusBar::drawKeys()
       for (; x <= screenWidth; x++)
         print (' ');
     }
+
     ++iter;
   }
+
   if ( isMonochron() )
     setReverse(false);
 
   x_msg = x;
 }
+
+//----------------------------------------------------------------------
+void FStatusBar::drawKey (keyList::const_iterator iter)
+{
+  // Draw not active key
+
+  int txt_length;
+  FStatusKey* item = *iter;
+
+  setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
+  x++;
+  print (' ');
+  x += keyname_len;
+  print (getKeyName(item->getKey()));
+  setColor (wc.statusbar_fg, wc.statusbar_bg);
+  x++;
+  print ('-');
+  txt_length = int(item->getText().getLength());
+  x += txt_length;
+
+  if ( x - 1 <= screenWidth )
+    print (item->getText());
+  else
+  {
+    // Print ellipsis
+    print ( item->getText()
+                 .left(uInt(txt_length + screenWidth - x - 1)) );
+    print ("..");
+  }
+
+  if ( iter + 1 != key_list.end()
+    && ( (*(iter + 1))->isActivated() || (*(iter + 1))->hasMouseFocus() )
+    && x + int(getKeyName((*(iter + 1))->getKey()).getLength()) + 3
+     < screenWidth )
+  {
+    // Next element is active
+    if ( isMonochron() )
+      setReverse(false);
+
+    if ( no_half_block_character )
+      print (' ');
+    else
+    {
+      setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
+      print (fc::LeftHalfBlock);  // ▐
+    }
+
+    x++;
+
+    if ( isMonochron() )
+      setReverse(true);
+  }
+  else if ( iter + 1 != key_list.end() && x < screenWidth )
+  {
+    // Not the last element
+    setColor (wc.statusbar_separator_fg, wc.statusbar_bg);
+    x++;
+    print (fc::BoxDrawingsVertical);  // │
+  }
+}
+
+//----------------------------------------------------------------------
+void FStatusBar::drawActiveKey (keyList::const_iterator iter)
+{
+  // Draw active key
+
+  int txt_length;
+  FStatusKey* item = *iter;
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  setColor ( wc.statusbar_active_hotkey_fg
+           , wc.statusbar_active_hotkey_bg );
+  x++;
+  print (' ');
+  x += keyname_len;
+  print (getKeyName(item->getKey()));
+  setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
+  x++;
+  print ('-');
+  txt_length = int(item->getText().getLength());
+  x += txt_length;
+
+  if ( x <= screenWidth )
+  {
+    print (item->getText());
+    x++;
+    print (fc::RightHalfBlock);  // ▌
+  }
+  else
+  {
+    // Print ellipsis
+    print ( item->getText()
+                    .left(uInt(txt_length + screenWidth - x - 1)) );
+    print ("..");
+  }
+
+  if ( isMonochron() )
+    setReverse(true);
+}
+

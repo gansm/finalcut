@@ -1,3 +1,12 @@
+2017-01-21  Markus Gans  <guru.mail@muenster.de>
+	* The Final Cut can now also be compiled under Cygwin
+	* Fixed bug in FScrollView::scrollTo
+	* Refactoring FStatusBar::drawKeys
+	* Refactoring FListView::drawListLine
+
+2017-01-17  Markus Gans  <guru.mail@muenster.de>
+	* Small array optimizations in the examples
+
 2017-01-14  Markus Gans  <guru.mail@muenster.de>
 	* Mouse functions are now in a separate class
 

@@ -23,6 +23,7 @@
 * NetBSD
 * OpenBSD
 * macOS
+* Cygwin
 * Solaris
 
 The Final Cut

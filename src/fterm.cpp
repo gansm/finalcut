@@ -1505,7 +1505,11 @@ const FString FTerm::getSecDA()
   struct timeval tv;
 
   // Get the secondary device attributes
+#if defined(__CYGWIN__)
+  puts (SECDA);
+#else
   putstring (SECDA);
+#endif
   std::fflush(stdout);
 
   FD_ZERO(&ifds);

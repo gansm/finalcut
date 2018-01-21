@@ -477,6 +477,8 @@ class FWidget : public FVTerm, public FObject
     void               KeyDownEvent (FKeyEvent*);
     void               processDestroy();
     virtual void       draw();
+    void               drawTransparentShadow (int, int, int, int);
+    void               drawBlockShadow (int, int, int, int);
     static void        setColorTheme();
     static void        set8ColorTheme();
     static void        set16ColorTheme();

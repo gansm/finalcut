@@ -247,11 +247,15 @@ class FStatusBar : public FWindow
     void                init();
     void                draw();
     void                drawKeys();
+    void                drawKey (keyList::const_iterator);
+    void                drawActiveKey (keyList::const_iterator);
 
     // Data Members
     keyList             key_list;
     FString             text;
     bool                mouse_down;
+    int                 screenWidth;
+    int                 keyname_len;
     int                 x;
     int                 x_msg;
 };

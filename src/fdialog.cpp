@@ -929,6 +929,14 @@ void FDialog::init()
   }
 
   // Add the dialog menu
+  initDialogMenu();
+}
+
+//----------------------------------------------------------------------
+void FDialog::initDialogMenu()
+{
+  // Create the dialog Menu (access via Shift-F10 or Ctrl-^)
+
   try
   {
     dialog_menu = new FMenu ("-", this);

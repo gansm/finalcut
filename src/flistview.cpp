@@ -1523,64 +1523,13 @@ void FListView::drawListLine ( const FListViewItem* item
 {
   uInt indent = item->getDepth() << 1;  // indent = 2 * depth
 
-  setColor (wc.list_fg, wc.list_bg);
+  // Set line color and attributes
+  setLineAttributes (is_current, is_focus);
 
-  if ( is_current )
-  {
-    if ( is_focus && getMaxColor() < 16 )
-      setBold();
+  // Print the entry
+  FString line = getLinePrefix (item, indent);
 
-    if ( isMonochron() )
-      unsetBold();
-
-    if ( is_focus )
-    {
-      setColor ( wc.current_element_focus_fg
-               , wc.current_element_focus_bg );
-    }
-    else
-      setColor ( wc.current_element_fg
-               , wc.current_element_bg );
-
-    if ( isMonochron() )
-      setReverse(false);
-  }
-  else
-  {
-    if ( isMonochron() )
-      setReverse(true);
-    else if ( is_focus && getMaxColor() < 16 )
-      unsetBold();
-  }
-
-  // print the entry
-  FString line;
-
-  if ( tree_view )
-  {
-    if ( indent > 0 )
-      line = FString(indent, L' ');
-
-    if ( item->expandable  )
-    {
-      if ( item->is_expand )
-      {
-        line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
-        line += L' ';
-      }
-      else
-      {
-        line += wchar_t(fc::BlackRightPointingPointer);  // ►
-        line += L' ';
-      }
-    }
-    else
-      line += L"  ";
-  }
-  else
-    line = L" ";
-
-  // print columns
+  // Print columns
   if ( ! item->column_list.empty() )
   {
     for (uInt i = 0; i < item->column_list.size(); )
@@ -1641,6 +1590,74 @@ void FListView::drawListLine ( const FListViewItem* item
 
   for (; i < uInt(getWidth() - nf_offset - 2); i++)
     print (' ');
+}
+
+//----------------------------------------------------------------------
+inline void FListView::setLineAttributes ( bool is_current
+                                         , bool is_focus )
+{
+  setColor (wc.list_fg, wc.list_bg);
+
+  if ( is_current )
+  {
+    if ( is_focus && getMaxColor() < 16 )
+      setBold();
+
+    if ( isMonochron() )
+      unsetBold();
+
+    if ( is_focus )
+    {
+      setColor ( wc.current_element_focus_fg
+               , wc.current_element_focus_bg );
+    }
+    else
+      setColor ( wc.current_element_fg
+               , wc.current_element_bg );
+
+    if ( isMonochron() )
+      setReverse(false);
+  }
+  else
+  {
+    if ( isMonochron() )
+      setReverse(true);
+    else if ( is_focus && getMaxColor() < 16 )
+      unsetBold();
+  }
+}
+
+//----------------------------------------------------------------------
+inline FString FListView::getLinePrefix ( const FListViewItem* item
+                                        , uInt indent )
+{
+  FString line = "";
+
+  if ( tree_view )
+  {
+    if ( indent > 0 )
+      line = FString(indent, L' ');
+
+    if ( item->expandable  )
+    {
+      if ( item->is_expand )
+      {
+        line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
+        line += L' ';
+      }
+      else
+      {
+        line += wchar_t(fc::BlackRightPointingPointer);  // ►
+        line += L' ';
+      }
+    }
+    else
+      line += L"  ";
+  }
+  else
+    line = L" ";
+
+  return line;
 }
 
 //----------------------------------------------------------------------

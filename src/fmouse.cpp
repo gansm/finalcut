@@ -1234,18 +1234,21 @@ void FMouseControl::clearEvent()
 }
 
 //----------------------------------------------------------------------
+#ifdef F_HAVE_LIBGPM
 void FMouseControl::setStdinNo (int file_descriptor)
 {
-#ifdef F_HAVE_LIBGPM
+
 
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     gpm_mouse->setStdinNo(file_descriptor);
-
-#endif
 }
+#else
+void FMouseControl::setStdinNo (int)
+{ }
+#endif
 
 //----------------------------------------------------------------------
 void FMouseControl::setMaxWidth (short x_max)
@@ -1565,19 +1568,23 @@ void FMouseControl::processEvent (struct timeval* time)
 }
 
 //----------------------------------------------------------------------
+#ifdef F_HAVE_LIBGPM
+
 bool FMouseControl::getGpmKeyPressed (bool pending)
+#else
+
+bool FMouseControl::getGpmKeyPressed (bool)
+#endif
 {
   if ( mouse_protocol.empty() )
     return false;
 
 #ifdef F_HAVE_LIBGPM
-
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->getGpmKeyPressed(pending);
-
 #endif
 
   return false;

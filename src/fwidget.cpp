@@ -1426,77 +1426,12 @@ void FWidget::drawShadow()
   if ( trans_shadow )
   {
     // transparent shadow
-    setPrintPos (x2 + 1, y1);
-    setTransparent();
-    print ("  ");
-    unsetTransparent();
-
-    setColor (wc.shadow_bg, wc.shadow_fg);
-    setTransShadow();
-
-    for (int i = 1; i < getHeight(); i++)
-    {
-      setPrintPos (x2 + 1, y1 + i);
-      print ("  ");
-    }
-
-    unsetTransShadow();
-    setPrintPos (x1, y2 + 1);
-    setTransparent();
-    print ("  ");
-    unsetTransparent();
-
-    setColor (wc.shadow_bg, wc.shadow_fg);
-    setTransShadow();
-
-    for (int i = 2; i <= getWidth() + 1; i++)
-      print (' ');
-
-    unsetTransShadow();
-
-    if ( isMonochron() )
-      setReverse(false);
+    drawTransparentShadow (x1, y1, x2, y2);
   }
   else
   {
     // non-transparent shadow
-    int block;
-
-    if ( no_shadow_character )
-      return;
-
-    setPrintPos (x2 + 1, y1);
-
-    if ( isWindowWidget() )
-    {
-      setColor (wc.shadow_fg, wc.shadow_bg);
-      setInheritBackground();  // current background color will be ignored
-    }
-    else if ( FWidget* p = getParentWidget() )
-      setColor (wc.shadow_fg, p->getBackgroundColor());
-
-    block = fc::FullBlock;  // █
-    print (fc::LowerHalfBlock);  // ▄
-
-    if ( isWindowWidget() )
-      unsetInheritBackground();
-
-    for (int i = 1; i < getHeight(); i++)
-    {
-      setPrintPos (x2 + 1, y1 + i);
-      print (block);  // █
-    }
-
-    setPrintPos (x1 + 1, y2 + 1);
-
-    if ( isWindowWidget() )
-      setInheritBackground();
-
-    for (int i = 1; i <= getWidth(); i++)
-      print (fc::UpperHalfBlock);  // ▀
-
-    if ( isWindowWidget() )
-      unsetInheritBackground();
+    drawBlockShadow (x1, y1, x2, y2);
   }
 }
 
@@ -2468,6 +2403,85 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::draw()
 { }
+
+//----------------------------------------------------------------------
+void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
+{
+  // transparent shadow
+  setPrintPos (x2 + 1, y1);
+  setTransparent();
+  print ("  ");
+  unsetTransparent();
+
+  setColor (wc.shadow_bg, wc.shadow_fg);
+  setTransShadow();
+
+  for (int i = 1; i < getHeight(); i++)
+  {
+    setPrintPos (x2 + 1, y1 + i);
+    print ("  ");
+  }
+
+  unsetTransShadow();
+  setPrintPos (x1, y2 + 1);
+  setTransparent();
+  print ("  ");
+  unsetTransparent();
+
+  setColor (wc.shadow_bg, wc.shadow_fg);
+  setTransShadow();
+
+  for (int i = 2; i <= getWidth() + 1; i++)
+    print (' ');
+
+  unsetTransShadow();
+
+  if ( isMonochron() )
+    setReverse(false);
+}
+
+//----------------------------------------------------------------------
+void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
+{
+  // non-transparent shadow
+  int block;
+
+  if ( no_shadow_character )
+    return;
+
+  setPrintPos (x2 + 1, y1);
+
+  if ( isWindowWidget() )
+  {
+    setColor (wc.shadow_fg, wc.shadow_bg);
+    setInheritBackground();  // current background color will be ignored
+  }
+  else if ( FWidget* p = getParentWidget() )
+    setColor (wc.shadow_fg, p->getBackgroundColor());
+
+  block = fc::FullBlock;  // █
+  print (fc::LowerHalfBlock);  // ▄
+
+  if ( isWindowWidget() )
+    unsetInheritBackground();
+
+  for (int i = 1; i < getHeight(); i++)
+  {
+    setPrintPos (x2 + 1, y1 + i);
+    print (block);  // █
+  }
+
+  setPrintPos (x1 + 1, y2 + 1);
+
+  if ( isWindowWidget() )
+    setInheritBackground();
+
+  for (int i = 1; i <= getWidth(); i++)
+    print (fc::UpperHalfBlock);  // ▀
+
+  if ( isWindowWidget() )
+    unsetInheritBackground();
+}
 
 //----------------------------------------------------------------------
 void FWidget::setColorTheme()
