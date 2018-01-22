@@ -1525,29 +1525,6 @@ void FMouseControl::disable()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool on)
-{
-  // activate/deactivate the xterm mouse support
-  if ( ! use_xterm_mouse )
-    return;
-
-  if ( on )
-    putstring (CSI "?1001s"    // save old highlight mouse tracking
-               CSI "?1000h"    // enable x11 mouse tracking
-               CSI "?1002h"    // enable cell motion mouse tracking
-               CSI "?1015h"    // enable urxvt mouse mode
-               CSI "?1006h");  // enable SGR mouse mode
-  else
-    putstring (CSI "?1006l"    // disable SGR mouse mode
-               CSI "?1015l"    // disable urxvt mouse mode
-               CSI "?1002l"    // disable cell motion mouse tracking
-               CSI "?1000l"    // disable x11 mouse tracking
-               CSI "?1001r");  // restore old highlight mouse tracking
-
-  std::fflush(stdout);
-}
-
-//----------------------------------------------------------------------
 void FMouseControl::setRawData ( FMouse::mouse_type mt
                                , char fifo_buf[]
                                , int fifo_buf_size )
@@ -1639,6 +1616,29 @@ FMouse* FMouseControl::getMouseWithEvent()
   }
 
   return 0;
+}
+
+//----------------------------------------------------------------------
+void FMouseControl::xtermMouse (bool on)
+{
+  // activate/deactivate the xterm mouse support
+  if ( ! use_xterm_mouse )
+    return;
+
+  if ( on )
+    putstring (CSI "?1001s"    // save old highlight mouse tracking
+               CSI "?1000h"    // enable x11 mouse tracking
+               CSI "?1002h"    // enable cell motion mouse tracking
+               CSI "?1015h"    // enable urxvt mouse mode
+               CSI "?1006h");  // enable SGR mouse mode
+  else
+    putstring (CSI "?1006l"    // disable SGR mouse mode
+               CSI "?1015l"    // disable urxvt mouse mode
+               CSI "?1002l"    // disable cell motion mouse tracking
+               CSI "?1000l"    // disable x11 mouse tracking
+               CSI "?1001r");  // restore old highlight mouse tracking
+
+  std::fflush(stdout);
 }
 
 //----------------------------------------------------------------------

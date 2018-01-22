@@ -8,6 +8,7 @@ AC_INIT([finalcut], [0.4.0])
 AC_CONFIG_HEADER([config.h])
 AX_PREFIX_CONFIG_H([include/final/fconfig.h], [F])
 AC_CONFIG_SRCDIR([src/fobject.cpp])
+AC_GNU_SOURCE
 AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_CXX

@@ -95,9 +95,9 @@
     typedef unsigned long chtype;
   #endif
 
-  #include <term.h>              // termcap
+  #include <term.h>  // termcap
 #else
-  #include <term.h>              // termcap
+  #include <term.h>  // termcap
 #endif
 
 #ifdef F_HAVE_LIBGPM

@@ -1,3 +1,6 @@
+2017-01-22  Markus Gans  <guru.mail@muenster.de>
+	* Fixes compiler errors for latest Cygwin versions
+
 2017-01-21  Markus Gans  <guru.mail@muenster.de>
 	* The Final Cut can now also be compiled under Cygwin
 	* Fixed bug in FScrollView::scrollTo

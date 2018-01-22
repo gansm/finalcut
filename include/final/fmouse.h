@@ -491,9 +491,7 @@ class FMouseControl
     // Methods
     void                enable();
     void                disable();
-    void                xtermMouse (bool);
-    void                enableXTermMouse();
-    void                disableXTermMouse();
+
     virtual void        setRawData (FMouse::mouse_type, char[], int);
     virtual void        processEvent (struct timeval* time);
     bool                getGpmKeyPressed (bool);
@@ -503,6 +501,9 @@ class FMouseControl
     // Accessor
     FMouse*             getMouseWithData();
     FMouse*             getMouseWithEvent();
+    void                xtermMouse (bool);
+    void                enableXTermMouse();
+    void                disableXTermMouse();
     void                putstring (const char[], int = 1);
 
     // Data Member
