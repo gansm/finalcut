@@ -137,7 +137,7 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fwindow.lo fmessagebox.lo ftooltip.lo ffiledialog.lo \
 	ftextview.lo fstatusbar.lo fterm.lo fvterm.lo fevent.lo \
 	foptiattr.lo foptimove.lo ftermbuffer.lo fapplication.lo \
-	fwidget.lo fobject.lo
+	fwidgetcolors.lo fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -372,6 +372,7 @@ libfinal_la_SOURCES = \
 	foptimove.cpp \
 	ftermbuffer.cpp \
 	fapplication.cpp \
+	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fobject.cpp
 
@@ -424,6 +425,7 @@ finalcutinclude_HEADERS = \
 	../include/final/fvterm.h \
 	../include/final/ftextview.h \
 	../include/final/ftogglebutton.h \
+	../include/final/fwidgetcolors.h \
 	../include/final/fwidget.h \
 	../include/final/fwindow.h
 
@@ -545,6 +547,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftooltip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fvterm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fwidget.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fwidgetcolors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fwindow.Plo@am__quote@
 
 .cpp.o:

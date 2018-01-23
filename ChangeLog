@@ -1,5 +1,6 @@
-2017-01-22  Markus Gans  <guru.mail@muenster.de>
+2017-01-24  Markus Gans  <guru.mail@muenster.de>
 	* Fixes compiler errors for latest Cygwin versions
+	* Widget color scheme settings moved to a separate class
 
 2017-01-21  Markus Gans  <guru.mail@muenster.de>
 	* The Final Cut can now also be compiled under Cygwin

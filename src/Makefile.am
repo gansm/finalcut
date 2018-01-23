@@ -45,6 +45,7 @@ libfinal_la_SOURCES = \
 	foptimove.cpp \
 	ftermbuffer.cpp \
 	fapplication.cpp \
+	fwidgetcolors.cpp \
 	fwidget.cpp \
 	fobject.cpp
 
@@ -99,6 +100,7 @@ finalcutinclude_HEADERS = \
 	../include/final/fvterm.h \
 	../include/final/ftextview.h \
 	../include/final/ftogglebutton.h \
+	../include/final/fwidgetcolors.h \
 	../include/final/fwidget.h \
 	../include/final/fwindow.h
 

@@ -47,6 +47,7 @@ INCLUDE_HEADERS = \
 	fvterm.h \
 	ftextview.h \
 	ftogglebutton.h \
+	fwidgetcolors.h \
 	fwidget.h \
 	fwindow.h
 
@@ -99,6 +100,7 @@ OBJS = \
 	foptimove.o \
 	ftermbuffer.o \
 	fapplication.o \
+	fwidgetcolors.o \
 	fwidget.o \
 	fobject.o
 

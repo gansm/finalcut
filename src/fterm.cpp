@@ -1298,7 +1298,7 @@ void FTerm::resetColorMap()
 //----------------------------------------------------------------------
 void FTerm::setPalette (short index, int r, int g, int b)
 {
-  // Redefine the color palette
+  // Redefine RGB color value for a palette entry
 
   char*& Ic = TCAP(fc::t_initialize_color);
   char*& Ip = TCAP(fc::t_initialize_pair);
@@ -4215,6 +4215,8 @@ void FTerm::init_encoding()
 //----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
+  // Redefine the color palette
+
   if ( cygwin_terminal
     || kde_konsole
     || tera_terminal

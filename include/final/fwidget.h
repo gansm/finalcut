@@ -98,6 +98,7 @@
 #include <vector>
 
 #include "final/fvterm.h"
+#include "final/fwidgetcolors.h"
 
 
 // Callback macros
@@ -365,97 +366,9 @@ class FWidget : public FVTerm, public FObject
     virtual void       onClose (FCloseEvent*);
 
     // Data Members
-    static struct widget_colors
-    {
-      short term_fg;
-      short term_bg;
-      short list_fg;
-      short list_bg;
-      short selected_list_fg;
-      short selected_list_bg;
-      short current_element_focus_fg;
-      short current_element_focus_bg;
-      short current_element_fg;
-      short current_element_bg;
-      short current_inc_search_element_fg;
-      short selected_current_element_focus_fg;
-      short selected_current_element_focus_bg;
-      short selected_current_element_fg;
-      short selected_current_element_bg;
-      short label_fg;
-      short label_bg;
-      short label_inactive_fg;
-      short label_inactive_bg;
-      short label_hotkey_fg;
-      short label_hotkey_bg;
-      short label_emphasis_fg;
-      short label_ellipsis_fg;
-      short inputfield_active_focus_fg;
-      short inputfield_active_focus_bg;
-      short inputfield_active_fg;
-      short inputfield_active_bg;
-      short inputfield_inactive_fg;
-      short inputfield_inactive_bg;
-      short dialog_fg;
-      short dialog_resize_fg;
-      short dialog_emphasis_fg;
-      short dialog_bg;
-      short error_box_fg;
-      short error_box_emphasis_fg;
-      short error_box_bg;
-      short tooltip_fg;
-      short tooltip_bg;
-      short shadow_fg;
-      short shadow_bg;
-      short toggle_button_active_focus_fg;
-      short toggle_button_active_focus_bg;
-      short toggle_button_active_fg;
-      short toggle_button_active_bg;
-      short toggle_button_inactive_fg;
-      short toggle_button_inactive_bg;
-      short button_active_focus_fg;
-      short button_active_focus_bg;
-      short button_active_fg;
-      short button_active_bg;
-      short button_inactive_fg;
-      short button_inactive_bg;
-      short button_hotkey_fg;
-      short titlebar_active_fg;
-      short titlebar_active_bg;
-      short titlebar_inactive_fg;
-      short titlebar_inactive_bg;
-      short titlebar_button_fg;
-      short titlebar_button_bg;
-      short titlebar_button_focus_fg;
-      short titlebar_button_focus_bg;
-      short menu_active_focus_fg;
-      short menu_active_focus_bg;
-      short menu_active_fg;
-      short menu_active_bg;
-      short menu_inactive_fg;
-      short menu_inactive_bg;
-      short menu_hotkey_fg;
-      short menu_hotkey_bg;
-      short statusbar_fg;
-      short statusbar_bg;
-      short statusbar_hotkey_fg;
-      short statusbar_hotkey_bg;
-      short statusbar_separator_fg;
-      short statusbar_active_fg;
-      short statusbar_active_bg;
-      short statusbar_active_hotkey_fg;
-      short statusbar_active_hotkey_bg;
-      short scrollbar_fg;
-      short scrollbar_bg;
-      short scrollbar_button_fg;
-      short scrollbar_button_bg;
-      short progressbar_fg;
-      short progressbar_bg;
-    } wc;
-    // widget_colors wc;
-
     int                   flags;
     static uInt           modal_dialogs;
+    static FWidgetColors  wc;
     static widgetList*    dialog_list;
     static widgetList*    always_on_top_list;
     static widgetList*    close_widget;
