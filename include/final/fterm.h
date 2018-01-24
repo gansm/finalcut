@@ -119,6 +119,7 @@
 #include <string>
 
 #include "final/fc.h"
+#include "final/fcolorpalette.h"
 #include "final/fmouse.h"
 #include "final/fobject.h"
 #include "final/foptiattr.h"

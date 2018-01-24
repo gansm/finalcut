@@ -2346,7 +2346,8 @@ void FTerm::initLinuxConsole()
       // Framebuffer color depth in bits per pixel
       int bpp = getFramebuffer_bpp();
 
-      if ( bpp >= 4 )
+      // More than 4 bits per pixel and the font uses the blink-bit
+      if ( bpp >= 4 && screen_font.charcount <= 256 )
         FTermcap::max_color = 16;
 
 #if DEBUG
@@ -4228,35 +4229,9 @@ void FTerm::redefineColorPalette()
   saveColorMap();
 
   if ( FTermcap::max_color >= 16 )
-  {
-    setPalette (fc::Black, 0x00, 0x00, 0x00);
-    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-    setPalette (fc::Green, 0x18, 0x78, 0x18);
-    setPalette (fc::Cyan, 0x4a, 0x4a, 0xe4);
-    setPalette (fc::Red, 0xba, 0x1a, 0x1a);
-    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-    setPalette (fc::LightGray, 0xbc, 0xbc, 0xbc);
-    setPalette (fc::DarkGray, 0x50, 0x50, 0x50);
-    setPalette (fc::LightBlue, 0x80, 0xa4, 0xec);
-    setPalette (fc::LightGreen, 0x5e, 0xeb, 0x5c);
-    setPalette (fc::LightCyan, 0x62, 0xbf, 0xf8);
-    setPalette (fc::LightRed, 0xee, 0x44, 0x44);
-    setPalette (fc::LightMagenta, 0xe9, 0xad, 0xff);
-    setPalette (fc::Yellow, 0xfb, 0xe8, 0x67);
-    setPalette (fc::White, 0xff, 0xff, 0xff);
-  }
+    FColorPalette::set16ColorPalette (FTerm::setPalette);
   else  // 8 colors
-  {
-    setPalette (fc::Black, 0x00, 0x00, 0x00);
-    setPalette (fc::Blue, 0x22, 0x22, 0xb2);
-    setPalette (fc::Green, 0x18, 0x78, 0x18);
-    setPalette (fc::Cyan, 0x66, 0x66, 0xff);
-    setPalette (fc::Red, 0xb2, 0x18, 0x18);
-    setPalette (fc::Magenta, 0xb2, 0x18, 0xb2);
-    setPalette (fc::Brown, 0xe8, 0x87, 0x1f);
-    setPalette (fc::LightGray, 0xe0, 0xe0, 0xe0);
-  }
+    FColorPalette::set8ColorPalette (FTerm::setPalette);
 }
 
 //----------------------------------------------------------------------
@@ -4270,15 +4245,9 @@ void FTerm::restoreColorPalette()
 
   // Reset screen settings
   if ( FTermcap::max_color >= 16 )
-  {
-    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
-    setPalette (fc::LightGray, 0xb2, 0xb2, 0xb2);
-    setPalette (fc::DarkGray, 0x68, 0x68, 0x68);
-    setPalette (fc::LightBlue, 0x54, 0x54, 0xff);
-    setPalette (fc::LightGreen, 0x54, 0xff, 0x54);
-  }
+    FColorPalette::reset16ColorPalette (FTerm::setPalette);
   else  // 8 colors
-    setPalette (fc::Cyan, 0x18, 0xb2, 0xb2);
+    FColorPalette::reset8ColorPalette (FTerm::setPalette);
 
   resetXTermColors();
   resetColorMap();
