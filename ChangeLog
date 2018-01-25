@@ -1,3 +1,6 @@
+2017-01-25  Markus Gans  <guru.mail@muenster.de>
+	* UTF-8 fix for Solaris
+
 2017-01-24  Markus Gans  <guru.mail@muenster.de>
 	* Fixes compiler errors for latest Cygwin versions
 	* Widget color scheme settings moved to a separate class
