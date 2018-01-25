@@ -3003,17 +3003,7 @@ inline void FVTerm::appendOutputBuffer (const char s[])
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (char ch)
 {
-  output_buffer->push(ch);
-
-  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
-    flush_out();
-
-  return ch;
-}
-#else
-//----------------------------------------------------------------------
-int FVTerm::appendOutputBuffer (int ch)
-{
+  // This method is required by tputs under Solaris
   output_buffer->push(ch);
 
   if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
@@ -3022,3 +3012,16 @@ int FVTerm::appendOutputBuffer (int ch)
   return ch;
 }
 #endif
+
+//----------------------------------------------------------------------
+int FVTerm::appendOutputBuffer (int ch)
+{
+  // append method for unicode character
+  output_buffer->push(ch);
+
+  if ( output_buffer->size() >= TERMINAL_OUTPUT_BUFFER_SIZE )
+    flush_out();
+
+  return ch;
+}
+

@@ -413,9 +413,9 @@ class FVTerm : public FTerm
 
 #if defined(__sun) && defined(__SVR4)
     static int              appendOutputBuffer (char);
-#else
-    static int              appendOutputBuffer (int);
 #endif
+    static int              appendOutputBuffer (int);
+
 
     // Data Members
     static std::queue<int>* output_buffer;
