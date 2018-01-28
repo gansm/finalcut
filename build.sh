@@ -101,9 +101,9 @@ fi
 
 if $MAKE
 then
-  echo "${GREEN}Successful compiled${NORMAL}"
+  printf '%bSuccessful compiled%b\n' "${GREEN}" "${NORMAL}"
 else
-  echo "${RED}Error on compile!${NORMAL}" 1>&2
+  printf '%bError on compile!%b\n' "${RED}" "${NORMAL}" 1>&2
   exit 1
 fi
 

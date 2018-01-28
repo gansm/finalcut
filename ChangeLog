@@ -1,3 +1,8 @@
+2017-01-28  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FApplication::processKeyboardEvent
+	* Shorter methods and a fix for recreating new windows 
+	  in the window example
+
 2017-01-25  Markus Gans  <guru.mail@muenster.de>
 	* UTF-8 fix for Solaris
 

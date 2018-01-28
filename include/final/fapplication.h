@@ -136,13 +136,15 @@ class FApplication : public FWidget
     FApplication& operator = (const FApplication&);
 
     // Methods
-    void               init();
+    void               init (long, long);
     static void        cmd_options (const int&, char*[]);
     bool               KeyPressed();
     ssize_t            readKey();
     FWidget*           findKeyboardWidget();
     bool               getKeyPressedState();
     void               keyboardBufferTimeout (FWidget*);
+    void               parseKeyPuffer (FWidget*);
+    void               performKeyboardAction (FWidget*);
     void               sendEscapeKeyPressEvent (FWidget*);
     bool               sendKeyDownEvent (FWidget*);
     bool               sendKeyPressEvent (FWidget*);
@@ -200,6 +202,7 @@ class FApplication : public FWidget
     long               key_timeout;
     long               dblclick_interval;
     struct timeval     time_keypressed;
+    static FMouseControl* mouse;
     static eventQueue* event_queue;
     static int         quit_code;
     static bool        quit_now;

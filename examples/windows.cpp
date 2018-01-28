@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -117,9 +117,6 @@ SmallWindow::~SmallWindow()
 {
   // Remove own timer
   delOwnTimer();
-
-  // Remove all callbacks before Window::cb_destroyWindow() will be called
-  delCallbacks();
 }
 
 //----------------------------------------------------------------------
@@ -183,7 +180,9 @@ class Window : public FDialog
     ~Window();
 
   private:
-    // Typedef
+    // Typedefs
+    typedef void (Window::*WindowCallback)(FWidget*, data_ptr);
+    typedef void (FApplication::*FAppCallback)(FWidget*, data_ptr);
     typedef struct
     {
       bool is_open;
@@ -199,8 +198,12 @@ class Window : public FDialog
     Window& operator = (const Window&);
 
     // Method
+    void createFileMenuItems (FMenu*);
+    void createDialogButtons();
     void activateWindow (FDialog*);
     void adjustSize();
+    void addClickedCallback (FWidget*, WindowCallback);
+    void addClickedCallback (FWidget*, FAppCallback);
 
     // Event handlers
     void onClose (FCloseEvent*);
@@ -222,20 +225,68 @@ Window::Window (FWidget* parent)
   : FDialog(parent)
   , windows()
 {
+  FMenu* File;
+  FDialogListMenu* DglList;
   FString drop_down_symbol;
-  // menu bar
-  FMenuBar* Menubar = new FMenuBar (this);
+  FMenuBar* Menubar;
+  FStatusBar* statusbar;
 
-  // menu bar item
-  FMenu* File = new FMenu ("&File", Menubar);
+  // Menu bar
+  Menubar = new FMenuBar (this);
+
+  // Menu bar item
+  File = new FMenu ("&File", Menubar);
   File->setStatusbarMessage ("File management commands");
 
-  // dialog list menu item
+  // Dialog list menu item
   drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
-
-  FDialogListMenu* DglList = new FDialogListMenu (drop_down_symbol, Menubar);
+  DglList = new FDialogListMenu (drop_down_symbol, Menubar);
   DglList->setStatusbarMessage ("List of all the active dialogs");
 
+  // File menu items
+  createFileMenuItems (File);
+
+  // Dialog buttons
+  createDialogButtons();
+
+  // Statusbar at the bottom
+  statusbar = new FStatusBar (this);
+  statusbar->setMessage("Status bar message");
+
+  // Generate data vector for the windows
+  for (int n = 1; n <= 6; n++)
+  {
+    win_data* win_dat = new win_data;
+    win_dat->is_open = false;
+    win_dat->title = new FString();
+    win_dat->title->sprintf("Window %d", n);
+    windows.push_back(win_dat);
+  }
+}
+
+//----------------------------------------------------------------------
+Window::~Window()
+{
+  std::vector<win_data*>::iterator iter;
+  iter = windows.begin();
+
+  while ( iter != windows.end() )
+  {
+    win_data* win_dat = *iter;
+
+    // Remove all callbacks before Window::cb_destroyWindow() will be called
+    if ( win_dat->is_open && win_dat->dgl )
+      win_dat->dgl->delCallbacks();
+
+    delete win_dat->title;
+    delete win_dat;
+    iter = windows.erase(iter);
+  }
+}
+
+//----------------------------------------------------------------------
+void Window::createFileMenuItems (FMenu* File)
+{
   // "File" menu item
   FMenuItem* New = new FMenuItem ("&New", File);
   New->setStatusbarMessage ("Create the windows");
@@ -261,11 +312,18 @@ Window::Window (FWidget* parent)
   Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
-  // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar (this);
-  statusbar->setMessage("Status bar message");
+  // Add menu item callback
+  addClickedCallback (New, &Window::cb_createWindows);
+  addClickedCallback (Close, &Window::cb_closeWindows);
+  addClickedCallback (Next, &Window::cb_next);
+  addClickedCallback (Previous, &Window::cb_previous);
+  addClickedCallback (Quit, &FApplication::cb_exitApp);
+}
 
-  // Buttons
+//----------------------------------------------------------------------
+void Window::createDialogButtons()
+{
+  // Dialog buttons
   FButton* CreateButton = new FButton (this);
   CreateButton->setGeometry(2, 2, 9, 1);
   CreateButton->setText (L"&Create");
@@ -278,78 +336,10 @@ Window::Window (FWidget* parent)
   QuitButton->setGeometry(28, 2, 9, 1);
   QuitButton->setText (L"&Quit");
 
-  // Add menu item callback
-  New->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_createWindows)
-  );
-
-  Close->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_closeWindows)
-  );
-
-  Next->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_next)
-  );
-
-  Previous->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_previous)
-  );
-
-  Quit->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
-  );
-
   // Add button callback
-  CreateButton->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_createWindows)
-  );
-
-  CloseButton->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Window::cb_closeWindows)
-  );
-
-  QuitButton->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
-  );
-
-  for (int n = 1; n <= 6; n++)
-  {
-    win_data* win_dat = new win_data;
-    win_dat->is_open = false;
-    win_dat->title = new FString();
-    win_dat->title->sprintf("Window %d", n);
-    windows.push_back(win_dat);
-  }
-}
-
-//----------------------------------------------------------------------
-Window::~Window()
-{
-  std::vector<win_data*>::iterator iter;
-  iter = windows.begin();
-
-  while ( iter != windows.end() )
-  {
-    delete (*iter)->title;
-    delete *iter;
-    iter = windows.erase(iter);
-  }
+  addClickedCallback (CreateButton, &Window::cb_createWindows);
+  addClickedCallback (CloseButton, &Window::cb_closeWindows);
+  addClickedCallback (QuitButton, &FApplication::cb_exitApp);
 }
 
 //----------------------------------------------------------------------
@@ -398,6 +388,32 @@ void Window::adjustSize()
   }
 
   FDialog::adjustSize();
+}
+
+//----------------------------------------------------------------------
+void Window::addClickedCallback (FWidget* widget, WindowCallback call)
+{
+  FMemberCallback callback
+      = reinterpret_cast<FWidget::FMemberCallback>(call);
+
+  widget->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, callback)
+  );
+}
+
+//----------------------------------------------------------------------
+void Window::addClickedCallback (FWidget* widget, FAppCallback call)
+{
+  FMemberCallback callback
+      = reinterpret_cast<FWidget::FMemberCallback>(call);
+
+  widget->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, callback)
+  );
 }
 
 //----------------------------------------------------------------------
@@ -551,7 +567,10 @@ void Window::cb_destroyWindow (FWidget*, data_ptr data)
   win_data* win_dat = static_cast<win_data*>(data);
 
   if ( win_dat )
+  {
     win_dat->is_open = false;
+    win_dat->dgl = 0;
+  }
 }
 
 

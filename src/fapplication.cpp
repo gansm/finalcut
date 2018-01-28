@@ -35,17 +35,19 @@ static FApplication* rootObj = 0;
 static bool app_exit_loop = false;
 
 // static attributes
-int      FApplication::loop_level       = 0;  // event loop level
-FWidget* FApplication::main_widget      = 0;  // main application widget
-FWidget* FApplication::active_window    = 0;  // the active window
-FWidget* FApplication::focus_widget     = 0;  // has keyboard input focus
-FWidget* FApplication::clicked_widget   = 0;  // is focused by click
-FWidget* FApplication::open_menu        = 0;  // currently open menu
-FWidget* FApplication::move_size_widget = 0;  // move/size by keyboard
-int      FApplication::quit_code        = 0;
-bool     FApplication::quit_now         = false;
+int            FApplication::loop_level       = 0;  // event loop level
+FWidget*       FApplication::main_widget      = 0;  // main application widget
+FWidget*       FApplication::active_window    = 0;  // the active window
+FWidget*       FApplication::focus_widget     = 0;  // has keyboard input focus
+FWidget*       FApplication::clicked_widget   = 0;  // is focused by click
+FWidget*       FApplication::open_menu        = 0;  // currently open menu
+FWidget*       FApplication::move_size_widget = 0;  // move/size by keyboard
+FMouseControl* FApplication::mouse            = 0;  // mouse control
+int            FApplication::quit_code        = 0;
+bool           FApplication::quit_now         = false;
 
-FApplication::eventQueue* FApplication::event_queue = 0;
+FApplication::eventQueue*    FApplication::event_queue = 0;
+
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -71,15 +73,6 @@ FApplication::FApplication ( const int& _argc
         && "FApplication: There should be only one application object" );
   rootObj = this;
 
-  // Set the keyboard keypress timeout
-  setKeypressTimeout (key_timeout);
-
-  // Set the default double click interval
-  FMouseControl* mouse = getMouseControl();
-
-  if ( mouse )
-    mouse->setDblclickInterval (dblclick_interval);
-
   if ( ! (_argc && _argv) )
   {
     static char* empty = C_STR("");
@@ -87,7 +80,7 @@ FApplication::FApplication ( const int& _argc
     app_argv = static_cast<char**>(&empty);
   }
 
-  init();
+  init (key_timeout, dblclick_interval);
 }
 
 //----------------------------------------------------------------------
@@ -362,16 +355,25 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init()
+void FApplication::init (long key_timeout, long dblclick_interval)
 {
-  // init keyboard values
+  // Initialize keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
 
-  FMouseControl* mouse = getMouseControl();
+  // Set the keyboard keypress timeout
+  setKeypressTimeout (key_timeout);
 
+  // Initialize mouse control
+  mouse = getMouseControl();
+
+  // Set stdin number for a gpm-mouse
   if ( mouse )
-    mouse->setStdinNo(stdin_no);
+    mouse->setStdinNo (stdin_no);
+
+  // Set the default double click interval
+  if ( mouse )
+    mouse->setDblclickInterval (dblclick_interval);
 
   try
   {
@@ -383,7 +385,7 @@ void FApplication::init()
     std::abort();
   }
 
-  // init arrays with '\0'
+  // Initialize arrays with '\0'
   std::fill_n (k_buf, sizeof(k_buf), '\0');
   std::fill_n (fifo_buf, fifo_buf_size, '\0');
 }
@@ -391,7 +393,7 @@ void FApplication::init()
 //----------------------------------------------------------------------
 void FApplication::cmd_options (const int& argc, char* argv[])
 {
-  // interpret the command line options
+  // Interpret the command line options
 
   while ( true )
   {
@@ -510,6 +512,15 @@ inline FWidget* FApplication::findKeyboardWidget()
 }
 
 //----------------------------------------------------------------------
+inline bool FApplication::getKeyPressedState()
+{
+  if ( mouse && mouse->isGpmMouseEnabled() )
+    return mouse->getGpmKeyPressed(unprocessedInput());
+
+  return KeyPressed();
+}
+
+//----------------------------------------------------------------------
 inline void FApplication::keyboardBufferTimeout (FWidget*)
 {
   // Empty the buffer on timeout
@@ -523,14 +534,97 @@ inline void FApplication::keyboardBufferTimeout (FWidget*)
 }
 
 //----------------------------------------------------------------------
-inline bool FApplication::getKeyPressedState()
+inline void FApplication::parseKeyPuffer (FWidget* widget)
 {
-  FMouseControl* mouse = getMouseControl();
+  register ssize_t bytesread;
+  getCurrentTime (&time_keypressed);
 
-  if ( mouse && mouse->isGpmMouseEnabled() )
-    return mouse->getGpmKeyPressed(unprocessedInput());
+  if ( quit_now || app_exit_loop )
+    return;
 
-  return KeyPressed();
+  while ( (bytesread = readKey()) > 0 )
+  {
+    if ( bytesread + fifo_offset <= fifo_buf_size )
+    {
+      for (int i = 0; i < bytesread; i++)
+      {
+        fifo_buf[fifo_offset] = k_buf[i];
+        fifo_offset++;
+      }
+
+      fifo_in_use = true;
+    }
+
+    // Read the rest from the fifo buffer
+    while ( ! widget->isKeypressTimeout(&time_keypressed)
+         && fifo_offset > 0
+         && key != NEED_MORE_DATA )
+    {
+      key = FTerm::parseKeyString(fifo_buf, fifo_buf_size, &time_keypressed);
+
+      if ( key != NEED_MORE_DATA )
+        performKeyboardAction (widget);
+
+      fifo_offset = int(std::strlen(fifo_buf));
+    }
+
+    // Send key up event
+    sendKeyUpEvent (widget);
+    key = 0;
+  }
+
+  std::fill_n (k_buf, sizeof(k_buf), '\0');
+}
+
+//----------------------------------------------------------------------
+inline void FApplication::performKeyboardAction (FWidget* widget)
+{
+#if defined(__linux__)
+  key = linuxModifierKeyCorrection (key);
+#endif
+
+  switch ( key )
+  {
+    case fc::Fckey_l:  // Ctrl-L (redraw the screen)
+      redraw();
+      break;
+
+    case fc::Fkey_mouse:
+      if ( mouse )
+      {
+        mouse->setRawData (FMouse::x11, fifo_buf, sizeof(fifo_buf));
+        unprocessedInput() = mouse->isInputDataPending();
+        processMouseEvent();
+      }
+      break;
+
+    case fc::Fkey_extended_mouse:
+      if ( mouse )
+      {
+        mouse->setRawData (FMouse::sgr, fifo_buf, sizeof(fifo_buf));
+        unprocessedInput() = mouse->isInputDataPending();
+        processMouseEvent();
+      }
+      break;
+
+    case fc::Fkey_urxvt_mouse:
+      if ( mouse )
+      {
+        mouse->setRawData (FMouse::urxvt, fifo_buf, sizeof(fifo_buf));
+        unprocessedInput() = mouse->isInputDataPending();
+        processMouseEvent();
+      }
+      break;
+
+    default:
+      bool acceptKeyDown = sendKeyDownEvent (widget);
+      bool acceptKeyPress = sendKeyPressEvent (widget);
+
+      if ( ! (acceptKeyDown || acceptKeyPress) )
+        sendKeyboardAccelerator();
+
+      break;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -609,102 +703,13 @@ inline void FApplication::sendKeyboardAccelerator()
 //----------------------------------------------------------------------
 void FApplication::processKeyboardEvent()
 {
-  bool isKeyPressed;
   FWidget* widget = findKeyboardWidget();
-  FMouseControl* mouse = getMouseControl();
   keyboardBufferTimeout(widget);
   flush_out();
-  isKeyPressed = getKeyPressedState();
+  bool isKeyPressed = getKeyPressedState();
 
   if ( isKeyPressed )
-  {
-    register ssize_t bytesread;
-    widget->getCurrentTime (&time_keypressed);
-
-    if ( quit_now || app_exit_loop )
-      return;
-
-    while ( (bytesread = readKey()) > 0 )
-    {
-      if ( bytesread + fifo_offset <= fifo_buf_size )
-      {
-        for (int i = 0; i < bytesread; i++)
-        {
-          fifo_buf[fifo_offset] = k_buf[i];
-          fifo_offset++;
-        }
-
-        fifo_in_use = true;
-      }
-
-      // read the rest from the fifo buffer
-      while ( ! widget->isKeypressTimeout(&time_keypressed)
-           && fifo_offset > 0
-           && key != NEED_MORE_DATA )
-      {
-        key = FTerm::parseKeyString(fifo_buf, fifo_buf_size, &time_keypressed);
-
-        if ( key != NEED_MORE_DATA )
-        {
-
-#if defined(__linux__)
-          key = linuxModifierKeyCorrection (key);
-#endif
-
-          switch ( key )
-          {
-            case fc::Fckey_l:  // Ctrl-L (redraw the screen)
-              redraw();
-              break;
-
-            case fc::Fkey_mouse:
-              if ( mouse )
-              {
-                mouse->setRawData (FMouse::x11, fifo_buf, sizeof(fifo_buf));
-                unprocessedInput() = mouse->isInputDataPending();
-                processMouseEvent();
-              }
-              break;
-
-            case fc::Fkey_extended_mouse:
-              if ( mouse )
-              {
-                mouse->setRawData (FMouse::sgr, fifo_buf, sizeof(fifo_buf));
-                unprocessedInput() = mouse->isInputDataPending();
-                processMouseEvent();
-              }
-              break;
-
-            case fc::Fkey_urxvt_mouse:
-              if ( mouse )
-              {
-                mouse->setRawData (FMouse::urxvt, fifo_buf, sizeof(fifo_buf));
-                unprocessedInput() = mouse->isInputDataPending();
-                processMouseEvent();
-              }
-              break;
-
-            default:
-              bool acceptKeyDown = sendKeyDownEvent (widget);
-              bool acceptKeyPress = sendKeyPressEvent (widget);
-
-              if ( ! (acceptKeyDown || acceptKeyPress) )
-                sendKeyboardAccelerator();
-
-              break;
-          }  // end of switch
-        }
-
-        fifo_offset = int(std::strlen(fifo_buf));
-      }
-
-      // Send key up event
-      sendKeyUpEvent (widget);
-      key = 0;
-    }
-
-    std::fill_n (k_buf, sizeof(k_buf), '\0');
-  }
+    parseKeyPuffer (widget);
 
   // special case: Esc key
   sendEscapeKeyPressEvent (widget);
@@ -1107,7 +1112,6 @@ bool FApplication::processAccelerator (const FWidget*& widget)
 bool FApplication::getMouseEvent()
 {
   bool mouse_event_occurred = false;
-  FMouseControl* mouse = getMouseControl();
 
   if ( mouse && mouse->hasData() )
   {
@@ -1124,8 +1128,6 @@ FWidget*& FApplication::determineClickedWidget()
 {
   if ( clicked_widget )
     return clicked_widget;
-
-  FMouseControl* mouse = getMouseControl();
 
   if ( ! mouse )
     return clicked_widget;
@@ -1170,8 +1172,6 @@ void FApplication::closeOpenMenu()
 {
   // Close the open menu
 
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! open_menu || ( mouse && mouse->isMoved()) )
     return;
 
@@ -1213,8 +1213,6 @@ void FApplication::closeOpenMenu()
 void FApplication::unselectMenubarItems()
 {
   // Unselect the menu bar items
-
-  FMouseControl* mouse = getMouseControl();
 
   if ( open_menu || (mouse && mouse->isMoved()) )
     return;
@@ -1258,8 +1256,6 @@ void FApplication::sendMouseEvent()
   if ( ! clicked_widget )
     return;
 
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1298,8 +1294,6 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
                                       , const FPoint& mouse_position
                                       , int key_state )
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1336,8 +1330,6 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                                            , const FPoint& mouse_position
                                            , int key_state )
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1378,8 +1370,6 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                                             , const FPoint& mouse_position
                                             , int key_state )
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1412,8 +1402,6 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                                              , const FPoint& mouse_position
                                              , int key_state )
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1451,8 +1439,6 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
 void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                                   , const FPoint& mouse_position )
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! mouse )
     return;
 
@@ -1482,8 +1468,6 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
 //----------------------------------------------------------------------
 void FApplication::processMouseEvent()
 {
-  FMouseControl* mouse = getMouseControl();
-
   if ( ! getMouseEvent() )
     return;
 
