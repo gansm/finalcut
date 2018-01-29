@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -141,8 +141,10 @@ class FLabel : public FWidget
     int                getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void               setHotkeyAccelerator();
     int                getAlignOffset (int);
-    void               printLine (wchar_t[], uInt, int, int = 0);
     void               draw();
+    void               drawMultiLine();
+    void               drawSingleLine();
+    void               printLine (wchar_t[], uInt, int, int = 0);
 
     // Data Members
     FStringList        multiline_text;

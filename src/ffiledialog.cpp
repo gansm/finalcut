@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -252,136 +252,6 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
     default:
       break;
   }
-}
-
-//----------------------------------------------------------------------
-int FFileDialog::readDir()
-{
-  const char* const dir = directory.c_str();
-  const char* const filter = filter_pattern.c_str();
-  directory_stream = opendir(dir);
-
-  if ( ! directory_stream )
-  {
-    FMessageBox::error (this, "Can't open directory\n" + directory);
-    return -1;
-  }
-
-  clear();
-
-  while ( true )
-  {
-    errno = 0;
-    struct dirent* next = readdir(directory_stream);
-
-    if ( next )
-    {
-      if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
-        continue;
-
-      if ( ! show_hidden
-        && next->d_name[0] == '.'
-        && next->d_name[1] != '\0'
-        && next->d_name[1] != '.' )
-      {
-        continue;
-      }
-
-      if ( dir[0] == '/' && dir[1] == '\0'
-        && std::strcmp(next->d_name, "..") == 0  )
-        continue;
-
-      dir_entry entry;
-      entry.name = strdup(next->d_name);
-
-#if defined _DIRENT_HAVE_D_TYPE || defined HAVE_STRUCT_DIRENT_D_TYPE
-      entry.fifo             = (next->d_type & DT_FIFO) == DT_FIFO;
-      entry.character_device = (next->d_type & DT_CHR ) == DT_CHR;
-      entry.directory        = (next->d_type & DT_DIR ) == DT_DIR;
-      entry.block_device     = (next->d_type & DT_BLK ) == DT_BLK;
-      entry.regular_file     = (next->d_type & DT_REG ) == DT_REG;
-      entry.symbolic_link    = (next->d_type & DT_LNK ) == DT_LNK;
-      entry.socket           = (next->d_type & DT_SOCK) == DT_SOCK;
-#else
-      struct stat s;
-      stat (entry.name, &s);
-      entry.fifo             = S_ISFIFO (s.st_mode);
-      entry.character_device = S_ISCHR (s.st_mode);
-      entry.directory        = S_ISDIR (s.st_mode);
-      entry.block_device     = S_ISBLK (s.st_mode);
-      entry.regular_file     = S_ISREG (s.st_mode);
-      entry.symbolic_link    = S_ISLNK (s.st_mode);
-      entry.socket           = S_ISSOCK (s.st_mode);
-#endif
-
-      if ( entry.symbolic_link )  // symbolic link
-      {
-        char resolved_path[MAXPATHLEN] = {};
-        char symLink[MAXPATHLEN] = {};
-        std::strncpy (symLink, dir, sizeof(symLink) - 1);
-        std::strncat ( symLink
-                     , next->d_name
-                     , sizeof(symLink) - std::strlen(symLink) - 1);
-
-        if ( realpath(symLink, resolved_path) != 0 )  // follow link
-        {
-          struct stat sb;
-
-          if ( lstat(resolved_path, &sb) == 0 )
-          {
-            if ( S_ISDIR(sb.st_mode) )
-              entry.directory = true;
-          }
-        }
-      }
-
-      if ( entry.directory )
-        dir_entries.push_back (entry);
-      else if ( pattern_match(filter, entry.name) )
-        dir_entries.push_back (entry);
-      else
-        std::free(entry.name);
-    }
-    else if ( errno != 0 )
-    {
-      FMessageBox::error (this, "Reading directory\n" + directory);
-
-      if ( errno == EOVERFLOW )  // Value too large to be stored in data type
-        break;
-    }
-    else
-      break;
-  }  // end while
-
-  if ( closedir(directory_stream) != 0 )
-  {
-    FMessageBox::error (this, "Closing directory\n" + directory);
-    return -2;
-  }
-
-  sortDir();
-
-  // fill list with directory entries
-  filebrowser->clear();
-
-  if ( ! dir_entries.empty() )
-  {
-    std::vector<dir_entry>::const_iterator iter, last;
-    iter = dir_entries.begin();
-    last = dir_entries.end();
-
-    while ( iter != last )
-    {
-      if ( (*iter).directory )
-        filebrowser->insert(FString((*iter).name), fc::SquareBrackets);
-      else
-        filebrowser->insert(FString((*iter).name));
-
-      ++iter;
-    }
-  }
-
-  return 0;
 }
 
 //----------------------------------------------------------------------
@@ -699,6 +569,159 @@ void FFileDialog::sortDir()
   std::sort ( dir_entries.begin() + dir_num
             , dir_entries.end()
             , sortByName );
+}
+
+//----------------------------------------------------------------------
+int FFileDialog::readDir()
+{
+  const char* const dir = directory.c_str();
+  directory_stream = opendir(dir);
+
+  if ( ! directory_stream )
+  {
+    FMessageBox::error (this, "Can't open directory\n" + directory);
+    return -1;
+  }
+
+  clear();
+
+  while ( true )
+  {
+    errno = 0;
+    struct dirent* next = readdir(directory_stream);
+
+    if ( next )
+    {
+      // Continue if name = "." (current directory)
+      if ( next->d_name[0] == '.' && next->d_name[1] == '\0' )
+        continue;
+
+      // Skip hidden entries
+      if ( ! show_hidden
+        && next->d_name[0] == '.'
+        && next->d_name[1] != '\0'
+        && next->d_name[1] != '.' )
+        continue;
+
+      // Skip ".." for the root directory
+      if ( dir[0] == '/' && dir[1] == '\0'
+        && std::strcmp(next->d_name, "..") == 0  )
+        continue;
+
+      getEntry(next);
+    }
+    else if ( errno != 0 )
+    {
+      FMessageBox::error (this, "Reading directory\n" + directory);
+
+      if ( errno == EOVERFLOW )  // Value too large to be stored in data type
+        break;
+    }
+    else
+      break;
+  }  // end while
+
+  if ( closedir(directory_stream) != 0 )
+  {
+    FMessageBox::error (this, "Closing directory\n" + directory);
+    return -2;
+  }
+
+  sortDir();
+
+  // Insert directory entries into the list
+  dirEntriesToList();
+
+  return 0;
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::getEntry (struct dirent* d_entry)
+{
+  const char* const filter = filter_pattern.c_str();
+  dir_entry entry;
+
+  entry.name = strdup(d_entry->d_name);
+
+#if defined _DIRENT_HAVE_D_TYPE || defined HAVE_STRUCT_DIRENT_D_TYPE
+  entry.fifo             = (d_entry->d_type & DT_FIFO) == DT_FIFO;
+  entry.character_device = (d_entry->d_type & DT_CHR ) == DT_CHR;
+  entry.directory        = (d_entry->d_type & DT_DIR ) == DT_DIR;
+  entry.block_device     = (d_entry->d_type & DT_BLK ) == DT_BLK;
+  entry.regular_file     = (d_entry->d_type & DT_REG ) == DT_REG;
+  entry.symbolic_link    = (d_entry->d_type & DT_LNK ) == DT_LNK;
+  entry.socket           = (d_entry->d_type & DT_SOCK) == DT_SOCK;
+#else
+  struct stat s;
+  stat (entry.name, &s);
+  entry.fifo             = S_ISFIFO (s.st_mode);
+  entry.character_device = S_ISCHR (s.st_mode);
+  entry.directory        = S_ISDIR (s.st_mode);
+  entry.block_device     = S_ISBLK (s.st_mode);
+  entry.regular_file     = S_ISREG (s.st_mode);
+  entry.symbolic_link    = S_ISLNK (s.st_mode);
+  entry.socket           = S_ISSOCK (s.st_mode);
+#endif
+
+  followSymLink(entry);
+
+  if ( entry.directory )
+    dir_entries.push_back (entry);
+  else if ( pattern_match(filter, entry.name) )
+    dir_entries.push_back (entry);
+  else
+    std::free(entry.name);
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::followSymLink (dir_entry& entry)
+{
+  if ( ! entry.symbolic_link )
+    return;  // No symbolic link
+
+  char resolved_path[MAXPATHLEN] = {};
+  char symLink[MAXPATHLEN] = {};
+  struct stat sb;
+  const char* const dir = directory.c_str();
+
+  std::strncpy (symLink, dir, sizeof(symLink) - 1);
+  std::strncat ( symLink
+               , entry.name
+               , sizeof(symLink) - std::strlen(symLink) - 1);
+
+  if ( realpath(symLink, resolved_path) == 0 )
+    return;  // Cannot follow the symlink
+
+  if ( lstat(resolved_path, &sb) == -1 )
+    return;  // Cannot get file status
+
+  if ( S_ISDIR(sb.st_mode) )
+    entry.directory = true;
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::dirEntriesToList()
+{
+  // Fill list with directory entries
+
+  filebrowser->clear();
+
+  if ( dir_entries.empty() )
+    return;
+
+  std::vector<dir_entry>::const_iterator iter, last;
+  iter = dir_entries.begin();
+  last = dir_entries.end();
+
+  while ( iter != last )
+  {
+    if ( (*iter).directory )
+      filebrowser->insert(FString((*iter).name), fc::SquareBrackets);
+    else
+      filebrowser->insert(FString((*iter).name));
+
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------

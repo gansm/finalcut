@@ -1,3 +1,7 @@
+2017-01-30  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FLabel::draw
+	* Refactoring FFileDialog::readDir
+
 2017-01-28  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FApplication::processKeyboardEvent
 	* Shorter methods and a fix for recreating new windows 

@@ -277,6 +277,10 @@ class MyDialog : public FDialog
     void initStatusBar();
     void initStatusBarCallbacks();
     void initWidgets();
+    void initFlatButtons();
+    void initToggleButtons();
+    void initButtons();
+    void initLabels();
     void initWidgetsCallbacks();
     void adjustSize();
 
@@ -531,7 +535,7 @@ void MyDialog::initStatusBar()
 //----------------------------------------------------------------------
 void MyDialog::initStatusBarCallbacks()
 {
-  // Add some function callbacks
+  // Add statusbar function callbacks
 
   key_F1->addCallback
   (
@@ -555,7 +559,40 @@ void MyDialog::initStatusBarCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::initWidgets()
 {
+  // Flat buttons
+  initFlatButtons();
+
+  // Radio buttons and check boxes
+  initToggleButtons();
+
+  // A text input field
+  myLineEdit = new FLineEdit (this);
+  myLineEdit->setGeometry(22, 1, 10, 1);
+  myLineEdit->setLabelText (L"&Input");
+  myLineEdit->setStatusbarMessage ("Press Enter to set the title");
+  *myLineEdit << FString("EnTry").toLower();
+
   // Buttons
+  initButtons();
+
+  // A multiple selection listbox
+  myList = new FListBox (this);
+  myList->setGeometry(38, 1, 14, 17);
+  myList->setText ("Items");
+  myList->setStatusbarMessage ("99 items in a list");
+  myList->setMultiSelection();
+
+  for (int z = 1; z < 100; z++)
+    myList->insert (FString() << z << L" placeholder");
+
+  // Text labels
+  initLabels();
+}
+
+//----------------------------------------------------------------------
+void MyDialog::initFlatButtons()
+{
+  // Flat buttons
   MyButton1 = new FButton (this);
   MyButton1->setGeometry(3, 3, 5, 1);
   MyButton1->setText (L"&SIN");
@@ -579,6 +616,29 @@ void MyDialog::initWidgets()
   MyButton3->setNoUnderline();
   MyButton3->setFlat();
 
+  // Add button callback functions
+  MyButton1->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+
+  MyButton2->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+
+  MyButton3->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
+  );
+}
+
+//----------------------------------------------------------------------
+void MyDialog::initToggleButtons()
+{
   // Radio buttons in a group
   FButtonGroup* radioButtonGroup = new FButtonGroup ("Button", this);
   radioButtonGroup->setGeometry(3, 8, 14, 4);
@@ -607,14 +667,11 @@ void MyDialog::initWidgets()
   check2->setGeometry(1, 2, 9, 1);
   check2->setChecked();
   check2->setNoUnderline();
+}
 
-  // A text input field
-  myLineEdit = new FLineEdit (this);
-  myLineEdit->setGeometry(22, 1, 10, 1);
-  myLineEdit->setLabelText (L"&Input");
-  myLineEdit->setStatusbarMessage ("Press Enter to set the title");
-  *myLineEdit << FString("EnTry").toLower();
-
+//----------------------------------------------------------------------
+void MyDialog::initButtons()
+{
   // Buttons
   MyButton4 = new FButton (this);
   MyButton4->setGeometry(20, 8, 12, 1);
@@ -634,16 +691,30 @@ void MyDialog::initWidgets()
   MyButton6->setStatusbarMessage ("Exit the program");
   MyButton6->addAccelerator('x');
 
-  // A multiple selection listbox
-  myList = new FListBox (this);
-  myList->setGeometry(38, 1, 14, 17);
-  myList->setText ("Items");
-  myList->setStatusbarMessage ("99 items in a list");
-  myList->setMultiSelection();
+  // Add button callback functions
+  MyButton4->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
+    static_cast<FWidget::data_ptr>(myLineEdit)
+  );
 
-  for (int z = 1; z < 100; z++)
-    myList->insert (FString() << z << L" placeholder");
+  MyButton5->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
+  );
 
+  MyButton6->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+  );
+}
+
+//----------------------------------------------------------------------
+void MyDialog::initLabels()
+{
   // Text labels
   FLabel* headline = new FLabel (this);
   headline->setGeometry(21, 3, 10, 1);
@@ -671,43 +742,6 @@ void MyDialog::initWidgets()
 void MyDialog::initWidgetsCallbacks()
 {
   // Add some function callbacks
-
-  MyButton1->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
-  );
-
-  MyButton2->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
-  );
-
-  MyButton3->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_noFunctionMsg)
-  );
-
-  MyButton4->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
-    static_cast<FWidget::data_ptr>(myLineEdit)
-  );
-
-  MyButton5->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_ProgressBar)
-  );
-
-  MyButton6->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
-  );
 
   myLineEdit->addCallback
   (

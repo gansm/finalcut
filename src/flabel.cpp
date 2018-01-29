@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -487,6 +487,117 @@ int FLabel::getAlignOffset (int length)
 }
 
 //----------------------------------------------------------------------
+void FLabel::draw()
+{
+  if ( isMonochron() )
+  {
+    setReverse(true);
+
+    if ( hasEmphasis() )
+      setBold(true);
+  }
+
+  if ( hasEmphasis() )
+    setColor (emphasis_color, getBackgroundColor());
+  else
+    setColor();
+
+  // Draw the text
+  if ( multiline && getHeight() >= 2 )
+    drawMultiLine();
+  else
+    drawSingleLine();
+
+  if ( isMonochron() )
+  {
+    setReverse(false);
+
+    if ( hasEmphasis() )
+      setBold(false);
+  }
+}
+
+//----------------------------------------------------------------------
+void FLabel::drawMultiLine()
+{
+  uInt y = 0;
+  uInt text_lines = uInt(multiline_text.size());
+
+
+  while ( y < text_lines && y < uInt(getHeight()) )
+  {
+    wchar_t* label_text;
+    bool hotkey_printed = false;
+    int  align_offset, hotkeypos = -1;
+    uInt length = multiline_text[y].getLength();
+
+    try
+    {
+      label_text = new wchar_t[length + 1]();
+    }
+    catch (const std::bad_alloc& ex)
+    {
+      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      return;
+    }
+
+    wchar_t* src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
+    wchar_t* dest = const_cast<wchar_t*>(label_text);
+
+    if ( ! hotkey_printed )
+      hotkeypos = getHotkeyPos(src, dest, length);
+    else
+      std::wcsncpy(dest, src, length);
+
+    setPrintPos (1, 1 + int(y));
+
+    if ( hotkeypos != -1 )
+    {
+      align_offset = getAlignOffset (int(length - 1));
+      printLine (label_text, length - 1, hotkeypos, align_offset);
+      hotkey_printed = true;
+      hotkeypos = -1;
+    }
+    else
+    {
+      align_offset = getAlignOffset (int(length));
+      printLine (label_text, length, -1, align_offset);
+    }
+
+    y++;
+    delete[] label_text;
+  }
+}
+
+//----------------------------------------------------------------------
+void FLabel::drawSingleLine()
+{
+  wchar_t* label_text;
+  int hotkeypos = -1, align_offset;
+  uInt length = text.getLength();
+
+  try
+  {
+    label_text = new wchar_t[length + 1]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return;
+  }
+
+  hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
+
+  if ( hotkeypos != -1 )
+    length--;
+
+  setPrintPos (1,1);
+  align_offset = getAlignOffset (int(length));
+  printLine (label_text, length, hotkeypos, align_offset);
+  delete[] label_text;
+}
+
+//----------------------------------------------------------------------
 void FLabel::printLine ( wchar_t line[]
                        , uInt length
                        , int  hotkeypos
@@ -556,107 +667,4 @@ void FLabel::printLine ( wchar_t line[]
 
   if ( hasReverseMode() )
     setReverse(false);
-}
-
-//----------------------------------------------------------------------
-void FLabel::draw()
-{
-  wchar_t* label_text;
-  uInt length;
-  int hotkeypos, align_offset;
-
-  if ( isMonochron() )
-  {
-    setReverse(true);
-
-    if ( hasEmphasis() )
-      setBold(true);
-  }
-
-  if ( hasEmphasis() )
-    setColor (emphasis_color, getBackgroundColor());
-  else
-    setColor();
-
-  hotkeypos = -1;
-
-  if ( multiline && getHeight() >= 2 )
-  {
-    uInt y = 0;
-    uInt text_lines = uInt(multiline_text.size());
-    bool hotkey_printed = false;
-
-    while ( y < text_lines && y < uInt(getHeight()) )
-    {
-      length = multiline_text[y].getLength();
-
-      try
-      {
-        label_text = new wchar_t[length + 1]();
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-        return;
-      }
-
-      wchar_t* src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-      wchar_t* dest = const_cast<wchar_t*>(label_text);
-
-      if ( ! hotkey_printed )
-        hotkeypos = getHotkeyPos(src, dest, length);
-      else
-        std::wcsncpy(dest, src, length);
-
-      setPrintPos (1, 1 + int(y));
-
-      if ( hotkeypos != -1 )
-      {
-        align_offset = getAlignOffset (int(length - 1));
-        printLine (label_text, length - 1, hotkeypos, align_offset);
-        hotkey_printed = true;
-        hotkeypos = -1;
-      }
-      else
-      {
-        align_offset = getAlignOffset (int(length));
-        printLine (label_text, length, -1, align_offset);
-      }
-
-      y++;
-      delete[] label_text;
-    }
-  }
-  else
-  {
-    length = text.getLength();
-
-    try
-    {
-      label_text = new wchar_t[length + 1]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return;
-    }
-
-    hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
-
-    if ( hotkeypos != -1 )
-      length--;
-
-    setPrintPos (1,1);
-    align_offset = getAlignOffset (int(length));
-    printLine (label_text, length, hotkeypos, align_offset);
-    delete[] label_text;
-  }
-
-  if ( isMonochron() )
-  {
-    setReverse(false);
-
-    if ( hasEmphasis() )
-      setBold(false);
-  }
 }
