@@ -184,6 +184,8 @@ class FDialog : public FWindow
     void                drawBarButton();
     void                drawZoomButton();
     void                drawTextBar();
+    void                restoreOverlaidWindows();
+    void                setCursorToFocusWidget();
     void                leaveMenu();
     void                openMenu();
     void                selectFirstMenuItem();

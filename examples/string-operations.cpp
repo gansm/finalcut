@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -36,6 +36,10 @@ void inputStreamExample();
 void outputStreamExample();
 void streamingIntoFStringExample();
 void streamingFromFStringExample();
+void streamToInterger();
+void streamToUnsignedInterger();
+void streamToDouble();
+void streamToFloat();
 void CStringOutputExample();
 void copyIntoFString();
 void utf8StringOutputExample();
@@ -193,6 +197,23 @@ void streamingFromFStringExample()
   std::cout << "stream out: " << stream_char << std::endl;
 
   // ...to interger
+  streamToInterger();
+
+  // ...to unsigned interger
+  streamToUnsignedInterger();
+
+  // ...to double
+  streamToDouble();
+
+  // ...to float
+  streamToFloat();
+}
+
+//----------------------------------------------------------------------
+void streamToInterger()
+{
+  // Streaming from a FString to interger
+
   try
   {
     int stream_int;
@@ -212,7 +233,12 @@ void streamingFromFStringExample()
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
 
-  // ...to unsigned interger
+}
+
+//----------------------------------------------------------------------
+void streamToUnsignedInterger()
+{
+  // Streaming from a FString to unsigned interger
   try
   {
     uInt stream_uint;
@@ -231,8 +257,12 @@ void streamingFromFStringExample()
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
+}
 
-  // ...to double
+//----------------------------------------------------------------------
+void streamToDouble()
+{
+  // Streaming from a FString to double
   try
   {
     double stream_double;
@@ -247,8 +277,12 @@ void streamingFromFStringExample()
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
+}
 
-  // ...to float
+//----------------------------------------------------------------------
+void streamToFloat()
+{
+  // Streaming from a FString to float
   try
   {
     float stream_float;

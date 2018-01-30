@@ -278,40 +278,9 @@ void FDialog::setPos (int x, int y, bool)
     restoreVTerm (old_geometry);
   }
 
-  // handle overlaid windows
-  if ( window_list && ! window_list->empty() )
-  {
-    bool overlaid = false;
-    widgetList::const_iterator iter, last;
-    iter = window_list->begin();
-    last = window_list->end();
-
-    while ( iter != last )
-    {
-      if ( overlaid )
-        putArea ((*iter)->getTermPos(), (*iter)->getVWin());
-
-      if ( vwin == (*iter)->getVWin() )
-        overlaid = true;
-
-      ++iter;
-    }
-  }
-
+  restoreOverlaidWindows();
   FWindow::adjustSize();
-
-  // set the cursor to the focus widget
-  FWidget* focus_widget = FWidget::getFocusWidget();
-
-  if ( focus_widget
-    && focus_widget->isVisible()
-    && focus_widget->hasVisibleCursor() )
-  {
-    FPoint cursor_pos = focus_widget->getCursorPos();
-    focus_widget->setCursorPos(cursor_pos);
-    updateVTermCursor(vwin);
-  }
-
+  setCursorToFocusWidget();
   updateTerminal();
 }
 
@@ -1233,6 +1202,48 @@ void FDialog::drawTextBar()
 
   if ( getMaxColor() < 16 )
     unsetBold();
+}
+
+//----------------------------------------------------------------------
+void FDialog::restoreOverlaidWindows()
+{
+  // Restoring overlaid windows
+
+  if ( ! window_list || window_list->empty() )
+    return;
+
+  bool overlaid = false;
+  widgetList::const_iterator iter, last;
+  iter = window_list->begin();
+  last = window_list->end();
+
+  while ( iter != last )
+  {
+    if ( overlaid )
+      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+
+    if ( vwin == (*iter)->getVWin() )
+      overlaid = true;
+
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FDialog::setCursorToFocusWidget()
+{
+  // Set the cursor to the focus widget
+
+  FWidget* focus_widget = FWidget::getFocusWidget();
+
+  if ( focus_widget
+    && focus_widget->isVisible()
+    && focus_widget->hasVisibleCursor() )
+  {
+    FPoint cursor_pos = focus_widget->getCursorPos();
+    focus_widget->setCursorPos(cursor_pos);
+    updateVTermCursor(vwin);
+  }
 }
 
 //----------------------------------------------------------------------

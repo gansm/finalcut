@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -129,94 +129,106 @@ void FSwitch::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  wchar_t on[6] = L"  On ";
-  wchar_t off[6] = L" Off ";
   setPrintPos (1 + switch_offset_pos, 1);
 
   if ( checked )
+    drawChecked();
+  else
+    drawUnchecked();
+}
+
+//----------------------------------------------------------------------
+void FSwitch::drawChecked()
+{
+  wchar_t on[6] = L"  On ";
+  wchar_t off[6] = L" Off ";
+
+  if ( hasFocus() && ! button_pressed )
   {
-    if ( hasFocus() && ! button_pressed )
+    if ( isMonochron() )
     {
-      if ( isMonochron() )
-      {
-        std::wcsncpy ( on, L" <On>", 6);
-        setBold(true);
-      }
-      else if ( getMaxColor() < 16 )
-      {
-        setBold(true);
-        setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
-      }
-      else
-        setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
+      std::wcsncpy ( on, L" <On>", 6);
+      setBold(true);
+    }
+    else if ( getMaxColor() < 16 )
+    {
+      setBold(true);
+      setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
     }
     else
-    {
-      if ( isMonochron() || getMaxColor() < 16 )
-        setColor (wc.button_active_focus_fg, wc.button_active_bg);
-      else
-        setColor (wc.button_hotkey_fg, wc.button_active_bg);
-    }
-
-    if ( isMonochron() )
-      setReverse(false);
-
-    print (on);
-
-    if ( isMonochron() )
-      setReverse(true);
-
-    if ( isMonochron() || getMaxColor() < 16 )
-      setBold(false);
-
-    setColor (wc.button_inactive_fg, wc.button_inactive_bg);
-    print (off);
-
-    if ( isMonochron() )
-      setReverse(false);
-
-    setCursorPos (3 + switch_offset_pos, 1);
+      setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
   }
   else
   {
-    setColor (wc.button_inactive_fg, wc.button_inactive_bg);
+    if ( isMonochron() || getMaxColor() < 16 )
+      setColor (wc.button_active_focus_fg, wc.button_active_bg);
+    else
+      setColor (wc.button_hotkey_fg, wc.button_active_bg);
+  }
 
+  if ( isMonochron() )
+    setReverse(false);
+
+  print (on);
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  if ( isMonochron() || getMaxColor() < 16 )
+    setBold(false);
+
+  setColor (wc.button_inactive_fg, wc.button_inactive_bg);
+  print (off);
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  setCursorPos (3 + switch_offset_pos, 1);
+}
+
+//----------------------------------------------------------------------
+void FSwitch::drawUnchecked()
+{
+  wchar_t on[6] = L"  On ";
+  wchar_t off[6] = L" Off ";
+
+  setColor (wc.button_inactive_fg, wc.button_inactive_bg);
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  print (on);
+
+  if ( hasFocus() && ! button_pressed )
+  {
     if ( isMonochron() )
-      setReverse(true);
-
-    print (on);
-
-    if ( hasFocus() && ! button_pressed )
     {
-      if ( isMonochron() )
-      {
-        std::wcsncpy ( off, L"<Off>", 6);
-        setBold(true);
-      }
-      else if ( getMaxColor() < 16 )
-      {
-        setBold(true);
-        setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
-      }
-      else
-        setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
+      std::wcsncpy ( off, L"<Off>", 6);
+      setBold(true);
+    }
+    else if ( getMaxColor() < 16 )
+    {
+      setBold(true);
+      setColor (wc.button_active_focus_fg, wc.button_active_focus_bg);
     }
     else
-    {
-      if ( isMonochron() || getMaxColor() < 16 )
-        setColor (wc.button_active_focus_fg, wc.button_active_bg);
-      else
-        setColor (wc.button_hotkey_fg, wc.button_active_bg);
-    }
-
-    if ( isMonochron() )
-      setReverse(false);
-
-    print (off);
-
-    if ( isMonochron() || getMaxColor() < 16 )
-      setBold(false);
-
-    setCursorPos (7 + switch_offset_pos, 1);
+      setColor (wc.button_hotkey_fg, wc.button_active_focus_bg);
   }
+  else
+  {
+    if ( isMonochron() || getMaxColor() < 16 )
+      setColor (wc.button_active_focus_fg, wc.button_active_bg);
+    else
+      setColor (wc.button_hotkey_fg, wc.button_active_bg);
+  }
+
+  if ( isMonochron() )
+    setReverse(false);
+
+  print (off);
+
+  if ( isMonochron() || getMaxColor() < 16 )
+    setBold(false);
+
+  setCursorPos (7 + switch_offset_pos, 1);
 }

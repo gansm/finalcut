@@ -1114,60 +1114,9 @@ void FWidget::redraw()
   draw();
 
   if ( isRootWidget() )
-  {
-    // draw windows
-    FOptiAttr::char_data default_char;
-    default_char.code         = ' ';
-    default_char.fg_color     = fc::Black;
-    default_char.bg_color     = fc::Black;
-    default_char.attr.byte[0] = 0;
-    default_char.attr.byte[1] = 0;
-
-    if ( window_list && ! window_list->empty() )
-    {
-      widgetList::const_iterator iter, last;
-      iter = window_list->begin();
-      last  = window_list->end();
-
-      while ( iter != last )
-      {
-        if ( (*iter)->isVisible() )
-        {
-          term_area* win = (*iter)->getVWin();
-          int w = win->width  + win->right_shadow;
-          int h = win->height + win->bottom_shadow;
-          std::fill_n (win->text, w * h, default_char);
-
-          (*iter)->redraw();
-        }
-
-        ++iter;
-      }
-    }
-  }
+    drawWindows();
   else
-  {
-    // draw child elements
-    if ( hasChildren() )
-    {
-      constFObjectIterator iter, last;
-      iter = FObject::begin();
-      last = FObject::end();
-
-      while ( iter != last )
-      {
-        if ( (*iter)->isWidget() )
-        {
-          FWidget* widget = static_cast<FWidget*>(*iter);
-
-          if ( widget->isVisible() && ! widget->isWindowWidget() )
-            widget->redraw();
-        }
-
-        ++iter;
-      }
-    }
-  }
+    drawChildren();
 
   if ( isRootWidget() )
     finishTerminalUpdate();
@@ -2404,6 +2353,65 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 //----------------------------------------------------------------------
 void FWidget::draw()
 { }
+
+//----------------------------------------------------------------------
+void FWidget::drawWindows()
+{
+  // redraw windows
+  FOptiAttr::char_data default_char;
+  default_char.code         = ' ';
+  default_char.fg_color     = fc::Black;
+  default_char.bg_color     = fc::Black;
+  default_char.attr.byte[0] = 0;
+  default_char.attr.byte[1] = 0;
+
+  if ( ! window_list || window_list->empty() )
+    return;
+
+  widgetList::const_iterator iter, last;
+  iter = window_list->begin();
+  last  = window_list->end();
+
+  while ( iter != last )
+  {
+    if ( (*iter)->isVisible() )
+    {
+      term_area* win = (*iter)->getVWin();
+      int w = win->width  + win->right_shadow;
+      int h = win->height + win->bottom_shadow;
+      std::fill_n (win->text, w * h, default_char);
+
+      (*iter)->redraw();
+    }
+
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
+void FWidget::drawChildren()
+{
+  // draw child elements
+  if ( ! hasChildren() )
+    return;
+
+  constFObjectIterator iter, last;
+  iter = FObject::begin();
+  last = FObject::end();
+
+  while ( iter != last )
+  {
+    if ( (*iter)->isWidget() )
+    {
+      FWidget* widget = static_cast<FWidget*>(*iter);
+
+      if ( widget->isVisible() && ! widget->isWindowWidget() )
+        widget->redraw();
+    }
+
+    ++iter;
+  }
+}
 
 //----------------------------------------------------------------------
 void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
