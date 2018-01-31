@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -99,7 +99,7 @@ class FMessageBox : public FDialog
                 , int, int, int
                 , FWidget* = 0 );
     // Destructor
-   ~FMessageBox();
+    ~FMessageBox();
 
     // Assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);
@@ -148,6 +148,9 @@ class FMessageBox : public FDialog
   private:
     // Methods
     void          init (int, int, int);
+    void          allocation (int, int, int);
+    void          deallocation();
+    void          initCallbacks();
     void          calculateDimensions();
     virtual void  draw();
     void          resizeButtons();

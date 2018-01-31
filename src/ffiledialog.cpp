@@ -117,11 +117,7 @@ FFileDialog::FFileDialog ( const FString& dirname
 //----------------------------------------------------------------------
 FFileDialog::~FFileDialog()  // destructor
 {
-  delete open;
-  delete cancel;
-  delete hidden;
-  delete filebrowser;
-  delete filename;
+  deallocation();
   clear();
 }
 
@@ -410,6 +406,15 @@ void FFileDialog::init()
   else
     FDialog::setText("Open file");
 
+  allocation (x, y);  // Create widgets
+  initCallbacks();
+  setModal();
+  readDir();
+}
+
+//----------------------------------------------------------------------
+inline void FFileDialog::allocation (int x, int y)
+{
   try
   {
     filename = new FLineEdit(this);
@@ -441,7 +446,21 @@ void FFileDialog::init()
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
     return;
   }
+}
 
+//----------------------------------------------------------------------
+inline void FFileDialog::deallocation()
+{
+  delete open;
+  delete cancel;
+  delete hidden;
+  delete filebrowser;
+  delete filename;
+}
+
+//----------------------------------------------------------------------
+void FFileDialog::initCallbacks()
+{
   filename->addCallback
   (
     "activate",
@@ -477,9 +496,6 @@ void FFileDialog::init()
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
   );
-
-  setModal();
-  readDir();
 }
 
 //----------------------------------------------------------------------
@@ -608,7 +624,7 @@ int FFileDialog::readDir()
         && std::strcmp(next->d_name, "..") == 0  )
         continue;
 
-      getEntry(next);
+      getEntry(dir, next);
     }
     else if ( errno != 0 )
     {
@@ -636,7 +652,7 @@ int FFileDialog::readDir()
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::getEntry (struct dirent* d_entry)
+void FFileDialog::getEntry (const char* const dir, struct dirent* d_entry)
 {
   const char* const filter = filter_pattern.c_str();
   dir_entry entry;
@@ -663,7 +679,7 @@ void FFileDialog::getEntry (struct dirent* d_entry)
   entry.socket           = S_ISSOCK (s.st_mode);
 #endif
 
-  followSymLink(entry);
+  followSymLink (dir, entry);
 
   if ( entry.directory )
     dir_entries.push_back (entry);
@@ -674,7 +690,7 @@ void FFileDialog::getEntry (struct dirent* d_entry)
 }
 
 //----------------------------------------------------------------------
-void FFileDialog::followSymLink (dir_entry& entry)
+void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
 {
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
@@ -682,7 +698,6 @@ void FFileDialog::followSymLink (dir_entry& entry)
   char resolved_path[MAXPATHLEN] = {};
   char symLink[MAXPATHLEN] = {};
   struct stat sb;
-  const char* const dir = directory.c_str();
 
   std::strncpy (symLink, dir, sizeof(symLink) - 1);
   std::strncat ( symLink

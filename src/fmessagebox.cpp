@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -111,8 +111,7 @@ FMessageBox::FMessageBox ( const FString& caption
 //----------------------------------------------------------------------
 FMessageBox::~FMessageBox()  // destructor
 {
-  for (uInt n = 0; n < num_buttons; n++)
-    delete button[n];
+  deallocation();
 }
 
 
@@ -335,6 +334,16 @@ void FMessageBox::init (int button0, int button1, int button2)
   button_digit[1] = button1;
   button_digit[2] = button2;
 
+  allocation (button0, button1, button2);
+  resizeButtons();
+  adjustButtons();
+  initCallbacks();
+  setModal();
+}
+
+//----------------------------------------------------------------------
+inline void FMessageBox::allocation (int button0, int button1, int button2)
+{
   try
   {
     button[0] = new FButton (this);
@@ -367,10 +376,18 @@ void FMessageBox::init (int button0, int button1, int button2)
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
     return;
   }
+}
 
-  resizeButtons();
-  adjustButtons();
+//----------------------------------------------------------------------
+inline void FMessageBox::deallocation()
+{
+  for (uInt n = 0; n < num_buttons; n++)
+    delete button[n];
+}
 
+//----------------------------------------------------------------------
+inline void FMessageBox::initCallbacks()
+{
   if ( button_digit[0] != 0 )
   {
     button[0]->addCallback
@@ -400,8 +417,6 @@ void FMessageBox::init (int button0, int button1, int button2)
       static_cast<FWidget::data_ptr>(&button_digit[2])
     );
   }
-
-  setModal();
 }
 
 //----------------------------------------------------------------------

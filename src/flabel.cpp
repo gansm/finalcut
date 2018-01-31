@@ -522,12 +522,11 @@ void FLabel::drawMultiLine()
 {
   uInt y = 0;
   uInt text_lines = uInt(multiline_text.size());
-
+  bool hotkey_printed = false;
 
   while ( y < text_lines && y < uInt(getHeight()) )
   {
     wchar_t* label_text;
-    bool hotkey_printed = false;
     int  align_offset, hotkeypos = -1;
     uInt length = multiline_text[y].getLength();
 

@@ -161,13 +161,16 @@ class FFileDialog : public FDialog
 
     // Method
     void          init();
+    void          allocation (int, int);
+    void          deallocation();
+    void          initCallbacks();
     inline bool   pattern_match (const char* const, char[]);
     void          clear();
     int           numOfDirs();
     void          sortDir();
     int           readDir();
-    void          getEntry (struct dirent*);
-    void          followSymLink (dir_entry&);
+    void          getEntry (const char* const, struct dirent*);
+    void          followSymLink (const char* const, dir_entry&);
     void          dirEntriesToList();
     int           changeDir (const FString&);
     void          printPath (const FString&);
