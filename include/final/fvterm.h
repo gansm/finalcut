@@ -102,6 +102,13 @@ class FVTerm : public FTerm
       fully_covered
     };
 
+    enum terminal_update
+    {
+      stop_refresh,
+      continue_refresh,
+      start_refresh
+    };
+
     // Constructor
     explicit FVTerm (bool, bool = false);
 
@@ -220,7 +227,7 @@ class FVTerm : public FTerm
     static void         resizeVTerm (const FRect&);
     static void         resizeVTerm (int, int);
     static void         putVTerm();
-    static void         updateTerminal (bool);
+    static void         updateTerminal (terminal_update);
     static void         updateTerminal();
     virtual void        addPreprocessingHandler ( FVTerm*
                                                 , FPreprocessingHandler );

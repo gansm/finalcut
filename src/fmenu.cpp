@@ -78,7 +78,7 @@ FMenu::~FMenu()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( ! fapp->isQuit() )
-    switchToPrevWindow();
+    switchToPrevWindow();  // Switch to previous window
 }
 
 
@@ -118,26 +118,26 @@ void FMenu::show()
 //----------------------------------------------------------------------
 void FMenu::hide()
 {
-  if ( isVisible() )
+  if ( ! isVisible() )
+    return;
+
+  FWindow::hide();
+  const FRect& t_geometry = getTermGeometryWithShadow();
+  restoreVTerm (t_geometry);
+  updateTerminal();
+  flush_out();
+
+  if ( ! isSubMenu() )
   {
-    FWindow::hide();
-    const FRect& t_geometry = getTermGeometryWithShadow();
-    restoreVTerm (t_geometry);
-    updateTerminal();
-    flush_out();
+    FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
 
-    if ( ! isSubMenu() )
-    {
-      FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+    if ( open_menu && open_menu != this )
+      open_menu->hide();
 
-      if ( open_menu && open_menu != this )
-        open_menu->hide();
-
-      setOpenMenu(0);
-    }
-
-    mouse_down = false;
+    setOpenMenu(0);
   }
+
+  mouse_down = false;
 }
 
 //----------------------------------------------------------------------

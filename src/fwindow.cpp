@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -719,6 +719,11 @@ bool FWindow::zoomWindow()
 void FWindow::switchToPrevWindow()
 {
   // switch to previous window
+
+  // Disable terminal updates to avoid flickering
+  // when redrawing the focused widget
+  updateTerminal (FVTerm::stop_refresh);
+
   bool is_activated = activatePrevWindow();
   FWindow* active_window = getActiveWindow();
 
@@ -765,6 +770,9 @@ void FWindow::switchToPrevWindow()
         focus_widget->redraw();
     }
   }
+
+  // Enable terminal updates again
+  updateTerminal (FVTerm::continue_refresh);
 }
 
 //----------------------------------------------------------------------

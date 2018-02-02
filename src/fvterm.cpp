@@ -230,11 +230,20 @@ void FVTerm::putVTerm()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::updateTerminal (bool on)
+void FVTerm::updateTerminal (terminal_update refresh_state)
 {
-  stop_terminal_updates = bool(! on);
+  switch ( refresh_state )
+  {
+    case stop_refresh:
+      stop_terminal_updates = true;
+      break;
 
-  if ( on )
+    case continue_refresh:
+    case start_refresh:
+      stop_terminal_updates = false;
+  }
+
+  if ( refresh_state == start_refresh )
     updateTerminal();
 }
 

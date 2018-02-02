@@ -1542,7 +1542,7 @@ int FApplication::processTimerEvent()
 //----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
-  updateTerminal(false);
+  updateTerminal (FVTerm::stop_refresh);
 
   if ( close_widget && ! close_widget->empty() )
   {
@@ -1558,7 +1558,7 @@ void FApplication::processCloseWidget()
     close_widget->clear();
   }
 
-  updateTerminal(true);
+  updateTerminal (FVTerm::start_refresh);
 }
 
 //----------------------------------------------------------------------
