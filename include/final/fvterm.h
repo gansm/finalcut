@@ -300,6 +300,9 @@ class FVTerm : public FTerm
     static void          removeArea (term_area*&);
     static void          restoreVTerm (const FRect&);
     static void          restoreVTerm (int, int, int, int);
+    static void          setTextToDefault (term_area*, int, int);
+    static bool          reallocateTextArea (term_area*, int, int);
+    static bool          reallocateTextArea (term_area*, int);
 
     static covered_state isCovered ( const FPoint&
                                    , term_area* );

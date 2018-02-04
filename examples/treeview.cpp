@@ -52,7 +52,7 @@ class Treeview : public FDialog
     // Disable assignment operator (=)
     Treeview& operator = (const Treeview&);
 
-    // Method
+    // Methods
     void adjustSize();
     TreeItem* getAfrica();
     TreeItem* getAsia();

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -49,6 +49,9 @@ class Listview : public FDialog
     // Disable assignment operator (=)
     Listview& operator = (const Listview&);
 
+    // Method
+    void populate (FListView*);
+
     // Event handlers
     void onClose (FCloseEvent*);
 
@@ -78,6 +81,34 @@ Listview::Listview (FWidget* parent)
   listView->setColumnAlignment (5, fc::alignRight);
 
   // Populate FListView with a list of items
+  populate (listView);
+
+  // Quit button
+  FButton* Quit = new FButton (this);
+  Quit->setGeometry(24, 16, 10, 1);
+  Quit->setText (L"&Quit");
+
+  // Add some function callbacks
+  Quit->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+  );
+
+  listView->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &Listview::cb_showInMessagebox)
+  );
+}
+
+//----------------------------------------------------------------------
+Listview::~Listview()  // destructor
+{ }
+
+//----------------------------------------------------------------------
+void Listview::populate (FListView* listView)
+{
   std::string weather[][5] =
   {
     { "Alexandria", "Sunny", "31°C", "61%", "1006.4 mb" },
@@ -130,29 +161,7 @@ Listview::Listview (FWidget* parent)
     FStringList line (&weather[i][0], &weather[i][0] + 5);
     listView->insert (line);
   }
-
-  // Quit button
-  FButton* Quit = new FButton (this);
-  Quit->setGeometry(24, 16, 10, 1);
-  Quit->setText (L"&Quit");
-
-  // Add some function callbacks
-  Quit->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
-  );
-
-  listView->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &Listview::cb_showInMessagebox)
-  );
 }
-
-//----------------------------------------------------------------------
-Listview::~Listview()  // destructor
-{ }
 
 //----------------------------------------------------------------------
 void Listview::onClose (FCloseEvent* ev)

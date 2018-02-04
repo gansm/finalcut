@@ -518,11 +518,16 @@ class FTerm
     static void           restoreColorPalette();
     static void           enableMouse();
     static void           disableMouse();
+    static void           useAlternateScreenBuffer();
+    static void           useNormalScreenBuffer();
     static void           captureXTermFontAndTitle();
     void                  allocationValues();
     void                  deallocationValues();
     void                  init();
+    void                  initOSspecifics();
     void                  finish();
+    void                  finishOSspecifics1();
+    void                  finishOSspecifics2();
     static uInt           cp437_to_unicode (uChar);
     static int            getMouseProtocolKey (char[]);
     static int            getTermcapKey (char[], int);

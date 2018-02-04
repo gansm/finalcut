@@ -832,8 +832,7 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   assert ( rsw >= 0 );
   assert ( bsh >= 0 );
   int area_size;
-  char_data default_char;
-  line_changes unchanged;
+  bool realloc_success = false;
 
   if ( ! area )
     return;
@@ -856,48 +855,37 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
 
   if ( area->height + area->bottom_shadow != height + bsh )
   {
-    if ( area->changes != 0 )
-      delete[] area->changes;
-
-    if ( area->text != 0 )
-      delete[] area->text;
-
-    try
-    {
-      area->changes = new line_changes[height + bsh];
-      area->text    = new char_data[area_size];
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return;
-    }
+    realloc_success = reallocateTextArea (area, height + bsh, area_size);
   }
   else if ( area->width + area->right_shadow != width + rsw )
   {
-    if ( area->text != 0 )
-      delete[] area->text;
-
-    try
-    {
-      area->text = new char_data[area_size];
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return;
-    }
+    realloc_success = reallocateTextArea (area, area_size);
   }
   else
     return;
 
-  area->offset_left = offset_left;
-  area->offset_top = offset_top;
-  area->width = width;
-  area->height = height;
-  area->right_shadow = rsw;
-  area->bottom_shadow = bsh;
-  area->has_changes = false;
+  if ( ! realloc_success )
+    return;
+
+  area->offset_left    = offset_left;
+  area->offset_top     = offset_top;
+  area->width          = width;
+  area->height         = height;
+  area->right_shadow   = rsw;
+  area->bottom_shadow  = bsh;
+  area->has_changes    = false;
+
+  setTextToDefault (area, width + rsw, height + bsh);
+}
+
+//----------------------------------------------------------------------
+inline void FVTerm::setTextToDefault ( term_area* area
+                                     , int width
+                                     , int height )
+{
+  char_data default_char;
+  line_changes unchanged;
+  int size = width * height;
 
   default_char.code         = ' ';
   default_char.fg_color     = fc::Default;
@@ -906,13 +894,57 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   default_char.attr.byte[1] = 0;
   default_char.attr.byte[2] = 0;
 
-  std::fill_n (area->text, area_size, default_char);
+  std::fill_n (area->text, size, default_char);
 
-  unchanged.xmin = uInt(width + rsw);
+  unchanged.xmin = uInt(width);
   unchanged.xmax = 0;
   unchanged.trans_count = 0;
 
-  std::fill_n (area->changes, height + bsh, unchanged);
+  std::fill_n (area->changes, height, unchanged);
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::reallocateTextArea ( term_area* area
+                                       , int height
+                                       , int size )
+{
+  if ( area->changes != 0 )
+    delete[] area->changes;
+
+  if ( area->text != 0 )
+    delete[] area->text;
+
+  try
+  {
+    area->changes = new line_changes[height];
+    area->text    = new char_data[size];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+inline bool FVTerm::reallocateTextArea (term_area* area, int size)
+{
+  if ( area->text != 0 )
+    delete[] area->text;
+
+  try
+  {
+    area->text = new char_data[size];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return false;
+  }
+
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -2221,9 +2253,9 @@ void FVTerm::flush_out()
 //----------------------------------------------------------------------
 void FVTerm::init()
 {
-  init_object   = this;
-  vterm         = 0;
-  vdesktop      = 0;
+  init_object = this;
+  vterm       = 0;
+  vdesktop    = 0;
 
   try
   {
@@ -2243,27 +2275,12 @@ void FVTerm::init()
   stop_terminal_updates   = false;
 
   // term_attribute stores the current state of the terminal
-  term_attribute.code                   = '\0';
-  term_attribute.fg_color               = fc::Default;
-  term_attribute.bg_color               = fc::Default;
-  term_attribute.attr.bit.bold          = \
-  term_attribute.attr.bit.dim           = \
-  term_attribute.attr.bit.italic        = \
-  term_attribute.attr.bit.underline     = \
-  term_attribute.attr.bit.blink         = \
-  term_attribute.attr.bit.reverse       = \
-  term_attribute.attr.bit.standout      = \
-  term_attribute.attr.bit.invisible     = \
-  term_attribute.attr.bit.protect       = \
-  term_attribute.attr.bit.crossed_out   = \
-  term_attribute.attr.bit.dbl_underline = \
-  term_attribute.attr.bit.alt_charset   = \
-  term_attribute.attr.bit.pc_charset    = \
-  term_attribute.attr.bit.transparent   = \
-  term_attribute.attr.bit.trans_shadow  = \
-  term_attribute.attr.bit.inherit_bg    = \
-  term_attribute.attr.bit.no_changes    = \
-  term_attribute.attr.bit.printed       = false;
+  term_attribute.code         = '\0';
+  term_attribute.fg_color     = fc::Default;
+  term_attribute.bg_color     = fc::Default;
+  term_attribute.attr.byte[0] = 0;
+  term_attribute.attr.byte[0] = 0;
+  term_attribute.attr.byte[0] = 0;
 
   // next_attribute contains the state of the next printed character
   std::memcpy (&next_attribute, &term_attribute, sizeof(char_data));

@@ -4288,6 +4288,48 @@ void FTerm::disableMouse()
 }
 
 //----------------------------------------------------------------------
+void FTerm::useAlternateScreenBuffer()
+{
+  if ( ! use_alternate_screen )
+    return;
+
+  // Save current cursor position
+  if ( TCAP(fc::t_save_cursor) )
+  {
+    putstring (TCAP(fc::t_save_cursor));
+    std::fflush(stdout);
+  }
+
+  // Saves the screen and the cursor position
+  if ( TCAP(fc::t_enter_ca_mode) )
+  {
+    putstring (TCAP(fc::t_enter_ca_mode));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTerm::useNormalScreenBuffer()
+{
+  if ( ! use_alternate_screen )
+    return;
+
+  // restores the screen and the cursor position
+  if ( TCAP(fc::t_exit_ca_mode) )
+  {
+    putstring (TCAP(fc::t_exit_ca_mode));
+    std::fflush(stdout);
+  }
+
+  // restore cursor to position of last save_cursor
+  if ( TCAP(fc::t_restore_cursor) )
+  {
+    putstring (TCAP(fc::t_restore_cursor));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::captureXTermFontAndTitle()
 {
   if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
@@ -4381,26 +4423,7 @@ void FTerm::init()
   if ( ttyname_r(stdout_no, term_name, sizeof(term_name)) )
     term_name[0] = '\0';
 
-#if defined(__linux__)
-
-  // initialize Linux console
-  initLinuxConsole();
-
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-
-  // Initialize BSD console
-  initFreeBSDConsole();
-
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-
-  // Initialize wscons console
-  initWSConsConsole();
-
-#endif
+  initOSspecifics();
 
   // Save termios settings
   storeTTYsettings();
@@ -4449,22 +4472,7 @@ void FTerm::init()
     std::fflush(stdout);
   }
 
-  if ( use_alternate_screen )
-  {
-    // Save current cursor position
-    if ( TCAP(fc::t_save_cursor) )
-    {
-      putstring (TCAP(fc::t_save_cursor));
-      std::fflush(stdout);
-    }
-
-    // Saves the screen and the cursor position
-    if ( TCAP(fc::t_enter_ca_mode) )
-    {
-      putstring (TCAP(fc::t_enter_ca_mode));
-      std::fflush(stdout);
-    }
-  }
+  useAlternateScreenBuffer();
 
   // Enable alternate charset
   if ( TCAP(fc::t_enable_acs) )
@@ -4513,6 +4521,25 @@ void FTerm::init()
 }
 
 //----------------------------------------------------------------------
+void FTerm::initOSspecifics()
+{
+#if defined(__linux__)
+  // initialize Linux console
+  initLinuxConsole();
+#endif
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  // Initialize BSD console
+  initFreeBSDConsole();
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  // Initialize wscons console
+  initWSConsConsole();
+#endif
+}
+
+//----------------------------------------------------------------------
 void FTerm::finish()
 {
   // Set default signal handler
@@ -4555,6 +4582,36 @@ void FTerm::finish()
     std::fflush(stdout);
   }
 
+  finishOSspecifics1();
+
+  if ( kde_konsole )
+    setKDECursor(fc::BlockCursor);
+
+  resetBeep();
+
+  // Disable the terminal mouse support
+  disableMouse();
+
+  // Deactivate meta key sends escape
+  if ( xterm_terminal )
+    xtermMetaSendsESC(false);
+
+  useNormalScreenBuffer();
+
+  // leave 'keyboard_transmit' mode
+  if ( TCAP(fc::t_keypad_local) )
+  {
+    putstring (TCAP(fc::t_keypad_local));
+    std::fflush(stdout);
+  }
+
+  finishOSspecifics2();
+  deallocationValues();
+}
+
+//----------------------------------------------------------------------
+void FTerm::finishOSspecifics1()
+{
 #if defined(__linux__)
   if ( linux_terminal )
   {
@@ -4573,43 +4630,11 @@ void FTerm::finish()
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   resetWSConsEncoding();
 #endif
+}
 
-  if ( kde_konsole )
-    setKDECursor(fc::BlockCursor);
-
-  resetBeep();
-
-  // Disable the terminal mouse support
-  disableMouse();
-
-  // Deactivate meta key sends escape
-  if ( xterm_terminal )
-    xtermMetaSendsESC(false);
-
-  if ( use_alternate_screen )
-  {
-    // restores the screen and the cursor position
-    if ( TCAP(fc::t_exit_ca_mode) )
-    {
-      putstring (TCAP(fc::t_exit_ca_mode));
-      std::fflush(stdout);
-    }
-
-    // restore cursor to position of last save_cursor
-    if ( TCAP(fc::t_restore_cursor) )
-    {
-      putstring (TCAP(fc::t_restore_cursor));
-      std::fflush(stdout);
-    }
-  }
-
-  // leave 'keyboard_transmit' mode
-  if ( TCAP(fc::t_keypad_local) )
-  {
-    putstring (TCAP(fc::t_keypad_local));
-    std::fflush(stdout);
-  }
-
+//----------------------------------------------------------------------
+void FTerm::finishOSspecifics2()
+{
 #if defined(__linux__)
   if ( linux_terminal && utf8_console )
     setUTF8(true);
@@ -4625,8 +4650,6 @@ void FTerm::finish()
       delete[] screen_unicode_map.entries;
   }
 #endif
-
-  deallocationValues();
 }
 
 //----------------------------------------------------------------------

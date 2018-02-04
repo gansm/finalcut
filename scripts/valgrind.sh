@@ -7,6 +7,7 @@ then
   PROG="../examples/.libs/ui"
 else
   PROG="$1"
+  shift
 fi
 
 # Is the file executable?
