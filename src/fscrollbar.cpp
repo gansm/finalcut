@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -651,76 +651,84 @@ void FScrollbar::drawButtons()
 //----------------------------------------------------------------------
 FScrollbar::sType FScrollbar::getClickedScrollType (int x, int y)
 {
-  FScrollbar::sType stype;
-
   if ( bar_orientation == fc::vertical )
   {
-    if ( y == 1 )
-    {
-      stype = FScrollbar::scrollStepBackward;  // decrement button
-    }
-    else if ( y > 1 && y <= slider_pos + 1 )
-    {
-      stype = FScrollbar::scrollPageBackward;  // before slider
-    }
-    else if ( y > slider_pos + slider_length + 1 && y < getHeight() )
-    {
-      stype = FScrollbar::scrollPageForward;  // after slider
-    }
-    else if ( y == getHeight() )
-    {
-      stype = FScrollbar::scrollStepForward;  // increment button
-    }
-    else
-      stype = FScrollbar::noScroll;
+    return  getVerticalClickedScrollType(y);
   }
   else  // horizontal
   {
-    if ( isNewFont() )
-    {
-      if ( x == 1 || x == 2 )
-      {
-        stype = FScrollbar::scrollStepBackward;  // decrement button
-      }
-      else if ( x > 2 && x <= slider_pos + 2 )
-      {
-        stype = FScrollbar::scrollPageBackward;  // before slider
-      }
-      else if ( x > slider_pos + slider_length + 2 && x < getWidth() - 1 )
-      {
-        stype = FScrollbar::scrollPageForward;  // after slider
-      }
-      else if ( x == getWidth() - 1 || x == getWidth() )
-      {
-        stype = FScrollbar::scrollStepForward;  // increment button
-      }
-      else
-        stype = FScrollbar::noScroll;
-    }
-    else
-    {
-      if ( x == 1 )
-      {
-        stype = FScrollbar::scrollStepBackward;  // decrement button
-      }
-      else if ( x > 1 && x <= slider_pos + 1 )
-      {
-        stype = FScrollbar::scrollPageBackward;  // before slider
-      }
-      else if ( x > slider_pos + slider_length + 1 && x < getWidth() )
-      {
-        stype = FScrollbar::scrollPageForward;  // after slider
-      }
-      else if ( x == getWidth() )
-      {
-        stype = FScrollbar::scrollStepForward;  // increment button
-      }
-      else
-        stype = FScrollbar::noScroll;
-    }
+    return getHorizontalClickedScrollType(x);
+  }
+}
+
+//----------------------------------------------------------------------
+FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
+{
+  if ( y == 1 )
+  {
+    return FScrollbar::scrollStepBackward;  // decrement button
+  }
+  else if ( y > 1 && y <= slider_pos + 1 )
+  {
+    return FScrollbar::scrollPageBackward;  // before slider
+  }
+  else if ( y > slider_pos + slider_length + 1 && y < getHeight() )
+  {
+    return FScrollbar::scrollPageForward;  // after slider
+  }
+  else if ( y == getHeight() )
+  {
+    return FScrollbar::scrollStepForward;  // increment button
   }
 
-  return stype;
+  return FScrollbar::noScroll;
+}
+
+//----------------------------------------------------------------------
+FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
+{
+  if ( isNewFont() )
+  {
+    if ( x == 1 || x == 2 )
+    {
+      return FScrollbar::scrollStepBackward;  // decrement button
+    }
+    else if ( x > 2 && x <= slider_pos + 2 )
+    {
+      return FScrollbar::scrollPageBackward;  // before slider
+    }
+    else if ( x > slider_pos + slider_length + 2 && x < getWidth() - 1 )
+    {
+      return FScrollbar::scrollPageForward;  // after slider
+    }
+    else if ( x == getWidth() - 1 || x == getWidth() )
+    {
+      return FScrollbar::scrollStepForward;  // increment button
+    }
+
+    return FScrollbar::noScroll;
+  }
+  else
+  {
+    if ( x == 1 )
+    {
+      return FScrollbar::scrollStepBackward;  // decrement button
+    }
+    else if ( x > 1 && x <= slider_pos + 1 )
+    {
+      return FScrollbar::scrollPageBackward;  // before slider
+    }
+    else if ( x > slider_pos + slider_length + 1 && x < getWidth() )
+    {
+      return FScrollbar::scrollPageForward;  // after slider
+    }
+    else if ( x == getWidth() )
+    {
+      return FScrollbar::scrollStepForward;  // increment button
+    }
+
+    return FScrollbar::noScroll;
+  }
 }
 
 //----------------------------------------------------------------------

@@ -398,7 +398,12 @@ class FVTerm : public FTerm
     // Methods
     void                    init();
     void                    finish();
+    static void             putAreaLine (char_data*, char_data*, int);
+    static void             putAreaCharacter ( int, int, FVTerm*
+                                             , char_data*, char_data* );
     static bool             clearTerm (int = ' ');
+    static bool             clearFullArea (term_area*, char_data&);
+    static void             clearAreaWithShadow (term_area*, char_data&);
     static bool             canClearToEOL (uInt, uInt);
     static bool             canClearLeadingWS (uInt&, uInt);
     static bool             canClearTrailingWS (uInt&, uInt);

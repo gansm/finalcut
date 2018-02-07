@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -130,6 +130,8 @@ class FScrollbar : public FWidget
     void  draw();
     void  drawButtons();
     sType getClickedScrollType (int, int);
+    sType getVerticalClickedScrollType (int);
+    sType getHorizontalClickedScrollType (int);
     void  processMiddleButton (int, int);
     void  processScroll();
 

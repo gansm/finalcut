@@ -1620,6 +1620,7 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
 void FVTerm::putArea (const FPoint& pos, term_area* area)
 {
   // Copies the given area block to the virtual terminal position
+
   if ( ! area )
     return;
 
@@ -1680,59 +1681,20 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
     if ( area->changes[y].trans_count == 0 )
     {
       // Line has only covered characters
-      tc = &vterm->text[(ay + y) * vterm->width + ax];
       ac = &area->text[y * line_len + ol];
-      std::memcpy (tc, ac, sizeof(char_data) * unsigned(length));
+      tc = &vterm->text[(ay + y) * vterm->width + ax];
+      putAreaLine (ac, tc, length);
     }
     else
     {
       // Line has one or more transparent characters
       for (register int x = 0; x < length; x++)  // column loop
       {
-        tc = &vterm->text[(ay + y) * vterm->width + (ax + x)];
+        int cx = ax + x;
+        int cy = ay + y;
         ac = &area->text[y * line_len + ol + x];
-
-        if ( ac->attr.bit.transparent )  // transparent
-        {
-          // restore one character on vterm
-          char_data ch;
-          ch = getCoveredCharacter (ax + x + 1, ay + y + 1, area->widget);
-          std::memcpy (tc, &ch, sizeof(char_data));
-        }
-        else  // not transparent
-        {
-          if ( ac->attr.bit.trans_shadow )  // transparent shadow
-          {
-            // get covered character + add the current color
-            char_data ch;
-            ch = getCoveredCharacter (ax + x + 1, ay + y + 1, area->widget);
-            ch.fg_color = ac->fg_color;
-            ch.bg_color = ac->bg_color;
-            ch.attr.bit.reverse  = false;
-            ch.attr.bit.standout = false;
-
-            if ( ch.code == fc::LowerHalfBlock
-              || ch.code == fc::UpperHalfBlock
-              || ch.code == fc::LeftHalfBlock
-              || ch.code == fc::RightHalfBlock
-              || ch.code == fc::MediumShade
-              || ch.code == fc::FullBlock )
-              ch.code = ' ';
-
-            std::memcpy (tc, &ch, sizeof(char_data));
-          }
-          else if ( ac->attr.bit.inherit_bg )
-          {
-            // add the covered background to this character
-            char_data ch, cc;
-            std::memcpy (&ch, ac, sizeof(char_data));
-            cc = getCoveredCharacter (ax + x + 1, ay + y + 1, area->widget);
-            ch.bg_color = cc.bg_color;
-            std::memcpy (tc, &ch, sizeof(char_data));
-          }
-          else  // default
-            std::memcpy (tc, ac, sizeof(char_data));
-        }
+        tc = &vterm->text[cy * vterm->width + cx];
+        putAreaCharacter (cx + 1, cy + 1, area->widget, ac, tc);
       }
     }
 
@@ -1869,69 +1831,27 @@ void FVTerm::scrollAreaReverse (term_area* area)
 //----------------------------------------------------------------------
 void FVTerm::clearArea (term_area* area, int fillchar)
 {
-  // clear the area with the current attributes
+  // Clear the area with the current attributes
+
   char_data nc;  // next character
-  int  total_width;
   uInt w;
 
-  // current attributes with a space character
+  // Current attributes with a space character
   std::memcpy (&nc, &next_attribute, sizeof(char_data));
   nc.code = fillchar;
 
   if ( ! (area && area->text) )
     return;
 
-  total_width = area->width + area->right_shadow;
-  w = uInt(total_width);
+  w = uInt(area->width + area->right_shadow);
 
   if ( area->right_shadow == 0 )
   {
-    int area_size = area->width * area->height;
-    std::fill_n (area->text, area_size, nc);
-
-    if ( area == vdesktop )
-    {
-      if ( clearTerm (fillchar) )
-      {
-        nc.attr.bit.printed = true;
-        std::fill_n (vterm->text, area_size, nc);
-      }
-      else
-      {
-        for (int i = 0; i < vdesktop->height; i++)
-        {
-          vdesktop->changes[i].xmin = 0;
-          vdesktop->changes[i].xmax = uInt(vdesktop->width) - 1;
-          vdesktop->changes[i].trans_count = 0;
-        }
-
-        vdesktop->has_changes = true;
-      }
-
+    if ( clearFullArea(area, nc) )
       return;
-    }
   }
   else
-  {
-    char_data t_char = nc;
-    t_char.attr.bit.transparent = true;
-
-    for (int y = 0; y < area->height; y++)
-    {
-      int pos = y * total_width;
-      // area
-      std::fill_n (&area->text[pos], total_width, nc);
-      // right shadow
-      std::fill_n (&area->text[pos + area->width], area->right_shadow, t_char);
-    }
-
-    // bottom shadow
-    for (int y = 0; y < area->bottom_shadow; y++)
-    {
-      int pos = total_width * (y + area->height);
-      std::fill_n (&area->text[pos], total_width, t_char);
-    }
-  }
+    clearAreaWithShadow(area, nc);
 
   for (int i = 0; i < area->height; i++)
   {
@@ -2328,9 +2248,66 @@ void FVTerm::finish()
 }
 
 //----------------------------------------------------------------------
+void FVTerm::putAreaLine (char_data* ac, char_data* tc, int length)
+{
+  // copy "length" characters from area to terminal
+
+  std::memcpy (tc, ac, sizeof(char_data) * unsigned(length));
+}
+
+//----------------------------------------------------------------------
+void FVTerm::putAreaCharacter ( int x, int y, FVTerm* obj
+                              , char_data* ac
+                              , char_data* tc )
+{
+  if ( ac->attr.bit.transparent )  // Transparent
+  {
+    // Restore one character on vterm
+    char_data ch;
+    ch = getCoveredCharacter (x, y, obj);
+    std::memcpy (tc, &ch, sizeof(char_data));
+  }
+  else  // Mot transparent
+  {
+    if ( ac->attr.bit.trans_shadow )  // Transparent shadow
+    {
+      // Get covered character + add the current color
+      char_data ch;
+      ch = getCoveredCharacter (x, y, obj);
+      ch.fg_color = ac->fg_color;
+      ch.bg_color = ac->bg_color;
+      ch.attr.bit.reverse  = false;
+      ch.attr.bit.standout = false;
+
+      if ( ch.code == fc::LowerHalfBlock
+        || ch.code == fc::UpperHalfBlock
+        || ch.code == fc::LeftHalfBlock
+        || ch.code == fc::RightHalfBlock
+        || ch.code == fc::MediumShade
+        || ch.code == fc::FullBlock )
+        ch.code = ' ';
+
+      std::memcpy (tc, &ch, sizeof(char_data));
+    }
+    else if ( ac->attr.bit.inherit_bg )
+    {
+      // Add the covered background to this character
+      char_data ch, cc;
+      std::memcpy (&ch, ac, sizeof(char_data));
+      cc = getCoveredCharacter (x, y, obj);
+      ch.bg_color = cc.bg_color;
+      std::memcpy (tc, &ch, sizeof(char_data));
+    }
+    else  // Default
+      std::memcpy (tc, ac, sizeof(char_data));
+  }
+}
+
+//----------------------------------------------------------------------
 bool FVTerm::clearTerm (int fillchar)
 {
   // Clear the real terminal and put cursor at home
+
   char*& cl = TCAP(fc::t_clear_screen);
   char*& cd = TCAP(fc::t_clr_eos);
   char*& cb = TCAP(fc::t_clr_eol);
@@ -2345,18 +2322,18 @@ bool FVTerm::clearTerm (int fillchar)
     return false;
   }
 
-  if ( cl )
+  if ( cl )  // Clear screen
   {
     appendOutputBuffer (cl);
     term_pos->setPoint(0,0);
   }
-  else if ( cd )
+  else if ( cd )  // Clear to end of screen
   {
     setTermXY (0, 0);
     appendOutputBuffer (cd);
     term_pos->setPoint(-1, -1);
   }
-  else if ( cb )
+  else if ( cb )  // Clear to end of line
   {
     term_pos->setPoint(-1, -1);
 
@@ -2371,6 +2348,61 @@ bool FVTerm::clearTerm (int fillchar)
 
   flush_out();
   return true;
+}
+
+//----------------------------------------------------------------------
+bool FVTerm::clearFullArea (term_area* area, char_data& nc)
+{
+  // Clear area
+  int area_size = area->width * area->height;
+  std::fill_n (area->text, area_size, nc);
+
+  if ( area != vdesktop )  // Is the area identical to the desktop?
+    return false;
+
+  // Try to clear the terminal rapidly with a control sequence
+  if ( clearTerm (nc.code) )
+  {
+    nc.attr.bit.printed = true;
+    std::fill_n (vterm->text, area_size, nc);
+  }
+  else
+  {
+    for (int i = 0; i < vdesktop->height; i++)
+    {
+      vdesktop->changes[i].xmin = 0;
+      vdesktop->changes[i].xmax = uInt(vdesktop->width) - 1;
+      vdesktop->changes[i].trans_count = 0;
+    }
+
+    vdesktop->has_changes = true;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+void FVTerm::clearAreaWithShadow (term_area* area, char_data& nc)
+{
+  char_data t_char = nc;
+  int total_width = area->width + area->right_shadow;
+  t_char.attr.bit.transparent = true;
+
+  for (int y = 0; y < area->height; y++)
+  {
+    int pos = y * total_width;
+    // Clear area
+    std::fill_n (&area->text[pos], total_width, nc);
+    // Make right shadow transparent
+    std::fill_n (&area->text[pos + area->width], area->right_shadow, t_char);
+  }
+
+  // Make bottom shadow transparent
+  for (int y = 0; y < area->bottom_shadow; y++)
+  {
+    int pos = total_width * (y + area->height);
+    std::fill_n (&area->text[pos], total_width, t_char);
+  }
 }
 
 //----------------------------------------------------------------------
