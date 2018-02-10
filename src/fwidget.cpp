@@ -1572,65 +1572,9 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
     y2 = getHeight();
 
   if ( isNewFont() )
-  {
-    setPrintPos (x1, y1);
-    print (fc::NF_border_corner_middle_upper_left);  // ┌
-
-    for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal);  // ─
-
-    print (fc::NF_border_corner_middle_upper_right);  // ┐
-
-    for (int y = y1 + 1; y <= y2; y++)
-    {
-      setPrintPos (x1, y);
-      print (fc::NF_border_line_left);  // border left ⎸
-      setPrintPos (x2, y);
-      print (fc::NF_rev_border_line_right);  // border right⎹
-    }
-
-    setPrintPos (x1, y2);
-    print (fc::NF_border_corner_middle_lower_left);  // └
-
-    for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal);  // ─
-
-    print (fc::NF_border_corner_middle_lower_right);  // ┘
-  }
+    drawNewFontBox (x1, y1, x2, y2);
   else
-  {
-    setPrintPos (x1, y1);
-    print (fc::BoxDrawingsDownAndRight);  // ┌
-
-    for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal);  // ─
-
-    print (fc::BoxDrawingsDownAndLeft);  // ┐
-
-    for (int y = y1 + 1; y < y2; y++)
-    {
-      setPrintPos (x1, y);
-      print (fc::BoxDrawingsVertical);  // │
-      setPrintPos (x2, y);
-      print (fc::BoxDrawingsVertical);  // │
-    }
-
-    setPrintPos (x1, y2);
-    print (fc::BoxDrawingsUpAndRight);  // └
-
-    for (int x = x1 + 1; x < x2; x++)
-      print (fc::BoxDrawingsHorizontal);  // ─
-
-    print (fc::BoxDrawingsUpAndLeft);  // ┘
-
-    for (int x = x1 + 1; x < x2; x++)
-    {
-      setPrintPos (x, y1);
-      print (fc::BoxDrawingsHorizontal);  // ─
-      setPrintPos (x, y2);
-      print (fc::BoxDrawingsHorizontal);  // ─
-    }
-  }
+    drawBox (x1, y1, x2, y2);
 }
 
 //----------------------------------------------------------------------
@@ -2493,8 +2437,78 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
 }
 
 //----------------------------------------------------------------------
+inline void FWidget::drawBox (int x1, int y1, int x2, int y2)
+{
+  // Use box-drawing characters to draw a border
+
+  setPrintPos (x1, y1);
+  print (fc::BoxDrawingsDownAndRight);  // ┌
+
+  for (int x = x1 + 1; x < x2; x++)
+    print (fc::BoxDrawingsHorizontal);  // ─
+
+  print (fc::BoxDrawingsDownAndLeft);  // ┐
+
+  for (int y = y1 + 1; y < y2; y++)
+  {
+    setPrintPos (x1, y);
+    print (fc::BoxDrawingsVertical);  // │
+    setPrintPos (x2, y);
+    print (fc::BoxDrawingsVertical);  // │
+  }
+
+  setPrintPos (x1, y2);
+  print (fc::BoxDrawingsUpAndRight);  // └
+
+  for (int x = x1 + 1; x < x2; x++)
+    print (fc::BoxDrawingsHorizontal);  // ─
+
+  print (fc::BoxDrawingsUpAndLeft);  // ┘
+
+  for (int x = x1 + 1; x < x2; x++)
+  {
+    setPrintPos (x, y1);
+    print (fc::BoxDrawingsHorizontal);  // ─
+    setPrintPos (x, y2);
+    print (fc::BoxDrawingsHorizontal);  // ─
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FWidget::drawNewFontBox (int x1, int y1, int x2, int y2)
+{
+  // Use new graphical font characters to draw a border
+
+  setPrintPos (x1, y1);
+  print (fc::NF_border_corner_middle_upper_left);  // ┌
+
+  for (int x = x1 + 1; x < x2; x++)
+    print (fc::BoxDrawingsHorizontal);  // ─
+
+  print (fc::NF_border_corner_middle_upper_right);  // ┐
+
+  for (int y = y1 + 1; y <= y2; y++)
+  {
+    setPrintPos (x1, y);
+    print (fc::NF_border_line_left);  // border left ⎸
+    setPrintPos (x2, y);
+    print (fc::NF_rev_border_line_right);  // border right⎹
+  }
+
+  setPrintPos (x1, y2);
+  print (fc::NF_border_corner_middle_lower_left);  // └
+
+  for (int x = x1 + 1; x < x2; x++)
+    print (fc::BoxDrawingsHorizontal);  // ─
+
+  print (fc::NF_border_corner_middle_lower_right);  // ┘
+}
+
+//----------------------------------------------------------------------
 void FWidget::setColorTheme()
 {
+  // Sets the default color theme
+
   if ( getMaxColor() < 16 )  // for 8 color mode
   {
     wc.set8ColorTheme();

@@ -139,7 +139,12 @@ class FOptiMove
     int  repeatedAppend (const capability&, volatile int, char*);
     int  relativeMove (char[], int, int, int, int);
     int  verticalMove (char[], int, int);
+    void downMove (char[], int&, int, int);
+    void upMove (char[], int&, int, int);
     int  horizontalMove (char[], int, int);
+    void rightMove (char[], int&, int, int);
+    void leftMove (char[], int&, int, int);
+
     bool isWideMove (int, int, int, int);
     bool isMethod0Faster (int&, int, int);
     bool isMethod1Faster (int&, int, int, int, int);

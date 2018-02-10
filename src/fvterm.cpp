@@ -48,6 +48,8 @@ FVTerm::termcap_map* FVTerm::tcap                    = 0;
 FTermcap::tcap_map*  FTermcap::tcap                  = 0;
 FVTerm::char_data    FVTerm::term_attribute;
 FVTerm::char_data    FVTerm::next_attribute;
+FVTerm::char_data    FVTerm::s_ch;
+FVTerm::char_data    FVTerm::i_ch;
 
 
 //----------------------------------------------------------------------
@@ -517,10 +519,6 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& term_string)
 
   while ( iter != term_string.end() )
   {
-    int  width  = area->width,
-         height = area->height,
-         rsh    = area->right_shadow,
-         bsh    = area->bottom_shadow;
     bool printable_character = false;
 
     switch ( (*iter).code )
@@ -556,26 +554,12 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& term_string)
       }
     }
 
-    if ( ! printable_character )
-    {
-      // Line break at right margin
-      if ( area->cursor_x > width + rsh )
-      {
-        area->cursor_x = 1;
-        area->cursor_y++;
-      }
-
-      // Prevent up scrolling
-      if ( area->cursor_y > height + bsh )
-      {
-        area->cursor_y--;
-        break;
-      }
-    }
+    if ( ! printable_character && printWrap(area) )
+      break;  // end of area reached
 
     len++;
     ++iter;
-  }  // end of while
+  }
 
   return len;
 }
@@ -1979,11 +1963,10 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
                                        , FVTerm* obj )
 {
   // Gets the overlapped or the covered character for the position (x,y)
-  int xx, yy;
-  char_data* cc;    // covered character
-  char_data  s_ch;  // shadow character
-  char_data  i_ch;  // inherit background character
-  FWidget*   w;
+  int xx, yy, layer;
+  char_data* cc;  // covered character
+  FWidget* w;
+  FWidget::widgetList::const_iterator iter, end;
 
   x--;
   y--;
@@ -2005,77 +1988,43 @@ FVTerm::char_data FVTerm::getCharacter ( character_type char_type
   cc = &vdesktop->text[yy * vdesktop->width + xx];
   w = static_cast<FWidget*>(obj);
 
-  if ( w->window_list && ! w->window_list->empty() )
+  if ( ! w->window_list || w->window_list->empty() )
+    return *cc;
+
+  // Get the window layer of this object
+  layer = FWindow::getWindowLayer(w);
+  iter  = w->window_list->begin();
+  end   = w->window_list->end();
+
+  for (; iter != end; ++iter)
   {
-    FWidget::widgetList::const_iterator iter, end;
-    // Get the window layer of this object
-    int layer = FWindow::getWindowLayer(w);
-    iter = w->window_list->begin();
-    end  = w->window_list->end();
+    bool significant_char;
 
-    for (; iter != end; ++iter)
+    // char_type can be "overlapped_character"
+    // or "covered_character"
+    if ( char_type == covered_character )
+      significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
+    else
+      significant_char = bool(layer < FWindow::getWindowLayer(*iter));
+
+    if ( obj && *iter != obj && significant_char )
     {
-      bool significant_char;
+      term_area* win = (*iter)->getVWin();
 
-      // char_type can be "overlapped_character"
-      // or "covered_character"
-      if ( char_type == covered_character )
-        significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
-      else
-        significant_char = bool(layer < FWindow::getWindowLayer(*iter));
+      if ( ! win || ! win->visible )
+        continue;
 
-      if ( obj && *iter != obj && significant_char )
-      {
-        term_area* win = (*iter)->getVWin();
+      FRect geometry ( win->offset_left
+                     , win->offset_top
+                     , win->width + win->right_shadow
+                     , win->height + win->bottom_shadow );
 
-        if ( ! win )
-          continue;
-
-        if ( ! win->visible )
-          continue;
-
-        int win_x = win->offset_left;
-        int win_y = win->offset_top;
-        FRect geometry ( win_x
-                       , win_y
-                       , win->width + win->right_shadow
-                       , win->height + win->bottom_shadow );
-
-        // Window visible and contains current character
-        if ( geometry.contains(x, y) )
-        {
-          char_data* tmp;
-          int line_len = win->width + win->right_shadow;
-          tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
-
-          // Current character not transparent
-          if ( ! tmp->attr.bit.transparent )
-          {
-            if ( tmp->attr.bit.trans_shadow )  // transparent shadow
-            {
-              // Keep the current vterm character
-              std::memcpy (&s_ch, cc, sizeof(char_data));
-              s_ch.fg_color = tmp->fg_color;
-              s_ch.bg_color = tmp->bg_color;
-              s_ch.attr.bit.reverse  = false;
-              s_ch.attr.bit.standout = false;
-              cc = &s_ch;
-            }
-            else if ( tmp->attr.bit.inherit_bg )
-            {
-              // Add the covered background to this character
-              std::memcpy (&i_ch, tmp, sizeof(char_data));
-              i_ch.bg_color = cc->bg_color;  // last background color
-              cc = &i_ch;
-            }
-            else  // default
-              cc = tmp;
-          }
-        }
-      }
-      else if ( char_type == covered_character )
-        break;
+      // Window visible and contains current character
+      if ( geometry.contains(x, y) )
+        getAreaCharacter (x, y, win, cc);
     }
+    else if ( char_type == covered_character )
+      break;
   }
 
   return *cc;
@@ -2300,6 +2249,41 @@ void FVTerm::putAreaCharacter ( int x, int y, FVTerm* obj
     }
     else  // Default
       std::memcpy (tc, ac, sizeof(char_data));
+  }
+}
+
+//----------------------------------------------------------------------
+void FVTerm::getAreaCharacter ( int x, int y, term_area* area
+                              , char_data*& cc )
+{
+  char_data* tmp;
+  int area_x = area->offset_left;
+  int area_y = area->offset_top;
+  int line_len = area->width + area->right_shadow;
+  tmp = &area->text[(y - area_y) * line_len + (x - area_x)];
+
+  // Current character not transparent
+  if ( ! tmp->attr.bit.transparent )
+  {
+    if ( tmp->attr.bit.trans_shadow )  // transparent shadow
+    {
+      // Keep the current vterm character
+      std::memcpy (&s_ch, cc, sizeof(char_data));
+      s_ch.fg_color = tmp->fg_color;
+      s_ch.bg_color = tmp->bg_color;
+      s_ch.attr.bit.reverse  = false;
+      s_ch.attr.bit.standout = false;
+      cc = &s_ch;
+    }
+    else if ( tmp->attr.bit.inherit_bg )
+    {
+      // Add the covered background to this character
+      std::memcpy (&i_ch, tmp, sizeof(char_data));
+      i_ch.bg_color = cc->bg_color;  // last background color
+      cc = &i_ch;
+    }
+    else  // default
+      cc = tmp;
   }
 }
 
@@ -2733,6 +2717,32 @@ void FVTerm::cursorWrap()
         term_pos->x_ref()--;
     }
   }
+}
+
+//----------------------------------------------------------------------
+bool FVTerm::printWrap (term_area* area)
+{
+  bool end_of_area = false;
+  int width  = area->width,
+      height = area->height,
+      rsh    = area->right_shadow,
+      bsh    = area->bottom_shadow;
+
+  // Line break at right margin
+  if ( area->cursor_x > width + rsh )
+  {
+    area->cursor_x = 1;
+    area->cursor_y++;
+  }
+
+  // Prevent up scrolling
+  if ( area->cursor_y > height + bsh )
+  {
+    area->cursor_y--;
+    end_of_area = true;
+  }
+
+  return end_of_area;
 }
 
 //----------------------------------------------------------------------

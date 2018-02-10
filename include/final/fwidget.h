@@ -394,9 +394,9 @@ class FWidget : public FVTerm, public FObject
     void               drawChildren();
     void               drawTransparentShadow (int, int, int, int);
     void               drawBlockShadow (int, int, int, int);
+    void               drawBox (int, int, int, int);
+    void               drawNewFontBox (int, int, int, int);
     static void        setColorTheme();
-    static void        set8ColorTheme();
-    static void        set16ColorTheme();
 
     // Data Members
     bool               enable;
@@ -598,6 +598,7 @@ inline const FRect& FWidget::getGeometryWithShadow()
     adjust_wsize.x2_ref() + wshadow.x_ref(),
     adjust_wsize.y2_ref() + wshadow.y_ref()
   );
+
   return adjust_wsize_shadow;
 }
 
@@ -611,6 +612,7 @@ inline const FRect& FWidget::getTermGeometry()
     adjust_wsize.x2_ref() + offset.x1_ref(),
     adjust_wsize.y2_ref() + offset.y1_ref()
   );
+
   return adjust_wsize_term;
 }
 
@@ -624,6 +626,7 @@ inline const FRect& FWidget::getTermGeometryWithShadow()
     adjust_wsize.x2_ref() + offset.x1_ref() + wshadow.x_ref(),
     adjust_wsize.y2_ref() + offset.y1_ref() + wshadow.y_ref()
   );
+
   return adjust_wsize_term_shadow;
 }
 

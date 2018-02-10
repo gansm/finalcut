@@ -1437,23 +1437,23 @@ inline void FDialog::moveSizeKey (FKeyEvent* ev)
   switch ( ev->key() )
   {
     case fc::Fkey_up:
-      if ( moveUp(1) )
-        ev->accept();
+      moveUp(1);
+      ev->accept();
       break;
 
     case fc::Fkey_down:
-      if ( moveDown(1) )
-        ev->accept();
+      moveDown(1);
+      ev->accept();
       break;
 
     case fc::Fkey_left:
-      if ( moveLeft(1) )
-        ev->accept();
+      moveLeft(1);
+      ev->accept();
       break;
 
     case fc::Fkey_right:
-      if ( moveRight(1) )
-        ev->accept();
+      moveRight(1);
+      ev->accept();
       break;
 
     case fc::Fmkey_up:

@@ -401,6 +401,8 @@ class FVTerm : public FTerm
     static void             putAreaLine (char_data*, char_data*, int);
     static void             putAreaCharacter ( int, int, FVTerm*
                                              , char_data*, char_data* );
+    static void             getAreaCharacter ( int, int, term_area*
+                                             , char_data*& );
     static bool             clearTerm (int = ' ');
     static bool             clearFullArea (term_area*, char_data&);
     static void             clearAreaWithShadow (term_area*, char_data&);
@@ -412,6 +414,7 @@ class FVTerm : public FTerm
     static exit_state       eraseCharacters (uInt&, uInt, uInt, bool);
     static exit_state       repeatCharacter (uInt&, uInt, uInt);
     static void             cursorWrap();
+    bool                    printWrap (term_area*);
     static void             updateTerminalLine (uInt);
     static bool             updateTerminalCursor();
     static bool             isInsideTerminal (int, int);
@@ -436,6 +439,8 @@ class FVTerm : public FTerm
     static std::queue<int>* output_buffer;
     static char_data        term_attribute;
     static char_data        next_attribute;
+    static char_data        s_ch;      // shadow character
+    static char_data        i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static termcap_map*     tcap;
     static bool             hidden_cursor;
@@ -570,24 +575,9 @@ inline void FVTerm::setColor (register short fg, register short bg)
 inline void FVTerm::setNormal()
 {
   // reset all character attributes
-  next_attribute.attr.bit.bold          = \
-  next_attribute.attr.bit.dim           = \
-  next_attribute.attr.bit.italic        = \
-  next_attribute.attr.bit.underline     = \
-  next_attribute.attr.bit.blink         = \
-  next_attribute.attr.bit.reverse       = \
-  next_attribute.attr.bit.standout      = \
-  next_attribute.attr.bit.invisible     = \
-  next_attribute.attr.bit.protect       = \
-  next_attribute.attr.bit.crossed_out   = \
-  next_attribute.attr.bit.dbl_underline = \
-  next_attribute.attr.bit.alt_charset   = \
-  next_attribute.attr.bit.pc_charset    = \
-  next_attribute.attr.bit.transparent   = \
-  next_attribute.attr.bit.trans_shadow  = \
-  next_attribute.attr.bit.inherit_bg    = \
-  next_attribute.attr.bit.no_changes    = false;
-
+  next_attribute.attr.byte[0] = 0;
+  next_attribute.attr.byte[1] = 0;
+  next_attribute.attr.bit.no_changes = false;
   next_attribute.fg_color = fc::Default;
   next_attribute.bg_color = fc::Default;
 }
