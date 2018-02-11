@@ -342,8 +342,8 @@ class FWidget : public FVTerm, public FObject
     // Methods
     virtual void       adjustSize();
     void               adjustSizeGlobal();
-    virtual bool       focusNextChild();  // Change child
-    virtual bool       focusPrevChild();  // focus
+    virtual bool       focusNextChild();  // Change child...
+    virtual bool       focusPrevChild();  // ...focus
 
     // Event handlers
     bool               event (FEvent*);
@@ -388,6 +388,7 @@ class FWidget : public FVTerm, public FObject
     void               insufficientSpaceAdjust();
     void               KeyPressEvent (FKeyEvent*);
     void               KeyDownEvent (FKeyEvent*);
+    bool               changeFocus (FWidget*, FWidget*, fc::FocusTypes);
     void               processDestroy();
     virtual void       draw();
     void               drawWindows();

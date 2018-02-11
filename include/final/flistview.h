@@ -323,9 +323,16 @@ class FListView : public FWidget
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 setLineAttributes (bool, bool);
     FString              getLinePrefix (const FListViewItem*, uInt);
+    void                 drawColumnText (headerItems::const_iterator&);
+    void                 drawColumnEllipsis ( headerItems::const_iterator&
+                                            , const FString& );
     void                 updateDrawing (bool, bool);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
+    void                 wheelUp (int);
+    void                 wheelDown (int);
+    bool                 dragScrollUp (int);
+    bool                 dragScrollDown (int);
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();

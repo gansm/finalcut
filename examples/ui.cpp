@@ -828,7 +828,7 @@ void MyDialog::cb_terminfo (FWidget*, data_ptr)
   FMessageBox info1 ( "Environment"
                     , FString()
                       << "  Type: " << getTermType() << "\n"
-                      << "  Name: " << getTermName() << "\n"
+                      << "  Name: " << getTermFileName() << "\n"
                       << "  Mode: " << getEncodingString() << "\n"
                       << "  Size: " << x << wchar_t(fc::Times)
                                     << y << "\n"

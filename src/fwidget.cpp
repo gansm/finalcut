@@ -1761,184 +1761,124 @@ void FWidget::adjustSizeGlobal()
 //----------------------------------------------------------------------
 bool FWidget::focusNextChild()
 {
-  if ( isDialogWidget() )
+  if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  if ( hasParent() )
+  FWidget* parent = getParentWidget();
+
+  if ( ! parent->hasChildren() || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  FObjectIterator iter, last;
+  iter = parent->begin();
+  last = parent->end();
+
+  while ( iter != last )
   {
-    FWidget* parent = getParentWidget();
-
-    if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
+    if ( ! (*iter)->isWidget() )
     {
-      FObjectIterator iter, last;
-      iter = parent->begin();
-      last = parent->end();
-
-      while ( iter != last )
-      {
-        if ( ! (*iter)->isWidget() )
-        {
-          ++iter;
-          continue;
-        }
-
-        FWidget* w = static_cast<FWidget*>(*iter);
-
-        if ( w == this )
-        {
-          FWidget* next = 0;
-          constFObjectIterator next_element;
-          next_element = iter;
-
-          do
-          {
-            ++next_element;
-
-            if ( next_element == parent->end() )
-              next_element = parent->begin();
-
-            if ( ! (*next_element)->isWidget() )
-              continue;
-
-            next = static_cast<FWidget*>(*next_element);
-          } while ( ! next
-                 || ! next->isEnabled()
-                 || ! next->acceptFocus()
-                 || ! next->isVisible()
-                 || next->isWindowWidget() );
-
-          FFocusEvent out (fc::FocusOut_Event);
-          out.setFocusType(fc::FocusNextWidget);
-          FApplication::sendEvent(this, &out);
-
-          FFocusEvent cfo (fc::ChildFocusOut_Event);
-          cfo.setFocusType(fc::FocusNextWidget);
-          cfo.ignore();
-          FApplication::sendEvent(parent, &cfo);
-
-          if ( cfo.isAccepted() )
-            out.ignore();
-
-          if ( out.isAccepted() )
-          {
-            if ( next == this )
-              return false;
-
-            next->setFocus();
-            FFocusEvent cfi (fc::ChildFocusIn_Event);
-            FApplication::sendEvent(parent, &cfi);
-
-            FFocusEvent in (fc::FocusIn_Event);
-            in.setFocusType(fc::FocusNextWidget);
-            FApplication::sendEvent(next, &in);
-
-            if ( in.isAccepted() )
-            {
-              redraw();
-              next->redraw();
-              updateTerminal();
-              flush_out();
-            }
-          }
-          break;
-        }
-        ++iter;
-      }
+      ++iter;
+      continue;
     }
+
+    FWidget* w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+    {
+      ++iter;
+      continue;
+    }
+
+    FWidget* next = 0;
+    constFObjectIterator next_element;
+    next_element = iter;
+
+    do
+    {
+      ++next_element;
+
+      if ( next_element == parent->end() )
+        next_element = parent->begin();
+
+      if ( ! (*next_element)->isWidget() )
+        continue;
+
+      next = static_cast<FWidget*>(*next_element);
+    } while ( ! next
+           || ! next->isEnabled()
+           || ! next->acceptFocus()
+           || ! next->isVisible()
+           || next->isWindowWidget() );
+
+    bool accpt = changeFocus (next, parent, fc::FocusNextWidget);
+
+    if ( ! accpt )
+      return false;
+
+    break;  // The focus has been changed
   }
+
   return true;
 }
 
 //----------------------------------------------------------------------
 bool FWidget::focusPrevChild()
 {
-  if ( isDialogWidget() )
+  if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  if ( hasParent() )
+  FWidget* parent = getParentWidget();
+
+  if ( ! parent->hasChildren() || parent->numOfFocusableChildren() <= 1 )
+    return false;
+
+  FObjectIterator iter, first;
+  iter  = parent->end();
+  first = parent->begin();
+
+  do
   {
-    FWidget* parent = getParentWidget();
+    --iter;
 
-    if ( parent->hasChildren() && parent->numOfFocusableChildren() > 1 )
+    if ( ! (*iter)->isWidget() )
+      continue;
+
+    FWidget* w = static_cast<FWidget*>(*iter);
+
+    if ( w != this )
+      continue;
+
+    FWidget* prev = 0;
+    constFObjectIterator prev_element;
+    prev_element = iter;
+
+    do
     {
-      FObjectIterator iter, first;
-      iter  = parent->end();
-      first = parent->begin();
-
-      do
+      if ( ! (*prev_element)->isWidget() )
       {
-        --iter;
-
-        if ( ! (*iter)->isWidget() )
-          continue;
-
-        FWidget* w = static_cast<FWidget*>(*iter);
-
-        if ( w == this )
-        {
-          FWidget* prev = 0;
-          constFObjectIterator prev_element;
-          prev_element = iter;
-
-          do
-          {
-            if ( ! (*prev_element)->isWidget() )
-            {
-              --prev_element;
-              continue;
-            }
-
-            if ( prev_element == parent->begin() )
-              prev_element = parent->end();
-
-            --prev_element;
-            prev = static_cast<FWidget*>(*prev_element);
-          } while ( ! prev
-                 || ! prev->isEnabled()
-                 || ! prev->acceptFocus()
-                 || ! prev->isVisible()
-                 || prev->isWindowWidget() );
-
-          FFocusEvent out (fc::FocusOut_Event);
-          out.setFocusType(fc::FocusPreviousWidget);
-          FApplication::sendEvent(this, &out);
-
-          FFocusEvent cfo (fc::ChildFocusOut_Event);
-          cfo.setFocusType(fc::FocusPreviousWidget);
-          cfo.ignore();
-          FApplication::sendEvent(parent, &cfo);
-
-          if ( cfo.isAccepted() )
-            out.ignore();
-
-          if ( out.isAccepted() )
-          {
-            if ( prev == this )
-              return false;
-
-            prev->setFocus();
-            FFocusEvent cfi (fc::ChildFocusIn_Event);
-            FApplication::sendEvent(parent, &cfi);
-
-            FFocusEvent in (fc::FocusIn_Event);
-            in.setFocusType(fc::FocusPreviousWidget);
-            FApplication::sendEvent(prev, &in);
-
-            if ( in.isAccepted() )
-            {
-              redraw();
-              prev->redraw();
-              updateTerminal();
-              flush_out();
-            }
-          }
-
-          break;
-        }
+        --prev_element;
+        continue;
       }
-      while ( iter != first );
-    }
+
+      if ( prev_element == parent->begin() )
+        prev_element = parent->end();
+
+      --prev_element;
+      prev = static_cast<FWidget*>(*prev_element);
+    } while ( ! prev
+           || ! prev->isEnabled()
+           || ! prev->acceptFocus()
+           || ! prev->isVisible()
+           || prev->isWindowWidget() );
+
+    bool accpt = changeFocus (prev, parent, fc::FocusPreviousWidget);
+
+    if ( ! accpt )
+      return false;
+
+    break;  // The focus has been changed
   }
+  while ( iter != first );
 
   return true;
 }
@@ -2292,6 +2232,47 @@ void FWidget::KeyDownEvent (FKeyEvent* kev)
 
     widget = widget->getParentWidget();
   }
+}
+
+//----------------------------------------------------------------------
+bool FWidget::changeFocus ( FWidget* follower, FWidget* parent
+                          , fc::FocusTypes ft )
+{
+  FFocusEvent out (fc::FocusOut_Event);
+  out.setFocusType(ft);
+  FApplication::sendEvent(this, &out);
+
+  FFocusEvent cfo (fc::ChildFocusOut_Event);
+  cfo.setFocusType(ft);
+  cfo.ignore();
+  FApplication::sendEvent(parent, &cfo);
+
+  if ( cfo.isAccepted() )
+    out.ignore();
+
+  if ( out.isAccepted() )
+  {
+    if ( follower == this )
+      return false;
+
+    follower->setFocus();
+    FFocusEvent cfi (fc::ChildFocusIn_Event);
+    FApplication::sendEvent(parent, &cfi);
+
+    FFocusEvent in (fc::FocusIn_Event);
+    in.setFocusType(ft);
+    FApplication::sendEvent(follower, &in);
+
+    if ( in.isAccepted() )
+    {
+      redraw();
+      follower->redraw();
+      updateTerminal();
+      flush_out();
+    }
+  }
+
+  return true;
 }
 
 //----------------------------------------------------------------------

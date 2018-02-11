@@ -810,7 +810,6 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
 inline void FOptiMove::rightMove ( char hmove[], int& htime
                                  , int from_x, int to_x )
 {
-  char str[BUF_SIZE] = {};
   int num = to_x - from_x;
 
   if ( F_parm_right_cursor.cap && F_parm_right_cursor.duration < htime )
@@ -823,6 +822,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
   if ( F_cursor_right.cap )
   {
+    char str[BUF_SIZE] = {};
     int htime_r = 0;
     str[0] = '\0';
 

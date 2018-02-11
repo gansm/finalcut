@@ -101,7 +101,7 @@ bool     FTerm::xterm_default_colors;
 bool     FTerm::use_alternate_screen = true;
 termios  FTerm::term_init;
 char     FTerm::termtype[256]  = {};
-char     FTerm::term_name[256] = {};
+char     FTerm::termfilename[256] = {};
 
 #if DEBUG
 char     FTerm::termtype_256color[256]   = {};
@@ -1989,7 +1989,7 @@ int FTerm::openConsole()
   if ( fd_tty >= 0 )  // console is already opened
     return 0;
 
-  if ( ! *term_name )
+  if ( ! *termfilename )
     return 0;
 
   for (int i = 0; terminal_devices[i] != 0; i++)
@@ -2022,92 +2022,118 @@ void FTerm::getSystemTermType()
 
   if ( term_env )
   {
+    // Save name in termtype
     std::strncpy (termtype, term_env, sizeof(termtype) - 1);
     return;
   }
-  else if ( *term_name )  // fallback: look into /etc/ttytype or /etc/ttys
+  else if ( *termfilename )  // 1st fallback: use the teminal file name
   {
-    // get term basename
-    const char* term_basename = std::strrchr(term_name, '/');
-
-    if ( term_basename == 0 )
-      term_basename = term_name;
-    else
-      term_basename++;
-
-    // Analyse /etc/ttytype
-    // --------------------
-    // file format:
-    // <terminal type> <whitespace> <tty name>
-    //
-    // Example:
-    // linux  tty1
-    // vt100  ttys0
-
-    std::FILE *fp;
-
-    if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
-    {
-      char* p;
-      char  str[BUFSIZ];
-
-      // read and parse the file
-      while ( fgets(str, sizeof(str) - 1, fp) != 0 )
-      {
-        char* name;
-        char* type;
-        type = name = 0;  // 0 == not found
-        p = str;
-
-        while ( *p )
-        {
-          if ( std::isspace(uChar(*p)) )
-            *p = '\0';
-          else if ( type == 0 )
-            type = p;
-          else if ( name == 0 && p != str && p[-1] == '\0' )
-            name = p;
-
-          p++;
-        }
-
-        if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
-        {
-          std::strncpy (termtype, type, sizeof(termtype) - 1);
-          std::fclose(fp);
-          return;
-        }
-      }
-
-      std::fclose(fp);
-    }
+    getTTYtype();  // Look into /etc/ttytype
 
 #if F_HAVE_GETTTYNAM
+    if ( getTTYSFileEntry() )  // Look into /etc/ttys
+      return;
+#endif
+  }
 
-    // Analyse /etc/ttys
-    // --------------------
-    struct ttyent* ttys_entryt;
-    ttys_entryt = getttynam(term_basename);
+  // 2nd fallback: use vt100 if not found
+  std::strncpy (termtype, C_STR("vt100"), 6);
+}
 
-    if ( ttys_entryt )
+//----------------------------------------------------------------------
+void FTerm::getTTYtype()
+{
+  // Analyse /etc/ttytype and get the term name
+  // ------------------------------------------
+  // file format:
+  // <terminal type> <whitespace> <tty name>
+  //
+  // Example:
+  // linux  tty1
+  // vt100  ttys0
+
+  // Get term basename
+  const char* term_basename = std::strrchr(termfilename, '/');
+
+  if ( term_basename == 0 )
+    term_basename = termfilename;
+  else
+    term_basename++;
+
+  std::FILE *fp;
+
+  if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
+  {
+    char* p;
+    char  str[BUFSIZ];
+
+    // Read and parse the file
+    while ( fgets(str, sizeof(str) - 1, fp) != 0 )
     {
-      char* type = ttys_entryt->ty_type;
+      char* name;
+      char* type;
+      type = name = 0;  // 0 == not found
+      p = str;
 
-      if ( type != 0 )
+      while ( *p )
       {
+        if ( std::isspace(uChar(*p)) )
+          *p = '\0';
+        else if ( type == 0 )
+          type = p;
+        else if ( name == 0 && p != str && p[-1] == '\0' )
+          name = p;
+
+        p++;
+      }
+
+      if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
+      {
+        // Save name in termtype
         std::strncpy (termtype, type, sizeof(termtype) - 1);
-        endttyent();
+        std::fclose(fp);
         return;
       }
     }
 
-    endttyent();
-#endif
+    std::fclose(fp);
+  }
+}
+
+#if F_HAVE_GETTTYNAM
+//----------------------------------------------------------------------
+bool FTerm::getTTYSFileEntry()
+{
+  // Analyse /etc/ttys and get the term name
+
+  // get term basename
+  const char* term_basename = std::strrchr(termfilename, '/');
+
+  if ( term_basename == 0 )
+    term_basename = termfilename;
+  else
+    term_basename++;
+
+  struct ttyent* ttys_entryt;
+  ttys_entryt = getttynam(term_basename);
+
+  if ( ttys_entryt )
+  {
+    char* type = ttys_entryt->ty_type;
+
+    if ( type != 0 )
+    {
+      // Save name in termtype
+      std::strncpy (termtype, type, sizeof(termtype) - 1);
+      endttyent();
+      return true;
+    }
   }
 
-  // use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), 6);
+  endttyent();
+  return false;
 }
+#endif
 
 //----------------------------------------------------------------------
 void FTerm::storeTTYsettings()
@@ -4420,8 +4446,8 @@ void FTerm::init()
     std::abort();
 
   // Get pathname of the terminal device
-  if ( ttyname_r(stdout_no, term_name, sizeof(term_name)) )
-    term_name[0] = '\0';
+  if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
+    termfilename[0] = '\0';
 
   initOSspecifics();
 

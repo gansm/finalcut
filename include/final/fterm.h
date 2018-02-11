@@ -173,7 +173,7 @@ class FTerm
 #endif
 
     static char*          getTermType();
-    static char*          getTermName();
+    static char*          getTermFileName();
     static int            getTabstop();
     static int            getMaxColor();
 
@@ -437,6 +437,10 @@ class FTerm
     static int            openConsole();
     static int            closeConsole();
     static void           getSystemTermType();
+    static void           getTTYtype();
+#if F_HAVE_GETTTYNAM
+    static bool           getTTYSFileEntry();
+#endif
     static void           storeTTYsettings();
     static void           restoreTTYsettings();
 
@@ -576,7 +580,7 @@ class FTerm
     static bool           screen_terminal;
     static bool           tmux_terminal;
     static char           termtype[256];
-    static char           term_name[256];
+    static char           termfilename[256];
     static char*          locale_name;
     static char*          locale_xterm;
     static FRect*         term;     // current terminal geometry
@@ -662,8 +666,8 @@ inline char* FTerm::getTermType()
 { return termtype; }
 
 //----------------------------------------------------------------------
-inline char* FTerm::getTermName()
-{ return term_name; }
+inline char* FTerm::getTermFileName()
+{ return termfilename; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getTabstop()

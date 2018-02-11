@@ -1020,8 +1020,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FListView::onTimer (FTimerEvent*)
 {
-  int element_count = int(getCount())
-    , position_before = current_iter.getPosition()
+  int position_before = current_iter.getPosition()
     , first_line_position_before = first_visible_line.getPosition();
 
   switch ( int(drag_scroll) )
@@ -1031,24 +1030,14 @@ void FListView::onTimer (FTimerEvent*)
 
     case fc::scrollUp:
     case fc::scrollUpSelect:
-      if ( position_before == 0 )
-      {
-        drag_scroll = fc::noScroll;
+      if ( ! dragScrollUp(position_before) )
         return;
-      }
-
-      stepBackward(scroll_distance);
       break;
 
     case fc::scrollDown:
     case fc::scrollDownSelect:
-      if ( position_before + 1 == element_count )
-      {
-        drag_scroll = fc::noScroll;
+      if ( ! dragScrollDown(position_before) )
         return;
-      }
-
-      stepForward(scroll_distance);
       break;
 
     default:
@@ -1071,13 +1060,9 @@ void FListView::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 void FListView::onWheel (FWheelEvent* ev)
 {
-  int wheel
-    , element_count = int(getCount())
-    , position_before = current_iter.getPosition()
+  int position_before = current_iter.getPosition()
     , first_line_position_before = first_visible_line.getPosition()
     , pagesize = 4;
-
-  wheel = ev->getWheel();
 
   if ( drag_scroll != fc::noScroll )
   {
@@ -1087,52 +1072,14 @@ void FListView::onWheel (FWheelEvent* ev)
     drag_scroll = fc::noScroll;
   }
 
-  switch ( wheel )
+  switch ( ev->getWheel() )
   {
     case fc::WheelUp:
-      if ( current_iter.getPosition() == 0 )
-        break;
-
-      if ( first_visible_line.getPosition() >= pagesize )
-      {
-        current_iter -= pagesize;
-        first_visible_line -= pagesize;
-        last_visible_line -= pagesize;
-      }
-      else
-      {
-        // Save relative position from the first line
-        int ry = current_iter.getPosition() - first_visible_line.getPosition();
-        // Save difference from top
-        int difference = first_visible_line.getPosition();
-        first_visible_line -= difference;
-        last_visible_line -= difference;
-        setRelativePosition(ry);
-      }
-
+      wheelUp (pagesize);
       break;
 
     case fc::WheelDown:
-      if ( current_iter.getPosition() + 1 == element_count )
-        break;
-
-      if ( last_visible_line.getPosition() < element_count - pagesize )
-      {
-        current_iter += pagesize;
-        first_visible_line += pagesize;
-        last_visible_line += pagesize;
-      }
-      else
-      {
-        // Save relative position from the first line
-        int ry = current_iter.getPosition() - first_visible_line.getPosition();
-        // Save difference from bottom
-        int differenz = element_count - last_visible_line.getPosition() - 1;
-        first_visible_line += differenz;
-        last_visible_line += differenz;
-        setRelativePosition(ry);
-      }
-
+      wheelDown (pagesize);
       break;
 
     default:
@@ -1384,13 +1331,8 @@ void FListView::draw()
 //----------------------------------------------------------------------
 void FListView::drawColumnLabels()
 {
-  static const int leading_space = 1;
-  static const int trailing_space = 1;
-  static const int ellipsis_length = 2;
   std::vector<char_data>::const_iterator first, last;
   headerItems::const_iterator iter;
-  FString txt;
-  uInt txt_length;
 
   if ( header.empty()
     || getHeight() <= 2
@@ -1404,8 +1346,6 @@ void FListView::drawColumnLabels()
   while ( iter != header.end() )
   {
     const FString& text = (*iter).name;
-    int width = (*iter).width;
-    int column_width;
 
     if ( text.isNull() || text.isEmpty() )
     {
@@ -1413,42 +1353,7 @@ void FListView::drawColumnLabels()
       continue;
     }
 
-    txt = " " + text;
-    txt_length = txt.getLength();
-    column_width = leading_space + width;
-
-    if ( isEnabled() )
-      setColor (wc.label_emphasis_fg, wc.label_bg);
-    else
-      setColor (wc.label_inactive_fg, wc.label_inactive_bg);
-
-    if ( txt_length <= uInt(column_width) )
-    {
-      headerline << txt;
-
-      if ( txt_length < uInt(column_width) )
-        headerline << ' ';  // trailing space
-
-      if ( txt_length + trailing_space < uInt(column_width) )
-      {
-        setColor();
-        const FString line ( uInt(column_width) - trailing_space - txt_length
-                           , wchar_t(fc::BoxDrawingsHorizontal) );
-        headerline << line;  // horizontal line
-      }
-    }
-    else
-    {
-      // Print ellipsis
-      headerline << ' ';
-      headerline << text.left(uInt(width - ellipsis_length));
-      setColor (wc.label_ellipsis_fg, wc.label_bg);
-      headerline << "..";
-
-      if ( iter == header.end() - 1 )  // Last element
-        headerline << ' ';
-    }
-
+    drawColumnText(iter);
     ++iter;
   }
 
@@ -1661,6 +1566,59 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
 }
 
 //----------------------------------------------------------------------
+void FListView::drawColumnText (headerItems::const_iterator& iter)
+{
+  // Print lable text
+  static const int leading_space = 1;
+  static const int trailing_space = 1;
+  const FString& text = (*iter).name;
+  int width = (*iter).width;
+  FString txt = " " + text;
+  uInt txt_length = txt.getLength();
+  int column_width = leading_space + width;
+
+  if ( isEnabled() )
+    setColor (wc.label_emphasis_fg, wc.label_bg);
+  else
+    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
+
+  if ( txt_length <= uInt(column_width) )
+  {
+    headerline << txt;
+
+    if ( txt_length < uInt(column_width) )
+      headerline << ' ';  // trailing space
+
+    if ( txt_length + trailing_space < uInt(column_width) )
+    {
+      setColor();
+      const FString line ( uInt(column_width) - trailing_space - txt_length
+                         , wchar_t(fc::BoxDrawingsHorizontal) );
+      headerline << line;  // horizontal line
+    }
+  }
+  else
+    drawColumnEllipsis (iter, text);  // Print ellipsis
+}
+
+//----------------------------------------------------------------------
+void FListView::drawColumnEllipsis ( headerItems::const_iterator& iter
+                                   , const FString& text )
+{
+  // Print lable ellipsis
+  static const int ellipsis_length = 2;
+  int width = (*iter).width;
+
+  headerline << ' ';
+  headerline << text.left(uInt(width - ellipsis_length));
+  setColor (wc.label_ellipsis_fg, wc.label_bg);
+  headerline << "..";
+
+  if ( iter == header.end() - 1 )  // Last element
+    headerline << ' ';
+}
+
+//----------------------------------------------------------------------
 void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 {
   if ( isVisible() )
@@ -1708,6 +1666,84 @@ void FListView::recalculateVerticalBar (int element_count)
 
   if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
     vbar->setVisible();
+}
+
+//----------------------------------------------------------------------
+void FListView::wheelUp (int pagesize)
+{
+  if ( current_iter.getPosition() == 0 )
+    return;
+
+  if ( first_visible_line.getPosition() >= pagesize )
+  {
+    current_iter -= pagesize;
+    first_visible_line -= pagesize;
+    last_visible_line -= pagesize;
+  }
+  else
+  {
+    // Save relative position from the first line
+    int ry = current_iter.getPosition() - first_visible_line.getPosition();
+    // Save difference from top
+    int difference = first_visible_line.getPosition();
+    first_visible_line -= difference;
+    last_visible_line -= difference;
+    setRelativePosition(ry);
+  }
+}
+
+//----------------------------------------------------------------------
+void FListView::wheelDown (int pagesize)
+{
+  int element_count = int(getCount());
+
+  if ( current_iter.getPosition() + 1 == element_count )
+    return;
+
+  if ( last_visible_line.getPosition() < element_count - pagesize )
+  {
+    current_iter += pagesize;
+    first_visible_line += pagesize;
+    last_visible_line += pagesize;
+  }
+  else
+  {
+    // Save relative position from the first line
+    int ry = current_iter.getPosition() - first_visible_line.getPosition();
+    // Save difference from bottom
+    int differenz = element_count - last_visible_line.getPosition() - 1;
+    first_visible_line += differenz;
+    last_visible_line += differenz;
+    setRelativePosition(ry);
+  }
+}
+
+//----------------------------------------------------------------------
+bool FListView::dragScrollUp (int position_before)
+{
+  if ( position_before == 0 )
+  {
+    drag_scroll = fc::noScroll;
+    return false;
+  }
+
+  stepBackward(scroll_distance);
+  return true;
+}
+
+//----------------------------------------------------------------------
+bool FListView::dragScrollDown (int position_before)
+{
+  int element_count = int(getCount());
+
+  if ( position_before + 1 == element_count )
+  {
+    drag_scroll = fc::noScroll;
+    return false;
+  }
+
+  stepForward(scroll_distance);
+  return true;
 }
 
 //----------------------------------------------------------------------

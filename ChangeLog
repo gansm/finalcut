@@ -1,4 +1,11 @@
-2017-10-02  Markus Gans  <guru.mail@muenster.de>
+2017-02-11  Markus Gans  <guru.mail@muenster.de>
+	* Refactoring FWidget::focusNextChild and FWidget::focusPrevChild
+	* Refactoring FListView::onWheel
+	* Refactoring FListView::drawColumnLabels
+	* Refactoring FTerm::getSystemTermType
+	* Rename getTermName() to getTermFileName()
+
+2017-02-10  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FOptiMove::verticalMove and FOptiMove::horizontalMove
 	* Refactoring FVTerm::getCharacter
 	* Refactoring FWidget::drawBorder
