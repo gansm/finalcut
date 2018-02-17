@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -134,6 +134,8 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void           init();
+    int            getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    void           drawText (wchar_t[], int, uInt);
     void           directFocus();
 
     // Data Members

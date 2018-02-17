@@ -504,18 +504,13 @@ void FButtonGroup::draw()
 void FButtonGroup::drawLabel()
 {
   wchar_t* LabelText;
-  register wchar_t* src;
-  register wchar_t* dest;
-  FString txt;
-  uInt length;
   int hotkeypos;
-  bool isActive, isNoUnderline;
 
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  txt = " " + text + " ";
-  length = txt.getLength();
+  FString txt = " " + text + " ";
+  uInt length = txt.getLength();
   hotkeypos = -1;
 
   try
@@ -528,26 +523,10 @@ void FButtonGroup::drawLabel()
     return;
   }
 
-  src = const_cast<wchar_t*>(txt.wc_str());
-  dest = const_cast<wchar_t*>(LabelText);
-
-  isActive = ((flags & fc::active) != 0);
-  isNoUnderline = ((flags & fc::no_underline) != 0);
+  wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
+  wchar_t* dest = const_cast<wchar_t*>(LabelText);
   unsetViewportPrint();
-
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  for (uInt i = 0; i < length; i++)
-  {
-    if ( (i < length) && (txt[i] == '&') && (hotkeypos == -1) )
-    {
-      hotkeypos = int(i);
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
+  hotkeypos = getHotkeyPos(src, dest, uInt(length));
 
   if ( hotkeypos != -1 )
     length--;
@@ -556,6 +535,64 @@ void FButtonGroup::drawLabel()
     FWidget::setPrintPos (2, 1);
   else
     FWidget::setPrintPos (0, 1);
+
+  drawText (LabelText, hotkeypos, length);
+  setViewportPrint();
+  delete[] LabelText;
+}
+
+
+// private methods of FButtonGroup
+//----------------------------------------------------------------------
+bool FButtonGroup::isRadioButton (FToggleButton* button) const
+{
+  if ( ! button )
+    return false;
+
+  return bool ( std::strcmp ( button->getClassName()
+                            , C_STR("FRadioButton") ) == 0 );
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::init()
+{
+  if ( isEnabled() )
+    flags |= fc::active;
+
+  setForegroundColor (wc.label_fg);
+  setBackgroundColor (wc.label_bg);
+  setMinimumSize (7, 4);
+  buttonlist.clear();  // no buttons yet
+}
+
+//----------------------------------------------------------------------
+int FButtonGroup::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+{
+  // find hotkey position in string
+  // + generate a new string without the '&'-sign
+  int pos = -1;
+  wchar_t* txt = src;
+
+  for (uInt i = 0; i < length; i++)
+  {
+    if ( i < length && txt[i] == L'&' && pos == -1 )
+    {
+      pos = int(i);
+      i++;
+      src++;
+    }
+
+    *dest++ = *src++;
+  }
+
+  return pos;
+}
+
+//----------------------------------------------------------------------
+void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
+{
+  bool isActive = ((flags & fc::active) != 0);
+  bool isNoUnderline = ((flags & fc::no_underline) != 0);
 
   if ( isMonochron() )
     setReverse(true);
@@ -587,33 +624,6 @@ void FButtonGroup::drawLabel()
 
   if ( isMonochron() )
     setReverse(true);
-
-  setViewportPrint();
-  delete[] LabelText;
-}
-
-
-// private methods of FButtonGroup
-//----------------------------------------------------------------------
-bool FButtonGroup::isRadioButton (FToggleButton* button) const
-{
-  if ( ! button )
-    return false;
-
-  return bool ( std::strcmp ( button->getClassName()
-                            , C_STR("FRadioButton") ) == 0 );
-}
-
-//----------------------------------------------------------------------
-void FButtonGroup::init()
-{
-  if ( isEnabled() )
-    flags |= fc::active;
-
-  setForegroundColor (wc.label_fg);
-  setBackgroundColor (wc.label_bg);
-  setMinimumSize (7, 4);
-  buttonlist.clear();  // no buttons yet
 }
 
 //----------------------------------------------------------------------

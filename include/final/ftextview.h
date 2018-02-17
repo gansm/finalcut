@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -89,8 +89,12 @@ class FTextView : public FWidget
 
     // Mutators
     void               setGeometry (int, int, int, int, bool = true);
-    void               setPosition (int);
     void               setText (const FString&);
+    void               scrollToX (int);
+    void               scrollToY (int);
+    void               scrollTo (const FPoint&);
+    void               scrollTo (int, int);
+    void               scrollBy (int, int);
 
     // Methods
     void               hide();
@@ -121,11 +125,17 @@ class FTextView : public FWidget
     // Disable assignment operator (=)
     FTextView& operator = (const FTextView&);
 
+    // Accessors
+    int                getTextHeight();
+    int                getTextWidth();
+
     // Methods
     void               init();
     void               draw();
     void               drawText();
     void               processChanged();
+    void               drawHBar();
+    void               drawVBar();
 
     // Callback methods
     void               cb_VBarChange (FWidget*, data_ptr);
@@ -135,6 +145,7 @@ class FTextView : public FWidget
     FStringList        data;
     FScrollbar*        vbar;
     FScrollbar*        hbar;
+    bool               update_scrollbar;
     int                xoffset;
     int                yoffset;
     int                nf_offset;
@@ -159,6 +170,10 @@ inline uInt FTextView::getRows() const
 //----------------------------------------------------------------------
 inline const FStringList& FTextView::getLines() const
 { return data; }
+
+//----------------------------------------------------------------------
+inline void FTextView::scrollTo (const FPoint& pos)
+{ scrollTo(pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline void FTextView::deleteRange (int from, int to)

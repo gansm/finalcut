@@ -489,7 +489,7 @@ void FScrollView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FScrollView::onWheel (FWheelEvent* ev)
 {
-  short  distance = 4;
+  short distance = 4;
 
   switch ( ev->getWheel() )
   {
@@ -935,7 +935,7 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
 void FScrollView::cb_HBarChange (FWidget*, data_ptr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
-  short  distance = 1;
+  short distance = 1;
   short wheel_distance = 4;
 
   if ( scrollType >= FScrollbar::scrollStepBackward

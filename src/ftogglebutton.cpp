@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -499,13 +499,8 @@ void FToggleButton::draw()
 //----------------------------------------------------------------------
 void FToggleButton::drawLabel()
 {
-  uInt length, i;
-  int hotkeypos;
-  FString txt;
   wchar_t* LabelText;
-  register wchar_t* src;
-  register wchar_t* dest;
-  bool isActive, isNoUnderline;
+  int hotkeypos;
 
   if ( ! isVisible() )
     return;
@@ -513,7 +508,7 @@ void FToggleButton::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  length = text.getLength();
+  uInt length = text.getLength();
   hotkeypos = -1;
 
   try
@@ -526,62 +521,16 @@ void FToggleButton::drawLabel()
     return;
   }
 
-  txt = text;
-  src = const_cast<wchar_t*>(txt.wc_str());
-  dest = const_cast<wchar_t*>(LabelText);
-  isActive = ((flags & fc::active) != 0);
-  isNoUnderline = ((flags & fc::no_underline) != 0);
-
-  // find hotkey position in string
-  // + generate a new string without the '&'-sign
-  for (i = 0; i < length; i++)
-  {
-    if ( i < length && txt[i] == '&' && hotkeypos == -1 )
-    {
-      hotkeypos = int(i);
-      i++;
-      src++;
-    }
-
-    *dest++ = *src++;
-  }
+  FString txt = text;
+  wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
+  wchar_t* dest = const_cast<wchar_t*>(LabelText);
+  hotkeypos = getHotkeyPos(src, dest, uInt(length));
 
   if ( hotkeypos != -1 )
     length--;
 
   setPrintPos (1 + label_offset_pos, 1);
-
-  if ( isMonochron() )
-    setReverse(true);
-
-  if ( isEnabled() )
-    setColor (wc.label_fg, wc.label_bg);
-  else
-    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
-
-  for (int z = 0; z < int(length); z++)
-  {
-    if ( (z == hotkeypos) && isActive )
-    {
-      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
-
-      if ( ! isNoUnderline )
-        setUnderline();
-
-      print ( LabelText[z] );
-
-      if ( ! isNoUnderline )
-        unsetUnderline();
-
-      setColor (wc.label_fg, wc.label_bg);
-    }
-    else
-      print (LabelText[z]);
-  }
-
-  if ( isMonochron() )
-    setReverse(false);
-
+  drawText (LabelText, hotkeypos, length);
   delete[] LabelText;
 }
 
@@ -685,4 +634,65 @@ void FToggleButton::init()
     setForegroundColor (wc.label_inactive_fg);
     setBackgroundColor (wc.label_inactive_bg);
   }
+}
+
+//----------------------------------------------------------------------
+int FToggleButton::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+{
+  // find hotkey position in string
+  // + generate a new string without the '&'-sign
+  int pos = -1;
+  wchar_t* txt = src;
+
+  for (uInt i = 0; i < length; i++)
+  {
+    if ( i < length && txt[i] == L'&' && pos == -1 )
+    {
+      pos = int(i);
+      i++;
+      src++;
+    }
+
+    *dest++ = *src++;
+  }
+
+  return pos;
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
+{
+  bool isActive = ((flags & fc::active) != 0);
+  bool isNoUnderline = ((flags & fc::no_underline) != 0);
+
+  if ( isMonochron() )
+    setReverse(true);
+
+  if ( isEnabled() )
+    setColor (wc.label_fg, wc.label_bg);
+  else
+    setColor (wc.label_inactive_fg, wc.label_inactive_bg);
+
+  for (int z = 0; z < int(length); z++)
+  {
+    if ( (z == hotkeypos) && isActive )
+    {
+      setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
+
+      if ( ! isNoUnderline )
+        setUnderline();
+
+      print ( LabelText[z] );
+
+      if ( ! isNoUnderline )
+        unsetUnderline();
+
+      setColor (wc.label_fg, wc.label_bg);
+    }
+    else
+      print (LabelText[z]);
+  }
+
+  if ( isMonochron() )
+    setReverse(false);;
 }

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -36,6 +36,7 @@ FTextView::FTextView(FWidget* parent)
   , data()
   , vbar(0)
   , hbar(0)
+  , update_scrollbar(true)
   , xoffset(0)
   , yoffset(0)
   , nf_offset(0)
@@ -114,31 +115,77 @@ void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FTextView::setPosition (int pos)
-{
-  int last_line = int(getRows());
-
-  if ( pos < 0 || pos > last_line - getHeight() + 2 )
-    return;
-
-  yoffset = pos;
-
-  if ( isVisible() )
-    drawText();
-
-  vbar->setValue (yoffset);
-
-  if ( vbar->isVisible() )
-    vbar->drawBar();
-
-  flush_out();
-}
-
-//----------------------------------------------------------------------
 void FTextView::setText (const FString& str)
 {
   clear();
   insert(str, -1);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollToX (int x)
+{
+  scrollTo (x, yoffset);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollToY (int y)
+{
+  scrollTo (xoffset, y);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollBy (int dx, int dy)
+{
+  scrollTo (xoffset + dx, yoffset + dy);
+}
+
+//----------------------------------------------------------------------
+void FTextView::scrollTo (int x, int y)
+{
+  bool changeX = bool(x != xoffset);
+  bool changeY = bool(y != yoffset);
+
+  if ( ! isVisible() || ! (changeX || changeY) )
+    return;
+
+  if ( xoffset != x )
+  {
+    int xoffset_end = int(maxLineWidth) - getTextWidth();
+    xoffset = x;
+
+    if ( xoffset < 0 )
+      xoffset = 0;
+
+    if ( xoffset > xoffset_end )
+      xoffset = xoffset_end;
+
+    if ( update_scrollbar )
+    {
+      hbar->setValue (xoffset);
+      drawHBar();
+    }
+  }
+
+  if ( yoffset != y )
+  {
+    int yoffset_end = int(getRows()) - getTextHeight();
+    yoffset = y;
+
+    if ( yoffset < 0 )
+      yoffset = 0;
+
+    if ( yoffset > yoffset_end )
+      yoffset = yoffset_end;
+
+    if ( update_scrollbar )
+    {
+      vbar->setValue (yoffset);
+      drawVBar();
+    }
+  }
+
+  drawText();
+  updateTerminal();
 }
 
 //----------------------------------------------------------------------
@@ -231,10 +278,10 @@ void FTextView::insert (const FString& str, int pos)
     {
       maxLineWidth = len;
 
-      if ( len > uInt(getWidth() - nf_offset - 2) )
+      if ( len > uInt(getTextWidth()) )
       {
-        hbar->setMaximum (int(maxLineWidth) - getWidth() + nf_offset + 2);
-        hbar->setPageSize (int(maxLineWidth), getWidth() - nf_offset - 2);
+        hbar->setMaximum (int(maxLineWidth) - getTextWidth());
+        hbar->setPageSize (int(maxLineWidth), getTextWidth());
         hbar->calculateSliderValues();
 
         if ( ! hbar->isVisible() )
@@ -244,14 +291,14 @@ void FTextView::insert (const FString& str, int pos)
   }
 
   data.insert (iter + pos, text_split.begin(), text_split.end());
-  vbar->setMaximum (int(getRows()) - getHeight() + 2 - nf_offset);
-  vbar->setPageSize (int(getRows()), getHeight() - 2 + nf_offset);
+  vbar->setMaximum (int(getRows()) - getTextHeight());
+  vbar->setPageSize (int(getRows()), getTextHeight());
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && int(getRows()) >= getHeight() + nf_offset - 1 )
+  if ( ! vbar->isVisible() && int(getRows()) >= getTextHeight() + 1 )
     vbar->setVisible();
 
-  if ( vbar->isVisible() && int(getRows()) < getHeight() + nf_offset - 1 )
+  if ( vbar->isVisible() && int(getRows()) < getTextHeight() + 1 )
     vbar->hide();
 
   processChanged();
@@ -317,7 +364,7 @@ void FTextView::clear()
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
-  for (int y = 0; y < getHeight() + nf_offset - 2; y++)
+  for (int y = 0; y < getTextHeight(); y++)
   {
     setPrintPos (2, 2 - nf_offset + y);
     print (blank);
@@ -330,94 +377,50 @@ void FTextView::clear()
 //----------------------------------------------------------------------
 void FTextView::onKeyPress (FKeyEvent* ev)
 {
-  int last_line = int(getRows());
-  int key = ev->key();
-
-  switch ( key )
+  switch ( ev->key() )
   {
     case fc::Fkey_up:
-      if ( yoffset > 0 )
-        yoffset--;
-
+      scrollBy (0, -1);
       ev->accept();
       break;
 
     case fc::Fkey_down:
-      if ( yoffset + getHeight() + nf_offset <= last_line + 1 )
-        yoffset++;
-
-      ev->accept();
-      break;
-
-    case fc::Fkey_right:
-      if ( xoffset + getWidth() - nf_offset <= int(maxLineWidth) + 1 )
-        xoffset++;
-
+      scrollBy (0, 1);
       ev->accept();
       break;
 
     case fc::Fkey_left:
-      if ( xoffset > 0 )
-        xoffset--;
+      scrollBy (-1, 0);
+      ev->accept();
+      break;
 
+    case fc::Fkey_right:
+      scrollBy (1, 0);
       ev->accept();
       break;
 
     case fc::Fkey_ppage:
-      yoffset -= getHeight() - 2;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollBy (0, -getTextHeight());
       ev->accept();
       break;
 
     case fc::Fkey_npage:
-      if ( last_line >= getHeight() )
-        yoffset += getHeight() - 2;
-
-      if ( yoffset > last_line - getHeight() - nf_offset + 2 )
-        yoffset = last_line - getHeight() - nf_offset + 2;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollBy (0, getTextHeight());
       ev->accept();
       break;
 
     case fc::Fkey_home:
-      yoffset = 0;
+      scrollToY (0);
       ev->accept();
       break;
 
     case fc::Fkey_end:
-      if ( last_line >= getHeight() )
-        yoffset = last_line - getHeight() - nf_offset + 2;
-
+      scrollToY (int(getRows()) - getTextHeight());
       ev->accept();
       break;
 
     default:
       break;
-  }
-
-  if ( ev->isAccepted() )
-  {
-    if ( isVisible() )
-      drawText();
-
-    vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() )
-      vbar->drawBar();
-
-    hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() )
-      hbar->drawBar();
-
-    updateTerminal();
-    flush_out();
   }
 }
 
@@ -542,37 +545,16 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onWheel (FWheelEvent* ev)
 {
-  int last_line = int(getRows());
-  int wheel = ev->getWheel();
+  int distance = 4;
 
-  switch ( wheel )
+  switch ( ev->getWheel() )
   {
     case fc::WheelUp:
-      if ( yoffset == 0 )
-        break;
-
-      yoffset -= 4;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollBy (0, -distance);
       break;
 
     case fc::WheelDown:
-      {
-        int yoffset_end = last_line - getClientHeight();
-
-        if ( yoffset_end < 0 )
-          yoffset_end = 0;
-
-        if ( yoffset == yoffset_end )
-          break;
-
-        yoffset += 4;
-
-        if ( yoffset > yoffset_end )
-          yoffset = yoffset_end;
-      }
+      scrollBy (0, distance);
       break;
 
     default:
@@ -581,16 +563,6 @@ void FTextView::onWheel (FWheelEvent* ev)
 
   if ( isVisible() )
     drawText();
-
-  vbar->setValue (yoffset);
-
-  if ( vbar->isVisible() )
-    vbar->drawBar();
-
-  hbar->setValue (xoffset);
-
-  if ( hbar->isVisible() )
-    hbar->drawBar();
 
   updateTerminal();
 }
@@ -662,6 +634,18 @@ void FTextView::adjustSize()
 
 
 // private methods of FTextView
+//----------------------------------------------------------------------
+int FTextView::getTextHeight()
+{
+  return getHeight() - 2 + nf_offset;
+}
+
+//----------------------------------------------------------------------
+int FTextView::getTextWidth()
+{
+  return getWidth() - 2 - nf_offset;
+}
+
 //----------------------------------------------------------------------
 void FTextView::init()
 {
@@ -767,7 +751,7 @@ void FTextView::drawText()
   if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
     return;
 
-  num = uInt(getHeight() + nf_offset - 2);
+  num = uInt(getTextHeight());
 
   if ( num > getRows() )
     num = getRows();
@@ -784,7 +768,7 @@ void FTextView::drawText()
     const wchar_t* line_str;
     setPrintPos (2, 2 - nf_offset + int(y));
     line = data[y + uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                       , uInt(getWidth() - nf_offset - 2) );
+                                       , uInt(getTextWidth()) );
     line_str = line.wc_str();
     len = line.getLength();
 
@@ -804,7 +788,7 @@ void FTextView::drawText()
         print ('.');
     }
 
-    for (; i < uInt(getWidth() - nf_offset - 2); i++)
+    for (; i < uInt(getTextWidth()); i++)
       print (' ');
   }
 
@@ -819,16 +803,37 @@ void FTextView::processChanged()
 }
 
 //----------------------------------------------------------------------
+inline void FTextView::drawHBar()
+{
+  if ( hbar->isVisible() )
+    hbar->drawBar();
+}
+
+//----------------------------------------------------------------------
+inline void FTextView::drawVBar()
+{
+  if ( vbar->isVisible() )
+    vbar->drawBar();
+}
+
+//----------------------------------------------------------------------
 void FTextView::cb_VBarChange (FWidget*, data_ptr)
 {
-  FScrollbar::sType scrollType;
-  int distance = 1
-    , last_line = int(getRows())
-    , yoffset_before = yoffset
-    , yoffset_end = last_line - getClientHeight();
-  scrollType = vbar->getScrollType();
+  FScrollbar::sType scrollType = vbar->getScrollType();
+  int distance = 1;
+  int wheel_distance = 4;
 
-  switch ( int(scrollType) )
+  if ( scrollType >= FScrollbar::scrollStepBackward
+    && scrollType <= FScrollbar::scrollWheelDown )
+  {
+    update_scrollbar = true;
+  }
+  else
+  {
+    update_scrollbar = false;
+  }
+
+  switch ( scrollType )
   {
     case FScrollbar::noScroll:
       break;
@@ -837,86 +842,52 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepBackward:
-      yoffset -= distance;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollBy (0, -distance);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientHeight();
       // fall through
     case FScrollbar::scrollStepForward:
-      yoffset += distance;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollBy (0, distance);
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int val = vbar->getValue();
-
-      if ( yoffset == val )
-        break;
-
-      yoffset = val;
-
-      if ( yoffset > yoffset_end )
-        yoffset = yoffset_end;
-
-      if ( yoffset < 0 )
-        yoffset = 0;
-
+      scrollToY (vbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
     {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
-      onWheel(&wheel_ev);
+      scrollBy (0, -wheel_distance);
       break;
     }
 
     case FScrollbar::scrollWheelDown:
     {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
-      onWheel(&wheel_ev);
+      scrollBy (0, wheel_distance);
       break;
     }
   }
 
-  if ( isVisible() )
-  {
-    drawText();
-    updateTerminal();
-  }
-
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollPageForward )
-  {
-    vbar->setValue (yoffset);
-
-    if ( vbar->isVisible() && yoffset_before != yoffset )
-      vbar->drawBar();
-
-    updateTerminal();
-  }
+  update_scrollbar = true;
 }
 
 //----------------------------------------------------------------------
 void FTextView::cb_HBarChange (FWidget*, data_ptr)
 {
-  FScrollbar::sType scrollType;
-  int distance = 1
-    , xoffset_before = xoffset
-    , xoffset_end = int(maxLineWidth) - getClientWidth();
-  scrollType = hbar->getScrollType();
+  FScrollbar::sType scrollType = hbar->getScrollType();
+  int distance = 1;
+  int wheel_distance = 4;
+
+  if ( scrollType >= FScrollbar::scrollStepBackward
+    && scrollType <= FScrollbar::scrollWheelDown )
+  {
+    update_scrollbar = true;
+  }
+  else
+  {
+    update_scrollbar = false;
+  }
 
   switch ( scrollType )
   {
@@ -927,82 +898,28 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
       distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepBackward:
-      xoffset -= distance;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollBy (-distance, 0);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepForward:
-      xoffset += distance;
-
-      if ( xoffset > int(maxLineWidth) - getClientWidth() )
-        xoffset = int(maxLineWidth) - getClientWidth();
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollBy (distance, 0);
       break;
 
     case FScrollbar::scrollJump:
-    {
-      int val = hbar->getValue();
-
-      if ( xoffset == val )
-        break;
-
-      xoffset = val;
-
-      if ( xoffset > int(maxLineWidth) - getClientWidth() )
-        xoffset = int(maxLineWidth) - getClientWidth();
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollToX (hbar->getValue());
       break;
-    }
 
     case FScrollbar::scrollWheelUp:
-      if ( xoffset == 0 )
-        break;
-
-      xoffset -= 4;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollBy (-wheel_distance, 0);
       break;
 
     case FScrollbar::scrollWheelDown:
-      if ( xoffset == xoffset_end )
-        break;
-
-      xoffset += 4;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
+      scrollBy (-wheel_distance, 0);
       break;
   }
 
-  if ( isVisible() )
-  {
-    drawText();
-    updateTerminal();
-  }
-
-  if ( scrollType >= FScrollbar::scrollStepBackward
-    && scrollType <= FScrollbar::scrollWheelDown )
-  {
-    hbar->setValue (xoffset);
-
-    if ( hbar->isVisible() && xoffset_before != xoffset )
-      hbar->drawBar();
-
-    updateTerminal();
-  }
+  update_scrollbar = true;
 }
