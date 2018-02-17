@@ -215,6 +215,10 @@ Class digramm
                                                           └────────────────┘
 </pre>
 
+License
+-------
+GNU Lesser General Public License Version 3 
+
 Please send bug reports to
 --------------------------
 https://github.com/gansm/finalcut/issues
