@@ -132,7 +132,10 @@ class FScrollbar : public FWidget
     sType getClickedScrollType (int, int);
     sType getVerticalClickedScrollType (int);
     sType getHorizontalClickedScrollType (int);
-    void  processMiddleButton (int, int);
+    int   getSliderClickPos (int, int);
+    void  jumpToClickPos (int, int);
+    void  jumpToClickPos (int);
+    void  avoidScrollOvershoot();
     void  processScroll();
 
     // Data Members

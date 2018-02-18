@@ -385,7 +385,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::MiddleButton )
   {
-    processMiddleButton (mouse_x, mouse_y);
+    jumpToClickPos (mouse_x, mouse_y);
     return;
   }
 
@@ -394,27 +394,7 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
 
   if ( scroll_type == FScrollbar::noScroll )
   {
-    if ( bar_orientation == fc::vertical )
-    {
-      if ( mouse_y > slider_pos + 1
-        && mouse_y <= slider_pos + slider_length + 1 )
-        slider_click_pos = mouse_y;  // on slider
-    }
-    else  // horizontal
-    {
-      if ( isNewFont() )
-      {
-        if ( mouse_x > slider_pos + 2
-          && mouse_x <= slider_pos + slider_length + 2 )
-          slider_click_pos = mouse_x;  // on slider
-      }
-      else
-      {
-        if ( mouse_x > slider_pos + 1
-          && mouse_x <= slider_pos + slider_length + 1 )
-          slider_click_pos = mouse_x;  // on slider
-      }
-    }
+    slider_click_pos = getSliderClickPos (mouse_x, mouse_y);
 
     if ( slider_click_pos > 0 )
       scroll_type = FScrollbar::scrollJump;
@@ -473,7 +453,7 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
 
   if ( ev->getButton() == fc::MiddleButton )
   {
-    processMiddleButton (mouse_x, mouse_y);
+    jumpToClickPos (mouse_x, mouse_y);
     return;
   }
 
@@ -556,16 +536,24 @@ void FScrollbar::onTimer (FTimerEvent*)
     addTimer(repeat_time);
   }
 
+  // Timer stop condition
   if ( ( scroll_type == FScrollbar::scrollPageBackward
-      && slider_pos < slider_click_stop_pos )
+      && slider_pos == slider_click_stop_pos )
     || ( scroll_type == FScrollbar::scrollPageForward
-      && slider_pos + slider_length > slider_click_stop_pos ) )
+      && slider_pos == slider_click_stop_pos ) )
   {
-    // Scroll to the end
-    if ( scroll_type == FScrollbar::scrollPageForward
-      && slider_pos + slider_length > slider_click_stop_pos )
+    int max_slider_pos = bar_length - slider_length;
+
+    if ( scroll_type == FScrollbar::scrollPageBackward
+      && slider_pos == 0 )
     {
-      setValue(max);
+      jumpToClickPos(0);  // Scroll to the start
+      processScroll();
+    }
+    else if ( scroll_type == FScrollbar::scrollPageForward
+           && slider_pos == max_slider_pos )
+    {
+      jumpToClickPos (max_slider_pos);  // Scroll to the end
       processScroll();
     }
 
@@ -732,46 +720,104 @@ FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::processMiddleButton (int x, int y)
+int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
 {
-    int new_val;
+  // Get the clicked position on the slider
 
-    if ( bar_orientation == fc::vertical )
+  if ( bar_orientation == fc::vertical )
+  {
+    if ( mouse_y > slider_pos + 1
+      && mouse_y <= slider_pos + slider_length + 1 )
+      return mouse_y;  // on slider
+  }
+  else  // horizontal bar orientation
+  {
+    if ( isNewFont() )
     {
-      if ( y >1 && y < getHeight() )
-      {
-        new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
-                             / double(bar_length - slider_length) ) );
-      }
-      else
-        return;
+      if ( mouse_x > slider_pos + 2
+        && mouse_x <= slider_pos + slider_length + 2 )
+        return mouse_x;  // on slider
     }
-    else  // horizontal
+    else
     {
-      int nf = isNewFont() ? 1 : 0;
+      if ( mouse_x > slider_pos + 1
+        && mouse_x <= slider_pos + slider_length + 1 )
+        return mouse_x;  // on slider
+    }
+  }
 
-      if ( x > 1 + nf && x < getWidth() - nf )
-      {
-        new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
-                             / double(bar_length - slider_length) ) );
-      }
-      else
-        return;
-    }
-
-    if ( new_val != val )
-    {
-      setValue(new_val);
-      drawBar();
-      updateTerminal();
-      scroll_type = FScrollbar::scrollJump;
-      processScroll();
-    }
+  return -1;
 }
 
+//----------------------------------------------------------------------
+void FScrollbar::jumpToClickPos (int x, int y)
+{
+  int new_val;
+
+  if ( bar_orientation == fc::vertical )
+  {
+    if ( y >1 && y < getHeight() )
+    {
+      new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
+                           / double(bar_length - slider_length) ) );
+    }
+    else
+      return;
+  }
+  else  // horizontal
+  {
+    int nf = isNewFont() ? 1 : 0;
+
+    if ( x > 1 + nf && x < getWidth() - nf )
+    {
+      new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
+                           / double(bar_length - slider_length) ) );
+    }
+    else
+      return;
+  }
+
+  if ( new_val != val )
+  {
+    setValue(new_val);
+    drawBar();
+    updateTerminal();
+    scroll_type = FScrollbar::scrollJump;
+    processScroll();
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::jumpToClickPos (int pos)
+{
+  if ( bar_orientation == fc::vertical )
+    jumpToClickPos (0, pos + 2);
+  else
+  {
+    if ( isNewFont() )
+      jumpToClickPos (pos + 3, 0);
+    else
+      jumpToClickPos (pos + 2, 0);
+  }
+}
+
+//----------------------------------------------------------------------
+void FScrollbar::avoidScrollOvershoot()
+{
+  // Avoid overshoot
+  if ( ( scroll_type == FScrollbar::scrollPageBackward
+      && slider_pos < slider_click_stop_pos )
+    || ( scroll_type == FScrollbar::scrollPageForward
+      && slider_pos > slider_click_stop_pos ) )
+  {
+    jumpToClickPos (slider_click_stop_pos);
+    delOwnTimer();
+  }
+}
 
 //----------------------------------------------------------------------
 void FScrollbar::processScroll()
 {
   emitCallback("change-value");
+  avoidScrollOvershoot();
 }
