@@ -1,6 +1,7 @@
 2017-02-18  Markus Gans  <guru.mail@muenster.de>
 	* Avoid scroll bar overshooting
 	* Refactoring FListView::onMouseMove
+	* Refactoring FDialog::initDialogMenu
 
 2017-02-17  Markus Gans  <guru.mail@muenster.de>
 	* Generalize scroll functions in FTextView

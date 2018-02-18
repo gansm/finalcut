@@ -925,9 +925,22 @@ void FDialog::initDialogMenu()
     dgl_menuitem->unsetFocusable();
   }
 
+  // Add the move/size menu item
+  initMoveSizeMenuItem (dialog_menu);
+
+  // Add the zoom menu item
+  initZoomMenuItem (dialog_menu);
+
+  // Add the close menu item
+  initCloseMenuItem (dialog_menu);
+}
+
+//----------------------------------------------------------------------
+void FDialog::initMoveSizeMenuItem (FMenu* menu)
+{
   try
   {
-    move_size_item = new FMenuItem (dialog_menu);
+    move_size_item = new FMenuItem (menu);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -943,10 +956,14 @@ void FDialog::initDialogMenu()
     "clicked",
     F_METHOD_CALLBACK (this, &FDialog::cb_move)
   );
+}
 
+//----------------------------------------------------------------------
+void FDialog::initZoomMenuItem (FMenu* menu)
+{
   try
   {
-    zoom_item = new FMenuItem (dialog_menu);
+    zoom_item = new FMenuItem (menu);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -962,10 +979,14 @@ void FDialog::initDialogMenu()
     "clicked",
     F_METHOD_CALLBACK (this, &FDialog::cb_zoom)
   );
+}
 
+//----------------------------------------------------------------------
+void FDialog::initCloseMenuItem (FMenu* menu)
+{
   try
   {
-    close_item = new FMenuItem ("&Close", dialog_menu);
+    close_item = new FMenuItem ("&Close", menu);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -1066,7 +1087,6 @@ void FDialog::drawBarButton()
     else
       setReverse(true);
   }
-
 
   if ( isNewFont() )
   {
