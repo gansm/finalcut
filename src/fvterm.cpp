@@ -1876,8 +1876,6 @@ FVTerm::char_data FVTerm::generateCharacter (int x, int y)
   // Generates characters for a given position considering all areas
   FWidget::widgetList::const_iterator iter, end;
   char_data* sc;    // shown character
-  char_data  s_ch;  // shadow character
-  char_data  i_ch;  // inherit background character
   FWidget*   widget;
 
   widget = static_cast<FWidget*>(vterm->widget);

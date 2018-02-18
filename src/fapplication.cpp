@@ -355,14 +355,14 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (long key_timeout, long dblclick_interval)
+void FApplication::init (long key_time, long dblclick_time)
 {
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;
   time_keypressed.tv_usec = 0;
 
   // Set the keyboard keypress timeout
-  setKeypressTimeout (key_timeout);
+  setKeypressTimeout (key_time);
 
   // Initialize mouse control
   mouse = getMouseControl();
@@ -373,7 +373,7 @@ void FApplication::init (long key_timeout, long dblclick_interval)
 
   // Set the default double click interval
   if ( mouse )
-    mouse->setDblclickInterval (dblclick_interval);
+    mouse->setDblclickInterval (dblclick_time);
 
   try
   {

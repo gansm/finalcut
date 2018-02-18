@@ -509,7 +509,6 @@ void FToggleButton::drawLabel()
     return;
 
   uInt length = text.getLength();
-  hotkeypos = -1;
 
   try
   {

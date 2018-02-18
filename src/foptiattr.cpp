@@ -1195,7 +1195,7 @@ inline void FOptiAttr::preProcessing_cygwin_quirks (char_data*& term)
 {
   // Cygwin bold color fix pre processing
 
-  if ( ! cygwin_terminal )
+  if ( ! cygwin_terminal || ! term )
     return;
 
   if ( term->fg_color > 7 || term->bg_color > 7 )

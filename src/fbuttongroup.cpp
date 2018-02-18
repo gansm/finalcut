@@ -511,7 +511,6 @@ void FButtonGroup::drawLabel()
 
   FString txt = " " + text + " ";
   uInt length = txt.getLength();
-  hotkeypos = -1;
 
   try
   {

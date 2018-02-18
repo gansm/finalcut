@@ -46,12 +46,11 @@ struct termcap_string
 {
   const std::string name;
   const fc::termcaps cap;
-
 };
 #pragma pack(pop)
 
 // String data array
-static termcap_string strings[] =
+static const termcap_string strings[] =
 {
   { "t_bell", fc::t_bell },
   { "t_erase_chars", fc::t_erase_chars },

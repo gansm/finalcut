@@ -194,7 +194,6 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  int screenWidth;
   short fg, bg;
   char* blank;
 

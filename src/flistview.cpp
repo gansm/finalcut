@@ -846,12 +846,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
 void FListView::onMouseUp (FMouseEvent* ev)
 {
   if ( drag_scroll != fc::noScroll )
-  {
-    delOwnTimer();
-    drag_scroll = fc::noScroll;
-    scroll_distance = 1;
-    scroll_timer = false;
-  }
+    stopDragScroll();
 
   if ( ev->getButton() == fc::LeftButton )
   {
@@ -922,61 +917,11 @@ void FListView::onMouseMove (FMouseEvent* ev)
 
   // auto-scrolling when dragging mouse outside the widget
   if ( mouse_y < 2 )
-  {
-    // drag up
-    if ( drag_scroll != fc::noScroll
-      && scroll_distance < getClientHeight() )
-      scroll_distance++;
-
-    if ( ! scroll_timer && current_iter.getPosition() > 0 )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-
-      if ( ev->getButton() == fc::RightButton )
-        drag_scroll = fc::scrollUpSelect;
-      else
-        drag_scroll = fc::scrollUp;
-    }
-
-    if ( current_iter.getPosition() == 0 )
-    {
-      delOwnTimer();
-      drag_scroll = fc::noScroll;
-    }
-  }
+    dragUp (ev->getButton());
   else if ( mouse_y >= getHeight() )
-  {
-    // drag down
-    if ( drag_scroll != fc::noScroll
-      && scroll_distance < getClientHeight() )
-      scroll_distance++;
-
-    if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
-    {
-      scroll_timer = true;
-      addTimer(scroll_repeat);
-
-      if ( ev->getButton() == fc::RightButton )
-        drag_scroll = fc::scrollDownSelect;
-      else
-        drag_scroll = fc::scrollDown;
-    }
-
-    if ( current_iter.getPosition() - 1 == int(getCount()) )
-    {
-      delOwnTimer();
-      drag_scroll = fc::noScroll;
-    }
-  }
+    dragDown (ev->getButton());
   else
-  {
-    // no dragging
-    delOwnTimer();
-    scroll_timer = false;
-    scroll_distance = 1;
-    drag_scroll = fc::noScroll;
-  }
+    stopDragScroll();
 }
 
 //----------------------------------------------------------------------
@@ -1065,12 +1010,7 @@ void FListView::onWheel (FWheelEvent* ev)
     , pagesize = 4;
 
   if ( drag_scroll != fc::noScroll )
-  {
-    delOwnTimer();
-    scroll_timer = false;
-    scroll_distance = 1;
-    drag_scroll = fc::noScroll;
-  }
+    stopDragScroll();
 
   switch ( ev->getWheel() )
   {
@@ -1744,6 +1684,65 @@ bool FListView::dragScrollDown (int position_before)
 
   stepForward(scroll_distance);
   return true;
+}
+
+//----------------------------------------------------------------------
+void FListView::dragUp (int mouse_button)
+{
+  if ( drag_scroll != fc::noScroll
+    && scroll_distance < getClientHeight() )
+    scroll_distance++;
+
+  if ( ! scroll_timer && current_iter.getPosition() > 0 )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+
+    if ( mouse_button == fc::RightButton )
+      drag_scroll = fc::scrollUpSelect;
+    else
+      drag_scroll = fc::scrollUp;
+  }
+
+  if ( current_iter.getPosition() == 0 )
+  {
+    delOwnTimer();
+    drag_scroll = fc::noScroll;
+  }
+}
+
+//----------------------------------------------------------------------
+void FListView::dragDown (int mouse_button)
+{
+  if ( drag_scroll != fc::noScroll
+    && scroll_distance < getClientHeight() )
+    scroll_distance++;
+
+  if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
+  {
+    scroll_timer = true;
+    addTimer(scroll_repeat);
+
+    if ( mouse_button == fc::RightButton )
+      drag_scroll = fc::scrollDownSelect;
+    else
+      drag_scroll = fc::scrollDown;
+  }
+
+  if ( current_iter.getPosition() - 1 == int(getCount()) )
+  {
+    delOwnTimer();
+    drag_scroll = fc::noScroll;
+  }
+}
+
+//----------------------------------------------------------------------
+void FListView::stopDragScroll()
+{
+  delOwnTimer();
+  scroll_timer = false;
+  scroll_distance = 1;
+  drag_scroll = fc::noScroll;
 }
 
 //----------------------------------------------------------------------

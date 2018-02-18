@@ -555,7 +555,6 @@ void FLabel::drawMultiLine()
       align_offset = getAlignOffset (int(length - 1));
       printLine (label_text, length - 1, hotkeypos, align_offset);
       hotkey_printed = true;
-      hotkeypos = -1;
     }
     else
     {

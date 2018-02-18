@@ -333,6 +333,9 @@ class FListView : public FWidget
     void                 wheelDown (int);
     bool                 dragScrollUp (int);
     bool                 dragScrollDown (int);
+    void                 dragUp (int);
+    void                 dragDown (int);
+    void                 stopDragScroll();
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
