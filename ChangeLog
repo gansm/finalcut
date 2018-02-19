@@ -1,5 +1,6 @@
 2017-02-19  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FTerm::init_termcaps
+	* Refactoring FTerm::init_encoding
 
 2017-02-18  Markus Gans  <guru.mail@muenster.de>
 	* Avoid scroll bar overshooting

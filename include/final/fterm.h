@@ -520,6 +520,12 @@ class FTerm
     static void           init_font();
     static void           init_locale();
     static void           init_encoding();
+    static void           init_encoding_set();
+    static void           init_term_encoding();
+    static void           init_individual_term_encoding();
+    static bool           init_force_vt100_encoding();
+    static void           init_utf8_without_alt_charset();
+    static void           init_tab_quirks();
     static void           redefineColorPalette();
     static void           restoreColorPalette();
     static void           enableMouse();

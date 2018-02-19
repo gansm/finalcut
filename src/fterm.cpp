@@ -4166,13 +4166,32 @@ void FTerm::init_encoding()
 {
   // detect encoding and set the Fputchar function pointer
 
+  init_encoding_set();
+  init_term_encoding();
+  init_pc_charset();
+  init_individual_term_encoding();
+
+  if ( ! init_force_vt100_encoding() )
+    init_utf8_without_alt_charset();
+
+  init_tab_quirks();
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::init_encoding_set()
+{
   // Define the encoding set
+
   (*encoding_set)["UTF8"]  = fc::UTF8;
   (*encoding_set)["UTF-8"] = fc::UTF8;
   (*encoding_set)["VT100"] = fc::VT100;
   (*encoding_set)["PC"]    = fc::PC;
   (*encoding_set)["ASCII"] = fc::ASCII;
+}
 
+//----------------------------------------------------------------------
+void FTerm::init_term_encoding()
+{
   if ( isatty(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
@@ -4197,9 +4216,11 @@ void FTerm::init_encoding()
     term_encoding = fc::ASCII;
     Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
+}
 
-  init_pc_charset();
-
+//----------------------------------------------------------------------
+void FTerm::init_individual_term_encoding()
+{
   if ( linux_terminal
     || cygwin_terminal
     || NewFont
@@ -4220,24 +4241,43 @@ void FTerm::init_encoding()
       Fputchar = &FTerm::putchar_UTF8;  // function pointer
     }
   }
+}
 
+//----------------------------------------------------------------------
+bool FTerm::init_force_vt100_encoding()
+{
   if ( force_vt100 )
   {
     vt100_console = true;
     term_encoding = fc::VT100;
     Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
-  else if ( FTermcap::no_utf8_acs_chars && isUTF8()
-         && term_encoding == fc::VT100 )
+
+  return force_vt100;
+}
+
+//----------------------------------------------------------------------
+void FTerm::init_utf8_without_alt_charset()
+{
+  // Fall back to ascii for utf-8 terminals that
+  // do not support VT100 line drawings
+
+  if ( FTermcap::no_utf8_acs_chars && isUTF8()
+    && term_encoding == fc::VT100 )
   {
     ascii_console = true;
     term_encoding = fc::ASCII;
     Fputchar      = &FTerm::putchar_ASCII;  // function pointer
   }
+}
 
+//----------------------------------------------------------------------
+void FTerm::init_tab_quirks()
+{
   // In some alternative character sets, a tab character prints a '○'
   // on the terminal and does not move the cursor to the next tab stop
   // position
+
   if ( term_encoding == fc::VT100 || term_encoding == fc::PC )
   {
     char* empty = 0;
