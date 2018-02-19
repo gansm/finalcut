@@ -3366,21 +3366,20 @@ void FTerm::init_teraterm_charmap()
 }
 
 //----------------------------------------------------------------------
+/* Terminal capability data base
+ * -----------------------------
+ * Info under: man 5 terminfo
+ *
+ * Importent shell commands:
+ *   captoinfo - convert all termcap descriptions into terminfo descriptions
+ *   infocmp   - print out terminfo description from the current terminal
+ */
 void FTerm::init_termcaps()
 {
-  /* Terminal capability data base
-   * -----------------------------
-   * Info under: man 5 terminfo
-   *
-   * Importent shell commands:
-   *   captoinfo - convert all termcap descriptions into terminfo descriptions
-   *   infocmp   - print out terminfo description from the current terminal
-   */
-  static const int
-      success       =  1
-    , no_entry      =  0
-    , db_not_found  = -1
-    , uninitialized = -2;
+  std::vector<std::string> terminals;
+  std::vector<std::string>::iterator iter;
+  static const int success = 1;
+  static const int uninitialized = -2;
   static char term_buffer[2048];
   static char string_buf[2048];
   char* buffer = string_buf;
@@ -3389,43 +3388,46 @@ void FTerm::init_termcaps()
   // share the terminal capabilities
   FTermcap().setTermcapMap(tcap);
 
-  if ( termtype[0] )
+  // open termcap file
+  terminals.push_back(termtype);            // available terminal type
+
+  if ( color256 )                           // 1st fallback if not found
+    terminals.push_back("xterm-256color");
+
+  terminals.push_back("xterm");             // 2nd fallback if not found
+  terminals.push_back("ansi");              // 3rd fallback if not found
+  terminals.push_back("vt100");             // 4th fallback if not found
+  iter = terminals.begin();
+
+  while ( iter != terminals.end() )
   {
-    // open the termcap file + load entry for termtype
+    // Copy c-string + terminating null-character ('\0')
+    std::strncpy (termtype, (*iter).c_str(), (*iter).length() + 1);
+
+    // Open the termcap file + load entry for termtype
     status = tgetent(term_buffer, termtype);
+
+    if ( status == success || ! terminal_detection )
+      break;
+
+    ++iter;
   }
 
-  if ( status != success && color256 )
-  {
-    // use "xterm-256color" as fallback if not found
-    std::strncpy (termtype, C_STR("xterm-256color"), 15);
-    status = tgetent(term_buffer, termtype);
-  }
+  if ( std::strncmp(termtype, "ansi", 4) == 0 )
+    ansi_terminal = true;
 
-  if ( status != success )
-  {
-    // use "xterm" as fallback if not found
-    std::strncpy (termtype, C_STR("xterm"), 6);
-    status = tgetent(term_buffer, termtype);
+  init_termcaps_error (status);
+  init_termcaps_variables (buffer);
+}
 
-    if ( status != success )
-    {
-      // use "ansi" as fallback if not found
-      std::strncpy (termtype, C_STR("ansi"), 5);
-      status = tgetent(term_buffer, termtype);
-      ansi_terminal = true;
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_error (int status)
+{
+  static const int no_entry = 0;
+  static const int db_not_found = -1;
+  static const int uninitialized = -2;
 
-      if ( status != success )
-      {
-        // use "vt100" as fallback if not found
-        std::strncpy (termtype, C_STR("vt100"), 6);
-        status = tgetent(term_buffer, termtype);
-        ansi_terminal = false;
-      }
-    }
-  }
-
-  if ( status == no_entry )
+  if ( status == no_entry || status == uninitialized )
   {
     std::cerr << "Unknown terminal: "  << termtype << "\n"
               << "Check the TERM environment variable\n"
@@ -3438,12 +3440,16 @@ void FTerm::init_termcaps()
     std::cerr << "The termcap/terminfo database could not be found.\n";
     std::abort();
   }
+}
 
+//----------------------------------------------------------------------
+void FTerm::init_termcaps_variables (char*& buffer)
+{
   // Get termcap booleans
   init_termcaps_booleans();
 
-  // Get termcap numeric
-  init_termcaps_numeric();
+  // Get termcap numerics
+  init_termcaps_numerics();
 
   // Get termcap strings
   init_termcaps_strings(buffer);
@@ -3490,7 +3496,7 @@ void FTerm::init_termcaps_booleans()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_numeric()
+void FTerm::init_termcaps_numerics()
 {
   // Get termcap numeric
 

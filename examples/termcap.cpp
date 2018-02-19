@@ -31,7 +31,7 @@
 static FVTerm* terminal;
 
 // Function prototype
-void tcapBooleans (const std::string&, bool);
+void tcapBoolean (const std::string&, bool);
 void tcapNumeric (const std::string&, int);
 void tcapString (const std::string&, const char[]);
 void debug (FApplication&);
@@ -142,7 +142,7 @@ const int last_item = int ( sizeof(strings) / sizeof(strings[0]) ) - 1;
 //----------------------------------------------------------------------
 // Functions
 //----------------------------------------------------------------------
-void tcapBooleans (const std::string& name, bool cap_bool)
+void tcapBoolean (const std::string& name, bool cap_bool)
 {
   std::cout << "FTermcap::" << name << ": ";
 
@@ -232,20 +232,20 @@ void debug (FApplication& TermApp)
 void booleans()
 {
   std::cout << "\r\n[Booleans]\r\n";
-  tcapBooleans ( "background_color_erase"
-               , FTermcap::background_color_erase );
-  tcapBooleans ( "automatic_left_margin"
-               , FTermcap::automatic_left_margin );
-  tcapBooleans ( "automatic_right_margin"
-               , FTermcap::automatic_right_margin );
-  tcapBooleans ( "eat_nl_glitch"
-               , FTermcap::eat_nl_glitch );
-  tcapBooleans ( "ansi_default_color"
-               , FTermcap::ansi_default_color );
-  tcapBooleans ( "osc_support"
-               , FTermcap::osc_support );
-  tcapBooleans ( "no_utf8_acs_chars"
-               , FTermcap::no_utf8_acs_chars );
+  tcapBoolean ( "background_color_erase"
+              , FTermcap::background_color_erase );
+  tcapBoolean ( "automatic_left_margin"
+              , FTermcap::automatic_left_margin );
+  tcapBoolean ( "automatic_right_margin"
+              , FTermcap::automatic_right_margin );
+  tcapBoolean ( "eat_nl_glitch"
+              , FTermcap::eat_nl_glitch );
+  tcapBoolean ( "ansi_default_color"
+              , FTermcap::ansi_default_color );
+  tcapBoolean ( "osc_support"
+              , FTermcap::osc_support );
+  tcapBoolean ( "no_utf8_acs_chars"
+              , FTermcap::no_utf8_acs_chars );
 }
 
 //----------------------------------------------------------------------

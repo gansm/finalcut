@@ -495,8 +495,10 @@ class FTerm
     static void           init_cygwin_charmap();
     static void           init_teraterm_charmap();
     static void           init_termcaps();
+    static void           init_termcaps_error (int);
+    static void           init_termcaps_variables(char*&);
     static void           init_termcaps_booleans();
-    static void           init_termcaps_numeric();
+    static void           init_termcaps_numerics();
     static void           init_termcaps_strings (char*&);
     static void           init_termcaps_quirks();
 #if defined(__FreeBSD__) || defined(__DragonFly__)
