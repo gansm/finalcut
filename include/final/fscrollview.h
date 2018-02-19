@@ -157,6 +157,7 @@ class FScrollView : public FWidget
 
     // Methods
     void              init (FWidget*);
+    void              init_scrollbar();
     void              calculateScrollbarPos();
     void              setHorizontalScrollBarVisibility();
     void              setVerticalScrollBarVisibility();

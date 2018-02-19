@@ -727,15 +727,47 @@ inline FPoint FScrollView::getViewportCursorPos()
 //----------------------------------------------------------------------
 void FScrollView::init (FWidget* parent)
 {
-  int xoffset_end
-    , yoffset_end;
+  int xoffset_end;
+  int yoffset_end;
 
   assert ( parent != 0 );
   assert ( ! parent->isInstanceOf("FScrollView") );
 
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
+  init_scrollbar();
+  xoffset_end = getScrollWidth() - getViewportWidth();
+  yoffset_end = getScrollHeight() - getViewportHeight();
+  nf_offset = isNewFont() ? 1 : 0;
+  setTopPadding (1 - getScrollY());
+  setLeftPadding (1 - getScrollX());
+  setBottomPadding (1 - (yoffset_end - getScrollY()));
+  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
 
+  FPoint no_shadow(0,0);
+  int w = getViewportWidth();
+  int h = getViewportHeight();
+
+  if ( w < 1 )
+    w = 1;
+
+  if ( h < 1 )
+    h = 1;
+
+  scroll_geometry.setRect (0, 0, w, h);
+  createArea (scroll_geometry, no_shadow, viewport);
+  addPreprocessingHandler
+  (
+    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
+  );
+
+  if ( viewport )
+    child_print_area = viewport;
+}
+
+//----------------------------------------------------------------------
+void FScrollView::init_scrollbar()
+{
   try
   {
     vbar = new FScrollbar(fc::vertical, this);
@@ -765,34 +797,6 @@ void FScrollView::init (FWidget* parent)
     "change-value",
     F_METHOD_CALLBACK (this, &FScrollView::cb_HBarChange)
   );
-
-  xoffset_end = getScrollWidth() - getViewportWidth();
-  yoffset_end = getScrollHeight() - getViewportHeight();
-  nf_offset = isNewFont() ? 1 : 0;
-  setTopPadding (1 - getScrollY());
-  setLeftPadding (1 - getScrollX());
-  setBottomPadding (1 - (yoffset_end - getScrollY()));
-  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
-
-  FPoint no_shadow(0,0);
-  int w = getViewportWidth();
-  int h = getViewportHeight();
-
-  if ( w < 1 )
-    w = 1;
-
-  if ( h < 1 )
-    h = 1;
-
-  scroll_geometry.setRect (0, 0, w, h);
-  createArea (scroll_geometry, no_shadow, viewport);
-  addPreprocessingHandler
-  (
-    F_PREPROC_HANDLER (this, &FScrollView::copy2area)
-  );
-
-  if ( viewport )
-    child_print_area = viewport;
 }
 
 //----------------------------------------------------------------------
