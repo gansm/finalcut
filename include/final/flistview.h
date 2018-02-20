@@ -354,6 +354,7 @@ class FListView : public FWidget
     void                 scrollToY (int);
     void                 scrollTo (const FPoint &);
     void                 scrollTo (int, int);
+    void                 scrollBy (int, int);
 
     // Callback methods
     void                 cb_VBarChange (FWidget*, data_ptr);

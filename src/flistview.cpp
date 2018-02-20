@@ -1330,7 +1330,7 @@ void FListView::drawList()
   y           = 0;
   page_height = uInt(getHeight() - 2);
   is_focus    = ((flags & fc::focus) != 0);
-  iter = first_visible_line;
+  iter        = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
   {
@@ -2055,13 +2055,24 @@ void FListView::scrollTo (int x, int y)
 }
 
 //----------------------------------------------------------------------
+void FListView::scrollBy (int dx, int dy)
+{
+  scrollToX(xoffset + dx);
+
+  if ( dy > 0 )
+    stepForward(dy);
+
+  if ( dy < 0 )
+    stepBackward(-dy);
+}
+
+//----------------------------------------------------------------------
 void FListView::cb_VBarChange (FWidget*, data_ptr)
 {
-  FScrollbar::sType scrollType;
-  int distance = 1;
-  int first_line_position_before = first_visible_line.getPosition();
-
-  scrollType = vbar->getScrollType();
+  FScrollbar::sType scrollType = vbar->getScrollType();
+  int distance = 1
+    , pagesize = 4
+    , first_line_position_before = first_visible_line.getPosition();
 
   switch ( scrollType )
   {
@@ -2086,22 +2097,15 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
     {
       int value = vbar->getValue();
       scrollToY (value);
-
       break;
     }
 
     case FScrollbar::scrollWheelUp:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelUp);
-      onWheel(&wheel_ev);
-    }
+    wheelUp (pagesize);
     break;
 
     case FScrollbar::scrollWheelDown:
-    {
-      FWheelEvent wheel_ev (fc::MouseWheel_Event, FPoint(2,2), fc::WheelDown);
-      onWheel(&wheel_ev);
-    }
+    wheelDown (pagesize);
     break;
   }
 
@@ -2125,12 +2129,10 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListView::cb_HBarChange (FWidget*, data_ptr)
 {
-  FScrollbar::sType scrollType;
+  FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1
     , pagesize = 4
-    , xoffset_before = xoffset
-    , xoffset_end = max_line_width - getClientWidth();
-  scrollType = hbar->getScrollType();
+    , xoffset_before = xoffset;
 
   switch ( scrollType )
   {
@@ -2141,24 +2143,14 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepBackward:
-      xoffset -= distance;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
+      scrollBy (-distance, 0);
       break;
 
     case FScrollbar::scrollPageForward:
       distance = getClientWidth();
       // fall through
     case FScrollbar::scrollStepForward:
-      xoffset += distance;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollBy (distance, 0);
       break;
 
     case FScrollbar::scrollJump:
@@ -2169,25 +2161,11 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
     }
 
     case FScrollbar::scrollWheelUp:
-      if ( xoffset == 0 )
-        break;
-
-      xoffset -= pagesize;
-
-      if ( xoffset < 0 )
-        xoffset = 0;
-
+      scrollBy (-pagesize, 0);
       break;
 
     case FScrollbar::scrollWheelDown:
-      if ( xoffset == xoffset_end )
-        break;
-
-      xoffset += pagesize;
-
-      if ( xoffset > xoffset_end )
-        xoffset = xoffset_end;
-
+      scrollBy (pagesize, 0);
       break;
   }
 
