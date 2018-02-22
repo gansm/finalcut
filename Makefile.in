@@ -85,8 +85,9 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in AUTHORS COPYING ChangeLog compile \
-	config.guess config.sub depcomp install-sh missing ltmain.sh
+	$(srcdir)/config.h.in AUTHORS COPYING COPYING.LESSER ChangeLog \
+	compile config.guess config.sub depcomp install-sh missing \
+	ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prefix_config_h.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -354,7 +355,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src fonts doc examples
-doc_DATA = AUTHORS COPYING ChangeLog
+doc_DATA = AUTHORS COPYING COPYING.LESSER ChangeLog
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

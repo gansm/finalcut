@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -341,72 +341,22 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
   if ( ! super_menu )
     return;
 
-  const FPoint& t = ev->getTermPos();
-  int b = ev->getButton();
-
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-    const FPoint& p2 = smenu->termToWidgetPos(t);
-
-    try
-    {
-      FMouseEvent* _ev = new FMouseEvent ( fc::MouseDoubleClick_Event
-                                         , p2, t, b );
-      smenu->onMouseDoubleClick(_ev);
-      delete _ev;
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc "
-                << ex.what() << std::endl;
-    }
+    passMouseEvent (smenu, ev, fc::MouseDoubleClick_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-    if ( mbar )
-    {
-      const FPoint& p2 = mbar->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDoubleClick_Event
-                                           , p2, t, b );
-        mbar->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
-    }
+    passMouseEvent (mbar, ev, fc::MouseDoubleClick_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-
-    if ( dgl )
-    {
-      const FPoint& p2 = dgl->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDoubleClick_Event
-                                           , p2, t, b );
-        dgl->onMouseDoubleClick(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
-    }
+    passMouseEvent (dgl, ev, fc::MouseDoubleClick_Event);
   }
 }
 
@@ -416,72 +366,22 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
   if ( ! super_menu )
     return;
 
-  const FPoint& t = ev->getTermPos();
-  int b = ev->getButton();
-
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-    const FPoint& p2 = smenu->termToWidgetPos(t);
-
-    try
-    {
-      FMouseEvent* _ev = new FMouseEvent ( fc::MouseDown_Event
-                                         , p2, t, b );
-      smenu->onMouseDown(_ev);
-      delete _ev;
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc "
-                << ex.what() << std::endl;
-    }
+    passMouseEvent (smenu, ev, fc::MouseDown_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-
-    if ( mbar )
-    {
-      const FPoint& p2 = mbar->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDown_Event
-                                           , p2, t, b );
-        mbar->onMouseDown(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
-    }
+    passMouseEvent (mbar, ev, fc::MouseDown_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-
-    if ( dgl )
-    {
-      const FPoint& p2 = dgl->termToWidgetPos(t);
-
-      try
-      {
-        FMouseEvent* _ev = new FMouseEvent ( fc::MouseDown_Event
-                                           , p2, t, b );
-        dgl->onMouseDown(_ev);
-        delete _ev;
-      }
-      catch (const std::bad_alloc& ex)
-      {
-        std::cerr << "not enough memory to alloc "
-                  << ex.what() << std::endl;
-      }
-    }
+    passMouseEvent (dgl, ev, fc::MouseDown_Event);
   }
 }
 
@@ -491,34 +391,22 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
   if ( ! super_menu )
     return;
 
-  const FPoint& t = ev->getTermPos();
-  int b = ev->getButton();
-
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-    const FPoint& p2 = smenu->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-    smenu->onMouseUp(_ev);
-    delete _ev;
+    passMouseEvent (smenu, ev, fc::MouseUp_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-    const FPoint& p2 = mbar->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-    mbar->onMouseUp(_ev);
-    delete _ev;
+    passMouseEvent (mbar, ev, fc::MouseUp_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-    const FPoint& p2 = dgl->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p2, t, b);
-    dgl->onMouseUp(_ev);
-    delete _ev;
+    passMouseEvent (dgl, ev, fc::MouseUp_Event);
   }
 }
 
@@ -528,34 +416,22 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
   if ( ! super_menu )
     return;
 
-  const FPoint& t = ev->getTermPos();
-  int b = ev->getButton();
-
   if ( isMenu(super_menu) )
   {
     FMenu* smenu = static_cast<FMenu*>(super_menu);
-    const FPoint& p2 = smenu->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-    smenu->onMouseMove(_ev);
-    delete _ev;
+    passMouseEvent (smenu, ev, fc::MouseMove_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
     FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
-    const FPoint& p2 = mbar->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-    mbar->onMouseMove(_ev);
-    delete _ev;
+    passMouseEvent (mbar, ev, fc::MouseMove_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
     FDialog* dgl = static_cast<FDialog*>(super_menu);
-    const FPoint& p2 = dgl->termToWidgetPos(t);
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p2, t, b);
-    dgl->onMouseMove(_ev);
-    delete _ev;
+    passMouseEvent (dgl, ev, fc::MouseMove_Event);
   }
 }
 
@@ -815,6 +691,52 @@ void FMenuItem::createDialogList (FMenu* winmenu)
   }
 
   winmenu->calculateDimensions();
+}
+
+//----------------------------------------------------------------------
+template<class T>
+void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
+                               , fc::events ev_type )
+{
+  if ( ! widget )
+    return;
+
+  FMouseEvent* _ev;
+  const FPoint& t = ev->getTermPos();
+  const FPoint& p2 = widget->termToWidgetPos(t);
+  int b = ev->getButton();
+
+  try
+  {
+    _ev = new FMouseEvent (ev_type, p2, t, b);
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc "
+              << ex.what() << std::endl;
+    return;
+  }
+
+  switch ( int(ev_type) )
+  {
+    case fc::MouseDoubleClick_Event:
+      widget->onMouseDoubleClick(_ev);
+      break;
+
+    case fc::MouseDown_Event:
+      widget->onMouseDown(_ev);
+      break;
+
+    case fc::MouseUp_Event:
+      widget->onMouseUp(_ev);
+      break;
+
+    case fc::MouseMove_Event:
+      widget->onMouseMove(_ev);
+      break;
+  }
+
+  delete _ev;
 }
 
 //----------------------------------------------------------------------
