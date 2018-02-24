@@ -1132,49 +1132,57 @@ void FDialog::drawZoomButton()
     setColor (wc.titlebar_button_fg, wc.titlebar_button_bg);
 
   if ( isZoomed() )
+    drawRestoreSizeButton();
+  else
+    drawZoomedButton();
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::drawRestoreSizeButton()
+{
+  if ( isNewFont() )
   {
-    if ( isNewFont() )
+    print (fc::NF_rev_down_pointing_triangle1);
+    print (fc::NF_rev_down_pointing_triangle2);
+  }
+  else
+  {
+    if ( isMonochron() )
     {
-      print (fc::NF_rev_down_pointing_triangle1);
-      print (fc::NF_rev_down_pointing_triangle2);
+      print ('[');
+      print (fc::BlackDownPointingTriangle);  // ▼
+      print (']');
     }
     else
     {
-      if ( isMonochron() )
-      {
-        print ('[');
-        print (fc::BlackDownPointingTriangle);  // ▼
-        print (']');
-      }
-      else
-      {
-        print (' ');
-        print (fc::BlackDownPointingTriangle);  // ▼
-        print (' ');
-      }
+      print (' ');
+      print (fc::BlackDownPointingTriangle);  // ▼
+      print (' ');
     }
   }
-  else  // is not zoomed
+}
+
+//----------------------------------------------------------------------
+inline void FDialog::drawZoomedButton()
+{
+  if ( isNewFont() )
   {
-    if ( isNewFont() )
+    print (fc::NF_rev_up_pointing_triangle1);
+    print (fc::NF_rev_up_pointing_triangle2);
+  }
+  else
+  {
+    if ( isMonochron() )
     {
-      print (fc::NF_rev_up_pointing_triangle1);
-      print (fc::NF_rev_up_pointing_triangle2);
+      print ('[');
+      print (fc::BlackUpPointingTriangle);  // ▲
+      print (']');
     }
     else
     {
-      if ( isMonochron() )
-      {
-        print ('[');
-        print (fc::BlackUpPointingTriangle);  // ▲
-        print (']');
-      }
-      else
-      {
-        print (' ');
-        print (fc::BlackUpPointingTriangle);  // ▲
-        print (' ');
-      }
+      print (' ');
+      print (fc::BlackUpPointingTriangle);  // ▲
+      print (' ');
     }
   }
 }

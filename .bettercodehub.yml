@@ -1,10 +1,13 @@
 exclude:
-- /fonts/newfont.h
-- /fonts/vgafont.h
-- /fonts/unicodemap.h
+- /fonts/.*
+- /scripts/.*
+- /doc/.*
 - /build.sh
 - /ltmain.sh
 component_depth: 3
+test:
+  include:
+  - /test/.*
 languages:
 - cpp
 - script
