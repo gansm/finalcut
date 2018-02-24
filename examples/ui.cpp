@@ -274,6 +274,10 @@ class MyDialog : public FDialog
     // Method
     void initMenu();
     void initMenuCallbacks();
+    void initFileMenuCallbacks();
+    void initEditMenuCallbacks();
+    void initViewMenuCallbacks();
+    void initHelpMenuCallback();
     void initStatusBar();
     void initStatusBarCallbacks();
     void initWidgets();
@@ -443,7 +447,16 @@ void MyDialog::initMenu()
 void MyDialog::initMenuCallbacks()
 {
   // Menu function callbacks
+  initFileMenuCallbacks();
+  initEditMenuCallbacks();
+  initViewMenuCallbacks();
+  initHelpMenuCallback();
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initFileMenuCallbacks()
+{
+  // File menu
   Open->addCallback
   (
     "clicked",
@@ -456,6 +469,33 @@ void MyDialog::initMenuCallbacks()
     F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
   );
 
+  // System files submenu
+  File1->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
+    static_cast<FWidget::data_ptr>(File1)
+  );
+
+  File2->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
+    static_cast<FWidget::data_ptr>(File2)
+  );
+
+  File3->addCallback
+  (
+    "clicked",
+    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
+    static_cast<FWidget::data_ptr>(File3)
+  );
+}
+
+//----------------------------------------------------------------------
+void MyDialog::initEditMenuCallbacks()
+{
+  // Edit menu
   Cut->addCallback
   (
     "clicked",
@@ -479,7 +519,12 @@ void MyDialog::initMenuCallbacks()
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_clearInput)
   );
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initViewMenuCallbacks()
+{
+  // View menu
   Env->addCallback
   (
     "clicked",
@@ -491,32 +536,15 @@ void MyDialog::initMenuCallbacks()
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_drives)
   );
+}
 
+//----------------------------------------------------------------------
+void MyDialog::initHelpMenuCallback()
+{
   Help->addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_about)
-  );
-
-  File1->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<FWidget::data_ptr>(File1)
-  );
-
-  File2->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<FWidget::data_ptr>(File2)
-  );
-
-  File3->addCallback
-  (
-    "clicked",
-    F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<FWidget::data_ptr>(File3)
   );
 }
 

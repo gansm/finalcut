@@ -117,7 +117,9 @@ FObject* FObject::getChild (int index) const
 //----------------------------------------------------------------------
 bool FObject::isChild (FObject* obj) const
 {
-  while ( FObject* p_obj = obj->getParent() )
+  FObject* p_obj = 0;
+
+  while ( obj && (p_obj = obj->getParent()) )
   {
     obj = p_obj;
 

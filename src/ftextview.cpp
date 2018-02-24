@@ -295,10 +295,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), getTextHeight());
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && int(getRows()) >= getTextHeight() + 1 )
+  if ( ! vbar->isVisible() && int(getRows()) > getTextHeight() )
     vbar->setVisible();
 
-  if ( vbar->isVisible() && int(getRows()) < getTextHeight() + 1 )
+  if ( vbar->isVisible() && int(getRows()) <= getTextHeight() )
     vbar->hide();
 
   processChanged();
