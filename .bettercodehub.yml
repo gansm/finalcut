@@ -5,9 +5,6 @@ exclude:
 - /build.sh
 - /ltmain.sh
 component_depth: 3
-test:
-  include:
-  - /test/.*
 languages:
 - cpp
 - script
