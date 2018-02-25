@@ -116,7 +116,10 @@ else
   exit 1
 fi
 
-if [ "$1" = "--unit-test" ] || [ "unit-test" ]
+if [ "$1" = "--unit-test" ] \
+|| [ "$1" == "unit-test" ] \
+|| [ "$1" == "--coverage" ] \
+|| [ "$1" == "coverage" ]
 then
   cd src/test && make check-TESTS
 fi
