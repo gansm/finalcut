@@ -64,8 +64,16 @@ case "$1" in
     fi
     ;;
 
+  "--unit-test"|"unit-test")
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
+    then
+      echo "${RED}Configure failed!${NORMAL}" 1>&2
+      exit -1
+    fi
+    ;;
+
   "--coverage"|"coverage")
-    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-gcov
+    if ! ./configure --prefix="$PREFIX" CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test --with-gcov
     then
       echo "${RED}Configure failed!${NORMAL}" 1>&2
       exit -1
@@ -81,6 +89,7 @@ case "$1" in
     echo "  debug         Compile with debug option"
     echo "  fulldebug     Compile with all warning options"
     echo "  profile       Compile with profile option (analysis with gprof)"
+    echo "  unit-test     Compile with CppUnit testing"
     echo "  cpu-profiler  Link with Google cpu performance profiler"
     echo "  coverage      Compile with options for coverage analysis with gcov"
     echo "  help          Show this help"
@@ -105,6 +114,11 @@ then
 else
   printf '%bError on compile!%b\n' "${RED}" "${NORMAL}" 1>&2
   exit 1
+fi
+
+if [ "$1" = "--unit-test" ] || [ "unit-test" ]
+then
+  cd src/test && make check-TESTS
 fi
 
 # make install

@@ -66,7 +66,7 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile src/test/Makefile])
 
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
@@ -92,6 +92,23 @@ then
                [ProfilerFlush],
                [LIBS="$LIBS -lprofiler"])
 fi
+
+# unit test
+AC_ARG_WITH([unit-test],
+            [AS_HELP_STRING([--with-unit-test], [build unit tests])],
+ 	    [with_unit_test=yes],
+            [with_unit_test=no])
+if test "x$with_unit_test" = "xyes"
+then
+  AC_MSG_NOTICE(enabled cppunit test)
+  AM_PATH_CPPUNIT([1.12.0],
+                  [],
+                  [AC_MSG_ERROR([*** CppUnit not found! ***])])
+  AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "1"])
+else
+  AM_CONDITIONAL(CPPUNIT_TEST, [test "1" = "0"])
+fi
+
 
 # code coverage
 AC_ARG_WITH([gcov],

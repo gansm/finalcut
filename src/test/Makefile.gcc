@@ -1,0 +1,44 @@
+#-----------------------------------------------------------------------------
+# Makefile for Final Cut
+#-----------------------------------------------------------------------------
+
+# This is where make install will install the executable
+BINDIR = /usr/local/bin
+
+# compiler parameter
+CXX = g++
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:%.cpp=%)
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
+MAKEFILE = -f Makefile.gcc
+LDFLAGS = -L../src -lfinal -lcppunit -ldl
+INCLUDES = -I../include -I/usr/include/final
+RM = rm -f
+
+ifdef DEBUG
+  OPTIMIZE = -O0
+else
+  OPTIMIZE = -O2
+endif
+
+# $@ = name of the targets
+# $^ = all dependency (without double entries)
+.cpp:
+	$(CXX) $(CCXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^
+
+all: $(OBJS)
+
+debug:
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic"
+
+check: test
+test: debug
+	$(OBJS) | sed -e "s/ OK/\x1b[32m OK\x1b[0m/g" -e "s/ failed/\x1b[31m failed\x1b[0m/g" 
+
+profile:
+	$(MAKE) $(MAKEFILE) PROFILE="-pg"
+
+.PHONY: clean
+clean:
+	$(RM) $(SRCS:%.cpp=%) *.gcno *.gcda *~
+

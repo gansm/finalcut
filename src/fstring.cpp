@@ -690,6 +690,9 @@ uInt FString::getUTF8length() const
   uInt len;
   const char* s;
 
+  if ( ! string )
+    return 0;
+
   len = 0;
   s = c_str();
 
@@ -1523,14 +1526,14 @@ bool FString::operator <= (const char c) const
 //----------------------------------------------------------------------
 bool FString::operator == (const FString& s) const
 {
+  if ( ! (string || s.string) )
+    return true;
+
   if ( ! s )
     return false;
 
   if ( bool(string) != bool(s.string) )
     return false;
-
-  if ( ! (string || s.string) )
-    return true;
 
   return ( std::wcscmp(string, s.string) == 0 );
 }
@@ -1580,14 +1583,14 @@ bool FString::operator == (const char c) const
 //----------------------------------------------------------------------
 bool FString::operator != (const FString& s) const
 {
+  if ( ! (string || s.string) )
+    return false;
+
   if ( ! s )
     return true;
 
   if ( bool(string) != bool(s.string) )
     return true;
-
-  if ( ! (string || s.string) )
-    return false;
 
   return ( std::wcscmp(string, s.string) != 0 );
 }
@@ -2424,18 +2427,27 @@ const FString& FString::remove (uInt pos, uInt len)
 //----------------------------------------------------------------------
 bool FString::includes (const FString& s)
 {
+  if ( ! string )
+    return false;
+
   return ( std::wcsstr(string, s.string) != 0 );
 }
 
 //----------------------------------------------------------------------
 bool FString::includes (const wchar_t s[])
 {
+  if ( ! string )
+    return false;
+
   return ( std::wcsstr(string, s) != 0 );
 }
 
 //----------------------------------------------------------------------
 bool FString::includes (const char s[])
-{
+{  
+  if ( ! string )
+    return false;
+
   bool ret;
   const wchar_t* wc_string = c_to_wc_str(s);
 
@@ -2450,6 +2462,9 @@ bool FString::includes (const char s[])
 //----------------------------------------------------------------------
 bool FString::includes (const wchar_t c)
 {
+  if ( ! string )
+    return false;
+
   wchar_t s[2];
   s[0] = c;
   s[1] = L'\0';
@@ -2459,6 +2474,9 @@ bool FString::includes (const wchar_t c)
 //----------------------------------------------------------------------
 bool FString::includes (const char c)
 {
+  if ( ! string )
+    return false;
+
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
   s[1] = L'\0';

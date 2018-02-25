@@ -8,6 +8,8 @@
 *.gcov
 *.gcno
 *.gcda
+*.log
+*.trs
 stamp-h1
 _configs.sed
 config.guess
@@ -46,3 +48,6 @@ examples/keyboard
 examples/mouse
 examples/timer
 examples/ui
+src/test/.deps/
+src/test/.libs/
+src/test/fstring_test

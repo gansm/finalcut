@@ -75,6 +75,8 @@ matrix:
       - make V=1 -j10
       - echo input | examples/string-operations 
       - examples/termcap
+      - cd test
+      - make check-TESTS
     after_success:
       - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts
 
