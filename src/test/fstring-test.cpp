@@ -49,6 +49,9 @@
 class FStringTest : public CPPUNIT_NS::TestFixture
 {
   public:
+    FStringTest()
+    { }
+  
     void setUp();
     void tearDown();
 
