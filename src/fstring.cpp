@@ -2444,7 +2444,7 @@ bool FString::includes (const wchar_t s[])
 
 //----------------------------------------------------------------------
 bool FString::includes (const char s[])
-{  
+{
   if ( ! string )
     return false;
 

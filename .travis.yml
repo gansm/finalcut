@@ -17,6 +17,7 @@ addons:
      - gpm
      - libgpm-dev
      - gperf
+     - libcppunit-dev
 
 env:
   global:
