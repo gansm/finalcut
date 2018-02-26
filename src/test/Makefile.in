@@ -82,9 +82,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = fstring_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fstring_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@TESTS = fstring_test$(EXEEXT)
-check_PROGRAMS = $(am__EXEEXT_1)
+@CPPUNIT_TEST_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
 subdir = src/test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
@@ -102,7 +102,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fstring_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_fstring_test_OBJECTS = fstring-test.$(OBJEXT)
+am__fstring_test_SOURCES_DIST = fstring-test.cpp
+@CPPUNIT_TEST_TRUE@am_fstring_test_OBJECTS = fstring-test.$(OBJEXT)
 fstring_test_OBJECTS = $(am_fstring_test_OBJECTS)
 fstring_test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -144,7 +145,7 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(fstring_test_SOURCES)
-DIST_SOURCES = $(fstring_test_SOURCES)
+DIST_SOURCES = $(am__fstring_test_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -502,7 +503,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal $(CPPUNIT_LIBS)
 AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
-fstring_test_SOURCES = fstring-test.cpp
+@CPPUNIT_TEST_TRUE@fstring_test_SOURCES = fstring-test.cpp
 all: all-am
 
 .SUFFIXES:
