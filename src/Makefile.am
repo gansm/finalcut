@@ -4,6 +4,8 @@
 
 AM_CPPFLAGS = -I../include -Wall -Werror -DCOMPILE_FINAL_CUT
 
+SUBDIRS = . test
+
 lib_LTLIBRARIES = libfinal.la
 
 libfinal_la_SOURCES = \
@@ -108,6 +110,8 @@ finalcutinclude_HEADERS = \
 
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
+
+test: check
 
 #uninstall:
 #	rm -R -f $(includedir)/final

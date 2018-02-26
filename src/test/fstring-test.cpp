@@ -28,8 +28,6 @@
 #include <string>
 #include <vector>
 
-#include <final/final.h>
-
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -38,6 +36,7 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+#include <final/final.h>
 
 //----------------------------------------------------------------------
 // class FStringTest
@@ -51,12 +50,13 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   public:
     FStringTest()
     { }
-  
+
     void setUp();
     void tearDown();
 
   protected:
-    void NoArgument();
+    void NoArgumentTest();
+    void caseTest();
     void equalTest();
     void exceptionTest();
 
@@ -66,7 +66,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   // Adds code needed to register the test suite
   CPPUNIT_TEST_SUITE (FStringTest);
 
-  CPPUNIT_TEST (NoArgument);
+  CPPUNIT_TEST (NoArgumentTest);
+  CPPUNIT_TEST (caseTest);
   CPPUNIT_TEST (equalTest);
   CPPUNIT_TEST (exceptionTest);
 
@@ -87,7 +88,7 @@ void FStringTest::tearDown()
   delete s;
 }
 //----------------------------------------------------------------------
-void FStringTest::NoArgument()
+void FStringTest::NoArgumentTest()
 {
   FString empty;
   CPPUNIT_ASSERT ( empty.isNull() );
@@ -106,7 +107,7 @@ void FStringTest::NoArgument()
   CPPUNIT_ASSERT ( str.length() == 0 );
   CPPUNIT_ASSERT ( str.size() == 0 );
   CPPUNIT_ASSERT ( str.empty() );
-  FString fstr = str;
+  const FString fstr = str;
   CPPUNIT_ASSERT ( fstr == empty );
   CPPUNIT_ASSERT ( empty == '\0' );
   CPPUNIT_ASSERT ( empty == L'\0' );
@@ -131,16 +132,53 @@ void FStringTest::NoArgument()
   // Fill the empty string with "123"
   empty << "123";
   CPPUNIT_ASSERT_EQUAL ( empty, FString(L"123") );
+
+  empty.clear();
+  CPPUNIT_ASSERT ( empty.isNull() );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::caseTest()
+{
+  FString str1("abc");
+  CPPUNIT_ASSERT ( str1.toUpper() == "ABC" );
+
+  FString str2("XYZ");
+  CPPUNIT_ASSERT ( str2.toLower() == "xyz" );
 }
 
 //----------------------------------------------------------------------
 void FStringTest::equalTest()
 {
   // std::string -> FString -> std::string
-  std::string s1;
+  const std::string s1 = "abc";
   FString s2 = s1;
   std::string s3 = s2.toString();
   CPPUNIT_ASSERT ( s1 == s3 );
+
+  FString one_char('a');
+  const char ch = 'a';
+  CPPUNIT_ASSERT ( one_char == ch );
+  CPPUNIT_ASSERT ( ch == one_char.c_str()[0] );
+  CPPUNIT_ASSERT ( one_char.getLength() == 1 );
+
+  const wchar_t wch = L'a';
+  CPPUNIT_ASSERT ( one_char == wch );
+  CPPUNIT_ASSERT ( wch == one_char.wc_str()[0] );
+
+  FString str(L"abc");
+  const char cstr[] = "abc";
+  CPPUNIT_ASSERT ( str == cstr );
+  CPPUNIT_ASSERT ( str.getLength() == 3 );
+  CPPUNIT_ASSERT ( str.getUTF8length() == 3 );
+  CPPUNIT_ASSERT ( strncmp(cstr, str.c_str(), 3) == 0 );
+
+  const wchar_t wcstr[] = L"abc";
+  CPPUNIT_ASSERT ( str == wcstr );
+  CPPUNIT_ASSERT ( wcsncmp(wcstr, str.wc_str(), 3) == 0 );
+
+  FString str2(L"abc");
+  CPPUNIT_ASSERT ( str == str2 );
 
   CPPUNIT_ASSERT ( s->getLength() == 1 );
   CPPUNIT_ASSERT ( s->c_str()[0] == 'c');

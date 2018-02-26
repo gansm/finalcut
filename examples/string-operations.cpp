@@ -232,7 +232,6 @@ void streamToInterger()
   {
     std::cerr << "Arithmetic error: " << ex.what() << std::endl;
   }
-
 }
 
 //----------------------------------------------------------------------
