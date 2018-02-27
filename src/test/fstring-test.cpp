@@ -58,6 +58,11 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void NoArgumentTest();
     void caseTest();
     void equalTest();
+    void lessEqualTest();
+    void lessTest();
+    void GreaterEqualTest();
+    void GreaterTest();
+    void notEqualTest();
     void exceptionTest();
 
   private:
@@ -69,6 +74,11 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST (NoArgumentTest);
   CPPUNIT_TEST (caseTest);
   CPPUNIT_TEST (equalTest);
+  CPPUNIT_TEST (notEqualTest);
+  CPPUNIT_TEST (lessEqualTest);
+  CPPUNIT_TEST (lessTest);
+  CPPUNIT_TEST (GreaterEqualTest);
+  CPPUNIT_TEST (GreaterTest);
   CPPUNIT_TEST (exceptionTest);
 
   // End of test suite definition
@@ -79,6 +89,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FStringTest::setUp()
 {
+  std::setlocale(LC_CTYPE, "");
   s = new FString('c');
 }
 
@@ -87,6 +98,7 @@ void FStringTest::tearDown()
 {
   delete s;
 }
+
 //----------------------------------------------------------------------
 void FStringTest::NoArgumentTest()
 {
@@ -151,12 +163,18 @@ void FStringTest::caseTest()
 void FStringTest::equalTest()
 {
   // std::string -> FString -> std::string
-  const std::string s1 = "abc";
-  FString s2 = s1;
-  std::string s3 = s2.toString();
-  CPPUNIT_ASSERT ( s1 == s3 );
+  const std::string s1 = "string";
+  FString fs = s1;
+  const std::string s2 = fs.toString();
+  CPPUNIT_ASSERT ( s1 == s2 );
 
-  FString one_char('a');
+  // std::wstring -> FString -> std::wstring
+  const std::wstring ws1 = L"wide string";
+  fs = ws1;
+  std::wstring ws2 = fs.wc_str();
+  CPPUNIT_ASSERT ( ws1 == ws2 );
+
+  const FString one_char('a');
   const char ch = 'a';
   CPPUNIT_ASSERT ( one_char == ch );
   CPPUNIT_ASSERT ( ch == one_char.c_str()[0] );
@@ -166,7 +184,10 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( one_char == wch );
   CPPUNIT_ASSERT ( wch == one_char.wc_str()[0] );
 
-  FString str(L"abc");
+  const FString str(L"abc");
+  const FString str2(L"abc");
+  CPPUNIT_ASSERT ( str == str2 );
+
   const char cstr[] = "abc";
   CPPUNIT_ASSERT ( str == cstr );
   CPPUNIT_ASSERT ( str.getLength() == 3 );
@@ -177,12 +198,182 @@ void FStringTest::equalTest()
   CPPUNIT_ASSERT ( str == wcstr );
   CPPUNIT_ASSERT ( wcsncmp(wcstr, str.wc_str(), 3) == 0 );
 
-  FString str2(L"abc");
-  CPPUNIT_ASSERT ( str == str2 );
+  const std::string st = "abc";
+  CPPUNIT_ASSERT ( str == st );
 
-  CPPUNIT_ASSERT ( s->getLength() == 1 );
+  const std::wstring wst = L"abc";
+  CPPUNIT_ASSERT ( str == wst );
+  
   CPPUNIT_ASSERT ( s->c_str()[0] == 'c');
+  CPPUNIT_ASSERT ( s->getLength() == 1 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::notEqualTest()
+{
+  const FString one_char('@');
+  const char ch = '!';
+  CPPUNIT_ASSERT ( one_char != ch );
+  CPPUNIT_ASSERT ( ch != one_char.c_str()[0] );
+  CPPUNIT_ASSERT ( one_char.getLength() == 1 );
+
+  const wchar_t wch = L'_';
+  CPPUNIT_ASSERT ( one_char != wch );
+  CPPUNIT_ASSERT ( wch != one_char.wc_str()[0] );
+
+  const FString s1 = L"ABC";  // latin letter
+  const FString s2 = L"АВС";  // cyrillic letters
+  CPPUNIT_ASSERT ( s1 != s2 );
+
+  const char cstr[] = "abc";
+  CPPUNIT_ASSERT ( s1 != cstr );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+  CPPUNIT_ASSERT ( strlen(s1.c_str()) == 3 );
+  CPPUNIT_ASSERT ( s2.getLength() == 3 );
+  CPPUNIT_ASSERT ( strlen(s2.c_str()) == 6 );
+  CPPUNIT_ASSERT ( s1.getUTF8length() == 3 );
+  CPPUNIT_ASSERT ( s2.getUTF8length() == 3 );
+  CPPUNIT_ASSERT ( strncmp(cstr, s1.c_str(), 3) != 0 );
+
+  const wchar_t wcstr[] = L"abc";
+  CPPUNIT_ASSERT ( s1 != wcstr );
+  CPPUNIT_ASSERT ( wcsncmp(wcstr, s1.wc_str(), 3) != 0 );
+
+  const std::string st = "abc";
+  CPPUNIT_ASSERT ( s1 != st );
+
+  const std::wstring wst = L"abc";
+  CPPUNIT_ASSERT ( s1 != wst );
+  
   CPPUNIT_ASSERT ( s->c_str()[0] != 's');
+}
+
+//----------------------------------------------------------------------
+void FStringTest::lessEqualTest()
+{
+  const FString one_char('x');
+  const char ch = 'z';
+  CPPUNIT_ASSERT ( one_char <= ch );
+
+  const wchar_t wch = L'z';
+  CPPUNIT_ASSERT ( one_char <= wch );
+
+  const FString s1 = L"xyz";
+  const FString s2 = L"xyz";
+  const FString s3 = L"xzz";
+  CPPUNIT_ASSERT ( s1 <= s2 && s1 == s2 );
+  CPPUNIT_ASSERT ( s1 <= s3 && s1 != s3 );
+
+  const char cstr1[] = "xyz";
+  const char cstr2[] = "xzz";
+  CPPUNIT_ASSERT ( s1 <= cstr1 && s1 == cstr1 );
+  CPPUNIT_ASSERT ( s1 <= cstr2 && s1 != cstr2 );
+
+  const wchar_t wcstr1[] = L"xyz";
+  const wchar_t wcstr2[] = L"xzz";
+  CPPUNIT_ASSERT ( s1 <= wcstr1 && s1 == wcstr1 );
+  CPPUNIT_ASSERT ( s1 <= wcstr2 && s1 != wcstr2 );
+
+  const std::string st1 = "xyz";
+  const std::string st2 = "xzz";
+  CPPUNIT_ASSERT ( s1 <= st1 && s1 == st1 );
+  CPPUNIT_ASSERT ( s1 <= st2 && s1 != st2 );
+
+  const std::wstring wst1 = L"xyz";
+  const std::wstring wst2 = L"xzz";
+  CPPUNIT_ASSERT ( s1 <= wst1 && s1 == wst1 );
+  CPPUNIT_ASSERT ( s1 <= wst2 && s1 != wst2 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::lessTest()
+{
+  const FString one_char('x');
+  const char ch = 'z';
+  CPPUNIT_ASSERT ( one_char < ch );
+
+  const wchar_t wch = L'z';
+  CPPUNIT_ASSERT ( one_char < wch );
+
+  const FString s1 = L"xyz";
+  const FString s2 = L"xzz";
+  CPPUNIT_ASSERT ( s1 < s2 );
+
+  const char cstr[] = "xzz";
+  CPPUNIT_ASSERT ( s1 < cstr );
+
+  const wchar_t wcstr[] = L"xzz";
+  CPPUNIT_ASSERT ( s1 < wcstr );
+
+  const std::string st = "xzz";
+  CPPUNIT_ASSERT ( s1 < st  );
+
+  const std::wstring wst = L"xzz";
+  CPPUNIT_ASSERT ( s1 < wst );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::GreaterEqualTest()
+{
+  const FString one_char('x');
+  const char ch = 'x';
+  CPPUNIT_ASSERT ( one_char >= ch );
+
+  const wchar_t wch = L'x';
+  CPPUNIT_ASSERT ( one_char >= wch );
+
+  const FString s1 = L"xyz";
+  const FString s2 = L"xyz";
+  const FString s3 = L"xxz";
+  CPPUNIT_ASSERT ( s1 >= s2 && s1 == s2 );
+  CPPUNIT_ASSERT ( s1 >= s3 && s1 != s3 );
+
+  const char cstr1[] = "xyz";
+  const char cstr2[] = "xxz";
+  CPPUNIT_ASSERT ( s1 >= cstr1 && s1 == cstr1 );
+  CPPUNIT_ASSERT ( s1 >= cstr2 && s1 != cstr2 );
+
+  const wchar_t wcstr1[] = L"xyz";
+  const wchar_t wcstr2[] = L"xxz";
+  CPPUNIT_ASSERT ( s1 >= wcstr1 && s1 == wcstr1 );
+  CPPUNIT_ASSERT ( s1 >= wcstr2 && s1 != wcstr2 );
+
+  const std::string st1 = "xyz";
+  const std::string st2 = "xxz";
+  CPPUNIT_ASSERT ( s1 >= st1 && s1 == st1 );
+  CPPUNIT_ASSERT ( s1 >= st2 && s1 != st2 );
+
+  const std::wstring wst1 = L"xyz";
+  const std::wstring wst2 = L"xxz";
+  CPPUNIT_ASSERT ( s1 >= wst1 && s1 == wst1 );
+  CPPUNIT_ASSERT ( s1 >= wst2 && s1 != wst2 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::GreaterTest()
+{
+  const FString one_char('x');
+  const char ch = 'w';
+  CPPUNIT_ASSERT ( one_char > ch );
+
+  const wchar_t wch = L'w';
+  CPPUNIT_ASSERT ( one_char > wch );
+
+  const FString s1 = L"xyz";
+  const FString s2 = L"xww";
+  CPPUNIT_ASSERT ( s1 > s2 );
+
+  const char cstr[] = "xww";
+  CPPUNIT_ASSERT ( s1 > cstr );
+
+  const wchar_t wcstr[] = L"xww";
+  CPPUNIT_ASSERT ( s1 > wcstr );
+
+  const std::string st = "xww";
+  CPPUNIT_ASSERT ( s1 > st  );
+
+  const std::wstring wst = L"xww";
+  CPPUNIT_ASSERT ( s1 > wst );
 }
 
 //----------------------------------------------------------------------
