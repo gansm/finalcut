@@ -56,6 +56,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void NoArgumentTest();
+    void initLengthTest();
+    void copyConstructorTest();
     void caseTest();
     void equalTest();
     void lessEqualTest();
@@ -72,6 +74,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE (FStringTest);
 
   CPPUNIT_TEST (NoArgumentTest);
+  CPPUNIT_TEST (initLengthTest);
+  CPPUNIT_TEST (copyConstructorTest);
   CPPUNIT_TEST (caseTest);
   CPPUNIT_TEST (equalTest);
   CPPUNIT_TEST (notEqualTest);
@@ -150,6 +154,56 @@ void FStringTest::NoArgumentTest()
 }
 
 //----------------------------------------------------------------------
+void FStringTest::initLengthTest()
+{
+  FString s1(0);
+  CPPUNIT_ASSERT ( s1.getLength() == 0 );
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  int  x1 = 10;
+  uInt x2 = 10;
+  FString s2(x1);
+  CPPUNIT_ASSERT ( s2.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s2.isNull() );
+  CPPUNIT_ASSERT ( s2.isEmpty() );
+
+  FString s3(x2);
+  CPPUNIT_ASSERT ( s2.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s2.isNull() );
+  CPPUNIT_ASSERT ( s2.isEmpty() );
+
+  FString s4(x1, '-');
+  CPPUNIT_ASSERT ( s4.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s4.isNull() );
+  CPPUNIT_ASSERT ( ! s4.isEmpty() );
+
+  FString s5(x2, '-');
+  CPPUNIT_ASSERT ( s5.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s5.isNull() );
+  CPPUNIT_ASSERT ( ! s5.isEmpty() );
+
+  FString s6(x1, L'-');
+  CPPUNIT_ASSERT ( s6.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s6.isNull() );
+  CPPUNIT_ASSERT ( ! s6.isEmpty() );
+
+  FString s7(x2, L'-');
+  CPPUNIT_ASSERT ( s7.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s7.isNull() );
+  CPPUNIT_ASSERT ( ! s7.isEmpty() );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::copyConstructorTest()
+{
+  FString s1("abc");
+  FString s2(s1);
+  CPPUNIT_ASSERT ( s2 == L"abc" );
+  CPPUNIT_ASSERT ( s2.getLength() == 3 );
+}
+
+//----------------------------------------------------------------------
 void FStringTest::caseTest()
 {
   FString str1("abc");
@@ -203,7 +257,13 @@ void FStringTest::equalTest()
 
   const std::wstring wst = L"abc";
   CPPUNIT_ASSERT ( str == wst );
-  
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( ! (str == null_str2) );
+  CPPUNIT_ASSERT ( ! (null_str1 == str) );
+  CPPUNIT_ASSERT ( null_str1 == null_str2 );
+
   CPPUNIT_ASSERT ( s->c_str()[0] == 'c');
   CPPUNIT_ASSERT ( s->getLength() == 1 );
 }
@@ -244,7 +304,13 @@ void FStringTest::notEqualTest()
 
   const std::wstring wst = L"abc";
   CPPUNIT_ASSERT ( s1 != wst );
-  
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( s1 != null_str2 );
+  CPPUNIT_ASSERT ( null_str1 != s1 );
+  CPPUNIT_ASSERT ( ! (null_str1 != null_str2) );
+
   CPPUNIT_ASSERT ( s->c_str()[0] != 's');
 }
 
@@ -283,6 +349,12 @@ void FStringTest::lessEqualTest()
   const std::wstring wst2 = L"xzz";
   CPPUNIT_ASSERT ( s1 <= wst1 && s1 == wst1 );
   CPPUNIT_ASSERT ( s1 <= wst2 && s1 != wst2 );
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( ! (s1 <= null_str2) );
+  CPPUNIT_ASSERT ( null_str1 <= s2 );
+  CPPUNIT_ASSERT ( null_str1 <= null_str2 );
 }
 
 //----------------------------------------------------------------------
@@ -310,6 +382,12 @@ void FStringTest::lessTest()
 
   const std::wstring wst = L"xzz";
   CPPUNIT_ASSERT ( s1 < wst );
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( ! (s1 < null_str2) );
+  CPPUNIT_ASSERT ( null_str1 < s2 );
+  CPPUNIT_ASSERT ( ! (null_str1 < null_str2) );
 }
 
 //----------------------------------------------------------------------
@@ -347,6 +425,12 @@ void FStringTest::GreaterEqualTest()
   const std::wstring wst2 = L"xxz";
   CPPUNIT_ASSERT ( s1 >= wst1 && s1 == wst1 );
   CPPUNIT_ASSERT ( s1 >= wst2 && s1 != wst2 );
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( s1 >= null_str2 );
+  CPPUNIT_ASSERT ( ! (null_str1 >= s2) );
+  CPPUNIT_ASSERT ( null_str1 >= null_str2 );
 }
 
 //----------------------------------------------------------------------
@@ -374,6 +458,12 @@ void FStringTest::GreaterTest()
 
   const std::wstring wst = L"xww";
   CPPUNIT_ASSERT ( s1 > wst );
+
+  const FString null_str1;
+  const FString null_str2;
+  CPPUNIT_ASSERT ( s1 > null_str2 );
+  CPPUNIT_ASSERT ( ! (null_str1 > s2) );
+  CPPUNIT_ASSERT ( ! (null_str1 > null_str2) );
 }
 
 //----------------------------------------------------------------------

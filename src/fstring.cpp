@@ -1466,6 +1466,9 @@ bool FString::operator < (const char c) const
 //----------------------------------------------------------------------
 bool FString::operator <= (const FString& s) const
 {
+  if ( ! (string || s.string) )
+    return true;
+
   if ( ! s )
     return false;
 
@@ -1473,9 +1476,6 @@ bool FString::operator <= (const FString& s) const
     return false;
 
   if ( ! string && s.string )
-    return true;
-
-  if ( ! (string || s.string) )
     return true;
 
   return ( std::wcscmp(string, s.string) <= 0 );
