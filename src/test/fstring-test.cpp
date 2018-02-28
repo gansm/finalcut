@@ -141,7 +141,7 @@ void FStringTest::NoArgumentTest()
   CPPUNIT_ASSERT ( ! empty.includes(std::wstring(L"123")) );
   CPPUNIT_ASSERT ( ! empty.includes(FString("123")) );
 
-  std::stringstream out;
+  std::ostringstream out;
   out << empty;
   CPPUNIT_ASSERT ( out.str() == "" );
 
