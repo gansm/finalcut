@@ -58,6 +58,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void NoArgumentTest();
     void initLengthTest();
     void copyConstructorTest();
+    void assignmentTest();
     void caseTest();
     void equalTest();
     void lessEqualTest();
@@ -76,6 +77,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST (NoArgumentTest);
   CPPUNIT_TEST (initLengthTest);
   CPPUNIT_TEST (copyConstructorTest);
+  CPPUNIT_TEST (assignmentTest);
   CPPUNIT_TEST (caseTest);
   CPPUNIT_TEST (equalTest);
   CPPUNIT_TEST (notEqualTest);
@@ -172,35 +174,118 @@ void FStringTest::initLengthTest()
   CPPUNIT_ASSERT ( s2.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s2.isNull() );
   CPPUNIT_ASSERT ( s2.isEmpty() );
+  
+  FString s4(0, '-');
+  CPPUNIT_ASSERT ( s4.getLength() == 0 );
+  CPPUNIT_ASSERT ( s4.isNull() );
+  CPPUNIT_ASSERT ( s4.isEmpty() );
 
-  FString s4(x1, '-');
-  CPPUNIT_ASSERT ( s4.getLength() == 10 );
-  CPPUNIT_ASSERT ( ! s4.isNull() );
-  CPPUNIT_ASSERT ( ! s4.isEmpty() );
-
-  FString s5(x2, '-');
-  CPPUNIT_ASSERT ( s5.getLength() == 10 );
-  CPPUNIT_ASSERT ( ! s5.isNull() );
-  CPPUNIT_ASSERT ( ! s5.isEmpty() );
-
-  FString s6(x1, L'-');
+  FString s5(0, char(0));
+  CPPUNIT_ASSERT ( s5.getLength() == 0 );
+  CPPUNIT_ASSERT ( s5.isNull() );
+  CPPUNIT_ASSERT ( s5.isEmpty() );
+  
+  FString s6(x1, '-');
   CPPUNIT_ASSERT ( s6.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s6.isNull() );
   CPPUNIT_ASSERT ( ! s6.isEmpty() );
 
-  FString s7(x2, L'-');
+  FString s7(x2, '-');
   CPPUNIT_ASSERT ( s7.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s7.isNull() );
   CPPUNIT_ASSERT ( ! s7.isEmpty() );
+
+  FString s8(x1, L'-');
+  CPPUNIT_ASSERT ( s8.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s8.isNull() );
+  CPPUNIT_ASSERT ( ! s8.isEmpty() );
+
+  FString s9(x2, L'-');
+  CPPUNIT_ASSERT ( s9.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s9.isNull() );
+  CPPUNIT_ASSERT ( ! s9.isEmpty() );
+
+  FString s10(x2, wchar_t(0));
+  CPPUNIT_ASSERT ( s10.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s10.isNull() );
+  CPPUNIT_ASSERT ( s10.isEmpty() );
 }
 
 //----------------------------------------------------------------------
 void FStringTest::copyConstructorTest()
 {
-  FString s1("abc");
+  const FString s1("abc");
   FString s2(s1);
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::assignmentTest()
+{
+  FString s1;
+  s1 = static_cast<FString>(0);
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = std::wstring();
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = std::string();
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = static_cast<wchar_t*>(0);
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = static_cast<char*>(0);
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = wchar_t(0);
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1 = char(0);
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  const FString s2("abc");
+  s1 = s2;
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+
+  const std::wstring s3(L"def");
+  s1 = s3;
+  CPPUNIT_ASSERT ( s1 == L"def" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+
+  const std::string s4("ghi");
+  s1 = s4;
+  CPPUNIT_ASSERT ( s1 == L"ghi" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+
+  const wchar_t s5[] = L"abc";
+  s1 = s5;
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+  
+  const char s6[] = "def";
+  s1 = s6;
+  CPPUNIT_ASSERT ( s1 == L"def" );
+  CPPUNIT_ASSERT ( s1.getLength() == 3 );
+
+  const wchar_t s7 = L'#';
+  s1 = s7;
+  CPPUNIT_ASSERT ( s1 == L"#" );
+  CPPUNIT_ASSERT ( s1.getLength() == 1 );
+  
+  const char s8 = '%';
+  s1 = s8;
+  CPPUNIT_ASSERT ( s1 == L"%" );
+  CPPUNIT_ASSERT ( s1.getLength() == 1 );
 }
 
 //----------------------------------------------------------------------

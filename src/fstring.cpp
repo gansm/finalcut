@@ -285,10 +285,9 @@ const FString& FString::operator = (const wchar_t s[])
 //----------------------------------------------------------------------
 FString& FString::operator = (const std::string& s)
 {
-  const wchar_t* wc_string = c_to_wc_str(s.c_str());
-
-  if ( wc_string )
+  if ( ! s.empty() )
   {
+    const wchar_t* wc_string = c_to_wc_str(s.c_str());
     _assign( wc_string );
     delete[] wc_string;
   }
@@ -301,10 +300,9 @@ FString& FString::operator = (const std::string& s)
 //----------------------------------------------------------------------
 const FString& FString::operator = (const char s[])
 {
-  const wchar_t* wc_string = c_to_wc_str(s);
-
-  if ( wc_string )
+  if ( s )
   {
+    const wchar_t* wc_string = c_to_wc_str(s);
     _assign( wc_string );
     delete[] wc_string;
   }
@@ -317,20 +315,32 @@ const FString& FString::operator = (const char s[])
 //----------------------------------------------------------------------
 const FString& FString::operator = (const wchar_t c)
 {
-  wchar_t s[2];
-  s[0] = c;
-  s[1] = L'\0';
-  _assign (s);
+  if ( c )
+  {
+    wchar_t s[2];
+    s[0] = c;
+    s[1] = L'\0';
+    _assign (s);
+  }
+  else
+    clear();
+
   return *this;
 }
 
 //----------------------------------------------------------------------
 const FString& FString::operator = (const char c)
 {
-  wchar_t s[2];
-  s[0] = wchar_t(c & 0xff);
-  s[1] = L'\0';
-  _assign (s);
+  if ( c )
+  {
+    wchar_t s[2];
+    s[0] = wchar_t(c & 0xff);
+    s[1] = L'\0';
+    _assign (s);
+  }
+  else
+    clear();
+
   return *this;
 }
 
