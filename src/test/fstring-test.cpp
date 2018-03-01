@@ -59,6 +59,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void initLengthTest();
     void copyConstructorTest();
     void assignmentTest();
+    void additionAssignmentTest();
+    void additionTest();
     void caseTest();
     void equalTest();
     void lessEqualTest();
@@ -78,6 +80,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST (initLengthTest);
   CPPUNIT_TEST (copyConstructorTest);
   CPPUNIT_TEST (assignmentTest);
+  CPPUNIT_TEST (additionAssignmentTest);
+  CPPUNIT_TEST (additionTest);
   CPPUNIT_TEST (caseTest);
   CPPUNIT_TEST (equalTest);
   CPPUNIT_TEST (notEqualTest);
@@ -174,7 +178,7 @@ void FStringTest::initLengthTest()
   CPPUNIT_ASSERT ( s2.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s2.isNull() );
   CPPUNIT_ASSERT ( s2.isEmpty() );
-  
+
   FString s4(0, '-');
   CPPUNIT_ASSERT ( s4.getLength() == 0 );
   CPPUNIT_ASSERT ( s4.isNull() );
@@ -184,7 +188,7 @@ void FStringTest::initLengthTest()
   CPPUNIT_ASSERT ( s5.getLength() == 0 );
   CPPUNIT_ASSERT ( s5.isNull() );
   CPPUNIT_ASSERT ( s5.isEmpty() );
-  
+
   FString s6(x1, '-');
   CPPUNIT_ASSERT ( s6.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s6.isNull() );
@@ -271,7 +275,7 @@ void FStringTest::assignmentTest()
   s1 = s5;
   CPPUNIT_ASSERT ( s1 == L"abc" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
-  
+
   const char s6[] = "def";
   s1 = s6;
   CPPUNIT_ASSERT ( s1 == L"def" );
@@ -281,11 +285,91 @@ void FStringTest::assignmentTest()
   s1 = s7;
   CPPUNIT_ASSERT ( s1 == L"#" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
-  
+
   const char s8 = '%';
   s1 = s8;
   CPPUNIT_ASSERT ( s1 == L"%" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::additionAssignmentTest()
+{
+  FString s1;
+  s1 += FString("abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += FString("def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+  s1.clear();
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  s1 += std::wstring(L"abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += std::wstring(L"def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+  s1.clear();
+  s1 += const_cast<wchar_t*>(L"abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += const_cast<wchar_t*>(L"def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+  s1.clear();
+  s1 += std::string("abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += std::string("def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+  s1.clear();
+  s1 += const_cast<char*>("abc");
+  CPPUNIT_ASSERT ( s1 == L"abc" );
+  s1 += const_cast<char*>("def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+
+  s1.clear();
+  s1 += wchar_t('a');
+  CPPUNIT_ASSERT ( s1 == L"a" );
+  s1 += wchar_t('b');
+  CPPUNIT_ASSERT ( s1 == L"ab" );
+
+  s1.clear();
+  s1 += char('a');
+  CPPUNIT_ASSERT ( s1 == L"a" );
+  s1 += char('b');
+  CPPUNIT_ASSERT ( s1 == L"ab" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::additionTest()
+{
+  FString s1("abc");
+  FString s2 = s1 + FString("def");
+  CPPUNIT_ASSERT ( s2 == L"abcdef" );
+
+  s2.clear();
+  s2 = s1 + std::wstring(L"def");
+  CPPUNIT_ASSERT ( s2 == L"abcdef" );
+
+  s2.clear();
+  s2 = s1 + const_cast<wchar_t*>(L"def");
+  CPPUNIT_ASSERT ( s2 == L"abcdef" );
+
+  s2.clear();
+  s2 = s1 + std::string("def");
+  CPPUNIT_ASSERT ( s2 == L"abcdef" );
+
+  s2.clear();
+  s2 = s1 + const_cast<char*>("def");
+  CPPUNIT_ASSERT ( s2 == L"abcdef" );
+
+  s2.clear();
+  s2 = s1 + wchar_t(L'd');
+  CPPUNIT_ASSERT ( s2 == L"abcd" );
+
+  s2.clear();
+  s2 = s1 + char('d');
+  CPPUNIT_ASSERT ( s2 == L"abcd" );
 }
 
 //----------------------------------------------------------------------
