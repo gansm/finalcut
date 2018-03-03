@@ -63,36 +63,44 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void additionTest();
     void caseTest();
     void equalTest();
+    void notEqualTest();
     void lessEqualTest();
     void lessTest();
     void GreaterEqualTest();
     void GreaterTest();
-    void notEqualTest();
+    void streamInsertionTest();
+    void streamExtractionTest();
+    void subscriptOperatorTest();
+    void functionCallOperatorTest();
     void exceptionTest();
 
   private:
     FString* s;
 
-  // Adds code needed to register the test suite
-  CPPUNIT_TEST_SUITE (FStringTest);
+    // Adds code needed to register the test suite
+    CPPUNIT_TEST_SUITE (FStringTest);
 
-  CPPUNIT_TEST (NoArgumentTest);
-  CPPUNIT_TEST (initLengthTest);
-  CPPUNIT_TEST (copyConstructorTest);
-  CPPUNIT_TEST (assignmentTest);
-  CPPUNIT_TEST (additionAssignmentTest);
-  CPPUNIT_TEST (additionTest);
-  CPPUNIT_TEST (caseTest);
-  CPPUNIT_TEST (equalTest);
-  CPPUNIT_TEST (notEqualTest);
-  CPPUNIT_TEST (lessEqualTest);
-  CPPUNIT_TEST (lessTest);
-  CPPUNIT_TEST (GreaterEqualTest);
-  CPPUNIT_TEST (GreaterTest);
-  CPPUNIT_TEST (exceptionTest);
+    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (initLengthTest);
+    CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (assignmentTest);
+    CPPUNIT_TEST (additionAssignmentTest);
+    CPPUNIT_TEST (additionTest);
+    CPPUNIT_TEST (caseTest);
+    CPPUNIT_TEST (equalTest);
+    CPPUNIT_TEST (notEqualTest);
+    CPPUNIT_TEST (lessEqualTest);
+    CPPUNIT_TEST (lessTest);
+    CPPUNIT_TEST (GreaterEqualTest);
+    CPPUNIT_TEST (GreaterTest);
+    CPPUNIT_TEST (streamInsertionTest);
+    CPPUNIT_TEST (streamExtractionTest);
+    CPPUNIT_TEST (subscriptOperatorTest);
+    CPPUNIT_TEST (functionCallOperatorTest);
+    CPPUNIT_TEST (exceptionTest);
 
-  // End of test suite definition
-  CPPUNIT_TEST_SUITE_END();
+    // End of test suite definition
+    CPPUNIT_TEST_SUITE_END();
 };
 #pragma pack(pop)
 
@@ -175,44 +183,49 @@ void FStringTest::initLengthTest()
   CPPUNIT_ASSERT ( s2.isEmpty() );
 
   FString s3(x2);
-  CPPUNIT_ASSERT ( s2.getLength() == 10 );
-  CPPUNIT_ASSERT ( ! s2.isNull() );
-  CPPUNIT_ASSERT ( s2.isEmpty() );
+  CPPUNIT_ASSERT ( s3.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s3.isNull() );
+  CPPUNIT_ASSERT ( s3.isEmpty() );
 
-  FString s4(0, '-');
+  FString s4(0, L'-');
   CPPUNIT_ASSERT ( s4.getLength() == 0 );
   CPPUNIT_ASSERT ( s4.isNull() );
   CPPUNIT_ASSERT ( s4.isEmpty() );
 
-  FString s5(0, char(0));
+  FString s5(0, '-');
   CPPUNIT_ASSERT ( s5.getLength() == 0 );
   CPPUNIT_ASSERT ( s5.isNull() );
   CPPUNIT_ASSERT ( s5.isEmpty() );
 
-  FString s6(x1, '-');
-  CPPUNIT_ASSERT ( s6.getLength() == 10 );
-  CPPUNIT_ASSERT ( ! s6.isNull() );
-  CPPUNIT_ASSERT ( ! s6.isEmpty() );
+  FString s6(0, char(0));
+  CPPUNIT_ASSERT ( s6.getLength() == 0 );
+  CPPUNIT_ASSERT ( s6.isNull() );
+  CPPUNIT_ASSERT ( s6.isEmpty() );
 
-  FString s7(x2, '-');
+  FString s7(x1, '-');
   CPPUNIT_ASSERT ( s7.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s7.isNull() );
   CPPUNIT_ASSERT ( ! s7.isEmpty() );
 
-  FString s8(x1, L'-');
+  FString s8(x2, '-');
   CPPUNIT_ASSERT ( s8.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s8.isNull() );
   CPPUNIT_ASSERT ( ! s8.isEmpty() );
 
-  FString s9(x2, L'-');
+  FString s9(x1, L'-');
   CPPUNIT_ASSERT ( s9.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s9.isNull() );
   CPPUNIT_ASSERT ( ! s9.isEmpty() );
 
-  FString s10(x2, wchar_t(0));
+  FString s10(x2, L'-');
   CPPUNIT_ASSERT ( s10.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s10.isNull() );
-  CPPUNIT_ASSERT ( s10.isEmpty() );
+  CPPUNIT_ASSERT ( ! s10.isEmpty() );
+
+  FString s11(x2, wchar_t(0));
+  CPPUNIT_ASSERT ( s11.getLength() == 10 );
+  CPPUNIT_ASSERT ( ! s11.isNull() );
+  CPPUNIT_ASSERT ( s11.isEmpty() );
 }
 
 //----------------------------------------------------------------------
@@ -521,9 +534,11 @@ void FStringTest::lessEqualTest()
 
   const FString null_str1;
   const FString null_str2;
+  const FString empty("");
   CPPUNIT_ASSERT ( ! (s1 <= null_str2) );
   CPPUNIT_ASSERT ( null_str1 <= s2 );
   CPPUNIT_ASSERT ( null_str1 <= null_str2 );
+  CPPUNIT_ASSERT ( ! (s1 <= empty) );
 }
 
 //----------------------------------------------------------------------
@@ -597,9 +612,11 @@ void FStringTest::GreaterEqualTest()
 
   const FString null_str1;
   const FString null_str2;
+  const FString empty("");
   CPPUNIT_ASSERT ( s1 >= null_str2 );
   CPPUNIT_ASSERT ( ! (null_str1 >= s2) );
   CPPUNIT_ASSERT ( null_str1 >= null_str2 );
+  CPPUNIT_ASSERT ( ! (s1 <= empty) );
 }
 
 //----------------------------------------------------------------------
@@ -636,10 +653,172 @@ void FStringTest::GreaterTest()
 }
 
 //----------------------------------------------------------------------
+void FStringTest::streamInsertionTest()
+{
+  FString out;
+  out << FString("ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << std::string("ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << std::wstring(L"ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << const_cast<wchar_t*>(L"ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << const_cast<char*>("ABC");
+  CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << wchar_t(L'A');
+  CPPUNIT_ASSERT ( out == L"A" );
+
+  out.clear();
+  out << char('A');
+  CPPUNIT_ASSERT ( out == L"A" );
+
+  out.clear();
+  out << sInt16(INT_LEAST16_MAX);
+  CPPUNIT_ASSERT ( out == L"32767" );
+
+  out.clear();
+  out << sInt16(INT_LEAST16_MIN);
+  CPPUNIT_ASSERT ( out == L"-32768" );
+
+  out.clear();
+  out << int(1234567);
+  CPPUNIT_ASSERT ( out == L"1234567" );
+
+  out.clear();
+  out << int(-1234567);
+  CPPUNIT_ASSERT ( out == L"-1234567" );
+
+  out.clear();
+  out << uInt(12345678);
+  CPPUNIT_ASSERT ( out == L"12345678" );
+
+  out.clear();
+  out << long(-34721053343141);
+  CPPUNIT_ASSERT ( out == L"-34721053343141" );
+
+  out.clear();
+  out << uLong(4670148723459);
+  CPPUNIT_ASSERT ( out == L"4670148723459" );
+
+  out.clear();
+  out << float(3.14159);
+  CPPUNIT_ASSERT ( out == L"3.14159" );
+
+  out.clear();
+  out << double(3.1415926535);
+  CPPUNIT_ASSERT ( out == L"3.1415926535" );
+
+  out.clear();
+  out << lDouble(3.141592653589793238L);
+  CPPUNIT_ASSERT ( out == L"3.14159265358979324" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::streamExtractionTest()
+{
+  FString in_1;
+  FString("ABC") >> in_1;
+  CPPUNIT_ASSERT ( in_1 == "ABC" );
+
+  std::wstring in_2;
+  FString("ABC") >> in_2;
+  CPPUNIT_ASSERT ( in_2 == L"ABC" );
+
+  std::string in_3;
+  FString("ABC") >> in_3;
+  CPPUNIT_ASSERT ( in_3 == "ABC" );
+
+  wchar_t in_4;
+  FString("A") >> in_4;
+  CPPUNIT_ASSERT ( in_4 == L'A' );
+
+  char in_5;
+  FString("A") >> in_5;
+  CPPUNIT_ASSERT ( in_5 == L'A' );
+
+  sInt16 in_6;
+  FString("-12345") >> in_6;
+  CPPUNIT_ASSERT ( in_6 == -12345 );
+
+  uInt16 in_7;
+  FString("33333") >> in_7;
+  CPPUNIT_ASSERT ( in_7 == 33333 );
+
+  int in_8;
+  FString("-12345678") >> in_8;
+  CPPUNIT_ASSERT ( in_8 == -12345678 );
+
+  uInt in_9;
+  FString("99999999") >> in_9;
+  CPPUNIT_ASSERT ( in_9 == 99999999 );
+
+  long in_10;
+  FString("-1234567890") >> in_10;
+  CPPUNIT_ASSERT ( in_10 == -1234567890 );
+
+  uLong in_11;
+  FString("9999999999999") >> in_11;
+  CPPUNIT_ASSERT ( in_11 == 9999999999999 );
+
+  float in_12;
+  FString("2.71828") >> in_12;
+  CPPUNIT_ASSERT ( in_12 == 2.71828f );
+
+  double in_13;
+  FString("2.7182818284590452353") >> in_13;
+  CPPUNIT_ASSERT ( in_13 == 2.7182818284590452353 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::subscriptOperatorTest()
+{
+  FString s(3);
+  CPPUNIT_ASSERT ( s[0] == L'\0' );
+  CPPUNIT_ASSERT ( s[1] == L'\0' );
+  CPPUNIT_ASSERT ( s[2] == L'\0' );
+  s[0] = L'A';
+  s[1] = L'B';
+  s[2] = L'C';
+  CPPUNIT_ASSERT ( s[0] == L'A' );
+  CPPUNIT_ASSERT ( s[1] == L'B' );
+  CPPUNIT_ASSERT ( s[2] == L'C' );
+  CPPUNIT_ASSERT ( s == L"ABC" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::functionCallOperatorTest()
+{
+  FString str = L"test";
+  CPPUNIT_ASSERT_EQUAL ( str, str() );
+
+  FString copy = str();
+  copy << L"string";
+  CPPUNIT_ASSERT ( str() == "test" );
+  CPPUNIT_ASSERT ( copy  == "teststring" );
+}
+
+//----------------------------------------------------------------------
 void FStringTest::exceptionTest()
 {
   CPPUNIT_ASSERT_THROW ( FString("abc").toULong()
                        , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("abc")[3]
+                       , std::out_of_range);
+
+  CPPUNIT_ASSERT_THROW ( FString("abc")[-1]
+                       , std::out_of_range);
 }
 
 // Put the test suite in the registry

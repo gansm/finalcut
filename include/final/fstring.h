@@ -133,6 +133,7 @@ class FString
 
     const FString& operator >> (FString&);
     const FString& operator >> (std::wstring&);
+    const FString& operator >> (std::string&);
     const FString& operator >> (wchar_t&);
     const FString& operator >> (char&);
     const FString& operator >> (sInt16&);

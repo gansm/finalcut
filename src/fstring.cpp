@@ -439,13 +439,14 @@ const FString FString::operator + (const wchar_t s[])
 const FString FString::operator + (const std::string& s)
 {
   FString tmp(string);
-  wchar_t* wc_string = c_to_wc_str(s.c_str());
 
-  if ( ! wc_string )
-    return tmp;
+  if ( ! s.empty() )
+  {
+    wchar_t* wc_string = c_to_wc_str(s.c_str());
+    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
+    delete[] wc_string;
+  }
 
-  tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-  delete[] wc_string;
   return tmp;
 }
 
@@ -453,13 +454,14 @@ const FString FString::operator + (const std::string& s)
 const FString FString::operator + (const char s[])
 {
   FString tmp(string);
-  wchar_t* wc_string = c_to_wc_str(s);
 
-  if ( ! wc_string )
-    return tmp;
+  if ( s )
+  {
+    wchar_t* wc_string = c_to_wc_str(s);
+    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
+    delete[] wc_string;
+  }
 
-  tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-  delete[] wc_string;
   return tmp;
 }
 
@@ -596,6 +598,13 @@ const FString& FString::operator >> (std::wstring& s)
 }
 
 //----------------------------------------------------------------------
+const FString& FString::operator >> (std::string& s)
+{
+  s += toString();
+  return *this;
+}
+
+//----------------------------------------------------------------------
 const FString& FString::operator >> (wchar_t& c)
 {
   c = ( length > 0 ) ? string[0] : L'\0';
@@ -668,18 +677,18 @@ const FString& FString::operator >> (float& num)
 //----------------------------------------------------------------------
 wchar_t& FString::operator [] (int pos)
 {
+  if ( pos < 0 )
+    throw std::out_of_range("");  // Invalid index position
+
   FString& s = *this;
-  assert ( (pos >= 0) && "Invalid index position!" );
   return s[uInt(pos)];
 }
 
 //----------------------------------------------------------------------
 wchar_t& FString::operator [] (uInt pos)
 {
-  assert ( (pos < length) && "Invalid index position!" );
-
   if ( pos >= length )
-    throw std::out_of_range("");
+    throw std::out_of_range("");  // Invalid index position
 
   return string[pos];
 }
@@ -1414,9 +1423,6 @@ FString& FString::setFormatedNumber (uLong num, char separator)
 //----------------------------------------------------------------------
 bool FString::operator < (const FString& s) const
 {
-  if ( ! s )
-    return false;
-
   if ( string && ! s.string )
     return false;
 
@@ -1477,9 +1483,6 @@ bool FString::operator <= (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  if ( ! s )
-    return false;
-
   if ( string && ! s.string )
     return false;
 
@@ -1537,9 +1540,6 @@ bool FString::operator == (const FString& s) const
   if ( ! (string || s.string) )
     return true;
 
-  if ( ! s )
-    return false;
-
   if ( bool(string) != bool(s.string) )
     return false;
 
@@ -1594,9 +1594,6 @@ bool FString::operator != (const FString& s) const
   if ( ! (string || s.string) )
     return false;
 
-  if ( ! s )
-    return true;
-
   if ( bool(string) != bool(s.string) )
     return true;
 
@@ -1648,9 +1645,6 @@ bool FString::operator != (const char c) const
 //----------------------------------------------------------------------
 bool FString::operator >= (const FString& s) const
 {
-  if ( ! s )
-    return true;
-
   if ( string && ! s.string )
     return true;
 
@@ -1710,9 +1704,6 @@ bool FString::operator > (const FString& s) const
 {
   if ( ! (string || s.string) )
     return false;
-
-  if ( ! s )
-    return true;
 
   if ( string && ! s.string )
     return true;
