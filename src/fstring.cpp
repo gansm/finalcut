@@ -161,7 +161,10 @@ FString::FString (const wchar_t s[])
   , bufsize(0)
   , c_string(0)
 {
-  if ( s )
+  if ( ! s )
+    return;
+
+  if ( s[0] )
     _assign (s);
 }
 
@@ -177,12 +180,8 @@ FString::FString (const std::string& s)
 
   const wchar_t* wc_string;
   wc_string = c_to_wc_str(s.c_str());
-
-  if ( wc_string )
-  {
-    _assign( wc_string );
-    delete[] wc_string;
-  }
+  _assign( wc_string );
+  delete[] wc_string;
 }
 
 //----------------------------------------------------------------------
@@ -195,14 +194,13 @@ FString::FString (const char s[])
   if ( ! s )
     return;
 
+  if ( ! s[0] )
+    return;
+
   const wchar_t* wc_string;
   wc_string = c_to_wc_str(s);
-
-  if ( wc_string )
-  {
-    _assign (wc_string);
-    delete[] wc_string;
-  }
+  _assign (wc_string);
+  delete[] wc_string;
 }
 
 //----------------------------------------------------------------------
@@ -879,8 +877,11 @@ sInt16 FString::toShort() const
   register long num;
   num = toLong();
 
-  if ( num > SHRT_MAX || num < SHRT_MIN )
+  if ( num > SHRT_MAX )
     throw std::overflow_error ("overflow");
+
+  if ( num < SHRT_MIN )
+    throw std::underflow_error ("underflow");
 
   return sInt16(num);
 }
@@ -889,7 +890,7 @@ sInt16 FString::toShort() const
 uInt16 FString::toUShort() const
 {
   register uLong num;
-  num = uLong(toLong());
+  num = uLong(toULong());
 
   if ( num > USHRT_MAX )
     throw std::overflow_error ("overflow");
@@ -903,8 +904,11 @@ int FString::toInt() const
   register long num;
   num = toLong();
 
-  if ( num > INT_MAX || num < INT_MIN )
+  if ( num > INT_MAX )
     throw std::overflow_error ("overflow");
+
+  if ( num < INT_MIN )
+    throw std::underflow_error ("underflow");
 
   return int(num);
 }
@@ -913,7 +917,7 @@ int FString::toInt() const
 uInt FString::toUInt() const
 {
   register uLong num;
-  num = uLong(toLong());
+  num = uLong(toULong());
 
   if ( num > UINT_MAX )
     throw std::overflow_error ("overflow");
@@ -963,7 +967,10 @@ long FString::toLong() const
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
     {
-      throw std::overflow_error ("overflow");
+      if ( neg )
+        throw std::underflow_error ("underflow");
+      else
+        throw std::overflow_error ("overflow");
     }
 
     num = (num << 3) + (num << 1) + d;  // (10 * num) + d
@@ -1000,7 +1007,11 @@ uLong FString::toULong() const
   if ( ! *p )
     throw std::invalid_argument ("empty value");
 
-  if ( *p == L'+' )
+  if ( *p == L'-' )
+  {
+    throw std::underflow_error ("underflow");
+  }
+  else if ( *p == L'+' )
   {
     p++;
   }
@@ -1031,8 +1042,11 @@ float FString::toFloat() const
   register double num;
   num = toDouble();
 
-  if ( num > double(FLT_MAX) || num < double(FLT_MIN) )
+  if ( num > double(FLT_MAX) )
     throw std::overflow_error ("overflow");
+
+  if ( num < double(-FLT_MAX) )
+    throw std::underflow_error ("underflow");
 
   return float(num);
 }

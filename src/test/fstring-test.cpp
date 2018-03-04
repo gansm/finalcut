@@ -49,6 +49,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
 {
   public:
     FStringTest()
+      : s(0)
     { }
 
     void setUp();
@@ -72,7 +73,10 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void streamExtractionTest();
     void subscriptOperatorTest();
     void functionCallOperatorTest();
+    void formatTest();
+    void convertToNumberTest();
     void exceptionTest();
+    void trimTest();
 
   private:
     FString* s;
@@ -97,7 +101,10 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (streamExtractionTest);
     CPPUNIT_TEST (subscriptOperatorTest);
     CPPUNIT_TEST (functionCallOperatorTest);
+    CPPUNIT_TEST (formatTest);
+    CPPUNIT_TEST (convertToNumberTest);
     CPPUNIT_TEST (exceptionTest);
+    CPPUNIT_TEST (trimTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -692,6 +699,10 @@ void FStringTest::streamInsertionTest()
   CPPUNIT_ASSERT ( out == L"-32768" );
 
   out.clear();
+  out << uInt16(UINT_LEAST16_MAX);
+  CPPUNIT_ASSERT ( out == L"65535" );
+
+  out.clear();
   out << int(1234567);
   CPPUNIT_ASSERT ( out == L"1234567" );
 
@@ -809,16 +820,158 @@ void FStringTest::functionCallOperatorTest()
 }
 
 //----------------------------------------------------------------------
+void FStringTest::formatTest()
+{
+  FString str;
+  int num = 3;
+  char location[] = "zoo";
+  str.sprintf ("There are %d lions in the %s", num, location);
+  CPPUNIT_ASSERT ( str == "There are 3 lions in the zoo" );
+
+  str.sprintf (L"It costs only %d cent", 50);
+  CPPUNIT_ASSERT ( str == "It costs only 50 cent" );
+
+  std::setlocale (LC_NUMERIC, "C");
+  FString fnum1, fnum2;
+
+#if defined(__LP64__) || defined(_LP64)
+  // 64-bit architecture
+  fnum1.setFormatedNumber(0xffffffffffffffff, '\'');
+  CPPUNIT_ASSERT ( fnum1 == "18'446'744'073'709'551'615" );
+
+  fnum2.setFormatedNumber(-9223372036854775807);
+  CPPUNIT_ASSERT ( fnum2 == "-9 223 372 036 854 775 807" );
+#else
+  // 32-bit architecture
+  fnum1.setFormatedNumber(0xffffffff, '\'');
+  CPPUNIT_ASSERT ( fnum1 == "4'294'967'295" );
+
+  fnum2.setFormatedNumber(-2147483647);
+  CPPUNIT_ASSERT ( fnum2 == "-2 147 483 647" );
+#endif
+}
+
+//----------------------------------------------------------------------
+void FStringTest::convertToNumberTest()
+{
+  FString str = "-127";
+  CPPUNIT_ASSERT ( str.toShort() == -127 );
+
+  str = "255";
+  CPPUNIT_ASSERT ( str.toUShort() == 255 );
+
+  str = "-32768";
+  CPPUNIT_ASSERT ( str.toInt() == -32768 );
+
+  str = "65535";
+  CPPUNIT_ASSERT ( str.toUInt() == 65535 );
+
+  str = "-2147483647";
+  CPPUNIT_ASSERT ( str.toLong() == -2147483647 );
+
+  str = "4294967295";
+  CPPUNIT_ASSERT ( str.toULong() == 4294967295 );
+
+  str = "3.14159";
+  CPPUNIT_ASSERT ( str.toFloat() == 3.14159f );
+
+  str = "-3.14159";
+  CPPUNIT_ASSERT ( str.toFloat() == -3.14159f );
+
+  str = "3.141592653589793238";
+  CPPUNIT_ASSERT ( str.toDouble() == 3.141592653589793238 );
+
+  str = "-3.141592653589793238";
+  CPPUNIT_ASSERT ( str.toDouble() == -3.141592653589793238 );
+}
+
+//----------------------------------------------------------------------
 void FStringTest::exceptionTest()
 {
   CPPUNIT_ASSERT_THROW ( FString("abc").toULong()
                        , std::invalid_argument );
 
   CPPUNIT_ASSERT_THROW ( FString("abc")[3]
-                       , std::out_of_range);
+                       , std::out_of_range );
 
   CPPUNIT_ASSERT_THROW ( FString("abc")[-1]
-                       , std::out_of_range);
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( FString("99999").toShort()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-99999").toShort()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("99999").toUShort()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-1").toUShort()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("9999999999").toInt()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-9999999999").toInt()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("9999999999").toUInt()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-1").toUInt()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("9999999999999999999").toLong()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-9999999999999999999").toLong()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("99999999999999999999").toULong()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-1").toULong()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString().toLong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("").toLong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("one").toLong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString().toULong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("").toULong()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("one").toULong()
+                       , std::invalid_argument );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::trimTest()
+{
+  const FString& trim_str1 = L"\r\n\t  A string \n\t";
+  CPPUNIT_ASSERT ( trim_str1.rtrim() == L"\r\n\t  A string" );
+  CPPUNIT_ASSERT ( trim_str1.ltrim() == L"A string \n\t" );
+  CPPUNIT_ASSERT ( trim_str1.trim() == L"A string" );
+
+  const FString& trim_str2 = L"\n  \n\n";
+  CPPUNIT_ASSERT ( trim_str2.rtrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str2.rtrim().isNull() );
+  CPPUNIT_ASSERT ( trim_str2.rtrim().getLength() == 0 );
+
+  CPPUNIT_ASSERT ( trim_str2.ltrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str2.ltrim().isNull() );
+  CPPUNIT_ASSERT ( trim_str2.ltrim().getLength() == 0 );
+
+  CPPUNIT_ASSERT ( trim_str2.trim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str2.trim().isNull() );
+  CPPUNIT_ASSERT ( trim_str2.trim().getLength() == 0 );
 }
 
 // Put the test suite in the registry
