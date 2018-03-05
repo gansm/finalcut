@@ -145,14 +145,13 @@ void FStringTest::NoArgumentTest()
   CPPUNIT_ASSERT ( str.size() == 0 );
   CPPUNIT_ASSERT ( str.empty() );
   const FString fstr = str;
-  CPPUNIT_ASSERT ( fstr == empty );
-  CPPUNIT_ASSERT ( empty == '\0' );
-  CPPUNIT_ASSERT ( empty == L'\0' );
+  CPPUNIT_ASSERT ( ! fstr.isNull() );
+  CPPUNIT_ASSERT ( fstr.isEmpty() );
+
   cstr = 0;
   CPPUNIT_ASSERT ( empty == cstr );
   wcstr = 0;
-  CPPUNIT_ASSERT ( empty == std::string() );
-  CPPUNIT_ASSERT ( empty == std::wstring() );
+  CPPUNIT_ASSERT ( empty == wcstr );
 
   CPPUNIT_ASSERT ( ! empty.includes('A') );
   CPPUNIT_ASSERT ( ! empty.includes(L'A') );
@@ -822,14 +821,15 @@ void FStringTest::functionCallOperatorTest()
 //----------------------------------------------------------------------
 void FStringTest::formatTest()
 {
-  FString str;
+  FString str1;
   int num = 3;
   char location[] = "zoo";
-  str.sprintf ("There are %d lions in the %s", num, location);
-  CPPUNIT_ASSERT ( str == "There are 3 lions in the zoo" );
+  str1.sprintf ("There are %d lions in the %s", num, location);
+  CPPUNIT_ASSERT ( str1 == "There are 3 lions in the zoo" );
 
-  str.sprintf (L"It costs only %d cent", 50);
-  CPPUNIT_ASSERT ( str == "It costs only 50 cent" );
+  FString str2;
+  str2.sprintf (L"It costs only %d cent", 50);
+  CPPUNIT_ASSERT ( str2 == "It costs only 50 cent" );
 
   std::setlocale (LC_NUMERIC, "C");
   FString fnum1, fnum2;
@@ -869,8 +869,14 @@ void FStringTest::convertToNumberTest()
   str = "-2147483647";
   CPPUNIT_ASSERT ( str.toLong() == -2147483647 );
 
+  str = "+987654321";
+  CPPUNIT_ASSERT ( str.toLong() == 987654321 );
+
   str = "4294967295";
   CPPUNIT_ASSERT ( str.toULong() == 4294967295 );
+
+  str = "+1234567890";
+  CPPUNIT_ASSERT ( str.toULong() == 1234567890 );
 
   str = "3.14159";
   CPPUNIT_ASSERT ( str.toFloat() == 3.14159f );
@@ -950,6 +956,24 @@ void FStringTest::exceptionTest()
 
   CPPUNIT_ASSERT_THROW ( FString("one").toULong()
                        , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("1E+42").toFloat()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-1E+42").toFloat()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("1.19209290E-08").toFloat()
+                       , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("1.7976931348623157E+309").toDouble()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("-1.7976931348623157E+309").toDouble()
+                       , std::overflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString("2.225074e-310").toDouble()
+                       , std::underflow_error );
 }
 
 //----------------------------------------------------------------------
@@ -962,15 +986,15 @@ void FStringTest::trimTest()
 
   const FString& trim_str2 = L"\n  \n\n";
   CPPUNIT_ASSERT ( trim_str2.rtrim().isEmpty() );
-  CPPUNIT_ASSERT ( trim_str2.rtrim().isNull() );
+  CPPUNIT_ASSERT ( ! trim_str2.rtrim().isNull() );
   CPPUNIT_ASSERT ( trim_str2.rtrim().getLength() == 0 );
 
   CPPUNIT_ASSERT ( trim_str2.ltrim().isEmpty() );
-  CPPUNIT_ASSERT ( trim_str2.ltrim().isNull() );
+  CPPUNIT_ASSERT ( ! trim_str2.ltrim().isNull() );
   CPPUNIT_ASSERT ( trim_str2.ltrim().getLength() == 0 );
 
   CPPUNIT_ASSERT ( trim_str2.trim().isEmpty() );
-  CPPUNIT_ASSERT ( trim_str2.trim().isNull() );
+  CPPUNIT_ASSERT ( ! trim_str2.trim().isNull() );
   CPPUNIT_ASSERT ( trim_str2.trim().getLength() == 0 );
 }
 

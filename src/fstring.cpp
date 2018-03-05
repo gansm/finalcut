@@ -139,7 +139,9 @@ FString::FString (const FString& s)  // copy constructor
   , bufsize(0)
   , c_string(0)
 {
-  if ( s.string )
+  if ( s.isNull() )
+    return;
+  else
     _assign (s.string);
 }
 
@@ -150,8 +152,10 @@ FString::FString (const std::wstring& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! s.empty() )
-    _assign ( s.c_str() );
+  if ( s.empty() )
+    _assign (L"");
+  else
+    _assign (s.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -164,7 +168,12 @@ FString::FString (const wchar_t s[])
   if ( ! s )
     return;
 
-  if ( s[0] )
+  if ( ! s[0] )
+  {
+    _assign(L"");
+    return;
+  }
+  else
     _assign (s);
 }
 
@@ -176,7 +185,10 @@ FString::FString (const std::string& s)
   , c_string(0)
 {
   if ( s.empty() )
+  {
+    _assign(L"");
     return;
+  }
 
   const wchar_t* wc_string;
   wc_string = c_to_wc_str(s.c_str());
@@ -195,7 +207,10 @@ FString::FString (const char s[])
     return;
 
   if ( ! s[0] )
+  {
+    _assign(L"");
     return;
+  }
 
   const wchar_t* wc_string;
   wc_string = c_to_wc_str(s);
@@ -211,7 +226,10 @@ FString::FString (const wchar_t c)
   , c_string(0)
 {
   if ( c == 0 )
+  {
+    _assign(L"");
     return;
+  }
 
   wchar_t s[2];
   s[0] = c;
@@ -227,7 +245,10 @@ FString::FString (const char c)
   , c_string(0)
 {
   if ( c == 0 )
+  {
+    _assign(L"");
     return;
+  }
 
   wchar_t s[2];
   s[0] = wchar_t(c & 0xff);
@@ -250,11 +271,7 @@ FString::~FString()  // destructor
 //----------------------------------------------------------------------
 FString& FString::operator = (const FString& s)
 {
-  if ( s )
-    _assign (s.string);
-  else
-    clear();
-
+  _assign (s.string);
   return *this;
 }
 
@@ -1042,10 +1059,10 @@ float FString::toFloat() const
   register double num;
   num = toDouble();
 
-  if ( num > double(FLT_MAX) )
+  if ( num > double(FLT_MAX) || num < double(-FLT_MAX) )
     throw std::overflow_error ("overflow");
 
-  if ( num < double(-FLT_MAX) )
+  if ( std::fabs(num) < FLT_EPSILON )  // num == 0.0f
     throw std::underflow_error ("underflow");
 
   return float(num);
@@ -1116,7 +1133,7 @@ FString FString::rtrim() const
     s.length--;
 
   if ( last == p && std::iswspace(wint_t(*last)) )
-    s.clear();
+    s = L"";
   else
     *(last + 1) = '\0';
 
