@@ -154,8 +154,13 @@ void FStringTest::NoArgumentTest()
 
   cstr = 0;
   CPPUNIT_ASSERT ( empty == cstr );
+  CPPUNIT_ASSERT ( FString(std::string()).isEmpty() );
+  CPPUNIT_ASSERT ( FString(char(0)).isEmpty() );
   wcstr = 0;
   CPPUNIT_ASSERT ( empty == wcstr );
+  CPPUNIT_ASSERT ( FString(std::wstring()).isEmpty() );
+  CPPUNIT_ASSERT ( FString(wchar_t(0)).isEmpty() );
+
 
   CPPUNIT_ASSERT ( ! empty.includes('A') );
   CPPUNIT_ASSERT ( ! empty.includes(L'A') );
@@ -313,6 +318,40 @@ void FStringTest::assignmentTest()
   s1 = s8;
   CPPUNIT_ASSERT ( s1 == L"%" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
+
+  s1.setString("A character string");
+  CPPUNIT_ASSERT ( s1 == "A character string" );
+
+  s1.setString(L"A wide character string");
+  CPPUNIT_ASSERT ( s1 == L"A wide character string" );
+
+  s1.setString("");
+  CPPUNIT_ASSERT ( s1 == "" );
+
+  s1.setString(L"");
+  CPPUNIT_ASSERT ( s1 == L"" );
+
+  s1.setString("");
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1.setString(L"");
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+
+  s1.setString("");
+  CPPUNIT_ASSERT ( ! s1.isNull() );
+
+  s1.setString(L"");
+  CPPUNIT_ASSERT ( ! s1.isNull() );
+
+  wchar_t* wc = 0;
+  s1.setString(wc);
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s1.isNull() );
+
+  wchar_t* c = 0;
+  s1.setString(c);
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s1.isNull() );
 }
 
 //----------------------------------------------------------------------
@@ -835,6 +874,12 @@ void FStringTest::formatTest()
   str2.sprintf (L"It costs only %d cent", 50);
   CPPUNIT_ASSERT ( str2 == "It costs only 50 cent" );
 
+  str2.sprintf ( L"Add a looooooooooooooooooooooooooooooooooooooo"
+                  "ooooooooooonnnnnnnnnnnnnnnnnnnnnnng %S"
+               , L"string" );
+  CPPUNIT_ASSERT ( str2 == "Add a looooooooooooooooooooooooooooooooooooooo"
+                           "ooooooooooonnnnnnnnnnnnnnnnnnnnnnng string" );
+
   std::setlocale (LC_NUMERIC, "C");
   FString fnum1, fnum2;
 
@@ -1007,6 +1052,12 @@ void FStringTest::trimTest()
   CPPUNIT_ASSERT ( trim_str2.ltrim().getLength() == 0 );
 
   const FString trim_str3;
+  CPPUNIT_ASSERT ( trim_str3.ltrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str3.ltrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str3.ltrim().getLength() == 0 );
+  CPPUNIT_ASSERT ( trim_str3.rtrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str3.rtrim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str3.rtrim().getLength() == 0 );
   CPPUNIT_ASSERT ( trim_str3.trim().isEmpty() );
   CPPUNIT_ASSERT ( trim_str3.trim().isNull() );
   CPPUNIT_ASSERT ( trim_str3.trim().getLength() == 0 );
@@ -1071,6 +1122,13 @@ void FStringTest::subStringTest()
   string_list.push_back("Look behind you");
   string_list.push_back(" a three-headed monkey!");
   CPPUNIT_ASSERT ( string_parts == string_list );
+
+  string_parts = str1.split(',');
+  CPPUNIT_ASSERT ( string_parts == string_list );
+
+  string_parts = FString().split(':');
+  CPPUNIT_ASSERT ( string_parts.empty() );
+  CPPUNIT_ASSERT ( string_parts.size() == 0 );
 }
 
 // Put the test suite in the registry

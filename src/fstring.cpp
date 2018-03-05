@@ -1281,13 +1281,8 @@ FString& FString::setString (const wchar_t s[])
 FString& FString::setString (const char s[])
 {
   const wchar_t* wc_string = c_to_wc_str(s);
-
-  if ( wc_string )
-  {
-    _assign (wc_string);
-    delete[] wc_string;
-  }
-
+  _assign (wc_string);
+  delete[] wc_string;
   return *this;
 }
 
@@ -2538,6 +2533,12 @@ inline void FString::initLength (uInt len)
 //----------------------------------------------------------------------
 inline void FString::_assign (const wchar_t s[])
 {
+  if ( ! s )
+  {
+    clear();
+    return;
+  }
+
   if ( s == string )
     return;
 
