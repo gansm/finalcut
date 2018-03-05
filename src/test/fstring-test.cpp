@@ -77,6 +77,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void functionCallOperatorTest();
     void formatTest();
     void convertToNumberTest();
+    void convertFromNumberTest();
     void exceptionTest();
     void trimTest();
     void subStringTest();
@@ -106,6 +107,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (functionCallOperatorTest);
     CPPUNIT_TEST (formatTest);
     CPPUNIT_TEST (convertToNumberTest);
+    CPPUNIT_TEST (convertFromNumberTest);
     CPPUNIT_TEST (exceptionTest);
     CPPUNIT_TEST (trimTest);
     CPPUNIT_TEST (subStringTest);
@@ -257,73 +259,95 @@ void FStringTest::assignmentTest()
 {
   FString s1;
   s1 = static_cast<FString>(0);
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = std::wstring();
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = std::string();
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = static_cast<wchar_t*>(0);
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = static_cast<char*>(0);
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = wchar_t(0);
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   s1 = char(0);
+  CPPUNIT_ASSERT ( ! s1 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
   const FString s2("abc");
   s1 = s2;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"abc" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
 
   const std::wstring s3(L"def");
   s1 = s3;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"def" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
 
   const std::string s4("ghi");
   s1 = s4;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"ghi" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
 
   const wchar_t s5[] = L"abc";
   s1 = s5;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"abc" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
 
   const char s6[] = "def";
   s1 = s6;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"def" );
   CPPUNIT_ASSERT ( s1.getLength() == 3 );
 
   const wchar_t s7 = L'#';
   s1 = s7;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"#" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
 
   const char s8 = '%';
   s1 = s8;
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"%" );
   CPPUNIT_ASSERT ( s1.getLength() == 1 );
 
   s1.setString("A character string");
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == "A character string" );
 
   s1.setString(L"A wide character string");
+  CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"A wide character string" );
+
+  s1.setString("");
+  CPPUNIT_ASSERT ( ! s1 );
+
+  s1.setString(L"");
+  CPPUNIT_ASSERT ( ! s1 );
 
   s1.setString("");
   CPPUNIT_ASSERT ( s1 == "" );
@@ -347,11 +371,13 @@ void FStringTest::assignmentTest()
   s1.setString(wc);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( ! s1 );
 
-  wchar_t* c = 0;
+  char* c = 0;
   s1.setString(c);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( ! s1 );
 }
 
 //----------------------------------------------------------------------
@@ -890,12 +916,18 @@ void FStringTest::formatTest()
 
   fnum2.setFormatedNumber(-9223372036854775807);
   CPPUNIT_ASSERT ( fnum2 == "-9 223 372 036 854 775 807" );
+
+  fnum2.setFormatedNumber(-9223372036854775807, '\0');
+  CPPUNIT_ASSERT ( fnum2 == "-9 223 372 036 854 775 807" );
 #else
   // 32-bit architecture
   fnum1.setFormatedNumber(0xffffffff, '\'');
   CPPUNIT_ASSERT ( fnum1 == "4'294'967'295" );
 
   fnum2.setFormatedNumber(-2147483647);
+  CPPUNIT_ASSERT ( fnum2 == "-2 147 483 647" );
+
+  fnum2.setFormatedNumber(-2147483647, '\0');
   CPPUNIT_ASSERT ( fnum2 == "-2 147 483 647" );
 #endif
 }
@@ -938,6 +970,38 @@ void FStringTest::convertToNumberTest()
 
   str = "-3.141592653589793238";
   CPPUNIT_ASSERT ( str.toDouble() == -3.141592653589793238 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::convertFromNumberTest()
+{
+  sInt16  n1 = -1234;
+  uInt16  n2 =  1234;
+  int     n3 = -12345;
+  uInt    n4 =  12345;
+  long    n5 = -12345678;
+  uLong   n6 =  12345678;
+  float   n7 =  1234.56f;
+  double  n8 =  1234.5678;
+  lDouble n9 =  12345.67890L;
+  CPPUNIT_ASSERT ( FString().setNumber(n1) == "-1234" );
+  CPPUNIT_ASSERT ( FString().setNumber(n2) == "1234" );
+  CPPUNIT_ASSERT ( FString().setNumber(n3) == "-12345" );
+  CPPUNIT_ASSERT ( FString().setNumber(n4) == "12345" );
+  CPPUNIT_ASSERT ( FString().setNumber(n5) == "-12345678" );
+  CPPUNIT_ASSERT ( FString().setNumber(n6) == "12345678" );
+  CPPUNIT_ASSERT ( FString().setNumber(n7) == "1234.56" );
+  CPPUNIT_ASSERT ( FString().setNumber(n8) == "1234.5678" );
+  CPPUNIT_ASSERT ( FString().setNumber(n9) == "12345.6789" );
+  CPPUNIT_ASSERT ( FString().setNumber(n7, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( FString().setNumber(n8, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( FString().setNumber(n9, 0) == "1e+04" );
+  CPPUNIT_ASSERT ( FString().setNumber(n7, 100)
+                   == "1234.56005859375" );
+  CPPUNIT_ASSERT ( FString().setNumber(n8, 100)
+                   == "1234.567800000000033833202905952930450439453125" );
+  CPPUNIT_ASSERT ( FString().setNumber(n9, 100)
+                   == "12345.67889999999999961488583721802569925785064697265625" );
 }
 
 //----------------------------------------------------------------------
