@@ -22,6 +22,8 @@
 
 #include <langinfo.h>
 #include <unistd.h>
+#define __STDC_LIMIT_MACROS
+#include <stdint.h>
 
 #include <clocale>
 #include <iomanip>
@@ -77,6 +79,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void convertToNumberTest();
     void exceptionTest();
     void trimTest();
+    void subStringTest();
 
   private:
     FString* s;
@@ -105,6 +108,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (convertToNumberTest);
     CPPUNIT_TEST (exceptionTest);
     CPPUNIT_TEST (trimTest);
+    CPPUNIT_TEST (subStringTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -974,6 +978,15 @@ void FStringTest::exceptionTest()
 
   CPPUNIT_ASSERT_THROW ( FString("2.225074e-310").toDouble()
                        , std::underflow_error );
+
+  CPPUNIT_ASSERT_THROW ( FString().toDouble()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("").toDouble()
+                       , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("one").toDouble()
+                       , std::invalid_argument );
 }
 
 //----------------------------------------------------------------------
@@ -993,9 +1006,71 @@ void FStringTest::trimTest()
   CPPUNIT_ASSERT ( ! trim_str2.ltrim().isNull() );
   CPPUNIT_ASSERT ( trim_str2.ltrim().getLength() == 0 );
 
-  CPPUNIT_ASSERT ( trim_str2.trim().isEmpty() );
-  CPPUNIT_ASSERT ( ! trim_str2.trim().isNull() );
-  CPPUNIT_ASSERT ( trim_str2.trim().getLength() == 0 );
+  const FString trim_str3;
+  CPPUNIT_ASSERT ( trim_str3.trim().isEmpty() );
+  CPPUNIT_ASSERT ( trim_str3.trim().isNull() );
+  CPPUNIT_ASSERT ( trim_str3.trim().getLength() == 0 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::subStringTest()
+{
+  FString str1("Look behind you, a three-headed monkey!");
+  CPPUNIT_ASSERT ( str1.left(uInt(11)) == L"Look behind" );
+  CPPUNIT_ASSERT ( str1.left(int(11)) == L"Look behind" );
+  CPPUNIT_ASSERT ( str1.left(999)
+                   == L"Look behind you, a three-headed monkey!" );
+  CPPUNIT_ASSERT ( str1.left(-5) == L"" );
+  CPPUNIT_ASSERT ( str1.left(0) == L"" );
+  CPPUNIT_ASSERT ( str1.left(0).isEmpty() );
+  CPPUNIT_ASSERT ( ! str1.left(0).isNull() );
+  CPPUNIT_ASSERT ( FString().left(5).isNull() );
+  CPPUNIT_ASSERT ( ! FString("").left(5).isNull() );
+  CPPUNIT_ASSERT ( FString("").left(5).isEmpty() );
+
+  CPPUNIT_ASSERT ( str1.right(uInt(7)) == L"monkey!" );
+  CPPUNIT_ASSERT ( str1.right(int(7)) == L"monkey!" );
+  CPPUNIT_ASSERT ( str1.right(999)
+                   == L"Look behind you, a three-headed monkey!" );
+  CPPUNIT_ASSERT ( str1.right(-5) == L"" );
+  CPPUNIT_ASSERT ( str1.right(0) == L"" );
+  CPPUNIT_ASSERT ( str1.right(0).isEmpty() );
+  CPPUNIT_ASSERT ( ! str1.right(0).isNull() );
+  CPPUNIT_ASSERT ( FString().right(5).isNull() );
+  CPPUNIT_ASSERT ( ! FString("").right(5).isNull() );
+  CPPUNIT_ASSERT ( FString("").right(5).isEmpty() );
+
+  CPPUNIT_ASSERT ( str1.mid(uInt(18), uInt(21))
+                   == L"a three-headed monkey" );
+  CPPUNIT_ASSERT ( str1.mid(int(18), int(21))
+                   == L"a three-headed monkey" );
+  CPPUNIT_ASSERT ( str1.mid(1, 999)
+                   == L"Look behind you, a three-headed monkey!" );
+  CPPUNIT_ASSERT ( str1.mid(5, 0) == L"" );
+  CPPUNIT_ASSERT ( str1.mid(-5, 2) == L"" );
+  CPPUNIT_ASSERT ( str1.mid(0, 0) == L"" );
+  CPPUNIT_ASSERT ( str1.mid(0, 5) == L"" );
+  CPPUNIT_ASSERT ( str1.mid(0, 0).isEmpty() );
+  CPPUNIT_ASSERT ( ! str1.mid(0, 0).isNull() );
+  CPPUNIT_ASSERT ( FString().mid(5, 0).isNull() );
+  CPPUNIT_ASSERT ( ! FString("").mid(5, 0).isNull() );
+  CPPUNIT_ASSERT ( FString("").mid(5, 0).isEmpty() );
+
+  FStringList string_parts = str1.split(" ");
+  FStringList string_list;
+  string_list.push_back("Look");
+  string_list.push_back("behind");
+  string_list.push_back("you,");
+  string_list.push_back("a");
+  string_list.push_back("three-headed");
+  string_list.push_back("monkey!");
+  CPPUNIT_ASSERT ( string_parts == string_list );
+
+  string_parts = str1.split(L',');
+  string_list.clear();
+  string_list.push_back("Look behind you");
+  string_list.push_back(" a three-headed monkey!");
+  CPPUNIT_ASSERT ( string_parts == string_list );
 }
 
 // Put the test suite in the registry
