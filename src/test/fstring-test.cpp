@@ -81,6 +81,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void exceptionTest();
     void trimTest();
     void subStringTest();
+    void insertTest();
+    void replaceTest();
 
   private:
     FString* s;
@@ -111,6 +113,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (exceptionTest);
     CPPUNIT_TEST (trimTest);
     CPPUNIT_TEST (subStringTest);
+    CPPUNIT_TEST (insertTest);
+    CPPUNIT_TEST (replaceTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -187,59 +191,59 @@ void FStringTest::NoArgumentTest()
 //----------------------------------------------------------------------
 void FStringTest::initLengthTest()
 {
-  FString s1(0);
+  const FString s1(0);
   CPPUNIT_ASSERT ( s1.getLength() == 0 );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  int  x1 = 10;
-  uInt x2 = 10;
-  FString s2(x1);
+  const int  x1 = 10;
+  const uInt x2 = 10;
+  const FString s2(x1);
   CPPUNIT_ASSERT ( s2.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s2.isNull() );
   CPPUNIT_ASSERT ( s2.isEmpty() );
 
-  FString s3(x2);
+  const FString s3(x2);
   CPPUNIT_ASSERT ( s3.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s3.isNull() );
   CPPUNIT_ASSERT ( s3.isEmpty() );
 
-  FString s4(0, L'-');
+  const FString s4(0, L'-');
   CPPUNIT_ASSERT ( s4.getLength() == 0 );
   CPPUNIT_ASSERT ( s4.isNull() );
   CPPUNIT_ASSERT ( s4.isEmpty() );
 
-  FString s5(0, '-');
+  const FString s5(0, '-');
   CPPUNIT_ASSERT ( s5.getLength() == 0 );
   CPPUNIT_ASSERT ( s5.isNull() );
   CPPUNIT_ASSERT ( s5.isEmpty() );
 
-  FString s6(0, char(0));
+  const FString s6(0, char(0));
   CPPUNIT_ASSERT ( s6.getLength() == 0 );
   CPPUNIT_ASSERT ( s6.isNull() );
   CPPUNIT_ASSERT ( s6.isEmpty() );
 
-  FString s7(x1, '-');
+  const FString s7(x1, '-');
   CPPUNIT_ASSERT ( s7.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s7.isNull() );
   CPPUNIT_ASSERT ( ! s7.isEmpty() );
 
-  FString s8(x2, '-');
+  const FString s8(x2, '-');
   CPPUNIT_ASSERT ( s8.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s8.isNull() );
   CPPUNIT_ASSERT ( ! s8.isEmpty() );
 
-  FString s9(x1, L'-');
+  const FString s9(x1, L'-');
   CPPUNIT_ASSERT ( s9.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s9.isNull() );
   CPPUNIT_ASSERT ( ! s9.isEmpty() );
 
-  FString s10(x2, L'-');
+  const FString s10(x2, L'-');
   CPPUNIT_ASSERT ( s10.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s10.isNull() );
   CPPUNIT_ASSERT ( ! s10.isEmpty() );
 
-  FString s11(x2, wchar_t(0));
+  const FString s11(x2, wchar_t(0));
   CPPUNIT_ASSERT ( s11.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s11.isNull() );
   CPPUNIT_ASSERT ( s11.isEmpty() );
@@ -249,7 +253,7 @@ void FStringTest::initLengthTest()
 void FStringTest::copyConstructorTest()
 {
   const FString s1("abc");
-  FString s2(s1);
+  const FString s2(s1);
   CPPUNIT_ASSERT ( s2 == L"abc" );
   CPPUNIT_ASSERT ( s2.getLength() == 3 );
 }
@@ -367,13 +371,13 @@ void FStringTest::assignmentTest()
   s1.setString(L"");
   CPPUNIT_ASSERT ( ! s1.isNull() );
 
-  wchar_t* wc = 0;
+  const wchar_t* wc = 0;
   s1.setString(wc);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( ! s1 );
 
-  char* c = 0;
+  const char* c = 0;
   s1.setString(c);
   CPPUNIT_ASSERT ( s1.isEmpty() );
   CPPUNIT_ASSERT ( s1.isNull() );
@@ -431,7 +435,7 @@ void FStringTest::additionAssignmentTest()
 //----------------------------------------------------------------------
 void FStringTest::additionTest()
 {
-  FString s1("abc");
+  const FString s1("abc");
   FString s2 = s1 + FString("def");
   CPPUNIT_ASSERT ( s2 == L"abcdef" );
 
@@ -463,10 +467,10 @@ void FStringTest::additionTest()
 //----------------------------------------------------------------------
 void FStringTest::caseTest()
 {
-  FString str1("abc");
+  const FString str1("abc");
   CPPUNIT_ASSERT ( str1.toUpper() == "ABC" );
 
-  FString str2("XYZ");
+  const FString str2("XYZ");
   CPPUNIT_ASSERT ( str2.toLower() == "xyz" );
 }
 
@@ -900,12 +904,10 @@ void FStringTest::formatTest()
   str2.sprintf (L"It costs only %d cent", 50);
   CPPUNIT_ASSERT ( str2 == "It costs only 50 cent" );
 
-  str2.sprintf ( L"Add a looooooooooooooooooooooooooooooooooooooo"
-                  "ooooooooooonnnnnnnnnnnnnnnnnnnnnnng %S"
+  str2.sprintf ( L"Add a looo" + FString(2048, 'o') + "ooong %S"
                , L"string" );
-  CPPUNIT_ASSERT ( str2 == "Add a looooooooooooooooooooooooooooooooooooooo"
-                           "ooooooooooonnnnnnnnnnnnnnnnnnnnnnng string" );
-
+  CPPUNIT_ASSERT ( str2 == "Add a looo" + FString(2048, 'o')
+                           + "ooong string" );
   std::setlocale (LC_NUMERIC, "C");
   FString fnum1, fnum2;
 
@@ -975,15 +977,15 @@ void FStringTest::convertToNumberTest()
 //----------------------------------------------------------------------
 void FStringTest::convertFromNumberTest()
 {
-  sInt16  n1 = -1234;
-  uInt16  n2 =  1234;
-  int     n3 = -12345;
-  uInt    n4 =  12345;
-  long    n5 = -12345678;
-  uLong   n6 =  12345678;
-  float   n7 =  1234.56f;
-  double  n8 =  1234.5678;
-  lDouble n9 =  12345.67890L;
+  const sInt16  n1 = -1234;
+  const uInt16  n2 =  1234;
+  const int     n3 = -12345;
+  const uInt    n4 =  12345;
+  const long    n5 = -12345678;
+  const uLong   n6 =  12345678;
+  const float   n7 =  1234.56f;
+  const double  n8 =  1234.5678;
+  const lDouble n9 =  12345.67890L;
   CPPUNIT_ASSERT ( FString().setNumber(n1) == "-1234" );
   CPPUNIT_ASSERT ( FString().setNumber(n2) == "1234" );
   CPPUNIT_ASSERT ( FString().setNumber(n3) == "-12345" );
@@ -1096,6 +1098,18 @@ void FStringTest::exceptionTest()
 
   CPPUNIT_ASSERT_THROW ( FString("one").toDouble()
                        , std::invalid_argument );
+
+  CPPUNIT_ASSERT_THROW ( FString("ABC").insert(FString("abc"), 4)
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( FString("ABC").insert(FString("abc"), -1)
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( FString("ABC").insert(L"abc", 4)
+                       , std::out_of_range );
+
+  CPPUNIT_ASSERT_THROW ( FString("ABC").insert(L"abc", -1)
+                       , std::out_of_range );
 }
 
 //----------------------------------------------------------------------
@@ -1193,6 +1207,232 @@ void FStringTest::subStringTest()
   string_parts = FString().split(':');
   CPPUNIT_ASSERT ( string_parts.empty() );
   CPPUNIT_ASSERT ( string_parts.size() == 0 );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::insertTest()
+{
+  FString str1 = "ABC";
+  const FString str2 = "xyz";
+  CPPUNIT_ASSERT ( str1.insert(str2, 0) == "xyzABC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str2, 1) == "AxyzBC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str2, 2) == "ABxyzC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str2, 3) == "ABCxyz" );
+
+  str1 = "ABC";
+  const wchar_t str3[] = L"xyz";
+  CPPUNIT_ASSERT ( str1.insert(str3, 0) == "xyzABC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str3, 1) == "AxyzBC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str3, 2) == "ABxyzC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str3, 3) == "ABCxyz" );
+
+  str1 = "ABC";
+  const char str4[] = "xyz";
+  CPPUNIT_ASSERT ( str1.insert(str4, 0) == "xyzABC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str4, 1) == "AxyzBC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str4, 2) == "ABxyzC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(str4, 3) == "ABCxyz" );
+
+  str1 = "ABC";
+  const wchar_t wc = L'*';
+  CPPUNIT_ASSERT ( str1.insert(wc, 0) == "*ABC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(wc, 1) == "A*BC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(wc, 2) == "AB*C" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(wc, 3) == "ABC*" );
+
+  str1 = "ABC";
+  const char c = '*';
+  CPPUNIT_ASSERT ( str1.insert(c, 0) == "*ABC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(c, 1) == "A*BC" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(c, 2) == "AB*C" );
+  str1 = "ABC";
+  CPPUNIT_ASSERT ( str1.insert(c, 3) == "ABC*" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::replaceTest()
+{
+  const FString str = "Look behind you, a three-headed monkey!";
+  FString s = str;
+  const FString      from1   =  "three";
+  const std::wstring from2   = L"three";
+  const wchar_t      from3[] = L"three";
+  const std::string  from4   =  "three";
+  const char         from5[] =  "three";
+  const wchar_t      from6   = L',';
+  const char         from7   =  ',';
+  const FString      to1     = L'3';
+  const std::wstring to2     = L"3";
+  const wchar_t      to3[]   = L"3";
+  const std::string  to4     =  "3";
+  const char         to5[]   =  "3";
+  const wchar_t      to6     =  '3';
+  const char         to7     =  '3';
+
+  CPPUNIT_ASSERT ( s.replace(from1, to1)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to2)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to3)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to4)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to5)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to6)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from1, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to1)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to2)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to3)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to4)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to5)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to6)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from2, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to1)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to2)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to3)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to4)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to5)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to6)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from3, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to1)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to2)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to3)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to4)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to5)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to6)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from4, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to1)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to2)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to3)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to4)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to5)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to6)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from5, to7)
+                   == "Look behind you, a 3-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to1)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to2)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to3)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to4)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to5)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to6)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from6, to7)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to1)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to2)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to3)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to4)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to5)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to6)
+                   == "Look behind you3 a three-headed monkey!" );
+  s = str;
+  CPPUNIT_ASSERT ( s.replace(from7, to7)
+                   == "Look behind you3 a three-headed monkey!" );
+
+  s = "A big ball and a small ball";
+  CPPUNIT_ASSERT ( s.replace("ball", "globe")
+                   == "A big globe and a small globe" );
 }
 
 // Put the test suite in the registry

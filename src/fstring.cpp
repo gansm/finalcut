@@ -1785,7 +1785,7 @@ bool FString::operator > (const char c) const
 //----------------------------------------------------------------------
 const FString& FString::insert (const FString& s, uInt pos)
 {
-  if ( pos >= length )
+  if ( pos > length )
     throw std::out_of_range("");
 
   _insert (pos, s.length, s.string);
@@ -1795,7 +1795,7 @@ const FString& FString::insert (const FString& s, uInt pos)
 //----------------------------------------------------------------------
 const FString& FString::insert (const wchar_t s[], uInt pos)
 {
-  if ( pos >= length )
+  if ( pos > length )
     throw std::out_of_range("");
 
   _insert (pos, uInt(std::wcslen(s)), s);
@@ -2191,6 +2191,13 @@ FString FString::replace (const wchar_t from, const wchar_t to)
 {
   FString to_wchar(to);
   return replace (from, to_wchar);
+}
+
+//----------------------------------------------------------------------
+FString FString::replace (const wchar_t from, const char to)
+{
+  FString to_char(to);
+  return replace (from, to_char);
 }
 
 //----------------------------------------------------------------------
