@@ -437,6 +437,7 @@ void FStringTest::additionAssignmentTest()
 //----------------------------------------------------------------------
 void FStringTest::additionTest()
 {
+  // FString member operator
   const FString s1("abc");
   CPPUNIT_ASSERT ( s1 + FString("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s1 + std::wstring(L"def") == L"abcdef" );
@@ -445,6 +446,16 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s1 + const_cast<char*>("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s1 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s1 + char('d') == L"abcd" );
+
+  // FString non-member operator
+  FString s2("abc");
+  CPPUNIT_ASSERT ( s2 + FString("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s2 + std::wstring(L"def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s2 + const_cast<wchar_t*>(L"def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s2 + std::string("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s2 + const_cast<char*>("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s2 + wchar_t(L'd') == L"abcd" );
+  CPPUNIT_ASSERT ( s2 + char('d') == L"abcd" );
 }
 
 //----------------------------------------------------------------------
@@ -1439,8 +1450,12 @@ void FStringTest::replaceTest()
   s.clear();
   CPPUNIT_ASSERT ( s.replace(from1, to1).isNull() );
   CPPUNIT_ASSERT ( s.replace(from1, to1).isEmpty() );
+  CPPUNIT_ASSERT ( s.replace(from6, to1).isNull() );
+  CPPUNIT_ASSERT ( s.replace(from6, to1).isEmpty() );
   CPPUNIT_ASSERT ( s.replace(from5, to5).isNull() );
   CPPUNIT_ASSERT ( s.replace(from5, to5).isEmpty() );
+  CPPUNIT_ASSERT ( s.replace(from7, to7).isNull() );
+  CPPUNIT_ASSERT ( s.replace(from7, to7).isEmpty() );
 }
 
 //----------------------------------------------------------------------
@@ -1460,30 +1475,72 @@ void FStringTest::controlCodesTest()
 
   FString tab_str = "one line";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "one line" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "one line" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "one line" );
   tab_str = "one\ttwo";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "one     two" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "one two" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "one two" );
   tab_str = "one\t\btwo";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "one     \btwo" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "one \btwo" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "one \btwo" );
   tab_str = "1\t2\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "1       2       2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "1   2   2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "1 2 2" );
   tab_str = "12\t22\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "12      22      2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "12  22  2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "12  22  2" );
   tab_str = "123\t222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "123     222     2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "123 222 2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "123 222 2" );
   tab_str = "1234\t2222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "1234    2222    2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "1234    2222    2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "1234  2222  2" );
   tab_str = "12345\t22222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "12345   22222   2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "12345   22222   2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "12345 22222 2" );
   tab_str = "123456\t222222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "123456  222222  2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "123456  222222  2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "123456  222222  2" );
   tab_str = "1234567\t2222222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "1234567 2222222 2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "1234567 2222222 2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "1234567 2222222 2" );
   tab_str = "12345678\t22222222\t2";
   CPPUNIT_ASSERT ( tab_str.expandTabs()
                    == "12345678        22222222        2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4)
+                   == "12345678    22222222    2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2)
+                   == "12345678  22222222  2" );
   tab_str = "12345678\t2";
-  std::cout << "\n<<" << tab_str.expandTabs() << ">>\n";
   CPPUNIT_ASSERT ( tab_str.expandTabs() == "12345678        2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(4) == "12345678    2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(2) == "12345678  2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(0) == "12345678\t2" );
+  CPPUNIT_ASSERT ( tab_str.expandTabs(-1) == "12345678\t2" );
+  FString cc(0x20);
+
+  for (int i = 0; i < 0x1f; i++)
+    cc[i] = i + 1;
+
+  CPPUNIT_ASSERT ( cc.replaceControlCodes()
+                   == "␁␂␃␄␅␆␇␈␉␊␋␌␍␎␏␐␑␒␓␔␕␖␗␘␙␚␛␜␝␞␟" );
+
+  for (int i = 0; i <= 0x1f; i++)
+    cc[i] = i + 0x80;
+
+  CPPUNIT_ASSERT ( cc.replaceControlCodes() == FString(32, L' ') );
+
+  cc = "t\b\bTesT\bt";
+  CPPUNIT_ASSERT ( cc.replaceControlCodes() == "t␈␈TesT␈t" );
 }
 
 // Put the test suite in the registry
