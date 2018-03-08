@@ -83,6 +83,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void subStringTest();
     void insertTest();
     void replaceTest();
+    void controlCodesTest();
 
   private:
     FString* s;
@@ -115,6 +116,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (subStringTest);
     CPPUNIT_TEST (insertTest);
     CPPUNIT_TEST (replaceTest);
+    CPPUNIT_TEST (controlCodesTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -436,32 +438,13 @@ void FStringTest::additionAssignmentTest()
 void FStringTest::additionTest()
 {
   const FString s1("abc");
-  FString s2 = s1 + FString("def");
-  CPPUNIT_ASSERT ( s2 == L"abcdef" );
-
-  s2.clear();
-  s2 = s1 + std::wstring(L"def");
-  CPPUNIT_ASSERT ( s2 == L"abcdef" );
-
-  s2.clear();
-  s2 = s1 + const_cast<wchar_t*>(L"def");
-  CPPUNIT_ASSERT ( s2 == L"abcdef" );
-
-  s2.clear();
-  s2 = s1 + std::string("def");
-  CPPUNIT_ASSERT ( s2 == L"abcdef" );
-
-  s2.clear();
-  s2 = s1 + const_cast<char*>("def");
-  CPPUNIT_ASSERT ( s2 == L"abcdef" );
-
-  s2.clear();
-  s2 = s1 + wchar_t(L'd');
-  CPPUNIT_ASSERT ( s2 == L"abcd" );
-
-  s2.clear();
-  s2 = s1 + char('d');
-  CPPUNIT_ASSERT ( s2 == L"abcd" );
+  CPPUNIT_ASSERT ( s1 + FString("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s1 + std::wstring(L"def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s1 + const_cast<wchar_t*>(L"def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s1 + std::string("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s1 + const_cast<char*>("def") == L"abcdef" );
+  CPPUNIT_ASSERT ( s1 + wchar_t(L'd') == L"abcd" );
+  CPPUNIT_ASSERT ( s1 + char('d') == L"abcd" );
 }
 
 //----------------------------------------------------------------------
@@ -919,8 +902,11 @@ void FStringTest::formatTest()
   fnum2.setFormatedNumber(-9223372036854775807);
   CPPUNIT_ASSERT ( fnum2 == "-9 223 372 036 854 775 807" );
 
-  fnum2.setFormatedNumber(-9223372036854775807, '\0');
-  CPPUNIT_ASSERT ( fnum2 == "-9 223 372 036 854 775 807" );
+  fnum2.setFormatedNumber(long(9223372036854775807), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
+
+  fnum2.setFormatedNumber(uLong(9223372036854775807), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 #else
   // 32-bit architecture
   fnum1.setFormatedNumber(0xffffffff, '\'');
@@ -929,8 +915,11 @@ void FStringTest::formatTest()
   fnum2.setFormatedNumber(-2147483647);
   CPPUNIT_ASSERT ( fnum2 == "-2 147 483 647" );
 
-  fnum2.setFormatedNumber(-2147483647, '\0');
-  CPPUNIT_ASSERT ( fnum2 == "-2 147 483 647" );
+  fnum2.setFormatedNumber(long(2147483647), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
+
+  fnum2.setFormatedNumber(uLong(2147483647), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 #endif
 }
 
@@ -1433,6 +1422,68 @@ void FStringTest::replaceTest()
   s = "A big ball and a small ball";
   CPPUNIT_ASSERT ( s.replace("ball", "globe")
                    == "A big globe and a small globe" );
+
+  s = "ABC";
+  FString empty;
+  CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
+
+  empty = "";
+  CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
+
+  s.clear();
+  CPPUNIT_ASSERT ( s.replace(from1, to1).isNull() );
+  CPPUNIT_ASSERT ( s.replace(from1, to1).isEmpty() );
+  CPPUNIT_ASSERT ( s.replace(from5, to5).isNull() );
+  CPPUNIT_ASSERT ( s.replace(from5, to5).isEmpty() );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::controlCodesTest()
+{
+  FString bs_str = "t\b\bTesT\bt";
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "Test" );
+  bs_str = "ABC\b\b\b\b";
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces() == "" );
+  CPPUNIT_ASSERT ( bs_str.removeBackspaces().isEmpty() );
+
+  FString del_str = "apple \177\177\177pietree";
+  CPPUNIT_ASSERT ( del_str.removeDel() == "apple tree" );
+  del_str = "\177\177\177\177ABC";
+  CPPUNIT_ASSERT ( del_str.removeDel() == "" );
+  CPPUNIT_ASSERT ( del_str.removeDel().isEmpty() );
+
+  FString tab_str = "one line";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "one line" );
+  tab_str = "one\ttwo";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "one     two" );
+  tab_str = "one\t\btwo";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "one     \btwo" );
+  tab_str = "1\t2\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "1       2       2" );
+  tab_str = "12\t22\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "12      22      2" );
+  tab_str = "123\t222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "123     222     2" );
+  tab_str = "1234\t2222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "1234    2222    2" );
+  tab_str = "12345\t22222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "12345   22222   2" );
+  tab_str = "123456\t222222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "123456  222222  2" );
+  tab_str = "1234567\t2222222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "1234567 2222222 2" );
+  tab_str = "12345678\t22222222\t2";
+  CPPUNIT_ASSERT ( tab_str.expandTabs()
+                   == "12345678        22222222        2" );
+  tab_str = "12345678\t2";
+  std::cout << "\n<<" << tab_str.expandTabs() << ">>\n";
+  CPPUNIT_ASSERT ( tab_str.expandTabs() == "12345678        2" );
 }
 
 // Put the test suite in the registry

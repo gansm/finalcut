@@ -1834,6 +1834,9 @@ FString FString::replace (const FString& from, const FString& to)
   if ( from.isNull() || to.isNull() )
     return s;
 
+  if ( from.isEmpty() || to.isEmpty() )
+    return s;
+
   p = s.string;
   from_length = from.getLength();
   to_length = to.getLength();
@@ -2132,7 +2135,7 @@ FString FString::replace (const wchar_t from, const FString& to)
   if ( ! (string && *string) )
     return s;
 
-  if ( to.isNull() )
+  if ( to.isNull() || to.isEmpty() )
     return s;
 
   p = s.string;
@@ -2322,7 +2325,10 @@ FString FString::expandTabs (int tabstop) const
   {
     uInt len = tab_split[i].getLength();
     uInt tab_len = uInt(tabstop);
-    outstr += tab_split[i] + FString(tab_len - (len % tab_len), L' ');
+    if ( i == last - 1 )
+      outstr += tab_split[i];
+    else
+      outstr += tab_split[i] + FString(tab_len - (len % tab_len), L' ');
   }
 
   return outstr;
