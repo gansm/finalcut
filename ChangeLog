@@ -1,3 +1,7 @@
+2017-03-10  Markus Gans  <guru.mail@muenster.de>
+	* Unit tests for the FString class completed
+	* Minor bug fixes in FString
+
 2017-02-25  Markus Gans  <guru.mail@muenster.de>
 	* First CppUnit tests implemented
 

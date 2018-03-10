@@ -2980,14 +2980,6 @@ const FString operator + (const char c, const FString& s)
 }
 
 //----------------------------------------------------------------------
-const FString operator + (const wchar_t c, const std::wstring& s)
-{
-  FString tmp(c);
-  tmp._insert (1, uInt(s.length()), s.c_str());
-  return tmp;
-}
-
-//----------------------------------------------------------------------
 const FString operator + (const FString& s, const char c)
 {
   FString tmp1(s);
