@@ -74,6 +74,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void streamInsertionTest();
     void streamExtractionTest();
     void subscriptOperatorTest();
+    void iteratorTest();
     void functionCallOperatorTest();
     void formatTest();
     void convertToNumberTest();
@@ -110,6 +111,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (streamInsertionTest);
     CPPUNIT_TEST (streamExtractionTest);
     CPPUNIT_TEST (subscriptOperatorTest);
+    CPPUNIT_TEST (iteratorTest);
     CPPUNIT_TEST (functionCallOperatorTest);
     CPPUNIT_TEST (formatTest);
     CPPUNIT_TEST (convertToNumberTest);
@@ -153,6 +155,10 @@ void FStringTest::NoArgumentTest()
   CPPUNIT_ASSERT ( empty.wc_str() == 0 );
   CPPUNIT_ASSERT ( empty.c_str() == 0 );
   CPPUNIT_ASSERT_EQUAL ( empty.toString(), std::string() );
+  CPPUNIT_ASSERT ( strlen(FString(99).c_str()) == 0 );
+  CPPUNIT_ASSERT ( wcslen(FString(99).wc_str()) == 0 );
+  CPPUNIT_ASSERT ( strlen(FString("").c_str()) == 0 );
+  CPPUNIT_ASSERT ( wcslen(FString("").wc_str()) == 0 );
 
   char* cstr = empty.c_str();
   CPPUNIT_ASSERT ( cstr == 0 );
@@ -359,10 +365,10 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s1 == L"A wide character string" );
 
   s1.setString("");
-  CPPUNIT_ASSERT ( ! s1 );
+  CPPUNIT_ASSERT ( s1 );
 
   s1.setString(L"");
-  CPPUNIT_ASSERT ( ! s1 );
+  CPPUNIT_ASSERT ( s1 );
 
   s1.setString("");
   CPPUNIT_ASSERT ( s1 == "" );
@@ -402,6 +408,10 @@ void FStringTest::additionAssignmentTest()
   s1 += FString("abc");
   CPPUNIT_ASSERT ( s1 == L"abc" );
   s1 += FString("def");
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+  s1 += FString();
+  CPPUNIT_ASSERT ( s1 == L"abcdef" );
+  s1 += FString("");
   CPPUNIT_ASSERT ( s1 == L"abcdef" );
 
   s1.clear();
@@ -465,6 +475,27 @@ void FStringTest::additionTest()
   CPPUNIT_ASSERT ( s2 + const_cast<char*>("def") == L"abcdef" );
   CPPUNIT_ASSERT ( s2 + wchar_t(L'd') == L"abcd" );
   CPPUNIT_ASSERT ( s2 + char('d') == L"abcd" );
+
+  const std::wstring& s3 = L"abc";
+  CPPUNIT_ASSERT ( s3 + FString("def") == L"abcdef" );
+
+  const wchar_t s4[] = L"abc";
+  CPPUNIT_ASSERT ( s4 + FString("def") == L"abcdef" );
+
+  const std::string& s5 = "abc";
+  CPPUNIT_ASSERT ( s5 + FString("def") == L"abcdef" );
+
+  const char s6[] = "abc";
+  CPPUNIT_ASSERT ( s6 + FString("def") == L"abcdef" );
+
+  const wchar_t c1 = L'a';
+  CPPUNIT_ASSERT ( c1 + s3 == L"aabc" );
+  CPPUNIT_ASSERT ( c1 + FString("def") == L"adef" );
+
+  const char c2 = 'a';
+  CPPUNIT_ASSERT ( c2 + s5 == "aabc" );
+  CPPUNIT_ASSERT ( c2 + FString("def") == L"adef" );
+
 }
 
 //----------------------------------------------------------------------
@@ -808,6 +839,15 @@ void FStringTest::streamInsertionTest()
   out.clear();
   out << lDouble(3.141592653589793238L);
   CPPUNIT_ASSERT ( out == L"3.14159265358979324" );
+
+  out = "abc";
+  std::ostringstream ostream;
+  ostream << out;
+  CPPUNIT_ASSERT ( ostream.str() == "abc" );
+
+  std::wostringstream wostream;
+  wostream << out;
+  CPPUNIT_ASSERT ( wostream.str() == L"abc" );
 }
 
 //----------------------------------------------------------------------
@@ -864,6 +904,15 @@ void FStringTest::streamExtractionTest()
   double in_13;
   FString("2.7182818284590452353") >> in_13;
   CPPUNIT_ASSERT ( in_13 == 2.7182818284590452353 );
+
+  FString in;
+  std::istringstream istream("abc");
+  istream >> in;
+  CPPUNIT_ASSERT ( in == "abc" );
+
+  std::wistringstream wistream(L"abc");
+  wistream >> in;
+  CPPUNIT_ASSERT ( in == "abc" );
 }
 
 //----------------------------------------------------------------------
@@ -880,6 +929,35 @@ void FStringTest::subscriptOperatorTest()
   CPPUNIT_ASSERT ( s[1] == L'B' );
   CPPUNIT_ASSERT ( s[2] == L'C' );
   CPPUNIT_ASSERT ( s == L"ABC" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::iteratorTest()
+{
+  const FString& str = "123456789";
+  CPPUNIT_ASSERT ( str.front() == L'1' );
+  CPPUNIT_ASSERT ( str.back() == L'9' );
+
+  FString::iterator iter = str.begin();
+  CPPUNIT_ASSERT ( (*iter) == L'1' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'2' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'3' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'4' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'5' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'6' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'7' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'8' );
+  ++iter;
+  CPPUNIT_ASSERT ( (*iter) == L'9' );
+  ++iter;
+  CPPUNIT_ASSERT ( iter == str.end() );
 }
 
 //----------------------------------------------------------------------
@@ -1536,16 +1614,19 @@ void FStringTest::includesTest()
   const char search9 = 'y';
   const char search10 = '&';
 
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<FString>(0)) );
   CPPUNIT_ASSERT ( ! str.includes(empty1) );
   CPPUNIT_ASSERT ( str.includes(search1) );
   CPPUNIT_ASSERT ( ! str.includes(search2) );
   CPPUNIT_ASSERT ( ! empty1.includes(search1) );
 
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<wchar_t*>(0)) );
   CPPUNIT_ASSERT ( ! str.includes(empty2) );
   CPPUNIT_ASSERT ( str.includes(search3) );
   CPPUNIT_ASSERT ( ! str.includes(search4) );
   CPPUNIT_ASSERT ( ! empty1.includes(search3) );
 
+  CPPUNIT_ASSERT ( ! str.includes(static_cast<char*>(0)) );
   CPPUNIT_ASSERT ( ! str.includes(empty3) );
   CPPUNIT_ASSERT ( str.includes(search5) );
   CPPUNIT_ASSERT ( ! str.includes(search6) );

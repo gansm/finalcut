@@ -829,6 +829,8 @@ const char* FString::c_str() const
 
   if ( length > 0 )
     return wc_to_c_str (string);
+  else if ( string )
+    return const_cast<char*>("");
   else
     return 0;
 }
@@ -840,6 +842,8 @@ char* FString::c_str()
 
   if ( length > 0 )
     return wc_to_c_str (string);
+  else if ( string )
+    return const_cast<char*>("");
   else
     return 0;
 }
@@ -2607,8 +2611,8 @@ inline void FString::_assign (const wchar_t s[])
     return;
   }
 
-  if ( s == string )
-    return;
+  if ( string && std::wcscmp(string, s) == 0 )
+    return;  // string == s
 
   uInt new_length = uInt(std::wcslen(s));
 
@@ -2997,7 +3001,7 @@ const FString operator + (const FString& s, const char c)
 //----------------------------------------------------------------------
 std::ostream& operator << (std::ostream& outstr, const FString& s)
 {
-  if ( s.length )
+  if ( s.length > 0 )
     outstr << s.wc_to_c_str( s.string );
 
   return outstr;
@@ -3024,7 +3028,7 @@ std::istream& operator >> (std::istream& instr, FString& s)
 //----------------------------------------------------------------------
 std::wostream& operator << (std::wostream& outstr, const FString& s)
 {
-  if ( s.length )
+  if ( s.length > 0 )
     outstr << s.string;
 
   return outstr;
