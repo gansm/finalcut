@@ -69,8 +69,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void notEqualTest();
     void lessEqualTest();
     void lessTest();
-    void GreaterEqualTest();
-    void GreaterTest();
+    void greaterEqualTest();
+    void greaterTest();
     void streamInsertionTest();
     void streamExtractionTest();
     void subscriptOperatorTest();
@@ -83,6 +83,9 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void subStringTest();
     void insertTest();
     void replaceTest();
+    void overwriteTest();
+    void removeTest();
+    void includesTest();
     void controlCodesTest();
 
   private:
@@ -102,8 +105,8 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (notEqualTest);
     CPPUNIT_TEST (lessEqualTest);
     CPPUNIT_TEST (lessTest);
-    CPPUNIT_TEST (GreaterEqualTest);
-    CPPUNIT_TEST (GreaterTest);
+    CPPUNIT_TEST (greaterEqualTest);
+    CPPUNIT_TEST (greaterTest);
     CPPUNIT_TEST (streamInsertionTest);
     CPPUNIT_TEST (streamExtractionTest);
     CPPUNIT_TEST (subscriptOperatorTest);
@@ -116,6 +119,9 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (subStringTest);
     CPPUNIT_TEST (insertTest);
     CPPUNIT_TEST (replaceTest);
+    CPPUNIT_TEST (overwriteTest);
+    CPPUNIT_TEST (removeTest);
+    CPPUNIT_TEST (includesTest);
     CPPUNIT_TEST (controlCodesTest);
 
     // End of test suite definition
@@ -345,6 +351,9 @@ void FStringTest::assignmentTest()
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == "A character string" );
 
+  s1.setString(L"A wide character string");
+  // Set the identical content again.
+  // Requires no string replacement (new string = string)
   s1.setString(L"A wide character string");
   CPPUNIT_ASSERT ( s1 );
   CPPUNIT_ASSERT ( s1 == L"A wide character string" );
@@ -648,7 +657,7 @@ void FStringTest::lessTest()
 }
 
 //----------------------------------------------------------------------
-void FStringTest::GreaterEqualTest()
+void FStringTest::greaterEqualTest()
 {
   const FString one_char('x');
   const char ch = 'x';
@@ -693,7 +702,7 @@ void FStringTest::GreaterEqualTest()
 }
 
 //----------------------------------------------------------------------
-void FStringTest::GreaterTest()
+void FStringTest::greaterTest()
 {
   const FString one_char('x');
   const char ch = 'w';
@@ -1440,22 +1449,117 @@ void FStringTest::replaceTest()
   CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from6, empty) == "ABC"  );
 
   empty = "";
   CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
+  CPPUNIT_ASSERT ( s.replace(from6, empty) == "ABC"  );
 
   s.clear();
   CPPUNIT_ASSERT ( s.replace(from1, to1).isNull() );
   CPPUNIT_ASSERT ( s.replace(from1, to1).isEmpty() );
   CPPUNIT_ASSERT ( s.replace(from6, to1).isNull() );
   CPPUNIT_ASSERT ( s.replace(from6, to1).isEmpty() );
+
   CPPUNIT_ASSERT ( s.replace(from5, to5).isNull() );
   CPPUNIT_ASSERT ( s.replace(from5, to5).isEmpty() );
   CPPUNIT_ASSERT ( s.replace(from7, to7).isNull() );
   CPPUNIT_ASSERT ( s.replace(from7, to7).isEmpty() );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::overwriteTest()
+{
+  // FString
+  FString str = "abcdefghijklm";
+  CPPUNIT_ASSERT ( str.overwrite("+++++++", 3) == "abc+++++++klm" );
+  CPPUNIT_ASSERT ( str.overwrite(".............") == "............." );
+  CPPUNIT_ASSERT ( str.overwrite(",,,,,,,,,,,,,,,") == ",,,,,,,,,,,,,,," );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite("+++++", 99) == "abc+++++" );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite("+++", -5) == "+++" );
+
+  // Wide string
+  str = "abcdefghijklm";
+  CPPUNIT_ASSERT ( str.overwrite(L"+++++++", 3) == "abc+++++++klm" );
+  CPPUNIT_ASSERT ( str.overwrite(L".............") == "............." );
+  CPPUNIT_ASSERT ( str.overwrite(L",,,,,,,,,,,,,,,") == ",,,,,,,,,,,,,,," );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite(L"+++++", 99) == "abc+++++" );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite(L"+++", -5) == "+++" );
+
+  // Wide char
+  str = "abcdefghijklm";
+  CPPUNIT_ASSERT ( str.overwrite(L'+', 3) == "abc+efghijklm" );
+  CPPUNIT_ASSERT ( str.overwrite(L'.') == ".bc+efghijklm" );
+  CPPUNIT_ASSERT ( str.overwrite(L',', 12) == ".bc+efghijkl," );
+  CPPUNIT_ASSERT ( str.overwrite(L'.', 13) == ".bc+efghijkl,." );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite(L'+', 99) == "abc+" );
+  str = "abc";
+  CPPUNIT_ASSERT ( str.overwrite(L'+', -5) == "+bc" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::removeTest()
+{
+  FString str = "ABCDE";
+  CPPUNIT_ASSERT ( str.remove(2, 2) == "ABE" );
+  CPPUNIT_ASSERT ( str.remove(2, 1) == "AB" );
+  CPPUNIT_ASSERT ( str.remove(2, 1) == "AB" );
+  CPPUNIT_ASSERT ( str.remove(2, 5) == "AB" );
+  str = "ABCDE";
+  CPPUNIT_ASSERT ( str.remove(2, 99) == "AB" );
+  CPPUNIT_ASSERT ( str.remove(99, 1) == "AB" );
+}
+
+//----------------------------------------------------------------------
+void FStringTest::includesTest()
+{
+  const FString str = "Look behind you, a three-headed monkey!";
+  const FString empty1;
+  const wchar_t empty2[] = L"";
+  const char empty3[] = "";
+  const FString search1 = "you";
+  const FString search2 = "me";
+  const wchar_t search3[] = L"you";
+  const wchar_t search4[] = L"me";
+  const char search5[] = "you";
+  const char search6[] = "me";
+  const wchar_t search7 = L'y';
+  const wchar_t search8 = L'&';
+  const char search9 = 'y';
+  const char search10 = '&';
+
+  CPPUNIT_ASSERT ( ! str.includes(empty1) );
+  CPPUNIT_ASSERT ( str.includes(search1) );
+  CPPUNIT_ASSERT ( ! str.includes(search2) );
+  CPPUNIT_ASSERT ( ! empty1.includes(search1) );
+
+  CPPUNIT_ASSERT ( ! str.includes(empty2) );
+  CPPUNIT_ASSERT ( str.includes(search3) );
+  CPPUNIT_ASSERT ( ! str.includes(search4) );
+  CPPUNIT_ASSERT ( ! empty1.includes(search3) );
+
+  CPPUNIT_ASSERT ( ! str.includes(empty3) );
+  CPPUNIT_ASSERT ( str.includes(search5) );
+  CPPUNIT_ASSERT ( ! str.includes(search6) );
+  CPPUNIT_ASSERT ( ! empty1.includes(search5) );
+
+  CPPUNIT_ASSERT ( ! str.includes(wchar_t(L'\0')) );
+  CPPUNIT_ASSERT ( str.includes(search7) );
+  CPPUNIT_ASSERT ( ! str.includes(search8) );
+  CPPUNIT_ASSERT ( ! empty1.includes(search7) );
+
+  CPPUNIT_ASSERT ( ! str.includes(char('\0')) );
+  CPPUNIT_ASSERT ( str.includes(search9) );
+  CPPUNIT_ASSERT ( ! str.includes(search10) );
+  CPPUNIT_ASSERT ( ! empty1.includes(search9) );
 }
 
 //----------------------------------------------------------------------
@@ -1539,8 +1643,8 @@ void FStringTest::controlCodesTest()
 
   CPPUNIT_ASSERT ( cc.replaceControlCodes() == FString(32, L' ') );
 
-  cc = "t\b\bTesT\bt";
-  CPPUNIT_ASSERT ( cc.replaceControlCodes() == "t␈␈TesT␈t" );
+  cc = "t\b\bTes\177Tt";
+  CPPUNIT_ASSERT ( cc.replaceControlCodes() == "t␈␈Tes␡Tt" );
 }
 
 // Put the test suite in the registry

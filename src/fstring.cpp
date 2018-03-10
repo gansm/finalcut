@@ -2409,8 +2409,20 @@ FString FString::removeBackspaces() const
 }
 
 //----------------------------------------------------------------------
+const FString& FString::overwrite (const FString& s, int pos)
+{
+  if ( pos < 0 )
+    return overwrite (s, 0);
+
+  return overwrite (s, uInt(pos));
+}
+
+//----------------------------------------------------------------------
 const FString& FString::overwrite (const FString& s, uInt pos)
 {
+  if ( pos > length )
+    pos = length;
+
   if ( length >= (pos + s.length) )
   {
     std::wcsncpy (string + pos, s.string, s.length);
@@ -2425,11 +2437,23 @@ const FString& FString::overwrite (const FString& s, uInt pos)
 }
 
 //----------------------------------------------------------------------
+const FString& FString::overwrite (const wchar_t s[], int pos)
+{
+  if ( pos < 0 )
+    return overwrite (s, 0);
+
+  return overwrite (s, uInt(pos));
+}
+
+//----------------------------------------------------------------------
 const FString& FString::overwrite (const wchar_t s[], uInt pos)
 {
   uInt len = uInt(std::wcslen(s));
 
-  if ( length >= (pos +len) )
+  if ( pos > length )
+    pos = length;
+
+  if ( length >= (pos + len) )
   {
     std::wcsncpy (string + pos, s, len);
   }
@@ -2443,11 +2467,28 @@ const FString& FString::overwrite (const wchar_t s[], uInt pos)
 }
 
 //----------------------------------------------------------------------
+const FString& FString::overwrite (const wchar_t c, int pos)
+{
+  if ( pos < 0 )
+    return overwrite (c, 0);
+
+  return overwrite (c, uInt(pos));
+}
+
+//----------------------------------------------------------------------
 const FString& FString::overwrite (const wchar_t c, uInt pos)
 {
+  if ( pos > length )
+    pos = length;
+
   if ( length >= (pos + 1) )
-  {
     string[pos] = c;
+  else
+  {
+    wchar_t s[2];
+    s[0] = c;
+    s[1] = L'\0';
+    _insert (length, pos + 1 - length, s);
   }
 
   return *this;
@@ -2456,34 +2497,48 @@ const FString& FString::overwrite (const wchar_t c, uInt pos)
 //----------------------------------------------------------------------
 const FString& FString::remove (uInt pos, uInt len)
 {
-  assert ((pos < length) && ((pos + len) <= length));
+  if ( pos > length )
+    return *this;
+
+  if ( pos + len > length )
+    len = length - pos;
+
   _remove (pos, len);
 
   return *this;
 }
 
 //----------------------------------------------------------------------
-bool FString::includes (const FString& s)
+bool FString::includes (const FString& s) const
 {
-  if ( ! string )
+  if ( ! s )
+    return false;
+
+  if ( ! (string && s.string) )
     return false;
 
   return ( std::wcsstr(string, s.string) != 0 );
 }
 
 //----------------------------------------------------------------------
-bool FString::includes (const wchar_t s[])
+bool FString::includes (const wchar_t s[]) const
 {
-  if ( ! string )
+  if ( ! s )
+    return false;
+
+  if ( ! ( string && s[0]) )
     return false;
 
   return ( std::wcsstr(string, s) != 0 );
 }
 
 //----------------------------------------------------------------------
-bool FString::includes (const char s[])
+bool FString::includes (const char s[]) const
 {
-  if ( ! string )
+  if ( ! s )
+    return false;
+
+  if ( ! (string && s[0]) )
     return false;
 
   bool ret;
@@ -2498,9 +2553,9 @@ bool FString::includes (const char s[])
 }
 
 //----------------------------------------------------------------------
-bool FString::includes (const wchar_t c)
+bool FString::includes (const wchar_t c) const
 {
-  if ( ! string )
+  if ( ! (string && c) )
     return false;
 
   wchar_t s[2];
@@ -2510,9 +2565,9 @@ bool FString::includes (const wchar_t c)
 }
 
 //----------------------------------------------------------------------
-bool FString::includes (const char c)
+bool FString::includes (const char c) const
 {
-  if ( ! string )
+  if ( ! (string && c) )
     return false;
 
   wchar_t s[2];

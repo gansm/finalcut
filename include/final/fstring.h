@@ -352,16 +352,19 @@ class FString
     FString removeDel() const;
     FString removeBackspaces() const;
 
-    const FString& overwrite (const FString&, uInt);
-    const FString& overwrite (const wchar_t[], uInt);
-    const FString& overwrite (const wchar_t, uInt);
+    const FString& overwrite (const FString&, int);
+    const FString& overwrite (const FString&, uInt = 0);
+    const FString& overwrite (const wchar_t[], int);
+    const FString& overwrite (const wchar_t[], uInt = 0);
+    const FString& overwrite (const wchar_t, int);
+    const FString& overwrite (const wchar_t, uInt = 0);
 
     const FString& remove (uInt, uInt);
-    bool  includes (const FString&);
-    bool  includes (const wchar_t[]);
-    bool  includes (const char[]);
-    bool  includes (const wchar_t);
-    bool  includes (const char);
+    bool  includes (const FString&) const;
+    bool  includes (const wchar_t[]) const;
+    bool  includes (const char[]) const;
+    bool  includes (const wchar_t) const;
+    bool  includes (const char) const;
 
   private:
     // Constants
