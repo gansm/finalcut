@@ -82,8 +82,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fstring_test$(EXEEXT)
-@CPPUNIT_TEST_TRUE@TESTS = fstring_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fstring_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fpoint_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@TESTS = fstring_test$(EXEEXT) fpoint_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
 subdir = src/test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -100,16 +101,21 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fstring_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fstring_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fpoint_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am__fstring_test_SOURCES_DIST = fstring-test.cpp
-@CPPUNIT_TEST_TRUE@am_fstring_test_OBJECTS = fstring-test.$(OBJEXT)
-fstring_test_OBJECTS = $(am_fstring_test_OBJECTS)
-fstring_test_LDADD = $(LDADD)
+am__fpoint_test_SOURCES_DIST = fpoint-test.cpp
+@CPPUNIT_TEST_TRUE@am_fpoint_test_OBJECTS = fpoint-test.$(OBJEXT)
+fpoint_test_OBJECTS = $(am_fpoint_test_OBJECTS)
+fpoint_test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am__fstring_test_SOURCES_DIST = fstring-test.cpp
+@CPPUNIT_TEST_TRUE@am_fstring_test_OBJECTS = fstring-test.$(OBJEXT)
+fstring_test_OBJECTS = $(am_fstring_test_OBJECTS)
+fstring_test_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -144,8 +150,9 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(fstring_test_SOURCES)
-DIST_SOURCES = $(am__fstring_test_SOURCES_DIST)
+SOURCES = $(fpoint_test_SOURCES) $(fstring_test_SOURCES)
+DIST_SOURCES = $(am__fpoint_test_SOURCES_DIST) \
+	$(am__fstring_test_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -504,6 +511,7 @@ top_srcdir = @top_srcdir@
 @CPPUNIT_TEST_TRUE@AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal $(CPPUNIT_LIBS)
 @CPPUNIT_TEST_TRUE@AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 @CPPUNIT_TEST_TRUE@fstring_test_SOURCES = fstring-test.cpp
+@CPPUNIT_TEST_TRUE@fpoint_test_SOURCES = fpoint-test.cpp
 all: all-am
 
 .SUFFIXES:
@@ -557,6 +565,10 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+fpoint_test$(EXEEXT): $(fpoint_test_OBJECTS) $(fpoint_test_DEPENDENCIES) $(EXTRA_fpoint_test_DEPENDENCIES) 
+	@rm -f fpoint_test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(fpoint_test_OBJECTS) $(fpoint_test_LDADD) $(LIBS)
+
 fstring_test$(EXEEXT): $(fstring_test_OBJECTS) $(fstring_test_DEPENDENCIES) $(EXTRA_fstring_test_DEPENDENCIES) 
 	@rm -f fstring_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fstring_test_OBJECTS) $(fstring_test_LDADD) $(LIBS)
@@ -567,6 +579,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fpoint-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring-test.Po@am__quote@
 
 .cpp.o:
@@ -792,6 +805,13 @@ recheck: all $(check_PROGRAMS)
 fstring_test.log: fstring_test$(EXEEXT)
 	@p='fstring_test$(EXEEXT)'; \
 	b='fstring_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+fpoint_test.log: fpoint_test$(EXEEXT)
+	@p='fpoint_test$(EXEEXT)'; \
+	b='fpoint_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -95,6 +95,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FStringTest);
 
+    // Add a methods to the test suite
     CPPUNIT_TEST (NoArgumentTest);
     CPPUNIT_TEST (initLengthTest);
     CPPUNIT_TEST (copyConstructorTest);
@@ -180,7 +181,6 @@ void FStringTest::NoArgumentTest()
   CPPUNIT_ASSERT ( empty == wcstr );
   CPPUNIT_ASSERT ( FString(std::wstring()).isEmpty() );
   CPPUNIT_ASSERT ( FString(wchar_t(0)).isEmpty() );
-
 
   CPPUNIT_ASSERT ( ! empty.includes('A') );
   CPPUNIT_ASSERT ( ! empty.includes(L'A') );
