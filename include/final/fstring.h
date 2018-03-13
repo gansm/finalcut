@@ -210,6 +210,9 @@ class FString
     friend std::wostream& operator << (std::wostream& outstr, const FString& s);
     friend std::wistream& operator >> (std::wistream& instr, FString& s);
 
+    // Accessor
+    virtual const char* getClassName();
+
     // inquiries
     bool isNull() const;
     bool isEmpty() const;
@@ -390,6 +393,10 @@ class FString
 
 
 // FString inline functions
+//----------------------------------------------------------------------
+inline const char* FString::getClassName()
+{ return "FString"; }
+
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
 { return ! string; }

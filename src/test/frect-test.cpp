@@ -1,0 +1,480 @@
+/***********************************************************************
+* frect-test.cpp - FRect unit tests                                    *
+*                                                                      *
+* This file is part of the Final Cut widget toolkit                    *
+*                                                                      *
+* Copyright 2018 Markus Gans                                           *
+*                                                                      *
+* The Final Cut is free software; you can redistribute it and/or       *
+* modify it under the terms of the GNU Lesser General Public License   *
+* as published by the Free Software Foundation; either version 3 of    *
+* the License, or (at your option) any later version.                  *
+*                                                                      *
+* The Final Cut is distributed in the hope that it will be useful,     *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+* GNU Lesser General Public License for more details.                  *
+*                                                                      *
+* You should have received a copy of the GNU Lesser General Public     *
+* License along with this program.  If not, see                        *
+* <http://www.gnu.org/licenses/>.                                      *
+***********************************************************************/
+
+#include <cppunit/BriefTestProgressListener.h>
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
+
+#include <final/final.h>
+
+//----------------------------------------------------------------------
+// class FRectTest
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FRectTest : public CPPUNIT_NS::TestFixture
+{
+  public:
+    FRectTest()
+    { }
+
+  protected:
+    void classNameTest();
+    void NoArgumentTest();
+    void copyConstructorTest();
+    void assignmentTest();
+    void equalTest();
+    void notEqualTest();
+    void additionTest();
+    void subtractionTest();
+    void referenceTest();
+    void moveTest();
+    void containsTest();
+    void overlapTest();
+    void intersectTest();
+    void combinedTest();
+
+  private:
+    // Adds code needed to register the test suite
+    CPPUNIT_TEST_SUITE (FRectTest);
+
+    // Add a methods to the test suite
+    CPPUNIT_TEST (classNameTest);
+    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (copyConstructorTest);
+    CPPUNIT_TEST (assignmentTest);
+    CPPUNIT_TEST (equalTest);
+    CPPUNIT_TEST (notEqualTest);
+    CPPUNIT_TEST (additionTest);
+    CPPUNIT_TEST (subtractionTest);
+    CPPUNIT_TEST (referenceTest);
+    CPPUNIT_TEST (moveTest);
+    CPPUNIT_TEST (containsTest);
+    CPPUNIT_TEST (overlapTest);
+    CPPUNIT_TEST (intersectTest);
+    CPPUNIT_TEST (combinedTest);
+
+    // End of test suite definition
+    CPPUNIT_TEST_SUITE_END();
+};
+#pragma pack(pop)
+
+//----------------------------------------------------------------------
+void FRectTest::classNameTest()
+{
+  FRect r;
+  const char* const classname = r.getClassName();
+  CPPUNIT_ASSERT ( std::strcmp(classname, "FRect") == 0 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::NoArgumentTest()
+{
+  const FRect rectangle;
+  CPPUNIT_ASSERT ( rectangle.getX1() == 0 );
+  CPPUNIT_ASSERT ( rectangle.getY1() == 0 );
+  CPPUNIT_ASSERT ( rectangle.getX2() == -1 );
+  CPPUNIT_ASSERT ( rectangle.getY2() == -1 );
+  CPPUNIT_ASSERT ( rectangle.isNull() );
+  CPPUNIT_ASSERT ( rectangle.getWidth() == 0 );
+  CPPUNIT_ASSERT ( rectangle.getHeight() == 0 );
+  CPPUNIT_ASSERT ( rectangle.getPos() == FPoint(0, 0) );
+  CPPUNIT_ASSERT ( rectangle.getUpperLeftPos() == FPoint(0, 0) );
+  CPPUNIT_ASSERT ( rectangle.getUpperRightPos() == FPoint(-1, 0) );
+  CPPUNIT_ASSERT ( rectangle.getLowerLeftPos() == FPoint(0, -1) );
+  CPPUNIT_ASSERT ( rectangle.getLowerRightPos() == FPoint(-1, -1) );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::copyConstructorTest()
+{
+  const FRect r1(1, 1, 20, 10);
+  const FRect r2 (r1);
+  CPPUNIT_ASSERT ( r2.getX() == 1 );
+  CPPUNIT_ASSERT ( r2.getY() == 1 );
+  CPPUNIT_ASSERT ( ! r2.isNull() );
+  CPPUNIT_ASSERT ( r2.getWidth() == 20 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 10 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::assignmentTest()
+{
+  const FRect r1(3, 5, 45, 14);
+  CPPUNIT_ASSERT ( r1.getX1() == 3 );
+  CPPUNIT_ASSERT ( r1.getY1() == 5 );
+  CPPUNIT_ASSERT ( r1.getX2() == 47 );
+  CPPUNIT_ASSERT ( r1.getY2() == 18 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 14 );
+
+  FRect r2 (r1);
+  CPPUNIT_ASSERT ( r2 == r1 );
+  CPPUNIT_ASSERT ( r2.getX1() == 3 );
+  CPPUNIT_ASSERT ( r2.getY1() == 5 );
+  CPPUNIT_ASSERT ( r2.getX2() == 47 );
+  CPPUNIT_ASSERT ( r2.getY2() == 18 );
+  CPPUNIT_ASSERT ( r2.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 14 );
+
+  FRect r3(3, 3, 10, 10);
+  r3 = r2;
+  CPPUNIT_ASSERT ( r3 == r2 );
+  CPPUNIT_ASSERT ( r3.getX1() == 3 );
+  CPPUNIT_ASSERT ( r3.getY1() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 47 );
+  CPPUNIT_ASSERT ( r3.getY2() == 18 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+
+  r3.setPos(FPoint(1, 1));
+  CPPUNIT_ASSERT ( r3 != r2 );
+  CPPUNIT_ASSERT ( r3.getX1() == 1 );
+  CPPUNIT_ASSERT ( r3.getY1() == 1 );
+  CPPUNIT_ASSERT ( r3.getX2() == 45 );
+  CPPUNIT_ASSERT ( r3.getY2() == 14 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+
+  r3.setPos(-5, -5);
+  CPPUNIT_ASSERT ( r3 != r2 );
+  CPPUNIT_ASSERT ( r3.getX1() == -5 );
+  CPPUNIT_ASSERT ( r3.getY1() == -5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 39 );
+  CPPUNIT_ASSERT ( r3.getY2() == 8 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+
+  r3.setRect(-3, -3, 6, 6);
+  CPPUNIT_ASSERT ( r3.getX1() == -3 );
+  CPPUNIT_ASSERT ( r3.getY1() == -3 );
+  CPPUNIT_ASSERT ( r3.getX2() == 2 );
+  CPPUNIT_ASSERT ( r3.getY2() == 2 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 6 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 6 );
+
+  r3.setRect(r1);
+  CPPUNIT_ASSERT ( r3 == r1 );
+  CPPUNIT_ASSERT ( r3.getX1() == 3 );
+  CPPUNIT_ASSERT ( r3.getY1() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 47 );
+  CPPUNIT_ASSERT ( r3.getY2() == 18 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 45 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+
+  r3.setX1(1);
+  CPPUNIT_ASSERT ( r3 != r1 );
+  CPPUNIT_ASSERT ( r3.getX1() == 1 );
+  CPPUNIT_ASSERT ( r3.getY1() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 47 );
+  CPPUNIT_ASSERT ( r3.getY2() == 18 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 47 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 14 );
+
+  r3.setY1(1);
+  CPPUNIT_ASSERT ( r3.getX1() == 1 );
+  CPPUNIT_ASSERT ( r3.getY1() == 1 );
+  CPPUNIT_ASSERT ( r3.getX2() == 47 );
+  CPPUNIT_ASSERT ( r3.getY2() == 18 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 47 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 18 );
+
+  r3.setX2(10);
+  CPPUNIT_ASSERT ( r3.getX1() == 1 );
+  CPPUNIT_ASSERT ( r3.getY1() == 1 );
+  CPPUNIT_ASSERT ( r3.getX2() == 10 );
+  CPPUNIT_ASSERT ( r3.getY2() == 18 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 18 );
+
+  r3.setY2(10);
+  CPPUNIT_ASSERT ( r3.getX1() == 1 );
+  CPPUNIT_ASSERT ( r3.getY1() == 1 );
+  CPPUNIT_ASSERT ( r3.getX2() == 10 );
+  CPPUNIT_ASSERT ( r3.getY2() == 10 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+
+  r3.setX(2);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 1 );
+  CPPUNIT_ASSERT ( r3.getX2() == 11 );
+  CPPUNIT_ASSERT ( r3.getY2() == 10 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+
+  r3.setY(2);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 2 );
+  CPPUNIT_ASSERT ( r3.getX2() == 11 );
+  CPPUNIT_ASSERT ( r3.getY2() == 11 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+
+  r3.setWidth(8);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 2 );
+  CPPUNIT_ASSERT ( r3.getX2() == 9 );
+  CPPUNIT_ASSERT ( r3.getY2() == 11 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 8 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 10 );
+
+  r3.setHeight(8);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 2 );
+  CPPUNIT_ASSERT ( r3.getX2() == 9 );
+  CPPUNIT_ASSERT ( r3.getY2() == 9 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 8 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 8 );
+
+  r3.setSize(5, 5);
+  CPPUNIT_ASSERT ( r3.getX1() == 2 );
+  CPPUNIT_ASSERT ( r3.getY1() == 2 );
+  CPPUNIT_ASSERT ( r3.getX2() == 6 );
+  CPPUNIT_ASSERT ( r3.getY2() == 6 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 5 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+
+  const FPoint p1(3, 3);
+  const FPoint p2(30, 10);
+  r3.setCoordinates (p1, p2);
+  CPPUNIT_ASSERT ( r3.getX1() == 3 );
+  CPPUNIT_ASSERT ( r3.getY1() == 3 );
+  CPPUNIT_ASSERT ( r3.getX2() == 30 );
+  CPPUNIT_ASSERT ( r3.getY2() == 10 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 28 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 8 );
+
+  r3.setCoordinates (10, 12, 40, 50);
+  CPPUNIT_ASSERT ( r3.getX1() == 10 );
+  CPPUNIT_ASSERT ( r3.getY1() == 12 );
+  CPPUNIT_ASSERT ( r3.getX2() == 40 );
+  CPPUNIT_ASSERT ( r3.getY2() == 50 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 31 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 39 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::equalTest()
+{
+  const FRect r1 (1, 2, 10, 20);
+  const FRect r2 (1, 2, 10, 20);
+  CPPUNIT_ASSERT ( r1 == r2 );
+  CPPUNIT_ASSERT ( FRect(1, 2, 10, 20) == r2 );
+  CPPUNIT_ASSERT ( r1 == FRect(1, 2, 10, 20) );
+  CPPUNIT_ASSERT ( FRect() == FRect() );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::notEqualTest()
+{
+  const FRect r1 (1, 2, 10, 20);
+  const FRect r2 (1, 2, 15, 25);
+  CPPUNIT_ASSERT ( r1 != r2 );
+  CPPUNIT_ASSERT ( FRect(1, 2, 10, 20) != r2 );
+  CPPUNIT_ASSERT ( r1 != FRect(3, 4, 10, 20) );
+  CPPUNIT_ASSERT ( FRect() != r2 );
+  CPPUNIT_ASSERT ( r1 != FRect() );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::additionTest()
+{
+  const FRect r1 (1, 2, 10, 10);
+  const FPoint p (3, 5);
+  const FRect r2 = r1 + p;
+  CPPUNIT_ASSERT ( r2.getX1() == 1 );
+  CPPUNIT_ASSERT ( r2.getY1() == 2 );
+  CPPUNIT_ASSERT ( r2.getX2() == 13 );
+  CPPUNIT_ASSERT ( r2.getY2() == 16 );
+  CPPUNIT_ASSERT ( r2.getWidth() == 13 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 15 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::subtractionTest()
+{
+  const FRect r1 (2, 2, 12, 12);
+  const FPoint p (5, 5);
+  const FRect r2 = r1 - p;
+  CPPUNIT_ASSERT ( r2.getX1() == 2 );
+  CPPUNIT_ASSERT ( r2.getY1() == 2 );
+  CPPUNIT_ASSERT ( r2.getX2() == 8 );
+  CPPUNIT_ASSERT ( r2.getY2() == 8 );
+  CPPUNIT_ASSERT ( r2.getWidth() == 7 );
+  CPPUNIT_ASSERT ( r2.getHeight() == 7 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::referenceTest()
+{
+  FRect r1 (1, 1, 10, 20);
+  CPPUNIT_ASSERT ( r1.getX1() == 1 );
+  CPPUNIT_ASSERT ( r1.getY1() == 1 );
+  CPPUNIT_ASSERT ( r1.getX2() == 10 );
+  CPPUNIT_ASSERT ( r1.getY2() == 20 );
+
+  // Use references to coordinates
+  r1.x1_ref()++;
+  r1.y1_ref()++;
+  r1.x2_ref()--;
+  r1.y2_ref()--;
+  CPPUNIT_ASSERT ( r1.getX1() == 2 );
+  CPPUNIT_ASSERT ( r1.getY1() == 2 );
+  CPPUNIT_ASSERT ( r1.getX2() == 9 );
+  CPPUNIT_ASSERT ( r1.getY2() == 19 );
+
+  short& x1 = r1.x1_ref();
+  short& y1 = r1.y1_ref();
+  short& x2 = r1.x2_ref();
+  short& y2 = r1.y2_ref();
+  x1 += 2;
+  y1 -= 2;
+  x2 -= 3;
+  y2 += 4;
+  CPPUNIT_ASSERT ( r1.getX1() == 4 );
+  CPPUNIT_ASSERT ( r1.getY1() == 0 );
+  CPPUNIT_ASSERT ( r1.getX2() == 6 );
+  CPPUNIT_ASSERT ( r1.getY2() == 23 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::moveTest()
+{
+  FRect r1 (1, 2, 10, 20);
+  CPPUNIT_ASSERT ( r1.getX() == 1 );
+  CPPUNIT_ASSERT ( r1.getY() == 2 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getX2() == 10 );
+  CPPUNIT_ASSERT ( r1.getY2() == 21 );
+
+  const FPoint p1 (2,3);
+  r1.move(p1);
+  CPPUNIT_ASSERT ( r1.getX() == 3 );
+  CPPUNIT_ASSERT ( r1.getY() == 5 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getX2() == 12 );
+  CPPUNIT_ASSERT ( r1.getY2() == 24 );
+
+  r1.move (-5, -5);
+  CPPUNIT_ASSERT ( r1.getX() == -2 );
+  CPPUNIT_ASSERT ( r1.getY() == 0 );
+  CPPUNIT_ASSERT ( r1.getWidth() == 10 );
+  CPPUNIT_ASSERT ( r1.getHeight() == 20 );
+  CPPUNIT_ASSERT ( r1.getX2() == 7 );
+  CPPUNIT_ASSERT ( r1.getY2() == 19 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::containsTest()
+{
+  const FRect r1 (1, 2, 10, 20);
+  CPPUNIT_ASSERT ( r1.contains(5, 5) );
+  CPPUNIT_ASSERT ( ! r1.contains(0, 1) );
+
+  const FPoint p1 (3, 4);
+  const FPoint p2 (3, 25);
+  CPPUNIT_ASSERT ( r1.contains(p1) );
+  CPPUNIT_ASSERT ( ! r1.contains(p2) );
+
+  const FRect r2 (5, 5, 10, 20);
+  const FRect r3 (2, 3, 9, 19);
+  CPPUNIT_ASSERT ( !r1.contains(r2) );
+  CPPUNIT_ASSERT ( r1.contains(r3) );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::overlapTest()
+{
+  const FRect r1 (1, 2, 10, 20);
+  const FRect r2 (5, 5, 10, 20);
+  const FRect r3 (2, 3, 9, 19);
+  const FRect r4 (10, 20, 10, 20);
+  const FRect r5 (11, 21, 10, 20);
+  const FRect r6 (-5, -3, 2, 3);
+  CPPUNIT_ASSERT ( r1.overlap(r2) );
+  CPPUNIT_ASSERT ( r1.overlap(r3) );
+  CPPUNIT_ASSERT ( r1.overlap(r4) );
+  CPPUNIT_ASSERT ( ! r1.overlap(r5) );
+  CPPUNIT_ASSERT ( ! r1.overlap(r6) );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::intersectTest()
+{
+  const FRect r1 (1, 2, 5, 5);
+  const FRect r2 (1, 2, 5, 5);
+  FRect r3 = r1.intersect(r2);
+  CPPUNIT_ASSERT ( r3.getX() == 1 );
+  CPPUNIT_ASSERT ( r3.getY() == 2 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 5 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 5 );
+  CPPUNIT_ASSERT ( r3.getY2() == 6 );
+
+  const FRect r4 (4, 2, 5, 6);
+  r3 = r1.intersect(r4);
+  CPPUNIT_ASSERT ( r3.getX() == 4 );
+  CPPUNIT_ASSERT ( r3.getY() == 2 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 2 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 5 );
+  CPPUNIT_ASSERT ( r3.getY2() == 6 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::combinedTest()
+{
+  const FRect r1 (1, 2, 5, 5);
+  const FRect r2 (1, 2, 5, 5);
+  FRect r3 = r1.combined(r2);
+  CPPUNIT_ASSERT ( r3.getX() == 1 );
+  CPPUNIT_ASSERT ( r3.getY() == 2 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 5 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 5 );
+  CPPUNIT_ASSERT ( r3.getX2() == 5 );
+  CPPUNIT_ASSERT ( r3.getY2() == 6 );
+
+  const FRect r4 (4, 2, 5, 6);
+  r3 = r1.combined(r4);
+  CPPUNIT_ASSERT ( r3.getX() == 1 );
+  CPPUNIT_ASSERT ( r3.getY() == 2 );
+  CPPUNIT_ASSERT ( r3.getWidth() == 8 );
+  CPPUNIT_ASSERT ( r3.getHeight() == 6 );
+  CPPUNIT_ASSERT ( r3.getX2() == 8 );
+  CPPUNIT_ASSERT ( r3.getY2() == 7 );
+}
+
+// Put the test suite in the registry
+CPPUNIT_TEST_SUITE_REGISTRATION (FRectTest);
+
+// The general unit test main part
+#include <main-test.inc>
+

@@ -51,3 +51,5 @@ examples/ui
 src/test/.deps/
 src/test/.libs/
 src/test/fstring_test
+src/test/fpoint_test
+src/test/frect_test

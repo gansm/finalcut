@@ -1,3 +1,6 @@
+2017-03-13  Markus Gans  <guru.mail@muenster.de>
+	* Added unit test for FRect
+
 2017-03-11  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FPoint
 

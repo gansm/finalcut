@@ -44,6 +44,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     { }
 
   protected:
+    void classNameTest();
     void NoArgumentTest();
     void copyConstructorTest();
     void assignmentTest();
@@ -60,6 +61,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE (FPointTest);
 
     // Add a methods to the test suite
+    CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (NoArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
@@ -75,6 +77,14 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 };
 #pragma pack(pop)
+
+//----------------------------------------------------------------------
+void FPointTest::classNameTest()
+{
+  FPoint p;
+  const char* const classname = p.getClassName();
+  CPPUNIT_ASSERT ( std::strcmp(classname, "FPoint") == 0 );
+}
 
 //----------------------------------------------------------------------
 void FPointTest::NoArgumentTest()

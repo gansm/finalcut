@@ -58,6 +58,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     void tearDown();
 
   protected:
+    void classNameTest();
     void NoArgumentTest();
     void initLengthTest();
     void copyConstructorTest();
@@ -96,6 +97,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE (FStringTest);
 
     // Add a methods to the test suite
+    CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (NoArgumentTest);
     CPPUNIT_TEST (initLengthTest);
     CPPUNIT_TEST (copyConstructorTest);
@@ -143,6 +145,14 @@ void FStringTest::setUp()
 void FStringTest::tearDown()
 {
   delete s;
+}
+
+//----------------------------------------------------------------------
+void FStringTest::classNameTest()
+{
+  FString s;
+  const char* const classname = s.getClassName();
+  CPPUNIT_ASSERT ( std::strcmp(classname, "FString") == 0 );
 }
 
 //----------------------------------------------------------------------
