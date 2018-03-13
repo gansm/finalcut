@@ -1533,6 +1533,8 @@ void FStringTest::replaceTest()
 
   s = "ABC";
   FString empty;
+  CPPUNIT_ASSERT ( s.replace('B', "") == "AC" );
+  CPPUNIT_ASSERT ( s.replace(L'B', "") == "AC" );
   CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
   CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );

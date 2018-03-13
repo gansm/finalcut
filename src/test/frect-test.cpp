@@ -277,6 +277,14 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getY2() == 50 );
   CPPUNIT_ASSERT ( r3.getWidth() == 31 );
   CPPUNIT_ASSERT ( r3.getHeight() == 39 );
+
+  FRect r4(p1, p2);
+  CPPUNIT_ASSERT ( r4.getX1() == 3 );
+  CPPUNIT_ASSERT ( r4.getY1() == 3 );
+  CPPUNIT_ASSERT ( r4.getX2() == 30 );
+  CPPUNIT_ASSERT ( r4.getY2() == 10 );
+  CPPUNIT_ASSERT ( r4.getWidth() == 28 );
+  CPPUNIT_ASSERT ( r4.getHeight() == 8 );
 }
 
 //----------------------------------------------------------------------

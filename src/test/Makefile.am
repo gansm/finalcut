@@ -7,15 +7,18 @@ AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal $(CPPUNIT_LIBS)
 AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 
 noinst_PROGRAMS = \
+	fobject_test \
 	fstring_test \
 	fpoint_test \
 	frect_test
 
+fobject_test_SOURCES = fobject-test.cpp
 fstring_test_SOURCES = fstring-test.cpp
 fpoint_test_SOURCES = fpoint-test.cpp
 frect_test_SOURCES = frect-test.cpp
 
-TESTS = fstring_test \
+TESTS = fobject_test \
+	fstring_test \
 	fpoint_test \
 	frect_test
 

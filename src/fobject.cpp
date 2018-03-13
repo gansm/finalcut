@@ -102,6 +102,8 @@ FObject::~FObject()  // destructor
 //----------------------------------------------------------------------
 FObject* FObject::getChild (int index) const
 {
+  // returns the child for the index number
+
   if ( ! hasChildren() )
     return 0;
 
@@ -117,6 +119,8 @@ FObject* FObject::getChild (int index) const
 //----------------------------------------------------------------------
 bool FObject::isChild (FObject* obj) const
 {
+  // Find out if obj is a child object of mine
+
   FObject* p_obj = 0;
 
   while ( obj && (p_obj = obj->getParent()) )

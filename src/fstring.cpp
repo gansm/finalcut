@@ -1838,7 +1838,7 @@ FString FString::replace (const FString& from, const FString& to)
   if ( from.isNull() || to.isNull() )
     return s;
 
-  if ( from.isEmpty() || to.isEmpty() )
+  if ( from.isEmpty() )
     return s;
 
   p = s.string;
@@ -2139,7 +2139,7 @@ FString FString::replace (const wchar_t from, const FString& to)
   if ( ! (string && *string) )
     return s;
 
-  if ( to.isNull() || to.isEmpty() )
+  if ( to.isNull() )
     return s;
 
   p = s.string;
@@ -2891,7 +2891,10 @@ inline wchar_t* FString::extractToken ( wchar_t* rest[]
   register wchar_t* token;
   token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
 
-  if ( ! *token )
+  if ( ! token )
+    return 0;
+
+  if ( ! token[0] )
     return 0;
 
   *rest = std::wcspbrk(token, delim);

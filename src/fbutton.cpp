@@ -401,7 +401,10 @@ void FButton::onMouseMove (FMouseEvent* ev)
 void FButton::onTimer (FTimerEvent* ev)
 {
   delTimer(ev->timerId());
-  clearShadow();
+
+  if ( hasShadow() )
+    clearShadow();
+
   setUp();
 }
 
@@ -569,7 +572,7 @@ inline int FButton::clickAnimationIndent (FWidget* parent_widget)
   // noshadow + indent one character to the right
   if ( is.flat )
     clearFlatBorder();
-  else
+  else if ( hasShadow() )
     clearShadow();
 
   if ( parent_widget )
