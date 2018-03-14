@@ -135,6 +135,15 @@ bool FObject::isChild (FObject* obj) const
 }
 
 //----------------------------------------------------------------------
+void FObject::removeParent()
+{
+  if ( ! hasParent() )
+    return;
+
+  getParent()->delChild(this);
+}
+
+//----------------------------------------------------------------------
 void FObject::addChild (FObject* obj)
 {
   if ( ! obj )
@@ -156,7 +165,8 @@ void FObject::delChild (FObject* obj)
 
   if ( hasChildren() )
   {
-    obj->removeParent();
+    obj->parent_obj = 0;
+    obj->has_parent = false;
     children_list.remove(obj);
   }
 }

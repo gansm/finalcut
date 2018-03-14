@@ -31,13 +31,13 @@ DUALCASE=1; export DUALCASE # for MKS sh
 # if CDPATH is set.
 (unset CDPATH) >/dev/null 2>&1 && unset CDPATH
 
-relink_command="(cd /usr/local/src/guru/finalcut/src/test; { test -z \"\${LIBRARY_PATH+set}\" || unset LIBRARY_PATH || { LIBRARY_PATH=; export LIBRARY_PATH; }; }; { test -z \"\${COMPILER_PATH+set}\" || unset COMPILER_PATH || { COMPILER_PATH=; export COMPILER_PATH; }; }; { test -z \"\${GCC_EXEC_PREFIX+set}\" || unset GCC_EXEC_PREFIX || { GCC_EXEC_PREFIX=; export GCC_EXEC_PREFIX; }; }; { test -z \"\${LD_RUN_PATH+set}\" || unset LD_RUN_PATH || { LD_RUN_PATH=; export LD_RUN_PATH; }; }; { test -z \"\${LD_LIBRARY_PATH+set}\" || unset LD_LIBRARY_PATH || { LD_LIBRARY_PATH=; export LD_LIBRARY_PATH; }; }; PATH=.:/home/guru/bin:/opt/trinity/bin:/sbin:/usr/sbin/:/home/guru/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games; export PATH; g++ -g -O0 -DDEBUG -o \$progdir/\$file fobject-test.o  -L../../src/.libs /usr/local/src/guru/finalcut/src/.libs/libfinal.so -L/usr/lib/x86_64-linux-gnu -lcppunit -ldl -ltermcap -lgpm -Wl,-rpath -Wl,/usr/local/src/guru/finalcut/src/.libs)"
+relink_command="(cd /usr/local/src/MyProgs/finalcut/src/test; { test -z \"\${LIBRARY_PATH+set}\" || unset LIBRARY_PATH || { LIBRARY_PATH=; export LIBRARY_PATH; }; }; { test -z \"\${COMPILER_PATH+set}\" || unset COMPILER_PATH || { COMPILER_PATH=; export COMPILER_PATH; }; }; { test -z \"\${GCC_EXEC_PREFIX+set}\" || unset GCC_EXEC_PREFIX || { GCC_EXEC_PREFIX=; export GCC_EXEC_PREFIX; }; }; { test -z \"\${LD_RUN_PATH+set}\" || unset LD_RUN_PATH || { LD_RUN_PATH=; export LD_RUN_PATH; }; }; { test -z \"\${LD_LIBRARY_PATH+set}\" || unset LD_LIBRARY_PATH || { LD_LIBRARY_PATH=; export LD_LIBRARY_PATH; }; }; PATH=.:/home/guru/bin:/opt/trinity/bin:/sbin:/usr/sbin/:/home/guru/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games; export PATH; g++ -g -O0 -DDEBUG -o \$progdir/\$file fobject-test.o  -L../../src/.libs /usr/local/src/MyProgs/finalcut/src/.libs/libfinal.so -L/usr/lib/x86_64-linux-gnu -lcppunit -ldl -ltermcap -lgpm -Wl,-rpath -Wl,/usr/local/src/MyProgs/finalcut/src/.libs)"
 
 # This environment variable determines our operation mode.
 if test "$libtool_install_magic" = "%%%MAGIC variable%%%"; then
   # install mode needs the following variables:
   generated_by_libtool_version='2.4.2'
-  notinst_deplibs=' /usr/local/src/guru/finalcut/src/.libs/libfinal.la'
+  notinst_deplibs=' /usr/local/src/MyProgs/finalcut/src/.libs/libfinal.la'
 else
   # When we are sourced in execute mode, $file and $ECHO are already set.
   if test "$libtool_execute_magic" != "%%%MAGIC variable%%%"; then

@@ -30,6 +30,25 @@
 
 #include <final/final.h>
 
+
+//----------------------------------------------------------------------
+// class FObject_protected
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FObject_protected : public FObject
+{
+  public:
+    bool event (FEvent* ev)
+    {
+      return FObject::event(ev);
+    }
+};
+#pragma pack(pop)
+
+
 //----------------------------------------------------------------------
 // class FObjectTest
 //----------------------------------------------------------------------
@@ -46,8 +65,10 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void NoArgumentTest();
-    void copyConstructorTest();
-    void assignmentTest();
+    void childObjectTest();
+    void removeParentTest();
+    void addTest();
+    void delTest();
 
   private:
     // Adds code needed to register the test suite
@@ -56,8 +77,10 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (NoArgumentTest);
-    CPPUNIT_TEST (copyConstructorTest);
-    CPPUNIT_TEST (assignmentTest);
+    CPPUNIT_TEST (childObjectTest);
+    CPPUNIT_TEST (removeParentTest);
+    CPPUNIT_TEST (addTest);
+    CPPUNIT_TEST (delTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -93,30 +116,147 @@ void FObjectTest::NoArgumentTest()
   CPPUNIT_ASSERT ( o1.isInstanceOf("FObject") );
   CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
 
-  struct test_protected : public FObject
-  {
-    bool test_event (FEvent* ev)
-    {
-      return event(ev);
-    }
-  };
-
-  test_protected t;
+  FObject_protected t;
   FEvent* ev = new FEvent(fc::None_Event);
-  CPPUNIT_ASSERT ( ! t.test_event(ev) );
+  CPPUNIT_ASSERT ( ! t.event(ev) );
   delete ev;
 }
 
 //----------------------------------------------------------------------
-void FObjectTest::copyConstructorTest()
-{
+void FObjectTest::childObjectTest()
+{/*
+  *  obj -> c1 -> c5 -> c6
+  *      -> c2
+  *      -> c3
+  *      -> c4
+  */
+  FObject obj;
+  FObject* c1 = new FObject(&obj);
+  FObject* c2 = new FObject(&obj);
+  FObject* c3 = new FObject(&obj);
+  FObject* c4 = new FObject(&obj);
+  FObject* c5 = new FObject(c1);
+  FObject* c6 = new FObject(c5);
 
+  CPPUNIT_ASSERT ( obj.hasChildren() );
+  CPPUNIT_ASSERT ( obj.getChild(0) == 0 );
+  CPPUNIT_ASSERT ( obj.getChild(1) != 0 );
+  CPPUNIT_ASSERT ( obj.numOfChildren() == 4 );
+
+  CPPUNIT_ASSERT ( obj.isChild(c1) );
+  CPPUNIT_ASSERT ( obj.isChild(c2) );
+  CPPUNIT_ASSERT ( obj.isChild(c3) );
+  CPPUNIT_ASSERT ( obj.isChild(c4) );
+  CPPUNIT_ASSERT ( obj.isChild(c5) );
+  CPPUNIT_ASSERT ( obj.isChild(c6) );
+
+  CPPUNIT_ASSERT ( obj.isDirectChild(c1) );
+  CPPUNIT_ASSERT ( obj.isDirectChild(c2) );
+  CPPUNIT_ASSERT ( obj.isDirectChild(c3) );
+  CPPUNIT_ASSERT ( obj.isDirectChild(c4) );
+  CPPUNIT_ASSERT ( ! obj.isDirectChild(c5) );
+  CPPUNIT_ASSERT ( c1->isDirectChild(c5) );
+  CPPUNIT_ASSERT ( ! obj.isDirectChild(c6) );
+  CPPUNIT_ASSERT ( ! c1->isDirectChild(c6) );
+  CPPUNIT_ASSERT ( c5->isDirectChild(c6) );
+
+  CPPUNIT_ASSERT ( c1->hasParent() );
+  CPPUNIT_ASSERT ( c1->getParent() == &obj );
+  CPPUNIT_ASSERT ( c1->hasChildren() );
+  CPPUNIT_ASSERT ( ! c2->hasChildren() );
+  CPPUNIT_ASSERT ( c1->getChild(0) == 0 );
+  CPPUNIT_ASSERT ( c1->getChild(1) != 0 );
+  CPPUNIT_ASSERT ( c2->getChild(1) == 0 );
+  CPPUNIT_ASSERT ( c1->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( c2->numOfChildren() == 0 );
+  const FObject::FObjectList& children_list2 = c1->getChildren();
+  CPPUNIT_ASSERT ( children_list2.begin() == c1->begin() );
+  CPPUNIT_ASSERT ( children_list2.begin() != c1->end() );
+  CPPUNIT_ASSERT ( children_list2.end() != c1->begin() );
+  CPPUNIT_ASSERT ( children_list2.end() == c1->end() );
+  CPPUNIT_ASSERT ( ! c1->isDirectChild(c1) );
+  CPPUNIT_ASSERT ( ! c1->isWidget() );
+  CPPUNIT_ASSERT ( c1->isInstanceOf("FObject") );
+  CPPUNIT_ASSERT ( ! c1->isTimerInUpdating() );
 }
 
 //----------------------------------------------------------------------
-void FObjectTest::assignmentTest()
-{
+void FObjectTest::removeParentTest()
+{/*
+  *  obj -> child
+  */
+  FObject* obj =  new FObject();
+  FObject* child = new FObject(obj);
 
+  CPPUNIT_ASSERT ( obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() == obj );
+
+  child->removeParent();
+  CPPUNIT_ASSERT ( ! obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( ! child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() != obj );
+
+  delete child;
+  delete obj;  // also deletes the child object
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::addTest()
+{/*
+  *  obj -> child
+  */
+  FObject* obj =  new FObject();
+  FObject* child = new FObject();
+
+  CPPUNIT_ASSERT ( ! obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( ! child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() != obj );
+
+  obj->addChild(child);
+  CPPUNIT_ASSERT ( obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() == obj );
+
+  delete obj;  // also deletes the child object
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::delTest()
+{/*
+  *  obj -> child
+  */
+  FObject* obj =  new FObject();
+  FObject* child = new FObject(obj);
+  CPPUNIT_ASSERT ( obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
+  CPPUNIT_ASSERT ( obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() == obj );
+
+  obj->delChild(child);
+  CPPUNIT_ASSERT ( ! obj->hasChildren() );
+  CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
+  CPPUNIT_ASSERT ( ! obj->isChild(child) );
+
+  CPPUNIT_ASSERT ( ! child->hasParent() );
+  CPPUNIT_ASSERT ( child->getParent() != obj );
+
+  delete child;
+  delete obj;
 }
 
 

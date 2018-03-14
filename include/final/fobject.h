@@ -194,13 +194,6 @@ inline bool FObject::isInstanceOf (const char classname[]) const
 inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
 
-//----------------------------------------------------------------------
-inline void FObject::removeParent()
-{
-  parent_obj = 0;
-  has_parent = false;
-}
-
 
 //----------------------------------------------------------------------
 // Operator functions for timeval
