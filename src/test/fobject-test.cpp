@@ -45,6 +45,11 @@ class FObject_protected : public FObject
     {
       return FObject::event(ev);
     }
+
+    FObject::TimerList* getTimerList() const
+    {
+      return timer_list;
+    }
 };
 #pragma pack(pop)
 
@@ -69,6 +74,9 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void removeParentTest();
     void addTest();
     void delTest();
+    void iteratorTest();
+    void timeTest();
+    void timerTest();
 
   private:
     // Adds code needed to register the test suite
@@ -81,6 +89,9 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (removeParentTest);
     CPPUNIT_TEST (addTest);
     CPPUNIT_TEST (delTest);
+    CPPUNIT_TEST (iteratorTest);
+    CPPUNIT_TEST (timeTest);
+    CPPUNIT_TEST (timerTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -120,6 +131,13 @@ void FObjectTest::NoArgumentTest()
   FEvent* ev = new FEvent(fc::None_Event);
   CPPUNIT_ASSERT ( ! t.event(ev) );
   delete ev;
+
+  ev = new FEvent(fc::Timer_Event);
+  CPPUNIT_ASSERT ( t.event(ev) );
+  delete ev;
+
+  CPPUNIT_ASSERT ( ! fc::emptyFString::get().isNull() );
+  CPPUNIT_ASSERT ( fc::emptyFString::get().isEmpty() );
 }
 
 //----------------------------------------------------------------------
@@ -259,7 +277,103 @@ void FObjectTest::delTest()
   delete obj;
 }
 
+//----------------------------------------------------------------------
+void FObjectTest::iteratorTest()
+{/*
+  *  obj -> child1
+  *      -> child2
+  *      -> child3
+  */
+  FObject* obj =  new FObject();
+  FObject* child1 = new FObject(obj);
+  FObject* child2 = new FObject(obj);
+  FObject* child3 = new FObject(obj);
 
+  CPPUNIT_ASSERT ( child1->getParent() == obj );
+  CPPUNIT_ASSERT ( child2->getParent() == obj );
+  CPPUNIT_ASSERT ( child3->getParent() == obj );
+
+  FObject::constFObjectIterator c_iter, c_last;
+  c_iter = obj->begin();
+  c_last = obj->end();
+  int i = 0;
+
+  while ( c_iter != c_last )
+  {
+    i++;
+    ++c_iter;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  FObject::FObjectIterator iter, last;
+  iter = obj->begin();
+  last = obj->end();
+  i = 0;
+
+  while ( iter != last )
+  {
+    i++;
+    ++iter;
+  }
+
+  CPPUNIT_ASSERT ( obj->numOfChildren() == i );
+  CPPUNIT_ASSERT ( i == 3 );
+
+  delete obj;
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::timeTest()
+{
+  struct timeval time1;
+  long timeout = 750000;  // 750 ms
+  FObject::getCurrentTime(&time1);
+  CPPUNIT_ASSERT ( ! FObject::isTimeout (&time1, timeout) );
+  sleep(1);
+  CPPUNIT_ASSERT ( FObject::isTimeout (&time1, timeout) );
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::timerTest()
+{
+  FObject_protected t1;
+  FObject_protected t2;
+  int id1, id2;
+  CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
+  id1 = t1.addTimer(300);
+  CPPUNIT_ASSERT ( ! t1.getTimerList()->empty() );
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 1 );
+  id2 = t1.addTimer(900);
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 2 );
+  t1.delTimer (id1);
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 1 );
+  t1.delTimer (id2);
+  CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
+  t1.addTimer(250);
+  t1.addTimer(500);
+  t2.addTimer(750);
+  t2.addTimer(1000);
+  CPPUNIT_ASSERT_EQUAL ( t1.getTimerList(), t2.getTimerList() );
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 4 );
+  CPPUNIT_ASSERT ( t2.getTimerList()->size() == 4 );
+
+  t1.delOwnTimer();
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 2 );
+  CPPUNIT_ASSERT ( t2.getTimerList()->size() == 2 );
+
+  t1.addTimer(250);
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 3 );
+  CPPUNIT_ASSERT ( t2.getTimerList()->size() == 3 );
+
+  t2.delAllTimer();
+  CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
+  CPPUNIT_ASSERT ( t2.getTimerList()->empty() );
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
+  CPPUNIT_ASSERT ( t2.getTimerList()->size() == 0 );
+}
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (FObjectTest);

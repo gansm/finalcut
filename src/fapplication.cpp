@@ -1517,21 +1517,21 @@ int FApplication::processTimerEvent()
 
   while ( iter != last )
   {
-    if ( ! (*iter).id
-      || ! (*iter).object
-      || currentTime < (*iter).timeout )  // no timer expired
+    if ( ! iter->id
+      || ! iter->object
+      || currentTime < iter->timeout )  // no timer expired
       break;
 
-    (*iter).timeout += (*iter).interval;
+    iter->timeout += iter->interval;
 
-    if ( (*iter).timeout < currentTime )
-      (*iter).timeout = currentTime + (*iter).interval;
+    if ( iter->timeout < currentTime )
+      iter->timeout = currentTime + iter->interval;
 
-    if ( (*iter).interval.tv_usec > 0 || (*iter).interval.tv_sec > 0 )
+    if ( iter->interval.tv_usec > 0 || iter->interval.tv_sec > 0 )
       activated++;
 
-    FTimerEvent t_ev(fc::Timer_Event, (*iter).id);
-    sendEvent((*iter).object, &t_ev);
+    FTimerEvent t_ev(fc::Timer_Event, iter->id);
+    sendEvent(iter->object, &t_ev);
 
     ++iter;
   }

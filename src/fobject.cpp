@@ -87,7 +87,7 @@ FObject::~FObject()  // destructor
 
     while ( iter != last )
     {
-      delete (*iter);
+      delete *iter;
       ++iter;
     }
   }
@@ -146,6 +146,8 @@ void FObject::removeParent()
 //----------------------------------------------------------------------
 void FObject::addChild (FObject* obj)
 {
+  // Adds an object obj to the children list
+
   if ( ! obj )
     return;
 
@@ -160,6 +162,8 @@ void FObject::addChild (FObject* obj)
 //----------------------------------------------------------------------
 void FObject::delChild (FObject* obj)
 {
+  // Deletes the child object obj from children list
+
   if ( ! obj )
     return;
 
@@ -174,6 +178,8 @@ void FObject::delChild (FObject* obj)
 //----------------------------------------------------------------------
 void FObject::getCurrentTime (timeval* time)
 {
+  // Get the current time as timeval struct
+
   gettimeofday(time, 0);
 
   // NTP fix
@@ -201,6 +207,8 @@ void FObject::getCurrentTime (timeval* time)
 //----------------------------------------------------------------------
 bool FObject::isTimeout (timeval* time, register long timeout)
 {
+  // Checks whether the specified time span (timeout in µs) has elapse
+
   register long diff_usec;
   struct timeval now;
   struct timeval diff;
@@ -222,6 +230,9 @@ bool FObject::isTimeout (timeval* time, register long timeout)
 //----------------------------------------------------------------------
 int FObject::addTimer (int interval)
 {
+  // Create a timer and returns the timer identifier number
+  // (interval in ms)
+
   FObject::TimerList::iterator iter, last;
   timeval time_interval;
   timeval currentTime;
@@ -250,7 +261,7 @@ int FObject::addTimer (int interval)
 
     while ( iter != last )
     {
-      if ( (*iter).id == id )
+      if ( iter->id == id )
       {
         iter = timer_list->begin();
         id++;
@@ -274,7 +285,7 @@ int FObject::addTimer (int interval)
   iter = timer_list->begin();
   last = timer_list->end();
 
-  while ( iter != last && (*iter).timeout < t.timeout )
+  while ( iter != last && iter->timeout < t.timeout )
     ++iter;
 
   timer_list->insert (iter, t);
@@ -286,16 +297,18 @@ int FObject::addTimer (int interval)
 //----------------------------------------------------------------------
 bool FObject::delTimer (int id)
 {
+  // Deletes a timer by using the timer identifier number
+
   FObject::TimerList::iterator iter, last;
 
-  if ( id <= 0 || id > int(timer_list->size()) )
+  if ( id <= 0 )
     return false;
 
   timer_modify_lock = true;
   iter = timer_list->begin();
   last = timer_list->end();
 
-  while ( iter != last && (*iter).id != id )
+  while ( iter != last && iter->id != id )
     ++iter;
 
   if ( iter != last )
@@ -312,6 +325,8 @@ bool FObject::delTimer (int id)
 //----------------------------------------------------------------------
 bool FObject::delOwnTimer()
 {
+  // Deletes all timers of this object
+
   FObject::TimerList::iterator iter;
 
   if ( ! timer_list )
@@ -325,7 +340,7 @@ bool FObject::delOwnTimer()
 
   while ( iter != timer_list->end() )
   {
-    if ( (*iter).object == this )
+    if ( iter->object == this )
       iter = timer_list->erase(iter);
     else
       ++iter;
@@ -338,6 +353,8 @@ bool FObject::delOwnTimer()
 //----------------------------------------------------------------------
 bool FObject::delAllTimer()
 {
+  // Deletes all timers of all objects
+
   if ( ! timer_list )
     return false;
 
@@ -355,6 +372,8 @@ bool FObject::delAllTimer()
 //----------------------------------------------------------------------
 bool FObject::event (FEvent* ev)
 {
+  // Receives events on this object
+
   if ( ev->type() == fc::Timer_Event )
   {
     onTimer ( const_cast<FTimerEvent*>(static_cast<const FTimerEvent*>(ev)) );

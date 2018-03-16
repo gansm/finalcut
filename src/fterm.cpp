@@ -3402,7 +3402,7 @@ void FTerm::init_termcaps()
   while ( iter != terminals.end() )
   {
     // Copy c-string + terminating null-character ('\0')
-    std::strncpy (termtype, (*iter).c_str(), (*iter).length() + 1);
+    std::strncpy (termtype, iter->c_str(), iter->length() + 1);
 
     // Open the termcap file + load entry for termtype
     status = tgetent(term_buffer, termtype);

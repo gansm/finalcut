@@ -521,7 +521,7 @@ int FVTerm::print (term_area* area, const std::vector<char_data>& term_string)
   {
     bool printable_character = false;
 
-    switch ( (*iter).code )
+    switch ( iter->code )
     {
       case '\n':
         area->cursor_y++;

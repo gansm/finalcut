@@ -533,7 +533,7 @@ void FFileDialog::clear()
 
   while ( iter != last )
   {
-    std::free ((*iter).name);
+    std::free (iter->name);
     ++iter;
   }
 
@@ -553,7 +553,7 @@ int FFileDialog::numOfDirs()
 
   while ( iter != last )
   {
-    if ( (*iter).directory && std::strcmp((*iter).name, ".") != 0 )
+    if ( iter->directory && std::strcmp(iter->name, ".") != 0 )
       n++;
 
     ++iter;
@@ -730,10 +730,10 @@ void FFileDialog::dirEntriesToList()
 
   while ( iter != last )
   {
-    if ( (*iter).directory )
-      filebrowser->insert(FString((*iter).name), fc::SquareBrackets);
+    if ( iter->directory )
+      filebrowser->insert(FString(iter->name), fc::SquareBrackets);
     else
-      filebrowser->insert(FString((*iter).name));
+      filebrowser->insert(FString(iter->name));
 
     ++iter;
   }
@@ -780,7 +780,7 @@ int FFileDialog::changeDir (const FString& dirname)
 
           while ( iter != last )
           {
-            if ( std::strcmp((*iter).name, baseName) == 0 )
+            if ( std::strcmp(iter->name, baseName) == 0 )
             {
               filebrowser->setCurrentItem(i);
               filename->setText(FString(baseName) + '/');
@@ -871,9 +871,9 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
       while ( iter != last )
       {
-        if ( (*iter).name && input && ! input.isNull()
-          && std::strcmp((*iter).name, input) == 0
-          && (*iter).directory )
+        if ( iter->name && input && ! input.isNull()
+          && std::strcmp(iter->name, input) == 0
+          && iter->directory )
         {
           found = true;
           changeDir(input);

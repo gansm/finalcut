@@ -594,8 +594,8 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 
   while ( header_iter != header.end() )
   {
-    int width = (*header_iter).width;
-    bool fixed_width = (*header_iter).fixed_width;
+    int width = header_iter->width;
+    bool fixed_width = header_iter->fixed_width;
 
     if ( ! fixed_width )
     {
@@ -607,10 +607,10 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
         len = 0;
 
       if ( len > width )
-        (*header_iter).width = len;
+        header_iter->width = len;
     }
 
-    line_width += (*header_iter).width + padding_space;  // width + trailing space
+    line_width += header_iter->width + padding_space;  // width + trailing space
     column_idx++;
     ++header_iter;
   }
@@ -1285,7 +1285,7 @@ void FListView::drawColumnLabels()
 
   while ( iter != header.end() )
   {
-    const FString& text = (*iter).name;
+    const FString& text = iter->name;
 
     if ( text.isNull() || text.isEmpty() )
     {
@@ -1511,8 +1511,8 @@ void FListView::drawColumnText (headerItems::const_iterator& iter)
   // Print lable text
   static const int leading_space = 1;
   static const int trailing_space = 1;
-  const FString& text = (*iter).name;
-  int width = (*iter).width;
+  const FString& text = iter->name;
+  int width = iter->width;
   FString txt = " " + text;
   uInt txt_length = txt.getLength();
   int column_width = leading_space + width;
@@ -1547,7 +1547,7 @@ void FListView::drawColumnEllipsis ( headerItems::const_iterator& iter
 {
   // Print lable ellipsis
   static const int ellipsis_length = 2;
-  int width = (*iter).width;
+  int width = iter->width;
 
   headerline << ' ';
   headerline << text.left(uInt(width - ellipsis_length));
