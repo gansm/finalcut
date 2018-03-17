@@ -274,7 +274,6 @@ int FObject::addTimer (int interval)
   if ( id <= 0 || id > int(timer_list->size() + 1) )
     return 0;
 
-
   time_interval.tv_sec  =  interval / 1000;
   time_interval.tv_usec = (interval % 1000) * 1000;
   getCurrentTime (&currentTime);

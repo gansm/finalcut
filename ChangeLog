@@ -1,3 +1,7 @@
+2017-03-17  Markus Gans  <guru.mail@muenster.de>
+	* Added unit test for FObject
+	* Some minor bug fixes in FObject
+
 2017-03-13  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FRect
 

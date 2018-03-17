@@ -347,11 +347,26 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 1 );
   id2 = t1.addTimer(900);
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 2 );
+  CPPUNIT_ASSERT ( &t1 != &t2 );
+  CPPUNIT_ASSERT ( id1 != id2 );
   t1.delTimer (id1);
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 1 );
   t1.delTimer (id2);
   CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
+
+  id1 = t1.addTimer(45);
+  id2 = t1.addTimer(95);
+  t1.delTimer (id2);
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 1 );
+  t1.delTimer (id1);
+  CPPUNIT_ASSERT ( t1.getTimerList()->empty() );
+  CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
+
+  CPPUNIT_ASSERT ( ! t1.delTimer (id1) );  // id double delete
+  CPPUNIT_ASSERT ( ! t1.delAllTimer() );
+
+
   t1.addTimer(250);
   t1.addTimer(500);
   t2.addTimer(750);
@@ -373,6 +388,53 @@ void FObjectTest::timerTest()
   CPPUNIT_ASSERT ( t2.getTimerList()->empty() );
   CPPUNIT_ASSERT ( t1.getTimerList()->size() == 0 );
   CPPUNIT_ASSERT ( t2.getTimerList()->size() == 0 );
+
+  timeval tv1 = { 1321006271, 0 };
+  timeval tv2 = { 27166271, 0 };
+  timeval tv_sum = tv1 + tv2;
+  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1348172542 );
+  CPPUNIT_ASSERT ( tv_sum.tv_usec == 0 );
+
+  timeval tv_difference = tv1 - tv2;
+  CPPUNIT_ASSERT ( tv_difference.tv_sec == 1293840000 );
+  CPPUNIT_ASSERT ( tv_difference.tv_usec == 0 );
+
+  tv_sum += tv2;
+  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1375338813 );
+  CPPUNIT_ASSERT ( tv_sum.tv_usec == 0 );
+
+  CPPUNIT_ASSERT ( tv2 < tv1 );
+  CPPUNIT_ASSERT ( ! (tv1 < tv2) );
+  CPPUNIT_ASSERT ( tv1 < tv_sum );
+  CPPUNIT_ASSERT ( ! (tv_sum < tv1) );
+  CPPUNIT_ASSERT ( tv2 < tv_sum );
+  CPPUNIT_ASSERT ( ! (tv_sum < tv2) );
+  CPPUNIT_ASSERT ( tv_difference < tv_sum );
+  CPPUNIT_ASSERT ( ! (tv_sum < tv_difference) );
+
+  tv1.tv_usec = tv2.tv_usec = 600000;
+  tv_sum = tv1 + tv2;
+  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1348172543 );
+  CPPUNIT_ASSERT ( tv_sum.tv_usec == 200000 );
+
+  tv1.tv_usec = 654321;
+  tv2.tv_usec = 123456;
+  tv_difference = tv1 - tv2;
+  CPPUNIT_ASSERT ( tv_difference.tv_sec == 1293840000 );
+  CPPUNIT_ASSERT ( tv_difference.tv_usec == 530865 );
+
+  tv2.tv_usec = 999888;
+  tv_sum += tv2;
+  CPPUNIT_ASSERT ( tv_sum.tv_sec == 1375338815 );
+  CPPUNIT_ASSERT ( tv_sum.tv_usec == 199888 );
+
+  CPPUNIT_ASSERT ( tv2 < tv1 );
+  CPPUNIT_ASSERT ( ! (tv1 < tv2) );
+  CPPUNIT_ASSERT ( tv_difference < tv_sum );
+  CPPUNIT_ASSERT ( ! (tv_sum < tv_difference) );
+
+  CPPUNIT_ASSERT ( ! t1.delTimer(0) );
+  CPPUNIT_ASSERT ( ! t1.delTimer(-1) );
 }
 
 // Put the test suite in the registry
