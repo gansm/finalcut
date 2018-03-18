@@ -137,6 +137,10 @@ void FMouseTest::classNameTest()
   FMouseUrxvt urxvt_mouse;
   const char* const classname5 = urxvt_mouse.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname5, "FMouseUrxvt") == 0 );
+
+  FMouseControl mouse_control;
+  const char* const classname6 = mouse_control.getClassName();
+  CPPUNIT_ASSERT ( std::strcmp(classname6, "FMouseControl") == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -174,6 +178,9 @@ void FMouseTest::noArgumentTest()
 
   FMouseUrxvt urxvt_mouse;
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
+
+  FMouseControl mouse_control;
+  CPPUNIT_ASSERT ( ! mouse_control.hasData() );
 }
 
 //----------------------------------------------------------------------
