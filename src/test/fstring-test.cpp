@@ -59,7 +59,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void classNameTest();
-    void NoArgumentTest();
+    void noArgumentTest();
     void initLengthTest();
     void copyConstructorTest();
     void assignmentTest();
@@ -98,7 +98,7 @@ class FStringTest : public CPPUNIT_NS::TestFixture
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (initLengthTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
@@ -156,7 +156,7 @@ void FStringTest::classNameTest()
 }
 
 //----------------------------------------------------------------------
-void FStringTest::NoArgumentTest()
+void FStringTest::noArgumentTest()
 {
   FString empty;
   CPPUNIT_ASSERT ( empty.isNull() );

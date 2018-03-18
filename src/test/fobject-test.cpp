@@ -69,7 +69,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void classNameTest();
-    void NoArgumentTest();
+    void noArgumentTest();
     void childObjectTest();
     void removeParentTest();
     void addTest();
@@ -84,7 +84,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (childObjectTest);
     CPPUNIT_TEST (removeParentTest);
     CPPUNIT_TEST (addTest);
@@ -107,7 +107,7 @@ void FObjectTest::classNameTest()
 }
 
 //----------------------------------------------------------------------
-void FObjectTest::NoArgumentTest()
+void FObjectTest::noArgumentTest()
 {
   FObject o1;
   CPPUNIT_ASSERT ( ! o1.hasParent() );
@@ -365,7 +365,6 @@ void FObjectTest::timerTest()
 
   CPPUNIT_ASSERT ( ! t1.delTimer (id1) );  // id double delete
   CPPUNIT_ASSERT ( ! t1.delAllTimer() );
-
 
   t1.addTimer(250);
   t1.addTimer(500);

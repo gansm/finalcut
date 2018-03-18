@@ -45,7 +45,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void classNameTest();
-    void NoArgumentTest();
+    void noArgumentTest();
     void copyConstructorTest();
     void assignmentTest();
     void additionAssignmentTest();
@@ -62,7 +62,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (additionAssignmentTest);
@@ -87,7 +87,7 @@ void FPointTest::classNameTest()
 }
 
 //----------------------------------------------------------------------
-void FPointTest::NoArgumentTest()
+void FPointTest::noArgumentTest()
 {
   const FPoint point;
   CPPUNIT_ASSERT ( point.getX() == 0 );

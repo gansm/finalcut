@@ -45,7 +45,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
 
   protected:
     void classNameTest();
-    void NoArgumentTest();
+    void noArgumentTest();
     void copyConstructorTest();
     void assignmentTest();
     void equalTest();
@@ -65,7 +65,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
 
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
-    CPPUNIT_TEST (NoArgumentTest);
+    CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (copyConstructorTest);
     CPPUNIT_TEST (assignmentTest);
     CPPUNIT_TEST (equalTest);
@@ -93,7 +93,7 @@ void FRectTest::classNameTest()
 }
 
 //----------------------------------------------------------------------
-void FRectTest::NoArgumentTest()
+void FRectTest::noArgumentTest()
 {
   const FRect rectangle;
   CPPUNIT_ASSERT ( rectangle.getX1() == 0 );
