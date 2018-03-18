@@ -49,7 +49,7 @@ matrix:
           name: gansm/finalcut
           description: Build submitted via Travis CI
         notification_email: guru.mail@muenster.de
-        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS=\"-DDEBUG\" CXXFLAGS=\"-g -O0 -DDEBUG\" --with-unit-test && make clean"
+        build_command_prepend: "autoreconf -v --install --force && ./configure --prefix=/usr CPPFLAGS='-DDEBUG' CXXFLAGS='-g -O0 -DDEBUG' --with-unit-test && make clean"
         build_command: "make V=1 -j10 && make check"
         branch_pattern: master
     before_install:
