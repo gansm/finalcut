@@ -55,7 +55,8 @@ matrix:
     before_install:
       - lsb_release -a
       - uname -a
-      - apt-get install gpm libgpm-dev libcppunit-dev
+      - whoami
+      - sudo apt-get install gpm libgpm-dev libcppunit-dev
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
