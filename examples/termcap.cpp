@@ -205,12 +205,16 @@ void tcapString (const std::string& name, const char cap_str[])
 //----------------------------------------------------------------------
 void debug (FApplication& TermApp)
 {
+  const FString& ab_s = TermApp.getAnswerbackString();
+  const FString& sec_da= TermApp.getSecDAString();
+
 #if DEBUG
   std::cout << "\n.------------------- debug -------------------\r\n";
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
             << TermApp.framebuffer_bpp << "\r\n";
 #endif
+
   std::cout << "| after init_256colorTerminal(): "
             << TermApp.termtype_256color << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
@@ -218,11 +222,11 @@ void debug (FApplication& TermApp)
   std::cout << "|            after parseSecDA(): "
             << TermApp.termtype_SecDA << "\r\n";
 
-  if ( const FString& s = TermApp.getAnswerbackString() )
-    tcapString ("|         The answerback String", s);
+  if ( ab_s.isEmpty() )
+    tcapString ("|         The answerback String", ab_s);
 
-  if (  const FString& s = TermApp.getSecDAString() )
-    tcapString ("|              The SecDA String", s);
+  if ( ab_s.isEmpty() )
+    tcapString ("|              The SecDA String", sec_da);
 
   std::cout << "`------------------- debug -------------------\r\n";
 #endif

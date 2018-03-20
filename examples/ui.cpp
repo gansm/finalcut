@@ -1018,7 +1018,7 @@ void MyDialog::cb_view (FWidget*, data_ptr data)
   FString file;
   FMenuItem* item = static_cast<FMenuItem*>(data);
 
-  if ( item && item->getText() )
+  if ( item && ! item->getText().isEmpty() )
     file = item->getText();
   else
     file = FFileDialog::fileOpenChooser (this);

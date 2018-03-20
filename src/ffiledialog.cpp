@@ -108,7 +108,7 @@ FFileDialog::FFileDialog ( const FString& dirname
   , dlg_type(type)
   , show_hidden(false)
 {
-  if ( dirname )
+  if ( ! dirname.isNull() )
     setPath(dirname);
 
   init();

@@ -250,10 +250,10 @@ bool FButton::setDown (bool on)
 //----------------------------------------------------------------------
 void FButton::setText (const FString& txt)
 {
-  if ( txt )
-    text = txt;
-  else
+  if ( txt.isNull() )
     text = "";
+  else
+    text = txt;
 
   detectHotkey();
 }

@@ -735,11 +735,38 @@ uInt FString::getUTF8length() const
 }
 
 //----------------------------------------------------------------------
+FString& FString::sprintf (const FString& format, ...)
+{
+  static const int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE];
+  va_list args;
+
+  if ( ! format )
+  {
+    clear();
+    return *this;
+  }
+
+  va_start (args, format);
+  std::vswprintf (buffer, BUFSIZE, format.wc_str(), args);
+  va_end (args);
+
+  _assign (buffer);
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FString& FString::sprintf (const wchar_t format[], ...)
 {
   static const int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];
   va_list args;
+
+  if ( ! format )
+  {
+    clear();
+    return *this;
+  }
 
   va_start (args, format);
   std::vswprintf (buffer, BUFSIZE, format, args);
@@ -757,6 +784,12 @@ FString& FString::sprintf (const char format[], ...)
   char* buffer;
   int   len;
   va_list args;
+
+  if ( ! format )
+  {
+    clear();
+    return *this;
+  }
 
   buffer = buf;
   va_start (args, format);

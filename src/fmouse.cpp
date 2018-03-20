@@ -371,11 +371,10 @@ bool FMouseGPM::gpmMouse (bool on)
 
     switch ( gpm_fd )
     {
-      case -1:
+      case -1:  // error
         return false;
 
-      case -2:
-        Gpm_Close();
+      case -2:  // xterm is in use
         return false;
 
       default:
@@ -503,11 +502,11 @@ void FMouseX11::setRawData (char fifo_buf[], int fifo_buf_size)
   for (n = len; n < fifo_buf_size; n++)
     fifo_buf[n - len] = fifo_buf[n];
 
-  n = fifo_buf_size - len - 1;
+  n = fifo_buf_size - len;
 
   // Fill rest with '\0'
   for (; n < fifo_buf_size; n++)
-    fifo_buf[n - len] = '\0';
+    fifo_buf[n] = '\0';
 
   input_data_pending = bool(fifo_buf[0] != '\0');
 }
@@ -1238,8 +1237,6 @@ void FMouseControl::clearEvent()
 #ifdef F_HAVE_LIBGPM
 void FMouseControl::setStdinNo (int file_descriptor)
 {
-
-
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 

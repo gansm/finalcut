@@ -96,7 +96,10 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     void noArgumentTest();
     void doubleClickTest();
     void workspaceSizeTest();
-
+#ifdef F_HAVE_LIBGPM
+    void gpmMouseTest();
+#endif
+    void x11MouseTest();
 
   private:
     // Adds code needed to register the test suite
@@ -107,6 +110,10 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (doubleClickTest);
     CPPUNIT_TEST (workspaceSizeTest);
+#ifdef F_HAVE_LIBGPM
+    CPPUNIT_TEST (gpmMouseTest);
+#endif
+    CPPUNIT_TEST (x11MouseTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -219,6 +226,63 @@ void FMouseTest::workspaceSizeTest()
   mouse.setMaxHeight(30);
   CPPUNIT_ASSERT ( mouse.getMaxWidth() == 92 );
   CPPUNIT_ASSERT ( mouse.getMaxHeight() == 30 );
+}
+
+#ifdef F_HAVE_LIBGPM
+//----------------------------------------------------------------------
+void FMouseTest::gpmMouseTest()
+{
+  FMouseGPM gpm_mouse;
+  CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
+
+  gpm_mouse.setStdinNo(fileno(stdin));
+
+  if ( gpm_mouse.enableGpmMouse() )
+  {
+    CPPUNIT_ASSERT ( gpm_mouse.isGpmMouseEnabled() );
+    timeval tv;
+    FObject::getCurrentTime(&tv);
+    gpm_mouse.processEvent(&tv);
+    CPPUNIT_ASSERT ( ! gpm_mouse.hasEvent() );
+  }
+  else
+    CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
+
+  gpm_mouse.disableGpmMouse();
+  CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
+}
+#endif
+
+//----------------------------------------------------------------------
+void FMouseTest::x11MouseTest()
+{
+  FMouseX11 x11_mouse;
+  CPPUNIT_ASSERT ( ! x11_mouse.hasData() );
+
+  char x11_mouse_data[8] = { 0x1b, '[', 'M', 0x23, 0x50, 0x32, 0x40, 0x40 };
+  x11_mouse.setRawData (x11_mouse_data, 8);
+  CPPUNIT_ASSERT ( x11_mouse.hasData() );
+  CPPUNIT_ASSERT ( x11_mouse.isInputDataPending() );
+
+  timeval tv;
+  FObject::getCurrentTime(&tv);
+  x11_mouse.processEvent (&tv);
+
+  CPPUNIT_ASSERT ( x11_mouse.getPos() == FPoint(48, 18) );
+  CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isLeftButtonPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isLeftButtonReleased() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isLeftButtonDoubleClick() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isRightButtonPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isRightButtonReleased() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isMiddleButtonPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isMiddleButtonReleased() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isShiftKeyPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isControlKeyPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isMetaKeyPressed() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
 }
 
 

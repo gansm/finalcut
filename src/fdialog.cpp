@@ -1212,7 +1212,7 @@ void FDialog::drawTextBar()
     print (' ');
 
   // Print title bar text
-  if ( tb_text )
+  if ( ! tb_text.isEmpty() )
   {
     if ( length <= getWidth() - MENU_BTN - zoom_btn )
       print (tb_text);
