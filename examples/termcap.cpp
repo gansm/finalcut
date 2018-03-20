@@ -225,7 +225,7 @@ void debug (FApplication& TermApp)
   if ( ab_s.isEmpty() )
     tcapString ("|         The answerback String", ab_s);
 
-  if ( ab_s.isEmpty() )
+  if ( sec_da.isEmpty() )
     tcapString ("|              The SecDA String", sec_da);
 
   std::cout << "`------------------- debug -------------------\r\n";
