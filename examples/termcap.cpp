@@ -205,10 +205,9 @@ void tcapString (const std::string& name, const char cap_str[])
 //----------------------------------------------------------------------
 void debug (FApplication& TermApp)
 {
-  const FString& ab_s = TermApp.getAnswerbackString();
-  const FString& sec_da= TermApp.getSecDAString();
-
 #if DEBUG
+  const FString& ab_s = TermApp.getAnswerbackString();
+  const FString& sec_da = TermApp.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
