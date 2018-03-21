@@ -1004,15 +1004,15 @@ void FStringTest::formatTest()
                            + "ooong string" );
 
   const FString null_fstring;
-  str2.sprintf (null_fstring);
+  str2.sprintf (null_fstring, 0);
   CPPUNIT_ASSERT ( str2.isNull() );
 
   const wchar_t* null_wstring = 0;
-  str2.sprintf (null_wstring);
+  str2.sprintf (null_wstring, 0);
   CPPUNIT_ASSERT ( str2.isNull() );
 
-  const char* null_string  = 0;
-  str2.sprintf (null_string);
+  const char* null_string = 0;
+  str2.sprintf (null_string, 0);
   CPPUNIT_ASSERT ( str2.isNull() );
 
   std::setlocale (LC_NUMERIC, "C");
