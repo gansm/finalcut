@@ -991,6 +991,9 @@ void FStringTest::formatTest()
   str1.sprintf ("There are %d lions in the %s", num, location);
   CPPUNIT_ASSERT ( str1 == "There are 3 lions in the zoo" );
 
+  str1.sprintf (FString("%d times"), 42);
+  CPPUNIT_ASSERT ( str1 == "42 times" );
+
   FString str2;
   str2.sprintf (L"It costs only %d cent", 50);
   CPPUNIT_ASSERT ( str2 == "It costs only 50 cent" );
@@ -999,6 +1002,19 @@ void FStringTest::formatTest()
                , L"string" );
   CPPUNIT_ASSERT ( str2 == "Add a looo" + FString(2048, 'o')
                            + "ooong string" );
+
+  const FString null_fstring;
+  str2.sprintf (null_fstring);
+  CPPUNIT_ASSERT ( str2.isNull() );
+
+  const wchar_t* null_wstring = 0;
+  str2.sprintf (null_wstring);
+  CPPUNIT_ASSERT ( str2.isNull() );
+
+  const char* null_string  = 0;
+  str2.sprintf (null_string);
+  CPPUNIT_ASSERT ( str2.isNull() );
+
   std::setlocale (LC_NUMERIC, "C");
   FString fnum1, fnum2;
 
