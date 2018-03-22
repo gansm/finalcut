@@ -708,10 +708,10 @@ void FMouseSGR::setRawData (char fifo_buf[], int fifo_buf_size)
   for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
     fifo_buf[n - len] = fifo_buf[n];
 
-  n = fifo_buf_size - len - 1;
+  n = fifo_buf_size - len;
 
   for (; n < fifo_buf_size; n++)       // Fill rest with '\0'
-    fifo_buf[n - len] = '\0';
+    fifo_buf[n] = '\0';
 
   input_data_pending = bool(fifo_buf[0] != '\0');
 }

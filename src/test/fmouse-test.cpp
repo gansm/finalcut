@@ -100,6 +100,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     void gpmMouseTest();
 #endif
     void x11MouseTest();
+    void sgrMouseTest();
 
   private:
     // Adds code needed to register the test suite
@@ -114,6 +115,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (gpmMouseTest);
 #endif
     CPPUNIT_TEST (x11MouseTest);
+    CPPUNIT_TEST (sgrMouseTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -284,6 +286,12 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelUp() );
   CPPUNIT_ASSERT ( ! x11_mouse.isWheelDown() );
   CPPUNIT_ASSERT ( ! x11_mouse.isMoved() );
+
+  // The same input again
+  char raw[] = { 0x1b, '[', 'M', 0x23, 0x50, 0x32 };
+  x11_mouse.setRawData ( raw, sizeof(raw));
+  x11_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! x11_mouse.hasEvent() );
 
   // Left mouse button pressed
   char rawdata2[] = { 0x1b, '[', 'M', 0x20, 0x21, 0x21 };
@@ -539,6 +547,79 @@ void FMouseTest::x11MouseTest()
   CPPUNIT_ASSERT ( x11_mouse.isShiftKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isControlKeyPressed() );
   CPPUNIT_ASSERT ( x11_mouse.isMetaKeyPressed() );
+
+  char rawdata10[] = { 0x1b, '[', 'M', 0x20, 0x7f, 0x3f };
+  x11_mouse.setRawData (rawdata10, sizeof(rawdata9));
+  CPPUNIT_ASSERT ( x11_mouse.hasData() );
+  x11_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( x11_mouse.hasEvent() );
+  x11_mouse.clearEvent();
+  CPPUNIT_ASSERT ( ! x11_mouse.hasEvent() );
+}
+
+
+//----------------------------------------------------------------------
+void FMouseTest::sgrMouseTest()
+{
+  FMouseSGR sgr_mouse;
+  CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
+
+  char rawdata1[] = { 0x1b, '[', '<', '0', ';', '7'
+                    , '3', ';', '4', 'm', '@', '@' };
+  sgr_mouse.setRawData (rawdata1, sizeof(rawdata1));
+  CPPUNIT_ASSERT ( sgr_mouse.hasData() );
+  CPPUNIT_ASSERT ( sgr_mouse.isInputDataPending() );
+  CPPUNIT_ASSERT ( strcmp(rawdata1, "@@") == 0 );
+
+  timeval tv;
+  FObject::getCurrentTime(&tv);
+  sgr_mouse.processEvent (&tv);
+
+  CPPUNIT_ASSERT ( sgr_mouse.getPos() == FPoint(73, 4) );
+  CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isLeftButtonPressed() );
+  CPPUNIT_ASSERT ( sgr_mouse.isLeftButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isLeftButtonDoubleClick() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isRightButtonPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isRightButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMiddleButtonPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMiddleButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isShiftKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isControlKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
+
+  // The same input again
+  char raw[] = { 0x1b, '[', '<', '0', ';', '7', '3', ';', '4', 'm' };
+  sgr_mouse.setRawData ( raw, sizeof(raw));
+  sgr_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
+
+  // Left mouse button pressed
+  char rawdata2[] = { 0x1b, '[', '<', '0', ';', '1', ';', '1', 'M' };
+  sgr_mouse.setRawData (rawdata2, sizeof(rawdata2));
+
+  CPPUNIT_ASSERT ( sgr_mouse.hasData() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isInputDataPending() );
+  sgr_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! sgr_mouse.hasData() );
+  CPPUNIT_ASSERT ( sgr_mouse.getPos() == FPoint(1, 1) );
+  CPPUNIT_ASSERT ( sgr_mouse.hasEvent() );
+  CPPUNIT_ASSERT ( sgr_mouse.isLeftButtonPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isLeftButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isLeftButtonDoubleClick() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isRightButtonPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isRightButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMiddleButtonPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMiddleButtonReleased() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isShiftKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isControlKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMetaKeyPressed() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelUp() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isWheelDown() );
+  CPPUNIT_ASSERT ( ! sgr_mouse.isMoved() );
 }
 
 
