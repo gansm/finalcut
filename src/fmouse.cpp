@@ -536,6 +536,7 @@ void FMouseX11::processEvent (struct timeval* time)
     && uChar(button) == x11_button_state )
   {
     mouse_event_occurred = false;
+    x11_mouse[0] = '\0';  // Delete already interpreted data
     return;
   }
 
@@ -736,6 +737,7 @@ void FMouseSGR::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      sgr_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -748,6 +750,7 @@ void FMouseSGR::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      sgr_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -759,6 +762,7 @@ void FMouseSGR::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      sgr_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -782,6 +786,7 @@ void FMouseSGR::processEvent (struct timeval* time)
     && sgr_button_state == uChar(((*p & 0x20) << 2) + button) )
   {
     mouse_event_occurred = false;
+    sgr_mouse[0] = '\0';  // Delete already interpreted data
     return;
   }
 
@@ -991,6 +996,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      urxvt_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -1009,6 +1015,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      urxvt_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -1027,6 +1034,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
     if ( *p < '0' || *p > '9')
     {
       mouse_event_occurred = false;
+      urxvt_mouse[0] = '\0';  // Delete already interpreted data
       return;
     }
 
@@ -1059,12 +1067,14 @@ void FMouseUrxvt::processEvent (struct timeval* time)
     && urxvt_button_state == uChar(button) )
   {
     mouse_event_occurred = false;
+    urxvt_mouse[0] = '\0';  // Delete already interpreted data
     return;
   }
 
   mouse_event_occurred = true;
   setPos (FPoint(x, y));
   urxvt_button_state = uChar(button);
+  // Delete already interpreted data
   urxvt_mouse[0] = '\0';
 }
 
@@ -1268,7 +1278,7 @@ void FMouseControl::setDblclickInterval (const long timeout)
   while ( iter != mouse_protocol.end() )
   {
     if ( iter->second )
-      return iter->second->setDblclickInterval(timeout);
+      iter->second->setDblclickInterval(timeout);
 
     ++iter;
   }
@@ -1458,8 +1468,8 @@ bool FMouseControl::isInputDataPending()
 
   while ( iter != mouse_protocol.end() )
   {
-    if ( iter->second )
-      return iter->second->isInputDataPending();
+    if ( iter->second && iter->second->isInputDataPending() )
+      return true;
 
     ++iter;
   }
@@ -1537,6 +1547,8 @@ void FMouseControl::setRawData ( FMouse::mouse_type mt
 void FMouseControl::processEvent (struct timeval* time)
 {
   FMouse* mouse_object = getMouseWithData();
+  // Clear all old mouse events
+  clearEvent();
 
   if ( mouse_object )
     mouse_object->processEvent(time);

@@ -1,3 +1,7 @@
+2017-03-25  Markus Gans  <guru.mail@muenster.de>
+	* Added unit test for the mouse classes
+	* Fixed small parsing errors with mouse events
+
 2017-03-17  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FObject
 	* Some minor bug fixes in FObject
