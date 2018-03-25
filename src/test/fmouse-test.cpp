@@ -102,6 +102,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     void x11MouseTest();
     void sgrMouseTest();
     void urxvtMouseTest();
+    void mouseControlTest();
 
   private:
     // Adds code needed to register the test suite
@@ -118,6 +119,7 @@ class FMouseTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (x11MouseTest);
     CPPUNIT_TEST (sgrMouseTest);
     CPPUNIT_TEST (urxvtMouseTest);
+    CPPUNIT_TEST (mouseControlTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -1164,7 +1166,95 @@ void FMouseTest::urxvtMouseTest()
 
   CPPUNIT_ASSERT ( urxvt_mouse.isInputDataPending() );
   CPPUNIT_ASSERT ( strcmp(rawdata11, "@") == 0 );
+
+  // Negative values
+  char rawdata12[] = { 0x1b, '[', '3', '2', ';', '-', '5', ';', '5', 'M'
+                     , 0x1b, '[', '3', '2', ';', '3', ';', '-', '3', 'M' };
+  urxvt_mouse.setRawData (rawdata12, sizeof(rawdata12));
+  CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
+  CPPUNIT_ASSERT ( urxvt_mouse.isInputDataPending() );
+  urxvt_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() != FPoint(-5, 5) );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() == FPoint(1, 5) );
+  CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
+
+  urxvt_mouse.setRawData (rawdata12, sizeof(rawdata12));
+  CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
+  urxvt_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() != FPoint(3, -3) );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() == FPoint(3, 1) );
+  CPPUNIT_ASSERT ( urxvt_mouse.hasEvent() );
+
+  // Oversize values
+  urxvt_mouse.setMaxWidth(40);
+  urxvt_mouse.setMaxHeight(20);
+  char rawdata13[] = { 0x1b, '[', '3', '2', ';', '7', '0', ';', '2', '5', 'M' };
+  urxvt_mouse.setRawData (rawdata13, sizeof(rawdata13));
+  CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
+  urxvt_mouse.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! urxvt_mouse.hasData() );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() != FPoint(70, 25) );
+  CPPUNIT_ASSERT ( urxvt_mouse.getPos() == FPoint(40, 20) );
 }
+
+//----------------------------------------------------------------------
+void FMouseTest::mouseControlTest()
+{
+  FMouseControl mouse_control;
+  mouse_control.setStdinNo(fileno(stdin));
+  mouse_control.setMaxWidth(100);
+  mouse_control.setMaxHeight(40);
+  mouse_control.clearEvent();
+  mouse_control.setDblclickInterval(750000);
+  mouse_control.useGpmMouse(true);
+  mouse_control.useXtermMouse(true);
+  mouse_control.enable();
+
+  CPPUNIT_ASSERT ( ! mouse_control.hasData() );
+  CPPUNIT_ASSERT ( mouse_control.getPos() == FPoint(0, 0) );
+  CPPUNIT_ASSERT ( ! mouse_control.hasEvent() );
+  CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
+  CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonDoubleClick() );
+  CPPUNIT_ASSERT ( ! mouse_control.isRightButtonPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isRightButtonReleased() );
+  CPPUNIT_ASSERT ( ! mouse_control.isMiddleButtonPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isMiddleButtonReleased() );
+  CPPUNIT_ASSERT ( ! mouse_control.isShiftKeyPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isControlKeyPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isMetaKeyPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelUp() );
+  CPPUNIT_ASSERT ( ! mouse_control.isWheelDown() );
+  CPPUNIT_ASSERT ( ! mouse_control.isMoved() );
+  CPPUNIT_ASSERT ( ! mouse_control.isInputDataPending() );
+
+  if ( mouse_control.isGpmMouseEnabled() )
+  {
+    CPPUNIT_ASSERT ( ! mouse_control.getGpmKeyPressed(false) );
+    mouse_control.drawGpmPointer();
+  }
+
+  // Left mouse button pressed on an X11 mouse
+  char rawdata1[] = { 0x1b, '[', 'M', 0x20, 0x25, 0x28 };
+  mouse_control.setRawData (FMouse::x11, rawdata1, sizeof(rawdata1));
+
+  CPPUNIT_ASSERT ( mouse_control.hasData() );
+  CPPUNIT_ASSERT ( ! mouse_control.isInputDataPending() );
+  timeval tv;
+  FObject::getCurrentTime(&tv);
+  mouse_control.processEvent (&tv);
+  CPPUNIT_ASSERT ( ! mouse_control.hasData() );
+  CPPUNIT_ASSERT ( mouse_control.getPos() == FPoint(5, 8) );
+  CPPUNIT_ASSERT ( mouse_control.hasEvent() );
+  CPPUNIT_ASSERT ( mouse_control.isLeftButtonPressed() );
+  CPPUNIT_ASSERT ( ! mouse_control.isLeftButtonReleased() );
+
+
+  mouse_control.disable();
+}
+
 
 // Put the test suite in the registry
 CPPUNIT_TEST_SUITE_REGISTRATION (FMouseTest);

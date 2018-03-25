@@ -238,7 +238,6 @@ class FMouseGPM : public FMouse
 };
 #pragma pack(pop)
 
-
 //----------------------------------------------------------------------
 inline bool FMouseGPM::enableGpmMouse()
 { return gpmMouse(true); }
