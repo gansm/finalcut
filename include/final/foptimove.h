@@ -80,6 +80,9 @@ class FOptiMove
     // Destructor
     ~FOptiMove();
 
+    // Accessors
+    const char* getClassName() const;
+
     // Mutators
     void  setBaudRate (int);
     void  setTabStop (int);
@@ -108,6 +111,7 @@ class FOptiMove
     void  set_eat_newline_glitch (const bool&);
 
     // Methods
+    void  check_boundaries (int&, int&, int&, int&);
     char* moveCursor (int, int, int, int);
     void  printDurations();
 
@@ -190,6 +194,10 @@ class FOptiMove
 
 
 // FOptiMove inline functions
+//----------------------------------------------------------------------
+inline const char* FOptiMove::getClassName() const
+{ return "FOptiMove"; }
+
 //----------------------------------------------------------------------
 inline void FOptiMove::set_auto_left_margin (const bool& bcap)
 { automatic_left_margin = bcap; }

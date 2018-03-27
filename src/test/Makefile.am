@@ -9,18 +9,21 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 noinst_PROGRAMS = \
 	fobject_test \
 	fmouse_test \
+	foptimove_test \
 	fstring_test \
 	fpoint_test \
 	frect_test
 
 fobject_test_SOURCES = fobject-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
+foptimove_test_SOURCES = foptimove-test.cpp
 fstring_test_SOURCES = fstring-test.cpp
 fpoint_test_SOURCES = fpoint-test.cpp
 frect_test_SOURCES = frect-test.cpp
 
 TESTS = fobject_test \
 	fmouse_test \
+	foptimove_test \
 	fstring_test \
 	fpoint_test \
 	frect_test

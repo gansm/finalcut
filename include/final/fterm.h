@@ -51,9 +51,6 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-// Typecast to c-string
-#define C_STR const_cast<char*>
-
 #include "final/fconfig.h"
 
 #if defined(__linux__)

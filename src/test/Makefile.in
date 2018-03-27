@@ -83,9 +83,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fobject_test$(EXEEXT) \
-@CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) fstring_test$(EXEEXT) \
-@CPPUNIT_TEST_TRUE@	fpoint_test$(EXEEXT) frect_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@TESTS = fobject_test$(EXEEXT) fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
@@ -105,8 +108,10 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fobject_test$(EXEEXT) \
-@CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) fstring_test$(EXEEXT) \
-@CPPUNIT_TEST_TRUE@	fpoint_test$(EXEEXT) frect_test$(EXEEXT)
+@CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am__fmouse_test_SOURCES_DIST = fmouse-test.cpp
 @CPPUNIT_TEST_TRUE@am_fmouse_test_OBJECTS = fmouse-test.$(OBJEXT)
@@ -120,6 +125,11 @@ am__fobject_test_SOURCES_DIST = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@am_fobject_test_OBJECTS = fobject-test.$(OBJEXT)
 fobject_test_OBJECTS = $(am_fobject_test_OBJECTS)
 fobject_test_LDADD = $(LDADD)
+am__foptimove_test_SOURCES_DIST = foptimove-test.cpp
+@CPPUNIT_TEST_TRUE@am_foptimove_test_OBJECTS =  \
+@CPPUNIT_TEST_TRUE@	foptimove-test.$(OBJEXT)
+foptimove_test_OBJECTS = $(am_foptimove_test_OBJECTS)
+foptimove_test_LDADD = $(LDADD)
 am__fpoint_test_SOURCES_DIST = fpoint-test.cpp
 @CPPUNIT_TEST_TRUE@am_fpoint_test_OBJECTS = fpoint-test.$(OBJEXT)
 fpoint_test_OBJECTS = $(am_fpoint_test_OBJECTS)
@@ -167,10 +177,11 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(fmouse_test_SOURCES) $(fobject_test_SOURCES) \
-	$(fpoint_test_SOURCES) $(frect_test_SOURCES) \
-	$(fstring_test_SOURCES)
+	$(foptimove_test_SOURCES) $(fpoint_test_SOURCES) \
+	$(frect_test_SOURCES) $(fstring_test_SOURCES)
 DIST_SOURCES = $(am__fmouse_test_SOURCES_DIST) \
 	$(am__fobject_test_SOURCES_DIST) \
+	$(am__foptimove_test_SOURCES_DIST) \
 	$(am__fpoint_test_SOURCES_DIST) $(am__frect_test_SOURCES_DIST) \
 	$(am__fstring_test_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -532,6 +543,7 @@ top_srcdir = @top_srcdir@
 @CPPUNIT_TEST_TRUE@AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 @CPPUNIT_TEST_TRUE@fobject_test_SOURCES = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@fmouse_test_SOURCES = fmouse-test.cpp
+@CPPUNIT_TEST_TRUE@foptimove_test_SOURCES = foptimove-test.cpp
 @CPPUNIT_TEST_TRUE@fstring_test_SOURCES = fstring-test.cpp
 @CPPUNIT_TEST_TRUE@fpoint_test_SOURCES = fpoint-test.cpp
 @CPPUNIT_TEST_TRUE@frect_test_SOURCES = frect-test.cpp
@@ -596,6 +608,10 @@ fobject_test$(EXEEXT): $(fobject_test_OBJECTS) $(fobject_test_DEPENDENCIES) $(EX
 	@rm -f fobject_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fobject_test_OBJECTS) $(fobject_test_LDADD) $(LIBS)
 
+foptimove_test$(EXEEXT): $(foptimove_test_OBJECTS) $(foptimove_test_DEPENDENCIES) $(EXTRA_foptimove_test_DEPENDENCIES) 
+	@rm -f foptimove_test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(foptimove_test_OBJECTS) $(foptimove_test_LDADD) $(LIBS)
+
 fpoint_test$(EXEEXT): $(fpoint_test_OBJECTS) $(fpoint_test_DEPENDENCIES) $(EXTRA_fpoint_test_DEPENDENCIES) 
 	@rm -f fpoint_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fpoint_test_OBJECTS) $(fpoint_test_LDADD) $(LIBS)
@@ -616,6 +632,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmouse-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fobject-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/foptimove-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fpoint-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/frect-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring-test.Po@am__quote@
@@ -850,6 +867,13 @@ fobject_test.log: fobject_test$(EXEEXT)
 fmouse_test.log: fmouse_test$(EXEEXT)
 	@p='fmouse_test$(EXEEXT)'; \
 	b='fmouse_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+foptimove_test.log: foptimove_test$(EXEEXT)
+	@p='foptimove_test$(EXEEXT)'; \
+	b='foptimove_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

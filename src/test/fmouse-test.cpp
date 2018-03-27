@@ -269,7 +269,7 @@ void FMouseTest::x11MouseTest()
   x11_mouse.setRawData (rawdata1, sizeof(rawdata1));
   CPPUNIT_ASSERT ( x11_mouse.hasData() );
   CPPUNIT_ASSERT ( x11_mouse.isInputDataPending() );
-  CPPUNIT_ASSERT ( strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
   timeval tv;
   FObject::getCurrentTime(&tv);
@@ -573,7 +573,7 @@ void FMouseTest::sgrMouseTest()
   sgr_mouse.setRawData (rawdata1, sizeof(rawdata1));
   CPPUNIT_ASSERT ( sgr_mouse.hasData() );
   CPPUNIT_ASSERT ( sgr_mouse.isInputDataPending() );
-  CPPUNIT_ASSERT ( strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
   timeval tv;
   FObject::getCurrentTime(&tv);
@@ -861,7 +861,7 @@ void FMouseTest::sgrMouseTest()
   CPPUNIT_ASSERT ( ! sgr_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( sgr_mouse.isInputDataPending() );
-  CPPUNIT_ASSERT ( strcmp(rawdata11, "@") == 0 );
+  CPPUNIT_ASSERT ( std::strcmp(rawdata11, "@") == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -876,7 +876,7 @@ void FMouseTest::urxvtMouseTest()
   urxvt_mouse.setRawData (rawdata1, sizeof(rawdata1));
   CPPUNIT_ASSERT ( urxvt_mouse.hasData() );
   CPPUNIT_ASSERT ( urxvt_mouse.isInputDataPending() );
-  CPPUNIT_ASSERT ( strcmp(rawdata1, "@@") == 0 );
+  CPPUNIT_ASSERT ( std::strcmp(rawdata1, "@@") == 0 );
 
   timeval tv;
   FObject::getCurrentTime(&tv);
@@ -1163,7 +1163,7 @@ void FMouseTest::urxvtMouseTest()
   CPPUNIT_ASSERT ( ! urxvt_mouse.hasEvent() );
 
   CPPUNIT_ASSERT ( urxvt_mouse.isInputDataPending() );
-  CPPUNIT_ASSERT ( strcmp(rawdata11, "@") == 0 );
+  CPPUNIT_ASSERT ( std::strcmp(rawdata11, "@") == 0 );
 
   // Negative values
   char rawdata12[] = { 0x1b, '[', '3', '2', ';', '-', '5', ';', '5', 'M'

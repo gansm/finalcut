@@ -22,6 +22,7 @@
 
 #include <cstring>
 
+#include "final/fc.h"
 #include "final/foptimove.h"
 
 
@@ -63,6 +64,11 @@ FOptiMove::FOptiMove (int baud)
   assert ( baud >= 0 );
   move_buf[0] = '\0';
   calculateCharDuration();
+
+  // ANSI set cursor address preset for undefined terminals
+  set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  // Set carriage return preset
+  set_carriage_return (C_STR("\r"));
 }
 
 //----------------------------------------------------------------------
@@ -486,10 +492,35 @@ int FOptiMove::set_clr_eol (char cap[])
 }
 
 //----------------------------------------------------------------------
+void FOptiMove::check_boundaries ( int& xold, int& yold
+                                 , int& xnew, int& ynew )
+{
+  if ( xold < 0 || xold >= screen_width )
+    xold = -1;
+
+  if ( yold < 0 || yold >= screen_height )
+    yold = -1;
+
+  if ( xnew < 0 )
+    xnew = 0;
+
+  if ( ynew < 0 )
+    ynew = 0;
+
+  if ( xnew >= screen_width )
+    xnew = screen_width - 1;
+
+  if ( ynew >= screen_height )
+    ynew = screen_height - 1;
+}
+
+//----------------------------------------------------------------------
 char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
 {
-  int   method = 0;
-  int   move_time = LONG_DURATION;
+  int method = 0;
+  int move_time = LONG_DURATION;
+
+  check_boundaries (xold, yold, xnew, ynew);
 
   // Method 0: direct cursor addressing
   if ( isMethod0Faster(move_time, xnew, ynew) )

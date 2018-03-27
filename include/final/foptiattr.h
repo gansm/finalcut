@@ -121,6 +121,9 @@ class FOptiAttr
     friend bool operator == (const char_data&, const char_data&);
     friend bool operator != (const char_data&, const char_data&);
 
+    // Accessors
+    const char* getClassName() const;
+
     // Mutators
     void  setMaxColor (const int&);
     void  setNoColorVideo (int);
@@ -356,6 +359,10 @@ inline bool operator == ( const FOptiAttr::char_data& lhs,
 inline bool operator != ( const FOptiAttr::char_data& lhs,
                           const FOptiAttr::char_data& rhs )
 { return ! ( lhs == rhs ); }
+
+//----------------------------------------------------------------------
+inline const char* FOptiAttr::getClassName() const
+{ return "FOptiAttr"; }
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::setMaxColor (const int& c)
