@@ -1,3 +1,6 @@
+2017-03-28  Markus Gans  <guru.mail@muenster.de>
+	* Add boundary check to FOptiMove
+
 2017-03-25  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for the mouse classes
 	* Fixed small parsing errors with mouse events

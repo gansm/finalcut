@@ -82,14 +82,18 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) input-dialog$(EXEEXT) \
-	choice$(EXEEXT) listbox$(EXEEXT) listview$(EXEEXT) \
-	treeview$(EXEEXT) opti-move$(EXEEXT) termcap$(EXEEXT) \
-	string-operations$(EXEEXT) mandelbrot$(EXEEXT) \
-	calculator$(EXEEXT) watch$(EXEEXT) term-attributes$(EXEEXT) \
-	transparent$(EXEEXT) keyboard$(EXEEXT) mouse$(EXEEXT) \
-	timer$(EXEEXT) scrollview$(EXEEXT) windows$(EXEEXT) \
-	menu$(EXEEXT) ui$(EXEEXT)
+@CPPUNIT_TEST_FALSE@noinst_PROGRAMS = hello$(EXEEXT) dialog$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	input-dialog$(EXEEXT) choice$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	listbox$(EXEEXT) listview$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	treeview$(EXEEXT) opti-move$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	termcap$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	string-operations$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	mandelbrot$(EXEEXT) calculator$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	watch$(EXEEXT) term-attributes$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	transparent$(EXEEXT) keyboard$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	mouse$(EXEEXT) timer$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	scrollview$(EXEEXT) windows$(EXEEXT) \
+@CPPUNIT_TEST_FALSE@	menu$(EXEEXT) ui$(EXEEXT)
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -106,74 +110,98 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_calculator_OBJECTS = calculator.$(OBJEXT)
+am__calculator_SOURCES_DIST = calculator.cpp
+@CPPUNIT_TEST_FALSE@am_calculator_OBJECTS = calculator.$(OBJEXT)
 calculator_OBJECTS = $(am_calculator_OBJECTS)
 calculator_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_choice_OBJECTS = choice.$(OBJEXT)
+am__choice_SOURCES_DIST = choice.cpp
+@CPPUNIT_TEST_FALSE@am_choice_OBJECTS = choice.$(OBJEXT)
 choice_OBJECTS = $(am_choice_OBJECTS)
 choice_LDADD = $(LDADD)
-am_dialog_OBJECTS = dialog.$(OBJEXT)
+am__dialog_SOURCES_DIST = dialog.cpp
+@CPPUNIT_TEST_FALSE@am_dialog_OBJECTS = dialog.$(OBJEXT)
 dialog_OBJECTS = $(am_dialog_OBJECTS)
 dialog_LDADD = $(LDADD)
-am_hello_OBJECTS = hello.$(OBJEXT)
+am__hello_SOURCES_DIST = hello.cpp
+@CPPUNIT_TEST_FALSE@am_hello_OBJECTS = hello.$(OBJEXT)
 hello_OBJECTS = $(am_hello_OBJECTS)
 hello_LDADD = $(LDADD)
-am_input_dialog_OBJECTS = input-dialog.$(OBJEXT)
+am__input_dialog_SOURCES_DIST = input-dialog.cpp
+@CPPUNIT_TEST_FALSE@am_input_dialog_OBJECTS = input-dialog.$(OBJEXT)
 input_dialog_OBJECTS = $(am_input_dialog_OBJECTS)
 input_dialog_LDADD = $(LDADD)
-am_keyboard_OBJECTS = keyboard.$(OBJEXT)
+am__keyboard_SOURCES_DIST = keyboard.cpp
+@CPPUNIT_TEST_FALSE@am_keyboard_OBJECTS = keyboard.$(OBJEXT)
 keyboard_OBJECTS = $(am_keyboard_OBJECTS)
 keyboard_LDADD = $(LDADD)
-am_listbox_OBJECTS = listbox.$(OBJEXT)
+am__listbox_SOURCES_DIST = listbox.cpp
+@CPPUNIT_TEST_FALSE@am_listbox_OBJECTS = listbox.$(OBJEXT)
 listbox_OBJECTS = $(am_listbox_OBJECTS)
 listbox_LDADD = $(LDADD)
-am_listview_OBJECTS = listview.$(OBJEXT)
+am__listview_SOURCES_DIST = listview.cpp
+@CPPUNIT_TEST_FALSE@am_listview_OBJECTS = listview.$(OBJEXT)
 listview_OBJECTS = $(am_listview_OBJECTS)
 listview_LDADD = $(LDADD)
-am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
+am__mandelbrot_SOURCES_DIST = mandelbrot.cpp
+@CPPUNIT_TEST_FALSE@am_mandelbrot_OBJECTS = mandelbrot.$(OBJEXT)
 mandelbrot_OBJECTS = $(am_mandelbrot_OBJECTS)
 mandelbrot_LDADD = $(LDADD)
-am_menu_OBJECTS = menu.$(OBJEXT)
+am__menu_SOURCES_DIST = menu.cpp
+@CPPUNIT_TEST_FALSE@am_menu_OBJECTS = menu.$(OBJEXT)
 menu_OBJECTS = $(am_menu_OBJECTS)
 menu_LDADD = $(LDADD)
-am_mouse_OBJECTS = mouse.$(OBJEXT)
+am__mouse_SOURCES_DIST = mouse.cpp
+@CPPUNIT_TEST_FALSE@am_mouse_OBJECTS = mouse.$(OBJEXT)
 mouse_OBJECTS = $(am_mouse_OBJECTS)
 mouse_LDADD = $(LDADD)
-am_opti_move_OBJECTS = opti-move.$(OBJEXT)
+am__opti_move_SOURCES_DIST = opti-move.cpp
+@CPPUNIT_TEST_FALSE@am_opti_move_OBJECTS = opti-move.$(OBJEXT)
 opti_move_OBJECTS = $(am_opti_move_OBJECTS)
 opti_move_LDADD = $(LDADD)
-am_scrollview_OBJECTS = scrollview.$(OBJEXT)
+am__scrollview_SOURCES_DIST = scrollview.cpp
+@CPPUNIT_TEST_FALSE@am_scrollview_OBJECTS = scrollview.$(OBJEXT)
 scrollview_OBJECTS = $(am_scrollview_OBJECTS)
 scrollview_LDADD = $(LDADD)
-am_string_operations_OBJECTS = string-operations.$(OBJEXT)
+am__string_operations_SOURCES_DIST = string-operations.cpp
+@CPPUNIT_TEST_FALSE@am_string_operations_OBJECTS =  \
+@CPPUNIT_TEST_FALSE@	string-operations.$(OBJEXT)
 string_operations_OBJECTS = $(am_string_operations_OBJECTS)
 string_operations_LDADD = $(LDADD)
-am_term_attributes_OBJECTS = term-attributes.$(OBJEXT)
+am__term_attributes_SOURCES_DIST = term-attributes.cpp
+@CPPUNIT_TEST_FALSE@am_term_attributes_OBJECTS =  \
+@CPPUNIT_TEST_FALSE@	term-attributes.$(OBJEXT)
 term_attributes_OBJECTS = $(am_term_attributes_OBJECTS)
 term_attributes_LDADD = $(LDADD)
-am_termcap_OBJECTS = termcap.$(OBJEXT)
+am__termcap_SOURCES_DIST = termcap.cpp
+@CPPUNIT_TEST_FALSE@am_termcap_OBJECTS = termcap.$(OBJEXT)
 termcap_OBJECTS = $(am_termcap_OBJECTS)
 termcap_LDADD = $(LDADD)
-am_timer_OBJECTS = timer.$(OBJEXT)
+am__timer_SOURCES_DIST = timer.cpp
+@CPPUNIT_TEST_FALSE@am_timer_OBJECTS = timer.$(OBJEXT)
 timer_OBJECTS = $(am_timer_OBJECTS)
 timer_LDADD = $(LDADD)
-am_transparent_OBJECTS = transparent.$(OBJEXT)
+am__transparent_SOURCES_DIST = transparent.cpp
+@CPPUNIT_TEST_FALSE@am_transparent_OBJECTS = transparent.$(OBJEXT)
 transparent_OBJECTS = $(am_transparent_OBJECTS)
 transparent_LDADD = $(LDADD)
-am_treeview_OBJECTS = treeview.$(OBJEXT)
+am__treeview_SOURCES_DIST = treeview.cpp
+@CPPUNIT_TEST_FALSE@am_treeview_OBJECTS = treeview.$(OBJEXT)
 treeview_OBJECTS = $(am_treeview_OBJECTS)
 treeview_LDADD = $(LDADD)
-am_ui_OBJECTS = ui.$(OBJEXT)
+am__ui_SOURCES_DIST = ui.cpp
+@CPPUNIT_TEST_FALSE@am_ui_OBJECTS = ui.$(OBJEXT)
 ui_OBJECTS = $(am_ui_OBJECTS)
 ui_LDADD = $(LDADD)
-am_watch_OBJECTS = watch.$(OBJEXT)
+am__watch_SOURCES_DIST = watch.cpp
+@CPPUNIT_TEST_FALSE@am_watch_OBJECTS = watch.$(OBJEXT)
 watch_OBJECTS = $(am_watch_OBJECTS)
 watch_LDADD = $(LDADD)
-am_windows_OBJECTS = windows.$(OBJEXT)
+am__windows_SOURCES_DIST = windows.cpp
+@CPPUNIT_TEST_FALSE@am_windows_OBJECTS = windows.$(OBJEXT)
 windows_OBJECTS = $(am_windows_OBJECTS)
 windows_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -218,15 +246,19 @@ SOURCES = $(calculator_SOURCES) $(choice_SOURCES) $(dialog_SOURCES) \
 	$(term_attributes_SOURCES) $(termcap_SOURCES) $(timer_SOURCES) \
 	$(transparent_SOURCES) $(treeview_SOURCES) $(ui_SOURCES) \
 	$(watch_SOURCES) $(windows_SOURCES)
-DIST_SOURCES = $(calculator_SOURCES) $(choice_SOURCES) \
-	$(dialog_SOURCES) $(hello_SOURCES) $(input_dialog_SOURCES) \
-	$(keyboard_SOURCES) $(listbox_SOURCES) $(listview_SOURCES) \
-	$(mandelbrot_SOURCES) $(menu_SOURCES) $(mouse_SOURCES) \
-	$(opti_move_SOURCES) $(scrollview_SOURCES) \
-	$(string_operations_SOURCES) $(term_attributes_SOURCES) \
-	$(termcap_SOURCES) $(timer_SOURCES) $(transparent_SOURCES) \
-	$(treeview_SOURCES) $(ui_SOURCES) $(watch_SOURCES) \
-	$(windows_SOURCES)
+DIST_SOURCES = $(am__calculator_SOURCES_DIST) \
+	$(am__choice_SOURCES_DIST) $(am__dialog_SOURCES_DIST) \
+	$(am__hello_SOURCES_DIST) $(am__input_dialog_SOURCES_DIST) \
+	$(am__keyboard_SOURCES_DIST) $(am__listbox_SOURCES_DIST) \
+	$(am__listview_SOURCES_DIST) $(am__mandelbrot_SOURCES_DIST) \
+	$(am__menu_SOURCES_DIST) $(am__mouse_SOURCES_DIST) \
+	$(am__opti_move_SOURCES_DIST) $(am__scrollview_SOURCES_DIST) \
+	$(am__string_operations_SOURCES_DIST) \
+	$(am__term_attributes_SOURCES_DIST) \
+	$(am__termcap_SOURCES_DIST) $(am__timer_SOURCES_DIST) \
+	$(am__transparent_SOURCES_DIST) $(am__treeview_SOURCES_DIST) \
+	$(am__ui_SOURCES_DIST) $(am__watch_SOURCES_DIST) \
+	$(am__windows_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -378,30 +410,30 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
-AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
-hello_SOURCES = hello.cpp
-dialog_SOURCES = dialog.cpp
-input_dialog_SOURCES = input-dialog.cpp
-choice_SOURCES = choice.cpp
-listbox_SOURCES = listbox.cpp
-listview_SOURCES = listview.cpp
-treeview_SOURCES = treeview.cpp
-opti_move_SOURCES = opti-move.cpp
-string_operations_SOURCES = string-operations.cpp
-mandelbrot_SOURCES = mandelbrot.cpp
-calculator_SOURCES = calculator.cpp
-watch_SOURCES = watch.cpp
-term_attributes_SOURCES = term-attributes.cpp
-termcap_SOURCES = termcap.cpp
-transparent_SOURCES = transparent.cpp
-keyboard_SOURCES = keyboard.cpp
-mouse_SOURCES = mouse.cpp
-timer_SOURCES = timer.cpp
-scrollview_SOURCES = scrollview.cpp
-windows_SOURCES = windows.cpp
-menu_SOURCES = menu.cpp
-ui_SOURCES = ui.cpp
+@CPPUNIT_TEST_FALSE@AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
+@CPPUNIT_TEST_FALSE@AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
+@CPPUNIT_TEST_FALSE@hello_SOURCES = hello.cpp
+@CPPUNIT_TEST_FALSE@dialog_SOURCES = dialog.cpp
+@CPPUNIT_TEST_FALSE@input_dialog_SOURCES = input-dialog.cpp
+@CPPUNIT_TEST_FALSE@choice_SOURCES = choice.cpp
+@CPPUNIT_TEST_FALSE@listbox_SOURCES = listbox.cpp
+@CPPUNIT_TEST_FALSE@listview_SOURCES = listview.cpp
+@CPPUNIT_TEST_FALSE@treeview_SOURCES = treeview.cpp
+@CPPUNIT_TEST_FALSE@opti_move_SOURCES = opti-move.cpp
+@CPPUNIT_TEST_FALSE@string_operations_SOURCES = string-operations.cpp
+@CPPUNIT_TEST_FALSE@mandelbrot_SOURCES = mandelbrot.cpp
+@CPPUNIT_TEST_FALSE@calculator_SOURCES = calculator.cpp
+@CPPUNIT_TEST_FALSE@watch_SOURCES = watch.cpp
+@CPPUNIT_TEST_FALSE@term_attributes_SOURCES = term-attributes.cpp
+@CPPUNIT_TEST_FALSE@termcap_SOURCES = termcap.cpp
+@CPPUNIT_TEST_FALSE@transparent_SOURCES = transparent.cpp
+@CPPUNIT_TEST_FALSE@keyboard_SOURCES = keyboard.cpp
+@CPPUNIT_TEST_FALSE@mouse_SOURCES = mouse.cpp
+@CPPUNIT_TEST_FALSE@timer_SOURCES = timer.cpp
+@CPPUNIT_TEST_FALSE@scrollview_SOURCES = scrollview.cpp
+@CPPUNIT_TEST_FALSE@windows_SOURCES = windows.cpp
+@CPPUNIT_TEST_FALSE@menu_SOURCES = menu.cpp
+@CPPUNIT_TEST_FALSE@ui_SOURCES = ui.cpp
 all: all-am
 
 .SUFFIXES:

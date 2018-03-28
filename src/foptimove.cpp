@@ -69,6 +69,8 @@ FOptiMove::FOptiMove (int baud)
   set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
   // Set carriage return preset
   set_carriage_return (C_STR("\r"));
+  // Set cursor down preset
+  set_cursor_down (C_STR("\n"));
 }
 
 //----------------------------------------------------------------------

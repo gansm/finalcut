@@ -67,6 +67,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void ansiTest();
+    void vt100Test();
 
   private:
     std::string printSequence (const std::string&);
@@ -78,6 +79,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (ansiTest);
+    CPPUNIT_TEST (vt100Test);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -100,8 +102,23 @@ void FOptiMoveTest::noArgumentTest()
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 1, 5, 5), C_STR(CSI "6;6H"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 9, 9), C_STR(CSI "10;10H"));
 
-  // No set cursor address preset
+  // Delete all presets
+  om.set_tabular (0);
+  om.set_back_tab (0);
+  om.set_cursor_home (0);
+  om.set_carriage_return (0);
+  om.set_cursor_up (0);
+  om.set_cursor_down (0);
+  om.set_cursor_left (0);
+  om.set_cursor_right (0);
   om.set_cursor_address (0);
+  om.set_column_address (0);
+  om.set_row_address (0);
+  om.set_parm_up_cursor (0);
+  om.set_parm_down_cursor (0);
+  om.set_parm_left_cursor (0);
+  om.set_parm_right_cursor (0);
+
   CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == 0);
 }
 
@@ -161,8 +178,65 @@ void FOptiMoveTest::ansiTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 53, 40), C_STR(CSI "25d"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
 
-  //om.printDurations();S
+//----------------------------------------------------------------------
+void FOptiMoveTest::vt100Test()
+{
+  FOptiMove om;
+  om.setTermSize (80, 24);
+  om.setBaudRate (1200);
+  om.setTabStop (8);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A$<2>"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_right (C_STR(CSI "C$<2>"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH$<5>"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+
+  //std::cout << "\nSequence: " << printSequence(om.moveCursor (53, 2, 53, -3)) << "\n";
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H$<5>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C$<2>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "2C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A$<2>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "2A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "76C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H$<5>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "7D"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\b\b"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H$<5>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H$<5>"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H$<5>"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H$<5>"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "26C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "2A"));
+
 /*
   om.set_cursor_to_ll (TCAP(fc::t_cursor_to_ll));
   om.set_auto_left_margin (FTermcap::automatic_left_margin);

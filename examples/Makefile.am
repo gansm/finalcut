@@ -2,6 +2,8 @@
 # Makefile.am  -  The Final Cut example programs
 #----------------------------------------------------------------------
 
+if ! CPPUNIT_TEST
+
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
 AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 
@@ -51,6 +53,8 @@ scrollview_SOURCES = scrollview.cpp
 windows_SOURCES = windows.cpp
 menu_SOURCES = menu.cpp
 ui_SOURCES = ui.cpp
+
+endif
 
 clean-local:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
