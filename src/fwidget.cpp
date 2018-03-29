@@ -1766,7 +1766,9 @@ bool FWidget::focusNextChild()
 
   FWidget* parent = getParentWidget();
 
-  if ( ! parent->hasChildren() || parent->numOfFocusableChildren() <= 1 )
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
     return false;
 
   FObjectIterator iter, last;
@@ -1829,7 +1831,9 @@ bool FWidget::focusPrevChild()
 
   FWidget* parent = getParentWidget();
 
-  if ( ! parent->hasChildren() || parent->numOfFocusableChildren() <= 1 )
+  if ( ! parent
+    || ! parent->hasChildren()
+    || parent->numOfFocusableChildren() <= 1 )
     return false;
 
   FObjectIterator iter, first;

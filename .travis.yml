@@ -76,7 +76,7 @@ matrix:
     script:
       - ./build.sh coverage
     after_success:
-      - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts
+      - coveralls --gcov-options '\-lp' -e debian -e doc -e icon -e logo -e m4 -e scripts -e examples
 
   #
   # macOS

@@ -66,6 +66,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
   protected:
     void classNameTest();
     void noArgumentTest();
+    void homeTest();
     void ansiTest();
     void vt100Test();
 
@@ -78,6 +79,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     // Add a methods to the test suite
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
+    CPPUNIT_TEST (homeTest);
     CPPUNIT_TEST (ansiTest);
     CPPUNIT_TEST (vt100Test);
 
@@ -120,6 +122,30 @@ void FOptiMoveTest::noArgumentTest()
   om.set_parm_right_cursor (0);
 
   CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == 0);
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::homeTest()
+{
+  int baud = 4800;
+  FOptiMove om(baud);
+  om.setTermSize (80, 24);
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_cursor_to_ll (C_STR(CSI "X"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR(CSI "B"));
+  om.set_cursor_left (C_STR(CSI "D"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+
+  // Upper home (first line, first column)
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 0), C_STR(CSI "H"));
+  // Lower home (last line, first column)
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 23), C_STR(CSI "X"));
 }
 
 //----------------------------------------------------------------------
@@ -201,7 +227,9 @@ void FOptiMoveTest::vt100Test()
   om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
   om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
 
-  //std::cout << "\nSequence: " << printSequence(om.moveCursor (53, 2, 53, -3)) << "\n";
+  //std::cout << "\nSequence: "
+  //          << printSequence(om.moveCursor (53, 2, 53, -3))
+  //          << "\n";
 
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H$<5>"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
