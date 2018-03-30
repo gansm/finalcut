@@ -239,16 +239,12 @@ void FMouseTest::workspaceSizeTest()
 void FMouseTest::gpmMouseTest()
 {
   FMouseGPM gpm_mouse;
-  CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
-
   gpm_mouse.setStdinNo(fileno(stdin));
+  CPPUNIT_ASSERT ( ! gpm_mouse.isGpmMouseEnabled() );
 
   if ( gpm_mouse.enableGpmMouse() )
   {
     CPPUNIT_ASSERT ( gpm_mouse.isGpmMouseEnabled() );
-    timeval tv;
-    FObject::getCurrentTime(&tv);
-    gpm_mouse.processEvent(&tv);
     CPPUNIT_ASSERT ( ! gpm_mouse.hasEvent() );
   }
   else

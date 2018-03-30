@@ -67,8 +67,15 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void homeTest();
+    void fromLeftToRightTest();
     void ansiTest();
     void vt100Test();
+    void xtermTest();
+    void rxvtTest();
+    void linuxTest();
+    void cygwinTest();
+    void puttyTest();
+    void teratermTest();
 
   private:
     std::string printSequence (const std::string&);
@@ -80,8 +87,17 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (homeTest);
+    CPPUNIT_TEST (fromLeftToRightTest);
     CPPUNIT_TEST (ansiTest);
     CPPUNIT_TEST (vt100Test);
+    CPPUNIT_TEST (xtermTest);
+    CPPUNIT_TEST (rxvtTest);
+    CPPUNIT_TEST (linuxTest);
+    CPPUNIT_TEST (cygwinTest);
+    CPPUNIT_TEST (puttyTest);
+    CPPUNIT_TEST (teratermTest);
+
+//  gnome-terminal
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -108,18 +124,19 @@ void FOptiMoveTest::noArgumentTest()
   om.set_tabular (0);
   om.set_back_tab (0);
   om.set_cursor_home (0);
+  om.set_cursor_to_ll (0);
   om.set_carriage_return (0);
   om.set_cursor_up (0);
   om.set_cursor_down (0);
-  om.set_cursor_left (0);
   om.set_cursor_right (0);
+  om.set_cursor_left (0);
   om.set_cursor_address (0);
   om.set_column_address (0);
   om.set_row_address (0);
   om.set_parm_up_cursor (0);
   om.set_parm_down_cursor (0);
-  om.set_parm_left_cursor (0);
   om.set_parm_right_cursor (0);
+  om.set_parm_left_cursor (0);
 
   CPPUNIT_ASSERT (om.moveCursor (1, 1, 5, 5) == 0);
 }
@@ -135,17 +152,43 @@ void FOptiMoveTest::homeTest()
   om.set_carriage_return (C_STR("\r"));
   om.set_cursor_up (C_STR(CSI "A"));
   om.set_cursor_down (C_STR(CSI "B"));
-  om.set_cursor_left (C_STR(CSI "D"));
   om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR(CSI "D"));
   om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
   om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
-  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
   om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
 
   // Upper home (first line, first column)
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 0), C_STR(CSI "H"));
   // Lower home (last line, first column)
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 10, 0, 23), C_STR(CSI "X"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::fromLeftToRightTest()
+{
+  int baud = 38400;
+  FOptiMove om(baud);
+  om.setTermSize (80, 24);
+  om.setTabStop (8);
+  om.set_auto_left_margin (true);
+  om.set_eat_newline_glitch (false);
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(ESC "M"));
+  om.set_cursor_down (C_STR(ESC "D"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 1), C_STR("\r\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR("\r\b" ESC "D"));
 }
 
 //----------------------------------------------------------------------
@@ -161,15 +204,15 @@ void FOptiMoveTest::ansiTest()
   om.set_carriage_return (C_STR("\r"));
   om.set_cursor_up (C_STR(CSI "A"));
   om.set_cursor_down (C_STR(CSI "B"));
-  om.set_cursor_left (C_STR(CSI "D"));
   om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR(CSI "D"));
   om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
   om.set_column_address (C_STR(CSI "%i%p1%dG"));
   om.set_row_address (C_STR(CSI "%i%p1%dd"));
   om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
   om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
-  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
   om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
 
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
@@ -219,17 +262,13 @@ void FOptiMoveTest::vt100Test()
   om.set_carriage_return (C_STR("\r"));
   om.set_cursor_up (C_STR(CSI "A$<2>"));
   om.set_cursor_down (C_STR("\n"));
-  om.set_cursor_left (C_STR("\b"));
   om.set_cursor_right (C_STR(CSI "C$<2>"));
+  om.set_cursor_left (C_STR("\b"));
   om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH$<5>"));
   om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
   om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
-  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
   om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
-
-  //std::cout << "\nSequence: "
-  //          << printSequence(om.moveCursor (53, 2, 53, -3))
-  //          << "\n";
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
 
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H$<5>"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
@@ -264,12 +303,364 @@ void FOptiMoveTest::vt100Test()
   // ynew is outside screen
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 53, 40), C_STR("\n"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "2A"));
+}
 
-/*
-  om.set_cursor_to_ll (TCAP(fc::t_cursor_to_ll));
-  om.set_auto_left_margin (FTermcap::automatic_left_margin);
-  om.set_eat_newline_glitch (FTermcap::eat_nl_glitch);
-*/
+//----------------------------------------------------------------------
+void FOptiMoveTest::xtermTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_back_tab (C_STR(CSI "Z"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "1d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "Z"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\r\t"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::rxvtTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "1d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "33G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\b\b"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::linuxTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_back_tab (C_STR(CSI "Z"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "1d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "Z"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\r\t"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::cygwinTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_tabular (C_STR("\t"));
+  om.set_back_tab (C_STR(CSI "Z"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR(CSI "B"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING ( printSequence(om.moveCursor (1, 2, 3, 4)).c_str()
+                         , C_STR("Esc [ 5 ; 4 H ") );
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r" CSI "B"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR(CSI "B"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR(CSI "3d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "1d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "Z"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\r\t"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR(CSI "B"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::puttyTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_auto_left_margin (true);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_back_tab (C_STR(CSI "Z"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(ESC "M"));
+  om.set_cursor_down (C_STR(ESC "D"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r" ESC "D"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR(ESC "D"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(ESC "M"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR(ESC "D" ESC "D"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(ESC "M" ESC "M"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "Z"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\r\t"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR(ESC "D"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(ESC "M" ESC "M"));
+}
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::teratermTest()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.setTabStop (8);
+  om.set_eat_newline_glitch (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_cursor_home (C_STR(CSI "H"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR(CSI "A"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_right (C_STR(CSI "C"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
+  om.set_column_address (C_STR(CSI "%i%p1%dG"));
+  om.set_row_address (C_STR(CSI "%i%p1%dd"));
+  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
+  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
+  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
+  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  //std::cout << "\nSequence: "
+  //          << printSequence(om.moveCursor (1, 2, 3, 4))
+  //          << "\n";
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR(CSI "C"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR(CSI "12G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR("\t"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR(CSI "A"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR(CSI "1d"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(CSI "21;76H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(CSI "33G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\b\b"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(CSI "11;80H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(CSI "11;51H"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(CSI "11;24H"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(CSI "11;13H"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR(CSI "80G"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
 }
 
 //----------------------------------------------------------------------
