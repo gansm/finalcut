@@ -169,7 +169,7 @@ class FOptiAttr
     static bool  isNormal (char_data*&);
 
     // Methods
-    void         init();
+    void         initialize();
     static short vga2ansi (register short);
     char*        changeAttribute (char_data*&, char_data*&);
 
@@ -272,7 +272,7 @@ class FOptiAttr
     // Methods
     bool  colorChange (char_data*&, char_data*&);
     void  resetColor (char_data*&);
-    void  prevent_no_color_video_attributes (char_data*&);
+    void  prevent_no_color_video_attributes (char_data*&, bool = false);
     void  preProcessing_cygwin_quirks (char_data*&);
     void  postProcessing_cygwin_quirks (char_data*&, char_data*&);
     void  deactivateAttributes (char_data*&, char_data*&);
@@ -284,6 +284,7 @@ class FOptiAttr
     void  resetAttribute (char_data*&);
     void  reset (char_data*&);
     bool  caused_reset_attributes (char[], uChar = all_tests);
+    bool  hasCharsetEquivalence();
     void  detectSwitchOn (char_data*&, char_data*&);
     void  detectSwitchOff (char_data*&, char_data*&);
     bool  switchOn();
@@ -330,10 +331,12 @@ class FOptiAttr
 
     char_data  on;
     char_data  off;
+    char_data  reset_byte_mask;
 
     int        max_color;
     int        attr_without_color;
     bool       ansi_default_color;
+    bool       alt_equal_pc_charset;
     bool       monochron;
     bool       fake_reverse;
     bool       cygwin_terminal;

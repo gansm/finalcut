@@ -43,6 +43,12 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
+  if ( s1 == 0 && s2 == 0 )
+    return;
+
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )
+    return;
+
   if ( std::strcmp (s1, s2) == 0 )
     return;
 
@@ -96,8 +102,6 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (cygwinTest);
     CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (teratermTest);
-
-//  gnome-terminal
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();

@@ -2920,8 +2920,8 @@ char* FTerm::parseAnswerbackMsg (char current_termtype[])
 //----------------------------------------------------------------------
 char* FTerm::parseSecDA (char current_termtype[])
 {
-  // The Linux console knows no Sec_DA
-  if ( linux_terminal )
+  // The Linux console and older cygwin terminals knows no Sec_DA
+  if ( linux_terminal || cygwin_terminal )
     return current_termtype;
 
   try
@@ -3028,14 +3028,15 @@ char* FTerm::secDA_Analysis (char current_termtype[])
       new_termtype = secDA_Analysis_24(current_termtype);
       break;
 
+    case 32:  // Tera Term
+      new_termtype = secDA_Analysis_32(current_termtype);
+      break;
+
     case 41:  // DEC VT420
     case 61:  // DEC VT510
     case 64:  // DEC VT520
     case 65:  // DEC VT525
-      break;
-
-    case 32:  // Tera Term
-      new_termtype = secDA_Analysis_32(current_termtype);
+    case 67:  // Cygwin
       break;
 
     case 77:  // mintty
@@ -3332,7 +3333,7 @@ void FTerm::init_pc_charset()
   }
 
   if ( reinit )
-    opti_attr->init();
+    opti_attr->initialize();
 }
 
 //----------------------------------------------------------------------
@@ -3627,7 +3628,15 @@ void FTerm::init_termcaps_cygwin_quirks()
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
 
+  // Include the Linux console quirks
   init_termcaps_linux_quirks();
+
+  // Avoid underline, blink and dim mode
+  FTermcap::attr_without_color = 26;
+
+  // Invisible mode is not supported
+  TCAP(fc::t_enter_secure_mode) = 0;
+  TCAP(fc::t_exit_secure_mode) = 0;
 }
 
 //----------------------------------------------------------------------
@@ -3654,7 +3663,7 @@ void FTerm::init_termcaps_linux_quirks()
   TCAP(fc::t_orig_pair) = \
       C_STR(CSI "39;49;25m");
 
-  // Avoid dim + underline
+  // Avoid underline and dim mode
   TCAP(fc::t_enter_dim_mode)       = 0;
   TCAP(fc::t_exit_dim_mode)        = 0;
   TCAP(fc::t_enter_underline_mode) = 0;
@@ -4090,7 +4099,7 @@ void FTerm::init_OptiAttr()
   if ( cygwin_terminal )
     opti_attr->setCygwinTerminal();
 
-  opti_attr->init();
+  opti_attr->initialize();
 }
 
 //----------------------------------------------------------------------
