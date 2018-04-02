@@ -43,14 +43,11 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
     return;
 
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )
-    return;
-
-  if ( std::strcmp (s1, s2) == 0 )
-    return;
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
 
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }

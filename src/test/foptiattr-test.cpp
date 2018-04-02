@@ -43,11 +43,11 @@ void check_c_string ( const char* s1
                     , const char* s2
                     , CppUnit::SourceLine sourceLine )
 {
-  if ( s1 == 0 && s2 == 0 )
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
     return;
 
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )
-    return;
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
 
   ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
 }
@@ -101,16 +101,23 @@ void FOptiAttrTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
+  FOptiAttr::char_data* ch = new FOptiAttr::char_data();
   FOptiAttr oa;
   oa.initialize();
 
   // isNormal test
-  FOptiAttr::char_data* ch = new FOptiAttr::char_data();
   CPPUNIT_ASSERT ( ! oa.isNormal(ch) );
   ch->fg_color = fc::Default;
   CPPUNIT_ASSERT ( ! oa.isNormal(ch) );
   ch->bg_color = fc::Default;
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
+
+  // Null test
+  FOptiAttr::char_data* ch_null = 0;
+  CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
+  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
+  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
+  CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch_null), C_STR("") );
   delete ch;
 }
 
