@@ -586,9 +586,12 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermBold (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.bold = true;
 
-  if ( term && append_sequence(F_enter_bold_mode.cap) )
+  if ( append_sequence(F_enter_bold_mode.cap) )
     return true;
   else
     return false;
@@ -599,6 +602,9 @@ inline bool FOptiAttr::unsetTermBold (char_data*& term)
 {
   // Back to normal intensity (turns off bold + dim)
 
+  if ( ! term )
+    return false;
+
   if ( F_exit_bold_mode.caused_reset )
     reset(term);
   else
@@ -607,7 +613,7 @@ inline bool FOptiAttr::unsetTermBold (char_data*& term)
     term->attr.bit.dim = false;
   }
 
-  if ( term && append_sequence(F_exit_bold_mode.cap) )
+  if ( append_sequence(F_exit_bold_mode.cap) )
     return true;
   else
     return false;
@@ -616,9 +622,12 @@ inline bool FOptiAttr::unsetTermBold (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermDim (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.dim = true;
 
-  if ( term && append_sequence(F_enter_dim_mode.cap) )
+  if ( append_sequence(F_enter_dim_mode.cap) )
     return true;
   else
     return false;
@@ -629,6 +638,9 @@ inline bool FOptiAttr::unsetTermDim (char_data*& term)
 {
   // Back to normal intensity (turns off bold + dim)
 
+  if ( ! term )
+    return false;
+
   if ( F_exit_dim_mode.caused_reset )
     reset(term);
   else
@@ -637,7 +649,7 @@ inline bool FOptiAttr::unsetTermDim (char_data*& term)
     term->attr.bit.dim = false;
   }
 
-  if ( term && append_sequence(F_exit_dim_mode.cap) )
+  if ( append_sequence(F_exit_dim_mode.cap) )
     return true;
   else
     return false;
@@ -646,9 +658,12 @@ inline bool FOptiAttr::unsetTermDim (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermItalic (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.italic = true;
 
-  if ( term && append_sequence(F_enter_italics_mode.cap) )
+  if ( append_sequence(F_enter_italics_mode.cap) )
     return true;
   else
     return false;
@@ -657,12 +672,15 @@ inline bool FOptiAttr::setTermItalic (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermItalic (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_italics_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.italic = false;
 
-  if ( term && append_sequence(F_exit_italics_mode.cap) )
+  if ( append_sequence(F_exit_italics_mode.cap) )
     return true;
   else
     return false;
@@ -671,9 +689,12 @@ inline bool FOptiAttr::unsetTermItalic (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermUnderline (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.underline = true;
 
-  if ( term && append_sequence(F_enter_underline_mode.cap) )
+  if ( append_sequence(F_enter_underline_mode.cap) )
     return true;
   else
     return false;
@@ -683,6 +704,10 @@ inline bool FOptiAttr::setTermUnderline (char_data*& term)
 inline bool FOptiAttr::unsetTermUnderline (char_data*& term)
 {
   // Turns off every underlining
+
+  if ( ! term )
+    return false;
+
   if ( F_exit_underline_mode.caused_reset )
     reset(term);
   else
@@ -691,7 +716,7 @@ inline bool FOptiAttr::unsetTermUnderline (char_data*& term)
     term->attr.bit.dbl_underline = false;
   }
 
-  if ( term && append_sequence(F_exit_underline_mode.cap) )
+  if ( append_sequence(F_exit_underline_mode.cap) )
     return true;
   else
     return false;
@@ -700,9 +725,12 @@ inline bool FOptiAttr::unsetTermUnderline (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermBlink (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.blink = true;
 
-  if ( term && append_sequence(F_enter_blink_mode.cap) )
+  if ( append_sequence(F_enter_blink_mode.cap) )
     return true;
   else
     return false;
@@ -711,12 +739,15 @@ inline bool FOptiAttr::setTermBlink (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermBlink (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_blink_mode.caused_reset )
     reset(term);
   else
    term->attr.bit.blink = false;
 
-  if ( term && append_sequence(F_exit_blink_mode.cap) )
+  if ( append_sequence(F_exit_blink_mode.cap) )
     return true;
   else
     return false;
@@ -725,9 +756,12 @@ inline bool FOptiAttr::unsetTermBlink (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermReverse (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.reverse = true;
 
-  if ( term && append_sequence(F_enter_reverse_mode.cap) )
+  if ( append_sequence(F_enter_reverse_mode.cap) )
     return true;
   else
     return false;
@@ -736,12 +770,15 @@ inline bool FOptiAttr::setTermReverse (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermReverse (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_reverse_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.reverse = false;
 
-  if ( term && append_sequence(F_exit_reverse_mode.cap) )
+  if ( append_sequence(F_exit_reverse_mode.cap) )
     return true;
   else
     return false;
@@ -750,9 +787,12 @@ inline bool FOptiAttr::unsetTermReverse (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermStandout (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.standout = true;
 
-  if ( term && append_sequence(F_enter_standout_mode.cap) )
+  if ( append_sequence(F_enter_standout_mode.cap) )
     return true;
   else
     return false;
@@ -761,12 +801,15 @@ inline bool FOptiAttr::setTermStandout (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermStandout (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_standout_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.standout = false;
 
-  if ( term && append_sequence(F_exit_standout_mode.cap) )
+  if ( append_sequence(F_exit_standout_mode.cap) )
     return true;
   else
     return false;
@@ -775,9 +818,12 @@ inline bool FOptiAttr::unsetTermStandout (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermInvisible (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.invisible = true;
 
-  if ( term && append_sequence(F_enter_secure_mode.cap) )
+  if ( append_sequence(F_enter_secure_mode.cap) )
     return true;
   else
     return false;
@@ -786,12 +832,15 @@ inline bool FOptiAttr::setTermInvisible (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermInvisible (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_secure_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.invisible = false;
 
-  if ( term && append_sequence(F_exit_secure_mode.cap) )
+  if ( append_sequence(F_exit_secure_mode.cap) )
     return true;
   else
     return false;
@@ -800,9 +849,12 @@ inline bool FOptiAttr::unsetTermInvisible (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermProtected (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.protect = true;
 
-  if ( term && append_sequence(F_enter_protected_mode.cap) )
+  if ( append_sequence(F_enter_protected_mode.cap) )
     return true;
   else
     return false;
@@ -811,12 +863,15 @@ inline bool FOptiAttr::setTermProtected (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermProtected (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_protected_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.protect = false;
 
-  if ( term && append_sequence(F_exit_protected_mode.cap) )
+  if ( append_sequence(F_exit_protected_mode.cap) )
     return true;
   else
     return false;
@@ -825,9 +880,12 @@ inline bool FOptiAttr::unsetTermProtected (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermCrossedOut (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.crossed_out = true;
 
-  if ( term && append_sequence(F_enter_crossed_out_mode.cap) )
+  if ( append_sequence(F_enter_crossed_out_mode.cap) )
     return true;
   else
     return false;
@@ -836,12 +894,15 @@ inline bool FOptiAttr::setTermCrossedOut (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermCrossedOut (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   if ( F_exit_crossed_out_mode.caused_reset )
     reset(term);
   else
     term->attr.bit.crossed_out = false;
 
-  if ( term && append_sequence(F_exit_crossed_out_mode.cap) )
+  if ( append_sequence(F_exit_crossed_out_mode.cap) )
     return true;
   else
     return false;
@@ -850,9 +911,12 @@ inline bool FOptiAttr::unsetTermCrossedOut (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermDoubleUnderline (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.dbl_underline = true;
 
-  if ( term && append_sequence(F_enter_dbl_underline_mode.cap) )
+  if ( append_sequence(F_enter_dbl_underline_mode.cap) )
     return true;
   else
     return false;
@@ -863,6 +927,9 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (char_data*& term)
 {
   // Turns off every underlining
 
+  if ( ! term )
+    return false;
+
   if ( F_exit_dbl_underline_mode.caused_reset )
     reset(term);
   else
@@ -871,7 +938,7 @@ inline bool FOptiAttr::unsetTermDoubleUnderline (char_data*& term)
     term->attr.bit.dbl_underline = false;
   }
 
-  if ( term && append_sequence(F_exit_dbl_underline_mode.cap) )
+  if ( append_sequence(F_exit_dbl_underline_mode.cap) )
     return true;
   else
     return false;
@@ -913,9 +980,12 @@ bool FOptiAttr::setTermAttributes ( char_data*& term
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermAttributes (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   reset(term);
 
-  if ( term && replace_sequence(F_exit_attribute_mode.cap) )
+  if ( replace_sequence(F_exit_attribute_mode.cap) )
     return true;
   else
     return false;
@@ -924,12 +994,15 @@ inline bool FOptiAttr::unsetTermAttributes (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermAltCharset (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.alt_charset = true;
 
   if ( alt_equal_pc_charset && term->attr.bit.pc_charset )
     return false;
 
-  if ( term && append_sequence(F_enter_alt_charset_mode.cap) )
+  if ( append_sequence(F_enter_alt_charset_mode.cap) )
     return true;
   else
     return false;
@@ -938,12 +1011,15 @@ inline bool FOptiAttr::setTermAltCharset (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermAltCharset (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.alt_charset = false;
 
   if ( alt_equal_pc_charset && term->attr.bit.pc_charset )
     return false;
 
-  if ( term && append_sequence(F_exit_alt_charset_mode.cap) )
+  if ( append_sequence(F_exit_alt_charset_mode.cap) )
     return true;
   else
     return false;
@@ -952,12 +1028,15 @@ inline bool FOptiAttr::unsetTermAltCharset (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::setTermPCcharset (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.pc_charset = true;
 
   if ( alt_equal_pc_charset && term->attr.bit.alt_charset )
     return false;
 
-  if ( term && append_sequence(F_enter_pc_charset_mode.cap) )
+  if ( append_sequence(F_enter_pc_charset_mode.cap) )
     return true;
   else
     return false;
@@ -966,12 +1045,15 @@ inline bool FOptiAttr::setTermPCcharset (char_data*& term)
 //----------------------------------------------------------------------
 inline bool FOptiAttr::unsetTermPCcharset (char_data*& term)
 {
+  if ( ! term )
+    return false;
+
   term->attr.bit.pc_charset = false;
 
   if ( alt_equal_pc_charset && term->attr.bit.alt_charset )
     return false;
 
-  if ( term && append_sequence(F_exit_pc_charset_mode.cap) )
+  if ( append_sequence(F_exit_pc_charset_mode.cap) )
     return true;
   else
     return false;
@@ -980,11 +1062,11 @@ inline bool FOptiAttr::unsetTermPCcharset (char_data*& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::setTermDefaultColor (char_data*& term)
 {
-  term->fg_color = Default;
-  term->bg_color = Default;
-
   if ( ! term )
     return false;
+
+  term->fg_color = Default;
+  term->bg_color = Default;
 
   if ( append_sequence(F_orig_pair.cap) )
     return true;

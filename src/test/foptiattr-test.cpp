@@ -140,16 +140,9 @@ void FOptiAttrTest::vga2ansi()
 void FOptiAttrTest::ansiTest()
 {
   FOptiAttr oa;
-  bool AX = true;       // ANSI default color
-  bool cygwin = false;  // Cygwin bold color fix
-
-  if ( AX )
-    oa.setDefaultColorSupport();
-
-  if ( cygwin )
-    oa.setCygwinTerminal();
-
-  oa.setNoColorVideo (3);  // Advid standout (1) + underline mode (2)
+  oa.setDefaultColorSupport();  // ANSI default color
+//oa.setCygwinTerminal();       // Cygwin bold color fix
+  oa.setNoColorVideo (3);       // Advid standout (1) + underline mode (2)
   oa.setMaxColor (8);
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "0m"));
