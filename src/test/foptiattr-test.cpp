@@ -831,7 +831,8 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017$<2>") );
   CPPUNIT_ASSERT ( *from != *to );
-  CPPUNIT_ASSERT ( from->code = ' ' );
+  CPPUNIT_ASSERT ( to->code == ' ' );
+  from->code = ' ';
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Invisible off (with default colors)
