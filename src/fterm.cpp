@@ -3663,6 +3663,9 @@ void FTerm::init_termcaps_linux_quirks()
   TCAP(fc::t_orig_pair) = \
       C_STR(CSI "39;49;25m");
 
+  TCAP(fc::t_exit_reverse_mode) = \
+      C_STR(CSI "27m");
+
   // Avoid underline and dim mode
   TCAP(fc::t_enter_dim_mode)       = 0;
   TCAP(fc::t_exit_dim_mode)        = 0;

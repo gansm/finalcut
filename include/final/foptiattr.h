@@ -290,7 +290,6 @@ class FOptiAttr
     bool  switchOn();
     bool  switchOff();
     bool  append_sequence (char[]);
-    bool  replace_sequence (char[]);
 
     // Data Members
     capability F_enter_bold_mode;

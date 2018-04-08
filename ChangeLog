@@ -1,3 +1,7 @@
+2017-04-08  Markus Gans  <guru.mail@muenster.de>
+	* Improved Linux terminal quirks
+	* Improvement in class FOptiAttr
+
 2017-04-02  Markus Gans  <guru.mail@muenster.de>
 	* Improved cygwin terminal quirks
 	* Optimized character set switching in FOptiAttr

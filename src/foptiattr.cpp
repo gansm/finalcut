@@ -566,7 +566,8 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   {
     deactivateAttributes (term, next);
   }
-  else if ( F_set_attributes.cap && ! term->attr.bit.pc_charset )
+  else if ( F_set_attributes.cap
+         && ( ! term->attr.bit.pc_charset || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
   }
@@ -985,7 +986,7 @@ inline bool FOptiAttr::unsetTermAttributes (char_data*& term)
 
   reset(term);
 
-  if ( replace_sequence(F_exit_attribute_mode.cap) )
+  if ( append_sequence(F_exit_attribute_mode.cap) )
     return true;
   else
     return false;
@@ -1340,6 +1341,9 @@ inline void FOptiAttr::deactivateAttributes ( char_data*& term
   {
     if ( F_exit_attribute_mode.cap )
     {
+      if ( off.attr.bit.alt_charset )  // Required for rxvt terminals
+        unsetTermAltCharset(term);
+
       unsetTermAttributes(term);
 
       if ( off.attr.bit.pc_charset )
@@ -1373,8 +1377,8 @@ inline void FOptiAttr::changeAttributeSGR ( char_data*& term
 
   if ( alt_equal_pc_charset && next->attr.bit.alt_charset )
   {
-    term->attr.bit.pc_charset = true;
-    off.attr.bit.pc_charset   = false;
+    term->attr.bit.pc_charset = next->attr.bit.pc_charset;
+    off.attr.bit.pc_charset = false;
     pc_charset_usable = false;
   }
 
@@ -1569,10 +1573,12 @@ bool FOptiAttr::caused_reset_attributes (char cap[], uChar test)
     if ( (test & test_adm3_reset) && std::strncmp (cap, ESC "G0", 3) == 0 )
       return true;
 
-    if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0 )
+    if ( (test & same_like_ue) && ue && std::strcmp (cap, ue) == 0
+       && std::strncmp (cap, CSI "24m", 5) != 0)
       return true;
 
-    if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0 )
+    if ( (test & same_like_se) && se && std::strcmp (cap, se) == 0
+       && std::strncmp (cap, CSI "27m", 5) != 0 )
       return true;
 
     if ( (test & same_like_me) && me && std::strcmp (cap, me) == 0 )
@@ -1663,18 +1669,6 @@ inline bool FOptiAttr::append_sequence (char seq[])
   if ( seq )
   {
     std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr) - 1 );
-    return true;
-  }
-  else
-    return false;
-}
-
-//----------------------------------------------------------------------
-inline bool FOptiAttr::replace_sequence (char seq[])
-{
-  if ( seq )
-  {
-    std::strncpy (attr_ptr, seq, sizeof(attr_buf) - 1);
     return true;
   }
   else
