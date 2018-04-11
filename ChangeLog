@@ -1,5 +1,6 @@
 2017-04-11  Markus Gans  <guru.mail@muenster.de>
 	* Remove Cygwin bold color quirks fix in FOptiAttr
+	* Added unit test for FOptiAttr
 
 2017-04-08  Markus Gans  <guru.mail@muenster.de>
 	* Improved Linux terminal quirks
