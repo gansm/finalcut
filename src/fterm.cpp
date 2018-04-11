@@ -3625,18 +3625,16 @@ void FTerm::init_termcaps_cygwin_quirks()
     TCAP(fc::t_enter_blink_mode) = \
         C_STR(CSI "5m");
 
+  // Set enable alternate character set for cygwin terminal
+  if ( ! TCAP(fc::t_enable_acs) )
+    TCAP(fc::t_enable_acs) = \
+        C_STR(ESC "(B" ESC ")0");
+
   // Set background color erase for cygwin terminal
   FTermcap::background_color_erase = true;
 
   // Include the Linux console quirks
   init_termcaps_linux_quirks();
-
-  // Avoid underline, blink and dim mode
-  FTermcap::attr_without_color = 26;
-
-  // Invisible mode is not supported
-  TCAP(fc::t_enter_secure_mode) = 0;
-  TCAP(fc::t_exit_secure_mode) = 0;
 }
 
 //----------------------------------------------------------------------
@@ -3648,9 +3646,11 @@ void FTerm::init_termcaps_linux_quirks()
   if ( FTermcap::max_color > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;21%;m");
+        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m");
     TCAP(fc::t_set_a_background) = \
         C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
+    // Avoid underline, blink and dim mode
+    FTermcap::attr_without_color = 26;
   }
   else
   {
@@ -3658,20 +3658,35 @@ void FTerm::init_termcaps_linux_quirks()
         C_STR(CSI "3%p1%dm");
     TCAP(fc::t_set_a_background) = \
         C_STR(CSI "4%p1%dm");
+    // Avoid underline and dim mode
+    FTermcap::attr_without_color = 18; 
   }
 
-  TCAP(fc::t_orig_pair) = \
-      C_STR(CSI "39;49;25m");
+  // Set select graphic rendition attributes
+  TCAP(fc::t_set_attributes) = \
+      C_STR(CSI "0"
+                "%?%p6%|%t;1%;"
+                "%?%p1%p3%|%t;7%;"
+                "%?%p4%t;5%;m"
+                "%?%p9%t\016%e\017%;");
 
-  TCAP(fc::t_exit_reverse_mode) = \
-      C_STR(CSI "27m");
+  TCAP(fc::t_enter_alt_charset_mode) = C_STR("\016");
+  TCAP(fc::t_exit_alt_charset_mode) = C_STR("\017");
+  TCAP(fc::t_exit_attribute_mode) = C_STR(CSI "0m\017");
+  TCAP(fc::t_exit_bold_mode) = C_STR(CSI "22m");
+  TCAP(fc::t_exit_blink_mode) = C_STR(CSI "25m");
+  TCAP(fc::t_exit_reverse_mode) = C_STR(CSI "27m");
+  TCAP(fc::t_exit_secure_mode) = 0;
+  TCAP(fc::t_exit_protected_mode) = 0;
+  TCAP(fc::t_exit_crossed_out_mode) = 0;
+  TCAP(fc::t_orig_pair) = C_STR(CSI "39;49;25m");
 
   // Avoid underline and dim mode
   TCAP(fc::t_enter_dim_mode)       = 0;
   TCAP(fc::t_exit_dim_mode)        = 0;
   TCAP(fc::t_enter_underline_mode) = 0;
   TCAP(fc::t_exit_underline_mode)  = 0;
-  FTermcap::attr_without_color     = 18;
+  
 }
 
 //----------------------------------------------------------------------
@@ -4098,9 +4113,6 @@ void FTerm::init_OptiAttr()
 
   if ( FTermcap::ansi_default_color )
     opti_attr->setDefaultColorSupport();
-
-  if ( cygwin_terminal )
-    opti_attr->setCygwinTerminal();
 
   opti_attr->initialize();
 }

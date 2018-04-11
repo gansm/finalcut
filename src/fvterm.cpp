@@ -688,8 +688,6 @@ int FVTerm::print (term_area* area, char_data& term_char)
   return 1;
 }
 
-//----------------------------------------------------------------------
-
 // protected methods of FVTerm
 //----------------------------------------------------------------------
 FVTerm::term_area* FVTerm::getPrintArea()
@@ -2910,34 +2908,34 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
   uInt code = uInt(next_char->code);
   uInt ch_enc = charEncode(code);
 
-  if ( ch_enc != code )
+  if ( ch_enc == code )
+    return;
+
+  if ( ch_enc == 0 )
   {
-    if ( ch_enc == 0 )
-    {
-      next_char->code = int(charEncode(code, fc::ASCII));
+    next_char->code = int(charEncode(code, fc::ASCII));
+    return;
+  }
+
+  next_char->code = int(ch_enc);
+
+  if ( term_encoding == fc::VT100 )
+    next_char->attr.bit.alt_charset = true;
+  else if ( term_encoding == fc::PC )
+  {
+    next_char->attr.bit.pc_charset = true;
+
+    if ( isPuttyTerminal() )
       return;
-    }
 
-    next_char->code = int(ch_enc);
-
-    if ( term_encoding == fc::VT100 )
-      next_char->attr.bit.alt_charset = true;
-    else if ( term_encoding == fc::PC )
+    if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
-      next_char->attr.bit.pc_charset = true;
-
-      if ( isPuttyTerminal() )
-        return;
-
-      if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
+      if ( hasUTF8() )
+        next_char->code = int(charEncode(code, fc::ASCII));
+      else
       {
-        if ( hasUTF8() )
-          next_char->code = int(charEncode(code, fc::ASCII));
-        else
-        {
-          next_char->code += 0x5f;
-          next_char->attr.bit.alt_charset = true;
-        }
+        next_char->code += 0x5f;
+        next_char->attr.bit.alt_charset = true;
       }
     }
   }

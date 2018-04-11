@@ -75,7 +75,6 @@ FOptiAttr::FOptiAttr()
   , alt_equal_pc_charset(false)
   , monochron(true)
   , fake_reverse(false)
-  , cygwin_terminal(false)
   , attr_ptr(attr_buf)
 {
   attr_buf[0] = '\0';
@@ -559,8 +558,6 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   // Look for no changes
   if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
     return 0;
-
-  preProcessing_cygwin_quirks(term);
 
   if ( hasNoAttribute(next) )
   {
@@ -1298,42 +1295,6 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( char_data*& attr
 }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::preProcessing_cygwin_quirks (char_data*& term)
-{
-  // Cygwin bold color fix pre processing
-
-  if ( ! cygwin_terminal || ! term )
-    return;
-
-  if ( term->fg_color > 7 || term->bg_color > 7 )
-  {
-    // Reset blink and bold mode from colors > 7
-    char rst[] = CSI "m";
-    append_sequence (rst);
-    reset(term);
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FOptiAttr::postProcessing_cygwin_quirks ( char_data*& term
-                                                    , char_data*& next )
-{
-  // Cygwin bold color fix post processing
-
-  if ( ! cygwin_terminal )
-    return;
-
-  if ( next->attr.bit.bold )
-    setTermBold(term);
-
-  if ( next->attr.bit.reverse )
-    setTermReverse(term);
-
-  if ( next->attr.bit.standout )
-    setTermStandout(term);
-}
-
-//----------------------------------------------------------------------
 inline void FOptiAttr::deactivateAttributes ( char_data*& term
                                             , char_data*& next )
 {
@@ -1398,10 +1359,7 @@ inline void FOptiAttr::changeAttributeSGR ( char_data*& term
     setTermPCcharset(term);
 
   if ( colorChange(term, next) )
-  {
     change_color(term, next);
-    postProcessing_cygwin_quirks(term, next);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -1411,10 +1369,7 @@ inline void FOptiAttr::changeAttributeSeparately ( char_data*& term
   setAttributesOff(term);
 
   if ( colorChange(term, next) )
-  {
     change_color (term, next);
-    postProcessing_cygwin_quirks(term, next);
-  }
 
   detectSwitchOn (term, next);  // After reset all attributes
   setAttributesOn(term);

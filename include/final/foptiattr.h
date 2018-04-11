@@ -128,7 +128,7 @@ class FOptiAttr
     void  setMaxColor (const int&);
     void  setNoColorVideo (int);
     void  setDefaultColorSupport();
-    void  setCygwinTerminal();
+    void  unsetDefaultColorSupport();
     void  set_enter_bold_mode (char[]);
     void  set_exit_bold_mode (char[]);
     void  set_enter_dim_mode (char[]);
@@ -273,8 +273,6 @@ class FOptiAttr
     bool  colorChange (char_data*&, char_data*&);
     void  resetColor (char_data*&);
     void  prevent_no_color_video_attributes (char_data*&, bool = false);
-    void  preProcessing_cygwin_quirks (char_data*&);
-    void  postProcessing_cygwin_quirks (char_data*&, char_data*&);
     void  deactivateAttributes (char_data*&, char_data*&);
     void  changeAttributeSGR (char_data*&, char_data*&);
     void  changeAttributeSeparately (char_data*&, char_data*&);
@@ -338,7 +336,6 @@ class FOptiAttr
     bool       alt_equal_pc_charset;
     bool       monochron;
     bool       fake_reverse;
-    bool       cygwin_terminal;
     char       attr_buf[8192];
     char*      attr_ptr;
 };
@@ -379,7 +376,7 @@ inline void FOptiAttr::setDefaultColorSupport()
 { ansi_default_color = true; }
 
 //----------------------------------------------------------------------
-inline void FOptiAttr::setCygwinTerminal()
-{ cygwin_terminal = true; }
+inline void FOptiAttr::unsetDefaultColorSupport()
+{ ansi_default_color = false; }
 
 #endif  // FOPTIATTR_H
