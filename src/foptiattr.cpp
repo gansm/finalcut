@@ -556,7 +556,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
     next->code = ' ';
 
   // Look for no changes
-  if ( ! ( switchOn() || switchOff() || colorChange(term, next) ) )
+  if ( ! (switchOn() || switchOff() || colorChange(term, next)) )
     return 0;
 
   if ( hasNoAttribute(next) )
@@ -564,7 +564,7 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
     deactivateAttributes (term, next);
   }
   else if ( F_set_attributes.cap
-         && ( ! term->attr.bit.pc_charset || alt_equal_pc_charset) )
+         && (! term->attr.bit.pc_charset || alt_equal_pc_charset) )
   {
     changeAttributeSGR (term, next);
   }
@@ -572,9 +572,6 @@ char* FOptiAttr::changeAttribute (char_data*& term, char_data*& next)
   {
     changeAttributeSeparately (term, next);
   }
-
-  if ( fake_reverse )
-    term->attr.bit.reverse = true;
 
   return attr_buf;
 }
@@ -759,7 +756,7 @@ inline bool FOptiAttr::setTermReverse (char_data*& term)
 
   term->attr.bit.reverse = true;
 
-  if ( append_sequence(F_enter_reverse_mode.cap) )
+  if ( ! fake_reverse && append_sequence(F_enter_reverse_mode.cap) )
     return true;
   else
     return false;
@@ -776,7 +773,7 @@ inline bool FOptiAttr::unsetTermReverse (char_data*& term)
   else
     term->attr.bit.reverse = false;
 
-  if ( append_sequence(F_exit_reverse_mode.cap) )
+  if ( ! fake_reverse && append_sequence(F_exit_reverse_mode.cap) )
     return true;
   else
     return false;
@@ -790,7 +787,7 @@ inline bool FOptiAttr::setTermStandout (char_data*& term)
 
   term->attr.bit.standout = true;
 
-  if ( append_sequence(F_enter_standout_mode.cap) )
+  if ( ! fake_reverse && append_sequence(F_enter_standout_mode.cap) )
     return true;
   else
     return false;
@@ -807,7 +804,7 @@ inline bool FOptiAttr::unsetTermStandout (char_data*& term)
   else
     term->attr.bit.standout = false;
 
-  if ( append_sequence(F_exit_standout_mode.cap) )
+  if ( ! fake_reverse && append_sequence(F_exit_standout_mode.cap) )
     return true;
   else
     return false;
@@ -951,9 +948,16 @@ bool FOptiAttr::setTermAttributes ( char_data*& term
   if ( term && F_set_attributes.cap )
   {
     char* sgr = tparm ( F_set_attributes.cap
-                      , p1, p2, p3, p4, p5, p6, p7, p8, p9 );
+                      , p1 && ! fake_reverse
+                      , p2
+                      , p3 && ! fake_reverse
+                      , p4
+                      , p5
+                      , p6
+                      , p7
+                      , p8
+                      , p9 );
     append_sequence (sgr);
-
     resetColor(term);
     term->attr.bit.standout      = p1;
     term->attr.bit.underline     = p2;
@@ -1209,7 +1213,11 @@ inline bool FOptiAttr::colorChange (char_data*& term, char_data*& next)
 {
   if ( term && next )
   {
-    return bool ( fake_reverse
+    bool frev = ( on.attr.bit.reverse
+               || on.attr.bit.standout
+               || off.attr.bit.reverse
+               || off.attr.bit.standout ) && fake_reverse;
+    return bool ( frev
                || term->fg_color != next->fg_color
                || term->bg_color != next->bg_color );
   }
@@ -1251,13 +1259,7 @@ inline void FOptiAttr::prevent_no_color_video_attributes ( char_data*& attr
         break;
 
       case reverse_mode:
-        if ( attr->attr.bit.reverse )
-        {
-          attr->attr.bit.reverse = false;
-
-          if ( attr->fg_color != attr->bg_color )
-            fake_reverse = true;
-        }
+        fake_reverse = true;
         break;
 
       case blink_mode:
@@ -1336,7 +1338,9 @@ inline void FOptiAttr::changeAttributeSGR ( char_data*& term
                       , next->attr.bit.protect
                       , next->attr.bit.alt_charset );
 
-  if ( alt_equal_pc_charset && next->attr.bit.alt_charset )
+  if ( alt_equal_pc_charset
+    && F_enter_pc_charset_mode.cap
+    && next->attr.bit.alt_charset )
   {
     term->attr.bit.pc_charset = next->attr.bit.pc_charset;
     off.attr.bit.pc_charset = false;
@@ -1346,16 +1350,17 @@ inline void FOptiAttr::changeAttributeSGR ( char_data*& term
   if ( off.attr.bit.pc_charset )
     unsetTermPCcharset(term);
 
-  if ( next->attr.bit.italic )
+  if ( ! term->attr.bit.italic && next->attr.bit.italic )
     setTermItalic(term);
 
-  if ( next->attr.bit.crossed_out )
+  if ( ! term->attr.bit.crossed_out && next->attr.bit.crossed_out )
     setTermCrossedOut(term);
 
-  if ( next->attr.bit.dbl_underline )
+  if ( ! term->attr.bit.dbl_underline && next->attr.bit.dbl_underline )
     setTermDoubleUnderline(term);
 
-  if ( next->attr.bit.pc_charset && pc_charset_usable )
+  if ( ! term->attr.bit.pc_charset && next->attr.bit.pc_charset
+    && pc_charset_usable )
     setTermPCcharset(term);
 
   if ( colorChange(term, next) )
@@ -1380,8 +1385,15 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
 {
   short fg, bg;
 
-  if ( monochron || ! (term && next) )
+  if ( ! (term && next) )
     return;
+
+  if ( monochron )
+  {
+    next->fg_color = fc::Default;
+    next->bg_color = fc::Default;
+    return;
+  }
 
   next->fg_color %= max_color;
   next->bg_color %= max_color;
@@ -1391,10 +1403,11 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   if ( fg == Default || bg == Default )
     change_to_default_color (term, next, fg, bg);
 
-  if ( ! fake_reverse && fg < 0 && bg < 0 )
+  if ( fake_reverse && fg < 0 && bg < 0 )
     return;
 
-  if ( fake_reverse )
+  if ( fake_reverse
+    && (next->attr.bit.reverse || next->attr.bit.standout) )
   {
     std::swap (fg, bg);
 
@@ -1458,27 +1471,31 @@ inline void FOptiAttr::change_current_color ( char_data*& term
   char* Sf = F_set_foreground.cap;
   char* Sb = F_set_background.cap;
   char* sp = F_set_color_pair.cap;
+  bool frev = ( off.attr.bit.reverse
+             || off.attr.bit.standout
+             || term->attr.bit.reverse
+             || term->attr.bit.standout ) && fake_reverse;
 
   if ( AF && AB )
   {
     short ansi_fg = vga2ansi(fg);
     short ansi_bg = vga2ansi(bg);
 
-    if ( term->fg_color != fg
+    if ( (term->fg_color != fg || frev)
       && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
 
-    if ( term->bg_color != bg
+    if ( (term->bg_color != bg || frev)
       && (color_str = tparm(AB, ansi_bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
   }
   else if ( Sf && Sb )
   {
-    if ( term->fg_color != fg
+    if ( (term->fg_color != fg || frev)
       && (color_str = tparm(Sf, fg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
 
-    if ( term->bg_color != bg
+    if ( (term->bg_color != bg || frev)
       && (color_str = tparm(Sb, bg, 0, 0, 0, 0, 0, 0, 0, 0)) )
       append_sequence (color_str);
   }

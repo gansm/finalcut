@@ -3659,7 +3659,7 @@ void FTerm::init_termcaps_linux_quirks()
     TCAP(fc::t_set_a_background) = \
         C_STR(CSI "4%p1%dm");
     // Avoid underline and dim mode
-    FTermcap::attr_without_color = 18; 
+    FTermcap::attr_without_color = 18;
   }
 
   // Set select graphic rendition attributes
@@ -3686,7 +3686,6 @@ void FTerm::init_termcaps_linux_quirks()
   TCAP(fc::t_exit_dim_mode)        = 0;
   TCAP(fc::t_enter_underline_mode) = 0;
   TCAP(fc::t_exit_underline_mode)  = 0;
-  
 }
 
 //----------------------------------------------------------------------
