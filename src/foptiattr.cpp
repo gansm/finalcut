@@ -1067,8 +1067,8 @@ bool FOptiAttr::setTermDefaultColor (char_data*& term)
   if ( ! term )
     return false;
 
-  term->fg_color = Default;
-  term->bg_color = Default;
+  term->fg_color = fc::Default;
+  term->bg_color = fc::Default;
 
   if ( append_sequence(F_orig_pair.cap) )
     return true;
@@ -1230,8 +1230,8 @@ inline void FOptiAttr::resetColor (char_data*& attr)
 {
   if ( attr )
   {
-    attr->fg_color = Default;
-    attr->bg_color = Default;
+    attr->fg_color = fc::Default;
+    attr->bg_color = fc::Default;
   }
 }
 
@@ -1400,7 +1400,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   fg = next->fg_color;
   bg = next->bg_color;
 
-  if ( fg == Default || bg == Default )
+  if ( fg == fc::Default || bg == fc::Default )
     change_to_default_color (term, next, fg, bg);
 
   if ( fake_reverse && fg < 0 && bg < 0 )
@@ -1411,7 +1411,7 @@ void FOptiAttr::change_color (char_data*& term, char_data*& next)
   {
     std::swap (fg, bg);
 
-    if ( fg == Default || bg == Default )
+    if ( fg == fc::Default || bg == fc::Default )
       setTermDefaultColor(term);
   }
 
@@ -1428,18 +1428,18 @@ inline void FOptiAttr::change_to_default_color ( char_data*& term
 {
   if ( ansi_default_color )
   {
-    if ( fg == Default && term->fg_color != Default
-      && bg == Default && term->bg_color != Default )
+    if ( fg == fc::Default && term->fg_color != fc::Default
+      && bg == fc::Default && term->bg_color != fc::Default )
     {
       setTermDefaultColor(term);
     }
-    else if ( fg == Default && term->fg_color != Default )
+    else if ( fg == fc::Default && term->fg_color != fc::Default )
     {
       char sgr_39[] = CSI "39m";
       append_sequence (sgr_39);
-      term->fg_color = Default;
+      term->fg_color = fc::Default;
     }
-    else if ( bg == Default && term->bg_color != Default )
+    else if ( bg == fc::Default && term->bg_color != fc::Default )
     {
       char* sgr_49;
       char* op = F_orig_pair.cap;
@@ -1450,14 +1450,14 @@ inline void FOptiAttr::change_to_default_color ( char_data*& term
         sgr_49 = C_STR(CSI "49m");
 
       append_sequence (sgr_49);
-      term->bg_color = Default;
+      term->bg_color = fc::Default;
     }
   }
   else if ( ! setTermDefaultColor(term) )
   {
     // Fallback to gray on black
-    fg = next->fg_color = LightGray;
-    bg = next->bg_color = Black;
+    fg = next->fg_color = fc::LightGray;
+    bg = next->bg_color = fc::Black;
   }
 }
 

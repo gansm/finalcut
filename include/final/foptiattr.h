@@ -194,13 +194,6 @@ class FOptiAttr
       all_tests       = 0x1f
     };
 
-    enum default_color
-    {
-      Default   = -1,
-      Black     = 0,
-      LightGray = 7
-    };
-
     enum attr_modes
     {
       standout_mode    = 1,

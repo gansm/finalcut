@@ -1626,7 +1626,6 @@ inline void FMenu::keyRight (FKeyEvent* ev)
   }
   else
     keypressMenuBar(ev);  // select next menu
-
 }
 
 //----------------------------------------------------------------------

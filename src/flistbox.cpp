@@ -1333,7 +1333,6 @@ void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
     if ( ! hbar->isVisible() )
       hbar->setVisible();
   }
-
 }
 
 //----------------------------------------------------------------------

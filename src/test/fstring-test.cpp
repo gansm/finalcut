@@ -505,7 +505,6 @@ void FStringTest::additionTest()
   const char c2 = 'a';
   CPPUNIT_ASSERT ( c2 + s5 == "aabc" );
   CPPUNIT_ASSERT ( c2 + FString("def") == L"adef" );
-
 }
 
 //----------------------------------------------------------------------
