@@ -1,5 +1,7 @@
 2017-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Fake-reverse bugfix in FOptiAttr
+	* Strict use of fc::colornames in FOptiAttr
+	* Stream support for FPoint and FRect
 
 2017-04-11  Markus Gans  <guru.mail@muenster.de>
 	* Remove Cygwin bold color quirks fix in FOptiAttr

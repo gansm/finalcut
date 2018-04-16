@@ -55,6 +55,8 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     void additionTest();
     void subtractionTest();
     void referenceTest();
+    void streamInsertionTest();
+    void streamExtractionTest();
 
   private:
     // Adds code needed to register the test suite
@@ -72,6 +74,8 @@ class FPointTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (additionTest);
     CPPUNIT_TEST (subtractionTest);
     CPPUNIT_TEST (referenceTest);
+    CPPUNIT_TEST (streamInsertionTest);
+    CPPUNIT_TEST (streamExtractionTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -276,6 +280,39 @@ void FPointTest::referenceTest()
   y += 2;
   CPPUNIT_ASSERT ( p1.getX() == 6 );
   CPPUNIT_ASSERT ( p1.getY() == 4 );
+}
+
+//----------------------------------------------------------------------
+void FPointTest::streamInsertionTest()
+{
+  FPoint out;
+  std::stringstream stream;
+  stream.str("10 5");
+  stream >> out;
+  CPPUNIT_ASSERT ( out.getX() == 10 );
+  CPPUNIT_ASSERT ( out.getY() == 5 );
+
+  stream.clear();
+  stream.str("-3 -9");
+  stream >> out;
+  CPPUNIT_ASSERT ( out.getX() == -3 );
+  CPPUNIT_ASSERT ( out.getY() == -9 );
+}
+
+//----------------------------------------------------------------------
+void FPointTest::streamExtractionTest()
+{
+  FPoint in;
+  in.setPoint (-7, 5);
+  std::stringstream stream;
+  stream << in;
+  CPPUNIT_ASSERT ( stream.str() == "-7 5" );
+
+  in.setPoint (127, 150);
+  stream.clear();
+  stream.str("");
+  stream << in;
+  CPPUNIT_ASSERT ( stream.str() == "127 150" );
 }
 
 // Put the test suite in the registry

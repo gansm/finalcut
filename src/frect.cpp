@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -274,4 +274,26 @@ bool operator != (const FRect& r1, const FRect& r2)
       || r1.Y1 != r2.Y1
       || r1.X2 != r2.X2
       || r1.Y2 != r2.Y2;
+}
+
+//----------------------------------------------------------------------
+std::ostream& operator << (std::ostream& outstr, const FRect& r)
+{
+  outstr << r.getX1() << " "
+         << r.getY1() << " "
+         << r.getX2() << " "
+         << r.getY2();
+  return outstr;
+}
+
+//----------------------------------------------------------------------
+std::istream& operator >> (std::istream& instr, FRect& r)
+{
+  short x1, y1, x2, y2;
+  instr >> x1;
+  instr >> y1;
+  instr >> x2;
+  instr >> y2;
+  r.setCoordinates (x1, y1, x2, y2);
+  return instr;
 }

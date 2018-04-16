@@ -205,10 +205,10 @@ class FString
     friend const FString operator + (const char, const FString&);
     friend const FString operator + (const FString&, const char);
 
-    friend std::ostream&  operator << (std::ostream& outstr, const FString& s);
-    friend std::istream&  operator >> (std::istream& instr, FString& s);
-    friend std::wostream& operator << (std::wostream& outstr, const FString& s);
-    friend std::wistream& operator >> (std::wistream& instr, FString& s);
+    friend std::ostream&  operator << (std::ostream&, const FString&);
+    friend std::istream&  operator >> (std::istream&, FString& s);
+    friend std::wostream& operator << (std::wostream&, const FString&);
+    friend std::wistream& operator >> (std::wistream&, FString&);
 
     // Accessor
     virtual const char* getClassName();

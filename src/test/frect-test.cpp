@@ -58,6 +58,8 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     void overlapTest();
     void intersectTest();
     void combinedTest();
+    void streamInsertionTest();
+    void streamExtractionTest();
 
   private:
     // Adds code needed to register the test suite
@@ -78,6 +80,8 @@ class FRectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (overlapTest);
     CPPUNIT_TEST (intersectTest);
     CPPUNIT_TEST (combinedTest);
+    CPPUNIT_TEST (streamInsertionTest);
+    CPPUNIT_TEST (streamExtractionTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -478,6 +482,43 @@ void FRectTest::combinedTest()
   CPPUNIT_ASSERT ( r3.getHeight() == 6 );
   CPPUNIT_ASSERT ( r3.getX2() == 8 );
   CPPUNIT_ASSERT ( r3.getY2() == 7 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::streamInsertionTest()
+{
+  FRect out;
+  std::stringstream stream;
+  stream.str("10 5 60 20");
+  stream >> out;
+  CPPUNIT_ASSERT ( out.getX1() == 10 );
+  CPPUNIT_ASSERT ( out.getY1() == 5 );
+  CPPUNIT_ASSERT ( out.getX2() == 60 );
+  CPPUNIT_ASSERT ( out.getY2() == 20 );
+
+  stream.clear();
+  stream.str("-3 -9 5 7");
+  stream >> out;
+  CPPUNIT_ASSERT ( out.getX1() == -3 );
+  CPPUNIT_ASSERT ( out.getY1() == -9 );
+  CPPUNIT_ASSERT ( out.getX2() == 5 );
+  CPPUNIT_ASSERT ( out.getY2() == 7 );
+}
+
+//----------------------------------------------------------------------
+void FRectTest::streamExtractionTest()
+{
+  FRect in;
+  in.setCoordinates (-7, 5, -1, 10);
+  std::stringstream stream;
+  stream << in;
+  CPPUNIT_ASSERT ( stream.str() == "-7 5 -1 10" );
+
+  in.setCoordinates (50, 100, 127, 150);
+  stream.clear();
+  stream.str("");
+  stream << in;
+  CPPUNIT_ASSERT ( stream.str() == "50 100 127 150" );
 }
 
 // Put the test suite in the registry

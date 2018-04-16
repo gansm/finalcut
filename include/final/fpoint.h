@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -35,6 +35,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <iostream>
+
 
 //----------------------------------------------------------------------
 // class FPoint
@@ -64,6 +66,8 @@ class FPoint
     friend inline FPoint operator +  (const FPoint&, const FPoint&);
     friend inline FPoint operator -  (const FPoint&, const FPoint&);
     friend inline FPoint operator -  (const FPoint&);
+    friend std::ostream& operator << (std::ostream&, const FPoint&);
+    friend std::istream& operator >> (std::istream&, FPoint&);
 
     // Accessors
     virtual const char* getClassName();
