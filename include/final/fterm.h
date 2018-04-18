@@ -210,12 +210,13 @@ class FTerm
     static bool           isCygwinTerminal();
     static bool           isMinttyTerm();
     static bool           isLinuxTerm();
+    static bool           isNetBSDTerm();
+    static bool           isOpenBSDTerm();
     static bool           isScreenTerm();
     static bool           isTmuxTerm();
     static bool           isInputDataPending();
     static bool           isNewFont();
     static bool           isUTF8();
-    static bool           isUTF8_linux_terminal();
 
     // Mutators
     static bool           setCursorOptimisation (bool);
@@ -566,24 +567,6 @@ class FTerm
     static bool           ascii_console;
     static bool           color256;
     static bool           monochron;
-    static bool           xterm_terminal;
-    static bool           ansi_terminal;
-    static bool           rxvt_terminal;
-    static bool           urxvt_terminal;
-    static bool           mlterm_terminal;
-    static bool           putty_terminal;
-    static bool           kde_konsole;
-    static bool           gnome_terminal;
-    static bool           kterm_terminal;
-    static bool           tera_terminal;
-    static bool           sun_terminal;
-    static bool           cygwin_terminal;
-    static bool           mintty_terminal;
-    static bool           linux_terminal;
-    static bool           netbsd_terminal;
-    static bool           openbsd_terminal;
-    static bool           screen_terminal;
-    static bool           tmux_terminal;
     static char           termtype[256];
     static char           termfilename[256];
     static char*          locale_name;
@@ -618,6 +601,32 @@ class FTerm
     static const FString* xterm_title;
     static const FString* answer_back;
     static const FString* sec_da;
+
+    static struct terminalType
+    {
+      // byte #0
+      uInt8 xterm          : 1;
+      uInt8 ansi           : 1;
+      uInt8 rxvt           : 1;
+      uInt8 urxvt          : 1;
+      uInt8 mlterm         : 1;
+      uInt8 putty          : 1;
+      uInt8 kde_konsole    : 1;
+      uInt8 gnome_terminal : 1;
+      // byte #1
+      uInt8 kterm          : 1;
+      uInt8 tera_term      : 1;
+      uInt8 sun            : 1;
+      uInt8 cygwin         : 1;
+      uInt8 mintty         : 1;
+      uInt8 linux_con      : 1;
+      uInt8 netbsd_con     : 1;
+      uInt8 openbsd_con    : 1;
+      // byte #2
+      uInt8 screen         : 1;
+      uInt8 tmux           : 1;
+      uInt8                : 6;  // padding bits
+    } terminal_type;
 
     static struct colorEnv
     {
@@ -722,67 +731,75 @@ inline bool FTerm::isMonochron()
 
 //----------------------------------------------------------------------
 inline bool FTerm::isXTerminal()
-{ return xterm_terminal; }
+{ return terminal_type.xterm; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isAnsiTerminal()
-{ return ansi_terminal; }
+{ return terminal_type.ansi; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRxvtTerminal()
-{ return rxvt_terminal; }
+{ return terminal_type.rxvt; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isUrxvtTerminal()
-{ return urxvt_terminal; }
+{ return terminal_type.urxvt; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMltermTerminal()
-{ return mlterm_terminal; }
+{ return terminal_type.mlterm; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isPuttyTerminal()
-{ return putty_terminal; }
+{ return terminal_type.putty; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKdeTerminal()
-{ return kde_konsole; }
+{ return terminal_type.kde_konsole; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isGnomeTerminal()
-{ return gnome_terminal; }
+{ return terminal_type.gnome_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKtermTerminal()
-{ return kterm_terminal; }
+{ return terminal_type.kterm; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isTeraTerm()
-{ return tera_terminal; }
+{ return terminal_type.tera_term; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isSunTerminal()
-{ return sun_terminal; }
+{ return terminal_type.sun; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isCygwinTerminal()
-{ return cygwin_terminal; }
+{ return terminal_type.cygwin; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMinttyTerm()
-{ return mintty_terminal; }
+{ return terminal_type.mintty; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isLinuxTerm()
-{ return linux_terminal; }
+{ return terminal_type.linux_con; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isNetBSDTerm()
+{ return terminal_type.netbsd_con; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isOpenBSDTerm()
+{ return terminal_type.openbsd_con; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isScreenTerm()
-{ return screen_terminal; }
+{ return terminal_type.screen; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isTmuxTerm()
-{ return tmux_terminal; }
+{ return terminal_type.tmux; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isInputDataPending()
@@ -795,10 +812,6 @@ inline bool FTerm::isNewFont()
 //----------------------------------------------------------------------
 inline bool FTerm::isUTF8()
 { return utf8_state; }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isUTF8_linux_terminal()
-{ return utf8_linux_terminal; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::setCursorOptimisation (bool on)

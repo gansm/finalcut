@@ -1,3 +1,6 @@
+2017-04-19  Markus Gans  <guru.mail@muenster.de>
+	* Placing the terminal types in FTerm in a separate structure
+
 2017-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Fake-reverse bugfix in FOptiAttr
 	* Strict use of fc::colornames in FOptiAttr

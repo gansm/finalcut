@@ -66,24 +66,6 @@ bool     FTerm::input_data_pending;
 bool     FTerm::non_blocking_stdin;
 bool     FTerm::color256;
 bool     FTerm::monochron;
-bool     FTerm::xterm_terminal;
-bool     FTerm::ansi_terminal;
-bool     FTerm::rxvt_terminal;
-bool     FTerm::urxvt_terminal;
-bool     FTerm::mlterm_terminal;
-bool     FTerm::putty_terminal;
-bool     FTerm::kde_konsole;
-bool     FTerm::gnome_terminal;
-bool     FTerm::kterm_terminal;
-bool     FTerm::tera_terminal;
-bool     FTerm::sun_terminal;
-bool     FTerm::cygwin_terminal;
-bool     FTerm::mintty_terminal;
-bool     FTerm::linux_terminal;
-bool     FTerm::netbsd_terminal;
-bool     FTerm::openbsd_terminal;
-bool     FTerm::screen_terminal;
-bool     FTerm::tmux_terminal;
 bool     FTerm::pc_charset_console;
 bool     FTerm::utf8_input;
 bool     FTerm::utf8_state;
@@ -137,8 +119,9 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-FTerm::secondaryDA            FTerm::secondary_da;
+FTerm::terminalType           FTerm::terminal_type;
 FTerm::colorEnv               FTerm::color_env;
+FTerm::secondaryDA            FTerm::secondary_da;
 FTerm::initializationValues   FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
@@ -291,7 +274,7 @@ void FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
 {
   // Set cursor style in linux console
 
-  if ( ! linux_terminal )
+  if ( ! isLinuxTerm() )
     return;
 
   linux_console_cursor_style = style;
@@ -417,7 +400,7 @@ bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
   else
     utf8_state = false;
 
-  if ( linux_terminal )
+  if ( isLinuxTerm() )
   {
     if ( on )
       putstring (ESC "%G");
@@ -496,17 +479,17 @@ bool FTerm::setVGAFont()
   if ( VGAFont )
     return VGAFont;
 
-  if ( gnome_terminal
-    || kde_konsole
-    || putty_terminal
-    || tera_terminal
-    || cygwin_terminal
-    || mintty_terminal )
+  if ( isGnomeTerminal()
+    || isKdeTerminal()
+    || isPuttyTerminal()
+    || isTeraTerm()
+    || isCygwinTerminal()
+    || isMinttyTerm() )
     return false;
 
   VGAFont = true;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     // Set font in xterm to vga
     oscPrefix();
@@ -517,13 +500,13 @@ bool FTerm::setVGAFont()
     pc_charset_console = true;
     term_encoding = fc::PC;
 
-    if ( xterm_terminal && utf8_console )
+    if ( isXTerminal() && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
-  else if ( linux_terminal )
+  else if ( isLinuxTerm() )
   {
     if ( openConsole() == 0 )
     {
@@ -568,16 +551,16 @@ bool FTerm::setNewFont()
   if ( NewFont )
     return true;
 
-  if ( gnome_terminal
-    || kde_konsole
-    || putty_terminal
-    || tera_terminal
-    || cygwin_terminal
-    || mintty_terminal )
+  if ( isGnomeTerminal()
+    || isKdeTerminal()
+    || isPuttyTerminal()
+    || isTeraTerm()
+    || isCygwinTerminal()
+    || isMinttyTerm() )
     return false;
 
-  if ( xterm_terminal || screen_terminal
-    || urxvt_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
     NewFont = true;
     // Set font in xterm to 8x16graph
@@ -588,13 +571,13 @@ bool FTerm::setNewFont()
     pc_charset_console = true;
     term_encoding = fc::PC;
 
-    if ( xterm_terminal && utf8_console )
+    if ( isXTerminal() && utf8_console )
       Fputchar = &FTerm::putchar_UTF8;
     else
       Fputchar = &FTerm::putchar_ASCII;
   }
 #if defined(__linux__)
-  else if ( linux_terminal )
+  else if ( isLinuxTerm() )
   {
     NewFont = true;
 
@@ -645,8 +628,8 @@ bool FTerm::setOldFont()
   NewFont = \
   VGAFont = false;
 
-  if ( xterm_terminal || screen_terminal
-    || urxvt_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
     if ( xterm_font && xterm_font->getLength() > 2 )
     {
@@ -667,7 +650,7 @@ bool FTerm::setOldFont()
     retval = true;
   }
 #if defined(__linux__)
-  else if ( linux_terminal )
+  else if ( isLinuxTerm() )
   {
     if ( openConsole() == 0 )
     {
@@ -787,7 +770,7 @@ void FTerm::setTermSize (int term_width, int term_height)
 {
   // Set xterm size to {term_width} x {term_height}
 
-  if ( xterm_terminal )
+  if ( isXTerminal() )
   {
     putstringf (CSI "8;%d;%dt", term_height, term_width);
     std::fflush(stdout);
@@ -799,7 +782,7 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 {
   // Set cursor style in KDE konsole
 
-  if ( kde_konsole )
+  if ( isKdeTerminal() )
   {
     oscPrefix();
     putstringf (OSC "50;CursorShape=%d" BEL, style);
@@ -811,7 +794,7 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 //----------------------------------------------------------------------
 const FString* FTerm::getXTermFont()
 {
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     fd_set ifds;
     struct timeval tv;
@@ -861,7 +844,7 @@ const FString* FTerm::getXTermFont()
 //----------------------------------------------------------------------
 const FString* FTerm::getXTermTitle()
 {
-  if ( kde_konsole )
+  if ( isKdeTerminal() )
     return 0;
 
   fd_set ifds;
@@ -956,7 +939,7 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
 
-  if ( (gnome_terminal && ! decscusr_support) || kde_konsole )
+  if ( (isGnomeTerminal() && ! decscusr_support) || isKdeTerminal() )
     return;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -964,7 +947,7 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
     return;
 #endif
 
-  if ( xterm_terminal || mintty_terminal || decscusr_support )
+  if ( isXTerminal() || isMinttyTerm() || decscusr_support )
   {
     putstringf (CSI "%d q", style);
     std::fflush(stdout);
@@ -975,8 +958,8 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 void FTerm::setXTermTitle (const FString& title)
 {
   // Set the xterm title
-  if ( xterm_terminal || screen_terminal
-    || mintty_terminal || putty_terminal
+  if ( isXTerminal() || isScreenTerm()
+    || isMinttyTerm() || isPuttyTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -990,8 +973,8 @@ void FTerm::setXTermTitle (const FString& title)
 void FTerm::setXTermForeground (const FString& fg)
 {
   // Set the VT100 text foreground color
-  if ( xterm_terminal || screen_terminal
-    || mintty_terminal || mlterm_terminal
+  if ( isXTerminal() || isScreenTerm()
+    || isMinttyTerm() || isMltermTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1005,8 +988,8 @@ void FTerm::setXTermForeground (const FString& fg)
 void FTerm::setXTermBackground (const FString& bg)
 {
   // Set the VT100 text background color
-  if ( xterm_terminal || screen_terminal
-    || mintty_terminal || mlterm_terminal
+  if ( isXTerminal() || isScreenTerm()
+    || isMinttyTerm() || isMltermTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1020,8 +1003,8 @@ void FTerm::setXTermBackground (const FString& bg)
 void FTerm::setXTermCursorColor (const FString& cc)
 {
   // Set the text cursor color
-  if ( xterm_terminal || screen_terminal
-    || mintty_terminal || urxvt_terminal
+  if ( isXTerminal() || isScreenTerm()
+    || isMinttyTerm() || isUrxvtTerminal()
     || FTermcap::osc_support )
   {
     oscPrefix();
@@ -1035,8 +1018,8 @@ void FTerm::setXTermCursorColor (const FString& cc)
 void FTerm::setXTermMouseForeground (const FString& mfg)
 {
   // Set the mouse foreground color
-  if ( xterm_terminal || screen_terminal
-    || urxvt_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "13;%s" BEL, mfg.c_str());
@@ -1049,7 +1032,7 @@ void FTerm::setXTermMouseForeground (const FString& mfg)
 void FTerm::setXTermMouseBackground (const FString& mbg)
 {
   // Set the mouse background color
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "14;%s" BEL, mbg.c_str());
@@ -1062,8 +1045,8 @@ void FTerm::setXTermMouseBackground (const FString& mbg)
 void FTerm::setXTermHighlightBackground (const FString& hbg)
 {
   // Set the highlight background color
-  if ( xterm_terminal || screen_terminal
-    || urxvt_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "17;%s" BEL, hbg.c_str());
@@ -1075,17 +1058,17 @@ void FTerm::setXTermHighlightBackground (const FString& hbg)
 //----------------------------------------------------------------------
 void FTerm::setXTermDefaults()
 {
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
   setXTermMouseBackground("rgb:ffff/ffff/ffff");
   setXTermMouseForeground ("rgb:0000/0000/0000");
 
-  if ( ! gnome_terminal )
+  if ( ! isGnomeTerminal() )
     setXTermCursorColor("rgb:ffff/ffff/ffff");
 
   if ( xterm_default_colors
-    && ! (mintty_terminal || rxvt_terminal || screen_terminal) )
+    && ! (isMinttyTerm() || isRxvtTerminal() || isScreenTerm()) )
   {
     // mintty and rxvt can't reset these settings
     setXTermBackground("rgb:8080/a4a4/ecec");
@@ -1099,13 +1082,13 @@ void FTerm::resetXTermColors()
 {
   // Reset the entire color table
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "104" BEL);
@@ -1119,13 +1102,13 @@ void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "110" BEL);
@@ -1139,13 +1122,13 @@ void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "111" BEL);
@@ -1159,13 +1142,13 @@ void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "112" BEL);
@@ -1179,13 +1162,13 @@ void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "113" BEL);
@@ -1199,13 +1182,13 @@ void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
   {
     oscPrefix();
     putstring (OSC "114" BEL);
@@ -1219,14 +1202,14 @@ void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
 
-  if ( gnome_terminal && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
     return;
 
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
-  if ( xterm_terminal || screen_terminal
-    || urxvt_terminal || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
     oscPrefix();
     putstringf (OSC "117" BEL);
@@ -1238,7 +1221,7 @@ void FTerm::resetXTermHighlightBackground()
 //----------------------------------------------------------------------
 void FTerm::resetXTermDefaults()
 {
-  if ( putty_terminal )
+  if ( isPuttyTerminal() )
     return;
 
   setXTermCursorColor("rgb:b1b1/b1b1/b1b1");
@@ -1320,7 +1303,7 @@ void FTerm::setPalette (short index, int r, int g, int b)
 
     putstring (color_str);
   }
-  else if ( linux_terminal )
+  else if ( isLinuxTerm() )
   {
 /*  // direct vga-register set
     if ( r>=0 && r<256
@@ -1340,7 +1323,7 @@ void FTerm::setPalette (short index, int r, int g, int b)
 //----------------------------------------------------------------------
 void FTerm::setBeep (int Hz, int ms)
 {
-  if ( ! linux_terminal )
+  if ( ! isLinuxTerm() )
     return;
 
   // range for frequency: 21-32766
@@ -1360,7 +1343,7 @@ void FTerm::setBeep (int Hz, int ms)
 //----------------------------------------------------------------------
 void FTerm::resetBeep()
 {
-  if ( ! linux_terminal )
+  if ( ! isLinuxTerm() )
     return;
 
   // default frequency: 750 Hz
@@ -1399,7 +1382,7 @@ void FTerm::setEncoding (fc::encoding enc)
 
     case fc::VT100:
     case fc::PC:
-      if ( xterm_terminal && utf8_console )
+      if ( isXTerminal() && utf8_console )
         Fputchar = &FTerm::putchar_UTF8;
       else
         Fputchar = &FTerm::putchar_ASCII;
@@ -1411,7 +1394,7 @@ void FTerm::setEncoding (fc::encoding enc)
       Fputchar = &FTerm::putchar_ASCII;
   }
 
-  if ( linux_terminal )
+  if ( isLinuxTerm() )
   {
     if ( term_encoding == fc::VT100 || term_encoding == fc::PC )
     {
@@ -2352,9 +2335,9 @@ void FTerm::initLinuxConsole()
 
   if ( openConsole() == 0 )
   {
-    linux_terminal = isLinuxConsole();
+    terminal_type.linux_con = isLinuxConsole();
 
-    if ( linux_terminal )
+    if ( isLinuxTerm() )
     {
       getUnicodeMap();
       getScreenFont();
@@ -2573,20 +2556,26 @@ void FTerm::init_global_values()
   ascii_console           = \
   decscusr_support        = \
   force_vt100             = \
-  tera_terminal           = \
-  sun_terminal            = \
-  kterm_terminal          = \
-  gnome_terminal          = \
-  kde_konsole             = \
-  ansi_terminal           = \
-  rxvt_terminal           = \
-  urxvt_terminal          = \
-  mlterm_terminal         = \
-  mintty_terminal         = \
-  openbsd_terminal        = \
-  screen_terminal         = \
-  tmux_terminal           = \
   xterm_default_colors    = false;
+
+  terminal_type.xterm          = \
+  terminal_type.ansi           = \
+  terminal_type.rxvt           = \
+  terminal_type.urxvt          = \
+  terminal_type.mlterm         = \
+  terminal_type.putty          = \
+  terminal_type.kde_konsole    = \
+  terminal_type.gnome_terminal = \
+  terminal_type.kterm          = \
+  terminal_type.tera_term      = \
+  terminal_type.sun            = \
+  terminal_type.cygwin         = \
+  terminal_type.mintty         = \
+  terminal_type.linux_con      = \
+  terminal_type.netbsd_con     = \
+  terminal_type.openbsd_con    = \
+  terminal_type.screen         = \
+  terminal_type.tmux           = false;
 
   // Preset to true
   cursor_optimisation     = \
@@ -2644,10 +2633,10 @@ void FTerm::detectTerminal()
     // Determines the maximum number of colors
     new_termtype = determineMaxColor(new_termtype);
 
-    if ( cygwin_terminal
-      || putty_terminal
-      || tera_terminal
-      || rxvt_terminal )
+    if ( isCygwinTerminal()
+      || isPuttyTerminal()
+      || isTeraTerm()
+      || isRxvtTerminal() )
     {
       FTermcap::max_color = 16;
     }
@@ -2664,14 +2653,12 @@ void FTerm::detectTerminal()
   if ( std::strncmp(termtype, C_STR("xterm"), 5) == 0
     || std::strncmp(termtype, C_STR("Eterm"), 5) == 0 )
   {
-    xterm_terminal = true;
+    terminal_type.xterm = true;
 
     // Each xterm should be able to use at least 16 colors
     if ( ! new_termtype && std::strlen(termtype) == 5 )
       new_termtype = C_STR("xterm-16color");
   }
-  else
-    xterm_terminal = false;
 
   // set the new environment variable TERM
   if ( new_termtype )
@@ -2686,47 +2673,41 @@ void FTerm::termtypeAnalysis()
 {
   // Cygwin console
   if ( std::strncmp(termtype, "cygwin", 6) == 0 )
-    cygwin_terminal = true;
-  else
-    cygwin_terminal = false;
+    terminal_type.cygwin = true;
 
   // rxvt terminal emulator (native MS Window System port) on cygwin
   if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    rxvt_terminal = true;
+    terminal_type.rxvt = true;
 
   // Ansi terminal
   if ( std::strncmp(termtype, "ansi", 4) == 0 )
   {
     terminal_detection = false;
-    ansi_terminal = true;
+    terminal_type.ansi = true;
   }
 
   // Sun Microsystems workstation console
   if ( std::strncmp(termtype, "sun", 3) == 0 )
   {
     terminal_detection = false;
-    sun_terminal = true;
+    terminal_type.sun = true;
   }
 
   // Kterm
   if ( std::strncmp(termtype, "kterm", 5) == 0 )
   {
     terminal_detection = false;
-    kterm_terminal = true;
+    terminal_type.kterm = true;
   }
 
   // Linux console
   if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
     || std::strncmp(termtype, C_STR("con"), 3) == 0 )
-    linux_terminal = true;
-  else
-    linux_terminal = false;
+    terminal_type.linux_con = true;
 
   // NetBSD workstation console
   if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
-    netbsd_terminal = true;
-  else
-    netbsd_terminal = false;
+    terminal_type.netbsd_con = true;
 }
 
 //----------------------------------------------------------------------
@@ -2775,11 +2756,11 @@ char* FTerm::termtype_256color_quirks()
   if ( std::strncmp(termtype, "screen", 6) == 0 )
   {
     new_termtype = C_STR("screen-256color");
-    screen_terminal = true;
+    terminal_type.screen = true;
     char* tmux = std::getenv("TMUX");
 
     if ( tmux && std::strlen(tmux) != 0 )
-      tmux_terminal = true;
+      terminal_type.tmux = true;
   }
 
   if ( std::strncmp(termtype, "Eterm", 5) == 0 )
@@ -2788,7 +2769,7 @@ char* FTerm::termtype_256color_quirks()
   if ( std::strncmp(termtype, "mlterm", 6) == 0 )
   {
     new_termtype = C_STR("mlterm-256color");
-    mlterm_terminal = true;
+    terminal_type.mlterm = true;
   }
 
   if ( std::strncmp(termtype, "rxvt", 4) != 0
@@ -2796,21 +2777,21 @@ char* FTerm::termtype_256color_quirks()
     && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
   {
     new_termtype = C_STR("rxvt-256color");
-    rxvt_terminal = true;
+    terminal_type.rxvt = true;
   }
 
   if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
     || (color_env.string6 && std::strlen(color_env.string6) > 0) )
-    kde_konsole = true;
+    terminal_type.kde_konsole = true;
 
   if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
     || color_env.string2 )
   {
-    gnome_terminal = true;
+    terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
 
-    if ( ! screen_terminal )
+    if ( ! isScreenTerm() )
       new_termtype = C_STR("gnome-256color");
   }
 
@@ -2849,15 +2830,15 @@ char* FTerm::determineMaxColor (char current_termtype[])
   char* new_termtype = current_termtype;
 
   if ( ! color256
-    && ! cygwin_terminal
-    && ! tera_terminal
-    && ! linux_terminal
-    && ! netbsd_terminal
+    && ! isCygwinTerminal()
+    && ! isTeraTerm()
+    && ! isLinuxTerm()
+    && ! isNetBSDTerm()
     && ! getXTermColorName(0).isEmpty() )
   {
     if ( ! getXTermColorName(256).isEmpty() )
     {
-      if ( putty_terminal )
+      if ( isPuttyTerminal() )
         new_termtype = C_STR("putty-256color");
       else
         new_termtype = C_STR("xterm-256color");
@@ -2893,18 +2874,16 @@ char* FTerm::parseAnswerbackMsg (char current_termtype[])
 
   if ( *answer_back == "PuTTY" )
   {
-    putty_terminal = true;
+    terminal_type.putty = true;
 
     if ( color256 )
       new_termtype = C_STR("putty-256color");
     else
       new_termtype = C_STR("putty");
   }
-  else
-    putty_terminal = false;
 
   // cygwin needs a backspace to delete the '♣' char
-  if ( cygwin_terminal )
+  if ( isCygwinTerminal() )
     putstring (BS " " BS);
 
 #if DEBUG
@@ -2921,7 +2900,7 @@ char* FTerm::parseAnswerbackMsg (char current_termtype[])
 char* FTerm::parseSecDA (char current_termtype[])
 {
   // The Linux console and older cygwin terminals knows no Sec_DA
-  if ( linux_terminal || cygwin_terminal )
+  if ( isLinuxTerm() || isCygwinTerminal() )
     return current_termtype;
 
   try
@@ -3060,11 +3039,11 @@ char* FTerm::secDA_Analysis (char current_termtype[])
   }
 
   // Correct false assumptions
-  if ( gnome_terminal && secondary_da.terminal_id_type != 1 )
-    gnome_terminal = false;
+  if ( isGnomeTerminal() && secondary_da.terminal_id_type != 1 )
+    terminal_type.gnome_terminal = false;
 
-  if ( kde_konsole && secondary_da.terminal_id_type != 0 )
-    kde_konsole = false;
+  if ( isKdeTerminal() && secondary_da.terminal_id_type != 0 )
+    terminal_type.kde_konsole = false;
 
   return new_termtype;
 }
@@ -3077,9 +3056,9 @@ inline char* FTerm::secDA_Analysis_0 (char current_termtype[])
   char* new_termtype = current_termtype;
 
   if ( secondary_da.terminal_id_version == 115 )
-    kde_konsole = true;
+    terminal_type.kde_konsole = true;
   else if ( secondary_da.terminal_id_version == 136 )
-    putty_terminal = true;  // PuTTY
+    terminal_type.putty = true;  // PuTTY
 
   return new_termtype;
 }
@@ -3093,7 +3072,7 @@ inline char* FTerm::secDA_Analysis_1 (char current_termtype[])
 
   if ( secondary_da.terminal_id_version > 1000 )
   {
-    gnome_terminal = true;
+    terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
     color256 = true;
     new_termtype = C_STR("gnome-256color");
@@ -3123,7 +3102,7 @@ inline char* FTerm::secDA_Analysis_24 (char current_termtype[])
       netbsd_terminal = true;
     else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
     {
-      openbsd_terminal = true;
+      terminal_type.openbsd_con = true;
       new_termtype = C_STR("pccon");
     }
   }
@@ -3139,7 +3118,7 @@ inline char* FTerm::secDA_Analysis_32 (char[])
   // Terminal ID 32 - Tera Term
 
   char* new_termtype;
-  tera_terminal = true;
+  terminal_type.tera_term = true;
   new_termtype = C_STR("teraterm");
   return new_termtype;
 }
@@ -3150,7 +3129,7 @@ inline char* FTerm::secDA_Analysis_77 (char[])
   // Terminal ID 77 - mintty
 
   char* new_termtype;
-  mintty_terminal = true;
+  terminal_type.mintty = true;
   new_termtype = C_STR("xterm-256color");
   // switch to application escape key mode
   putstring (CSI "?7727h");
@@ -3164,7 +3143,7 @@ inline char* FTerm::secDA_Analysis_82 (char current_termtype[])
   // Terminal ID 82 - rxvt
 
   char* new_termtype = current_termtype;
-  rxvt_terminal = true;
+  terminal_type.rxvt = true;
   force_vt100 = true;  // This rxvt terminal does not support utf-8
 
   if ( std::strncmp(termtype, "rxvt-", 5) != 0
@@ -3182,7 +3161,7 @@ inline char* FTerm::secDA_Analysis_83 (char current_termtype[])
   // Terminal ID 83 - screen
 
   char* new_termtype = current_termtype;
-  screen_terminal = true;
+  terminal_type.screen = true;
   return new_termtype;
 }
 
@@ -3192,8 +3171,8 @@ inline char* FTerm::secDA_Analysis_85 (char current_termtype[])
   // Terminal ID 85 - rxvt-unicode
 
   char* new_termtype = current_termtype;
-  rxvt_terminal = true;
-  urxvt_terminal = true;
+  terminal_type.rxvt = true;
+  terminal_type.urxvt = true;
 
   if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
   {
@@ -3211,12 +3190,12 @@ inline char* FTerm::secDA_Analysis_85 (char current_termtype[])
 //----------------------------------------------------------------------
 void FTerm::oscPrefix()
 {
-  if ( tmux_terminal )
+  if ( isTmuxTerm() )
   {
     // tmux device control string
     putstring (ESC "Ptmux;" ESC);
   }
-  else if ( screen_terminal )
+  else if ( isScreenTerm() )
   {
     // GNU Screen device control string
     putstring (ESC "P");
@@ -3226,7 +3205,7 @@ void FTerm::oscPrefix()
 //----------------------------------------------------------------------
 void FTerm::oscPostfix()
 {
-  if ( screen_terminal || tmux_terminal )
+  if ( isScreenTerm() || isTmuxTerm() )
   {
     // GNU Screen/tmux string terminator
     putstring (ESC "\\");
@@ -3284,10 +3263,10 @@ void FTerm::init_pc_charset()
   bool reinit = false;
 
   // rxvt does not support pc charset
-  if ( rxvt_terminal || urxvt_terminal )
+  if ( isRxvtTerminal() || isUrxvtTerminal() )
     return;
 
-  if ( gnome_terminal || linux_terminal )
+  if ( isGnomeTerminal() || isLinuxTerm() )
   {
     // Fallback if tcap "S2" is not found
     if ( ! TCAP(fc::t_enter_pc_charset_mode) )
@@ -3341,7 +3320,7 @@ void FTerm::init_cygwin_charmap()
 {
   // Replace don't printable characters in a Cygwin terminal
 
-  if ( ! cygwin_terminal )
+  if ( ! isCygwinTerminal() )
     return;
 
   for (int i = 0; i <= fc::lastCharItem; i++ )
@@ -3358,7 +3337,7 @@ void FTerm::init_teraterm_charmap()
 {
   // Tera Term can't print ascii characters < 0x20
 
-  if ( ! tera_terminal )
+  if ( ! isTeraTerm() )
     return;
 
   for (int i = 0; i <= fc::lastCharItem; i++ )
@@ -3415,7 +3394,7 @@ void FTerm::init_termcaps()
   }
 
   if ( std::strncmp(termtype, "ansi", 4) == 0 )
-    ansi_terminal = true;
+    terminal_type.ansi = true;
 
   init_termcaps_error (status);
   init_termcaps_variables (buffer);
@@ -3533,35 +3512,35 @@ void FTerm::init_termcaps_strings (char*& buffer)
 //----------------------------------------------------------------------
 void FTerm::init_termcaps_quirks()
 {
-  if ( cygwin_terminal )
+  if ( isCygwinTerminal() )
   {
     init_termcaps_cygwin_quirks();
   }
-  else if ( linux_terminal )
+  else if ( isLinuxTerm() )
   {
     init_termcaps_linux_quirks();
   }
-  else if ( rxvt_terminal )
+  else if ( isRxvtTerminal() )
   {
     init_termcaps_rxvt_quirks();
   }
-  else if ( gnome_terminal )
+  else if ( isGnomeTerminal() )
   {
     init_termcaps_vte_quirks();
   }
-  else if ( tera_terminal )
+  else if ( isTeraTerm() )
   {
     init_termcaps_teraterm_quirks();
   }
-  else if ( sun_terminal )
+  else if ( isSunTerminal() )
   {
     init_termcaps_sun_quirks();
   }
-  else if ( putty_terminal )
+  else if ( isPuttyTerminal() )
   {
     init_termcaps_putty_quirks();
   }
-  else if ( screen_terminal )
+  else if ( isScreenTerm() )
   {
     init_termcaps_screen_quirks();
   }
@@ -3573,7 +3552,7 @@ void FTerm::init_termcaps_quirks()
 #endif
 
   // xterm and compatible terminals
-  if ( xterm_terminal && ! putty_terminal )
+  if ( isXTerminal() && ! isPuttyTerminal() )
     init_termcaps_xterm_quirks();
 
   // Fixes general quirks
@@ -3725,7 +3704,7 @@ void FTerm::init_termcaps_rxvt_quirks()
   }
 
   // Set ansi foreground and background color
-  if ( ! urxvt_terminal )
+  if ( ! isUrxvtTerminal() )
   {
     TCAP(fc::t_set_a_foreground) = \
         C_STR(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
@@ -3861,7 +3840,7 @@ void FTerm::init_termcaps_screen_quirks()
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
-    if ( tmux_terminal )
+    if ( isTmuxTerm() )
     {
       TCAP(fc::t_initialize_color) = \
           C_STR(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
@@ -4151,11 +4130,11 @@ void FTerm::init_locale()
     locale_name = std::setlocale (LC_ALL, locale_xterm);
 
   // TeraTerm can not show UTF-8 character
-  if ( tera_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+  if ( isTeraTerm() && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = std::setlocale (LC_ALL, "C");
 
   // Kterm
-  if ( kterm_terminal && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
+  if ( isKtermTerminal() && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
     locale_name = std::setlocale (LC_ALL, "C");
 
   // Sun (color) workstation console can't show UTF-8 character
@@ -4244,24 +4223,22 @@ void FTerm::init_term_encoding()
 //----------------------------------------------------------------------
 void FTerm::init_individual_term_encoding()
 {
-  if ( linux_terminal
-    || cygwin_terminal
-    || NewFont
-    || (putty_terminal && ! utf8_state)
-    || (tera_terminal && ! utf8_state) )
+  if ( isLinuxTerm()
+    || isCygwinTerminal()
+    || isNewFont()
+    || (isPuttyTerminal() && ! isUTF8())
+    || (isTeraTerm() && ! isUTF8()) )
   {
     pc_charset_console = true;
     term_encoding      = fc::PC;
     Fputchar           = &FTerm::putchar_ASCII;  // function pointer
 
-    if ( linux_terminal && utf8_console )
+    if ( hasUTF8() )
     {
-      utf8_linux_terminal = true;
-      setUTF8(false);
-    }
-    else if ( xterm_terminal && utf8_console )
-    {
-      Fputchar = &FTerm::putchar_UTF8;  // function pointer
+      if ( isLinuxTerm() )
+        setUTF8(false);
+      else if ( isXTerminal() )
+        Fputchar = &FTerm::putchar_UTF8;  // function pointer
     }
   }
 }
@@ -4313,11 +4290,11 @@ void FTerm::redefineColorPalette()
 {
   // Redefine the color palette
 
-  if ( cygwin_terminal
-    || kde_konsole
-    || tera_terminal
-    || sun_terminal
-    || ansi_terminal )
+  if ( isCygwinTerminal()
+    || isKdeTerminal()
+    || isTeraTerm()
+    || isSunTerminal()
+    || isAnsiTerminal() )
     return;
 
   resetColorMap();
@@ -4332,10 +4309,10 @@ void FTerm::redefineColorPalette()
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( kde_konsole
-    || tera_terminal
-    || sun_terminal
-    || ansi_terminal )
+  if ( isKdeTerminal()
+    || isTeraTerm()
+    || isSunTerminal()
+    || isAnsiTerminal() )
     return;
 
   // Reset screen settings
@@ -4355,7 +4332,7 @@ void FTerm::enableMouse()
   bool xterm_mouse = false;
 
 #if defined(__linux__)
-  if ( linux_terminal && openConsole() == 0 )
+  if ( isLinuxTerm() && openConsole() == 0 )
   {
     if ( isLinuxConsole() )
       gpm_mouse = true;
@@ -4364,7 +4341,7 @@ void FTerm::enableMouse()
   }
 #endif
 
-  if ( TCAP(fc::t_key_mouse) && ! linux_terminal )
+  if ( TCAP(fc::t_key_mouse) && ! isLinuxTerm() )
     xterm_mouse = true;
 
   mouse->setMaxWidth (short(getColumnNumber()));
@@ -4427,7 +4404,7 @@ void FTerm::useNormalScreenBuffer()
 //----------------------------------------------------------------------
 void FTerm::captureXTermFontAndTitle()
 {
-  if ( (xterm_terminal || urxvt_terminal) && ! rxvt_terminal )
+  if ( (isXTerminal() || isUrxvtTerminal()) && ! isRxvtTerminal() )
   {
     struct termios t;
     tcgetattr (stdin_no, &t);
@@ -4557,7 +4534,7 @@ void FTerm::init()
   enableMouse();
 
   // Activate meta key sends escape
-  if ( xterm_terminal )
+  if ( isXTerminal() )
     xtermMetaSendsESC(true);
 
   // Enter 'keyboard_transmit' mode
@@ -4579,13 +4556,13 @@ void FTerm::init()
   // Save the used xterm font and window title
   captureXTermFontAndTitle();
 
-  if ( kde_konsole )
+  if ( isKdeTerminal() )
     setKDECursor(fc::UnderlineCursor);
 
-  if ( cygwin_terminal )
+  if ( isCygwinTerminal() )
     init_cygwin_charmap();
 
-  if ( tera_terminal )
+  if ( isTeraTerm() )
     init_teraterm_charmap();
 
   // Redefine the color palette
@@ -4640,7 +4617,7 @@ void FTerm::finish()
   // Set default signal handler
   resetSignalHandler();
 
-  if ( xterm_title && xterm_terminal && ! rxvt_terminal )
+  if ( xterm_title && isXTerminal() && ! isRxvtTerminal() )
     setXTermTitle (*xterm_title);
 
   // Restore the saved termios settings
@@ -4670,7 +4647,7 @@ void FTerm::finish()
   if ( init_values.color_change )
     restoreColorPalette();
 
-  if ( mintty_terminal )
+  if ( isMinttyTerm() )
   {
     // Switch to normal escape key mode
     putstring (CSI "?7727l");
@@ -4679,7 +4656,7 @@ void FTerm::finish()
 
   finishOSspecifics1();
 
-  if ( kde_konsole )
+  if ( isKdeTerminal() )
     setKDECursor(fc::BlockCursor);
 
   resetBeep();
@@ -4688,7 +4665,7 @@ void FTerm::finish()
   disableMouse();
 
   // Deactivate meta key sends escape
-  if ( xterm_terminal )
+  if ( isXTerminal() )
     xtermMetaSendsESC(false);
 
   useNormalScreenBuffer();
@@ -4708,7 +4685,7 @@ void FTerm::finish()
 void FTerm::finishOSspecifics1()
 {
 #if defined(__linux__)
-  if ( linux_terminal )
+  if ( isLinuxTerm() )
   {
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     setBlinkAsIntensity (false);
@@ -4731,7 +4708,7 @@ void FTerm::finishOSspecifics1()
 void FTerm::finishOSspecifics2()
 {
 #if defined(__linux__)
-  if ( linux_terminal && utf8_console )
+  if ( isLinuxTerm() && utf8_console )
     setUTF8(true);
 
   if ( NewFont || VGAFont )
