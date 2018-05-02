@@ -1,3 +1,7 @@
+2017-05-02  Markus Gans  <guru.mail@muenster.de>
+	* Outsourcing of data from FTerm to the classes FTermios, 
+	  FTermDetection and FTermcapQuirks
+
 2017-04-19  Markus Gans  <guru.mail@muenster.de>
 	* Placing the terminal types in FTerm in a separate structure
 

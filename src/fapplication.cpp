@@ -369,7 +369,7 @@ void FApplication::init (long key_time, long dblclick_time)
 
   // Set stdin number for a gpm-mouse
   if ( mouse )
-    mouse->setStdinNo (stdin_no);
+    mouse->setStdinNo (FTermios::getStdIn());
 
   // Set the default double click interval
   if ( mouse )
@@ -465,6 +465,7 @@ inline bool FApplication::KeyPressed()
   register int result;
   fd_set ifds;
   struct timeval tv;
+  int stdin_no = FTermios::getStdIn();
 
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
@@ -483,7 +484,7 @@ inline ssize_t FApplication::readKey()
 {
   register ssize_t bytes;
   setNonBlockingInput();
-  bytes = read(stdin_no, &k_buf, sizeof(k_buf) - 1);
+  bytes = read(FTermios::getStdIn(), &k_buf, sizeof(k_buf) - 1);
   unsetNonBlockingInput();
   return bytes;
 }

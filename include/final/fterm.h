@@ -78,8 +78,6 @@
 
 #include <fcntl.h>
 #include <langinfo.h>
-#include <termios.h>
-
 
 #if defined(__sun) && defined(__SVR4)
   #include <termio.h>
@@ -105,9 +103,6 @@
   #include <ttyent.h>
 #endif
 
-
-#include <unistd.h>
-
 #include <clocale>
 #include <cmath>
 #include <csignal>
@@ -125,6 +120,9 @@
 #include "final/frect.h"
 #include "final/fstring.h"
 #include "final/ftermcap.h"
+#include "final/ftermcapquirks.h"
+#include "final/ftermdetection.h"
+#include "final/ftermios.h"
 
 
 //----------------------------------------------------------------------
@@ -185,6 +183,10 @@ class FTerm
 #if DEBUG
     static const FString& getAnswerbackString();
     static const FString& getSecDAString();
+    static const char*    getTermType_256color();
+    static const char*    getTermType_Answerback();
+    static const char*    getTermType_SecDA();
+    static int            getFramebufferBpp();
 #endif
 
     // Inquiries
@@ -210,6 +212,7 @@ class FTerm
     static bool           isCygwinTerminal();
     static bool           isMinttyTerm();
     static bool           isLinuxTerm();
+    static bool           isFreeBSDTerm();
     static bool           isNetBSDTerm();
     static bool           isOpenBSDTerm();
     static bool           isScreenTerm();
@@ -219,6 +222,7 @@ class FTerm
     static bool           isUTF8();
 
     // Mutators
+    static void           setTermType (char[]);
     static bool           setCursorOptimisation (bool);
     static void           setXTermDefaultColors (bool);
 
@@ -234,12 +238,6 @@ class FTerm
 
     static void           setKeypressTimeout (const long);
     static void           setDblclickInterval (const long);
-    static void           setTTY (const termios&);
-    static void           noHardwareEcho();
-    static bool           setRawMode (bool);
-    static bool           setRawMode();
-    static bool           unsetRawMode();
-    static bool           setCookedMode();
     static void           disableAltScreen();
     static bool           setUTF8 (bool);
     static bool           setUTF8();
@@ -263,7 +261,6 @@ class FTerm
     static void           setKDECursor (fc::kdeKonsoleCursorShape);
     static const FString* getXTermFont();
     static const FString* getXTermTitle();
-    static const FString  getXTermColorName (int);
     static void           setXTermCursorStyle (fc::xtermCursorStyle);
     static void           setXTermTitle (const FString&);
     static void           setXTermForeground (const FString&);
@@ -295,9 +292,6 @@ class FTerm
     static bool           scrollTermForward();
     static bool           scrollTermReverse();
 
-    static const FString  getAnswerbackMsg();
-    static const FString  getSecDA();
-
     // function pointer -> static function
     static int            (*Fputchar)(int);
 
@@ -319,9 +313,6 @@ class FTerm
     static int            UTF8decode (const char[]);
 
 #if DEBUG
-    static char           termtype_256color[256];
-    static char           termtype_Answerback[256];
-    static char           termtype_SecDA[256];
     static int            framebuffer_bpp;
 #endif
 
@@ -349,8 +340,6 @@ class FTerm
     #endif
                           ;
     // Data Members
-    static int            stdin_no;
-    static int            stdout_no;
     static int            erase_ch_length;
     static int            repeat_char_length;
     static int            clr_bol_length;
@@ -434,13 +423,6 @@ class FTerm
 
     static int            openConsole();
     static int            closeConsole();
-    static void           getSystemTermType();
-    static void           getTTYtype();
-#if F_HAVE_GETTTYNAM
-    static bool           getTTYSFileEntry();
-#endif
-    static void           storeTTYsettings();
-    static void           restoreTTYsettings();
 
 #if defined(__linux__)
     static int            getScreenFont();
@@ -467,52 +449,21 @@ class FTerm
     static void           initWSConsConsole();
 #endif
 
-    static uInt           getBaudRate (const struct termios*);
     static void           init_global_values();
-    static void           detectTerminal();
-    static void           termtypeAnalysis();
-    static bool           get256colorEnvString();
-    static char*          termtype_256color_quirks();
-    static char*          init_256colorTerminal();
-    static char*          determineMaxColor (char[]);
-    static char*          parseAnswerbackMsg (char[]);
-    static char*          parseSecDA (char[]);
-    static char*          secDA_Analysis (char[]);
-    static char*          secDA_Analysis_0 (char[]);
-    static char*          secDA_Analysis_1 (char[]);
-    static char*          secDA_Analysis_24 (char[]);
-    static char*          secDA_Analysis_32 (char[]);
-    static char*          secDA_Analysis_77 (char[]);
-    static char*          secDA_Analysis_82 (char[]);
-    static char*          secDA_Analysis_83 (char[]);
-    static char*          secDA_Analysis_85 (char[]);
     static void           oscPrefix();
     static void           oscPostfix();
     static void           init_alt_charset();
     static void           init_pc_charset();
     static void           init_cygwin_charmap();
     static void           init_teraterm_charmap();
-    static void           init_termcaps();
-    static void           init_termcaps_error (int);
-    static void           init_termcaps_variables(char*&);
-    static void           init_termcaps_booleans();
-    static void           init_termcaps_numerics();
-    static void           init_termcaps_strings (char*&);
-    static void           init_termcaps_quirks();
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void           init_termcaps_freebsd_quirks();
-#endif
-    static void           init_termcaps_cygwin_quirks();
-    static void           init_termcaps_linux_quirks();
-    static void           init_termcaps_xterm_quirks();
-    static void           init_termcaps_rxvt_quirks();
-    static void           init_termcaps_vte_quirks();
-    static void           init_termcaps_putty_quirks();
-    static void           init_termcaps_teraterm_quirks();
-    static void           init_termcaps_sun_quirks();
-    static void           init_termcaps_screen_quirks();
-    static void           init_termcaps_general_quirks();
-    static void           init_termcaps_keys (char*&);
+    static void           init_fixed_max_color();
+    static void           init_termcap();
+    static void           init_termcap_error (int);
+    static void           init_termcap_variables(char*&);
+    static void           init_termcap_booleans();
+    static void           init_termcap_numerics();
+    static void           init_termcap_strings (char*&);
+    static void           init_termcap_keys (char*&);
     static void           init_OptiMove();
     static void           init_OptiAttr();
     static void           init_font();
@@ -552,9 +503,6 @@ class FTerm
     static std::map <std::string,fc::encoding>* encoding_set;
     static FTermcap::tcap_map* tcap;
 
-    static bool           decscusr_support;
-    static bool           terminal_detection;
-    static bool           raw_mode;
     static bool           input_data_pending;
     static bool           non_blocking_stdin;
     static bool           pc_charset_console;
@@ -571,16 +519,14 @@ class FTerm
     static char           termfilename[256];
     static char*          locale_name;
     static char*          locale_xterm;
-    static FRect*         term;     // current terminal geometry
+    static FRect*         term;  // current terminal geometry
 
-    static int            gnome_terminal_id;
     static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
     static long           key_timeout;
     static bool           resize_term;
 
-    static struct         termios term_init;
     static fc::linuxConsoleCursorStyle linux_console_cursor_style;
     static fc::freebsdConsoleCursorStyle freebsd_console_cursor_style;
     static struct         console_font_op screen_font;
@@ -594,39 +540,12 @@ class FTerm
     static kbd_t          wscons_keyboard_encoding;
 #endif
 
-    static FOptiMove*     opti_move;
-    static FOptiAttr*     opti_attr;
-    static FMouseControl* mouse;
-    static const FString* xterm_font;
-    static const FString* xterm_title;
-    static const FString* answer_back;
-    static const FString* sec_da;
-
-    static struct terminalType
-    {
-      // byte #0
-      uInt8 xterm          : 1;
-      uInt8 ansi           : 1;
-      uInt8 rxvt           : 1;
-      uInt8 urxvt          : 1;
-      uInt8 mlterm         : 1;
-      uInt8 putty          : 1;
-      uInt8 kde_konsole    : 1;
-      uInt8 gnome_terminal : 1;
-      // byte #1
-      uInt8 kterm          : 1;
-      uInt8 tera_term      : 1;
-      uInt8 sun            : 1;
-      uInt8 cygwin         : 1;
-      uInt8 mintty         : 1;
-      uInt8 linux_con      : 1;
-      uInt8 netbsd_con     : 1;
-      uInt8 openbsd_con    : 1;
-      // byte #2
-      uInt8 screen         : 1;
-      uInt8 tmux           : 1;
-      uInt8                : 6;  // padding bits
-    } terminal_type;
+    static FOptiMove*      opti_move;
+    static FOptiAttr*      opti_attr;
+    static FTermDetection* term_detection;
+    static FMouseControl*  mouse;
+    static const FString*  xterm_font;
+    static const FString*  xterm_title;
 
     static struct colorEnv
     {
@@ -666,6 +585,8 @@ class FTerm
     {
       dacreg d[16];
     } color_map;
+
+    friend class FTermDetection;
 };
 
 #pragma pack(pop)
@@ -694,20 +615,32 @@ inline int FTerm::getMaxColor()
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
-{ return ( answer_back ) ? *answer_back : fc::emptyFString::get(); }
+{ return term_detection->getAnswerbackString(); }
 
 //----------------------------------------------------------------------
 inline const FString& FTerm::getSecDAString()
-{ return ( sec_da ) ? *sec_da : fc::emptyFString::get(); }
+{ return term_detection->getSecDAString(); }
+
+//----------------------------------------------------------------------
+inline const char* FTerm::getTermType_256color()
+{ return term_detection->getTermType_256color(); }
+
+//----------------------------------------------------------------------
+inline const char* FTerm::getTermType_Answerback()
+{ return term_detection->getTermType_Answerback(); }
+
+//----------------------------------------------------------------------
+inline const char* FTerm::getTermType_SecDA()
+{ return term_detection->getTermType_SecDA(); }
+
+//----------------------------------------------------------------------
+inline int FTerm::getFramebufferBpp()
+{ return framebuffer_bpp; }
 #endif
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKeypressTimeout (timeval* time)
 { return FObject::isTimeout (time, key_timeout); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isRaw()
-{ return raw_mode; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::hasPCcharset()
@@ -731,75 +664,79 @@ inline bool FTerm::isMonochron()
 
 //----------------------------------------------------------------------
 inline bool FTerm::isXTerminal()
-{ return terminal_type.xterm; }
+{ return term_detection->isXTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isAnsiTerminal()
-{ return terminal_type.ansi; }
+{ return term_detection->isAnsiTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isRxvtTerminal()
-{ return terminal_type.rxvt; }
+{ return term_detection->isRxvtTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isUrxvtTerminal()
-{ return terminal_type.urxvt; }
+{ return term_detection->isUrxvtTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMltermTerminal()
-{ return terminal_type.mlterm; }
+{ return term_detection->isMltermTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isPuttyTerminal()
-{ return terminal_type.putty; }
+{ return term_detection->isPuttyTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKdeTerminal()
-{ return terminal_type.kde_konsole; }
+{ return term_detection->isKdeTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isGnomeTerminal()
-{ return terminal_type.gnome_terminal; }
+{ return term_detection->isGnomeTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKtermTerminal()
-{ return terminal_type.kterm; }
+{ return term_detection->isKtermTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isTeraTerm()
-{ return terminal_type.tera_term; }
+{ return term_detection->isTeraTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isSunTerminal()
-{ return terminal_type.sun; }
+{ return term_detection->isSunTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isCygwinTerminal()
-{ return terminal_type.cygwin; }
+{ return term_detection->isCygwinTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isMinttyTerm()
-{ return terminal_type.mintty; }
+{ return term_detection->isMinttyTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isLinuxTerm()
-{ return terminal_type.linux_con; }
+{ return term_detection->isLinuxTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::isFreeBSDTerm()
+{ return term_detection->isFreeBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isNetBSDTerm()
-{ return terminal_type.netbsd_con; }
+{ return term_detection->isNetBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isOpenBSDTerm()
-{ return terminal_type.openbsd_con; }
+{ return term_detection->isOpenBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isScreenTerm()
-{ return terminal_type.screen; }
+{ return term_detection->isScreenTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isTmuxTerm()
-{ return terminal_type.tmux; }
+{ return term_detection->isTmuxTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isInputDataPending()
@@ -824,18 +761,6 @@ inline void FTerm::setXTermDefaultColors (bool on)
 //----------------------------------------------------------------------
 inline void FTerm::setKeypressTimeout (const long timeout)
 { key_timeout = timeout; }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setRawMode()
-{ return setRawMode(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::unsetRawMode()
-{ return setRawMode(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setCookedMode()
-{ return setRawMode(false); }
 
 //----------------------------------------------------------------------
 inline void FTerm::disableAltScreen()

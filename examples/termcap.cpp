@@ -211,20 +211,20 @@ void debug (FApplication& TermApp)
   std::cout << "\n.------------------- debug -------------------\r\n";
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
-            << TermApp.framebuffer_bpp << "\r\n";
+            << TermApp.getFramebufferBpp() << "\r\n";
 #endif
 
   std::cout << "| after init_256colorTerminal(): "
-            << TermApp.termtype_256color << "\r\n";
+            << TermApp.getTermType_256color() << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
-            << TermApp.termtype_Answerback << "\r\n";
+            << TermApp.getTermType_Answerback() << "\r\n";
   std::cout << "|            after parseSecDA(): "
-            << TermApp.termtype_SecDA << "\r\n";
+            << TermApp.getTermType_SecDA() << "\r\n";
 
-  if ( ab_s.isEmpty() )
+  if ( ! ab_s.isEmpty() )
     tcapString ("|         The answerback String", ab_s);
 
-  if ( sec_da.isEmpty() )
+  if ( ! sec_da.isEmpty() )
     tcapString ("|              The SecDA String", sec_da);
 
   std::cout << "`------------------- debug -------------------\r\n";

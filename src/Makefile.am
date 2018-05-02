@@ -40,6 +40,9 @@ libfinal_la_SOURCES = \
 	ffiledialog.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
+	ftermcapquirks.cpp \
+	ftermdetection.cpp \
+	ftermios.cpp \
 	fterm.cpp \
 	fvterm.cpp \
 	fevent.cpp \
@@ -67,6 +70,7 @@ finalcutinclude_HEADERS = \
 	../include/final/fdialog.h \
 	../include/final/fc.h \
 	../include/final/ftypes.h \
+	../include/final/emptyfstring.h \
 	../include/final/fevent.h \
 	../include/final/ffiledialog.h \
 	../include/final/final.h \
@@ -99,6 +103,9 @@ finalcutinclude_HEADERS = \
 	../include/final/fstring.h \
 	../include/final/ftcap_map.h \
 	../include/final/ftermcap.h \
+	../include/final/ftermcapquirks.h \
+	../include/final/ftermdetection.h \
+	../include/final/ftermios.h \
 	../include/final/fterm.h \
 	../include/final/fvterm.h \
 	../include/final/ftextview.h \

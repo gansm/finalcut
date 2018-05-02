@@ -46,10 +46,7 @@ static bool term_initialized = false;
 int (*FTerm::Fputchar)(int);
 
 // static class attributes
-int      FTerm::stdin_no;
-int      FTerm::stdout_no;
 int      FTerm::fd_tty;
-int      FTerm::gnome_terminal_id;
 int      FTerm::stdin_status_flags;
 int      FTerm::erase_ch_length;
 int      FTerm::repeat_char_length;
@@ -59,9 +56,7 @@ int      FTerm::cursor_addres_lengths;
 uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
 bool     FTerm::resize_term;
-bool     FTerm::decscusr_support;
-bool     FTerm::terminal_detection;
-bool     FTerm::raw_mode;
+
 bool     FTerm::input_data_pending;
 bool     FTerm::non_blocking_stdin;
 bool     FTerm::color256;
@@ -81,17 +76,11 @@ bool     FTerm::no_half_block_character;
 bool     FTerm::cursor_optimisation;
 bool     FTerm::xterm_default_colors;
 bool     FTerm::use_alternate_screen = true;
-termios  FTerm::term_init;
-char     FTerm::termtype[256]  = {};
+char     FTerm::termtype[256] = {};
 char     FTerm::termfilename[256] = {};
-
 #if DEBUG
-char     FTerm::termtype_256color[256]   = {};
-char     FTerm::termtype_Answerback[256] = {};
-char     FTerm::termtype_SecDA[256]      = {};
 int      FTerm::framebuffer_bpp = -1;
 #endif
-
 char*    FTerm::locale_name  = 0;
 char*    FTerm::locale_xterm = 0;
 FRect*   FTerm::term         = 0;
@@ -100,10 +89,9 @@ char                   FTerm::exit_message[8192]        = "";
 fc::encoding           FTerm::term_encoding;
 const FString*         FTerm::xterm_font                = 0;
 const FString*         FTerm::xterm_title               = 0;
-const FString*         FTerm::answer_back               = 0;
-const FString*         FTerm::sec_da                    = 0;
 FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
+FTermDetection*        FTerm::term_detection            = 0;
 FMouseControl*         FTerm::mouse                     = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
@@ -119,7 +107,6 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-FTerm::terminalType           FTerm::terminal_type;
 FTerm::colorEnv               FTerm::color_env;
 FTerm::secondaryDA            FTerm::secondary_da;
 FTerm::initializationValues   FTerm::init_values;
@@ -168,14 +155,6 @@ FTerm::~FTerm()  // destructor
 
 
 // public methods of FTerm
-//----------------------------------------------------------------------
-termios FTerm::getTTY()
-{
-  struct termios t;
-  tcgetattr (stdin_no, &t);
-  return t;
-}
-
 //----------------------------------------------------------------------
 int FTerm::getLineNumber()
 {
@@ -267,6 +246,17 @@ bool FTerm::isNormal (char_data*& ch)
   return opti_attr->isNormal(ch);
 }
 
+//----------------------------------------------------------------------
+void FTerm::setTermType (char term_name[])
+{
+  if ( ! term_name )
+    return;
+
+  std::strncpy ( termtype
+               , term_name
+               , std::strlen(term_name) + 1 );
+}
+
 #if defined(__linux__)
 //----------------------------------------------------------------------
 void FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
@@ -313,83 +303,6 @@ void FTerm::setDblclickInterval (const long timeout)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTTY (const termios& t)
-{
-  tcsetattr (stdin_no, TCSADRAIN, &t);
-}
-
-//----------------------------------------------------------------------
-void FTerm::noHardwareEcho()
-{
-  // Info under: man 3 termios
-  struct termios t;
-  tcgetattr (stdin_no, &t);
-
-  // local mode
-  t.c_lflag &= uInt(~(ECHO | ECHONL));
-
-  // input mode
-  t.c_iflag &= uInt(~(ICRNL | INLCR | IGNCR));
-
-  // output mode
-  t.c_oflag &= uInt(~ONLCR);
-
-  // set the new termios settings
-  setTTY (t);
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setRawMode (bool on)
-{
-  // set + unset flags for raw mode
-  if ( on == raw_mode )
-    return raw_mode;
-
-  if ( on )
-  {
-    // Info under: man 3 termios
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-
-    // local mode
-#if DEBUG
-    // Exit with ctrl-c only if compiled with "DEBUG" option
-    t.c_lflag &= uInt(~(ICANON | IEXTEN));
-#else
-    t.c_lflag &= uInt(~(ICANON | ISIG | IEXTEN));
-#endif
-
-    // input mode
-    t.c_iflag &= uInt(~(IXON | BRKINT | PARMRK));
-
-    // defines the terminal special characters for noncanonical read
-    t.c_cc[VTIME] = 0;  // Timeout in deciseconds
-    t.c_cc[VMIN]  = 1;  // Minimum number of characters
-
-    // set the new termios settings
-    setTTY (t);
-    raw_mode = true;
-  }
-  else
-  {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-
-    // local mode
-    t.c_lflag |= uInt(ISIG | ICANON | (term_init.c_lflag & IEXTEN));
-
-    // input mode
-    t.c_iflag |= uInt(IXON | BRKINT | PARMRK);
-
-    // set the new termios settings
-    setTTY (t);
-    raw_mode = false;
-  }
-
-  return raw_mode;
-}
-
-//----------------------------------------------------------------------
 bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
 {
   if ( on == utf8_state )
@@ -422,14 +335,14 @@ bool FTerm::setNonBlockingInput (bool on)
   {
     stdin_status_flags |= O_NONBLOCK;
 
-    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
       non_blocking_stdin = true;
   }
   else
   {
     stdin_status_flags &= ~O_NONBLOCK;
 
-    if ( fcntl (stdin_no, F_SETFL, stdin_status_flags) != -1 )
+    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
       non_blocking_stdin = false;
   }
 
@@ -798,6 +711,7 @@ const FString* FTerm::getXTermFont()
   {
     fd_set ifds;
     struct timeval tv;
+    int stdin_no = FTermios::getStdIn();
 
     oscPrefix();
     putstring (OSC "50;?" BEL);  // get font
@@ -809,8 +723,8 @@ const FString* FTerm::getXTermFont()
     tv.tv_sec  = 0;
     tv.tv_usec = 150000;  // 150 ms
 
-    // read the terminal answer
-    if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
+    // Read the terminal answer
+    if ( select(stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     {
       char temp[150] = {};
 
@@ -849,6 +763,7 @@ const FString* FTerm::getXTermTitle()
 
   fd_set ifds;
   struct timeval tv;
+  int stdin_no = FTermios::getStdIn();
 
   putstring (CSI "21t");  // get title
   std::fflush(stdout);
@@ -896,50 +811,12 @@ const FString* FTerm::getXTermTitle()
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getXTermColorName (int color)
-{
-  FString color_str("");
-
-  fd_set ifds;
-  struct timeval tv;
-
-  char temp[512] = {};
-  putstringf (OSC "4;%d;?" BEL, color);  // get color
-  std::fflush(stdout);
-
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
-
-  // read the terminal answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
-  {
-    if ( std::scanf("\033]4;%10d;%509[^\n]s", &color, temp) == 2 )
-    {
-      std::size_t n = std::strlen(temp);
-
-      // BEL + '\0' = string terminator
-      if ( n >= 6 && temp[n - 1] == BEL[0] && temp[n] == '\0' )
-        temp[n - 1] = '\0';
-
-      // Esc + \ = OSC string terminator (mintty)
-      if ( n >= 6 && temp[n - 2] == ESC[0] && temp[n - 1] == '\\' )
-        temp[n - 2] = '\0';
-
-      color_str = temp;
-    }
-  }
-
-  return color_str;
-}
-
-//----------------------------------------------------------------------
 void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
 {
   // Set the xterm cursor style
 
-  if ( (isGnomeTerminal() && ! decscusr_support) || isKdeTerminal() )
+  if ( (isGnomeTerminal() && ! term_detection->hasSetCursorStyleSupport())
+    || isKdeTerminal() )
     return;
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -947,7 +824,8 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
     return;
 #endif
 
-  if ( isXTerminal() || isMinttyTerm() || decscusr_support )
+  if ( isXTerminal() || isMinttyTerm()
+    || term_detection->hasSetCursorStyleSupport() )
   {
     putstringf (CSI "%d q", style);
     std::fflush(stdout);
@@ -1082,7 +960,7 @@ void FTerm::resetXTermColors()
 {
   // Reset the entire color table
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1102,7 +980,7 @@ void FTerm::resetXTermForeground()
 {
   // Reset the VT100 text foreground color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1122,7 +1000,7 @@ void FTerm::resetXTermBackground()
 {
   // Reset the VT100 text background color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1142,7 +1020,7 @@ void FTerm::resetXTermCursorColor()
 {
   // Reset the text cursor color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1162,7 +1040,7 @@ void FTerm::resetXTermMouseForeground()
 {
   // Reset the mouse foreground color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1182,7 +1060,7 @@ void FTerm::resetXTermMouseBackground()
 {
   // Reset the mouse background color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1202,7 +1080,7 @@ void FTerm::resetXTermHighlightBackground()
 {
   // Reset the highlight background color
 
-  if ( isGnomeTerminal() && gnome_terminal_id < 3502 )
+  if ( isGnomeTerminal() && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
   if ( isPuttyTerminal() )
@@ -1452,63 +1330,6 @@ bool FTerm::scrollTermReverse()
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getAnswerbackMsg()
-{
-  FString answerback = "";
-
-  fd_set ifds;
-  struct timeval tv;
-  char temp[10] = {};
-
-  std::putchar (ENQ[0]);  // Send enquiry character
-  std::fflush(stdout);
-
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 150000;  // 150 ms
-
-  // Read the answerback message
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
-    if ( std::fgets (temp, sizeof(temp) - 1, stdin) != 0 )
-      answerback = temp;
-
-  return answerback;
-}
-
-//----------------------------------------------------------------------
-const FString FTerm::getSecDA()
-{
-  FString sec_da_str = "";
-
-  int a = 0
-    , b = 0
-    , c = 0;
-  fd_set ifds;
-  struct timeval tv;
-
-  // Get the secondary device attributes
-#if defined(__CYGWIN__)
-  puts (SECDA);
-#else
-  putstring (SECDA);
-#endif
-  std::fflush(stdout);
-
-  FD_ZERO(&ifds);
-  FD_SET(stdin_no, &ifds);
-  tv.tv_sec  = 0;
-  tv.tv_usec = 600000;  // 600 ms
-
-  // Read the answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1 )
-    if ( std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
-      sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
-
-  return sec_da_str;
-}
-
-//----------------------------------------------------------------------
 void FTerm::putstringf (const char format[], ...)
 {
   assert ( format != 0 );
@@ -1698,8 +1519,8 @@ void FTerm::initFreeBSDConsoleCharMap()
     return;
 
   for (int i = 0; i <= fc::lastCharItem; i++ )
-    if ( character[i][fc::PC] < 0x1c )
-      character[i][fc::PC] = character[i][fc::ASCII];
+    if ( fc::character[i][fc::PC] < 0x1c )
+      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
 #endif
 
@@ -1997,141 +1818,6 @@ int FTerm::closeConsole()
     return -1;
 }
 
-//----------------------------------------------------------------------
-void FTerm::getSystemTermType()
-{
-  // Import the untrusted environment variable TERM
-  const char* const& term_env = std::getenv(C_STR("TERM"));
-
-  if ( term_env )
-  {
-    // Save name in termtype
-    std::strncpy (termtype, term_env, sizeof(termtype) - 1);
-    return;
-  }
-  else if ( *termfilename )  // 1st fallback: use the teminal file name
-  {
-    getTTYtype();  // Look into /etc/ttytype
-
-#if F_HAVE_GETTTYNAM
-    if ( getTTYSFileEntry() )  // Look into /etc/ttys
-      return;
-#endif
-  }
-
-  // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), 6);
-}
-
-//----------------------------------------------------------------------
-void FTerm::getTTYtype()
-{
-  // Analyse /etc/ttytype and get the term name
-  // ------------------------------------------
-  // file format:
-  // <terminal type> <whitespace> <tty name>
-  //
-  // Example:
-  // linux  tty1
-  // vt100  ttys0
-
-  // Get term basename
-  const char* term_basename = std::strrchr(termfilename, '/');
-
-  if ( term_basename == 0 )
-    term_basename = termfilename;
-  else
-    term_basename++;
-
-  std::FILE *fp;
-
-  if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
-  {
-    char* p;
-    char  str[BUFSIZ];
-
-    // Read and parse the file
-    while ( fgets(str, sizeof(str) - 1, fp) != 0 )
-    {
-      char* name;
-      char* type;
-      type = name = 0;  // 0 == not found
-      p = str;
-
-      while ( *p )
-      {
-        if ( std::isspace(uChar(*p)) )
-          *p = '\0';
-        else if ( type == 0 )
-          type = p;
-        else if ( name == 0 && p != str && p[-1] == '\0' )
-          name = p;
-
-        p++;
-      }
-
-      if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
-      {
-        // Save name in termtype
-        std::strncpy (termtype, type, sizeof(termtype) - 1);
-        std::fclose(fp);
-        return;
-      }
-    }
-
-    std::fclose(fp);
-  }
-}
-
-#if F_HAVE_GETTTYNAM
-//----------------------------------------------------------------------
-bool FTerm::getTTYSFileEntry()
-{
-  // Analyse /etc/ttys and get the term name
-
-  // get term basename
-  const char* term_basename = std::strrchr(termfilename, '/');
-
-  if ( term_basename == 0 )
-    term_basename = termfilename;
-  else
-    term_basename++;
-
-  struct ttyent* ttys_entryt;
-  ttys_entryt = getttynam(term_basename);
-
-  if ( ttys_entryt )
-  {
-    char* type = ttys_entryt->ty_type;
-
-    if ( type != 0 )
-    {
-      // Save name in termtype
-      std::strncpy (termtype, type, sizeof(termtype) - 1);
-      endttyent();
-      return true;
-    }
-  }
-
-  endttyent();
-  return false;
-}
-#endif
-
-//----------------------------------------------------------------------
-void FTerm::storeTTYsettings()
-{
-  // store termios settings
-  term_init = getTTY();
-}
-
-//----------------------------------------------------------------------
-void FTerm::restoreTTYsettings()
-{
-  // restore termios settings
-  setTTY (term_init);
-}
-
 #if defined(__linux__)
 //----------------------------------------------------------------------
 int FTerm::getScreenFont()
@@ -2335,7 +2021,7 @@ void FTerm::initLinuxConsole()
 
   if ( openConsole() == 0 )
   {
-    terminal_type.linux_con = isLinuxConsole();
+    term_detection->setLinuxTerm (isLinuxConsole());
 
     if ( isLinuxTerm() )
     {
@@ -2500,33 +2186,6 @@ void FTerm::initWSConsConsole()
 #endif
 
 //----------------------------------------------------------------------
-uInt FTerm::getBaudRate (const struct termios* termios_p)
-{
-  std::map<speed_t,uInt> outspeed;
-  outspeed[B0]      = 0;       // hang up
-  outspeed[B50]     = 50;      //      50 baud
-  outspeed[B75]     = 75;      //      75 baud
-  outspeed[B110]    = 110;     //     110 baud
-  outspeed[B134]    = 134;     //     134.5 baud
-  outspeed[B150]    = 150;     //     150 baud
-  outspeed[B200]    = 200;     //     200 baud
-  outspeed[B300]    = 300;     //     300 baud
-  outspeed[B600]    = 600;     //     600 baud
-  outspeed[B1200]   = 1200;    //   1,200 baud
-  outspeed[B1800]   = 1800;    //   1,800 baud
-  outspeed[B2400]   = 2400;    //   2,400 baud
-  outspeed[B4800]   = 4800;    //   4,800 baud
-  outspeed[B9600]   = 9600;    //   9,600 baud
-  outspeed[B19200]  = 19200;   //  19,200 baud
-  outspeed[B38400]  = 38400;   //  38,400 baud
-  outspeed[B57600]  = 57600;   //  57,600 baud
-  outspeed[B115200] = 115200;  // 115,200 baud
-  outspeed[B230400] = 230400;  // 230,400 baud
-
-  return outspeed[cfgetospeed(termios_p)];
-}
-
-//----------------------------------------------------------------------
 void FTerm::init_global_values()
 {
   // Initialize global values
@@ -2534,13 +2193,11 @@ void FTerm::init_global_values()
   // Teletype (tty) file descriptor is still undefined
   fd_tty = -1;
 
-  // Gnome terminal id from SecDA
-  // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
-  //                      a.b.c  = a * 100 +  b * 100 + c
-  gnome_terminal_id = 0;
-
   // Set default timeout for keypress
   key_timeout = 100000;  // 100 ms
+
+  // Preset to true
+  cursor_optimisation     = true;
 
   // Preset to false
   utf8_console            = \
@@ -2554,35 +2211,10 @@ void FTerm::init_global_values()
   no_shadow_character     = \
   no_half_block_character = \
   ascii_console           = \
-  decscusr_support        = \
   force_vt100             = \
   xterm_default_colors    = false;
 
-  terminal_type.xterm          = \
-  terminal_type.ansi           = \
-  terminal_type.rxvt           = \
-  terminal_type.urxvt          = \
-  terminal_type.mlterm         = \
-  terminal_type.putty          = \
-  terminal_type.kde_konsole    = \
-  terminal_type.gnome_terminal = \
-  terminal_type.kterm          = \
-  terminal_type.tera_term      = \
-  terminal_type.sun            = \
-  terminal_type.cygwin         = \
-  terminal_type.mintty         = \
-  terminal_type.linux_con      = \
-  terminal_type.netbsd_con     = \
-  terminal_type.openbsd_con    = \
-  terminal_type.screen         = \
-  terminal_type.tmux           = false;
-
-  // Preset to true
-  cursor_optimisation     = \
-  terminal_detection      = true;
-
   // Assertion: programm start in cooked mode
-  raw_mode                = \
   input_data_pending      = \
   non_blocking_stdin      = false;
 
@@ -2594,597 +2226,7 @@ void FTerm::init_global_values()
   secondary_da.setDefault();
 
   if ( ! init_values.terminal_detection )
-    terminal_detection = false;
-}
-
-//----------------------------------------------------------------------
-void FTerm::detectTerminal()
-{
-  // Terminal detection
-
-  char* new_termtype = 0;
-
-  if ( ! terminal_detection )
-  {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-    t.c_cc[VTIME] = 1;  // Timeout in deciseconds
-    t.c_cc[VMIN]  = 0;  // Minimum number of characters
-    tcsetattr (stdin_no, TCSANOW, &t);
-  }
-  else
-  {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-    t.c_lflag &= uInt(~(ICANON | ECHO));
-    t.c_cc[VTIME] = 1;  // Timeout in deciseconds
-    t.c_cc[VMIN]  = 0;  // Minimum number of characters
-    tcsetattr (stdin_no, TCSANOW, &t);
-
-    // Initialize 256 colors terminals
-    new_termtype = init_256colorTerminal();
-
-    // Identify the terminal via the answerback-message
-    new_termtype = parseAnswerbackMsg (new_termtype);
-
-    // Identify the terminal via the secondary device attributes (SEC_DA)
-    new_termtype = parseSecDA (new_termtype);
-
-    // Determines the maximum number of colors
-    new_termtype = determineMaxColor(new_termtype);
-
-    if ( isCygwinTerminal()
-      || isPuttyTerminal()
-      || isTeraTerm()
-      || isRxvtTerminal() )
-    {
-      FTermcap::max_color = 16;
-    }
-
-    t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr(stdin_no, TCSADRAIN, &t);
-  }
-
-  //
-  // Additional termtype analysis
-  //
-
-  // Test if the terminal is a xterm
-  if ( std::strncmp(termtype, C_STR("xterm"), 5) == 0
-    || std::strncmp(termtype, C_STR("Eterm"), 5) == 0 )
-  {
-    terminal_type.xterm = true;
-
-    // Each xterm should be able to use at least 16 colors
-    if ( ! new_termtype && std::strlen(termtype) == 5 )
-      new_termtype = C_STR("xterm-16color");
-  }
-
-  // set the new environment variable TERM
-  if ( new_termtype )
-  {
-    setenv(C_STR("TERM"), new_termtype, 1);
-    std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::termtypeAnalysis()
-{
-  // Cygwin console
-  if ( std::strncmp(termtype, "cygwin", 6) == 0 )
-    terminal_type.cygwin = true;
-
-  // rxvt terminal emulator (native MS Window System port) on cygwin
-  if ( std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    terminal_type.rxvt = true;
-
-  // Ansi terminal
-  if ( std::strncmp(termtype, "ansi", 4) == 0 )
-  {
-    terminal_detection = false;
-    terminal_type.ansi = true;
-  }
-
-  // Sun Microsystems workstation console
-  if ( std::strncmp(termtype, "sun", 3) == 0 )
-  {
-    terminal_detection = false;
-    terminal_type.sun = true;
-  }
-
-  // Kterm
-  if ( std::strncmp(termtype, "kterm", 5) == 0 )
-  {
-    terminal_detection = false;
-    terminal_type.kterm = true;
-  }
-
-  // Linux console
-  if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
-    || std::strncmp(termtype, C_STR("con"), 3) == 0 )
-    terminal_type.linux_con = true;
-
-  // NetBSD workstation console
-  if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
-    terminal_type.netbsd_con = true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::get256colorEnvString()
-{
-  // Enable 256 color capabilities
-  color_env.string1 = std::getenv("COLORTERM");
-  color_env.string2 = std::getenv("VTE_VERSION");
-  color_env.string3 = std::getenv("XTERM_VERSION");
-  color_env.string4 = std::getenv("ROXTERM_ID");
-  color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
-  color_env.string6 = std::getenv("KONSOLE_DCOP");
-
-  if ( color_env.string1 != 0 )
-    return true;
-
-  if ( color_env.string2 != 0 )
-    return true;
-
-  if ( color_env.string3 != 0 )
-    return true;
-
-  if ( color_env.string4 != 0 )
-    return true;
-
-  if ( color_env.string5 != 0 )
-    return true;
-
-  if ( color_env.string6 != 0 )
-    return true;
-
-  return false;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::termtype_256color_quirks()
-{
-  char* new_termtype = 0;
-
-  if ( ! color256 )
-    return new_termtype;
-
-  if ( std::strncmp(termtype, "xterm", 5) == 0 )
-    new_termtype = C_STR("xterm-256color");
-
-  if ( std::strncmp(termtype, "screen", 6) == 0 )
-  {
-    new_termtype = C_STR("screen-256color");
-    terminal_type.screen = true;
-    char* tmux = std::getenv("TMUX");
-
-    if ( tmux && std::strlen(tmux) != 0 )
-      terminal_type.tmux = true;
-  }
-
-  if ( std::strncmp(termtype, "Eterm", 5) == 0 )
-    new_termtype = C_STR("Eterm-256color");
-
-  if ( std::strncmp(termtype, "mlterm", 6) == 0 )
-  {
-    new_termtype = C_STR("mlterm-256color");
-    terminal_type.mlterm = true;
-  }
-
-  if ( std::strncmp(termtype, "rxvt", 4) != 0
-    && color_env.string1
-    && std::strncmp(color_env.string1, "rxvt-xpm", 8) == 0 )
-  {
-    new_termtype = C_STR("rxvt-256color");
-    terminal_type.rxvt = true;
-  }
-
-  if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
-    || (color_env.string6 && std::strlen(color_env.string6) > 0) )
-    terminal_type.kde_konsole = true;
-
-  if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
-    || color_env.string2 )
-  {
-    terminal_type.gnome_terminal = true;
-    // Each gnome-terminal should be able to use 256 colors
-    color256 = true;
-
-    if ( ! isScreenTerm() )
-      new_termtype = C_STR("gnome-256color");
-  }
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::init_256colorTerminal()
-{
-  char* new_termtype = 0;
-
-  if ( get256colorEnvString() )
-    color256 = true;
-  else if ( std::strstr (termtype, "256color") )
-    color256 = true;
-  else
-    color256 = false;
-
-  new_termtype = termtype_256color_quirks();
-
-#if DEBUG
-  if ( new_termtype )
-    std::strncpy ( termtype_256color
-                 , new_termtype
-                 , std::strlen(new_termtype) + 1 );
-#endif
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::determineMaxColor (char current_termtype[])
-{
-  // Determine xterm maximum number of colors via OSC 4
-
-  char* new_termtype = current_termtype;
-
-  if ( ! color256
-    && ! isCygwinTerminal()
-    && ! isTeraTerm()
-    && ! isLinuxTerm()
-    && ! isNetBSDTerm()
-    && ! getXTermColorName(0).isEmpty() )
-  {
-    if ( ! getXTermColorName(256).isEmpty() )
-    {
-      if ( isPuttyTerminal() )
-        new_termtype = C_STR("putty-256color");
-      else
-        new_termtype = C_STR("xterm-256color");
-    }
-    else if ( ! getXTermColorName(87).isEmpty() )
-    {
-      new_termtype = C_STR("xterm-88color");
-    }
-    else if ( ! getXTermColorName(15).isEmpty() )
-    {
-      new_termtype = C_STR("xterm-16color");
-    }
-  }
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::parseAnswerbackMsg (char current_termtype[])
-{
-  char* new_termtype = current_termtype;
-
-  // send ENQ and read the answerback message
-  try
-  {
-    answer_back = new FString(getAnswerbackMsg());
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return 0;
-  }
-
-  if ( *answer_back == "PuTTY" )
-  {
-    terminal_type.putty = true;
-
-    if ( color256 )
-      new_termtype = C_STR("putty-256color");
-    else
-      new_termtype = C_STR("putty");
-  }
-
-  // cygwin needs a backspace to delete the '♣' char
-  if ( isCygwinTerminal() )
-    putstring (BS " " BS);
-
-#if DEBUG
-  if ( new_termtype )
-    std::strncpy ( termtype_Answerback
-                 , new_termtype
-                 , std::strlen(new_termtype) + 1 );
-#endif
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::parseSecDA (char current_termtype[])
-{
-  // The Linux console and older cygwin terminals knows no Sec_DA
-  if ( isLinuxTerm() || isCygwinTerminal() )
-    return current_termtype;
-
-  try
-  {
-    // Secondary device attributes (SEC_DA) <- decTerminalID string
-    sec_da = new FString(getSecDA());
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return current_termtype;
-  }
-
-  if ( sec_da->getLength() < 6 )
-    return current_termtype;
-
-  // remove the first 3 bytes ("\033[>")
-  FString temp = sec_da->right(sec_da->getLength() - 3);
-  // remove the last byte ("c")
-  temp.remove(temp.getLength() - 1, 1);
-  // split into components
-  FStringList sec_da_list = temp.split(';');
-
-  uLong num_components = sec_da_list.size();
-
-  // The second device attribute (SEC_DA) always has 3 parameters,
-  // otherwise it usually has a copy of the device attribute (primary DA)
-  if ( num_components < 3 )
-    return current_termtype;
-
-  const FString* sec_da_components = &sec_da_list[0];
-
-  if ( sec_da_components[0].isEmpty() )
-    return current_termtype;
-
-  // Read the terminal type
-  try
-  {
-    secondary_da.terminal_id_type = sec_da_components[0].toInt();
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_type = -1;
-  }
-
-  // Read the terminal (firmware) version
-  try
-  {
-    if ( sec_da_components[1] )
-      secondary_da.terminal_id_version = sec_da_components[1].toInt();
-    else
-      secondary_da.terminal_id_version = -1;
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_version = -1;
-  }
-
-  // Read the terminal hardware option
-  try
-  {
-    if ( sec_da_components[2] )
-      secondary_da.terminal_id_hardware = sec_da_components[2].toInt();
-    else
-      secondary_da.terminal_id_hardware = -1;
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_hardware = -1;
-  }
-
-  char* new_termtype = secDA_Analysis(current_termtype);
-
-#if DEBUG
-  if ( new_termtype )
-    std::strncpy ( termtype_SecDA
-                 , new_termtype
-                 , std::strlen(new_termtype) + 1 );
-#endif
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-char* FTerm::secDA_Analysis (char current_termtype[])
-{
-  char* new_termtype = current_termtype;
-
-  switch ( secondary_da.terminal_id_type )
-  {
-    case 0:  // DEC VT100
-      new_termtype = secDA_Analysis_0(current_termtype);
-      break;
-
-    case 1:  // DEC VT220
-      new_termtype = secDA_Analysis_1(current_termtype);
-      break;
-
-    case 2:   // DEC VT240
-    case 18:  // DEC VT330
-    case 19:  // DEC VT340
-
-    case 24:  // DEC VT320
-      new_termtype = secDA_Analysis_24(current_termtype);
-      break;
-
-    case 32:  // Tera Term
-      new_termtype = secDA_Analysis_32(current_termtype);
-      break;
-
-    case 41:  // DEC VT420
-    case 61:  // DEC VT510
-    case 64:  // DEC VT520
-    case 65:  // DEC VT525
-    case 67:  // Cygwin
-      break;
-
-    case 77:  // mintty
-      new_termtype = secDA_Analysis_77(current_termtype);
-      break;
-
-    case 82:  // rxvt
-      new_termtype = secDA_Analysis_82(current_termtype);
-      break;
-
-    case 83:  // screen
-      new_termtype = secDA_Analysis_83(current_termtype);
-      break;
-
-    case 85:  // rxvt-unicode
-      new_termtype = secDA_Analysis_85(current_termtype);
-      break;
-
-    default:
-      break;
-  }
-
-  // Correct false assumptions
-  if ( isGnomeTerminal() && secondary_da.terminal_id_type != 1 )
-    terminal_type.gnome_terminal = false;
-
-  if ( isKdeTerminal() && secondary_da.terminal_id_type != 0 )
-    terminal_type.kde_konsole = false;
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_0 (char current_termtype[])
-{
-  // Terminal ID 0 - DEC VT100
-
-  char* new_termtype = current_termtype;
-
-  if ( secondary_da.terminal_id_version == 115 )
-    terminal_type.kde_konsole = true;
-  else if ( secondary_da.terminal_id_version == 136 )
-    terminal_type.putty = true;  // PuTTY
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_1 (char current_termtype[])
-{
-  // Terminal ID 1 - DEC VT220
-
-  char* new_termtype = current_termtype;
-
-  if ( secondary_da.terminal_id_version > 1000 )
-  {
-    terminal_type.gnome_terminal = true;
-    // Each gnome-terminal should be able to use 256 colors
-    color256 = true;
-    new_termtype = C_STR("gnome-256color");
-    gnome_terminal_id = secondary_da.terminal_id_version;
-
-    // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
-    if ( gnome_terminal_id >= 4000 )
-      decscusr_support = true;
-  }
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_24 (char current_termtype[])
-{
-  // Terminal ID 24 - DEC VT320
-
-  char* new_termtype = current_termtype;
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-
-  if ( secondary_da.terminal_id_version == 20 && isWSConsConsole() )
-  {
-    // NetBSD/OpenBSD workstation console
-    if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )
-      netbsd_terminal = true;
-    else if ( std::strncmp(termtype, C_STR("vt220"), 5) == 0 )
-    {
-      terminal_type.openbsd_con = true;
-      new_termtype = C_STR("pccon");
-    }
-  }
-
-#endif
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_32 (char[])
-{
-  // Terminal ID 32 - Tera Term
-
-  char* new_termtype;
-  terminal_type.tera_term = true;
-  new_termtype = C_STR("teraterm");
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_77 (char[])
-{
-  // Terminal ID 77 - mintty
-
-  char* new_termtype;
-  terminal_type.mintty = true;
-  new_termtype = C_STR("xterm-256color");
-  // switch to application escape key mode
-  putstring (CSI "?7727h");
-  std::fflush(stdout);
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_82 (char current_termtype[])
-{
-  // Terminal ID 82 - rxvt
-
-  char* new_termtype = current_termtype;
-  terminal_type.rxvt = true;
-  force_vt100 = true;  // This rxvt terminal does not support utf-8
-
-  if ( std::strncmp(termtype, "rxvt-", 5) != 0
-    && std::strncmp(termtype, "rxvt-cygwin-native", 18) == 0 )
-    new_termtype = C_STR("rxvt-16color");
-  else
-    new_termtype = termtype;
-
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_83 (char current_termtype[])
-{
-  // Terminal ID 83 - screen
-
-  char* new_termtype = current_termtype;
-  terminal_type.screen = true;
-  return new_termtype;
-}
-
-//----------------------------------------------------------------------
-inline char* FTerm::secDA_Analysis_85 (char current_termtype[])
-{
-  // Terminal ID 85 - rxvt-unicode
-
-  char* new_termtype = current_termtype;
-  terminal_type.rxvt = true;
-  terminal_type.urxvt = true;
-
-  if ( std::strncmp(termtype, "rxvt-", 5) != 0 )
-  {
-    if ( color256 )
-      new_termtype = C_STR("rxvt-256color");
-    else
-      new_termtype = C_STR("rxvt");
-  }
-  else
-    new_termtype = termtype;
-
-  return new_termtype;
+    term_detection->setTerminalDetection (false);
 }
 
 //----------------------------------------------------------------------
@@ -3333,6 +2375,20 @@ void FTerm::init_cygwin_charmap()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_fixed_max_color()
+{
+  // Initialize maximum number of colors for known terminals
+
+  if ( isCygwinTerminal()
+    || isPuttyTerminal()
+    || isTeraTerm()
+    || isRxvtTerminal() )
+  {
+    FTermcap::max_color = 16;
+  }
+}
+
+//----------------------------------------------------------------------
 void FTerm::init_teraterm_charmap()
 {
   // Tera Term can't print ascii characters < 0x20
@@ -3354,7 +2410,7 @@ void FTerm::init_teraterm_charmap()
  *   captoinfo - convert all termcap descriptions into terminfo descriptions
  *   infocmp   - print out terminfo description from the current terminal
  */
-void FTerm::init_termcaps()
+void FTerm::init_termcap()
 {
   std::vector<std::string> terminals;
   std::vector<std::string>::iterator iter;
@@ -3387,21 +2443,21 @@ void FTerm::init_termcaps()
     // Open the termcap file + load entry for termtype
     status = tgetent(term_buffer, termtype);
 
-    if ( status == success || ! terminal_detection )
+    if ( status == success || ! term_detection->hasTerminalDetection() )
       break;
 
     ++iter;
   }
 
   if ( std::strncmp(termtype, "ansi", 4) == 0 )
-    terminal_type.ansi = true;
+    term_detection->setAnsiTerminal (true);
 
-  init_termcaps_error (status);
-  init_termcaps_variables (buffer);
+  init_termcap_error (status);
+  init_termcap_variables (buffer);
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_error (int status)
+void FTerm::init_termcap_error (int status)
 {
   static const int no_entry = 0;
   static const int db_not_found = -1;
@@ -3423,22 +2479,26 @@ void FTerm::init_termcaps_error (int status)
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_variables (char*& buffer)
+void FTerm::init_termcap_variables (char*& buffer)
 {
   // Get termcap booleans
-  init_termcaps_booleans();
+  init_termcap_booleans();
 
   // Get termcap numerics
-  init_termcaps_numerics();
+  init_termcap_numerics();
 
   // Get termcap strings
-  init_termcaps_strings(buffer);
+  init_termcap_strings(buffer);
 
-  // Fix terminal quirks
-  init_termcaps_quirks();
+  // Terminal quirks
+  FTermcapQuirks termcap_quirks;
+  termcap_quirks.setTermcapMap (tcap);  // Parameter
+  termcap_quirks.setFTermDetection (term_detection);
+  termcap_quirks.setTerminalType (termtype);
+  termcap_quirks.terminalFixup();       // Fix terminal quirks
 
   // Get termcap keys
-  init_termcaps_keys(buffer);
+  init_termcap_keys(buffer);
 
   // Initialize cursor movement optimization
   init_OptiMove();
@@ -3448,7 +2508,7 @@ void FTerm::init_termcaps_variables (char*& buffer)
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_booleans()
+void FTerm::init_termcap_booleans()
 {
   // Get termcap booleans
 
@@ -3476,7 +2536,7 @@ void FTerm::init_termcaps_booleans()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_numerics()
+void FTerm::init_termcap_numerics()
 {
   // Get termcap numeric
 
@@ -3500,7 +2560,7 @@ void FTerm::init_termcaps_numerics()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_strings (char*& buffer)
+void FTerm::init_termcap_strings (char*& buffer)
 {
   // Get termcap strings
 
@@ -3510,440 +2570,7 @@ void FTerm::init_termcaps_strings (char*& buffer)
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcaps_quirks()
-{
-  if ( isCygwinTerminal() )
-  {
-    init_termcaps_cygwin_quirks();
-  }
-  else if ( isLinuxTerm() )
-  {
-    init_termcaps_linux_quirks();
-  }
-  else if ( isRxvtTerminal() )
-  {
-    init_termcaps_rxvt_quirks();
-  }
-  else if ( isGnomeTerminal() )
-  {
-    init_termcaps_vte_quirks();
-  }
-  else if ( isTeraTerm() )
-  {
-    init_termcaps_teraterm_quirks();
-  }
-  else if ( isSunTerminal() )
-  {
-    init_termcaps_sun_quirks();
-  }
-  else if ( isPuttyTerminal() )
-  {
-    init_termcaps_putty_quirks();
-  }
-  else if ( isScreenTerm() )
-  {
-    init_termcaps_screen_quirks();
-  }
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  else if ( isFreeBSDConsole() )
-  {
-    init_termcaps_freebsd_quirks()
-  }
-#endif
-
-  // xterm and compatible terminals
-  if ( isXTerminal() && ! isPuttyTerminal() )
-    init_termcaps_xterm_quirks();
-
-  // Fixes general quirks
-  init_termcaps_general_quirks();
-}
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-//----------------------------------------------------------------------
-static void FTerm::init_termcaps_freebsd_quirks()
-{
-  // FreeBSD console fixes
-
-  TCAP(fc::t_acs_chars) = \
-      C_STR("-\036.\0370\333"
-            "a\260f\370g\361"
-            "h\261j\331k\277"
-            "l\332m\300n\305"
-            "q\304t\303u\264"
-            "v\301w\302x\263"
-            "y\363z\362~\371");
-
-    TCAP(fc::t_set_attributes) = \
-        C_STR(CSI "0"
-                  "%?%p1%p6%|%t;1%;"
-                  "%?%p2%t;4%;"
-                  "%?%p1%p3%|%t;7%;"
-                  "%?%p4%t;5%;m"
-                  "%?%p9%t\016%e\017%;");
-
-  FTermcap::attr_without_color = 18;
-}
-#endif
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_cygwin_quirks()
-{
-  // Set invisible cursor for cygwin terminal
-  if ( ! TCAP(fc::t_cursor_invisible) )
-    TCAP(fc::t_cursor_invisible) = \
-        C_STR(CSI "?25l");
-
-  // Set visible cursor for cygwin terminal
-  if ( ! TCAP(fc::t_cursor_visible) )
-    TCAP(fc::t_cursor_visible) = \
-        C_STR(CSI "?25h");
-
-  // Set ansi blink for cygwin terminal
-  if ( ! TCAP(fc::t_enter_blink_mode) )
-    TCAP(fc::t_enter_blink_mode) = \
-        C_STR(CSI "5m");
-
-  // Set enable alternate character set for cygwin terminal
-  if ( ! TCAP(fc::t_enable_acs) )
-    TCAP(fc::t_enable_acs) = \
-        C_STR(ESC "(B" ESC ")0");
-
-  // Set background color erase for cygwin terminal
-  FTermcap::background_color_erase = true;
-
-  // Include the Linux console quirks
-  init_termcaps_linux_quirks();
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_linux_quirks()
-{
-  /* Same settings are used by cygwin */
-
-  // Set ansi foreground and background color
-  if ( FTermcap::max_color > 8 )
-  {
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m");
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "4%p1%{8}%m%d%?%p1%{7}%>%t;5%e;25%;m");
-    // Avoid underline, blink and dim mode
-    FTermcap::attr_without_color = 26;
-  }
-  else
-  {
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%dm");
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "4%p1%dm");
-    // Avoid underline and dim mode
-    FTermcap::attr_without_color = 18;
-  }
-
-  // Set select graphic rendition attributes
-  TCAP(fc::t_set_attributes) = \
-      C_STR(CSI "0"
-                "%?%p6%|%t;1%;"
-                "%?%p1%p3%|%t;7%;"
-                "%?%p4%t;5%;m"
-                "%?%p9%t\016%e\017%;");
-
-  TCAP(fc::t_enter_alt_charset_mode) = C_STR("\016");
-  TCAP(fc::t_exit_alt_charset_mode) = C_STR("\017");
-  TCAP(fc::t_exit_attribute_mode) = C_STR(CSI "0m\017");
-  TCAP(fc::t_exit_bold_mode) = C_STR(CSI "22m");
-  TCAP(fc::t_exit_blink_mode) = C_STR(CSI "25m");
-  TCAP(fc::t_exit_reverse_mode) = C_STR(CSI "27m");
-  TCAP(fc::t_exit_secure_mode) = 0;
-  TCAP(fc::t_exit_protected_mode) = 0;
-  TCAP(fc::t_exit_crossed_out_mode) = 0;
-  TCAP(fc::t_orig_pair) = C_STR(CSI "39;49;25m");
-
-  // Avoid underline and dim mode
-  TCAP(fc::t_enter_dim_mode)       = 0;
-  TCAP(fc::t_exit_dim_mode)        = 0;
-  TCAP(fc::t_enter_underline_mode) = 0;
-  TCAP(fc::t_exit_underline_mode)  = 0;
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_xterm_quirks()
-{
-  // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
-  {
-    TCAP(fc::t_initialize_color) = \
-        C_STR(OSC "4;%p1%d;rgb:"
-                  "%p2%{255}%*%{1000}%/%2.2X/"
-                  "%p3%{255}%*%{1000}%/%2.2X/"
-                  "%p4%{255}%*%{1000}%/%2.2X" ESC "\\");
-  }
-
-  // Fallback if "vi" is not found
-  if ( ! TCAP(fc::t_cursor_invisible) )
-    TCAP(fc::t_cursor_invisible) = \
-        C_STR(CSI "?25l");
-
-  // Fallback if "ve" is not found
-  if ( ! TCAP(fc::t_cursor_normal) )
-    TCAP(fc::t_cursor_normal) = \
-        C_STR(CSI "?12l" CSI "?25h");
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_rxvt_quirks()
-{
-  // Set enter/exit alternative charset mode for rxvt terminal
-  if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
-  {
-    TCAP(fc::t_enter_alt_charset_mode) = \
-        C_STR(ESC "(0");
-    TCAP(fc::t_exit_alt_charset_mode)  = \
-        C_STR(ESC "(B");
-  }
-
-  // Set ansi foreground and background color
-  if ( ! isUrxvtTerminal() )
-  {
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm");
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm");
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_vte_quirks()
-{
-  // gnome-terminal has NC=16 however, it can use the dim attribute
-  FTermcap::attr_without_color = 0;
-
-  // set exit underline for gnome terminal
-  TCAP(fc::t_exit_underline_mode) = \
-      C_STR(CSI "24m");
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_putty_quirks()
-{
-  FTermcap::background_color_erase = true;
-  FTermcap::osc_support = true;
-
-  // PuTTY has NC=22 however, it can show underline and reverse
-  // and since version 0.71 is the dim attribute is also supported
-  FTermcap::attr_without_color = 0;
-
-  // Set ansi foreground and background color
-  TCAP(fc::t_set_a_foreground) = \
-      C_STR(CSI "%?%p1%{8}%<"
-                "%t3%p1%d"
-                "%e%p1%{16}%<"
-                "%t9%p1%{8}%-%d"
-                "%e38;5;%p1%d%;m");
-
-  TCAP(fc::t_set_a_background) = \
-      C_STR(CSI "%?%p1%{8}%<"
-                "%t4%p1%d"
-                "%e%p1%{16}%<"
-                "%t10%p1%{8}%-%d"
-                "%e48;5;%p1%d%;m");
-
-  TCAP(fc::t_set_attributes) = \
-      C_STR(CSI "0"
-                "%?%p1%p6%|%t;1%;"
-                "%?%p5%t;2%;"  // since putty 0.71
-                "%?%p2%t;4%;"
-                "%?%p1%p3%|%t;7%;"
-                "%?%p4%t;5%;m"
-                "%?%p9%t\016%e\017%;");
-  // PuTTY 0.71 or higher
-  TCAP(fc::t_enter_dim_mode) = \
-      C_STR(CSI "2m");
-
-  // PuTTY 0.71 or higher
-  TCAP(fc::t_exit_dim_mode) = \
-      C_STR(CSI "22m");
-
-  if ( ! TCAP(fc::t_clr_bol) )
-    TCAP(fc::t_clr_bol) = \
-        C_STR(CSI "1K");
-
-  if ( ! TCAP(fc::t_orig_pair) )
-    TCAP(fc::t_orig_pair) = \
-        C_STR(CSI "39;49m");
-
-  if ( ! TCAP(fc::t_orig_colors) )
-    TCAP(fc::t_orig_colors) = \
-        C_STR(OSC "R");
-
-  if ( ! TCAP(fc::t_column_address) )
-    TCAP(fc::t_column_address) = \
-        C_STR(CSI "%i%p1%dG");
-
-  if ( ! TCAP(fc::t_row_address) )
-    TCAP(fc::t_row_address) = \
-        C_STR(CSI "%i%p1%dd");
-
-  if ( ! TCAP(fc::t_enable_acs) )
-    TCAP(fc::t_enable_acs) = \
-        C_STR(ESC "(B" ESC ")0");
-
-  if ( ! TCAP(fc::t_enter_am_mode) )
-    TCAP(fc::t_enter_am_mode) = \
-        C_STR(CSI "?7h");
-
-  if ( ! TCAP(fc::t_exit_am_mode) )
-    TCAP(fc::t_exit_am_mode) = \
-        C_STR(CSI "?7l");
-
-  if ( ! TCAP(fc::t_enter_pc_charset_mode) )
-    TCAP(fc::t_enter_pc_charset_mode) = \
-        C_STR(CSI "11m");
-
-  if ( ! TCAP(fc::t_exit_pc_charset_mode) )
-    TCAP(fc::t_exit_pc_charset_mode) = \
-        C_STR(CSI "10m");
-
-  if ( ! TCAP(fc::t_key_mouse) )
-    TCAP(fc::t_key_mouse) = \
-        C_STR(CSI "M");
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_teraterm_quirks()
-{
-  // Tera Term eat_nl_glitch fix
-  FTermcap::eat_nl_glitch = true;
-
-  // Tera Term color settings
-  TCAP(fc::t_set_a_foreground) = \
-      C_STR(CSI "38;5;%p1%dm");
-  TCAP(fc::t_set_a_background) = \
-      C_STR(CSI "48;5;%p1%dm");
-  TCAP(fc::t_exit_attribute_mode) = \
-      C_STR(CSI "0m" SI);
-  TCAP(fc::t_orig_pair) = \
-      C_STR(CSI "39;49m");
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_sun_quirks()
-{
-  // Sun Microsystems workstation console eat_nl_glitch fix
-  FTermcap::eat_nl_glitch = true;
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_screen_quirks()
-{
-  // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
-  {
-    if ( isTmuxTerm() )
-    {
-      TCAP(fc::t_initialize_color) = \
-          C_STR(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
-                "%p2%{255}%*%{1000}%/%2.2X/"
-                "%p3%{255}%*%{1000}%/%2.2X/"
-                "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-    }
-    else
-    {
-      TCAP(fc::t_initialize_color) = \
-          C_STR(ESC "P" OSC "4;%p1%d;rgb:"
-                "%p2%{255}%*%{1000}%/%2.2X/"
-                "%p3%{255}%*%{1000}%/%2.2X/"
-                "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\");
-    }
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_general_quirks()
-{
-  static const int not_available = -1;
-
-  if ( FTermcap::tabstop == not_available )
-    FTermcap::tabstop = 8;
-
-  if ( FTermcap::attr_without_color == not_available )
-    FTermcap::attr_without_color = 0;
-
-  // Fallback if "AF" is not found
-  if ( ! TCAP(fc::t_set_a_foreground) )
-    TCAP(fc::t_set_a_foreground) = \
-        C_STR(CSI "3%p1%dm");
-
-  // Fallback if "AB" is not found
-  if ( ! TCAP(fc::t_set_a_background) )
-    TCAP(fc::t_set_a_background) = \
-        C_STR(CSI "4%p1%dm");
-
-  // Fallback if "Ic" is not found
-  if ( ! TCAP(fc::t_initialize_color) )
-  {
-    TCAP(fc::t_initialize_color) = \
-        C_STR(OSC "P%p1%x"
-                  "%p2%{255}%*%{1000}%/%02x"
-                  "%p3%{255}%*%{1000}%/%02x"
-                  "%p4%{255}%*%{1000}%/%02x");
-  }
-
-  // Fallback if "ti" is not found
-  if ( ! TCAP(fc::t_enter_ca_mode) )
-    TCAP(fc::t_enter_ca_mode) = \
-        C_STR(ESC "7" CSI "?47h");
-
-  // Fallback if "te" is not found
-  if ( ! TCAP(fc::t_exit_ca_mode) )
-    TCAP(fc::t_exit_ca_mode) = \
-        C_STR(CSI "?47l" ESC "8" CSI "m");
-
-  // Set ansi move if "cm" is not found
-  if ( ! TCAP(fc::t_cursor_address) )
-    TCAP(fc::t_cursor_address) = \
-        C_STR(CSI "%i%p1%d;%p2%dH");
-
-  // Test for standard ECMA-48 (ANSI X3.64) terminal
-  if ( TCAP(fc::t_exit_underline_mode)
-    && std::strncmp(TCAP(fc::t_exit_underline_mode), CSI "24m", 5) == 0 )
-  {
-    // Seems to be a ECMA-48 (ANSI X3.64) compatible terminal
-    TCAP(fc::t_enter_dbl_underline_mode) = \
-        C_STR(CSI "21m");  // Exit single underline, too
-
-    TCAP(fc::t_exit_dbl_underline_mode) = \
-        C_STR(CSI "24m");
-
-    TCAP(fc::t_exit_bold_mode) = \
-        C_STR(CSI "22m");  // Exit dim, too
-
-    TCAP(fc::t_exit_dim_mode) = \
-        C_STR(CSI "22m");
-
-    TCAP(fc::t_exit_underline_mode) = \
-        C_STR(CSI "24m");
-
-    TCAP(fc::t_exit_blink_mode) = \
-        C_STR(CSI "25m");
-
-    TCAP(fc::t_exit_reverse_mode) = \
-        C_STR(CSI "27m");
-
-    TCAP(fc::t_exit_secure_mode) = \
-        C_STR(CSI "28m");
-
-    TCAP(fc::t_enter_crossed_out_mode) = \
-        C_STR(CSI "9m");
-
-    TCAP(fc::t_exit_crossed_out_mode) = \
-        C_STR(CSI "29m");
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcaps_keys (char*& buffer)
+void FTerm::init_termcap_keys (char*& buffer)
 {
   // Read termcap key strings
 
@@ -4169,6 +2796,10 @@ void FTerm::init_encoding()
   // detect encoding and set the Fputchar function pointer
 
   init_encoding_set();
+
+  if ( isRxvtTerminal() )
+    force_vt100 = true;  // This rxvt terminal does not support utf-8
+
   init_term_encoding();
   init_pc_charset();
   init_individual_term_encoding();
@@ -4177,6 +2808,11 @@ void FTerm::init_encoding()
     init_utf8_without_alt_charset();
 
   init_tab_quirks();
+
+  if ( init_values.encoding != fc::UNKNOWN )
+  {
+    setEncoding(init_values.encoding);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -4194,6 +2830,8 @@ inline void FTerm::init_encoding_set()
 //----------------------------------------------------------------------
 void FTerm::init_term_encoding()
 {
+  int stdout_no = FTermios::getStdOut();
+
   if ( isatty(stdout_no)
     && ! std::strcmp(nl_langinfo(CODESET), "UTF-8") )
   {
@@ -4293,6 +2931,8 @@ void FTerm::redefineColorPalette()
   if ( isCygwinTerminal()
     || isKdeTerminal()
     || isTeraTerm()
+    || isNetBSDTerm()
+    || isOpenBSDTerm()
     || isSunTerminal()
     || isAnsiTerminal() )
     return;
@@ -4309,8 +2949,11 @@ void FTerm::redefineColorPalette()
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( isKdeTerminal()
+  if ( isCygwinTerminal()
+    || isKdeTerminal()
     || isTeraTerm()
+    || isNetBSDTerm()
+    || isOpenBSDTerm()
     || isSunTerminal()
     || isAnsiTerminal() )
     return;
@@ -4406,16 +3049,10 @@ void FTerm::captureXTermFontAndTitle()
 {
   if ( (isXTerminal() || isUrxvtTerminal()) && ! isRxvtTerminal() )
   {
-    struct termios t;
-    tcgetattr (stdin_no, &t);
-    t.c_lflag &= uInt(~(ICANON | ECHO));
-    tcsetattr (stdin_no, TCSANOW, &t);
-
+    FTermios::setCaptureSendCharacters();
     xterm_font  = getXTermFont();
     xterm_title = getXTermTitle();
-
-    t.c_lflag |= uInt(ICANON | ECHO);
-    tcsetattr (stdin_no, TCSADRAIN, &t);
+    FTermios::unsetCaptureSendCharacters();
   }
 }
 
@@ -4426,6 +3063,7 @@ inline void FTerm::allocationValues()
   {
     opti_move      = new FOptiMove();
     opti_attr      = new FOptiAttr();
+    term_detection = new FTermDetection();
     mouse          = new FMouseControl();
     term           = new FRect(0, 0, 0, 0);
     vt100_alt_char = new std::map<uChar, uChar>;
@@ -4447,12 +3085,6 @@ inline void FTerm::deallocationValues()
   if ( vt100_alt_char )
     delete vt100_alt_char;
 
-  if ( sec_da )
-    delete sec_da;
-
-  if ( answer_back )
-    delete answer_back;
-
   if ( xterm_title )
     delete xterm_title;
 
@@ -4465,6 +3097,9 @@ inline void FTerm::deallocationValues()
   if ( mouse )
     delete mouse;
 
+  if ( term_detection )
+    delete term_detection;
+
   if ( opti_attr )
     delete opti_attr;
 
@@ -4475,18 +3110,18 @@ inline void FTerm::deallocationValues()
 //----------------------------------------------------------------------
 void FTerm::init()
 {
+  int stdout_no = FTermios::getStdOut();
   init_term_object = this;
 
   // Initialize global values for all objects
   allocationValues();
   init_global_values();
 
-  // Get file descriptor for standard input and standard output
-  stdin_no  = fileno(stdin);
-  stdout_no = fileno(stdout);
+  // Initialize termios
+  FTermios::init();
 
   // Get the stdin file status flags
-  stdin_status_flags = fcntl(stdin_no, F_GETFL);
+  stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
 
   if ( stdin_status_flags == -1 )
     std::abort();
@@ -4495,28 +3130,28 @@ void FTerm::init()
   if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
     termfilename[0] = '\0';
 
+  term_detection->setTermFileName(termfilename);
+
   initOSspecifics();
 
   // Save termios settings
-  storeTTYsettings();
+  FTermios::storeTTYsettings();
 
   // Get output baud rate
-  baudrate = getBaudRate(&term_init);
+  baudrate = FTermios::getBaudRate();
 
   if ( isatty(stdout_no) )
     opti_move->setBaudRate(int(baudrate));
 
-  // Set the variable 'termtype' to the predefined type of the terminal
-  getSystemTermType();
-
-  // Analysis the termtype
-  termtypeAnalysis();
-
   // Terminal detection
-  detectTerminal();
+  term_detection->detect();
+  setTermType (term_detection->getTermType());
+
+  // Set maximum number of colors for detected terminals
+  init_fixed_max_color();
 
   // Initializes variables for the current terminal
-  init_termcaps();
+  init_termcap();
   init_alt_charset();
 
   // Initializes locale information
@@ -4525,17 +3160,16 @@ void FTerm::init()
   // Detect environment and set encoding
   init_encoding();
 
-  if ( init_values.encoding != fc::UNKNOWN )
-  {
-    setEncoding(init_values.encoding);
-  }
-
   // Enable the terminal mouse support
   enableMouse();
 
   // Activate meta key sends escape
   if ( isXTerminal() )
     xtermMetaSendsESC(true);
+
+  // switch to application escape key mode
+  if ( isMinttyTerm() )
+    FTerm::putstring (CSI "?7727h");
 
   // Enter 'keyboard_transmit' mode
   if ( TCAP(fc::t_keypad_xmit) )
@@ -4583,10 +3217,10 @@ void FTerm::init()
   init_font();
 
   // Turn off hardware echo
-  noHardwareEcho();
+  FTermios::unsetHardwareEcho();
 
   // Switch to the raw mode
-  setRawMode();
+  FTermios::setRawMode();
 
   // The terminal is now initialized
   term_initialized = true;
@@ -4621,7 +3255,7 @@ void FTerm::finish()
     setXTermTitle (*xterm_title);
 
   // Restore the saved termios settings
-  restoreTTYsettings();
+  FTermios::restoreTTYsettings();
 
   // Turn off all attributes
   if ( TCAP(fc::t_exit_attribute_mode) )
