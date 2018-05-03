@@ -1124,12 +1124,10 @@ void FTerm::saveColorMap()
 //----------------------------------------------------------------------
 void FTerm::resetColorMap()
 {
-  char*& op = TCAP(fc::t_orig_pair);
   char*& oc = TCAP(fc::t_orig_colors);
+  char*& op = TCAP(fc::t_orig_pair);
 
-  if ( op )
-    putstring (op);
-  else if ( oc )
+  if ( oc )
     putstring (oc);
 /*else
   {
@@ -1152,6 +1150,9 @@ void FTerm::resetColorMap()
     }
     ioctl (0, PIO_CMAP, &color_map);
   }*/
+
+  if ( op )
+    putstring (op);
 
   std::fflush(stdout);
 }
