@@ -5,7 +5,7 @@ The Final Cut determines the used number of bits per pixel (bpp)
 for Linux framebuffer console to determine whether 16 (or more) 
 different background colors can be displayed. Therefor your user
 needs read-access to the framebuffer device (/dev/fb0 or /dev/fb/0).
-If this is the case, you can check with the following command:
+You can check this with the following command:
 
 > fbset -i
 
