@@ -1,0 +1,20 @@
+Framebuffer
+===========
+
+The Final Cut determines the used number of bits per pixel (bpp) 
+for Linux framebuffer console to determine whether 16 (or more) 
+different background colors can be displayed. For this your user 
+needs read-access to the framebuffer device (/dev/fb0 or /dev/fb/0).
+If this is the case, you can check with the following command:
+
+> fbset -i
+
+If the read-access is not given, it can help to add your user to 
+the group "video". To do this, please enter the following command:
+
+> sudo usermod -a -G video USERNAME
+
+You can check the group membership with the id command:
+
+> id
+
