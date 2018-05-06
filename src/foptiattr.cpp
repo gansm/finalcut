@@ -1326,6 +1326,9 @@ inline void FOptiAttr::changeAttributeSGR ( char_data*& term
 {
   bool pc_charset_usable = true;
 
+  if ( ! (term && next) )
+    return;
+
   if ( switchOn() || switchOff() )
     setTermAttributes ( term
                       , next->attr.bit.standout

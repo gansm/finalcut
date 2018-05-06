@@ -81,6 +81,7 @@ static FTermcap::tcap_map term_caps[] =
   { 0, "RI" },  // parm_right_cursor      -> move #1 characters to the right (P*)
   { 0, "sc" },  // save_cursor            -> save current cursor position (P)
   { 0, "rc" },  // restore_cursor         -> restore cursor to save_cursor
+  { 0, "Ss" },  // set cursor style       -> Select the DECSCUSR cursor style
   { 0, "sf" },  // scroll_forward         -> scroll text up (P)
   { 0, "sr" },  // scroll_reverse         -> scroll text down (P)
   { 0, "ti" },  // enter_ca_mode          -> string to start programs using cup

@@ -1360,8 +1360,8 @@ void FWidget::drawShadow()
   if ( isMonochron() && ! trans_shadow )
     return;
 
-  if ( (term_encoding == fc::VT100 && ! trans_shadow)
-    || (term_encoding == fc::ASCII && ! trans_shadow) )
+  if ( (getEncoding() == fc::VT100 && ! trans_shadow)
+    || (getEncoding() == fc::ASCII && ! trans_shadow) )
   {
     clearShadow();
     return;
@@ -2384,7 +2384,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   // non-transparent shadow
   int block;
 
-  if ( no_shadow_character )
+  if ( ! hasShadowCharacter() )
     return;
 
   setPrintPos (x2 + 1, y1);

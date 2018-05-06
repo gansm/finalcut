@@ -63,6 +63,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "final/ftypes.h"
 
 //----------------------------------------------------------------------
 // class FOptiMove
@@ -87,26 +88,26 @@ class FOptiMove
     void  setBaudRate (int);
     void  setTabStop (int);
     void  setTermSize (int, int);
-    int   set_cursor_home (char[]);
-    int   set_cursor_to_ll (char[]);
-    int   set_carriage_return (char[]);
-    int   set_tabular (char[]);
-    int   set_back_tab (char[]);
-    int   set_cursor_up (char[]);
-    int   set_cursor_down (char[]);
-    int   set_cursor_left (char[]);
-    int   set_cursor_right (char[]);
-    int   set_cursor_address (char[]);
-    int   set_column_address (char[]);
-    int   set_row_address (char[]);
-    int   set_parm_up_cursor (char[]);
-    int   set_parm_down_cursor (char[]);
-    int   set_parm_left_cursor (char[]);
-    int   set_parm_right_cursor (char[]);
-    int   set_erase_chars (char[]);
-    int   set_repeat_char (char[]);
-    int   set_clr_bol (char[]);
-    int   set_clr_eol (char[]);
+    uInt  set_cursor_home (char[]);
+    uInt  set_cursor_to_ll (char[]);
+    uInt  set_carriage_return (char[]);
+    uInt  set_tabular (char[]);
+    uInt  set_back_tab (char[]);
+    uInt  set_cursor_up (char[]);
+    uInt  set_cursor_down (char[]);
+    uInt  set_cursor_left (char[]);
+    uInt  set_cursor_right (char[]);
+    uInt  set_cursor_address (char[]);
+    uInt  set_column_address (char[]);
+    uInt  set_row_address (char[]);
+    uInt  set_parm_up_cursor (char[]);
+    uInt  set_parm_down_cursor (char[]);
+    uInt  set_parm_left_cursor (char[]);
+    uInt  set_parm_right_cursor (char[]);
+    uInt  set_erase_chars (char[]);
+    uInt  set_repeat_char (char[]);
+    uInt  set_clr_bol (char[]);
+    uInt  set_clr_eol (char[]);
     void  set_auto_left_margin (const bool&);
     void  set_eat_newline_glitch (const bool&);
 
@@ -119,10 +120,7 @@ class FOptiMove
     // Constant
     static const std::size_t BUF_SIZE = 512;
 
-    // Typedefs
-    typedef unsigned char uChar;
-    typedef unsigned int  uInt;
-
+    // Typedef
     typedef struct
     {
       char* cap;

@@ -775,7 +775,7 @@ void FTextView::drawText()
     for (i = 0; i < len; i++)
     {
       wchar_t ch = line_str[i];
-      bool utf8 = ( term_encoding == fc::UTF8 ) ? true : false;
+      bool utf8 = ( getEncoding() == fc::UTF8 ) ? true : false;
 
       // only printable and 1 column per character
       if ( ( (utf8 && std::iswprint(wint_t(ch)))

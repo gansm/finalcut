@@ -1073,6 +1073,7 @@ enum termcaps
   t_parm_right_cursor,
   t_save_cursor,
   t_restore_cursor,
+  t_cursor_style,
   t_scroll_forward,
   t_scroll_reverse,
   t_enter_ca_mode,

@@ -317,6 +317,19 @@ class FTerm
 #endif
 
   protected:
+    // Inquiries
+    static bool           hasChangedTermSize();
+    static bool           hasShadowCharacter();
+    static bool           hasHalfBlockCharacter();
+    static bool           hasAlternateScreen();
+
+    // Accessors
+    static uInt           getEraseCharLength();
+    static uInt           getRepeatCharLength();
+    static uInt           getClrBolLength();
+    static uInt           getClrEolLength();
+    static uInt           getCursorAddressLengths();
+
     // Methods
 #if defined(__linux__)
     static void           initLinuxConsoleCharMap();
@@ -331,7 +344,6 @@ class FTerm
     static uInt           charEncode (uInt, fc::encoding);
     static char*          changeAttribute ( char_data*&
                                           , char_data*& );
-    static bool           hasChangedTermSize();
     static void           changeTermSizeFinished();
     static void           xtermMetaSendsESC (bool);
     static void           exitWithMessage (std::string)
@@ -340,21 +352,6 @@ class FTerm
     #endif
                           ;
     // Data Members
-    static int            erase_ch_length;
-    static int            repeat_char_length;
-    static int            clr_bol_length;
-    static int            clr_eol_length;
-    static int            cursor_addres_lengths;
-    static bool           NewFont;
-    static bool           VGAFont;
-    static bool           no_shadow_character;
-    static bool           no_half_block_character;
-    static bool           cursor_optimisation;
-    static bool           xterm_default_colors;
-    static bool           use_alternate_screen;
-    static fc::encoding   term_encoding;
-    static char           exit_message[8192];
-
     static struct initializationValues
     {
       public:
@@ -502,7 +499,13 @@ class FTerm
     static std::map <uChar,uChar>* vt100_alt_char;
     static std::map <std::string,fc::encoding>* encoding_set;
     static FTermcap::tcap_map* tcap;
+    static fc::encoding   term_encoding;
 
+    static bool           shadow_character;
+    static bool           half_block_character;
+    static bool           cursor_optimisation;
+    static bool           xterm_default_colors;
+    static bool           use_alternate_screen;
     static bool           input_data_pending;
     static bool           non_blocking_stdin;
     static bool           pc_charset_console;
@@ -513,10 +516,13 @@ class FTerm
     static bool           force_vt100;
     static bool           vt100_console;
     static bool           ascii_console;
+    static bool           NewFont;
+    static bool           VGAFont;
     static bool           color256;
     static bool           monochron;
     static char           termtype[256];
     static char           termfilename[256];
+    static char           exit_message[8192];
     static char*          locale_name;
     static char*          locale_xterm;
     static FRect*         term;  // current terminal geometry
@@ -524,6 +530,11 @@ class FTerm
     static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
+    static uInt           erase_char_length;
+    static uInt           repeat_char_length;
+    static uInt           clr_bol_length;
+    static uInt           clr_eol_length;
+    static uInt           cursor_address_lengths;
     static long           key_timeout;
     static bool           resize_term;
 
@@ -785,6 +796,38 @@ inline bool FTerm::unsetNonBlockingInput()
 //----------------------------------------------------------------------
 inline bool FTerm::hasChangedTermSize()
 { return resize_term; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::hasShadowCharacter()
+{ return shadow_character; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::hasHalfBlockCharacter()
+{ return half_block_character; }
+
+//----------------------------------------------------------------------
+inline bool FTerm::hasAlternateScreen()
+{ return use_alternate_screen; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getEraseCharLength()
+{ return erase_char_length; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getRepeatCharLength()
+{ return repeat_char_length; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getClrBolLength()
+{ return clr_bol_length; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getClrEolLength()
+{ return clr_eol_length; }
+
+//----------------------------------------------------------------------
+inline uInt FTerm::getCursorAddressLengths()
+{ return cursor_address_lengths; }
 
 //----------------------------------------------------------------------
 inline void FTerm::changeTermSizeFinished()

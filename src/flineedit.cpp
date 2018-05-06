@@ -234,8 +234,8 @@ bool FLineEdit::setFocus (bool on)
 bool FLineEdit::setShadow (bool on)
 {
   if ( on
-    && term_encoding != fc::VT100
-    && term_encoding != fc::ASCII )
+    && getEncoding() != fc::VT100
+    && getEncoding() != fc::ASCII )
   {
     flags |= fc::shadow;
     setShadowSize(1,1);

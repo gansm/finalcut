@@ -2176,7 +2176,7 @@ void FVTerm::finish()
   // Clear the terminal
   setNormal();
 
-  if ( use_alternate_screen )
+  if ( hasAlternateScreen() )
     clearTerm();
 
   flush_out();
@@ -2413,7 +2413,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
 
     if ( beginning_whitespace == uInt(vt->width) - xmin
       && (ut || normal)
-      && clr_eol_length < int(beginning_whitespace) )
+      && getClrEolLength() < beginning_whitespace )
       return true;
   }
 
@@ -2448,7 +2448,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
 
     if ( leading_whitespace > xmin
       && (ut || normal)
-      && clr_bol_length < int(leading_whitespace) )
+      && getClrBolLength() < leading_whitespace )
     {
       xmin = leading_whitespace - 1;
       return true;
@@ -2486,7 +2486,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
 
     if ( trailing_whitespace > uInt(vt->width) - xmax
       && (ut || normal)
-      && clr_bol_length < int(trailing_whitespace) )
+      && getClrBolLength() < trailing_whitespace )
     {
       xmax = uInt(vt->width) - trailing_whitespace;
       return true;
@@ -2519,7 +2519,7 @@ bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
         break;
     }
 
-    if ( count > uInt(cursor_addres_lengths) )
+    if ( count > getCursorAddressLengths() )
     {
       setTermXY (int(x + count), int(y));
       x = x + count - 1;
@@ -2604,7 +2604,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
     uInt start_pos = x;
     bool& ut = FTermcap::background_color_erase;
 
-    if ( whitespace > uInt(erase_ch_length) + uInt(cursor_addres_lengths)
+    if ( whitespace > getEraseCharLength() + getCursorAddressLengths()
       && (ut || normal) )
     {
       appendAttributes (print_char);
@@ -2664,7 +2664,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
   {
     uInt start_pos = x;
 
-    if ( repetitions > uInt(repeat_char_length)
+    if ( repetitions > getRepeatCharLength()
       && print_char->code < 128 )
     {
       newFontChanges (print_char);
@@ -2862,7 +2862,7 @@ inline void FVTerm::markAsPrinted (uInt from, uInt to, uInt line)
 inline void FVTerm::newFontChanges (char_data*& next_char)
 {
   // NewFont special cases
-  if ( NewFont )
+  if ( isNewFont() )
   {
     switch ( next_char->code )
     {
@@ -2902,7 +2902,7 @@ inline void FVTerm::newFontChanges (char_data*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::charsetChanges (char_data*& next_char)
 {
-  if ( term_encoding == fc::UTF8 )
+  if ( getEncoding() == fc::UTF8 )
     return;
 
   uInt code = uInt(next_char->code);
@@ -2919,9 +2919,9 @@ inline void FVTerm::charsetChanges (char_data*& next_char)
 
   next_char->code = int(ch_enc);
 
-  if ( term_encoding == fc::VT100 )
+  if ( getEncoding() == fc::VT100 )
     next_char->attr.bit.alt_charset = true;
-  else if ( term_encoding == fc::PC )
+  else if ( getEncoding() == fc::PC )
   {
     next_char->attr.bit.pc_charset = true;
 

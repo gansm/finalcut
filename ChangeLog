@@ -1,3 +1,6 @@
+2017-05-06  Markus Gans  <guru.mail@muenster.de>
+	* Some protected data members in FTerm moved to private
+
 2017-05-03  Markus Gans  <guru.mail@muenster.de>
 	* Fix resetColorMap in FTerm
 

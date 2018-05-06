@@ -48,11 +48,11 @@ int (*FTerm::Fputchar)(int);
 // static class attributes
 int      FTerm::fd_tty;
 int      FTerm::stdin_status_flags;
-int      FTerm::erase_ch_length;
-int      FTerm::repeat_char_length;
-int      FTerm::clr_bol_length;
-int      FTerm::clr_eol_length;
-int      FTerm::cursor_addres_lengths;
+uInt     FTerm::erase_char_length;
+uInt     FTerm::repeat_char_length;
+uInt     FTerm::clr_bol_length;
+uInt     FTerm::clr_eol_length;
+uInt     FTerm::cursor_address_lengths;
 uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
 bool     FTerm::resize_term;
@@ -71,8 +71,8 @@ bool     FTerm::vt100_console;
 bool     FTerm::ascii_console;
 bool     FTerm::NewFont;
 bool     FTerm::VGAFont;
-bool     FTerm::no_shadow_character;
-bool     FTerm::no_half_block_character;
+bool     FTerm::shadow_character;
+bool     FTerm::half_block_character;
 bool     FTerm::cursor_optimisation;
 bool     FTerm::xterm_default_colors;
 bool     FTerm::use_alternate_screen = true;
@@ -824,7 +824,9 @@ void FTerm::setXTermCursorStyle (fc::xtermCursorStyle style)
     return;
 #endif
 
-  if ( isXTerminal() || isMinttyTerm()
+  if ( TCAP(fc::t_cursor_style)
+    || isXTerminal()
+    || isMinttyTerm()
     || term_detection->hasSetCursorStyleSupport() )
   {
     putstringf (CSI "%d q", style);
@@ -1496,7 +1498,7 @@ void FTerm::initLinuxConsoleCharMap()
     || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
     || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
   {
-    no_shadow_character = true;
+    shadow_character = false;
   }
 
   c4 = fc::RightHalfBlock;
@@ -1505,7 +1507,7 @@ void FTerm::initLinuxConsoleCharMap()
   if ( charEncode(c4, fc::PC) == charEncode(c4, fc::ASCII)
     || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
   {
-    no_half_block_character = true;
+    half_block_character = false;
   }
 }
 #endif
@@ -2198,22 +2200,22 @@ void FTerm::init_global_values()
   key_timeout = 100000;  // 100 ms
 
   // Preset to true
-  cursor_optimisation     = true;
+  shadow_character     = \
+  half_block_character = \
+  cursor_optimisation  = true;
 
   // Preset to false
-  utf8_console            = \
-  utf8_input              = \
-  utf8_state              = \
-  utf8_linux_terminal     = \
-  pc_charset_console      = \
-  vt100_console           = \
-  NewFont                 = \
-  VGAFont                 = \
-  no_shadow_character     = \
-  no_half_block_character = \
-  ascii_console           = \
-  force_vt100             = \
-  xterm_default_colors    = false;
+  utf8_console         = \
+  utf8_input           = \
+  utf8_state           = \
+  utf8_linux_terminal  = \
+  pc_charset_console   = \
+  vt100_console        = \
+  NewFont              = \
+  VGAFont              = \
+  ascii_console        = \
+  force_vt100          = \
+  xterm_default_colors = false;
 
   // Assertion: programm start in cooked mode
   input_data_pending      = \
@@ -2656,7 +2658,7 @@ void FTerm::init_OptiMove()
   opti_move->set_cursor_down (TCAP(fc::t_cursor_down));
   opti_move->set_cursor_left (TCAP(fc::t_cursor_left));
   opti_move->set_cursor_right (TCAP(fc::t_cursor_right));
-  cursor_addres_lengths = \
+  cursor_address_lengths = \
       opti_move->set_cursor_address (TCAP(fc::t_cursor_address));
   opti_move->set_column_address (TCAP(fc::t_column_address));
   opti_move->set_row_address (TCAP(fc::t_row_address));
@@ -2666,7 +2668,7 @@ void FTerm::init_OptiMove()
   opti_move->set_parm_right_cursor (TCAP(fc::t_parm_right_cursor));
   opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
   opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
-  erase_ch_length = \
+  erase_char_length = \
       opti_move->set_erase_chars (TCAP(fc::t_erase_chars));
   repeat_char_length = \
       opti_move->set_repeat_char (TCAP(fc::t_repeat_char));

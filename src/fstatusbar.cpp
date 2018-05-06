@@ -664,13 +664,13 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
     if ( isMonochron() )
       setReverse(false);
 
-    if ( no_half_block_character )
-      print (' ');
-    else
+    if ( hasHalfBlockCharacter() )
     {
       setColor (wc.statusbar_active_fg, wc.statusbar_active_bg);
       print (fc::LeftHalfBlock);  // ▐
     }
+    else
+      print (' ');
 
     x++;
 
