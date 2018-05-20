@@ -33,7 +33,6 @@
 static FVTerm* init_object = 0;
 
 // static class attributes
-bool                 FVTerm::hidden_cursor;
 bool                 FVTerm::terminal_update_complete;
 bool                 FVTerm::terminal_update_pending;
 bool                 FVTerm::force_terminal_update;
@@ -131,46 +130,16 @@ void FVTerm::setTermXY (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-bool FVTerm::hideCursor (bool on)
+void FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
-  if ( on == hidden_cursor )
-    return hidden_cursor;
 
-  if ( on )
-  {
-    char* hide_str = disableCursor();
+  char* visibility_str = cursorsVisibility (on);
 
-    if ( hide_str )
-    {
-      appendOutputBuffer (hide_str);
-      hidden_cursor = true;  // global
-    }
-  }
-  else
-  {
-    char* show_str = enableCursor();
-
-    if ( show_str )
-    {
-      appendOutputBuffer (show_str);
-      hidden_cursor = false;
-    }
-  }
+  if ( visibility_str )
+    appendOutputBuffer(visibility_str);
 
   flush_out();
-
-#if defined(__linux__)
-  if ( ! hidden_cursor && isLinuxTerm() )
-    setLinuxConsoleCursorStyle (getLinuxConsoleCursorStyle(), false);
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  if ( ! hidden_cursor )
-    setFreeBSDConsoleCursorStyle (getFreeBSDConsoleCursorStyle(), false);
-#endif
-
-  return hidden_cursor;
 }
 
 //----------------------------------------------------------------------
@@ -711,43 +680,6 @@ FVTerm::term_area* FVTerm::getPrintArea()
   }
 
   return vdesktop;
-}
-
-//----------------------------------------------------------------------
-void FVTerm::setInsertCursorStyle (bool on)
-{
-  if ( on )
-  {
-    setXTermCursorStyle(fc::blinking_underline);
-    setKDECursor(fc::UnderlineCursor);
-
-#if defined(__linux__)
-    setLinuxConsoleCursorStyle (fc::underscore_cursor, isCursorHidden());
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, isCursorHidden());
-#endif
-
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:ffff/ffff/ffff");
-  }
-  else
-  {
-    setXTermCursorStyle(fc::steady_block);
-    setKDECursor(fc::BlockCursor);
-
-#if defined(__linux__)
-    setLinuxConsoleCursorStyle (fc::full_block_cursor, isCursorHidden());
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    setFreeBSDConsoleCursorStyle (fc::normal_cursor, isCursorHidden());
-#endif
-
-    if ( isUrxvtTerminal() )
-      setXTermCursorColor("rgb:eeee/0000/0000");
-  }
 }
 
 //----------------------------------------------------------------------
@@ -2134,7 +2066,6 @@ void FVTerm::init()
   }
 
   // Preset to false
-  hidden_cursor           = \
   terminal_update_pending = \
   force_terminal_update   = \
   stop_terminal_updates   = false;

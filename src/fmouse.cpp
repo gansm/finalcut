@@ -28,6 +28,7 @@
 
 #include "final/fmouse.h"
 #include "final/fterm.h"
+#include "final/ftermxterminal.h"
 
 
 //----------------------------------------------------------------------
@@ -1632,23 +1633,11 @@ FMouse* FMouseControl::getMouseWithEvent()
 void FMouseControl::xtermMouse (bool on)
 {
   // activate/deactivate the xterm mouse support
+
   if ( ! use_xterm_mouse )
     return;
 
-  if ( on )
-    putstring (CSI "?1001s"    // save old highlight mouse tracking
-               CSI "?1000h"    // enable x11 mouse tracking
-               CSI "?1002h"    // enable cell motion mouse tracking
-               CSI "?1015h"    // enable urxvt mouse mode
-               CSI "?1006h");  // enable SGR mouse mode
-  else
-    putstring (CSI "?1006l"    // disable SGR mouse mode
-               CSI "?1015l"    // disable urxvt mouse mode
-               CSI "?1002l"    // disable cell motion mouse tracking
-               CSI "?1000l"    // disable x11 mouse tracking
-               CSI "?1001r");  // restore old highlight mouse tracking
-
-  std::fflush(stdout);
+  FTermXTerminal::setMouseSupport (on);
 }
 
 //----------------------------------------------------------------------

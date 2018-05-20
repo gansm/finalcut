@@ -69,7 +69,7 @@ FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
 FLineEdit::~FLineEdit()  // destructor
 {
   if ( ! insert_mode )
-    setInsertCursorStyle();
+    setInsertCursor();
 }
 
 // FLineEdit operators
@@ -611,16 +611,16 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 void FLineEdit::onHide (FHideEvent*)
 {
   if ( ! insert_mode )
-    setInsertCursorStyle();
+    setInsertCursor();
 }
 
 //----------------------------------------------------------------------
 void FLineEdit::onFocusIn (FFocusEvent*)
 {
   if ( insert_mode )
-    setInsertCursorStyle();
+    setInsertCursor();
   else
-    unsetInsertCursorStyle();
+    unsetInsertCursor();
 
   if ( getStatusBar() )
   {
@@ -640,7 +640,7 @@ void FLineEdit::onFocusOut (FFocusEvent*)
   }
 
   if ( ! insert_mode )
-    setInsertCursorStyle();
+    setInsertCursor();
 }
 
 
@@ -885,9 +885,9 @@ inline void FLineEdit::keyInsert()
   insert_mode = not insert_mode;
 
   if ( insert_mode )
-    setInsertCursorStyle();
+    setInsertCursor();
   else
-    unsetInsertCursorStyle();
+    unsetInsertCursor();
 }
 
 //----------------------------------------------------------------------

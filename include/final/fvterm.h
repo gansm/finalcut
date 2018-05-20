@@ -129,9 +129,9 @@ class FVTerm : public FTerm
 
     // Mutators
     static void         setTermXY (register int, register int);
-    static bool         hideCursor (bool);
-    static bool         hideCursor();
-    static bool         showCursor();
+    static void         hideCursor (bool);
+    static void         hideCursor();
+    static void         showCursor();
     void                setPrintCursor (const FPoint&);
     void                setPrintCursor (register int, register int);
     void                setColor (short, short);
@@ -202,7 +202,6 @@ class FVTerm : public FTerm
     static bool         unsetInheritBackground();
 
     // Inquiries
-    static bool         isCursorHidden();
     static bool         isBold();
     static bool         isDim();
     static bool         isItalic();
@@ -274,11 +273,6 @@ class FVTerm : public FTerm
     bool                 hasPrintArea() const;
     bool                 hasChildPrintArea() const;
     bool                 isVirtualWindow() const;
-
-    // Mutator
-    static void          setInsertCursorStyle (bool on);
-    static void          setInsertCursorStyle();
-    static void          unsetInsertCursorStyle();
 
     // Methods
     void                 createArea ( const FRect&
@@ -443,7 +437,6 @@ class FVTerm : public FTerm
     static char_data        i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static termcap_map*     tcap;
-    static bool             hidden_cursor;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
     static bool             force_terminal_update;
@@ -552,11 +545,11 @@ inline FVTerm::char_data FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::hideCursor()
+inline void FVTerm::hideCursor()
 { return hideCursor(true); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::showCursor()
+inline void FVTerm::showCursor()
 { return hideCursor(false); }
 
 //----------------------------------------------------------------------
@@ -775,10 +768,6 @@ inline bool FVTerm::unsetInheritBackground()
 { return setInheritBackground(false); }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::isCursorHidden()
-{ return hidden_cursor; }
-
-//----------------------------------------------------------------------
 inline bool FVTerm::isBold()
 { return next_attribute.attr.bit.bold; }
 
@@ -857,14 +846,6 @@ inline bool FVTerm::hasChildPrintArea() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
-
-//----------------------------------------------------------------------
-inline void FVTerm::setInsertCursorStyle()
-{ setInsertCursorStyle(true); }
-
-//----------------------------------------------------------------------
-inline void FVTerm::unsetInsertCursorStyle()
-{ setInsertCursorStyle(false); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

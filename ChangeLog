@@ -1,3 +1,6 @@
+2017-05-20  Markus Gans  <guru.mail@muenster.de>
+	* Methods outsourcing from FTerm to FTermXTerminal
+
 2017-05-06  Markus Gans  <guru.mail@muenster.de>
 	* Some protected data members in FTerm moved to private
 

@@ -150,8 +150,8 @@ void FStringTest::tearDown()
 //----------------------------------------------------------------------
 void FStringTest::classNameTest()
 {
-  FString s;
-  const char* const classname = s.getClassName();
+  FString str;
+  const char* const classname = str.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FString") == 0 );
 }
 
@@ -1379,7 +1379,7 @@ void FStringTest::insertTest()
 void FStringTest::replaceTest()
 {
   const FString str = "Look behind you, a three-headed monkey!";
-  FString s = str;
+  FString s1 = str;
   const FString      from1   =  "three";
   const std::wstring from2   = L"three";
   const wchar_t      from3[] = L"three";
@@ -1395,184 +1395,184 @@ void FStringTest::replaceTest()
   const wchar_t      to6     =  '3';
   const char         to7     =  '3';
 
-  CPPUNIT_ASSERT ( s.replace(from1, to1)
+  CPPUNIT_ASSERT ( s1.replace(from1, to1)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to2)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to3)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to4)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to5)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to6)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from1, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from1, to7)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to1)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to2)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to3)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to4)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to5)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to6)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from2, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from2, to7)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to1)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to2)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to3)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to4)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to5)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to6)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from3, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from3, to7)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to1)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to2)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to3)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to4)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to5)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to6)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from4, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from4, to7)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to1)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to2)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to3)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to4)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to5)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to6)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from5, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from5, to7)
                    == "Look behind you, a 3-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to1)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to2)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to3)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to4)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to5)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to6)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from6, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from6, to7)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to1)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to1)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to2)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to2)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to3)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to3)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to4)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to4)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to5)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to5)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to6)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to6)
                    == "Look behind you3 a three-headed monkey!" );
-  s = str;
-  CPPUNIT_ASSERT ( s.replace(from7, to7)
+  s1 = str;
+  CPPUNIT_ASSERT ( s1.replace(from7, to7)
                    == "Look behind you3 a three-headed monkey!" );
 
-  s = "A big ball and a small ball";
-  CPPUNIT_ASSERT ( s.replace("ball", "globe")
+  s1 = "A big ball and a small ball";
+  CPPUNIT_ASSERT ( s1.replace("ball", "globe")
                    == "A big globe and a small globe" );
 
-  s = "ABC";
+  s1 = "ABC";
   FString empty;
-  CPPUNIT_ASSERT ( s.replace('B', "") == "AC" );
-  CPPUNIT_ASSERT ( s.replace(L'B', "") == "AC" );
-  CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from6, empty) == "ABC"  );
+  CPPUNIT_ASSERT ( s1.replace('B', "") == "AC" );
+  CPPUNIT_ASSERT ( s1.replace(L'B', "") == "AC" );
+  CPPUNIT_ASSERT ( s1.replace(from1, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from3, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from5, to5) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(empty, to1) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from6, empty) == "ABC"  );
 
   empty = "";
-  CPPUNIT_ASSERT ( s.replace(from1, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from3, empty) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from5, to5) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(empty, to1) == "ABC" );
-  CPPUNIT_ASSERT ( s.replace(from6, empty) == "ABC"  );
+  CPPUNIT_ASSERT ( s1.replace(from1, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from3, empty) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from5, to5) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(empty, to1) == "ABC" );
+  CPPUNIT_ASSERT ( s1.replace(from6, empty) == "ABC"  );
 
-  s.clear();
-  CPPUNIT_ASSERT ( s.replace(from1, to1).isNull() );
-  CPPUNIT_ASSERT ( s.replace(from1, to1).isEmpty() );
-  CPPUNIT_ASSERT ( s.replace(from6, to1).isNull() );
-  CPPUNIT_ASSERT ( s.replace(from6, to1).isEmpty() );
+  s1.clear();
+  CPPUNIT_ASSERT ( s1.replace(from1, to1).isNull() );
+  CPPUNIT_ASSERT ( s1.replace(from1, to1).isEmpty() );
+  CPPUNIT_ASSERT ( s1.replace(from6, to1).isNull() );
+  CPPUNIT_ASSERT ( s1.replace(from6, to1).isEmpty() );
 
-  CPPUNIT_ASSERT ( s.replace(from5, to5).isNull() );
-  CPPUNIT_ASSERT ( s.replace(from5, to5).isEmpty() );
-  CPPUNIT_ASSERT ( s.replace(from7, to7).isNull() );
-  CPPUNIT_ASSERT ( s.replace(from7, to7).isEmpty() );
+  CPPUNIT_ASSERT ( s1.replace(from5, to5).isNull() );
+  CPPUNIT_ASSERT ( s1.replace(from5, to5).isEmpty() );
+  CPPUNIT_ASSERT ( s1.replace(from7, to7).isNull() );
+  CPPUNIT_ASSERT ( s1.replace(from7, to7).isEmpty() );
 }
 
 //----------------------------------------------------------------------

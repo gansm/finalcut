@@ -47,6 +47,7 @@ INCLUDE_HEADERS = \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \
+	ftermxterminal.h \
 	fvterm.h \
 	ftextview.h \
 	ftogglebutton.h \
@@ -101,6 +102,7 @@ OBJS = \
 	ftermios.o \
 	ftermdetection.o \
 	ftermcapquirks.o \
+	ftermxterminal.o \
 	fvterm.o \
 	fevent.o \
 	foptiattr.o \

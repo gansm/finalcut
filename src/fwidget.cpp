@@ -1160,21 +1160,8 @@ void FWidget::show()
 
   if ( ! init_desktop )
   {
-#if defined(__linux__)
-    // Important: Do not use setNewFont() or setVGAFont() after
-    //            the console character mapping has been initialized
-    initLinuxConsoleCharMap();
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    initFreeBSDConsoleCharMap();
-#endif
-
-    // set xterm underline cursor
-    setXTermCursorStyle(fc::blinking_underline);
-
-    // set xterm color settings to defaults
-    setXTermDefaults();
+    // Sets the initial screen settings
+    initScreenSettings();
 
     // draw the vdesktop
     FWidget* r = getRootWidget();

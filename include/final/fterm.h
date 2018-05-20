@@ -23,12 +23,36 @@
 /*  Base class
  *  ══════════
  *
- * ▕▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FTerm ▏-┬- - - -▕ FOptiMove ▏
- * ▕▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▏1       1▕▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FTerm ▏-┬- - - -▕ FTermios ▏
+ * ▕▁▁▁▁▁▁▁▏ :       ▕▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FTermcap ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FTermcapQuirks ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FTermDetection ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FTermXTerminal ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FColorPalette ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  *           :
  *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▏
  *           :- - - -▕ FOptiAttr ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FOptiMove ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
  *           :
  *           :      *▕▔▔▔▔▔▔▔▔▔▏
@@ -123,6 +147,7 @@
 #include "final/ftermcapquirks.h"
 #include "final/ftermdetection.h"
 #include "final/ftermios.h"
+#include "final/ftermxterminal.h"
 
 
 //----------------------------------------------------------------------
@@ -190,6 +215,7 @@ class FTerm
 #endif
 
     // Inquiries
+    static bool           isCursorHidden();
     static bool           isKeypressTimeout (timeval*);
     static bool           isNormal (char_data*&);
     static bool           isRaw();
@@ -223,11 +249,14 @@ class FTerm
 
     // Mutators
     static void           setTermType (char[]);
+    static void           setInsertCursor (bool on);
+    static void           setInsertCursor();
+    static void           unsetInsertCursor();
     static bool           setCursorOptimisation (bool);
-    static void           setXTermDefaultColors (bool);
+    static void           redefineDefaultColors (bool);
 
 #if defined(__linux__)
-    static void           setLinuxConsoleCursorStyle \
+    static char*          setLinuxConsoleCursorStyle \
                               (fc::linuxConsoleCursorStyle, bool);
 #endif
 
@@ -253,31 +282,14 @@ class FTerm
     static bool           setNewFont();
     static bool           setOldFont();
     static char*          moveCursor (int, int, int, int);
+    static char*          cursorsVisibility (bool);
     static void           printMoveDurations();
     static char*          enableCursor();
     static char*          disableCursor();
     static void           detectTermSize();
     static void           setTermSize (int, int);
+    static void           setTermTitle(const FString&);
     static void           setKDECursor (fc::kdeKonsoleCursorShape);
-    static const FString* getXTermFont();
-    static const FString* getXTermTitle();
-    static void           setXTermCursorStyle (fc::xtermCursorStyle);
-    static void           setXTermTitle (const FString&);
-    static void           setXTermForeground (const FString&);
-    static void           setXTermBackground (const FString&);
-    static void           setXTermCursorColor (const FString&);
-    static void           setXTermMouseForeground (const FString&);
-    static void           setXTermMouseBackground (const FString&);
-    static void           setXTermHighlightBackground (const FString&);
-    static void           setXTermDefaults();
-    static void           resetXTermColors();
-    static void           resetXTermForeground();
-    static void           resetXTermBackground();
-    static void           resetXTermCursorColor();
-    static void           resetXTermMouseForeground();
-    static void           resetXTermMouseBackground();
-    static void           resetXTermHighlightBackground();
-    static void           resetXTermDefaults();
     static void           saveColorMap();
     static void           resetColorMap();
     static void           setPalette (short, int, int, int);
@@ -331,21 +343,13 @@ class FTerm
     static uInt           getCursorAddressLengths();
 
     // Methods
-#if defined(__linux__)
-    static void           initLinuxConsoleCharMap();
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void           initFreeBSDConsoleCharMap();
-#endif
-
+    static void           initScreenSettings();
     static bool           charEncodable (uInt);
     static uInt           charEncode (uInt);
     static uInt           charEncode (uInt, fc::encoding);
     static char*          changeAttribute ( char_data*&
                                           , char_data*& );
     static void           changeTermSizeFinished();
-    static void           xtermMetaSendsESC (bool);
     static void           exitWithMessage (std::string)
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
@@ -428,6 +432,7 @@ class FTerm
     static int            setUnicodeMap (struct unimapdesc*);
     static int            getUnicodeMap ();
     static void           initLinuxConsole();
+    static void           initLinuxConsoleCharMap();
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -436,6 +441,7 @@ class FTerm
     static bool           setFreeBSDAlt2Meta();
     static bool           resetFreeBSDAlt2Meta();
     static void           initFreeBSDConsole();
+    static void           initFreeBSDConsoleCharMap();
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
@@ -474,11 +480,12 @@ class FTerm
     static void           init_tab_quirks();
     static void           redefineColorPalette();
     static void           restoreColorPalette();
+    static void           setInsertCursorStyle();
+    static void           setOverwriteCursorStyle();
     static void           enableMouse();
     static void           disableMouse();
     static void           useAlternateScreenBuffer();
     static void           useNormalScreenBuffer();
-    static void           captureXTermFontAndTitle();
     void                  allocationValues();
     void                  deallocationValues();
     void                  init();
@@ -504,7 +511,7 @@ class FTerm
     static bool           shadow_character;
     static bool           half_block_character;
     static bool           cursor_optimisation;
-    static bool           xterm_default_colors;
+    static bool           hidden_cursor;
     static bool           use_alternate_screen;
     static bool           input_data_pending;
     static bool           non_blocking_stdin;
@@ -554,9 +561,10 @@ class FTerm
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
     static FTermDetection* term_detection;
+    static FTermXTerminal* xterm;
     static FMouseControl*  mouse;
-    static const FString*  xterm_font;
-    static const FString*  xterm_title;
+    static const FString*  save_xterm_font;
+    static const FString*  save_xterm_title;
 
     static struct colorEnv
     {
@@ -582,8 +590,8 @@ class FTerm
     {
       void setDefault()
       {
-        terminal_id_type = -1;
-        terminal_id_version = -1;
+        terminal_id_type     = -1;
+        terminal_id_version  = -1;
         terminal_id_hardware = -1;
       }
 
@@ -648,6 +656,10 @@ inline const char* FTerm::getTermType_SecDA()
 inline int FTerm::getFramebufferBpp()
 { return framebuffer_bpp; }
 #endif
+
+//----------------------------------------------------------------------
+inline bool FTerm::isCursorHidden()
+{ return hidden_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FTerm::isKeypressTimeout (timeval* time)
@@ -762,12 +774,16 @@ inline bool FTerm::isUTF8()
 { return utf8_state; }
 
 //----------------------------------------------------------------------
-inline bool FTerm::setCursorOptimisation (bool on)
-{ return cursor_optimisation = ( on ) ? true : false; }
+inline void FTerm::setInsertCursor()
+{ setInsertCursor(true); }
 
 //----------------------------------------------------------------------
-inline void FTerm::setXTermDefaultColors (bool on)
-{ xterm_default_colors = on; }
+inline void FTerm::unsetInsertCursor()
+{ setInsertCursor(false); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::setCursorOptimisation (bool on)
+{ return cursor_optimisation = ( on ) ? true : false; }
 
 //----------------------------------------------------------------------
 inline void FTerm::setKeypressTimeout (const long timeout)

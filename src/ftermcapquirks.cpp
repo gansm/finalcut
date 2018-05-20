@@ -179,7 +179,7 @@ void FTermcapQuirks::init_termcap_linux_quirks()
   /* Same settings are used by cygwin */
 
   // Set ansi foreground and background color
-  if ( FTermcap::max_color > 8 )
+  if ( FTerm::getMaxColor() > 8 )
   {
     TCAP(fc::t_set_a_foreground) = \
         C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m");

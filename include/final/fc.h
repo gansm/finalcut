@@ -963,6 +963,7 @@ enum scrollBarMode
 // Xterm cursor style
 enum xtermCursorStyle
 {
+  unknown_cursor_style   = -1,
   blinking_block         = 0,
   blinking_block_default = 1,
   steady_block           = 2,

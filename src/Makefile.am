@@ -41,6 +41,7 @@ libfinal_la_SOURCES = \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	ftermcapquirks.cpp \
+	ftermxterminal.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
@@ -104,6 +105,7 @@ finalcutinclude_HEADERS = \
 	../include/final/ftcap_map.h \
 	../include/final/ftermcap.h \
 	../include/final/ftermcapquirks.h \
+	../include/final/ftermxterminal.h \
 	../include/final/ftermdetection.h \
 	../include/final/ftermios.h \
 	../include/final/fterm.h \

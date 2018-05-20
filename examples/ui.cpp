@@ -39,6 +39,7 @@ class ProgressDialog : public FDialog
   public:
     // Constructor
     explicit ProgressDialog (FWidget* = 0);
+
     // Destructor
     ~ProgressDialog();
 
@@ -194,6 +195,7 @@ class TextWindow : public FDialog
   public:
     // Constructor
     explicit TextWindow (FWidget* = 0);
+
     // Destructor
     ~TextWindow();
 
@@ -205,6 +207,7 @@ class TextWindow : public FDialog
     // Disable assignment operator (=)
     TextWindow& operator = (const TextWindow&);
 
+    // Method
     void adjustSize();
 
     // Data Members
@@ -969,8 +972,8 @@ void MyDialog::cb_setTitlebar (FWidget* widget, data_ptr)
   FLineEdit* lineedit = static_cast<FLineEdit*>(widget);
   FString title;
   *lineedit >> title;
-  setXTermTitle(title);;
-  setText(title);
+  setTermTitle (title);
+  setText (title);
   redraw();
 }
 
@@ -1072,8 +1075,8 @@ int main (int argc, char* argv[])
 
   // Create the application object app
   FApplication app(argc, argv);
-  app.setXTermDefaultColors(true);
-  app.setXTermTitle (title);
+  app.redefineDefaultColors(true);
+  app.setTermTitle (title);
 
   // Force vt100 encoding
   //app.setEncoding("VT100");
