@@ -2395,6 +2395,22 @@ void FTerm::init_tab_quirks()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_captureFontAndTitle()
+{
+  // Save the used xterm font and window title
+
+  xterm->captureFontAndTitle();
+  const FString* font = xterm->getFont();
+  const FString* title = xterm->getTitle();
+
+  if ( font )
+    save_xterm_font = new FString(*font);
+
+  if ( title )
+    save_xterm_title = new FString(*title);
+}
+
+//----------------------------------------------------------------------
 void FTerm::redefineColorPalette()
 {
   // Redefine the color palette
@@ -2697,9 +2713,7 @@ void FTerm::init()
   }
 
   // Save the used xterm font and window title
-  xterm->captureFontAndTitle();
-  save_xterm_font = new FString(*(xterm->getFont()));
-  save_xterm_title = new FString(*(xterm->getTitle()));
+  init_captureFontAndTitle();
 
   if ( isKdeTerminal() )
     setKDECursor(fc::UnderlineCursor);

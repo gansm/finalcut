@@ -443,6 +443,7 @@ class FTerm
     static bool           init_force_vt100_encoding();
     static void           init_utf8_without_alt_charset();
     static void           init_tab_quirks();
+    static void           init_captureFontAndTitle();
     static void           redefineColorPalette();
     static void           restoreColorPalette();
     static void           setInsertCursorStyle();
