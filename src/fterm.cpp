@@ -56,10 +56,8 @@ uInt     FTerm::cursor_address_lengths;
 uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
 bool     FTerm::resize_term;
-
 bool     FTerm::input_data_pending;
 bool     FTerm::non_blocking_stdin;
-bool     FTerm::color256;
 bool     FTerm::monochron;
 bool     FTerm::pc_charset_console;
 bool     FTerm::utf8_input;
@@ -76,8 +74,8 @@ bool     FTerm::half_block_character;
 bool     FTerm::cursor_optimisation;
 bool     FTerm::hidden_cursor;
 bool     FTerm::use_alternate_screen = true;
-char     FTerm::termtype[256] = {};
-char     FTerm::termfilename[256] = {};
+char     FTerm::termtype[256] = { };
+char     FTerm::termfilename[256] = { };
 #if DEBUG
 int      FTerm::framebuffer_bpp = -1;
 #endif
@@ -112,7 +110,6 @@ FTerm::colorEnv               FTerm::color_env;
 FTerm::secondaryDA            FTerm::secondary_da;
 FTerm::initializationValues   FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
-fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 
 #if defined(__linux__)
   FTerm::modifier_key  FTerm::mod_key;
@@ -121,11 +118,11 @@ fc::freebsdConsoleCursorStyle FTerm::freebsd_console_cursor_style;
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  uInt FTerm::bsd_alt_keymap = 0;
+  FTermFreeBSD*        FTerm::freebsd = 0;
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  kbd_t FTerm::wscons_keyboard_encoding = 0;
+  FTermOpenBSD*        FTerm::openbsd = 0;
 #endif
 
 
@@ -151,7 +148,7 @@ FTerm::FTerm (bool disable_alt_screen)
 FTerm::~FTerm()  // destructor
 {
   if ( init_term_object == this )
-    finish();
+    finish();  // Resetting console settings
 }
 
 
@@ -233,14 +230,6 @@ fc::linuxConsoleCursorStyle FTerm::getLinuxConsoleCursorStyle()
 }
 #endif
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-//----------------------------------------------------------------------
-fc::freebsdConsoleCursorStyle FTerm::getFreeBSDConsoleCursorStyle()
-{
-  return freebsd_console_cursor_style;
-}
-#endif
-
 //----------------------------------------------------------------------
 bool FTerm::isNormal (char_data*& ch)
 {
@@ -292,25 +281,6 @@ char* FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
 
   std::sprintf (buf, CSI "?%dc", style);
   return buf;
-}
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-//----------------------------------------------------------------------
-void FTerm::setFreeBSDConsoleCursorStyle ( fc::freebsdConsoleCursorStyle style
-                                         , bool hidden )
-{
-  // Set cursor style in a BSD console
-
-  if ( ! isFreeBSDConsole() )
-    return;
-
-  freebsd_console_cursor_style = style;
-
-  if ( hidden )
-    return;
-
-  ioctl(0, CONS_CURSORTYPE, &style);
 }
 #endif
 
@@ -608,7 +578,8 @@ bool FTerm::setOldFont()
 //----------------------------------------------------------------------
 char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
 {
-  // returns the cursor move string
+  // Returns the cursor move string
+
   if ( cursor_optimisation )
     return opti_move->moveCursor (xold, yold, xnew, ynew);
   else
@@ -652,6 +623,8 @@ void FTerm::printMoveDurations()
 //----------------------------------------------------------------------
 char* FTerm::enableCursor()
 {
+  // Returns the cursor enable string
+
   static const std::size_t SIZE = 32;
   static char enable_str[SIZE] = { };
   char*& vs = TCAP(fc::t_cursor_visible);
@@ -665,6 +638,7 @@ char* FTerm::enableCursor()
 #if defined(__linux__)
   if ( isLinuxTerm() )
   {
+    // Restore the last used Linux console cursor style
     char* lcur;
     lcur = setLinuxConsoleCursorStyle (getLinuxConsoleCursorStyle(), false);
     std::strncat (enable_str, lcur, SIZE - std::strlen(enable_str) - 1);
@@ -672,7 +646,8 @@ char* FTerm::enableCursor()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  setFreeBSDConsoleCursorStyle (getFreeBSDConsoleCursorStyle(), false);
+  // Restore the last used FreeBSD console cursor style
+  freebsd->restoreCursorStyle();
 #endif
 
   return enable_str;
@@ -681,6 +656,8 @@ char* FTerm::enableCursor()
 //----------------------------------------------------------------------
 char* FTerm::disableCursor()
 {
+  // Returns the cursor disable string
+
   char*& vi = TCAP(fc::t_cursor_invisible);
 
   if ( vi )
@@ -692,6 +669,8 @@ char* FTerm::disableCursor()
 //----------------------------------------------------------------------
 void FTerm::detectTermSize()
 {
+  // Detect the terminal width and height
+
   struct winsize win_size;
   bool close_after_detect = false;
   int ret;
@@ -1114,7 +1093,7 @@ void FTerm::initScreenSettings()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  initFreeBSDConsoleCharMap();
+  freebsd->initCharMap();
 #endif
 
   // set xterm underline cursor
@@ -1187,37 +1166,13 @@ void FTerm::exitWithMessage (std::string message)
 #if defined(__linux__)
 int FTerm::isLinuxConsole()
 {
+  // Check if it's a Linux console
+
   char arg = 0;
   // get keyboard type an compare
   return ( isatty (fd_tty)
         && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
         && ((arg == KB_101) || (arg == KB_84)) );
-}
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-//----------------------------------------------------------------------
-bool FTerm::isFreeBSDConsole()
-{
-  keymap_t keymap;
-
-  if ( ioctl(0, GIO_KEYMAP, &keymap) == 0 )
-    return true;
-  else
-    return false;
-}
-#endif
-
-//----------------------------------------------------------------------
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-bool FTerm::isWSConsConsole()
-{
-  static kbd_t kbdencoding;
-
-  if ( ioctl(0, WSKBDIO_GETENCODING, &kbdencoding) == 0 )
-    return true;
-  else
-    return false;
 }
 #endif
 
@@ -1328,7 +1283,7 @@ int FTerm::setBlinkAsIntensity (bool on)
 #endif
 
 //----------------------------------------------------------------------
-int FTerm::getFramebuffer_bpp ()
+int FTerm::getFramebuffer_bpp()
 {
   int fd = -1;
   struct fb_var_screeninfo fb_var;
@@ -1696,143 +1651,6 @@ void FTerm::initLinuxConsoleCharMap()
 }
 #endif
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-//----------------------------------------------------------------------
-bool FTerm::saveFreeBSDAltKey()
-{
-  static const int left_alt = 0x38;
-  int ret;
-  keymap_t keymap;
-
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
-
-  if ( ret < 0 )
-    return false;
-
-  // save current mapping
-  bsd_alt_keymap = keymap.key[left_alt].map[0];
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setFreeBSDAltKey (uInt key)
-{
-  static const int left_alt = 0x38;
-  int ret;
-  keymap_t keymap;
-
-  ret = ioctl(0, GIO_KEYMAP, &keymap);
-
-  if ( ret < 0 )
-    return false;
-
-  // map to meta key
-  keymap.key[left_alt].map[0] = key;
-
-  if ( (keymap.n_keys > 0) && (ioctl(0, PIO_KEYMAP, &keymap) < 0) )
-    return false;
-  else
-    return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setFreeBSDAlt2Meta()
-{
-  return setFreeBSDAltKey (META);
-}
-
-//----------------------------------------------------------------------
-bool FTerm::resetFreeBSDAlt2Meta()
-{
-  return setFreeBSDAltKey (bsd_alt_keymap);
-}
-
-//----------------------------------------------------------------------
-void FTerm::initFreeBSDConsole()
-{
-  // initialize BSD console
-
-  if ( isFreeBSDConsole() )
-  {
-    // save current left alt key mapping
-    saveFreeBSDAltKey();
-
-    // map meta key to left alt key
-    setFreeBSDAlt2Meta();
-
-    // Initialize FreeBSD console cursor
-    setFreeBSDConsoleCursorStyle (fc::destructive_cursor, true);
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::initFreeBSDConsoleCharMap()
-{
-  // A FreeBSD console can't show ASCII codes from 0x00 to 0x1b
-
-  if ( ! isFreeBSDConsole() )
-    return;
-
-  for (int i = 0; i <= fc::lastCharItem; i++ )
-    if ( fc::character[i][fc::PC] < 0x1c )
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
-}
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-//----------------------------------------------------------------------
-bool FTerm::saveWSConsEncoding()
-{
-  static kbd_t k_encoding;
-  int ret = ioctl(0, WSKBDIO_GETENCODING, &k_encoding);
-
-  if ( ret < 0 )
-    return false;
-
-  // save current encoding
-  wscons_keyboard_encoding = k_encoding;
-  return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setWSConsEncoding (kbd_t k_encoding)
-{
-  if ( ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
-    return false;
-  else
-    return true;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setWSConsMetaEsc()
-{
-  static const kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
-
-  return setWSConsEncoding (wscons_keyboard_encoding | meta_esc);
-}
-
-//----------------------------------------------------------------------
-bool FTerm::resetWSConsEncoding()
-{
-  return setWSConsEncoding (wscons_keyboard_encoding);
-}
-
-//----------------------------------------------------------------------
-void FTerm::initWSConsConsole()
-{
-  // initialize wscons console
-
-  if ( isWSConsConsole() )
-  {
-    // save current left alt key mapping
-    saveWSConsEncoding();
-
-    // alt key generate ESC prefix
-    setWSConsMetaEsc();
-  }
-}
-#endif
-
 //----------------------------------------------------------------------
 void FTerm::init_global_values()
 {
@@ -2072,6 +1890,7 @@ void FTerm::init_termcap()
   static char string_buf[2048];
   char* buffer = string_buf;
   int status = uninitialized;
+  bool color256 = term_detection->canDisplay256Colors();
 
   // share the terminal capabilities
   FTermcap().setTermcapMap(tcap);
@@ -2631,7 +2450,7 @@ void FTerm::setInsertCursorStyle()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  setFreeBSDConsoleCursorStyle (fc::destructive_cursor, isCursorHidden());
+  freebsd->setCursorStyle (fc::destructive_cursor, isCursorHidden());
 #endif
 
   if ( isUrxvtTerminal() )
@@ -2649,7 +2468,7 @@ void FTerm::setOverwriteCursorStyle()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  setFreeBSDConsoleCursorStyle (fc::normal_cursor, isCursorHidden());
+  freebsd->setCursorStyle (fc::normal_cursor, isCursorHidden());
 #endif
 
   if ( isUrxvtTerminal() )
@@ -2741,6 +2560,11 @@ inline void FTerm::allocationValues()
     opti_attr      = new FOptiAttr();
     term_detection = new FTermDetection();
     xterm          = new FTermXTerminal();
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    freebsd        = new FTermFreeBSD();
+#endif
+
     mouse          = new FMouseControl();
     term           = new FRect(0, 0, 0, 0);
     vt100_alt_char = new std::map<uChar, uChar>;
@@ -2773,6 +2597,11 @@ inline void FTerm::deallocationValues()
 
   if ( mouse )
     delete mouse;
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  if ( freebsd )
+    delete freebsd;
+#endif
 
   if ( xterm )
     delete xterm;
@@ -2918,12 +2747,12 @@ void FTerm::initOSspecifics()
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   // Initialize BSD console
-  initFreeBSDConsole();
+  freebsd->init();
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   // Initialize wscons console
-  initWSConsConsole();
+  openbsd->init();
 #endif
 }
 
@@ -3011,12 +2840,11 @@ void FTerm::finishOSspecifics1()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  resetFreeBSDAlt2Meta();
-  setFreeBSDConsoleCursorStyle (fc::normal_cursor, false);
+  freebsd->finish();
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  resetWSConsEncoding();
+  openbsd->finish();
 #endif
 }
 
@@ -3159,7 +2987,7 @@ inline int FTerm::getSingleKey (char buffer[], int buf_size)
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[4] = {};  // Init array with '\0'
+    char utf8char[4] = { };  // Init array with '\0'
 
     if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;

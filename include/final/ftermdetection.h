@@ -124,6 +124,7 @@ class FTermDetection
     static bool           isOpenBSDTerm();
     static bool           isScreenTerm();
     static bool           isTmuxTerm();
+    static bool           canDisplay256Colors();
     static bool           hasTerminalDetection();
     static bool           hasSetCursorStyleSupport();
 
@@ -273,6 +274,10 @@ inline const char* FTermDetection::getTermType_Answerback()
 inline const char* FTermDetection::getTermType_SecDA()
 { return termtype_SecDA; }
 #endif
+
+//----------------------------------------------------------------------
+inline bool FTermDetection::canDisplay256Colors()
+{ return color256; }
 
 //----------------------------------------------------------------------
 inline bool FTermDetection::hasSetCursorStyleSupport()

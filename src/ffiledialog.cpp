@@ -502,7 +502,7 @@ void FFileDialog::initCallbacks()
 inline bool FFileDialog::pattern_match ( const char* const pattern
                                        , char fname[] )
 {
-  char search[128] = {};
+  char search[128] = { };
 
   if ( show_hidden && fname[0] == '.' && fname[1] != '\0' )  // hidden files
   {
@@ -695,8 +695,8 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
   if ( ! entry.symbolic_link )
     return;  // No symbolic link
 
-  char resolved_path[MAXPATHLEN] = {};
-  char symLink[MAXPATHLEN] = {};
+  char resolved_path[MAXPATHLEN] = { };
+  char symLink[MAXPATHLEN] = { };
   struct stat sb;
 
   std::strncpy (symLink, dir, sizeof(symLink) - 1);

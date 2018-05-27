@@ -1,9 +1,9 @@
 /***********************************************************************
-* fclassname.cpp - [brief description]                                 *
+* ftermopenbsd.h - Contains the NetBSD/OpenBSD terminal functions      *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright  [year] [Maintainer]                                       *
+* Copyright 2018 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,32 +20,81 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#include "final/fclassname.h"
+/*  Standalone class
+ *  ════════════════
+ *
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FTermOpenBSD ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ */
 
-// static class attributes
+#ifndef FTERMOPENBSD_H
+#define FTERMOPENBSD_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
+#include <sys/ioctl.h>
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  #include <sys/time.h>
+  #include <dev/wscons/wsconsio.h>
+#endif
 
 //----------------------------------------------------------------------
-// class FClassName
+// class FTermOpenBSD
 //----------------------------------------------------------------------
 
-// constructors and destructor
+#pragma pack(push)
+#pragma pack(1)
+
+class FTermOpenBSD
+{
+  public:
+    // Constructors
+    FTermOpenBSD();
+
+    // Destructor
+    ~FTermOpenBSD();
+
+    // Overloaded operators
+
+    // Accessors
+
+    // Mutators
+
+    // Inquiries
+    static bool        isWSConsConsole();
+
+    // Methods
+    static void        init();
+    static void        finish();
+
+  private:
+    // Disable copy constructor
+    FTermOpenBSD (const FTermOpenBSD&);
+
+    // Disable assignment operator (=)
+    FTermOpenBSD& operator = (const FTermOpenBSD&);
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+    // Methods
+    static bool        saveWSConsEncoding();
+    static bool        setWSConsEncoding (kbd_t);
+    static bool        setWSConsMetaEsc();
+    static bool        resetWSConsEncoding();
+
+    // Data Members
+    static kbd_t       wscons_keyboard_encoding;
+#endif
+};
+#pragma pack(pop)
+
+// FTermOpenBSD inline functions
 //----------------------------------------------------------------------
-FClassName::FClassName()
-{ }
-
-//----------------------------------------------------------------------
-FClassName::~FClassName()  // destructor
-{ }
-
-// public methods of FClassName
-//----------------------------------------------------------------------
 
 
-// protected methods of FClassName
-//----------------------------------------------------------------------
+#endif  // FTERMOPENBSD_H
 
-
-// private methods of FClassName
-//----------------------------------------------------------------------
 

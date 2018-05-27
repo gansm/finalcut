@@ -23,7 +23,7 @@
 #include "final/ftermcapquirks.h"
 
 // static class attributes
-char                FTermcapQuirks::termtype[256]  = {};
+char                FTermcapQuirks::termtype[256]  = { };
 FTermcap::tcap_map* FTermcapQuirks::tcap           = 0;
 FTermDetection*     FTermcapQuirks::term_detection = 0;
 

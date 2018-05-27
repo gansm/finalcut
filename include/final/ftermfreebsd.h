@@ -1,9 +1,9 @@
 /***********************************************************************
-* fclassname.h - [brief description]                                   *
+* ftermfreebsd.h - Contains the FreeBSD terminal functions             *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright [year] [Maintainer]                                        *
+* Copyright 2018 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -23,108 +23,84 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FClassName ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FTermFreeBSD ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FCLASSNAME_H
-#define FCLASSNAME_H
+#ifndef FTERMFREEBSD_H
+#define FTERMFREEBSD_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-//#include ...
+#include "final/fc.h"
+#include "final/ftypes.h"
 
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  #undef mouse_info  // consio.h
+  #undef buttons     // consio.h
+
+  #include <sys/consio.h>
+  #include <sys/kbio.h>
+#endif
 
 //----------------------------------------------------------------------
-// class FClassName
+// class FTermFreeBSD
 //----------------------------------------------------------------------
 
 #pragma pack(push)
 #pragma pack(1)
 
-class FClassName
+class FTermFreeBSD
 {
   public:
-    // Using-declaration
-
-    // Typedefs and Enumerations
-
-    // Constants
+    // Typedef
+    typedef fc::freebsdConsoleCursorStyle  CursorStyle;
 
     // Constructors
-    FClassName();
+    FTermFreeBSD();
 
     // Destructor
-    ~FClassName();
+    ~FTermFreeBSD();
 
     // Overloaded operators
 
     // Accessors
+    static CursorStyle getCursorStyle();
+
+    // Inquiry
+    static bool        isFreeBSDConsole();
 
     // Mutators
-
-    // Inquiries
-
+    static void        setCursorStyle (CursorStyle, bool);
     // Methods
-
-    // Event handlers
-
-    // Callback methods
-
-    // Data Members
-
-  protected:
-    // Typedefs and Enumerations
-
-    // Constants
-
-    // Accessors
-
-    // Inquiries
-
-    // Methods
-
-    // Event handlers
-
-    // Callback methods
-
-    // Data Members
+    static void        init();
+    static void        initCharMap();
+    static void        finish();
+    static void        restoreCursorStyle();
 
   private:
-    // Typedefs and Enumerations
-
-    // Constants
-
     // Disable copy constructor
-    FClassName (const FClassName&);
+    FTermFreeBSD (const FTermFreeBSD&);
 
     // Disable assignment operator (=)
-    FClassName& operator = (const FClassName&);
-
-    // Accessors
-
-    // Inquiries
+    FTermFreeBSD& operator = (const FTermFreeBSD&);
 
     // Methods
-
-    // Event handlers
-
-    // Callback methods
+    static bool        saveFreeBSDAltKey();
+    static bool        setFreeBSDAltKey (uInt);
+    static bool        setFreeBSDAlt2Meta();
+    static bool        resetFreeBSDAlt2Meta();
 
     // Data Members
-
-    // Friend class
-
+    static uInt        bsd_alt_keymap;
+    static CursorStyle cursor_style;
 };
 #pragma pack(pop)
 
-// FClassName inline functions
-//----------------------------------------------------------------------
 
-
-#endif  // FCLASSNAME_H
+#endif  // FTERMFREEBSD_H
 
 

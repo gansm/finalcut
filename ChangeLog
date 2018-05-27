@@ -1,3 +1,6 @@
+2017-05-27  Markus Gans  <guru.mail@muenster.de>
+	* Move FreeBSD, NetBSD and OpenBSD functions to separate classes
+
 2017-05-20  Markus Gans  <guru.mail@muenster.de>
 	* Methods outsourcing from FTerm to FTermXTerminal
 

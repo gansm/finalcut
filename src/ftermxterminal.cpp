@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include "final/fterm.h"
+#include "final/ftermfreebsd.h"
 #include "final/ftermxterminal.h"
 
 // static class attributes
@@ -355,7 +356,7 @@ void FTermXTerminal::setXTermCursorStyle()
   // Set the xterm cursor style
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  if ( FTerm::isFreeBSDConsole() )
+  if ( FTermFreeBSD::isFreeBSDConsole() )
     return;
 #endif
 
@@ -780,7 +781,7 @@ const FString* FTermXTerminal::captureXTermFont()
     // Read the terminal answer
     if ( select(stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
     {
-      char temp[150] = {};
+      char temp[150] = { };
 
       if ( std::scanf("\033]50;%148[^\n]s", temp) == 1 )
       {
@@ -830,7 +831,7 @@ const FString* FTermXTerminal::captureXTermTitle()
   // read the terminal answer
   if ( select (stdin_no + 1, &ifds, 0, 0, &tv) > 0 )
   {
-    char temp[512] = {};
+    char temp[512] = { };
 
     if ( std::scanf("\033]l%509[^\n]s", temp) == 1 )
     {

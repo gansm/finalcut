@@ -1755,7 +1755,10 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   nc.code = fillchar;
 
   if ( ! (area && area->text) )
+  {
+    clearTerm (fillchar);
     return;
+  }
 
   w = uInt(area->width + area->right_shadow);
 

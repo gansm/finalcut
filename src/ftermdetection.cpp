@@ -28,8 +28,8 @@ FTermDetection::terminalType FTermDetection::terminal_type = \
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 FTermDetection::colorEnv     FTermDetection::color_env;
 FTermDetection::secondaryDA  FTermDetection::secondary_da;
-char           FTermDetection::termtype[256] = {};
-char           FTermDetection::termfilename[256] = {};
+char           FTermDetection::termtype[256] = { };
+char           FTermDetection::termfilename[256] = { };
 bool           FTermDetection::decscusr_support;
 bool           FTermDetection::terminal_detection;
 bool           FTermDetection::color256;
@@ -38,9 +38,9 @@ const FString* FTermDetection::sec_da      = 0;
 int            FTermDetection::gnome_terminal_id;
 
 #if DEBUG
-  char FTermDetection::termtype_256color[256]   = {};
-  char FTermDetection::termtype_Answerback[256] = {};
-  char FTermDetection::termtype_SecDA[256]      = {};
+  char FTermDetection::termtype_256color[256]   = { };
+  char FTermDetection::termtype_Answerback[256] = { };
+  char FTermDetection::termtype_SecDA[256]      = { };
 #endif
 
 
@@ -469,7 +469,7 @@ const FString FTermDetection::getXTermColorName (int color)
   struct timeval tv;
   int stdin_no = FTermios::getStdIn();
 
-  char temp[512] = {};
+  char temp[512] = { };
   FTerm::putstringf (OSC "4;%d;?" BEL, color);  // get color
   std::fflush(stdout);
 
@@ -547,7 +547,7 @@ const FString FTermDetection::getAnswerbackMsg()
 
   fd_set ifds;
   struct timeval tv;
-  char temp[10] = {};
+  char temp[10] = { };
   int stdin_no = FTermios::getStdIn();
 
   std::putchar (ENQ[0]);  // Send enquiry character
@@ -764,7 +764,7 @@ inline char* FTermDetection::secDA_Analysis_0 (char current_termtype[])
     terminal_type.putty = true;  // PuTTY
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  if ( FTerm::isFreeBSDConsole() )
+  if ( FTermFreeBSD::isFreeBSDConsole() )
     terminal_type.freebsd_con = true;
 #endif
 
@@ -803,7 +803,8 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
 
-  if ( secondary_da.terminal_id_version == 20 && FTerm::isWSConsConsole() )
+  if ( secondary_da.terminal_id_version == 20
+     && FTermOpenBSD::isWSConsConsole() )
   {
     // NetBSD/OpenBSD workstation console
     if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )

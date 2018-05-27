@@ -210,6 +210,18 @@ void FStringTest::noArgumentTest()
 
   empty.clear();
   CPPUNIT_ASSERT ( empty.isNull() );
+
+  const std::string* str1 = 0;
+  FString s1(*str1);
+  CPPUNIT_ASSERT ( s1.isEmpty() );
+  CPPUNIT_ASSERT ( s1.isNull() );
+  CPPUNIT_ASSERT ( ! s1 );
+
+  const FString* str2 = 0;
+  FString s2(*str2);
+  CPPUNIT_ASSERT ( s2.isEmpty() );
+  CPPUNIT_ASSERT ( s2.isNull() );
+  CPPUNIT_ASSERT ( ! s2 );
 }
 
 //----------------------------------------------------------------------

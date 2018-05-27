@@ -726,7 +726,7 @@ int FOptiMove::relativeMove ( char move[]
 
   if ( to_x != from_x )  // horizontal move
   {
-    char hmove[BUF_SIZE] = {};
+    char hmove[BUF_SIZE] = { };
     htime = horizontalMove (hmove, from_x, to_x);
 
     if ( htime >= LONG_DURATION )
@@ -855,7 +855,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
   if ( F_cursor_right.cap )
   {
-    char str[BUF_SIZE] = {};
+    char str[BUF_SIZE] = { };
     int htime_r = 0;
     str[0] = '\0';
 
@@ -908,7 +908,7 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
 
   if ( F_cursor_left.cap )
   {
-    char str[BUF_SIZE] = {};
+    char str[BUF_SIZE] = { };
     int htime_l = 0;
     str[0] = '\0';
 

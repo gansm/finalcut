@@ -42,6 +42,8 @@ libfinal_la_SOURCES = \
 	fstatusbar.cpp \
 	ftermcapquirks.cpp \
 	ftermxterminal.cpp \
+	ftermfreebsd.cpp \
+	ftermopenbsd.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
@@ -106,6 +108,8 @@ finalcutinclude_HEADERS = \
 	../include/final/ftermcap.h \
 	../include/final/ftermcapquirks.h \
 	../include/final/ftermxterminal.h \
+	../include/final/ftermfreebsd.h \
+	../include/final/ftermopenbsd.h \
 	../include/final/ftermdetection.h \
 	../include/final/ftermios.h \
 	../include/final/fterm.h \

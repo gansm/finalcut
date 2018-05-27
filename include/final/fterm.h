@@ -87,16 +87,6 @@
   #include <sys/kd.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-  #include <sys/consio.h>
-  #include <sys/kbio.h>
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-  #include <sys/time.h>
-  #include <dev/wscons/wsconsio.h>
-#endif
-
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 
@@ -146,6 +136,15 @@
 #include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
 #include "final/ftermdetection.h"
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+  #include "final/ftermfreebsd.h"
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  #include "final/ftermopenbsd.h"
+#endif
+
 #include "final/ftermios.h"
 #include "final/ftermxterminal.h"
 
@@ -201,10 +200,6 @@ class FTerm
     static fc::linuxConsoleCursorStyle getLinuxConsoleCursorStyle();
 #endif
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static fc::freebsdConsoleCursorStyle getFreeBSDConsoleCursorStyle();
-#endif
-
 #if DEBUG
     static const FString& getAnswerbackString();
     static const FString& getSecDAString();
@@ -258,11 +253,6 @@ class FTerm
 #if defined(__linux__)
     static char*          setLinuxConsoleCursorStyle \
                               (fc::linuxConsoleCursorStyle, bool);
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void           setFreeBSDConsoleCursorStyle \
-                              (fc::freebsdConsoleCursorStyle, bool);
 #endif
 
     static void           setKeypressTimeout (const long);
@@ -401,14 +391,6 @@ class FTerm
     static int            isLinuxConsole();
 #endif
 
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static bool           isFreeBSDConsole();
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-    static bool           isWSConsConsole();
-#endif
-
     // Methods
 #if defined(__linux__)
 #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
@@ -433,23 +415,6 @@ class FTerm
     static int            getUnicodeMap ();
     static void           initLinuxConsole();
     static void           initLinuxConsoleCharMap();
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static bool           saveFreeBSDAltKey();
-    static bool           setFreeBSDAltKey (uInt);
-    static bool           setFreeBSDAlt2Meta();
-    static bool           resetFreeBSDAlt2Meta();
-    static void           initFreeBSDConsole();
-    static void           initFreeBSDConsoleCharMap();
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-    static bool           saveWSConsEncoding();
-    static bool           setWSConsEncoding (kbd_t);
-    static bool           setWSConsMetaEsc();
-    static bool           resetWSConsEncoding();
-    static void           initWSConsConsole();
 #endif
 
     static void           init_global_values();
@@ -525,7 +490,6 @@ class FTerm
     static bool           ascii_console;
     static bool           NewFont;
     static bool           VGAFont;
-    static bool           color256;
     static bool           monochron;
     static char           termtype[256];
     static char           termfilename[256];
@@ -546,22 +510,22 @@ class FTerm
     static bool           resize_term;
 
     static fc::linuxConsoleCursorStyle linux_console_cursor_style;
-    static fc::freebsdConsoleCursorStyle freebsd_console_cursor_style;
     static struct         console_font_op screen_font;
     static struct         unimapdesc      screen_unicode_map;
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
-    static uInt           bsd_alt_keymap;
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
-    static kbd_t          wscons_keyboard_encoding;
-#endif
 
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
     static FTermDetection* term_detection;
     static FTermXTerminal* xterm;
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    static FTermFreeBSD*   freebsd;
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+    static FTermOpenBSD*   openbsd;
+#endif
+
     static FMouseControl*  mouse;
     static const FString*  save_xterm_font;
     static const FString*  save_xterm_title;
@@ -604,8 +568,6 @@ class FTerm
     {
       dacreg d[16];
     } color_map;
-
-    friend class FTermDetection;
 };
 
 #pragma pack(pop)
