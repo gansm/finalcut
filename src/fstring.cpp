@@ -139,9 +139,6 @@ FString::FString (const FString& s)  // copy constructor
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! &s )
-    return;
-
   if ( s.isNull() )
     return;
   else
@@ -155,9 +152,6 @@ FString::FString (const std::wstring& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! &s )
-    return;
-
   if ( s.empty() )
     _assign (L"");
   else
@@ -190,9 +184,6 @@ FString::FString (const std::string& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! &s )
-    return;
-
   if ( s.empty() )
   {
     _assign(L"");
