@@ -301,6 +301,8 @@ int FTerm::keyCorrection (const int& key)
 
 #if defined(__linux__)
   key_correction = linux->modifierKeyCorrection(key);
+#else
+  key_correction = key;
 #endif
 
   return key_correction;
@@ -438,15 +440,17 @@ bool FTerm::setOldFont()
   else if ( isLinuxTerm() )
   {
     retval = linux->loadOldFont(fc::character);
+
+    if ( retval )
+    {
+      shadow_character = linux->hasShadowCharacter();
+      half_block_character = linux->hasHalfBlockCharacter();
+    }
   }
 #endif
 
   if ( retval )
-  {
     VGAFont = NewFont = false;
-    shadow_character = linux->hasShadowCharacter();
-    half_block_character = linux->hasHalfBlockCharacter();
-  }
 
   return retval;
 }

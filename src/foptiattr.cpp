@@ -532,7 +532,7 @@ short FOptiAttr::vga2ansi (register short color)
 
     color = lookup_table[color];
   }
-  else
+  else if ( color < 0 )
     color = 0;
 
   return color;
