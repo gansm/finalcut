@@ -64,11 +64,13 @@ FTermLinux::FTermLinux()
 //----------------------------------------------------------------------
 FTermLinux::~FTermLinux()  // destructor
 {
+#if defined(__linux__)
   if ( screen_font.data )
     delete[] screen_font.data;
 
   if ( screen_unicode_map.entries )
     delete[] screen_unicode_map.entries;
+#endif
 }
 
 // public methods of FTermLinux
