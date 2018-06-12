@@ -187,6 +187,7 @@ class FTermLinux
 
 // FTermLinux inline functions
 //----------------------------------------------------------------------
+#if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()
 { return framebuffer_bpp; }
 
@@ -209,5 +210,6 @@ inline bool FTermLinux::isVGAFontUsed()
 //----------------------------------------------------------------------
 inline bool FTermLinux::isNewFontUsed()
 { return NewFont; }
+#endif
 
 #endif  // FTERMLINUX_H
