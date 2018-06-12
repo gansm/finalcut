@@ -64,22 +64,22 @@ class FTermios
     static int     getStdOut();
 
     // Inquiries
-    static bool isRaw();
+    static bool    isRaw();
 
     // Methods
-    static void init();
-    static void setTTY (const termios&);
-    static void storeTTYsettings();
-    static void restoreTTYsettings();
-    static void setHardwareEcho();
-    static void unsetHardwareEcho();
-    static void setCaptureSendCharacters();
-    static void unsetCaptureSendCharacters();
-    static bool setRawMode (bool);
-    static bool setRawMode();
-    static bool unsetRawMode();
-    static bool setCookedMode();
-    static uInt getBaudRate();
+    static void    init();
+    static void    setTTY (const termios&);
+    static void    storeTTYsettings();
+    static void    restoreTTYsettings();
+    static void    setHardwareEcho();
+    static void    unsetHardwareEcho();
+    static void    setCaptureSendCharacters();
+    static void    unsetCaptureSendCharacters();
+    static bool    setRawMode (bool);
+    static bool    setRawMode();
+    static bool    unsetRawMode();
+    static bool    setCookedMode();
+    static uInt    getBaudRate();
 
   private:
     // Data Members

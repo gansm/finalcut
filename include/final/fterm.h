@@ -43,6 +43,18 @@
  *           :- - - -▕ FTermXTerminal ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕   FTermLinux   ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕  FTermFreeBSD  ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕  FTermOpenBSD  ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
  *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
  *           :- - - -▕ FColorPalette ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
@@ -76,16 +88,6 @@
 #endif
 
 #include "final/fconfig.h"
-
-#if defined(__linux__)
-  #include <linux/fb.h>        // Linux framebuffer console
-
-  #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    #include <sys/io.h>        // <asm/io.h> is deprecated
-  #endif
-
-  #include <sys/kd.h>
-#endif
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -137,6 +139,10 @@
 #include "final/ftermcapquirks.h"
 #include "final/ftermdetection.h"
 
+#if defined(__linux__)
+  #include "final/ftermlinux.h"
+#endif
+
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   #include "final/ftermfreebsd.h"
 #endif
@@ -162,17 +168,6 @@ class FTerm
     // Typedefs
     typedef FOptiAttr::char_data  char_data;
 
-#if defined(__linux__)
-    static struct modifier_key  // bit field
-    {
-      uChar shift  : 1;  // 0..1
-      uChar alt_gr : 1;  // 0..1
-      uChar ctrl   : 1;  // 0..1
-      uChar alt    : 1;  // 0..1
-      uChar        : 4;  // padding bits
-    } mod_key;
-#endif
-
     // Constructor
     explicit FTerm (bool = false);
 
@@ -182,23 +177,16 @@ class FTerm
     // Accessors
     virtual const char*   getClassName() const;
     static termios        getTTY();
+    static int            getTTYFileDescriptor();
     static int            getLineNumber();
     static int            getColumnNumber();
     static const FString  getKeyName (int);
     static FMouseControl* getMouseControl();
 
-#if defined(__linux__)
-    static modifier_key&  getLinuxModifierKey();
-#endif
-
     static char*          getTermType();
     static char*          getTermFileName();
     static int            getTabstop();
     static int            getMaxColor();
-
-#if defined(__linux__)
-    static fc::linuxConsoleCursorStyle getLinuxConsoleCursorStyle();
-#endif
 
 #if DEBUG
     static const FString& getAnswerbackString();
@@ -249,12 +237,6 @@ class FTerm
     static void           unsetInsertCursor();
     static bool           setCursorOptimisation (bool);
     static void           redefineDefaultColors (bool);
-
-#if defined(__linux__)
-    static char*          setLinuxConsoleCursorStyle \
-                              (fc::linuxConsoleCursorStyle, bool);
-#endif
-
     static void           setKeypressTimeout (const long);
     static void           setDblclickInterval (const long);
     static void           disableAltScreen();
@@ -267,10 +249,13 @@ class FTerm
 
     // Methods
     static int            parseKeyString (char[], int, timeval*);
+    static int            keyCorrection (const int&);
     static bool&          unprocessedInput();
     static bool           setVGAFont();
     static bool           setNewFont();
     static bool           setOldFont();
+    static int            openConsole();
+    static int            closeConsole();
     static char*          moveCursor (int, int, int, int);
     static char*          cursorsVisibility (bool);
     static void           printMoveDurations();
@@ -290,6 +275,9 @@ class FTerm
     static void           setEncoding (fc::encoding);
     static fc::encoding   getEncoding();
     static std::string    getEncodingString();
+    static bool           charEncodable (uInt);
+    static uInt           charEncode (uInt);
+    static uInt           charEncode (uInt, fc::encoding);
 
     static bool           scrollTermForward();
     static bool           scrollTermReverse();
@@ -334,9 +322,6 @@ class FTerm
 
     // Methods
     static void           initScreenSettings();
-    static bool           charEncodable (uInt);
-    static uInt           charEncode (uInt);
-    static uInt           charEncode (uInt, fc::encoding);
     static char*          changeAttribute ( char_data*&
                                           , char_data*& );
     static void           changeTermSizeFinished();
@@ -372,13 +357,6 @@ class FTerm
     // Typedefs
     typedef FTermcap::tcap_map termcap_map;
 
-    typedef struct
-    {
-      uChar red;
-      uChar green;
-      uChar blue;
-    } dacreg;
-
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
 
@@ -387,36 +365,7 @@ class FTerm
     // Disable assignment operator (=)
     FTerm& operator = (const FTerm&);
 
-#if defined(__linux__)
-    static int            isLinuxConsole();
-#endif
-
     // Methods
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    static uInt16         getInputStatusRegisterOne();
-    static uChar          readAttributeController (uChar);
-    static void           writeAttributeController (uChar, uChar);
-    static uChar          getAttributeMode();
-    static void           setAttributeMode (uChar);
-    static int            setBlinkAsIntensity (bool);
-#endif
-    static int            getFramebuffer_bpp();
-#endif
-
-    static int            openConsole();
-    static int            closeConsole();
-
-#if defined(__linux__)
-    static int            getScreenFont();
-    static int            setScreenFont ( uChar[], uInt, uInt, uInt
-                                        , bool = false );
-    static int            setUnicodeMap (struct unimapdesc*);
-    static int            getUnicodeMap ();
-    static void           initLinuxConsole();
-    static void           initLinuxConsoleCharMap();
-#endif
-
     static void           init_global_values();
     static void           oscPrefix();
     static void           oscPostfix();
@@ -519,6 +468,11 @@ class FTerm
     static FTermDetection* term_detection;
     static FTermXTerminal* xterm;
 
+#if defined(__linux__)
+    #undef linux
+    static FTermLinux*     linux;
+#endif
+
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     static FTermFreeBSD*   freebsd;
 #endif
@@ -530,45 +484,6 @@ class FTerm
     static FMouseControl*  mouse;
     static const FString*  save_xterm_font;
     static const FString*  save_xterm_title;
-
-    static struct colorEnv
-    {
-      void setDefault()
-      {
-        string1 = 0;
-        string2 = 0;
-        string3 = 0;
-        string4 = 0;
-        string5 = 0;
-        string6 = 0;
-      }
-
-      char* string1;
-      char* string2;
-      char* string3;
-      char* string4;
-      char* string5;
-      char* string6;
-    } color_env;
-
-    static struct secondaryDA
-    {
-      void setDefault()
-      {
-        terminal_id_type     = -1;
-        terminal_id_version  = -1;
-        terminal_id_hardware = -1;
-      }
-
-      int terminal_id_type;
-      int terminal_id_version;
-      int terminal_id_hardware;
-    } secondary_da;
-
-    struct
-    {
-      dacreg d[16];
-    } color_map;
 };
 
 #pragma pack(pop)
@@ -577,6 +492,10 @@ class FTerm
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
+
+//----------------------------------------------------------------------
+inline int FTerm::getTTYFileDescriptor()
+{ return fd_tty; }
 
 //----------------------------------------------------------------------
 inline char* FTerm::getTermType()

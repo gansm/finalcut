@@ -50,6 +50,7 @@ INCLUDE_HEADERS = \
 	ftermxterminal.h \
 	ftermfreebsd.h \
 	ftermopenbsd.h \
+	ftermlinux.h \
 	fvterm.h \
 	ftextview.h \
 	ftogglebutton.h \
@@ -107,6 +108,7 @@ OBJS = \
 	ftermxterminal.o \
 	ftermfreebsd.o \
 	ftermopenbsd.o \
+	ftermlinux.o \
 	fvterm.o \
 	fevent.o \
 	foptiattr.o \

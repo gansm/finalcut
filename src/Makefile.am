@@ -44,6 +44,7 @@ libfinal_la_SOURCES = \
 	ftermxterminal.cpp \
 	ftermfreebsd.cpp \
 	ftermopenbsd.cpp \
+	ftermlinux.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
@@ -110,6 +111,7 @@ finalcutinclude_HEADERS = \
 	../include/final/ftermxterminal.h \
 	../include/final/ftermfreebsd.h \
 	../include/final/ftermopenbsd.h \
+	../include/final/ftermlinux.h \
 	../include/final/ftermdetection.h \
 	../include/final/ftermios.h \
 	../include/final/fterm.h \

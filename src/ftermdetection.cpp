@@ -62,6 +62,10 @@ FTermDetection::FTermDetection()
   // Example: vte version 0.40.0 = 0 * 100 + 40 * 100 + 0 = 4000
   //                      a.b.c  = a * 100 +  b * 100 + c
   gnome_terminal_id = 0;
+
+  // Initialize the structs
+  color_env.setDefault();
+  secondary_da.setDefault();
 }
 
 //----------------------------------------------------------------------

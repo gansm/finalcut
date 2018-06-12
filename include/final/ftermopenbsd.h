@@ -58,12 +58,6 @@ class FTermOpenBSD
     // Destructor
     ~FTermOpenBSD();
 
-    // Overloaded operators
-
-    // Accessors
-
-    // Mutators
-
     // Inquiries
     static bool        isWSConsConsole();
 
@@ -91,10 +85,4 @@ class FTermOpenBSD
 };
 #pragma pack(pop)
 
-// FTermOpenBSD inline functions
-//----------------------------------------------------------------------
-
-
 #endif  // FTERMOPENBSD_H
-
-

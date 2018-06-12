@@ -868,7 +868,7 @@ const FString* FTermXTerminal::captureXTermTitle()
 //----------------------------------------------------------------------
 void FTermXTerminal::enableXTermMouse()
 {
-  // activate the xterm mouse support
+  // Activate the xterm mouse support
 
   if ( mouse_support )
     return;
@@ -885,7 +885,7 @@ void FTermXTerminal::enableXTermMouse()
 //----------------------------------------------------------------------
 void FTermXTerminal::disableXTermMouse()
 {
-  // deactivate the xterm mouse support
+  // Deactivate the xterm mouse support
 
   if ( ! mouse_support )
     return;
@@ -902,7 +902,7 @@ void FTermXTerminal::disableXTermMouse()
 //----------------------------------------------------------------------
 void FTermXTerminal::enableXTermMetaSendsESC()
 {
-  // activate the xterm meta key sends escape prefix
+  // Activate the xterm meta key sends escape prefix
 
   if ( meta_sends_esc )
     return;
@@ -916,7 +916,7 @@ void FTermXTerminal::enableXTermMetaSendsESC()
 //----------------------------------------------------------------------
 void FTermXTerminal::disableXTermMetaSendsESC()
 {
-  // deactivate the xterm meta key sends escape prefix
+  // Deactivate the xterm meta key sends escape prefix
 
   if ( ! meta_sends_esc )
     return;

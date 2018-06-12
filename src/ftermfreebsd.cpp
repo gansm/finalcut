@@ -99,7 +99,7 @@ void FTermFreeBSD::init()
 }
 
 //----------------------------------------------------------------------
-void FTermFreeBSD::initCharMap()
+void FTermFreeBSD::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
 {
   // A FreeBSD console can't show ASCII codes from 0x00 to 0x1b
 
@@ -107,8 +107,8 @@ void FTermFreeBSD::initCharMap()
     return;
 
   for (int i = 0; i <= fc::lastCharItem; i++)
-    if ( fc::character[i][fc::PC] < 0x1c )
-      fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
+    if ( char_map[i][fc::PC] < 0x1c )
+      char_map[i][fc::PC] = char_map[i][fc::ASCII];
 }
 
 //----------------------------------------------------------------------

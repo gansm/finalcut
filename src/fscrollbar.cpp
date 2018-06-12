@@ -260,7 +260,12 @@ void FScrollbar::drawVerticalBar()
     setPrintPos (1, 1 + z);
 
     if ( isNewFont() )
-      print (fc::NF_border_line_left);  // ⎸
+    {
+      if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade);  // ▒
+      else
+        print (fc::NF_border_line_left);  // ⎸
+    }
 
     if ( isMonochron() || max_color < 16 )
       print (fc::MediumShade);  // ▒
@@ -293,7 +298,12 @@ void FScrollbar::drawVerticalBar()
     setPrintPos (1, 1 + z);
 
     if ( isNewFont() )
-      print (fc::NF_border_line_left);  // ⎸
+    {
+      if ( isMonochron() || max_color < 16 )
+        print (fc::MediumShade);  // ▒
+      else
+        print (fc::NF_border_line_left);  // ⎸
+    }
 
     if ( isMonochron() || max_color < 16 )
       print (fc::MediumShade);
@@ -318,7 +328,7 @@ void FScrollbar::drawHorizontalBar()
 
   for (z = 0; z < slider_pos; z++)
   {
-    if ( isNewFont() )
+    if ( isNewFont() && max_color > 8 )
       print (fc::NF_border_line_upper);  // ¯
     else if ( isMonochron() || max_color < 16 )
       print (fc::MediumShade);  // ▒
@@ -342,7 +352,7 @@ void FScrollbar::drawHorizontalBar()
 
   for (; z <= bar_length; z++)
   {
-    if ( isNewFont() )
+    if ( isNewFont() && max_color > 8 )
       print (fc::NF_border_line_upper);  // ¯
     else if ( isMonochron() || max_color < 16 )
       print (fc::MediumShade);  // ▒

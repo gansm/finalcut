@@ -137,10 +137,10 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fcheckmenuitem.lo fmenulist.lo fdialog.lo fscrollview.lo \
 	fwindow.lo fmessagebox.lo ftooltip.lo ffiledialog.lo \
 	ftextview.lo fstatusbar.lo ftermcapquirks.lo ftermxterminal.lo \
-	ftermfreebsd.lo ftermopenbsd.lo ftermdetection.lo ftermios.lo \
-	fterm.lo fvterm.lo fevent.lo foptiattr.lo foptimove.lo \
-	ftermbuffer.lo fapplication.lo fcolorpalette.lo \
-	fwidgetcolors.lo fwidget.lo fobject.lo
+	ftermfreebsd.lo ftermopenbsd.lo ftermlinux.lo \
+	ftermdetection.lo ftermios.lo fterm.lo fvterm.lo fevent.lo \
+	foptiattr.lo foptimove.lo ftermbuffer.lo fapplication.lo \
+	fcolorpalette.lo fwidgetcolors.lo fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -418,6 +418,7 @@ libfinal_la_SOURCES = \
 	ftermxterminal.cpp \
 	ftermfreebsd.cpp \
 	ftermopenbsd.cpp \
+	ftermlinux.cpp \
 	ftermdetection.cpp \
 	ftermios.cpp \
 	fterm.cpp \
@@ -482,6 +483,7 @@ finalcutinclude_HEADERS = \
 	../include/final/ftermxterminal.h \
 	../include/final/ftermfreebsd.h \
 	../include/final/ftermopenbsd.h \
+	../include/final/ftermlinux.h \
 	../include/final/ftermdetection.h \
 	../include/final/ftermios.h \
 	../include/final/fterm.h \
@@ -611,6 +613,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermdetection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermfreebsd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermios.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermlinux.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermopenbsd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermxterminal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftextview.Plo@am__quote@

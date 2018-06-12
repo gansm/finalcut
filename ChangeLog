@@ -1,3 +1,6 @@
+2017-06-12  Markus Gans  <guru.mail@muenster.de>
+	* Linux functions from FTerm moved into the FTermLinux class
+
 2017-05-27  Markus Gans  <guru.mail@muenster.de>
 	* Move FreeBSD, NetBSD and OpenBSD functions to separate classes
 

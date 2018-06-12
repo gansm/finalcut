@@ -65,8 +65,6 @@ class FTermFreeBSD
     // Destructor
     ~FTermFreeBSD();
 
-    // Overloaded operators
-
     // Accessors
     static CursorStyle getCursorStyle();
 
@@ -75,9 +73,10 @@ class FTermFreeBSD
 
     // Mutators
     static void        setCursorStyle (CursorStyle, bool);
+
     // Methods
     static void        init();
-    static void        initCharMap();
+    static void        initCharMap (uInt[][fc::NUM_OF_ENCODINGS]);
     static void        finish();
     static void        restoreCursorStyle();
 

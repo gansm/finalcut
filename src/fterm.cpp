@@ -30,12 +30,6 @@
 #include "final/fkey_map.h"
 #include "final/ftcap_map.h"
 
-#if defined(__linux__)
-  #include "../fonts/newfont.h"
-  #include "../fonts/unicodemap.h"
-  #include "../fonts/vgafont.h"
-#endif
-
 // global FTerm object
 static FTerm* init_term_object = 0;
 
@@ -106,23 +100,19 @@ bool                   FTermcap::no_utf8_acs_chars      = false;
 int                    FTermcap::max_color              = 1;
 int                    FTermcap::tabstop                = 8;
 int                    FTermcap::attr_without_color     = 0;
-FTerm::colorEnv               FTerm::color_env;
-FTerm::secondaryDA            FTerm::secondary_da;
 FTerm::initializationValues   FTerm::init_values;
 fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 
 #if defined(__linux__)
-  FTerm::modifier_key  FTerm::mod_key;
-  console_font_op      FTerm::screen_font;
-  unimapdesc           FTerm::screen_unicode_map;
+  FTermLinux* FTerm::linux = 0;
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  FTermFreeBSD*        FTerm::freebsd = 0;
+  FTermFreeBSD* FTerm::freebsd = 0;
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  FTermOpenBSD*        FTerm::openbsd = 0;
+  FTermOpenBSD* FTerm::openbsd = 0;
 #endif
 
 
@@ -133,7 +123,6 @@ fc::linuxConsoleCursorStyle   FTerm::linux_console_cursor_style;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTerm::FTerm (bool disable_alt_screen)
-  : color_map()
 {
   resize_term = false;
 
@@ -193,43 +182,6 @@ FMouseControl* FTerm::getMouseControl()
     return 0;
 }
 
-#if defined(__linux__)
-//----------------------------------------------------------------------
-FTerm::modifier_key& FTerm::getLinuxModifierKey()
-{
-  // Get Linux console shift state
-
-  char subcode = 6;  // Shift state command + return value
-
-  // fill bit field with 0
-  std::memset (&mod_key, 0x00, sizeof(mod_key));
-
-  // TIOCLINUX, subcode = 6
-  if ( ioctl(0, TIOCLINUX, &subcode) >= 0 )
-  {
-    if ( subcode & (1 << KG_SHIFT) )
-      mod_key.shift = true;
-
-    if ( subcode & (1 << KG_ALTGR) )
-      mod_key.alt_gr = true;
-
-    if ( subcode & (1 << KG_CTRL) )
-      mod_key.ctrl = true;
-
-    if ( subcode & (1 << KG_ALT) )
-      mod_key.alt = true;
-  }
-
-  return mod_key;
-}
-
-//----------------------------------------------------------------------
-fc::linuxConsoleCursorStyle FTerm::getLinuxConsoleCursorStyle()
-{
-  return linux_console_cursor_style;
-}
-#endif
-
 //----------------------------------------------------------------------
 bool FTerm::isNormal (char_data*& ch)
 {
@@ -262,28 +214,6 @@ void FTerm::redefineDefaultColors (bool on)
   xterm->redefineDefaultColors (on);
 }
 
-#if defined(__linux__)
-//----------------------------------------------------------------------
-char* FTerm::setLinuxConsoleCursorStyle ( fc::linuxConsoleCursorStyle style
-                                        , bool hidden )
-{
-  // Set cursor style in linux console
-
-  static char buf[16] = { };
-
-  if ( ! isLinuxTerm() )
-    return buf;
-
-  linux_console_cursor_style = style;
-
-  if ( hidden )
-    return buf;
-
-  std::sprintf (buf, CSI "?%dc", style);
-  return buf;
-}
-#endif
-
 //----------------------------------------------------------------------
 void FTerm::setDblclickInterval (const long timeout)
 {
@@ -301,15 +231,10 @@ bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
   else
     utf8_state = false;
 
-  if ( isLinuxTerm() )
-  {
-    if ( on )
-      putstring (ESC "%G");
-    else
-      putstring (ESC "%@");
-  }
+#if defined(__linux__)
+  linux->setUTF8 (on);
+#endif
 
-  std::fflush(stdout);
   return utf8_state;
 }
 
@@ -342,11 +267,12 @@ int FTerm::parseKeyString ( char buffer[]
                           , int buf_size
                           , timeval* time_keypressed )
 {
+  int key;
   uChar firstchar = uChar(buffer[0]);
 
   if ( firstchar == ESC[0] )
   {
-    int key = getMouseProtocolKey(buffer);
+    key = getMouseProtocolKey(buffer);
 
     if ( key > 0 )
       return key;
@@ -369,6 +295,18 @@ int FTerm::parseKeyString ( char buffer[]
 }
 
 //----------------------------------------------------------------------
+int FTerm::keyCorrection (const int& key)
+{
+  int key_correction;
+
+#if defined(__linux__)
+  key_correction = linux->modifierKeyCorrection(key);
+#endif
+
+  return key_correction;
+}
+
+//----------------------------------------------------------------------
 bool& FTerm::unprocessedInput()
 {
   return input_data_pending;
@@ -388,10 +326,11 @@ bool FTerm::setVGAFont()
     || isMinttyTerm() )
     return false;
 
-  VGAFont = true;
 
-  if ( isXTerminal() || isScreenTerm() || FTermcap::osc_support )
+  if ( isXTerminal() || isScreenTerm()
+    || isUrxvtTerminal() || FTermcap::osc_support )
   {
+    VGAFont = true;
     // Set font in xterm to vga
     xterm->setFont("vga");
     NewFont = false;
@@ -406,32 +345,7 @@ bool FTerm::setVGAFont()
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    if ( openConsole() == 0 )
-    {
-      if ( isLinuxConsole() )
-      {
-        // standard vga font 8x16
-        int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
-
-        if ( ret != 0 )
-          VGAFont = false;
-
-        // unicode character mapping
-        struct unimapdesc unimap;
-        unimap.entry_ct = uChar ( sizeof(fc::unicode_cp437_pairs)
-                                / sizeof(unipair) );
-        unimap.entries = &fc::unicode_cp437_pairs[0];
-        setUnicodeMap(&unimap);
-      }
-      else
-        VGAFont = false;
-
-      detectTermSize();
-      closeConsole();
-    }
-    else
-      VGAFont = false;
-
+    VGAFont = linux->loadVGAFont();
     pc_charset_console = true;
     term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;
@@ -439,6 +353,9 @@ bool FTerm::setVGAFont()
 #endif
   else
     VGAFont = false;
+
+  if ( VGAFont )
+    shadow_character = half_block_character = true;
 
   return VGAFont;
 }
@@ -474,32 +391,7 @@ bool FTerm::setNewFont()
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    NewFont = true;
-
-    if ( openConsole() == 0 )
-    {
-      if ( isLinuxConsole() )
-      {
-        struct unimapdesc unimap;
-        int ret;
-
-        // Set the graphical font 8x16
-        ret = setScreenFont(fc::__8x16graph, 256, 8, 16);
-
-        if ( ret != 0 )
-          NewFont = false;
-
-        // unicode character mapping
-        unimap.entry_ct = uInt16 ( sizeof(fc::unicode_cp437_pairs)
-                                 / sizeof(unipair) );
-        unimap.entries = &fc::unicode_cp437_pairs[0];
-        setUnicodeMap(&unimap);
-      }
-
-      detectTermSize();
-      closeConsole();
-    }
-
+    NewFont = linux->loadNewFont();
     pc_charset_console = true;
     term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
@@ -508,13 +400,16 @@ bool FTerm::setNewFont()
   else
     NewFont = false;
 
+  if ( NewFont )
+    shadow_character = half_block_character = true;
+
   return NewFont;
 }
 
 //----------------------------------------------------------------------
 bool FTerm::setOldFont()
 {
-  bool retval;
+  bool retval = false;
 
   if ( ! (NewFont || VGAFont) )
     return false;
@@ -542,37 +437,60 @@ bool FTerm::setOldFont()
 #if defined(__linux__)
   else if ( isLinuxTerm() )
   {
-    if ( openConsole() == 0 )
-    {
-      if ( isLinuxConsole() )
-      {
-        if ( screen_font.data )
-        {
-          int ret = setScreenFont ( screen_font.data
-                                  , screen_font.charcount
-                                  , screen_font.width
-                                  , screen_font.height
-                                  , true );
-          delete[] screen_font.data;
-
-          if ( ret == 0 )
-            retval = true;
-        }
-
-        if ( screen_unicode_map.entries )
-        {
-          setUnicodeMap (&screen_unicode_map);
-          delete[] screen_unicode_map.entries;
-        }
-      }
-
-      detectTermSize();
-      closeConsole();
-    }
+    retval = linux->loadOldFont(fc::character);
   }
 #endif
 
+  if ( retval )
+  {
+    VGAFont = NewFont = false;
+    shadow_character = linux->hasShadowCharacter();
+    half_block_character = linux->hasHalfBlockCharacter();
+  }
+
   return retval;
+}
+
+//----------------------------------------------------------------------
+int FTerm::openConsole()
+{
+  static const char* terminal_devices[] =
+  {
+    "/proc/self/fd/0",
+    "/dev/tty",
+    "/dev/tty0",
+    "/dev/vc/0",
+    "/dev/systty",
+    "/dev/console",
+    0
+  };
+
+  if ( fd_tty >= 0 )  // console is already opened
+    return 0;
+
+  if ( ! *termfilename )
+    return 0;
+
+  for (int i = 0; terminal_devices[i] != 0; i++)
+    if ( (fd_tty = open(terminal_devices[i], O_RDWR, 0)) >= 0 )
+      return 0;
+
+  return -1;  // No file descriptor referring to the console
+}
+
+//----------------------------------------------------------------------
+int FTerm::closeConsole()
+{
+  if ( fd_tty < 0 )  // console is already closed
+    return 0;
+
+  int ret = ::close (fd_tty);  // use 'close' from the global namespace
+  fd_tty = -1;
+
+  if ( ret == 0 )
+    return 0;
+  else
+    return -1;
 }
 
 //----------------------------------------------------------------------
@@ -639,15 +557,18 @@ char* FTerm::enableCursor()
   if ( isLinuxTerm() )
   {
     // Restore the last used Linux console cursor style
-    char* lcur;
-    lcur = setLinuxConsoleCursorStyle (getLinuxConsoleCursorStyle(), false);
-    std::strncat (enable_str, lcur, SIZE - std::strlen(enable_str) - 1);
+    char* cstyle;
+    cstyle = linux->restoreCursorStyle();
+    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
   }
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  // Restore the last used FreeBSD console cursor style
-  freebsd->restoreCursorStyle();
+  if ( isFreeBSDTerm() )
+  {
+    // Restore the last used FreeBSD console cursor style
+    freebsd->restoreCursorStyle();
+  }
 #endif
 
   return enable_str;
@@ -742,7 +663,9 @@ void FTerm::setKDECursor (fc::kdeKonsoleCursorShape style)
 //----------------------------------------------------------------------
 void FTerm::saveColorMap()
 {
-  //ioctl (0, GIO_CMAP, &color_map);
+#if defined(__linux__)
+  linux->saveColorMap();
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -753,27 +676,14 @@ void FTerm::resetColorMap()
 
   if ( oc )
     putstring (oc);
-/*else
+
+#if defined(__linux__)
+  else
   {
-    dacreg CurrentColors[16] =
-    {
-      {0x00, 0x00, 0x00}, {0xAA, 0x00, 0x00},
-      {0x00, 0xAA, 0x00}, {0xAA, 0x55, 0x00},
-      {0x00, 0x00, 0xAA}, {0xAA, 0x00, 0xAA},
-      {0x00, 0xAA, 0xAA}, {0xAA, 0xAA, 0xAA},
-      {0x55, 0x55, 0x55}, {0xFF, 0x55, 0x55},
-      {0x55, 0xFF, 0x55}, {0xFF, 0xFF, 0x55},
-      {0x55, 0x55, 0xFF}, {0xFF, 0x55, 0xFF},
-      {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
-    };
-    for (int x = 0; x < 16; x++)
-    {
-      color_map.d[x].red = CurrentColors[x].red;
-      color_map.d[x].green = CurrentColors[x].green;
-      color_map.d[x].blue = CurrentColors[x].blue;
-    }
-    ioctl (0, PIO_CMAP, &color_map);
-  }*/
+  linux->resetColorMap();
+
+  }
+#endif
 
   if ( op )
     putstring (op);
@@ -806,19 +716,12 @@ void FTerm::setPalette (short index, int r, int g, int b)
 
     putstring (color_str);
   }
-  else if ( isLinuxTerm() )
+#if defined(__linux__)
+  else
   {
-/*  // direct vga-register set
-    if ( r>=0 && r<256
-      && g>=0 && g<256
-      && b>=0 && b<256 )
-    {
-      map.d[index].red = r;
-      map.d[index].green = g;
-      map.d[index].blue = b;
-    }
-    ioctl (0, PIO_CMAP, &map); */
+    linux->setPalette(index, r, g, b);
   }
+#endif
 
   std::fflush(stdout);
 }
@@ -826,34 +729,17 @@ void FTerm::setPalette (short index, int r, int g, int b)
 //----------------------------------------------------------------------
 void FTerm::setBeep (int Hz, int ms)
 {
-  if ( ! isLinuxTerm() )
-    return;
-
-  // range for frequency: 21-32766
-  if ( Hz < 21 || Hz > 32766 )
-    return;
-
-  // range for duration:  0-1999
-  if ( ms < 0 || ms > 1999 )
-    return;
-
-  putstringf ( CSI "10;%d]"
-               CSI "11;%d]"
-             , Hz, ms );
-  std::fflush(stdout);
+#if defined(__linux__)
+  linux->setBeep (Hz, ms);
+#endif
 }
 
 //----------------------------------------------------------------------
 void FTerm::resetBeep()
 {
-  if ( ! isLinuxTerm() )
-    return;
-
-  // default frequency: 750 Hz
-  // default duration:  125 ms
-  putstring ( CSI "10;750]"
-              CSI "11;125]" );
-  std::fflush(stdout);
+#if defined(__linux__)
+  linux->resetBeep();
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -926,6 +812,34 @@ std::string FTerm::getEncodingString()
       return it->first;
 
   return "";
+}
+
+//----------------------------------------------------------------------
+bool FTerm::charEncodable (uInt c)
+{
+  uInt ch = charEncode(c);
+  return bool(ch > 0 && ch != c);
+}
+
+//----------------------------------------------------------------------
+uInt FTerm::charEncode (uInt c)
+{
+  return charEncode (c, term_encoding);
+}
+
+//----------------------------------------------------------------------
+uInt FTerm::charEncode (uInt c, fc::encoding enc)
+{
+  for (uInt i = 0; i <= uInt(fc::lastCharItem); i++)
+  {
+    if ( fc::character[i][fc::UTF8] == c )
+    {
+      c = fc::character[i][enc];
+      break;
+    }
+  }
+
+  return c;
 }
 
 //----------------------------------------------------------------------
@@ -1089,7 +1003,9 @@ void FTerm::initScreenSettings()
 #if defined(__linux__)
   // Important: Do not use setNewFont() or setVGAFont() after
   //            the console character mapping has been initialized
-  initLinuxConsoleCharMap();
+  linux->initCharMap (fc::character);
+  shadow_character = linux->hasShadowCharacter();
+  half_block_character = linux->hasHalfBlockCharacter();
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -1101,34 +1017,6 @@ void FTerm::initScreenSettings()
 
   // set xterm color settings to defaults
   xterm->setDefaults();
-}
-
-//----------------------------------------------------------------------
-bool FTerm::charEncodable (uInt c)
-{
-  uInt ch = charEncode(c);
-  return bool(ch > 0 && ch != c);
-}
-
-//----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c)
-{
-  return charEncode (c, term_encoding);
-}
-
-//----------------------------------------------------------------------
-uInt FTerm::charEncode (uInt c, fc::encoding enc)
-{
-  for (uInt i = 0; i <= uInt(fc::lastCharItem); i++)
-  {
-    if ( fc::character[i][0] == c )
-    {
-      c = fc::character[i][enc];
-      break;
-    }
-  }
-
-  return c;
 }
 
 //----------------------------------------------------------------------
@@ -1162,495 +1050,6 @@ void FTerm::exitWithMessage (std::string message)
 
 
 // private methods of FTerm
-//----------------------------------------------------------------------
-#if defined(__linux__)
-int FTerm::isLinuxConsole()
-{
-  // Check if it's a Linux console
-
-  char arg = 0;
-  // get keyboard type an compare
-  return ( isatty (fd_tty)
-        && ioctl(fd_tty, KDGKBTYPE, &arg) == 0
-        && ((arg == KB_101) || (arg == KB_84)) );
-}
-#endif
-
-#if defined(__linux__)
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-//----------------------------------------------------------------------
-inline uInt16 FTerm::getInputStatusRegisterOne()
-{
-  // Gets the VGA input-status-register-1
-
-  // Miscellaneous output (read port)
-  static const uInt16 misc_read = 0x3cc;
-  const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
-  // 0x3ba : Input status 1 MDA (read port)
-  // 0x3da : Input status 1 CGA (read port)
-  return io_base + 0x0a;
-}
-
-//----------------------------------------------------------------------
-uChar FTerm::readAttributeController (uChar index)
-{
-  // Reads a byte from the attribute controller from a given index
-
-  uChar res;
-  // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
-  // Attribute controller (read port)
-  static const uInt16 attrib_cntlr_read  = 0x3c1;
-  const uInt16 input_status_1 = getInputStatusRegisterOne();
-
-  inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write);
-  res = inb (attrib_cntlr_read);
-
-  inb (input_status_1);  // switch to data mode
-  index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
-  outb (index, attrib_cntlr_write);
-  inb (attrib_cntlr_read);
-  return res;
-}
-
-//----------------------------------------------------------------------
-void FTerm::writeAttributeController (uChar index, uChar data)
-{
-  // Writes a byte from the attribute controller from a given index
-
-  // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
-  const uInt16 input_status_1 = getInputStatusRegisterOne();
-
-  inb (input_status_1);  // switch to index mode
-  outb (index & 0x1f, attrib_cntlr_write);
-  outb (data, attrib_cntlr_write);
-
-  inb (input_status_1);  // switch to data mode
-  index = (index & 0x1f) | 0x20;  // set bit 5 (enable display)
-  outb (index, attrib_cntlr_write);
-  outb (data, attrib_cntlr_write);
-}
-
-//----------------------------------------------------------------------
-inline uChar FTerm::getAttributeMode()
-{
-  // Gets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
-  return readAttributeController(attrib_mode);
-}
-
-//----------------------------------------------------------------------
-inline void FTerm::setAttributeMode (uChar data)
-{
-  // Sets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
-  writeAttributeController (attrib_mode, data);
-}
-
-//----------------------------------------------------------------------
-int FTerm::setBlinkAsIntensity (bool on)
-{
-  // Uses blink-bit as background intensity.
-  // That permits 16 colors for background
-
-  // Test if the blink-bit is used by the screen font (512 characters)
-  if ( screen_font.charcount > 256 )
-    return -1;
-
-  if ( getuid() != 0 )  // Direct hardware access requires root privileges
-    return -2;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  // Enable access to VGA I/O ports  (from 0x3B4 with num = 0x2C)
-  if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
-    return -1;  // error on KDENABIO
-
-  if ( on )
-    setAttributeMode (getAttributeMode() & 0xF7);  // clear bit 3
-  else
-    setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
-
-  // Disable access to VGA I/O ports
-  if ( ioctl(fd_tty, KDDISABIO, 0) < 0 )
-    return -1;  // error on KDDISABIO
-
-  return 0;
-}
-#endif
-
-//----------------------------------------------------------------------
-int FTerm::getFramebuffer_bpp()
-{
-  int fd = -1;
-  struct fb_var_screeninfo fb_var;
-  struct fb_fix_screeninfo fb_fix;
-
-  const char* fb = C_STR("/dev/fb/0");
-
-  if ( (fd = open(fb, O_RDWR)) < 0 )
-  {
-    if ( errno != ENOENT && errno != ENOTDIR )
-      return -1;
-
-    fb = C_STR("/dev/fb0");
-
-    if ( (fd = open(fb, O_RDWR)) < 0 )
-      return -1;
-  }
-
-  if ( ! ioctl(fd, FBIOGET_VSCREENINFO, &fb_var)
-    && ! ioctl(fd, FBIOGET_FSCREENINFO, &fb_fix) )
-  {
-    ::close(fd);
-    return int(fb_var.bits_per_pixel);
-  }
-  else
-  {
-    ::close(fd);
-  }
-
-  return -1;
-}
-#endif
-
-//----------------------------------------------------------------------
-int FTerm::openConsole()
-{
-  static const char* terminal_devices[] =
-  {
-    "/proc/self/fd/0",
-    "/dev/tty",
-    "/dev/tty0",
-    "/dev/vc/0",
-    "/dev/systty",
-    "/dev/console",
-    0
-  };
-
-  if ( fd_tty >= 0 )  // console is already opened
-    return 0;
-
-  if ( ! *termfilename )
-    return 0;
-
-  for (int i = 0; terminal_devices[i] != 0; i++)
-    if ( (fd_tty = open(terminal_devices[i], O_RDWR, 0)) >= 0 )
-      return 0;
-
-  return -1;  // No file descriptor referring to the console
-}
-
-//----------------------------------------------------------------------
-int FTerm::closeConsole()
-{
-  if ( fd_tty < 0 )  // console is already closed
-    return 0;
-
-  int ret = ::close (fd_tty);  // use 'close' from the global namespace
-  fd_tty = -1;
-
-  if ( ret == 0 )
-    return 0;
-  else
-    return -1;
-}
-
-#if defined(__linux__)
-//----------------------------------------------------------------------
-int FTerm::getScreenFont()
-{
-  static const std::size_t data_size = 4 * 32 * 512;
-  struct console_font_op font;
-
-  int ret;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  // initialize unused padding bytes in struct
-  std::memset (&font, 0, sizeof(console_font_op));
-
-  font.op = KD_FONT_OP_GET;
-  font.flags = 0;
-  font.width = 32;
-  font.height = 32;
-  font.charcount = 512;
-
-  // initialize with 0
-  try
-  {
-    font.data = new uChar[data_size]();
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return -1;
-  }
-
-  // font operation
-  ret = ioctl (fd_tty, KDFONTOP, &font);
-
-  if ( ret == 0 )
-  {
-    screen_font.width = font.width;
-    screen_font.height = font.height;
-    screen_font.charcount = font.charcount;
-    screen_font.data = font.data;
-    return 0;
-  }
-  else
-    return -1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::setScreenFont ( uChar fontdata[], uInt count
-                         , uInt fontwidth, uInt fontheight
-                         , bool direct)
-{
-  struct console_font_op font;
-  int ret;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  // initialize unused padding bytes in struct
-  std::memset (&font, 0x00, sizeof(console_font_op));
-
-  font.op = KD_FONT_OP_SET;
-  font.flags = 0;
-  font.width = fontwidth;
-  font.height = fontheight;
-  font.charcount = count;
-
-  if ( direct )
-    font.data = fontdata;
-  else
-  {
-    const uInt bytes_per_line = font.width / 8;
-    const std::size_t data_size = bytes_per_line * 32 * font.charcount;
-
-    try
-    {
-      font.data = new uChar[data_size]();  // initialize with 0
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return -1;
-    }
-
-    for (uInt i = 0; i < count; i++)
-      std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line * 32 * i)
-                  , &fontdata[i * font.height]
-                  , font.height);
-  }
-  // font operation
-  ret = ioctl (fd_tty, KDFONTOP, &font);
-
-  if ( ret != 0 && errno != ENOSYS && errno != EINVAL )
-  {
-    if ( ! direct )
-      delete[] font.data;
-
-    return -1;
-  }
-
-  if ( ! direct )
-    delete[] font.data;
-
-  if ( ret == 0 )
-    return 0;
-  else
-    return -1;
-}
-
-//----------------------------------------------------------------------
-int FTerm::getUnicodeMap()
-{
-  struct unimapdesc unimap;
-  int ret;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  unimap.entry_ct = 0;
-  unimap.entries = 0;
-
-  // get count
-  ret = ioctl (fd_tty, GIO_UNIMAP, &unimap);
-
-  if ( ret != 0 )
-  {
-    int count;
-
-    if ( errno != ENOMEM || unimap.entry_ct == 0 )
-      return -1;
-
-    count = unimap.entry_ct;
-
-    try
-    {
-      unimap.entries = new struct unipair[count]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return -1;
-    }
-
-    // get unicode-to-font mapping from kernel
-    ret = ioctl(fd_tty, GIO_UNIMAP, &unimap);
-
-    if ( ret == 0 )
-    {
-      screen_unicode_map.entry_ct = unimap.entry_ct;
-      screen_unicode_map.entries = unimap.entries;
-    }
-    else
-      return -1;
-  }
-
-  return 0;
-}
-
-//----------------------------------------------------------------------
-int FTerm::setUnicodeMap (struct unimapdesc* unimap)
-{
-  struct unimapinit advice;
-  int ret;
-
-  if ( fd_tty < 0 )
-    return -1;
-
-  advice.advised_hashsize = 0;
-  advice.advised_hashstep = 0;
-  advice.advised_hashlevel = 0;
-
-  do
-  {
-    // clear the unicode-to-font table
-    ret = ioctl(fd_tty, PIO_UNIMAPCLR, &advice);
-
-    if ( ret != 0 )
-      return -1;
-
-    // put the new unicode-to-font mapping in kernel
-    ret = ioctl(fd_tty, PIO_UNIMAP, unimap);
-
-    if ( ret != 0 )
-      advice.advised_hashlevel++;
-  }
-  while ( ret != 0 && errno == ENOMEM && advice.advised_hashlevel < 100);
-
-  if ( ret == 0 )
-    return 0;
-  else
-    return -1;
-}
-
-//----------------------------------------------------------------------
-void FTerm::initLinuxConsole()
-{
-  // initialize Linux console
-
-  screen_unicode_map.entries = 0;
-  screen_font.data = 0;
-
-  if ( openConsole() == 0 )
-  {
-    term_detection->setLinuxTerm (isLinuxConsole());
-
-    if ( isLinuxTerm() )
-    {
-      getUnicodeMap();
-      getScreenFont();
-
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-      // Enable 16 background colors
-      if ( setBlinkAsIntensity(true) == 0 )
-        FTermcap::max_color = 16;
-      else
-        FTermcap::max_color = 8;
-#endif
-      // Underline cursor
-      setLinuxConsoleCursorStyle (fc::underscore_cursor, true);
-
-      // Framebuffer color depth in bits per pixel
-      int bpp = getFramebuffer_bpp();
-
-      // More than 4 bits per pixel and the font uses the blink-bit
-      if ( bpp >= 4 && screen_font.charcount <= 256 )
-        FTermcap::max_color = 16;
-
-#if DEBUG
-    framebuffer_bpp = bpp;
-#endif
-    }
-
-    detectTermSize();
-    closeConsole();
-  }
-  else
-  {
-    std::cerr << "can not open the console.\n";
-    std::abort();
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::initLinuxConsoleCharMap()
-{
-  uInt c1, c2, c3, c4, c5;
-
-  if ( NewFont || VGAFont )
-    return;
-
-  if ( screen_unicode_map.entry_ct != 0 )
-  {
-    for (int i = 0; i <= fc::lastCharItem; i++ )
-    {
-      bool found = false;
-
-      for (uInt n = 0; n < screen_unicode_map.entry_ct; n++)
-      {
-        if ( fc::character[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
-        {
-          found = true;
-          break;
-        }
-      }
-
-      if ( ! found )
-        fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
-    }
-  }
-
-  c1 = fc::UpperHalfBlock;
-  c2 = fc::LowerHalfBlock;
-  c3 = fc::FullBlock;
-
-  if ( charEncode(c1, fc::PC) == charEncode(c1, fc::ASCII)
-    || charEncode(c2, fc::PC) == charEncode(c2, fc::ASCII)
-    || charEncode(c3, fc::PC) == charEncode(c3, fc::ASCII) )
-  {
-    shadow_character = false;
-  }
-
-  c4 = fc::RightHalfBlock;
-  c5 = fc::LeftHalfBlock;
-
-  if ( charEncode(c4, fc::PC) == charEncode(c4, fc::ASCII)
-    || charEncode(c5, fc::PC) == charEncode(c5, fc::ASCII) )
-  {
-    half_block_character = false;
-  }
-}
-#endif
-
 //----------------------------------------------------------------------
 void FTerm::init_global_values()
 {
@@ -1690,10 +1089,6 @@ void FTerm::init_global_values()
   // Initialize xterm object
   xterm->setTermcapMap(tcap);
   xterm->setFTermDetection(term_detection);
-
-  // Initialize the structs
-  color_env.setDefault();
-  secondary_da.setDefault();
 
   if ( ! init_values.terminal_detection )
     term_detection->setTerminalDetection (false);
@@ -2462,7 +1857,10 @@ void FTerm::setInsertCursorStyle()
   setKDECursor(fc::UnderlineCursor);
 
 #if defined(__linux__)
-  setLinuxConsoleCursorStyle (fc::underscore_cursor, isCursorHidden());
+  char* cstyle;
+  cstyle = linux->setCursorStyle (fc::underscore_cursor, isCursorHidden());
+  putstring (cstyle);
+  std::fflush(stdout);
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -2480,7 +1878,10 @@ void FTerm::setOverwriteCursorStyle()
   setKDECursor(fc::BlockCursor);
 
 #if defined(__linux__)
-  setLinuxConsoleCursorStyle (fc::full_block_cursor, isCursorHidden());
+  char* cstyle;
+  cstyle = linux->setCursorStyle (fc::full_block_cursor, isCursorHidden());
+  putstring (cstyle);
+  std::fflush(stdout);
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -2500,7 +1901,7 @@ void FTerm::enableMouse()
 #if defined(__linux__)
   if ( isLinuxTerm() && openConsole() == 0 )
   {
-    if ( isLinuxConsole() )
+    if ( linux->isLinuxConsole() )
       gpm_mouse = true;
 
     closeConsole();
@@ -2577,8 +1978,16 @@ inline void FTerm::allocationValues()
     term_detection = new FTermDetection();
     xterm          = new FTermXTerminal();
 
+#if defined(__linux__)
+    linux          = new FTermLinux();
+#endif
+
 #if defined(__FreeBSD__) || defined(__DragonFly__)
     freebsd        = new FTermFreeBSD();
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+    openbsd        = new FTermOpenBSD();
 #endif
 
     mouse          = new FMouseControl();
@@ -2614,9 +2023,19 @@ inline void FTerm::deallocationValues()
   if ( mouse )
     delete mouse;
 
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+  if ( openbsd )
+    delete openbsd;
+#endif
+
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( freebsd )
     delete freebsd;
+#endif
+
+#if defined(__linux__)
+  if ( linux )
+    delete linux;
 #endif
 
   if ( xterm )
@@ -2755,18 +2174,17 @@ void FTerm::init()
 void FTerm::initOSspecifics()
 {
 #if defined(__linux__)
-  // initialize Linux console
-  initLinuxConsole();
+  linux->setFTermDetection(term_detection);
+  linux->init();    // Initialize Linux console
+  framebuffer_bpp = linux->getFramebufferBpp();
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  // Initialize BSD console
-  freebsd->init();
+  freebsd->init();  // Initialize BSD console
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  // Initialize wscons console
-  openbsd->init();
+  openbsd->init();  // Initialize wscons console
 #endif
 }
 
@@ -2837,6 +2255,10 @@ void FTerm::finish()
   }
 
   finishOSspecifics2();
+
+  if ( NewFont || VGAFont )
+    setOldFont();
+
   deallocationValues();
 }
 
@@ -2844,13 +2266,7 @@ void FTerm::finish()
 void FTerm::finishOSspecifics1()
 {
 #if defined(__linux__)
-  if ( isLinuxTerm() )
-  {
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    setBlinkAsIntensity (false);
-#endif
-    setLinuxConsoleCursorStyle (fc::default_cursor, false);
-  }
+  linux->finish();
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
@@ -2868,17 +2284,6 @@ void FTerm::finishOSspecifics2()
 #if defined(__linux__)
   if ( isLinuxTerm() && utf8_console )
     setUTF8(true);
-
-  if ( NewFont || VGAFont )
-    setOldFont();
-  else
-  {
-    if ( screen_font.data != 0 )
-      delete[] screen_font.data;
-
-    if ( screen_unicode_map.entries != 0 )
-      delete[] screen_unicode_map.entries;
-  }
 #endif
 }
 
