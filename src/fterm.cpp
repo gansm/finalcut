@@ -731,12 +731,15 @@ void FTerm::setPalette (short index, int r, int g, int b)
 }
 
 //----------------------------------------------------------------------
+#if defined(__linux__)
 void FTerm::setBeep (int Hz, int ms)
 {
-#if defined(__linux__)
   linux->setBeep (Hz, ms);
-#endif
 }
+#else
+void FTerm::setBeep (int, int)
+{ }
+#endif
 
 //----------------------------------------------------------------------
 void FTerm::resetBeep()
@@ -1013,7 +1016,7 @@ void FTerm::initScreenSettings()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  freebsd->initCharMap();
+  freebsd->initCharMap (fc::character);
 #endif
 
   // set xterm underline cursor
@@ -2109,7 +2112,8 @@ void FTerm::init()
   init_encoding();
 
   // Enable the terminal mouse support
-  enableMouse();
+  if ( init_values.mouse_support )
+    enableMouse();
 
   // Activate meta key sends escape
   if ( isXTerminal() )
@@ -2184,10 +2188,25 @@ void FTerm::initOSspecifics()
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
+  if ( init_values.meta_sends_escape )
+    freebsd->enableMetaSendsEscape();
+  else
+    freebsd->disableMetaSendsEscape();
+
+  if ( init_values.change_cursorstyle )
+    freebsd->enableChangeCursorStyle();
+  else
+    freebsd->disableChangeCursorStyle();
+
   freebsd->init();  // Initialize BSD console
 #endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
+  if ( init_values.meta_sends_escape )
+    openbsd->enableMetaSendsEscape();
+  else
+    openbsd->disableMetaSendsEscape();
+
   openbsd->init();  // Initialize wscons console
 #endif
 }
@@ -2243,7 +2262,8 @@ void FTerm::finish()
   resetBeep();
 
   // Disable the terminal mouse support
-  disableMouse();
+  if ( init_values.mouse_support )
+    disableMouse();
 
   // Deactivate meta key sends escape
   if ( isXTerminal() )
@@ -2258,7 +2278,7 @@ void FTerm::finish()
     std::fflush(stdout);
   }
 
-  finishOSspecifics2();
+  finish_encoding();
 
   if ( NewFont || VGAFont )
     setOldFont();
@@ -2283,7 +2303,7 @@ void FTerm::finishOSspecifics1()
 }
 
 //----------------------------------------------------------------------
-void FTerm::finishOSspecifics2()
+void FTerm::finish_encoding()
 {
 #if defined(__linux__)
   if ( isLinuxTerm() && utf8_console )
@@ -2312,6 +2332,10 @@ uInt FTerm::cp437_to_unicode (uChar c)
 inline int FTerm::getMouseProtocolKey (char buffer[])
 {
   // Looking for mouse string in the key buffer
+
+  if ( ! init_values.mouse_support )
+    return -1;
+
   register std::size_t buf_len = std::strlen(buffer);
 
   // x11 mouse tracking

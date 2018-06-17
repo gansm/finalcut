@@ -321,11 +321,13 @@ void FApplication::showParameterUsage()
     << "  -h, --help           "
     << "       Display this help and exit" << std::endl
     << std::endl
-    << "FinalCut Options:" << std::endl
+    << "The Final Cut options:" << std::endl
     << "  --encoding <name>    "
     << "       Sets the character encoding mode" << std::endl
     << "                       "
     << "       {utf8, vt100, pc, ascii}" << std::endl
+    << "  --no-mouse             "
+    << "     Disable mouse support" << std::endl
     << "  --no-optimized-cursor  "
     << "     Disable cursor optimization" << std::endl
     << "  --no-terminal-detection"
@@ -335,7 +337,25 @@ void FApplication::showParameterUsage()
     << "  --vgafont              "
     << "     Set the standard vga 8x16 font" << std::endl
     << "  --newfont              "
-    << "     Enables the graphical font" << std::endl;
+    << "     Enables the graphical font" << std::endl
+
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+    << std::endl
+    << "FreeBSD console options:" << std::endl
+    << "  --no-esc-for-alt-meta  "
+    << "     Do not send a ESC prefix for the alt/meta key" << std::endl
+    << "  --no-cursorstyle-change"
+    << "     Do not change the current cursor style" << std::endl
+#endif
+
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+    << std::endl
+    << "NetBSD/OpenBSD console options:" << std::endl
+    << "  --no-esc-for-alt-meta  "
+    << "     Do not send a ESC prefix for the alt/meta key" << std::endl
+#endif
+
+    << std::endl;
   std::exit(EXIT_SUCCESS);
 }
 
@@ -402,20 +422,28 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     static struct option long_options[] =
     {
       {C_STR("encoding"),              required_argument, 0,  0 },
+      {C_STR("no-mouse"),              no_argument,       0,  0 },
       {C_STR("no-optimized-cursor"),   no_argument,       0,  0 },
       {C_STR("no-terminal-detection"), no_argument,       0,  0 },
       {C_STR("no-color-change"),       no_argument,       0,  0 },
       {C_STR("vgafont"),               no_argument,       0,  0 },
       {C_STR("newfont"),               no_argument,       0,  0 },
+
+    #if defined(__FreeBSD__) || defined(__DragonFly__)
+      {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
+      {C_STR("no-cursorstyle-change"), no_argument,       0,  0 },
+    #endif
+
+    #if defined(__NetBSD__) || defined(__OpenBSD__)
+      {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
+    #endif
+
       {0,                              0,                 0,  0 }
     };
 
     opterr = 0;
-    c = getopt_long ( argc
-                    , argv
-                    , ""
-                    , long_options
-                    , &idx );
+    c = getopt_long (argc, argv, "", long_options, &idx);
+
     if ( c == -1 )
       break;
 
@@ -441,6 +469,9 @@ void FApplication::cmd_options (const int& argc, char* argv[])
                           + std::string(encoding.c_str()) );
       }
 
+      if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
+        init_values.mouse_support = false;
+
       if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
         init_values.cursor_optimisation = false;
 
@@ -455,6 +486,19 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
         init_values.newfont = true;
+
+    #if defined(__FreeBSD__) || defined(__DragonFly__)
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
+        init_values.meta_sends_escape = false;
+
+      if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
+        init_values.change_cursorstyle = false;
+    #endif
+
+    #if defined(__NetBSD__) || defined(__OpenBSD__)
+      if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
+        init_values.meta_sends_escape = false;
+    #endif
     }
   }
 }

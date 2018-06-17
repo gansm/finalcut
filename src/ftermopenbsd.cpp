@@ -24,7 +24,8 @@
 
 // static class attributes
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-  kbd_t FTermOpenBSD::wscons_keyboard_encoding = 0;
+  kbd_t FTermOpenBSD::bsd_keyboard_encoding = 0;
+  bool  FTermOpenBSD::meta_sends_escape = true;
 #endif
 
 
@@ -44,9 +45,9 @@ FTermOpenBSD::~FTermOpenBSD()  // destructor
 // public methods of FTermOpenBSD
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__)
-bool FTermOpenBSD::isWSConsConsole()
+bool FTermOpenBSD::isBSDConsole()
 {
-  // Check if it's a NetBSD/OpenBSD console
+  // Check if it's a NetBSD/OpenBSD workstation console
 
   static kbd_t kbdencoding;
 
@@ -59,31 +60,35 @@ bool FTermOpenBSD::isWSConsConsole()
 //----------------------------------------------------------------------
 void FTermOpenBSD::init()
 {
-  // initialize wscons console
+  // initialize BSD workstation console
 
-  if ( ! isWSConsConsole() )
+  if ( ! isBSDConsole() )
     return;
 
-  // save current left alt key mapping
-  saveWSConsEncoding();
+  if ( meta_sends_escape )
+  {
+    // save current left alt key mapping
+    saveBSDConsoleEncoding();
 
-  // alt key generate ESC prefix
-  setWSConsMetaEsc();
+    // alt key generate ESC prefix
+    setBSDConsoleMetaEsc();
+  }
 }
 
 //----------------------------------------------------------------------
 void FTermOpenBSD::finish()
 {
-  if ( ! isWSConsConsole() )
+  if ( ! isBSDConsole() )
     return;
 
-  resetWSConsEncoding();
+  if ( meta_sends_escape )
+    resetBSDConsoleEncoding();
 }
 
 
 // private methods of FTermOpenBSD
 //----------------------------------------------------------------------
-bool FTermOpenBSD::saveWSConsEncoding()
+bool FTermOpenBSD::saveBSDConsoleEncoding()
 {
   static kbd_t k_encoding;
   int ret = ioctl(0, WSKBDIO_GETENCODING, &k_encoding);
@@ -92,12 +97,12 @@ bool FTermOpenBSD::saveWSConsEncoding()
     return false;
 
   // save current encoding
-  wscons_keyboard_encoding = k_encoding;
+  bsd_keyboard_encoding = k_encoding;
   return true;
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::setWSConsEncoding (kbd_t k_encoding)
+bool FTermOpenBSD::setBSDConsoleEncoding (kbd_t k_encoding)
 {
   if ( ioctl(0, WSKBDIO_SETENCODING, &k_encoding) < 0 )
     return false;
@@ -106,17 +111,17 @@ bool FTermOpenBSD::setWSConsEncoding (kbd_t k_encoding)
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::setWSConsMetaEsc()
+bool FTermOpenBSD::setBSDConsoleMetaEsc()
 {
   static const kbd_t meta_esc = 0x20;  // generate ESC prefix on ALT-key
 
-  return setWSConsEncoding (wscons_keyboard_encoding | meta_esc);
+  return setBSDConsoleEncoding (bsd_keyboard_encoding | meta_esc);
 }
 
 //----------------------------------------------------------------------
-bool FTermOpenBSD::resetWSConsEncoding()
+bool FTermOpenBSD::resetBSDConsoleEncoding()
 {
-  return setWSConsEncoding (wscons_keyboard_encoding);
+  return setBSDConsoleEncoding (bsd_keyboard_encoding);
 }
 
 #endif

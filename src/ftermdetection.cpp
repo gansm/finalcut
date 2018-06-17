@@ -808,7 +808,7 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
 #if defined(__NetBSD__) || defined(__OpenBSD__)
 
   if ( secondary_da.terminal_id_version == 20
-     && FTermOpenBSD::isWSConsConsole() )
+     && FTermOpenBSD::isBSDConsole() )
   {
     // NetBSD/OpenBSD workstation console
     if ( std::strncmp(termtype, C_STR("wsvt25"), 6) == 0 )

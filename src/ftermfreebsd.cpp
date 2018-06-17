@@ -25,8 +25,10 @@
 
 // static class attributes
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-  uInt FTermFreeBSD::bsd_alt_keymap = 0;
-  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style;
+  uInt                      FTermFreeBSD::bsd_alt_keymap = 0;
+  FTermFreeBSD::CursorStyle FTermFreeBSD::cursor_style = fc::normal_cursor;
+  bool                      FTermFreeBSD::change_cursorstyle = true;
+  bool                      FTermFreeBSD::meta_sends_escape = true;
 #endif
 
 
@@ -59,6 +61,9 @@ void FTermFreeBSD::setCursorStyle (CursorStyle style, bool hidden)
   if ( ! isFreeBSDConsole() )
     return;
 
+  if ( ! change_cursorstyle )
+    return;
+
   cursor_style = style;
 
   if ( hidden )
@@ -88,14 +93,20 @@ void FTermFreeBSD::init()
   if ( ! isFreeBSDConsole() )
     return;
 
-  // save current left alt key mapping
-  saveFreeBSDAltKey();
+  if ( meta_sends_escape )
+  {
+    // save current left alt key mapping
+    saveFreeBSDAltKey();
 
-  // map meta key to left alt key
-  setFreeBSDAlt2Meta();
+    // map meta key to left alt key
+    setFreeBSDAlt2Meta();
+  }
 
-  // Initialize FreeBSD console cursor
-  setCursorStyle (fc::destructive_cursor, true);
+  if ( change_cursorstyle )
+  {
+    // Initialize FreeBSD console cursor
+    setCursorStyle (fc::destructive_cursor, true);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -119,7 +130,9 @@ void FTermFreeBSD::finish()
   if ( ! isFreeBSDConsole() )
     return;
 
-  resetFreeBSDAlt2Meta();
+  if ( meta_sends_escape )
+    resetFreeBSDAlt2Meta();
+
   setCursorStyle (fc::normal_cursor, false);
 }
 

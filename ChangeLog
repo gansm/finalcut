@@ -1,3 +1,6 @@
+2017-06-17  Markus Gans  <guru.mail@muenster.de>
+	* Added special console options for FreeBSD, NetBSD and OpenBSD
+
 2017-06-12  Markus Gans  <guru.mail@muenster.de>
 	* Linux functions from FTerm moved into the FTermLinux class
 

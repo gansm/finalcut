@@ -210,6 +210,6 @@ inline bool FTermLinux::isVGAFontUsed()
 //----------------------------------------------------------------------
 inline bool FTermLinux::isNewFontUsed()
 { return NewFont; }
-#endif
+#endif  // defined(__linux__)
 
 #endif  // FTERMLINUX_H

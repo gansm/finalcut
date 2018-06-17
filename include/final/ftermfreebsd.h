@@ -73,6 +73,10 @@ class FTermFreeBSD
 
     // Mutators
     static void        setCursorStyle (CursorStyle, bool);
+    static void        enableChangeCursorStyle();
+    static void        disableChangeCursorStyle();
+    static void        enableMetaSendsEscape();
+    static void        disableMetaSendsEscape();
 
     // Methods
     static void        init();
@@ -96,10 +100,28 @@ class FTermFreeBSD
     // Data Members
     static uInt        bsd_alt_keymap;
     static CursorStyle cursor_style;
+    static bool        change_cursorstyle;
+    static bool        meta_sends_escape;
 };
 #pragma pack(pop)
 
+// FTermFreeBSD inline functions
+//----------------------------------------------------------------------
+#if defined(__FreeBSD__) || defined(__DragonFly__)
+inline void FTermFreeBSD::enableChangeCursorStyle()
+{ change_cursorstyle = true; }
+
+//----------------------------------------------------------------------
+inline void FTermFreeBSD::disableChangeCursorStyle()
+{ change_cursorstyle = false; }
+
+//----------------------------------------------------------------------
+inline void FTermFreeBSD::enableMetaSendsEscape()
+{ meta_sends_escape = true; }
+
+//----------------------------------------------------------------------
+inline void FTermFreeBSD::disableMetaSendsEscape()
+{ meta_sends_escape = false; }
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
 #endif  // FTERMFREEBSD_H
-
-

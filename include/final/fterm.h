@@ -336,21 +336,43 @@ class FTerm
       public:
         void setDefault()
         {
-          terminal_detection = true;
           cursor_optimisation = true;
+          mouse_support = true;
+          terminal_detection = true;
           color_change = true;
           vgafont = false;
           newfont = false;
           encoding = fc::UNKNOWN;
+
+        #if defined(__FreeBSD__) || defined(__DragonFly__)
+          meta_sends_escape = true;
+          change_cursorstyle = true;
+        #endif
+
+        #if defined(__NetBSD__) || defined(__OpenBSD__)
+          meta_sends_escape = true;
+        #endif
         }
 
-        uInt8 terminal_detection  : 1;
         uInt8 cursor_optimisation : 1;
+        uInt8 mouse_support       : 1;
+        uInt8 terminal_detection  : 1;
         uInt8 color_change        : 1;
         uInt8 vgafont             : 1;
         uInt8 newfont             : 1;
-        uInt8                     : 3;  // padding bits
+        uInt8                     : 2;  // padding bits
         fc::encoding encoding;
+
+      #if defined(__FreeBSD__) || defined(__DragonFly__)
+        uInt8 meta_sends_escape  : 1;
+        uInt8 change_cursorstyle : 1;
+        uInt8                    : 6;  // padding bits
+      #endif
+
+      #if defined(__NetBSD__) || defined(__OpenBSD__)
+        uInt8 meta_sends_escape  : 1;
+        uInt8                    : 7;  // padding bits
+      #endif
     } init_values;
 
   private:
@@ -407,7 +429,7 @@ class FTerm
     void                  initOSspecifics();
     void                  finish();
     void                  finishOSspecifics1();
-    void                  finishOSspecifics2();
+    void                  finish_encoding();
     static uInt           cp437_to_unicode (uChar);
     static int            getMouseProtocolKey (char[]);
     static int            getTermcapKey (char[], int);

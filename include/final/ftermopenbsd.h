@@ -59,7 +59,11 @@ class FTermOpenBSD
     ~FTermOpenBSD();
 
     // Inquiries
-    static bool        isWSConsConsole();
+    static bool        isBSDConsole();
+
+    // Mutators
+    static void        disableMetaSendsEscape();
+    static void        enableMetaSendsEscape();
 
     // Methods
     static void        init();
@@ -74,15 +78,27 @@ class FTermOpenBSD
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
     // Methods
-    static bool        saveWSConsEncoding();
-    static bool        setWSConsEncoding (kbd_t);
-    static bool        setWSConsMetaEsc();
-    static bool        resetWSConsEncoding();
+    static bool        saveBSDConsoleEncoding();
+    static bool        setBSDConsoleEncoding (kbd_t);
+    static bool        setBSDConsoleMetaEsc();
+    static bool        resetBSDConsoleEncoding();
 
     // Data Members
-    static kbd_t       wscons_keyboard_encoding;
+    static kbd_t       bsd_keyboard_encoding;
+    static bool        meta_sends_escape;
 #endif
 };
 #pragma pack(pop)
+
+// FTermOpenBSD inline functions
+//----------------------------------------------------------------------
+#if defined(__NetBSD__) || defined(__OpenBSD__)
+inline void FTermOpenBSD::enableMetaSendsEscape()
+{ meta_sends_escape = true; }
+
+//----------------------------------------------------------------------
+inline void FTermOpenBSD::disableMetaSendsEscape()
+{ meta_sends_escape = false; }
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
 
 #endif  // FTERMOPENBSD_H
