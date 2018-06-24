@@ -1271,7 +1271,7 @@ void FListView::draw()
 //----------------------------------------------------------------------
 void FListView::drawColumnLabels()
 {
-  std::vector<char_data>::const_iterator first, last;
+  std::vector<charData>::const_iterator first, last;
   headerItems::const_iterator iter;
 
   if ( header.empty()
@@ -1297,7 +1297,7 @@ void FListView::drawColumnLabels()
     ++iter;
   }
 
-  std::vector<char_data> h;
+  std::vector<charData> h;
   h << headerline;
   first = h.begin() + xoffset;
 
@@ -1314,7 +1314,7 @@ void FListView::drawColumnLabels()
   }
 
   setPrintPos (2, 1);
-  print() << std::vector<char_data>(first, last);
+  print() << std::vector<charData>(first, last);
 }
 
 //----------------------------------------------------------------------

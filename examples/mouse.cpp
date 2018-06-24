@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -481,11 +481,11 @@ void MouseDraw::drawCanvas()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    char_data* cc;  // canvas character
-    char_data* wc;  // window character
+    charData* cc;  // canvas character
+    charData* wc;  // window character
     cc = &canvas->text[y * x_end];
     wc = &print_area->text[(ay + y) * w_line_len + ax];
-    std::memcpy (wc, cc, sizeof(char_data) * unsigned(x_end));
+    std::memcpy (wc, cc, sizeof(charData) * unsigned(x_end));
 
     if ( short(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);

@@ -183,7 +183,7 @@ FMouseControl* FTerm::getMouseControl()
 }
 
 //----------------------------------------------------------------------
-bool FTerm::isNormal (char_data*& ch)
+bool FTerm::isNormal (charData*& ch)
 {
   return opti_attr->isNormal(ch);
 }
@@ -1027,8 +1027,8 @@ void FTerm::initScreenSettings()
 }
 
 //----------------------------------------------------------------------
-char* FTerm::changeAttribute ( char_data*& term_attr
-                             , char_data*& next_attr )
+char* FTerm::changeAttribute ( charData*& term_attr
+                             , charData*& next_attr )
 {
   return opti_attr->changeAttribute (term_attr, next_attr);
 }
@@ -1551,48 +1551,49 @@ void FTerm::init_OptiAttr()
 {
   // Setting video attribute optimization
 
-  opti_attr->setNoColorVideo (int(FTermcap::attr_without_color));
-  opti_attr->set_enter_bold_mode (TCAP(fc::t_enter_bold_mode));
-  opti_attr->set_exit_bold_mode (TCAP(fc::t_exit_bold_mode));
-  opti_attr->set_enter_dim_mode (TCAP(fc::t_enter_dim_mode));
-  opti_attr->set_exit_dim_mode (TCAP(fc::t_exit_dim_mode));
-  opti_attr->set_enter_italics_mode (TCAP(fc::t_enter_italics_mode));
-  opti_attr->set_exit_italics_mode (TCAP(fc::t_exit_italics_mode));
-  opti_attr->set_enter_underline_mode (TCAP(fc::t_enter_underline_mode));
-  opti_attr->set_exit_underline_mode (TCAP(fc::t_exit_underline_mode));
-  opti_attr->set_enter_blink_mode (TCAP(fc::t_enter_blink_mode));
-  opti_attr->set_exit_blink_mode (TCAP(fc::t_exit_blink_mode));
-  opti_attr->set_enter_reverse_mode (TCAP(fc::t_enter_reverse_mode));
-  opti_attr->set_exit_reverse_mode (TCAP(fc::t_exit_reverse_mode));
-  opti_attr->set_enter_standout_mode (TCAP(fc::t_enter_standout_mode));
-  opti_attr->set_exit_standout_mode (TCAP(fc::t_exit_standout_mode));
-  opti_attr->set_enter_secure_mode (TCAP(fc::t_enter_secure_mode));
-  opti_attr->set_exit_secure_mode (TCAP(fc::t_exit_secure_mode));
-  opti_attr->set_enter_protected_mode (TCAP(fc::t_enter_protected_mode));
-  opti_attr->set_exit_protected_mode (TCAP(fc::t_exit_protected_mode));
-  opti_attr->set_enter_crossed_out_mode (TCAP(fc::t_enter_crossed_out_mode));
-  opti_attr->set_exit_crossed_out_mode (TCAP(fc::t_exit_crossed_out_mode));
-  opti_attr->set_enter_dbl_underline_mode (TCAP(fc::t_enter_dbl_underline_mode));
-  opti_attr->set_exit_dbl_underline_mode (TCAP(fc::t_exit_dbl_underline_mode));
-  opti_attr->set_set_attributes (TCAP(fc::t_set_attributes));
-  opti_attr->set_exit_attribute_mode (TCAP(fc::t_exit_attribute_mode));
-  opti_attr->set_enter_alt_charset_mode (TCAP(fc::t_enter_alt_charset_mode));
-  opti_attr->set_exit_alt_charset_mode (TCAP(fc::t_exit_alt_charset_mode));
-  opti_attr->set_enter_pc_charset_mode (TCAP(fc::t_enter_pc_charset_mode));
-  opti_attr->set_exit_pc_charset_mode (TCAP(fc::t_exit_pc_charset_mode));
-  opti_attr->set_a_foreground_color (TCAP(fc::t_set_a_foreground));
-  opti_attr->set_a_background_color (TCAP(fc::t_set_a_background));
-  opti_attr->set_foreground_color (TCAP(fc::t_set_foreground));
-  opti_attr->set_background_color (TCAP(fc::t_set_background));
-  opti_attr->set_term_color_pair (TCAP(fc::t_set_color_pair));
-  opti_attr->set_orig_pair (TCAP(fc::t_orig_pair));
-  opti_attr->set_orig_orig_colors (TCAP(fc::t_orig_colors));
-  opti_attr->setMaxColor (FTermcap::max_color);
+  FOptiAttr::termEnv optiattr_env =
+  {
+    FTermcap::ansi_default_color,
+    FTermcap::max_color,
+    FTermcap::attr_without_color,
+    TCAP(fc::t_enter_bold_mode),
+    TCAP(fc::t_exit_bold_mode),
+    TCAP(fc::t_enter_dim_mode),
+    TCAP(fc::t_exit_dim_mode),
+    TCAP(fc::t_enter_italics_mode),
+    TCAP(fc::t_exit_italics_mode),
+    TCAP(fc::t_enter_underline_mode),
+    TCAP(fc::t_exit_underline_mode),
+    TCAP(fc::t_enter_blink_mode),
+    TCAP(fc::t_exit_blink_mode),
+    TCAP(fc::t_enter_reverse_mode),
+    TCAP(fc::t_exit_reverse_mode),
+    TCAP(fc::t_enter_standout_mode),
+    TCAP(fc::t_exit_standout_mode),
+    TCAP(fc::t_enter_secure_mode),
+    TCAP(fc::t_exit_secure_mode),
+    TCAP(fc::t_enter_protected_mode),
+    TCAP(fc::t_exit_protected_mode),
+    TCAP(fc::t_enter_crossed_out_mode),
+    TCAP(fc::t_exit_crossed_out_mode),
+    TCAP(fc::t_enter_dbl_underline_mode),
+    TCAP(fc::t_exit_dbl_underline_mode),
+    TCAP(fc::t_set_attributes),
+    TCAP(fc::t_exit_attribute_mode),
+    TCAP(fc::t_enter_alt_charset_mode),
+    TCAP(fc::t_enter_alt_charset_mode),
+    TCAP(fc::t_enter_pc_charset_mode),
+    TCAP(fc::t_exit_pc_charset_mode),
+    TCAP(fc::t_set_a_foreground),
+    TCAP(fc::t_set_a_background),
+    TCAP(fc::t_set_foreground),
+    TCAP(fc::t_set_background),
+    TCAP(fc::t_orig_pair),
+    TCAP(fc::t_orig_pair),
+    TCAP(fc::t_orig_colors)
+  };
 
-  if ( FTermcap::ansi_default_color )
-    opti_attr->setDefaultColorSupport();
-
-  opti_attr->initialize();
+  opti_attr->setTermEnvironment(optiattr_env);
 }
 
 //----------------------------------------------------------------------

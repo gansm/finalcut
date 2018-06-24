@@ -166,7 +166,7 @@ class FTerm
 {
   public:
     // Typedefs
-    typedef FOptiAttr::char_data  char_data;
+    typedef FOptiAttr::charData  charData;
 
     // Constructor
     explicit FTerm (bool = false);
@@ -200,7 +200,7 @@ class FTerm
     // Inquiries
     static bool           isCursorHidden();
     static bool           isKeypressTimeout (timeval*);
-    static bool           isNormal (char_data*&);
+    static bool           isNormal (charData*&);
     static bool           isRaw();
     static bool           hasPCcharset();
     static bool           hasUTF8();
@@ -322,8 +322,8 @@ class FTerm
 
     // Methods
     static void           initScreenSettings();
-    static char*          changeAttribute ( char_data*&
-                                          , char_data*& );
+    static char*          changeAttribute ( charData*&
+                                          , charData*& );
     static void           changeTermSizeFinished();
     static void           exitWithMessage (std::string)
     #if defined(__clang__) || defined(__GNUC__)

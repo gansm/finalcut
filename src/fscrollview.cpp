@@ -682,13 +682,13 @@ void FScrollView::copy2area()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    char_data* vc;  // viewport character
-    char_data* ac;  // area character
+    charData* vc;  // viewport character
+    charData* ac;  // area character
     int v_line_len = viewport->width;
     int a_line_len = print_area->width + print_area->right_shadow;
     vc = &viewport->text[(dy + y) * v_line_len + dx];
     ac = &print_area->text[(ay + y) * a_line_len + ax];
-    std::memcpy (ac, vc, sizeof(char_data) * unsigned(x_end));
+    std::memcpy (ac, vc, sizeof(charData) * unsigned(x_end));
 
     if ( short(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);

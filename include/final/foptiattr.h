@@ -72,7 +72,7 @@
 class FOptiAttr
 {
   public:
-    // Typedef
+    // Typedefs
     typedef struct
     {
       int   code;      // character code
@@ -109,7 +109,49 @@ class FOptiAttr
 
         uInt8 byte[3];
       } attr;
-    } char_data;
+    } charData;
+
+    typedef struct
+    {
+      bool  ansi_default_color;
+      int   max_color;
+      int   attr_without_color;
+      char* F_enter_bold_mode;
+      char* F_exit_bold_mode;
+      char* F_enter_dim_mode;
+      char* F_exit_dim_mode;
+      char* F_enter_italics_mode;
+      char* F_exit_italics_mode;
+      char* F_enter_underline_mode;
+      char* F_exit_underline_mode;
+      char* F_enter_blink_mode;
+      char* F_exit_blink_mode;
+      char* F_enter_reverse_mode;
+      char* F_exit_reverse_mode;
+      char* F_enter_standout_mode;
+      char* F_exit_standout_mode;
+      char* F_enter_secure_mode;
+      char* F_exit_secure_mode;
+      char* F_enter_protected_mode;
+      char* F_exit_protected_mode;
+      char* F_enter_crossed_out_mode;
+      char* F_exit_crossed_out_mode;
+      char* F_enter_dbl_underline_mode;
+      char* F_exit_dbl_underline_mode;
+      char* F_set_attributes;
+      char* F_exit_attribute_mode;
+      char* F_enter_alt_charset_mode;
+      char* F_exit_alt_charset_mode;
+      char* F_enter_pc_charset_mode;
+      char* F_exit_pc_charset_mode;
+      char* F_set_a_foreground;
+      char* F_set_a_background;
+      char* F_set_foreground;
+      char* F_set_background;
+      char* F_set_color_pair;
+      char* F_orig_pair;
+      char* F_orig_colors;
+    } termEnv;
 
     // Constructor
     explicit FOptiAttr();
@@ -118,13 +160,14 @@ class FOptiAttr
     ~FOptiAttr();
 
     // Friend operator functions
-    friend bool operator == (const char_data&, const char_data&);
-    friend bool operator != (const char_data&, const char_data&);
+    friend bool operator == (const charData&, const charData&);
+    friend bool operator != (const charData&, const charData&);
 
     // Accessors
     const char* getClassName() const;
 
     // Mutators
+    void  setTermEnvironment (termEnv&);
     void  setMaxColor (const int&);
     void  setNoColorVideo (int);
     void  setDefaultColorSupport();
@@ -166,17 +209,15 @@ class FOptiAttr
     void  set_orig_orig_colors (char[]);
 
     // Inquiry
-    static bool  isNormal (char_data*&);
+    static bool  isNormal (charData*&);
 
     // Methods
     void         initialize();
     static short vga2ansi (register short);
-    char*        changeAttribute (char_data*&, char_data*&);
+    char*        changeAttribute (charData*&, charData*&);
 
   private:
     // Typedefs and Enumerations
-    typedef unsigned char uChar;
-
     typedef struct
     {
       char* cap;
@@ -222,62 +263,62 @@ class FOptiAttr
     FOptiAttr& operator = (const FOptiAttr&);
 
     // Mutators
-    bool  setTermBold (char_data*&);
-    bool  unsetTermBold (char_data*&);
-    bool  setTermDim (char_data*&);
-    bool  unsetTermDim (char_data*&);
-    bool  setTermItalic (char_data*&);
-    bool  unsetTermItalic (char_data*&);
-    bool  setTermUnderline (char_data*&);
-    bool  unsetTermUnderline (char_data*&);
-    bool  setTermBlink (char_data*&);
-    bool  unsetTermBlink (char_data*&);
-    bool  setTermReverse (char_data*&);
-    bool  unsetTermReverse (char_data*&);
-    bool  setTermStandout (char_data*&);
-    bool  unsetTermStandout (char_data*&);
-    bool  setTermInvisible (char_data*&);
-    bool  unsetTermInvisible (char_data*&);
-    bool  setTermProtected (char_data*&);
-    bool  unsetTermProtected (char_data*&);
-    bool  setTermCrossedOut (char_data*&);
-    bool  unsetTermCrossedOut (char_data*&);
-    bool  setTermDoubleUnderline (char_data*&);
-    bool  unsetTermDoubleUnderline (char_data*&);
-    bool  setTermAttributes ( char_data*&
+    bool  setTermBold (charData*&);
+    bool  unsetTermBold (charData*&);
+    bool  setTermDim (charData*&);
+    bool  unsetTermDim (charData*&);
+    bool  setTermItalic (charData*&);
+    bool  unsetTermItalic (charData*&);
+    bool  setTermUnderline (charData*&);
+    bool  unsetTermUnderline (charData*&);
+    bool  setTermBlink (charData*&);
+    bool  unsetTermBlink (charData*&);
+    bool  setTermReverse (charData*&);
+    bool  unsetTermReverse (charData*&);
+    bool  setTermStandout (charData*&);
+    bool  unsetTermStandout (charData*&);
+    bool  setTermInvisible (charData*&);
+    bool  unsetTermInvisible (charData*&);
+    bool  setTermProtected (charData*&);
+    bool  unsetTermProtected (charData*&);
+    bool  setTermCrossedOut (charData*&);
+    bool  unsetTermCrossedOut (charData*&);
+    bool  setTermDoubleUnderline (charData*&);
+    bool  unsetTermDoubleUnderline (charData*&);
+    bool  setTermAttributes ( charData*&
                             , bool, bool, bool
                             , bool, bool, bool
                             , bool, bool, bool );
-    bool  unsetTermAttributes (char_data*&);
-    bool  setTermAltCharset (char_data*&);
-    bool  unsetTermAltCharset (char_data*&);
-    bool  setTermPCcharset (char_data*&);
-    bool  unsetTermPCcharset (char_data*&);
-    bool  setTermDefaultColor (char_data*&);
-    void  setAttributesOn (char_data*&);
-    void  setAttributesOff (char_data*&);
+    bool  unsetTermAttributes (charData*&);
+    bool  setTermAltCharset (charData*&);
+    bool  unsetTermAltCharset (charData*&);
+    bool  setTermPCcharset (charData*&);
+    bool  unsetTermPCcharset (charData*&);
+    bool  setTermDefaultColor (charData*&);
+    void  setAttributesOn (charData*&);
+    void  setAttributesOff (charData*&);
 
     // Inquiries
-    static bool  hasColor (char_data*&);
-    static bool  hasAttribute (char_data*&);
-    static bool  hasNoAttribute (char_data*&);
+    static bool  hasColor (charData*&);
+    static bool  hasAttribute (charData*&);
+    static bool  hasNoAttribute (charData*&);
 
     // Methods
-    bool  colorChange (char_data*&, char_data*&);
-    void  resetColor (char_data*&);
-    void  prevent_no_color_video_attributes (char_data*&, bool = false);
-    void  deactivateAttributes (char_data*&, char_data*&);
-    void  changeAttributeSGR (char_data*&, char_data*&);
-    void  changeAttributeSeparately (char_data*&, char_data*&);
-    void  change_color (char_data*&, char_data*&);
-    void  change_to_default_color (char_data*&, char_data*&, short&, short&);
-    void  change_current_color (char_data*&, short, short);
-    void  resetAttribute (char_data*&);
-    void  reset (char_data*&);
+    bool  colorChange (charData*&, charData*&);
+    void  resetColor (charData*&);
+    void  prevent_no_color_video_attributes (charData*&, bool = false);
+    void  deactivateAttributes (charData*&, charData*&);
+    void  changeAttributeSGR (charData*&, charData*&);
+    void  changeAttributeSeparately (charData*&, charData*&);
+    void  change_color (charData*&, charData*&);
+    void  change_to_default_color (charData*&, charData*&, short&, short&);
+    void  change_current_color (charData*&, short, short);
+    void  resetAttribute (charData*&);
+    void  reset (charData*&);
     bool  caused_reset_attributes (char[], uChar = all_tests);
     bool  hasCharsetEquivalence();
-    void  detectSwitchOn (char_data*&, char_data*&);
-    void  detectSwitchOff (char_data*&, char_data*&);
+    void  detectSwitchOn (charData*&, charData*&);
+    void  detectSwitchOff (charData*&, charData*&);
     bool  switchOn();
     bool  switchOff();
     bool  append_sequence (char[]);
@@ -319,9 +360,9 @@ class FOptiAttr
     capability F_orig_pair;
     capability F_orig_colors;
 
-    char_data  on;
-    char_data  off;
-    char_data  reset_byte_mask;
+    charData   on;
+    charData   off;
+    charData   reset_byte_mask;
 
     int        max_color;
     int        attr_without_color;
@@ -337,8 +378,8 @@ class FOptiAttr
 
 // FOptiAttr inline functions
 //----------------------------------------------------------------------
-inline bool operator == ( const FOptiAttr::char_data& lhs,
-                          const FOptiAttr::char_data& rhs )
+inline bool operator == ( const FOptiAttr::charData& lhs,
+                          const FOptiAttr::charData& rhs )
 {
   return lhs.code         == rhs.code
       && lhs.fg_color     == rhs.fg_color
@@ -348,8 +389,8 @@ inline bool operator == ( const FOptiAttr::char_data& lhs,
 }
 
 //----------------------------------------------------------------------
-inline bool operator != ( const FOptiAttr::char_data& lhs,
-                          const FOptiAttr::char_data& rhs )
+inline bool operator != ( const FOptiAttr::charData& lhs,
+                          const FOptiAttr::charData& rhs )
 { return ! ( lhs == rhs ); }
 
 //----------------------------------------------------------------------

@@ -2274,7 +2274,7 @@ void FWidget::draw()
 void FWidget::drawWindows()
 {
   // redraw windows
-  FOptiAttr::char_data default_char;
+  FOptiAttr::charData default_char;
   default_char.code         = ' ';
   default_char.fg_color     = fc::Black;
   default_char.bg_color     = fc::Black;

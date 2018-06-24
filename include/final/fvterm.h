@@ -82,7 +82,7 @@ class FVTerm : public FTerm
       uInt trans_count;    // Number of transparent characters
     } line_changes;
 
-    typedef FOptiAttr::char_data  char_data;
+    typedef FOptiAttr::charData  charData;
     typedef void (FVTerm::*FPreprocessingHandler)();
 
     struct term_area;  // forward declaration
@@ -117,7 +117,7 @@ class FVTerm : public FTerm
 
     // Overloaded operators
     template<class type> FVTerm& operator << (const type&);
-    FVTerm& operator << (const std::vector<char_data>&);
+    FVTerm& operator << (const std::vector<charData>&);
 
     // Accessors
     virtual const char* getClassName() const;
@@ -125,7 +125,7 @@ class FVTerm : public FTerm
     static short        getTermBackgroundColor();
     term_area*          getVWin() const;
     FPoint              getPrintCursor();
-    static char_data    getAttribute();
+    static charData    getAttribute();
 
     // Mutators
     static void         setTermXY (register int, register int);
@@ -250,12 +250,12 @@ class FVTerm : public FTerm
     int                 print (term_area*, const std::string&);
     int                 print (const FString&);
     int                 print (term_area*, const FString&);
-    int                 print (const std::vector<char_data>&);
-    int                 print (term_area*, const std::vector<char_data>&);
+    int                 print (const std::vector<charData>&);
+    int                 print (term_area*, const std::vector<charData>&);
     int                 print (int);
     int                 print (term_area*, int);
-    int                 print (char_data&);
-    int                 print (term_area*, char_data&);
+    int                 print (charData&);
+    int                 print (term_area*, charData&);
     FVTerm&             print();
 
   protected:
@@ -337,21 +337,21 @@ class FVTerm : public FTerm
     static void          scrollAreaReverse (term_area*);
     static void          clearArea (term_area*, int = ' ');
 
-    static char_data     generateCharacter (const FPoint&);
-    static char_data     generateCharacter (int, int);
+    static charData     generateCharacter (const FPoint&);
+    static charData     generateCharacter (int, int);
 
-    static char_data     getCharacter ( character_type
+    static charData     getCharacter ( character_type
                                       , const FPoint&
                                       , FVTerm* );
 
-    static char_data     getCharacter ( character_type
+    static charData     getCharacter ( character_type
                                       , int
                                       , int, FVTerm* );
 
-    static char_data     getCoveredCharacter (const FPoint&, FVTerm*);
-    static char_data     getCoveredCharacter (int, int, FVTerm*);
-    static char_data     getOverlappedCharacter (const FPoint&, FVTerm*);
-    static char_data     getOverlappedCharacter (int, int, FVTerm*);
+    static charData     getCoveredCharacter (const FPoint&, FVTerm*);
+    static charData     getCoveredCharacter (int, int, FVTerm*);
+    static charData     getOverlappedCharacter (const FPoint&, FVTerm*);
+    static charData     getOverlappedCharacter (int, int, FVTerm*);
     static void          processTerminalUpdate();
     static void          startTerminalUpdate();
     static void          finishTerminalUpdate();
@@ -392,14 +392,14 @@ class FVTerm : public FTerm
     // Methods
     void                    init();
     void                    finish();
-    static void             putAreaLine (char_data*, char_data*, int);
+    static void             putAreaLine (charData*, charData*, int);
     static void             putAreaCharacter ( int, int, FVTerm*
-                                             , char_data*, char_data* );
+                                             , charData*, charData* );
     static void             getAreaCharacter ( int, int, term_area*
-                                             , char_data*& );
+                                             , charData*& );
     static bool             clearTerm (int = ' ');
-    static bool             clearFullArea (term_area*, char_data&);
-    static void             clearAreaWithShadow (term_area*, char_data&);
+    static bool             clearFullArea (term_area*, charData&);
+    static void             clearAreaWithShadow (term_area*, charData&);
     static bool             canClearToEOL (uInt, uInt);
     static bool             canClearLeadingWS (uInt&, uInt);
     static bool             canClearTrailingWS (uInt&, uInt);
@@ -414,12 +414,12 @@ class FVTerm : public FTerm
     static bool             isInsideTerminal (int, int);
     static void             markAsPrinted (uInt, uInt);
     static void             markAsPrinted (uInt, uInt, uInt);
-    static void             newFontChanges (char_data*&);
-    static void             charsetChanges (char_data*&);
-    static void             appendCharacter (char_data*&);
-    static void             appendChar (char_data*&);
-    static void             appendAttributes (char_data*&);
-    static int              appendLowerRight (char_data*&);
+    static void             newFontChanges (charData*&);
+    static void             charsetChanges (charData*&);
+    static void             appendCharacter (charData*&);
+    static void             appendChar (charData*&);
+    static void             appendAttributes (charData*&);
+    static int              appendLowerRight (charData*&);
     static void             appendOutputBuffer (const std::string&);
     static void             appendOutputBuffer (const char[]);
 
@@ -431,10 +431,10 @@ class FVTerm : public FTerm
 
     // Data Members
     static std::queue<int>* output_buffer;
-    static char_data        term_attribute;
-    static char_data        next_attribute;
-    static char_data        s_ch;      // shadow character
-    static char_data        i_ch;      // inherit background character
+    static charData        term_attribute;
+    static charData        next_attribute;
+    static charData        s_ch;      // shadow character
+    static charData        i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static termcap_map*     tcap;
     static bool             terminal_update_complete;
@@ -492,7 +492,7 @@ struct FVTerm::term_area  // define virtual terminal character properties
     FWidget* widget;     // Widget that owns this term_area
     FPreprocessing preprocessing_call;
     line_changes* changes;
-    char_data* text;     // Text data for the output
+    charData* text;     // Text data for the output
     bool input_cursor_visible;
     bool has_changes;
     bool visible;
@@ -518,7 +518,7 @@ inline FVTerm& FVTerm::operator << (const type& s)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << (const std::vector<FVTerm::char_data>& termString)
+inline FVTerm& FVTerm::operator << (const std::vector<FVTerm::charData>& termString)
 {
   print (termString);
   return *this;
@@ -541,7 +541,7 @@ inline FVTerm::term_area* FVTerm::getVWin() const
 { return vwin; }
 
 //----------------------------------------------------------------------
-inline FVTerm::char_data FVTerm::getAttribute()
+inline FVTerm::charData FVTerm::getAttribute()
 { return next_attribute; }
 
 //----------------------------------------------------------------------

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -138,7 +138,7 @@ int FTermBuffer::write (const FString& s)
   {
     while ( *p )
     {
-      char_data  nc;  // next character
+      charData  nc;  // next character
       nc = FVTerm::getAttribute();
       nc.code = *p;
       nc.attr.bit.no_changes = false;
@@ -157,7 +157,7 @@ int FTermBuffer::write (const FString& s)
 //----------------------------------------------------------------------
 int FTermBuffer::write (register int c)
 {
-  char_data nc;  // next character
+  charData nc;  // next character
   nc = FVTerm::getAttribute();
   nc.code = c;
   nc.attr.bit.no_changes = false;
@@ -170,8 +170,8 @@ int FTermBuffer::write (register int c)
 
 // FTermBuffer non-member operators
 //----------------------------------------------------------------------
-std::vector<FTermBuffer::char_data>& operator << \
-  ( std::vector<FTermBuffer::char_data>& termString
+std::vector<FTermBuffer::charData>& operator << \
+  ( std::vector<FTermBuffer::charData>& termString
   , const FTermBuffer& buf )
 {
   if ( ! buf.data.empty() )

@@ -121,7 +121,7 @@ void FOptiAttrTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
-  FOptiAttr::char_data* ch = new FOptiAttr::char_data();
+  FOptiAttr::charData* ch = new FOptiAttr::charData();
   FOptiAttr oa;
   oa.initialize();
 
@@ -133,7 +133,7 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  FOptiAttr::char_data* ch_null = 0;
+  FOptiAttr::charData* ch_null = 0;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
@@ -168,8 +168,8 @@ void FOptiAttrTest::fakeReverseTest()
 {
   FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
-  oa.setNoColorVideo (4);       // Avoid reverse (4)
   oa.setMaxColor (8);
+  oa.setNoColorVideo (4);       // Avoid reverse (4)
   oa.set_enter_bold_mode (0);
   oa.set_exit_bold_mode (0);
   oa.set_enter_dim_mode (0);
@@ -207,8 +207,8 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Gray text on blue background
@@ -256,8 +256,8 @@ void FOptiAttrTest::ansiTest()
 
   FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
-  oa.setNoColorVideo (3);       // Avoid standout (1) + underline mode (2)
   oa.setMaxColor (8);
+  oa.setNoColorVideo (3);       // Avoid standout (1) + underline mode (2)
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "0m"));
   oa.set_enter_dim_mode (0);
@@ -302,8 +302,8 @@ void FOptiAttrTest::ansiTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -723,8 +723,8 @@ void FOptiAttrTest::vt100Test()
 
   FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
-  oa.setNoColorVideo (0);
   oa.setMaxColor (1);
+  oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (C_STR(CSI "1m$<2>"));
   oa.set_exit_bold_mode (C_STR(CSI "0m$<2>"));
   oa.set_enter_dim_mode (0);
@@ -767,8 +767,8 @@ void FOptiAttrTest::vt100Test()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1185,8 +1185,8 @@ void FOptiAttrTest::xtermTest()
 
   FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
-  oa.setNoColorVideo (0);
   oa.setMaxColor (256);
+  oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "22m"));
   oa.set_enter_dim_mode (C_STR(CSI "2m"));
@@ -1239,8 +1239,8 @@ void FOptiAttrTest::xtermTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -1666,8 +1666,8 @@ void FOptiAttrTest::rxvtTest()
 
   FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
-  oa.setNoColorVideo (0);
   oa.setMaxColor (8);
+  oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "22m"));
   oa.set_enter_dim_mode (0);
@@ -1710,8 +1710,8 @@ void FOptiAttrTest::rxvtTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2138,8 +2138,8 @@ void FOptiAttrTest::linuxTest()
 
   FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
-  oa.setNoColorVideo (18);
   oa.setMaxColor (16);
+  oa.setNoColorVideo (18);
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "22m"));
   oa.set_enter_dim_mode (0);
@@ -2183,8 +2183,8 @@ void FOptiAttrTest::linuxTest()
   oa.set_orig_orig_colors (C_STR(OSC "R"));
   oa.initialize();
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -2613,8 +2613,8 @@ void FOptiAttrTest::puttyTest()
 
   FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
-  oa.setNoColorVideo (0);
   oa.setMaxColor (256);
+  oa.setNoColorVideo (0);
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "22m"));
   oa.set_enter_dim_mode (C_STR(CSI "2m"));
@@ -2667,8 +2667,8 @@ void FOptiAttrTest::puttyTest()
   oa.initialize();
 
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3096,8 +3096,8 @@ void FOptiAttrTest::teratermTest()
 
   FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
-  oa.setNoColorVideo (41);  // Avoid standout (1) + blink (8) + bold (32)
   oa.setMaxColor (16);
+  oa.setNoColorVideo (41);  // Avoid standout (1) + blink (8) + bold (32)
   oa.set_enter_bold_mode (C_STR(CSI "1m"));
   oa.set_exit_bold_mode (C_STR(CSI "22m"));
   oa.set_enter_dim_mode (0);
@@ -3141,8 +3141,8 @@ void FOptiAttrTest::teratermTest()
   oa.initialize();
 
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -3563,8 +3563,8 @@ void FOptiAttrTest::ibmColorTest()
 
   FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
-  oa.setNoColorVideo (3);  // Avoid standout (1) + underline mode (2)
   oa.setMaxColor (8);
+  oa.setNoColorVideo (3);  // Avoid standout (1) + underline mode (2)
   oa.set_enter_bold_mode (0);
   oa.set_exit_bold_mode (0);
   oa.set_enter_dim_mode (0);
@@ -3617,8 +3617,8 @@ void FOptiAttrTest::ibmColorTest()
   oa.initialize();
 
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
@@ -4001,54 +4001,66 @@ void FOptiAttrTest::wyse50Test()
   // Simulate an Wyse-50 terminal
 
   FOptiAttr oa;
-  oa.unsetDefaultColorSupport();  // No ANSI default color
-  oa.setNoColorVideo (0);
-  oa.setMaxColor (1);
-  oa.set_enter_bold_mode (0);
-  oa.set_exit_bold_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_dim_mode (C_STR(ESC "Gp"));
-  oa.set_exit_dim_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_italics_mode (0);
-  oa.set_exit_italics_mode (0);
-  oa.set_enter_underline_mode (C_STR(ESC "G8"));
-  oa.set_exit_underline_mode (C_STR(ESC "G0"));
-  oa.set_enter_blink_mode (C_STR(ESC "G2"));
-  oa.set_exit_blink_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_reverse_mode (C_STR(ESC "G2"));
-  oa.set_exit_reverse_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_standout_mode (C_STR(ESC "Gt"));
-  oa.set_exit_standout_mode (C_STR(ESC "G0"));
-  oa.set_enter_secure_mode (C_STR(ESC "G1"));
-  oa.set_exit_secure_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_protected_mode (C_STR(ESC ")"));
-  oa.set_exit_protected_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_crossed_out_mode (0);
-  oa.set_exit_crossed_out_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_dbl_underline_mode (0);
-  oa.set_exit_dbl_underline_mode (0);
-  oa.set_set_attributes (C_STR("%?%p8%t\E)%e\E(%;"
-                               "%?%p9%t\EcE%e\EcD%;\EG%'0'"
-                               "%?%p2%t%{8}%|%;"
-                               "%?%p1%p3%|%p6%|%t%{4}%|%;"
-                               "%?%p4%t%{2}%|%;"
-                               "%?%p1%p5%|%t%'@'%|%;"
-                               "%?%p7%t%{1}%|%;%c"));
-  oa.set_exit_attribute_mode (C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD"));
-  oa.set_enter_alt_charset_mode (C_STR(ESC "cE"));
-  oa.set_exit_alt_charset_mode (C_STR(ESC "cD"));
-  oa.set_enter_pc_charset_mode (0);
-  oa.set_exit_pc_charset_mode (0);
-  oa.set_a_foreground_color (0);
-  oa.set_a_background_color (0);
-  oa.set_foreground_color (0);
-  oa.set_background_color (0);
-  oa.set_term_color_pair (0);
-  oa.set_orig_pair (0);
-  oa.set_orig_orig_colors (0);
-  oa.initialize();
+  FOptiAttr::termEnv optiattr_env =
+  {
+    false,                              // No ANSI default color
+    1,                                  // Max color
+    0,                                  // No color video
+    0,                                  // Enter bold
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit bold
+    C_STR(ESC "Gp"),                    // Enter dim
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit dim
+    0,                                  // Enter italics
+    0,                                  // Exit italics
+    C_STR(ESC "G8"),                    // Enter underline
+    C_STR(ESC "G0"),                    // Exit underline
+    C_STR(ESC "G2"),                    // Enter blink
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit blink
+    C_STR(ESC "G2"),                    // Enter reverse
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit reverse
+    C_STR(ESC "Gt"),                    // Enter standout
+    C_STR(ESC "G0"),                    // Exit standout
+    C_STR(ESC "G1"),                    // Enter secure
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit secure
+    C_STR(ESC ")"),                     // Enter protected
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit protected
+    0,                                  // Enter crossed out
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit crossed out
+    0,                                  // Enter double underline
+    0,                                  // Exit double underline
+    C_STR("%?%p8%t\E)%e\E(%;"
+          "%?%p9%t\EcE%e\EcD%;\EG%'0'"
+          "%?%p2%t%{8}%|%;"
+          "%?%p1%p3%|%p6%|%t%{4}%|%;"
+          "%?%p4%t%{2}%|%;"
+          "%?%p1%p5%|%t%'@'%|%;"
+          "%?%p7%t%{1}%|%;%c"),         // Set attributes
+    C_STR(ESC "("  ESC "H\003"
+          ESC "G0" ESC "cD"),           // Exit attribute
+    C_STR(ESC "cE"),                    // Enter alt charset
+    C_STR(ESC "cD"),                    // Exit alt charset
+    0,                                  // Enter pc charset
+    0,                                  // Exit pc charset
+    0,                                  // Ansi foreground color
+    0,                                  // Ansi background color
+    0,                                  // Foreground color
+    0,                                  // Background color
+    0,                                  // Term color pair
+    0,                                  // Orig pair
+    0                                   // Orig orig colors
+  };
 
-  FOptiAttr::char_data* from = new FOptiAttr::char_data();
-  FOptiAttr::char_data* to = new FOptiAttr::char_data();
+  oa.setTermEnvironment(optiattr_env);
+
+  FOptiAttr::charData* from = new FOptiAttr::charData();
+  FOptiAttr::charData* to = new FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold

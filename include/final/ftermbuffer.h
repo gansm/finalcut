@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -54,7 +54,7 @@ class FTermBuffer
 {
   public:
     // Typedef
-    typedef FOptiAttr::char_data  char_data;
+    typedef FOptiAttr::charData  charData;
 
     // Constructor
     explicit FTermBuffer();
@@ -65,7 +65,7 @@ class FTermBuffer
     // Overloaded operators
     template<class type> FTermBuffer& operator << (const type&);
     // Non-member operators
-    friend std::vector<char_data>& operator << ( std::vector<char_data>&
+    friend std::vector<charData>& operator << ( std::vector<charData>&
                                                , const FTermBuffer& );
 
     // Accessors
@@ -92,10 +92,10 @@ class FTermBuffer
     int                    write (const FString&);
     int                    write (int);
     FTermBuffer&           write ();
-    std::vector<char_data> getBuffer();
+    std::vector<charData>  getBuffer();
 
   private:
-    std::vector<char_data> data;
+    std::vector<charData> data;
 };
 
 #pragma pack(pop)
@@ -133,7 +133,7 @@ inline FTermBuffer& FTermBuffer::write()
 { return *this; }
 
 //----------------------------------------------------------------------
-inline std::vector<FTermBuffer::char_data> FTermBuffer::getBuffer()
+inline std::vector<FTermBuffer::charData> FTermBuffer::getBuffer()
 { return data; }
 
 #endif  // FTERMBUFFER_H
