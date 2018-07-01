@@ -93,6 +93,13 @@ void move (int xold, int yold, int xnew, int ynew)
   char* buffer;
   char  from[10], to[10], byte[20];
   uInt  len;
+  const std::string ctrl_character[] =
+  {
+    "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
+    "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
+    "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
+    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US"
+  };
 
   term_boundaries(xold, yold);
   term_boundaries(xnew, ynew);
@@ -108,32 +115,14 @@ void move (int xold, int yold, int xnew, int ynew)
 
   for (uInt i = 0; i < len; i++)
   {
-    switch ( buffer[i] )
-    {
-      case 0x08:
-        sequence += "BS ";
-        break;
+    char ch = buffer[i];
 
-      case 0x09:
-        sequence += "TAB ";
-        break;
+    if ( ch < 0x20 )
+      sequence += ctrl_character[uInt(ch)];
+    else
+      sequence += ch;
 
-      case 0x0a:
-        sequence += "LF ";
-        break;
-
-      case 0x0d:
-        sequence += "CR ";
-        break;
-
-      case 0x1b:
-        sequence += "Esc ";
-        break;
-
-      default:
-        sequence += buffer[i];
-        sequence += ' ';
-    }
+    sequence += ' ';
   }
 
   std::cout << std::setw(21) << sequence << " ";

@@ -608,22 +608,35 @@ void FOptiMoveTest::teratermTest()
   FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
-  om.setTabStop (8);
-  om.set_eat_newline_glitch (true);
-  om.set_tabular (C_STR("\t"));
-  om.set_cursor_home (C_STR(CSI "H"));
-  om.set_carriage_return (C_STR("\r"));
-  om.set_cursor_up (C_STR(CSI "A"));
-  om.set_cursor_down (C_STR("\n"));
-  om.set_cursor_right (C_STR(CSI "C"));
-  om.set_cursor_left (C_STR("\b"));
-  om.set_cursor_address (C_STR(CSI "%i%p1%d;%p2%dH"));
-  om.set_column_address (C_STR(CSI "%i%p1%dG"));
-  om.set_row_address (C_STR(CSI "%i%p1%dd"));
-  om.set_parm_up_cursor (C_STR(CSI "%p1%dA"));
-  om.set_parm_down_cursor (C_STR(CSI "%p1%dB"));
-  om.set_parm_right_cursor (C_STR(CSI "%p1%dC"));
-  om.set_parm_left_cursor (C_STR(CSI "%p1%dD"));
+
+  FOptiMove::termEnv optimove_env =
+  {
+    false,                        // Automatic left margin
+    true,                         // Eat newline glitch
+    8,                            // Tab stop
+    C_STR(CSI "H"),               // Cursor home
+    C_STR("\r"),                  // Carriage return
+    0,                            // Cursor to ll
+    C_STR("\t"),                  // Tabular
+    0,                            // Back tabular
+    C_STR(CSI "A"),               // Cursor up
+    C_STR("\n"),                  // Cursor down
+    C_STR("\b"),                  // Cursor left
+    C_STR(CSI "C"),               // Cursor right
+    C_STR(CSI "%i%p1%d;%p2%dH"),  // Cursor address
+    C_STR(CSI "%i%p1%dG"),        // Column address
+    C_STR(CSI "%i%p1%dd"),        // Row address
+    C_STR(CSI "%p1%dA"),          // Parm up cursor
+    C_STR(CSI "%p1%dB"),          // Parm down cursor
+    C_STR(CSI "%p1%dD"),          // Parm left cursor
+    C_STR(CSI "%p1%dC"),          // Parm right cursor
+    C_STR(CSI "%p1%dX"),          // Erase characters
+    0,                            // Repeat character
+    C_STR(CSI "1K"),              // Clear to beginning of line
+    C_STR(CSI "K")                // Clear to end of line
+  };
+
+  om.setTermEnvironment(optimove_env);
 
   //std::cout << "\nSequence: "
   //          << printSequence(om.moveCursor (1, 2, 3, 4))

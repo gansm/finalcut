@@ -38,6 +38,11 @@ bool                 FVTerm::terminal_update_pending;
 bool                 FVTerm::force_terminal_update;
 bool                 FVTerm::stop_terminal_updates;
 int                  FVTerm::skipped_terminal_update = 0;
+uInt                 FVTerm::erase_char_length;
+uInt                 FVTerm::repeat_char_length;
+uInt                 FVTerm::clr_bol_length;
+uInt                 FVTerm::clr_eol_length;
+uInt                 FVTerm::cursor_address_length;
 std::queue<int>*     FVTerm::output_buffer           = 0;
 FPoint*              FVTerm::term_pos                = 0;
 FVTerm::term_area*   FVTerm::vterm                   = 0;
@@ -45,10 +50,10 @@ FVTerm::term_area*   FVTerm::vdesktop                = 0;
 FVTerm::term_area*   FVTerm::active_area             = 0;
 FVTerm::termcap_map* FVTerm::tcap                    = 0;
 FTermcap::tcap_map*  FTermcap::tcap                  = 0;
-FVTerm::charData    FVTerm::term_attribute;
-FVTerm::charData    FVTerm::next_attribute;
-FVTerm::charData    FVTerm::s_ch;
-FVTerm::charData    FVTerm::i_ch;
+FVTerm::charData     FVTerm::term_attribute;
+FVTerm::charData     FVTerm::next_attribute;
+FVTerm::charData     FVTerm::s_ch;
+FVTerm::charData     FVTerm::i_ch;
 
 
 //----------------------------------------------------------------------
@@ -2084,14 +2089,14 @@ void FVTerm::init()
   // next_attribute contains the state of the next printed character
   std::memcpy (&next_attribute, &term_attribute, sizeof(charData));
 
-  // receive the terminal capabilities
+  // Receive the terminal capabilities
   tcap = FTermcap().getTermcapMap();
 
-  // create virtual terminal
+  // Create virtual terminal
   FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());
   createVTerm (term_geometry);
 
-  // create virtual desktop area
+  // Create virtual desktop area
   FPoint shadow_size(0,0);
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
@@ -2099,6 +2104,30 @@ void FVTerm::init()
 
   // Hide the input cursor
   hideCursor();
+
+  // Initialize character lengths
+  init_characterLengths (getFOptiMove());
+}
+
+//----------------------------------------------------------------------
+void FVTerm::init_characterLengths (FOptiMove* opti_move)
+{
+  if ( opti_move )
+  {
+    cursor_address_length = opti_move->getCursorAddressLength();
+    erase_char_length     = opti_move->getEraseCharsLength();
+    repeat_char_length    = opti_move->getRepeatCharLength();
+    clr_bol_length        = opti_move->getClrBolLength();
+    clr_eol_length        = opti_move->getClrEolLength();
+  }
+  else
+  {
+    cursor_address_length = INT_MAX;
+    erase_char_length     = INT_MAX;
+    repeat_char_length    = INT_MAX;
+    clr_bol_length        = INT_MAX;
+    clr_eol_length        = INT_MAX;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -2347,7 +2376,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
 
     if ( beginning_whitespace == uInt(vt->width) - xmin
       && (ut || normal)
-      && getClrEolLength() < beginning_whitespace )
+      && clr_eol_length < beginning_whitespace )
       return true;
   }
 
@@ -2382,7 +2411,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
 
     if ( leading_whitespace > xmin
       && (ut || normal)
-      && getClrBolLength() < leading_whitespace )
+      && clr_bol_length < leading_whitespace )
     {
       xmin = leading_whitespace - 1;
       return true;
@@ -2420,7 +2449,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
 
     if ( trailing_whitespace > uInt(vt->width) - xmax
       && (ut || normal)
-      && getClrBolLength() < trailing_whitespace )
+      && clr_bol_length < trailing_whitespace )
     {
       xmax = uInt(vt->width) - trailing_whitespace;
       return true;
@@ -2453,7 +2482,7 @@ bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
         break;
     }
 
-    if ( count > getCursorAddressLengths() )
+    if ( count > cursor_address_length )
     {
       setTermXY (int(x + count), int(y));
       x = x + count - 1;
@@ -2538,7 +2567,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
     uInt start_pos = x;
     bool& ut = FTermcap::background_color_erase;
 
-    if ( whitespace > getEraseCharLength() + getCursorAddressLengths()
+    if ( whitespace > erase_char_length + cursor_address_length
       && (ut || normal) )
     {
       appendAttributes (print_char);
@@ -2598,7 +2627,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
   {
     uInt start_pos = x;
 
-    if ( repetitions > getRepeatCharLength()
+    if ( repetitions > repeat_char_length
       && print_char->code < 128 )
     {
       newFontChanges (print_char);

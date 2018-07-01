@@ -42,11 +42,6 @@ int (*FTerm::Fputchar)(int);
 // static class attributes
 int      FTerm::fd_tty;
 int      FTerm::stdin_status_flags;
-uInt     FTerm::erase_char_length;
-uInt     FTerm::repeat_char_length;
-uInt     FTerm::clr_bol_length;
-uInt     FTerm::clr_eol_length;
-uInt     FTerm::cursor_address_lengths;
 uInt     FTerm::baudrate;
 long     FTerm::key_timeout;
 bool     FTerm::resize_term;
@@ -1518,32 +1513,34 @@ void FTerm::init_OptiMove()
 {
   // Duration precalculation of the cursor movement strings
 
-  opti_move->setTabStop(int(FTermcap::tabstop));
-  opti_move->set_cursor_home (TCAP(fc::t_cursor_home));
-  opti_move->set_cursor_to_ll (TCAP(fc::t_cursor_to_ll));
-  opti_move->set_carriage_return (TCAP(fc::t_carriage_return));
-  opti_move->set_tabular (TCAP(fc::t_tab));
-  opti_move->set_back_tab (TCAP(fc::t_back_tab));
-  opti_move->set_cursor_up (TCAP(fc::t_cursor_up));
-  opti_move->set_cursor_down (TCAP(fc::t_cursor_down));
-  opti_move->set_cursor_left (TCAP(fc::t_cursor_left));
-  opti_move->set_cursor_right (TCAP(fc::t_cursor_right));
-  cursor_address_lengths = \
-      opti_move->set_cursor_address (TCAP(fc::t_cursor_address));
-  opti_move->set_column_address (TCAP(fc::t_column_address));
-  opti_move->set_row_address (TCAP(fc::t_row_address));
-  opti_move->set_parm_up_cursor (TCAP(fc::t_parm_up_cursor));
-  opti_move->set_parm_down_cursor (TCAP(fc::t_parm_down_cursor));
-  opti_move->set_parm_left_cursor (TCAP(fc::t_parm_left_cursor));
-  opti_move->set_parm_right_cursor (TCAP(fc::t_parm_right_cursor));
-  opti_move->set_auto_left_margin (FTermcap::automatic_left_margin);
-  opti_move->set_eat_newline_glitch (FTermcap::eat_nl_glitch);
-  erase_char_length = \
-      opti_move->set_erase_chars (TCAP(fc::t_erase_chars));
-  repeat_char_length = \
-      opti_move->set_repeat_char (TCAP(fc::t_repeat_char));
-  clr_bol_length = opti_move->set_clr_bol (TCAP(fc::t_clr_bol));
-  clr_eol_length = opti_move->set_clr_eol (TCAP(fc::t_clr_eol));
+  FOptiMove::termEnv optimove_env =
+  {
+    FTermcap::automatic_left_margin,
+    FTermcap::eat_nl_glitch,
+    FTermcap::tabstop,
+    TCAP(fc::t_cursor_home),
+    TCAP(fc::t_carriage_return),
+    TCAP(fc::t_cursor_to_ll),
+    TCAP(fc::t_tab),
+    TCAP(fc::t_back_tab),
+    TCAP(fc::t_cursor_up),
+    TCAP(fc::t_cursor_down),
+    TCAP(fc::t_cursor_left),
+    TCAP(fc::t_cursor_right),
+    TCAP(fc::t_cursor_address),
+    TCAP(fc::t_column_address),
+    TCAP(fc::t_row_address),
+    TCAP(fc::t_parm_up_cursor),
+    TCAP(fc::t_parm_down_cursor),
+    TCAP(fc::t_parm_left_cursor),
+    TCAP(fc::t_parm_right_cursor),
+    TCAP(fc::t_erase_chars),
+    TCAP(fc::t_repeat_char),
+    TCAP(fc::t_clr_bol),
+    TCAP(fc::t_clr_eol)
+  };
+
+  opti_move->setTermEnvironment(optimove_env);
 }
 
 //----------------------------------------------------------------------

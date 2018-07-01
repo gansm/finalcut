@@ -314,11 +314,12 @@ class FTerm
     static bool           hasAlternateScreen();
 
     // Accessors
-    static uInt           getEraseCharLength();
+    FOptiMove*            getFOptiMove();
+    static uInt           getEraseCharsLength();
     static uInt           getRepeatCharLength();
     static uInt           getClrBolLength();
     static uInt           getClrEolLength();
-    static uInt           getCursorAddressLengths();
+    static uInt           getCursorAddressLength();
 
     // Methods
     static void           initScreenSettings();
@@ -473,11 +474,6 @@ class FTerm
     static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
-    static uInt           erase_char_length;
-    static uInt           repeat_char_length;
-    static uInt           clr_bol_length;
-    static uInt           clr_eol_length;
-    static uInt           cursor_address_lengths;
     static long           key_timeout;
     static bool           resize_term;
 
@@ -730,24 +726,8 @@ inline bool FTerm::hasAlternateScreen()
 { return use_alternate_screen; }
 
 //----------------------------------------------------------------------
-inline uInt FTerm::getEraseCharLength()
-{ return erase_char_length; }
-
-//----------------------------------------------------------------------
-inline uInt FTerm::getRepeatCharLength()
-{ return repeat_char_length; }
-
-//----------------------------------------------------------------------
-inline uInt FTerm::getClrBolLength()
-{ return clr_bol_length; }
-
-//----------------------------------------------------------------------
-inline uInt FTerm::getClrEolLength()
-{ return clr_eol_length; }
-
-//----------------------------------------------------------------------
-inline uInt FTerm::getCursorAddressLengths()
-{ return cursor_address_lengths; }
+inline FOptiMove* FTerm::getFOptiMove()
+{ return opti_move; }
 
 //----------------------------------------------------------------------
 inline void FTerm::changeTermSizeFinished()

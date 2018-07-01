@@ -75,6 +75,34 @@
 class FOptiMove
 {
   public:
+    // Typedef
+    typedef struct
+    {
+      bool  automatic_left_margin;
+      bool  eat_nl_glitch;
+      int   tabstop;
+      char* t_cursor_home;
+      char* t_carriage_return;
+      char* t_cursor_to_ll;
+      char* t_tab;
+      char* t_back_tab;
+      char* t_cursor_up;
+      char* t_cursor_down;
+      char* t_cursor_left;
+      char* t_cursor_right;
+      char* t_cursor_address;
+      char* t_column_address;
+      char* t_row_address;
+      char* t_parm_up_cursor;
+      char* t_parm_down_cursor;
+      char* t_parm_left_cursor;
+      char* t_parm_right_cursor;
+      char* t_erase_chars;
+      char* t_repeat_char;
+      char* t_clr_bol;
+      char* t_clr_eol;
+    } termEnv;
+
     // Constructor
     explicit FOptiMove (int = 0);
 
@@ -83,31 +111,52 @@ class FOptiMove
 
     // Accessors
     const char* getClassName() const;
+    uInt  getCursorHomeLength() const;
+    uInt  getCarriageReturnLength() const;
+    uInt  getCursorToLLLength() const;
+    uInt  getTabLength() const;
+    uInt  getBackTabLength() const;
+    uInt  getCursorUpLength() const;
+    uInt  getCursorDownLength() const;
+    uInt  getCursorLeftLength() const;
+    uInt  getCursorRightLength() const;
+    uInt  getCursorAddressLength() const;
+    uInt  getColumnAddressLength() const;
+    uInt  getRowAddressLength() const;
+    uInt  getParmUpCursorLength() const;
+    uInt  getParmDownCursorLength() const;
+    uInt  getParmLeftCursorLength() const;
+    uInt  getParmRightCursorLength() const;
+    uInt  getEraseCharsLength() const;
+    uInt  getRepeatCharLength() const;
+    uInt  getClrBolLength() const;
+    uInt  getClrEolLength() const;
 
     // Mutators
     void  setBaudRate (int);
     void  setTabStop (int);
     void  setTermSize (int, int);
-    uInt  set_cursor_home (char[]);
-    uInt  set_cursor_to_ll (char[]);
-    uInt  set_carriage_return (char[]);
-    uInt  set_tabular (char[]);
-    uInt  set_back_tab (char[]);
-    uInt  set_cursor_up (char[]);
-    uInt  set_cursor_down (char[]);
-    uInt  set_cursor_left (char[]);
-    uInt  set_cursor_right (char[]);
-    uInt  set_cursor_address (char[]);
-    uInt  set_column_address (char[]);
-    uInt  set_row_address (char[]);
-    uInt  set_parm_up_cursor (char[]);
-    uInt  set_parm_down_cursor (char[]);
-    uInt  set_parm_left_cursor (char[]);
-    uInt  set_parm_right_cursor (char[]);
-    uInt  set_erase_chars (char[]);
-    uInt  set_repeat_char (char[]);
-    uInt  set_clr_bol (char[]);
-    uInt  set_clr_eol (char[]);
+    void  setTermEnvironment (termEnv&);
+    void  set_cursor_home (char[]);
+    void  set_cursor_to_ll (char[]);
+    void  set_carriage_return (char[]);
+    void  set_tabular (char[]);
+    void  set_back_tab (char[]);
+    void  set_cursor_up (char[]);
+    void  set_cursor_down (char[]);
+    void  set_cursor_left (char[]);
+    void  set_cursor_right (char[]);
+    void  set_cursor_address (char[]);
+    void  set_column_address (char[]);
+    void  set_row_address (char[]);
+    void  set_parm_up_cursor (char[]);
+    void  set_parm_down_cursor (char[]);
+    void  set_parm_left_cursor (char[]);
+    void  set_parm_right_cursor (char[]);
+    void  set_erase_chars (char[]);
+    void  set_repeat_char (char[]);
+    void  set_clr_bol (char[]);
+    void  set_clr_eol (char[]);
     void  set_auto_left_margin (const bool&);
     void  set_eat_newline_glitch (const bool&);
 
@@ -195,6 +244,86 @@ class FOptiMove
 //----------------------------------------------------------------------
 inline const char* FOptiMove::getClassName() const
 { return "FOptiMove"; }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorHomeLength() const
+{ return uInt(F_cursor_home.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCarriageReturnLength() const
+{ return uInt(F_carriage_return.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorToLLLength() const
+{ return uInt(F_cursor_to_ll.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getTabLength() const
+{ return uInt(F_tab.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getBackTabLength() const
+{ return uInt(F_back_tab.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorUpLength() const
+{ return uInt(F_cursor_up.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorDownLength() const
+{ return uInt(F_cursor_down.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorLeftLength() const
+{ return uInt(F_cursor_left.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorRightLength() const
+{ return uInt(F_cursor_right.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getCursorAddressLength() const
+{ return uInt(F_cursor_address.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getColumnAddressLength() const
+{ return uInt(F_column_address.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getRowAddressLength() const
+{ return uInt(F_row_address.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getParmUpCursorLength() const
+{ return uInt(F_parm_up_cursor.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getParmDownCursorLength() const
+{ return uInt(F_parm_down_cursor.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getParmLeftCursorLength() const
+{ return uInt(F_parm_left_cursor.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getParmRightCursorLength() const
+{ return uInt(F_parm_right_cursor.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getEraseCharsLength() const
+{ return uInt(F_erase_chars.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getRepeatCharLength() const
+{ return uInt(F_repeat_char.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getClrBolLength() const
+{ return uInt(F_clr_bol.length); }
+
+//----------------------------------------------------------------------
+inline uInt FOptiMove::getClrEolLength() const
+{ return uInt(F_clr_eol.length); }
 
 //----------------------------------------------------------------------
 inline void FOptiMove::set_auto_left_margin (const bool& bcap)

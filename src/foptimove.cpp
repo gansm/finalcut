@@ -105,7 +105,37 @@ void FOptiMove::setTermSize (int w, int h)
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_home (char cap[])
+void FOptiMove::setTermEnvironment (termEnv& term_env)
+{
+  // Set all required termcap values at once
+
+  set_auto_left_margin (term_env.automatic_left_margin);
+  set_eat_newline_glitch (term_env.eat_nl_glitch);
+  setTabStop (term_env.tabstop);
+  set_cursor_home (term_env.t_cursor_home);
+  set_cursor_to_ll (term_env.t_cursor_to_ll);
+  set_carriage_return (term_env.t_carriage_return);
+  set_tabular (term_env.t_tab);
+  set_back_tab (term_env.t_back_tab);
+  set_cursor_up (term_env.t_cursor_up);
+  set_cursor_down (term_env.t_cursor_down);
+  set_cursor_left (term_env.t_cursor_left);
+  set_cursor_right (term_env.t_cursor_right);
+  set_cursor_address (term_env.t_cursor_address);
+  set_column_address (term_env.t_column_address);
+  set_row_address (term_env.t_row_address);
+  set_parm_up_cursor (term_env.t_parm_up_cursor);
+  set_parm_down_cursor (term_env.t_parm_down_cursor);
+  set_parm_left_cursor (term_env.t_parm_left_cursor);
+  set_parm_right_cursor (term_env.t_parm_right_cursor);
+  set_erase_chars (term_env.t_erase_chars);
+  set_repeat_char (term_env.t_repeat_char);
+  set_clr_bol (term_env.t_clr_bol);
+  set_clr_eol (term_env.t_clr_eol);
+}
+
+//----------------------------------------------------------------------
+void FOptiMove::set_cursor_home (char cap[])
 {
   if ( cap )
   {
@@ -119,12 +149,10 @@ uInt FOptiMove::set_cursor_home (char cap[])
     F_cursor_home.duration = \
     F_cursor_home.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_home.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_to_ll (char cap[])
+void FOptiMove::set_cursor_to_ll (char cap[])
 {
   if ( cap )
   {
@@ -138,12 +166,10 @@ uInt FOptiMove::set_cursor_to_ll (char cap[])
     F_cursor_to_ll.duration = \
     F_cursor_to_ll.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_to_ll.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_carriage_return (char cap[])
+void FOptiMove::set_carriage_return (char cap[])
 {
   if ( cap )
   {
@@ -157,12 +183,10 @@ uInt FOptiMove::set_carriage_return (char cap[])
     F_carriage_return.duration = \
     F_carriage_return.length   = LONG_DURATION;
   }
-
-  return uInt(F_carriage_return.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_tabular (char cap[])
+void FOptiMove::set_tabular (char cap[])
 {
   if ( cap )
   {
@@ -176,12 +200,10 @@ uInt FOptiMove::set_tabular (char cap[])
     F_tab.duration = \
     F_tab.length   = LONG_DURATION;
   }
-
-  return uInt(F_tab.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_back_tab (char cap[])
+void FOptiMove::set_back_tab (char cap[])
 {
   if ( cap )
   {
@@ -195,12 +217,10 @@ uInt FOptiMove::set_back_tab (char cap[])
     F_back_tab.duration = \
     F_back_tab.length   = LONG_DURATION;
   }
-
-  return uInt(F_back_tab.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_up (char cap[])
+void FOptiMove::set_cursor_up (char cap[])
 {
   if ( cap )
   {
@@ -214,12 +234,10 @@ uInt FOptiMove::set_cursor_up (char cap[])
     F_cursor_up.duration = \
     F_cursor_up.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_up.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_down (char cap[])
+void FOptiMove::set_cursor_down (char cap[])
 {
   if ( cap )
   {
@@ -233,12 +251,10 @@ uInt FOptiMove::set_cursor_down (char cap[])
     F_cursor_down.duration = \
     F_cursor_down.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_down.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_left (char cap[])
+void FOptiMove::set_cursor_left (char cap[])
 {
   if ( cap )
   {
@@ -252,12 +268,10 @@ uInt FOptiMove::set_cursor_left (char cap[])
     F_cursor_left.duration = \
     F_cursor_left.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_left.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_right (char cap[])
+void FOptiMove::set_cursor_right (char cap[])
 {
   if ( cap )
   {
@@ -271,12 +285,10 @@ uInt FOptiMove::set_cursor_right (char cap[])
     F_cursor_right.duration = \
     F_cursor_right.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_right.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_cursor_address (char cap[])
+void FOptiMove::set_cursor_address (char cap[])
 {
   if ( cap )
   {
@@ -291,12 +303,10 @@ uInt FOptiMove::set_cursor_address (char cap[])
     F_cursor_address.duration = \
     F_cursor_address.length   = LONG_DURATION;
   }
-
-  return uInt(F_cursor_address.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_column_address (char cap[])
+void FOptiMove::set_column_address (char cap[])
 {
   if ( cap )
   {
@@ -311,12 +321,10 @@ uInt FOptiMove::set_column_address (char cap[])
     F_column_address.duration = \
     F_column_address.length   = LONG_DURATION;
   }
-
-  return uInt(F_column_address.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_row_address (char cap[])
+void FOptiMove::set_row_address (char cap[])
 {
   if ( cap )
   {
@@ -331,12 +339,10 @@ uInt FOptiMove::set_row_address (char cap[])
     F_row_address.duration = \
     F_row_address.length   = LONG_DURATION;
   }
-
-  return uInt(F_row_address.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_parm_up_cursor (char cap[])
+void FOptiMove::set_parm_up_cursor (char cap[])
 {
   if ( cap )
   {
@@ -351,12 +357,10 @@ uInt FOptiMove::set_parm_up_cursor (char cap[])
     F_parm_up_cursor.duration = \
     F_parm_up_cursor.length   = LONG_DURATION;
   }
-
-  return uInt(F_parm_up_cursor.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_parm_down_cursor (char cap[])
+void FOptiMove::set_parm_down_cursor (char cap[])
 {
   if ( cap )
   {
@@ -371,12 +375,10 @@ uInt FOptiMove::set_parm_down_cursor (char cap[])
     F_parm_down_cursor.duration = \
     F_parm_down_cursor.length   = LONG_DURATION;
   }
-
-  return uInt(F_parm_down_cursor.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_parm_left_cursor (char cap[])
+void FOptiMove::set_parm_left_cursor (char cap[])
 {
   if ( cap )
   {
@@ -391,12 +393,10 @@ uInt FOptiMove::set_parm_left_cursor (char cap[])
     F_parm_left_cursor.duration = \
     F_parm_left_cursor.length   = LONG_DURATION;
   }
-
-  return uInt(F_parm_left_cursor.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_parm_right_cursor (char cap[])
+void FOptiMove::set_parm_right_cursor (char cap[])
 {
   if ( cap )
   {
@@ -411,12 +411,10 @@ uInt FOptiMove::set_parm_right_cursor (char cap[])
     F_parm_right_cursor.duration = \
     F_parm_right_cursor.length   = LONG_DURATION;
   }
-
-  return uInt(F_parm_right_cursor.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_erase_chars (char cap[])
+void FOptiMove::set_erase_chars (char cap[])
 {
   if ( cap )
   {
@@ -431,12 +429,10 @@ uInt FOptiMove::set_erase_chars (char cap[])
     F_erase_chars.duration = \
     F_erase_chars.length   = LONG_DURATION;
   }
-
-  return uInt(F_erase_chars.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_repeat_char (char cap[])
+void FOptiMove::set_repeat_char (char cap[])
 {
   if ( cap )
   {
@@ -451,12 +447,10 @@ uInt FOptiMove::set_repeat_char (char cap[])
     F_repeat_char.duration = \
     F_repeat_char.length   = LONG_DURATION;
   }
-
-  return uInt(F_repeat_char.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_clr_bol (char cap[])
+void FOptiMove::set_clr_bol (char cap[])
 {
   if ( cap )
   {
@@ -470,12 +464,10 @@ uInt FOptiMove::set_clr_bol (char cap[])
     F_clr_bol.duration = \
     F_clr_bol.length   = LONG_DURATION;
   }
-
-  return uInt(F_clr_bol.length);
 }
 
 //----------------------------------------------------------------------
-uInt FOptiMove::set_clr_eol (char cap[])
+void FOptiMove::set_clr_eol (char cap[])
 {
   if ( cap )
   {
@@ -489,8 +481,6 @@ uInt FOptiMove::set_clr_eol (char cap[])
     F_clr_eol.duration = \
     F_clr_eol.length   = LONG_DURATION;
   }
-
-  return uInt(F_clr_eol.length);
 }
 
 //----------------------------------------------------------------------

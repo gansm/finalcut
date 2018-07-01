@@ -125,7 +125,7 @@ class FVTerm : public FTerm
     static short        getTermBackgroundColor();
     term_area*          getVWin() const;
     FPoint              getPrintCursor();
-    static charData    getAttribute();
+    static charData     getAttribute();
 
     // Mutators
     static void         setTermXY (register int, register int);
@@ -391,6 +391,7 @@ class FVTerm : public FTerm
 
     // Methods
     void                    init();
+    static void             init_characterLengths (FOptiMove*);
     void                    finish();
     static void             putAreaLine (charData*, charData*, int);
     static void             putAreaCharacter ( int, int, FVTerm*
@@ -431,10 +432,10 @@ class FVTerm : public FTerm
 
     // Data Members
     static std::queue<int>* output_buffer;
-    static charData        term_attribute;
-    static charData        next_attribute;
-    static charData        s_ch;      // shadow character
-    static charData        i_ch;      // inherit background character
+    static charData         term_attribute;
+    static charData         next_attribute;
+    static charData         s_ch;      // shadow character
+    static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static termcap_map*     tcap;
     static bool             terminal_update_complete;
@@ -442,6 +443,11 @@ class FVTerm : public FTerm
     static bool             force_terminal_update;
     static bool             stop_terminal_updates;
     static int              skipped_terminal_update;
+    static uInt             erase_char_length;
+    static uInt             repeat_char_length;
+    static uInt             clr_bol_length;
+    static uInt             clr_eol_length;
+    static uInt             cursor_address_length;
 };
 #pragma pack(pop)
 
