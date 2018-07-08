@@ -566,10 +566,10 @@ inline bool FApplication::getKeyPressedState()
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::keyboardBufferTimeout (FWidget*)
+inline void FApplication::emptyKeyBufferOnTimeout()
 {
   // Empty the buffer on timeout
-  if ( fifo_in_use && isKeypressTimeout(&time_keypressed)  )
+  if ( fifo_in_use && isKeypressTimeout(&time_keypressed) )
   {
     fifo_offset = 0;
     key = 0;
@@ -579,7 +579,7 @@ inline void FApplication::keyboardBufferTimeout (FWidget*)
 }
 
 //----------------------------------------------------------------------
-inline void FApplication::parseKeyPuffer (FWidget* widget)
+inline void FApplication::parseKeyBuffer (FWidget* widget)
 {
   register ssize_t bytesread;
   getCurrentTime (&time_keypressed);
@@ -746,12 +746,12 @@ inline void FApplication::sendKeyboardAccelerator()
 void FApplication::processKeyboardEvent()
 {
   FWidget* widget = findKeyboardWidget();
-  keyboardBufferTimeout(widget);
+  emptyKeyBufferOnTimeout();
   flush_out();
   bool isKeyPressed = getKeyPressedState();
 
   if ( isKeyPressed )
-    parseKeyPuffer (widget);
+    parseKeyBuffer (widget);
 
   // special case: Esc key
   sendEscapeKeyPressEvent (widget);

@@ -142,8 +142,8 @@ class FApplication : public FWidget
     ssize_t            readKey();
     FWidget*           findKeyboardWidget();
     bool               getKeyPressedState();
-    void               keyboardBufferTimeout (FWidget*);
-    void               parseKeyPuffer (FWidget*);
+    void               emptyKeyBufferOnTimeout();
+    void               parseKeyBuffer (FWidget*);
     void               performKeyboardAction (FWidget*);
     void               sendEscapeKeyPressEvent (FWidget*);
     bool               sendKeyDownEvent (FWidget*);

@@ -98,7 +98,8 @@ void move (int xold, int yold, int xnew, int ynew)
     "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
     "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
     "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
-    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US"
+    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US",
+    "Space"
   };
 
   term_boundaries(xold, yold);
@@ -117,7 +118,7 @@ void move (int xold, int yold, int xnew, int ynew)
   {
     char ch = buffer[i];
 
-    if ( ch < 0x20 )
+    if ( ch < 0x21 )
       sequence += ctrl_character[uInt(ch)];
     else
       sequence += ch;

@@ -262,12 +262,11 @@ int FTerm::parseKeyString ( char buffer[]
                           , int buf_size
                           , timeval* time_keypressed )
 {
-  int key;
   uChar firstchar = uChar(buffer[0]);
 
   if ( firstchar == ESC[0] )
   {
-    key = getMouseProtocolKey(buffer);
+    int key = getMouseProtocolKey(buffer);
 
     if ( key > 0 )
       return key;

@@ -79,6 +79,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     void cygwinTest();
     void puttyTest();
     void teratermTest();
+    void wyse50Test();
 
   private:
     std::string printSequence (const std::string&);
@@ -99,6 +100,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (cygwinTest);
     CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (teratermTest);
+    CPPUNIT_TEST (wyse50Test);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -638,10 +640,6 @@ void FOptiMoveTest::teratermTest()
 
   om.setTermEnvironment(optimove_env);
 
-  //std::cout << "\nSequence: "
-  //          << printSequence(om.moveCursor (1, 2, 3, 4))
-  //          << "\n";
-
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(CSI "6;6H"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR(CSI "H"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
@@ -675,6 +673,64 @@ void FOptiMoveTest::teratermTest()
   // ynew is outside screen
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR(CSI "1d"));
+}
+
+
+//----------------------------------------------------------------------
+void FOptiMoveTest::wyse50Test()
+{
+  FOptiMove om;
+  om.setTermSize (80, 25);
+  om.setBaudRate (38400);
+  om.set_auto_left_margin (true);
+  om.set_tabular (C_STR("\t"));
+  om.set_back_tab (C_STR(ESC "I"));
+  om.set_cursor_home (C_STR("\036"));
+  om.set_cursor_to_ll (C_STR("\036\v"));
+  om.set_carriage_return (C_STR("\r"));
+  om.set_cursor_up (C_STR("\v"));
+  om.set_cursor_down (C_STR("\n"));
+  om.set_cursor_right (C_STR("\f"));
+  om.set_cursor_left (C_STR("\b"));
+  om.set_cursor_address (C_STR(ESC "=%p1%' '%+%c%p2%' '%+%c"));
+
+  //std::cout << "\nSequence: "
+  //          << printSequence(om.moveCursor (1, 2, 3, 4))
+  //          << "\n";
+
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (0, 0, 5, 5), C_STR(ESC "=%%"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 0, 0), C_STR("\036"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 1), C_STR("\r"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (79, 1, 0, 2), C_STR("\r\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 10, 4), C_STR("\f"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 4, 9, 4), C_STR("\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (9, 4, 11, 4), C_STR("\f\f"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (11, 4, 9, 4), C_STR("\b\b"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 0, 8, 0), C_STR(ESC "= ("));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 1), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 1, 16, 0), C_STR("\v"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 0, 16, 2), C_STR("\n\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (16, 2, 16, 0), C_STR("\v\v"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 2, 79, 2), C_STR("\r\b\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 75, 20), C_STR(ESC "=4k"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (39, 0, 32, 0), C_STR(ESC "= @"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (10, 0, 8, 0), C_STR("\b\b"));
+
+  // xold is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (99, 10, 79, 10), C_STR(ESC "=*o"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (-3, 33, 50, 10), C_STR(ESC "=*R"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, 33, 23, 10), C_STR(ESC "=*7"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (23, -3, 12, 10), C_STR(ESC "=*,"));
+
+  // xnew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 22, 100, 22), C_STR("\r\b\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (3, 22, -5, 22), C_STR("\r"));
+
+  // ynew is outside screen
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 23, 53, 40), C_STR("\n"));
+  CPPUNIT_ASSERT_CSTRING (om.moveCursor (53, 2, 53, -3), C_STR("\v\v"));
 }
 
 //----------------------------------------------------------------------

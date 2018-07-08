@@ -38,7 +38,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "final/fterm.h"
 #include "final/ftypes.h"
 
 

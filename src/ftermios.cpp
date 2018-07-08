@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include "final/ftermios.h"
+#include "final/fterm.h"
 
 // static class attributes
 int     FTermios::stdin_no;
