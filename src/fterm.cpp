@@ -1438,7 +1438,7 @@ void FTerm::init_OptiAttr()
     TCAP(fc::t_set_attributes),
     TCAP(fc::t_exit_attribute_mode),
     TCAP(fc::t_enter_alt_charset_mode),
-    TCAP(fc::t_enter_alt_charset_mode),
+    TCAP(fc::t_exit_alt_charset_mode),
     TCAP(fc::t_enter_pc_charset_mode),
     TCAP(fc::t_exit_pc_charset_mode),
     TCAP(fc::t_set_a_foreground),

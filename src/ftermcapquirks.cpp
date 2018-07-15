@@ -201,7 +201,7 @@ void FTermcapQuirks::init_termcap_linux_quirks()
   // Set select graphic rendition attributes
   TCAP(fc::t_set_attributes) = \
       C_STR(CSI "0"
-                "%?%p6%|%t;1%;"
+                "%?%p6%t;1%;"
                 "%?%p1%p3%|%t;7%;"
                 "%?%p4%t;5%;m"
                 "%?%p9%t\016%e\017%;");
