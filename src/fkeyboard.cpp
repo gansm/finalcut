@@ -20,10 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <fcntl.h>
+
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
-
-#include <fcntl.h>
+#include "final/ftermios.h"
 
 // static class attributes
 long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
