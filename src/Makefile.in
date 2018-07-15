@@ -133,14 +133,15 @@ am_libfinal_la_OBJECTS = fstring.lo fpoint.lo frect.lo fscrollbar.lo \
 	fprogressbar.lo flineedit.lo fbutton.lo fbuttongroup.lo \
 	ftogglebutton.lo fradiobutton.lo fcheckbox.lo fswitch.lo \
 	flabel.lo flistbox.lo flistview.lo fmenu.lo fmouse.lo \
-	fdialoglistmenu.lo fmenubar.lo fmenuitem.lo fradiomenuitem.lo \
-	fcheckmenuitem.lo fmenulist.lo fdialog.lo fscrollview.lo \
-	fwindow.lo fmessagebox.lo ftooltip.lo ffiledialog.lo \
-	ftextview.lo fstatusbar.lo ftermcapquirks.lo ftermxterminal.lo \
-	ftermfreebsd.lo ftermopenbsd.lo ftermlinux.lo \
-	ftermdetection.lo ftermios.lo fterm.lo fvterm.lo fevent.lo \
-	foptiattr.lo foptimove.lo ftermbuffer.lo fapplication.lo \
-	fcolorpalette.lo fwidgetcolors.lo fwidget.lo fobject.lo
+	fkeyboard.lo fdialoglistmenu.lo fmenubar.lo fmenuitem.lo \
+	fradiomenuitem.lo fcheckmenuitem.lo fmenulist.lo fdialog.lo \
+	fscrollview.lo fwindow.lo fmessagebox.lo ftooltip.lo \
+	ffiledialog.lo fkey_map.lo ftextview.lo fstatusbar.lo \
+	ftermcapquirks.lo ftermxterminal.lo ftermfreebsd.lo \
+	ftermopenbsd.lo ftermlinux.lo ftermdetection.lo ftermios.lo \
+	fterm.lo fvterm.lo fevent.lo foptiattr.lo foptimove.lo \
+	ftermbuffer.lo fapplication.lo fcolorpalette.lo \
+	fwidgetcolors.lo fwidget.lo fobject.lo
 libfinal_la_OBJECTS = $(am_libfinal_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -400,6 +401,7 @@ libfinal_la_SOURCES = \
 	flistview.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
+	fkeyboard.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
@@ -412,6 +414,7 @@ libfinal_la_SOURCES = \
 	fmessagebox.cpp \
 	ftooltip.cpp \
 	ffiledialog.cpp \
+	fkey_map.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	ftermcapquirks.cpp \
@@ -457,6 +460,7 @@ finalcutinclude_HEADERS = \
 	../include/final/flistview.h \
 	../include/final/fmenu.h \
 	../include/final/fmouse.h \
+	../include/final/fkeyboard.h \
 	../include/final/fdialoglistmenu.h \
 	../include/final/fmenubar.h \
 	../include/final/fmenuitem.h \
@@ -584,6 +588,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fdialoglistmenu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fevent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ffiledialog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fkey_map.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fkeyboard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flabel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flineedit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/flistbox.Plo@am__quote@

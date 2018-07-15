@@ -138,14 +138,13 @@ class FApplication : public FWidget
     // Methods
     void               init (long, long);
     static void        cmd_options (const int&, char*[]);
-    bool               KeyPressed();
-    ssize_t            readKey();
-    FWidget*           findKeyboardWidget();
-    bool               getKeyPressedState();
-    void               emptyKeyBufferOnTimeout();
-    void               parseKeyBuffer (FWidget*);
-    void               performKeyboardAction (FWidget*);
-    void               sendEscapeKeyPressEvent (FWidget*);
+    void               findKeyboardWidget();
+    bool               isKeyPressed();
+    void               keyPressed();
+    void               keyReleased();
+    void               escapeKeyPressed();
+    void               performKeyboardAction();
+    void               sendEscapeKeyPressEvent();
     bool               sendKeyDownEvent (FWidget*);
     bool               sendKeyPressEvent (FWidget*);
     bool               sendKeyUpEvent (FWidget*);
@@ -181,21 +180,16 @@ class FApplication : public FWidget
     // Data Members
     int                app_argc;
     char**             app_argv;
-    int                key;
-    char               k_buf[1024];
-    char               fifo_buf[512];
-    int                fifo_offset;
-    bool               fifo_in_use;
-    int                fifo_buf_size;
     long               key_timeout;
     long               dblclick_interval;
-    struct timeval     time_keypressed;
     static FMouseControl* mouse;
     static eventQueue* event_queue;
     static int         quit_code;
     static bool        quit_now;
     static int         loop_level;
     static bool        process_timer_event;
+    static FKeyboard*  keyboard;
+    static FWidget*    keyboard_widget;
     static FWidget*    move_size_widget;
     static FWidget*    main_widget;
     static FWidget*    active_window;

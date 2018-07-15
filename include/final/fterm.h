@@ -67,6 +67,10 @@
  *           :- - - -▕ FOptiMove ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
  *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FKeyboard ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
  *           :      *▕▔▔▔▔▔▔▔▔▔▏
  *           :- - - -▕ FString ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▏
@@ -128,6 +132,7 @@
 
 #include "final/fc.h"
 #include "final/fcolorpalette.h"
+#include "final/fkeyboard.h"
 #include "final/fmouse.h"
 #include "final/fobject.h"
 #include "final/foptiattr.h"
@@ -176,13 +181,13 @@ class FTerm
 
     // Accessors
     virtual const char*   getClassName() const;
-    static termios        getTTY();
-    static int            getTTYFileDescriptor();
+    static FKeyboard*     getKeyboard();
+    static FMouseControl* getMouseControl();
     static int            getLineNumber();
     static int            getColumnNumber();
     static const FString  getKeyName (int);
-    static FMouseControl* getMouseControl();
 
+    static int            getTTYFileDescriptor();
     static char*          getTermType();
     static char*          getTermFileName();
     static int            getTabstop();
@@ -199,7 +204,6 @@ class FTerm
 
     // Inquiries
     static bool           isCursorHidden();
-    static bool           isKeypressTimeout (timeval*);
     static bool           isNormal (charData*&);
     static bool           isRaw();
     static bool           hasPCcharset();
@@ -226,7 +230,6 @@ class FTerm
     static bool           isOpenBSDTerm();
     static bool           isScreenTerm();
     static bool           isTmuxTerm();
-    static bool           isInputDataPending();
     static bool           isNewFont();
     static bool           isUTF8();
 
@@ -237,20 +240,13 @@ class FTerm
     static void           unsetInsertCursor();
     static bool           setCursorOptimisation (bool);
     static void           redefineDefaultColors (bool);
-    static void           setKeypressTimeout (const long);
     static void           setDblclickInterval (const long);
     static void           disableAltScreen();
     static bool           setUTF8 (bool);
     static bool           setUTF8();
     static bool           unsetUTF8();
-    static bool           setNonBlockingInput (bool);
-    static bool           setNonBlockingInput();
-    static bool           unsetNonBlockingInput();
 
     // Methods
-    static int            parseKeyString (char[], int, timeval*);
-    static int            keyCorrection (const int&);
-    static bool&          unprocessedInput();
     static bool           setVGAFont();
     static bool           setNewFont();
     static bool           setOldFont();
@@ -300,7 +296,6 @@ class FTerm
 
     static int            putchar_ASCII (register int);
     static int            putchar_UTF8  (register int);
-    static int            UTF8decode (const char[]);
 
 #if DEBUG
     static int            framebuffer_bpp;
@@ -380,9 +375,6 @@ class FTerm
     // Typedefs
     typedef FTermcap::tcap_map termcap_map;
 
-    // Constants
-    static const int NEED_MORE_DATA = -1;  // parseKeyString return value
-
     // Disable copy constructor
     FTerm (const FTerm&);
     // Disable assignment operator (=)
@@ -397,6 +389,7 @@ class FTerm
     static void           init_cygwin_charmap();
     static void           init_teraterm_charmap();
     static void           init_fixed_max_color();
+    static void           init_keyboard();
     static void           init_termcap();
     static void           init_termcap_error (int);
     static void           init_termcap_variables(char*&);
@@ -432,10 +425,6 @@ class FTerm
     void                  finishOSspecifics1();
     void                  finish_encoding();
     static uInt           cp437_to_unicode (uChar);
-    static int            getMouseProtocolKey (char[]);
-    static int            getTermcapKey (char[], int);
-    static int            getMetaKey (char[], int, timeval*);
-    static int            getSingleKey (char[], int);
     static void           setSignalHandler();
     static void           resetSignalHandler();
     static void           signal_handler (int);
@@ -451,10 +440,7 @@ class FTerm
     static bool           cursor_optimisation;
     static bool           hidden_cursor;
     static bool           use_alternate_screen;
-    static bool           input_data_pending;
-    static bool           non_blocking_stdin;
     static bool           pc_charset_console;
-    static bool           utf8_input;
     static bool           utf8_state;
     static bool           utf8_console;
     static bool           utf8_linux_terminal;
@@ -471,20 +457,22 @@ class FTerm
     static char*          locale_xterm;
     static FRect*         term;  // current terminal geometry
 
-    static int            stdin_status_flags;
     static int            fd_tty;
     static uInt           baudrate;
-    static long           key_timeout;
     static bool           resize_term;
 
-    static fc::linuxConsoleCursorStyle linux_console_cursor_style;
-    static struct         console_font_op screen_font;
-    static struct         unimapdesc      screen_unicode_map;
+    static fc::linuxConsoleCursorStyle \
+                          linux_console_cursor_style;
+    static struct console_font_op \
+                          screen_font;
+    static struct unimapdesc \
+                          screen_unicode_map;
 
     static FOptiMove*      opti_move;
     static FOptiAttr*      opti_attr;
     static FTermDetection* term_detection;
     static FTermXTerminal* xterm;
+    static FKeyboard*      keyboard;
 
 #if defined(__linux__)
     #undef linux
@@ -510,6 +498,14 @@ class FTerm
 //----------------------------------------------------------------------
 inline const char* FTerm::getClassName() const
 { return "FTerm"; }
+
+//----------------------------------------------------------------------
+inline FKeyboard* FTerm::getKeyboard()
+{ return ( keyboard ) ? keyboard : 0; }
+
+//----------------------------------------------------------------------
+inline FMouseControl* FTerm::getMouseControl()
+{ return ( mouse ) ? mouse : 0; }
 
 //----------------------------------------------------------------------
 inline int FTerm::getTTYFileDescriptor()
@@ -560,10 +556,6 @@ inline int FTerm::getFramebufferBpp()
 //----------------------------------------------------------------------
 inline bool FTerm::isCursorHidden()
 { return hidden_cursor; }
-
-//----------------------------------------------------------------------
-inline bool FTerm::isKeypressTimeout (timeval* time)
-{ return FObject::isTimeout (time, key_timeout); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::hasPCcharset()
@@ -662,10 +654,6 @@ inline bool FTerm::isTmuxTerm()
 { return term_detection->isTmuxTerm(); }
 
 //----------------------------------------------------------------------
-inline bool FTerm::isInputDataPending()
-{ return input_data_pending; }
-
-//----------------------------------------------------------------------
 inline bool FTerm::isNewFont()
 { return NewFont; }
 
@@ -686,10 +674,6 @@ inline bool FTerm::setCursorOptimisation (bool on)
 { return cursor_optimisation = ( on ) ? true : false; }
 
 //----------------------------------------------------------------------
-inline void FTerm::setKeypressTimeout (const long timeout)
-{ key_timeout = timeout; }
-
-//----------------------------------------------------------------------
 inline void FTerm::disableAltScreen()
 { use_alternate_screen = false; }
 
@@ -700,14 +684,6 @@ inline bool FTerm::setUTF8()
 //----------------------------------------------------------------------
 inline bool FTerm::unsetUTF8()
 { return setUTF8(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setNonBlockingInput()
-{ return setNonBlockingInput(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::unsetNonBlockingInput()
-{ return setNonBlockingInput(false); }
 
 //----------------------------------------------------------------------
 inline bool FTerm::hasChangedTermSize()

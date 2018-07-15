@@ -41,15 +41,10 @@ int (*FTerm::Fputchar)(int);
 
 // static class attributes
 int      FTerm::fd_tty;
-int      FTerm::stdin_status_flags;
 uInt     FTerm::baudrate;
-long     FTerm::key_timeout;
 bool     FTerm::resize_term;
-bool     FTerm::input_data_pending;
-bool     FTerm::non_blocking_stdin;
 bool     FTerm::monochron;
 bool     FTerm::pc_charset_console;
-bool     FTerm::utf8_input;
 bool     FTerm::utf8_state;
 bool     FTerm::utf8_console;
 bool     FTerm::utf8_linux_terminal;
@@ -80,6 +75,7 @@ FOptiMove*             FTerm::opti_move                 = 0;
 FOptiAttr*             FTerm::opti_attr                 = 0;
 FTermDetection*        FTerm::term_detection            = 0;
 FTermXTerminal*        FTerm::xterm                     = 0;
+FKeyboard*             FTerm::keyboard                  = 0;
 FMouseControl*         FTerm::mouse                     = 0;
 std::map<uChar,uChar>* FTerm::vt100_alt_char            = 0;
 std::map<std::string,fc::encoding>* \
@@ -158,23 +154,7 @@ int FTerm::getColumnNumber()
 //----------------------------------------------------------------------
 const FString FTerm::getKeyName (int keynum)
 {
-  for (int i = 0; fc::FkeyName[i].string[0] != 0; i++)
-    if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
-      return FString(fc::FkeyName[i].string);
-
-  if ( keynum > 32 && keynum < 127 )
-    return FString(char(keynum));
-
-  return FString("");
-}
-
-//----------------------------------------------------------------------
-FMouseControl* FTerm::getMouseControl()
-{
-  if ( mouse )
-    return mouse;
-  else
-    return 0;
+  return keyboard->getKeyName (keynum);
 }
 
 //----------------------------------------------------------------------
@@ -231,81 +211,6 @@ bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
 #endif
 
   return utf8_state;
-}
-
-//----------------------------------------------------------------------
-bool FTerm::setNonBlockingInput (bool on)
-{
-  if ( on == non_blocking_stdin )
-    return non_blocking_stdin;
-
-  if ( on )  // make stdin non-blocking
-  {
-    stdin_status_flags |= O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = true;
-  }
-  else
-  {
-    stdin_status_flags &= ~O_NONBLOCK;
-
-    if ( fcntl (FTermios::getStdIn(), F_SETFL, stdin_status_flags) != -1 )
-      non_blocking_stdin = false;
-  }
-
-  return non_blocking_stdin;
-}
-
-//----------------------------------------------------------------------
-int FTerm::parseKeyString ( char buffer[]
-                          , int buf_size
-                          , timeval* time_keypressed )
-{
-  uChar firstchar = uChar(buffer[0]);
-
-  if ( firstchar == ESC[0] )
-  {
-    int key = getMouseProtocolKey(buffer);
-
-    if ( key > 0 )
-      return key;
-
-    key = getTermcapKey(buffer, buf_size);
-
-    if ( key > 0 )
-      return key;
-
-    key = getMetaKey(buffer, buf_size, time_keypressed);
-
-    if ( key > 0 )
-      return key;
-
-    if ( ! isKeypressTimeout(time_keypressed) )
-      return NEED_MORE_DATA;
-  }
-
-  return getSingleKey(buffer, buf_size);
-}
-
-//----------------------------------------------------------------------
-int FTerm::keyCorrection (const int& key)
-{
-  int key_correction;
-
-#if defined(__linux__)
-  key_correction = linux->modifierKeyCorrection(key);
-#else
-  key_correction = key;
-#endif
-
-  return key_correction;
-}
-
-//----------------------------------------------------------------------
-bool& FTerm::unprocessedInput()
-{
-  return input_data_pending;
 }
 
 //----------------------------------------------------------------------
@@ -952,50 +857,6 @@ int FTerm::putchar_UTF8 (register int c)
     return EOF;
 }
 
-//----------------------------------------------------------------------
-int FTerm::UTF8decode (const char utf8[])
-{
-  register int ucs = 0;
-
-  for (register int i = 0; i < int(std::strlen(utf8)); ++i)
-  {
-    register uChar ch = uChar(utf8[i]);
-
-    if ( (ch & 0xc0) == 0x80 )
-    {
-      // byte 2..4 = 10xxxxxx
-      ucs = (ucs << 6) | (ch & 0x3f);
-    }
-    else if ( ch < 128 )
-    {
-      // byte 1 = 0xxxxxxx (1 byte mapping)
-      ucs = ch & 0xff;
-    }
-    else if ( (ch & 0xe0) == 0xc0 )
-    {
-      // byte 1 = 110xxxxx (2 byte mapping)
-      ucs = ch & 0x1f;
-    }
-    else if ( (ch & 0xf0) == 0xe0 )
-    {
-      // byte 1 = 1110xxxx (3 byte mapping)
-      ucs = ch & 0x0f;
-    }
-    else if ( (ch & 0xf8) == 0xf0 )
-    {
-      // byte 1 = 11110xxx (4 byte mapping)
-      ucs = ch & 0x07;
-    }
-    else
-    {
-      // error
-      ucs = EOF;
-    }
-  }
-
-  return ucs;
-}
-
 
 // protected methods of FTerm
 //----------------------------------------------------------------------
@@ -1059,9 +920,6 @@ void FTerm::init_global_values()
   // Teletype (tty) file descriptor is still undefined
   fd_tty = -1;
 
-  // Set default timeout for keypress
-  key_timeout = 100000;  // 100 ms
-
   // Preset to true
   shadow_character     = \
   half_block_character = \
@@ -1070,7 +928,6 @@ void FTerm::init_global_values()
   // Preset to false
   hidden_cursor        = \
   utf8_console         = \
-  utf8_input           = \
   utf8_state           = \
   utf8_linux_terminal  = \
   pc_charset_console   = \
@@ -1079,10 +936,6 @@ void FTerm::init_global_values()
   VGAFont              = \
   ascii_console        = \
   force_vt100          = false;
-
-  // Assertion: programm start in cooked mode
-  input_data_pending   = \
-  non_blocking_stdin   = false;
 
   // Init arrays with '\0'
   std::fill_n (exit_message, sizeof(exit_message), '\0');
@@ -1268,6 +1121,14 @@ void FTerm::init_teraterm_charmap()
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_keyboard()
+{
+#if defined(__linux__)
+  keyboard->setFTermLinux (linux);
+#endif
+}
+
+//----------------------------------------------------------------------
 /* Terminal capability data base
  * -----------------------------
  * Info under: man 5 terminfo
@@ -1288,10 +1149,10 @@ void FTerm::init_termcap()
   int status = uninitialized;
   bool color256 = term_detection->canDisplay256Colors();
 
-  // share the terminal capabilities
+  // Share the terminal capabilities
   FTermcap().setTermcapMap(tcap);
 
-  // open termcap file
+  // Open termcap file
   terminals.push_back(termtype);            // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
@@ -1359,7 +1220,7 @@ void FTerm::init_termcap_variables (char*& buffer)
 
   // Terminal quirks
   FTermcapQuirks termcap_quirks;
-  termcap_quirks.setTermcapMap (tcap);  // Parameter
+  termcap_quirks.setTermcapMap (tcap);
   termcap_quirks.setFTermDetection (term_detection);
   termcap_quirks.setTerminalType (termtype);
   termcap_quirks.terminalFixup();       // Fix terminal quirks
@@ -1709,8 +1570,8 @@ void FTerm::init_term_encoding()
     term_encoding = fc::UTF8;
     Fputchar      = &FTerm::putchar_UTF8;  // function pointer
     utf8_state    = true;
-    utf8_input    = true;
     setUTF8(true);
+    keyboard->enableUTF8();
   }
   else if ( isatty(stdout_no)
          && (std::strlen(termtype) > 0)
@@ -1915,6 +1776,7 @@ void FTerm::enableMouse()
   if ( TCAP(fc::t_key_mouse) && ! isLinuxTerm() )
     xterm_mouse = true;
 
+  keyboard->enableMouseSequences();
   mouse->setMaxWidth (short(getColumnNumber()));
   mouse->setMaxHeight (short(getLineNumber()));
   // Enable the linux general purpose mouse (gpm) server
@@ -1927,6 +1789,7 @@ void FTerm::enableMouse()
 //----------------------------------------------------------------------
 void FTerm::disableMouse()
 {
+  keyboard->disableMouseSequences();
   mouse->disable();
 }
 
@@ -1994,6 +1857,7 @@ inline void FTerm::allocationValues()
     openbsd        = new FTermOpenBSD();
 #endif
 
+    keyboard       = new FKeyboard();
     mouse          = new FMouseControl();
     term           = new FRect(0, 0, 0, 0);
     vt100_alt_char = new std::map<uChar, uChar>;
@@ -2026,6 +1890,9 @@ inline void FTerm::deallocationValues()
 
   if ( mouse )
     delete mouse;
+
+  if ( keyboard )
+    delete keyboard;
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   if ( openbsd )
@@ -2068,12 +1935,6 @@ void FTerm::init()
   // Initialize termios
   FTermios::init();
 
-  // Get the stdin file status flags
-  stdin_status_flags = fcntl(FTermios::getStdIn(), F_GETFL);
-
-  if ( stdin_status_flags == -1 )
-    std::abort();
-
   // Get pathname of the terminal device
   if ( ttyname_r(stdout_no, termfilename, sizeof(termfilename)) )
     termfilename[0] = '\0';
@@ -2102,11 +1963,17 @@ void FTerm::init()
   init_termcap();
   init_alt_charset();
 
+  // Pass the terminal capabilities to the keyboard object
+  keyboard->setTermcapMap (fc::Fkey);
+
   // Initializes locale information
   init_locale();
 
   // Detect environment and set encoding
   init_encoding();
+
+  // Initializes keyboard settings
+  init_keyboard();
 
   // Enable the terminal mouse support
   if ( init_values.mouse_support )
@@ -2323,143 +2190,6 @@ uInt FTerm::cp437_to_unicode (uChar c)
   }
 
   return ucs;
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::getMouseProtocolKey (char buffer[])
-{
-  // Looking for mouse string in the key buffer
-
-  if ( ! init_values.mouse_support )
-    return -1;
-
-  register std::size_t buf_len = std::strlen(buffer);
-
-  // x11 mouse tracking
-  if ( buf_len >= 6 && buffer[1] == '[' && buffer[2] == 'M' )
-    return fc::Fkey_mouse;
-
-  // SGR mouse tracking
-  if ( buffer[1] == '[' && buffer[2] == '<' && buf_len >= 9
-    && (buffer[buf_len - 1] == 'M' || buffer[buf_len - 1] == 'm') )
-    return fc::Fkey_extended_mouse;
-
-  // urxvt mouse tracking
-  if ( buffer[1] == '[' && buffer[2] >= '1' && buffer[2] <= '9'
-    && buffer[3] >= '0' && buffer[3] <= '9' && buf_len >= 9
-    && buffer[buf_len - 1] == 'M' )
-    return fc::Fkey_urxvt_mouse;
-
-  return -1;
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::getTermcapKey (char buffer[], int buf_size)
-{
-  // Looking for termcap key strings in the buffer
-  assert ( buf_size > 0 );
-
-  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
-  {
-    char* k = fc::Fkey[i].string;
-    register int len = ( k ) ? int(std::strlen(k)) : 0;
-
-    if ( k && std::strncmp(k, buffer, uInt(len)) == 0 )  // found
-    {
-      register int n;
-
-      for (n = len; n < buf_size; n++)  // Remove founded entry
-        buffer[n - len] = buffer[n];
-
-      for (; n - len < len; n++)  // Fill rest with '\0'
-        buffer[n - len] = '\0';
-
-      input_data_pending = bool(buffer[0] != '\0');
-      return fc::Fkey[i].num;
-    }
-  }
-
-  return -1;
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::getMetaKey ( char buffer[]
-                             , int buf_size
-                             , timeval* time_keypressed )
-{
-  // Looking for meta key strings in the buffer
-  assert ( buf_size > 0 );
-
-  for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
-  {
-    char* kmeta = fc::Fmetakey[i].string;  // The string is never null
-    register int len = int(std::strlen(kmeta));
-
-    if ( std::strncmp(kmeta, buffer, uInt(len)) == 0 )  // found
-    {
-      register int n;
-
-      if ( len == 2 && ( buffer[1] == 'O'
-                      || buffer[1] == '['
-                      || buffer[1] == ']' ) )
-      {
-        if ( ! isKeypressTimeout(time_keypressed) )
-          return NEED_MORE_DATA;
-      }
-
-      for (n = len; n < buf_size; n++)  // Remove founded entry
-        buffer[n - len] = buffer[n];
-
-      for (; n - len < len; n++)  // Fill rest with '\0'
-        buffer[n - len] = '\0';
-
-      input_data_pending = bool(buffer[0] != '\0');
-      return fc::Fmetakey[i].num;
-    }
-  }
-
-  return -1;
-}
-
-//----------------------------------------------------------------------
-inline int FTerm::getSingleKey (char buffer[], int buf_size)
-{
-  register uChar firstchar = uChar(buffer[0]);
-  int key, n, len;
-  len = 1;
-
-  // Look for a utf-8 character
-  if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
-  {
-    char utf8char[4] = { };  // Init array with '\0'
-
-    if ( (firstchar & 0xe0) == 0xc0 )
-      len = 2;
-    else if ( (firstchar & 0xf0) == 0xe0 )
-      len = 3;
-    else if ( (firstchar & 0xf8) == 0xf0 )
-      len = 4;
-
-    for (int i = 0; i < len ; i++)
-      utf8char[i] = char(buffer[i] & 0xff);
-
-    key = UTF8decode(utf8char);
-  }
-  else
-    key = uChar(buffer[0] & 0xff);
-
-  for (n = len; n < buf_size; n++)  // Remove the key from the buffer front
-    buffer[n - len] = buffer[n];
-
-  for (n = n - len; n < buf_size; n++)   // Fill the rest with '\0' bytes
-    buffer[n] = '\0';
-
-  input_data_pending = bool(buffer[0] != '\0');
-
-  if ( key == 0 )  // Ctrl+Space or Ctrl+@
-    key = fc::Fckey_space;
-
-  return int(key == 127 ? fc::Fkey_backspace : key);
 }
 
 //----------------------------------------------------------------------

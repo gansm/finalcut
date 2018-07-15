@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -48,6 +48,34 @@ typedef int32_t        sInt32;
 typedef int64_t        sInt64;
 
 typedef long double    lDouble;
+
+namespace fc
+{
+#pragma pack(push)
+#pragma pack(1)
+typedef struct
+{
+  int   num;
+  char* string;
+  char  tname[4];
+}
+fkeymap;
+
+typedef struct
+{
+  int  num;
+  char string[8];
+}
+fmetakeymap;
+
+typedef struct
+{
+  int  num;
+  char string[25];
+}
+keyname;
+#pragma pack(pop)
+}  // namespace fc
 
 #endif  // FTYPES_H
 

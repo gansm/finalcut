@@ -26,6 +26,7 @@ libfinal_la_SOURCES = \
 	flistview.cpp \
 	fmenu.cpp \
 	fmouse.cpp \
+	fkeyboard.cpp \
 	fdialoglistmenu.cpp \
 	fmenubar.cpp \
 	fmenuitem.cpp \
@@ -38,6 +39,7 @@ libfinal_la_SOURCES = \
 	fmessagebox.cpp \
 	ftooltip.cpp \
 	ffiledialog.cpp \
+	fkey_map.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
 	ftermcapquirks.cpp \
@@ -85,6 +87,7 @@ finalcutinclude_HEADERS = \
 	../include/final/flistview.h \
 	../include/final/fmenu.h \
 	../include/final/fmouse.h \
+	../include/final/fkeyboard.h \
 	../include/final/fdialoglistmenu.h \
 	../include/final/fmenubar.h \
 	../include/final/fmenuitem.h \

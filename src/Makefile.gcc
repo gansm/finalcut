@@ -24,6 +24,7 @@ INCLUDE_HEADERS = \
 	flistview.h \
 	fmenu.h \
 	fmouse.h \
+	fkeyboard.h \
 	fdialoglistmenu.h \
 	fmenubar.h \
 	fradiomenuitem.h \
@@ -87,6 +88,7 @@ OBJS = \
 	flistview.o \
 	fmenu.o \
 	fmouse.o \
+	fkeyboard.o \
 	fdialoglistmenu.o \
 	fmenubar.o \
 	fmenuitem.o \
@@ -99,6 +101,7 @@ OBJS = \
 	fmessagebox.o \
 	ftooltip.o \
 	ffiledialog.o \
+	fkey_map.o \
 	ftextview.o \
 	fstatusbar.o \
 	fterm.o \

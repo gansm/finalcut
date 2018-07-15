@@ -1,3 +1,6 @@
+2017-07-15  Markus Gans  <guru.mail@muenster.de>
+	* Keyboarb functions are now in a separate class
+
 2017-07-08  Markus Gans  <guru.mail@muenster.de>
 	* Extension of the unit test of FOptiMove
 

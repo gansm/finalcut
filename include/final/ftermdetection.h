@@ -42,6 +42,7 @@
 #include <cstring>
 
 #include "final/fc.h"
+#include "final/fconfig.h"
 #include "final/ftermios.h"
 #include "final/ftypes.h"
 

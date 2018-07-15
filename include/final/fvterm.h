@@ -438,6 +438,7 @@ class FVTerm : public FTerm
     static charData         i_ch;      // inherit background character
     static FPoint*          term_pos;  // terminal cursor position
     static termcap_map*     tcap;
+    static FKeyboard*       keyboard;
     static bool             terminal_update_complete;
     static bool             terminal_update_pending;
     static bool             force_terminal_update;

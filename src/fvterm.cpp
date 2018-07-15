@@ -43,13 +43,14 @@ uInt                 FVTerm::repeat_char_length;
 uInt                 FVTerm::clr_bol_length;
 uInt                 FVTerm::clr_eol_length;
 uInt                 FVTerm::cursor_address_length;
-std::queue<int>*     FVTerm::output_buffer           = 0;
-FPoint*              FVTerm::term_pos                = 0;
-FVTerm::term_area*   FVTerm::vterm                   = 0;
-FVTerm::term_area*   FVTerm::vdesktop                = 0;
-FVTerm::term_area*   FVTerm::active_area             = 0;
-FVTerm::termcap_map* FVTerm::tcap                    = 0;
-FTermcap::tcap_map*  FTermcap::tcap                  = 0;
+std::queue<int>*     FVTerm::output_buffer = 0;
+FPoint*              FVTerm::term_pos      = 0;
+FVTerm::term_area*   FVTerm::vterm         = 0;
+FVTerm::term_area*   FVTerm::vdesktop      = 0;
+FVTerm::term_area*   FVTerm::active_area   = 0;
+FVTerm::termcap_map* FVTerm::tcap          = 0;
+FTermcap::tcap_map*  FTermcap::tcap        = 0;
+FKeyboard*           FVTerm::keyboard      = 0;
 FVTerm::charData     FVTerm::term_attribute;
 FVTerm::charData     FVTerm::next_attribute;
 FVTerm::charData     FVTerm::s_ch;
@@ -237,7 +238,7 @@ void FVTerm::updateTerminal()
     if ( ! terminal_update_complete )
       return;
 
-    if ( isInputDataPending() )
+    if ( keyboard->isInputDataPending() )
     {
       terminal_update_pending = true;
       return;
@@ -2009,7 +2010,7 @@ void FVTerm::processTerminalUpdate()
   if ( ! terminal_update_pending )
     return;
 
-  if ( ! unprocessedInput() )
+  if ( ! keyboard->isInputDataPending() )
   {
     updateTerminal();
     terminal_update_pending = false;
@@ -2101,6 +2102,9 @@ void FVTerm::init()
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
+
+  // Initialize keyboard
+  keyboard = getKeyboard();
 
   // Hide the input cursor
   hideCursor();
