@@ -680,7 +680,7 @@ void FApplication::processKeyboardEvent()
 
   findKeyboardWidget();
   flush_out();
-  keyboard->emptyKeyBufferOnTimeout();
+  keyboard->clearKeyBufferOnTimeout();
 
   if ( isKeyPressed() )
     keyboard->fetchKeyCode();

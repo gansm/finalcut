@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,6 +26,7 @@
 
 #define USE_FINAL_H
 
+#include <final/fkey_map.h>
 #include <final/fapplication.h>
 #include <final/fbuttongroup.h>
 #include <final/fbutton.h>

@@ -71,6 +71,10 @@
  *           :- - - -▕ FKeyboard ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▏
  *           :
+ *           :      1▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ *           :- - - -▕ FMouseControl ▏
+ *           :       ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ *           :
  *           :      *▕▔▔▔▔▔▔▔▔▔▏
  *           :- - - -▕ FString ▏
  *           :       ▕▁▁▁▁▁▁▁▁▁▏
@@ -132,6 +136,7 @@
 
 #include "final/fc.h"
 #include "final/fcolorpalette.h"
+#include "final/fkey_map.h"
 #include "final/fkeyboard.h"
 #include "final/fmouse.h"
 #include "final/fobject.h"
@@ -310,11 +315,6 @@ class FTerm
 
     // Accessors
     FOptiMove*            getFOptiMove();
-    static uInt           getEraseCharsLength();
-    static uInt           getRepeatCharLength();
-    static uInt           getClrBolLength();
-    static uInt           getClrEolLength();
-    static uInt           getCursorAddressLength();
 
     // Methods
     static void           initScreenSettings();

@@ -84,40 +84,42 @@ class FKeyboard
     FKeyboard();
 
     // Destructor
-    ~FKeyboard();
+    virtual ~FKeyboard();
 
     // Accessors
-    int           getKey();
-    const FString getKeyName (int);
-    char*         getKeyBuffer();
-    int           getKeyBufferSize();
-    timeval*      getKeyPressedTime();
+    virtual const char* getClassName() const;
+    int                 getKey();
+    const FString       getKeyName (int);
+    char*               getKeyBuffer();
+    int                 getKeyBufferSize();
+    timeval*            getKeyPressedTime();
 
     // Mutators
-    void          setTermcapMap (fc::fkeymap*);
-    void          setKeypressTimeout (const long);
-    void          enableUTF8();
-    void          disableUTF8();
-    void          enableMouseSequences();
-    void          disableMouseSequences();
+    void                setTermcapMap (fc::fkeymap*);
+    void                setKeypressTimeout (const long);
+    void                enableUTF8();
+    void                disableUTF8();
+    void                enableMouseSequences();
+    void                disableMouseSequences();
 
 #if defined(__linux__)
-    void          setFTermLinux (FTermLinux*);
+    void                setFTermLinux (FTermLinux*);
 #endif
 
-    void          setPressCommand (FKeyboardCommand);
-    void          setReleaseCommand (FKeyboardCommand);
-    void          setEscPressedCommand (FKeyboardCommand);
+    void                setPressCommand (FKeyboardCommand);
+    void                setReleaseCommand (FKeyboardCommand);
+    void                setEscPressedCommand (FKeyboardCommand);
 
     // Inquiry
-    bool          isInputDataPending();
+    bool                isInputDataPending();
 
     // Methods
-    bool&         unprocessedInput();
-    bool          isKeyPressed();
-    void          emptyKeyBufferOnTimeout();
-    void          fetchKeyCode();
-    void          escapeKeyHandling();
+    bool&               unprocessedInput();
+    bool                isKeyPressed();
+    void                clearKeyBuffer();
+    void                clearKeyBufferOnTimeout();
+    void                fetchKeyCode();
+    void                escapeKeyHandling();
 
   private:
     // Constants
@@ -130,28 +132,28 @@ class FKeyboard
     FKeyboard& operator = (const FKeyboard&);
 
     // Accessors
-    int           getMouseProtocolKey();
-    int           getTermcapKey();
-    int           getMetaKey();
-    int           getSingleKey();
+    int                 getMouseProtocolKey();
+    int                 getTermcapKey();
+    int                 getMetaKey();
+    int                 getSingleKey();
 
     // Mutators
-    bool          setNonBlockingInput (bool);
-    bool          setNonBlockingInput();
-    bool          unsetNonBlockingInput();
+    bool                setNonBlockingInput (bool);
+    bool                setNonBlockingInput();
+    bool                unsetNonBlockingInput();
 
     // Inquiry
-    static bool   isKeypressTimeout (timeval*);
+    static bool         isKeypressTimeout();
 
     // Methods
-    int           UTF8decode (const char[]);
-    ssize_t       readKey();
-    void          parseKeyBuffer();
-    int           parseKeyString();
-    int 	        keyCorrection (const int&);
-    void          keyPressed();
-    void          keyReleased();
-    void          escapeKeyPressed();
+    int                 UTF8decode (const char[]);
+    ssize_t             readKey();
+    void                parseKeyBuffer();
+    int                 parseKeyString();
+    int                 keyCorrection (const int&);
+    void                keyPressed();
+    void                keyReleased();
+    void                escapeKeyPressed();
 
     // Data Members
     int              key;
@@ -170,9 +172,8 @@ class FKeyboard
     FKeyboardCommand keyreleased_cmd;
     FKeyboardCommand escape_key_cmd;
 
-    struct timeval   time_keypressed;
+    static timeval   time_keypressed;
     fc::fkeymap*     termcap_map;
-    //void*           termcap_map;
 
 #if defined(__linux__)
     #undef linux
@@ -182,6 +183,10 @@ class FKeyboard
 #pragma pack(pop)
 
 // FKeyboard inline functions
+//----------------------------------------------------------------------
+inline const char* FKeyboard::getClassName() const
+{ return "FKeyboard"; }
+
 //----------------------------------------------------------------------
 inline int FKeyboard::getKey()
 { return key; }
@@ -194,7 +199,7 @@ inline int FKeyboard::getKeyBufferSize()
 { return fifo_buf_size; }
 
 //----------------------------------------------------------------------
-inline struct timeval* FKeyboard::getKeyPressedTime()
+inline timeval* FKeyboard::getKeyPressedTime()
 { return &time_keypressed; }
 
 //----------------------------------------------------------------------
@@ -234,10 +239,6 @@ inline void FKeyboard::setReleaseCommand (FKeyboardCommand cmd)
 //----------------------------------------------------------------------
 inline void FKeyboard::setEscPressedCommand (FKeyboardCommand cmd)
 { escape_key_cmd = cmd; }
-
-//----------------------------------------------------------------------
-inline bool FKeyboard::isKeypressTimeout (timeval* time)
-{ return FObject::isTimeout (time, key_timeout); }
 
 //----------------------------------------------------------------------
 inline bool FKeyboard::isInputDataPending()

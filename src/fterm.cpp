@@ -27,7 +27,6 @@
 
 #include "final/fterm.h"
 #include "final/fcharmap.h"
-#include "final/fkey_map.h"
 #include "final/ftcap_map.h"
 
 // global FTerm object

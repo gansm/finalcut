@@ -515,6 +515,8 @@ class FMouseControl
 };
 #pragma pack(pop)
 
+// FMouseControl inline functions
+//----------------------------------------------------------------------
 inline const char* FMouseControl::getClassName() const
 { return "FMouseControl"; }
 

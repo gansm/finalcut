@@ -28,6 +28,7 @@
 
 // static class attributes
 long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
+struct timeval FKeyboard::time_keypressed;
 
 #if defined(__linux__)
   FTermLinux* FKeyboard::linux = 0;
@@ -75,7 +76,6 @@ FKeyboard::FKeyboard()
   , keypressed_cmd()
   , keyreleased_cmd()
   , escape_key_cmd()
-  , time_keypressed()
   , termcap_map(0)
 {
   // Initialize keyboard values
@@ -150,16 +150,23 @@ bool FKeyboard::isKeyPressed()
 }
 
 //----------------------------------------------------------------------
-void FKeyboard::emptyKeyBufferOnTimeout()
+void FKeyboard::clearKeyBuffer()
+{
+  // Empty the buffer
+
+  fifo_offset = 0;
+  key = 0;
+  std::fill_n (fifo_buf, fifo_buf_size, '\0');
+  fifo_in_use = false;
+}
+
+//----------------------------------------------------------------------
+void FKeyboard::clearKeyBufferOnTimeout()
 {
   // Empty the buffer on timeout
-  if ( fifo_in_use && isKeypressTimeout(&time_keypressed) )
-  {
-    fifo_offset = 0;
-    key = 0;
-    std::fill_n (fifo_buf, fifo_buf_size, '\0');
-    fifo_in_use = false;
-  }
+
+  if ( fifo_in_use && isKeypressTimeout() )
+    clearKeyBuffer();
 }
 
 //----------------------------------------------------------------------
@@ -172,7 +179,7 @@ void FKeyboard::escapeKeyHandling()
     && fifo_offset == 1
     && fifo_buf[0] == 0x1b
     && fifo_buf[1] == 0x00
-    && isKeypressTimeout(&time_keypressed) )
+    && isKeypressTimeout() )
   {
     fifo_offset = 0;
     fifo_buf[0] = 0x00;
@@ -216,13 +223,15 @@ inline int FKeyboard::getMouseProtocolKey()
 inline int FKeyboard::getTermcapKey()
 {
   // Looking for termcap key strings in the buffer
+
   assert ( fifo_buf_size > 0 );
 
-  //for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  if ( ! termcap_map )
+    return -1;
+
   fc::fkeymap* keymap = reinterpret_cast<fc::fkeymap*>(termcap_map);
   for (int i = 0; keymap[i].tname[0] != 0; i++)
   {
-    //char* k = fc::Fkey[i].string;
     char* k = keymap[i].string;
     register int len = ( k ) ? int(std::strlen(k)) : 0;
 
@@ -248,6 +257,7 @@ inline int FKeyboard::getTermcapKey()
 inline int FKeyboard::getMetaKey()
 {
   // Looking for meta key strings in the buffer
+
   assert ( fifo_buf_size > 0 );
 
   for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
@@ -263,7 +273,7 @@ inline int FKeyboard::getMetaKey()
                       || fifo_buf[1] == '['
                       || fifo_buf[1] == ']' ) )
       {
-        if ( ! isKeypressTimeout(&time_keypressed) )
+        if ( ! isKeypressTimeout() )
           return NEED_MORE_DATA;
       }
 
@@ -284,6 +294,8 @@ inline int FKeyboard::getMetaKey()
 //----------------------------------------------------------------------
 inline int FKeyboard::getSingleKey()
 {
+  // Looking for single key code in the buffer
+
   register uChar firstchar = uChar(fifo_buf[0]);
   int keycode, n, len;
   len = 1;
@@ -347,6 +359,12 @@ bool FKeyboard::setNonBlockingInput (bool on)
 }
 
 //----------------------------------------------------------------------
+bool FKeyboard::isKeypressTimeout()
+{
+  return FObject::isTimeout (&time_keypressed, key_timeout);
+}
+
+//----------------------------------------------------------------------
 int FKeyboard::UTF8decode (const char utf8[])
 {
   register int ucs = 0;
@@ -401,7 +419,7 @@ inline ssize_t FKeyboard::readKey()
 }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::parseKeyBuffer()
+void FKeyboard::parseKeyBuffer()
 {
   register ssize_t bytesread;
   FObject::getCurrentTime (&time_keypressed);
@@ -420,7 +438,7 @@ inline void FKeyboard::parseKeyBuffer()
     }
 
     // Read the rest from the fifo buffer
-    while ( ! isKeypressTimeout(&time_keypressed)
+    while ( ! isKeypressTimeout()
          && fifo_offset > 0
          && key != NEED_MORE_DATA )
     {
@@ -431,6 +449,11 @@ inline void FKeyboard::parseKeyBuffer()
         keyPressed();
 
       fifo_offset = int(std::strlen(fifo_buf));
+
+      if ( key == fc::Fkey_mouse
+        || key == fc::Fkey_extended_mouse
+        || key == fc::Fkey_urxvt_mouse )
+        break;
     }
 
     // Send key up event
@@ -465,7 +488,7 @@ int FKeyboard::parseKeyString()
     if ( keycode > 0 )
       return keycode;
 
-    if ( ! isKeypressTimeout(&time_keypressed) )
+    if ( ! isKeypressTimeout() )
       return NEED_MORE_DATA;
   }
 

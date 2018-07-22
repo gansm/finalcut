@@ -457,6 +457,7 @@ keyname FkeyName[] =
   { fc::Fckey_y                   , "Ctrl+Y" },
   { fc::Fckey_z                   , "Ctrl+Z" },
   { fc::Fkey_escape               , "Esc" },        // Ctrl+[
+  { fc::Fkey_escape_mintty        , "Esc" },
   { fc::Fckey_backslash           , "Ctrl+\\" },
   { fc::Fckey_right_square_bracket, "Ctrl+]" },
   { fc::Fckey_caret               , "Ctrl+^" },
@@ -813,6 +814,9 @@ keyname FkeyName[] =
   { fc::Fmkey_vertical_bar        , "Meta+|" },
   { fc::Fmkey_right_curly_bracket , "Meta+}" },
   { fc::Fmkey_tilde               , "Meta+~" },
+  { fc::Fkey_mouse                , "xterm mouse" },
+  { fc::Fkey_extended_mouse       , "SGR extended mouse" },
+  { fc::Fkey_urxvt_mouse          , "urxvt mouse extension" },
   { 0                             , "\0" }
 };
 

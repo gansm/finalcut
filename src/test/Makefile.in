@@ -84,11 +84,13 @@ build_triplet = @build@
 host_triplet = @host@
 @CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fobject_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@TESTS = fobject_test$(EXEEXT) fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
@@ -111,19 +113,25 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fobject_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am__fmouse_test_SOURCES_DIST = fmouse-test.cpp
-@CPPUNIT_TEST_TRUE@am_fmouse_test_OBJECTS = fmouse-test.$(OBJEXT)
-fmouse_test_OBJECTS = $(am_fmouse_test_OBJECTS)
-fmouse_test_LDADD = $(LDADD)
+am__fkeyboard_test_SOURCES_DIST = fkeyboard-test.cpp
+@CPPUNIT_TEST_TRUE@am_fkeyboard_test_OBJECTS =  \
+@CPPUNIT_TEST_TRUE@	fkeyboard-test.$(OBJEXT)
+fkeyboard_test_OBJECTS = $(am_fkeyboard_test_OBJECTS)
+fkeyboard_test_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am__fmouse_test_SOURCES_DIST = fmouse-test.cpp
+@CPPUNIT_TEST_TRUE@am_fmouse_test_OBJECTS = fmouse-test.$(OBJEXT)
+fmouse_test_OBJECTS = $(am_fmouse_test_OBJECTS)
+fmouse_test_LDADD = $(LDADD)
 am__fobject_test_SOURCES_DIST = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@am_fobject_test_OBJECTS = fobject-test.$(OBJEXT)
 fobject_test_OBJECTS = $(am_fobject_test_OBJECTS)
@@ -184,11 +192,12 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(fmouse_test_SOURCES) $(fobject_test_SOURCES) \
-	$(foptiattr_test_SOURCES) $(foptimove_test_SOURCES) \
-	$(fpoint_test_SOURCES) $(frect_test_SOURCES) \
-	$(fstring_test_SOURCES)
-DIST_SOURCES = $(am__fmouse_test_SOURCES_DIST) \
+SOURCES = $(fkeyboard_test_SOURCES) $(fmouse_test_SOURCES) \
+	$(fobject_test_SOURCES) $(foptiattr_test_SOURCES) \
+	$(foptimove_test_SOURCES) $(fpoint_test_SOURCES) \
+	$(frect_test_SOURCES) $(fstring_test_SOURCES)
+DIST_SOURCES = $(am__fkeyboard_test_SOURCES_DIST) \
+	$(am__fmouse_test_SOURCES_DIST) \
 	$(am__fobject_test_SOURCES_DIST) \
 	$(am__foptiattr_test_SOURCES_DIST) \
 	$(am__foptimove_test_SOURCES_DIST) \
@@ -553,6 +562,7 @@ top_srcdir = @top_srcdir@
 @CPPUNIT_TEST_TRUE@AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
 @CPPUNIT_TEST_TRUE@fobject_test_SOURCES = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@fmouse_test_SOURCES = fmouse-test.cpp
+@CPPUNIT_TEST_TRUE@fkeyboard_test_SOURCES = fkeyboard-test.cpp
 @CPPUNIT_TEST_TRUE@foptimove_test_SOURCES = foptimove-test.cpp
 @CPPUNIT_TEST_TRUE@foptiattr_test_SOURCES = foptiattr-test.cpp
 @CPPUNIT_TEST_TRUE@fstring_test_SOURCES = fstring-test.cpp
@@ -611,6 +621,10 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+fkeyboard_test$(EXEEXT): $(fkeyboard_test_OBJECTS) $(fkeyboard_test_DEPENDENCIES) $(EXTRA_fkeyboard_test_DEPENDENCIES) 
+	@rm -f fkeyboard_test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(fkeyboard_test_OBJECTS) $(fkeyboard_test_LDADD) $(LIBS)
+
 fmouse_test$(EXEEXT): $(fmouse_test_OBJECTS) $(fmouse_test_DEPENDENCIES) $(EXTRA_fmouse_test_DEPENDENCIES) 
 	@rm -f fmouse_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fmouse_test_OBJECTS) $(fmouse_test_LDADD) $(LIBS)
@@ -645,6 +659,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fkeyboard-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fmouse-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fobject-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/foptiattr-test.Po@am__quote@
@@ -883,6 +898,13 @@ fobject_test.log: fobject_test$(EXEEXT)
 fmouse_test.log: fmouse_test$(EXEEXT)
 	@p='fmouse_test$(EXEEXT)'; \
 	b='fmouse_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+fkeyboard_test.log: fkeyboard_test$(EXEEXT)
+	@p='fkeyboard_test$(EXEEXT)'; \
+	b='fkeyboard_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
