@@ -387,7 +387,6 @@ void FKeyboardTest::inputTest()
   CPPUNIT_ASSERT ( key_pressed == 'A' );
   CPPUNIT_ASSERT ( key_released == 'A' );
   clear();
-
 }
 
 //----------------------------------------------------------------------
