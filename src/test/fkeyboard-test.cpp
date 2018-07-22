@@ -244,6 +244,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
+    void init();
     void input (std::string);
     void processInput();
     void clear();
@@ -264,24 +265,7 @@ FKeyboardTest::FKeyboardTest()
   , key_released(0)
   , keyboard(0)
 {
-  keyboard = new FKeyboard();
-  FApplication* object = reinterpret_cast<FApplication*>(this);
-  void (FApplication::*method1)()
-      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::keyPressed);
-  void (FApplication::*method2)()
-      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::keyReleased);
-  void (FApplication::*method3)()
-      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::escapeKeyPressed);
-  FKeyboardCommand key_cmd1 (object, method1);
-  FKeyboardCommand key_cmd2 (object, method2);
-  FKeyboardCommand key_cmd3 (object, method3);
-  keyboard->setPressCommand (key_cmd1);
-  keyboard->setReleaseCommand (key_cmd2);
-  keyboard->setEscPressedCommand (key_cmd3);
-  keyboard->setKeypressTimeout (100000);  // 100 ms
-  keyboard->enableUTF8();
-  keyboard->enableMouseSequences();
-  keyboard->setTermcapMap (reinterpret_cast<fc::fkeymap*>(test::Fkey));
+  init();
 }
 
 //----------------------------------------------------------------------
@@ -390,6 +374,29 @@ void FKeyboardTest::inputTest()
 }
 
 //----------------------------------------------------------------------
+void FKeyboardTest::init()
+{
+  keyboard = new FKeyboard();
+  FApplication* object = reinterpret_cast<FApplication*>(this);
+  void (FApplication::*method1)()
+      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::keyPressed);
+  void (FApplication::*method2)()
+      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::keyReleased);
+  void (FApplication::*method3)()
+      = reinterpret_cast<void(FApplication::*)()>(&FKeyboardTest::escapeKeyPressed);
+  FKeyboardCommand key_cmd1 (object, method1);
+  FKeyboardCommand key_cmd2 (object, method2);
+  FKeyboardCommand key_cmd3 (object, method3);
+  keyboard->setPressCommand (key_cmd1);
+  keyboard->setReleaseCommand (key_cmd2);
+  keyboard->setEscPressedCommand (key_cmd3);
+  keyboard->setKeypressTimeout (100000);  // 100 ms
+  keyboard->enableUTF8();
+  keyboard->enableMouseSequences();
+  keyboard->setTermcapMap (reinterpret_cast<fc::fkeymap*>(test::Fkey));
+}
+
+//----------------------------------------------------------------------
 void FKeyboardTest::input (std::string s)
 {
   // Simulates keystrokes
@@ -402,11 +409,15 @@ void FKeyboardTest::input (std::string s)
   while ( iter != s.end() )
   {
     char c = *iter;
-    ioctl (FTermios::getStdIn(), TIOCSTI, &c);
+
+    if ( ioctl (FTermios::getStdIn(), TIOCSTI, &c) < 0 )
+      break;
+
     ++iter;
   }
 
-  ioctl (FTermios::getStdIn(), TIOCSTI, &EOT);
+  if ( ioctl (FTermios::getStdIn(), TIOCSTI, &EOT) < 0 )
+    return;
 }
 
 //----------------------------------------------------------------------

@@ -4035,8 +4035,8 @@ void FOptiAttrTest::wyse50Test()
           ESC "G0" ESC "cD"),           // Exit crossed out
     0,                                  // Enter double underline
     0,                                  // Exit double underline
-    C_STR("%?%p8%t\E)%e\E(%;"
-          "%?%p9%t\EcE%e\EcD%;\EG%'0'"
+    C_STR("%?%p8%t\033)%e\033(%;"
+          "%?%p9%t\033cE%e\033cD%;\033G%'0'"
           "%?%p2%t%{8}%|%;"
           "%?%p1%p3%|%p6%|%t%{4}%|%;"
           "%?%p4%t%{2}%|%;"

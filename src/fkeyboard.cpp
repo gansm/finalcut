@@ -501,7 +501,10 @@ int FKeyboard::keyCorrection (const int& keycode)
   int key_correction;
 
 #if defined(__linux__)
-  key_correction = linux->modifierKeyCorrection(keycode);
+  if ( linux )
+    key_correction = linux->modifierKeyCorrection(keycode);
+  else
+    key_correction = key;
 #else
   key_correction = key;
 #endif
