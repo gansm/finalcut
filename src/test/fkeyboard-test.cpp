@@ -227,6 +227,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 {
   public:
     FKeyboardTest();
+    ~FKeyboardTest();
 
   protected:
     void classNameTest();
@@ -260,12 +261,19 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
 };
 #pragma pack(pop)
 
+//----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()
   : key_pressed(0)
   , key_released(0)
   , keyboard(0)
 {
   init();
+}
+
+//----------------------------------------------------------------------
+FKeyboardTest::~FKeyboardTest()
+{
+  delete keyboard;
 }
 
 //----------------------------------------------------------------------
