@@ -303,7 +303,7 @@ inline int FKeyboard::getSingleKey()
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
   {
-    char utf8char[4] = { };  // Init array with '\0'
+    char utf8char[5] = { };  // Init array with '\0'
 
     if ( (firstchar & 0xe0) == 0xc0 )
       len = 2;
@@ -368,8 +368,9 @@ bool FKeyboard::isKeypressTimeout()
 int FKeyboard::UTF8decode (const char utf8[])
 {
   register int ucs = 0;
+  const int max = 4;
 
-  for (register int i = 0; i < int(std::strlen(utf8)); ++i)
+  for (register int i = 0; i < int(std::strlen(utf8)) && i < max; ++i)
   {
     register uChar ch = uChar(utf8[i]);
 

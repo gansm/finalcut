@@ -63,7 +63,7 @@ fkeymap Fkey[] =
   { fc::Fkey_f1       , C_STR(ESC "OP")   , "k1X"},  // F1 function key
   { fc::Fkey_f2       , C_STR(ESC "OQ")   , "k2" },  // F2 function key
   { fc::Fkey_f2       , C_STR(CSI "12~")  , "k2x"},  // F2 function key
-  { fc::Fkey_f2       , C_STR(ESC "OQ")   , "k2X"},  // F2 function key
+  { fc::Fkey_f2       , C_STR(CSI "OQ")   , "k2X"},  // F2 function key
   { fc::Fkey_f3       , C_STR(ESC "OR")   , "k3" },  // F3 function key
   { fc::Fkey_f3       , C_STR(CSI "13~")  , "k3x"},  // F3 function key
   { fc::Fkey_f3       , C_STR(ESC "OR")   , "k3X"},  // F3 function key
@@ -257,7 +257,6 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     int key_pressed;
     int key_released;
     FKeyboard* keyboard;
-    //FTerm t;
 };
 #pragma pack(pop)
 
@@ -322,6 +321,7 @@ void FKeyboardTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FKeyboardTest::inputTest()
 {
+  // X11 mouse
   std::cout << std::endl;
   input("\033[M Z2");
   processInput();
@@ -329,55 +329,203 @@ void FKeyboardTest::inputTest()
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_mouse );
   clear();
 
+  // SGR mouse
   input("\033[<0;11;7M");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_extended_mouse );
   clear();
 
+  // URXVT mouse
   input("\033[32;11;7M");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_urxvt_mouse );
   clear();
 
+  // Without mouse support
+  keyboard->disableMouseSequences();
+  input("\033[M Z2");
+  processInput();
+  CPPUNIT_ASSERT ( key_pressed != fc::Fkey_mouse );
+  clear();
+  input("\033[<0;11;7M");
+  processInput();
+  CPPUNIT_ASSERT ( key_pressed != fc::Fkey_extended_mouse );
+  clear();
+  input("\033[32;11;7M");
+  processInput();
+  CPPUNIT_ASSERT ( key_pressed != fc::Fkey_urxvt_mouse );
+  clear();
+  std::cout << std::endl;
+
+  // Mintty application escape key
   input("\033O[");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_escape_mintty );
   clear();
 
+  // Normal escape (needs a timeout)
   input("\033");
   processInput();
   usleep(100000);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_escape );
-  clear();
+  keyboard->clearKeyBufferOnTimeout();
 
+  // Clear-tab
   input("\033[3~");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_ctab );
   clear();
 
+  // Cursor down keys in positioning mode
   input("\033OB");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_down );
   clear();
 
+  // Cursor down keys in applications mode
   input("\033[B");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_down );
   clear();
 
+  // Cursor down in character by character input (e.g. rxvt-cygwin-native)
+  input("\033");
+  processInput();
+  input("[");
+  processInput();
+  input("B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_down );
+  clear();
+
+  // Two one byte characters
   input("aA");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == 'A' );
   CPPUNIT_ASSERT ( key_released == 'A' );
+  clear();
+
+  // UTF-8 encoded character
+  input("\360\220\200\200");  // Linear B syllable (4 bytes)
+  processInput();
+  std::cout << " - code: " << key_pressed << std::endl;
+  CPPUNIT_ASSERT ( key_released == 0x10000 );
+  input("\342\202\254");  // Euro sign (3 bytes)
+  processInput();
+  std::cout << " - code: " << key_pressed << std::endl;
+  CPPUNIT_ASSERT ( key_released == 0x20ac );
+  input("\303\274");  // u with two Dots (2 bytes)
+  processInput();
+  std::cout << " - code: " << key_pressed << std::endl;
+  CPPUNIT_ASSERT ( key_released == 0x00fc );
+  clear();
+
+  // Function key F1 (numeric keypad PF1)
+  input("\033OP");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f1 );
+  clear();
+
+  // Function key F1
+  input("\033[11~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f1 );
+  clear();
+
+  // Function key F2 (numeric keypad PF2)
+  input("\033OQ");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f2 );
+  clear();
+
+  // Function key F2
+  input("\033[12~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f2 );
+  clear();
+
+  // Function key F3 (numeric keypad PF1)
+  input("\033OR");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f3 );
+  clear();
+
+  // Function key F3
+  input("\033[13~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f3 );
+  clear();
+
+  // Function key F4 (numeric keypad PF1)
+  input("\033OS");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f4 );
+  clear();
+
+  // Function key F4
+  input("\033[14~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f4 );
+  clear();
+
+  // Function key F5
+  input("\033[15~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f5 );
+  clear();
+
+  // Function key F6
+  input("\033[17~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f6 );
+  clear();
+
+  // Function key F7
+  input("\033[18~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f7 );
+  clear();
+
+  // Function key F8
+  input("\033[19~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f8 );
+  clear();
+
+  // Function key F9
+  input("\033[20~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f9 );
+  clear();
+
+  // Function key F10
+  input("\033[21~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_f10 );
   clear();
 }
 
@@ -399,6 +547,8 @@ void FKeyboardTest::init()
   keyboard->setReleaseCommand (key_cmd2);
   keyboard->setEscPressedCommand (key_cmd3);
   keyboard->setKeypressTimeout (100000);  // 100 ms
+  processInput();
+  CPPUNIT_ASSERT ( key_pressed == 0 );
   keyboard->enableUTF8();
   keyboard->enableMouseSequences();
   keyboard->setTermcapMap (reinterpret_cast<fc::fkeymap*>(test::Fkey));
