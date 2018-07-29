@@ -1327,6 +1327,22 @@ void FTerm::init_termcap_keys (char*& buffer)
     // Fallback for TERM=ansi
     if ( std::strncmp(fc::Fkey[i].tname, "@7X", 3) == 0 )
       fc::Fkey[i].string = C_STR(CSI "K");  // End key
+
+    // Keypad keys
+    if ( std::strncmp(fc::Fkey[i].tname, "@8x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "OM");  // Enter key
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP1", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Oo");  // Keypad slash
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP2", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Oj");  // Keypad asterisk
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP3", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Om");  // Keypad minus sign
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP4", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Ok");  // Keypad plus sign
   }
 
   // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys

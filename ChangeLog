@@ -1,3 +1,7 @@
+2017-07-29  Markus Gans  <guru.mail@muenster.de>
+	* Added numeric Keypad [/], [*], [-], [+] support
+	* More tests in FKeyboard unit test
+
 2017-07-27  Markus Gans  <guru.mail@muenster.de>
 	* The array for keyboard input of UTF-8 characters was 
 	  not long enough for 4 bytes of UTF-8 codes.
