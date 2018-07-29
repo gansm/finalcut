@@ -151,33 +151,34 @@ class FKeyboard
     void                parseKeyBuffer();
     int                 parseKeyString();
     int                 keyCorrection (const int&);
+    void                substringKeyHandling();
     void                keyPressed();
     void                keyReleased();
     void                escapeKeyPressed();
 
     // Data Members
-    int              key;
-    char             k_buf[1024];
-    char             fifo_buf[512];
-    int              fifo_offset;
-    bool             fifo_in_use;
-    int              fifo_buf_size;
-    int              stdin_status_flags;
-    static long      key_timeout;
-    bool             input_data_pending;
-    bool             utf8_input;
-    bool             mouse_support;
-    bool             non_blocking_stdin;
-    FKeyboardCommand keypressed_cmd;
-    FKeyboardCommand keyreleased_cmd;
-    FKeyboardCommand escape_key_cmd;
+    int                 key;
+    char                k_buf[1024];
+    char                fifo_buf[512];
+    int                 fifo_offset;
+    bool                fifo_in_use;
+    int                 fifo_buf_size;
+    int                 stdin_status_flags;
+    static long         key_timeout;
+    bool                input_data_pending;
+    bool                utf8_input;
+    bool                mouse_support;
+    bool                non_blocking_stdin;
+    FKeyboardCommand    keypressed_cmd;
+    FKeyboardCommand    keyreleased_cmd;
+    FKeyboardCommand    escape_key_cmd;
 
-    static timeval   time_keypressed;
-    fc::fkeymap*     termcap_map;
+    static timeval      time_keypressed;
+    fc::fkeymap*        termcap_map;
 
 #if defined(__linux__)
     #undef linux
-    static FTermLinux* linux;
+    static FTermLinux*  linux;
 #endif
 };
 #pragma pack(pop)

@@ -187,6 +187,9 @@ void FKeyboard::escapeKeyHandling()
     input_data_pending = false;
     escapeKeyPressed();
   }
+
+  // Handling of keys that are substrings of other keys
+  substringKeyHandling();
 }
 
 
@@ -242,8 +245,8 @@ inline int FKeyboard::getTermcapKey()
       for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
 
-      for (; n - len < len; n++)  // Fill rest with '\0'
-        fifo_buf[n - len] = '\0';
+      for (n = n - len; n < fifo_buf_size; n++)  // Fill rest with '\0'
+        fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
       return fc::Fkey[i].num;
@@ -280,8 +283,8 @@ inline int FKeyboard::getMetaKey()
       for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
 
-      for (; n - len < len; n++)  // Fill rest with '\0'
-        fifo_buf[n - len] = '\0';
+      for (n = n - len; n < fifo_buf_size; n++)  // Fill rest with '\0'
+        fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
       return fc::Fmetakey[i].num;
@@ -511,6 +514,36 @@ int FKeyboard::keyCorrection (const int& keycode)
 #endif
 
   return key_correction;
+}
+
+//----------------------------------------------------------------------
+void FKeyboard::substringKeyHandling()
+{
+  // Some keys (Meta-O, Meta-[, Meta-]) used substrings
+  // of other keys and are only processed after a timeout
+
+  if ( fifo_in_use
+    && fifo_offset == 2
+    && fifo_buf[0] == 0x1b
+    && (fifo_buf[1] == 'O' || fifo_buf[1] == '[' || fifo_buf[1] == ']')
+    && fifo_buf[2] == '\0'
+    && isKeypressTimeout() )
+  {
+    fifo_offset = 0;
+    fifo_buf[0] = 0x00;
+    fifo_in_use = false;
+    input_data_pending = false;
+
+    if ( fifo_buf[1] == 'O' )
+      key = fc::Fmkey_O;
+    else if ( fifo_buf[1] == '[' )
+      key = fc::Fmkey_left_square_bracket;
+    else
+      key = fc::Fmkey_right_square_bracket;
+
+    keyPressed();
+    keyReleased();
+  }
 }
 
 //----------------------------------------------------------------------

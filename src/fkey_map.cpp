@@ -368,32 +368,32 @@ fmetakeymap Fmetakey[] =
   { fc::Fmkey_greater_than         , "\033>" },  // M->
   { fc::Fmkey_question_mark        , "\033?" },  // M-?
   { fc::Fmkey_at                   , "\033@" },  // M-@
-  { fc::Fmkey_A                    , "\033A" },  // M-A
-  { fc::Fmkey_B                    , "\033B" },  // M-B
-  { fc::Fmkey_C                    , "\033C" },  // M-C
-  { fc::Fmkey_D                    , "\033D" },  // M-D
-  { fc::Fmkey_E                    , "\033E" },  // M-E
-  { fc::Fmkey_F                    , "\033F" },  // M-F
-  { fc::Fmkey_G                    , "\033G" },  // M-G
-  { fc::Fmkey_H                    , "\033H" },  // M-H
-  { fc::Fmkey_I                    , "\033I" },  // M-I
-  { fc::Fmkey_J                    , "\033J" },  // M-J
-  { fc::Fmkey_K                    , "\033K" },  // M-K
-  { fc::Fmkey_L                    , "\033L" },  // M-L
-  { fc::Fmkey_M                    , "\033M" },  // M-M
-  { fc::Fmkey_N                    , "\033N" },  // M-N
-  { fc::Fmkey_O                    , "\033O" },  // M-O
-  { fc::Fmkey_P                    , "\033P" },  // M-P
-  { fc::Fmkey_Q                    , "\033Q" },  // M-Q
-  { fc::Fmkey_R                    , "\033R" },  // M-R
-  { fc::Fmkey_S                    , "\033S" },  // M-S
-  { fc::Fmkey_T                    , "\033T" },  // M-T
-  { fc::Fmkey_U                    , "\033U" },  // M-U
-  { fc::Fmkey_V                    , "\033V" },  // M-V
-  { fc::Fmkey_W                    , "\033W" },  // M-W
-  { fc::Fmkey_X                    , "\033X" },  // M-X
-  { fc::Fmkey_Y                    , "\033Y" },  // M-Y
-  { fc::Fmkey_Z                    , "\033Z" },  // M-Z
+  { fc::Fmkey_A                    , "\033A" },  // shift-M-A
+  { fc::Fmkey_B                    , "\033B" },  // shift-M-B
+  { fc::Fmkey_C                    , "\033C" },  // shift-M-C
+  { fc::Fmkey_D                    , "\033D" },  // shift-M-D
+  { fc::Fmkey_E                    , "\033E" },  // shift-M-E
+  { fc::Fmkey_F                    , "\033F" },  // shift-M-F
+  { fc::Fmkey_G                    , "\033G" },  // shift-M-G
+  { fc::Fmkey_H                    , "\033H" },  // shift-M-H
+  { fc::Fmkey_I                    , "\033I" },  // shift-M-I
+  { fc::Fmkey_J                    , "\033J" },  // shift-M-J
+  { fc::Fmkey_K                    , "\033K" },  // shift-M-K
+  { fc::Fmkey_L                    , "\033L" },  // shift-M-L
+  { fc::Fmkey_M                    , "\033M" },  // shift-M-M
+  { fc::Fmkey_N                    , "\033N" },  // shift-M-N
+  { fc::Fmkey_O                    , "\033O" },  // shift-M-O
+  { fc::Fmkey_P                    , "\033P" },  // shift-M-P
+  { fc::Fmkey_Q                    , "\033Q" },  // shift-M-Q
+  { fc::Fmkey_R                    , "\033R" },  // shift-M-R
+  { fc::Fmkey_S                    , "\033S" },  // shift-M-S
+  { fc::Fmkey_T                    , "\033T" },  // shift-M-T
+  { fc::Fmkey_U                    , "\033U" },  // shift-M-U
+  { fc::Fmkey_V                    , "\033V" },  // shift-M-V
+  { fc::Fmkey_W                    , "\033W" },  // shift-M-W
+  { fc::Fmkey_X                    , "\033X" },  // shift-M-X
+  { fc::Fmkey_Y                    , "\033Y" },  // shift-M-Y
+  { fc::Fmkey_Z                    , "\033Z" },  // shift-M-Z
   { fc::Fmkey_left_square_bracket  , "\033[" },  // M-[
   { fc::Fmkey_backslash            , "\033\\"},  // M-'\'
   { fc::Fmkey_right_square_bracket , "\033]" },  // M-]

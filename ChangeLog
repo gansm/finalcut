@@ -1,5 +1,6 @@
 2017-07-29  Markus Gans  <guru.mail@muenster.de>
 	* Added numeric Keypad [/], [*], [-], [+] support
+	* Handling of keys that are substrings of other keys
 	* More tests in FKeyboard unit test
 
 2017-07-27  Markus Gans  <guru.mail@muenster.de>

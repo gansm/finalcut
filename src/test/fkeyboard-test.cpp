@@ -241,6 +241,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void characterwiseInputTest();
     void severalKeysTest();
     void functionKeyTest();
+    void metaKeyTest();
     void sequencesTest();
     void mouseTest();
     void utf8Test();
@@ -257,6 +258,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (characterwiseInputTest);
     CPPUNIT_TEST (severalKeysTest);
     CPPUNIT_TEST (functionKeyTest);
+    CPPUNIT_TEST (metaKeyTest);
     CPPUNIT_TEST (sequencesTest);
     CPPUNIT_TEST (mouseTest);
     CPPUNIT_TEST (utf8Test);
@@ -879,6 +881,1551 @@ void FKeyboardTest::functionKeyTest()
 }
 
 //----------------------------------------------------------------------
+void FKeyboardTest::metaKeyTest()
+{
+  std::cout << std::endl;
+
+  // meta-insert
+  input("\033[2;3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_ic );
+  clear();
+
+  // meta-insert
+  input("\033\033[2~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_ic );
+  clear();
+
+  // meta-delete
+  input("\033[3;3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_dc );
+  clear();
+
+  // meta-delete
+  input("\033\033[3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_dc );
+  clear();
+
+  // meta-home
+  input("\033[1;3H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_home );
+  clear();
+
+  // meta-home
+  input("\033\033[1~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_home );
+  clear();
+
+  // meta-end
+  input("\033[1;3F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_end );
+  clear();
+
+  // meta-end
+  input("\033\033[4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_end );
+  clear();
+
+  // meta-prev-page
+  input("\033[5;3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_ppage );
+  clear();
+
+  // meta-prev-page
+  input("\033\033[5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_ppage );
+  clear();
+
+  // meta-next-page
+  input("\033[6;3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_npage );
+  clear();
+
+  // meta-next-page
+  input("\033\033[6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_npage );
+  clear();
+
+  // meta-f1
+  input("\033[1;3P");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f1 );
+  clear();
+
+  // meta-f1
+  input("\033\033[11~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f1 );
+  clear();
+
+  // meta-f2
+  input("\033[1;3Q");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f2 );
+  clear();
+
+  // meta-f2
+  input("\033\033[12~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f2 );
+  clear();
+
+  // meta-f3
+  input("\033[1;3R");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f3 );
+  clear();
+
+  // meta-f3
+  input("\033\033[13~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f3 );
+  clear();
+
+  // meta-f4
+  input("\033[1;3S");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f4 );
+  clear();
+
+  // meta-f4
+  input("\033\033[14~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f4 );
+  clear();
+
+  // meta-f5
+  input("\033\033[15~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f5 );
+  clear();
+
+  // meta-f6
+  input("\033\033[17~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f6 );
+  clear();
+
+  // meta-f7
+  input("\033\033[18~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f7 );
+  clear();
+
+  // meta-f8
+  input("\033\033[19~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f8 );
+  clear();
+
+  // meta-f9
+  input("\033\033[20~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f9 );
+  clear();
+
+  // meta-f10
+  input("\033\033[21~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f10 );
+  clear();
+
+  // meta-f11
+  input("\033\033[23~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f11 );
+  clear();
+
+  // meta-f12
+  input("\033\033[24~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f12 );
+  clear();
+
+  // meta-up
+  input("\033[1;3A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_up );
+  clear();
+
+  // meta-up
+  input("\033\033[A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_up );
+  clear();
+
+  // meta-down
+  input("\033[1;3B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_down );
+  clear();
+
+  // meta-down
+  input("\033\033[B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_down );
+  clear();
+
+  // meta-right
+  input("\033[1;3C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_right );
+  clear();
+
+  // meta-right
+  input("\033\033[C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_right );
+  clear();
+
+  // meta-left
+  input("\033[1;3D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_left );
+  clear();
+
+  // meta-left
+  input("\033\033[D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_left );
+  clear();
+
+  // shift-meta-insert
+  input("\033[2;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sic );
+  clear();
+
+  // shift-meta-delete
+  input("\033[3;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sdc );
+  clear();
+
+  // shift-meta-home
+  input("\033[1;4H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_shome );
+  clear();
+
+  // shift-meta-end
+  input("\033[1;4F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_send );
+  clear();
+
+  // shift-meta-prev-page
+  input("\033[5;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sppage );
+  clear();
+
+  // shift-meta-next-page
+  input("\033[6;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_snpage );
+  clear();
+
+  // shift-meta-f1
+  input("\033[1;4P");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf1 );
+  clear();
+
+  // shift-meta-f2
+  input("\033[1;4Q");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf2 );
+  clear();
+
+  // shift-meta-f3
+  input("\033[1;4R");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf3 );
+  clear();
+
+  // shift-meta-f4
+  input("\033[1;4S");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf4 );
+  clear();
+
+  // shift-meta-f5
+  input("\033[15;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf5 );
+  clear();
+
+  // shift-meta-f6
+  input("\033[17;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf6 );
+  clear();
+
+  // shift-meta-f7
+  input("\033[18;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf7 );
+  clear();
+
+  // shift-meta-f8
+  input("\033[19;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf8 );
+  clear();
+
+  // shift-meta-f9
+  input("\033[20;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf9 );
+  clear();
+
+  // shift-meta-f10
+  input("\033[21;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf10 );
+  clear();
+
+  // shift-meta-f11
+  input("\033[23;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf11 );
+  clear();
+
+  // shift-meta-f12
+  input("\033[24;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sf12 );
+  clear();
+
+  // shift-meta-up
+  input("\033[1;4A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sup );
+  clear();
+
+  // shift-meta-down
+  input("\033[1;4B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sdown );
+  clear();
+
+  // shift-meta-right
+  input("\033[1;4C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sright );
+  clear();
+
+  // shift-meta-left
+  input("\033[1;4D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_sleft );
+  clear();
+
+  // ctrl-insert
+  input("\033[2;5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_ic );
+  clear();
+
+  // ctrl-delete
+  input("\033[3;5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_dc );
+  clear();
+
+  // ctrl-home
+  input("\033[1;5H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_home );
+  clear();
+
+  // ctrl-end
+  input("\033[1;5F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_end );
+  clear();
+
+  // ctrl-prev-page
+  input("\033[5;5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_ppage );
+  clear();
+
+  // ctrl-next-page
+  input("\033[6;5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_npage );
+  clear();
+
+  // ctrl-up
+  input("\033[1;5A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_up );
+  clear();
+
+  // ctrl-down
+  input("\033[1;5B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_down );
+  clear();
+
+  // ctrl-right
+  input("\033[1;5C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_right );
+  clear();
+
+  // ctrl-left
+  input("\033[1;5D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_left );
+  clear();
+
+  // shift-ctrl-meta-insert
+  input("\033[2;6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sic );
+  clear();
+
+  // shift-ctrl-meta-delete
+  input("\033[3;6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sdc );
+  clear();
+
+  // shift-ctrl-meta-home
+  input("\033[1;6H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_shome );
+  clear();
+
+  // shift-ctrl-meta-end
+  input("\033[1;6F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_send );
+  clear();
+
+  // shift-ctrl-meta-prev-page
+  input("\033[5;6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sppage );
+  clear();
+
+  // shift-ctrl-meta-next-page
+  input("\033[6;6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_snpage );
+  clear();
+
+  // shift-ctrl-meta-up
+  input("\033[1;6A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sup );
+  clear();
+
+  // shift-ctrl-meta-down
+  input("\033[1;6B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sdown );
+  clear();
+
+  // shift-ctrl-meta-right
+  input("\033[1;6C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sright );
+  clear();
+
+  // shift-ctrl-meta-left
+  input("\033[1;6D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_sleft );
+  clear();
+
+  // ctrl-meta-insert
+  input("\033[2;7~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_ic );
+  clear();
+
+  // ctrl-meta-delete
+  input("\033[3;7~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_dc );
+  clear();
+
+  // ctrl-meta-home
+  input("\033[1;7H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_home );
+  clear();
+
+  // ctrl-meta-end
+  input("\033[1;7F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_end );
+  clear();
+
+  // ctrl-meta-prev-page
+  input("\033[5;7~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_ppage );
+  clear();
+
+  // ctrl-meta-next-page
+  input("\033[6;7~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_npage );
+  clear();
+
+  // ctrl-meta-up
+  input("\033[1;7A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_up );
+  clear();
+
+  // ctrl-meta-down
+  input("\033[1;7B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_down );
+  clear();
+
+  // ctrl-meta-right
+  input("\033[1;7C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_right );
+  clear();
+
+  // ctrl-meta-left
+  input("\033[1;7D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_left );
+  clear();
+
+  // shift-ctrl-meta-insert
+  input("\033[2;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sic );
+  clear();
+
+  // shift-ctrl-meta-delete
+  input("\033[3;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sdc );
+  clear();
+
+  // shift-ctrl-meta-home
+  input("\033[1;8H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_shome );
+  clear();
+
+  // shift-ctrl-meta-end
+  input("\033[1;8F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_send );
+  clear();
+
+  // shift-ctrl-meta-prev-page
+  input("\033[5;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sppage );
+  clear();
+
+  // shift-ctrl-meta-next-page
+  input("\033[6;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_snpage );
+  clear();
+
+  // shift-ctrl-meta-f1
+  input("\033[1;8P");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf1 );
+  clear();
+
+  // shift-ctrl-meta-f2
+  input("\033[1;8Q");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf2 );
+  clear();
+
+  // shift-ctrl-meta-f3
+  input("\033[1;8R");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf3 );
+  clear();
+
+  // shift-ctrl-meta-f4
+  input("\033[1;8S");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf4 );
+  clear();
+
+  // shift-ctrl-meta-f5
+  input("\033[15;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf5 );
+  clear();
+
+  // shift-ctrl-meta-f6
+  input("\033[17;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf6 );
+  clear();
+
+  // shift-ctrl-meta-f7
+  input("\033[18;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf7 );
+  clear();
+
+  // shift-ctrl-meta-f8
+  input("\033[19;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf8 );
+  clear();
+
+  // shift-ctrl-meta-f9
+  input("\033[20;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf9 );
+  clear();
+
+  // shift-ctrl-meta-f10
+  input("\033[21;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf10 );
+  clear();
+
+  // shift-ctrl-meta-f11
+  input("\033[23;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf11 );
+  clear();
+
+  // shift-ctrl-meta-f12
+  input("\033[24;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sf12 );
+  clear();
+
+  // shift-ctrl-meta-up
+  input("\033[1;8A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sup );
+  clear();
+
+  // shift-ctrl-meta-down
+  input("\033[1;8B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sdown );
+  clear();
+
+  // shift-ctrl-meta-right
+  input("\033[1;8C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sright );
+  clear();
+
+  // shift-ctrl-meta-left
+  input("\033[1;8D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_sleft );
+  clear();
+
+  // menu
+  input("\033[29~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_menu );
+  clear();
+
+  // shift-menu
+  input("\033[29$");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_smenu );
+  clear();
+
+  // shift-menu
+  input("\033[29;2~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fkey_smenu );
+  clear();
+
+  // ctrl-menu
+  input("\033[29^");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_menu );
+  clear();
+
+  // ctrl-menu
+  input("\033[29;5~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_menu );
+  clear();
+
+  // shift-ctrl-menu
+  input("\033[29@");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_smenu );
+  clear();
+
+  // shift-ctrl-menu
+  input("\033[29;6~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fckey_smenu );
+  clear();
+
+  // meta-menu
+  input("\033[29;3~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_menu );
+  clear();
+
+  // shift-meta-menu
+  input("\033[29;4~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_smenu );
+  clear();
+
+  // ctrl-meta-menu
+  input("\033[29;7~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_menu );
+  clear();
+
+  // shift-ctrl-meta-menu
+  input("\033[29;8~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fcmkey_smenu );
+  clear();
+
+  // meta-tab
+  input("\033\t");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_tab );
+  clear();
+
+  // meta-enter
+  input("\033\n");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_enter );
+  clear();
+
+  // meta-enter
+  input("\033\r");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_enter );
+  clear();
+
+  // meta-' '
+  input("\033 ");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_space );
+  clear();
+
+  // meta-!
+  input("\033!");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_bang );
+  clear();
+
+  // meta-"
+  input("\033\"");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_quotes );
+  clear();
+
+  // meta-#
+  input("\033#");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_hash );
+  clear();
+
+  // meta-$
+  input("\033$");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_dollar );
+  clear();
+
+  // meta-%
+  input("\033%");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_percent );
+  clear();
+
+  // meta-&
+  input("\033&");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_ampersand );
+  clear();
+
+  // meta-'
+  input("\033'");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_apostrophe );
+  clear();
+
+  // meta-(
+  input("\033(");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_left_parenthesis );
+  clear();
+
+  // meta-)
+  input("\033)");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_right_parenthesis );
+  clear();
+
+  // meta-*
+  input("\033*");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_asterisk );
+  clear();
+
+  // meta-+
+  input("\033+");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_plus );
+  clear();
+
+  // meta-,
+  input("\033,");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_comma );
+  clear();
+
+  // meta-'-'
+  input("\033-");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_minus );
+  clear();
+
+  // meta-.
+  input("\033.");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_full_stop );
+  clear();
+
+  // meta-/
+  input("\033/");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_slash );
+  clear();
+
+  // meta-0
+  input("\0330");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_0 );
+  clear();
+
+  // meta-1
+  input("\0331");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_1 );
+  clear();
+
+  // meta-2
+  input("\0332");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_2 );
+  clear();
+
+  // meta-3
+  input("\0333");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_3 );
+  clear();
+
+  // meta-4
+  input("\0334");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_4 );
+  clear();
+
+  // meta-5
+  input("\0335");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_5 );
+  clear();
+
+  // meta-6
+  input("\0336");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_6 );
+  clear();
+
+  // meta-7
+  input("\0337");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_7 );
+  clear();
+
+  // meta-8
+  input("\0338");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_8 );
+  clear();
+
+  // meta-9
+  input("\0339");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_9 );
+  clear();
+
+  // meta-:
+  input("\033:");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_colon );
+  clear();
+
+  // meta-;
+  input("\033;");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_semicolon );
+  clear();
+
+  // meta-<
+  input("\033<");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_less_than );
+  clear();
+
+  // meta-=
+  input("\033=");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_equals );
+  clear();
+
+  // meta->
+  input("\033>");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_greater_than );
+  clear();
+
+  // meta-?
+  input("\033?");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_question_mark );
+  clear();
+
+  // meta-@
+  input("\033@");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_at );
+  clear();
+
+  // shifted meta-A
+  input("\033A");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_A );
+  clear();
+
+  // shifted meta-B
+  input("\033B");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_B );
+  clear();
+
+  // shifted meta-C
+  input("\033C");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_C );
+  clear();
+
+  // shifted meta-D
+  input("\033D");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_D );
+  clear();
+
+  // shifted meta-E
+  input("\033E");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_E );
+  clear();
+
+  // shifted meta-F
+  input("\033F");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_F );
+  clear();
+
+  // shifted meta-G
+  input("\033G");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_G );
+  clear();
+
+  // shifted meta-H
+  input("\033H");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_H );
+  clear();
+
+  // shifted meta-I
+  input("\033I");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_I );
+  clear();
+
+  // shifted meta-J
+  input("\033J");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_J );
+  clear();
+
+  // shifted meta-K
+  input("\033K");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_K );
+  clear();
+
+  // shifted meta-L
+  input("\033L");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_L );
+  clear();
+
+  // shifted meta-M
+  input("\033M");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_M );
+  clear();
+
+  // shifted meta-N
+  input("\033N");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_N );
+  clear();
+
+  // shifted meta-O
+  input("\033O");
+  processInput();
+  usleep(100000);  // Substring keys needs a timeout
+  keyboard->escapeKeyHandling();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_O );
+  clear();
+
+  // shifted meta-P
+  input("\033P");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_P );
+  clear();
+
+  // shifted meta-Q
+  input("\033Q");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_Q );
+  clear();
+
+  // shifted meta-R
+  input("\033R");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_R );
+  clear();
+
+  // shifted meta-S
+  input("\033S");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_S );
+  clear();
+
+  // shifted meta-T
+  input("\033T");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_T );
+  clear();
+
+  // shifted meta-U
+  input("\033U");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_U );
+  clear();
+
+  // shifted meta-V
+  input("\033V");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_V );
+  clear();
+
+  // shifted meta-W
+  input("\033W");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_W );
+  clear();
+
+  // shifted meta-X
+  input("\033X");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_X );
+  clear();
+
+  // shifted meta-Y
+  input("\033Y");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_Y );
+  clear();
+
+  // shifted meta-Z
+  input("\033Z");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_Z );
+  clear();
+
+  // meta-[
+  input("\033[");
+  processInput();
+  usleep(100000);  // Substring keys needs a timeout
+  keyboard->escapeKeyHandling();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_left_square_bracket );
+  clear();
+
+  // meta-'\'
+  input("\033\\");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_backslash );
+  clear();
+
+  // meta-]
+  input("\033]");
+  processInput();
+  usleep(100000);  // Substring keys needs a timeout
+  keyboard->escapeKeyHandling();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_right_square_bracket );
+  clear();
+
+  // meta-^
+  input("\033^");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_caret );
+  clear();
+
+  // meta-_
+  input("\033_");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_underscore );
+  clear();
+
+  // meta-`
+  input("\033`");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_grave_accent );
+  clear();
+
+  // meta-a
+  input("\033a");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_a );
+  clear();
+
+  // meta-b
+  input("\033b");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_b );
+  clear();
+
+  // meta-c
+  input("\033c");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_c );
+  clear();
+
+  // meta-d
+  input("\033d");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_d );
+  clear();
+
+  // meta-e
+  input("\033e");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_e );
+  clear();
+
+  // meta-f
+  input("\033f");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_f );
+  clear();
+
+  // meta-g
+  input("\033g");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_g );
+  clear();
+
+  // meta-h
+  input("\033h");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_h );
+  clear();
+
+  // meta-i
+  input("\033i");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_i );
+  clear();
+
+  // meta-j
+  input("\033j");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_j );
+  clear();
+
+  // meta-k
+  input("\033k");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_k );
+  clear();
+
+  // meta-l
+  input("\033l");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_l );
+  clear();
+
+  // meta-m
+  input("\033m");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_m );
+  clear();
+
+  // meta-n
+  input("\033n");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_n );
+  clear();
+
+  // meta-o
+  input("\033o");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_o );
+  clear();
+
+  // meta-p
+  input("\033p");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_p );
+  clear();
+
+  // meta-q
+  input("\033q");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_q );
+  clear();
+
+  // meta-r
+  input("\033r");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_r );
+  clear();
+
+  // meta-s
+  input("\033s");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_s );
+  clear();
+
+  // meta-t
+  input("\033t");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_t );
+  clear();
+
+  // meta-u
+  input("\033u");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_u );
+  clear();
+
+  // meta-v
+  input("\033v");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_v );
+  clear();
+
+  // meta-w
+  input("\033w");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_w );
+  clear();
+
+  // meta-x
+  input("\033x");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_x );
+  clear();
+
+  // meta-y
+  input("\033y");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_y );
+  clear();
+
+  // meta-z
+  input("\033z");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_z );
+  clear();
+
+  // meta-{
+  input("\033{");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_left_curly_bracket );
+  clear();
+
+  // meta-|
+  input("\033|");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_vertical_bar );
+  clear();
+
+  // meta-}
+  input("\033}");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_right_curly_bracket );
+  clear();
+
+  // meta-~
+  input("\033~");
+  processInput();
+  std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == fc::Fmkey_tilde );
+  clear();
+}
+
+//----------------------------------------------------------------------
 void FKeyboardTest::sequencesTest()
 {
   std::cout << std::endl;
@@ -1127,7 +2674,6 @@ void FKeyboardTest::sequencesTest()
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == fc::Fkey_plus_sign );
   clear();
-
 }
 
 //----------------------------------------------------------------------
@@ -1183,19 +2729,31 @@ void FKeyboardTest::utf8Test()
   input("\360\220\200\200");
   processInput();
   std::cout << " - code: " << key_pressed << std::endl;
-  CPPUNIT_ASSERT ( key_released == 0x10000 );
+  CPPUNIT_ASSERT ( key_pressed == 0x10000 );
 
   // Euro sign (3 bytes)
   input("\342\202\254");
   processInput();
   std::cout << " - code: " << key_pressed << std::endl;
-  CPPUNIT_ASSERT ( key_released == 0x20ac );
+  CPPUNIT_ASSERT ( key_pressed == 0x20ac );
 
   // u with two Dots (2 bytes)
   input("\303\274");
   processInput();
   std::cout << " - code: " << key_pressed << std::endl;
-  CPPUNIT_ASSERT ( key_released == 0x00fc );
+  CPPUNIT_ASSERT ( key_pressed == 0x00fc );
+
+  // @ (1 bytes)
+  input("@");
+  processInput();
+  std::cout << " - code: " << key_pressed << std::endl;
+  CPPUNIT_ASSERT ( key_pressed == 0x0040 );
+
+  // Invalid UTF-8
+  key_pressed = -5;
+  input("\377");
+  processInput();
+  CPPUNIT_ASSERT ( key_pressed == -5 );
 
   // Without UTF-8 support
   keyboard->disableUTF8();
