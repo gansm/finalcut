@@ -58,6 +58,7 @@ class FTermios
     ~FTermios();
 
     // Accessors
+    const char*    getClassName() const;
     static termios getTTY();
     static int     getStdIn();
     static int     getStdOut();
@@ -90,6 +91,10 @@ class FTermios
 #pragma pack(pop)
 
 // FTermios inline functions
+//----------------------------------------------------------------------
+inline const char* FTermios::getClassName() const
+{ return "FTermios"; }
+
 //----------------------------------------------------------------------
 inline int FTermios::getStdIn()
 { return stdin_no; }

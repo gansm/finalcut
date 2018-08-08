@@ -47,6 +47,9 @@ class FColorPalette
     // Typedefs
     typedef void (*funcp)(short, int, int, int);
 
+    // Accessor
+    virtual const char* getClassName() const;
+
     // Methods
     static void set8ColorPalette (funcp);
     static void set16ColorPalette (funcp);
@@ -55,5 +58,9 @@ class FColorPalette
 };
 #pragma pack(pop)
 
+// FColorPalette inline functions
+//----------------------------------------------------------------------
+inline const char* FColorPalette::getClassName() const
+{ return "FColorPalette"; }
 
 #endif  // FCOLORPALETTE_H

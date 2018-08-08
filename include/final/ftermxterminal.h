@@ -76,6 +76,7 @@ class FTermXTerminal
     static void           metaSendsESC (bool);
 
     // Accessors
+    const char*           getClassName() const;
     static fc::xtermCursorStyle getCursorStyle();
     static const FString* getFont();
     static const FString* getTitle();
@@ -150,6 +151,10 @@ class FTermXTerminal
 #pragma pack(pop)
 
 // FTermXTerminal inline functions
+//----------------------------------------------------------------------
+inline const char* FTermXTerminal::getClassName() const
+{ return "FTermXTerminal"; }
+
 //----------------------------------------------------------------------
 inline void FTermXTerminal::setTermcapMap (FTermcap::tcap_map* tc)
 { tcap = tc; }

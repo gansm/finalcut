@@ -57,8 +57,11 @@ class FTermcapQuirks
     // Destructor
     ~FTermcapQuirks();
 
+    // Accessor
+    const char* getClassName() const;
+
     // Mutator
-    static void setTerminalType (char[]);
+    static void setTerminalType (const char[]);
     static void setTermcapMap (FTermcap::tcap_map*);
     static void setFTermDetection (FTermDetection*);
 
@@ -87,5 +90,10 @@ class FTermcapQuirks
     static FTermDetection*     term_detection;
 };
 #pragma pack(pop)
+
+// FTermcapQuirks inline functions
+//----------------------------------------------------------------------
+inline const char* FTermcapQuirks::getClassName() const
+{ return "FTermcapQuirks"; }
 
 #endif  // FTERMCAPQUIRKS_H

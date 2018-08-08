@@ -85,12 +85,14 @@ host_triplet = @host@
 @CPPUNIT_TEST_TRUE@noinst_PROGRAMS = fobject_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	ftermcapquirks_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@TESTS = fobject_test$(EXEEXT) fmouse_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	ftermcapquirks_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
@@ -114,6 +116,7 @@ CONFIG_CLEAN_VPATH_FILES =
 @CPPUNIT_TEST_TRUE@am__EXEEXT_1 = fobject_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fmouse_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fkeyboard_test$(EXEEXT) \
+@CPPUNIT_TEST_TRUE@	ftermcapquirks_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptimove_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	foptiattr_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
@@ -158,6 +161,11 @@ am__fstring_test_SOURCES_DIST = fstring-test.cpp
 @CPPUNIT_TEST_TRUE@am_fstring_test_OBJECTS = fstring-test.$(OBJEXT)
 fstring_test_OBJECTS = $(am_fstring_test_OBJECTS)
 fstring_test_LDADD = $(LDADD)
+am__ftermcapquirks_test_SOURCES_DIST = ftermcapquirks-test.cpp
+@CPPUNIT_TEST_TRUE@am_ftermcapquirks_test_OBJECTS =  \
+@CPPUNIT_TEST_TRUE@	ftermcapquirks-test.$(OBJEXT)
+ftermcapquirks_test_OBJECTS = $(am_ftermcapquirks_test_OBJECTS)
+ftermcapquirks_test_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -195,14 +203,16 @@ am__v_CXXLD_1 =
 SOURCES = $(fkeyboard_test_SOURCES) $(fmouse_test_SOURCES) \
 	$(fobject_test_SOURCES) $(foptiattr_test_SOURCES) \
 	$(foptimove_test_SOURCES) $(fpoint_test_SOURCES) \
-	$(frect_test_SOURCES) $(fstring_test_SOURCES)
+	$(frect_test_SOURCES) $(fstring_test_SOURCES) \
+	$(ftermcapquirks_test_SOURCES)
 DIST_SOURCES = $(am__fkeyboard_test_SOURCES_DIST) \
 	$(am__fmouse_test_SOURCES_DIST) \
 	$(am__fobject_test_SOURCES_DIST) \
 	$(am__foptiattr_test_SOURCES_DIST) \
 	$(am__foptimove_test_SOURCES_DIST) \
 	$(am__fpoint_test_SOURCES_DIST) $(am__frect_test_SOURCES_DIST) \
-	$(am__fstring_test_SOURCES_DIST)
+	$(am__fstring_test_SOURCES_DIST) \
+	$(am__ftermcapquirks_test_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -563,6 +573,7 @@ top_srcdir = @top_srcdir@
 @CPPUNIT_TEST_TRUE@fobject_test_SOURCES = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@fmouse_test_SOURCES = fmouse-test.cpp
 @CPPUNIT_TEST_TRUE@fkeyboard_test_SOURCES = fkeyboard-test.cpp
+@CPPUNIT_TEST_TRUE@ftermcapquirks_test_SOURCES = ftermcapquirks-test.cpp
 @CPPUNIT_TEST_TRUE@foptimove_test_SOURCES = foptimove-test.cpp
 @CPPUNIT_TEST_TRUE@foptiattr_test_SOURCES = foptiattr-test.cpp
 @CPPUNIT_TEST_TRUE@fstring_test_SOURCES = fstring-test.cpp
@@ -653,6 +664,10 @@ fstring_test$(EXEEXT): $(fstring_test_OBJECTS) $(fstring_test_DEPENDENCIES) $(EX
 	@rm -f fstring_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(fstring_test_OBJECTS) $(fstring_test_LDADD) $(LIBS)
 
+ftermcapquirks_test$(EXEEXT): $(ftermcapquirks_test_OBJECTS) $(ftermcapquirks_test_DEPENDENCIES) $(EXTRA_ftermcapquirks_test_DEPENDENCIES) 
+	@rm -f ftermcapquirks_test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(ftermcapquirks_test_OBJECTS) $(ftermcapquirks_test_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -667,6 +682,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fpoint-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/frect-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fstring-test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftermcapquirks-test.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -905,6 +921,13 @@ fmouse_test.log: fmouse_test$(EXEEXT)
 fkeyboard_test.log: fkeyboard_test$(EXEEXT)
 	@p='fkeyboard_test$(EXEEXT)'; \
 	b='fkeyboard_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ftermcapquirks_test.log: ftermcapquirks_test$(EXEEXT)
+	@p='ftermcapquirks_test$(EXEEXT)'; \
+	b='ftermcapquirks_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

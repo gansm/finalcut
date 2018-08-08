@@ -44,7 +44,7 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
-void FTermcapQuirks::setTerminalType (char tt[])
+void FTermcapQuirks::setTerminalType (const char tt[])
 {
   std::strncpy (termtype, tt, sizeof(termtype) - 1);
 }
@@ -60,7 +60,6 @@ void FTermcapQuirks::setFTermDetection (FTermDetection* td)
 {
   term_detection = td;
 }
-
 
 
 // private methods of FTermcapQuirks

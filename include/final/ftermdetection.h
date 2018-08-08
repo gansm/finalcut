@@ -92,6 +92,7 @@ class FTermDetection
     ~FTermDetection();
 
     // Accessor
+    const char*           getClassName() const;
     static char*          getTermType();
     static char*          getTermFileName();
     static int            getGnomeTerminalID();
@@ -238,6 +239,10 @@ class FTermDetection
 #pragma pack(pop)
 
 // FTermDetection inline functions
+//----------------------------------------------------------------------
+inline const char* FTermDetection::getClassName() const
+{ return "FTermDetection"; }
+
 //----------------------------------------------------------------------
 inline char* FTermDetection::getTermType()
 { return termtype; }

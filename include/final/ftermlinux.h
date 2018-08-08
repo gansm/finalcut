@@ -74,6 +74,7 @@ class FTermLinux
     ~FTermLinux();
 
     // Accessors
+    const char*          getClassName() const;
     static fc::linuxConsoleCursorStyle getCursorStyle();
     static int           getFramebufferBpp();
 
@@ -186,6 +187,10 @@ class FTermLinux
 #pragma pack(pop)
 
 // FTermLinux inline functions
+//----------------------------------------------------------------------
+inline const char* FTermLinux::getClassName() const
+{ return "FTermLinux"; }
+
 //----------------------------------------------------------------------
 #if defined(__linux__)
 inline int FTermLinux::getFramebufferBpp()

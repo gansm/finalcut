@@ -163,7 +163,7 @@ bool FTerm::isNormal (charData*& ch)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTermType (char term_name[])
+void FTerm::setTermType (const char term_name[])
 {
   if ( ! term_name )
     return;
@@ -1218,11 +1218,11 @@ void FTerm::init_termcap_variables (char*& buffer)
   init_termcap_strings(buffer);
 
   // Terminal quirks
-  FTermcapQuirks termcap_quirks;
-  termcap_quirks.setTermcapMap (tcap);
-  termcap_quirks.setFTermDetection (term_detection);
-  termcap_quirks.setTerminalType (termtype);
-  termcap_quirks.terminalFixup();       // Fix terminal quirks
+  FTermcapQuirks quirks;
+  quirks.setTermcapMap (tcap);
+  quirks.setFTermDetection (term_detection);
+  quirks.setTerminalType (termtype);
+  quirks.terminalFixup();       // Fix terminal quirks
 
   // Get termcap keys
   init_termcap_keys(buffer);

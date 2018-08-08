@@ -97,7 +97,6 @@ class FTermBuffer
   private:
     std::vector<charData> data;
 };
-
 #pragma pack(pop)
 
 

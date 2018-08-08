@@ -58,6 +58,9 @@ class FTermOpenBSD
     // Destructor
     ~FTermOpenBSD();
 
+    // Accessor
+    const char*        getClassName() const;
+
     // Inquiries
     static bool        isBSDConsole();
 
@@ -91,6 +94,10 @@ class FTermOpenBSD
 #pragma pack(pop)
 
 // FTermOpenBSD inline functions
+//----------------------------------------------------------------------
+inline const char* FTermOpenBSD::getClassName() const
+{ return "FTermOpenBSD"; }
+
 //----------------------------------------------------------------------
 #if defined(__NetBSD__) || defined(__OpenBSD__)
 inline void FTermOpenBSD::enableMetaSendsEscape()

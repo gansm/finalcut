@@ -66,6 +66,7 @@ class FTermFreeBSD
     ~FTermFreeBSD();
 
     // Accessors
+    const char*        getClassName() const;
     static CursorStyle getCursorStyle();
 
     // Inquiry
@@ -106,6 +107,10 @@ class FTermFreeBSD
 #pragma pack(pop)
 
 // FTermFreeBSD inline functions
+//----------------------------------------------------------------------
+inline const char* FTermFreeBSD::getClassName() const
+{ return "FTermFreeBSD"; }
+
 //----------------------------------------------------------------------
 #if defined(__FreeBSD__) || defined(__DragonFly__)
 inline void FTermFreeBSD::enableChangeCursorStyle()

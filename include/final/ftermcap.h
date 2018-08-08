@@ -66,7 +66,9 @@ class FTermcap
     ~FTermcap()
     { }
 
-    // Accessor
+    // Accessors
+    const char* getClassName() const;
+
     static tcap_map* getTermcapMap()
     {
       return tcap;
@@ -95,5 +97,10 @@ class FTermcap
     static tcap_map* tcap;
 };
 #pragma pack(pop)
+
+// FOptiMove inline functions
+//----------------------------------------------------------------------
+inline const char* FTermcap::getClassName() const
+{ return "FTermcap"; }
 
 #endif  // FTERMCAP_H

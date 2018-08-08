@@ -239,7 +239,7 @@ class FTerm
     static bool           isUTF8();
 
     // Mutators
-    static void           setTermType (char[]);
+    static void           setTermType (const char[]);
     static void           setInsertCursor (bool on);
     static void           setInsertCursor();
     static void           unsetInsertCursor();
