@@ -2063,7 +2063,11 @@ void FTerm::initOSspecifics()
 #if defined(__linux__)
   linux->setFTermDetection(term_detection);
   linux->init();    // Initialize Linux console
+
+#if DEBUG
   framebuffer_bpp = linux->getFramebufferBpp();
+#endif
+
 #endif
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)

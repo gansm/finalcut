@@ -227,7 +227,6 @@ void FTermcapQuirksTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::generalTest()
 {
-  
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
   
@@ -287,6 +286,7 @@ void FTermcapQuirksTest::generalTest()
                          , C_STR(CSI "29m") );
   delete[] caps;
 }
+
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::xtermTest()
 {
@@ -304,13 +304,6 @@ void FTermcapQuirksTest::xtermTest()
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
-/*
-  printf ("\n(%s)\n", printSequence(caps[fc::t_initialize_color].string).c_str());
-  printf ("\n(%s)\n", printSequence(C_STR(OSC "4;%p1%d;rgb:"
-                                              "%p2%{255}%*%{1000}%/%2.2X/"
-                                              "%p3%{255}%*%{1000}%/%2.2X/"
-                                              "%p4%{255}%*%{1000}%/%2.2X" ESC "\\")).c_str());
-*/
   CPPUNIT_ASSERT_CSTRING ( caps[fc::t_initialize_color].string
                          , C_STR(OSC "4;%p1%d;rgb:"
                                      "%p2%{255}%*%{1000}%/%2.2X/"

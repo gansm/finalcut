@@ -45,10 +45,7 @@
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
   FTermLinux::ColorMap        FTermLinux::saved_color_map;
   FTermLinux::ColorMap        FTermLinux::cmap;
-#if DEBUG
-  int      FTermLinux::framebuffer_bpp = -1;
-#endif
-
+  int                         FTermLinux::framebuffer_bpp = -1;
 #endif  // defined(__linux__)
 
 
@@ -172,15 +169,11 @@ void FTermLinux::init()
       setCursorStyle (fc::underscore_cursor, true);
 
       // Framebuffer color depth in bits per pixel
-      int bpp = getFramebuffer_bpp();
+      framebuffer_bpp = getFramebuffer_bpp();
 
       // More than 4 bits per pixel and the font uses the blink-bit
-      if ( bpp >= 4 && screen_font.charcount <= 256 )
+      if ( framebuffer_bpp >= 4 && screen_font.charcount <= 256 )
         FTermcap::max_color = 16;
-
-#if DEBUG
-    framebuffer_bpp = bpp;
-#endif
     }
 
     FTerm::detectTermSize();

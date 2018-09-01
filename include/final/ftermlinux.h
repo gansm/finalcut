@@ -179,9 +179,7 @@ class FTermLinux
     static unimapdesc             screen_unicode_map;
     static ColorMap               saved_color_map;
     static ColorMap               cmap;
-#if DEBUG
     static int                    framebuffer_bpp;
-#endif
 #endif  // defined(__linux__)
 };
 #pragma pack(pop)

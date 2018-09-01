@@ -1,180 +1,183 @@
-2017-08-08  Markus Gans  <guru.mail@muenster.de>
+2018-08-31  Markus Gans  <guru.mail@muenster.de>
+	* Fixed a problem for a non-debug compilation
+
+2018-08-08  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FTermcapQuirks
 
-2017-07-29  Markus Gans  <guru.mail@muenster.de>
+2018-07-29  Markus Gans  <guru.mail@muenster.de>
 	* Added numeric Keypad [/], [*], [-], [+] support
 	* Handling of keys that are substrings of other keys
 	* More tests in FKeyboard unit test
 
-2017-07-27  Markus Gans  <guru.mail@muenster.de>
+2018-07-27  Markus Gans  <guru.mail@muenster.de>
 	* The array for keyboard input of UTF-8 characters was 
 	  not long enough for 4 bytes of UTF-8 codes.
 	* More tests in FKeyboard unit test
 
-2017-07-22  Markus Gans  <guru.mail@muenster.de>
+2018-07-22  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FKeyboard
 
-2017-07-15  Markus Gans  <guru.mail@muenster.de>
+2018-07-15  Markus Gans  <guru.mail@muenster.de>
 	* Keyboard functions are now in a separate class
 	* Fix Parameter passing in term::init_OptiAttr
 
-2017-07-08  Markus Gans  <guru.mail@muenster.de>
+2018-07-08  Markus Gans  <guru.mail@muenster.de>
 	* Extension of the unit test of FOptiMove
 
-2017-07-01  Markus Gans  <guru.mail@muenster.de>
+2018-07-01  Markus Gans  <guru.mail@muenster.de>
 	* All in FOptiMove required termcap values can now be passed 
           with a single struct
 
-2017-06-25  Markus Gans  <guru.mail@muenster.de>
+2018-06-25  Markus Gans  <guru.mail@muenster.de>
 	* All termcap values required in FOptiAttr can now be passed 
 	  with a single struct
 
-2017-06-17  Markus Gans  <guru.mail@muenster.de>
+2018-06-17  Markus Gans  <guru.mail@muenster.de>
 	* Added special console options for FreeBSD, NetBSD and OpenBSD
 
-2017-06-12  Markus Gans  <guru.mail@muenster.de>
+2018-06-12  Markus Gans  <guru.mail@muenster.de>
 	* Linux functions from FTerm moved into the FTermLinux class
 
-2017-05-27  Markus Gans  <guru.mail@muenster.de>
+2018-05-27  Markus Gans  <guru.mail@muenster.de>
 	* Move FreeBSD, NetBSD and OpenBSD functions to separate classes
 
-2017-05-20  Markus Gans  <guru.mail@muenster.de>
+2018-05-20  Markus Gans  <guru.mail@muenster.de>
 	* Methods outsourcing from FTerm to FTermXTerminal
 
-2017-05-06  Markus Gans  <guru.mail@muenster.de>
+2018-05-06  Markus Gans  <guru.mail@muenster.de>
 	* Some protected data members in FTerm moved to private
 
-2017-05-03  Markus Gans  <guru.mail@muenster.de>
+2018-05-03  Markus Gans  <guru.mail@muenster.de>
 	* Fix resetColorMap in FTerm
 
-2017-05-02  Markus Gans  <guru.mail@muenster.de>
+2018-05-02  Markus Gans  <guru.mail@muenster.de>
 	* Outsourcing of data from FTerm to the classes FTermios, 
 	  FTermDetection and FTermcapQuirks
 
-2017-04-19  Markus Gans  <guru.mail@muenster.de>
+2018-04-19  Markus Gans  <guru.mail@muenster.de>
 	* Placing the terminal types in FTerm in a separate structure
 
-2017-04-15  Markus Gans  <guru.mail@muenster.de>
+2018-04-15  Markus Gans  <guru.mail@muenster.de>
 	* Fake-reverse bugfix in FOptiAttr
 	* Strict use of fc::colornames in FOptiAttr
 	* Stream support for FPoint and FRect
 
-2017-04-11  Markus Gans  <guru.mail@muenster.de>
+2018-04-11  Markus Gans  <guru.mail@muenster.de>
 	* Remove Cygwin bold color quirks fix in FOptiAttr
 	* Added unit test for FOptiAttr
 
-2017-04-08  Markus Gans  <guru.mail@muenster.de>
+2018-04-08  Markus Gans  <guru.mail@muenster.de>
 	* Improved Linux terminal quirks
 	* Improvement in class FOptiAttr
 
-2017-04-02  Markus Gans  <guru.mail@muenster.de>
+2018-04-02  Markus Gans  <guru.mail@muenster.de>
 	* Improved cygwin terminal quirks
 	* Optimized character set switching in FOptiAttr
 
-2017-03-30  Markus Gans  <guru.mail@muenster.de>
+2018-03-30  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FOptiMove
 
-2017-03-28  Markus Gans  <guru.mail@muenster.de>
+2018-03-28  Markus Gans  <guru.mail@muenster.de>
 	* Add boundary check to FOptiMove
 
-2017-03-25  Markus Gans  <guru.mail@muenster.de>
+2018-03-25  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for the mouse classes
 	* Fixed small parsing errors with mouse events
 
-2017-03-17  Markus Gans  <guru.mail@muenster.de>
+2018-03-17  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FObject
 	* Some minor bug fixes in FObject
 
-2017-03-13  Markus Gans  <guru.mail@muenster.de>
+2018-03-13  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FRect
 
-2017-03-11  Markus Gans  <guru.mail@muenster.de>
+2018-03-11  Markus Gans  <guru.mail@muenster.de>
 	* Added unit test for FPoint
 
-2017-03-10  Markus Gans  <guru.mail@muenster.de>
+2018-03-10  Markus Gans  <guru.mail@muenster.de>
 	* Unit tests for the FString class completed
 	* Minor bug fixes in FString
 
-2017-02-25  Markus Gans  <guru.mail@muenster.de>
+2018-02-25  Markus Gans  <guru.mail@muenster.de>
 	* First CppUnit tests implemented
 
-2017-02-22  Markus Gans  <guru.mail@muenster.de>
+2018-02-22  Markus Gans  <guru.mail@muenster.de>
 	* Generalize mouse event passing in FMenuItem
 
-2017-02-19  Markus Gans  <guru.mail@muenster.de>
+2018-02-19  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FTerm::init_termcaps
 	* Refactoring FTerm::init_encoding
 
-2017-02-18  Markus Gans  <guru.mail@muenster.de>
+2018-02-18  Markus Gans  <guru.mail@muenster.de>
 	* Avoid scroll bar overshooting
 	* Refactoring FListView::onMouseMove
 	* Refactoring FDialog::initDialogMenu
 
-2017-02-17  Markus Gans  <guru.mail@muenster.de>
+2018-02-17  Markus Gans  <guru.mail@muenster.de>
 	* Generalize scroll functions in FTextView
 	* Refactoring FButtonGroup::drawLabel
 	* Refactoring FToggleButton::drawLabel
 
-2017-02-11  Markus Gans  <guru.mail@muenster.de>
+2018-02-11  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FWidget::focusNextChild and FWidget::focusPrevChild
 	* Refactoring FListView::onWheel
 	* Refactoring FListView::drawColumnLabels
 	* Refactoring FTerm::getSystemTermType
 	* Rename getTermName() to getTermFileName()
 
-2017-02-10  Markus Gans  <guru.mail@muenster.de>
+2018-02-10  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FOptiMove::verticalMove and FOptiMove::horizontalMove
 	* Refactoring FVTerm::getCharacter
 	* Refactoring FWidget::drawBorder
 
-2017-02-02  Markus Gans  <guru.mail@muenster.de>
+2018-02-02  Markus Gans  <guru.mail@muenster.de>
 	* Avoids flickering when redrawing a focused widget
 
-2017-01-31  Markus Gans  <guru.mail@muenster.de>
+2018-01-31  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FSwitch::drawCheckButton
 	* Refactoring FWidget::redraw
 	* Refactoring FMessageBox::init 
 	* Refactoring FFileDialog::init 
 
-2017-01-30  Markus Gans  <guru.mail@muenster.de>
+2018-01-30  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FLabel::draw
 	* Refactoring FFileDialog::readDir
 
-2017-01-28  Markus Gans  <guru.mail@muenster.de>
+2018-01-28  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FApplication::processKeyboardEvent
 	* Shorter methods and a fix for recreating new windows 
 	  in the window example
 
-2017-01-25  Markus Gans  <guru.mail@muenster.de>
+2018-01-25  Markus Gans  <guru.mail@muenster.de>
 	* UTF-8 fix for Solaris
 
-2017-01-24  Markus Gans  <guru.mail@muenster.de>
+2018-01-24  Markus Gans  <guru.mail@muenster.de>
 	* Fixes compiler errors for latest Cygwin versions
 	* Widget color scheme settings moved to a separate class
 	* The color palette redefinition now has its own class
 
-2017-01-21  Markus Gans  <guru.mail@muenster.de>
+2018-01-21  Markus Gans  <guru.mail@muenster.de>
 	* The Final Cut can now also be compiled under Cygwin
 	* Fixed bug in FScrollView::scrollTo
 	* Refactoring FStatusBar::drawKeys
 	* Refactoring FListView::drawListLine
 
-2017-01-17  Markus Gans  <guru.mail@muenster.de>
+2018-01-17  Markus Gans  <guru.mail@muenster.de>
 	* Small array optimizations in the examples
 
-2017-01-14  Markus Gans  <guru.mail@muenster.de>
+2018-01-14  Markus Gans  <guru.mail@muenster.de>
 	* Mouse functions are now in a separate class
 
-2017-01-05  Markus Gans  <guru.mail@muenster.de>
+2018-01-05  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FVTerm::restoreVTerm
 	* Fixed buffer size in FOptiMove
 
-2017-01-03  Markus Gans  <guru.mail@muenster.de>
+2018-01-03  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring FOptiMove::relativeMove
 	* Refactoring attribute settings in FOptiAttr
 	* Refactoring FTerm::parseKeyString and timeout settings
 
-2017-01-02  Markus Gans  <guru.mail@muenster.de>
+2018-01-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of secondary device attributes parsing
         * Small menu improvements
 
