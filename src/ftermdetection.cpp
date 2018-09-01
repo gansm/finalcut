@@ -86,9 +86,7 @@ void FTermDetection::setTermFileName (char term_filename[])
   if ( ! term_filename )
     return;
 
-  std::strncpy ( termfilename
-               , term_filename
-               , std::strlen(term_filename) + 1 );
+  std::strncpy (termfilename, term_filename, sizeof(termfilename) - 1);
 }
 
 //----------------------------------------------------------------------
@@ -314,7 +312,7 @@ void FTermDetection::detectTerminal()
   if ( new_termtype )
   {
     setenv(C_STR("TERM"), new_termtype, 1);
-    std::strncpy (termtype, new_termtype, std::strlen(new_termtype) + 1);
+    std::strncpy (termtype, new_termtype, sizeof(termtype) - 1);
   }
 }
 

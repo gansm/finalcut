@@ -1,3 +1,6 @@
+2018-09-01  Markus Gans  <guru.mail@muenster.de>
+	* Compiles now with newer gcc
+
 2018-08-31  Markus Gans  <guru.mail@muenster.de>
 	* Fixed a problem for a non-debug compilation
 

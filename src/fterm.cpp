@@ -168,9 +168,8 @@ void FTerm::setTermType (const char term_name[])
   if ( ! term_name )
     return;
 
-  std::strncpy ( termtype
-               , term_name
-               , std::strlen(term_name) + 1 );
+  std::strncpy (termtype, term_name, sizeof(termtype));
+  termtype[sizeof(termtype) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------

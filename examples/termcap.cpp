@@ -203,9 +203,9 @@ void tcapString (const std::string& name, const char cap_str[])
 }
 
 //----------------------------------------------------------------------
+#if DEBUG
 void debug (FApplication& TermApp)
 {
-#if DEBUG
   const FString& ab_s = TermApp.getAnswerbackString();
   const FString& sec_da = TermApp.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
@@ -228,8 +228,12 @@ void debug (FApplication& TermApp)
     tcapString ("|              The SecDA String", sec_da);
 
   std::cout << "`------------------- debug -------------------\r\n";
-#endif
+
 }
+#else
+void debug (FApplication&)
+{ }
+#endif
 
 //----------------------------------------------------------------------
 void booleans()
