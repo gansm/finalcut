@@ -917,7 +917,7 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollWheelDown:
-      scrollBy (-wheel_distance, 0);
+      scrollBy (wheel_distance, 0);
       break;
   }
 
