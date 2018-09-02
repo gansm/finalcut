@@ -538,15 +538,11 @@ void FLineEdit::onTimer (FTimerEvent*)
         return;
       }
 
-      text_offset--;
+      if ( text_offset > 0 )
+        text_offset--;
 
-      if ( text_offset < 0 )
-        text_offset = 0;
-
-      cursor_pos--;
-
-      if ( cursor_pos < 0 )
-        cursor_pos = 0;
+      if ( cursor_pos > 0 )
+        cursor_pos--;
 
       break;
 
@@ -557,15 +553,11 @@ void FLineEdit::onTimer (FTimerEvent*)
         return;
       }
 
-      text_offset++;
+      if ( text_offset <= len - getWidth() + 1 )
+        text_offset++;
 
-      if ( text_offset > len - getWidth() + 2 )
-        text_offset = len - getWidth() + 2;
-
-      cursor_pos++;
-
-      if ( cursor_pos > len )
-        cursor_pos = len;
+      if ( cursor_pos < len )
+        cursor_pos++;
 
       break;
 
@@ -804,10 +796,8 @@ void FLineEdit::drawInputField()
 //----------------------------------------------------------------------
 inline void FLineEdit::keyLeft()
 {
-  cursor_pos--;
-
-  if ( cursor_pos < 0 )
-    cursor_pos = 0;
+  if ( cursor_pos > 0 )
+    cursor_pos--;
 
   if ( cursor_pos < text_offset )
     text_offset--;
@@ -817,10 +807,9 @@ inline void FLineEdit::keyLeft()
 inline void FLineEdit::keyRight()
 {
   int len = int(text.getLength());
-  cursor_pos++;
 
-  if ( cursor_pos >= len )
-    cursor_pos = len;
+  if ( cursor_pos < len )
+    cursor_pos++;
 
   if ( cursor_pos - text_offset >= getWidth() - 2
     && text_offset <= len - getWidth() + 1 )

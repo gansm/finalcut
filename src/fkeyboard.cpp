@@ -372,8 +372,12 @@ int FKeyboard::UTF8decode (const char utf8[])
 {
   register int ucs = 0;
   const int max = 4;
+  int len = int(std::strlen(utf8));
 
-  for (register int i = 0; i < int(std::strlen(utf8)) && i < max; ++i)
+  if ( len > max )
+    len = max;
+
+  for (register int i = 0; i < len; ++i)
   {
     register uChar ch = uChar(utf8[i]);
 

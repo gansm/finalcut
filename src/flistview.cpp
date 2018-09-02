@@ -1814,10 +1814,8 @@ inline void FListView::keyLeft (int& first_line_position_before)
   else
   {
     // Scroll left
-    xoffset--;
-
-    if ( xoffset < 0 )
-      xoffset = 0;
+    if ( xoffset > 0 )
+      xoffset--;
   }
 }
 
@@ -1838,10 +1836,8 @@ inline void FListView::keyRight (int& first_line_position_before)
   else
   {
     // Scroll right
-    xoffset++;
-
-    if ( xoffset > xoffset_end )
-      xoffset = xoffset_end;
+    if ( xoffset < xoffset_end )
+      xoffset++;
 
     if ( xoffset < 0 )
       xoffset = 0;

@@ -91,7 +91,7 @@ void move (int xold, int yold, int xnew, int ynew)
   // prints the cursor move escape sequence
   std::string sequence;
   char* buffer;
-  char  from[10], to[10], byte[20];
+  char  from[26], to[26], byte[20];
   uInt  len;
   const std::string ctrl_character[] =
   {
@@ -104,8 +104,8 @@ void move (int xold, int yold, int xnew, int ynew)
 
   term_boundaries(xold, yold);
   term_boundaries(xnew, ynew);
-  snprintf (from, sizeof(from), "(%d;%d)", xold, yold);
-  snprintf (to, sizeof(to), "(%d;%d)", xnew, ynew);
+  snprintf (from, sizeof(from), "(%3d;%3d)", xold, yold);
+  snprintf (to, sizeof(to), "(%3d;%3d)", xnew, ynew);
   std::cout << std::right << std::setw(10) << from
             << " -> "
             << std::left << std::setw(10) << to
