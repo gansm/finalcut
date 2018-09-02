@@ -481,11 +481,11 @@ void MouseDraw::drawCanvas()
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    charData* cc;  // canvas character
-    charData* wc;  // window character
-    cc = &canvas->text[y * x_end];
-    wc = &print_area->text[(ay + y) * w_line_len + ax];
-    std::memcpy (wc, cc, sizeof(charData) * unsigned(x_end));
+    charData* canvaschar;  // canvas character
+    charData* winchar;     // window character
+    canvaschar = &canvas->text[y * x_end];
+    winchar = &print_area->text[(ay + y) * w_line_len + ax];
+    std::memcpy (winchar, canvaschar, sizeof(charData) * unsigned(x_end));
 
     if ( short(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);

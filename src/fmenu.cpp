@@ -143,18 +143,18 @@ void FMenu::hide()
 //----------------------------------------------------------------------
 void FMenu::onKeyPress (FKeyEvent* ev)
 {
-  FWidget* menubar;
+  FWidget* menu_bar;
 
   // looking for menu hotkey
   if ( hotkeyMenu(ev) )
     return;
 
   // looking for menu bar hotkey
-  menubar = getMenuBar();
+  menu_bar = getMenuBar();
 
-  if ( menubar )
+  if ( menu_bar )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(menubar);
+    FMenuBar* mbar = static_cast<FMenuBar*>(menu_bar);
 
     if ( mbar->hotkeyMenu(ev) )
       return;
@@ -1004,16 +1004,16 @@ void FMenu::passEventToMenuBar (FMouseEvent*& ev)
 {
   // Mouse event handover to the menu bar
 
-  FWidget* menubar = getMenuBar();
+  FWidget* menu_bar = getMenuBar();
   const FPoint& t = ev->getTermPos();
-  const FPoint& p = menubar->termToWidgetPos(t);
+  const FPoint& p = menu_bar->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
     FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
-    setClickedWidget(menubar);
-    FMenuBar* mbar = static_cast<FMenuBar*>(menubar);
+    setClickedWidget(menu_bar);
+    FMenuBar* mbar = static_cast<FMenuBar*>(menu_bar);
     mbar->mouse_down = true;
     mbar->onMouseMove(_ev);
     delete _ev;

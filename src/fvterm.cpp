@@ -2114,15 +2114,15 @@ void FVTerm::init()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::init_characterLengths (FOptiMove* opti_move)
+void FVTerm::init_characterLengths (FOptiMove* optimove)
 {
-  if ( opti_move )
+  if ( optimove )
   {
-    cursor_address_length = opti_move->getCursorAddressLength();
-    erase_char_length     = opti_move->getEraseCharsLength();
-    repeat_char_length    = opti_move->getRepeatCharLength();
-    clr_bol_length        = opti_move->getClrBolLength();
-    clr_eol_length        = opti_move->getClrEolLength();
+    cursor_address_length = optimove->getCursorAddressLength();
+    erase_char_length     = optimove->getEraseCharsLength();
+    repeat_char_length    = optimove->getRepeatCharLength();
+    clr_bol_length        = optimove->getClrBolLength();
+    clr_eol_length        = optimove->getClrEolLength();
   }
   else
   {

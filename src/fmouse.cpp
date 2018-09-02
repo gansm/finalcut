@@ -519,22 +519,22 @@ void FMouseX11::processEvent (struct timeval* time)
 
   const FPoint& mouse_position = getPos();
   uChar x, y;
-  int button;
+  int btn;
 
   x = uChar(x11_mouse[1] - 0x20);
   y = uChar(x11_mouse[2] - 0x20);
-  button = x11_mouse[0];
+  btn = x11_mouse[0];
   new_mouse_position.setPoint (x, y);
   // Fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
-  setKeyState (button);
-  setMoveState (mouse_position, button);
-  setButtonState (button & button_mask, time);
+  setKeyState (btn);
+  setMoveState (mouse_position, btn);
+  setButtonState (btn & button_mask, time);
 
   if ( new_mouse_position == mouse_position
     && ! isWheelUp()
     && ! isWheelDown()
-    && uChar(button) == x11_button_state )
+    && uChar(btn) == x11_button_state )
   {
     mouse_event_occurred = false;
     x11_mouse[0] = '\0';  // Delete already interpreted data
@@ -544,7 +544,7 @@ void FMouseX11::processEvent (struct timeval* time)
   mouse_event_occurred = true;
   setPos (FPoint(x, y));
   // Get the button state from string
-  x11_button_state = uChar(button);
+  x11_button_state = uChar(btn);
   // Delete already interpreted data
   x11_mouse[0] = '\0';
 }
@@ -552,23 +552,23 @@ void FMouseX11::processEvent (struct timeval* time)
 
 // private methods of FMouseX11
 //----------------------------------------------------------------------
-void FMouseX11::setKeyState (int button)
+void FMouseX11::setKeyState (int btn)
 {
-  if ( (button & key_shift) == key_shift )
+  if ( (btn & key_shift) == key_shift )
     b_state.shift_button = Pressed;
 
-  if ( (button & key_meta) == key_meta )
+  if ( (btn & key_meta) == key_meta )
     b_state.meta_button = Pressed;
 
-  if ( (button & key_ctrl) == key_ctrl )
+  if ( (btn & key_ctrl) == key_ctrl )
     b_state.control_button = Pressed;
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setMoveState (const FPoint& mouse_position, int button)
+void FMouseX11::setMoveState (const FPoint& mouse_position, int btn)
 {
-  if ( (button & button_mask) >= button1_pressed_move
-    && (button & button_mask) <= button3_pressed_move
+  if ( (btn & button_mask) >= button1_pressed_move
+    && (btn & button_mask) <= button3_pressed_move
     && mouse_position != zero_point )
   {
     b_state.mouse_moved = true;
@@ -576,13 +576,13 @@ void FMouseX11::setMoveState (const FPoint& mouse_position, int button)
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setButtonState (int button, struct timeval* time)
+void FMouseX11::setButtonState (int btn, struct timeval* time)
 {
   // Get the x11 mouse button state
 
   const FPoint& mouse_position = getPos();
 
-  switch ( button )
+  switch ( btn )
   {
     case button1_pressed:
     case button1_pressed_move:
@@ -723,12 +723,12 @@ void FMouseSGR::processEvent (struct timeval* time)
 {
   const FPoint& mouse_position = getPos();
   register char* p;
-  int button;
+  int btn;
   short x, y;
 
   x = 0;
   y = 0;
-  button = 0;
+  btn = 0;
 
   // parse the SGR mouse string
   p = sgr_mouse;
@@ -742,7 +742,7 @@ void FMouseSGR::processEvent (struct timeval* time)
       return;
     }
 
-    button = 10 * button + (*p - '0');
+    btn = 10 * btn + (*p - '0');
     p++;
   }
 
@@ -773,18 +773,18 @@ void FMouseSGR::processEvent (struct timeval* time)
   new_mouse_position.setPoint (x, y);
   // Fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
-  setKeyState (button);
-  setMoveState (mouse_position, button);
+  setKeyState (btn);
+  setMoveState (mouse_position, btn);
 
   if ( *p == pressed )
-    setPressedButtonState (button & button_mask, time);
+    setPressedButtonState (btn & button_mask, time);
   else  // *p == released
-    setReleasedButtonState (button & button_mask);
+    setReleasedButtonState (btn & button_mask);
 
   if ( mouse_position == new_mouse_position
     && ! isWheelUp()
     && ! isWheelDown()
-    && sgr_button_state == uChar(((*p & 0x20) << 2) + button) )
+    && sgr_button_state == uChar(((*p & 0x20) << 2) + btn) )
   {
     mouse_event_occurred = false;
     sgr_mouse[0] = '\0';  // Delete already interpreted data
@@ -794,30 +794,30 @@ void FMouseSGR::processEvent (struct timeval* time)
   mouse_event_occurred = true;
   setPos (FPoint(x, y));
   // Get the button state from string
-  sgr_button_state = uChar(((*p & 0x20) << 2) + button);
+  sgr_button_state = uChar(((*p & 0x20) << 2) + btn);
   // Delete already interpreted data
   sgr_mouse[0] = '\0';
 }
 
 // private methods of FMouseSGR
 //----------------------------------------------------------------------
-void FMouseSGR::setKeyState (int button)
+void FMouseSGR::setKeyState (int btn)
 {
-  if ( (button & key_shift) == key_shift )
+  if ( (btn & key_shift) == key_shift )
     b_state.shift_button = true;
 
-  if ( (button & key_meta) == key_meta )
+  if ( (btn & key_meta) == key_meta )
     b_state.meta_button = true;
 
-  if ( (button & key_ctrl) == key_ctrl )
+  if ( (btn & key_ctrl) == key_ctrl )
     b_state.control_button = true;
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setMoveState (const FPoint& mouse_position, int button)
+void FMouseSGR::setMoveState (const FPoint& mouse_position, int btn)
 {
-  if ( (button & button_mask) >= button1_move
-    && (button & button_mask) <= button3_move
+  if ( (btn & button_mask) >= button1_move
+    && (btn & button_mask) <= button3_move
     && mouse_position != zero_point )
   {
     b_state.mouse_moved = true;
@@ -825,13 +825,13 @@ void FMouseSGR::setMoveState (const FPoint& mouse_position, int button)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setPressedButtonState (int button, struct timeval* time)
+void FMouseSGR::setPressedButtonState (int btn, struct timeval* time)
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
   const FPoint& mouse_position = getPos();
 
-  switch ( button )
+  switch ( btn )
   {
     case button1:
     case button1_move:
@@ -882,11 +882,11 @@ void FMouseSGR::setPressedButtonState (int button, struct timeval* time)
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setReleasedButtonState (int button)
+void FMouseSGR::setReleasedButtonState (int btn)
 {
   // Gets the extended x11 mouse mode (SGR) status for released buttons
 
-  switch ( button )
+  switch ( btn )
   {
     case button1:
     case button1_move:
@@ -980,12 +980,12 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   register char* p;
   register bool x_neg;
   register bool y_neg;
-  int button;
+  int btn;
   short x, y;
 
   x = 0;
   y = 0;
-  button = 0;
+  btn = 0;
 
   // Parse the Urxvt mouse string
   p = urxvt_mouse;
@@ -1001,7 +1001,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
       return;
     }
 
-    button = 10 * button + (*p - '0');
+    btn = 10 * btn + (*p - '0');
     p++;
   }
 
@@ -1058,14 +1058,14 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   new_mouse_position.setPoint (x, y);
   // Fill bit field with 0
   std::memset(&b_state, 0x00, sizeof(b_state));
-  setKeyState (button);
-  setMoveState (mouse_position, button);
-  setButtonState (button & button_mask, time);
+  setKeyState (btn);
+  setMoveState (mouse_position, btn);
+  setButtonState (btn & button_mask, time);
 
   if ( mouse_position == new_mouse_position
     && ! isWheelUp()
     && ! isWheelDown()
-    && urxvt_button_state == uChar(button) )
+    && urxvt_button_state == uChar(btn) )
   {
     mouse_event_occurred = false;
     urxvt_mouse[0] = '\0';  // Delete already interpreted data
@@ -1074,7 +1074,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
 
   mouse_event_occurred = true;
   setPos (FPoint(x, y));
-  urxvt_button_state = uChar(button);
+  urxvt_button_state = uChar(btn);
   // Delete already interpreted data
   urxvt_mouse[0] = '\0';
 }
@@ -1082,23 +1082,23 @@ void FMouseUrxvt::processEvent (struct timeval* time)
 
 // private methods of FMouseUrxvt
 //----------------------------------------------------------------------
-void FMouseUrxvt::setKeyState (int button)
+void FMouseUrxvt::setKeyState (int btn)
 {
-  if ( (button & key_shift) == key_shift )
+  if ( (btn & key_shift) == key_shift )
     b_state.shift_button = Pressed;
 
-  if ( (button & key_meta) == key_meta )
+  if ( (btn & key_meta) == key_meta )
     b_state.meta_button = Pressed;
 
-  if ( (button & key_ctrl) == key_ctrl )
+  if ( (btn & key_ctrl) == key_ctrl )
     b_state.control_button = Pressed;
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int button)
+void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int btn)
 {
-  if ( (button & button_mask) >= button1_pressed_move
-    && (button & button_mask) <= button3_pressed_move
+  if ( (btn & button_mask) >= button1_pressed_move
+    && (btn & button_mask) <= button3_pressed_move
     && mouse_position != zero_point )
   {
     b_state.mouse_moved = true;
@@ -1106,13 +1106,13 @@ void FMouseUrxvt::setMoveState (const FPoint& mouse_position, int button)
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setButtonState (int button, struct timeval* time)
+void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 {
   // Get the urxvt mouse button state
 
   const FPoint& mouse_position = getPos();
 
-  switch ( button )
+  switch ( btn )
   {
     case button1_pressed:
     case button1_pressed_move:

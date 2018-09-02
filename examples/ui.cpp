@@ -555,12 +555,12 @@ void MyDialog::initHelpMenuCallback()
 void MyDialog::initStatusBar()
 {
   // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar (this);
+  FStatusBar* Statusbar = new FStatusBar (this);
 
   // Statusbar keys
-  key_F1 = new FStatusKey (fc::Fkey_f1, "About", statusbar);
-  key_F2 = new FStatusKey (fc::Fkey_f2, "View", statusbar);
-  key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", statusbar);
+  key_F1 = new FStatusKey (fc::Fkey_f1, "About", Statusbar);
+  key_F2 = new FStatusKey (fc::Fkey_f2, "View", Statusbar);
+  key_F3 = new FStatusKey (fc::Fkey_f3, "Quit", Statusbar);
 }
 
 //----------------------------------------------------------------------

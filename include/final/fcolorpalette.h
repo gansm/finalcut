@@ -44,6 +44,9 @@
 class FColorPalette
 {
   public:
+    // Destructor
+    virtual ~FColorPalette() = 0;
+
     // Typedefs
     typedef void (*funcp)(short, int, int, int);
 

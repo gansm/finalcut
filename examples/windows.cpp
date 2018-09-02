@@ -229,7 +229,7 @@ Window::Window (FWidget* parent)
   FDialogListMenu* DglList;
   FString drop_down_symbol;
   FMenuBar* Menubar;
-  FStatusBar* statusbar;
+  FStatusBar* Statusbar;
 
   // Menu bar
   Menubar = new FMenuBar (this);
@@ -250,8 +250,8 @@ Window::Window (FWidget* parent)
   createDialogButtons();
 
   // Statusbar at the bottom
-  statusbar = new FStatusBar (this);
-  statusbar->setMessage("Status bar message");
+  Statusbar = new FStatusBar (this);
+  Statusbar->setMessage("Status bar message");
 
   // Generate data vector for the windows
   for (int n = 1; n <= 6; n++)

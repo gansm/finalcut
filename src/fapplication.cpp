@@ -869,12 +869,12 @@ void FApplication::unselectMenubarItems()
   if ( open_menu || (mouse && mouse->isMoved()) )
     return;
 
-  FMenuBar* menubar = getMenuBar();
+  FMenuBar* menu_bar = getMenuBar();
 
-  if ( ! menubar )
+  if ( ! menu_bar )
     return;
 
-  if ( ! menubar->hasSelectedItem() )
+  if ( ! menu_bar->hasSelectedItem() )
     return;
 
   if ( ! mouse )

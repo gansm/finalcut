@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -212,8 +212,8 @@ MainWindow::MainWindow (FWidget* parent)
   ibg->unsetTransparentShadow();
 
   // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar (this);
-  statusbar->setMessage("Press Q to quit");
+  FStatusBar* status_bar = new FStatusBar (this);
+  status_bar->setMessage("Press Q to quit");
 
   addAccelerator('q');
   unsetTransparentShadow();

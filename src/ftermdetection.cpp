@@ -332,9 +332,12 @@ char* FTermDetection::init_256colorTerminal()
 
 #if DEBUG
   if ( new_termtype )
+  {
     std::strncpy ( termtype_256color
                  , new_termtype
-                 , std::strlen(new_termtype) + 1 );
+                 , sizeof(termtype_256color) );
+    termtype_256color[sizeof(termtype_256color) - 1] = '\0';
+  }
 #endif
 
   return new_termtype;
@@ -472,7 +475,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512] = { };
-  FTerm::putstringf (OSC "4;%d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
@@ -534,9 +537,12 @@ char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
 
 #if DEBUG
   if ( new_termtype )
+  {
     std::strncpy ( termtype_Answerback
                  , new_termtype
-                 , std::strlen(new_termtype) + 1 );
+                 , sizeof(termtype_Answerback) );
+    termtype_Answerback[sizeof(termtype_Answerback) - 1] = '\0';
+  }
 #endif
 
   return new_termtype;
@@ -648,9 +654,10 @@ char* FTermDetection::parseSecDA (char current_termtype[])
 
 #if DEBUG
   if ( new_termtype )
-    std::strncpy ( termtype_SecDA
-                 , new_termtype
-                 , std::strlen(new_termtype) + 1 );
+  {
+    std::strncpy (termtype_SecDA, new_termtype, sizeof(termtype_SecDA));
+    termtype_SecDA[sizeof(termtype_SecDA) - 1] = '\0';
+  }
 #endif
 
   return new_termtype;
@@ -664,16 +671,13 @@ const FString FTermDetection::getSecDA()
   int a = 0
     , b = 0
     , c = 0
-    , stdin_no = FTermios::getStdIn();
+    , stdin_no = FTermios::getStdIn()
+    , stdout_no = FTermios::getStdOut();
   fd_set ifds;
   struct timeval tv;
 
   // Get the secondary device attributes
-#if defined(__CYGWIN__)
-  puts (SECDA);
-#else
-  FTerm::putstring (SECDA);
-#endif
+  write(stdout_no, SECDA, std::strlen(SECDA));
   std::fflush(stdout);
 
   FD_ZERO(&ifds);

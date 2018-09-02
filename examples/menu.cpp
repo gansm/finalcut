@@ -94,8 +94,8 @@ Menu::Menu (FWidget* parent)
   defaultCallback (Menubar);
 
   // Statusbar at the bottom
-  FStatusBar* statusbar = new FStatusBar (this);
-  statusbar->setMessage("Status bar message");
+  FStatusBar* Statusbar = new FStatusBar (this);
+  Statusbar->setMessage("Status bar message");
 
   // Headline labels
   FLabel* Headline1 = new FLabel(" Key ", this);
