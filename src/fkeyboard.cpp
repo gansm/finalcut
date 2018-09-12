@@ -132,7 +132,7 @@ bool& FKeyboard::unprocessedInput()
 //----------------------------------------------------------------------
 bool FKeyboard::isKeyPressed()
 {
-  register int result;
+  int result;
   fd_set ifds;
   struct timeval tv;
   int stdin_no = FTermios::getStdIn();
@@ -202,7 +202,7 @@ inline int FKeyboard::getMouseProtocolKey()
   if ( ! mouse_support )
     return -1;
 
-  register std::size_t buf_len = std::strlen(fifo_buf);
+  std::size_t buf_len = std::strlen(fifo_buf);
 
   // x11 mouse tracking
   if ( buf_len >= 6 && fifo_buf[1] == '[' && fifo_buf[2] == 'M' )
@@ -236,11 +236,11 @@ inline int FKeyboard::getTermcapKey()
   for (int i = 0; keymap[i].tname[0] != 0; i++)
   {
     char* k = keymap[i].string;
-    register int len = ( k ) ? int(std::strlen(k)) : 0;
+    int len = ( k ) ? int(std::strlen(k)) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, uInt(len)) == 0 )  // found
     {
-      register int n;
+      int n;
 
       for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
@@ -266,11 +266,11 @@ inline int FKeyboard::getMetaKey()
   for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
   {
     char* kmeta = fc::Fmetakey[i].string;  // The string is never null
-    register int len = int(std::strlen(kmeta));
+    int len = int(std::strlen(kmeta));
 
     if ( std::strncmp(kmeta, fifo_buf, uInt(len)) == 0 )  // found
     {
-      register int n;
+      int n;
 
       if ( len == 2 && ( fifo_buf[1] == 'O'
                       || fifo_buf[1] == '['
@@ -299,7 +299,7 @@ inline int FKeyboard::getSingleKey()
 {
   // Looking for single key code in the buffer
 
-  register uChar firstchar = uChar(fifo_buf[0]);
+  uChar firstchar = uChar(fifo_buf[0]);
   int keycode, n, len;
   len = 1;
 
@@ -370,16 +370,16 @@ bool FKeyboard::isKeypressTimeout()
 //----------------------------------------------------------------------
 int FKeyboard::UTF8decode (const char utf8[])
 {
-  register int ucs = 0;
+  int ucs = 0;
   const int max = 4;
   int len = int(std::strlen(utf8));
 
   if ( len > max )
     len = max;
 
-  for (register int i = 0; i < len; ++i)
+  for (int i = 0; i < len; ++i)
   {
-    register uChar ch = uChar(utf8[i]);
+    uChar ch = uChar(utf8[i]);
 
     if ( (ch & 0xc0) == 0x80 )
     {
@@ -419,7 +419,7 @@ int FKeyboard::UTF8decode (const char utf8[])
 //----------------------------------------------------------------------
 inline ssize_t FKeyboard::readKey()
 {
-  register ssize_t bytes;
+  ssize_t bytes;
   setNonBlockingInput();
   bytes = read(FTermios::getStdIn(), &k_buf, sizeof(k_buf) - 1);
   unsetNonBlockingInput();
@@ -429,7 +429,7 @@ inline ssize_t FKeyboard::readKey()
 //----------------------------------------------------------------------
 void FKeyboard::parseKeyBuffer()
 {
-  register ssize_t bytesread;
+  ssize_t bytesread;
   FObject::getCurrentTime (&time_keypressed);
 
   while ( (bytesread = readKey()) > 0 )

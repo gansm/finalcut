@@ -180,6 +180,7 @@ class FTermDetection
     static char*          parseAnswerbackMsg (char[]);
     static const FString  getAnswerbackMsg();
     static char*          parseSecDA (char[]);
+    static int            str2int (const FString&);
     static const FString  getSecDA();
     static char*          secDA_Analysis (char[]);
     static char*          secDA_Analysis_0 (char[]);

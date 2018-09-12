@@ -424,8 +424,8 @@ void FMouseGPM::drawGpmPointer()
 //----------------------------------------------------------------------
 int FMouseGPM::gpmEvent (bool clear)
 {
-  register int result;
-  register int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
+  int result;
+  int max = ( gpm_fd > stdin_no ) ? gpm_fd : stdin_no;
   fd_set ifds;
   struct timeval tv;
 
@@ -722,7 +722,7 @@ void FMouseSGR::setRawData (char fifo_buf[], int fifo_buf_size)
 void FMouseSGR::processEvent (struct timeval* time)
 {
   const FPoint& mouse_position = getPos();
-  register char* p;
+  char* p;
   int btn;
   short x, y;
 
@@ -977,9 +977,9 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
   const FPoint& mouse_position = getPos();
-  register char* p;
-  register bool x_neg;
-  register bool y_neg;
+  char* p;
+  bool x_neg;
+  bool y_neg;
   int btn;
   short x, y;
 

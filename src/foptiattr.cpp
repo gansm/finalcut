@@ -549,7 +549,7 @@ void FOptiAttr::initialize()
 }
 
 //----------------------------------------------------------------------
-short FOptiAttr::vga2ansi (register short color)
+short FOptiAttr::vga2ansi (short color)
 {
   //   VGA   |  ANSI
   // i R G B | i B G R

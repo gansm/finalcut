@@ -729,7 +729,7 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setCursorPos (register int x, register int y)
+bool FWidget::setCursorPos (int x, int y)
 {
   // sets the input cursor position
 
@@ -765,7 +765,7 @@ bool FWidget::setCursorPos (register int x, register int y)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setPrintPos (register int x, register int y)
+void FWidget::setPrintPos (int x, int y)
 {
   setPrintCursor ( offset.getX1() + getX() + x - 1,
                    offset.getY1() + getY() + y - 1 );
@@ -1493,7 +1493,7 @@ void FWidget::clearFlatBorder()
     setColor (wc.dialog_fg, wc.dialog_bg);
 
   // clear on left side
-  for (register int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
     setPrintPos (x1 - 1, y1 + y + 1);
 
@@ -1504,7 +1504,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear on right side
-  for (register int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < getHeight(); y++)
   {
     setPrintPos (x2, y1 + y + 1);
 
@@ -1517,7 +1517,7 @@ void FWidget::clearFlatBorder()
   // clear at top
   setPrintPos (x1, y1);
 
-  for (register int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
       print (fc::NF_border_line_upper);
@@ -1528,7 +1528,7 @@ void FWidget::clearFlatBorder()
   // clear at bottom
   setPrintPos (x1, y2);
 
-  for (register int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < getWidth(); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
       print (fc::NF_border_line_bottom);

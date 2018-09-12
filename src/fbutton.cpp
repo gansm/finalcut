@@ -288,13 +288,14 @@ void FButton::hide()
 
   try
   {
-    blank = new char[size + 1];
+    blank = new char[uInt(size) + 1];
   }
   catch (const std::bad_alloc& ex)
   {
     std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
     return;
   }
+
   std::memset(blank, ' ', uLong(size));
   blank[size] = '\0';
 
@@ -751,7 +752,7 @@ void FButton::draw()
 
   try
   {
-    button_text = new wchar_t[txtlength + 1]();
+    button_text = new wchar_t[uInt(txtlength) + 1]();
   }
   catch (const std::bad_alloc& ex)
   {

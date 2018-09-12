@@ -27,6 +27,16 @@
 // class FColorPalette
 //----------------------------------------------------------------------
 
+// constructors and destructor
+//----------------------------------------------------------------------
+FColorPalette::FColorPalette()
+{ }
+
+//----------------------------------------------------------------------
+FColorPalette::~FColorPalette()  // destructor
+{ }
+
+
 // public methods of FColorPalette
 //----------------------------------------------------------------------
 void FColorPalette::set8ColorPalette (funcp setPalette)

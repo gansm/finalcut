@@ -270,13 +270,13 @@ void FScrollView::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setCursorPos (register int x, register int y)
+void FScrollView::setCursorPos (int x, int y)
 {
   FWidget::setCursorPos (x + getLeftPadding(), y + getTopPadding());
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setPrintPos (register int x, register int y)
+void FScrollView::setPrintPos (int x, int y)
 {
   FWidget::setPrintPos (x + getLeftPadding(), y + getTopPadding());
 }

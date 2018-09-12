@@ -666,9 +666,9 @@ int FOptiMove::repeatedAppend ( const capability& o
                               , volatile int count
                               , char* dst )
 {
-  register std::size_t src_len;
-  register std::size_t dst_len;
-  register int total;
+  std::size_t src_len;
+  std::size_t dst_len;
+  int total;
 
   src_len = std::strlen(o.cap);
   dst_len = ( dst != 0 ) ? std::strlen(dst) : 0;

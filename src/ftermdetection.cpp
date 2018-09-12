@@ -615,40 +615,13 @@ char* FTermDetection::parseSecDA (char current_termtype[])
     return current_termtype;
 
   // Read the terminal type
-  try
-  {
-    secondary_da.terminal_id_type = sec_da_components[0].toInt();
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_type = -1;
-  }
+  secondary_da.terminal_id_type = str2int(sec_da_components[0]);
 
   // Read the terminal (firmware) version
-  try
-  {
-    if ( sec_da_components[1] )
-      secondary_da.terminal_id_version = sec_da_components[1].toInt();
-    else
-      secondary_da.terminal_id_version = -1;
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_version = -1;
-  }
+  secondary_da.terminal_id_version = str2int(sec_da_components[1]);
 
   // Read the terminal hardware option
-  try
-  {
-    if ( sec_da_components[2] )
-      secondary_da.terminal_id_hardware = sec_da_components[2].toInt();
-    else
-      secondary_da.terminal_id_hardware = -1;
-  }
-  catch (const std::exception&)
-  {
-    secondary_da.terminal_id_hardware = -1;
-  }
+  secondary_da.terminal_id_hardware = str2int(sec_da_components[2]);
 
   char* new_termtype = secDA_Analysis(current_termtype);
 
@@ -661,6 +634,22 @@ char* FTermDetection::parseSecDA (char current_termtype[])
 #endif
 
   return new_termtype;
+}
+
+//----------------------------------------------------------------------
+int FTermDetection::str2int (const FString& s)
+{
+  if ( ! s )
+    return -1;
+
+  try
+  {
+    return s.toInt();
+  }
+  catch (const std::exception&)
+  {
+    return -1;
+  }
 }
 
 //----------------------------------------------------------------------

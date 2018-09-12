@@ -296,11 +296,11 @@ class FTerm
     static void           putstring (const char[], int = 1);
 
 #if defined(__sun) && defined(__SVR4)
-    static int            putchar_ASCII (register char);
+    static int            putchar_ASCII (char);
 #endif
 
-    static int            putchar_ASCII (register int);
-    static int            putchar_UTF8  (register int);
+    static int            putchar_ASCII (int);
+    static int            putchar_UTF8  (int);
 
 #if DEBUG
     static int            framebuffer_bpp;

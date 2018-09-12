@@ -205,11 +205,11 @@ void FObject::getCurrentTime (timeval* time)
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (timeval* time, register long timeout)
+bool FObject::isTimeout (timeval* time, long timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapse
 
-  register long diff_usec;
+  long diff_usec;
   struct timeval now;
   struct timeval diff;
 

@@ -76,7 +76,7 @@ int FTermBuffer::writef (const char format[], ...)
   {
     try
     {
-      buffer = new char[len + 1]();
+      buffer = new char[uInt(len) + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -131,7 +131,7 @@ int FTermBuffer::write (const std::string& s)
 int FTermBuffer::write (const FString& s)
 {
   assert ( ! s.isNull() );
-  register int len = 0;
+  int len = 0;
   const wchar_t* p = s.wc_str();
 
   if ( p )
@@ -155,7 +155,7 @@ int FTermBuffer::write (const FString& s)
 }
 
 //----------------------------------------------------------------------
-int FTermBuffer::write (register int c)
+int FTermBuffer::write (int c)
 {
   charData nc;  // next character
   nc = FVTerm::getAttribute();

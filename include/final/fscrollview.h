@@ -4,7 +4,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -99,8 +99,8 @@ class FScrollView : public FWidget
     virtual void      setHeight (int, bool = true);
     virtual void      setSize (int, int, bool = true);
     void              setGeometry (int, int, int, int, bool = true);
-    void              setCursorPos (register int, register int);
-    void              setPrintPos (register int, register int);
+    void              setCursorPos (int, int);
+    void              setPrintPos (int, int);
     bool              setViewportPrint (bool);
     bool              setViewportPrint();
     bool              unsetViewportPrint();

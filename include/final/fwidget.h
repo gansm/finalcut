@@ -241,10 +241,10 @@ class FWidget : public FVTerm, public FObject
     void               setMaximumSize (int, int);
     void               setFixedSize (int, int);
     bool               setCursorPos (const FPoint&);
-    bool               setCursorPos (register int, register int);
+    bool               setCursorPos (int, int);
     void               unsetCursorPos();
     void               setPrintPos (const FPoint&);
-    void               setPrintPos (register int, register int);
+    void               setPrintPos (int, int);
     void               setDoubleFlatLine (fc::sides, bool = true);
     void               unsetDoubleFlatLine (fc::sides);
     void               setDoubleFlatLine (fc::sides, int, bool = true);

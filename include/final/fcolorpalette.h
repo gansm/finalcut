@@ -44,8 +44,11 @@
 class FColorPalette
 {
   public:
+    // Constructor
+    explicit FColorPalette();
+
     // Destructor
-    virtual ~FColorPalette() = 0;
+    virtual ~FColorPalette();
 
     // Typedefs
     typedef void (*funcp)(short, int, int, int);

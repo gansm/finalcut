@@ -213,7 +213,7 @@ class FOptiAttr
 
     // Methods
     void         initialize();
-    static short vga2ansi (register short);
+    static short vga2ansi (short);
     char*        changeAttribute (charData*&, charData*&);
 
   private:

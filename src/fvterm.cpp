@@ -99,7 +99,7 @@ FPoint FVTerm::getPrintCursor()
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setTermXY (register int x, register int y)
+void FVTerm::setTermXY (int x, int y)
 {
   // Sets the hardware cursor to the given (x,y) position
   int term_x, term_y, term_width, term_height;
@@ -149,7 +149,7 @@ void FVTerm::hideCursor (bool on)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::setPrintCursor (register int x, register int y)
+void FVTerm::setPrintCursor (int x, int y)
 {
   term_area* win = getPrintArea();
 
@@ -248,7 +248,7 @@ void FVTerm::updateTerminal()
   // Update data on VTerm
   updateVTerm();
 
-  for (register uInt y = 0; y < uInt(vterm->height); y++)
+  for (uInt y = 0; y < uInt(vterm->height); y++)
     updateTerminalLine (y);
 
   // sets the new input cursor position
@@ -325,7 +325,7 @@ int FVTerm::printf (const char format[], ...)
   {
     try
     {
-      buffer = new char[len + 1]();
+      buffer = new char[uInt(len) + 1]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -481,7 +481,7 @@ int FVTerm::print (const std::vector<charData>& term_string)
 //----------------------------------------------------------------------
 int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 {
-  register int len = 0;
+  int len = 0;
   std::vector<charData>::const_iterator iter;
   iter = term_string.begin();
   uInt tabstop = uInt(getTabstop());
@@ -540,7 +540,7 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (register int c)
+int FVTerm::print (int c)
 {
   term_area* area = getPrintArea();
 
@@ -556,7 +556,7 @@ int FVTerm::print (register int c)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (term_area* area, register int c)
+int FVTerm::print (term_area* area, int c)
 {
   charData nc;  // next character
 
@@ -828,6 +828,9 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
                                        , int height
                                        , int size )
 {
+  assert ( height > 0 );
+  assert ( size > 0 );
+
   if ( area->changes != 0 )
     delete[] area->changes;
 
@@ -836,8 +839,8 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 
   try
   {
-    area->changes = new line_changes[height];
-    area->text    = new charData[size];
+    area->changes = new line_changes[uInt(height)];
+    area->text    = new charData[uInt(size)];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -851,12 +854,14 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 //----------------------------------------------------------------------
 inline bool FVTerm::reallocateTextArea (term_area* area, int size)
 {
+  assert ( size > 0 );
+
   if ( area->text != 0 )
     delete[] area->text;
 
   try
   {
-    area->text = new charData[size];
+    area->text = new charData[uInt(size)];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -1594,7 +1599,7 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
   if ( length < 1 )
     return;
 
-  for (register int y = 0; y < y_end; y++)  // line loop
+  for (int y = 0; y < y_end; y++)  // line loop
   {
     int line_len = aw + rsh;
 
@@ -1608,7 +1613,7 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
     else
     {
       // Line has one or more transparent characters
-      for (register int x = 0; x < length; x++)  // column loop
+      for (int x = 0; x < length; x++)  // column loop
       {
         int cx = ax + x;
         int cy = ay + y;

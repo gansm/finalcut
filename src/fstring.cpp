@@ -85,8 +85,8 @@ FString::FString (uInt len, wchar_t c)
   , bufsize(0)
   , c_string(0)
 {
-  register wchar_t* ps;
-  register wchar_t* pe;
+  wchar_t* ps;
+  wchar_t* pe;
 
   initLength(len);
   ps = string;
@@ -121,8 +121,8 @@ FString::FString (uInt len, char c)
   , bufsize(0)
   , c_string(0)
 {
-  register wchar_t* ps;
-  register wchar_t* pe;
+  wchar_t* ps;
+  wchar_t* pe;
 
   initLength(len);
   ps = string;
@@ -798,9 +798,11 @@ FString& FString::sprintf (const char format[], ...)
 
   if ( len >= int(sizeof(buf)) )
   {
+    uLong buf_size = uInt(len) + 1;
+
     try
     {
-      buffer = new char[len + 1]();
+      buffer = new char[buf_size]();
     }
     catch (const std::bad_alloc& ex)
     {
@@ -809,7 +811,7 @@ FString& FString::sprintf (const char format[], ...)
     }
 
     va_start (args, format);
-    vsnprintf (buffer, uLong(len + 1), format, args);
+    vsnprintf (buffer, buf_size, format, args);
     va_end (args);
   }
 
@@ -890,7 +892,7 @@ const std::string FString::toString() const
 //----------------------------------------------------------------------
 FString FString::toLower() const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
   p = s.string;
 
@@ -909,7 +911,7 @@ FString FString::toLower() const
 //----------------------------------------------------------------------
 FString FString::toUpper() const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
   p = s.string;
 
@@ -928,7 +930,7 @@ FString FString::toUpper() const
 //----------------------------------------------------------------------
 sInt16 FString::toShort() const
 {
-  register long num;
+  long num;
   num = toLong();
 
   if ( num > SHRT_MAX )
@@ -943,7 +945,7 @@ sInt16 FString::toShort() const
 //----------------------------------------------------------------------
 uInt16 FString::toUShort() const
 {
-  register uLong num;
+  uLong num;
   num = uLong(toULong());
 
   if ( num > USHRT_MAX )
@@ -955,7 +957,7 @@ uInt16 FString::toUShort() const
 //----------------------------------------------------------------------
 int FString::toInt() const
 {
-  register long num;
+  long num;
   num = toLong();
 
   if ( num > INT_MAX )
@@ -970,7 +972,7 @@ int FString::toInt() const
 //----------------------------------------------------------------------
 uInt FString::toUInt() const
 {
-  register uLong num;
+  uLong num;
   num = uLong(toULong());
 
   if ( num > UINT_MAX )
@@ -982,11 +984,11 @@ uInt FString::toUInt() const
 //----------------------------------------------------------------------
 long FString::toLong() const
 {
-  register bool neg;
-  register long num;
-  register long tenth_limit;
-  register long tenth_limit_digit;
-  register wchar_t* p;
+  bool neg;
+  long num;
+  long tenth_limit;
+  long tenth_limit_digit;
+  wchar_t* p;
   FString s;
 
   neg = false;
@@ -1016,7 +1018,7 @@ long FString::toLong() const
 
   while ( std::iswdigit(wint_t(*p)) )
   {
-    register uChar d = uChar((*p) - L'0');
+    uChar d = uChar((*p) - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -1043,10 +1045,10 @@ long FString::toLong() const
 //----------------------------------------------------------------------
 uLong FString::toULong() const
 {
-  register uLong num;
-  register uLong tenth_limit;
-  register uLong tenth_limit_digit;
-  register wchar_t* p;
+  uLong num;
+  uLong tenth_limit;
+  uLong tenth_limit_digit;
+  wchar_t* p;
   FString s;
 
   num = 0;
@@ -1072,7 +1074,7 @@ uLong FString::toULong() const
 
   while ( std::iswdigit(wint_t(*p)) )
   {
-    register uChar d = uChar((*p) - L'0');
+    uChar d = uChar((*p) - L'0');
 
     if ( num > tenth_limit
       || (num == tenth_limit && d > tenth_limit_digit) )
@@ -1093,13 +1095,13 @@ uLong FString::toULong() const
 //----------------------------------------------------------------------
 float FString::toFloat() const
 {
-  register double num;
+  double num;
   num = toDouble();
 
   if ( num > double(FLT_MAX) || num < double(-FLT_MAX) )
     throw std::overflow_error ("overflow");
 
-  if ( std::fabs(num) < FLT_EPSILON )  // num == 0.0f
+  if ( std::fabs(num) < double(FLT_EPSILON) )  // num == 0.0f
     throw std::underflow_error ("underflow");
 
   return float(num);
@@ -1109,7 +1111,7 @@ float FString::toFloat() const
 double FString::toDouble() const
 {
   wchar_t* p;
-  register double ret;
+  double ret;
 
   if ( ! string )
     throw std::invalid_argument ("null value");
@@ -1137,7 +1139,7 @@ double FString::toDouble() const
 //----------------------------------------------------------------------
 FString FString::ltrim() const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   // handle NULL and empty string
@@ -1155,8 +1157,8 @@ FString FString::ltrim() const
 //----------------------------------------------------------------------
 FString FString::rtrim() const
 {
-  register wchar_t* p;
-  register wchar_t* last;
+  wchar_t* p;
+  wchar_t* last;
   FString s(string);
 
   // handle NULL and empty string
@@ -1200,7 +1202,7 @@ FString FString::left (int len) const
 //----------------------------------------------------------------------
 FString FString::left (uInt len) const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   // handle NULL and empty string
@@ -1228,7 +1230,7 @@ FString FString::right (int len) const
 //----------------------------------------------------------------------
 FString FString::right (uInt len) const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   // handle NULL and empty string
@@ -1260,8 +1262,8 @@ FString FString::mid (int pos, int len) const
 //----------------------------------------------------------------------
 FString FString::mid (uInt pos, uInt len) const
 {
-  register wchar_t* p;
-  register wchar_t* first;
+  wchar_t* p;
+  wchar_t* first;
   FString s(string);
 
   // handle NULL and empty string
@@ -1326,8 +1328,8 @@ FString& FString::setString (const char s[])
 //----------------------------------------------------------------------
 FString& FString::setNumber (long num)
 {
-  register wchar_t* s;
-  register bool neg;
+  wchar_t* s;
+  bool neg;
   wchar_t buf[30];
 
   s = &buf[29];
@@ -1361,7 +1363,7 @@ FString& FString::setNumber (long num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (uLong num)
 {
-  register wchar_t* s;
+  wchar_t* s;
   wchar_t buf[30];
 
   s = &buf[29];
@@ -1381,7 +1383,7 @@ FString& FString::setNumber (uLong num)
 //----------------------------------------------------------------------
 FString& FString::setNumber (lDouble num, int precision)
 {
-  register wchar_t* s;
+  wchar_t* s;
   wchar_t format[20];  // = "%.<precision>Lg"
 
   s = &format[0];
@@ -1414,9 +1416,9 @@ FString& FString::setNumber (lDouble num, int precision)
 //----------------------------------------------------------------------
 FString& FString::setFormatedNumber (long num, char separator)
 {
-  register int n;
-  register wchar_t* s;
-  register bool neg;
+  int n;
+  wchar_t* s;
+  bool neg;
   wchar_t buf[30];
 
   n = 0;
@@ -1457,8 +1459,8 @@ FString& FString::setFormatedNumber (long num, char separator)
 //----------------------------------------------------------------------
 FString& FString::setFormatedNumber (uLong num, char separator)
 {
-  register int n;
-  register wchar_t* s;
+  int n;
+  wchar_t* s;
   wchar_t buf[30];
 
   n = 0;
@@ -1860,7 +1862,7 @@ const FString& FString::insert (const char c, uInt pos)
 //----------------------------------------------------------------------
 FString FString::replace (const FString& from, const FString& to)
 {
-  register wchar_t* p;
+  wchar_t* p;
   uInt from_length, to_length, pos;
   FString s(string);
 
@@ -2165,7 +2167,7 @@ FString FString::replace (const char from[], const char to)
 //----------------------------------------------------------------------
 FString FString::replace (const wchar_t from, const FString& to)
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   // handle NULL and empty string
@@ -2290,7 +2292,7 @@ FString FString::replace (const char from, const wchar_t to)
 //----------------------------------------------------------------------
 FString FString::replace (const char from, const char to)
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   // handle NULL and empty string
@@ -2313,7 +2315,7 @@ FString FString::replace (const char from, const char to)
 //----------------------------------------------------------------------
 FString FString::replaceControlCodes() const
 {
-  register wchar_t* p;
+  wchar_t* p;
   FString s(string);
 
   p = s.string;
@@ -2374,8 +2376,7 @@ FString FString::expandTabs (int tabstop) const
 //----------------------------------------------------------------------
 FString FString::removeDel() const
 {
-  register wchar_t* p;
-
+  wchar_t* p;
   FString s(string);
   p = s.string;
 
@@ -2414,8 +2415,7 @@ FString FString::removeDel() const
 //----------------------------------------------------------------------
 FString FString::removeBackspaces() const
 {
-  register wchar_t* p;
-
+  wchar_t* p;
   FString s(string);
   p = s.string;
 
@@ -2824,7 +2824,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
 
   try
   {
-    c_string = new char[dest_size]();
+    c_string = new char[uInt(dest_size)]();
 
     // pre-initialiaze the whole string with '\0'
     std::memset (c_string, '\0', std::size_t(dest_size));
@@ -2881,7 +2881,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
 
   try
   {
-    dest = new wchar_t[size]();
+    dest = new wchar_t[uInt(size)]();
     // pre-initialiaze the whole string with '\0'
     std::wmemset (dest, L'\0', std::size_t(size));
   }
@@ -2921,7 +2921,7 @@ inline wchar_t* FString::extractToken ( wchar_t* rest[]
                                       , const wchar_t s[]
                                       , const wchar_t delim[] )
 {
-  register wchar_t* token;
+  wchar_t* token;
   token = ( s ) ? const_cast<wchar_t*>(s) : *rest;
 
   if ( ! token )

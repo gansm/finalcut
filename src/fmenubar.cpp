@@ -68,7 +68,7 @@ void FMenuBar::hide()
 
   try
   {
-    blank = new char[screenWidth + 1];
+    blank = new char[uInt(screenWidth) + 1];
   }
   catch (const std::bad_alloc& ex)
   {

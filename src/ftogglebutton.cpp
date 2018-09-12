@@ -241,7 +241,7 @@ void FToggleButton::hide()
 
   try
   {
-    blank = new char[size + 1];
+    blank = new char[uInt(size) + 1];
   }
   catch (const std::bad_alloc& ex)
   {

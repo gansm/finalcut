@@ -800,7 +800,7 @@ void FTerm::putstring (const char s[], int affcnt)
 
 #if defined(__sun) && defined(__SVR4)
 //----------------------------------------------------------------------
-int FTerm::putchar_ASCII (register char c)
+int FTerm::putchar_ASCII (char c)
 {
   if ( std::putchar(c) == EOF )
     return 0;
@@ -810,7 +810,7 @@ int FTerm::putchar_ASCII (register char c)
 #endif
 
 //----------------------------------------------------------------------
-int FTerm::putchar_ASCII (register int c)
+int FTerm::putchar_ASCII (int c)
 {
   if ( std::putchar(char(c)) == EOF )
     return 0;
@@ -819,7 +819,7 @@ int FTerm::putchar_ASCII (register int c)
 }
 
 //----------------------------------------------------------------------
-int FTerm::putchar_UTF8 (register int c)
+int FTerm::putchar_UTF8 (int c)
 {
   if ( c < 0x80 )
   {
@@ -2196,9 +2196,9 @@ void FTerm::finish_encoding()
 //----------------------------------------------------------------------
 uInt FTerm::cp437_to_unicode (uChar c)
 {
-  register uInt ucs = uInt(c);
+  uInt ucs = uInt(c);
 
-  for (register uInt i = 0; i <= fc::lastCP437Item; i++)
+  for (uInt i = 0; i <= fc::lastCP437Item; i++)
   {
     if ( fc::cp437_to_ucs[i][0] == c )  // found
     {
