@@ -382,6 +382,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     bool        openSlavePTY();
     void        closeMasterPTY();
     void        closeSlavePTY();
+    void        closeStandardStreams();
     pid_t       forkProcess();
     bool        isChildProcess (pid_t);
     void        terminalSimulation (console);
@@ -512,10 +513,7 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -574,9 +572,9 @@ void FTermDetectionTest::xtermTest()
 
     debugOutput();
 
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    close(0);  // fd_slave on stdin
+    close(1);  // fd_slave on stdout
+    close(2);  // fd_slave on stderr
     return;
   }
   else  // Parent
@@ -634,10 +632,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -695,10 +690,7 @@ void FTermDetectionTest::urxvtTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -757,10 +749,7 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -819,10 +808,7 @@ void FTermDetectionTest::puttyTest()
 
     //debug = true;
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -880,10 +866,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -942,10 +925,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1004,10 +984,7 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1066,10 +1043,7 @@ void FTermDetectionTest::teraTermTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1128,10 +1102,7 @@ void FTermDetectionTest::cygwinTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1190,10 +1161,7 @@ void FTermDetectionTest::minttyTest()
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1252,10 +1220,7 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1315,10 +1280,7 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1378,10 +1340,7 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1441,10 +1400,7 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1502,10 +1458,7 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1565,10 +1518,7 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1628,10 +1578,7 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
+    closeStandardStreams();
     return;
   }
   else  // Parent
@@ -1961,6 +1908,14 @@ void FTermDetectionTest::closeSlavePTY()
 }
 
 //----------------------------------------------------------------------
+void FTermDetectionTest::closeStandardStreams()
+{
+  close(fd_stdin);   // stdin
+  close(fd_stdout);  // stdout
+  close(fd_stderr);  // stderr
+}
+
+//----------------------------------------------------------------------
 pid_t FTermDetectionTest::forkProcess()
 {
   // Initialize buffer with '\0'
@@ -1991,7 +1946,8 @@ pid_t FTermDetectionTest::forkProcess()
 
 #ifdef TIOCSCTTY
     // Set controlling tty
-    ioctl(fd_slave, TIOCSCTTY, 0);
+    if ( ioctl(fd_slave, TIOCSCTTY, 0) == -1 )
+      return -1;
 #endif
 
     // Get current terminal settings
@@ -2000,14 +1956,11 @@ pid_t FTermDetectionTest::forkProcess()
     // Set raw mode on the slave side of the PTY
     cfmakeraw (&term_settings);
     tcsetattr (fd_slave, TCSANOW, &term_settings);
+    closeStandardStreams();
 
-    close(fd_stdin);
-    close(fd_stdout);
-    close(fd_stderr);
-
-    dup(fd_slave);  // PTY becomes stdin  (0)
-    dup(fd_slave);  // PTY becomes stdout (1)
-    dup(fd_slave);  // PTY becomes stderr (2)
+    fd_stdin = dup(fd_slave);  // PTY becomes stdin  (0)
+    fd_stdout = dup(fd_slave);  // PTY becomes stdout (1)
+    fd_stderr = dup(fd_slave);  // PTY becomes stderr (2)
 
     closeSlavePTY();
 
