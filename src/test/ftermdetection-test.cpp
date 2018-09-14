@@ -29,6 +29,7 @@
 #include <cppunit/TestRunner.h>
 
 #include <final/final.h>
+#include <sys/wait.h>
 #include <sys/mman.h>
 
 #define CPPUNIT_ASSERT_CSTRING(expected, actual) \
@@ -514,15 +515,15 @@ void FTermDetectionTest::ansiTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (ansi);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -571,19 +572,16 @@ void FTermDetectionTest::xtermTest()
     CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
 
     debugOutput();
-
-    close(0);  // fd_slave on stdin
-    close(1);  // fd_slave on stdout
-    close(2);  // fd_slave on stderr
-    return;
+    closeStandardStreams();
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (xterm);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -633,15 +631,15 @@ void FTermDetectionTest::rxvtTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (rxvt);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -691,15 +689,15 @@ void FTermDetectionTest::urxvtTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (urxvt);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -750,15 +748,15 @@ void FTermDetectionTest::mltermTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (mlterm);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -809,15 +807,15 @@ void FTermDetectionTest::puttyTest()
     //debug = true;
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (putty);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -867,15 +865,15 @@ void FTermDetectionTest::kdeKonsoleTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (kde_konsole);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -926,15 +924,15 @@ void FTermDetectionTest::gnomeTerminalTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (gnome_terminal);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -985,15 +983,15 @@ void FTermDetectionTest::ktermTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (kterm);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1044,15 +1042,15 @@ void FTermDetectionTest::teraTermTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (tera_term);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1103,15 +1101,15 @@ void FTermDetectionTest::cygwinTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (cygwin);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1162,15 +1160,15 @@ void FTermDetectionTest::minttyTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (mintty);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1221,15 +1219,15 @@ void FTermDetectionTest::linuxTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (linux_con);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1281,15 +1279,15 @@ void FTermDetectionTest::freebsdTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (freebsd_con);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1341,15 +1339,15 @@ void FTermDetectionTest::netbsdTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (netbsd_con);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1401,15 +1399,15 @@ void FTermDetectionTest::openbsdTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (openbsd_con);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1459,15 +1457,15 @@ void FTermDetectionTest::sunTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (sun_con);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1519,15 +1517,15 @@ void FTermDetectionTest::screenTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (screen);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1579,15 +1577,15 @@ void FTermDetectionTest::tmuxTest()
 
     debugOutput();
     closeStandardStreams();
-    return;
+    exit(EXIT_SUCCESS);
   }
   else  // Parent
   {
     // Start the terminal simulation
     terminalSimulation (tmux);
 
-    // Kill child process
-    kill (pid, SIGKILL);
+    if ( waitpid(pid, 0, 0) != pid )
+      ::fprintf (stderr, "waitpid error");
   }
 }
 
@@ -1999,14 +1997,17 @@ void FTermDetectionTest::terminalSimulation (console con)
   while ( 1 )
   {
     fd_set ifds;
+    struct timeval tv;
     int len;
 
     FD_ZERO(&ifds);
     FD_SET(fd_stdin, &ifds);
     FD_SET(fd_master, &ifds);
+    tv.tv_sec  = 0;
+    tv.tv_usec = 750000;  // 750 ms
 
     // Wait for data from stdin or the master side of PTY
-    if ( select(fd_master + 1, &ifds, 0, 0, 0) < 0 )
+    if ( select(fd_master + 1, &ifds, 0, 0, &tv) < 0 )
       break;
 
     // Data on standard input
