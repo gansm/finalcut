@@ -122,6 +122,7 @@ if [ "$1" = "--unit-test" ] \
 || [ "$1" = "coverage" ]
 then
   cd src/test && make check-TESTS
+  cat *.log 2>/dev/null
 fi
 
 # make install

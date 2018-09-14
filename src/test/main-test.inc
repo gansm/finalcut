@@ -19,6 +19,7 @@ int main (int, char**)
   CPPUNIT_NS::TestRunner testrunner;
   testrunner.addTest (CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest());
   testrunner.run (testresult);
+
   // Outputting results in compiler format
   CPPUNIT_NS::CompilerOutputter compileroutputter ( &collectedresults
                                                   , std::cerr );

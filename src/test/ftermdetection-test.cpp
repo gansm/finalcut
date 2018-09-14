@@ -1958,7 +1958,7 @@ pid_t FTermDetectionTest::forkProcess()
     tcsetattr (fd_slave, TCSANOW, &term_settings);
     closeStandardStreams();
 
-    fd_stdin = dup(fd_slave);  // PTY becomes stdin  (0)
+    fd_stdin  = dup(fd_slave);  // PTY becomes stdin  (0)
     fd_stdout = dup(fd_slave);  // PTY becomes stdout (1)
     fd_stderr = dup(fd_slave);  // PTY becomes stderr (2)
 
