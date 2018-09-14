@@ -26,6 +26,7 @@
 // static class attributes
 int     FTermios::stdin_no;
 int     FTermios::stdout_no;
+int     FTermios::stderr_no;
 bool    FTermios::raw_mode;
 termios FTermios::term_init;
 
@@ -56,6 +57,7 @@ void FTermios::init()
   // Get file descriptor for standard input and standard output
   stdin_no  = fileno(stdin);
   stdout_no = fileno(stdout);
+  stderr_no = fileno(stderr);
 }
 
 //----------------------------------------------------------------------

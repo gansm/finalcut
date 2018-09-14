@@ -532,6 +532,7 @@ void FTermXTerminal::setXTerm8ColorDefaults()
 
   if ( xterm_default_colors
     && ! (term_detection->isMinttyTerm()
+       || term_detection->isMltermTerminal()
        || term_detection->isRxvtTerminal()
        || term_detection->isScreenTerm()) )
   {
@@ -559,6 +560,7 @@ void FTermXTerminal::setXTerm16ColorDefaults()
 
   if ( xterm_default_colors
     && ! (term_detection->isMinttyTerm()
+       || term_detection->isMltermTerminal()
        || term_detection->isRxvtTerminal()
        || term_detection->isScreenTerm()) )
   {
@@ -578,7 +580,8 @@ void FTermXTerminal::resetXTermColorMap()
     && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection->isPuttyTerminal()
+    || term_detection->isMltermTerminal() )
     return;
 
   if ( term_detection->isXTerminal()
@@ -601,7 +604,8 @@ void FTermXTerminal::resetXTermForeground()
     && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection->isPuttyTerminal()
+    || term_detection->isMltermTerminal() )
     return;
 
   if ( term_detection->isXTerminal()
@@ -624,7 +628,8 @@ void FTermXTerminal::resetXTermBackground()
     && term_detection->getGnomeTerminalID() < 3502 )
     return;
 
-  if ( term_detection->isPuttyTerminal() )
+  if ( term_detection->isPuttyTerminal()
+    || term_detection->isMltermTerminal() )
     return;
 
   if ( term_detection->isXTerminal()

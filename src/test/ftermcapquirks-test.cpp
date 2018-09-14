@@ -229,7 +229,7 @@ void FTermcapQuirksTest::generalTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -292,10 +292,10 @@ void FTermcapQuirksTest::xtermTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
-  
+
   FTermcapQuirks quirks;
   FTermDetection detect;
   detect.setXTerminal (true);
@@ -323,7 +323,7 @@ void FTermcapQuirksTest::freebsdTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -362,7 +362,7 @@ void FTermcapQuirksTest::cygwinTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -389,7 +389,7 @@ void FTermcapQuirksTest::linuxTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -413,7 +413,7 @@ void FTermcapQuirksTest::linuxTest()
   // 16 colors
   FTermcap::max_color = 16;
   quirks.terminalFixup();
-  
+
   CPPUNIT_ASSERT_CSTRING ( caps[fc::t_set_a_foreground].string
                          , C_STR(CSI "3%p1%{8}%m%d%?%p1%{7}%>%t;1%e;22%;m") );
   CPPUNIT_ASSERT_CSTRING ( caps[fc::t_set_a_background].string
@@ -463,7 +463,7 @@ void FTermcapQuirksTest::rxvtTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -495,7 +495,7 @@ void FTermcapQuirksTest::rxvtTest()
                          , C_STR(CSI "%?%p1%{8}%<%t%p1%{30}%+%e%p1%'R'%+%;%dm") );
   CPPUNIT_ASSERT_CSTRING ( caps[fc::t_set_a_background].string
                          , C_STR(CSI "%?%p1%{8}%<%t%p1%'('%+%e%p1%{92}%+%;%dm") );
-  
+
   detect.setUrxvtTerminal (false);
   detect.setRxvtTerminal (false);
   delete[] caps;
@@ -506,7 +506,7 @@ void FTermcapQuirksTest::vteTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -532,7 +532,7 @@ void FTermcapQuirksTest::puttyTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -617,7 +617,7 @@ void FTermcapQuirksTest::teratermTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -649,7 +649,7 @@ void FTermcapQuirksTest::sunTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
@@ -673,7 +673,7 @@ void FTermcapQuirksTest::screenTest()
 {
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
   test::tcap_map* caps = new test::tcap_map[last_item];
-  
+
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 

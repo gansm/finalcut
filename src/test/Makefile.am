@@ -10,6 +10,7 @@ noinst_PROGRAMS = \
 	fobject_test \
 	fmouse_test \
 	fkeyboard_test \
+	ftermdetection_test \
 	ftermcapquirks_test \
 	foptimove_test \
 	foptiattr_test \
@@ -20,6 +21,7 @@ noinst_PROGRAMS = \
 fobject_test_SOURCES = fobject-test.cpp
 fmouse_test_SOURCES = fmouse-test.cpp
 fkeyboard_test_SOURCES = fkeyboard-test.cpp
+ftermdetection_test_SOURCES = ftermdetection-test.cpp
 ftermcapquirks_test_SOURCES = ftermcapquirks-test.cpp
 foptimove_test_SOURCES = foptimove-test.cpp
 foptiattr_test_SOURCES = foptiattr-test.cpp
@@ -30,6 +32,7 @@ frect_test_SOURCES = frect-test.cpp
 TESTS = fobject_test \
 	fmouse_test \
 	fkeyboard_test \
+	ftermdetection_test \
 	ftermcapquirks_test \
 	foptimove_test \
 	foptiattr_test \

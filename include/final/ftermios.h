@@ -62,6 +62,7 @@ class FTermios
     static termios getTTY();
     static int     getStdIn();
     static int     getStdOut();
+    static int     getStdErr();
 
     // Inquiries
     static bool    isRaw();
@@ -85,6 +86,7 @@ class FTermios
     // Data Members
     static int    stdin_no;
     static int    stdout_no;
+    static int    stderr_no;
     static bool   raw_mode;
     static struct termios term_init;
 };
@@ -102,6 +104,10 @@ inline int FTermios::getStdIn()
 //----------------------------------------------------------------------
 inline int FTermios::getStdOut()
 { return stdout_no; }
+
+//----------------------------------------------------------------------
+inline int FTermios::getStdErr()
+{ return stderr_no; }
 
 //----------------------------------------------------------------------
 inline bool FTermios::isRaw()

@@ -61,8 +61,8 @@ class FTermDetection
     typedef struct
     {
       // byte #0
-      uInt8 xterm          : 1;
       uInt8 ansi           : 1;
+      uInt8 xterm          : 1;
       uInt8 rxvt           : 1;
       uInt8 urxvt          : 1;
       uInt8 mlterm         : 1;
@@ -107,8 +107,8 @@ class FTermDetection
 #endif
 
     // Inquiries
-    static bool           isXTerminal();
     static bool           isAnsiTerminal();
+    static bool           isXTerminal();
     static bool           isRxvtTerminal();
     static bool           isUrxvtTerminal();
     static bool           isMltermTerminal();
@@ -117,13 +117,13 @@ class FTermDetection
     static bool           isGnomeTerminal();
     static bool           isKtermTerminal();
     static bool           isTeraTerm();
-    static bool           isSunTerminal();
     static bool           isCygwinTerminal();
     static bool           isMinttyTerm();
     static bool           isLinuxTerm();
     static bool           isFreeBSDTerm();
     static bool           isNetBSDTerm();
     static bool           isOpenBSDTerm();
+    static bool           isSunTerminal();
     static bool           isScreenTerm();
     static bool           isTmuxTerm();
     static bool           canDisplay256Colors();
@@ -131,8 +131,8 @@ class FTermDetection
     static bool           hasSetCursorStyleSupport();
 
     // Mutators
-    static void           setXTerminal (bool);
     static void           setAnsiTerminal (bool);
+    static void           setXTerminal (bool);
     static void           setRxvtTerminal (bool);
     static void           setUrxvtTerminal (bool);
     static void           setMltermTerminal (bool);
@@ -141,13 +141,13 @@ class FTermDetection
     static void           setGnomeTerminal (bool);
     static void           setKtermTerminal (bool);
     static void           setTeraTerm (bool);
-    static void           setSunTerminal (bool);
     static void           setCygwinTerminal (bool);
     static void           setMinttyTerm (bool);
     static void           setLinuxTerm (bool);
     static void           setFreeBSDTerm (bool);
     static void           setNetBSDTerm (bool);
     static void           setOpenBSDTerm (bool);
+    static void           setSunTerminal (bool);
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
@@ -190,6 +190,7 @@ class FTermDetection
     static char*          secDA_Analysis_77 (char[]);
     static char*          secDA_Analysis_82 (char[]);
     static char*          secDA_Analysis_83 (char[]);
+    static char*          secDA_Analysis_84 (char[]);
     static char*          secDA_Analysis_85 (char[]);
 
     // Data Members
@@ -331,10 +332,6 @@ inline bool FTermDetection::isTeraTerm()
 { return terminal_type.tera_term; }
 
 //----------------------------------------------------------------------
-inline bool FTermDetection::isSunTerminal()
-{ return terminal_type.sun_con; }
-
-//----------------------------------------------------------------------
 inline bool FTermDetection::isCygwinTerminal()
 { return terminal_type.cygwin; }
 
@@ -357,6 +354,10 @@ inline bool FTermDetection::isNetBSDTerm()
 //----------------------------------------------------------------------
 inline bool FTermDetection::isOpenBSDTerm()
 { return terminal_type.openbsd_con; }
+
+//----------------------------------------------------------------------
+inline bool FTermDetection::isSunTerminal()
+{ return terminal_type.sun_con; }
 
 //----------------------------------------------------------------------
 inline bool FTermDetection::isScreenTerm()
@@ -411,10 +412,6 @@ inline void FTermDetection::setTeraTerm (bool on)
 { terminal_type.tera_term = on; }
 
 //----------------------------------------------------------------------
-inline void FTermDetection::setSunTerminal (bool on)
-{ terminal_type.sun_con = on; }
-
-//----------------------------------------------------------------------
 inline void FTermDetection::setCygwinTerminal (bool on)
 { terminal_type.cygwin = on; }
 
@@ -437,6 +434,10 @@ inline void FTermDetection::setNetBSDTerm (bool on)
 //----------------------------------------------------------------------
 inline void FTermDetection::setOpenBSDTerm (bool on)
 { terminal_type.openbsd_con = on; }
+
+//----------------------------------------------------------------------
+inline void FTermDetection::setSunTerminal (bool on)
+{ terminal_type.sun_con = on; }
 
 //----------------------------------------------------------------------
 inline void FTermDetection::setScreenTerm (bool on)

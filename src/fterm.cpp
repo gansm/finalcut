@@ -580,10 +580,7 @@ void FTerm::resetColorMap()
 
 #if defined(__linux__)
   else
-  {
-  linux->resetColorMap();
-
-  }
+    linux->resetColorMap();
 #endif
 
   if ( op )
@@ -1692,6 +1689,7 @@ void FTerm::redefineColorPalette()
   if ( isCygwinTerminal()
     || isKdeTerminal()
     || isTeraTerm()
+    || isMltermTerminal()
     || isNetBSDTerm()
     || isOpenBSDTerm()
     || isSunTerminal()
@@ -1713,6 +1711,7 @@ void FTerm::restoreColorPalette()
   if ( isCygwinTerminal()
     || isKdeTerminal()
     || isTeraTerm()
+    || isMltermTerminal()
     || isNetBSDTerm()
     || isOpenBSDTerm()
     || isSunTerminal()

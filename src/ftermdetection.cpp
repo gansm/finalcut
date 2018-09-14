@@ -257,6 +257,20 @@ void FTermDetection::termtypeAnalysis()
     terminal_type.kterm = true;
   }
 
+  // mlterm
+  if ( std::strncmp(termtype, "mlterm", 6) == 0 )
+    terminal_type.mlterm = true;
+
+  // screen/tmux
+  if ( std::strncmp(termtype, "screen", 6) == 0 )
+  {
+    terminal_type.screen = true;
+    char* tmux = std::getenv("TMUX");
+
+    if ( tmux && std::strlen(tmux) != 0 )
+      terminal_type.tmux = true;
+  }
+
   // Linux console
   if ( std::strncmp(termtype, C_STR("linux"), 5) == 0
     || std::strncmp(termtype, C_STR("con"), 3) == 0 )
@@ -387,23 +401,13 @@ char* FTermDetection::termtype_256color_quirks()
     new_termtype = C_STR("xterm-256color");
 
   if ( std::strncmp(termtype, "screen", 6) == 0 )
-  {
     new_termtype = C_STR("screen-256color");
-    terminal_type.screen = true;
-    char* tmux = std::getenv("TMUX");
-
-    if ( tmux && std::strlen(tmux) != 0 )
-      terminal_type.tmux = true;
-  }
 
   if ( std::strncmp(termtype, "Eterm", 5) == 0 )
     new_termtype = C_STR("Eterm-256color");
 
   if ( std::strncmp(termtype, "mlterm", 6) == 0 )
-  {
     new_termtype = C_STR("mlterm-256color");
-    terminal_type.mlterm = true;
-  }
 
   if ( std::strncmp(termtype, "rxvt", 4) != 0
     && color_env.string1
@@ -416,6 +420,9 @@ char* FTermDetection::termtype_256color_quirks()
   if ( (color_env.string5 && std::strlen(color_env.string5) > 0)
     || (color_env.string6 && std::strlen(color_env.string6) > 0) )
     terminal_type.kde_konsole = true;
+
+  if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
+    decscusr_support = true;
 
   if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
     || color_env.string2 )
@@ -445,8 +452,10 @@ char* FTermDetection::determineMaxColor (char current_termtype[])
     && ! isNetBSDTerm()
     && ! getXTermColorName(0).isEmpty() )
   {
-    if ( ! getXTermColorName(256).isEmpty() )
+    if ( ! getXTermColorName(255).isEmpty() )
     {
+      color256 = true;
+
       if ( isPuttyTerminal() )
         new_termtype = C_STR("putty-256color");
       else
@@ -728,6 +737,10 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
       new_termtype = secDA_Analysis_83(current_termtype);
       break;
 
+    case 84:  // tmux
+      new_termtype = secDA_Analysis_84(current_termtype);
+      break;
+
     case 85:  // rxvt-unicode
       new_termtype = secDA_Analysis_85(current_termtype);
       break;
@@ -834,6 +847,7 @@ inline char* FTermDetection::secDA_Analysis_77 (char[])
 
   char* new_termtype;
   terminal_type.mintty = true;
+  decscusr_support = true;
   new_termtype = C_STR("xterm-256color");
   std::fflush(stdout);
   return new_termtype;
@@ -863,6 +877,17 @@ inline char* FTermDetection::secDA_Analysis_83 (char current_termtype[])
 
   char* new_termtype = current_termtype;
   terminal_type.screen = true;
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTermDetection::secDA_Analysis_84 (char current_termtype[])
+{
+  // Terminal ID 84 - tmux
+
+  char* new_termtype = current_termtype;
+  terminal_type.screen = true;
+  terminal_type.tmux = true;
   return new_termtype;
 }
 

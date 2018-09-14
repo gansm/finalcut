@@ -1,3 +1,8 @@
+2018-09-14  Markus Gans  <guru.mail@muenster.de>
+	* Added unit test for FTermDetection with a terminal simulation 
+	  for common terminals
+	* Some minor terminal detection bug fixes
+
 2018-09-12  Markus Gans  <guru.mail@muenster.de>
 	* Removes the deprecated keyword "register" 
 	  from the source code
