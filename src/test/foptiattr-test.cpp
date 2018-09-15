@@ -83,7 +83,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
     void wyse50Test();
 
   private:
-    std::string printSequence (char*);
+    std::string printSequence (const std::string&);
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FOptiAttrTest);
@@ -4483,57 +4483,31 @@ void FOptiAttrTest::wyse50Test()
 }
 
 //----------------------------------------------------------------------
-std::string FOptiAttrTest::printSequence (char* str)
+std::string FOptiAttrTest::printSequence (const std::string& s)
 {
-  std::ostringstream sequence;
-
-  if ( ! str )
-    return "";
-
-  const std::string& s(str);
+  std::string sequence;
+  const std::string ctrl_character[] =
+  {
+    "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
+    "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
+    "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
+    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US",
+    "Space"
+  };
 
   for (std::string::size_type i = 0; i < s.length(); ++i)
   {
-    switch ( int(s[i]) )
-    {
-      case 0x03:
-        sequence << "ETX ";
-        break;
+    char ch = s[i];
 
-      case 0x08:
-        sequence << "BS ";
-        break;
+    if ( ch < 0x21 )
+      sequence += ctrl_character[uInt(ch)];
+    else
+      sequence += ch;
 
-      case 0x09:
-        sequence << "Tab ";
-        break;
-
-      case 0x0a:
-        sequence << "LF ";
-        break;
-
-      case 0x0d:
-        sequence << "CR ";
-        break;
-
-      case 0x0e:
-        sequence << "SO ";
-        break;
-
-      case 0x0f:
-        sequence << "SI ";
-        break;
-
-      case 0x1b:
-        sequence << "Esc ";
-        break;
-
-      default:
-        sequence << s[i] << ' ';
-    }
+    sequence += ' ';
   }
 
-  return sequence.str();
+  return sequence;
 }
 
 

@@ -32,8 +32,6 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 
-#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
-            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
 
 static char* colorname[] =
 {
@@ -296,20 +294,6 @@ static char* colorname[] =
   0
 };
 
-//----------------------------------------------------------------------
-void check_c_string ( const char* s1
-                    , const char* s2
-                    , CppUnit::SourceLine sourceLine )
-{
-  if ( s1 == 0 && s2 == 0 )  // Strings are equal
-    return;
-
-  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
-      return;
-
-  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
-}
-
 
 //----------------------------------------------------------------------
 // class FTermDetectionTest
@@ -371,7 +355,6 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     void tmuxTest();
 
   private:
-    std::string printSequence (const std::string&);
     char*       getAnswerback (console);
     char*       getDSR (console);
     char*       getDECID (console);
@@ -804,7 +787,7 @@ void FTermDetectionTest::puttyTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
-    //debug = true;
+    debug = true;
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1591,34 +1574,6 @@ void FTermDetectionTest::tmuxTest()
 
 
 // private methods of FOptiMoveTest
-//----------------------------------------------------------------------
-std::string FTermDetectionTest::printSequence (const std::string& s)
-{
-  std::string sequence;
-  const std::string ctrl_character[] =
-  {
-    "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
-    "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
-    "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
-    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US",
-    "Space"
-  };
-
-  for (std::string::size_type i = 0; i < s.length(); ++i)
-  {
-    char ch = buffer[i];
-
-    if ( ch < 0x21 )
-      sequence += ctrl_character[uInt(ch)];
-    else
-      sequence += ch;
-
-    sequence += ' ';
-  }
-
-  return sequence;
-}
-
 //----------------------------------------------------------------------
 char* FTermDetectionTest::getAnswerback (console con)
 {

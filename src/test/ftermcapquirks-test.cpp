@@ -284,6 +284,8 @@ void FTermcapQuirksTest::generalTest()
                          , C_STR(CSI "9m") );
   CPPUNIT_ASSERT_CSTRING ( caps[fc::t_exit_crossed_out_mode].string
                          , C_STR(CSI "29m") );
+  CPPUNIT_ASSERT_CSTRING ( printSequence(caps[fc::t_enter_ca_mode].string).c_str()
+                         , C_STR("Esc 7 Esc [ ? 4 7 h ") );
   delete[] caps;
 }
 
@@ -710,39 +712,29 @@ void FTermcapQuirksTest::screenTest()
 //----------------------------------------------------------------------
 std::string FTermcapQuirksTest::printSequence (const std::string& s)
 {
-  std::ostringstream sequence;
+  std::string sequence;
+  const std::string ctrl_character[] =
+  {
+    "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL",
+    "BS",  "Tab", "LF",  "VT",  "FF",  "CR",  "SO",  "SI",
+    "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB",
+    "CAN", "EM",  "SUB", "Esc", "FS",  "GS",  "RS",  "US",
+    "Space"
+  };
 
   for (std::string::size_type i = 0; i < s.length(); ++i)
   {
-    switch ( int(s[i]) )
-    {
-      case 0x08:
-        sequence << "BS ";
-        break;
+    char ch = s[i];
 
-      case 0x09:
-        sequence << "TAB ";
-        break;
+    if ( ch < 0x21 )
+      sequence += ctrl_character[uInt(ch)];
+    else
+      sequence += ch;
 
-      case 0x0a:
-        sequence << "LF ";
-        break;
-
-      case 0x0d:
-        sequence << "CR ";
-        break;
-
-      case 0x1b:
-        sequence << "Esc ";
-        break;
-
-      default:
-        sequence << s[i];
-        sequence << ' ';
-    }
+    sequence += ' ';
   }
 
-  return sequence.str();
+  return sequence;
 }
 
 // Put the test suite in the registry
