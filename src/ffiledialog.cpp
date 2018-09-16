@@ -508,7 +508,7 @@ inline bool FFileDialog::pattern_match ( const char* const pattern
   {
     search[0] = '.';
     search[1] = '\0';
-    std::strncat(search, pattern, sizeof(search) - std::strlen(search));
+    std::strncat(search, pattern, sizeof(search) - std::strlen(search) - 1);
   }
   else
     std::strncpy(search, pattern, sizeof(search));
@@ -705,7 +705,7 @@ void FFileDialog::followSymLink (const char* const dir, dir_entry& entry)
   symLink[sizeof(symLink) - 1] = '\0';
   std::strncat ( symLink
                , entry.name
-               , sizeof(symLink) - std::strlen(symLink));
+               , sizeof(symLink) - std::strlen(symLink) - 1);
   symLink[sizeof(symLink) - 1] = '\0';
 
   if ( realpath(symLink, resolved_path) == 0 )
