@@ -152,6 +152,7 @@ class FTermDetection
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
     static void           setTermFileName (char[]);
+    static void           setTtyTypeFileName (char[]);
 
     // Methods
     static void           detect();
@@ -166,7 +167,7 @@ class FTermDetection
   private:
     // Methods
     static void           getSystemTermType();
-    static void           getTTYtype();
+    static bool           getTTYtype();
 #if F_HAVE_GETTTYNAM
     static bool           getTTYSFileEntry();
 #endif
@@ -187,6 +188,7 @@ class FTermDetection
     static char*          secDA_Analysis_1 (char[]);
     static char*          secDA_Analysis_24 (char[]);
     static char*          secDA_Analysis_32 (char[]);
+    static char*          secDA_Analysis_67 (char[]);
     static char*          secDA_Analysis_77 (char[]);
     static char*          secDA_Analysis_82 (char[]);
     static char*          secDA_Analysis_83 (char[]);
@@ -196,6 +198,7 @@ class FTermDetection
     // Data Members
     static char           termtype[256];
     static char           termfilename[256];
+    static char           ttytypename[256];
     static bool           decscusr_support;
     static bool           terminal_detection;
     static bool           color256;

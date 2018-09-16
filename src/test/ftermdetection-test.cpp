@@ -32,6 +32,8 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 
+#define CPPUNIT_ASSERT_CSTRING(expected, actual) \
+            check_c_string (expected, actual, CPPUNIT_SOURCELINE())
 
 static char* colorname[] =
 {
@@ -294,6 +296,20 @@ static char* colorname[] =
   0
 };
 
+//----------------------------------------------------------------------
+void check_c_string ( const char* s1
+                    , const char* s2
+                    , CppUnit::SourceLine sourceLine )
+{
+  if ( s1 == 0 && s2 == 0 )  // Strings are equal
+    return;
+
+  if ( s1 && s2 && std::strcmp (s1, s2) == 0 )  // Strings are equal
+      return;
+
+  ::CppUnit::Asserter::fail ("Strings are not equal", sourceLine);
+}
+
 
 //----------------------------------------------------------------------
 // class FTermDetectionTest
@@ -353,6 +369,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     void sunTest();
     void screenTest();
     void tmuxTest();
+    void ttytypeTest();
 
   private:
     char*       getAnswerback (console);
@@ -396,6 +413,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (sunTest);
     CPPUNIT_TEST (screenTest);
     CPPUNIT_TEST (tmuxTest);
+    CPPUNIT_TEST (ttytypeTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -464,6 +482,7 @@ void FTermDetectionTest::ansiTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "ansi", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -495,6 +514,14 @@ void FTermDetectionTest::ansiTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("ansi") );
+
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setAnsiTerminal(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
 
     debugOutput();
     closeStandardStreams();
@@ -506,7 +533,7 @@ void FTermDetectionTest::ansiTest()
     terminalSimulation (ansi);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -523,6 +550,7 @@ void FTermDetectionTest::xtermTest()
   {
     setenv ("TERM", "xterm", 1);
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("ROXTERM_ID");
@@ -564,7 +592,7 @@ void FTermDetectionTest::xtermTest()
     terminalSimulation (xterm);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -581,6 +609,7 @@ void FTermDetectionTest::rxvtTest()
   {
     setenv ("TERM", "rxvt-cygwin-native", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
+    unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -622,7 +651,7 @@ void FTermDetectionTest::rxvtTest()
     terminalSimulation (rxvt);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -639,6 +668,7 @@ void FTermDetectionTest::urxvtTest()
   {
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
+    unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -680,7 +710,7 @@ void FTermDetectionTest::urxvtTest()
     terminalSimulation (urxvt);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -697,6 +727,7 @@ void FTermDetectionTest::mltermTest()
   {
     setenv ("TERM", "mlterm", 1);
     setenv ("MLTERM", "3.8.4", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -739,7 +770,7 @@ void FTermDetectionTest::mltermTest()
     terminalSimulation (mlterm);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -755,6 +786,7 @@ void FTermDetectionTest::puttyTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "xterm", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -798,7 +830,7 @@ void FTermDetectionTest::puttyTest()
     terminalSimulation (putty);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -817,6 +849,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("KONSOLE_DBUS_SERVICE", "DCOPRef(konsole-11768,konsole)", 1);
     setenv ("KONSOLE_DCOP", ":1.77", 1);
+    unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -856,7 +889,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     terminalSimulation (kde_konsole);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -874,6 +907,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5202", 1);
+    unsetenv("TERMCAP");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
     unsetenv("KONSOLE_DBUS_SESSION");
@@ -915,7 +949,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     terminalSimulation (gnome_terminal);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -931,6 +965,7 @@ void FTermDetectionTest::ktermTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "kterm", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -964,6 +999,13 @@ void FTermDetectionTest::ktermTest()
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setKtermTerminal(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -974,7 +1016,7 @@ void FTermDetectionTest::ktermTest()
     terminalSimulation (kterm);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -990,6 +1032,7 @@ void FTermDetectionTest::teraTermTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "xterm", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1033,7 +1076,7 @@ void FTermDetectionTest::teraTermTest()
     terminalSimulation (tera_term);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1049,6 +1092,7 @@ void FTermDetectionTest::cygwinTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "cygwin", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1092,7 +1136,7 @@ void FTermDetectionTest::cygwinTest()
     terminalSimulation (cygwin);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1108,6 +1152,7 @@ void FTermDetectionTest::minttyTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "xterm-256color", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1151,7 +1196,7 @@ void FTermDetectionTest::minttyTest()
     terminalSimulation (mintty);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1167,6 +1212,7 @@ void FTermDetectionTest::linuxTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "linux", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1200,6 +1246,13 @@ void FTermDetectionTest::linuxTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setLinuxTerm(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1210,7 +1263,7 @@ void FTermDetectionTest::linuxTest()
     terminalSimulation (linux_con);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1226,6 +1279,7 @@ void FTermDetectionTest::freebsdTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "xterm", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1260,6 +1314,15 @@ void FTermDetectionTest::freebsdTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setXTerminal (false);
+    detect.setFreeBSDTerm(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1270,7 +1333,7 @@ void FTermDetectionTest::freebsdTest()
     terminalSimulation (freebsd_con);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1286,6 +1349,7 @@ void FTermDetectionTest::netbsdTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "wsvt25", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1320,6 +1384,13 @@ void FTermDetectionTest::netbsdTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setNetBSDTerm(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1330,7 +1401,7 @@ void FTermDetectionTest::netbsdTest()
     terminalSimulation (netbsd_con);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1346,6 +1417,7 @@ void FTermDetectionTest::openbsdTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "vt220", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1380,6 +1452,13 @@ void FTermDetectionTest::openbsdTest()
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setOpenBSDTerm(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1390,7 +1469,7 @@ void FTermDetectionTest::openbsdTest()
     terminalSimulation (openbsd_con);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1405,6 +1484,7 @@ void FTermDetectionTest::sunTest()
   if ( isChildProcess(pid) )
   {
     setenv ("TERM", "sun-color", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1438,6 +1518,13 @@ void FTermDetectionTest::sunTest()
     CPPUNIT_ASSERT ( ! detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
 
+    // Test fallback to vt100 without TERM environment variable
+    unsetenv("TERM");
+    detect.setSunTerminal(false);
+    detect.detect();
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
     debugOutput();
     closeStandardStreams();
     exit(EXIT_SUCCESS);
@@ -1448,7 +1535,7 @@ void FTermDetectionTest::sunTest()
     terminalSimulation (sun_con);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1508,7 +1595,7 @@ void FTermDetectionTest::screenTest()
     terminalSimulation (screen);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
 }
 
@@ -1526,6 +1613,7 @@ void FTermDetectionTest::tmuxTest()
     setenv ("TERM", "screen", 1);
     setenv ("TMUX", "/tmp/tmux-1000/default,7844,0", 1);
     setenv ("TMUX_PANE", "%0", 1);
+    unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -1568,8 +1656,97 @@ void FTermDetectionTest::tmuxTest()
     terminalSimulation (tmux);
 
     if ( waitpid(pid, 0, 0) != pid )
-      ::fprintf (stderr, "waitpid error");
+      std::cerr << "waitpid error" << std::endl;
   }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::ttytypeTest()
+{
+  struct stat sb = { };
+
+  if ( stat("new-root-dir", &sb) == -1 )
+    if ( mkdir("new-root-dir", 0755) == -1 )
+      return;
+
+  if ( stat("new-root-dir/etc", &sb) == -1 )
+    if ( mkdir("new-root-dir/etc", 0755) == -1 )
+      return;
+
+  // Write a own /etc/ttytype file
+  std::ofstream ttytype ("new-root-dir/etc/ttytype");
+
+  if ( ! ttytype.is_open() )
+  {
+    rmdir("new-root-dir/etc");
+    rmdir("new-root-dir");
+    return;
+  }
+
+  ttytype << "linux" << "\t" << "tty1" << std::endl;
+  ttytype << "linux" << "\t" << "tty2" << std::endl;
+  ttytype << "linux" << "\t" << "tty3" << std::endl;
+  ttytype << "linux" << "\t" << "tty4" << std::endl;
+  ttytype << "linux" << "\t" << "tty5" << std::endl;
+  ttytype << "linux" << "\t" << "tty6" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp0" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp1" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp2" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp3" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp4" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp5" << std::endl;
+  ttytype << "vt100" << "\t" << "ttyp6" << std::endl;
+  ttytype.close();
+
+  FTermDetection detect;
+  detect.setTerminalDetection(true);
+  detect.setTtyTypeFileName(C_STR("new-root-dir/etc/ttytype"));
+
+  pid_t pid = forkProcess();
+
+  if ( isChildProcess(pid) )
+  {
+    unsetenv("TERM");
+    unsetenv("TERMCAP");
+    unsetenv("COLORTERM");
+    unsetenv("VTE_VERSION");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    // Test /dev/tty3 with linux
+    detect.setTermFileName(C_STR("/dev/tty3"));
+    detect.detect();
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("linux") );
+
+    // Test /dev/ttyp0 with vt100
+    detect.setTermFileName(C_STR("/dev/ttyp0"));
+    detect.detect();
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
+    // Test non-existent /dev/tty8 with fallback to vt100
+    detect.setTermFileName(C_STR("/dev/tty8"));
+    detect.detect();
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
+
+    debugOutput();
+    closeStandardStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal simulation
+    terminalSimulation (ansi);
+
+    if ( waitpid(pid, 0, 0) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+
+  unlink("new-root-dir/etc/ttytype");
+  rmdir("new-root-dir/etc");
+  rmdir("new-root-dir");
 }
 
 
@@ -1770,9 +1947,9 @@ void FTermDetectionTest::debugOutput()
   setenv ("GO_RIGHT",   "\\033[79D\\033[40C", 1);
 
   FString line (69, '-');
-  ::printf ("\n%s\n", line.c_str());
-  ::printf ("Probe           Escape sequence          Reply\n");
-  ::printf ("%s\n", line.c_str());
+  std::cout << std::endl << line << std::endl;
+  std::cout << "Probe           Escape sequence          Reply";
+  std::cout << std::endl << line << std::endl;
 
   // Command line
   char* child_av[] =
@@ -1900,7 +2077,10 @@ pid_t FTermDetectionTest::forkProcess()
 #ifdef TIOCSCTTY
     // Set controlling tty
     if ( ioctl(fd_slave, TIOCSCTTY, 0) == -1 )
+    {
+      *shared_state = true;
       return -1;
+    }
 #endif
 
     // Get current terminal settings
@@ -1909,6 +2089,20 @@ pid_t FTermDetectionTest::forkProcess()
     // Set raw mode on the slave side of the PTY
     cfmakeraw (&term_settings);
     tcsetattr (fd_slave, TCSANOW, &term_settings);
+
+#ifdef TIOCSWINSZ
+    // Set slave tty window size
+    struct winsize size;
+    size.ws_row = 25;
+    size.ws_col = 80;
+
+    if ( ioctl(fd_slave, TIOCSWINSZ, &size) == -1)
+    {
+      *shared_state = true;
+      return -1;
+    }
+#endif
+
     closeStandardStreams();
 
     fd_stdin  = dup(fd_slave);  // PTY becomes stdin  (0)

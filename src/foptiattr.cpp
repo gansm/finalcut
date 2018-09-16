@@ -1694,7 +1694,8 @@ inline bool FOptiAttr::append_sequence (char seq[])
 {
   if ( seq )
   {
-    std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr) - 1 );
+    std::strncat (attr_ptr, seq, sizeof(attr_buf) - std::strlen(attr_ptr));
+    attr_buf[sizeof(attr_buf) - 1] = '\0';
     return true;
   }
   else

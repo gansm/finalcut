@@ -30,6 +30,7 @@ FTermDetection::colorEnv     FTermDetection::color_env;
 FTermDetection::secondaryDA  FTermDetection::secondary_da;
 char           FTermDetection::termtype[256] = { };
 char           FTermDetection::termfilename[256] = { };
+char           FTermDetection::ttytypename[256] = { };
 bool           FTermDetection::decscusr_support;
 bool           FTermDetection::terminal_detection;
 bool           FTermDetection::color256;
@@ -66,6 +67,10 @@ FTermDetection::FTermDetection()
   // Initialize the structs
   color_env.setDefault();
   secondary_da.setDefault();
+
+  // Set default ttytype file
+  std::strncpy (ttytypename, C_STR("/etc/ttytype"), sizeof(ttytypename));
+  ttytypename[sizeof(ttytypename) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------
@@ -86,7 +91,18 @@ void FTermDetection::setTermFileName (char term_filename[])
   if ( ! term_filename )
     return;
 
-  std::strncpy (termfilename, term_filename, sizeof(termfilename) - 1);
+  std::strncpy (termfilename, term_filename, sizeof(termfilename));
+  termfilename[sizeof(termfilename) - 1] = '\0';
+}
+
+//----------------------------------------------------------------------
+void FTermDetection::setTtyTypeFileName (char ttytype_filename[])
+{
+  if ( ! ttytype_filename )
+    return;
+
+  std::strncpy (ttytypename, ttytype_filename, sizeof(ttytypename));
+  ttytypename[sizeof(ttytypename) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------
@@ -113,12 +129,14 @@ void FTermDetection::getSystemTermType()
   if ( term_env )
   {
     // Save name in termtype
-    std::strncpy (termtype, term_env, sizeof(termtype) - 1);
+    std::strncpy (termtype, term_env, sizeof(termtype));
+    termtype[sizeof(termtype) - 1] = '\0';
     return;
   }
   else if ( *termfilename )  // 1st fallback: use the teminal file name
   {
-    getTTYtype();  // Look into /etc/ttytype
+    if ( getTTYtype() )  // Look into /etc/ttytype
+      return;
 
 #if F_HAVE_GETTTYNAM
     if ( getTTYSFileEntry() )  // Look into /etc/ttys
@@ -131,7 +149,7 @@ void FTermDetection::getSystemTermType()
 }
 
 //----------------------------------------------------------------------
-void FTermDetection::getTTYtype()
+bool FTermDetection::getTTYtype()
 {
   // Analyse /etc/ttytype and get the term name
   // ------------------------------------------
@@ -152,7 +170,7 @@ void FTermDetection::getTTYtype()
 
   std::FILE *fp;
 
-  if ( (fp = std::fopen("/etc/ttytype", "r")) != 0 )
+  if ( (fp = std::fopen(ttytypename, "r")) != 0 )
   {
     char* p;
     char  str[BUFSIZ];
@@ -180,14 +198,17 @@ void FTermDetection::getTTYtype()
       if ( type != 0 && name != 0 && ! std::strcmp(name, term_basename) )
       {
         // Save name in termtype
-        std::strncpy (termtype, type, sizeof(termtype) - 1);
+        std::strncpy (termtype, type, sizeof(termtype));
+        termtype[sizeof(termtype) - 1] = '\0';
         std::fclose(fp);
-        return;
+        return true;
       }
     }
 
     std::fclose(fp);
   }
+
+  return false;
 }
 
 #if F_HAVE_GETTTYNAM
@@ -214,7 +235,8 @@ bool FTermDetection::getTTYSFileEntry()
     if ( type != 0 )
     {
       // Save name in termtype
-      std::strncpy (termtype, type, sizeof(termtype) - 1);
+      std::strncpy (termtype, type, sizeof(termtype));
+      termtype[sizeof(termtype) - 1] = '\0';
       endttyent();
       return true;
     }
@@ -326,7 +348,8 @@ void FTermDetection::detectTerminal()
   if ( new_termtype )
   {
     setenv(C_STR("TERM"), new_termtype, 1);
-    std::strncpy (termtype, new_termtype, sizeof(termtype) - 1);
+    std::strncpy (termtype, new_termtype, sizeof(termtype));
+    termtype[sizeof(termtype) - 1] = '\0';
   }
 }
 
@@ -723,6 +746,7 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
     case 64:  // DEC VT520
     case 65:  // DEC VT525
     case 67:  // Cygwin
+      new_termtype = secDA_Analysis_67(current_termtype);
       break;
 
     case 77:  // mintty
@@ -837,6 +861,18 @@ inline char* FTermDetection::secDA_Analysis_32 (char[])
   char* new_termtype;
   terminal_type.tera_term = true;
   new_termtype = C_STR("teraterm");
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTermDetection::secDA_Analysis_67 (char[])
+{
+  // Terminal ID 67 - cygwin
+
+  char* new_termtype;
+  terminal_type.cygwin = true;
+  new_termtype = C_STR("cygwin");
+  std::fflush(stdout);
   return new_termtype;
 }
 

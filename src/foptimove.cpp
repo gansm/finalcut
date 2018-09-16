@@ -744,9 +744,12 @@ inline int FOptiMove::verticalMove (char move[], int from_y, int to_y)
   if ( F_row_address.cap )
   {
     if ( move )
+    {
       std::strncpy ( move
                    , tparm(F_row_address.cap, to_y, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , BUF_SIZE - 1 );
+                   , BUF_SIZE );
+      move[BUF_SIZE - 1] = '\0';
+    }
 
     vtime = F_row_address.duration;
   }
@@ -768,9 +771,12 @@ inline void FOptiMove::downMove ( char move[], int& vtime
   if ( F_parm_down_cursor.cap && F_parm_down_cursor.duration < vtime )
   {
     if ( move )
+    {
       std::strncpy ( move
                    , tparm(F_parm_down_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , BUF_SIZE - 1 );
+                   , BUF_SIZE );
+      move[BUF_SIZE - 1] = '\0';
+    }
 
     vtime = F_parm_down_cursor.duration;
   }
@@ -793,9 +799,12 @@ inline void FOptiMove::upMove ( char move[], int& vtime
   if ( F_parm_up_cursor.cap && F_parm_up_cursor.duration < vtime )
   {
     if ( move )
+    {
       std::strncpy ( move
                    , tparm(F_parm_up_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                   , BUF_SIZE - 1 );
+                   , BUF_SIZE );
+      move[BUF_SIZE - 1] = '\0';
+    }
 
     vtime = F_parm_up_cursor.duration;
   }
@@ -819,7 +828,8 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
     // Move to fixed column position1
     std::strncat ( hmove
                  , tparm(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE - std::strlen(hmove) - 1 );
+                 , BUF_SIZE - std::strlen(hmove) );
+    hmove[BUF_SIZE - 1] = '\0';
     htime = F_column_address.duration;
   }
 
@@ -841,7 +851,8 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
   {
     std::strncpy ( hmove
                  , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE - 1 );
+                 , BUF_SIZE );
+    hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
   }
 
@@ -895,7 +906,8 @@ inline void FOptiMove::leftMove ( char hmove[], int& htime
   {
     std::strncpy ( hmove
                  , tparm(F_parm_left_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE - 1 );
+                 , BUF_SIZE );
+    hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_left_cursor.duration;
   }
 
@@ -959,7 +971,8 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
   if ( move_xy )
   {
     char* move_ptr = move_buf;
-    std::strncpy (move_ptr, move_xy, BUF_SIZE - 1);
+    std::strncpy (move_ptr, move_xy, BUF_SIZE);
+    move_ptr[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;
     return true;
   }
@@ -1108,22 +1121,25 @@ void FOptiMove::moveByMethod ( int method
     case 2:
       if ( F_carriage_return.cap )
       {
-        std::strncpy (move_ptr, F_carriage_return.cap, BUF_SIZE - 1);
+        std::strncpy (move_ptr, F_carriage_return.cap, BUF_SIZE);
         move_ptr += F_carriage_return.length;
         relativeMove (move_ptr, 0, yold, xnew, ynew);
+        move_buf[BUF_SIZE - 1] ='\0';
       }
       break;
 
     case 3:
-      std::strncpy (move_ptr, F_cursor_home.cap, BUF_SIZE - 1);
+      std::strncpy (move_ptr, F_cursor_home.cap, BUF_SIZE);
       move_ptr += F_cursor_home.length;
       relativeMove (move_ptr, 0, 0, xnew, ynew);
+      move_buf[BUF_SIZE - 1] ='\0';
       break;
 
     case 4:
-      std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE - 1);
+      std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE);
       move_ptr += F_cursor_to_ll.length;
       relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
+      move_buf[BUF_SIZE - 1] ='\0';
       break;
 
     case 5:
@@ -1132,13 +1148,14 @@ void FOptiMove::moveByMethod ( int method
       if ( xold >= 0 )
         std::strncat ( move_ptr
                      , F_carriage_return.cap
-                     , BUF_SIZE - std::strlen(move_ptr) - 1 );
+                     , BUF_SIZE - std::strlen(move_ptr) );
 
       std::strncat ( move_ptr
                    , F_cursor_left.cap
-                   , BUF_SIZE - std::strlen(move_ptr) - 1 );
+                   , BUF_SIZE - std::strlen(move_ptr) );
       move_ptr += std::strlen(move_buf);
       relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
+      move_buf[BUF_SIZE - 1] ='\0';
       break;
 
     default:

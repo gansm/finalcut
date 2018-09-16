@@ -2668,6 +2668,7 @@ inline void FString::_assign (const wchar_t s[])
   }
 
   std::wcsncpy (string, s, bufsize);
+  string[bufsize - 1] = L'\0';
   length = new_length;
 }
 
@@ -2695,6 +2696,7 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t s[])
     }
 
     std::wcsncpy (string, s, bufsize);
+    string[bufsize - 1] = L'\0';
     return;
   }
   else

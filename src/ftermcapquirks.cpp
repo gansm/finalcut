@@ -46,7 +46,8 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 //----------------------------------------------------------------------
 void FTermcapQuirks::setTerminalType (const char tt[])
 {
-  std::strncpy (termtype, tt, sizeof(termtype) - 1);
+  std::strncpy (termtype, tt, sizeof(termtype));
+  termtype[sizeof(termtype) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------

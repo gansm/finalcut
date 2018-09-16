@@ -450,9 +450,9 @@ char* FTerm::enableCursor()
   char*& ve = TCAP(fc::t_cursor_normal);
 
   if ( ve )
-    std::strncpy (enable_str, ve, SIZE - 1);
+    std::strncpy (enable_str, ve, SIZE);
   else if ( vs )
-    std::strncpy (enable_str, vs, SIZE - 1);
+    std::strncpy (enable_str, vs, SIZE);
 
 #if defined(__linux__)
   if ( isLinuxTerm() )
@@ -460,9 +460,11 @@ char* FTerm::enableCursor()
     // Restore the last used Linux console cursor style
     char* cstyle;
     cstyle = linux->restoreCursorStyle();
-    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
+    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str));
   }
 #endif
+
+  enable_str[SIZE - 1] = '\0';
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( isFreeBSDTerm() )
