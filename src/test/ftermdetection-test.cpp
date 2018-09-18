@@ -532,7 +532,7 @@ void FTermDetectionTest::ansiTest()
     // Start the terminal simulation
     terminalSimulation (ansi);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -591,7 +591,7 @@ void FTermDetectionTest::xtermTest()
     // Start the terminal simulation
     terminalSimulation (xterm);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -650,7 +650,7 @@ void FTermDetectionTest::rxvtTest()
     // Start the terminal simulation
     terminalSimulation (rxvt);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -709,7 +709,7 @@ void FTermDetectionTest::urxvtTest()
     // Start the terminal simulation
     terminalSimulation (urxvt);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -769,7 +769,7 @@ void FTermDetectionTest::mltermTest()
     // Start the terminal simulation
     terminalSimulation (mlterm);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -829,7 +829,7 @@ void FTermDetectionTest::puttyTest()
     // Start the terminal simulation
     terminalSimulation (putty);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -888,7 +888,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     // Start the terminal simulation
     terminalSimulation (kde_konsole);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -948,7 +948,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     // Start the terminal simulation
     terminalSimulation (gnome_terminal);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1015,7 +1015,7 @@ void FTermDetectionTest::ktermTest()
     // Start the terminal simulation
     terminalSimulation (kterm);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1075,7 +1075,7 @@ void FTermDetectionTest::teraTermTest()
     // Start the terminal simulation
     terminalSimulation (tera_term);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1135,7 +1135,7 @@ void FTermDetectionTest::cygwinTest()
     // Start the terminal simulation
     terminalSimulation (cygwin);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1195,7 +1195,7 @@ void FTermDetectionTest::minttyTest()
     // Start the terminal simulation
     terminalSimulation (mintty);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1262,7 +1262,7 @@ void FTermDetectionTest::linuxTest()
     // Start the terminal simulation
     terminalSimulation (linux_con);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1332,7 +1332,7 @@ void FTermDetectionTest::freebsdTest()
     // Start the terminal simulation
     terminalSimulation (freebsd_con);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1400,7 +1400,7 @@ void FTermDetectionTest::netbsdTest()
     // Start the terminal simulation
     terminalSimulation (netbsd_con);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1468,7 +1468,7 @@ void FTermDetectionTest::openbsdTest()
     // Start the terminal simulation
     terminalSimulation (openbsd_con);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1534,7 +1534,7 @@ void FTermDetectionTest::sunTest()
     // Start the terminal simulation
     terminalSimulation (sun_con);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1594,7 +1594,7 @@ void FTermDetectionTest::screenTest()
     // Start the terminal simulation
     terminalSimulation (screen);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1655,7 +1655,7 @@ void FTermDetectionTest::tmuxTest()
     // Start the terminal simulation
     terminalSimulation (tmux);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 }
@@ -1738,7 +1738,7 @@ void FTermDetectionTest::ttytypeTest()
     // Start the terminal simulation
     terminalSimulation (ansi);
 
-    if ( waitpid(pid, 0, 0) != pid )
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
   }
 

@@ -1122,7 +1122,7 @@ void FOptiMove::moveByMethod ( int method
       if ( F_carriage_return.cap )
       {
         std::strncpy (move_ptr, F_carriage_return.cap, BUF_SIZE);
-        move_buf[BUF_SIZE - 1] ='\0';
+        move_ptr[BUF_SIZE - 1] ='\0';
         move_ptr += F_carriage_return.length;
         relativeMove (move_ptr, 0, yold, xnew, ynew);
       }
@@ -1130,14 +1130,14 @@ void FOptiMove::moveByMethod ( int method
 
     case 3:
       std::strncpy (move_ptr, F_cursor_home.cap, BUF_SIZE);
-      move_buf[BUF_SIZE - 1] ='\0';
+      move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += F_cursor_home.length;
       relativeMove (move_ptr, 0, 0, xnew, ynew);
       break;
 
     case 4:
       std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE);
-      move_buf[BUF_SIZE - 1] ='\0';
+      move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += F_cursor_to_ll.length;
       relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
       break;
@@ -1153,7 +1153,7 @@ void FOptiMove::moveByMethod ( int method
       std::strncat ( move_ptr
                    , F_cursor_left.cap
                    , BUF_SIZE - std::strlen(move_ptr) );
-      move_buf[BUF_SIZE - 1] ='\0';
+      move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += std::strlen(move_buf);
       relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
       break;
