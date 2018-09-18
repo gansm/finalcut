@@ -1663,14 +1663,12 @@ void FTermDetectionTest::tmuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ttytypeTest()
 {
-  struct stat sb = { };
-
-  if ( stat("new-root-dir", &sb) == -1 )
-    if ( mkdir("new-root-dir", 0755) == -1 )
+  if ( mkdir("new-root-dir", 0755) == -1 )
+    if ( errno != EEXIST )
       return;
 
-  if ( stat("new-root-dir/etc", &sb) == -1 )
-    if ( mkdir("new-root-dir/etc", 0755) == -1 )
+  if ( mkdir("new-root-dir/etc", 0755) == -1 )
+    if ( errno != EEXIST )
       return;
 
   // Write a own /etc/ttytype file
