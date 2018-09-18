@@ -1950,23 +1950,17 @@ void FTermDetectionTest::debugOutput()
   std::cout << std::endl << line << std::endl;
 
   // Command line
-  char* child_av[] =
-  {
-    C_STR("/bin/bash"),
-    C_STR("-c"),
-    C_STR("for i in DSR CURSOR_POS DECID DA DA1 SEC_DA ANSWERBACK \
-                    TITLE COLOR16 COLOR88 COLOR256; \
-           do \
-             eval \"echo -en \\\"$i${GO_MIDDLE}\\\"; \
-                    echo -n \\\"\\${$i}\\\"; \
-                    echo -en \\\"${GO_RIGHT}\\${$i}\\\"\"; \
-             sleep 0.5; \
-             echo -e \"\\r\"; \
-           done"),
-    0
-  };
-
-  execvp(child_av[0], child_av);
+  const char debug_command[] = "/bin/bash -c ' \
+      for i in DSR CURSOR_POS DECID DA DA1 SEC_DA ANSWERBACK \
+               TITLE COLOR16 COLOR88 COLOR256; \
+      do \
+        eval \"echo -en \\\"$i${GO_MIDDLE}\\\"; \
+              echo -n \\\"\\${$i}\\\"; \
+              echo -en \\\"${GO_RIGHT}\\${$i}\\\"\"; \
+        sleep 0.5; \
+        echo -e \"\\r\"; \
+      done'";
+  system(debug_command);
 }
 
 //----------------------------------------------------------------------
