@@ -484,6 +484,7 @@ void FTermDetectionTest::ansiTest()
     setenv ("TERM", "ansi", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -552,6 +553,7 @@ void FTermDetectionTest::xtermTest()
     setenv ("XTERM_VERSION", "XTerm(312)", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("ROXTERM_ID");
     unsetenv("KONSOLE_DBUS_SESSION");
@@ -609,6 +611,7 @@ void FTermDetectionTest::rxvtTest()
   {
     setenv ("TERM", "rxvt-cygwin-native", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
+    setenv ("COLORFGBG", "default;default", 1);
     unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -640,6 +643,7 @@ void FTermDetectionTest::rxvtTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("rxvt-cygwin-native") );
 
     debugOutput();
     closeStandardStreams();
@@ -668,6 +672,8 @@ void FTermDetectionTest::urxvtTest()
   {
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
+    setenv ("COLORFGBG", "default;default;0", 1);
+    //unsetenv("COLORFGBG");
     unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -727,6 +733,7 @@ void FTermDetectionTest::mltermTest()
   {
     setenv ("TERM", "mlterm", 1);
     setenv ("MLTERM", "3.8.4", 1);
+    setenv ("COLORFGBG", "default;default", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
     unsetenv("VTE_VERSION");
@@ -759,6 +766,13 @@ void FTermDetectionTest::mltermTest()
     CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("mlterm-256color") );
+
+    setenv ("TERM", "mlterm", 1);
+    unsetenv("COLORFGBG");
+    detect.detect();
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("xterm-256color") );
 
     debugOutput();
     closeStandardStreams();
@@ -788,6 +802,7 @@ void FTermDetectionTest::puttyTest()
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -849,6 +864,7 @@ void FTermDetectionTest::kdeKonsoleTest()
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("KONSOLE_DBUS_SERVICE", "DCOPRef(konsole-11768,konsole)", 1);
     setenv ("KONSOLE_DCOP", ":1.77", 1);
+    unsetenv("COLORFGBG");
     unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -907,6 +923,7 @@ void FTermDetectionTest::gnomeTerminalTest()
     setenv ("TERM", "xterm-256color", 1);
     setenv ("COLORTERM", "truecolor", 1);
     setenv ("VTE_VERSION", "5202", 1);
+    unsetenv("COLORFGBG");
     unsetenv("TERMCAP");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -967,6 +984,7 @@ void FTermDetectionTest::ktermTest()
     setenv ("TERM", "kterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1034,6 +1052,7 @@ void FTermDetectionTest::teraTermTest()
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1094,6 +1113,7 @@ void FTermDetectionTest::cygwinTest()
     setenv ("TERM", "cygwin", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1154,6 +1174,7 @@ void FTermDetectionTest::minttyTest()
     setenv ("TERM", "xterm-256color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1214,6 +1235,7 @@ void FTermDetectionTest::linuxTest()
     setenv ("TERM", "linux", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1281,6 +1303,7 @@ void FTermDetectionTest::freebsdTest()
     setenv ("TERM", "xterm", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1351,6 +1374,7 @@ void FTermDetectionTest::netbsdTest()
     setenv ("TERM", "wsvt25", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1419,6 +1443,7 @@ void FTermDetectionTest::openbsdTest()
     setenv ("TERM", "vt220", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1486,6 +1511,7 @@ void FTermDetectionTest::sunTest()
     setenv ("TERM", "sun-color", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1553,6 +1579,7 @@ void FTermDetectionTest::screenTest()
     setenv ("TERM", "screen", 1);
     setenv ("TERMCAP", "SC|screen|VT 100/ANSI X3.64 virtual terminal:...", 1);
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1584,6 +1611,12 @@ void FTermDetectionTest::screenTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen") );
+
+    setenv ("XTERM_VERSION", "XTerm(312)", 1);
+    detect.detect();
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen-256color") );
 
     debugOutput();
     closeStandardStreams();
@@ -1615,6 +1648,7 @@ void FTermDetectionTest::tmuxTest()
     setenv ("TMUX_PANE", "%0", 1);
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");
@@ -1645,6 +1679,12 @@ void FTermDetectionTest::tmuxTest()
     CPPUNIT_ASSERT ( ! detect.canDisplay256Colors() );
     CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
     CPPUNIT_ASSERT ( ! detect.hasSetCursorStyleSupport() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen") );
+
+    setenv ("VTE_VERSION", "3801", 1);
+    detect.detect();
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("screen-256color") );
 
     debugOutput();
     closeStandardStreams();
@@ -1663,6 +1703,8 @@ void FTermDetectionTest::tmuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ttytypeTest()
 {
+  // Test without TERM environment variable
+
   if ( mkdir("new-root-dir", 0755) == -1 )
     if ( errno != EEXIST )
       return;
@@ -1707,6 +1749,7 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("TERM");
     unsetenv("TERMCAP");
     unsetenv("COLORTERM");
+    unsetenv("COLORFGBG");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
     unsetenv("ROXTERM_ID");

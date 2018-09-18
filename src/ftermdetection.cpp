@@ -390,6 +390,7 @@ bool FTermDetection::get256colorEnvString()
   color_env.string4 = std::getenv("ROXTERM_ID");
   color_env.string5 = std::getenv("KONSOLE_DBUS_SESSION");
   color_env.string6 = std::getenv("KONSOLE_DCOP");
+  color_env.string7 = std::getenv("COLORFGBG");
 
   if ( color_env.string1 != 0 )
     return true;
@@ -407,6 +408,9 @@ bool FTermDetection::get256colorEnvString()
     return true;
 
   if ( color_env.string6 != 0 )
+    return true;
+
+  if ( color_env.string7 != 0 )
     return true;
 
   return false;

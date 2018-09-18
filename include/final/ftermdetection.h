@@ -217,6 +217,7 @@ class FTermDetection
         string4 = 0;
         string5 = 0;
         string6 = 0;
+        string7 = 0;
       }
 
       char* string1;
@@ -225,6 +226,7 @@ class FTermDetection
       char* string4;
       char* string5;
       char* string6;
+      char* string7;
     } color_env;
 
     static struct secondaryDA
