@@ -1,0 +1,13 @@
+# Package information for pkg-config
+
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=@libdir@
+includedir=${prefix}/include
+
+Name: finalcut
+Description: The Final Cut text-based widget library
+Version: @VERSION@
+URL: https://github.com/gansm/finalcut
+Libs: -L${libdir} -lfinal
+Cflags: -I${includedir}

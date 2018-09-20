@@ -10,6 +10,7 @@
 *.gcda
 *.log
 *.trs
+finalcut.pc
 stamp-h1
 _configs.sed
 config.guess

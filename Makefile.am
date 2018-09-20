@@ -6,6 +6,13 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
+EXTRA_DIST=finalcut.pc
+
+pkgconfigdir = $(datadir)/pkgconfig
+pkgconfig_DATA = finalcut.pc
+
+CLEANFILES = finalcut.pc
+
 SUBDIRS = src fonts doc examples
 
 docdir = ${datadir}/doc/${PACKAGE}
