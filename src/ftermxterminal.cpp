@@ -24,6 +24,9 @@
 #include "final/ftermfreebsd.h"
 #include "final/ftermxterminal.h"
 
+namespace finalcut
+{
+
 // static class attributes
 bool                 FTermXTerminal::mouse_support;
 bool                 FTermXTerminal::meta_sends_esc;
@@ -930,3 +933,5 @@ void FTermXTerminal::disableXTermMetaSendsESC()
   std::fflush(stdout);
   meta_sends_esc = false;
 }
+
+}  // namespace finalcut

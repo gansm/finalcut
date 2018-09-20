@@ -40,6 +40,8 @@
 
 #include "final/ftypes.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermios
@@ -125,5 +127,6 @@ inline bool FTermios::unsetRawMode()
 inline bool FTermios::setCookedMode()
 { return setRawMode(false); }
 
+}  // namespace finalcut
 
 #endif  // FTERMIOS_H

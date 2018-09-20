@@ -29,6 +29,9 @@
 
 #include "final/ftermcap.h"
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -138,5 +141,7 @@ static FTermcap::tcap_map term_caps[] =
  */
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FTCAPMAP_H

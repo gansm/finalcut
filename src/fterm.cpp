@@ -29,6 +29,9 @@
 #include "final/fcharmap.h"
 #include "final/ftcap_map.h"
 
+namespace finalcut
+{
+
 // global FTerm object
 static FTerm* init_term_object = 0;
 
@@ -249,7 +252,7 @@ bool FTerm::setVGAFont()
     term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;
   }
-#endif
+#endif  // defined(__linux__)
   else
     VGAFont = false;
 
@@ -295,7 +298,7 @@ bool FTerm::setNewFont()
     term_encoding = fc::PC;
     Fputchar = &FTerm::putchar_ASCII;  // function pointer
   }
-#endif
+#endif  // defined(__linux__)
   else
     NewFont = false;
 
@@ -344,7 +347,7 @@ bool FTerm::setOldFont()
       half_block_character = linux->hasHalfBlockCharacter();
     }
   }
-#endif
+#endif  // defined(__linux__)
 
   if ( retval )
     VGAFont = NewFont = false;
@@ -462,7 +465,7 @@ char* FTerm::enableCursor()
     cstyle = linux->restoreCursorStyle();
     std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str));
   }
-#endif
+#endif  // defined(__linux__)
 
   enable_str[SIZE - 1] = '\0';
 
@@ -472,7 +475,7 @@ char* FTerm::enableCursor()
     // Restore the last used FreeBSD console cursor style
     freebsd->restoreCursorStyle();
   }
-#endif
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
   return enable_str;
 }
@@ -635,7 +638,7 @@ void FTerm::setBeep (int Hz, int ms)
 #else
 void FTerm::setBeep (int, int)
 { }
-#endif
+#endif  // defined(__linux__)
 
 //----------------------------------------------------------------------
 void FTerm::resetBeep()
@@ -806,7 +809,7 @@ int FTerm::putchar_ASCII (char c)
   else
     return 1;
 }
-#endif
+#endif  // defined(__sun) && defined(__SVR4)
 
 //----------------------------------------------------------------------
 int FTerm::putchar_ASCII (int c)
@@ -1786,7 +1789,7 @@ void FTerm::enableMouse()
 
     closeConsole();
   }
-#endif
+#endif  // defined(__linux__)
 
   if ( TCAP(fc::t_key_mouse) && ! isLinuxTerm() )
     xterm_mouse = true;
@@ -2068,7 +2071,7 @@ void FTerm::initOSspecifics()
   framebuffer_bpp = linux->getFramebufferBpp();
 #endif
 
-#endif
+#endif  // defined(__linux__)
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   if ( init_values.meta_sends_escape )
@@ -2082,7 +2085,7 @@ void FTerm::initOSspecifics()
     freebsd->disableChangeCursorStyle();
 
   freebsd->init();  // Initialize BSD console
-#endif
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   if ( init_values.meta_sends_escape )
@@ -2263,3 +2266,5 @@ void FTerm::signal_handler (int signum)
       std::terminate();
   }
 }
+
+}  // namespace finalcut

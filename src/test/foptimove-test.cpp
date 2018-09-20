@@ -1,5 +1,5 @@
 /***********************************************************************
-* foptimove-test.cpp - FOptiMove unit tests                            *
+* foptimove-test.cpp - finalcut::FOptiMove unit tests                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -111,7 +111,7 @@ class FOptiMoveTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FOptiMoveTest::classNameTest()
 {
-  FOptiMove opti_move;
+  finalcut::FOptiMove opti_move;
   const char* const classname = opti_move.getClassName();
   CPPUNIT_ASSERT_CSTRING ( classname, "FOptiMove");
 }
@@ -119,7 +119,7 @@ void FOptiMoveTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::noArgumentTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (1, 1, 5, 5), C_STR(CSI "6;6H"));
   CPPUNIT_ASSERT_CSTRING (om.moveCursor (5, 5, 9, 9), C_STR(CSI "10;10H"));
 
@@ -148,7 +148,7 @@ void FOptiMoveTest::noArgumentTest()
 void FOptiMoveTest::homeTest()
 {
   int baud = 4800;
-  FOptiMove om(baud);
+  finalcut::FOptiMove om(baud);
   om.setTermSize (80, 24);
   om.set_cursor_home (C_STR(CSI "H"));
   om.set_cursor_to_ll (C_STR(CSI "X"));
@@ -172,7 +172,7 @@ void FOptiMoveTest::homeTest()
 void FOptiMoveTest::fromLeftToRightTest()
 {
   int baud = 38400;
-  FOptiMove om(baud);
+  finalcut::FOptiMove om(baud);
   om.setTermSize (80, 24);
   om.setTabStop (8);
   om.set_auto_left_margin (true);
@@ -197,7 +197,7 @@ void FOptiMoveTest::fromLeftToRightTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::ansiTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (19200);
   om.setTabStop (8);
@@ -255,7 +255,7 @@ void FOptiMoveTest::ansiTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::vt100Test()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 24);
   om.setBaudRate (1200);
   om.setTabStop (8);
@@ -311,7 +311,7 @@ void FOptiMoveTest::vt100Test()
 //----------------------------------------------------------------------
 void FOptiMoveTest::xtermTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
@@ -370,7 +370,7 @@ void FOptiMoveTest::xtermTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::rxvtTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
@@ -428,7 +428,7 @@ void FOptiMoveTest::rxvtTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::linuxTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
@@ -487,7 +487,7 @@ void FOptiMoveTest::linuxTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::cygwinTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
@@ -547,7 +547,7 @@ void FOptiMoveTest::cygwinTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::puttyTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.setTabStop (8);
@@ -607,11 +607,11 @@ void FOptiMoveTest::puttyTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::teratermTest()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
 
-  FOptiMove::termEnv optimove_env =
+  finalcut::FOptiMove::termEnv optimove_env =
   {
     false,                        // Automatic left margin
     true,                         // Eat newline glitch
@@ -679,7 +679,7 @@ void FOptiMoveTest::teratermTest()
 //----------------------------------------------------------------------
 void FOptiMoveTest::wyse50Test()
 {
-  FOptiMove om;
+  finalcut::FOptiMove om;
   om.setTermSize (80, 25);
   om.setBaudRate (38400);
   om.set_auto_left_margin (true);

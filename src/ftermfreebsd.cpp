@@ -31,6 +31,8 @@
   bool                      FTermFreeBSD::meta_sends_escape = true;
 #endif
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermFreeBSD
@@ -202,5 +204,6 @@ bool FTermFreeBSD::resetFreeBSDAlt2Meta()
 
   return setFreeBSDAltKey (bsd_alt_keymap);
 }
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
-#endif
+}  // namespace finalcut

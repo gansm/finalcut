@@ -31,11 +31,11 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class SmallWindow : public FDialog
+class SmallWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit SmallWindow (FWidget* = 0);
+    explicit SmallWindow (finalcut::FWidget* = 0);
 
     // Destructor
     ~SmallWindow();
@@ -51,21 +51,21 @@ class SmallWindow : public FDialog
     void adjustSize();
 
     // Event handlers
-    void onShow (FShowEvent*);
-    void onTimer (FTimerEvent*);
+    void onShow (finalcut::FShowEvent*);
+    void onTimer (finalcut::FTimerEvent*);
 
     // Data Members
-    FLabel* left_arrow;
-    FLabel* right_arrow;
-    FLabel* top_left_label;
-    FLabel* top_right_label;
-    FLabel* bottom_label;
+    finalcut::FLabel* left_arrow;
+    finalcut::FLabel* right_arrow;
+    finalcut::FLabel* top_left_label;
+    finalcut::FLabel* top_right_label;
+    finalcut::FLabel* bottom_label;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-SmallWindow::SmallWindow (FWidget* parent)
-  : FDialog(parent)
+SmallWindow::SmallWindow (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , left_arrow()
   , right_arrow()
   , top_left_label()
@@ -74,39 +74,39 @@ SmallWindow::SmallWindow (FWidget* parent)
 {
   wchar_t arrow_up, arrow_down;
 
-  arrow_up = fc::BlackUpPointingTriangle;
-  arrow_down = fc::BlackDownPointingTriangle;
+  arrow_up = finalcut::fc::BlackUpPointingTriangle;
+  arrow_down = finalcut::fc::BlackDownPointingTriangle;
 
-  left_arrow = new FLabel (arrow_up, this);
+  left_arrow = new finalcut::FLabel (arrow_up, this);
   left_arrow->setForegroundColor (wc.label_inactive_fg);
   left_arrow->setEmphasis();
   left_arrow->ignorePadding();
   left_arrow->setGeometry (2, 2, 1, 1);
 
-  right_arrow = new FLabel (arrow_up, this);
+  right_arrow = new finalcut::FLabel (arrow_up, this);
   right_arrow->setForegroundColor (wc.label_inactive_fg);
   right_arrow->setEmphasis();
   right_arrow->ignorePadding();
   right_arrow->setGeometry (getWidth() - 1, 2, 1, 1);
 
-  const FString& top_left_label_text = "menu";
-  top_left_label = new FLabel (top_left_label_text, this);
+  const finalcut::FString& top_left_label_text = "menu";
+  top_left_label = new finalcut::FLabel (top_left_label_text, this);
   top_left_label->setForegroundColor (wc.label_inactive_fg);
   top_left_label->setEmphasis();
   top_left_label->setGeometry (1, 1, 6, 1);
 
-  const FString& top_right_label_text = "zoom";
-  top_right_label = new FLabel (top_right_label_text, this);
-  top_right_label->setAlignment (fc::alignRight);
+  const finalcut::FString& top_right_label_text = "zoom";
+  top_right_label = new finalcut::FLabel (top_right_label_text, this);
+  top_right_label->setAlignment (finalcut::fc::alignRight);
   top_right_label->setForegroundColor (wc.label_inactive_fg);
   top_right_label->setEmphasis();
   top_right_label->setGeometry (getClientWidth() - 5, 1, 6, 1);
 
-  FString bottom_label_text = "resize\n"
-                              "corner\n";
+  finalcut::FString bottom_label_text = "resize\n"
+                                        "corner\n";
   bottom_label_text += arrow_down;
-  bottom_label = new FLabel (bottom_label_text, this);
-  bottom_label->setAlignment (fc::alignRight);
+  bottom_label = new finalcut::FLabel (bottom_label_text, this);
+  bottom_label->setAlignment (finalcut::fc::alignRight);
   bottom_label->setForegroundColor (wc.label_inactive_fg);
   bottom_label->setEmphasis();
   bottom_label->setGeometry (13, 3, 6, 3);
@@ -133,20 +133,20 @@ void SmallWindow::adjustSize()
     bottom_label->setVisible();
   }
 
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
   right_arrow->setGeometry (getWidth() - 1, 2, 1, 1);
   top_right_label->setGeometry (getClientWidth() - 5, 1, 6, 1);
   bottom_label->setGeometry (1, getClientHeight() - 2, getClientWidth(), 3);
 }
 
 //----------------------------------------------------------------------
-void SmallWindow::onShow (FShowEvent*)
+void SmallWindow::onShow (finalcut::FShowEvent*)
 {
   addTimer(1000);
 }
 
 //----------------------------------------------------------------------
-void SmallWindow::onTimer (FTimerEvent*)
+void SmallWindow::onTimer (finalcut::FTimerEvent*)
 {
   left_arrow->unsetEmphasis();
   left_arrow->redraw();
@@ -170,23 +170,23 @@ void SmallWindow::onTimer (FTimerEvent*)
 #pragma pack(push)
 #pragma pack(1)
 
-class Window : public FDialog
+class Window : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Window (FWidget* = 0);
+    explicit Window (finalcut::FWidget* = 0);
 
     // Destructor
     ~Window();
 
   private:
     // Typedefs
-    typedef void (Window::*WindowCallback)(FWidget*, data_ptr);
-    typedef void (FApplication::*FAppCallback)(FWidget*, data_ptr);
+    typedef void (Window::*WindowCallback)(finalcut::FWidget*, data_ptr);
+    typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, data_ptr);
     typedef struct
     {
       bool is_open;
-      FString* title;
+      finalcut::FString* title;
       SmallWindow* dgl;
     }
     win_data;
@@ -198,22 +198,22 @@ class Window : public FDialog
     Window& operator = (const Window&);
 
     // Method
-    void createFileMenuItems (FMenu*);
+    void createFileMenuItems (finalcut::FMenu*);
     void createDialogButtons();
-    void activateWindow (FDialog*);
+    void activateWindow (finalcut::FDialog*);
     void adjustSize();
-    void addClickedCallback (FWidget*, WindowCallback);
-    void addClickedCallback (FWidget*, FAppCallback);
+    void addClickedCallback (finalcut::FWidget*, WindowCallback);
+    void addClickedCallback (finalcut::FWidget*, FAppCallback);
 
     // Event handlers
-    void onClose (FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_createWindows (FWidget*, data_ptr);
-    void cb_closeWindows (FWidget*, data_ptr);
-    void cb_next (FWidget*, data_ptr);
-    void cb_previous (FWidget*, data_ptr);
-    void cb_destroyWindow (FWidget*, data_ptr);
+    void cb_createWindows (finalcut::FWidget*, data_ptr);
+    void cb_closeWindows (finalcut::FWidget*, data_ptr);
+    void cb_next (finalcut::FWidget*, data_ptr);
+    void cb_previous (finalcut::FWidget*, data_ptr);
+    void cb_destroyWindow (finalcut::FWidget*, data_ptr);
 
     // Data Members
     std::vector<win_data*> windows;
@@ -221,26 +221,26 @@ class Window : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Window::Window (FWidget* parent)
-  : FDialog(parent)
+Window::Window (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , windows()
 {
-  FMenu* File;
-  FDialogListMenu* DglList;
-  FString drop_down_symbol;
-  FMenuBar* Menubar;
-  FStatusBar* Statusbar;
+  finalcut::FMenu* File;
+  finalcut::FDialogListMenu* DglList;
+  finalcut::FString drop_down_symbol;
+  finalcut::FMenuBar* Menubar;
+  finalcut::FStatusBar* Statusbar;
 
   // Menu bar
-  Menubar = new FMenuBar (this);
+  Menubar = new finalcut::FMenuBar (this);
 
   // Menu bar item
-  File = new FMenu ("&File", Menubar);
+  File = new finalcut::FMenu ("&File", Menubar);
   File->setStatusbarMessage ("File management commands");
 
   // Dialog list menu item
-  drop_down_symbol = wchar_t(fc::BlackDownPointingTriangle);
-  DglList = new FDialogListMenu (drop_down_symbol, Menubar);
+  drop_down_symbol = wchar_t(finalcut::fc::BlackDownPointingTriangle);
+  DglList = new finalcut::FDialogListMenu (drop_down_symbol, Menubar);
   DglList->setStatusbarMessage ("List of all the active dialogs");
 
   // File menu items
@@ -250,7 +250,7 @@ Window::Window (FWidget* parent)
   createDialogButtons();
 
   // Statusbar at the bottom
-  Statusbar = new FStatusBar (this);
+  Statusbar = new finalcut::FStatusBar (this);
   Statusbar->setMessage("Status bar message");
 
   // Generate data vector for the windows
@@ -258,7 +258,7 @@ Window::Window (FWidget* parent)
   {
     win_data* win_dat = new win_data;
     win_dat->is_open = false;
-    win_dat->title = new FString();
+    win_dat->title = new finalcut::FString();
     win_dat->title->sprintf("Window %d", n);
     windows.push_back(win_dat);
   }
@@ -285,31 +285,31 @@ Window::~Window()
 }
 
 //----------------------------------------------------------------------
-void Window::createFileMenuItems (FMenu* File)
+void Window::createFileMenuItems (finalcut::FMenu* File)
 {
   // "File" menu item
-  FMenuItem* New = new FMenuItem ("&New", File);
+  finalcut::FMenuItem* New = new finalcut::FMenuItem ("&New", File);
   New->setStatusbarMessage ("Create the windows");
 
-  FMenuItem* Close = new FMenuItem ("&Close", File);
+  finalcut::FMenuItem* Close = new finalcut::FMenuItem ("&Close", File);
   Close->setStatusbarMessage ("Close the windows");
 
-  FMenuItem* Line1 = new FMenuItem (File);
+  finalcut::FMenuItem* Line1 = new finalcut::FMenuItem (File);
   Line1->setSeparator();
 
-  FMenuItem* Next = new FMenuItem ("Ne&xt window", File);
-  Next->addAccelerator (fc::Fmkey_npage);  // Meta/Alt + PgDn
+  finalcut::FMenuItem* Next = new finalcut::FMenuItem ("Ne&xt window", File);
+  Next->addAccelerator (finalcut::fc::Fmkey_npage);  // Meta/Alt + PgDn
   Next->setStatusbarMessage ("Switch to the next window");
 
-  FMenuItem* Previous = new FMenuItem ("&Previous window", File);
-  Previous->addAccelerator (fc::Fmkey_ppage);  // Meta/Alt + PgUp
+  finalcut::FMenuItem* Previous = new finalcut::FMenuItem ("&Previous window", File);
+  Previous->addAccelerator (finalcut::fc::Fmkey_ppage);  // Meta/Alt + PgUp
   Previous->setStatusbarMessage ("Switch to the previous window");
 
-  FMenuItem* Line2 = new FMenuItem (File);
+  finalcut::FMenuItem* Line2 = new finalcut::FMenuItem (File);
   Line2->setSeparator();
 
-  FMenuItem* Quit = new FMenuItem ("&Quit", File);
-  Quit->addAccelerator (fc::Fmkey_x);  // Meta/Alt + X
+  finalcut::FMenuItem* Quit = new finalcut::FMenuItem ("&Quit", File);
+  Quit->addAccelerator (finalcut::fc::Fmkey_x);  // Meta/Alt + X
   Quit->setStatusbarMessage ("Exit the program");
 
   // Add menu item callback
@@ -317,38 +317,38 @@ void Window::createFileMenuItems (FMenu* File)
   addClickedCallback (Close, &Window::cb_closeWindows);
   addClickedCallback (Next, &Window::cb_next);
   addClickedCallback (Previous, &Window::cb_previous);
-  addClickedCallback (Quit, &FApplication::cb_exitApp);
+  addClickedCallback (Quit, &finalcut::FApplication::cb_exitApp);
 }
 
 //----------------------------------------------------------------------
 void Window::createDialogButtons()
 {
   // Dialog buttons
-  FButton* CreateButton = new FButton (this);
+  finalcut::FButton* CreateButton = new finalcut::FButton (this);
   CreateButton->setGeometry(2, 2, 9, 1);
   CreateButton->setText (L"&Create");
 
-  FButton* CloseButton = new FButton (this);
+  finalcut::FButton* CloseButton = new finalcut::FButton (this);
   CloseButton->setGeometry(15, 2, 9, 1);
   CloseButton->setText (L"C&lose");
 
-  FButton* QuitButton = new FButton (this);
+  finalcut::FButton* QuitButton = new finalcut::FButton (this);
   QuitButton->setGeometry(28, 2, 9, 1);
   QuitButton->setText (L"&Quit");
 
   // Add button callback
   addClickedCallback (CreateButton, &Window::cb_createWindows);
   addClickedCallback (CloseButton, &Window::cb_closeWindows);
-  addClickedCallback (QuitButton, &FApplication::cb_exitApp);
+  addClickedCallback (QuitButton, &finalcut::FApplication::cb_exitApp);
 }
 
 //----------------------------------------------------------------------
-void Window::activateWindow (FDialog* win)
+void Window::activateWindow (finalcut::FDialog* win)
 {
   if ( ! win || win->isWindowHidden() || win->isWindowActive() )
     return;
 
-  bool has_raised = FWindow::raiseWindow(win);
+  bool has_raised = finalcut::FWindow::raiseWindow(win);
   win->activateDialog();
 
   if ( has_raised )
@@ -387,14 +387,15 @@ void Window::adjustSize()
     ++iter;
   }
 
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-void Window::addClickedCallback (FWidget* widget, WindowCallback call)
+void Window::addClickedCallback ( finalcut::FWidget* widget
+                                , WindowCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<FWidget::FMemberCallback>(call);
+      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
 
   widget->addCallback
   (
@@ -404,10 +405,11 @@ void Window::addClickedCallback (FWidget* widget, WindowCallback call)
 }
 
 //----------------------------------------------------------------------
-void Window::addClickedCallback (FWidget* widget, FAppCallback call)
+void Window::addClickedCallback ( finalcut::FWidget* widget
+                                , FAppCallback call )
 {
   FMemberCallback callback
-      = reinterpret_cast<FWidget::FMemberCallback>(call);
+      = reinterpret_cast<finalcut::FWidget::FMemberCallback>(call);
 
   widget->addCallback
   (
@@ -417,13 +419,13 @@ void Window::addClickedCallback (FWidget* widget, FAppCallback call)
 }
 
 //----------------------------------------------------------------------
-void Window::onClose (FCloseEvent* ev)
+void Window::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void Window::cb_createWindows (FWidget*, data_ptr)
+void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
 {
   std::vector<win_data*>::const_iterator iter, first;
   iter = first = windows.begin();
@@ -453,7 +455,7 @@ void Window::cb_createWindows (FWidget*, data_ptr)
       (
         "destroy",
         F_METHOD_CALLBACK (this, &Window::cb_destroyWindow),
-        static_cast<FWidget::data_ptr>(win_dat)
+        static_cast<finalcut::FWidget::data_ptr>(win_dat)
       );
     }
 
@@ -464,12 +466,12 @@ void Window::cb_createWindows (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_closeWindows (FWidget*, data_ptr)
+void Window::cb_closeWindows (finalcut::FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  widgetList::const_iterator iter, first;
+  finalcut::FWidget::widgetList::const_iterator iter, first;
   iter = dialog_list->end();
   first = dialog_list->begin();
   activateWindow(this);
@@ -485,20 +487,20 @@ void Window::cb_closeWindows (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_next (FWidget*, data_ptr)
+void Window::cb_next (finalcut::FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  widgetList::const_iterator iter;
+  finalcut::FWidget::widgetList::const_iterator iter;
   iter = dialog_list->begin();
 
   while ( iter != dialog_list->end() )
   {
-    if ( static_cast<FWindow*>(*iter)->isWindowActive() )
+    if ( static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
-      FDialog* next;
-      widgetList::const_iterator next_element;
+      finalcut::FDialog* next;
+      finalcut::FWidget::widgetList::const_iterator next_element;
       next_element = iter;
 
       do
@@ -508,7 +510,7 @@ void Window::cb_next (FWidget*, data_ptr)
         if ( next_element == dialog_list->end() )
           next_element = dialog_list->begin();
 
-        next = static_cast<FDialog*>(*next_element);
+        next = static_cast<finalcut::FDialog*>(*next_element);
       } while ( ! next->isEnabled()
              || ! next->acceptFocus()
              || ! next->isVisible()
@@ -523,12 +525,12 @@ void Window::cb_next (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_previous (FWidget*, data_ptr)
+void Window::cb_previous (finalcut::FWidget*, data_ptr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  widgetList::const_iterator iter;
+  finalcut::FWidget::widgetList::const_iterator iter;
   iter = dialog_list->end();
 
   do
@@ -536,10 +538,10 @@ void Window::cb_previous (FWidget*, data_ptr)
     --iter;
 
     if ( (*iter)->isDialogWidget()
-      && static_cast<FWindow*>(*iter)->isWindowActive() )
+      && static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
-      FDialog* prev;
-      widgetList::const_iterator prev_element;
+      finalcut::FDialog* prev;
+      finalcut::FWidget::widgetList::const_iterator prev_element;
       prev_element = iter;
 
       do
@@ -548,7 +550,7 @@ void Window::cb_previous (FWidget*, data_ptr)
           prev_element = dialog_list->end();
 
         --prev_element;
-        prev = static_cast<FDialog*>(*prev_element);
+        prev = static_cast<finalcut::FDialog*>(*prev_element);
       } while ( ! prev->isEnabled()
              || ! prev->acceptFocus()
              || ! prev->isVisible()
@@ -562,7 +564,7 @@ void Window::cb_previous (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (FWidget*, data_ptr data)
+void Window::cb_destroyWindow (finalcut::FWidget*, data_ptr data)
 {
   win_data* win_dat = static_cast<win_data*>(data);
 
@@ -581,7 +583,7 @@ void Window::cb_destroyWindow (FWidget*, data_ptr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app (argc, argv);
+  finalcut::FApplication app (argc, argv);
 
   // Create main dialog object
   Window main_dlg (&app);

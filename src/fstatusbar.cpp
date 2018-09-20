@@ -24,6 +24,8 @@
 
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FStatusKey
@@ -727,3 +729,4 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
     setReverse(true);
 }
 
+}  // namespace finalcut

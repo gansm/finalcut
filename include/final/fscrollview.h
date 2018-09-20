@@ -56,6 +56,8 @@
 #include "final/fscrollbar.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FScrollView
@@ -248,5 +250,6 @@ inline bool FScrollView::isViewportPrint()
 inline void FScrollView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
 
+}  // namespace finalcut
 
 #endif  // FSCROLLVIEW_H

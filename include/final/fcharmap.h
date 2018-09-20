@@ -30,6 +30,9 @@
 #include "final/fc.h"
 #include "final/ftypes.h"
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -326,5 +329,7 @@ static uInt cp437_to_ucs[][2] =
 const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
                                 / sizeof(cp437_to_ucs[0]) ) - 1;
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FCHARMAP_H

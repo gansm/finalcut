@@ -32,6 +32,9 @@
 
 #define null NULL
 
+namespace
+{
+
 typedef unsigned char  uChar;
 typedef unsigned int   uInt;
 typedef unsigned long  uLong;
@@ -48,6 +51,12 @@ typedef int32_t        sInt32;
 typedef int64_t        sInt64;
 
 typedef long double    lDouble;
+
+} // namespace
+
+
+namespace finalcut
+{
 
 namespace fc
 {
@@ -75,7 +84,10 @@ typedef struct
 }
 keyname;
 #pragma pack(pop)
+
 }  // namespace fc
+
+} // namespace finalcut
 
 #endif  // FTYPES_H
 

@@ -23,6 +23,8 @@
 #include "final/fradiomenuitem.h"
 #include "final/fmenu.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FRadioMenuItem
@@ -88,3 +90,5 @@ void FRadioMenuItem::processClicked()
 
   emitCallback("clicked");
 }
+
+}  // namespace finalcut

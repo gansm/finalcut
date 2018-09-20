@@ -81,6 +81,8 @@
 #include "final/fstatusbar.h"
 #include "final/fterm.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FFileDialog
@@ -230,5 +232,7 @@ inline bool FFileDialog::unsetShowHiddenFiles()
 //----------------------------------------------------------------------
 inline bool FFileDialog::getShowHiddenFiles()
 { return show_hidden; }
+
+}  // namespace finalcut
 
 #endif  // FFILEDIALOG_H

@@ -40,6 +40,8 @@
 #include "final/ftermcap.h"
 #include "final/ftermdetection.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermXTerminal
@@ -219,5 +221,6 @@ inline void FTermXTerminal::setMouseSupport()
 inline void FTermXTerminal::unsetMouseSupport()
 { setMouseSupport (false); }
 
+}  // namespace finalcut
 
 #endif  // FTERMXTERMINAL_H

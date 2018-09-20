@@ -24,6 +24,8 @@
 #include "final/fstatusbar.h"
 #include "final/ftextview.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTextView
@@ -923,3 +925,5 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
 
   update_scrollbar = true;
 }
+
+}  // namespace finalcut

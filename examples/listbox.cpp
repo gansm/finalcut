@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -29,31 +29,38 @@
 
 
 // Global application object
-static FString* temp_str = 0;
+static finalcut::FString* temp_str = 0;
+
 
 // Function prototypes
-void doubleToItem (FListBoxItem&, FWidget::data_ptr container, int index);
-FString& doubleToString (std::list<double>::const_iterator iter);
-FString& mapToString (std::map<FString, FString>::const_iterator iter);
+void doubleToItem ( finalcut::FListBoxItem&
+                  , finalcut::FWidget::data_ptr container
+                  , int index) ;
+finalcut::FString& doubleToString (std::list<double>::const_iterator iter);
+finalcut::FString& mapToString ( std::map<finalcut::FString
+                               , finalcut::FString>::const_iterator iter );
+
 
 // Lazy conversion import function
-void doubleToItem (FListBoxItem& item, FWidget::data_ptr container, int index)
+void doubleToItem ( finalcut::FListBoxItem& item
+                  , finalcut::FWidget::data_ptr container, int index)
 {
   typedef std::list<double>* double_list_ptr;
   double_list_ptr dbllist = static_cast<double_list_ptr>(container);
   std::list<double>::iterator iter = dbllist->begin();
   std::advance (iter, index);
-  item.setText (FString() << *iter);
-  item.setData (FWidget::data_ptr(&(*iter)));
+  item.setText (finalcut::FString() << *iter);
+  item.setData (finalcut::FWidget::data_ptr(&(*iter)));
 }
 
 // Import converter functions
-FString& doubleToString (std::list<double>::const_iterator iter)
+finalcut::FString& doubleToString (std::list<double>::const_iterator iter)
 {
   return temp_str->setNumber(*iter);
 }
 
-FString& mapToString (std::map<FString, FString>::const_iterator iter)
+finalcut::FString& mapToString ( std::map<finalcut::FString
+                               , finalcut::FString>::const_iterator iter )
 {
   return *temp_str = iter->first + ": " + iter->second;
 }
@@ -66,7 +73,7 @@ FString& mapToString (std::map<FString, FString>::const_iterator iter)
 #pragma pack(push)
 #pragma pack(1)
 
-class Listbox : public FDialog
+class Listbox : public finalcut::FDialog
 {
   public:
     // Constructor
@@ -81,7 +88,7 @@ class Listbox : public FDialog
     Listbox& operator = (const Listbox&);
 
     // Event handlers
-    void onClose (FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Data Member
     std::list<double>* double_list;
@@ -89,19 +96,19 @@ class Listbox : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Listbox::Listbox (FWidget* parent)
-  : FDialog(parent)
+Listbox::Listbox (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , double_list()
 {
-  temp_str = new FString;
+  temp_str = new finalcut::FString;
 
   // listbox 1
-  FListBox* list1 = new FListBox (this);
+  finalcut::FListBox* list1 = new finalcut::FListBox (this);
   list1->setGeometry(2, 1, 18, 10);
   list1->setText ("FListBoxItem");
 
   for (int i = 1; i < 30; i++)
-    list1->insert (L"----- " + (FString() << i) + L" -----");
+    list1->insert (L"----- " + (finalcut::FString() << i) + L" -----");
 
   // listbox 2
   double_list = new std::list<double>;
@@ -109,7 +116,7 @@ Listbox::Listbox (FWidget* parent)
   for (double i = 1; i<=15; i++)
     double_list->push_back(2 * i + (i / 100));
 
-  FListBox* list2 = new FListBox (this);
+  finalcut::FListBox* list2 = new finalcut::FListBox (this);
   list2->setGeometry(21, 1, 10, 10);
   list2->setText ("double");
 
@@ -124,20 +131,20 @@ Listbox::Listbox (FWidget* parent)
   //list2->insert (double_list->begin(), double_list->end(), doubleToString);
 
   // listbox 3
-  std::map<FString, FString> TLD;
+  std::map<finalcut::FString, finalcut::FString> TLD;
   TLD["com"] = "Commercial";
   TLD["org"] = "Organization";
   TLD["net"] = "Network";
   TLD["edu"] = "Education";
   TLD["gov"] = "Government";
 
-  FListBox* list3;
-  list3 = new FListBox (TLD.begin(), TLD.end(), mapToString, this);
+  finalcut::FListBox* list3;
+  list3 = new finalcut::FListBox (TLD.begin(), TLD.end(), mapToString, this);
   list3->setGeometry(32, 1, 21, 10);
   list3->setText ("key: value");
 
   // Quit button
-  FButton* Quit = new FButton (this);
+  finalcut::FButton* Quit = new finalcut::FButton (this);
   Quit->setGeometry(42, 12, 10, 1);
   Quit->setText (L"&Quit");
 
@@ -145,7 +152,7 @@ Listbox::Listbox (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 }
 
@@ -157,9 +164,9 @@ Listbox::~Listbox()  // destructor
 }
 
 //----------------------------------------------------------------------
-void Listbox::onClose (FCloseEvent* ev)
+void Listbox::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 
@@ -170,7 +177,7 @@ void Listbox::onClose (FCloseEvent* ev)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create main dialog object
   Listbox d(&app);

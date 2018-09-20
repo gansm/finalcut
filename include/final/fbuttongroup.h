@@ -55,6 +55,8 @@
 
 #include "final/fscrollview.h"
 
+namespace finalcut
+{
 
 // class forward declaration
 class FToggleButton;
@@ -169,5 +171,7 @@ inline uInt FButtonGroup::getCount() const
 //----------------------------------------------------------------------
 inline FString& FButtonGroup::getText()
 { return text; }
+
+}  // namespace finalcut
 
 #endif  // FBUTTONGROUP_H

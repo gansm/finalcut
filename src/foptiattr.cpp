@@ -24,6 +24,9 @@
 
 #include "final/foptiattr.h"
 
+namespace finalcut
+{
+
 //----------------------------------------------------------------------
 // class FOptiAttr
 //----------------------------------------------------------------------
@@ -1701,3 +1704,5 @@ inline bool FOptiAttr::append_sequence (char seq[])
   else
     return false;
 }
+
+}  // namespace finalcut

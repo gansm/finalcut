@@ -59,6 +59,8 @@
 #include "final/fstring.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FListBoxItem
@@ -531,5 +533,7 @@ inline FListBox::listBoxItems::iterator FListBox::index2iterator (int index)
   std::advance (iter, index);
   return iter;
 }
+
+}  // namespace finalcut
 
 #endif  // FLISTBOX_H

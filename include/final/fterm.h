@@ -112,12 +112,12 @@
     typedef unsigned int chtype;
   #else
     typedef unsigned long chtype;
-  #endif
+  #endif  // _LP64
 
   #include <term.h>  // termcap
 #else
   #include <term.h>  // termcap
-#endif
+#endif  // defined(__sun) && defined(__SVR4)
 
 #ifdef F_HAVE_LIBGPM
   #undef buttons  // from term.h
@@ -164,6 +164,8 @@
 #include "final/ftermios.h"
 #include "final/ftermxterminal.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -205,7 +207,7 @@ class FTerm
     static const char*    getTermType_Answerback();
     static const char*    getTermType_SecDA();
     static int            getFramebufferBpp();
-#endif
+#endif  // DEBUG
 
     // Inquiries
     static bool           isCursorHidden();
@@ -551,7 +553,7 @@ inline const char* FTerm::getTermType_SecDA()
 //----------------------------------------------------------------------
 inline int FTerm::getFramebufferBpp()
 { return framebuffer_bpp; }
-#endif
+#endif  // DEBUG
 
 //----------------------------------------------------------------------
 inline bool FTerm::isCursorHidden()
@@ -709,5 +711,7 @@ inline FOptiMove* FTerm::getFOptiMove()
 inline void FTerm::changeTermSizeFinished()
 { resize_term = false; }
 
+
+}  // namespace finalcut
 
 #endif  // FTERM_H

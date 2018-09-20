@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,22 +24,22 @@
 
 
 // function prototypes
-void cb_quit (FWidget*, FWidget::data_ptr);
-void cb_publish (FWidget*, FWidget::data_ptr);
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_publish (finalcut::FWidget*, finalcut::FWidget::data_ptr);
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (FWidget*, FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  FApplication* app = static_cast<FApplication*>(data);
+  finalcut::FApplication* app = static_cast<finalcut::FApplication*>(data);
   app->quit();
 }
 
-void cb_publish (FWidget* widget, FWidget::data_ptr data)
+void cb_publish (finalcut::FWidget* widget, finalcut::FWidget::data_ptr data)
 {
-  FCheckBox* cbox1 = static_cast<FCheckBox*>(widget);
-  FCheckBox* cbox2 = static_cast<FCheckBox*>(data);
+  finalcut::FCheckBox* cbox1 = static_cast<finalcut::FCheckBox*>(widget);
+  finalcut::FCheckBox* cbox2 = static_cast<finalcut::FCheckBox*>(data);
 
   if ( cbox1->isChecked() )
     cbox2->setEnable();
@@ -57,21 +57,21 @@ void cb_publish (FWidget* widget, FWidget::data_ptr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple dialog box
-  FDialog dgl(&app);
+  finalcut::FDialog dgl(&app);
   dgl.setText ("Data input");
   dgl.setGeometry (4, 2, 37, 22);
   dgl.setShadow();
 
   // Create input fields
-  FLineEdit* name_field  = new FLineEdit(&dgl);
-  FLineEdit* email_field = new FLineEdit(&dgl);
-  FLineEdit* org_field   = new FLineEdit(&dgl);
-  FLineEdit* city_field  = new FLineEdit(&dgl);
-  FLineEdit* st_field    = new FLineEdit(&dgl);
-  FLineEdit* c_field     = new FLineEdit(&dgl);
+  finalcut::FLineEdit* name_field  = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit* email_field = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit* org_field   = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit* city_field  = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit* st_field    = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit* c_field     = new finalcut::FLineEdit(&dgl);
 
   name_field->setLabelText(L"&Name");
   email_field->setLabelText(L"&Email");
@@ -88,28 +88,34 @@ int main (int argc, char* argv[])
   c_field->setGeometry(15, 11, 4, 1);
 
   // Create the button group
-  FButtonGroup* radioButtonGroup = new FButtonGroup("Sex", &dgl);
+  finalcut::FButtonGroup* radioButtonGroup = \
+      new finalcut::FButtonGroup("Sex", &dgl);
   radioButtonGroup->setGeometry(2, 13, 13, 4);
 
   // Create radio buttons
-  FRadioButton* male = new FRadioButton("&Male", radioButtonGroup);
-  FRadioButton* female = new FRadioButton("&Female", radioButtonGroup);
+  finalcut::FRadioButton* male = \
+      new finalcut::FRadioButton("&Male", radioButtonGroup);
+  finalcut::FRadioButton* female = \
+      new finalcut::FRadioButton("&Female", radioButtonGroup);
   male->setGeometry(1, 1, 8, 1);
   female->setGeometry(1, 2, 10, 1);
 
   // Create another button group
-  FButtonGroup* checkButtonGroup = new FButtonGroup("&Data options", &dgl);
+  finalcut::FButtonGroup* checkButtonGroup = \
+      new finalcut::FButtonGroup("&Data options", &dgl);
   checkButtonGroup->setGeometry(16, 13, 19, 4);
 
   // Create checkbox buttons
-  FCheckBox* check1 = new FCheckBox("Save data", checkButtonGroup);
-  FCheckBox* check2 = new FCheckBox("Encrypt data", checkButtonGroup);
+  finalcut::FCheckBox* check1 = \
+      new finalcut::FCheckBox("Save data", checkButtonGroup);
+  finalcut::FCheckBox* check2 = \
+      new finalcut::FCheckBox("Encrypt data", checkButtonGroup);
   check1->setGeometry(1, 1, 13, 1);
   check2->setGeometry(1, 2, 16, 1);
   check2->setDisable();
 
   // Create a OK button
-  FButton btn("&OK", &dgl);
+  finalcut::FButton btn("&OK", &dgl);
   btn.setGeometry (24, 18, 10, 1);
 
   // Connect checkbox signal "clicked" with a callback function

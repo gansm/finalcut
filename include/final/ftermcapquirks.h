@@ -40,6 +40,8 @@
 #include "final/ftermcap.h"
 #include "final/ftermdetection.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermcapsQuirks
@@ -95,5 +97,7 @@ class FTermcapQuirks
 //----------------------------------------------------------------------
 inline const char* FTermcapQuirks::getClassName() const
 { return "FTermcapQuirks"; }
+
+}  // namespace finalcut
 
 #endif  // FTERMCAPQUIRKS_H

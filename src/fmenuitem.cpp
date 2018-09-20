@@ -28,6 +28,8 @@
 #include "final/fmenuitem.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenuItem
@@ -771,3 +773,5 @@ void FMenuItem::processClicked()
 {
   emitCallback("clicked");
 }
+
+}  // namespace finalcut

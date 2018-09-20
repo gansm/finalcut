@@ -24,6 +24,8 @@
 #include "final/fdialog.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FDialog
@@ -1066,7 +1068,7 @@ void FDialog::drawTitleBar()
     setPrintPos (getWidth() - 2, 1);
     printf ("(%d)", getWindowLayer(this));
   }
-#endif
+#endif  // DEBUG
 }
 
 //----------------------------------------------------------------------
@@ -1765,3 +1767,5 @@ void FDialog::cb_close (FWidget*, data_ptr)
   drawTitleBar();
   close();
 }
+
+}  // namespace finalcut

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -31,11 +31,11 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class Watch : public FDialog
+class Watch : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Watch (FWidget* = 0);
+    explicit Watch (finalcut::FWidget* = 0);
 
     // Destructor
     ~Watch();
@@ -44,12 +44,12 @@ class Watch : public FDialog
     void printTime();
 
     // Event handlers
-    void onTimer (FTimerEvent*);
-    void onClose (FCloseEvent*);
+    void onTimer (finalcut::FTimerEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_clock (FWidget*, data_ptr);
-    void cb_seconds (FWidget*, data_ptr);
+    void cb_clock (finalcut::FWidget*, data_ptr);
+    void cb_seconds (finalcut::FWidget*, data_ptr);
 
   protected:
     // Method
@@ -63,17 +63,17 @@ class Watch : public FDialog
     Watch& operator = (const Watch&);
 
     // Data Members
-    bool     sec;
-    FLabel*  time_label;
-    FLabel*  time_str;
-    FSwitch* clock_sw;
-    FSwitch* seconds_sw;
+    bool               sec;
+    finalcut::FLabel*  time_label;
+    finalcut::FLabel*  time_str;
+    finalcut::FSwitch* clock_sw;
+    finalcut::FSwitch* seconds_sw;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Watch::Watch (FWidget* parent)
-  : FDialog(parent)
+  : finalcut::FDialog(parent)
   , sec(true)
   , time_label(0)
   , time_str(0)
@@ -85,21 +85,21 @@ Watch::Watch (FWidget* parent)
   setGeometry (1 + (pw - 22) / 2, 3, 22, 13);
 
   // Create labels
-  time_label = new FLabel(L"Time", this);
+  time_label = new finalcut::FLabel(L"Time", this);
   time_label->setGeometry(5, 2, 5, 1);
   time_label->setEmphasis();
-  time_str = new FLabel(L"--:--:--", this);
+  time_str = new finalcut::FLabel(L"--:--:--", this);
   time_str->setGeometry(10, 2, 8, 1);
 
   // Create checkbox buttons
-  clock_sw = new FSwitch(L"Clock", this);
-  seconds_sw = new FSwitch(L"Seconds", this);
+  clock_sw = new finalcut::FSwitch(L"Clock", this);
+  seconds_sw = new finalcut::FSwitch(L"Seconds", this);
   clock_sw->setGeometry(4, 4, 9, 1);
   seconds_sw->setGeometry(2, 6, 11, 1);
   sec = seconds_sw->setChecked();
 
   // Create button
-  FButton* quit_btn = new FButton(L"&Quit", this);
+  finalcut::FButton* quit_btn = new finalcut::FButton(L"&Quit", this);
   quit_btn->setGeometry(6, 9, 9, 1);
 
   // Connect switch signal "toggled" with a callback member function
@@ -120,7 +120,7 @@ Watch::Watch (FWidget* parent)
   quit_btn->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 }
 
@@ -133,7 +133,7 @@ Watch::~Watch()
 //----------------------------------------------------------------------
 void Watch::printTime()
 {
-  FString str;
+  finalcut::FString str;
   std::tm now;
   std::time_t t;
 
@@ -150,19 +150,19 @@ void Watch::printTime()
 }
 
 //----------------------------------------------------------------------
-void Watch::onTimer (FTimerEvent*)
+void Watch::onTimer (finalcut::FTimerEvent*)
 {
   printTime();
 }
 
 //----------------------------------------------------------------------
-void Watch::onClose (FCloseEvent* ev)
+void Watch::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (FWidget*, data_ptr)
+void Watch::cb_clock (finalcut::FWidget*, data_ptr)
 {
   if ( clock_sw->isChecked() )
   {
@@ -178,7 +178,7 @@ void Watch::cb_clock (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (FWidget*, data_ptr)
+void Watch::cb_seconds (finalcut::FWidget*, data_ptr)
 {
   if ( seconds_sw->isChecked() )
     sec = true;
@@ -203,7 +203,7 @@ void Watch::adjustSize()
 {
   int pw = getParentWidget()->getWidth();
   setX (1 + (pw - 22) / 2, false);
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -212,7 +212,7 @@ void Watch::adjustSize()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple dialog box
   Watch w(&app);

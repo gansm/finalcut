@@ -24,6 +24,8 @@
 
 #include "final/ffiledialog.h"
 
+namespace finalcut
+{
 
 // non-member functions
 //----------------------------------------------------------------------
@@ -939,3 +941,5 @@ void FFileDialog::cb_processShowHidden (FWidget*, data_ptr)
 {
   setShowHiddenFiles(not show_hidden);
 }
+
+}  // namespace finalcut

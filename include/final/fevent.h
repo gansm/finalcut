@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -79,6 +79,8 @@
 #include "final/fc.h"
 #include "final/fpoint.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FEvent
@@ -335,5 +337,7 @@ class FTimerEvent : public FEvent  // timer event
 };
 
 #pragma pack(pop)
+
+}  // namespace finalcut
 
 #endif  // FEVENT_H

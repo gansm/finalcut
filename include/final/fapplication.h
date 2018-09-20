@@ -69,6 +69,8 @@
 #include "final/fwidget.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FApplication
@@ -241,5 +243,6 @@ inline FWidget* FApplication::getFocusWidget() const
 inline void FApplication::cb_exitApp (FWidget*, data_ptr)
 { close(); }
 
+}  // namespace finalcut
 
 #endif  // FAPPLICATION_H

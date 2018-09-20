@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -27,24 +27,24 @@
 // class Timer
 //----------------------------------------------------------------------
 
-class Timer : public FWidget
+class Timer : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Timer (FWidget* = 0);
+    explicit Timer (finalcut::FWidget* = 0);
 
   protected:
     // Method
     void draw();
 
     // Event handlers
-    void onTimer (FTimerEvent*);
-    void onAccel (FAccelEvent*);
+    void onTimer (finalcut::FTimerEvent*);
+    void onAccel (finalcut::FAccelEvent*);
 };
 
 //----------------------------------------------------------------------
-Timer::Timer (FWidget* parent)
-  : FWidget(parent)
+Timer::Timer (finalcut::FWidget* parent)
+  : finalcut::FWidget(parent)
 {
   addTimer (60000);        // 1-minute timer
   int id = addTimer (50);  // 50-millisecond timer
@@ -52,8 +52,8 @@ Timer::Timer (FWidget* parent)
   delTimer (id);
   addTimer (250);          // 250-millisecond timer
 
-  wc.term_fg = fc::Default;
-  wc.term_bg = fc::Default;
+  wc.term_fg = finalcut::fc::Default;
+  wc.term_bg = finalcut::fc::Default;
 }
 
 //----------------------------------------------------------------------
@@ -67,7 +67,7 @@ void Timer::draw()
 }
 
 //----------------------------------------------------------------------
-void Timer::onTimer (FTimerEvent* ev)
+void Timer::onTimer (finalcut::FTimerEvent* ev)
 {
   bool is_last_line = false;
   int timer_id = ev->timerId();
@@ -75,7 +75,7 @@ void Timer::onTimer (FTimerEvent* ev)
   if ( getPrintPos().getY() == getDesktopHeight() )
     is_last_line = true;
 
-  setColor (short(1 + timer_id), fc::Default);
+  setColor (short(1 + timer_id), finalcut::fc::Default);
   print() << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )
@@ -85,7 +85,7 @@ void Timer::onTimer (FTimerEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Timer::onAccel (FAccelEvent* ev)
+void Timer::onAccel (finalcut::FAccelEvent* ev)
 {
   quit();
   ev->accept();
@@ -98,9 +98,9 @@ void Timer::onAccel (FAccelEvent* ev)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
-  app.setForegroundColor(fc::Default);
-  app.setBackgroundColor(fc::Default);
+  finalcut::FApplication app(argc, argv);
+  app.setForegroundColor(finalcut::fc::Default);
+  app.setBackgroundColor(finalcut::fc::Default);
 
   // Create a timer object t
   Timer t(&app);

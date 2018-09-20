@@ -62,6 +62,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FWindow
@@ -272,5 +274,7 @@ inline bool FWindow::raiseWindow()
 //----------------------------------------------------------------------
 inline bool FWindow::lowerWindow()
 { return lowerWindow(this); }
+
+}  // namespace finalcut
 
 #endif  // FWINDOW_H

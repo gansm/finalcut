@@ -46,6 +46,9 @@
   #include <sys/kbio.h>
 #endif
 
+namespace finalcut
+{
+
 //----------------------------------------------------------------------
 // class FTermFreeBSD
 //----------------------------------------------------------------------
@@ -128,5 +131,7 @@ inline void FTermFreeBSD::enableMetaSendsEscape()
 inline void FTermFreeBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__)
+
+}  // namespace finalcut
 
 #endif  // FTERMFREEBSD_H

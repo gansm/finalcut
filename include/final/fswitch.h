@@ -59,6 +59,8 @@
 
 #include "final/ftogglebutton.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FSwitch
@@ -112,5 +114,7 @@ class FSwitch : public FToggleButton
 //----------------------------------------------------------------------
 inline const char* FSwitch::getClassName() const
 { return "FSwitch"; }
+
+}  // namespace finalcut
 
 #endif  // FSWITCH_H

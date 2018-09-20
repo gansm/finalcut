@@ -61,6 +61,8 @@
 
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FToolTip
@@ -121,5 +123,6 @@ class FToolTip : public FWindow
 inline const char* FToolTip::getClassName() const
 { return "FToolTip"; }
 
+}  // namespace finalcut
 
 #endif  // FTOOLTIP_H

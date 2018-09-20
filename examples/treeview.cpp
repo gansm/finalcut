@@ -35,11 +35,11 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class Treeview : public FDialog
+class Treeview : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Treeview (FWidget* = 0);
+    explicit Treeview (finalcut::FWidget* = 0);
     // Destructor
     ~Treeview();
 
@@ -62,11 +62,11 @@ class Treeview : public FDialog
     TreeItem* getOceania();
 
     // Event handlers
-    void onClose (FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Data Members
-    FListView* listView;
-    FButton*   Quit;
+    finalcut::FListView* listView;
+    finalcut::FButton*   Quit;
 };
 #pragma pack(pop)
 
@@ -251,13 +251,13 @@ Treeview::TreeItem* Treeview::getOceania()
 }
 
 //----------------------------------------------------------------------
-Treeview::Treeview (FWidget* parent)
-  : FDialog(parent)
+Treeview::Treeview (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , listView()
   , Quit()
 {
   // Create FListView object
-  listView = new FListView (this);
+  listView = new finalcut::FListView (this);
   listView->setGeometry(2, 1, 53, 14);
 
   // Add columns to the view
@@ -266,8 +266,8 @@ Treeview::Treeview (FWidget* parent)
   listView->addColumn ("Density/km²");
 
   // Set right alignment for the second and third column
-  listView->setColumnAlignment (2, fc::alignRight);
-  listView->setColumnAlignment (3, fc::alignRight);
+  listView->setColumnAlignment (2, finalcut::fc::alignRight);
+  listView->setColumnAlignment (3, finalcut::fc::alignRight);
 
   // Activate tree view
   listView->setTreeView();
@@ -297,12 +297,15 @@ Treeview::Treeview (FWidget* parent)
   while ( continent_list->name )
   {
     TreeItem* country_list = continent_list->child_element;
-    FStringList continent_line (continent_list->begin(), continent_list->end());
-    FObjectIterator iter = listView->insert (continent_line);
+    finalcut::FStringList continent_line ( continent_list->begin()
+                                         , continent_list->end() );
+    finalcut::FListViewIterator::FObjectIterator iter = \
+        listView->insert (continent_line);
 
     while ( country_list && country_list->name )
     {
-      FStringList country_line (country_list->begin(), country_list->end());
+      finalcut::FStringList country_line ( country_list->begin()
+                                         , country_list->end() );
       listView->insert (country_line, iter);
       country_list++;
     }
@@ -311,7 +314,7 @@ Treeview::Treeview (FWidget* parent)
   }
 
   // Quit button
-  Quit = new FButton (this);
+  Quit = new finalcut::FButton (this);
   Quit->setGeometry(24, 16, 10, 1);
   Quit->setText (L"&Quit");
 
@@ -319,7 +322,7 @@ Treeview::Treeview (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 }
 
@@ -345,13 +348,13 @@ void Treeview::adjustSize()
   if ( Quit )
     Quit->setY(getHeight() - 4);
 
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-void Treeview::onClose (FCloseEvent* ev)
+void Treeview::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 
@@ -362,7 +365,7 @@ void Treeview::onClose (FCloseEvent* ev)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create main dialog object
   Treeview d(&app);

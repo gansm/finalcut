@@ -24,6 +24,8 @@
 #include "final/flineedit.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FLineEdit
@@ -939,3 +941,5 @@ void FLineEdit::processChanged()
 {
   emitCallback("changed");
 }
+
+}  // namespace finalcut

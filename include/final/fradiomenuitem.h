@@ -59,6 +59,8 @@
 
 #include "final/fmenuitem.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FRadioMenuItem
@@ -99,5 +101,7 @@ class FRadioMenuItem : public FMenuItem
 //----------------------------------------------------------------------
 inline const char* FRadioMenuItem::getClassName() const
 { return "FRadioMenuItem"; }
+
+}  // namespace finalcut
 
 #endif  // FRADIOMENUITEM_H

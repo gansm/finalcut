@@ -29,6 +29,9 @@
 #include "final/fwidget.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
+
 // global FVTerm object
 static FVTerm* init_object = 0;
 
@@ -3047,7 +3050,7 @@ int FVTerm::appendOutputBuffer (char ch)
 
   return ch;
 }
-#endif
+#endif  // defined(__sun) && defined(__SVR4)
 
 //----------------------------------------------------------------------
 int FVTerm::appendOutputBuffer (int ch)
@@ -3061,3 +3064,4 @@ int FVTerm::appendOutputBuffer (int ch)
   return ch;
 }
 
+}  // namespace finalcut

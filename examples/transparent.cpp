@@ -30,7 +30,7 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class Transparent : public FDialog
+class Transparent : public finalcut::FDialog
 {
   public:
     // Typedef and Enumeration
@@ -43,7 +43,7 @@ class Transparent : public FDialog
 
   public:
     // Constructor
-    explicit Transparent (FWidget* = 0, trans_type = transparent);
+    explicit Transparent (finalcut::FWidget* = 0, trans_type = transparent);
 
     // Destructor
     ~Transparent();
@@ -59,7 +59,7 @@ class Transparent : public FDialog
     void draw();
 
     // Event handlers
-    void onKeyPress (FKeyEvent* ev);
+    void onKeyPress (finalcut::FKeyEvent* ev);
 
     // Data Members
     trans_type type;
@@ -67,8 +67,9 @@ class Transparent : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Transparent::Transparent (FWidget* parent, Transparent::trans_type tt)
-  : FDialog(parent)
+Transparent::Transparent ( finalcut::FWidget* parent
+                         , Transparent::trans_type tt )
+  : finalcut::FDialog(parent)
   , type(tt)
 {
   setStatusbarMessage("Press Q to quit");
@@ -81,7 +82,7 @@ Transparent::~Transparent()
 //----------------------------------------------------------------------
 void Transparent::draw()
 {
-  FDialog::draw();
+  finalcut::FDialog::draw();
 
   if ( isMonochron() )
     setReverse(true);
@@ -94,16 +95,16 @@ void Transparent::draw()
   else if ( type == inherit_background )
   {
     if ( getMaxColor() > 8 )
-      setColor(fc::Blue, fc::Black);
+      setColor(finalcut::fc::Blue, finalcut::fc::Black);
     else
-      setColor(fc::Green, fc::Black);
+      setColor(finalcut::fc::Green, finalcut::fc::Black);
 
     setInheritBackground();
   }
   else
     setTransparent();
 
-  FString line(getClientWidth(), wchar_t('.'));
+  finalcut::FString line(getClientWidth(), wchar_t('.'));
 
   for (int n = 1; n <= getClientHeight(); n++)
   {
@@ -123,7 +124,7 @@ void Transparent::draw()
 }
 
 //----------------------------------------------------------------------
-void Transparent::onKeyPress (FKeyEvent* ev)
+void Transparent::onKeyPress (finalcut::FKeyEvent* ev)
 {
   if ( ! ev )
     return;
@@ -136,7 +137,7 @@ void Transparent::onKeyPress (FKeyEvent* ev)
       ev->ignore();
   }
   else
-    FDialog::onKeyPress(ev);
+    finalcut::FDialog::onKeyPress(ev);
 }
 
 
@@ -147,11 +148,11 @@ void Transparent::onKeyPress (FKeyEvent* ev)
 #pragma pack(push)
 #pragma pack(1)
 
-class MainWindow : public FDialog
+class MainWindow : public finalcut::FDialog
 {
   private:
-    FString line1;
-    FString line2;
+    finalcut::FString line1;
+    finalcut::FString line2;
 
   private:
     // Disable copy constructor
@@ -162,10 +163,10 @@ class MainWindow : public FDialog
     void draw();
 
     // Event handlers
-    void onClose (FCloseEvent*);
-    void onShow  (FShowEvent*);
-    void onTimer (FTimerEvent*);
-    void onKeyPress (FKeyEvent* ev)
+    void onClose (finalcut::FCloseEvent*);
+    void onShow  (finalcut::FShowEvent*);
+    void onTimer (finalcut::FTimerEvent*);
+    void onKeyPress (finalcut::FKeyEvent* ev)
     {
       if ( ! ev )
         return;
@@ -176,19 +177,19 @@ class MainWindow : public FDialog
         ev->accept();
       }
       else
-        FDialog::onKeyPress(ev);
+        finalcut::FDialog::onKeyPress(ev);
     }
 
   public:
     // Constructor
-    explicit MainWindow (FWidget* = 0);
+    explicit MainWindow (finalcut::FWidget* = 0);
     // Destructor
     ~MainWindow();
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-MainWindow::MainWindow (FWidget* parent)
+MainWindow::MainWindow (finalcut::FWidget* parent)
   : FDialog(parent)
   , line1()
   , line2()
@@ -212,7 +213,7 @@ MainWindow::MainWindow (FWidget* parent)
   ibg->unsetTransparentShadow();
 
   // Statusbar at the bottom
-  FStatusBar* status_bar = new FStatusBar (this);
+  finalcut::FStatusBar* status_bar = new finalcut::FStatusBar (this);
   status_bar->setMessage("Press Q to quit");
 
   addAccelerator('q');
@@ -227,7 +228,7 @@ MainWindow::~MainWindow()
 //----------------------------------------------------------------------
 void MainWindow::draw()
 {
-  FDialog::draw();
+  finalcut::FDialog::draw();
 
   if ( isMonochron() )
     setReverse(true);
@@ -245,19 +246,19 @@ void MainWindow::draw()
 }
 
 //----------------------------------------------------------------------
-void MainWindow::onClose (FCloseEvent* ev)
+void MainWindow::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void MainWindow::onShow (FShowEvent*)
+void MainWindow::onShow (finalcut::FShowEvent*)
 {
   addTimer(100);
 }
 
 //----------------------------------------------------------------------
-void MainWindow::onTimer (FTimerEvent*)
+void MainWindow::onTimer (finalcut::FTimerEvent*)
 {
   wchar_t first_Char[2];
   uInt length = line1.getLength();
@@ -276,7 +277,7 @@ void MainWindow::onTimer (FTimerEvent*)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app (argc, argv);
+  finalcut::FApplication app (argc, argv);
 
   // Create main dialog object
   MainWindow main_dlg (&app);

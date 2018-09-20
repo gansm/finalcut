@@ -27,6 +27,9 @@
 #include "final/fmenu.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
+
 //----------------------------------------------------------------------
 // class FMenu
 //----------------------------------------------------------------------
@@ -1687,3 +1690,5 @@ void FMenu::processActivate()
 {
   emitCallback("activate");
 }
+
+}  // namespace finalcut

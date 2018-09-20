@@ -76,6 +76,8 @@
   #undef buttons  // from term.h
 #endif
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMouse
@@ -249,7 +251,7 @@ inline bool FMouseGPM::disableGpmMouse()
 //----------------------------------------------------------------------
 inline bool FMouseGPM::isGpmMouseEnabled()
 { return gpm_mouse_enabled; }
-#endif
+#endif  // F_HAVE_LIBGPM
 
 
 //----------------------------------------------------------------------
@@ -527,5 +529,7 @@ inline void FMouseControl::enableXTermMouse()
 //----------------------------------------------------------------------
 inline void FMouseControl::disableXTermMouse()
 { xtermMouse(false); }
+
+}  // namespace finalcut
 
 #endif  // FMOUSE_H

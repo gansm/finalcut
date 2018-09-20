@@ -59,6 +59,8 @@
 
 #include "final/ftogglebutton.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FRadioButton
@@ -99,5 +101,7 @@ class FRadioButton : public FToggleButton
 //----------------------------------------------------------------------
 inline const char* FRadioButton::getClassName() const
 { return "FRadioButton"; }
+
+}  // namespace finalcut
 
 #endif  // FRADIOBUTTON_H

@@ -37,6 +37,8 @@
 
 //#include ...
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FClassName
@@ -124,6 +126,7 @@ class FClassName
 // FClassName inline functions
 //----------------------------------------------------------------------
 
+}  // namespace finalcut
 
 #endif  // FCLASSNAME_H
 

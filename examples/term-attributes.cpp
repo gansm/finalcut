@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,23 +30,23 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class AttribDlg : public FDialog
+class AttribDlg : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit AttribDlg (FWidget* = 0);
+    explicit AttribDlg (finalcut::FWidget* = 0);
 
     // Destructor
     ~AttribDlg();
 
     // Event handlers
-    void onAccel (FAccelEvent*);
-    void onWheel (FWheelEvent*);
-    void onClose (FCloseEvent*);
+    void onAccel (finalcut::FAccelEvent*);
+    void onWheel (finalcut::FWheelEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_next (FWidget* = 0, data_ptr = 0);
-    void cb_back (FWidget* = 0, data_ptr = 0);
+    void cb_next (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_back (finalcut::FWidget* = 0, data_ptr = 0);
 
     // Data Members
     short bgcolor;
@@ -61,28 +61,28 @@ class AttribDlg : public FDialog
     void adjustSize();
 
     // Data Members
-    FButton* next_button;
-    FButton* back_button;
+    finalcut::FButton* next_button;
+    finalcut::FButton* back_button;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-AttribDlg::AttribDlg (FWidget* parent)
-  : FDialog(parent)
+AttribDlg::AttribDlg (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , bgcolor(wc.label_bg)
   , next_button()
   , back_button()
 {
   setText ( "A terminal attributes test ("
-          + FString(getTermType())
+          + finalcut::FString(getTermType())
           + ")");
 
-  next_button = new FButton("&Next >", this);
+  next_button = new finalcut::FButton("&Next >", this);
   next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1);
-  next_button->addAccelerator(fc::Fkey_right);
-  back_button = new FButton("< &Back", this);
+  next_button->addAccelerator(finalcut::fc::Fkey_right);
+  back_button = new finalcut::FButton("< &Back", this);
   back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1);
-  back_button->addAccelerator(fc::Fkey_left);
+  back_button->addAccelerator(finalcut::fc::Fkey_left);
 
   // Add function callbacks
   next_button->addCallback
@@ -103,31 +103,31 @@ AttribDlg::~AttribDlg()
 { }
 
 //----------------------------------------------------------------------
-void AttribDlg::onAccel (FAccelEvent* ev)
+void AttribDlg::onAccel (finalcut::FAccelEvent* ev)
 {
   close();
   ev->accept();
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::onWheel (FWheelEvent* ev)
+void AttribDlg::onWheel (finalcut::FWheelEvent* ev)
 {
   int wheel = ev->getWheel();
 
-  if ( wheel == fc::WheelUp )
+  if ( wheel == finalcut::fc::WheelUp )
     cb_next();
-  else if ( wheel == fc::WheelDown )
+  else if ( wheel == finalcut::fc::WheelDown )
     cb_back();
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::onClose (FCloseEvent* ev)
+void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (FWidget*, data_ptr)
+void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
 {
   if ( isMonochron() )
     return;
@@ -135,20 +135,20 @@ void AttribDlg::cb_next (FWidget*, data_ptr)
   bgcolor++;
 
   if ( bgcolor >= getMaxColor() )
-    bgcolor = fc::Default;
+    bgcolor = finalcut::fc::Default;
 
   redraw();
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (FWidget*, data_ptr)
+void AttribDlg::cb_back (finalcut::FWidget*, data_ptr)
 {
   if ( isMonochron() )
     return;
 
   bgcolor--;
 
-  if ( bgcolor < fc::Default )
+  if ( bgcolor < finalcut::fc::Default )
     bgcolor = short(getMaxColor() - 1);
 
   redraw();
@@ -169,7 +169,7 @@ void AttribDlg::adjustSize()
   setGeometry(x, y, 69, 21, false);
   next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1, false);
   back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1, false);
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 
@@ -180,7 +180,7 @@ void AttribDlg::adjustSize()
 #pragma pack(push)
 #pragma pack(1)
 
-class AttribDemo : public FWidget
+class AttribDemo : public finalcut::FWidget
 {
   public:
     // Constructor
@@ -191,7 +191,7 @@ class AttribDemo : public FWidget
     { }
 
     // Event handler
-    void onWheel (FWheelEvent* ev)
+    void onWheel (finalcut::FWheelEvent* ev)
     {
       AttribDlg* p = static_cast<AttribDlg*>(getParentWidget());
 
@@ -224,8 +224,8 @@ class AttribDemo : public FWidget
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-AttribDemo::AttribDemo (FWidget* parent)
-  : FWidget(parent)
+AttribDemo::AttribDemo (finalcut::FWidget* parent)
+  : finalcut::FWidget(parent)
   , colors(getMaxColor())
 {
   if ( isMonochron() )
@@ -259,16 +259,16 @@ void AttribDemo::printAltCharset()
   setPrintPos (1,1);
   print("alternate charset: ");
 
-  if ( parent->bgcolor == fc::Default )
+  if ( parent->bgcolor == finalcut::fc::Default )
   {
-    setColor (fc::Default, fc::Default);
+    setColor (finalcut::fc::Default, finalcut::fc::Default);
   }
   else
   {
     if ( parent->bgcolor == 0 || parent->bgcolor == 16 )
-      setColor (fc::White, parent->bgcolor);
+      setColor (finalcut::fc::White, parent->bgcolor);
     else
-      setColor (fc::Black, parent->bgcolor);
+      setColor (finalcut::fc::Black, parent->bgcolor);
   }
 
   setAltCharset();
@@ -471,7 +471,7 @@ void AttribDemo::draw()
   short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
-  if ( bg == fc::Default )
+  if ( bg == finalcut::fc::Default )
     print (" default");
   else
     printf ( " %d", bg);
@@ -487,7 +487,7 @@ void AttribDemo::draw()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app (argc, argv);
+  finalcut::FApplication app (argc, argv);
 
   // Create a dialog box object.
   // This object will be automatically deleted by

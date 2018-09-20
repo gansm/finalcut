@@ -28,6 +28,9 @@
 #include "final/fstatusbar.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
+
 // global application object
 static FApplication* rootObj = 0;
 
@@ -1229,3 +1232,5 @@ bool FApplication::processNextEvent()
 
   return ( num_events > 0 );
 }
+
+}  // namespace finalcut

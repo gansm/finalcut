@@ -1,5 +1,5 @@
 /***********************************************************************
-* foptiattr_test.cpp - FOptiAttr unit tests                            *
+* foptiattr_test.cpp - finalcut::FOptiAttr unit tests                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -113,7 +113,7 @@ class FOptiAttrTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FOptiAttrTest::classNameTest()
 {
-  FOptiAttr opti_attr;
+  finalcut::FOptiAttr opti_attr;
   const char* const classname = opti_attr.getClassName();
   CPPUNIT_ASSERT_CSTRING ( classname, "FOptiAttr");
 }
@@ -121,19 +121,19 @@ void FOptiAttrTest::classNameTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::noArgumentTest()
 {
-  FOptiAttr::charData* ch = new FOptiAttr::charData();
-  FOptiAttr oa;
+  finalcut::FOptiAttr::charData* ch = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr oa;
   oa.initialize();
 
   // isNormal test
   CPPUNIT_ASSERT ( ! oa.isNormal(ch) );
-  ch->fg_color = fc::Default;
+  ch->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( ! oa.isNormal(ch) );
-  ch->bg_color = fc::Default;
+  ch->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  FOptiAttr::charData* ch_null = 0;
+  finalcut::FOptiAttr::charData* ch_null = 0;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );
@@ -144,7 +144,7 @@ void FOptiAttrTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::vga2ansiTest()
 {
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   CPPUNIT_ASSERT (oa.vga2ansi(0) == 0);
   CPPUNIT_ASSERT (oa.vga2ansi(1) == 4);
   CPPUNIT_ASSERT (oa.vga2ansi(2) == 2);
@@ -166,7 +166,7 @@ void FOptiAttrTest::vga2ansiTest()
 //----------------------------------------------------------------------
 void FOptiAttrTest::fakeReverseTest()
 {
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (4);       // Avoid reverse (4)
@@ -207,13 +207,15 @@ void FOptiAttrTest::fakeReverseTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = \
+      new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = \
+      new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Gray text on blue background
-  to->fg_color = fc::LightGray;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::LightGray;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "37m" CSI "44m") );
@@ -225,12 +227,12 @@ void FOptiAttrTest::fakeReverseTest()
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "34m" CSI "47m") );
-  CPPUNIT_ASSERT ( from->fg_color == fc::LightGray );
-  CPPUNIT_ASSERT ( from->bg_color == fc::Blue );
+  CPPUNIT_ASSERT ( from->fg_color == finalcut::fc::LightGray );
+  CPPUNIT_ASSERT ( from->bg_color == finalcut::fc::Blue );
   CPPUNIT_ASSERT ( *from == *to );
 
   // Gray text on red background
-  to->bg_color = fc::Red;
+  to->bg_color = finalcut::fc::Red;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31m" CSI "47m") );
@@ -254,7 +256,7 @@ void FOptiAttrTest::ansiTest()
 {
   // Simulate an ansi terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (3);       // Avoid standout (1) + underline mode (2)
@@ -302,16 +304,16 @@ void FOptiAttrTest::ansiTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;10;1m") );
@@ -319,8 +321,8 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -333,7 +335,7 @@ void FOptiAttrTest::ansiTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m" CSI "34m") );
@@ -341,8 +343,8 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31m" CSI "40m") );
@@ -350,8 +352,8 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32m" CSI "44m") );
@@ -359,8 +361,8 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -590,8 +592,8 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "36m" CSI "44m") );
@@ -698,14 +700,14 @@ void FOptiAttrTest::ansiTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "32m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 m ") );
@@ -721,7 +723,7 @@ void FOptiAttrTest::vt100Test()
 {
   // Simulate a vt100 terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (1);
   oa.setNoColorVideo (0);
@@ -767,16 +769,16 @@ void FOptiAttrTest::vt100Test()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;1m\017$<2>") );
@@ -784,8 +786,8 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -798,28 +800,28 @@ void FOptiAttrTest::vt100Test()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m$<2>" ) );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR("") );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
 
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -1051,8 +1053,8 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
 
@@ -1163,14 +1165,14 @@ void FOptiAttrTest::vt100Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
@@ -1183,7 +1185,7 @@ void FOptiAttrTest::xtermTest()
 {
   // Simulate an xterm-256color terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (256);
   oa.setNoColorVideo (0);
@@ -1239,16 +1241,16 @@ void FOptiAttrTest::xtermTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(ESC "(B" CSI "0;1m") );
@@ -1256,8 +1258,8 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -1271,7 +1273,7 @@ void FOptiAttrTest::xtermTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m" CSI "34m") );
@@ -1279,8 +1281,8 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31m" CSI "40m") );
@@ -1288,8 +1290,8 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "38;5;42m" CSI "48;5;17m") );
@@ -1297,8 +1299,8 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -1529,8 +1531,8 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "36m" CSI "44m") );
@@ -1641,14 +1643,14 @@ void FOptiAttrTest::xtermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "32m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 m ") );
@@ -1664,7 +1666,7 @@ void FOptiAttrTest::rxvtTest()
 {
   // Simulate an rxvt terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (0);
@@ -1710,16 +1712,16 @@ void FOptiAttrTest::rxvtTest()
   oa.set_orig_orig_colors (0);
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;1m\017") );
@@ -1727,8 +1729,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -1741,7 +1743,7 @@ void FOptiAttrTest::rxvtTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m" CSI "34m") );
@@ -1749,8 +1751,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31m" CSI "40m") );
@@ -1758,8 +1760,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32m" CSI "44m") );
@@ -1767,8 +1769,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -2001,8 +2003,8 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "36m" CSI "44m") );
@@ -2113,14 +2115,14 @@ void FOptiAttrTest::rxvtTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "32m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 m ") );
@@ -2136,7 +2138,7 @@ void FOptiAttrTest::linuxTest()
 {
   // Simulate a Linux terminal with 16 colors
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.setDefaultColorSupport();  // ANSI default color
   oa.setMaxColor (16);
   oa.setNoColorVideo (18);
@@ -2183,16 +2185,16 @@ void FOptiAttrTest::linuxTest()
   oa.set_orig_orig_colors (C_STR(OSC "R"));
   oa.initialize();
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;1m\017") );
@@ -2200,8 +2202,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -2214,7 +2216,7 @@ void FOptiAttrTest::linuxTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m\017" CSI "34;22m") );
@@ -2222,8 +2224,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31;22m" CSI "40;25m") );
@@ -2231,8 +2233,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32;1m" CSI "44;25m") );
@@ -2240,8 +2242,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -2474,8 +2476,8 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "36;22m" CSI "44;25m") );
@@ -2580,14 +2582,14 @@ void FOptiAttrTest::linuxTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "32;22m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 m ") );
@@ -2611,7 +2613,7 @@ void FOptiAttrTest::puttyTest()
 {
   // Simulate a putty-256color terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (256);
   oa.setNoColorVideo (0);
@@ -2667,16 +2669,16 @@ void FOptiAttrTest::puttyTest()
   oa.initialize();
 
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;1m\017") );
@@ -2684,8 +2686,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -2699,7 +2701,7 @@ void FOptiAttrTest::puttyTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m" CSI "39;49m" CSI "34m") );
@@ -2707,8 +2709,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "31m" CSI "40m") );
@@ -2716,8 +2718,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "38;5;42m" CSI "48;5;17m") );
@@ -2725,8 +2727,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -2959,8 +2961,8 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "36m" CSI "44m") );
@@ -3071,14 +3073,14 @@ void FOptiAttrTest::puttyTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "32m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 ; 4 9 m Esc [ 4 4 m ") );
@@ -3094,7 +3096,7 @@ void FOptiAttrTest::teratermTest()
 {
   // Simulate a Tera Term terminal
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (16);
   oa.setNoColorVideo (41);  // Avoid standout (1) + blink (8) + bold (32)
@@ -3141,16 +3143,16 @@ void FOptiAttrTest::teratermTest()
   oa.initialize();
 
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0;1m\017$<2>") );
@@ -3158,8 +3160,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -3173,7 +3175,7 @@ void FOptiAttrTest::teratermTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "0m$<2>" CSI "39;49m"
@@ -3182,8 +3184,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "38;5;1m" CSI "48;5;0m") );
@@ -3191,8 +3193,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "38;5;10m" CSI "48;5;4m") );
@@ -3200,8 +3202,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -3434,8 +3436,8 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "38;5;6m" CSI "48;5;4m") );
@@ -3538,14 +3540,14 @@ void FOptiAttrTest::teratermTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR(CSI "38;5;2m") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 9 ; 4 9 m Esc [ 4 8 ; 5 ; 4 m ") );
@@ -3561,7 +3563,7 @@ void FOptiAttrTest::ibmColorTest()
 {
   // Simulate IBM color definitions
 
-  FOptiAttr oa;
+  finalcut::FOptiAttr oa;
   oa.unsetDefaultColorSupport();  // No ANSI default color
   oa.setMaxColor (8);
   oa.setNoColorVideo (3);  // Avoid standout (1) + underline mode (2)
@@ -3617,24 +3619,24 @@ void FOptiAttrTest::ibmColorTest()
   oa.initialize();
 
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -3647,7 +3649,7 @@ void FOptiAttrTest::ibmColorTest()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32;40m" CSI "31m") );
@@ -3655,8 +3657,8 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "34m" CSI "40m") );
@@ -3664,8 +3666,8 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32m" CSI "41m") );
@@ -3673,8 +3675,8 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -3880,8 +3882,8 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "33m" CSI "41m") );
@@ -3976,7 +3978,7 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(CSI "32m") );
@@ -3984,7 +3986,7 @@ void FOptiAttrTest::ibmColorTest()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( printSequence(oa.changeAttribute(from, to)).c_str()
                          , C_STR("Esc [ 3 2 ; 4 0 m Esc [ 4 1 m ") );
@@ -4000,8 +4002,8 @@ void FOptiAttrTest::wyse50Test()
 {
   // Simulate an Wyse-50 terminal
 
-  FOptiAttr oa;
-  FOptiAttr::termEnv optiattr_env =
+  finalcut::FOptiAttr oa;
+  finalcut::FOptiAttr::termEnv optiattr_env =
   {
     false,                              // No ANSI default color
     1,                                  // Max color
@@ -4059,16 +4061,16 @@ void FOptiAttrTest::wyse50Test()
 
   oa.setTermEnvironment(optiattr_env);
 
-  FOptiAttr::charData* from = new FOptiAttr::charData();
-  FOptiAttr::charData* to = new FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* from = new finalcut::FOptiAttr::charData();
+  finalcut::FOptiAttr::charData* to = new finalcut::FOptiAttr::charData();
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default color + bold
-  from->fg_color = fc::Default;
-  from->bg_color = fc::Default;
+  from->fg_color = finalcut::fc::Default;
+  from->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(ESC "(" ESC "cD" ESC "G4") );
@@ -4076,8 +4078,8 @@ void FOptiAttrTest::wyse50Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Blue text on white background + dim + italic
-  to->fg_color = fc::Blue;
-  to->bg_color = fc::White;
+  to->fg_color = finalcut::fc::Blue;
+  to->bg_color = finalcut::fc::White;
   to->attr.bit.dim = true;
   to->attr.bit.italic = true;
   CPPUNIT_ASSERT ( *from != *to );
@@ -4090,7 +4092,7 @@ void FOptiAttrTest::wyse50Test()
   to->attr.bit.bold = false;
   to->attr.bit.dim = false;
   to->attr.bit.italic = false;
-  to->bg_color = fc::Default;
+  to->bg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
                          , C_STR(ESC "(" ESC "H\003" ESC "G0" ESC "cD") );
@@ -4098,24 +4100,24 @@ void FOptiAttrTest::wyse50Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Red text on black background
-  to->fg_color = fc::Red;
-  to->bg_color = fc::Black;
+  to->fg_color = finalcut::fc::Red;
+  to->bg_color = finalcut::fc::Black;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // 256 color text and background
-  to->fg_color = fc::SpringGreen3;
-  to->bg_color = fc::NavyBlue;
+  to->fg_color = finalcut::fc::SpringGreen3;
+  to->bg_color = finalcut::fc::NavyBlue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Bold on (with default colors)
-  to->fg_color = fc::Default;
-  to->bg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
+  to->bg_color = finalcut::fc::Default;
   to->attr.bit.bold = true;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to)
@@ -4346,8 +4348,8 @@ void FOptiAttrTest::wyse50Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Cyan text on blue background
-  to->fg_color = fc::Cyan;
-  to->bg_color = fc::Blue;
+  to->fg_color = finalcut::fc::Cyan;
+  to->bg_color = finalcut::fc::Blue;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
@@ -4467,14 +4469,14 @@ void FOptiAttrTest::wyse50Test()
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Green text color
-  to->fg_color = fc::Green;
+  to->fg_color = finalcut::fc::Green;
   CPPUNIT_ASSERT ( *from != *to );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(from, to), C_STR("") );
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 
   // Default text color
-  to->fg_color = fc::Default;
+  to->fg_color = finalcut::fc::Default;
   CPPUNIT_ASSERT ( *from == *to );
   CPPUNIT_ASSERT ( oa.changeAttribute(from, to) == 0 );
 

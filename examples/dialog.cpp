@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -23,15 +23,15 @@
 #include <final/final.h>
 
 // function prototype
-void cb_quit (FWidget*, FWidget::data_ptr);
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
 
 
 //----------------------------------------------------------------------
 // callback function
 //----------------------------------------------------------------------
-void cb_quit (FWidget*, FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  FApplication* app = static_cast<FApplication*>(data);
+  finalcut::FApplication* app = static_cast<finalcut::FApplication*>(data);
   app->quit();
 }
 
@@ -42,21 +42,21 @@ void cb_quit (FWidget*, FWidget::data_ptr data)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple dialog box
-  FDialog dgl(&app);
+  finalcut::FDialog dgl(&app);
   dgl.setText ("FDialog");
   dgl.setGeometry (4, 3, 41, 11);
 
   // Create text labels
-  FLabel label_1(&dgl);
-  FLabel label_2(&dgl);
+  finalcut::FLabel label_1(&dgl);
+  finalcut::FLabel label_2(&dgl);
 
-  label_1 << wchar_t(fc::BlackUpPointingTriangle)
+  label_1 << wchar_t(finalcut::fc::BlackUpPointingTriangle)
           << std::wstring(L"\n")
-          << wchar_t(fc::BoxDrawingsUpAndRight)
-          << FString(2, wchar_t(fc::BoxDrawingsHorizontal))
+          << wchar_t(finalcut::fc::BoxDrawingsUpAndRight)
+          << finalcut::FString(2, wchar_t(finalcut::fc::BoxDrawingsHorizontal))
           << " Double click the title bar button,";
   label_2 << "press Q on the keyboard,\n"
           << "or push the button below to exit\n"
@@ -66,7 +66,7 @@ int main (int argc, char* argv[])
   label_2.setGeometry (5, 3, 34, 3);
 
   // Create the quit button
-  FButton btn("&Quit", &dgl);
+  finalcut::FButton btn("&Quit", &dgl);
   btn.setGeometry (16, 7, 9, 1);
 
   // Connect the button signal "clicked" with the callback function

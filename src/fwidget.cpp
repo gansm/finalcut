@@ -27,6 +27,8 @@
 #include "final/fstatusbar.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 // global FWidget object
 static FWidget* rootObject = 0;
@@ -2493,3 +2495,5 @@ void FWidget::setColorTheme()
       wc.term_bg = fc::SteelBlue3;
   }
 }
+
+}  // namespace finalcut

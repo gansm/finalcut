@@ -40,10 +40,10 @@
 
   #if defined(__x86_64__) || defined(__i386) || defined(__arm__)
     #include <sys/io.h>        // <asm/io.h> is deprecated
-  #endif
+  #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
 
   #include <sys/kd.h>
-#endif
+#endif  // defined(__linux__)
 
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -56,6 +56,8 @@
 #include "final/ftermdetection.h"
 #include "final/ftypes.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermLinux
@@ -156,7 +158,7 @@ class FTermLinux
     static bool          setVGAPalette (short, int, int, int);
     static bool          saveVGAPalette();
     static bool          resetVGAPalette();
-#endif
+#endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
     static int           shiftKeyCorrection (const int&);
     static int           ctrlKeyCorrection (const int&);
     static int           altKeyCorrection (const int&);
@@ -214,5 +216,7 @@ inline bool FTermLinux::isVGAFontUsed()
 inline bool FTermLinux::isNewFontUsed()
 { return NewFont; }
 #endif  // defined(__linux__)
+
+}  // namespace finalcut
 
 #endif  // FTERMLINUX_H

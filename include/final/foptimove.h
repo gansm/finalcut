@@ -49,12 +49,12 @@
     typedef unsigned int chtype;
   #else
     typedef unsigned long chtype;
-  #endif
+  #endif  // _LP64
 
   #include <term.h>  // need for tparm
 #else
   #include <term.h>  // need for tparm
-#endif
+#endif  // defined(__sun) && defined(__SVR4)
 
 #include <cctype>
 #include <climits>
@@ -64,6 +64,9 @@
 #include <iostream>
 
 #include "final/ftypes.h"
+
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FOptiMove
@@ -332,5 +335,7 @@ inline void FOptiMove::set_auto_left_margin (const bool& bcap)
 //----------------------------------------------------------------------
 inline void FOptiMove::set_eat_newline_glitch (const bool& bcap)
 { eat_nl_glitch = bcap; }
+
+}  // namespace finalcut
 
 #endif  // FOPTIMOVE_H

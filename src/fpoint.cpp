@@ -22,6 +22,8 @@
 
 #include "final/fpoint.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FPoint
@@ -96,3 +98,5 @@ std::istream& operator >> (std::istream& instr, FPoint& p)
   p.setPoint (x, y);
   return instr;
 }
+
+}  // namespace finalcut

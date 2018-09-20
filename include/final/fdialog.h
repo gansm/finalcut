@@ -61,6 +61,8 @@
 #include "final/ftooltip.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FDialog
@@ -285,6 +287,6 @@ inline bool FDialog::isModal()
 inline bool FDialog::isScrollable()
 { return ((flags & fc::scrollable) != 0); }
 
-
+}  // namespace finalcut
 
 #endif  // FDIALOG_H

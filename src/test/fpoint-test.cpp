@@ -1,5 +1,5 @@
 /***********************************************************************
-* fpoint-test.cpp - FPoint unit tests                                  *
+* fpoint-test.cpp - finalcut::FPoint unit tests                                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -85,7 +85,7 @@ class FPointTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FPointTest::classNameTest()
 {
-  FPoint p;
+  finalcut::FPoint p;
   const char* const classname = p.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FPoint") == 0 );
 }
@@ -93,7 +93,7 @@ void FPointTest::classNameTest()
 //----------------------------------------------------------------------
 void FPointTest::noArgumentTest()
 {
-  const FPoint point;
+  const finalcut::FPoint point;
   CPPUNIT_ASSERT ( point.getX() == 0 );
   CPPUNIT_ASSERT ( point.getY() == 0 );
   CPPUNIT_ASSERT ( point.isNull() );
@@ -102,8 +102,8 @@ void FPointTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FPointTest::copyConstructorTest()
 {
-  const FPoint p1 (15,10);
-  const FPoint p2 (p1);
+  const finalcut::FPoint p1 (15,10);
+  const finalcut::FPoint p2 (p1);
   CPPUNIT_ASSERT ( p2.getX() == 15 );
   CPPUNIT_ASSERT ( p2.getY() == 10 );
 }
@@ -111,11 +111,11 @@ void FPointTest::copyConstructorTest()
 //----------------------------------------------------------------------
 void FPointTest::assignmentTest()
 {
-  const FPoint p1 (-99,100);
+  const finalcut::FPoint p1 (-99,100);
   CPPUNIT_ASSERT ( p1.getX() == -99 );
   CPPUNIT_ASSERT ( p1.getY() == 100 );
 
-  FPoint p2;
+  finalcut::FPoint p2;
   p2 = p1;
   CPPUNIT_ASSERT ( p2.getX() == -99 );
   CPPUNIT_ASSERT ( p2.getY() == 100 );
@@ -137,7 +137,7 @@ void FPointTest::assignmentTest()
   CPPUNIT_ASSERT ( p2.getY() == 12 );
 
   // Value limit exceeded
-  const FPoint p3 (-999999,1000000);
+  const finalcut::FPoint p3 (-999999,1000000);
   CPPUNIT_ASSERT ( p3.getX() != -999999 );
   CPPUNIT_ASSERT ( p3.getY() != 1000000 );
 }
@@ -145,21 +145,21 @@ void FPointTest::assignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::additionAssignmentTest()
 {
-  FPoint p1 (1,2);
-  p1 += FPoint (3,1);
+  finalcut::FPoint p1 (1,2);
+  p1 += finalcut::FPoint (3,1);
   CPPUNIT_ASSERT ( p1.getX() == 4 );
   CPPUNIT_ASSERT ( p1.getY() == 3 );
 
-  p1 += FPoint (-4,-3);
+  p1 += finalcut::FPoint (-4,-3);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isNull() );
 
   // Value limit exceeded
-  FPoint p2 (18000,-18000);
+  finalcut::FPoint p2 (18000,-18000);
   CPPUNIT_ASSERT ( p2.getX() == 18000 );
   CPPUNIT_ASSERT ( p2.getY() == -18000 );
-  p2 += FPoint (18000,-18000);
+  p2 += finalcut::FPoint (18000,-18000);
   CPPUNIT_ASSERT ( p2.getX() != 36000 );
   CPPUNIT_ASSERT ( p2.getY() != -36000 );
 }
@@ -167,46 +167,46 @@ void FPointTest::additionAssignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::subtractionAssignmentTest()
 {
-  FPoint p1 (10,20);
-  p1 -= FPoint (5,5);
+  finalcut::FPoint p1 (10,20);
+  p1 -= finalcut::FPoint (5,5);
   CPPUNIT_ASSERT ( p1.getX() == 5 );
   CPPUNIT_ASSERT ( p1.getY() == 15 );
 
-  p1 -= FPoint (-5,20);
+  p1 -= finalcut::FPoint (-5,20);
   CPPUNIT_ASSERT ( p1.getX() == 10 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isNull() );
 
-  p1 -= FPoint (-10,0);
+  p1 -= finalcut::FPoint (-10,0);
   CPPUNIT_ASSERT ( p1.getX() == 20 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isNull() );
 
-  p1 -= FPoint (20,0);
+  p1 -= finalcut::FPoint (20,0);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == -5 );
   CPPUNIT_ASSERT ( ! p1.isNull() );
 
-  p1 -= FPoint (0,-6);
+  p1 -= finalcut::FPoint (0,-6);
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
   CPPUNIT_ASSERT ( ! p1.isNull() );
 
-  p1 -= FPoint (1,0);
+  p1 -= finalcut::FPoint (1,0);
   CPPUNIT_ASSERT ( p1.getX() == -1 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
   CPPUNIT_ASSERT ( ! p1.isNull() );
 
-  p1 -= (FPoint (0,1) + FPoint (-1,0));
+  p1 -= (finalcut::FPoint (0,1) + finalcut::FPoint (-1,0));
   CPPUNIT_ASSERT ( p1.getX() == 0 );
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isNull() );
 
   // Value limit exceeded
-  FPoint p2 (18000,-18000);
+  finalcut::FPoint p2 (18000,-18000);
   CPPUNIT_ASSERT ( p2.getX() == 18000 );
   CPPUNIT_ASSERT ( p2.getY() == -18000 );
-  p2 += FPoint (18000,-18000);
+  p2 += finalcut::FPoint (18000,-18000);
   CPPUNIT_ASSERT ( p2.getX() != 36000 );
   CPPUNIT_ASSERT ( p2.getY() != -36000 );
 }
@@ -214,58 +214,58 @@ void FPointTest::subtractionAssignmentTest()
 //----------------------------------------------------------------------
 void FPointTest::equalTest()
 {
-  const FPoint p1 (1,2);
-  const FPoint p2 (1,2);
+  const finalcut::FPoint p1 (1,2);
+  const finalcut::FPoint p2 (1,2);
   CPPUNIT_ASSERT ( p1 == p2 );
-  CPPUNIT_ASSERT ( FPoint(1,2) == p2 );
-  CPPUNIT_ASSERT ( p1 == FPoint(1,2) );
-  CPPUNIT_ASSERT ( FPoint() == FPoint() );
-  CPPUNIT_ASSERT ( FPoint() == -FPoint() );
+  CPPUNIT_ASSERT ( finalcut::FPoint(1,2) == p2 );
+  CPPUNIT_ASSERT ( p1 == finalcut::FPoint(1,2) );
+  CPPUNIT_ASSERT ( finalcut::FPoint() == finalcut::FPoint() );
+  CPPUNIT_ASSERT ( finalcut::FPoint() == -finalcut::FPoint() );
 }
 
 //----------------------------------------------------------------------
 void FPointTest::notEqualTest()
 {
-  const FPoint p1 (1,2);
-  const FPoint p2 (2,4);
+  const finalcut::FPoint p1 (1,2);
+  const finalcut::FPoint p2 (2,4);
   CPPUNIT_ASSERT ( p1 != p2 );
-  CPPUNIT_ASSERT ( FPoint(1,2) != p2 );
-  CPPUNIT_ASSERT ( p1 != FPoint(2,4) );
-  CPPUNIT_ASSERT ( FPoint() != p2 );
-  CPPUNIT_ASSERT ( p1 != FPoint() );
+  CPPUNIT_ASSERT ( finalcut::FPoint(1,2) != p2 );
+  CPPUNIT_ASSERT ( p1 != finalcut::FPoint(2,4) );
+  CPPUNIT_ASSERT ( finalcut::FPoint() != p2 );
+  CPPUNIT_ASSERT ( p1 != finalcut::FPoint() );
 }
 
 //----------------------------------------------------------------------
 void FPointTest::additionTest()
 {
-  const FPoint p1 (1,2);
-  const FPoint p2 (5,8);
-  const FPoint p3 = p1 + p2;
+  const finalcut::FPoint p1 (1,2);
+  const finalcut::FPoint p2 (5,8);
+  const finalcut::FPoint p3 = p1 + p2;
   CPPUNIT_ASSERT ( p3.getX() == 6 );
   CPPUNIT_ASSERT ( p3.getY() == 10 );
-  CPPUNIT_ASSERT ( p1 + p2 == FPoint(6,10) );
-  CPPUNIT_ASSERT ( p1 + FPoint() == p1 );
-  CPPUNIT_ASSERT ( FPoint() + p2 == p2 );
-  CPPUNIT_ASSERT ( FPoint() + FPoint() == FPoint() );
+  CPPUNIT_ASSERT ( p1 + p2 == finalcut::FPoint(6,10) );
+  CPPUNIT_ASSERT ( p1 + finalcut::FPoint() == p1 );
+  CPPUNIT_ASSERT ( finalcut::FPoint() + p2 == p2 );
+  CPPUNIT_ASSERT ( finalcut::FPoint() + finalcut::FPoint() == finalcut::FPoint() );
 }
 
 //----------------------------------------------------------------------
 void FPointTest::subtractionTest()
 {
-  const FPoint p1 (-5,-20);
-  const FPoint p2 (0,-30);
-  const FPoint p3 = p1 - p2;
+  const finalcut::FPoint p1 (-5,-20);
+  const finalcut::FPoint p2 (0,-30);
+  const finalcut::FPoint p3 = p1 - p2;
   CPPUNIT_ASSERT ( p3.getX() == -5 );
   CPPUNIT_ASSERT ( p3.getY() == 10 );
-  CPPUNIT_ASSERT ( p1 - p2 == FPoint(-5,10) );
-  CPPUNIT_ASSERT ( p1 - FPoint() == p1 );
-  CPPUNIT_ASSERT ( FPoint() - FPoint() == FPoint() );
+  CPPUNIT_ASSERT ( p1 - p2 == finalcut::FPoint(-5,10) );
+  CPPUNIT_ASSERT ( p1 - finalcut::FPoint() == p1 );
+  CPPUNIT_ASSERT ( finalcut::FPoint() - finalcut::FPoint() == finalcut::FPoint() );
 }
 
 //----------------------------------------------------------------------
 void FPointTest::referenceTest()
 {
-  FPoint p1 (1,1);
+  finalcut::FPoint p1 (1,1);
   CPPUNIT_ASSERT ( p1.getX() == 1 );
   CPPUNIT_ASSERT ( p1.getY() == 1 );
 
@@ -285,7 +285,7 @@ void FPointTest::referenceTest()
 //----------------------------------------------------------------------
 void FPointTest::streamInsertionTest()
 {
-  FPoint out;
+  finalcut::FPoint out;
   std::stringstream stream;
   stream.str("10 5");
   stream >> out;
@@ -302,7 +302,7 @@ void FPointTest::streamInsertionTest()
 //----------------------------------------------------------------------
 void FPointTest::streamExtractionTest()
 {
-  FPoint in;
+  finalcut::FPoint in;
   in.setPoint (-7, 5);
   std::stringstream stream;
   stream << in;

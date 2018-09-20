@@ -22,6 +22,8 @@
 
 #include "final/fdialoglistmenu.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FDialogListMenu
@@ -56,3 +58,5 @@ void FDialogListMenu::init()
   if ( menuitem )
     menuitem->dialog_index = true;
 }
+
+}  // namespace finalcut

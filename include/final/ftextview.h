@@ -60,6 +60,8 @@
 #include "final/fstring.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTextView
@@ -182,5 +184,7 @@ inline void FTextView::deleteRange (int from, int to)
 //----------------------------------------------------------------------
 inline void FTextView::deleteLine (int pos)
 { deleteRange (pos, pos); }
+
+}  // namespace finalcut
 
 #endif  // FTEXTVIEW_H

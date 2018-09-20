@@ -25,6 +25,8 @@
 #include "final/fstatusbar.h"
 #include "final/ftogglebutton.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FToggleButton
@@ -695,3 +697,5 @@ void FToggleButton::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
   if ( isMonochron() )
     setReverse(false);;
 }
+
+}  // namespace finalcut

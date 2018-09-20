@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -54,6 +54,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FButton
@@ -273,5 +275,7 @@ inline bool FButton::hasShadow() const
 //----------------------------------------------------------------------
 inline bool FButton::hasClickAnimation()
 { return click_animation; }
+
+}  // namespace finalcut
 
 #endif  // FBUTTON_H

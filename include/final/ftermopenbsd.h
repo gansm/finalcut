@@ -42,6 +42,9 @@
   #include <dev/wscons/wsconsio.h>
 #endif
 
+namespace finalcut
+{
+
 //----------------------------------------------------------------------
 // class FTermOpenBSD
 //----------------------------------------------------------------------
@@ -89,7 +92,7 @@ class FTermOpenBSD
     // Data Members
     static kbd_t       bsd_keyboard_encoding;
     static bool        meta_sends_escape;
-#endif
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
 };
 #pragma pack(pop)
 
@@ -107,5 +110,7 @@ inline void FTermOpenBSD::enableMetaSendsEscape()
 inline void FTermOpenBSD::disableMetaSendsEscape()
 { meta_sends_escape = false; }
 #endif  // defined(__NetBSD__) || defined(__OpenBSD__)
+
+}  // namespace finalcut
 
 #endif  // FTERMOPENBSD_H

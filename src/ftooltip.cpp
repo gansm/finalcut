@@ -23,6 +23,8 @@
 #include "final/fapplication.h"
 #include "final/ftooltip.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FToolTip
@@ -176,3 +178,5 @@ void FToolTip::adjustSize()
   calculateDimensions();
   FWindow::adjustSize();
 }
+
+}  // namespace finalcut

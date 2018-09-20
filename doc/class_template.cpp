@@ -22,6 +22,9 @@
 
 #include "final/fclassname.h"
 
+namespace finalcut
+{
+
 // static class attributes
 
 
@@ -48,4 +51,6 @@ FClassName::~FClassName()  // destructor
 
 // private methods of FClassName
 //----------------------------------------------------------------------
+
+}  // namespace finalcut
 

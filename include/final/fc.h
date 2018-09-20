@@ -41,6 +41,8 @@
 #define OSC    ESC "]"    // Operating system command (7-bit)
 #define SECDA  ESC "[>c"  // Secondary Device Attributes
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // Global constants and enumerations
@@ -1134,5 +1136,7 @@ enum termcaps
 };
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FC_H

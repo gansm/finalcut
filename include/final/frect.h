@@ -38,6 +38,8 @@
 #include <algorithm>
 #include "final/fpoint.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FRect
@@ -226,5 +228,7 @@ inline short& FRect::x2_ref()
 //----------------------------------------------------------------------
 inline short& FRect::y2_ref()
 { return Y2; }
+
+}  // namespace finalcut
 
 #endif  // FRECT_H

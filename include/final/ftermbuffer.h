@@ -42,6 +42,8 @@
 #include "final/fvterm.h"
 #include "final/fstring.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermBuffer
@@ -134,5 +136,7 @@ inline FTermBuffer& FTermBuffer::write()
 //----------------------------------------------------------------------
 inline std::vector<FTermBuffer::charData> FTermBuffer::getBuffer()
 { return data; }
+
+}  // namespace finalcut
 
 #endif  // FTERMBUFFER_H

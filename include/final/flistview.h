@@ -60,6 +60,9 @@
 #include "final/ftermbuffer.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
+
 // class forward declaration
 class FListView;
 
@@ -472,5 +475,7 @@ inline FObject::FObjectIterator FListView::endOfList()
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+}  // namespace finalcut
 
 #endif  // FLISTVIEW_H

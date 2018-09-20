@@ -42,6 +42,9 @@
   #include "final/ftermlinux.h"
 #endif
 
+namespace finalcut
+{
+
 // class forward declaration
 class FApplication;
 
@@ -251,5 +254,7 @@ inline bool FKeyboard::setNonBlockingInput()
 //----------------------------------------------------------------------
 inline bool FKeyboard::unsetNonBlockingInput()
 { return setNonBlockingInput(false); }
+
+}  // namespace finalcut
 
 #endif  // FKEYBOARD_H

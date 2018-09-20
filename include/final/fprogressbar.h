@@ -54,6 +54,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FProgressbar
@@ -126,5 +128,6 @@ inline bool FProgressbar::unsetShadow()
 inline bool FProgressbar::hasShadow()
 { return ((flags & fc::shadow) != 0); }
 
+}  // namespace finalcut
 
 #endif  // FPROGRESSBAR_H

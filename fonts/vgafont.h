@@ -3,6 +3,9 @@
 #ifndef FVGAFONT_H
 #define FVGAFONT_H
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -267,5 +270,7 @@ static unsigned char __8x16std[] =
 };
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FVGAFONT_H

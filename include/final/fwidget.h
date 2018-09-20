@@ -103,11 +103,14 @@
 
 // Callback macros
 #define F_FUNCTION_CALLBACK(h) \
-           reinterpret_cast<FWidget::FCallback>((h))
+           reinterpret_cast<finalcut::FWidget::FCallback>((h))
 
 #define F_METHOD_CALLBACK(i,h) \
-           reinterpret_cast<FWidget*>((i)) \
-         , reinterpret_cast<FWidget::FMemberCallback>((h))
+           reinterpret_cast<finalcut::FWidget*>((i)) \
+         , reinterpret_cast<finalcut::FWidget::FMemberCallback>((h))
+
+namespace finalcut
+{
 
 // class forward declaration
 class FStatusBar;
@@ -928,5 +931,7 @@ const wchar_t CHECKED_RADIO_BUTTON[4] =
   fc::NF_radio_button3,
   '\0'
 };
+
+}  // namespace finalcut
 
 #endif  // FWIDGET_H

@@ -58,6 +58,9 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
+
 // class forward declaration
 class FDialog;
 class FMenu;
@@ -269,5 +272,7 @@ inline FWidget* FMenuItem::getSuperMenu() const
 //----------------------------------------------------------------------
 inline void FMenuItem::setSuperMenu (FWidget* smenu)
 { super_menu = smenu; }
+
+}  // namespace finalcut
 
 #endif  // FMENUITEM_H

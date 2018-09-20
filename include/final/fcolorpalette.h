@@ -31,8 +31,14 @@
 #ifndef FCOLORPALETTE_H
 #define FCOLORPALETTE_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/fc.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FColorPalette
@@ -68,5 +74,7 @@ class FColorPalette
 //----------------------------------------------------------------------
 inline const char* FColorPalette::getClassName() const
 { return "FColorPalette"; }
+
+}  // namespace finalcut
 
 #endif  // FCOLORPALETTE_H

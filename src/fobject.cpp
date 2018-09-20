@@ -22,6 +22,9 @@
 
 #include "final/fobject.h"
 
+namespace finalcut
+{
+
 // static class attributes
 bool                FObject::timer_modify_lock;
 FObject::TimerList* FObject::timer_list = 0;
@@ -385,3 +388,5 @@ bool FObject::event (FEvent* ev)
 //----------------------------------------------------------------------
 void FObject::onTimer (FTimerEvent*)
 { }
+
+}  // namespace finalcut

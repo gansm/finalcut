@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -63,6 +63,8 @@
 #include "final/fmenulist.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenuBar
@@ -165,5 +167,7 @@ inline const char* FMenuBar::getClassName() const
 //----------------------------------------------------------------------
 inline bool FMenuBar::isMenu (FMenuItem* mi) const
 { return mi->hasMenu(); }
+
+}  // namespace finalcut
 
 #endif  // FMENUBAR_H

@@ -26,6 +26,8 @@
 #include "final/fmenubar.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenuBar
@@ -1064,3 +1066,5 @@ void FMenuBar::leaveMenuBar()
   flush_out();
   mouse_down = false;
 }
+
+}  // namespace finalcut

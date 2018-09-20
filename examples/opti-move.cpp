@@ -27,10 +27,10 @@
 
 
 // Global FVTerm object
-static FVTerm* terminal;
+static finalcut::FVTerm* terminal;
 
 // Global FApplication object
-static FApplication* app;
+static finalcut::FApplication* app;
 
 // function prototype
 bool keyPressed();
@@ -145,16 +145,16 @@ int main (int argc, char* argv[])
   int xmax, ymax;
 
   // Create the application object
-  FApplication TermApp(argc, argv);
+  finalcut::FApplication TermApp(argc, argv);
 
   // Pointer to the global virtual terminal object
-  terminal = static_cast<FVTerm*>(&TermApp);
+  terminal = static_cast<finalcut::FVTerm*>(&TermApp);
   app = &TermApp;
 
   // Get screen dimension
   xmax = TermApp.getDesktopWidth() - 1;
   ymax = TermApp.getDesktopHeight() - 1;
-  FString line(xmax + 1, '-');
+  finalcut::FString line(xmax + 1, '-');
 
   // Place the cursor in the upper left corner
   TermApp.setTermXY(0,0);

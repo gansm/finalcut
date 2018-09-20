@@ -25,6 +25,8 @@
 #include "final/fc.h"
 #include "final/foptimove.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FOptiMove
@@ -1162,3 +1164,5 @@ void FOptiMove::moveByMethod ( int method
       break;
   }
 }
+
+}  // namespace finalcut

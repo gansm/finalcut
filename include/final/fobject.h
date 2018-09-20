@@ -46,7 +46,8 @@
 #include "final/fevent.h"
 #include "final/ftypes.h"
 
-
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FObject
@@ -193,6 +194,8 @@ inline bool FObject::isInstanceOf (const char classname[]) const
 //----------------------------------------------------------------------
 inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
+
+}  // namespace finalcut
 
 
 //----------------------------------------------------------------------

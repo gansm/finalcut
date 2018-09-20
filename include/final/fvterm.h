@@ -61,6 +61,9 @@
            static_cast<FVTerm*>((i)) \
          , reinterpret_cast<FVTerm::FPreprocessingHandler>((h))
 
+namespace finalcut
+{
+
 // class forward declaration
 class FWidget;
 
@@ -857,5 +860,7 @@ inline bool FVTerm::isVirtualWindow() const
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)
 { print_area = area; }
+
+}  // namespace finalcut
 
 #endif  // FVTERM_H

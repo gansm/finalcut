@@ -35,11 +35,11 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class Listview : public FDialog
+class Listview : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Listview (FWidget* = 0);
+    explicit Listview (finalcut::FWidget* = 0);
     // Destructor
     ~Listview();
 
@@ -50,22 +50,22 @@ class Listview : public FDialog
     Listview& operator = (const Listview&);
 
     // Method
-    void populate (FListView*);
+    void populate (finalcut::FListView*);
 
     // Event handlers
-    void onClose (FCloseEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_showInMessagebox (FWidget*, data_ptr);
+    void cb_showInMessagebox (finalcut::FWidget*, data_ptr);
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Listview::Listview (FWidget* parent)
-  : FDialog(parent)
+Listview::Listview (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
 {
   // Create FListView object
-  FListView* listView = new FListView (this);
+  finalcut::FListView* listView = new finalcut::FListView (this);
   listView->setGeometry(2, 1, 33, 14);
 
   // Add columns to the view
@@ -76,15 +76,15 @@ Listview::Listview (FWidget* parent)
   listView->addColumn ("Pressure", 10);
 
   // Set right alignment for the third, fourth, and fifth column
-  listView->setColumnAlignment (3, fc::alignRight);
-  listView->setColumnAlignment (4, fc::alignRight);
-  listView->setColumnAlignment (5, fc::alignRight);
+  listView->setColumnAlignment (3, finalcut::fc::alignRight);
+  listView->setColumnAlignment (4, finalcut::fc::alignRight);
+  listView->setColumnAlignment (5, finalcut::fc::alignRight);
 
   // Populate FListView with a list of items
   populate (listView);
 
   // Quit button
-  FButton* Quit = new FButton (this);
+  finalcut::FButton* Quit = new finalcut::FButton (this);
   Quit->setGeometry(24, 16, 10, 1);
   Quit->setText (L"&Quit");
 
@@ -92,7 +92,7 @@ Listview::Listview (FWidget* parent)
   Quit->addCallback
   (
     "clicked",
-    F_METHOD_CALLBACK (this, &FApplication::cb_exitApp)
+    F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 
   listView->addCallback
@@ -107,7 +107,7 @@ Listview::~Listview()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void Listview::populate (FListView* listView)
+void Listview::populate (finalcut::FListView* listView)
 {
   std::string weather[][5] =
   {
@@ -158,30 +158,31 @@ void Listview::populate (FListView* listView)
 
   for (int i = 0; i <= lastItem; i++)
   {
-    FStringList line (&weather[i][0], &weather[i][0] + 5);
+    finalcut::FStringList line (&weather[i][0], &weather[i][0] + 5);
     listView->insert (line);
   }
 }
 
 //----------------------------------------------------------------------
-void Listview::onClose (FCloseEvent* ev)
+void Listview::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
-void Listview::cb_showInMessagebox (FWidget* widget, data_ptr)
+void Listview::cb_showInMessagebox (finalcut::FWidget* widget, data_ptr)
 {
-  FListView* listView = static_cast<FListView*>(widget);
-  FListViewItem* item = listView->getCurrentItem();
-  FMessageBox info ( "Weather in " + item->getText(1)
-                   , "  Condition: " + item->getText(2) + "\n"
-                     "Temperature: " + item->getText(3) + "\n"
-                     "   Humidity: " + item->getText(4) + "\n"
-                     "   Pressure: " + item->getText(5)
-                   , FMessageBox::Ok, 0, 0, this );
+  finalcut::FListView* listView = static_cast<finalcut::FListView*>(widget);
+  finalcut::FListViewItem* item = listView->getCurrentItem();
+  finalcut::FMessageBox info ( "Weather in " + item->getText(1)
+                             , "  Condition: " + item->getText(2) + "\n"
+                               "Temperature: " + item->getText(3) + "\n"
+                               "   Humidity: " + item->getText(4) + "\n"
+                               "   Pressure: " + item->getText(5)
+                             , finalcut::FMessageBox::Ok, 0, 0, this );
   info.show();
 }
+
 
 //----------------------------------------------------------------------
 //                               main part
@@ -190,7 +191,7 @@ void Listview::cb_showInMessagebox (FWidget* widget, data_ptr)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create main dialog object
   Listview d(&app);

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017 Markus Gans                                           *
+* Copyright 2017-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -24,35 +24,36 @@
 
 
 // function prototypes
-void cb_quit (FWidget*, FWidget::data_ptr);
-void populateChoice (std::vector<FRadioButton*>&, FButtonGroup*);
-void preset (std::vector<FRadioButton*>&);
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void populateChoice (std::vector<finalcut::FRadioButton*>&, finalcut::FButtonGroup*);
+void preset (std::vector<finalcut::FRadioButton*>&);
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (FWidget*, FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  FDialog* dlg = static_cast<FDialog*>(data);
+  finalcut::FDialog* dlg = static_cast<finalcut::FDialog*>(data);
   dlg->close();
 }
 
 //----------------------------------------------------------------------
-void populateChoice (std::vector<FRadioButton*>& os, FButtonGroup* group)
+void populateChoice ( std::vector<finalcut::FRadioButton*>& os
+                    , finalcut::FButtonGroup* group )
 {
-  os[0] = new FRadioButton("AIX", group);
-  os[1] = new FRadioButton("Cygwin", group);
-  os[2] = new FRadioButton("FreeBSD", group);
-  os[3] = new FRadioButton("HP-UX", group);
-  os[4] = new FRadioButton("Linux", group);
-  os[5] = new FRadioButton("Mac OS X", group);
-  os[6] = new FRadioButton("NetBSD", group);
-  os[7] = new FRadioButton("OpenBSD", group);
-  os[8] = new FRadioButton("Solaris", group);
+  os[0] = new finalcut::FRadioButton("AIX", group);
+  os[1] = new finalcut::FRadioButton("Cygwin", group);
+  os[2] = new finalcut::FRadioButton("FreeBSD", group);
+  os[3] = new finalcut::FRadioButton("HP-UX", group);
+  os[4] = new finalcut::FRadioButton("Linux", group);
+  os[5] = new finalcut::FRadioButton("Mac OS X", group);
+  os[6] = new finalcut::FRadioButton("NetBSD", group);
+  os[7] = new finalcut::FRadioButton("OpenBSD", group);
+  os[8] = new finalcut::FRadioButton("Solaris", group);
 }
 
 //----------------------------------------------------------------------
-void preset (std::vector<FRadioButton*>& os)
+void preset (std::vector<finalcut::FRadioButton*>& os)
 {
 #if defined(_AIX)
   os[0]->setChecked();
@@ -90,13 +91,13 @@ void preset (std::vector<FRadioButton*>& os)
 int main (int argc, char* argv[])
 {
   int x, y, w, h;
-  FString label_text = "no OS";
+  finalcut::FString label_text = "no OS";
 
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple modal dialog box
-  FDialog* dgl = new FDialog(&app);
+  finalcut::FDialog* dgl = new finalcut::FDialog(&app);
   dgl->setModal();
   dgl->setText ("UNIX select");
   w = 20;
@@ -106,11 +107,11 @@ int main (int argc, char* argv[])
   dgl->setGeometry (x, y, w, h);
 
   // Create a button group
-  FButtonGroup* checkButtonGroup = new FButtonGroup("choice", dgl);
+  finalcut::FButtonGroup* checkButtonGroup = new finalcut::FButtonGroup("choice", dgl);
   checkButtonGroup->setGeometry (2, 1, 16, 7);
 
   // Create radio buttons
-  std::vector<FRadioButton*> os (9);
+  std::vector<finalcut::FRadioButton*> os (9);
   populateChoice (os, checkButtonGroup);
 
   // Set the radio button geometry
@@ -122,11 +123,11 @@ int main (int argc, char* argv[])
   preset(os);
 
   // Scroll to the focused child element
-  FFocusEvent cfi (fc::ChildFocusIn_Event);
-  FApplication::sendEvent(checkButtonGroup, &cfi);
+  finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
+  finalcut::FApplication::sendEvent(checkButtonGroup, &cfi);
 
   // Create a OK button
-  FButton* ok = new FButton("&OK", dgl);
+  finalcut::FButton* ok = new finalcut::FButton("&OK", dgl);
   ok->setGeometry (10, 9, 8, 1);
 
   // Connect the button signal "clicked" with the callback function
@@ -154,7 +155,7 @@ int main (int argc, char* argv[])
   delete dgl;
 
   // Create and show tooltip for two seconds
-  FToolTip* tooltip = new FToolTip(&app);
+  finalcut::FToolTip* tooltip = new finalcut::FToolTip(&app);
   tooltip->setText ("You have chosen " + label_text);
   tooltip->show();
   sleep(2);

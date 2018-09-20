@@ -40,6 +40,8 @@
 
 #include <string>
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermcap
@@ -102,5 +104,7 @@ class FTermcap
 //----------------------------------------------------------------------
 inline const char* FTermcap::getClassName() const
 { return "FTermcap"; }
+
+}  // namespace finalcut
 
 #endif  // FTERMCAP_H

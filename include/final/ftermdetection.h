@@ -46,6 +46,8 @@
 #include "final/ftermios.h"
 #include "final/ftypes.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermDetection
@@ -455,5 +457,7 @@ inline void FTermDetection::setTmuxTerm (bool on)
 //----------------------------------------------------------------------
 inline void FTermDetection::setTerminalDetection (bool on)
 { terminal_detection = on; }
+
+}  // namespace finalcut
 
 #endif  // FTERMDETECTION_H

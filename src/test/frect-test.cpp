@@ -1,5 +1,5 @@
 /***********************************************************************
-* frect-test.cpp - FRect unit tests                                    *
+* frect-test.cpp - finalcut::FRect unit tests                                    *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -91,7 +91,7 @@ class FRectTest : public CPPUNIT_NS::TestFixture
 //----------------------------------------------------------------------
 void FRectTest::classNameTest()
 {
-  FRect r;
+  finalcut::FRect r;
   const char* const classname = r.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FRect") == 0 );
 }
@@ -99,7 +99,7 @@ void FRectTest::classNameTest()
 //----------------------------------------------------------------------
 void FRectTest::noArgumentTest()
 {
-  const FRect rectangle;
+  const finalcut::FRect rectangle;
   CPPUNIT_ASSERT ( rectangle.getX1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getY1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getX2() == -1 );
@@ -107,18 +107,18 @@ void FRectTest::noArgumentTest()
   CPPUNIT_ASSERT ( rectangle.isNull() );
   CPPUNIT_ASSERT ( rectangle.getWidth() == 0 );
   CPPUNIT_ASSERT ( rectangle.getHeight() == 0 );
-  CPPUNIT_ASSERT ( rectangle.getPos() == FPoint(0, 0) );
-  CPPUNIT_ASSERT ( rectangle.getUpperLeftPos() == FPoint(0, 0) );
-  CPPUNIT_ASSERT ( rectangle.getUpperRightPos() == FPoint(-1, 0) );
-  CPPUNIT_ASSERT ( rectangle.getLowerLeftPos() == FPoint(0, -1) );
-  CPPUNIT_ASSERT ( rectangle.getLowerRightPos() == FPoint(-1, -1) );
+  CPPUNIT_ASSERT ( rectangle.getPos() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( rectangle.getUpperLeftPos() == finalcut::FPoint(0, 0) );
+  CPPUNIT_ASSERT ( rectangle.getUpperRightPos() == finalcut::FPoint(-1, 0) );
+  CPPUNIT_ASSERT ( rectangle.getLowerLeftPos() == finalcut::FPoint(0, -1) );
+  CPPUNIT_ASSERT ( rectangle.getLowerRightPos() == finalcut::FPoint(-1, -1) );
 }
 
 //----------------------------------------------------------------------
 void FRectTest::copyConstructorTest()
 {
-  const FRect r1(1, 1, 20, 10);
-  const FRect r2 (r1);
+  const finalcut::FRect r1(1, 1, 20, 10);
+  const finalcut::FRect r2 (r1);
   CPPUNIT_ASSERT ( r2.getX() == 1 );
   CPPUNIT_ASSERT ( r2.getY() == 1 );
   CPPUNIT_ASSERT ( ! r2.isNull() );
@@ -129,7 +129,7 @@ void FRectTest::copyConstructorTest()
 //----------------------------------------------------------------------
 void FRectTest::assignmentTest()
 {
-  const FRect r1(3, 5, 45, 14);
+  const finalcut::FRect r1(3, 5, 45, 14);
   CPPUNIT_ASSERT ( r1.getX1() == 3 );
   CPPUNIT_ASSERT ( r1.getY1() == 5 );
   CPPUNIT_ASSERT ( r1.getX2() == 47 );
@@ -137,7 +137,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r1.getWidth() == 45 );
   CPPUNIT_ASSERT ( r1.getHeight() == 14 );
 
-  FRect r2 (r1);
+  finalcut::FRect r2 (r1);
   CPPUNIT_ASSERT ( r2 == r1 );
   CPPUNIT_ASSERT ( r2.getX1() == 3 );
   CPPUNIT_ASSERT ( r2.getY1() == 5 );
@@ -146,7 +146,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r2.getWidth() == 45 );
   CPPUNIT_ASSERT ( r2.getHeight() == 14 );
 
-  FRect r3(3, 3, 10, 10);
+  finalcut::FRect r3(3, 3, 10, 10);
   r3 = r2;
   CPPUNIT_ASSERT ( r3 == r2 );
   CPPUNIT_ASSERT ( r3.getX1() == 3 );
@@ -156,7 +156,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getWidth() == 45 );
   CPPUNIT_ASSERT ( r3.getHeight() == 14 );
 
-  r3.setPos(FPoint(1, 1));
+  r3.setPos(finalcut::FPoint(1, 1));
   CPPUNIT_ASSERT ( r3 != r2 );
   CPPUNIT_ASSERT ( r3.getX1() == 1 );
   CPPUNIT_ASSERT ( r3.getY1() == 1 );
@@ -264,8 +264,8 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
   CPPUNIT_ASSERT ( r3.getHeight() == 5 );
 
-  const FPoint p1(3, 3);
-  const FPoint p2(30, 10);
+  const finalcut::FPoint p1(3, 3);
+  const finalcut::FPoint p2(30, 10);
   r3.setCoordinates (p1, p2);
   CPPUNIT_ASSERT ( r3.getX1() == 3 );
   CPPUNIT_ASSERT ( r3.getY1() == 3 );
@@ -282,7 +282,7 @@ void FRectTest::assignmentTest()
   CPPUNIT_ASSERT ( r3.getWidth() == 31 );
   CPPUNIT_ASSERT ( r3.getHeight() == 39 );
 
-  FRect r4(p1, p2);
+  finalcut::FRect r4(p1, p2);
   CPPUNIT_ASSERT ( r4.getX1() == 3 );
   CPPUNIT_ASSERT ( r4.getY1() == 3 );
   CPPUNIT_ASSERT ( r4.getX2() == 30 );
@@ -294,32 +294,32 @@ void FRectTest::assignmentTest()
 //----------------------------------------------------------------------
 void FRectTest::equalTest()
 {
-  const FRect r1 (1, 2, 10, 20);
-  const FRect r2 (1, 2, 10, 20);
+  const finalcut::FRect r1 (1, 2, 10, 20);
+  const finalcut::FRect r2 (1, 2, 10, 20);
   CPPUNIT_ASSERT ( r1 == r2 );
-  CPPUNIT_ASSERT ( FRect(1, 2, 10, 20) == r2 );
-  CPPUNIT_ASSERT ( r1 == FRect(1, 2, 10, 20) );
-  CPPUNIT_ASSERT ( FRect() == FRect() );
+  CPPUNIT_ASSERT ( finalcut::FRect(1, 2, 10, 20) == r2 );
+  CPPUNIT_ASSERT ( r1 == finalcut::FRect(1, 2, 10, 20) );
+  CPPUNIT_ASSERT ( finalcut::FRect() == finalcut::FRect() );
 }
 
 //----------------------------------------------------------------------
 void FRectTest::notEqualTest()
 {
-  const FRect r1 (1, 2, 10, 20);
-  const FRect r2 (1, 2, 15, 25);
+  const finalcut::FRect r1 (1, 2, 10, 20);
+  const finalcut::FRect r2 (1, 2, 15, 25);
   CPPUNIT_ASSERT ( r1 != r2 );
-  CPPUNIT_ASSERT ( FRect(1, 2, 10, 20) != r2 );
-  CPPUNIT_ASSERT ( r1 != FRect(3, 4, 10, 20) );
-  CPPUNIT_ASSERT ( FRect() != r2 );
-  CPPUNIT_ASSERT ( r1 != FRect() );
+  CPPUNIT_ASSERT ( finalcut::FRect(1, 2, 10, 20) != r2 );
+  CPPUNIT_ASSERT ( r1 != finalcut::FRect(3, 4, 10, 20) );
+  CPPUNIT_ASSERT ( finalcut::FRect() != r2 );
+  CPPUNIT_ASSERT ( r1 != finalcut::FRect() );
 }
 
 //----------------------------------------------------------------------
 void FRectTest::additionTest()
 {
-  const FRect r1 (1, 2, 10, 10);
-  const FPoint p (3, 5);
-  const FRect r2 = r1 + p;
+  const finalcut::FRect r1 (1, 2, 10, 10);
+  const finalcut::FPoint p (3, 5);
+  const finalcut::FRect r2 = r1 + p;
   CPPUNIT_ASSERT ( r2.getX1() == 1 );
   CPPUNIT_ASSERT ( r2.getY1() == 2 );
   CPPUNIT_ASSERT ( r2.getX2() == 13 );
@@ -331,9 +331,9 @@ void FRectTest::additionTest()
 //----------------------------------------------------------------------
 void FRectTest::subtractionTest()
 {
-  const FRect r1 (2, 2, 12, 12);
-  const FPoint p (5, 5);
-  const FRect r2 = r1 - p;
+  const finalcut::FRect r1 (2, 2, 12, 12);
+  const finalcut::FPoint p (5, 5);
+  const finalcut::FRect r2 = r1 - p;
   CPPUNIT_ASSERT ( r2.getX1() == 2 );
   CPPUNIT_ASSERT ( r2.getY1() == 2 );
   CPPUNIT_ASSERT ( r2.getX2() == 8 );
@@ -345,7 +345,7 @@ void FRectTest::subtractionTest()
 //----------------------------------------------------------------------
 void FRectTest::referenceTest()
 {
-  FRect r1 (1, 1, 10, 20);
+  finalcut::FRect r1 (1, 1, 10, 20);
   CPPUNIT_ASSERT ( r1.getX1() == 1 );
   CPPUNIT_ASSERT ( r1.getY1() == 1 );
   CPPUNIT_ASSERT ( r1.getX2() == 10 );
@@ -378,7 +378,7 @@ void FRectTest::referenceTest()
 //----------------------------------------------------------------------
 void FRectTest::moveTest()
 {
-  FRect r1 (1, 2, 10, 20);
+  finalcut::FRect r1 (1, 2, 10, 20);
   CPPUNIT_ASSERT ( r1.getX() == 1 );
   CPPUNIT_ASSERT ( r1.getY() == 2 );
   CPPUNIT_ASSERT ( r1.getWidth() == 10 );
@@ -386,7 +386,7 @@ void FRectTest::moveTest()
   CPPUNIT_ASSERT ( r1.getX2() == 10 );
   CPPUNIT_ASSERT ( r1.getY2() == 21 );
 
-  const FPoint p1 (2,3);
+  const finalcut::FPoint p1 (2,3);
   r1.move(p1);
   CPPUNIT_ASSERT ( r1.getX() == 3 );
   CPPUNIT_ASSERT ( r1.getY() == 5 );
@@ -407,17 +407,17 @@ void FRectTest::moveTest()
 //----------------------------------------------------------------------
 void FRectTest::containsTest()
 {
-  const FRect r1 (1, 2, 10, 20);
+  const finalcut::FRect r1 (1, 2, 10, 20);
   CPPUNIT_ASSERT ( r1.contains(5, 5) );
   CPPUNIT_ASSERT ( ! r1.contains(0, 1) );
 
-  const FPoint p1 (3, 4);
-  const FPoint p2 (3, 25);
+  const finalcut::FPoint p1 (3, 4);
+  const finalcut::FPoint p2 (3, 25);
   CPPUNIT_ASSERT ( r1.contains(p1) );
   CPPUNIT_ASSERT ( ! r1.contains(p2) );
 
-  const FRect r2 (5, 5, 10, 20);
-  const FRect r3 (2, 3, 9, 19);
+  const finalcut::FRect r2 (5, 5, 10, 20);
+  const finalcut::FRect r3 (2, 3, 9, 19);
   CPPUNIT_ASSERT ( !r1.contains(r2) );
   CPPUNIT_ASSERT ( r1.contains(r3) );
 }
@@ -425,12 +425,12 @@ void FRectTest::containsTest()
 //----------------------------------------------------------------------
 void FRectTest::overlapTest()
 {
-  const FRect r1 (1, 2, 10, 20);
-  const FRect r2 (5, 5, 10, 20);
-  const FRect r3 (2, 3, 9, 19);
-  const FRect r4 (10, 20, 10, 20);
-  const FRect r5 (11, 21, 10, 20);
-  const FRect r6 (-5, -3, 2, 3);
+  const finalcut::FRect r1 (1, 2, 10, 20);
+  const finalcut::FRect r2 (5, 5, 10, 20);
+  const finalcut::FRect r3 (2, 3, 9, 19);
+  const finalcut::FRect r4 (10, 20, 10, 20);
+  const finalcut::FRect r5 (11, 21, 10, 20);
+  const finalcut::FRect r6 (-5, -3, 2, 3);
   CPPUNIT_ASSERT ( r1.overlap(r2) );
   CPPUNIT_ASSERT ( r1.overlap(r3) );
   CPPUNIT_ASSERT ( r1.overlap(r4) );
@@ -441,9 +441,9 @@ void FRectTest::overlapTest()
 //----------------------------------------------------------------------
 void FRectTest::intersectTest()
 {
-  const FRect r1 (1, 2, 5, 5);
-  const FRect r2 (1, 2, 5, 5);
-  FRect r3 = r1.intersect(r2);
+  const finalcut::FRect r1 (1, 2, 5, 5);
+  const finalcut::FRect r2 (1, 2, 5, 5);
+  finalcut::FRect r3 = r1.intersect(r2);
   CPPUNIT_ASSERT ( r3.getX() == 1 );
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
@@ -451,7 +451,7 @@ void FRectTest::intersectTest()
   CPPUNIT_ASSERT ( r3.getX2() == 5 );
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
 
-  const FRect r4 (4, 2, 5, 6);
+  const finalcut::FRect r4 (4, 2, 5, 6);
   r3 = r1.intersect(r4);
   CPPUNIT_ASSERT ( r3.getX() == 4 );
   CPPUNIT_ASSERT ( r3.getY() == 2 );
@@ -464,9 +464,9 @@ void FRectTest::intersectTest()
 //----------------------------------------------------------------------
 void FRectTest::combinedTest()
 {
-  const FRect r1 (1, 2, 5, 5);
-  const FRect r2 (1, 2, 5, 5);
-  FRect r3 = r1.combined(r2);
+  const finalcut::FRect r1 (1, 2, 5, 5);
+  const finalcut::FRect r2 (1, 2, 5, 5);
+  finalcut::FRect r3 = r1.combined(r2);
   CPPUNIT_ASSERT ( r3.getX() == 1 );
   CPPUNIT_ASSERT ( r3.getY() == 2 );
   CPPUNIT_ASSERT ( r3.getWidth() == 5 );
@@ -474,7 +474,7 @@ void FRectTest::combinedTest()
   CPPUNIT_ASSERT ( r3.getX2() == 5 );
   CPPUNIT_ASSERT ( r3.getY2() == 6 );
 
-  const FRect r4 (4, 2, 5, 6);
+  const finalcut::FRect r4 (4, 2, 5, 6);
   r3 = r1.combined(r4);
   CPPUNIT_ASSERT ( r3.getX() == 1 );
   CPPUNIT_ASSERT ( r3.getY() == 2 );
@@ -487,7 +487,7 @@ void FRectTest::combinedTest()
 //----------------------------------------------------------------------
 void FRectTest::streamInsertionTest()
 {
-  FRect out;
+  finalcut::FRect out;
   std::stringstream stream;
   stream.str("10 5 60 20");
   stream >> out;
@@ -508,7 +508,7 @@ void FRectTest::streamInsertionTest()
 //----------------------------------------------------------------------
 void FRectTest::streamExtractionTest()
 {
-  FRect in;
+  finalcut::FRect in;
   in.setCoordinates (-7, 5, -1, 10);
   std::stringstream stream;
   stream << in;

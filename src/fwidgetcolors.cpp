@@ -22,6 +22,8 @@
 
 #include "final/fwidgetcolors.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FWidgetColors
@@ -206,3 +208,4 @@ void FWidgetColors::set16ColorTheme()
   progressbar_bg                    = fc::LightBlue;
 }
 
+}  // namespace finalcut

@@ -28,6 +28,9 @@
 #include "final/fstatusbar.h"
 #include "final/ftermbuffer.h"
 
+namespace finalcut
+{
+
 // Static class attribute
 FObject::FObjectIterator FListView::null_iter;
 
@@ -2185,3 +2188,5 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
     flush_out();
   }
 }
+
+}  // namespace finalcut

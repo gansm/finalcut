@@ -23,6 +23,8 @@
 #include "final/fcheckmenuitem.h"
 #include "final/fmenu.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FCheckMenuItem
@@ -77,3 +79,5 @@ void FCheckMenuItem::processClicked()
   processToggle();
   emitCallback("clicked");
 }
+
+}  // namespace finalcut

@@ -22,6 +22,8 @@
 
 #include "final/fcheckbox.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FCheckBox
@@ -107,3 +109,5 @@ void FCheckBox::drawCheckButton()
   if ( isMonochron() )
     setReverse(false);
 }
+
+}  // namespace finalcut

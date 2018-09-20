@@ -24,6 +24,8 @@
 #include "final/fbutton.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FButton
@@ -855,3 +857,5 @@ void FButton::processClick()
 {
   emitCallback("clicked");
 }
+
+}  // namespace finalcut

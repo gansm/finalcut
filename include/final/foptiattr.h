@@ -61,6 +61,8 @@
 #include "final/fc.h"
 #include "final/ftypes.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FOptiAttr
@@ -412,5 +414,7 @@ inline void FOptiAttr::setDefaultColorSupport()
 //----------------------------------------------------------------------
 inline void FOptiAttr::unsetDefaultColorSupport()
 { ansi_default_color = false; }
+
+}  // namespace finalcut
 
 #endif  // FOPTIATTR_H

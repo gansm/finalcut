@@ -27,6 +27,8 @@
 #include "final/fscrollbar.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FListBoxItem
@@ -2065,3 +2067,5 @@ void FListBox::cb_HBarChange (FWidget*, data_ptr)
     flush_out();
   }
 }
+
+}  // namespace finalcut

@@ -29,6 +29,9 @@
   #include "../fonts/vgafont.h"
 #endif
 
+namespace finalcut
+{
+
 // static class attributes
 #if defined(__linux__)
   FTermLinux::modifier_key  FTermLinux::mod_key;
@@ -67,7 +70,7 @@ FTermLinux::~FTermLinux()  // destructor
 
   if ( screen_unicode_map.entries )
     delete[] screen_unicode_map.entries;
-#endif
+#endif  // defined(__linux__)
 }
 
 // public methods of FTermLinux
@@ -1190,5 +1193,6 @@ int FTermLinux::shiftCtrlAltKeyCorrection (const int& key_id)
       return key_id;
   }
 }
-
 #endif  // defined(__linux__)
+
+}  // namespace finalcut

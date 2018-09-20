@@ -1,5 +1,8 @@
 2018-09-20  Markus Gans  <guru.mail@muenster.de>
 	* Added pkg-config file finalcut.pc
+	* The entire library source code is now encapsulated under 
+	  the namespace finalcut. All examples and tests have been 
+	  modified to fit the namespace.
 
 2018-09-16  Markus Gans  <guru.mail@muenster.de>
 	* Implement a ttytype test for the FTermDetection unit test

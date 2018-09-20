@@ -8,8 +8,9 @@ FONTFILE="8x16graph.bdf"
   echo -e "// newfont.h\\n"
   echo -e "#ifndef FNEWFONT_H"
   echo -e "#define FNEWFONT_H\\n"
-  echo -e "namespace fc\\n{"
-  echo -e "\\nstatic unsigned char __8x16graph[] =\\n{"
+  echo -e "namespace finalcut\\n{\\n"
+  echo -e "namespace fc\\n{\\n"
+  echo -e "static unsigned char __8x16graph[] =\\n{"
 
   grep -A${HEIGHT} ^BITMAP "$FONTFILE" \
   | tr '\n' ',' \
@@ -28,6 +29,7 @@ FONTFILE="8x16graph.bdf"
 
   echo -e "};"
   echo -e "\\n}  // namespace fc"
+  echo -e "\\n}  // namespace finalcut"
   echo -e "\\n#endif  // FNEWFONT_H"
 ) > newfont.h
 

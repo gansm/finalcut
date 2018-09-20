@@ -26,6 +26,9 @@
 #include "final/fkey_map.h"
 #include "final/ftermios.h"
 
+namespace finalcut
+{
+
 // static class attributes
 long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
 struct timeval FKeyboard::time_keypressed;
@@ -567,3 +570,5 @@ void FKeyboard::escapeKeyPressed()
 {
   escape_key_cmd.execute();
 }
+
+}  // namespace finalcut

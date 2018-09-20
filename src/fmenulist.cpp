@@ -24,6 +24,8 @@
 
 #include "final/fmenulist.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenuList
@@ -134,3 +136,5 @@ void FMenuList::unselectItem()
 
   setSelectedItem(0);
 }
+
+}  // namespace finalcut

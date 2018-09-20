@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -48,6 +48,8 @@
 #include "final/fmenuitem.h"
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenuList
@@ -138,5 +140,7 @@ inline bool FMenuList::isSelected(int index) const
 //----------------------------------------------------------------------
 inline bool FMenuList::hasSelectedItem() const
 { return selected_item; }
+
+}  // namespace finalcut
 
 #endif  // FMENULIST_H

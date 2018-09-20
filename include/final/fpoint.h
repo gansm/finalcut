@@ -37,6 +37,8 @@
 
 #include <iostream>
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FPoint
@@ -150,5 +152,7 @@ inline short& FPoint::x_ref()
 //----------------------------------------------------------------------
 inline short& FPoint::y_ref()
 { return ypos; }
+
+}  // namespace finalcut
 
 #endif  // FPOINT_H

@@ -28,6 +28,8 @@
   bool  FTermOpenBSD::meta_sends_escape = true;
 #endif
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermOpenBSD
@@ -123,5 +125,6 @@ bool FTermOpenBSD::resetBSDConsoleEncoding()
 {
   return setBSDConsoleEncoding (bsd_keyboard_encoding);
 }
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
 
-#endif
+}  // namespace finalcut

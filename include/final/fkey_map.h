@@ -30,6 +30,9 @@
 #include <string>
 #include "final/ftypes.h"
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -38,5 +41,7 @@ extern fmetakeymap Fmetakey[];
 extern keyname FkeyName[];
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FKEYMAP_H

@@ -24,6 +24,8 @@
 #include "final/flabel.h"
 #include "final/fstatusbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FLabel
@@ -666,3 +668,5 @@ void FLabel::printLine ( wchar_t line[]
   if ( hasReverseMode() )
     setReverse(false);
 }
+
+}  // namespace finalcut

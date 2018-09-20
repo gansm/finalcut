@@ -31,8 +31,14 @@
 #ifndef FWIDGETCOLORS_H
 #define FWIDGETCOLORS_H
 
+#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
+  #error "Only <final/final.h> can be included directly."
+#endif
+
 #include "final/fc.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FWidgetColors
@@ -136,5 +142,6 @@ class FWidgetColors
 };
 #pragma pack(pop)
 
+}  // namespace finalcut
 
 #endif  // FWIDGETCOLORS_H

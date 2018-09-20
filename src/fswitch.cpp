@@ -22,6 +22,8 @@
 
 #include "final/fswitch.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FSwitch
@@ -232,3 +234,5 @@ void FSwitch::drawUnchecked()
 
   setCursorPos (7 + switch_offset_pos, 1);
 }
+
+}  // namespace finalcut

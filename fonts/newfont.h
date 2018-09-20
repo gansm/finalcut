@@ -3,6 +3,9 @@
 #ifndef FNEWFONT_H
 #define FNEWFONT_H
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -267,5 +270,7 @@ static unsigned char __8x16graph[] =
 };
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FNEWFONT_H

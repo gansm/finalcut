@@ -24,6 +24,8 @@
 #include "final/fscrollview.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FScrollView
@@ -1029,3 +1031,5 @@ inline void FScrollView::drawVBar()
 
   child_print_area = viewport;
 }
+
+}  // namespace finalcut

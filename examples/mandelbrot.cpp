@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -30,18 +30,18 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class Mandelbrot : public FDialog
+class Mandelbrot : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Mandelbrot (FWidget* = 0);
+    explicit Mandelbrot (finalcut::FWidget* = 0);
 
     // Destructor
     ~Mandelbrot();
 
     // Event handlers
-    void onAccel (FAccelEvent*);
-    void onClose (FCloseEvent*);
+    void onAccel (finalcut::FAccelEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
   private:
     // Methods
@@ -51,8 +51,8 @@ class Mandelbrot : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Mandelbrot::Mandelbrot (FWidget* parent)
-  : FDialog(parent)
+Mandelbrot::Mandelbrot (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
 {
   setText ("Mandelbrot set");
 }
@@ -69,7 +69,7 @@ void Mandelbrot::draw()
   double x, y, xtemp, x0, y0, dX, dY;
   double x_min, x_max, y_min, y_max;
 
-  FDialog::draw();
+  finalcut::FDialog::draw();
 
   x_min = -2.20;
   x_max =  1.00;
@@ -106,9 +106,9 @@ void Mandelbrot::draw()
       }
 
       if ( iter < max_iter )
-        setColor(fc::Black, iter % 16);
+        setColor(finalcut::fc::Black, iter % 16);
       else
-        setColor(fc::Black, 0);
+        setColor(finalcut::fc::Black, 0);
 
       print(' ');
     }
@@ -116,16 +116,16 @@ void Mandelbrot::draw()
 }
 
 //----------------------------------------------------------------------
-void Mandelbrot::onAccel (FAccelEvent* ev)
+void Mandelbrot::onAccel (finalcut::FAccelEvent* ev)
 {
   close();
   ev->accept();
 }
 
 //----------------------------------------------------------------------
-void Mandelbrot::onClose (FCloseEvent* ev)
+void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
@@ -134,7 +134,7 @@ void Mandelbrot::adjustSize()
   int h = getParentWidget()->getHeight() - 1;
   int w = getParentWidget()->getWidth() - 10;
   setGeometry(6, 1, w, h, false);
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
@@ -143,7 +143,7 @@ void Mandelbrot::adjustSize()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple dialog box
   Mandelbrot mb(&app);

@@ -54,6 +54,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 // class forward declaration
 class FButtonGroup;
@@ -222,5 +224,7 @@ inline FButtonGroup* FToggleButton::getGroup() const
 //----------------------------------------------------------------------
 inline bool FToggleButton::hasGroup() const
 { return button_group; }
+
+}  // namespace finalcut
 
 #endif  // FTOGGLEBUTTON_H

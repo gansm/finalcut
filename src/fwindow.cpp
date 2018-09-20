@@ -25,6 +25,9 @@
 #include "final/fstatusbar.h"
 #include "final/fwindow.h"
 
+namespace finalcut
+{
+
 // static attributes
 FWindow* FWindow::previous_window = 0;
 
@@ -925,3 +928,5 @@ void FWindow::processAlwaysOnTop()
     ++iter;
   }
 }
+
+}  // namespace finalcut

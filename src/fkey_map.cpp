@@ -23,6 +23,9 @@
 #include <final/fc.h>
 #include <final/fkey_map.h>
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -826,3 +829,5 @@ keyname FkeyName[] =
 };
 
 }  // namespace fc
+
+}  // namespace finalcut

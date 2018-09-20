@@ -3,6 +3,9 @@
 #ifndef FUNICODEMAP_H
 #define FUNICODEMAP_H
 
+namespace finalcut
+{
+
 namespace fc
 {
 
@@ -317,5 +320,7 @@ static struct unipair unicode_cp437_pairs[] =
 };
 
 }  // namespace fc
+
+}  // namespace finalcut
 
 #endif  // FUNICODEMAP_H

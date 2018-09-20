@@ -24,6 +24,8 @@
 
 #include "final/fscrollbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -831,3 +833,5 @@ void FScrollbar::processScroll()
   emitCallback("change-value");
   avoidScrollOvershoot();
 }
+
+}  // namespace finalcut

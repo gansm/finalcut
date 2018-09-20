@@ -24,6 +24,8 @@
 
 #include "final/fevent.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FEvent
@@ -357,3 +359,5 @@ FTimerEvent::~FTimerEvent()  // destructor
 //----------------------------------------------------------------------
 int FTimerEvent::timerId() const
 { return id; }
+
+}  // namespace finalcut

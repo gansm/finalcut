@@ -54,6 +54,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FScrollbar
@@ -173,5 +175,7 @@ inline int FScrollbar::getValue() const
 //----------------------------------------------------------------------
 inline FScrollbar::sType FScrollbar::getScrollType() const
 { return scroll_type; }
+
+}  // namespace finalcut
 
 #endif  // FSCROLLBAR_H

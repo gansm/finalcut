@@ -22,6 +22,8 @@
 
 #include "final/fcolorpalette.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FColorPalette
@@ -122,3 +124,5 @@ void FColorPalette::reset16ColorPalette (funcp setPalette)
   setPalette (fc::Yellow, 0xff, 0xff, 0x55);
   setPalette (fc::White, 0xff, 0xff, 0xff);
 }
+
+}  // namespace finalcut

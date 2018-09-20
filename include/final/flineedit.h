@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2012-2017 Markus Gans                                      *
+* Copyright 2012-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -55,6 +55,8 @@
 #include "final/fwidget.h"
 #include "final/flabel.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FLineEdit
@@ -226,5 +228,7 @@ inline bool FLineEdit::unsetShadow()
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
 { return ((flags & fc::shadow) != 0); }
+
+}  // namespace finalcut
 
 #endif  // FLINEEDIT_H

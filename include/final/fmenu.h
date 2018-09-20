@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -64,6 +64,8 @@
 #include "final/fmenulist.h"
 #include "final/fmenuitem.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMenu
@@ -327,5 +329,6 @@ inline FMenu* FMenu::superMenuAt (const FPoint& p)
 inline void FMenu::onAccel (FAccelEvent* ev)
 { item->onAccel(ev); }
 
+}  // namespace finalcut
 
 #endif  // FMENU_H

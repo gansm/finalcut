@@ -56,6 +56,8 @@
 
 #include "final/fwidget.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FLabel
@@ -224,5 +226,7 @@ inline bool FLabel::hasReverseMode()
 //----------------------------------------------------------------------
 inline void FLabel::clear()
 { text.clear(); }
+
+}  // namespace finalcut
 
 #endif  // FLABEL_H

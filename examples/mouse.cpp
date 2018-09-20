@@ -30,11 +30,11 @@
 #pragma pack(push)
 #pragma pack(1)
 
-class ColorChooser : public FWidget
+class ColorChooser : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit ColorChooser (FWidget* = 0);
+    explicit ColorChooser (finalcut::FWidget* = 0);
 
     // Destructor
     ~ColorChooser();
@@ -53,7 +53,7 @@ class ColorChooser : public FWidget
     void draw();
 
     // Event handler
-    void onMouseDown (FMouseEvent*);
+    void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
     short fg_color;
@@ -62,10 +62,10 @@ class ColorChooser : public FWidget
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-ColorChooser::ColorChooser (FWidget* parent)
+ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
-  , fg_color(fc::White)
-  , bg_color(fc::Black)
+  , fg_color(finalcut::fc::White)
+  , bg_color(finalcut::fc::Black)
 {
   setSize (8, 12);
   setFixedSize (8, 12);
@@ -78,10 +78,10 @@ ColorChooser::ColorChooser (FWidget* parent)
   }
 
   // Text label
-  FLabel* headline = new FLabel (this);
+  finalcut::FLabel* headline = new finalcut::FLabel (this);
   headline->setGeometry(1, 1, 8, 1);
   headline->setEmphasis();
-  headline->setAlignment (fc::alignCenter);
+  headline->setAlignment (finalcut::fc::alignCenter);
   *headline << "Color";
 }
 
@@ -90,12 +90,12 @@ ColorChooser::~ColorChooser()
 { }
 
 //----------------------------------------------------------------------
-void ColorChooser::onMouseDown (FMouseEvent* ev)
+void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
 {
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
-  if ( ev->getButton() == fc::MiddleButton )
+  if ( ev->getButton() == finalcut::fc::MiddleButton )
     return;
 
   for (int c = 0; c < 16; c++)
@@ -106,9 +106,9 @@ void ColorChooser::onMouseDown (FMouseEvent* ev)
 
     if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
     {
-      if ( ev->getButton() == fc::LeftButton )
+      if ( ev->getButton() == finalcut::fc::LeftButton )
         bg_color = short(c);
-      else if ( ev->getButton() == fc::RightButton )
+      else if ( ev->getButton() == finalcut::fc::RightButton )
         fg_color = short(c);
 
       redraw();
@@ -121,23 +121,23 @@ void ColorChooser::onMouseDown (FMouseEvent* ev)
 void ColorChooser::draw()
 {
   setColor();
-  FWidget::drawBorder (1, 2, 8, 11);
+  finalcut::FWidget::drawBorder (1, 2, 8, 11);
 
   for (short c = 0; c < 16; c++)
   {
     setPrintPos (2 + (c / 8) * 3, 3 + c % 8);
 
     if ( c < 6 )
-      setColor (fc::LightGray, c);
+      setColor (finalcut::fc::LightGray, c);
     else if ( c > 8 )
-      setColor (fc::DarkGray, c);
+      setColor (finalcut::fc::DarkGray, c);
     else
-      setColor (fc::White, c);
+      setColor (finalcut::fc::White, c);
 
     if ( c == bg_color )
     {
       print (' ');
-      print (fc::Times);
+      print (finalcut::fc::Times);
       print (' ');
     }
     else
@@ -165,11 +165,11 @@ inline short ColorChooser::getBackground()
 #pragma pack(push)
 #pragma pack(1)
 
-class Brushes : public FWidget
+class Brushes : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Brushes (FWidget* = 0);
+    explicit Brushes (finalcut::FWidget* = 0);
 
     // Destructor
     ~Brushes();
@@ -191,7 +191,7 @@ class Brushes : public FWidget
     void draw();
 
     // Event handler
-    void onMouseDown (FMouseEvent*);
+    void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
     wchar_t brush;
@@ -201,11 +201,11 @@ class Brushes : public FWidget
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Brushes::Brushes (FWidget* parent)
+Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget(parent)
   , brush(L' ')
-  , fg_color(fc::White)
-  , bg_color(fc::Black)
+  , fg_color(finalcut::fc::White)
+  , bg_color(finalcut::fc::Black)
 {
   setSize (8, 4);
   setFixedSize (8, 4);
@@ -218,10 +218,10 @@ Brushes::Brushes (FWidget* parent)
   }
 
   // Text label
-  FLabel* headline = new FLabel (this);
+  finalcut::FLabel* headline = new finalcut::FLabel (this);
   headline->setGeometry(1, 1, 8, 1);
   headline->setEmphasis();
-  headline->setAlignment (fc::alignCenter);
+  headline->setAlignment (finalcut::fc::alignCenter);
   *headline << "Brush";
 }
 
@@ -235,11 +235,11 @@ void Brushes::draw()
 {
   int pos;
   setColor();
-  FWidget::drawBorder (1, 2, 8, 4);
+  finalcut::FWidget::drawBorder (1, 2, 8, 4);
   setColor (fg_color, bg_color);
   setPrintPos (2, 3);
   print("   ");
-  print(FString(3, wchar_t(fc::MediumShade)));
+  print(finalcut::FString(3, wchar_t(finalcut::fc::MediumShade)));
 
   if ( brush == L' ' )
     pos = 0;
@@ -248,18 +248,18 @@ void Brushes::draw()
 
   setColor();
   setPrintPos (3 + pos, 2);
-  print(wchar_t(fc::BlackDownPointingTriangle));
+  print(wchar_t(finalcut::fc::BlackDownPointingTriangle));
   setPrintPos (3 + pos, 4);
-  print(wchar_t(fc::BlackUpPointingTriangle));
+  print(wchar_t(finalcut::fc::BlackUpPointingTriangle));
 }
 
 //----------------------------------------------------------------------
-void Brushes::onMouseDown (FMouseEvent* ev)
+void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
 {
   int mouse_x = ev->getX();
   int mouse_y = ev->getY();
 
-  if ( ev->getButton() != fc::LeftButton )
+  if ( ev->getButton() != finalcut::fc::LeftButton )
     return;
 
   if ( mouse_x >= 2 && mouse_x <= 4 && mouse_y == 3 )
@@ -269,7 +269,7 @@ void Brushes::onMouseDown (FMouseEvent* ev)
   }
   else if ( mouse_x >= 5 && mouse_x <= 7 && mouse_y == 3 )
   {
-    brush = wchar_t(fc::MediumShade);
+    brush = wchar_t(finalcut::fc::MediumShade);
     redraw();
   }
 }
@@ -300,14 +300,14 @@ inline void Brushes::setBackground (short color)
 #pragma pack(push)
 #pragma pack(1)
 
-class MouseDraw : public FDialog
+class MouseDraw : public finalcut::FDialog
 {
   public:
     // Using-declaration
     using FWidget::setGeometry;
 
     // Constructor
-    explicit MouseDraw (FWidget* = 0);
+    explicit MouseDraw (finalcut::FWidget* = 0);
 
     // Destructor
     ~MouseDraw();
@@ -316,8 +316,8 @@ class MouseDraw : public FDialog
     void setGeometry (int, int, int, int, bool = true);
 
     // Event handlers
-    void onAccel (FAccelEvent*);
-    void onClose (FCloseEvent*);
+    void onAccel (finalcut::FAccelEvent*);
+    void onClose (finalcut::FCloseEvent*);
 
   private:
     // Disable copy constructor
@@ -332,11 +332,11 @@ class MouseDraw : public FDialog
     void adjustSize();
 
     // Event handler
-    void onMouseDown (FMouseEvent*);
-    void onMouseMove (FMouseEvent*);
+    void onMouseDown (finalcut::FMouseEvent*);
+    void onMouseMove (finalcut::FMouseEvent*);
 
     // Callback methods
-    void cb_colorChanged (FWidget*, data_ptr);
+    void cb_colorChanged (finalcut::FWidget*, data_ptr);
 
     // Data Members
     term_area*    canvas;
@@ -346,8 +346,8 @@ class MouseDraw : public FDialog
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-MouseDraw::MouseDraw (FWidget* parent)
-  : FDialog(parent)
+MouseDraw::MouseDraw (finalcut::FWidget* parent)
+  : finalcut::FDialog(parent)
   , canvas(0)
   , c_chooser()
   , brush()
@@ -364,8 +364,8 @@ MouseDraw::MouseDraw (FWidget* parent)
   brush = new Brushes(this);
   brush->setPos (1, 12);
 
-  FPoint no_shadow(0,0);
-  FRect scroll_geometry(0, 0, 1, 1);
+  finalcut::FPoint no_shadow(0,0);
+  finalcut::FRect scroll_geometry(0, 0, 1, 1);
   createArea (scroll_geometry, no_shadow, canvas);
 }
 
@@ -377,10 +377,10 @@ MouseDraw::~MouseDraw()
 void MouseDraw::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   int old_w, old_h;
-  FDialog::setGeometry (x, y, w, h, adjust);
+  finalcut::FDialog::setGeometry (x, y, w, h, adjust);
 
-  FPoint no_shadow(0,0);
-  FRect scroll_geometry (0, 0, w - 11, h - 3);
+  finalcut::FPoint no_shadow(0,0);
+  finalcut::FRect scroll_geometry (0, 0, w - 11, h - 3);
   old_w = canvas->width;
   old_h = canvas->height;
   resizeArea (scroll_geometry, no_shadow, canvas);
@@ -393,23 +393,23 @@ void MouseDraw::setGeometry (int x, int y, int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::onAccel (FAccelEvent* ev)
+void MouseDraw::onAccel (finalcut::FAccelEvent* ev)
 {
   close();
   ev->accept();
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::onClose (FCloseEvent* ev)
+void MouseDraw::onClose (finalcut::FCloseEvent* ev)
 {
-  FApplication::closeConfirmationDialog (this, ev);
+  finalcut::FApplication::closeConfirmationDialog (this, ev);
 }
 
 //----------------------------------------------------------------------
 void MouseDraw::draw()
 {
   int y_max = getHeight();
-  FDialog::draw();
+  finalcut::FDialog::draw();
   setColor();
 
   if ( isNewFont() )
@@ -417,25 +417,25 @@ void MouseDraw::draw()
     for (int y = 2; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(fc::NF_rev_border_line_right));
+      print (wchar_t(finalcut::fc::NF_rev_border_line_right));
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(fc::NF_rev_border_corner_lower_right));
+    print (wchar_t(finalcut::fc::NF_rev_border_corner_lower_right));
   }
   else
   {
     setPrintPos (10, 2);
-    print (wchar_t(fc::BoxDrawingsDownAndHorizontal));
+    print (wchar_t(finalcut::fc::BoxDrawingsDownAndHorizontal));
 
     for (int y = 3; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(fc::BoxDrawingsVertical));
+      print (wchar_t(finalcut::fc::BoxDrawingsVertical));
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(fc::BoxDrawingsUpAndHorizontal));
+    print (wchar_t(finalcut::fc::BoxDrawingsUpAndHorizontal));
   }
 
   drawCanvas();
@@ -468,7 +468,7 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
 void MouseDraw::drawCanvas()
 {
   if ( ! hasPrintArea() )
-    FVTerm::getPrintArea();
+    finalcut::FVTerm::getPrintArea();
 
   if ( ! (hasPrintArea() && canvas) )
     return;
@@ -505,35 +505,39 @@ void MouseDraw::adjustSize()
     , x = 1 + (getParentWidget()->getWidth() - w) / 2
     , y = 1 + (getParentWidget()->getHeight() - h) / 2;
   setGeometry (x, y, w, h, false);
-  FDialog::adjustSize();
+  finalcut::FDialog::adjustSize();
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::onMouseDown (FMouseEvent* ev)
+void MouseDraw::onMouseDown (finalcut::FMouseEvent* ev)
 {
-  FDialog::onMouseDown(ev);
+  finalcut::FDialog::onMouseDown(ev);
 
-  if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != finalcut::fc::LeftButton
+    && ev->getButton() != finalcut::fc::RightButton )
     return;
 
-  drawBrush (ev->getX(), ev->getY(), ev->getButton() == fc::RightButton);
+  drawBrush ( ev->getX()
+            , ev->getY()
+            , ev->getButton() == finalcut::fc::RightButton );
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::onMouseMove (FMouseEvent* ev)
+void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 {
   FDialog::onMouseMove(ev);
 
-  if ( ev->getButton() != fc::LeftButton
-      && ev->getButton() != fc::RightButton )
+  if ( ev->getButton() != finalcut::fc::LeftButton
+    && ev->getButton() != finalcut::fc::RightButton )
     return;
 
-  drawBrush (ev->getX(), ev->getY(), ev->getButton() == fc::RightButton);
+  drawBrush ( ev->getX()
+            , ev->getY()
+            , ev->getButton() == finalcut::fc::RightButton);
 }
 
 //----------------------------------------------------------------------
-void MouseDraw::cb_colorChanged (FWidget*, data_ptr)
+void MouseDraw::cb_colorChanged (finalcut::FWidget*, data_ptr)
 {
   brush->setForeground (c_chooser->getForeground());
   brush->setBackground (c_chooser->getBackground());
@@ -547,7 +551,7 @@ void MouseDraw::cb_colorChanged (FWidget*, data_ptr)
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
+  finalcut::FApplication app(argc, argv);
 
   // Create a simple dialog box
   MouseDraw mouse_draw(&app);

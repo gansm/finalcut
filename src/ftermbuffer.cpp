@@ -25,6 +25,8 @@
 
 #include "final/ftermbuffer.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FTermBuffer
@@ -179,3 +181,5 @@ std::vector<FTermBuffer::charData>& operator << \
 
   return termString;
 }
+
+}  // namespace finalcut

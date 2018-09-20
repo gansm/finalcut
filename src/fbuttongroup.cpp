@@ -26,6 +26,8 @@
 #include "final/fstatusbar.h"
 #include "final/ftogglebutton.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FButtonGroup
@@ -692,3 +694,5 @@ void FButtonGroup::directFocus()
     flush_out();
   }
 }
+
+}  // namespace finalcut

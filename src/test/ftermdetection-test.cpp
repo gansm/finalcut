@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermdetection-test.cpp - FTermDetection unit tests                  *
+* ftermdetection-test.cpp - finalcut::FTermDetection unit tests                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -465,7 +465,7 @@ FTermDetectionTest::~FTermDetectionTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::classNameTest()
 {
-  FTermDetection d;
+  finalcut::FTermDetection d;
   const char* const classname = d.getClassName();
   CPPUNIT_ASSERT ( std::strcmp(classname, "FTermDetection") == 0 );
 }
@@ -474,7 +474,7 @@ void FTermDetectionTest::classNameTest()
 void FTermDetectionTest::ansiTest()
 {
   setenv ("TERM", "ansi", 1);
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("ansi"));
 
   pid_t pid = forkProcess();
@@ -541,7 +541,7 @@ void FTermDetectionTest::ansiTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::xtermTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
@@ -601,7 +601,7 @@ void FTermDetectionTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::rxvtTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("rxvt-cygwin-native"));
   detect.setTerminalDetection(true);
 
@@ -662,7 +662,7 @@ void FTermDetectionTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::urxvtTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("rxvt-unicode-256color"));
   detect.setTerminalDetection(true);
 
@@ -723,7 +723,7 @@ void FTermDetectionTest::urxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::mltermTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("mlterm"));
   detect.setTerminalDetection(true);
 
@@ -791,7 +791,7 @@ void FTermDetectionTest::mltermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::puttyTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
@@ -852,7 +852,7 @@ void FTermDetectionTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kdeKonsoleTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
@@ -912,7 +912,7 @@ void FTermDetectionTest::kdeKonsoleTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::gnomeTerminalTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
@@ -973,7 +973,7 @@ void FTermDetectionTest::gnomeTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ktermTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("kterm"));
   detect.setTerminalDetection(true);
 
@@ -1041,7 +1041,7 @@ void FTermDetectionTest::ktermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::teraTermTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
@@ -1102,7 +1102,7 @@ void FTermDetectionTest::teraTermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::cygwinTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("cygwin"));
   detect.setTerminalDetection(true);
 
@@ -1163,7 +1163,7 @@ void FTermDetectionTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::minttyTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm-256color"));
   detect.setTerminalDetection(true);
 
@@ -1224,7 +1224,7 @@ void FTermDetectionTest::minttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::linuxTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("linux"));
   detect.setTerminalDetection(true);
 
@@ -1292,7 +1292,7 @@ void FTermDetectionTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::freebsdTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("xterm"));
   detect.setTerminalDetection(true);
 
@@ -1363,7 +1363,7 @@ void FTermDetectionTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::netbsdTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("wsvt25"));
   detect.setTerminalDetection(true);
 
@@ -1432,7 +1432,7 @@ void FTermDetectionTest::netbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::openbsdTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("vt220"));
   detect.setTerminalDetection(true);
 
@@ -1501,7 +1501,7 @@ void FTermDetectionTest::openbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::sunTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("sun-color"));
 
   pid_t pid = forkProcess();
@@ -1568,7 +1568,7 @@ void FTermDetectionTest::sunTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::screenTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("screen"));
   detect.setTerminalDetection(true);
 
@@ -1635,7 +1635,7 @@ void FTermDetectionTest::screenTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::tmuxTest()
 {
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTermFileName(C_STR("screen"));
   detect.setTerminalDetection(true);
 
@@ -1738,7 +1738,7 @@ void FTermDetectionTest::ttytypeTest()
   ttytype << "vt100" << "\t" << "ttyp6" << std::endl;
   ttytype.close();
 
-  FTermDetection detect;
+  finalcut::FTermDetection detect;
   detect.setTerminalDetection(true);
   detect.setTtyTypeFileName(C_STR("new-root-dir/etc/ttytype"));
 
@@ -1987,7 +1987,7 @@ void FTermDetectionTest::debugOutput()
   setenv ("GO_MIDDLE",  "\\033[80D\\033[15C", 1);
   setenv ("GO_RIGHT",   "\\033[79D\\033[40C", 1);
 
-  FString line (69, '-');
+  finalcut::FString line (69, '-');
   std::cout << std::endl << line << std::endl;
   std::cout << "Probe           Escape sequence          Reply";
   std::cout << std::endl << line << std::endl;

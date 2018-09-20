@@ -63,6 +63,8 @@
 
 #include "final/fwindow.h"
 
+namespace finalcut
+{
 
 // class forward declaration
 class FStatusBar;
@@ -294,5 +296,7 @@ inline FString FStatusBar::getMessage() const
 //----------------------------------------------------------------------
 inline void FStatusBar::clearMessage()
 { text.clear(); }
+
+}  // namespace finalcut
 
 #endif  // FSTATUSBAR_H

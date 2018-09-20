@@ -23,6 +23,8 @@
 #include "final/fapplication.h"
 #include "final/fradiobutton.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FRadioButton
@@ -108,3 +110,5 @@ void FRadioButton::drawRadioButton()
   if ( isMonochron() )
     setReverse(false);
 }
+
+}  // namespace finalcut

@@ -30,6 +30,8 @@
 #include "final/fterm.h"
 #include "final/ftermxterminal.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMouse
@@ -452,7 +454,7 @@ int FMouseGPM::gpmEvent (bool clear)
   else
     return no_event;
 }
-#endif
+#endif  // F_HAVE_LIBGPM
 
 
 //----------------------------------------------------------------------
@@ -1257,7 +1259,7 @@ void FMouseControl::setStdinNo (int file_descriptor)
 #else
 void FMouseControl::setStdinNo (int)
 { }
-#endif
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 void FMouseControl::setMaxWidth (short x_max)
@@ -1492,7 +1494,7 @@ bool FMouseControl::isGpmMouseEnabled()
   if ( gpm_mouse )
     return gpm_mouse->isGpmMouseEnabled();
 
-#endif
+#endif  // F_HAVE_LIBGPM
 
   return false;
 }
@@ -1500,16 +1502,16 @@ bool FMouseControl::isGpmMouseEnabled()
 //----------------------------------------------------------------------
 void FMouseControl::enable()
 {
+#ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-#ifdef F_HAVE_LIBGPM
     FMouse* mouse = mouse_protocol[FMouse::gpm];
     FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       use_gpm_mouse = gpm_mouse->enableGpmMouse();
-#endif
   }
+#endif  // F_HAVE_LIBGPM
 
   if ( use_xterm_mouse )
     enableXTermMouse();
@@ -1518,16 +1520,16 @@ void FMouseControl::enable()
 //----------------------------------------------------------------------
 void FMouseControl::disable()
 {
+#ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-#ifdef F_HAVE_LIBGPM
     FMouse* mouse = mouse_protocol[FMouse::gpm];
     FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       gpm_mouse->disableGpmMouse();
-#endif
   }
+#endif  // F_HAVE_LIBGPM
 
   if ( use_xterm_mouse )
     disableXTermMouse();
@@ -1562,7 +1564,7 @@ bool FMouseControl::getGpmKeyPressed (bool pending)
 #else
 
 bool FMouseControl::getGpmKeyPressed (bool)
-#endif
+#endif  // F_HAVE_LIBGPM
 {
   if ( mouse_protocol.empty() )
     return false;
@@ -1573,7 +1575,7 @@ bool FMouseControl::getGpmKeyPressed (bool)
 
   if ( gpm_mouse )
     return gpm_mouse->getGpmKeyPressed(pending);
-#endif
+#endif // F_HAVE_LIBGPM
 
   return false;
 }
@@ -1592,7 +1594,7 @@ void FMouseControl::drawGpmPointer()
   if ( gpm_mouse )
     gpm_mouse->drawGpmPointer();
 
-#endif
+#endif  // F_HAVE_LIBGPM
 }
 
 
@@ -1645,3 +1647,5 @@ void FMouseControl::putstring (const char s[], int affcnt)
 {
   FTerm::putstring (s, affcnt);
 }
+
+}  // namespace finalcut

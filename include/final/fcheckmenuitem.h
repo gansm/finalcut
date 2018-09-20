@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -59,6 +59,8 @@
 
 #include "final/fmenuitem.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FCheckMenuItem
@@ -99,5 +101,7 @@ class FCheckMenuItem : public FMenuItem
 //----------------------------------------------------------------------
 inline const char* FCheckMenuItem::getClassName() const
 { return "FCheckMenuItem"; }
+
+}  // namespace finalcut
 
 #endif  // FCHECKMENUITEM_H

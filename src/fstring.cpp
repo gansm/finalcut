@@ -25,6 +25,9 @@
 
 #include "final/fstring.h"
 
+namespace finalcut
+{
+
 // static class constant
 const char* const FString::bad_alloc_str = "not enough memory " \
                                            "to alloc a new string";
@@ -3072,3 +3075,5 @@ std::wistream& operator >> (std::wistream& instr, FString& s)
   s._assign (buf);
   return instr;
 }
+
+}  // namespace finalcut

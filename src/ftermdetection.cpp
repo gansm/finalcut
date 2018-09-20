@@ -23,6 +23,9 @@
 #include "final/fterm.h"
 #include "final/ftermdetection.h"
 
+namespace finalcut
+{
+
 // static class attributes
 FTermDetection::terminalType FTermDetection::terminal_type = \
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -42,7 +45,7 @@ int            FTermDetection::gnome_terminal_id;
   char FTermDetection::termtype_256color[256]   = { };
   char FTermDetection::termtype_Answerback[256] = { };
   char FTermDetection::termtype_SecDA[256]      = { };
-#endif
+#endif  // DEBUG
 
 
 //----------------------------------------------------------------------
@@ -245,7 +248,7 @@ bool FTermDetection::getTTYSFileEntry()
   endttyent();
   return false;
 }
-#endif
+#endif  // F_HAVE_GETTTYNAM
 
 //----------------------------------------------------------------------
 void FTermDetection::termtypeAnalysis()
@@ -375,7 +378,7 @@ char* FTermDetection::init_256colorTerminal()
                  , sizeof(termtype_256color) );
     termtype_256color[sizeof(termtype_256color) - 1] = '\0';
   }
-#endif
+#endif  // DEBUG
 
   return new_termtype;
 }
@@ -579,7 +582,7 @@ char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
                  , sizeof(termtype_Answerback) );
     termtype_Answerback[sizeof(termtype_Answerback) - 1] = '\0';
   }
-#endif
+#endif  // DEBUG
 
   return new_termtype;
 }
@@ -667,7 +670,7 @@ char* FTermDetection::parseSecDA (char current_termtype[])
     std::strncpy (termtype_SecDA, new_termtype, sizeof(termtype_SecDA));
     termtype_SecDA[sizeof(termtype_SecDA) - 1] = '\0';
   }
-#endif
+#endif  // DEBUG
 
   return new_termtype;
 }
@@ -852,7 +855,7 @@ inline char* FTermDetection::secDA_Analysis_24 (char current_termtype[])
     }
   }
 
-#endif
+#endif  // defined(__NetBSD__) || defined(__OpenBSD__)
 
   return new_termtype;
 }
@@ -952,3 +955,5 @@ inline char* FTermDetection::secDA_Analysis_85 (char current_termtype[])
 
   return new_termtype;
 }
+
+}  // namespace finalcut

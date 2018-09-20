@@ -68,6 +68,8 @@
 #include "final/fdialog.h"
 #include "final/fterm.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FMessageBox
@@ -204,5 +206,7 @@ inline bool FMessageBox::setCenterText()
 //----------------------------------------------------------------------
 inline bool FMessageBox::unsetCenterText()
 { return setCenterText(false); }
+
+}  // namespace finalcut
 
 #endif  // FMESSAGEBOX_H

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -26,30 +26,30 @@
 // class Keyboard
 //----------------------------------------------------------------------
 
-class Keyboard : public FWidget
+class Keyboard : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Keyboard (FWidget* = 0);
+    explicit Keyboard (finalcut::FWidget* = 0);
 
   protected:
     // Event handlers
-    void onKeyPress (FKeyEvent*);
-    void onAccel (FAccelEvent*);
+    void onKeyPress (finalcut::FKeyEvent*);
+    void onAccel (finalcut::FAccelEvent*);
 
     void draw();
 };
 
 //----------------------------------------------------------------------
-Keyboard::Keyboard (FWidget* parent)
-  : FWidget(parent)
+Keyboard::Keyboard (finalcut::FWidget* parent)
+  : finalcut::FWidget(parent)
 {
-  wc.term_fg = fc::Default;
-  wc.term_bg = fc::Default;
+  wc.term_fg = finalcut::fc::Default;
+  wc.term_bg = finalcut::fc::Default;
 }
 
 //----------------------------------------------------------------------
-void Keyboard::onKeyPress (FKeyEvent* ev)
+void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
   int key_id = ev->key();
   bool is_last_line = false;
@@ -67,7 +67,7 @@ void Keyboard::onKeyPress (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Keyboard::onAccel (FAccelEvent* ev)
+void Keyboard::onAccel (finalcut::FAccelEvent* ev)
 {
   quit();
   ev->accept();
@@ -89,9 +89,9 @@ void Keyboard::draw()
 int main (int argc, char* argv[])
 {
   // Create the application object
-  FApplication app(argc, argv);
-  app.setForegroundColor(fc::Default);
-  app.setBackgroundColor(fc::Default);
+  finalcut::FApplication app(argc, argv);
+  app.setForegroundColor(finalcut::fc::Default);
+  app.setBackgroundColor(finalcut::fc::Default);
 
   // Create a keyboard object
   Keyboard key(&app);

@@ -22,6 +22,9 @@
 
 #include "final/ftermcapquirks.h"
 
+namespace finalcut
+{
+
 // static class attributes
 char                FTermcapQuirks::termtype[256]  = { };
 FTermcap::tcap_map* FTermcapQuirks::tcap           = 0;
@@ -106,7 +109,7 @@ void FTermcapQuirks::terminalFixup()
   {
     init_termcap_freebsd_quirks();
   }
-#endif
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
   // xterm and compatible terminals
   if ( td->isXTerminal() && ! td->isPuttyTerminal() )
@@ -141,7 +144,7 @@ void FTermcapQuirks::init_termcap_freebsd_quirks()
 
   FTermcap::attr_without_color = 18;
 }
-#endif
+#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
 //----------------------------------------------------------------------
 void FTermcapQuirks::init_termcap_cygwin_quirks()
@@ -498,3 +501,5 @@ void FTermcapQuirks::init_termcap_general_quirks()
         C_STR(CSI "29m");
   }
 }
+
+}  // namespace finalcut

@@ -24,6 +24,9 @@
 
 #include "final/frect.h"
 
+namespace finalcut
+{
+
 //----------------------------------------------------------------------
 // class FRect
 //----------------------------------------------------------------------
@@ -297,3 +300,5 @@ std::istream& operator >> (std::istream& instr, FRect& r)
   r.setCoordinates (x1, y1, x2, y2);
   return instr;
 }
+
+}  // namespace finalcut

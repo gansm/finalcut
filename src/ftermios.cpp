@@ -23,6 +23,9 @@
 #include "final/ftermios.h"
 #include "final/fterm.h"
 
+namespace finalcut
+{
+
 // static class attributes
 int     FTermios::stdin_no;
 int     FTermios::stdout_no;
@@ -224,3 +227,5 @@ uInt FTermios::getBaudRate()
 
   return outspeed[cfgetospeed(&term_init)];
 }
+
+}  // namespace finalcut

@@ -25,6 +25,8 @@
 #include "final/fapplication.h"
 #include "final/fmessagebox.h"
 
+namespace finalcut
+{
 
 static const char* const button_text[] =
 {
@@ -568,3 +570,5 @@ void FMessageBox::adjustButtons()
     }
   }
 }
+
+}  // namespace finalcut

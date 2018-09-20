@@ -22,6 +22,8 @@
 
 #include "final/fprogressbar.h"
 
+namespace finalcut
+{
 
 //----------------------------------------------------------------------
 // class FProgressbar
@@ -258,3 +260,5 @@ void FProgressbar::drawBar()
   updateTerminal();
   flush_out();
 }
+
+}  // namespace finalcut

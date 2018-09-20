@@ -57,6 +57,9 @@
 
 #include "final/ftypes.h"
 
+namespace finalcut
+{
+
 // class forward declaration
 class FString;
 
@@ -496,5 +499,6 @@ inline FString& FString::setFormatedNumber (int num, char separator)
 inline FString& FString::setFormatedNumber (uInt num, char separator)
 { return setFormatedNumber (uLong(num), separator); }
 
+}  // namespace finalcut
 
 #endif  // FSTRING_H
