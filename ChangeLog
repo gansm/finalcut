@@ -1,5 +1,5 @@
 2018-09-20  Markus Gans  <guru.mail@muenster.de>
-	* added pkg-config file finalcut.pc
+	* Added pkg-config file finalcut.pc
 
 2018-09-16  Markus Gans  <guru.mail@muenster.de>
 	* Implement a ttytype test for the FTermDetection unit test

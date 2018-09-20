@@ -17786,7 +17786,7 @@ SO_VERSION="4:0:4"
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile src/test/Makefile finalcut.pc"
+ac_config_files="$ac_config_files Makefile src/Makefile fonts/Makefile doc/Makefile examples/Makefile src/test/Makefile finalcut.spec finalcut.pc"
 
 
 # use GPM (General Purpose Mouse)
@@ -19239,6 +19239,7 @@ do
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "src/test/Makefile") CONFIG_FILES="$CONFIG_FILES src/test/Makefile" ;;
+    "finalcut.spec") CONFIG_FILES="$CONFIG_FILES finalcut.spec" ;;
     "finalcut.pc") CONFIG_FILES="$CONFIG_FILES finalcut.pc" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

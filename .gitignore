@@ -11,6 +11,7 @@
 *.log
 *.trs
 finalcut.pc
+finalcut.spec
 stamp-h1
 _configs.sed
 config.guess

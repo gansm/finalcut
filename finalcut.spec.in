@@ -1,14 +1,14 @@
 #
 # spec file for package finalcut
 #
-# Copyright (c) 2017 by Markus Gans
+# Copyright (c) 2018 by Markus Gans
 #
 
-Name:		finalcut
+Name:		@PACKAGE@
 %define         libname libfinal
 %define         libsoname %{libname}0
 
-Version:	0.4.0
+Version:	@VERSION@
 Release:	%{buildno}
 License:	LGPL-3.0
 Summary:	The Final Cut 

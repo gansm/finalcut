@@ -72,6 +72,7 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  examples/Makefile
                  src/test/Makefile
+                 finalcut.spec
                  finalcut.pc])
 
 # use GPM (General Purpose Mouse)
