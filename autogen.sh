@@ -3,7 +3,7 @@
 if test "$1" = "update"
 then
   # Update generated configuration files
-  autoreconf -v --install --force
+  autoreconf --force --install --verbose --warnings=all
 else
   # Set up an m4 environment
   aclocal

@@ -12,6 +12,7 @@
 ```bash
 > git clone git://github.com/gansm/finalcut.git
 > cd finalcut
+> autoreconf --install --force
 > ./configure --prefix=/usr
 > make
 > su -c "make install"

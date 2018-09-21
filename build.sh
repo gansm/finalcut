@@ -6,6 +6,10 @@ RED="\\033[0;31m"
 GREEN="\\033[0;32m"
 NORMAL="\\033[m"
 
+SRCDIR="$(dirname "$0")"
+test -n "$SRCDIR" || SRCDIR=.
+cd "$SRCDIR" || exit
+
 # Get number of logical processor cores
 if command -v getconf >/dev/null 2>&1
 then
@@ -21,6 +25,11 @@ then
 fi
 
 test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
+
+if [ -n "$1" ]
+then
+  test ! -f ./configure &&  autoreconf --install --force
+fi
 
 # Build commands
 case "$1" in
@@ -122,7 +131,8 @@ if [ "$1" = "--unit-test" ] \
 || [ "$1" = "coverage" ]
 then
   cd test && make check-TESTS
-  cat *.log 2>/dev/null
+  cat ./*.log 2>/dev/null
+  cd .. || exit
 fi
 
 # make install

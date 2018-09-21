@@ -1,3 +1,4 @@
+usr/include/final/*.h
 usr/lib/*/lib*.la
 usr/lib/*/lib*.a
-usr/include/final/*.h
+usr/lib/*/pkgconfig
