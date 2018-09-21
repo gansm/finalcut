@@ -6,7 +6,7 @@
 VERSION = "0.4.0"
 MAJOR := $(shell echo ${VERSION} | cut -d. -f1)
 LIBDIR = /usr/local/lib
-INCLUDEDIR1 = ../include/final
+INCLUDEDIR1 = include/final
 INCLUDEDIR2 = /usr/local/include/final
 INCLUDE_HEADERS = \
 	fapplication.h \
@@ -65,7 +65,7 @@ CXX = clang++
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
-INCLUDES = -I../include
+INCLUDES = -Iinclude
 GPM = -D F_HAVE_LIBGPM
 VER = -D F_VERSION=$(VERSION)
 RM = rm -f
