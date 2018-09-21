@@ -4,7 +4,7 @@ exclude:
 - /doc/.*
 - /build.sh
 - /ltmain.sh
-component_depth: 3
+component_depth: 4
 languages:
 - cpp
 - script
