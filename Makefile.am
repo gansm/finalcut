@@ -13,7 +13,7 @@ pkgconfig_DATA = finalcut.pc
 
 CLEANFILES = finalcut.pc
 
-SUBDIRS = src fonts doc examples
+SUBDIRS = src fonts doc examples test
 
 docdir = ${datadir}/doc/${PACKAGE}
 doc_DATA = AUTHORS COPYING COPYING.LESSER ChangeLog

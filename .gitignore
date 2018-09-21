@@ -50,6 +50,6 @@ examples/keyboard
 examples/mouse
 examples/timer
 examples/ui
-src/test/.deps/
-src/test/.libs/
-src/test/*_test
+test/.deps/
+test/.libs/
+test/*_test

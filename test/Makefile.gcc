@@ -11,8 +11,8 @@ SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
 CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
 MAKEFILE = -f Makefile.gcc
-LDFLAGS = -L.. -lfinal -lcppunit -ldl
-INCLUDES = -I. -I../../include -I/usr/include/final
+LDFLAGS = -L../src -lfinal -lcppunit -ldl
+INCLUDES = -I. -I../src/include -I/usr/include/final
 RM = rm -f
 
 ifdef DEBUG

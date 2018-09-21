@@ -100,7 +100,7 @@ host_triplet = @host@
 @CPPUNIT_TEST_TRUE@	fstring_test$(EXEEXT) fpoint_test$(EXEEXT) \
 @CPPUNIT_TEST_TRUE@	frect_test$(EXEEXT)
 @CPPUNIT_TEST_TRUE@check_PROGRAMS = $(am__EXEEXT_1)
-subdir = src/test
+subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -578,7 +578,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @CPPUNIT_TEST_TRUE@AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal $(CPPUNIT_LIBS)
-@CPPUNIT_TEST_TRUE@AM_CPPFLAGS = -I$(top_srcdir)/include -Wall -Werror
+@CPPUNIT_TEST_TRUE@AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror
 @CPPUNIT_TEST_TRUE@fobject_test_SOURCES = fobject-test.cpp
 @CPPUNIT_TEST_TRUE@fmouse_test_SOURCES = fmouse-test.cpp
 @CPPUNIT_TEST_TRUE@fkeyboard_test_SOURCES = fkeyboard-test.cpp
@@ -602,9 +602,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/test/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu test/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/test/Makefile
+	  $(AUTOMAKE) --gnu test/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

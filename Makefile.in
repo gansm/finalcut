@@ -363,7 +363,7 @@ EXTRA_DIST = finalcut.pc
 pkgconfigdir = $(datadir)/pkgconfig
 pkgconfig_DATA = finalcut.pc
 CLEANFILES = finalcut.pc
-SUBDIRS = src fonts doc examples
+SUBDIRS = src fonts doc examples test
 doc_DATA = AUTHORS COPYING COPYING.LESSER ChangeLog
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
