@@ -661,7 +661,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
     font.data = fontdata;
   else
   {
-    const uInt bytes_per_line = font.width / 8;
+    const std::size_t bytes_per_line = font.width / 8;
     const std::size_t data_size = bytes_per_line * 32 * font.charcount;
 
     try
@@ -674,7 +674,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
       return -1;
     }
 
-    for (uInt i = 0; i < count; i++)
+    for (std::size_t i = 0; i < count; i++)
       std::memcpy ( const_cast<uChar*>(font.data + bytes_per_line * 32 * i)
                   , &fontdata[i * font.height]
                   , font.height);
