@@ -64,8 +64,7 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   , focus_inside_group(true)
   , text()
 {
-  init();
-  setText(txt);
+  init(txt);
 
   if ( parent && parent->isInstanceOf("FButtonGroup") )
   {
@@ -610,6 +609,13 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
 void FToggleButton::setGroup (FButtonGroup* btngroup)
 {
   button_group = btngroup;
+}
+
+//----------------------------------------------------------------------
+void FToggleButton::init (const FString& txt)
+{
+  setText(txt);
+  init();
 }
 
 //----------------------------------------------------------------------

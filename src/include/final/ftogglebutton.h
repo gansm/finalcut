@@ -153,6 +153,7 @@ class FToggleButton : public FWidget
     void          setGroup (FButtonGroup*);
 
     // Methods
+    void          init (const FString&);
     void          init();
     int           getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void          drawText (wchar_t[], int, uInt);
