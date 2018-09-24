@@ -73,7 +73,7 @@ class FTermLinux
     FTermLinux();
 
     // Destructor
-    ~FTermLinux();
+    virtual ~FTermLinux();
 
     // Accessors
     const char*          getClassName() const;

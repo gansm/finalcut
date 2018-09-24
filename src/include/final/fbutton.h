@@ -89,13 +89,13 @@ class FButton : public FWidget
     bool         setNoUnderline(bool);
     bool         setNoUnderline();
     bool         unsetNoUnderline();
-    bool         setEnable(bool);
-    bool         setEnable();
-    bool         unsetEnable();
-    bool         setDisable();
-    bool         setFocus(bool);
-    bool         setFocus();
-    bool         unsetFocus();
+    virtual bool setEnable(bool);
+    virtual bool setEnable();
+    virtual bool unsetEnable();
+    virtual bool setDisable();
+    virtual bool setFocus(bool);
+    virtual bool setFocus();
+    virtual bool unsetFocus();
     bool         setFlat(bool);
     bool         setFlat();
     bool         unsetFlat();
@@ -117,17 +117,17 @@ class FButton : public FWidget
     bool         hasClickAnimation();
 
     // Methods
-    void         hide();
+    virtual void hide();
 
     // Event handlers
-    void         onKeyPress (FKeyEvent*);
-    void         onMouseDown (FMouseEvent*);
-    void         onMouseUp (FMouseEvent*);
-    void         onMouseMove (FMouseEvent*);
-    void         onTimer (FTimerEvent*);
-    void         onAccel (FAccelEvent*);
-    void         onFocusIn (FFocusEvent*);
-    void         onFocusOut (FFocusEvent*);
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onTimer (FTimerEvent*);
+    virtual void onAccel (FAccelEvent*);
+    virtual void onFocusIn (FFocusEvent*);
+    virtual void onFocusOut (FFocusEvent*);
 
   private:
     // Disable copy constructor
@@ -149,7 +149,7 @@ class FButton : public FWidget
     void         drawMarginRight();
     void         drawTopBottomBackground();
     void         drawButtonTextLine (wchar_t[]);
-    void         draw();
+    virtual void draw();
     void         updateStatusBar();
     void         updateButtonColor();
     void         processClick();

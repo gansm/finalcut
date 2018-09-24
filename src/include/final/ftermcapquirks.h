@@ -57,7 +57,7 @@ class FTermcapQuirks
     FTermcapQuirks();
 
     // Destructor
-    ~FTermcapQuirks();
+    virtual ~FTermcapQuirks();
 
     // Accessor
     const char* getClassName() const;

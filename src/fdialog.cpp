@@ -1554,9 +1554,9 @@ void FDialog::resizeMouseDown (mouseStates& ms)
   // Click on the lower right resize corner
 
   if ( isResizeable()
-    && ( (ms.mouse_x == getWidth() && ms.mouse_y == getHeight())
-      || (ms.mouse_x == getWidth() - 1 && ms.mouse_y == getHeight())
-      || (ms.mouse_x == getWidth() && ms.mouse_y == getHeight() - 1) ) )
+    && ( (ms.mouse_x == getWidth() && ms.mouse_y == getHeight() - 1)
+      || ( (ms.mouse_x == getWidth() - 1
+          || ms.mouse_x == getWidth()) && ms.mouse_y == getHeight()) ) )
   {
     resize_click_pos = ms.termPos;
     FPoint lower_right_pos = getTermGeometry().getLowerRightPos();

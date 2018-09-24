@@ -57,7 +57,7 @@ class FTermios
     FTermios();
 
     // Destructor
-    ~FTermios();
+    virtual ~FTermios();
 
     // Accessors
     const char*    getClassName() const;

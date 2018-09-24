@@ -48,11 +48,11 @@ class SmallWindow : public finalcut::FDialog
     SmallWindow& operator = (const SmallWindow&);
 
     // Method
-    void adjustSize();
+    virtual void adjustSize();
 
     // Event handlers
-    void onShow (finalcut::FShowEvent*);
-    void onTimer (finalcut::FTimerEvent*);
+    virtual void onShow (finalcut::FShowEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*);
 
     // Data Members
     finalcut::FLabel* left_arrow;
@@ -201,12 +201,12 @@ class Window : public finalcut::FDialog
     void createFileMenuItems (finalcut::FMenu*);
     void createDialogButtons();
     void activateWindow (finalcut::FDialog*);
-    void adjustSize();
+    virtual void adjustSize();
     void addClickedCallback (finalcut::FWidget*, WindowCallback);
     void addClickedCallback (finalcut::FWidget*, FAppCallback);
 
     // Event handlers
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
     void cb_createWindows (finalcut::FWidget*, data_ptr);

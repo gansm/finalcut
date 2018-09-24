@@ -50,8 +50,8 @@ class ProgressDialog : public finalcut::FDialog
     ProgressDialog& operator = (const ProgressDialog&);
 
     // Event handlers
-    void onShow (finalcut::FShowEvent*);
-    void onTimer (finalcut::FTimerEvent*);
+    virtual void onShow (finalcut::FShowEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*);
 
     // Callback methods
     void cb_reset_bar (finalcut::FWidget*, data_ptr);
@@ -208,7 +208,7 @@ class TextWindow : public finalcut::FDialog
     TextWindow& operator = (const TextWindow&);
 
     // Method
-    void adjustSize();
+    virtual void adjustSize();
 
     // Data Members
     finalcut::FTextView* scrollText;
@@ -289,10 +289,10 @@ class MyDialog : public finalcut::FDialog
     void initButtons();
     void initLabels();
     void initWidgetsCallbacks();
-    void adjustSize();
+    virtual void adjustSize();
 
     // Event handlers
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
     void cb_noFunctionMsg (finalcut::FWidget*, data_ptr);

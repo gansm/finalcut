@@ -49,7 +49,7 @@ class Scrollview : public finalcut::FScrollView
     Scrollview& operator = (const Scrollview&);
 
     // Method
-    void draw();
+    virtual void draw();
 
     // Callback methods
     void cb_go_east (finalcut::FWidget*, data_ptr);
@@ -206,7 +206,7 @@ class Scrollviewdemo : public finalcut::FDialog
     ~Scrollviewdemo();
 
     // Event handler
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
     void cb_quit (finalcut::FWidget* = 0, data_ptr = 0);

@@ -59,7 +59,7 @@ class FTermOpenBSD
     FTermOpenBSD();
 
     // Destructor
-    ~FTermOpenBSD();
+    virtual ~FTermOpenBSD();
 
     // Accessor
     const char*        getClassName() const;

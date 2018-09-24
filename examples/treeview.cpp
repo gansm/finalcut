@@ -53,7 +53,7 @@ class Treeview : public finalcut::FDialog
     Treeview& operator = (const Treeview&);
 
     // Methods
-    void adjustSize();
+    virtual void adjustSize();
     TreeItem* getAfrica();
     TreeItem* getAsia();
     TreeItem* getEurope();

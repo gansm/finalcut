@@ -453,9 +453,9 @@ char* FTerm::enableCursor()
   char*& ve = TCAP(fc::t_cursor_normal);
 
   if ( ve )
-    std::strncpy (enable_str, ve, SIZE);
+    std::strncpy (enable_str, ve, SIZE - 1);
   else if ( vs )
-    std::strncpy (enable_str, vs, SIZE);
+    std::strncpy (enable_str, vs, SIZE - 1);
 
 #if defined(__linux__)
   if ( isLinuxTerm() )

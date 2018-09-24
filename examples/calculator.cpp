@@ -49,7 +49,7 @@ class Button : public finalcut::FButton
     void setChecked(bool);
 
     // Event handler
-    void onKeyPress (finalcut::FKeyEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent*);
 
   private:
     // Data Member
@@ -118,12 +118,12 @@ class Calc : public finalcut::FDialog
     ~Calc();
 
     // Event handlers
-    void     onKeyPress (finalcut::FKeyEvent*);
-    void     onAccel (finalcut::FAccelEvent*);
-    void     onClose (finalcut::FCloseEvent*);
+    virtual void   onKeyPress (finalcut::FKeyEvent*);
+    virtual void   onAccel (finalcut::FAccelEvent*);
+    virtual void   onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void     cb_buttonClicked (finalcut::FWidget*, data_ptr);
+    void           cb_buttonClicked (finalcut::FWidget*, data_ptr);
 
   private:
     // Typedef and Enumeration
@@ -212,7 +212,7 @@ class Calc : public finalcut::FDialog
     void           setInfixOperator (char);
     void           clearInfixOperator();
     void           calcInfixOperator();
-    void           adjustSize();
+    virtual void   adjustSize();
     const wchar_t* getButtonText (int);
     void           mapKeyFunctions();
 

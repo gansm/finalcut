@@ -44,8 +44,8 @@ class Watch : public finalcut::FDialog
     void printTime();
 
     // Event handlers
-    void onTimer (finalcut::FTimerEvent*);
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
     void cb_clock (finalcut::FWidget*, data_ptr);
@@ -53,7 +53,7 @@ class Watch : public finalcut::FDialog
 
   protected:
     // Method
-    void adjustSize();
+    virtual void adjustSize();
 
   private:
     // Disable copy constructor

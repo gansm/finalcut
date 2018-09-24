@@ -103,7 +103,7 @@ class FStatusKey : public FWidget
     bool                hasMouseFocus() const;
 
     // Event handler
-    void                onAccel (FAccelEvent*);
+    virtual void        onAccel (FAccelEvent*);
 
   protected:
     // Mutators
@@ -218,19 +218,19 @@ class FStatusBar : public FWindow
     bool                hasActivatedKey();
 
     // Methods
-    void                hide();
+    virtual void        hide();
     void                drawMessage();
     void                clearMessage();
     void                insert (FStatusKey*);
     void                remove (FStatusKey*);
     void                remove (int);
     void                clear();
-    void                adjustSize();
+    virtual void        adjustSize();
 
     // Event handlers
-    void                onMouseDown (FMouseEvent*);
-    void                onMouseUp (FMouseEvent*);
-    void                onMouseMove (FMouseEvent*);
+    virtual void        onMouseDown (FMouseEvent*);
+    virtual void        onMouseUp (FMouseEvent*);
+    virtual void        onMouseMove (FMouseEvent*);
 
     // Callback method
     void                cb_statuskey_activated (FWidget*, data_ptr);
@@ -247,7 +247,7 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
-    void                draw();
+    virtual void        draw();
     void                drawKeys();
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);

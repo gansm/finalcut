@@ -85,7 +85,7 @@ class FWindow : public FWidget
    explicit FWindow (FWidget* = 0);
 
    // Destructor
-  ~FWindow ();
+   virtual ~FWindow ();
 
    // Accessors
    const char*     getClassName() const;
@@ -157,7 +157,7 @@ class FWindow : public FWidget
    virtual void    adjustSize();
 
    // Event handlers
-   bool            event (FEvent*);
+   virtual bool    event (FEvent*);
    virtual void    onWindowActive (FEvent*);
    virtual void    onWindowInactive (FEvent*);
    virtual void    onWindowRaised (FEvent*);

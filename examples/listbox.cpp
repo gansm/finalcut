@@ -88,7 +88,7 @@ class Listbox : public finalcut::FDialog
     Listbox& operator = (const Listbox&);
 
     // Event handlers
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Data Member
     std::list<double>* double_list;

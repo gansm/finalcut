@@ -159,7 +159,7 @@ class FOptiAttr
     explicit FOptiAttr();
 
     // Destructor
-    ~FOptiAttr();
+    virtual ~FOptiAttr();
 
     // Friend operator functions
     friend bool operator == (const charData&, const charData&);

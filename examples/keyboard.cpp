@@ -34,10 +34,12 @@ class Keyboard : public finalcut::FWidget
 
   protected:
     // Event handlers
-    void onKeyPress (finalcut::FKeyEvent*);
-    void onAccel (finalcut::FAccelEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*);
 
-    void draw();
+  private:
+    // Methods
+    virtual void draw();
 };
 
 //----------------------------------------------------------------------

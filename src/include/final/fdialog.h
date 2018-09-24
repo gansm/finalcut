@@ -104,7 +104,7 @@ class FDialog : public FWindow
     bool                setModal (bool);
     bool                setModal();
     bool                unsetModal();
-    bool                setResizeable (bool);
+    virtual bool        setResizeable (bool);
     bool                setScrollable (bool);
     bool                setScrollable();
     bool                unsetScrollable();
@@ -115,16 +115,16 @@ class FDialog : public FWindow
     bool                isScrollable();
 
     // Methods
-    void                show();
-    void                hide();
+    virtual void        show();
+    virtual void        hide();
     int                 exec();
-    void                setPos (int, int, bool = true);
-    void                move (int, int);
+    virtual void        setPos (int, int, bool = true);
+    virtual void        move (int, int);
     bool                moveUp (int);
     bool                moveDown (int);
     bool                moveLeft (int);
     bool                moveRight (int);
-    void                setSize (int, int, bool = true);
+    virtual void        setSize (int, int, bool = true);
     bool                reduceHeight (int);
     bool                expandHeight (int);
     bool                reduceWidth (int);
@@ -132,16 +132,16 @@ class FDialog : public FWindow
     void                activateDialog();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*);
-    void                onMouseDown (FMouseEvent*);
-    void                onMouseUp (FMouseEvent*);
-    void                onMouseMove (FMouseEvent*);
-    void                onMouseDoubleClick (FMouseEvent*);
-    void                onAccel (FAccelEvent*);
-    void                onWindowActive (FEvent*);
-    void                onWindowInactive (FEvent*);
-    void                onWindowRaised (FEvent*);
-    void                onWindowLowered (FEvent*);
+    virtual void        onKeyPress (FKeyEvent*);
+    virtual void        onMouseDown (FMouseEvent*);
+    virtual void        onMouseUp (FMouseEvent*);
+    virtual void        onMouseMove (FMouseEvent*);
+    virtual void        onMouseDoubleClick (FMouseEvent*);
+    virtual void        onAccel (FAccelEvent*);
+    virtual void        onWindowActive (FEvent*);
+    virtual void        onWindowInactive (FEvent*);
+    virtual void        onWindowRaised (FEvent*);
+    virtual void        onWindowLowered (FEvent*);
 
   protected:
     // Methods

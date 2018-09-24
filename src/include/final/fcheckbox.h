@@ -90,9 +90,9 @@ class FCheckBox : public FToggleButton
     FCheckBox& operator = (const FCheckBox&);
 
     // Methods
-    void init();
-    void draw();
-    void drawCheckButton();
+    void         init();
+    virtual void draw();
+    void         drawCheckButton();
 };
 #pragma pack(pop)
 

@@ -100,7 +100,7 @@ class FScrollView : public FWidget
     virtual void      setWidth (int, bool = true);
     virtual void      setHeight (int, bool = true);
     virtual void      setSize (int, int, bool = true);
-    void              setGeometry (int, int, int, int, bool = true);
+    virtual void      setGeometry (int, int, int, int, bool = true);
     void              setCursorPos (int, int);
     void              setPrintPos (int, int);
     bool              setViewportPrint (bool);
@@ -126,11 +126,11 @@ class FScrollView : public FWidget
     virtual void      draw();
 
     // Event handlers
-    void              onKeyPress (FKeyEvent*);
-    void              onWheel (FWheelEvent*);
-    void              onFocusIn (FFocusEvent*);
-    void              onChildFocusIn (FFocusEvent*);
-    void              onChildFocusOut (FFocusEvent*);
+    virtual void      onKeyPress (FKeyEvent*);
+    virtual void      onWheel (FWheelEvent*);
+    virtual void      onFocusIn (FFocusEvent*);
+    virtual void      onChildFocusIn (FFocusEvent*);
+    virtual void      onChildFocusOut (FFocusEvent*);
 
   protected:
     // Using-declaration
@@ -140,7 +140,7 @@ class FScrollView : public FWidget
     term_area*        getPrintArea();
 
     // Method
-    void              adjustSize();
+    virtual void      adjustSize();
     void              copy2area();
 
   private:

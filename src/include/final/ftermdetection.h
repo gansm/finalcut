@@ -91,7 +91,7 @@ class FTermDetection
     FTermDetection();
 
     // Destructor
-    ~FTermDetection();
+    virtual ~FTermDetection();
 
     // Accessor
     const char*           getClassName() const;

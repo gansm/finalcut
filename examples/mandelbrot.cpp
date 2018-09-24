@@ -40,13 +40,13 @@ class Mandelbrot : public finalcut::FDialog
     ~Mandelbrot();
 
     // Event handlers
-    void onAccel (finalcut::FAccelEvent*);
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
   private:
     // Methods
     virtual void draw();
-    void adjustSize();
+    virtual void adjustSize();
 };
 #pragma pack(pop)
 

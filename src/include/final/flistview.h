@@ -84,7 +84,7 @@ class FListViewItem : public FObject
                   , FObjectIterator );
 
     // Destructor
-    ~FListViewItem();
+    virtual ~FListViewItem();
 
     // Assignment operator (=)
     FListViewItem& operator = (const FListViewItem&);
@@ -97,7 +97,6 @@ class FListViewItem : public FObject
 
     // Mutator
     void              setText (int, const FString&);
-
 
     // Inquiry
     bool              isExpand() const;
@@ -166,11 +165,8 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    FListViewIterator ();
+    explicit FListViewIterator ();
     FListViewIterator (FObjectIterator);
-
-    // Destructor
-    ~FListViewIterator();
 
     // Overloaded operators
     FListViewIterator& operator ++ ();     // prefix
@@ -246,7 +242,7 @@ class FListView : public FWidget
     explicit FListView (FWidget* = 0);
 
     // Destructor
-    ~FListView();
+    virtual ~FListView();
 
     // Accessors
     const char*          getClassName() const;
@@ -256,7 +252,7 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    void                 setGeometry (int, int, int, int, bool = true);
+    virtual void         setGeometry (int, int, int, int, bool = true);
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
     bool                 setTreeView (bool);
@@ -285,15 +281,15 @@ class FListView : public FWidget
     FObjectIterator      endOfList();
 
     // Event handlers
-    void                 onKeyPress (FKeyEvent*);
-    void                 onMouseDown (FMouseEvent*);
-    void                 onMouseUp (FMouseEvent*);
-    void                 onMouseMove (FMouseEvent*);
-    void                 onMouseDoubleClick (FMouseEvent*);
-    void                 onWheel (FWheelEvent*);
-    void                 onTimer (FTimerEvent*);
-    void                 onFocusIn (FFocusEvent*);
-    void                 onFocusOut (FFocusEvent*);
+    virtual void         onKeyPress (FKeyEvent*);
+    virtual void         onMouseDown (FMouseEvent*);
+    virtual void         onMouseUp (FMouseEvent*);
+    virtual void         onMouseMove (FMouseEvent*);
+    virtual void         onMouseDoubleClick (FMouseEvent*);
+    virtual void         onWheel (FWheelEvent*);
+    virtual void         onTimer (FTimerEvent*);
+    virtual void         onFocusIn (FFocusEvent*);
+    virtual void         onFocusOut (FFocusEvent*);
 
     // Data Members
     static FObjectIterator null_iter;
@@ -301,7 +297,7 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport();
-    void                 adjustSize();
+    virtual void         adjustSize();
 
   private:
     // Typedef
@@ -320,7 +316,7 @@ class FListView : public FWidget
     // Methods
     void                 init();
     uInt                 getAlignOffset (fc::text_alignment, uInt, uInt);
-    void                 draw();
+    virtual void         draw();
     void                 drawColumnLabels();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
@@ -399,14 +395,11 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
+    explicit Header()
       : name()
       , width (0)
       , fixed_width (false)
       , alignment (fc::alignLeft)
-    { }
-
-    ~Header()
     { }
 
     FString name;

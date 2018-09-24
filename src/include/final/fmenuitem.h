@@ -90,74 +90,74 @@ class FMenuItem : public FWidget
     virtual ~FMenuItem();
 
     // Accessors
-    const char* getClassName() const;
-    int         getHotkey() const;
-    FMenu*      getMenu() const;
-    uInt        getTextLength() const;
-    FString     getText() const;
+    const char*  getClassName() const;
+    int          getHotkey() const;
+    FMenu*       getMenu() const;
+    uInt         getTextLength() const;
+    FString      getText() const;
 
     // Mutators
-    bool        setEnable (bool);
-    bool        setFocus (bool);
-    bool        setFocus();
-    bool        unsetFocus();
-    void        setSelected();
-    void        unsetSelected();
-    void        setSeparator();
-    void        unsetSeparator();
-    void        setChecked();
-    void        unsetChecked();
-    void        setMenu (FMenu*);
-    void        setText (const FString&);
+    virtual bool setEnable (bool);
+    virtual bool setFocus (bool);
+    virtual bool setFocus();
+    virtual bool unsetFocus();
+    void         setSelected();
+    void         unsetSelected();
+    void         setSeparator();
+    void         unsetSeparator();
+    void         setChecked();
+    void         unsetChecked();
+    void         setMenu (FMenu*);
+    void         setText (const FString&);
 
     // Inquiries
-    bool        isSelected() const;
-    bool        isSeparator() const;
-    bool        isChecked() const;
-    bool        hasHotkey() const;
-    bool        hasMenu() const;
+    bool         isSelected() const;
+    bool         isSeparator() const;
+    bool         isChecked() const;
+    bool         hasHotkey() const;
+    bool         hasMenu() const;
 
     // Methods
-    void        addAccelerator (int, FWidget*);
-    void        delAccelerator (FWidget*);
-    void        openMenu();
+    virtual void addAccelerator (int, FWidget*);
+    virtual void delAccelerator (FWidget*);
+    void         openMenu();
 
     // Event handlers
-    void        onKeyPress (FKeyEvent*);
-    void        onMouseDoubleClick (FMouseEvent*);
-    void        onMouseDown (FMouseEvent*);
-    void        onMouseUp (FMouseEvent*);
-    void        onMouseMove (FMouseEvent*);
-    void        onAccel (FAccelEvent*);
-    void        onFocusIn (FFocusEvent*);
-    void        onFocusOut (FFocusEvent*);
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDoubleClick (FMouseEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onAccel (FAccelEvent*);
+    virtual void onFocusIn (FFocusEvent*);
+    virtual void onFocusOut (FFocusEvent*);
 
   protected:
     // Accessor
-    FWidget*    getSuperMenu() const;
+    FWidget*     getSuperMenu() const;
 
     // Mutator
-    void        setSuperMenu (FWidget*);
+    void         setSuperMenu (FWidget*);
 
     // Inquiries
-    bool        isWindowsMenu (FWidget*) const;
-    bool        isMenuBar (FWidget*) const;
-    bool        isMenu (FWidget*) const;
+    bool         isWindowsMenu (FWidget*) const;
+    bool         isMenuBar (FWidget*) const;
+    bool         isMenu (FWidget*) const;
 
     // Data Members
-    FString     text;
-    bool        selected;
-    bool        separator;
-    bool        checkable;
-    bool        checked;
-    bool        radio_button;
-    bool        dialog_index;
-    uInt        text_length;
-    int         hotkey;
-    int         accel_key;
-    FMenu*      menu;
-    FWidget*    super_menu;
-    FDialog*    associated_window;
+    FString      text;
+    bool         selected;
+    bool         separator;
+    bool         checkable;
+    bool         checked;
+    bool         radio_button;
+    bool         dialog_index;
+    uInt         text_length;
+    int          hotkey;
+    int          accel_key;
+    FMenu*       menu;
+    FWidget*     super_menu;
+    FDialog*     associated_window;
 
   private:
     // Disable copy constructor
@@ -167,17 +167,17 @@ class FMenuItem : public FWidget
     FMenuItem& operator = (const FMenuItem&);
 
     // Methods
-    void        init (FWidget*);
-    uChar       hotKey();
-    void        processActivate();
-    void        processDeactivate();
-    void        createDialogList (FMenu*);
+    void         init (FWidget*);
+    uChar        hotKey();
+    void         processActivate();
+    void         processDeactivate();
+    void         createDialogList (FMenu*);
     template<class T>
-    void        passMouseEvent (T, FMouseEvent*, fc::events);
+    void         passMouseEvent (T, FMouseEvent*, fc::events);
 
     // Callback methods
-    void        cb_switchToDialog (FWidget*, data_ptr);
-    void        cb_destroyDialog (FWidget*, data_ptr);
+    void         cb_switchToDialog (FWidget*, data_ptr);
+    void         cb_destroyDialog (FWidget*, data_ptr);
 
     virtual void processClicked();
 

@@ -56,10 +56,10 @@ class Menu : public finalcut::FDialog
     void createBorderColorMenuItems (finalcut::FMenu*);
     void createBorderStyleMenuItems (finalcut::FMenu*);
     void defaultCallback (finalcut::FMenuList*);
-    void adjustSize();
+    virtual void adjustSize();
 
     // Event handler
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
     void cb_message (finalcut::FWidget*, data_ptr);

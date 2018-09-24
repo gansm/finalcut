@@ -57,7 +57,7 @@ class FTermXTerminal
     FTermXTerminal();
 
     // Destructor
-    ~FTermXTerminal();
+    virtual ~FTermXTerminal();
 
     // Mutators
     static void           setTermcapMap (FTermcap::tcap_map*);

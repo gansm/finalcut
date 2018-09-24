@@ -116,7 +116,7 @@ class FVTerm : public FTerm
     explicit FVTerm (bool, bool = false);
 
     // Destructor
-   ~FVTerm();
+    virtual ~FVTerm();
 
     // Overloaded operators
     template<class type> FVTerm& operator << (const type&);

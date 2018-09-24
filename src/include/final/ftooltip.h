@@ -90,11 +90,11 @@ class FToolTip : public FWindow
 
     // Methods
     virtual void  draw();
-    void          show();
-    void          hide();
+    virtual void  show();
+    virtual void  hide();
 
     // Event handler
-    void          onMouseDown (FMouseEvent*);
+    virtual void  onMouseDown (FMouseEvent*);
 
   private:
     // Disable copy constructor

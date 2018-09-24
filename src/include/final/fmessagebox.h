@@ -101,7 +101,7 @@ class FMessageBox : public FDialog
                 , int, int, int
                 , FWidget* = 0 );
     // Destructor
-    ~FMessageBox();
+    virtual ~FMessageBox();
 
     // Assignment operator (=)
     FMessageBox& operator = (const FMessageBox&);
@@ -142,7 +142,7 @@ class FMessageBox : public FDialog
                         , int = 0 );
    protected:
     // Method
-    void          adjustSize();
+    virtual void  adjustSize();
 
     // Callback method
     void          cb_processClick (FWidget*, data_ptr);

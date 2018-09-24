@@ -90,16 +90,16 @@ class FMenu : public FWindow, public FMenuList
     FMenuItem*          getItem() const;
 
     // Mutators
-    bool                setEnable(bool);
-    bool                setEnable();
-    bool                unsetEnable();
-    bool                setDisable();
+    virtual bool        setEnable(bool);
+    virtual bool        setEnable();
+    virtual bool        unsetEnable();
+    virtual bool        setDisable();
     void                setSelected();
     void                unsetSelected();
     bool                setMenuWidget (bool);
     bool                setMenuWidget();
     bool                unsetMenuWidget();
-    void                setStatusbarMessage (const FString&);
+    virtual void        setStatusbarMessage (const FString&);
     void                setMenu (FMenu*);
     void                setText (const FString&);
 
@@ -110,15 +110,15 @@ class FMenu : public FWindow, public FMenuList
     bool                hasMenu() const;
 
     // Methods
-    void                show();
-    void                hide();
+    virtual void        show();
+    virtual void        hide();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*);
-    void                onMouseDown (FMouseEvent*);
-    void                onMouseUp (FMouseEvent*);
-    void                onMouseMove (FMouseEvent*);
-    void                onAccel (FAccelEvent*);
+    virtual void        onKeyPress (FKeyEvent*);
+    virtual void        onMouseDown (FMouseEvent*);
+    virtual void        onMouseUp (FMouseEvent*);
+    virtual void        onMouseMove (FMouseEvent*);
+    virtual void        onAccel (FAccelEvent*);
 
     // Callback method
     void                cb_menuitem_toggled (FWidget*, data_ptr);
@@ -200,7 +200,7 @@ class FMenu : public FWindow, public FMenuList
     void         keypressMenuBar (FKeyEvent*);
     bool         hotkeyMenu (FKeyEvent*);
     int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
-    void         draw();
+    virtual void draw();
     void         drawItems();
     void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);

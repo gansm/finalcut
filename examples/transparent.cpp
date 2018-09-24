@@ -56,10 +56,10 @@ class Transparent : public finalcut::FDialog
     Transparent& operator = (const Transparent&);
 
     // Method
-    void draw();
+    virtual void draw();
 
     // Event handlers
-    void onKeyPress (finalcut::FKeyEvent* ev);
+    virtual void onKeyPress (finalcut::FKeyEvent* ev);
 
     // Data Members
     trans_type type;
@@ -160,13 +160,13 @@ class MainWindow : public finalcut::FDialog
     // Disable assignment operator (=)
     MainWindow& operator = (const MainWindow&);
 
-    void draw();
+    virtual void draw();
 
     // Event handlers
-    void onClose (finalcut::FCloseEvent*);
-    void onShow  (finalcut::FShowEvent*);
-    void onTimer (finalcut::FTimerEvent*);
-    void onKeyPress (finalcut::FKeyEvent* ev)
+    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onShow  (finalcut::FShowEvent*);
+    virtual void onTimer (finalcut::FTimerEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent* ev)
     {
       if ( ! ev )
         return;

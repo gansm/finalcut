@@ -442,6 +442,7 @@ FTermDetectionTest::FTermDetectionTest()
   , fd_master(-1)
   , fd_slave(-1)
   , debug(false)
+  , buffer()
 {
   // Map shared memory
   void* ptr = mmap ( NULL
@@ -2086,14 +2087,10 @@ pid_t FTermDetectionTest::forkProcess()
   // Initialize buffer with '\0'
   std::fill_n (buffer, sizeof(buffer), '\0');
 
-  bool result = openMasterPTY();
-
-  if ( ! result )
+  if ( ! openMasterPTY() )
     return -1;
 
-  result = openSlavePTY();
-
-  if ( ! result )
+  if ( ! openSlavePTY() )
     return -1;
 
   pid_t pid = fork();  // Create a child process
@@ -2119,7 +2116,11 @@ pid_t FTermDetectionTest::forkProcess()
 #endif
 
     // Get current terminal settings
-    result = tcgetattr(fd_slave, &term_settings);
+    if ( tcgetattr(fd_slave, &term_settings) == -1 )
+    {
+      *shared_state = true;
+      return -1;
+    }
 
     // Set raw mode on the slave side of the PTY
     cfmakeraw (&term_settings);

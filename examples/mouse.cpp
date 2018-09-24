@@ -50,10 +50,10 @@ class ColorChooser : public finalcut::FWidget
     ColorChooser& operator = (const ColorChooser&);
 
     // Method
-    void draw();
+    virtual void draw();
 
     // Event handler
-    void onMouseDown (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
     short fg_color;
@@ -188,10 +188,10 @@ class Brushes : public finalcut::FWidget
     Brushes& operator = (const Brushes&);
 
     // Method
-    void draw();
+    virtual void draw();
 
     // Event handler
-    void onMouseDown (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
     wchar_t brush;
@@ -316,8 +316,8 @@ class MouseDraw : public finalcut::FDialog
     void setGeometry (int, int, int, int, bool = true);
 
     // Event handlers
-    void onAccel (finalcut::FAccelEvent*);
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
   private:
     // Disable copy constructor
@@ -329,11 +329,11 @@ class MouseDraw : public finalcut::FDialog
     virtual void draw();
     void drawBrush (int, int, bool = false);
     void drawCanvas();
-    void adjustSize();
+    virtual void adjustSize();
 
     // Event handler
-    void onMouseDown (finalcut::FMouseEvent*);
-    void onMouseMove (finalcut::FMouseEvent*);
+    virtual void onMouseDown (finalcut::FMouseEvent*);
+    virtual void onMouseMove (finalcut::FMouseEvent*);
 
     // Callback methods
     void cb_colorChanged (finalcut::FWidget*, data_ptr);

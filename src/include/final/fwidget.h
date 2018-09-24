@@ -146,7 +146,7 @@ class FWidget : public FVTerm, public FObject
     explicit FWidget (FWidget* = 0, bool = false);
 
     // Destructor
-    ~FWidget();
+    virtual ~FWidget();
 
     // Accessors
     const char*        getClassName() const;
@@ -349,7 +349,7 @@ class FWidget : public FVTerm, public FObject
     virtual bool       focusPrevChild();  // ...focus
 
     // Event handlers
-    bool               event (FEvent*);
+    virtual bool       event (FEvent*);
     virtual void       onKeyPress (FKeyEvent*);
     virtual void       onKeyUp (FKeyEvent*);
     virtual void       onKeyDown (FKeyEvent*);
@@ -860,7 +860,7 @@ inline FPoint FWidget::termToWidgetPos (const FPoint& tPos)
 
 //----------------------------------------------------------------------
 inline void FWidget::move (const FPoint& pos)
-{ move( pos.getX(), pos.getY() ); }
+{ move(pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
 inline void FWidget::drawBorder()

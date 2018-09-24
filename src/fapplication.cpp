@@ -1150,11 +1150,11 @@ void FApplication::processResizeEvent()
 }
 
 //----------------------------------------------------------------------
-int FApplication::processTimerEvent()
+uInt FApplication::processTimerEvent()
 {
   FObject::TimerList::iterator iter, last;
   timeval currentTime;
-  int activated = 0;
+  uInt activated = 0;
 
   getCurrentTime (&currentTime);
 
@@ -1219,7 +1219,7 @@ void FApplication::processCloseWidget()
 //----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
-  int num_events = 0;
+  uInt num_events = 0;
 
   processKeyboardEvent();
   processMouseEvent();

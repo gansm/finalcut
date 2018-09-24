@@ -107,7 +107,7 @@ class FLabel : public FWidget
     bool               setReverseMode(bool);
     bool               setReverseMode();
     bool               unsetReverseMode();
-    bool               setEnable (bool);
+    virtual bool       setEnable (bool);
     void               setNumber (uLong);
     void               setNumber (long);
     void               setNumber (float, int = FLT_DIG);
@@ -120,12 +120,12 @@ class FLabel : public FWidget
     bool               hasReverseMode();
 
     // Methods
-    void               hide();
+    virtual void       hide();
     void               clear();
 
     // Event handlers
-    void               onMouseDown (FMouseEvent*);
-    void               onAccel (FAccelEvent*);
+    virtual void       onMouseDown (FMouseEvent*);
+    virtual void       onAccel (FAccelEvent*);
 
     // Callback method
     void               cb_accel_widget_destroyed (FWidget*, data_ptr);
@@ -143,7 +143,7 @@ class FLabel : public FWidget
     int                getHotkeyPos (wchar_t[], wchar_t[], uInt);
     void               setHotkeyAccelerator();
     int                getAlignOffset (int);
-    void               draw();
+    virtual void       draw();
     void               drawMultiLine();
     void               drawSingleLine();
     void               printLine (wchar_t[], uInt, int, int = 0);

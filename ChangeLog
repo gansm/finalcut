@@ -1,3 +1,6 @@
+2018-09-24  Markus Gans  <guru.mail@muenster.de>
+	* Stricter use of the keyword virtual
+
 2018-09-20  Markus Gans  <guru.mail@muenster.de>
 	* Added pkg-config file finalcut.pc
 	* The entire library source code is now encapsulated under 

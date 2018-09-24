@@ -288,9 +288,6 @@ FListViewIterator::FListViewIterator (FObjectIterator iter)
   , position(0)
 { }
 
-//----------------------------------------------------------------------
-FListViewIterator::~FListViewIterator()  // destructor
-{ }
 
 // FListViewIterator operators
 //----------------------------------------------------------------------

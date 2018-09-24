@@ -89,11 +89,11 @@ class FApplication : public FWidget
     virtual ~FApplication();
 
     // Accessors
-    const char*        getClassName()     const;
-    int                getArgc()          const;
-    char**             getArgv()          const;
-    FWidget*           getMainWidget()    const;
-    FWidget*           getFocusWidget()   const;
+    const char*        getClassName()   const;
+    int                getArgc()        const;
+    char**             getArgv()        const;
+    FWidget*           getMainWidget()  const;
+    virtual FWidget*   getFocusWidget() const;
 
     // Mutator
     void               setMainWidget (FWidget*);
@@ -175,7 +175,7 @@ class FApplication : public FWidget
     void               sendWheelEvent (const FPoint&, const FPoint&);
     void               processMouseEvent();
     void               processResizeEvent();
-    int                processTimerEvent();
+    uInt               processTimerEvent();
     void               processCloseWidget();
     bool               processNextEvent();
 

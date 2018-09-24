@@ -85,17 +85,17 @@ class FToggleButton : public FWidget
     FString&      getText();
 
     // Mutators
-    void          setGeometry (int, int, int, int, bool = true);
+    virtual void  setGeometry (int, int, int, int, bool = true);
     bool          setNoUnderline (bool);
     bool          setNoUnderline();
     bool          unsetNoUnderline();
-    bool          setEnable (bool);
-    bool          setEnable();
-    bool          unsetEnable();
-    bool          setDisable();
-    bool          setFocus (bool);
-    bool          setFocus();
-    bool          unsetFocus();
+    virtual bool  setEnable (bool);
+    virtual bool  setEnable();
+    virtual bool  unsetEnable();
+    virtual bool  setDisable();
+    virtual bool  setFocus (bool);
+    virtual bool  setFocus();
+    virtual bool  unsetFocus();
     bool          setChecked (bool);
     bool          setChecked();
     bool          unsetChecked();
@@ -105,15 +105,15 @@ class FToggleButton : public FWidget
     bool          isChecked();
 
     // Methods
-    void          hide();
+    virtual void  hide();
 
     // Event handlers
-    void          onMouseDown (FMouseEvent*);
-    void          onMouseUp (FMouseEvent*);
-    void          onWheel (FWheelEvent*);
-    void          onAccel (FAccelEvent*);
-    void          onFocusIn (FFocusEvent*);
-    void          onFocusOut (FFocusEvent*);
+    virtual void  onMouseDown (FMouseEvent*);
+    virtual void  onMouseUp (FMouseEvent*);
+    virtual void  onWheel (FWheelEvent*);
+    virtual void  onAccel (FAccelEvent*);
+    virtual void  onFocusIn (FFocusEvent*);
+    virtual void  onFocusOut (FFocusEvent*);
 
   protected:
     // Accessor

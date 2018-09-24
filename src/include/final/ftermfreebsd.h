@@ -66,7 +66,7 @@ class FTermFreeBSD
     FTermFreeBSD();
 
     // Destructor
-    ~FTermFreeBSD();
+    virtual ~FTermFreeBSD();
 
     // Accessors
     const char*        getClassName() const;

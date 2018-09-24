@@ -110,7 +110,7 @@ class FOptiMove
     explicit FOptiMove (int = 0);
 
     // Destructor
-    ~FOptiMove();
+    virtual ~FOptiMove();
 
     // Accessors
     const char* getClassName() const;
