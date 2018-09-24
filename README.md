@@ -225,6 +225,10 @@ License
 -------
 GNU Lesser General Public License Version 3 
 
+First steps
+-----------
+[How to use the library](doc/first-steps.md)
+
 Please send bug reports to
 --------------------------
 https://github.com/gansm/finalcut/issues
