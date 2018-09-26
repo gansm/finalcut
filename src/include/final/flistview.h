@@ -93,10 +93,12 @@ class FListViewItem : public FObject
     const char*       getClassName() const;
     uInt              getColumnCount() const;
     FString           getText (int) const;
+    FWidget::data_ptr getData() const;
     uInt              getDepth() const;
 
     // Mutator
     void              setText (int, const FString&);
+    void              setData (FWidget::data_ptr);
 
     // Inquiry
     bool              isExpand() const;
@@ -139,6 +141,14 @@ inline const char* FListViewItem::getClassName() const
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_list.size()); }
+
+//----------------------------------------------------------------------
+inline FWidget::data_ptr FListViewItem::getData() const
+{ return data_pointer; }
+
+//----------------------------------------------------------------------
+inline void FListViewItem::setData (FWidget::data_ptr data)
+{ data_pointer = data; }
 
 //----------------------------------------------------------------------
 inline bool FListViewItem::isExpand() const

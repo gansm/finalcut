@@ -1,3 +1,7 @@
+2018-09-26  Markus Gans  <guru.mail@muenster.de>
+	* The FListViewItem class now has a getData() and a setData() method 
+	  similar to the FListBoxItem class.
+
 2018-09-24  Markus Gans  <guru.mail@muenster.de>
 	* Stricter use of the keyword virtual
 	* Add a first steps document
