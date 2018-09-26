@@ -64,7 +64,7 @@ FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   , focus_inside_group(true)
   , text()
 {
-  FToggleButton::setText(txt);  // call own method 
+  FToggleButton::setText(txt);  // call own method
   init();
 
   if ( parent && parent->isInstanceOf("FButtonGroup") )

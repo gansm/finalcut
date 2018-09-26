@@ -195,8 +195,6 @@ inline bool FObject::isInstanceOf (const char classname[]) const
 inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
 
-}  // namespace finalcut
-
 
 //----------------------------------------------------------------------
 // Operator functions for timeval
@@ -251,5 +249,7 @@ static inline bool operator < (const timeval& t1, const timeval& t2)
   return (t1.tv_sec < t2.tv_sec)
       || (t1.tv_sec == t2.tv_sec && t1.tv_usec < t2.tv_usec);
 }
+
+}  // namespace finalcut
 
 #endif  // FOBJECT_H

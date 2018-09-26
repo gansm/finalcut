@@ -199,6 +199,8 @@ void FMouseTest::noArgumentTest()
 //----------------------------------------------------------------------
 void FMouseTest::doubleClickTest()
 {
+  using finalcut::operator -;
+
   FMouse_protected mouse;
   CPPUNIT_ASSERT ( mouse.getDblclickInterval() == 500000 );  // 500 ms
   timeval tv = { 0, 0 };

@@ -515,9 +515,9 @@ int FKeyboard::keyCorrection (const int& keycode)
   if ( linux )
     key_correction = linux->modifierKeyCorrection(keycode);
   else
-    key_correction = key;
+    key_correction = keycode;
 #else
-  key_correction = key;
+  key_correction = keycode;
 #endif
 
   return key_correction;

@@ -258,6 +258,7 @@ void FObjectTest::delTest()
   */
   finalcut::FObject* obj =  new finalcut::FObject();
   finalcut::FObject* child = new finalcut::FObject(obj);
+
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj->isChild(child) );
@@ -338,6 +339,11 @@ void FObjectTest::timeTest()
 //----------------------------------------------------------------------
 void FObjectTest::timerTest()
 {
+  using finalcut::operator +;
+  using finalcut::operator -;
+  using finalcut::operator +=;
+  using finalcut::operator <;
+
   FObject_protected t1;
   FObject_protected t2;
   int id1, id2;
