@@ -41,6 +41,10 @@
 class FObject_protected : public finalcut::FObject
 {
   public:
+    FObject_protected()
+      : count(0)
+    { }
+
     bool event (finalcut::FEvent* ev)
     {
       return finalcut::FObject::event(ev);
@@ -50,6 +54,21 @@ class FObject_protected : public finalcut::FObject
     {
       return finalcut::FObject::getTimerList();
     }
+    
+    uInt processEvent()
+    {
+      return processTimerEvent();
+    }
+
+    virtual void performTimerAction (const FObject*, const finalcut::FEvent*)
+    {
+      std::cout << ".";
+      fflush(stdout);
+      count++;
+    }
+
+    // Data Member
+    uInt count;
 };
 #pragma pack(pop)
 
@@ -77,6 +96,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void iteratorTest();
     void timeTest();
     void timerTest();
+    void performTimerActionTest();
 
   private:
     // Adds code needed to register the test suite
@@ -92,6 +112,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (iteratorTest);
     CPPUNIT_TEST (timeTest);
     CPPUNIT_TEST (timerTest);
+    CPPUNIT_TEST (performTimerActionTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -443,6 +464,26 @@ void FObjectTest::timerTest()
 
   CPPUNIT_ASSERT ( ! t1.delTimer(0) );
   CPPUNIT_ASSERT ( ! t1.delTimer(-1) );
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::performTimerActionTest()
+{
+  FObject_protected t;
+  uInt num_events = 0;
+  uInt loop = 0;
+  t.addTimer(100);
+
+  while ( loop < 10 )
+  {
+    num_events += t.processEvent();
+    usleep(100000);
+    loop++;
+  }
+
+  CPPUNIT_ASSERT ( loop == 10 );
+  CPPUNIT_ASSERT ( num_events == 9 );
+  CPPUNIT_ASSERT ( t.count == 9 );
 }
 
 // Put the test suite in the registry
