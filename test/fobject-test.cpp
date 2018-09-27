@@ -46,9 +46,9 @@ class FObject_protected : public finalcut::FObject
       return finalcut::FObject::event(ev);
     }
 
-    finalcut::FObject::TimerList* getTimerList() const
+    TimerList* getTimerList() const
     {
-      return timer_list;
+      return finalcut::FObject::getTimerList();
     }
 };
 #pragma pack(pop)
@@ -333,6 +333,9 @@ void FObjectTest::timeTest()
   finalcut::FObject::getCurrentTime(&time1);
   CPPUNIT_ASSERT ( ! finalcut::FObject::isTimeout (&time1, timeout) );
   sleep(1);
+  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
+  time1.tv_sec = 300;
+  time1.tv_usec = 2000000;  // > 1000000 µs to test diff underflow
   CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
 }
 

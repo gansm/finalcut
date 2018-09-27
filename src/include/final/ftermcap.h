@@ -65,7 +65,7 @@ class FTermcap
     { }
 
     // Destructor
-    virtual ~FTermcap()
+    ~FTermcap()
     { }
 
     // Accessors

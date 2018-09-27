@@ -175,9 +175,10 @@ class FApplication : public FWidget
     void               sendWheelEvent (const FPoint&, const FPoint&);
     void               processMouseEvent();
     void               processResizeEvent();
-    uInt               processTimerEvent();
     void               processCloseWidget();
     bool               processNextEvent();
+    virtual void       performTimerAction ( const FObject*
+                                          , const FEvent* );
 
     // Data Members
     int                app_argc;

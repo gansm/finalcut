@@ -240,21 +240,7 @@ int FObject::addTimer (int interval)
   timeval time_interval;
   timeval currentTime;
   int id = 1;
-
   timer_modify_lock = true;
-
-  if ( ! timer_list )
-  {
-    try
-    {
-      timer_list = new TimerList();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return -1;
-    }
-  }
 
   // find an unused timer id
   if ( ! timer_list->empty() )
@@ -387,6 +373,54 @@ bool FObject::event (FEvent* ev)
 
 //----------------------------------------------------------------------
 void FObject::onTimer (FTimerEvent*)
+{ }
+
+//----------------------------------------------------------------------
+uInt FObject::processTimerEvent()
+{
+  FObject::TimerList::iterator iter, last;
+  timeval currentTime;
+  uInt activated = 0;
+
+  getCurrentTime (&currentTime);
+
+  if ( isTimerInUpdating() )
+    return 0;
+
+  if ( ! timer_list )
+    return 0;
+
+  if ( timer_list->empty() )
+    return 0;
+
+  iter = timer_list->begin();
+  last  = timer_list->end();
+
+  while ( iter != last )
+  {
+    if ( ! iter->id
+      || ! iter->object
+      || currentTime < iter->timeout )  // no timer expired
+      break;
+
+    iter->timeout += iter->interval;
+
+    if ( iter->timeout < currentTime )
+      iter->timeout = currentTime + iter->interval;
+
+    if ( iter->interval.tv_usec > 0 || iter->interval.tv_sec > 0 )
+      activated++;
+
+    FTimerEvent t_ev(fc::Timer_Event, iter->id);
+    performTimerAction (iter->object, &t_ev);
+    ++iter;
+  }
+
+  return activated;
+}
+
+//----------------------------------------------------------------------
+void FObject::performTimerAction (const FObject*, const FEvent*)
 { }
 
 }  // namespace finalcut
