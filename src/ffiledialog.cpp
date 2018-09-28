@@ -33,7 +33,7 @@ bool sortByName ( const FFileDialog::dir_entry& lhs
                 , const FFileDialog::dir_entry& rhs )
 {
   // lhs < rhs
-  return bool(strcasecmp(lhs.name, rhs.name) < 0);
+  return bool( strcasecmp(lhs.name, rhs.name) < 0 );
 }
 
 //----------------------------------------------------------------------

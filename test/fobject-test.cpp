@@ -137,7 +137,7 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( o1.getChild(0) == 0 );
   CPPUNIT_ASSERT ( o1.getChild(1) == 0 );
   CPPUNIT_ASSERT ( o1.numOfChildren() == 0 );
-  const finalcut::FObject::FObjectList& children_list = o1.getChildren();
+  finalcut::FObject::FObjectList& children_list = o1.getChildren();
   CPPUNIT_ASSERT ( children_list.begin() == o1.begin() );
   CPPUNIT_ASSERT ( children_list.begin() == o1.end() );
   CPPUNIT_ASSERT ( children_list.end() == o1.begin() );

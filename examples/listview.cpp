@@ -80,6 +80,18 @@ Listview::Listview (finalcut::FWidget* parent)
   listView->setColumnAlignment (4, finalcut::fc::alignRight);
   listView->setColumnAlignment (5, finalcut::fc::alignRight);
 
+  // Set the type of sorting
+  listView->setColumnSortType (1, finalcut::fc::by_name);
+  listView->setColumnSortType (2, finalcut::fc::by_name);
+  listView->setColumnSortType (3, finalcut::fc::by_number);
+  listView->setColumnSortType (4, finalcut::fc::by_number);
+  listView->setColumnSortType (5, finalcut::fc::by_number);
+
+  // Sort in ascending order by the 1st column
+  listView->setColumnSort (1, finalcut::fc::ascending);
+  // The sorting occurs later automatically at insert().
+  // Otherwise you could start the sorting directly with sort()
+
   // Populate FListView with a list of items
   populate (listView);
 

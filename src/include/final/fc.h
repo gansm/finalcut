@@ -1039,6 +1039,21 @@ enum sides
   left   = 3
 };
 
+enum sorting_type
+{
+  by_name,
+  by_number,
+  user_defined,
+  unknown
+};
+
+enum sorting_order
+{
+  ascending,
+  descending,
+  unsorted
+};
+
 enum brackets_type
 {
   NoBrackets     = 0,

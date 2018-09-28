@@ -34,6 +34,118 @@ namespace finalcut
 // Static class attribute
 FObject::FObjectIterator FListView::null_iter;
 
+// Function prototypes
+long firstNumberFromString (const FString&);
+bool sortAscendingByName (const FObject*, const FObject*);
+bool sortDescendingByName (const FObject*, const FObject*);
+bool sortAscendingByNumber (const FObject*, const FObject*);
+bool sortDescendingByNumber (const FObject*, const FObject*);
+
+// non-member functions
+//----------------------------------------------------------------------
+long firstNumberFromString (const FString& str)
+{
+  const FString::iterator last = str.end();
+  FString::iterator iter = str.begin();
+  FString::iterator first_pos;
+  FString::iterator last_pos;
+  long number;
+
+  while ( iter != last )
+  {
+    if ( wchar_t(*iter) >= L'0' && wchar_t(*iter) <= L'9' )
+      break;
+
+    ++iter;
+  }
+
+  first_pos = iter;
+
+  if ( first_pos == last )
+    return 0;
+
+  while ( iter != last )
+  {
+    if ( wchar_t(*iter) < L'0' || wchar_t(*iter) > L'9' )
+      break;
+
+    ++iter;
+  }
+
+  last_pos = iter;
+
+  if ( last_pos == last )
+    return 0;
+
+  uInt pos = uInt(std::distance(str.begin(), first_pos)) + 1;
+  uInt length = uInt(std::distance(first_pos, last_pos));
+  const FString num_str = str.mid(pos, length);
+
+  try
+  {
+    number = num_str.toLong();
+  }
+  catch (const std::exception&)
+  {
+    return 0;
+  }
+
+  return number;
+}
+
+//----------------------------------------------------------------------
+bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
+{
+  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
+  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+  const FString l_string = l_item->getText(column);
+  const FString r_string = r_item->getText(column);
+
+  // lhs < rhs
+  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) < 0 );
+}
+
+//----------------------------------------------------------------------
+bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
+{
+  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
+  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+  const FString l_string = l_item->getText(column);
+  const FString r_string = r_item->getText(column);
+
+  // lhs > rhs
+  return bool( strcasecmp(l_string.c_str(), r_string.c_str()) > 0 );
+}
+
+//----------------------------------------------------------------------
+bool sortAscendingByNumber (const FObject* lhs, const FObject* rhs)
+{
+  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
+  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+  const long l_number = firstNumberFromString(l_item->getText(column));
+  const long r_number = firstNumberFromString(r_item->getText(column));
+
+  // lhs < rhs
+  return bool( l_number < r_number );
+}
+
+//----------------------------------------------------------------------
+bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
+{
+  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
+  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+  const long l_number = firstNumberFromString(l_item->getText(column));
+  const long r_number = firstNumberFromString(r_item->getText(column));
+
+  // lhs > rhs
+  return bool( l_number > r_number );
+}
+
+
 //----------------------------------------------------------------------
 // class FListViewItem
 //----------------------------------------------------------------------
@@ -44,6 +156,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
   , column_list(item.column_list)
   , data_pointer(item.data_pointer)
+  , root()
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
@@ -68,6 +181,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
   : FObject((*parent_iter)->getParent())
   , column_list()
   , data_pointer(0)
+  , root()
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
@@ -82,6 +196,7 @@ FListViewItem::FListViewItem ( const FStringList& cols
   : FObject(0)
   , column_list(cols)
   , data_pointer(data)
+  , root()
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
@@ -99,6 +214,16 @@ FListViewItem::~FListViewItem()  // destructor
 
 
 // public methods of FListViewItem
+//----------------------------------------------------------------------
+int FListViewItem::getSortColumn() const
+{
+  if ( ! *root )
+    return -1;
+
+  FListView* root_obj = static_cast<FListView*>(*root);
+  return root_obj->getSortColumn();
+}
+
 //----------------------------------------------------------------------
 FString FListViewItem::getText (int column) const
 {
@@ -209,10 +334,39 @@ void FListViewItem::collapse()
 
 // private methods of FListView
 //----------------------------------------------------------------------
+template<typename Compare>
+void FListViewItem::sort (Compare cmp)
+{
+  if ( ! expandable )
+    return;
+
+  // Sort the top level
+  FObject::FObjectList& children_list = getChildren();
+
+  if ( ! children_list.empty() )
+    children_list.sort(cmp);
+
+  // Sort the sublevels
+  FListViewIterator iter = children_list.begin();
+
+  while ( iter != children_list.end() )
+  {
+    if ( *iter )
+    {
+      FListViewItem* item = static_cast<FListViewItem*>(*iter);
+      item->sort(cmp);
+    }
+
+    ++iter;
+  }
+}
+
+//----------------------------------------------------------------------
 FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
 {
   expandable = true;
   resetVisibleLineCounter();
+  child->root = root;
   addChild (child);
   // Return iterator to child/last element
   return --FObject::end();
@@ -451,6 +605,11 @@ FListView::FListView (FWidget* parent)
   , xoffset(0)
   , nf_offset(0)
   , max_line_width(1)
+  , sort_column(-1)
+  , sort_type()
+  , sort_order(fc::unsorted)
+  , user_defined_ascending(0)
+  , user_defined_descending(0)
 {
   init();
 }
@@ -505,6 +664,24 @@ FString FListView::getColumnText (int column) const
 }
 
 //----------------------------------------------------------------------
+fc::sorting_type FListView::getColumnSortType (int column) const
+{
+  fc::sorting_type type;
+  std::size_t size = uInt(column);
+
+  try
+  {
+    type = sort_type.at(size);
+  }
+  catch (const std::out_of_range&)
+  {
+    type = fc::unknown;
+  }
+
+  return type;
+}
+
+//----------------------------------------------------------------------
 void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
 {
   // Set the widget geometry
@@ -554,6 +731,34 @@ void FListView::setColumnText (int column, const FString& label)
   }
 
   header[uInt(column)].name = label;
+}
+
+//----------------------------------------------------------------------
+void FListView::setColumnSortType (int column, fc::sorting_type type)
+{
+  // Sets the sort type by which the list is to be sorted
+
+  if ( column < 1 || header.empty() || column > int(header.size()) )
+    return;
+
+  std::size_t size = uInt(column + 1);
+
+  if ( sort_type.empty() || sort_type.size() < size )
+    sort_type.resize(size);
+
+  sort_type[uInt(column)] = type;
+}
+
+//----------------------------------------------------------------------
+void FListView::setColumnSort (int column, fc::sorting_order order)
+{
+  // Sets the column to sort by + the sorting order
+
+  if ( column < 1 || header.empty() || column > int(header.size()) )
+    column = -1;
+
+  sort_column = column;
+  sort_order = order;
 }
 
 //----------------------------------------------------------------------
@@ -649,6 +854,9 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
     first_visible_line = itemlist.begin();
   }
 
+  // Sort list by a column (only if activated)
+  sort();
+
   int element_count = int(getCount());
   recalculateVerticalBar (element_count);
   return item_iter;
@@ -698,6 +906,55 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
   item_iter = insert (str_cols, d, parent_iter);
 
   return item_iter;
+}
+
+//----------------------------------------------------------------------
+void FListView::sort()
+{
+  // Sorts the list view according to the specified setting
+
+  if ( sort_column < 1 && sort_column > int(header.size()) )
+    return;
+
+  switch ( getColumnSortType(sort_column) )
+  {
+    case fc::unknown:
+    case fc::by_name:
+      if ( sort_order == fc::ascending )
+      {
+        sort (sortAscendingByName);
+      }
+      else if ( sort_order == fc::descending )
+      {
+        sort (sortDescendingByName);
+      }
+      break;
+
+    case fc::by_number:
+      if ( sort_order == fc::ascending )
+      {
+        sort (sortAscendingByNumber);
+      }
+      else if ( sort_order == fc::descending )
+      {
+        sort (sortDescendingByNumber);
+      }
+      break;
+
+    case fc::user_defined:
+      if ( sort_order == fc::ascending && user_defined_ascending )
+      {
+        sort (user_defined_ascending);
+      }
+      else if ( sort_order == fc::descending && user_defined_descending )
+      {
+        sort (user_defined_descending);
+      }
+      break;
+  }
+
+  current_iter = itemlist.begin();
+  first_visible_line = itemlist.begin();
 }
 
 //----------------------------------------------------------------------
@@ -1184,6 +1441,28 @@ void FListView::init()
   setLeftPadding(1);
   setBottomPadding(1);
   setRightPadding(1 + nf_offset);
+}
+
+//----------------------------------------------------------------------
+template<typename Compare>
+void FListView::sort (Compare cmp)
+{
+  // Sort the top level
+  itemlist.sort(cmp);
+
+  // Sort the sublevels
+  FListViewIterator iter = itemlist.begin();
+
+  while ( iter != itemlist.end() )
+  {
+    if ( *iter )
+    {
+      FListViewItem* item = static_cast<FListViewItem*>(*iter);
+      item->sort(cmp);
+    }
+
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -1748,6 +2027,7 @@ void FListView::stopDragScroll()
 //----------------------------------------------------------------------
 FObject::FObjectIterator FListView::appendItem (FListViewItem* item)
 {
+  item->root = root;
   addChild (item);
   itemlist.push_back (item);
   return --itemlist.end();
