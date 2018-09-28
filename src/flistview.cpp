@@ -54,7 +54,12 @@ long firstNumberFromString (const FString& str)
   while ( iter != last )
   {
     if ( wchar_t(*iter) >= L'0' && wchar_t(*iter) <= L'9' )
+    {
+      if ( wchar_t(*(iter - 1)) == L'-' )
+        --iter;
+
       break;
+    }
 
     ++iter;
   }
