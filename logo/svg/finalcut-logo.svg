@@ -11,7 +11,7 @@
    version="1.1"
    width="100%"
    height="100%"
-   viewBox="0 0 750 128"
+   viewBox="0 0 650 128"
    id="svg2"
    style="fill-rule:evenodd">
   <metadata
@@ -27,7 +27,142 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs43" />
+     id="defs43">
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3784"
+       xlink:href="#a"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3792"
+       xlink:href="#a"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3792-9"
+       xlink:href="#a-8"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       cx="134.06599"
+       cy="79.788696"
+       r="40.1213"
+       fx="134.06599"
+       fy="79.788696"
+       id="a-8"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop5-1"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop7-0"
+         style="stop-color:#999999;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3808"
+       xlink:href="#a-8"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       cx="134.06599"
+       cy="79.788696"
+       r="40.1213"
+       fx="134.06599"
+       fy="79.788696"
+       id="radialGradient3810"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop3812"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop3814"
+         style="stop-color:#999999;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3818"
+       xlink:href="#a-8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-153.08409,-173.48831)" />
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3792-0"
+       xlink:href="#a-1"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       cx="134.06599"
+       cy="79.788696"
+       r="40.1213"
+       fx="134.06599"
+       fy="79.788696"
+       id="a-1"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop5-0"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop7-2"
+         style="stop-color:#999999;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3861"
+       xlink:href="#a-1"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       cx="134.06599"
+       cy="79.788696"
+       r="40.1213"
+       fx="134.06599"
+       fy="79.788696"
+       id="radialGradient3863"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop3865"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop3867"
+         style="stop-color:#999999;stop-opacity:1"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       x1="165.74928"
+       y1="57.311855"
+       x2="674.01331"
+       y2="57.311855"
+       id="linearGradient3871"
+       xlink:href="#a-1"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0.378418,-0.44196145)" />
+  </defs>
   <radialGradient
      cx="134.06599"
      cy="79.788696"
@@ -107,6 +242,18 @@
      xlink:href="#e"
      gradientUnits="userSpaceOnUse"
      gradientTransform="matrix(0.9999964,0,0,1,-39.981171,-27.394473)" />
+  <text
+     x="160.94762"
+     y="93.333893"
+     transform="scale(0.95126779,1.0512287)"
+     id="text37-5"
+     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;fill-rule:evenodd;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">
+    <tspan
+       x="160.94762"
+       y="93.333893"
+       id="tspan3006-1"
+       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">FINAL CUT</tspan>
+  </text>
   <g
      id="g23"
      style="stroke:#000000;stroke-width:0.70560098">
@@ -142,15 +289,15 @@
      id="path35"
      style="fill:url(#f);stroke:#000000;stroke-width:0.70560002" />
   <text
-     x="471.83469"
+     x="158.56929"
      y="91.775856"
      transform="scale(0.95126779,1.0512287)"
      id="text37"
-     style="font-size:96px;font-weight:600;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#083c99;fill-rule:evenodd;stroke:#00173d;font-family:FreeSans">
+     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;fill-rule:evenodd;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">
     <tspan
-       x="471.83469"
+       x="158.56929"
        y="91.775856"
-       id="tspan39"
-       style="font-size:96px;font-weight:600;writing-mode:lr-tb;text-anchor:middle;fill:#083c99;stroke:#00173d;font-family:FreeSans">The Final Cut</tspan>
+       id="tspan3006"
+       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">FINAL CUT</tspan>
   </text>
 </svg>
