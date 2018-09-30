@@ -28,7 +28,16 @@ test "$CPU_COUNT" -eq 0 && CPU_COUNT=1
 
 if [ -n "$1" ]
 then
-  test ! -f ./configure &&  autoreconf --install --force
+  if [ ! -f ./configure ]
+  then
+    if which autoreconf >/dev/null
+    then
+      autoreconf --install --force
+    else
+      echo "Build failed, please install autoconf first"
+      exit -1
+    fi
+  fi
 fi
 
 # Build commands
