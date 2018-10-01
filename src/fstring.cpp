@@ -2705,6 +2705,10 @@ inline void FString::_insert (uInt pos, uInt len, const wchar_t s[])
   else
   {
     uInt x;
+    uInt insert_len = uInt(std::wcslen(s));
+
+    if  ( len > insert_len )
+      len = insert_len;
 
     if ( (length + len + 1) <= bufsize )
     {

@@ -51,8 +51,7 @@ FPoint*              FVTerm::term_pos      = 0;
 FVTerm::term_area*   FVTerm::vterm         = 0;
 FVTerm::term_area*   FVTerm::vdesktop      = 0;
 FVTerm::term_area*   FVTerm::active_area   = 0;
-FVTerm::termcap_map* FVTerm::tcap          = 0;
-FTermcap::tcap_map*  FTermcap::tcap        = 0;
+FTermcap::tcap_map*  FVTerm::tcap          = 0;
 FKeyboard*           FVTerm::keyboard      = 0;
 FVTerm::charData     FVTerm::term_attribute;
 FVTerm::charData     FVTerm::next_attribute;
@@ -2099,7 +2098,7 @@ void FVTerm::init()
   std::memcpy (&next_attribute, &term_attribute, sizeof(charData));
 
   // Receive the terminal capabilities
-  tcap = FTermcap().getTermcapMap();
+  tcap = FTermcap::getTermcapMap();
 
   // Create virtual terminal
   FRect term_geometry (0, 0, getColumnNumber(), getLineNumber());

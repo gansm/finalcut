@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftcap_map.h - Internally used termcap capabilities                   *
+* ftermcap.cpp - Provides access to terminal capabilities              *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -20,22 +20,41 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
-#ifndef FTCAPMAP_H
-#define FTCAPMAP_H
-
-#if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
-  #error "Only <final/final.h> can be included directly."
-#endif
-
 #include "final/ftermcap.h"
 
 namespace finalcut
 {
 
-namespace fc
-{
+// static class attributes
+bool FTermcap::background_color_erase = false;
+bool FTermcap::automatic_left_margin  = false;
+bool FTermcap::automatic_right_margin = false;
+bool FTermcap::eat_nl_glitch          = false;
+bool FTermcap::ansi_default_color     = false;
+bool FTermcap::osc_support            = false;
+bool FTermcap::no_utf8_acs_chars      = false;
+int  FTermcap::max_color              = 1;
+int  FTermcap::tabstop                = 8;
+int  FTermcap::attr_without_color     = 0;
 
-static FTermcap::tcap_map term_caps[] =
+
+//----------------------------------------------------------------------
+// class FTermcap
+//----------------------------------------------------------------------
+
+// constructors and destructor
+//----------------------------------------------------------------------
+FTermcap::FTermcap()
+{ }
+
+//----------------------------------------------------------------------
+FTermcap::~FTermcap()  // destructor
+{ }
+
+
+// private Data Member of FTermcap - termcap capabilities
+//----------------------------------------------------------------------
+FTermcap::tcap_map FTermcap::tcap[] =
 {
  // .------------- term string
  // |    .-------- Tcap-code
@@ -140,8 +159,4 @@ static FTermcap::tcap_map term_caps[] =
  * "XX", "Us" and "Ue" are unofficial and they are only used here.
  */
 
-}  // namespace fc
-
 }  // namespace finalcut
-
-#endif  // FTCAPMAP_H

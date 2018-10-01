@@ -149,7 +149,7 @@ static tcap_map tcap[] =
   { 0, "\0" }
 };
 
-}  // namespace test
+} // namespace test
 
 
 //----------------------------------------------------------------------
@@ -227,17 +227,18 @@ void FTermcapQuirksTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::generalTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::tabstop = -1;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -286,23 +287,24 @@ void FTermcapQuirksTest::generalTest()
                          , C_STR(CSI "29m") );
   CPPUNIT_ASSERT_CSTRING ( printSequence(caps[finalcut::fc::t_enter_ca_mode].string).c_str()
                          , C_STR("Esc 7 Esc [ ? 4 7 h ") );
-  delete[] caps;
+  //delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::xtermTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setXTerminal (true);
-  quirks.setTerminalType ("xterm");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("xterm");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -316,25 +318,25 @@ void FTermcapQuirksTest::xtermTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_normal].string
                          , C_STR(CSI "?12l" CSI "?25h") );
   detect.setXTerminal (false);
-  delete[] caps;
 }
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::freebsdTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setFreeBSDTerm (true);
-  quirks.setTerminalType ("xterm-16color");
-  quirks.setTermcapMap (reinterpret_cast<FTermcap::tcap_map*>(caps));
+  data.setTermType ("xterm-16color");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -355,25 +357,25 @@ void FTermcapQuirksTest::freebsdTest()
                                      "%?%p4%t;5%;m"
                                      "%?%p9%t\016%e\017%;") );
   detect.setFreeBSDTerm (false);
-  delete[] caps;
 }
 #endif
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::cygwinTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setCygwinTerminal (true);
-  quirks.setTerminalType ("cygwin");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("cygwin");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -383,25 +385,25 @@ void FTermcapQuirksTest::cygwinTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_cursor_visible].string
                          , C_STR(CSI "?25h") );
   detect.setCygwinTerminal (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::linuxTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::max_color = 8;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setLinuxTerm (true);
-  quirks.setTerminalType ("linux");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("linux");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -457,23 +459,23 @@ void FTermcapQuirksTest::linuxTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_underline_mode].string
                          , 0 );
   detect.setLinuxTerm (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::rxvtTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setRxvtTerminal (true);
-  quirks.setTerminalType ("rxvt");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("rxvt");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -483,7 +485,7 @@ void FTermcapQuirksTest::rxvtTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_exit_alt_charset_mode].string
                          , 0 );
   // rxvt-16color
-  quirks.setTerminalType ("rxvt-16color");
+  data.setTermType ("rxvt-16color");
   quirks.terminalFixup();
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_enter_alt_charset_mode].string
                          , C_STR(ESC "(0") );
@@ -500,24 +502,24 @@ void FTermcapQuirksTest::rxvtTest()
 
   detect.setUrxvtTerminal (false);
   detect.setRxvtTerminal (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::vteTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setGnomeTerminal (true);
-  quirks.setTerminalType ("gnome-256color");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("gnome-256color");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -526,26 +528,26 @@ void FTermcapQuirksTest::vteTest()
                          , C_STR(CSI "24m") );
 
   detect.setGnomeTerminal (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::puttyTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::background_color_erase = false;
   finalcut::FTermcap::osc_support = false;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setPuttyTerminal (true);
-  quirks.setTerminalType ("putty");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("putty");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -611,24 +613,24 @@ void FTermcapQuirksTest::puttyTest()
                         , C_STR(CSI "M") );
 
   detect.setPuttyTerminal (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::teratermTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setTeraTerm (true);
-  quirks.setTerminalType ("teraterm");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("teraterm");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -643,47 +645,41 @@ void FTermcapQuirksTest::teratermTest()
                          , C_STR(CSI "39;49m") );
 
   detect.setTeraTerm (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::sunTest()
 {
-  const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
-
-  for (int i = 0; i < last_item; i++)
-    memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
-
+  finalcut::FTermData data;
   finalcut::FTermcap::eat_nl_glitch = false;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setSunTerminal (true);
-  quirks.setTerminalType ("sun-color");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("sun-color");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::eat_nl_glitch == true );
 
   detect.setSunTerminal (false);
-  delete[] caps;
 }
 
 //----------------------------------------------------------------------
 void FTermcapQuirksTest::screenTest()
 {
+  finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
-  test::tcap_map* caps = new test::tcap_map[last_item];
 
   for (int i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
+  finalcut::FTermData data;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   detect.setScreenTerm (true);
-  quirks.setTerminalType ("screen-256color");
-  quirks.setTermcapMap (reinterpret_cast<finalcut::FTermcap::tcap_map*>(caps));
+  data.setTermType ("screen-256color");
+  quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -704,7 +700,6 @@ void FTermcapQuirksTest::screenTest()
                                  "%p4%{255}%*%{1000}%/%2.2X" BEL ESC "\\") );
   detect.setTmuxTerm (false);
   detect.setScreenTerm (false);
-  delete[] caps;
 }
 
 

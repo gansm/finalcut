@@ -31,9 +31,8 @@ namespace finalcut
 bool                 FTermXTerminal::mouse_support;
 bool                 FTermXTerminal::meta_sends_esc;
 bool                 FTermXTerminal::xterm_default_colors;
-FTermcap::tcap_map*  FTermXTerminal::tcap = 0;
-FTermDetection*      FTermXTerminal::term_detection = 0;
-fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
+int                  FTermXTerminal::term_width = 80;
+int                  FTermXTerminal::term_height = 24;
 const FString*       FTermXTerminal::xterm_font = 0;
 const FString*       FTermXTerminal::xterm_title = 0;
 const FString*       FTermXTerminal::foreground_color = 0;
@@ -42,6 +41,9 @@ const FString*       FTermXTerminal::cursor_color = 0;
 const FString*       FTermXTerminal::mouse_foreground_color = 0;
 const FString*       FTermXTerminal::mouse_background_color = 0;
 const FString*       FTermXTerminal::highlight_background_color = 0;
+FTermcap::tcap_map*  FTermXTerminal::tcap = 0;
+FTermDetection*      FTermXTerminal::term_detection = 0;
+fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
 
 
 //----------------------------------------------------------------------
@@ -56,6 +58,8 @@ FTermXTerminal::FTermXTerminal()
   mouse_support        = \
   meta_sends_esc       = \
   xterm_default_colors = false;
+
+  tcap = FTermcap::getTermcapMap();
 }
 
 //----------------------------------------------------------------------
@@ -119,6 +123,16 @@ void FTermXTerminal::setTitle (const FString& title)
 
   xterm_title = new FString(title);
   setXTermTitle();
+}
+
+//----------------------------------------------------------------------
+void FTermXTerminal::setTermSize (int width, int height)
+{
+  // Set xterm size to {term_width} x {term_height}
+
+  term_width = width;
+  term_height = height;
+  setXTermSize();
 }
 
 //----------------------------------------------------------------------
@@ -394,6 +408,16 @@ void FTermXTerminal::setXTermTitle()
     oscPrefix();
     FTerm::putstringf (OSC "0;%s" BEL, xterm_title->c_str());
     oscPostfix();
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermXTerminal::setXTermSize()
+{
+  if ( term_detection->isXTerminal() )
+  {
+    FTerm::putstringf (CSI "8;%d;%dt", term_height, term_width);
     std::fflush(stdout);
   }
 }

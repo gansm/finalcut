@@ -38,6 +38,7 @@
 #include "final/fc.h"
 #include "final/fterm.h"
 #include "final/ftermcap.h"
+#include "final/ftermdata.h"
 #include "final/ftermdetection.h"
 
 namespace finalcut
@@ -63,8 +64,7 @@ class FTermcapQuirks
     const char* getClassName() const;
 
     // Mutator
-    static void setTerminalType (const char[]);
-    static void setTermcapMap (FTermcap::tcap_map*);
+    static void setTermData (FTermData*);
     static void setFTermDetection (FTermDetection*);
 
     // Methods
@@ -87,8 +87,8 @@ class FTermcapQuirks
     static void init_termcap_general_quirks();
 
     // Data Members
-    static char                termtype[256];
     static FTermcap::tcap_map* tcap;
+    static FTermData*          fterm_data;
     static FTermDetection*     term_detection;
 };
 #pragma pack(pop)

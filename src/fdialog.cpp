@@ -1549,14 +1549,30 @@ inline void FDialog::lowerActivateDialog()
 }
 
 //----------------------------------------------------------------------
+bool FDialog::isLowerRightResizeCorner (mouseStates& ms)
+{
+  // 3 characters in the lower right corner  |
+  //                                         x
+  //                                   -----xx
+
+  if ( (ms.mouse_x == getWidth() && ms.mouse_y == getHeight() - 1)
+    || ( ( ms.mouse_x == getWidth() - 1
+        || ms.mouse_x == getWidth() ) && ms.mouse_y == getHeight() ) )
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+//----------------------------------------------------------------------
 void FDialog::resizeMouseDown (mouseStates& ms)
 {
   // Click on the lower right resize corner
 
-  if ( isResizeable()
-    && ( (ms.mouse_x == getWidth() && ms.mouse_y == getHeight() - 1)
-      || ( (ms.mouse_x == getWidth() - 1
-          || ms.mouse_x == getWidth()) && ms.mouse_y == getHeight()) ) )
+  if ( isResizeable() && isLowerRightResizeCorner(ms) )
   {
     resize_click_pos = ms.termPos;
     FPoint lower_right_pos = getTermGeometry().getLowerRightPos();

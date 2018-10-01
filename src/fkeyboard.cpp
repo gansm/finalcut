@@ -79,7 +79,7 @@ FKeyboard::FKeyboard()
   , keypressed_cmd()
   , keyreleased_cmd()
   , escape_key_cmd()
-  , termcap_map(0)
+  , key_map(0)
 {
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;
@@ -123,7 +123,7 @@ const FString FKeyboard::getKeyName (int keynum)
 //----------------------------------------------------------------------
 void FKeyboard::setTermcapMap (fc::fkeymap* keymap)
 {
-  termcap_map = keymap;
+  key_map = keymap;
 }
 
 //----------------------------------------------------------------------
@@ -232,10 +232,10 @@ inline int FKeyboard::getTermcapKey()
 
   assert ( fifo_buf_size > 0 );
 
-  if ( ! termcap_map )
+  if ( ! key_map )
     return -1;
 
-  fc::fkeymap* keymap = reinterpret_cast<fc::fkeymap*>(termcap_map);
+  fc::fkeymap* keymap = reinterpret_cast<fc::fkeymap*>(key_map);
   for (int i = 0; keymap[i].tname[0] != 0; i++)
   {
     char* k = keymap[i].string;

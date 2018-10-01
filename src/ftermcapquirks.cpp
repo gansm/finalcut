@@ -26,8 +26,8 @@ namespace finalcut
 {
 
 // static class attributes
-char                FTermcapQuirks::termtype[256]  = { };
 FTermcap::tcap_map* FTermcapQuirks::tcap           = 0;
+FTermData*          FTermcapQuirks::fterm_data     = 0;
 FTermDetection*     FTermcapQuirks::term_detection = 0;
 
 
@@ -38,7 +38,9 @@ FTermDetection*     FTermcapQuirks::term_detection = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FTermcapQuirks::FTermcapQuirks()
-{ }
+{
+  tcap = FTermcap::getTermcapMap();
+}
 
 //----------------------------------------------------------------------
 FTermcapQuirks::~FTermcapQuirks()  // destructor
@@ -47,16 +49,9 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
-void FTermcapQuirks::setTerminalType (const char tt[])
+void FTermcapQuirks::setTermData (FTermData* data)
 {
-  std::strncpy (termtype, tt, sizeof(termtype));
-  termtype[sizeof(termtype) - 1] = '\0';
-}
-
-//----------------------------------------------------------------------
-void FTermcapQuirks::setTermcapMap (FTermcap::tcap_map* tc)
-{
-  tcap = tc;
+  fterm_data = data;
 }
 
 //----------------------------------------------------------------------
@@ -255,6 +250,8 @@ void FTermcapQuirks::init_termcap_xterm_quirks()
 void FTermcapQuirks::init_termcap_rxvt_quirks()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
+  const char* termtype = fterm_data->getTermType();
+
   if ( std::strncmp(termtype, "rxvt-16color", 12) == 0 )
   {
     TCAP(fc::t_enter_alt_charset_mode) = \

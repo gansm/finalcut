@@ -207,6 +207,7 @@ class FDialog : public FWindow
     void                moveSizeKey (FKeyEvent*);
     void                raiseActivateDialog();
     void                lowerActivateDialog();
+    bool                isLowerRightResizeCorner (mouseStates&);
     void                resizeMouseDown (mouseStates&);
     void                resizeMouseUpMove (mouseStates&, bool = false);
     void                cancelMouseResize();

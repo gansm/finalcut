@@ -79,7 +79,7 @@ enum events
   Timer_Event               // timer event occur
 };
 
-// Properties of a widget
+// Properties of a widget ⚑
 enum widget_flags
 {
   shadow        = 0x00000001,

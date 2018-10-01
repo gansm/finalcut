@@ -355,6 +355,7 @@ class FListView : public FWidget
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
+    int                  determineLineWidth (FListViewItem* item);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
     void                 wheelUp (int);
@@ -473,7 +474,7 @@ inline void FListView::setUserDescendingCompare (Compare cmp)
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
-{ return tree_view = ( on ) ? true : false; }
+{ return tree_view = on; }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()

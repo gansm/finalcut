@@ -789,42 +789,14 @@ int FListView::addColumn (const FString& label, int width)
 FObject::FObjectIterator FListView::insert ( FListViewItem* item
                                            , FObjectIterator parent_iter )
 {
-  static const int padding_space = 1;
-  int  line_width = padding_space;  // leading space
-  uInt column_idx = 0;
-  uInt entries = uInt(item->column_list.size());
   FObjectIterator item_iter;
-  headerItems::iterator header_iter;
+  int line_width;
+  int element_count;
 
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
 
-  // Determine the line width
-  header_iter = header.begin();
-
-  while ( header_iter != header.end() )
-  {
-    int width = header_iter->width;
-    bool fixed_width = header_iter->fixed_width;
-
-    if ( ! fixed_width )
-    {
-      int len;
-
-      if ( column_idx < entries )
-        len = int(item->column_list[column_idx].getLength());
-      else
-        len = 0;
-
-      if ( len > width )
-        header_iter->width = len;
-    }
-
-    line_width += header_iter->width + padding_space;  // width + trailing space
-    column_idx++;
-    ++header_iter;
-  }
-
+  line_width = determineLineWidth (item);
   recalculateHorizontalBar (line_width);
 
   if  ( parent_iter == root )
@@ -862,7 +834,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
   // Sort list by a column (only if activated)
   sort();
 
-  int element_count = int(getCount());
+  element_count = int(getCount());
   recalculateVerticalBar (element_count);
   return item_iter;
 }
@@ -1860,6 +1832,42 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 
   updateTerminal();
   flush_out();
+}
+
+//----------------------------------------------------------------------
+int FListView::determineLineWidth (FListViewItem* item)
+{
+  static const int padding_space = 1;
+  int  line_width = padding_space;  // leading space
+  uInt column_idx = 0;
+  uInt entries = uInt(item->column_list.size());
+  headerItems::iterator header_iter;
+  header_iter = header.begin();
+
+  while ( header_iter != header.end() )
+  {
+    int width = header_iter->width;
+    bool fixed_width = header_iter->fixed_width;
+
+    if ( ! fixed_width )
+    {
+      int len;
+
+      if ( column_idx < entries )
+        len = int(item->column_list[column_idx].getLength());
+      else
+        len = 0;
+
+      if ( len > width )
+        header_iter->width = len;
+    }
+
+    line_width += header_iter->width + padding_space;  // width + trailing space
+    column_idx++;
+    ++header_iter;
+  }
+
+  return line_width;
 }
 
 //----------------------------------------------------------------------

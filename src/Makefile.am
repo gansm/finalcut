@@ -42,6 +42,7 @@ libfinal_la_SOURCES = \
 	fkey_map.cpp \
 	ftextview.cpp \
 	fstatusbar.cpp \
+	ftermcap.cpp \
 	ftermcapquirks.cpp \
 	ftermxterminal.cpp \
 	ftermfreebsd.cpp \
@@ -108,7 +109,6 @@ finalcutinclude_HEADERS = \
 	include/final/fscrollview.h \
 	include/final/fstatusbar.h \
 	include/final/fstring.h \
-	include/final/ftcap_map.h \
 	include/final/ftermcap.h \
 	include/final/ftermcapquirks.h \
 	include/final/ftermxterminal.h \

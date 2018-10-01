@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -61,12 +61,10 @@ class FTermcap
     tcap_map;
 
     // Constructors
-    FTermcap()
-    { }
+    FTermcap();
 
     // Destructor
-    ~FTermcap()
-    { }
+    ~FTermcap();
 
     // Accessors
     const char* getClassName() const;
@@ -74,12 +72,6 @@ class FTermcap
     static tcap_map* getTermcapMap()
     {
       return tcap;
-    }
-
-    // Mutator
-    static void setTermcapMap (tcap_map* t)
-    {
-      tcap = t;
     }
 
     // Data Members
@@ -95,16 +87,17 @@ class FTermcap
     static int  attr_without_color;
 
   private:
-    // Data Members
-    static tcap_map* tcap;
+    // Data Member
+    static tcap_map tcap[];
 };
 #pragma pack(pop)
 
-// FOptiMove inline functions
+// FTermcap inline functions
 //----------------------------------------------------------------------
 inline const char* FTermcap::getClassName() const
 { return "FTermcap"; }
 
 }  // namespace finalcut
+
 
 #endif  // FTERMCAP_H
