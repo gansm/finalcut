@@ -2676,39 +2676,44 @@ inline void FString::_assign (const wchar_t s[])
 }
 
 //----------------------------------------------------------------------
+inline void FString::_insert (uInt len, const wchar_t s[])
+{
+  if ( len == 0 )  // String s is a null or a empty string
+    return;
+
+  if ( string )
+    delete[](string);
+
+  length = len;
+  bufsize = FWDBUFFER + length + 1;
+
+  try
+  {
+    string = new wchar_t[bufsize]();
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
+    return;
+  }
+
+  std::wcsncpy (string, s, bufsize);
+  string[bufsize - 1] = L'\0';
+}
+
+//----------------------------------------------------------------------
 inline void FString::_insert (uInt pos, uInt len, const wchar_t s[])
 {
   if ( len == 0 )  // String s is a null or a empty string
     return;
 
-  if ( ! string )
+  if ( ! string )  // string is null
   {
-    // string is null
-
-    length = len;
-    bufsize = FWDBUFFER + length + 1;
-
-    try
-    {
-      string = new wchar_t[bufsize]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << bad_alloc_str << " " << ex.what() << std::endl;
-      return;
-    }
-
-    std::wcsncpy (string, s, bufsize);
-    string[bufsize - 1] = L'\0';
-    return;
+    _insert (len, s);
   }
   else
   {
     uInt x;
-    uInt insert_len = uInt(std::wcslen(s));
-
-    if  ( len > insert_len )
-      len = insert_len;
 
     if ( (length + len + 1) <= bufsize )
     {

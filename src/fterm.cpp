@@ -1260,6 +1260,46 @@ void FTerm::init_termcap_strings (char*& buffer)
 }
 
 //----------------------------------------------------------------------
+void FTerm::init_termcap_keys_vt100 (char*& buffer)
+{
+  // Some terminals (e.g. PuTTY) send vt100 key codes for
+  // the arrow and function keys.
+
+  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
+
+  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
+    || ( TCAP(fc::t_cursor_up)
+      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
+  {
+    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+    {
+      if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "A");  // Key up
+
+      if ( std::strncmp(fc::Fkey[i].tname, "kdx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "B");  // Key down
+
+      if ( std::strncmp(fc::Fkey[i].tname, "krx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "C");  // Key right
+
+      if ( std::strncmp(fc::Fkey[i].tname, "klx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "D");  // Key left
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k1X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OP");  // PF1
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k2X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OQ");  // PF2
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k3X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OR");  // PF3
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k4X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OS");  // PF4
+    }
+  }
+}
+//----------------------------------------------------------------------
 void FTerm::init_termcap_keys (char*& buffer)
 {
   // Read termcap key strings
@@ -1308,42 +1348,8 @@ void FTerm::init_termcap_keys (char*& buffer)
       fc::Fkey[i].string = C_STR(ESC "Ok");  // Keypad plus sign
   }
 
-  // Some terminals (e.g. PuTTY) send the wrong code for the arrow keys
-  // http://www.unix.com/shell-programming-scripting/..
-  //      ..110380-using-arrow-keys-shell-scripts.html
-  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
-
-  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
-    || ( TCAP(fc::t_cursor_up)
-      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
-  {
-    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
-    {
-      if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "A");  // Key up
-
-      if ( std::strncmp(fc::Fkey[i].tname, "kdx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "B");  // Key down
-
-      if ( std::strncmp(fc::Fkey[i].tname, "krx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "C");  // Key right
-
-      if ( std::strncmp(fc::Fkey[i].tname, "klx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "D");  // Key left
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k1X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OP");  // PF1
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k2X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OQ");  // PF2
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k3X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OR");  // PF3
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k4X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OS");  // PF4
-    }
-  }
+  // VT100 key codes for the arrow and function keys
+  init_termcap_keys_vt100(buffer);
 }
 
 //----------------------------------------------------------------------
@@ -1982,14 +1988,8 @@ void FTerm::init (bool disable_alt_screen)
   // Save the used xterm font and window title
   init_captureFontAndTitle();
 
-  if ( isKdeTerminal() )
-    setKDECursor(fc::UnderlineCursor);
-
-  if ( isCygwinTerminal() )
-    init_cygwin_charmap();
-
-  if ( isTeraTerm() )
-    init_teraterm_charmap();
+  // KDE terminal cursor and cygwin + teraterm charmap correction
+  initTermspecifics();
 
   // Redefine the color palette
   if ( init_values.color_change )
@@ -2053,6 +2053,19 @@ void FTerm::initOSspecifics()
 
   openbsd->init();  // Initialize wscons console
 #endif
+}
+
+//----------------------------------------------------------------------
+void FTerm::initTermspecifics()
+{
+  if ( isKdeTerminal() )
+    setKDECursor(fc::UnderlineCursor);
+
+  if ( isCygwinTerminal() )
+    init_cygwin_charmap();
+
+  if ( isTeraTerm() )
+    init_teraterm_charmap();
 }
 
 //----------------------------------------------------------------------

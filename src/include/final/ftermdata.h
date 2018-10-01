@@ -181,6 +181,9 @@ inline FTermData::FTermData()
   , termfilename()
   , xterm_font()
   , xterm_title()
+#if DEBUG
+  , framebuffer_bpp(-1)
+#endif
 {
   // Initialize arrays with '\0'
   std::fill_n (termtype, sizeof(termtype), '\0');
@@ -370,7 +373,7 @@ inline void FTermData::setTermFileName (const char file_name[])
     return;
 
   std::strncpy (termfilename, file_name, sizeof(termfilename));
-  termtype[sizeof(termfilename) - 1] = '\0';
+  termfilename[sizeof(termfilename) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------

@@ -387,6 +387,7 @@ class FTerm
     static void            init_termcap_booleans();
     static void            init_termcap_numerics();
     static void            init_termcap_strings (char*&);
+    static void            init_termcap_keys_vt100 (char*&);
     static void            init_termcap_keys (char*&);
     static void            init_OptiMove();
     static void            init_OptiAttr();
@@ -412,6 +413,7 @@ class FTerm
     void                   deallocationValues();
     void                   init (bool);
     void                   initOSspecifics();
+    void                   initTermspecifics();
     void                   finish();
     void                   finishOSspecifics1();
     void                   finish_encoding();

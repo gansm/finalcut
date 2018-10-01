@@ -287,7 +287,6 @@ void FTermcapQuirksTest::generalTest()
                          , C_STR(CSI "29m") );
   CPPUNIT_ASSERT_CSTRING ( printSequence(caps[finalcut::fc::t_enter_ca_mode].string).c_str()
                          , C_STR("Esc 7 Esc [ ? 4 7 h ") );
-  //delete[] caps;
 }
 
 //----------------------------------------------------------------------
