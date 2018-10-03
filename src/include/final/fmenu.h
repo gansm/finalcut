@@ -87,7 +87,7 @@ class FMenu : public FWindow, public FMenuList
     // Accessors
     virtual const char* getClassName() const;
     FString             getText() const;
-    FMenuItem*          getItem() const;
+    FMenuItem*          getItem();
 
     // Mutators
     virtual bool        setEnable(bool);
@@ -228,7 +228,7 @@ class FMenu : public FWindow, public FMenuList
     friend class FRadioMenuItem;
 
     // Data Members
-    FMenuItem*   item;
+    FMenuItem    item;
     FWidget*     super_menu;
     FMenu*       opened_sub_menu;
     FMenu*       shown_sub_menu;
@@ -247,35 +247,35 @@ inline const char* FMenu::getClassName() const
 
 //----------------------------------------------------------------------
 inline FString FMenu::getText() const
-{ return item->getText(); }
+{ return item.getText(); }
 
 //----------------------------------------------------------------------
-inline FMenuItem* FMenu::getItem() const
-{ return item; }
+inline FMenuItem* FMenu::getItem()
+{ return &item; }
 
 //----------------------------------------------------------------------
 inline bool FMenu::setEnable(bool on)
-{ return item->setEnable(on); }
+{ return item.setEnable(on); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::setEnable()
-{ return item->setEnable(); }
+{ return item.setEnable(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::unsetEnable()
-{ return item->unsetEnable(); }
+{ return item.unsetEnable(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::setDisable()
-{ return item->setDisable(); }
+{ return item.setDisable(); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setSelected()
-{ item->setSelected(); }
+{ item.setSelected(); }
 
 //----------------------------------------------------------------------
 inline void FMenu::unsetSelected()
-{ item->unsetSelected(); }
+{ item.unsetSelected(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::setMenuWidget()
@@ -287,27 +287,27 @@ inline bool FMenu::unsetMenuWidget()
 
 //----------------------------------------------------------------------
 inline void FMenu::setMenu (FMenu* m)
-{ item->setMenu(m); }
+{ item.setMenu(m); }
 
 //----------------------------------------------------------------------
 inline void FMenu::setText (const FString& txt)
-{ item->setText(txt); }
+{ item.setText(txt); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::isEnabled() const
-{ return item->isEnabled(); }
+{ return item.isEnabled(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::isSelected() const
-{ return item->isSelected(); }
+{ return item.isSelected(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasHotkey() const
-{ return item->hasHotkey(); }
+{ return item.hasHotkey(); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::hasMenu() const
-{ return item->hasMenu(); }
+{ return item.hasMenu(); }
 
 //----------------------------------------------------------------------
 inline FWidget* FMenu::getSuperMenu() const
@@ -327,7 +327,7 @@ inline FMenu* FMenu::superMenuAt (const FPoint& p)
 
 //----------------------------------------------------------------------
 inline void FMenu::onAccel (FAccelEvent* ev)
-{ item->onAccel(ev); }
+{ item.onAccel(ev); }
 
 }  // namespace finalcut
 

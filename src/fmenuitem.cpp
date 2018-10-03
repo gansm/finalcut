@@ -99,6 +99,14 @@ FMenuItem::FMenuItem (int k, const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FMenuItem::~FMenuItem()  // destructor
 {
+  if ( super_menu && (isMenu(super_menu) || isMenuBar(super_menu)) )
+  {
+    FMenuList* menu_list = dynamic_cast<FMenuList*>(super_menu);
+
+    if ( menu_list )
+      menu_list->remove(this);
+  }
+
   delAccelerator();
 
   // remove dialog list item callback from the dialog
