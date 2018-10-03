@@ -58,6 +58,7 @@ class ColorChooser : public finalcut::FWidget
     // Data Members
     short fg_color;
     short bg_color;
+    finalcut::FLabel headline;
 };
 #pragma pack(pop)
 
@@ -66,6 +67,7 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
   , fg_color(finalcut::fc::White)
   , bg_color(finalcut::fc::Black)
+  , headline(this)
 {
   setSize (8, 12);
   setFixedSize (8, 12);
@@ -73,16 +75,19 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    setForegroundColor(parent->getForegroundColor());
-    setBackgroundColor(parent->getBackgroundColor());
+    short fg = parent->getForegroundColor();
+    short bg = parent->getBackgroundColor();
+    setForegroundColor(fg);
+    setBackgroundColor(bg);
+    headline.setForegroundColor(fg);
+    headline.setBackgroundColor(bg);
   }
 
   // Text label
-  finalcut::FLabel* headline = new finalcut::FLabel (this);
-  headline->setGeometry(1, 1, 8, 1);
-  headline->setEmphasis();
-  headline->setAlignment (finalcut::fc::alignCenter);
-  *headline << "Color";
+  headline.setGeometry (1, 1, 8, 1);
+  headline.setEmphasis();
+  headline.setAlignment (finalcut::fc::alignCenter);
+  headline << "Color";
 }
 
 //----------------------------------------------------------------------
@@ -197,6 +202,7 @@ class Brushes : public finalcut::FWidget
     wchar_t brush;
     short   fg_color;
     short   bg_color;
+    finalcut::FLabel headline;
 };
 #pragma pack(pop)
 
@@ -206,6 +212,7 @@ Brushes::Brushes (finalcut::FWidget* parent)
   , brush(L' ')
   , fg_color(finalcut::fc::White)
   , bg_color(finalcut::fc::Black)
+  , headline(this)
 {
   setSize (8, 4);
   setFixedSize (8, 4);
@@ -213,16 +220,19 @@ Brushes::Brushes (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    setForegroundColor(parent->getForegroundColor());
-    setBackgroundColor(parent->getBackgroundColor());
+    short fg = parent->getForegroundColor();
+    short bg = parent->getBackgroundColor();
+    setForegroundColor(fg);
+    setBackgroundColor(bg);
+    headline.setForegroundColor(fg);
+    headline.setBackgroundColor(bg);
   }
 
   // Text label
-  finalcut::FLabel* headline = new finalcut::FLabel (this);
-  headline->setGeometry(1, 1, 8, 1);
-  headline->setEmphasis();
-  headline->setAlignment (finalcut::fc::alignCenter);
-  *headline << "Brush";
+  headline.setGeometry(1, 1, 8, 1);
+  headline.setEmphasis();
+  headline.setAlignment (finalcut::fc::alignCenter);
+  headline << "Brush";
 }
 
 //----------------------------------------------------------------------
@@ -339,9 +349,9 @@ class MouseDraw : public finalcut::FDialog
     void cb_colorChanged (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    term_area*    canvas;
-    ColorChooser* c_chooser;
-    Brushes*      brush;
+    term_area*   canvas;
+    ColorChooser c_chooser;
+    Brushes      brush;
 };
 #pragma pack(pop)
 
@@ -349,20 +359,18 @@ class MouseDraw : public finalcut::FDialog
 MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
   , canvas(0)
-  , c_chooser()
-  , brush()
+  , c_chooser(this)
+  , brush(this)
 {
   setText ("Drawing with the mouse");
-  c_chooser = new ColorChooser(this);
-  c_chooser->setPos (1, 1);
-  c_chooser->addCallback
+  c_chooser.setPos (1, 1);
+  c_chooser.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MouseDraw::cb_colorChanged)
   );
 
-  brush = new Brushes(this);
-  brush->setPos (1, 12);
+  brush.setPos (1, 12);
 
   finalcut::FPoint no_shadow(0,0);
   finalcut::FRect scroll_geometry(0, 0, 1, 1);
@@ -450,15 +458,15 @@ void MouseDraw::drawBrush (int x, int y, bool swap_color)
   if ( x > 10 && x < Cols && y > 2 && y < Lines )
   {
     if ( swap_color )
-      setColor (c_chooser->getBackground(), c_chooser->getForeground());
+      setColor (c_chooser.getBackground(), c_chooser.getForeground());
     else
-      setColor (c_chooser->getForeground(), c_chooser->getBackground());
+      setColor (c_chooser.getForeground(), c_chooser.getBackground());
 
     // set canvas print cursor position
     canvas->cursor_x = x - canvas->offset_left - 10;
     canvas->cursor_y = y - canvas->offset_top - 2;
     // print on canvas
-    print (canvas, brush->getBrush());
+    print (canvas, brush.getBrush());
     // copy canvas to the dialog
     drawCanvas();
   }
@@ -539,9 +547,9 @@ void MouseDraw::onMouseMove (finalcut::FMouseEvent* ev)
 //----------------------------------------------------------------------
 void MouseDraw::cb_colorChanged (finalcut::FWidget*, data_ptr)
 {
-  brush->setForeground (c_chooser->getForeground());
-  brush->setBackground (c_chooser->getBackground());
-  brush->redraw();
+  brush.setForeground (c_chooser.getForeground());
+  brush.setBackground (c_chooser.getBackground());
+  brush.redraw();
 }
 
 

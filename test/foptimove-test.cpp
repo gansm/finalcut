@@ -1,5 +1,5 @@
 /***********************************************************************
-* foptimove-test.cpp - finalcut::FOptiMove unit tests                            *
+* foptimove-test.cpp - FOptiMove unit tests                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

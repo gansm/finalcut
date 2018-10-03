@@ -1,5 +1,5 @@
 /***********************************************************************
-* fmouse-test.cpp - finalcut::FMouse unit tests                                  *
+* fmouse-test.cpp - FMouse unit tests                                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

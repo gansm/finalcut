@@ -61,8 +61,8 @@ class AttribDlg : public finalcut::FDialog
     virtual void adjustSize();
 
     // Data Members
-    finalcut::FButton* next_button;
-    finalcut::FButton* back_button;
+    finalcut::FButton next_button;
+    finalcut::FButton back_button;
 };
 #pragma pack(pop)
 
@@ -70,28 +70,26 @@ class AttribDlg : public finalcut::FDialog
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
   , bgcolor(wc.label_bg)
-  , next_button()
-  , back_button()
+  , next_button("&Next >", this)
+  , back_button("< &Back", this)
 {
   setText ( "A terminal attributes test ("
           + finalcut::FString(getTermType())
           + ")");
 
-  next_button = new finalcut::FButton("&Next >", this);
-  next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1);
-  next_button->addAccelerator(finalcut::fc::Fkey_right);
-  back_button = new finalcut::FButton("< &Back", this);
-  back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1);
-  back_button->addAccelerator(finalcut::fc::Fkey_left);
+  next_button.setGeometry(getWidth() - 13, getHeight() - 4, 10, 1);
+  next_button.addAccelerator(finalcut::fc::Fkey_right);
+  back_button.setGeometry(getWidth() - 25, getHeight() - 4, 10, 1);
+  back_button.addAccelerator(finalcut::fc::Fkey_left);
 
   // Add function callbacks
-  next_button->addCallback
+  next_button.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &AttribDlg::cb_next)
   );
 
-  back_button->addCallback
+  back_button.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &AttribDlg::cb_back)
@@ -167,8 +165,8 @@ void AttribDlg::adjustSize()
     y = 1;
 
   setGeometry(x, y, 69, 21, false);
-  next_button->setGeometry(getWidth() - 13, getHeight() - 4, 10, 1, false);
-  back_button->setGeometry(getWidth() - 25, getHeight() - 4, 10, 1, false);
+  next_button.setGeometry(getWidth() - 13, getHeight() - 4, 10, 1, false);
+  back_button.setGeometry(getWidth() - 25, getHeight() - 4, 10, 1, false);
   finalcut::FDialog::adjustSize();
 }
 
@@ -492,20 +490,20 @@ int main (int argc, char* argv[])
   // Create a dialog box object.
   // This object will be automatically deleted by
   // the parent object "app" (FObject destructor).
-  AttribDlg* dialog = new AttribDlg(&app);
+  AttribDlg dialog(&app);
 
-  dialog->setGeometry (6, 2, 69, 21);
-  dialog->addAccelerator('q');  // press 'q' to quit
-  dialog->setShadow();
+  dialog.setGeometry (6, 2, 69, 21);
+  dialog.addAccelerator('q');  // press 'q' to quit
+  dialog.setShadow();
 
   // Create the attribute demo widget as a child object from the dialog
-  AttribDemo* demo = new AttribDemo(dialog);
-  demo->setGeometry (1, 1, 67, 19);
+  AttribDemo demo(&dialog);
+  demo.setGeometry (1, 1, 67, 19);
 
   // Set the dialog object as main widget
-  app.setMainWidget(dialog);
+  app.setMainWidget(&dialog);
 
   // Show and start the application
-  dialog->show();
+  dialog.show();
   return app.exec();
 }

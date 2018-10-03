@@ -54,7 +54,7 @@ class FObject_protected : public finalcut::FObject
     {
       return finalcut::FObject::getTimerList();
     }
-    
+
     uInt processEvent()
     {
       return processTimerEvent();
@@ -477,7 +477,8 @@ void FObjectTest::performTimerActionTest()
   while ( loop < 10 )
   {
     num_events += t.processEvent();
-    usleep(100000);
+    // Wait 100 ms
+    nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
     loop++;
   }
 

@@ -60,8 +60,8 @@ FFileDialog::FFileDialog (FWidget* parent)
   , dir_entries()
   , directory()
   , filter_pattern()
-  , filebrowser()
   , filename()
+  , filebrowser()
   , hidden()
   , cancel()
   , open()
@@ -78,8 +78,8 @@ FFileDialog::FFileDialog (const FFileDialog& fdlg)
   , dir_entries()
   , directory(fdlg.directory)
   , filter_pattern(fdlg.filter_pattern)
-  , filebrowser()
   , filename()
+  , filebrowser()
   , hidden()
   , cancel()
   , open()
@@ -102,11 +102,11 @@ FFileDialog::FFileDialog ( const FString& dirname
   , dir_entries()
   , directory()
   , filter_pattern(filter)
-  , filebrowser()
-  , filename()
-  , hidden()
-  , cancel()
-  , open()
+  , filename(this)
+  , filebrowser(this)
+  , hidden(this)
+  , cancel(this)
+  , open(this)
   , dlg_type(type)
   , show_hidden(false)
 {
@@ -119,7 +119,6 @@ FFileDialog::FFileDialog ( const FString& dirname
 //----------------------------------------------------------------------
 FFileDialog::~FFileDialog()  // destructor
 {
-  deallocation();
   clear();
 }
 
@@ -134,11 +133,6 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
   }
   else
   {
-    delete open;
-    delete cancel;
-    delete hidden;
-    delete filebrowser;
-    delete filename;
     clear();
 
     if ( fdlg.getParentWidget() )
@@ -160,7 +154,7 @@ FFileDialog& FFileDialog::operator = (const FFileDialog& fdlg)
 //----------------------------------------------------------------------
 const FString FFileDialog::getSelectedFile() const
 {
-  uLong n = uLong(filebrowser->currentItem() - 1);
+  uLong n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     return FString("");
@@ -222,7 +216,7 @@ bool FFileDialog::setShowHiddenFiles (bool on)
 
   show_hidden = on;
   readDir();
-  filebrowser->redraw();
+  filebrowser.redraw();
   return show_hidden;
 }
 
@@ -234,7 +228,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
 
   FDialog::onKeyPress (ev);
 
-  if ( ! filebrowser->hasFocus() )
+  if ( ! filebrowser.hasFocus() )
     return;
 
   int key = ev->key();
@@ -374,10 +368,10 @@ void FFileDialog::adjustSize()
   X = 1 + int((max_width - getWidth()) / 2);
   Y = 1 + int((max_height - getHeight()) / 3);
   setPos(X, Y, false);
-  filebrowser->setHeight (h - 8, false);
-  hidden->setY (h - 4, false);
-  cancel->setY (h - 4, false);
-  open->setY (h - 4, false);
+  filebrowser.setHeight (h - 8, false);
+  hidden.setY (h - 4, false);
+  cancel.setY (h - 4, false);
+  open.setY (h - 4, false);
   FDialog::adjustSize();
   printPath(directory);
 }
@@ -408,92 +402,72 @@ void FFileDialog::init()
   else
     FDialog::setText("Open file");
 
-  allocation (x, y);  // Create widgets
+  widgetSettings (x, y);  // Create widgets
   initCallbacks();
   setModal();
   readDir();
 }
 
 //----------------------------------------------------------------------
-inline void FFileDialog::allocation (int x, int y)
+inline void FFileDialog::widgetSettings (int x, int y)
 {
-  try
-  {
-    filename = new FLineEdit(this);
-    filename->setLabelText("File&name");
-    filename->setText(filter_pattern);
-    filename->setGeometry(11, 1, 28, 1);
-    filename->setFocus();
+  filename.setLabelText ("File&name");
+  filename.setText (filter_pattern);
+  filename.setGeometry (11, 1, 28, 1);
+  filename.setFocus();
 
-    filebrowser = new FListBox(this);
-    filebrowser->setGeometry(2, 3, 38, 6);
-    printPath(directory);
+  filebrowser.setGeometry (2, 3, 38, 6);
+  printPath (directory);
 
-    hidden = new FCheckBox("&hidden files", this);
-    hidden->setGeometry(2, 10, 16, 1);
+  hidden.setText ("&hidden files");
+  hidden.setGeometry (2, 10, 16, 1);
 
-    cancel = new FButton("&Cancel", this);
-    cancel->setGeometry(19, 10, 9, 1);
+  cancel.setText ("&Cancel");
+  cancel.setGeometry(19, 10, 9, 1);
 
-    if ( dlg_type == FFileDialog::Save )
-      open = new FButton("&Save", this);
-    else
-      open = new FButton("&Open", this);
+  if ( dlg_type == FFileDialog::Save )
+    open.setText ("&Save");
+  else
+    open.setText ("&Open");
 
-    open->setGeometry(30, 10, 9, 1);
-    setGeometry (x, y, getWidth(), getHeight());
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-}
-
-//----------------------------------------------------------------------
-inline void FFileDialog::deallocation()
-{
-  delete open;
-  delete cancel;
-  delete hidden;
-  delete filebrowser;
-  delete filename;
+  open.setGeometry(30, 10, 9, 1);
+  setGeometry (x, y, getWidth(), getHeight());
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::initCallbacks()
 {
-  filename->addCallback
+  filename.addCallback
   (
     "activate",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processActivate)
   );
 
-  filebrowser->addCallback
+  filebrowser.addCallback
   (
     "row-changed",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processRowChanged)
   );
 
-  filebrowser->addCallback
+  filebrowser.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processClicked)
   );
 
-  hidden->addCallback
+  hidden.addCallback
   (
     "toggled",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processShowHidden)
   );
 
-  cancel->addCallback
+  cancel.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processCancel)
   );
 
-  open->addCallback
+  open.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &FFileDialog::cb_processOpen)
@@ -725,7 +699,7 @@ void FFileDialog::dirEntriesToList()
 {
   // Fill list with directory entries
 
-  filebrowser->clear();
+  filebrowser.clear();
 
   if ( dir_entries.empty() )
     return;
@@ -737,9 +711,9 @@ void FFileDialog::dirEntriesToList()
   while ( iter != last )
   {
     if ( iter->directory )
-      filebrowser->insert(FString(iter->name), fc::SquareBrackets);
+      filebrowser.insert(FString(iter->name), fc::SquareBrackets);
     else
-      filebrowser->insert(FString(iter->name));
+      filebrowser.insert(FString(iter->name));
 
     ++iter;
   }
@@ -774,7 +748,7 @@ int FFileDialog::changeDir (const FString& dirname)
       if ( newdir == FString("..") )
       {
         if ( lastdir == FString('/') )
-          filename->setText('/');
+          filename.setText('/');
         else if ( ! dir_entries.empty() )
         {
           int i = 1;
@@ -788,8 +762,8 @@ int FFileDialog::changeDir (const FString& dirname)
           {
             if ( std::strcmp(iter->name, baseName) == 0 )
             {
-              filebrowser->setCurrentItem(i);
-              filename->setText(FString(baseName) + '/');
+              filebrowser.setCurrentItem(i);
+              filename.setText(FString(baseName) + '/');
               break;
             }
 
@@ -803,14 +777,14 @@ int FFileDialog::changeDir (const FString& dirname)
         FString firstname = dir_entries[0].name;
 
         if ( dir_entries[0].directory )
-          filename->setText(firstname + '/');
+          filename.setText(firstname + '/');
         else
-          filename->setText(firstname);
+          filename.setText(firstname);
       }
 
       printPath(directory);
-      filename->redraw();
-      filebrowser->redraw();
+      filename.redraw();
+      filebrowser.redraw();
       // fall through
     default:
       return 0;
@@ -821,12 +795,12 @@ int FFileDialog::changeDir (const FString& dirname)
 void FFileDialog::printPath (const FString& txt)
 {
   const FString& path = txt;
-  const uInt max_width = uInt(filebrowser->getWidth()) - 4;
+  const uInt max_width = uInt(filebrowser.getWidth()) - 4;
 
   if ( path.getLength() > max_width )
-    filebrowser->setText(".." + path.right(max_width - 2));
+    filebrowser.setText(".." + path.right(max_width - 2));
   else
-    filebrowser->setText(path);
+    filebrowser.setText(path);
 }
 
 //----------------------------------------------------------------------
@@ -845,24 +819,24 @@ const FString FFileDialog::getHomeDir()
 //----------------------------------------------------------------------
 void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 {
-  if ( filename->getText().includes('*')
-    || filename->getText().includes('?') )
+  if ( filename.getText().includes('*')
+    || filename.getText().includes('?') )
   {
-    setFilter(filename->getText());
+    setFilter(filename.getText());
     readDir();
-    filebrowser->redraw();
+    filebrowser.redraw();
   }
-  else if ( filename->getText().getLength() == 0 )
+  else if ( filename.getText().getLength() == 0 )
   {
     setFilter("*");
     readDir();
-    filebrowser->redraw();
+    filebrowser.redraw();
   }
-  else if ( filename->getText().trim() == FString("..")
-         || filename->getText().includes('/')
-         || filename->getText().includes('~') )
+  else if ( filename.getText().trim() == FString("..")
+         || filename.getText().includes('/')
+         || filename.getText().includes('~') )
   {
-    changeDir(filename->getText().trim());
+    changeDir(filename.getText().trim());
   }
   else
   {
@@ -871,7 +845,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
     if ( ! dir_entries.empty() )
     {
       std::vector<dir_entry>::const_iterator iter, last;
-      const FString& input = filename->getText().trim();
+      const FString& input = filename.getText().trim();
       iter = dir_entries.begin();
       last = dir_entries.end();
 
@@ -898,7 +872,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 {
-  const int n = filebrowser->currentItem();
+  const int n = filebrowser.currentItem();
 
   if ( n == 0 )
     return;
@@ -906,17 +880,17 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
   const FString& name = dir_entries[uLong(n - 1)].name;
 
   if ( dir_entries[uLong(n - 1)].directory )
-    filename->setText( name + '/' );
+    filename.setText( name + '/' );
   else
-    filename->setText( name );
+    filename.setText( name );
 
-  filename->redraw();
+  filename.redraw();
 }
 
 //----------------------------------------------------------------------
 void FFileDialog::cb_processClicked (FWidget*, data_ptr)
 {
-  const uLong n = uLong(filebrowser->currentItem() - 1);
+  const uLong n = uLong(filebrowser.currentItem() - 1);
 
   if ( dir_entries[n].directory )
     changeDir(dir_entries[n].name);

@@ -92,6 +92,8 @@ class FStatusKey : public FWidget
     virtual FString     getText() const;
 
     // Mutators
+    void                setKey (int);
+    void                setText (const FString&);
     void                setActive();
     void                unsetActive();
     bool                setMouseFocus(bool);
@@ -104,11 +106,6 @@ class FStatusKey : public FWidget
 
     // Event handler
     virtual void        onAccel (FAccelEvent*);
-
-  protected:
-    // Mutators
-    void                setKey (int);
-    void                setText (const FString&);
 
   private:
     // Disable copy constructor
@@ -150,6 +147,14 @@ inline FString FStatusKey::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
+inline void FStatusKey::setKey (int k)
+{ key = k; }
+
+//----------------------------------------------------------------------
+inline void FStatusKey::setText (const FString& txt)
+{ text = txt; }
+
+//----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()
 { active = false; }
 
@@ -168,14 +173,6 @@ inline bool FStatusKey::isActivated() const
 //----------------------------------------------------------------------
 inline bool FStatusKey::hasMouseFocus() const
 { return mouse_focus; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setKey (int k)
-{ key = k; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setText (const FString& txt)
-{ text = txt; }
 
 //----------------------------------------------------------------------
 inline FStatusBar* FStatusKey::getConnectedStatusbar() const

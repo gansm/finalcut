@@ -91,7 +91,11 @@ class Listbox : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Data Member
-    std::list<double>* double_list;
+    std::list<double>  double_list;
+    finalcut::FListBox list1;
+    finalcut::FListBox list2;
+    finalcut::FListBox list3;
+    finalcut::FButton  Quit;
 };
 #pragma pack(pop)
 
@@ -99,38 +103,41 @@ class Listbox : public finalcut::FDialog
 Listbox::Listbox (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
   , double_list()
+  , list1(this)
+  , list2(this)
+  , list3(this)
+  , Quit(this)
 {
   temp_str = new finalcut::FString;
 
   // listbox 1
-  finalcut::FListBox* list1 = new finalcut::FListBox (this);
-  list1->setGeometry(2, 1, 18, 10);
-  list1->setText ("FListBoxItem");
+  //----------
+  list1.setGeometry(2, 1, 18, 10);
+  list1.setText ("FListBoxItem");
 
   for (int i = 1; i < 30; i++)
-    list1->insert (L"----- " + (finalcut::FString() << i) + L" -----");
+    list1.insert (L"----- " + (finalcut::FString() << i) + L" -----");
 
   // listbox 2
-  double_list = new std::list<double>;
-
+  //----------
   for (double i = 1; i<=15; i++)
-    double_list->push_back(2 * i + (i / 100));
+    double_list.push_back(2 * i + (i / 100));
 
-  finalcut::FListBox* list2 = new finalcut::FListBox (this);
-  list2->setGeometry(21, 1, 10, 10);
-  list2->setText ("double");
+  list2.setGeometry(21, 1, 10, 10);
+  list2.setText ("double");
 
   //
   // Import via lazy conversion on print
   //
-  list2->insert (double_list, doubleToItem);
+  list2.insert (&double_list, doubleToItem);
 
   //
   // Direct import of the complete list
   //
-  //list2->insert (double_list->begin(), double_list->end(), doubleToString);
+  //list2.insert (double_list.begin(), double_list.end(), doubleToString);
 
   // listbox 3
+  //----------
   std::map<finalcut::FString, finalcut::FString> TLD;
   TLD["com"] = "Commercial";
   TLD["org"] = "Organization";
@@ -138,18 +145,16 @@ Listbox::Listbox (finalcut::FWidget* parent)
   TLD["edu"] = "Education";
   TLD["gov"] = "Government";
 
-  finalcut::FListBox* list3;
-  list3 = new finalcut::FListBox (TLD.begin(), TLD.end(), mapToString, this);
-  list3->setGeometry(32, 1, 21, 10);
-  list3->setText ("key: value");
+  list3.insert (TLD.begin(), TLD.end(), mapToString);
+  list3.setGeometry(32, 1, 21, 10);
+  list3.setText ("key: value");
 
   // Quit button
-  finalcut::FButton* Quit = new finalcut::FButton (this);
-  Quit->setGeometry(42, 12, 10, 1);
-  Quit->setText (L"&Quit");
+  Quit.setGeometry(42, 12, 10, 1);
+  Quit.setText (L"&Quit");
 
   // Add quit button function callback
-  Quit->addCallback
+  Quit.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
@@ -160,7 +165,6 @@ Listbox::Listbox (finalcut::FWidget* parent)
 Listbox::~Listbox()  // destructor
 {
   delete temp_str;
-  delete double_list;
 }
 
 //----------------------------------------------------------------------

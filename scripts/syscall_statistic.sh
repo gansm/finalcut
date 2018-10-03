@@ -1,3 +1,3 @@
 #!/bin/sh
-strace -c ../examples/.libs/ui
+LD_LIBRARY_PATH=../src/.libs strace -c ../examples/.libs/ui
 

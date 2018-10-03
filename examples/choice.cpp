@@ -96,68 +96,66 @@ int main (int argc, char* argv[])
   // Create the application object
   finalcut::FApplication app(argc, argv);
 
-  // Create a simple modal dialog box
-  finalcut::FDialog* dgl = new finalcut::FDialog(&app);
-  dgl->setModal();
-  dgl->setText ("UNIX select");
-  w = 20;
-  h = 13;
-  x = (app.getDesktopWidth() - w) / 2;
-  y = (app.getDesktopHeight() - h) / 2;
-  dgl->setGeometry (x, y, w, h);
+  {  // Create a simple modal dialog box in this scope
+    finalcut::FDialog dgl(&app);
+    dgl.setModal();
+    dgl.setText ("UNIX select");
+    w = 20;
+    h = 13;
+    x = (app.getDesktopWidth() - w) / 2;
+    y = (app.getDesktopHeight() - h) / 2;
+    dgl.setGeometry (x, y, w, h);
 
-  // Create a button group
-  finalcut::FButtonGroup* checkButtonGroup = new finalcut::FButtonGroup("choice", dgl);
-  checkButtonGroup->setGeometry (2, 1, 16, 7);
+    // Create a button group
+    finalcut::FButtonGroup checkButtonGroup("choice", &dgl);
+    checkButtonGroup.setGeometry (2, 1, 16, 7);
 
-  // Create radio buttons
-  std::vector<finalcut::FRadioButton*> os (9);
-  populateChoice (os, checkButtonGroup);
+    // Create radio buttons
+    std::vector<finalcut::FRadioButton*> os (9);
+    populateChoice (os, &checkButtonGroup);
 
-  // Set the radio button geometry
-  // => checkButtonGroup->setScrollSize(...) is not required
-  //    because a FButtonGroup is self-adjusting
-  for (uInt i = 0; i < os.size(); i++)
-    os[i]->setGeometry(1, int(1 + i), 12, 1);
+    // Set the radio button geometry
+    // => checkButtonGroup.setScrollSize(...) is not required
+    //    because a FButtonGroup is self-adjusting
+    for (uInt i = 0; i < os.size(); i++)
+      os[i]->setGeometry(1, int(1 + i), 12, 1);
 
-  preset(os);
+    preset(os);
 
-  // Scroll to the focused child element
-  finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
-  finalcut::FApplication::sendEvent(checkButtonGroup, &cfi);
+    // Scroll to the focused child element
+    finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
+    finalcut::FApplication::sendEvent(&checkButtonGroup, &cfi);
 
-  // Create a OK button
-  finalcut::FButton* ok = new finalcut::FButton("&OK", dgl);
-  ok->setGeometry (10, 9, 8, 1);
+    // Create a OK button
+    finalcut::FButton ok("&OK", &dgl);
+    ok.setGeometry (10, 9, 8, 1);
 
-  // Connect the button signal "clicked" with the callback function
-  ok->addCallback
-  (
-    "clicked",
-    F_FUNCTION_CALLBACK (&cb_quit),
-    dgl
-  );
+    // Connect the button signal "clicked" with the callback function
+    ok.addCallback
+    (
+      "clicked",
+      F_FUNCTION_CALLBACK (&cb_quit),
+      &dgl
+    );
 
-  // Show the dialog
-  dgl->show();
+    // Show the dialog
+    dgl.show();
 
-  // Get the checked radio button text
-  for (int n = 1; n <= int(checkButtonGroup->getCount()); n++)
-  {
-    if ( checkButtonGroup->isChecked(n) )
+    // Get the checked radio button text
+    for (int n = 1; n <= int(checkButtonGroup.getCount()); n++)
     {
-      label_text = checkButtonGroup->getButton(n)->getText();
-      break;
+      if ( checkButtonGroup.isChecked(n) )
+      {
+        label_text = checkButtonGroup.getButton(n)->getText();
+        break;
+      }
     }
-  }
+  }  // Hide and destroy the dialog object
 
-  // Hide and destroy the dialog object
-  delete dgl;
 
   // Create and show tooltip for two seconds
-  finalcut::FToolTip* tooltip = new finalcut::FToolTip(&app);
-  tooltip->setText ("You have chosen " + label_text);
-  tooltip->show();
+  finalcut::FToolTip tooltip(&app);
+  tooltip.setText ("You have chosen " + label_text);
+  tooltip.show();
   sleep(2);
-  delete tooltip;
 }

@@ -1,5 +1,5 @@
 /***********************************************************************
-* fstring-test.cpp - finalcut::FString unit tests                                *
+* fstring-test.cpp - FString unit tests                                *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

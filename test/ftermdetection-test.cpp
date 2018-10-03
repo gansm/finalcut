@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermdetection-test.cpp - finalcut::FTermDetection unit tests                  *
+* ftermdetection-test.cpp - FTermDetection unit tests                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -2198,7 +2198,8 @@ pid_t FTermDetectionTest::forkProcess()
     // Wait until the child process is ready for input
     while ( ! *shared_state && i < timeout )
     {
-      usleep(10000);  // wait 10 ms
+      // Wait 10 ms (= 10,000,000 ns)
+      nanosleep ((const struct timespec[]){{0, 10000000L}}, NULL);
       i++;
     }
 

@@ -58,58 +58,55 @@ class Scrollview : public finalcut::FScrollView
     void cb_go_north (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FButton* go_east;
-    finalcut::FButton* go_south;
-    finalcut::FButton* go_west;
-    finalcut::FButton* go_north;
+    wchar_t pointer_right;
+    wchar_t pointer_down;
+    wchar_t pointer_left;
+    wchar_t pointer_up;
+    finalcut::FButton go_east;
+    finalcut::FButton go_south;
+    finalcut::FButton go_west;
+    finalcut::FButton go_north;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
   : finalcut::FScrollView(parent)
-  , go_east()
-  , go_south()
-  , go_west()
-  , go_north()
+  , pointer_right(wchar_t(finalcut::fc::BlackRightPointingPointer))
+  , pointer_down(wchar_t(finalcut::fc::BlackDownPointingTriangle))
+  , pointer_left(wchar_t(finalcut::fc::BlackLeftPointingPointer))
+  , pointer_up(wchar_t(finalcut::fc::BlackUpPointingTriangle))
+  , go_east(pointer_right, this)
+  , go_south(pointer_down, this)
+  , go_west(pointer_left, this)
+  , go_north(pointer_up, this)
 {
-  // Create the four navigation buttons
-  wchar_t pointer_right = wchar_t(finalcut::fc::BlackRightPointingPointer);
-  go_east = new finalcut::FButton(pointer_right, this);
-  go_east->setGeometry (1, 1, 5, 1);
-
-  wchar_t pointer_down = wchar_t(finalcut::fc::BlackDownPointingTriangle);
-  go_south = new finalcut::FButton(pointer_down, this);
-  go_south->setGeometry (getScrollWidth() - 5, 1, 5, 1);
-
-  wchar_t pointer_left = wchar_t(finalcut::fc::BlackLeftPointingPointer);
-  go_west = new finalcut::FButton(pointer_left, this);
-  go_west->setGeometry (getScrollWidth() - 5, getScrollHeight() - 2, 5, 1);
-
-  wchar_t pointer_up = wchar_t(finalcut::fc::BlackUpPointingTriangle);
-  go_north = new finalcut::FButton(pointer_up, this);
-  go_north->setGeometry (1, getScrollHeight() - 2, 5, 1);
+  // Sets the navigation button geometry
+  go_east.setGeometry (1, 1, 5, 1);
+  go_south.setGeometry (getScrollWidth() - 5, 1, 5, 1);
+  go_west.setGeometry (getScrollWidth() - 5, getScrollHeight() - 2, 5, 1);
+  go_north.setGeometry (1, getScrollHeight() - 2, 5, 1);
 
   // Add scroll function callbacks to the buttons
-  go_east->addCallback
+  go_east.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Scrollview::cb_go_east)
   );
 
-  go_south->addCallback
+  go_south.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Scrollview::cb_go_south)
   );
 
-  go_west->addCallback
+  go_west.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Scrollview::cb_go_west)
   );
 
-  go_north->addCallback
+  go_north.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Scrollview::cb_go_north)
@@ -124,9 +121,9 @@ Scrollview::~Scrollview()
 void Scrollview::setScrollSize (int width, int height)
 {
   FScrollView::setScrollSize (width, height);
-  go_south->setPos (width - 5, 1);
-  go_west->setPos (width - 5, height - 1);
-  go_north->setPos (1, height - 1);
+  go_south.setPos (width - 5, 1);
+  go_west.setPos (width - 5, height - 1);
+  go_north.setPos (1, height - 1);
 }
 
 //----------------------------------------------------------------------
@@ -156,36 +153,36 @@ void Scrollview::draw()
 void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
 {
   scrollToX (getScrollWidth() - getViewportWidth() + 1);
-  go_south->setFocus();
-  go_east->redraw();
-  go_south->redraw();
+  go_south.setFocus();
+  go_east.redraw();
+  go_south.redraw();
 }
 
 //----------------------------------------------------------------------
 void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
 {
   scrollToY (getScrollHeight() - getViewportHeight() + 1);
-  go_west->setFocus();
-  go_south->redraw();
-  go_west->redraw();
+  go_west.setFocus();
+  go_south.redraw();
+  go_west.redraw();
 }
 
 //----------------------------------------------------------------------
 void Scrollview::cb_go_west (finalcut::FWidget*, data_ptr)
 {
   scrollToX (1);
-  go_north->setFocus();
-  go_west->redraw();
-  go_north->redraw();
+  go_north.setFocus();
+  go_west.redraw();
+  go_north.redraw();
 }
 
 //----------------------------------------------------------------------
 void Scrollview::cb_go_north (finalcut::FWidget*, data_ptr)
 {
   scrollToY (1);
-  go_east->setFocus();
-  go_north->redraw();
-  go_east->redraw();
+  go_east.setFocus();
+  go_north.redraw();
+  go_east.redraw();
 }
 
 
@@ -210,6 +207,11 @@ class Scrollviewdemo : public finalcut::FDialog
 
     // Callback method
     void cb_quit (finalcut::FWidget* = 0, data_ptr = 0);
+
+    // Data Members
+    Scrollview sview;
+    finalcut::FButton quit_btn;
+    finalcut::FLabel label;
 };
 #pragma pack(pop)
 
@@ -217,31 +219,31 @@ class Scrollviewdemo : public finalcut::FDialog
 //----------------------------------------------------------------------
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
+  , sview(this)
+  , quit_btn("&Quit", this)
+  , label(this)
 {
   setGeometry (16, 3, 50, 19);
   setText ("Scrolling viewport example");
 
   // The scrolling viewport widget
-  Scrollview* sview = new Scrollview (this);
-  sview->setGeometry(3, 2, 44, 12);
-  sview->setScrollSize(188, 124);
+  sview.setGeometry(3, 2, 44, 12);
+  sview.setScrollSize(188, 124);
 
   // Quit button
-  finalcut::FButton* button = new finalcut::FButton("&Quit", this);
-  button->setGeometry(37, 15, 10, 1);
+  quit_btn.setGeometry(37, 15, 10, 1);
 
   // Add function callback
-  button->addCallback
+  quit_btn.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Scrollviewdemo::cb_quit)
   );
 
   // Text label
-  finalcut::FLabel* label = new finalcut::FLabel (this);
-  label->setGeometry(2, 1, 46, 1);
-  label->setEmphasis();
-  *label << L"Use scrollbars to change the viewport position";
+  label.setGeometry(2, 1, 46, 1);
+  label.setEmphasis();
+  label << L"Use scrollbars to change the viewport position";
 }
 
 //----------------------------------------------------------------------

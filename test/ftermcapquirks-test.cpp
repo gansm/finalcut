@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermcapquirks-test.cpp - finalcut::FTermcapQuirks unit tests                  *
+* ftermcapquirks-test.cpp - FTermcapQuirks unit tests                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

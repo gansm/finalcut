@@ -1466,7 +1466,7 @@ void FTerm::init_locale()
   char* locale_xterm;
   const char* termtype = data->getTermType();
   locale_name = std::setlocale (LC_ALL, "");
-  locale_name = std::setlocale (LC_NUMERIC, "");
+  std::setlocale (LC_NUMERIC, "");
 
   // Get XTERM_LOCALE
   locale_xterm = std::getenv("XTERM_LOCALE");
@@ -1506,7 +1506,7 @@ void FTerm::init_locale()
 
   // Fallback to C
   if ( ! locale_name )
-    locale_name = C_STR("C");
+    std::setlocale (LC_ALL, "C");
 }
 
 //----------------------------------------------------------------------

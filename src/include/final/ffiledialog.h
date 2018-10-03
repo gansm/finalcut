@@ -163,8 +163,7 @@ class FFileDialog : public FDialog
 
     // Method
     void          init();
-    void          allocation (int, int);
-    void          deallocation();
+    void          widgetSettings (int, int);
     void          initCallbacks();
     bool          pattern_match (const char* const, char[]);
     void          clear();
@@ -191,11 +190,11 @@ class FFileDialog : public FDialog
     dirEntries    dir_entries;
     FString       directory;
     FString       filter_pattern;
-    FListBox*     filebrowser;
-    FLineEdit*    filename;
-    FCheckBox*    hidden;
-    FButton*      cancel;
-    FButton*      open;
+    FLineEdit     filename;
+    FListBox      filebrowser;
+    FCheckBox     hidden;
+    FButton       cancel;
+    FButton       open;
     DialogType    dlg_type;
     bool          show_hidden;
 

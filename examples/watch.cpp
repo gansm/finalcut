@@ -63,11 +63,12 @@ class Watch : public finalcut::FDialog
     Watch& operator = (const Watch&);
 
     // Data Members
-    bool               sec;
-    finalcut::FLabel*  time_label;
-    finalcut::FLabel*  time_str;
-    finalcut::FSwitch* clock_sw;
-    finalcut::FSwitch* seconds_sw;
+    bool              sec;
+    finalcut::FLabel  time_label;
+    finalcut::FLabel  time_str;
+    finalcut::FSwitch clock_sw;
+    finalcut::FSwitch seconds_sw;
+    finalcut::FButton quit_btn;
 };
 #pragma pack(pop)
 
@@ -75,49 +76,45 @@ class Watch : public finalcut::FDialog
 Watch::Watch (FWidget* parent)
   : finalcut::FDialog(parent)
   , sec(true)
-  , time_label(0)
-  , time_str(0)
-  , clock_sw(0)
-  , seconds_sw(0)
+  , time_label(L"Time", this)
+  , time_str(L"--:--:--", this)
+  , clock_sw(L"Clock", this)
+  , seconds_sw(L"Seconds", this)
+  , quit_btn(L"&Quit", this)
 {
   setText ("Watch");
   int pw = getParentWidget()->getWidth();
   setGeometry (1 + (pw - 22) / 2, 3, 22, 13);
 
-  // Create labels
-  time_label = new finalcut::FLabel(L"Time", this);
-  time_label->setGeometry(5, 2, 5, 1);
-  time_label->setEmphasis();
-  time_str = new finalcut::FLabel(L"--:--:--", this);
-  time_str->setGeometry(10, 2, 8, 1);
+  // Labels
+  time_label.setGeometry(5, 2, 5, 1);
+  time_label.setEmphasis();
+  time_str.setGeometry(10, 2, 8, 1);
 
-  // Create checkbox buttons
-  clock_sw = new finalcut::FSwitch(L"Clock", this);
-  seconds_sw = new finalcut::FSwitch(L"Seconds", this);
-  clock_sw->setGeometry(4, 4, 9, 1);
-  seconds_sw->setGeometry(2, 6, 11, 1);
-  sec = seconds_sw->setChecked();
+  // Checkbox buttons
+  clock_sw.setGeometry(4, 4, 9, 1);
+  seconds_sw.setGeometry(2, 6, 11, 1);
+  sec = seconds_sw.setChecked();
 
-  // Create button
-  finalcut::FButton* quit_btn = new finalcut::FButton(L"&Quit", this);
-  quit_btn->setGeometry(6, 9, 9, 1);
+  // Quit button
+  quit_btn.setGeometry(6, 9, 9, 1);
 
   // Connect switch signal "toggled" with a callback member function
-  clock_sw->addCallback
+  clock_sw.addCallback
   (
     "toggled",
     F_METHOD_CALLBACK (this, &Watch::cb_clock)
   );
 
   // Connect switch signal "toggled" with a callback member function
-  seconds_sw->addCallback
+  seconds_sw.addCallback
   (
     "toggled",
     F_METHOD_CALLBACK (this, &Watch::cb_seconds)
   );
 
   // Connect button signal "clicked" with a callback member function
-  quit_btn->addCallback
+  quit_btn.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
@@ -145,8 +142,8 @@ void Watch::printTime()
   else
     str.sprintf("%02d:%02d   ", now.tm_hour, now.tm_min);
 
-  *time_str = str;
-  time_str->redraw();
+  time_str = str;
+  time_str.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -164,7 +161,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Watch::cb_clock (finalcut::FWidget*, data_ptr)
 {
-  if ( clock_sw->isChecked() )
+  if ( clock_sw.isChecked() )
   {
     printTime();
     addTimer(1000);
@@ -172,29 +169,29 @@ void Watch::cb_clock (finalcut::FWidget*, data_ptr)
   else
   {
     delAllTimer();
-    *time_str = "--:--:--";
-    time_str->redraw();
+    time_str = "--:--:--";
+    time_str.redraw();
   }
 }
 
 //----------------------------------------------------------------------
 void Watch::cb_seconds (finalcut::FWidget*, data_ptr)
 {
-  if ( seconds_sw->isChecked() )
+  if ( seconds_sw.isChecked() )
     sec = true;
   else
     sec = false;
 
-  if ( clock_sw->isChecked() )
+  if ( clock_sw.isChecked() )
     printTime();
   else
   {
     if ( sec )
-      *time_str = "--:--:--";
+      time_str = "--:--:--";
     else
-      *time_str = "--:--   ";
+      time_str = "--:--   ";
 
-    time_str->redraw();
+    time_str.redraw();
   }
 }
 

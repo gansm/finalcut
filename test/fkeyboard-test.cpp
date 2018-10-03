@@ -356,7 +356,8 @@ void FKeyboardTest::escapeKeyTest()
   // Normal escape (needs a timeout)
   input("\033");
   processInput();
-  usleep(100000);
+  // Wait 100 ms (= 100,000,000 ns)
+  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_escape );
@@ -2085,7 +2086,8 @@ void FKeyboardTest::metaKeyTest()
   // shifted meta-O
   input("\033O");
   processInput();
-  usleep(100000);  // Substring keys needs a timeout
+  // Wait 100 ms - Substring keys needs a timeout
+  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_O );
@@ -2171,7 +2173,8 @@ void FKeyboardTest::metaKeyTest()
   // meta-[
   input("\033[");
   processInput();
-  usleep(100000);  // Substring keys needs a timeout
+  // Wait 100 ms - Substring keys needs a timeout
+  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_left_square_bracket );
@@ -2187,7 +2190,8 @@ void FKeyboardTest::metaKeyTest()
   // meta-]
   input("\033]");
   processInput();
-  usleep(100000);  // Substring keys needs a timeout
+  // Wait 100 ms - Substring keys needs a timeout
+  nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
   keyboard->escapeKeyHandling();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
   CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fmkey_right_square_bracket );
