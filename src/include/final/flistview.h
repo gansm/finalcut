@@ -490,24 +490,24 @@ inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const FStringList& cols, data_ptr d )
+    FListView::insert (const FStringList& cols, data_ptr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const FStringList& cols
-                    , FObjectIterator parent_iter )
+    FListView::insert ( const FStringList& cols
+                      , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<long>& cols, data_ptr d )
+    FListView::insert (const std::vector<long>& cols, data_ptr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<long>& cols
-                    , FObjectIterator parent_iter )
+    FListView::insert ( const std::vector<long>& cols
+                      , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
