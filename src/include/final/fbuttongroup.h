@@ -87,10 +87,10 @@ class FButtonGroup : public FScrollView
     FString&       getText();
 
     // Mutator
-    bool           setEnable(bool);
-    bool           setEnable();
-    bool           unsetEnable();
-    bool           setDisable();
+    virtual bool   setEnable(bool);
+    virtual bool   setEnable();
+    virtual bool   unsetEnable();
+    virtual bool   setDisable();
     void           setText (const FString&);
 
     // Inquiries
@@ -99,16 +99,16 @@ class FButtonGroup : public FScrollView
     bool           hasCheckedButton() const;
 
     // Methods
-    void           hide();
+    virtual void   hide();
     void           insert (FToggleButton*);
     void           remove (FToggleButton*);
     void           checkScrollSize (FToggleButton*);
     void           checkScrollSize (const FRect&);
 
     // Event handlers
-    void           onMouseDown (FMouseEvent*);
-    void           onAccel (FAccelEvent*);
-    void           onFocusIn (FFocusEvent*);
+    virtual void   onMouseDown (FMouseEvent*);
+    virtual void   onAccel (FAccelEvent*);
+    virtual void   onFocusIn (FFocusEvent*);
 
     // Callback method
     void           cb_buttonToggled (FWidget*, data_ptr);

@@ -177,7 +177,7 @@ class FKeyboard
     FKeyboardCommand    escape_key_cmd;
 
     static timeval      time_keypressed;
-    fc::fkeymap*        termcap_map;
+    fc::fkeymap*        key_map;
 
 #if defined(__linux__)
     #undef linux

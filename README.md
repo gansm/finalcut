@@ -1,4 +1,5 @@
-![The Final Cut](logo/png/finalcut-logo.png)
+![FINAL CUT](logo/svg/finalcut-logo.svg)
+============================================
 
 ### Building and code analysis
 *Travis CI:*<br />
@@ -9,6 +10,9 @@
 &#160;&#160;&#160;&#160;&#160;[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/gansm/finalcut.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gansm/finalcut/context:cpp) <br />
 *Class Reference:*<br />
 &#160;&#160;&#160;&#160;&#160;[![documented](https://codedocs.xyz/gansm/finalcut.svg)](https://codedocs.xyz/gansm/finalcut/hierarchy.html)
+
+The Final Cut is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
 
 ### Installation
 ```bash
@@ -29,29 +33,47 @@
 * Cygwin
 * Solaris
 
-The Final Cut
-=============
-The Final Cut is a C++ class library and widget toolkit with full mouse support for creating a [text-based user interface](https://en.wikipedia.org/wiki/Text-based_user_interface). The library supports the programmer to develop an application for the text console. It allows the simultaneous handling of multiple text windows on the screen.
-The C++ class design was inspired by the Qt framework. It provides common controls like dialog boxes, push buttons, check boxes, radio buttons, input lines, list boxes, status bars and so on.
+### First steps
 
-![](doc/fileopen-dialog.png)
+[How to use the library](doc/first-steps.md)
 
-![](doc/progress-bar.png)
+### Screenshots
 
-![](doc/textview.png)
+The FFileDialog widget:
 
-![](doc/Mandelbrot.png)
+![FFileDialog](doc/fileopen-dialog.png)
+
+
+The Final Cut FProgressbar widget:
+
+![FProgressbar](doc/progress-bar.png)
+
+
+Scrollable text in the FTextView widget:
+
+ ![FTextView](doc/textview.png)
+
+
+The Mandelbrot set example:
+
+ ![Mandelbrot set](doc/Mandelbrot.png)
 
 
 newfont
 -------
 A [graphical text font](fonts/) for X11 and the Linux console.
 
-![](doc/newfont1.png)
+![ui example in newfont mode](doc/newfont1.png)
 
-![](doc/newfont2.png)
 
-![](doc/calculator.png)
+Newfont drive symbols:
+
+![drive symbols](doc/newfont2.png)
+
+
+The calculator example in newfont mode:
+
+![calculator](doc/calculator.png)
 
 
 Virtual terminal

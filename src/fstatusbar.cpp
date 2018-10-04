@@ -99,7 +99,7 @@ bool FStatusKey::setMouseFocus(bool on)
   if ( on == mouse_focus )
     return true;
 
-  return mouse_focus = ( on ) ? true : false;
+  return mouse_focus = on;
 }
 
 

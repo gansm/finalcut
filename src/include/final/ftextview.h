@@ -80,7 +80,7 @@ class FTextView : public FWidget
     explicit FTextView (FWidget* = 0);
 
     // Destructor
-    ~FTextView();
+    virtual ~FTextView();
 
     // Accessors
     const char*        getClassName() const;
@@ -90,7 +90,7 @@ class FTextView : public FWidget
     const FStringList& getLines() const;
 
     // Mutators
-    void               setGeometry (int, int, int, int, bool = true);
+    virtual void       setGeometry (int, int, int, int, bool = true);
     void               setText (const FString&);
     void               scrollToX (int);
     void               scrollToY (int);
@@ -99,7 +99,7 @@ class FTextView : public FWidget
     void               scrollBy (int, int);
 
     // Methods
-    void               hide();
+    virtual void       hide();
     void               append (const FString&);
     void               insert (const FString&, int);
     void               replaceRange (const FString&, int, int);
@@ -108,17 +108,17 @@ class FTextView : public FWidget
     void               clear();
 
     // Event handlers
-    void               onKeyPress (FKeyEvent*);
-    void               onMouseDown (FMouseEvent*);
-    void               onMouseUp (FMouseEvent*);
-    void               onMouseMove (FMouseEvent*);
-    void               onWheel (FWheelEvent*);
-    void               onFocusIn (FFocusEvent*);
-    void               onFocusOut (FFocusEvent*);
+    virtual void       onKeyPress (FKeyEvent*);
+    virtual void       onMouseDown (FMouseEvent*);
+    virtual void       onMouseUp (FMouseEvent*);
+    virtual void       onMouseMove (FMouseEvent*);
+    virtual void       onWheel (FWheelEvent*);
+    virtual void       onFocusIn (FFocusEvent*);
+    virtual void       onFocusOut (FFocusEvent*);
 
   protected:
     // Method
-    void               adjustSize();
+    virtual void       adjustSize();
 
   private:
     // Disable copy constructor
@@ -133,7 +133,7 @@ class FTextView : public FWidget
 
     // Methods
     void               init();
-    void               draw();
+    virtual void       draw();
     void               drawText();
     void               processChanged();
     void               drawHBar();

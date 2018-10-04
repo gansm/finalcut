@@ -31,8 +31,8 @@ FTermDetection::terminalType FTermDetection::terminal_type = \
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 FTermDetection::colorEnv     FTermDetection::color_env;
 FTermDetection::secondaryDA  FTermDetection::secondary_da;
+FTermData*     FTermDetection::fterm_data = 0;
 char           FTermDetection::termtype[256] = { };
-char           FTermDetection::termfilename[256] = { };
 char           FTermDetection::ttytypename[256] = { };
 bool           FTermDetection::decscusr_support;
 bool           FTermDetection::terminal_detection;
@@ -89,13 +89,9 @@ FTermDetection::~FTermDetection()  // destructor
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
-void FTermDetection::setTermFileName (char term_filename[])
+void FTermDetection::setTermData (FTermData* data)
 {
-  if ( ! term_filename )
-    return;
-
-  std::strncpy (termfilename, term_filename, sizeof(termfilename));
-  termfilename[sizeof(termfilename) - 1] = '\0';
+  fterm_data = data;
 }
 
 //----------------------------------------------------------------------
@@ -128,6 +124,7 @@ void FTermDetection::getSystemTermType()
 {
   // Import the untrusted environment variable TERM
   const char* const& term_env = std::getenv(C_STR("TERM"));
+  const char* termfilename = fterm_data->getTermFileName();
 
   if ( term_env )
   {
@@ -164,6 +161,7 @@ bool FTermDetection::getTTYtype()
   // vt100  ttys0
 
   // Get term basename
+  const char* termfilename = fterm_data->getTermFileName();
   const char* term_basename = std::strrchr(termfilename, '/');
 
   if ( term_basename == 0 )
@@ -221,6 +219,7 @@ bool FTermDetection::getTTYSFileEntry()
   // Analyse /etc/ttys and get the term name
 
   // get term basename
+  const char* termfilename = fterm_data->getTermFileName();
   const char* term_basename = std::strrchr(termfilename, '/');
 
   if ( term_basename == 0 )

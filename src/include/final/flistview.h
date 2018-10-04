@@ -84,7 +84,7 @@ class FListViewItem : public FObject
                   , FObjectIterator );
 
     // Destructor
-    ~FListViewItem();
+    virtual ~FListViewItem();
 
     // Assignment operator (=)
     FListViewItem& operator = (const FListViewItem&);
@@ -92,12 +92,14 @@ class FListViewItem : public FObject
     // Accessors
     const char*       getClassName() const;
     uInt              getColumnCount() const;
+    int               getSortColumn() const;
     FString           getText (int) const;
+    FWidget::data_ptr getData() const;
     uInt              getDepth() const;
 
     // Mutator
     void              setText (int, const FString&);
-
+    void              setData (FWidget::data_ptr);
 
     // Inquiry
     bool              isExpand() const;
@@ -113,6 +115,8 @@ class FListViewItem : public FObject
     bool              isExpandable() const;
 
     // Methods
+    template<typename Compare>
+    void              sort (Compare);
     FObjectIterator   appendItem (FListViewItem*);
     void              replaceControlCodes();
     int               getVisibleLines();
@@ -121,6 +125,7 @@ class FListViewItem : public FObject
     // Data Members
     FStringList       column_list;
     FWidget::data_ptr data_pointer;
+    FObjectIterator   root;
     int               visible_lines;
     bool              expandable;
     bool              is_expand;
@@ -140,6 +145,14 @@ inline const char* FListViewItem::getClassName() const
 //----------------------------------------------------------------------
 inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_list.size()); }
+
+//----------------------------------------------------------------------
+inline FWidget::data_ptr FListViewItem::getData() const
+{ return data_pointer; }
+
+//----------------------------------------------------------------------
+inline void FListViewItem::setData (FWidget::data_ptr data)
+{ data_pointer = data; }
 
 //----------------------------------------------------------------------
 inline bool FListViewItem::isExpand() const
@@ -166,11 +179,8 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    FListViewIterator ();
+    explicit FListViewIterator ();
     FListViewIterator (FObjectIterator);
-
-    // Destructor
-    ~FListViewIterator();
 
     // Overloaded operators
     FListViewIterator& operator ++ ();     // prefix
@@ -246,19 +256,30 @@ class FListView : public FWidget
     explicit FListView (FWidget* = 0);
 
     // Destructor
-    ~FListView();
+    virtual ~FListView();
 
     // Accessors
     const char*          getClassName() const;
     uInt                 getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
+    fc::sorting_type     getColumnSortType (int) const;
+    fc::sorting_order    getSortOrder() const;
+    int                  getSortColumn() const;
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    void                 setGeometry (int, int, int, int, bool = true);
+    virtual void         setGeometry (int, int, int, int, bool = true);
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
+    void                 setColumnSortType (int,fc::sorting_type \
+                                                    = fc::by_name);
+    void                 setColumnSort (int, fc::sorting_order \
+                                                 = fc::ascending);
+    template<typename Compare>
+    void                 setUserAscendingCompare (Compare);
+    template<typename Compare>
+    void                 setUserDescendingCompare (Compare);
     bool                 setTreeView (bool);
     bool                 setTreeView();
     bool                 unsetTreeView();
@@ -283,17 +304,18 @@ class FListView : public FWidget
                                 , FObjectIterator );
     FObjectIterator      beginOfList();
     FObjectIterator      endOfList();
+    virtual void         sort();
 
     // Event handlers
-    void                 onKeyPress (FKeyEvent*);
-    void                 onMouseDown (FMouseEvent*);
-    void                 onMouseUp (FMouseEvent*);
-    void                 onMouseMove (FMouseEvent*);
-    void                 onMouseDoubleClick (FMouseEvent*);
-    void                 onWheel (FWheelEvent*);
-    void                 onTimer (FTimerEvent*);
-    void                 onFocusIn (FFocusEvent*);
-    void                 onFocusOut (FFocusEvent*);
+    virtual void         onKeyPress (FKeyEvent*);
+    virtual void         onMouseDown (FMouseEvent*);
+    virtual void         onMouseUp (FMouseEvent*);
+    virtual void         onMouseMove (FMouseEvent*);
+    virtual void         onMouseDoubleClick (FMouseEvent*);
+    virtual void         onWheel (FWheelEvent*);
+    virtual void         onTimer (FTimerEvent*);
+    virtual void         onFocusIn (FFocusEvent*);
+    virtual void         onFocusOut (FFocusEvent*);
 
     // Data Members
     static FObjectIterator null_iter;
@@ -301,12 +323,13 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport();
-    void                 adjustSize();
+    virtual void         adjustSize();
 
   private:
     // Typedef
     struct Header;  // forward declaration
     typedef std::vector<Header> headerItems;
+    typedef std::vector<fc::sorting_type> sortTypes;
 
     // Constants
     static const int USE_MAX_SIZE = -1;
@@ -319,8 +342,10 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
+    template<typename Compare>
+    void                 sort (Compare);
     uInt                 getAlignOffset (fc::text_alignment, uInt, uInt);
-    void                 draw();
+    virtual void         draw();
     void                 drawColumnLabels();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
@@ -330,6 +355,7 @@ class FListView : public FWidget
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
+    int                  determineLineWidth (FListViewItem* item);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
     void                 wheelUp (int);
@@ -383,6 +409,11 @@ class FListView : public FWidget
     int                  xoffset;
     int                  nf_offset;
     int                  max_line_width;
+    int                  sort_column;
+    sortTypes            sort_type;
+    fc::sorting_order    sort_order;
+    bool (*user_defined_ascending) (const FObject*, const FObject*);
+    bool (*user_defined_descending) (const FObject*, const FObject*);
 
     // Friend class
     friend class FListViewItem;
@@ -399,14 +430,11 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
+    explicit Header()
       : name()
       , width (0)
       , fixed_width (false)
       , alignment (fc::alignLeft)
-    { }
-
-    ~Header()
     { }
 
     FString name;
@@ -423,12 +451,30 @@ inline const char* FListView::getClassName() const
 { return "FListView"; }
 
 //----------------------------------------------------------------------
+inline fc::sorting_order FListView::getSortOrder() const
+{ return sort_order; }
+
+//----------------------------------------------------------------------
+inline int FListView::getSortColumn() const
+{ return sort_column; }
+
+//----------------------------------------------------------------------
 inline FListViewItem* FListView::getCurrentItem()
 { return static_cast<FListViewItem*>(*current_iter); }
 
 //----------------------------------------------------------------------
+template<typename Compare>
+inline void FListView::setUserAscendingCompare (Compare cmp)
+{ user_defined_ascending = cmp; }
+
+//----------------------------------------------------------------------
+template<typename Compare>
+inline void FListView::setUserDescendingCompare (Compare cmp)
+{ user_defined_descending = cmp; }
+
+//----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
-{ return tree_view = ( on ) ? true : false; }
+{ return tree_view = on; }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()
@@ -444,24 +490,24 @@ inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const FStringList& cols, data_ptr d )
+    FListView::insert (const FStringList& cols, data_ptr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const FStringList& cols
-                    , FObjectIterator parent_iter )
+    FListView::insert ( const FStringList& cols
+                      , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<long>& cols, data_ptr d )
+    FListView::insert (const std::vector<long>& cols, data_ptr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-  FListView::insert ( const std::vector<long>& cols
-                    , FObjectIterator parent_iter )
+    FListView::insert ( const std::vector<long>& cols
+                      , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 
 //----------------------------------------------------------------------

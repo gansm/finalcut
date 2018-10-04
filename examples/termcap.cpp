@@ -39,18 +39,32 @@ void booleans();
 void numeric();
 void string(finalcut::FTermcap::tcap_map*&);
 
+
+//----------------------------------------------------------------------
+// struct data
+//----------------------------------------------------------------------
+
 #pragma pack(push)
 #pragma pack(1)
 
-struct termcap_string
+struct data
 {
-  const std::string name;
-  const finalcut::fc::termcaps cap;
+  static int getNumberOfItems();
+
+  struct termcap_string
+  {
+    const std::string name;
+    const finalcut::fc::termcaps cap;
+  };
+
+  static termcap_string strings[];
 };
 #pragma pack(pop)
 
-// String data array
-static const termcap_string strings[] =
+//----------------------------------------------------------------------
+// struct data - string data array
+//----------------------------------------------------------------------
+data::termcap_string data::strings[] =
 {
   { "t_bell", finalcut::fc::t_bell },
   { "t_erase_chars", finalcut::fc::t_erase_chars },
@@ -136,7 +150,12 @@ static const termcap_string strings[] =
   { "t_key_mouse", finalcut::fc::t_key_mouse }
 };
 
-const int last_item = int ( sizeof(strings) / sizeof(strings[0]) ) - 1;
+// data inline functions
+//----------------------------------------------------------------------
+inline int data::getNumberOfItems()
+{
+  return int ( sizeof(strings) / sizeof(strings[0]) ) - 1;
+}
 
 
 //----------------------------------------------------------------------
@@ -272,10 +291,10 @@ void string(finalcut::FTermcap::tcap_map*& tcap)
 {
   std::cout << "\r\n[String]\r\n";
 
-  for (int n = 0; n <= last_item; n++ )
+  for (int n = 0; n <= data::getNumberOfItems(); n++ )
   {
-    const std::string name = strings[n].name;
-    const finalcut::fc::termcaps cap = strings[n].cap;
+    const std::string name = data::strings[n].name;
+    const finalcut::fc::termcaps cap = data::strings[n].cap;
     tcapString (name, tcap[cap].string);
   }
 }

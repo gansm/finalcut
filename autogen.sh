@@ -3,7 +3,13 @@
 if test "$1" = "update"
 then
   # Update generated configuration files
-  autoreconf --force --install --verbose --warnings=all
+  if which autoreconf >/dev/null
+  then
+    autoreconf --force --install --verbose --warnings=all
+  else
+    echo "Update failed, please install autoconf first"
+    exit 1
+  fi
 else
   # Set up an m4 environment
   aclocal

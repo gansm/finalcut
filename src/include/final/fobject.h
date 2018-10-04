@@ -71,37 +71,38 @@ class FObject
     virtual ~FObject();
 
     // Accessors
-    virtual const char*     getClassName() const;
-    FObject*                getParent() const;
-    FObject*                getChild (int) const;
-    const FObjectList&      getChildren() const;
-    int                     numOfChildren() const;
-    FObjectIterator         begin();
-    FObjectIterator         end();
-    constFObjectIterator    begin() const;
-    constFObjectIterator    end() const;
+    virtual const char*  getClassName() const;
+    FObject*             getParent() const;
+    FObject*             getChild (int) const;
+    FObjectList&         getChildren();
+    const FObjectList&   getChildren() const;
+    int                  numOfChildren() const;
+    FObjectIterator      begin();
+    FObjectIterator      end();
+    constFObjectIterator begin() const;
+    constFObjectIterator end() const;
 
     // Inquiries
-    bool                    hasParent() const;
-    bool                    hasChildren() const;
-    bool                    isChild (FObject*) const;
-    bool                    isDirectChild (FObject*) const;
-    bool                    isWidget() const;
-    bool                    isInstanceOf (const char[]) const;
-    bool                    isTimerInUpdating() const;
+    bool                 hasParent() const;
+    bool                 hasChildren() const;
+    bool                 isChild (FObject*) const;
+    bool                 isDirectChild (FObject*) const;
+    bool                 isWidget() const;
+    bool                 isInstanceOf (const char[]) const;
+    bool                 isTimerInUpdating() const;
 
     // Methods
-    void                    removeParent();
-    void                    addChild (FObject*);
-    void                    delChild (FObject*);
+    void                 removeParent();
+    void                 addChild (FObject*);
+    void                 delChild (FObject*);
 
     // Timer methods
-    static void             getCurrentTime (timeval*);
-    static bool             isTimeout (timeval*, long);
-    int                     addTimer (int);
-    bool                    delTimer (int);
-    bool                    delOwnTimer();
-    bool                    delAllTimer();
+    static void          getCurrentTime (timeval*);
+    static bool          isTimeout (timeval*, long);
+    int                  addTimer (int);
+    bool                 delTimer (int);
+    bool                 delOwnTimer();
+    bool                 delAllTimer();
 
   protected:
     struct timer_data
@@ -115,13 +116,18 @@ class FObject
     // Typedef
     typedef std::vector<timer_data> TimerList;
 
-    // Event handler
-    virtual bool event (FEvent*);
-    virtual void onTimer (FTimerEvent*);
+    // Accessor
+    TimerList*           getTimerList() const;
 
-    // Data Members
-    static TimerList* timer_list;
-    bool              widget_object;
+    // Method
+    uInt                 processTimerEvent();
+
+    // Event handler
+    virtual bool         event (FEvent*);
+    virtual void         onTimer (FTimerEvent*);
+
+    // Data Member
+    bool widget_object;
 
   private:
     // Disable copy constructor
@@ -130,11 +136,15 @@ class FObject
     // Disable assignment operator (=)
     FObject& operator = (const FObject&);
 
+    // Method
+    virtual void performTimerAction (const FObject*, const FEvent*);
+
     // Data Members
-    FObject*     parent_obj;
-    FObjectList  children_list;
-    bool         has_parent;
-    static bool  timer_modify_lock;
+    FObject*          parent_obj;
+    FObjectList       children_list;
+    bool              has_parent;
+    static bool       timer_modify_lock;
+    static TimerList* timer_list;
 };
 
 #pragma pack(pop)
@@ -146,6 +156,10 @@ inline const char* FObject::getClassName() const
 //----------------------------------------------------------------------
 inline FObject* FObject::getParent() const
 { return parent_obj; }
+
+//----------------------------------------------------------------------
+inline FObject::FObjectList& FObject::getChildren()
+{ return children_list; }
 
 //----------------------------------------------------------------------
 inline const FObject::FObjectList& FObject::getChildren() const
@@ -195,7 +209,9 @@ inline bool FObject::isInstanceOf (const char classname[]) const
 inline bool FObject::isTimerInUpdating() const
 { return timer_modify_lock; }
 
-}  // namespace finalcut
+//----------------------------------------------------------------------
+inline FObject::TimerList* FObject::getTimerList() const
+{ return timer_list; }
 
 
 //----------------------------------------------------------------------
@@ -251,5 +267,7 @@ static inline bool operator < (const timeval& t1, const timeval& t2)
   return (t1.tv_sec < t2.tv_sec)
       || (t1.tv_sec == t2.tv_sec && t1.tv_usec < t2.tv_usec);
 }
+
+}  // namespace finalcut
 
 #endif  // FOBJECT_H

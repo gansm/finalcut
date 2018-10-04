@@ -90,9 +90,9 @@ class FRadioButton : public FToggleButton
     FRadioButton& operator = (const FRadioButton&);
 
     // Methods
-    void init();
-    void draw();
-    void drawRadioButton();
+    void         init();
+    virtual void draw();
+    void         drawRadioButton();
 };
 #pragma pack(pop)
 

@@ -1150,51 +1150,6 @@ void FApplication::processResizeEvent()
 }
 
 //----------------------------------------------------------------------
-int FApplication::processTimerEvent()
-{
-  FObject::TimerList::iterator iter, last;
-  timeval currentTime;
-  int activated = 0;
-
-  getCurrentTime (&currentTime);
-
-  if ( isTimerInUpdating() )
-    return 0;
-
-  if ( ! timer_list )
-    return 0;
-
-  if ( timer_list->empty() )
-    return 0;
-
-  iter = timer_list->begin();
-  last  = timer_list->end();
-
-  while ( iter != last )
-  {
-    if ( ! iter->id
-      || ! iter->object
-      || currentTime < iter->timeout )  // no timer expired
-      break;
-
-    iter->timeout += iter->interval;
-
-    if ( iter->timeout < currentTime )
-      iter->timeout = currentTime + iter->interval;
-
-    if ( iter->interval.tv_usec > 0 || iter->interval.tv_sec > 0 )
-      activated++;
-
-    FTimerEvent t_ev(fc::Timer_Event, iter->id);
-    sendEvent(iter->object, &t_ev);
-
-    ++iter;
-  }
-
-  return activated;
-}
-
-//----------------------------------------------------------------------
 void FApplication::processCloseWidget()
 {
   updateTerminal (FVTerm::stop_refresh);
@@ -1219,7 +1174,7 @@ void FApplication::processCloseWidget()
 //----------------------------------------------------------------------
 bool FApplication::processNextEvent()
 {
-  int num_events = 0;
+  uInt num_events = 0;
 
   processKeyboardEvent();
   processMouseEvent();
@@ -1231,6 +1186,13 @@ bool FApplication::processNextEvent()
   num_events += processTimerEvent();
 
   return ( num_events > 0 );
+}
+
+//----------------------------------------------------------------------
+void FApplication::performTimerAction ( const FObject* receiver
+                                      , const FEvent* event )
+{
+  sendEvent(receiver, event);
 }
 
 }  // namespace finalcut

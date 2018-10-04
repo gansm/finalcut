@@ -82,7 +82,7 @@ class FProgressbar : public FWidget
 
     // Mutators
     void         setPercentage (int);
-    void         setGeometry (int, int, int, int, bool = true);
+    virtual void setGeometry (int, int, int, int, bool = true);
     bool         setShadow (bool);
     bool         setShadow();
     bool         unsetShadow();
@@ -91,7 +91,7 @@ class FProgressbar : public FWidget
     bool         hasShadow();
 
     // Methods
-    void         hide();
+    virtual void hide();
     void         reset();
 
   private:

@@ -153,7 +153,7 @@ class FListBox : public FWidget
     FListBox (Container, LazyConverter, FWidget* = 0);
 
     // Destructor
-    ~FListBox();
+    virtual  ~FListBox();
 
     // Accessors
     const char*  getClassName() const;
@@ -173,14 +173,14 @@ class FListBox : public FWidget
     void         showInsideBrackets (int, fc::brackets_type);
     void         showNoBrackets (int);
     void         showNoBrackets (listBoxItems::iterator);
-    void         setGeometry (int, int, int, int, bool = true);
+    virtual void setGeometry (int, int, int, int, bool = true);
     void         setMultiSelection (bool);
     void         setMultiSelection ();
     void         unsetMultiSelection ();
-    bool         setDisable();
-    bool         setFocus (bool);
-    bool         setFocus();
-    bool         unsetFocus();
+    virtual bool setDisable();
+    virtual bool setFocus (bool);
+    virtual bool setFocus();
+    virtual bool unsetFocus();
     void         setText (const FString&);
 
     // Inquiries
@@ -191,7 +191,7 @@ class FListBox : public FWidget
     bool         hasBrackets (listBoxItems::iterator) const;
 
     // Methods
-    void         hide();
+    virtual void hide();
     template <class Iterator, class InsertConverter>
     void         insert (Iterator, Iterator, InsertConverter);
     template <class Container, class LazyConverter>
@@ -209,21 +209,20 @@ class FListBox : public FWidget
     void         clear();
 
     // Event handlers
-    void         onKeyPress (FKeyEvent*);
-    void         onMouseDown (FMouseEvent*);
-    void         onMouseUp (FMouseEvent*);
-    void         onMouseMove (FMouseEvent*);
-    void         onMouseDoubleClick (FMouseEvent*);
-    void         onWheel (FWheelEvent*);
-    void         onTimer (FTimerEvent*);
-    void         onFocusIn (FFocusEvent*);
-    void         onFocusOut (FFocusEvent*);
-
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onMouseDoubleClick (FMouseEvent*);
+    virtual void onWheel (FWheelEvent*);
+    virtual void onTimer (FTimerEvent*);
+    virtual void onFocusIn (FFocusEvent*);
+    virtual void onFocusOut (FFocusEvent*);
 
   protected:
     // Methods
-    void adjustYOffset();
-    void adjustSize();
+    void         adjustYOffset();
+    virtual void adjustSize();
 
   private:
     // Enumeration
@@ -244,53 +243,53 @@ class FListBox : public FWidget
     static FString& getString (listBoxItems::iterator);
 
     // Methods
-    void        init();
-    void        draw();
-    void        drawLabel();
-    void        drawList();
-    void        drawListLine (int, listBoxItems::iterator, bool);
-    void        printLeftBracket (fc::brackets_type);
-    void        printRightBracket (fc::brackets_type);
-    void        drawListBracketsLine (int, listBoxItems::iterator, bool);
-    void        setLineAttributes (int, bool, bool, bool&);
-    void        unsetAttributes();
-    void        updateDrawing (bool, bool);
-    void        recalculateHorizontalBar (int, bool);
-    void        recalculateVerticalBar (int);
-    void        getWidgetFocus();
-    void        multiSelection (int);
-    void        multiSelectionUpTo (int);
-    void        wheelUp (int);
-    void        wheelDown (int);
-    bool        dragScrollUp();
-    bool        dragScrollDown();
-    void        dragUp (int);
-    void        dragDown (int);
-    void        stopDragScroll();
-    void        prevListItem (int);
-    void        nextListItem (int);
-    void        scrollToX (int);
-    void        scrollToY (int);
-    void        scrollLeft (int);
-    void        scrollRight (int);
-    void        keyUp();
-    void        keyDown();
-    void        keyLeft();
-    void        keyRight();
-    void        keyPgUp();
-    void        keyPgDn();
-    void        keyHome();
-    void        keyEnd();
-    bool        keyEsc();
-    void        keyEnter();
-    bool        keySpace();
-    bool        keyInsert();
-    bool        keyBackspace();
-    bool        keyIncSearchInput (int);
-    void        processClick();
-    void        processSelect();
-    void        processChanged();
-    void        lazyConvert (listBoxItems::iterator, int);
+    void         init();
+    virtual void draw();
+    void         drawLabel();
+    void         drawList();
+    void         drawListLine (int, listBoxItems::iterator, bool);
+    void         printLeftBracket (fc::brackets_type);
+    void         printRightBracket (fc::brackets_type);
+    void         drawListBracketsLine (int, listBoxItems::iterator, bool);
+    void         setLineAttributes (int, bool, bool, bool&);
+    void         unsetAttributes();
+    void         updateDrawing (bool, bool);
+    void         recalculateHorizontalBar (int, bool);
+    void         recalculateVerticalBar (int);
+    void         getWidgetFocus();
+    void         multiSelection (int);
+    void         multiSelectionUpTo (int);
+    void         wheelUp (int);
+    void         wheelDown (int);
+    bool         dragScrollUp();
+    bool         dragScrollDown();
+    void         dragUp (int);
+    void         dragDown (int);
+    void         stopDragScroll();
+    void         prevListItem (int);
+    void         nextListItem (int);
+    void         scrollToX (int);
+    void         scrollToY (int);
+    void         scrollLeft (int);
+    void         scrollRight (int);
+    void         keyUp();
+    void         keyDown();
+    void         keyLeft();
+    void         keyRight();
+    void         keyPgUp();
+    void         keyPgDn();
+    void         keyHome();
+    void         keyEnd();
+    bool         keyEsc();
+    void         keyEnter();
+    bool         keySpace();
+    bool         keyInsert();
+    bool         keyBackspace();
+    bool         keyIncSearchInput (int);
+    void         processClick();
+    void         processSelect();
+    void         processChanged();
+    void         lazyConvert (listBoxItems::iterator, int);
     listBoxItems::iterator index2iterator (int);
 
     // Callback methods
@@ -298,9 +297,9 @@ class FListBox : public FWidget
     void         cb_HBarChange (FWidget*, data_ptr);
 
     // Function Pointer
-    void        (*convertToItem) ( FListBoxItem&
-                                 , FWidget::data_ptr
-                                 , int index );
+    void         (*convertToItem) ( FListBoxItem&
+                                  , FWidget::data_ptr
+                                  , int index );
 
     // Data Members
     listBoxItems      itemlist;

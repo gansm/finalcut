@@ -38,7 +38,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
-  , item(0)
+  , item()
   , super_menu(0)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
@@ -53,7 +53,7 @@ FMenu::FMenu(FWidget* parent)
 //----------------------------------------------------------------------
 FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow(parent)
-  , item(0)
+  , item(txt, parent)
   , super_menu(0)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
@@ -62,16 +62,6 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   , mouse_down(false)
   , has_checkable_items(false)
 {
-  try
-  {
-    item = new FMenuItem(txt, parent);
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
   init(parent);
 }
 
@@ -104,9 +94,7 @@ bool FMenu::setMenuWidget (bool on)
 void FMenu::setStatusbarMessage (const FString& msg)
 {
   FWidget::setStatusbarMessage(msg);
-
-  if ( item )
-    item->setStatusbarMessage(msg);
+  item.setStatusbarMessage(msg);
 }
 
 //----------------------------------------------------------------------
@@ -474,9 +462,7 @@ void FMenu::init(FWidget* parent)
 
   setForegroundColor (wc.menu_active_fg);
   setBackgroundColor (wc.menu_active_bg);
-
-  if ( item )
-    item->setMenu(this);
+  item.setMenu(this);
 
   if ( parent )
   {
@@ -500,9 +486,7 @@ void FMenu::init(FWidget* parent)
 //----------------------------------------------------------------------
 void FMenu::calculateDimensions()
 {
-  int item_X
-    , item_Y
-    , adjust_X;
+  int item_X, item_Y, adjust_X;
   std::vector<FMenuItem*>::const_iterator iter, last;
   iter = item_list.begin();
   last = item_list.end();
@@ -1038,7 +1022,7 @@ bool FMenu::containsMenuStructure (int x, int y)
     return true;
   else if ( si && si->hasMenu() && opened_sub_menu )
     return si->getMenu()->containsMenuStructure(x, y);
-  else if ( item && item->getTermGeometry().contains(x, y) )
+  else if ( item.getTermGeometry().contains(x, y) )
     return true;
   else
     return false;

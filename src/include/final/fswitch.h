@@ -80,15 +80,15 @@ class FSwitch : public FToggleButton
     virtual ~FSwitch();
 
     // Accessor
-    const char* getClassName() const;
+    const char*  getClassName() const;
 
     // Mutator
-    void setText (const FString&);
+    virtual void setText (const FString&);
 
     // Event handlers
-    void onKeyPress (FKeyEvent*);
-    void onMouseDown (FMouseEvent*);
-    void onMouseUp (FMouseEvent*);
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
 
   private:
     // Disable copy constructor
@@ -98,14 +98,14 @@ class FSwitch : public FToggleButton
     FSwitch& operator = (const FSwitch&);
 
     // Methods
-    void draw();
-    void drawCheckButton();
-    void drawChecked();
-    void drawUnchecked();
+    virtual void draw();
+    void         drawCheckButton();
+    void         drawChecked();
+    void         drawUnchecked();
 
     // Data Members
-    int  switch_offset_pos;
-    bool button_pressed;
+    int          switch_offset_pos;
+    bool         button_pressed;
 };
 #pragma pack(pop)
 

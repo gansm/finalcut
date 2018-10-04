@@ -174,7 +174,7 @@ bool FWindow::activateWindow (bool on)
     active_area = getVWin();
   }
 
-  return window_active = ( on ) ? true : false;
+  return window_active = on;
 }
 
 //----------------------------------------------------------------------

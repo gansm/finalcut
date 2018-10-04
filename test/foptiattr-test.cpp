@@ -1,5 +1,5 @@
 /***********************************************************************
-* foptiattr_test.cpp - finalcut::FOptiAttr unit tests                            *
+* foptiattr_test.cpp - FOptiAttr unit tests                            *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

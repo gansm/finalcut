@@ -57,15 +57,15 @@ class FTermXTerminal
     FTermXTerminal();
 
     // Destructor
-    ~FTermXTerminal();
+    virtual ~FTermXTerminal();
 
     // Mutators
-    static void           setTermcapMap (FTermcap::tcap_map*);
     static void           setFTermDetection (FTermDetection*);
     static void           redefineDefaultColors (bool);
     static void           setCursorStyle (fc::xtermCursorStyle);
     static void           setFont (const FString&);
     static void           setTitle (const FString&);
+    static void           setTermSize (int, int);
     static void           setForeground (const FString&);
     static void           setBackground (const FString&);
     static void           setCursorColor (const FString&);
@@ -110,6 +110,7 @@ class FTermXTerminal
     static void           setXTermCursorStyle();
     static void           setXTermFont();
     static void           setXTermTitle();
+    static void           setXTermSize();
     static void           setXTermForeground();
     static void           setXTermBackground();
     static void           setXTermCursorColor();
@@ -135,9 +136,11 @@ class FTermXTerminal
     static void           disableXTermMetaSendsESC();
 
     // Data Members
-    static FTermcap::tcap_map*  tcap;
-    static FTermDetection*      term_detection;
-    static fc::xtermCursorStyle cursor_style;
+    static bool                 mouse_support;
+    static bool                 meta_sends_esc;
+    static bool                 xterm_default_colors;
+    static int                  term_width;
+    static int                  term_height;
     static const FString*       xterm_font;
     static const FString*       xterm_title;
     static const FString*       foreground_color;
@@ -146,9 +149,9 @@ class FTermXTerminal
     static const FString*       mouse_foreground_color;
     static const FString*       mouse_background_color;
     static const FString*       highlight_background_color;
-    static bool                 mouse_support;
-    static bool                 meta_sends_esc;
-    static bool                 xterm_default_colors;
+    static FTermcap::tcap_map*  tcap;
+    static FTermDetection*      term_detection;
+    static fc::xtermCursorStyle cursor_style;
 };
 #pragma pack(pop)
 
@@ -156,10 +159,6 @@ class FTermXTerminal
 //----------------------------------------------------------------------
 inline const char* FTermXTerminal::getClassName() const
 { return "FTermXTerminal"; }
-
-//----------------------------------------------------------------------
-inline void FTermXTerminal::setTermcapMap (FTermcap::tcap_map* tc)
-{ tcap = tc; }
 
 //----------------------------------------------------------------------
 inline void FTermXTerminal::setFTermDetection (FTermDetection* td)

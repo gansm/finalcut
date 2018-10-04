@@ -41,15 +41,34 @@
 class FObject_protected : public finalcut::FObject
 {
   public:
+    FObject_protected()
+      : count(0)
+    { }
+
     bool event (finalcut::FEvent* ev)
     {
       return finalcut::FObject::event(ev);
     }
 
-    finalcut::FObject::TimerList* getTimerList() const
+    TimerList* getTimerList() const
     {
-      return timer_list;
+      return finalcut::FObject::getTimerList();
     }
+
+    uInt processEvent()
+    {
+      return processTimerEvent();
+    }
+
+    virtual void performTimerAction (const FObject*, const finalcut::FEvent*)
+    {
+      std::cout << ".";
+      fflush(stdout);
+      count++;
+    }
+
+    // Data Member
+    uInt count;
 };
 #pragma pack(pop)
 
@@ -77,6 +96,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void iteratorTest();
     void timeTest();
     void timerTest();
+    void performTimerActionTest();
 
   private:
     // Adds code needed to register the test suite
@@ -92,6 +112,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (iteratorTest);
     CPPUNIT_TEST (timeTest);
     CPPUNIT_TEST (timerTest);
+    CPPUNIT_TEST (performTimerActionTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -116,7 +137,7 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( o1.getChild(0) == 0 );
   CPPUNIT_ASSERT ( o1.getChild(1) == 0 );
   CPPUNIT_ASSERT ( o1.numOfChildren() == 0 );
-  const finalcut::FObject::FObjectList& children_list = o1.getChildren();
+  finalcut::FObject::FObjectList& children_list = o1.getChildren();
   CPPUNIT_ASSERT ( children_list.begin() == o1.begin() );
   CPPUNIT_ASSERT ( children_list.begin() == o1.end() );
   CPPUNIT_ASSERT ( children_list.end() == o1.begin() );
@@ -258,6 +279,7 @@ void FObjectTest::delTest()
   */
   finalcut::FObject* obj =  new finalcut::FObject();
   finalcut::FObject* child = new finalcut::FObject(obj);
+
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( obj->isChild(child) );
@@ -333,11 +355,19 @@ void FObjectTest::timeTest()
   CPPUNIT_ASSERT ( ! finalcut::FObject::isTimeout (&time1, timeout) );
   sleep(1);
   CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
+  time1.tv_sec = 300;
+  time1.tv_usec = 2000000;  // > 1000000 µs to test diff underflow
+  CPPUNIT_ASSERT ( finalcut::FObject::isTimeout (&time1, timeout) );
 }
 
 //----------------------------------------------------------------------
 void FObjectTest::timerTest()
 {
+  using finalcut::operator +;
+  using finalcut::operator -;
+  using finalcut::operator +=;
+  using finalcut::operator <;
+
   FObject_protected t1;
   FObject_protected t2;
   int id1, id2;
@@ -434,6 +464,27 @@ void FObjectTest::timerTest()
 
   CPPUNIT_ASSERT ( ! t1.delTimer(0) );
   CPPUNIT_ASSERT ( ! t1.delTimer(-1) );
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::performTimerActionTest()
+{
+  FObject_protected t;
+  uInt num_events = 0;
+  uInt loop = 0;
+  t.addTimer(100);
+
+  while ( loop < 10 )
+  {
+    num_events += t.processEvent();
+    // Wait 100 ms
+    nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
+    loop++;
+  }
+
+  CPPUNIT_ASSERT ( loop == 10 );
+  CPPUNIT_ASSERT ( num_events == 9 );
+  CPPUNIT_ASSERT ( t.count == 9 );
 }
 
 // Put the test suite in the registry

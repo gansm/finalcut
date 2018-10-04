@@ -1,5 +1,5 @@
 /***********************************************************************
-* fpoint-test.cpp - finalcut::FPoint unit tests                                  *
+* fpoint-test.cpp - FPoint unit tests                                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

@@ -109,7 +109,7 @@ class FFileDialog : public FDialog
                 , DialogType = FFileDialog::Open
                 , FWidget* = 0 );
     // Destructor
-    ~FFileDialog();
+    virtual ~FFileDialog();
 
     // Assignment operator (=)
     FFileDialog& operator = (const FFileDialog&);
@@ -129,7 +129,7 @@ class FFileDialog : public FDialog
     bool          unsetShowHiddenFiles();
 
     // Event handler
-    void          onKeyPress (FKeyEvent*);
+    virtual void  onKeyPress (FKeyEvent*);
 
     // Methods
     static const FString fileOpenChooser ( FWidget*
@@ -141,7 +141,7 @@ class FFileDialog : public FDialog
 
   protected:
     // Method
-    void adjustSize();
+    virtual void adjustSize();
 
   private:
     // Typedef
@@ -163,10 +163,9 @@ class FFileDialog : public FDialog
 
     // Method
     void          init();
-    void          allocation (int, int);
-    void          deallocation();
+    void          widgetSettings (int, int);
     void          initCallbacks();
-    inline bool   pattern_match (const char* const, char[]);
+    bool          pattern_match (const char* const, char[]);
     void          clear();
     int           numOfDirs();
     void          sortDir();
@@ -191,11 +190,11 @@ class FFileDialog : public FDialog
     dirEntries    dir_entries;
     FString       directory;
     FString       filter_pattern;
-    FListBox*     filebrowser;
-    FLineEdit*    filename;
-    FCheckBox*    hidden;
-    FButton*      cancel;
-    FButton*      open;
+    FLineEdit     filename;
+    FListBox      filebrowser;
+    FCheckBox     hidden;
+    FButton       cancel;
+    FButton       open;
     DialogType    dlg_type;
     bool          show_hidden;
 

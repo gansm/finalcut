@@ -96,46 +96,46 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&);
 
     // Accessors
-    const char* getClassName() const;
-    FString     getText() const;
-    int         getLabelOrientation();
+    const char*  getClassName() const;
+    FString      getText() const;
+    int          getLabelOrientation();
 
     // Mutators
-    void        setText (const FString&);
-    void        setLabelText (const FString&);
-    void        setLabelOrientation(const label_o);
-    bool        setEnable(bool);
-    bool        setEnable();
-    bool        unsetEnable();
-    bool        setDisable();
-    bool        setFocus(bool);
-    bool        setFocus();
-    bool        unsetFocus();
-    bool        setShadow(bool);
-    bool        setShadow();
-    bool        unsetShadow();
+    void         setText (const FString&);
+    void         setLabelText (const FString&);
+    void         setLabelOrientation(const label_o);
+    virtual bool setEnable(bool);
+    virtual bool setEnable();
+    virtual bool unsetEnable();
+    virtual bool setDisable();
+    virtual bool setFocus(bool);
+    virtual bool setFocus();
+    virtual bool unsetFocus();
+    bool         setShadow(bool);
+    bool         setShadow();
+    bool         unsetShadow();
 
     // Inquiry
-    bool        hasShadow();
+    bool         hasShadow();
 
     // Methods
-    void        hide();
-    void        clear();
+    virtual void hide();
+    void         clear();
 
     // Event handlers
-    void        onKeyPress (FKeyEvent*);
-    void        onMouseDown (FMouseEvent*);
-    void        onMouseUp (FMouseEvent*);
-    void        onMouseMove (FMouseEvent*);
-    void        onTimer (FTimerEvent*);
-    void        onAccel (FAccelEvent*);
-    void        onHide (FHideEvent*);
-    void        onFocusIn (FFocusEvent*);
-    void        onFocusOut (FFocusEvent*);
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onTimer (FTimerEvent*);
+    virtual void onAccel (FAccelEvent*);
+    virtual void onHide (FHideEvent*);
+    virtual void onFocusIn (FFocusEvent*);
+    virtual void onFocusOut (FFocusEvent*);
 
   protected:
-    void        adjustLabel();
-    void        adjustSize();
+    void         adjustLabel();
+    virtual void adjustSize();
 
   private:
     // Enumeration
@@ -153,33 +153,33 @@ class FLineEdit : public FWidget
     FLineEdit& operator = (const FLineEdit&);
 
     // Methods
-    void        init();
-    bool        hasHotkey();
-    void        draw();
-    void        drawInputField();
-    void        keyLeft();
-    void        keyRight();
-    void        keyHome();
-    void        keyEnd();
-    void        keyDel();
-    void        keyBackspace();
-    void        keyInsert();
-    void        keyEnter();
-    bool        keyInput (int);
-    void        processActivate();
-    void        processChanged();
+    void         init();
+    bool         hasHotkey();
+    virtual void draw();
+    void         drawInputField();
+    void         keyLeft();
+    void         keyRight();
+    void         keyHome();
+    void         keyEnd();
+    void         keyDel();
+    void         keyBackspace();
+    void         keyInsert();
+    void         keyEnter();
+    bool         keyInput (int);
+    void         processActivate();
+    void         processChanged();
 
     // Data Members
-    FString     text;
-    FString     label_text;
-    FLabel*     label;
-    label_o     label_orientation;
-    dragScroll  drag_scroll;
-    bool        scroll_timer;
-    int         scroll_repeat;
-    bool        insert_mode;
-    int         cursor_pos;
-    int         text_offset;
+    FString      text;
+    FString      label_text;
+    FLabel*      label;
+    label_o      label_orientation;
+    dragScroll   drag_scroll;
+    bool         scroll_timer;
+    int          scroll_repeat;
+    bool         insert_mode;
+    int          cursor_pos;
+    int          text_offset;
 };
 #pragma pack(pop)
 

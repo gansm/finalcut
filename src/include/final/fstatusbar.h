@@ -92,6 +92,8 @@ class FStatusKey : public FWidget
     virtual FString     getText() const;
 
     // Mutators
+    void                setKey (int);
+    void                setText (const FString&);
     void                setActive();
     void                unsetActive();
     bool                setMouseFocus(bool);
@@ -103,12 +105,7 @@ class FStatusKey : public FWidget
     bool                hasMouseFocus() const;
 
     // Event handler
-    void                onAccel (FAccelEvent*);
-
-  protected:
-    // Mutators
-    void                setKey (int);
-    void                setText (const FString&);
+    virtual void        onAccel (FAccelEvent*);
 
   private:
     // Disable copy constructor
@@ -150,6 +147,14 @@ inline FString FStatusKey::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
+inline void FStatusKey::setKey (int k)
+{ key = k; }
+
+//----------------------------------------------------------------------
+inline void FStatusKey::setText (const FString& txt)
+{ text = txt; }
+
+//----------------------------------------------------------------------
 inline void FStatusKey::unsetActive()
 { active = false; }
 
@@ -168,14 +173,6 @@ inline bool FStatusKey::isActivated() const
 //----------------------------------------------------------------------
 inline bool FStatusKey::hasMouseFocus() const
 { return mouse_focus; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setKey (int k)
-{ key = k; }
-
-//----------------------------------------------------------------------
-inline void FStatusKey::setText (const FString& txt)
-{ text = txt; }
 
 //----------------------------------------------------------------------
 inline FStatusBar* FStatusKey::getConnectedStatusbar() const
@@ -218,19 +215,19 @@ class FStatusBar : public FWindow
     bool                hasActivatedKey();
 
     // Methods
-    void                hide();
+    virtual void        hide();
     void                drawMessage();
     void                clearMessage();
     void                insert (FStatusKey*);
     void                remove (FStatusKey*);
     void                remove (int);
     void                clear();
-    void                adjustSize();
+    virtual void        adjustSize();
 
     // Event handlers
-    void                onMouseDown (FMouseEvent*);
-    void                onMouseUp (FMouseEvent*);
-    void                onMouseMove (FMouseEvent*);
+    virtual void        onMouseDown (FMouseEvent*);
+    virtual void        onMouseUp (FMouseEvent*);
+    virtual void        onMouseMove (FMouseEvent*);
 
     // Callback method
     void                cb_statuskey_activated (FWidget*, data_ptr);
@@ -247,7 +244,7 @@ class FStatusBar : public FWindow
 
     // Methods
     void                init();
-    void                draw();
+    virtual void        draw();
     void                drawKeys();
     void                drawKey (keyList::const_iterator);
     void                drawActiveKey (keyList::const_iterator);

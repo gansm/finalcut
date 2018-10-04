@@ -43,6 +43,7 @@
 
 #include "final/fc.h"
 #include "final/fconfig.h"
+#include "final/ftermdata.h"
 #include "final/ftermios.h"
 #include "final/ftypes.h"
 
@@ -91,12 +92,11 @@ class FTermDetection
     FTermDetection();
 
     // Destructor
-    ~FTermDetection();
+    virtual ~FTermDetection();
 
     // Accessor
     const char*           getClassName() const;
     static char*          getTermType();
-    static char*          getTermFileName();
     static int            getGnomeTerminalID();
     terminalType&         getTermTypeStruct();
 
@@ -153,7 +153,7 @@ class FTermDetection
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
-    static void           setTermFileName (char[]);
+    static void           setTermData (FTermData*);
     static void           setTtyTypeFileName (char[]);
 
     // Methods
@@ -199,7 +199,6 @@ class FTermDetection
 
     // Data Members
     static char           termtype[256];
-    static char           termfilename[256];
     static char           ttytypename[256];
     static bool           decscusr_support;
     static bool           terminal_detection;
@@ -207,6 +206,7 @@ class FTermDetection
     static int            gnome_terminal_id;
     static const FString* answer_back;
     static const FString* sec_da;
+    static FTermData*     fterm_data;
     static terminalType   terminal_type;
 
     static struct colorEnv
@@ -255,10 +255,6 @@ inline const char* FTermDetection::getClassName() const
 //----------------------------------------------------------------------
 inline char* FTermDetection::getTermType()
 { return termtype; }
-
-//----------------------------------------------------------------------
-inline char* FTermDetection::getTermFileName()
-{ return termfilename; }
 
 //----------------------------------------------------------------------
 inline int FTermDetection::getGnomeTerminalID()

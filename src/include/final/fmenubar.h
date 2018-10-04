@@ -86,19 +86,19 @@ class FMenuBar : public FWindow, public FMenuList
     virtual const char* getClassName() const;
 
     // Methods
-    void                hide();
-    void                resetMenu();
-    void                adjustSize();
+    void         resetMenu();
+    virtual void hide();
+    virtual void adjustSize();
 
     // Event handlers
-    void                onKeyPress (FKeyEvent*);
-    void                onMouseDown (FMouseEvent*);
-    void                onMouseUp (FMouseEvent*);
-    void                onMouseMove (FMouseEvent*);
-    void                onAccel (FAccelEvent*);
+    virtual void onKeyPress (FKeyEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onAccel (FAccelEvent*);
 
     // Callback methods
-    void                cb_item_deactivated (FWidget*, data_ptr);
+    void         cb_item_deactivated (FWidget*, data_ptr);
 
   private:
     // Typedef
@@ -115,46 +115,46 @@ class FMenuBar : public FWindow, public FMenuList
     FMenuBar (const FMenuBar&);
 
     // Disable assignment operator (=)
-    FMenuBar& operator  = (const FMenuBar&);
+    FMenuBar& operator = (const FMenuBar&);
 
     // Inquiry
-    bool                isMenu (FMenuItem*) const;
+    bool         isMenu (FMenuItem*) const;
 
     // Methods
-    void                init();
-    void                calculateDimensions();
-    bool                selectNextItem();
-    bool                selectPrevItem();
-    bool                hotkeyMenu (FKeyEvent*&);
-    int                 getHotkeyPos (wchar_t[], wchar_t[], uInt);
-    void                draw();
-    void                drawItems();
-    void                drawItem (FMenuItem*, int&);
-    void                setLineAttributes (FMenuItem*);
-    void                drawMenuText (menuText&);
-    void                drawEllipsis (menuText&, int);
-    void                drawLeadingSpace (int&);
-    void                drawTrailingSpace (int&);
-    void                adjustItems();
-    bool                activateMenu (FMenuItem*);
-    bool                clickItem (FMenuItem*);
-    void                unselectMenuItem (FMenuItem*);
-    void                selectMenuItem (FMenuItem*);
-    void                mouseDownOverList (FMouseEvent*);
-    void                mouseUpOverList (FMouseEvent*);
-    void                mouseMoveOverList (FMouseEvent*);
-    void                passEventToMenu (FMouseEvent*&);
-    void                leaveMenuBar();
+    void         init();
+    void         calculateDimensions();
+    bool         selectNextItem();
+    bool         selectPrevItem();
+    bool         hotkeyMenu (FKeyEvent*&);
+    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    virtual void draw();
+    void         drawItems();
+    void         drawItem (FMenuItem*, int&);
+    void         setLineAttributes (FMenuItem*);
+    void         drawMenuText (menuText&);
+    void         drawEllipsis (menuText&, int);
+    void         drawLeadingSpace (int&);
+    void         drawTrailingSpace (int&);
+    void         adjustItems();
+    bool         activateMenu (FMenuItem*);
+    bool         clickItem (FMenuItem*);
+    void         unselectMenuItem (FMenuItem*);
+    void         selectMenuItem (FMenuItem*);
+    void         mouseDownOverList (FMouseEvent*);
+    void         mouseUpOverList (FMouseEvent*);
+    void         mouseMoveOverList (FMouseEvent*);
+    void         passEventToMenu (FMouseEvent*&);
+    void         leaveMenuBar();
 
     // Friend classes
     friend class FMenu;
     friend class FMenuItem;
 
     // Data Members
-    bool   mouse_down;
-    bool   drop_down;
-    bool   focus_changed;
-    int    screenWidth;
+    bool  mouse_down;
+    bool  drop_down;
+    bool  focus_changed;
+    int   screenWidth;
 };
 #pragma pack(pop)
 

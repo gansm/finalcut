@@ -53,20 +53,21 @@ class Treeview : public finalcut::FDialog
     Treeview& operator = (const Treeview&);
 
     // Methods
-    void adjustSize();
-    TreeItem* getAfrica();
-    TreeItem* getAsia();
-    TreeItem* getEurope();
-    TreeItem* getNorthAmerica();
-    TreeItem* getSouthAmerica();
-    TreeItem* getOceania();
+    virtual void adjustSize();
 
     // Event handlers
     void onClose (finalcut::FCloseEvent*);
 
     // Data Members
-    finalcut::FListView* listView;
-    finalcut::FButton*   Quit;
+    bool                initialized;
+    finalcut::FListView listView;
+    finalcut::FButton   Quit;
+    static TreeItem     africa[];
+    static TreeItem     asia[];
+    static TreeItem     europe[];
+    static TreeItem     north_america[];
+    static TreeItem     south_america[];
+    static TreeItem     oceania[];
 };
 #pragma pack(pop)
 
@@ -94,192 +95,154 @@ struct Treeview::TreeItem
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getAfrica()
-{
-  static TreeItem africa[] =
-  {
-    { "Algeria", "40,400,000", "15.9", 0 },
-    { "Angola", "25,789,024", "20.69", 0 },
-    { "Botswana", "2,250,260", "3.7", 0 },
-    { "Cameroon", "22,534,532", "39.7", 0 },
-    { "Chad", "13,670,084", "8.6", 0 },
-    { "Egypt", "94,666,000", "87", 0 },
-    { "Ethiopia", "102,374,044", "92.7", 0 },
-    { "Ivory Coast", "23,740,424", "63.9", 0 },
-    { "Libya", "6,541,948", "3.55", 0 },
-    { "Madagascar", "24,430,325", "35.2", 0 },
-    { "Mali", "14,517,176", "11.7", 0 },
-    { "Mauritania", "4,301,018", "3.4", 0 },
-    { "Mozambique", "24,692,144", "28.7", 0 },
-    { "Namibia", "2,113,077", "2.54", 0 },
-    { "Niger", "20,672,987", "12.1", 0 },
-    { "Nigeria", "185,989,640", "197.2", 0 },
-    { "Somalia", "14,317,996", "19.31", 0 },
-    { "South Africa", "54,956,900", "42.4", 0 },
-    { "South Sudan", "12,340,000", "13.33", 0 },
-    { "Sudan", "39,578,828", "21.3", 0 },
-    { "Tanzania", "51,820,00", "47.5", 0 },
-    { "Zambia", "16,212,000", "17.2", 0 },
-    { 0, 0, 0, 0 }
-  };
-
-  return africa;
-}
-
+// class Treeview - array data
 //----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getAsia()
+Treeview::TreeItem Treeview::africa[] =
 {
-  static TreeItem asia[] =
-  {
-    { "Afghanistan", "34,656,032", "49.88", 0 },
-    { "China", "1,403,500,365", "145.0", 0 },
-    { "India", "1,324,171,354", "393.9", 0 },
-    { "Indonesia", "261,115,456", "124.66", 0 },
-    { "Iran", "80,829,192", "48.0", 0 },
-    { "Iraq", "37,202,572", "82.7", 0 },
-    { "Japan", "126,740,000", "336.0", 0 },
-    { "Kazakhstan", "17,987,736", "6.49", 0 },
-    { "Mongolia", "3,081,677", "1.97", 0 },
-    { "Myanmar", "51,486,253", "76.0", 0 },
-    { "Pakistan", "207,774,520", "244.4", 0 },
-    { "Russia", "144,463,451", "8.4", 0 },
-    { "Saudi Arabia", "33,000,000", "15.0", 0 },
-    { "Thailand", "68,863,514", "132.1", 0 },
-    { "Turkey", "79,814,871", "102.0", 0 },
-    { "Turkmenistan", "5,662,544", "10.5", 0 },
-    { "Uzbekistan", "32,979,000", "70.5", 0 },
-    { "Vietnam", "94,569,072", "276.03", 0 },
-    { "Yemen", "27,584,213", "44.7", 0 },
-    { 0, 0, 0, 0 }
-  };
+  { "Algeria", "40,400,000", "15.9", 0 },
+  { "Angola", "25,789,024", "20.69", 0 },
+  { "Botswana", "2,250,260", "3.7", 0 },
+  { "Cameroon", "22,534,532", "39.7", 0 },
+  { "Chad", "13,670,084", "8.6", 0 },
+  { "Egypt", "94,666,000", "87", 0 },
+  { "Ethiopia", "102,374,044", "92.7", 0 },
+  { "Ivory Coast", "23,740,424", "63.9", 0 },
+  { "Libya", "6,541,948", "3.55", 0 },
+  { "Madagascar", "24,430,325", "35.2", 0 },
+  { "Mali", "14,517,176", "11.7", 0 },
+  { "Mauritania", "4,301,018", "3.4", 0 },
+  { "Mozambique", "24,692,144", "28.7", 0 },
+  { "Namibia", "2,113,077", "2.54", 0 },
+  { "Niger", "20,672,987", "12.1", 0 },
+  { "Nigeria", "185,989,640", "197.2", 0 },
+  { "Somalia", "14,317,996", "19.31", 0 },
+  { "South Africa", "54,956,900", "42.4", 0 },
+  { "South Sudan", "12,340,000", "13.33", 0 },
+  { "Sudan", "39,578,828", "21.3", 0 },
+  { "Tanzania", "51,820,00", "47.5", 0 },
+  { "Zambia", "16,212,000", "17.2", 0 },
+  { 0, 0, 0, 0 }
+};
 
-  return asia;
-}
-
-//----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getEurope()
+Treeview::TreeItem Treeview::asia[] =
 {
-  static TreeItem europe[] =
-  {
-    { "Austria", "8,794,267", "104.0", 0 },
-    { "Belarus", "9,498,700", "45.8", 0 },
-    { "Bulgaria", "7,101,859", "64.9", 0 },
-    { "Czech Republic", "10,610,947", "134.0", 0 },
-    { "Finland", "5,506,312", "16.0", 0 },
-    { "France", "66,991,000", "103.0", 0 },
-    { "Germany", "82,175,700", "227.0", 0 },
-    { "Greece", "11,183,716", "82.0", 0 },
-    { "Hungary", "9,797,561", "105.3", 0 },
-    { "Iceland", "332,529", "3.2", 0 },
-    { "Italy", "60,589,445", "201.3", 0 },
-    { "Norway", "5,267,146", "15.8", 0 },
-    { "Poland", "38,634,007", "123.0", 0 },
-    { "Portugal", "10,309,573", "115.0", 0 },
-    { "Romania", "19,638,000", "84.4", 0 },
-    { "Serbia", "7,058,322", "91.1", 0 },
-    { "Spain", "46,468,102", "92.0", 0 },
-    { "Sweden", "10,065,389", "22.0", 0 },
-    { "United Kingdom", "65,648,000", "270.7", 0 },
-    { 0, 0, 0, 0 }
-  };
+  { "Afghanistan", "34,656,032", "49.88", 0 },
+  { "China", "1,403,500,365", "145.0", 0 },
+  { "India", "1,324,171,354", "393.9", 0 },
+  { "Indonesia", "261,115,456", "124.66", 0 },
+  { "Iran", "80,829,192", "48.0", 0 },
+  { "Iraq", "37,202,572", "82.7", 0 },
+  { "Japan", "126,740,000", "336.0", 0 },
+  { "Kazakhstan", "17,987,736", "6.49", 0 },
+  { "Mongolia", "3,081,677", "1.97", 0 },
+  { "Myanmar", "51,486,253", "76.0", 0 },
+  { "Pakistan", "207,774,520", "244.4", 0 },
+  { "Russia", "144,463,451", "8.4", 0 },
+  { "Saudi Arabia", "33,000,000", "15.0", 0 },
+  { "Thailand", "68,863,514", "132.1", 0 },
+  { "Turkey", "79,814,871", "102.0", 0 },
+  { "Turkmenistan", "5,662,544", "10.5", 0 },
+  { "Uzbekistan", "32,979,000", "70.5", 0 },
+  { "Vietnam", "94,569,072", "276.03", 0 },
+  { "Yemen", "27,584,213", "44.7", 0 },
+  { 0, 0, 0, 0 }
+};
 
-  return europe;
-}
-
-//----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getNorthAmerica()
+Treeview::TreeItem Treeview::europe[] =
 {
-  static TreeItem north_america[] =
-  {
-    { "Canada", "35,151,728", "3.92", 0 },
-    { "Cuba", "11,239,224", "102.3", 0 },
-    { "Greenland", "56,483", "0.028", 0 },
-    { "Guatemala", "16,582,469", "129.0", 0 },
-    { "Honduras", "9,112,867", "64.0", 0 },
-    { "Mexico", "119,530,753", "61.0", 0 },
-    { "Nicaragua", "6,167,237", "51.0", 0 },
-    { "USA", "325,365,189", "35.0", 0 },
-    { 0, 0, 0, 0 }
-  };
+  { "Austria", "8,794,267", "104.0", 0 },
+  { "Belarus", "9,498,700", "45.8", 0 },
+  { "Bulgaria", "7,101,859", "64.9", 0 },
+  { "Czech Republic", "10,610,947", "134.0", 0 },
+  { "Finland", "5,506,312", "16.0", 0 },
+  { "France", "66,991,000", "103.0", 0 },
+  { "Germany", "82,175,700", "227.0", 0 },
+  { "Greece", "11,183,716", "82.0", 0 },
+  { "Hungary", "9,797,561", "105.3", 0 },
+  { "Iceland", "332,529", "3.2", 0 },
+  { "Italy", "60,589,445", "201.3", 0 },
+  { "Norway", "5,267,146", "15.8", 0 },
+  { "Poland", "38,634,007", "123.0", 0 },
+  { "Portugal", "10,309,573", "115.0", 0 },
+  { "Romania", "19,638,000", "84.4", 0 },
+  { "Serbia", "7,058,322", "91.1", 0 },
+  { "Spain", "46,468,102", "92.0", 0 },
+  { "Sweden", "10,065,389", "22.0", 0 },
+  { "United Kingdom", "65,648,000", "270.7", 0 },
+  { 0, 0, 0, 0 }
+};
 
-  return north_america;
-}
 
-//----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getSouthAmerica()
+Treeview::TreeItem Treeview::north_america[] =
 {
-  static TreeItem south_america[] =
-  {
-    { "Argentina", "43,847,430", "14.4", 0 },
-    { "Bolivia", "11,410,651", "10.4", 0 },
-    { "Brazil", "208,064,000", "24.35", 0 },
-    { "Chile", "18,006,407", "24.0", 0 },
-    { "Colombia", "49,364,592", "40.74", 0 },
-    { "Ecuador", "16,385,068", "58.95", 0 },
-    { "Guyana", "773,303", "3.502", 0 },
-    { "Paraguay", "6,725,308", "17.2", 0 },
-    { "Peru", "31,826,018", "23.0", 0 },
-    { "Venezuela", "31,568,179", "33.75", 0 },
-    { 0, 0, 0, 0 }
-  };
+  { "Canada", "35,151,728", "3.92", 0 },
+  { "Cuba", "11,239,224", "102.3", 0 },
+  { "Greenland", "56,483", "0.028", 0 },
+  { "Guatemala", "16,582,469", "129.0", 0 },
+  { "Honduras", "9,112,867", "64.0", 0 },
+  { "Mexico", "119,530,753", "61.0", 0 },
+  { "Nicaragua", "6,167,237", "51.0", 0 },
+  { "USA", "325,365,189", "35.0", 0 },
+  { 0, 0, 0, 0 }
+};
 
-  return south_america;
-}
-
-//----------------------------------------------------------------------
-Treeview::TreeItem* Treeview::getOceania()
+Treeview::TreeItem Treeview::south_america[] =
 {
-  static TreeItem oceania[] =
-  {
-    { "Australia", "24,675,900", "3.2", 0 },
-    { "Papua New Guinea", "7,059,653", "15.0", 0 },
-    { "Papua", "3,486,432", "11.0", 0 },
-    { "New Zealand", "4,823,090", "17.5", 0 },
-    { "West Papua", "877,437", "6.3", 0 },
-    { "Solomon Islands", "599,419", "18.1", 0 },
-    { "New Caledonia", "268,767", "14.5", 0 },
-    { "Fiji", "898,76", "46.4", 0 },
-    { "Hawaii", "1,428,557", "82.6", 0 },
-    { "Vanuatu", "270,402", "19.7", 0 },
-    { "French Polynesia", "280,208", "76.0", 0 },
-    { "Samoa", "192,342", "68.0", 0 },
-    { "Kiribati", "110,136", "152.0", 0 },
-    { 0, 0, 0, 0 }
-  };
+  { "Argentina", "43,847,430", "14.4", 0 },
+  { "Bolivia", "11,410,651", "10.4", 0 },
+  { "Brazil", "208,064,000", "24.35", 0 },
+  { "Chile", "18,006,407", "24.0", 0 },
+  { "Colombia", "49,364,592", "40.74", 0 },
+  { "Ecuador", "16,385,068", "58.95", 0 },
+  { "Guyana", "773,303", "3.502", 0 },
+  { "Paraguay", "6,725,308", "17.2", 0 },
+  { "Peru", "31,826,018", "23.0", 0 },
+  { "Venezuela", "31,568,179", "33.75", 0 },
+  { 0, 0, 0, 0 }
+};
 
-  return oceania;
-}
+Treeview::TreeItem Treeview::oceania[] =
+{
+  { "Australia", "24,675,900", "3.2", 0 },
+  { "Papua New Guinea", "7,059,653", "15.0", 0 },
+  { "Papua", "3,486,432", "11.0", 0 },
+  { "New Zealand", "4,823,090", "17.5", 0 },
+  { "West Papua", "877,437", "6.3", 0 },
+  { "Solomon Islands", "599,419", "18.1", 0 },
+  { "New Caledonia", "268,767", "14.5", 0 },
+  { "Fiji", "898,76", "46.4", 0 },
+  { "Hawaii", "1,428,557", "82.6", 0 },
+  { "Vanuatu", "270,402", "19.7", 0 },
+  { "French Polynesia", "280,208", "76.0", 0 },
+  { "Samoa", "192,342", "68.0", 0 },
+  { "Kiribati", "110,136", "152.0", 0 },
+  { 0, 0, 0, 0 }
+};
 
+// constructors and destructor
 //----------------------------------------------------------------------
 Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , listView()
-  , Quit()
+  , initialized(false)
+  , listView(this)
+  , Quit(this)
 {
   // Create FListView object
-  listView = new finalcut::FListView (this);
-  listView->setGeometry(2, 1, 53, 14);
+  listView.setGeometry(2, 1, 53, 14);
 
   // Add columns to the view
-  listView->addColumn ("Name", 23);
-  listView->addColumn ("Population");
-  listView->addColumn ("Density/km²");
+  listView.addColumn ("Name", 23);
+  listView.addColumn ("Population");
+  listView.addColumn ("Density/km²");
 
   // Set right alignment for the second and third column
-  listView->setColumnAlignment (2, finalcut::fc::alignRight);
-  listView->setColumnAlignment (3, finalcut::fc::alignRight);
+  listView.setColumnAlignment (2, finalcut::fc::alignRight);
+  listView.setColumnAlignment (3, finalcut::fc::alignRight);
 
   // Activate tree view
-  listView->setTreeView();
+  listView.setTreeView();
 
   // Populate FListView with a list of items
-  TreeItem* africa        = getAfrica();
-  TreeItem* asia          = getAsia();
-  TreeItem* europe        = getEurope();
-  TreeItem* north_america = getNorthAmerica();
-  TreeItem* south_america = getSouthAmerica();
-  TreeItem* oceania       = getOceania();
-
   static TreeItem continent[] =
   {
     { "Africa", "944,000,000", "31.2", africa },
@@ -300,13 +263,13 @@ Treeview::Treeview (finalcut::FWidget* parent)
     finalcut::FStringList continent_line ( continent_list->begin()
                                          , continent_list->end() );
     finalcut::FListViewIterator::FObjectIterator iter = \
-        listView->insert (continent_line);
+        listView.insert (continent_line);
 
     while ( country_list && country_list->name )
     {
       finalcut::FStringList country_line ( country_list->begin()
                                          , country_list->end() );
-      listView->insert (country_line, iter);
+      listView.insert (country_line, iter);
       country_list++;
     }
 
@@ -314,16 +277,17 @@ Treeview::Treeview (finalcut::FWidget* parent)
   }
 
   // Quit button
-  Quit = new finalcut::FButton (this);
-  Quit->setGeometry(24, 16, 10, 1);
-  Quit->setText (L"&Quit");
+  Quit.setGeometry(24, 16, 10, 1);
+  Quit.setText (L"&Quit");
 
   // Add some function callbacks
-  Quit->addCallback
+  Quit.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
+
+  initialized = true;
 }
 
 //----------------------------------------------------------------------
@@ -342,11 +306,11 @@ void Treeview::adjustSize()
 
   setX (X, false);
 
-  if ( listView )
-    listView->setHeight (getHeight() - 6, false);
-
-  if ( Quit )
-    Quit->setY(getHeight() - 4);
+  if ( initialized )
+  {
+    listView.setHeight (getHeight() - 6, false);
+    Quit.setY(getHeight() - 4);
+  }
 
   finalcut::FDialog::adjustSize();
 }

@@ -1,3 +1,26 @@
+2018-10-03  Markus Gans  <guru.mail@muenster.de>
+	* At the end of the lifetime of an FMenuItem object, 
+	  delete its entry from the object list of the parent object
+	* Reduce the use of the new operators in the examples
+	* Adding a unit test for the FTermData class
+
+2018-10-01  Markus Gans  <guru.mail@muenster.de>
+	* Extract FTerm data members into the data class FTermData
+
+2018-09-28  Markus Gans  <guru.mail@muenster.de>
+	* FListView now has the ability to sort by columns
+
+2018-09-27  Markus Gans  <guru.mail@muenster.de>
+	* Move time event processing from FApplication to FObject
+
+2018-09-26  Markus Gans  <guru.mail@muenster.de>
+	* The FListViewItem class now has a getData() and a setData() method 
+	  similar to the FListBoxItem class.
+
+2018-09-24  Markus Gans  <guru.mail@muenster.de>
+	* Stricter use of the keyword virtual
+	* Add a first steps document
+
 2018-09-20  Markus Gans  <guru.mail@muenster.de>
 	* Added pkg-config file finalcut.pc
 	* The entire library source code is now encapsulated under 

@@ -50,52 +50,68 @@ class Listview : public finalcut::FDialog
     Listview& operator = (const Listview&);
 
     // Method
-    void populate (finalcut::FListView*);
+    void populate();
 
     // Event handlers
-    void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
     void cb_showInMessagebox (finalcut::FWidget*, data_ptr);
+
+    // Data Members
+    finalcut::FListView listView;
+    finalcut::FButton   Quit;
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
+  , listView(this)
+  , Quit(this)
 {
   // Create FListView object
-  finalcut::FListView* listView = new finalcut::FListView (this);
-  listView->setGeometry(2, 1, 33, 14);
+  listView.setGeometry(2, 1, 33, 14);
 
   // Add columns to the view
-  listView->addColumn ("City");
-  listView->addColumn ("Condition");
-  listView->addColumn ("Temp.");
-  listView->addColumn ("Humidity");
-  listView->addColumn ("Pressure", 10);
+  listView.addColumn ("City");
+  listView.addColumn ("Condition");
+  listView.addColumn ("Temp.");
+  listView.addColumn ("Humidity");
+  listView.addColumn ("Pressure", 10);
 
   // Set right alignment for the third, fourth, and fifth column
-  listView->setColumnAlignment (3, finalcut::fc::alignRight);
-  listView->setColumnAlignment (4, finalcut::fc::alignRight);
-  listView->setColumnAlignment (5, finalcut::fc::alignRight);
+  listView.setColumnAlignment (3, finalcut::fc::alignRight);
+  listView.setColumnAlignment (4, finalcut::fc::alignRight);
+  listView.setColumnAlignment (5, finalcut::fc::alignRight);
+
+  // Set the type of sorting
+  listView.setColumnSortType (1, finalcut::fc::by_name);
+  listView.setColumnSortType (2, finalcut::fc::by_name);
+  listView.setColumnSortType (3, finalcut::fc::by_number);
+  listView.setColumnSortType (4, finalcut::fc::by_number);
+  listView.setColumnSortType (5, finalcut::fc::by_number);
+
+  // Sort in ascending order by the 1st column
+  listView.setColumnSort (1, finalcut::fc::ascending);
+  // The sorting occurs later automatically at insert().
+  // Otherwise you could start the sorting directly with sort()
 
   // Populate FListView with a list of items
-  populate (listView);
+  populate();
 
   // Quit button
-  finalcut::FButton* Quit = new finalcut::FButton (this);
-  Quit->setGeometry(24, 16, 10, 1);
-  Quit->setText (L"&Quit");
+  Quit.setGeometry(24, 16, 10, 1);
+  Quit.setText (L"&Quit");
 
   // Add some function callbacks
-  Quit->addCallback
+  Quit.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &finalcut::FApplication::cb_exitApp)
   );
 
-  listView->addCallback
+  listView.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &Listview::cb_showInMessagebox)
@@ -107,7 +123,7 @@ Listview::~Listview()  // destructor
 { }
 
 //----------------------------------------------------------------------
-void Listview::populate (finalcut::FListView* listView)
+void Listview::populate()
 {
   std::string weather[][5] =
   {
@@ -159,7 +175,7 @@ void Listview::populate (finalcut::FListView* listView)
   for (int i = 0; i <= lastItem; i++)
   {
     finalcut::FStringList line (&weather[i][0], &weather[i][0] + 5);
-    listView->insert (line);
+    listView.insert (line);
   }
 }
 
@@ -170,10 +186,9 @@ void Listview::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Listview::cb_showInMessagebox (finalcut::FWidget* widget, data_ptr)
+void Listview::cb_showInMessagebox (finalcut::FWidget*, data_ptr)
 {
-  finalcut::FListView* listView = static_cast<finalcut::FListView*>(widget);
-  finalcut::FListViewItem* item = listView->getCurrentItem();
+  finalcut::FListViewItem* item = listView.getCurrentItem();
   finalcut::FMessageBox info ( "Weather in " + item->getText(1)
                              , "  Condition: " + item->getText(2) + "\n"
                                "Temperature: " + item->getText(3) + "\n"

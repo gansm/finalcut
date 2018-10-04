@@ -66,64 +66,58 @@ int main (int argc, char* argv[])
   dgl.setShadow();
 
   // Create input fields
-  finalcut::FLineEdit* name_field  = new finalcut::FLineEdit(&dgl);
-  finalcut::FLineEdit* email_field = new finalcut::FLineEdit(&dgl);
-  finalcut::FLineEdit* org_field   = new finalcut::FLineEdit(&dgl);
-  finalcut::FLineEdit* city_field  = new finalcut::FLineEdit(&dgl);
-  finalcut::FLineEdit* st_field    = new finalcut::FLineEdit(&dgl);
-  finalcut::FLineEdit* c_field     = new finalcut::FLineEdit(&dgl);
+  finalcut::FLineEdit name_field (&dgl);
+  finalcut::FLineEdit email_field (&dgl);
+  finalcut::FLineEdit org_field (&dgl);
+  finalcut::FLineEdit city_field (&dgl);
+  finalcut::FLineEdit st_field (&dgl);
+  finalcut::FLineEdit c_field (&dgl);
 
-  name_field->setLabelText(L"&Name");
-  email_field->setLabelText(L"&Email");
-  org_field->setLabelText(L"Or&ganization");
-  city_field->setLabelText(L"&City");
-  st_field->setLabelText(L"&State");
-  c_field->setLabelText(L"&Country");
+  name_field.setLabelText (L"&Name");
+  email_field.setLabelText (L"&Email");
+  org_field.setLabelText (L"Or&ganization");
+  city_field.setLabelText (L"&City");
+  st_field.setLabelText (L"&State");
+  c_field.setLabelText (L"&Country");
 
-  name_field->setGeometry(15, 1, 19, 1);
-  email_field->setGeometry(15, 3, 19, 1);
-  org_field->setGeometry(15, 5, 19, 1);
-  city_field->setGeometry(15, 7, 19, 1);
-  st_field->setGeometry(15, 9, 19, 1);
-  c_field->setGeometry(15, 11, 4, 1);
+  name_field.setGeometry (15, 1, 19, 1);
+  email_field.setGeometry (15, 3, 19, 1);
+  org_field.setGeometry (15, 5, 19, 1);
+  city_field.setGeometry (15, 7, 19, 1);
+  st_field.setGeometry (15, 9, 19, 1);
+  c_field.setGeometry (15, 11, 4, 1);
 
   // Create the button group
-  finalcut::FButtonGroup* radioButtonGroup = \
-      new finalcut::FButtonGroup("Sex", &dgl);
-  radioButtonGroup->setGeometry(2, 13, 13, 4);
+  finalcut::FButtonGroup radioButtonGroup ("Sex", &dgl);
+  radioButtonGroup.setGeometry(2, 13, 13, 4);
 
   // Create radio buttons
-  finalcut::FRadioButton* male = \
-      new finalcut::FRadioButton("&Male", radioButtonGroup);
-  finalcut::FRadioButton* female = \
-      new finalcut::FRadioButton("&Female", radioButtonGroup);
-  male->setGeometry(1, 1, 8, 1);
-  female->setGeometry(1, 2, 10, 1);
+  finalcut::FRadioButton male ("&Male", &radioButtonGroup);
+  finalcut::FRadioButton female ("&Female", &radioButtonGroup);
+  male.setGeometry (1, 1, 8, 1);
+  female.setGeometry (1, 2, 10, 1);
 
   // Create another button group
-  finalcut::FButtonGroup* checkButtonGroup = \
-      new finalcut::FButtonGroup("&Data options", &dgl);
-  checkButtonGroup->setGeometry(16, 13, 19, 4);
+  finalcut::FButtonGroup checkButtonGroup ("&Data options", &dgl);
+  checkButtonGroup.setGeometry(16, 13, 19, 4);
 
   // Create checkbox buttons
-  finalcut::FCheckBox* check1 = \
-      new finalcut::FCheckBox("Save data", checkButtonGroup);
-  finalcut::FCheckBox* check2 = \
-      new finalcut::FCheckBox("Encrypt data", checkButtonGroup);
-  check1->setGeometry(1, 1, 13, 1);
-  check2->setGeometry(1, 2, 16, 1);
-  check2->setDisable();
+  finalcut::FCheckBox check1 ("Save data", &checkButtonGroup);
+  finalcut::FCheckBox check2 ("Encrypt data", &checkButtonGroup);
+  check1.setGeometry (1, 1, 13, 1);
+  check2.setGeometry (1, 2, 16, 1);
+  check2.setDisable();
 
   // Create a OK button
   finalcut::FButton btn("&OK", &dgl);
   btn.setGeometry (24, 18, 10, 1);
 
   // Connect checkbox signal "clicked" with a callback function
-  check1->addCallback
+  check1.addCallback
   (
     "clicked",
     F_FUNCTION_CALLBACK (&cb_publish),
-    check2
+    &check2
   );
 
   // Connect the button signal "clicked" with the callback function

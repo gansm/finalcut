@@ -12,10 +12,11 @@ INCLUDE_HEADERS = \
 	fapplication.h \
 	fbuttongroup.h \
 	fbutton.h \
+	ftogglebutton.h \
 	fcheckbox.h \
 	fswitch.h \
 	fdialog.h \
-	fevent.h \
+	fwindow.h \
 	ffiledialog.h \
 	final.h \
 	flabel.h \
@@ -23,15 +24,12 @@ INCLUDE_HEADERS = \
 	flistbox.h \
 	flistview.h \
 	fmenu.h \
-	fmouse.h \
-	fkeyboard.h \
 	fdialoglistmenu.h \
 	fmenubar.h \
 	fradiomenuitem.h \
 	fcheckmenuitem.h \
 	fmessagebox.h \
 	ftooltip.h \
-	fobject.h \
 	foptiattr.h \
 	foptimove.h \
 	ftermbuffer.h \
@@ -43,6 +41,8 @@ INCLUDE_HEADERS = \
 	fscrollview.h \
 	fstatusbar.h \
 	fstring.h \
+	fmouse.h \
+	fkeyboard.h \
 	ftermcap.h \
 	fterm.h \
 	ftermios.h \
@@ -54,11 +54,11 @@ INCLUDE_HEADERS = \
 	ftermlinux.h \
 	fvterm.h \
 	ftextview.h \
-	ftogglebutton.h \
 	fcolorpalette.h \
 	fwidgetcolors.h \
 	fwidget.h \
-	fwindow.h
+	fevent.h \
+	fobject.h \
 
 # compiler parameter
 CXX = clang++
@@ -87,8 +87,6 @@ OBJS = \
 	flistbox.o \
 	flistview.o \
 	fmenu.o \
-	fmouse.o \
-	fkeyboard.o \
 	fdialoglistmenu.o \
 	fmenubar.o \
 	fmenuitem.o \
@@ -96,14 +94,17 @@ OBJS = \
 	fcheckmenuitem.o \
 	fmenulist.o \
 	fdialog.o \
-	fscrollview.o \
 	fwindow.o \
+	fscrollview.o \
 	fmessagebox.o \
 	ftooltip.o \
 	ffiledialog.o \
 	fkey_map.o \
 	ftextview.o \
 	fstatusbar.o \
+	fmouse.o \
+	fkeyboard.o \
+	ftermcap.o \
 	fterm.o \
 	ftermios.o \
 	ftermdetection.o \
@@ -113,7 +114,6 @@ OBJS = \
 	ftermopenbsd.o \
 	ftermlinux.o \
 	fvterm.o \
-	fevent.o \
 	foptiattr.o \
 	foptimove.o \
 	ftermbuffer.o \
@@ -121,12 +121,14 @@ OBJS = \
 	fcolorpalette.o \
 	fwidgetcolors.o \
 	fwidget.o \
+	fevent.o \
 	fobject.o
 
 TERMCAP := $(shell test -n "$$(ldd {/usr,}/lib64/libncursesw.so.5 2>/dev/null | grep libtinfo)" && echo "-ltinfo" || echo "-lncurses")
 
 ifdef DEBUG
-  OPTIMIZE = -O0 -fsanitize=undefined
+  OPTIMIZE = -O0 -fsanitize=bool,bounds,enum,float-cast-overflow,function,null
+#  OPTIMIZE = -O0 -fsanitize=undefined
 else
   OPTIMIZE = -O2
 endif

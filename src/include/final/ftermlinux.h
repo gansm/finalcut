@@ -73,7 +73,7 @@ class FTermLinux
     FTermLinux();
 
     // Destructor
-    ~FTermLinux();
+    virtual ~FTermLinux();
 
     // Accessors
     const char*          getClassName() const;
@@ -169,8 +169,8 @@ class FTermLinux
 
     // Data Members
 #if defined(__linux__)
-    static bool                   VGAFont;
-    static bool                   NewFont;
+    static bool                   vga_font;
+    static bool                   new_font;
     static bool                   shadow_character;
     static bool                   half_block_character;
     static bool                   has_saved_palette;
@@ -210,11 +210,11 @@ inline bool FTermLinux::hasHalfBlockCharacter()
 
 //----------------------------------------------------------------------
 inline bool FTermLinux::isVGAFontUsed()
-{ return VGAFont; }
+{ return vga_font; }
 
 //----------------------------------------------------------------------
 inline bool FTermLinux::isNewFontUsed()
-{ return NewFont; }
+{ return new_font; }
 #endif  // defined(__linux__)
 
 }  // namespace finalcut

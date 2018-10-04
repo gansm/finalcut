@@ -79,7 +79,7 @@ enum events
   Timer_Event               // timer event occur
 };
 
-// Properties of a widget
+// Properties of a widget ⚑
 enum widget_flags
 {
   shadow        = 0x00000001,
@@ -1037,6 +1037,21 @@ enum sides
   right  = 1,
   bottom = 2,
   left   = 3
+};
+
+enum sorting_type
+{
+  by_name,
+  by_number,
+  user_defined,
+  unknown
+};
+
+enum sorting_order
+{
+  ascending,
+  descending,
+  unsorted
 };
 
 enum brackets_type

@@ -54,6 +54,13 @@ FMenuBar::~FMenuBar()  // destructor
 
 // public methods of FMenuBar
 //----------------------------------------------------------------------
+void FMenuBar::resetMenu()
+{
+  unselectItem();
+  drop_down = false;
+}
+
+//----------------------------------------------------------------------
 void FMenuBar::hide()
 {
   short fg, bg;
@@ -83,13 +90,6 @@ void FMenuBar::hide()
   setPrintPos (1,1);
   print (blank);
   delete[] blank;
-}
-
-//----------------------------------------------------------------------
-void FMenuBar::resetMenu()
-{
-  unselectItem();
-  drop_down = false;
 }
 
 //----------------------------------------------------------------------

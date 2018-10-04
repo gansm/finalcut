@@ -16,7 +16,7 @@ INCLUDES = -I../src/include -I/usr/include/final
 RM = rm -f
 
 ifdef DEBUG
-  OPTIMIZE = -O0 -fsanitize=undefined
+  OPTIMIZE = -O0 -fsanitize=bool,bounds,enum,float-cast-overflow,function,null
 else
   OPTIMIZE = -O2
 endif

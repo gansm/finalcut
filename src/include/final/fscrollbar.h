@@ -91,34 +91,34 @@ class FScrollbar : public FWidget
     virtual ~FScrollbar();
 
     // Accessors
-    const char* getClassName() const;
-    int   getValue() const;
-    sType getScrollType() const;
+    const char*  getClassName() const;
+    int          getValue() const;
+    sType        getScrollType() const;
 
     // Mutators
-    void  setMinimum (int);
-    void  setMaximum (int);
-    void  setRange (int, int);
-    void  setValue (int);
-    void  setSteps (double);
-    void  setPageSize (int, int);
-    void  setOrientation (int);
-    void  setGeometry (int, int, int, int, bool = true);
+    void         setMinimum (int);
+    void         setMaximum (int);
+    void         setRange (int, int);
+    void         setValue (int);
+    void         setSteps (double);
+    void         setPageSize (int, int);
+    void         setOrientation (int);
+    virtual void setGeometry (int, int, int, int, bool = true);
 
     // Methods
-    void  resize();
-    void  redraw();
-    void  calculateSliderValues();
-    void  drawVerticalBar();
-    void  drawHorizontalBar();
-    void  drawBar();
+    virtual void resize();
+    virtual void redraw();
+    void         calculateSliderValues();
+    void         drawVerticalBar();
+    void         drawHorizontalBar();
+    void         drawBar();
 
     // Event handlers
-    void  onMouseDown (FMouseEvent*);
-    void  onMouseUp (FMouseEvent*);
-    void  onMouseMove (FMouseEvent*);
-    void  onWheel (FWheelEvent*);
-    void  onTimer (FTimerEvent*);
+    virtual void onMouseDown (FMouseEvent*);
+    virtual void onMouseUp (FMouseEvent*);
+    virtual void onMouseMove (FMouseEvent*);
+    virtual void onWheel (FWheelEvent*);
+    virtual void onTimer (FTimerEvent*);
 
   private:
     // Disable copy constructor
@@ -128,37 +128,37 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&);
 
     // Methods
-    void  init();
-    void  draw();
-    void  drawButtons();
-    sType getClickedScrollType (int, int);
-    sType getVerticalClickedScrollType (int);
-    sType getHorizontalClickedScrollType (int);
-    int   getSliderClickPos (int, int);
-    void  jumpToClickPos (int, int);
-    void  jumpToClickPos (int);
-    void  avoidScrollOvershoot();
-    void  processScroll();
+    void         init();
+    virtual void draw();
+    void         drawButtons();
+    sType        getClickedScrollType (int, int);
+    sType        getVerticalClickedScrollType (int);
+    sType        getHorizontalClickedScrollType (int);
+    int          getSliderClickPos (int, int);
+    void         jumpToClickPos (int, int);
+    void         jumpToClickPos (int);
+    void         avoidScrollOvershoot();
+    void         processScroll();
 
     // Data Members
-    sType  scroll_type;
-    bool   threshold_reached;
-    int    threshold_time;
-    int    repeat_time;
-    int    slider_click_pos;
-    int    slider_click_stop_pos;
-    int    current_slider_pos;
-    int    slider_pos;
-    int    slider_length;
-    int    bar_length;
-    int    val;
-    int    min;
-    int    max;
-    double steps;
-    int    pagesize;
-    int    length;
-    int    bar_orientation;
-    int    max_color;
+    sType        scroll_type;
+    bool         threshold_reached;
+    int          threshold_time;
+    int          repeat_time;
+    int          slider_click_pos;
+    int          slider_click_stop_pos;
+    int          current_slider_pos;
+    int          slider_pos;
+    int          slider_length;
+    int          bar_length;
+    int          val;
+    int          min;
+    int          max;
+    double       steps;
+    int          pagesize;
+    int          length;
+    int          bar_orientation;
+    int          max_color;
 };
 #pragma pack(pop)
 

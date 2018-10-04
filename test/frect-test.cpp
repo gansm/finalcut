@@ -1,5 +1,5 @@
 /***********************************************************************
-* frect-test.cpp - finalcut::FRect unit tests                                    *
+* frect-test.cpp - FRect unit tests                                    *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *

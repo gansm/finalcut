@@ -38,8 +38,8 @@ namespace finalcut
   console_font_op           FTermLinux::screen_font;
   unimapdesc                FTermLinux::screen_unicode_map;
 
-  bool   FTermLinux::NewFont;
-  bool   FTermLinux::VGAFont;
+  bool   FTermLinux::new_font;
+  bool   FTermLinux::vga_font;
   bool   FTermLinux::shadow_character = true;
   bool   FTermLinux::half_block_character = true;
   bool   FTermLinux::has_saved_palette = false;
@@ -194,7 +194,7 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
 {
   uInt c1, c2, c3, c4, c5;
 
-  if ( NewFont || VGAFont )
+  if ( new_font || vga_font )
     return;
 
   if ( screen_unicode_map.entry_ct != 0 )
@@ -255,7 +255,7 @@ void FTermLinux::finish()
 //----------------------------------------------------------------------
 bool FTermLinux::loadVGAFont()
 {
-  VGAFont = true;
+  vga_font = true;
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -265,7 +265,7 @@ bool FTermLinux::loadVGAFont()
       int ret = setScreenFont(fc::__8x16std, 256, 8, 16);
 
       if ( ret != 0 )
-        VGAFont = false;
+        vga_font = false;
 
       // unicode character mapping
       struct unimapdesc unimap;
@@ -275,24 +275,24 @@ bool FTermLinux::loadVGAFont()
       setUnicodeMap(&unimap);
     }
     else
-      VGAFont = false;
+      vga_font = false;
 
     FTerm::detectTermSize();
     FTerm::closeConsole();
   }
   else
-    VGAFont = false;
+    vga_font = false;
 
-  if ( VGAFont )
+  if ( vga_font )
     shadow_character = half_block_character = true;
 
-  return VGAFont;
+  return vga_font;
 }
 
 //----------------------------------------------------------------------
 bool FTermLinux::loadNewFont()
 {
-  NewFont = true;
+  new_font = true;
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -302,7 +302,7 @@ bool FTermLinux::loadNewFont()
       int ret = setScreenFont(fc::__8x16graph, 256, 8, 16);
 
       if ( ret != 0 )
-        NewFont = false;
+        new_font = false;
 
       // unicode character mapping
       struct unimapdesc unimap;
@@ -312,18 +312,18 @@ bool FTermLinux::loadNewFont()
       setUnicodeMap(&unimap);
     }
     else
-      NewFont = false;
+      new_font = false;
 
     FTerm::detectTermSize();
     FTerm::closeConsole();
   }
   else
-    NewFont = false;
+    new_font = false;
 
-  if ( VGAFont )
+  if ( vga_font )
     shadow_character = half_block_character = true;
 
-  return NewFont;
+  return new_font;
 }
 
 //----------------------------------------------------------------------
@@ -363,7 +363,7 @@ bool FTermLinux::loadOldFont (uInt char_map[][fc::NUM_OF_ENCODINGS])
   }
 
   if ( retval )
-    VGAFont = NewFont = false;
+    vga_font = new_font = false;
 
   return retval;
 }

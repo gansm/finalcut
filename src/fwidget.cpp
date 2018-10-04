@@ -361,7 +361,7 @@ bool FWidget::setEnable (bool on)
   else
     flags &= ~fc::active;
 
-  return enable = ( on ) ? true : false;
+  return enable = on;
 }
 
 //----------------------------------------------------------------------
@@ -414,7 +414,7 @@ bool FWidget::setFocus (bool on)
     window->setWindowFocusWidget(this);
   }
 
-  return focus = ( on ) ? true : false;
+  return focus = on;
 }
 
 //----------------------------------------------------------------------

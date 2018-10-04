@@ -1,5 +1,5 @@
 /***********************************************************************
-* ftermdetection-test.cpp - finalcut::FTermDetection unit tests                  *
+* ftermdetection-test.cpp - FTermDetection unit tests                  *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
@@ -442,6 +442,7 @@ FTermDetectionTest::FTermDetectionTest()
   , fd_master(-1)
   , fd_slave(-1)
   , debug(false)
+  , buffer()
 {
   // Map shared memory
   void* ptr = mmap ( NULL
@@ -473,9 +474,11 @@ void FTermDetectionTest::classNameTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ansiTest()
 {
-  setenv ("TERM", "ansi", 1);
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("ansi"));
+  setenv ("TERM", "ansi", 1);
+  data.setTermFileName(C_STR("ansi"));
+  detect.setTermData(&data);
 
   pid_t pid = forkProcess();
 
@@ -541,8 +544,10 @@ void FTermDetectionTest::ansiTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::xtermTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm"));
+  data.setTermFileName(C_STR("xterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -601,8 +606,10 @@ void FTermDetectionTest::xtermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::rxvtTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("rxvt-cygwin-native"));
+  data.setTermFileName(C_STR("rxvt-cygwin-native"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -662,8 +669,10 @@ void FTermDetectionTest::rxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::urxvtTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("rxvt-unicode-256color"));
+  data.setTermFileName(C_STR("rxvt-unicode-256color"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -723,8 +732,10 @@ void FTermDetectionTest::urxvtTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::mltermTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("mlterm"));
+  data.setTermFileName(C_STR("mlterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -791,8 +802,10 @@ void FTermDetectionTest::mltermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::puttyTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm"));
+  data.setTermFileName(C_STR("xterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -852,8 +865,10 @@ void FTermDetectionTest::puttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::kdeKonsoleTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm-256color"));
+  data.setTermFileName(C_STR("xterm-256color"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -912,8 +927,10 @@ void FTermDetectionTest::kdeKonsoleTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::gnomeTerminalTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm-256color"));
+  data.setTermFileName(C_STR("xterm-256color"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -973,8 +990,10 @@ void FTermDetectionTest::gnomeTerminalTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::ktermTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("kterm"));
+  data.setTermFileName(C_STR("kterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1041,8 +1060,10 @@ void FTermDetectionTest::ktermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::teraTermTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm"));
+  data.setTermFileName(C_STR("xterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1102,8 +1123,10 @@ void FTermDetectionTest::teraTermTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::cygwinTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("cygwin"));
+  data.setTermFileName(C_STR("cygwin"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1163,8 +1186,10 @@ void FTermDetectionTest::cygwinTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::minttyTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm-256color"));
+  data.setTermFileName(C_STR("xterm-256color"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1224,8 +1249,10 @@ void FTermDetectionTest::minttyTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::linuxTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("linux"));
+  data.setTermFileName(C_STR("linux"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1292,8 +1319,10 @@ void FTermDetectionTest::linuxTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::freebsdTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("xterm"));
+  data.setTermFileName(C_STR("xterm"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1363,8 +1392,10 @@ void FTermDetectionTest::freebsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::netbsdTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("wsvt25"));
+  data.setTermFileName(C_STR("wsvt25"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1432,8 +1463,10 @@ void FTermDetectionTest::netbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::openbsdTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("vt220"));
+  data.setTermFileName(C_STR("vt220"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1501,8 +1534,10 @@ void FTermDetectionTest::openbsdTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::sunTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("sun-color"));
+  data.setTermFileName(C_STR("sun-color"));
+  detect.setTermData(&data);
 
   pid_t pid = forkProcess();
 
@@ -1568,8 +1603,10 @@ void FTermDetectionTest::sunTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::screenTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("screen"));
+  data.setTermFileName(C_STR("screen"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1635,8 +1672,10 @@ void FTermDetectionTest::screenTest()
 //----------------------------------------------------------------------
 void FTermDetectionTest::tmuxTest()
 {
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
-  detect.setTermFileName(C_STR("screen"));
+  data.setTermFileName(C_STR("screen"));
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
 
   pid_t pid = forkProcess();
@@ -1738,7 +1777,9 @@ void FTermDetectionTest::ttytypeTest()
   ttytype << "vt100" << "\t" << "ttyp6" << std::endl;
   ttytype.close();
 
+  finalcut::FTermData data;
   finalcut::FTermDetection detect;
+  detect.setTermData(&data);
   detect.setTerminalDetection(true);
   detect.setTtyTypeFileName(C_STR("new-root-dir/etc/ttytype"));
 
@@ -1758,17 +1799,17 @@ void FTermDetectionTest::ttytypeTest()
     unsetenv("TMUX");
 
     // Test /dev/tty3 with linux
-    detect.setTermFileName(C_STR("/dev/tty3"));
+    data.setTermFileName(C_STR("/dev/tty3"));
     detect.detect();
     CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("linux") );
 
     // Test /dev/ttyp0 with vt100
-    detect.setTermFileName(C_STR("/dev/ttyp0"));
+    data.setTermFileName(C_STR("/dev/ttyp0"));
     detect.detect();
     CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
 
     // Test non-existent /dev/tty8 with fallback to vt100
-    detect.setTermFileName(C_STR("/dev/tty8"));
+    data.setTermFileName(C_STR("/dev/tty8"));
     detect.detect();
     CPPUNIT_ASSERT_CSTRING ( detect.getTermType(), C_STR("vt100") );
 
@@ -2086,14 +2127,10 @@ pid_t FTermDetectionTest::forkProcess()
   // Initialize buffer with '\0'
   std::fill_n (buffer, sizeof(buffer), '\0');
 
-  bool result = openMasterPTY();
-
-  if ( ! result )
+  if ( ! openMasterPTY() )
     return -1;
 
-  result = openSlavePTY();
-
-  if ( ! result )
+  if ( ! openSlavePTY() )
     return -1;
 
   pid_t pid = fork();  // Create a child process
@@ -2119,7 +2156,11 @@ pid_t FTermDetectionTest::forkProcess()
 #endif
 
     // Get current terminal settings
-    result = tcgetattr(fd_slave, &term_settings);
+    if ( tcgetattr(fd_slave, &term_settings) == -1 )
+    {
+      *shared_state = true;
+      return -1;
+    }
 
     // Set raw mode on the slave side of the PTY
     cfmakeraw (&term_settings);
@@ -2157,7 +2198,8 @@ pid_t FTermDetectionTest::forkProcess()
     // Wait until the child process is ready for input
     while ( ! *shared_state && i < timeout )
     {
-      usleep(10000);  // wait 10 ms
+      // Wait 10 ms (= 10,000,000 ns)
+      nanosleep ((const struct timespec[]){{0, 10000000L}}, NULL);
       i++;
     }
 
