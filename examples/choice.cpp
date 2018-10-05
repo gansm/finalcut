@@ -90,7 +90,6 @@ void preset (std::vector<finalcut::FRadioButton*>& os)
 //----------------------------------------------------------------------
 int main (int argc, char* argv[])
 {
-  int x, y, w, h;
   finalcut::FString label_text = "no OS";
 
   // Create the application object
@@ -100,10 +99,10 @@ int main (int argc, char* argv[])
     finalcut::FDialog dgl(&app);
     dgl.setModal();
     dgl.setText ("UNIX select");
-    w = 20;
-    h = 13;
-    x = (app.getDesktopWidth() - w) / 2;
-    y = (app.getDesktopHeight() - h) / 2;
+    int w = 20;
+    int h = 13;
+    int x = (app.getDesktopWidth() - w) / 2;
+    int y = (app.getDesktopHeight() - h) / 2;
     dgl.setGeometry (x, y, w, h);
 
     // Create a button group

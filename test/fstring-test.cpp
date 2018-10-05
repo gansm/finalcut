@@ -180,7 +180,7 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( str.size() == 0 );
   CPPUNIT_ASSERT ( str.empty() );
   const finalcut::FString fstr = str;
-  CPPUNIT_ASSERT ( ! fstr.isNull() );
+  CPPUNIT_ASSERT ( fstr.isNull() );
   CPPUNIT_ASSERT ( fstr.isEmpty() );
 
   cstr = 0;
@@ -1628,8 +1628,8 @@ void FStringTest::includesTest()
 {
   const finalcut::FString str = "Look behind you, a three-headed monkey!";
   const finalcut::FString empty1;
-  const wchar_t empty2[] = L"";
-  const char empty3[] = "";
+  const wchar_t empty2[] = { };
+  const char empty3[] = { };
   const finalcut::FString search1 = "you";
   const finalcut::FString search2 = "me";
   const wchar_t search3[] = L"you";

@@ -45,88 +45,21 @@ FTermBuffer::~FTermBuffer()  // destructor
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
-int FTermBuffer::writef (const wchar_t format[], ...)
+int FTermBuffer::writef (const FString& format, ...)
 {
-  assert ( format != 0 );
-  static const int BufSize = 1024;
-  wchar_t buffer[BufSize];
+  static const int BUFSIZE = 4096;
+  wchar_t buffer[BUFSIZE];
   va_list args;
 
+  if ( format.isEmpty() )
+    return 0;
+
   va_start (args, format);
-  std::vswprintf (buffer, BufSize, format, args);
+  std::vswprintf (buffer, BUFSIZE, format.wc_str(), args);
   va_end (args);
 
   FString str(buffer);
   return write(str);
-}
-
-//----------------------------------------------------------------------
-int FTermBuffer::writef (const char format[], ...)
-{
-  assert ( format != 0 );
-  int   len;
-  char  buf[512];
-  char* buffer;
-  va_list args;
-
-  buffer = buf;
-  va_start (args, format);
-  len = vsnprintf (buffer, sizeof(buf), format, args);
-  va_end (args);
-
-  if ( len >= int(sizeof(buf)) )
-  {
-    try
-    {
-      buffer = new char[uInt(len) + 1]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-      return -1;
-    }
-
-    va_start (args, format);
-    vsnprintf (buffer, uLong(len + 1), format, args);
-    va_end (args);
-  }
-
-  FString str(buffer);
-  int ret = write(str);
-
-  if ( buffer != buf )
-    delete[] buffer;
-
-  return ret;
-}
-
-//----------------------------------------------------------------------
-int FTermBuffer::write (const std::wstring& s)
-{
-  assert ( ! s.empty() );
-  return write (FString(s));
-}
-
-//----------------------------------------------------------------------
-int FTermBuffer::write (const wchar_t s[])
-{
-  assert ( s != 0 );
-  return write (FString(s));
-}
-
-//----------------------------------------------------------------------
-int FTermBuffer::write (const char s[])
-{
-  assert ( s != 0 );
-  FString str(s);
-  return write(str);
-}
-
-//----------------------------------------------------------------------
-int FTermBuffer::write (const std::string& s)
-{
-  assert ( ! s.empty() );
-  return write (FString(s));
 }
 
 //----------------------------------------------------------------------

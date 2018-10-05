@@ -68,7 +68,7 @@ class FTermBuffer
     template<class type> FTermBuffer& operator << (const type&);
     // Non-member operators
     friend std::vector<charData>& operator << ( std::vector<charData>&
-                                               , const FTermBuffer& );
+                                              , const FTermBuffer& );
 
     // Accessors
     virtual const char*    getClassName() const;
@@ -79,18 +79,7 @@ class FTermBuffer
 
     // Methods
     void                   clear();
-    int                    writef (const wchar_t[], ...);
-    int                    writef (const char[], ...)
-#if defined(__clang__)
-      __attribute__((__format__ (__printf__, 2, 3)))
-#elif defined(__GNUC__)
-      __attribute__ ((format (printf, 2, 3)))
-#endif
-                           ;
-    int                    write (const std::wstring&);
-    int                    write (const wchar_t[]);
-    int                    write (const char[]);
-    int                    write (const std::string&);
+    int                    writef (const FString&, ...);
     int                    write (const FString&);
     int                    write (int);
     FTermBuffer&           write ();

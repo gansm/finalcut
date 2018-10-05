@@ -35,7 +35,7 @@ The C++ class design was inspired by the Qt framework. It provides common contro
 
 ### First steps
 
-[How to use the library](doc/first-steps.md)
+[How to use the library](doc/first-steps.md#first-steps-with-the-final-cut-widget-toolkit)
 
 ### Screenshots
 

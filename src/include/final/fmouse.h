@@ -506,7 +506,6 @@ class FMouseControl
     void                xtermMouse (bool);
     void                enableXTermMouse();
     void                disableXTermMouse();
-    void                putstring (const char[], int = 1);
 
     // Data Member
     std::map<FMouse::mouse_type, FMouse*> mouse_protocol;
