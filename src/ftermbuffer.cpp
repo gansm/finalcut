@@ -45,7 +45,7 @@ FTermBuffer::~FTermBuffer()  // destructor
 
 // public methods of FTermBuffer
 //----------------------------------------------------------------------
-int FTermBuffer::writef (const FString& format, ...)
+int FTermBuffer::writef (const FString format, ...)
 {
   static const int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];

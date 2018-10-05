@@ -566,7 +566,7 @@ uInt FString::getUTF8length() const
 }
 
 //----------------------------------------------------------------------
-FString& FString::sprintf (const FString& format, ...)
+FString& FString::sprintf (const FString format, ...)
 {
   static const int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];

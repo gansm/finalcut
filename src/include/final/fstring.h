@@ -193,7 +193,7 @@ class FString
     wchar_t  front() const;
     wchar_t  back()  const;
 
-    FString& sprintf (const FString&, ...);
+    FString& sprintf (const FString, ...);
     FString clear();
 
     const wchar_t* wc_str() const;

@@ -294,7 +294,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::printf (const FString& format, ...)
+int FVTerm::printf (const FString format, ...)
 {
   static const int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];

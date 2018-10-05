@@ -79,7 +79,7 @@ class FTermBuffer
 
     // Methods
     void                   clear();
-    int                    writef (const FString&, ...);
+    int                    writef (const FString, ...);
     int                    write (const FString&);
     int                    write (int);
     FTermBuffer&           write ();

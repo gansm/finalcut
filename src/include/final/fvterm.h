@@ -235,7 +235,7 @@ class FVTerm : public FTerm
                                                 , FPreprocessingHandler );
     virtual void        delPreprocessingHandler (FVTerm*);
 
-    int                 printf (const FString&, ...);
+    int                 printf (const FString, ...);
     int                 print (const FString&);
     int                 print (term_area*, const FString&);
     int                 print (const std::vector<charData>&);
