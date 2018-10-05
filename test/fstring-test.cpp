@@ -1628,8 +1628,8 @@ void FStringTest::includesTest()
 {
   const finalcut::FString str = "Look behind you, a three-headed monkey!";
   const finalcut::FString empty1;
-  const wchar_t empty2[] = { };
-  const char empty3[] = { };
+  const wchar_t* empty2 = 0;
+  const char* empty3 = 0;
   const finalcut::FString search1 = "you";
   const finalcut::FString search2 = "me";
   const wchar_t search3[] = L"you";
