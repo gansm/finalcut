@@ -1,3 +1,6 @@
+2018-10-05  Markus Gans  <guru.mail@muenster.de>
+	* Remove redundant program code from FString
+
 2018-10-03  Markus Gans  <guru.mail@muenster.de>
 	* At the end of the lifetime of an FMenuItem object, 
 	  delete its entry from the object list of the parent object

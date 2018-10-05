@@ -98,26 +98,10 @@ class FString
 
     // Overloaded operators
     FString& operator = (const FString&);
-    FString& operator = (const std::wstring&);
-    const FString& operator = (const wchar_t[]);
-    FString& operator = (const std::string&);
-    const FString& operator = (const char[]);
-    const FString& operator = (const wchar_t);
-    const FString& operator = (const char);
 
     const FString& operator += (const FString&);
-    const FString& operator += (const std::wstring&);
-    const FString& operator += (const wchar_t[]);
-    const FString& operator += (const std::string&);
-    const FString& operator += (const char[]);
-    const FString& operator += (const wchar_t);
-    const FString& operator += (const char);
 
     const FString operator + (const FString&);
-    const FString operator + (const std::wstring&);
-    const FString operator + (const wchar_t[]);
-    const FString operator + (const std::string&);
-    const FString operator + (const char[]);
     const FString operator + (const wchar_t);
     const FString operator + (const char);
 
@@ -153,47 +137,23 @@ class FString
     const FString& operator () ();
 
     bool operator <  (const FString&) const;
-    bool operator <  (const std::wstring&) const;
-    bool operator <  (const wchar_t[]) const;
-    bool operator <  (const std::string&) const;
-    bool operator <  (const char[]) const;
-    bool operator <  (const wchar_t) const;
-    bool operator <  (const char) const;
+    template <typename CharT>
+    bool operator <  (CharT&) const;
     bool operator <= (const FString&) const;
-    bool operator <= (const std::wstring&) const;
-    bool operator <= (const wchar_t[]) const;
-    bool operator <= (const std::string&) const;
-    bool operator <= (const char[]) const;
-    bool operator <= (const wchar_t) const;
-    bool operator <= (const char) const;
+    template <typename CharT>
+    bool operator <= (CharT&) const;
     bool operator == (const FString&) const;
-    bool operator == (const std::wstring&) const;
-    bool operator == (const wchar_t[]) const;
-    bool operator == (const std::string&) const;
-    bool operator == (const char[]) const;
-    bool operator == (const wchar_t) const;
-    bool operator == (const char) const;
+    template <typename CharT>
+    bool operator == (CharT&) const;
     bool operator != (const FString&) const;
-    bool operator != (const std::wstring&) const;
-    bool operator != (const wchar_t[]) const;
-    bool operator != (const std::string&) const;
-    bool operator != (const char[]) const;
-    bool operator != (const wchar_t) const;
-    bool operator != (const char) const;
+    template <typename CharT>
+    bool operator != (CharT&) const;
     bool operator >= (const FString&) const;
-    bool operator >= (const std::wstring&) const;
-    bool operator >= (const wchar_t[]) const;
-    bool operator >= (const std::string&) const;
-    bool operator >= (const char[]) const;
-    bool operator >= (const wchar_t) const;
-    bool operator >= (const char) const;
+    template <typename CharT>
+    bool operator >= (CharT&) const;
     bool operator >  (const FString&) const;
-    bool operator >  (const std::wstring&) const;
-    bool operator >  (const wchar_t[]) const;
-    bool operator >  (const std::string&) const;
-    bool operator >  (const char[]) const;
-    bool operator >  (const wchar_t) const;
-    bool operator >  (const char) const;
+    template <typename CharT>
+    bool operator >  (CharT&) const;
 
     operator const char* () const { return c_str(); }
 
@@ -230,14 +190,6 @@ class FString
     wchar_t  back()  const;
 
     FString& sprintf (const FString, ...);
-    FString& sprintf (const wchar_t[], ...);
-    FString& sprintf (const char[], ...)
-#if defined(__clang__)
-      __attribute__((__format__ (__printf__, 2, 3)))
-#elif defined(__GNUC__)
-      __attribute__ ((format (printf, 2, 3)))
-#endif
-             ;
     FString clear();
 
     const wchar_t* wc_str() const;
@@ -270,15 +222,7 @@ class FString
     FString mid (uInt, uInt) const;
 
     FStringList split (const FString&);
-    FStringList split (const std::wstring&);
-    FStringList split (const wchar_t[]);
-    FStringList split (const std::string&);
-    FStringList split (const char[]);
-    FStringList split (const wchar_t);
-    FStringList split (const char);
-
-    FString& setString (const wchar_t[]);
-    FString& setString (const char[]);
+    FString& setString (const FString&);
 
     FString& setNumber (sInt16);
     FString& setNumber (uInt16);
@@ -297,61 +241,10 @@ class FString
     FString& setFormatedNumber (long,   char = nl_langinfo(THOUSEP)[0]);
     FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
 
+    const FString& insert (const FString&, int);
     const FString& insert (const FString&, uInt);
-    const FString& insert (const wchar_t[], uInt);
-    const FString& insert (const char[], uInt);
-    const FString& insert (const wchar_t, uInt);
-    const FString& insert (const char, uInt);
 
     FString replace (const FString&, const FString&);
-    FString replace (const FString&, const std::wstring&);
-    FString replace (const FString&, const wchar_t[]);
-    FString replace (const FString&, const std::string&);
-    FString replace (const FString&, const char[]);
-    FString replace (const FString&, const wchar_t);
-    FString replace (const FString&, const char);
-    FString replace (const std::wstring&, const FString&);
-    FString replace (const std::wstring&, const std::wstring&);
-    FString replace (const std::wstring&, const wchar_t[]);
-    FString replace (const std::wstring&, const std::string&);
-    FString replace (const std::wstring&, const char[]);
-    FString replace (const std::wstring&, const wchar_t);
-    FString replace (const std::wstring&, const char);
-    FString replace (const std::string&, const FString&);
-    FString replace (const std::string&, const std::wstring&);
-    FString replace (const std::string&, const wchar_t[]);
-    FString replace (const std::string&, const std::string&);
-    FString replace (const std::string&, const char[]);
-    FString replace (const std::string&, const wchar_t);
-    FString replace (const std::string&, const char);
-    FString replace (const wchar_t[], const FString&);
-    FString replace (const wchar_t[], const std::wstring&);
-    FString replace (const wchar_t[], const wchar_t[]);
-    FString replace (const wchar_t[], const std::string&);
-    FString replace (const wchar_t[], const char[]);
-    FString replace (const wchar_t[], const wchar_t);
-    FString replace (const wchar_t[], const char);
-    FString replace (const char[], const FString&);
-    FString replace (const char[], const std::wstring&);
-    FString replace (const char[], const wchar_t[]);
-    FString replace (const char[], const std::string&);
-    FString replace (const char[], const char[]);
-    FString replace (const char[], const wchar_t);
-    FString replace (const char[], const char);
-    FString replace (const wchar_t, const FString&);
-    FString replace (const wchar_t, const std::wstring&);
-    FString replace (const wchar_t, const wchar_t[]);
-    FString replace (const wchar_t, const std::string&);
-    FString replace (const wchar_t, const char[]);
-    FString replace (const wchar_t, const wchar_t);
-    FString replace (const wchar_t, const char);
-    FString replace (const char, const FString&);
-    FString replace (const char, const std::wstring&);
-    FString replace (const char, const wchar_t[]);
-    FString replace (const char, const std::string&);
-    FString replace (const char, const char[]);
-    FString replace (const char, const wchar_t);
-    FString replace (const char, const char);
 
     FString replaceControlCodes() const;
     FString expandTabs (int = 8) const;
@@ -360,17 +253,10 @@ class FString
 
     const FString& overwrite (const FString&, int);
     const FString& overwrite (const FString&, uInt = 0);
-    const FString& overwrite (const wchar_t[], int);
-    const FString& overwrite (const wchar_t[], uInt = 0);
-    const FString& overwrite (const wchar_t, int);
-    const FString& overwrite (const wchar_t, uInt = 0);
 
+    const FString& remove (int, uInt);
     const FString& remove (uInt, uInt);
     bool  includes (const FString&) const;
-    bool  includes (const wchar_t[]) const;
-    bool  includes (const char[]) const;
-    bool  includes (const wchar_t) const;
-    bool  includes (const char) const;
 
   private:
     // Constants
@@ -401,6 +287,54 @@ class FString
 //----------------------------------------------------------------------
 inline const char* FString::getClassName()
 { return "FString"; }
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator < (CharT& s) const
+{
+  const FString tmp(s);
+  return *this < tmp;
+}
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator <= (CharT& s) const
+{
+  const FString tmp(s);
+  return *this <= tmp;
+}
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator == (CharT& s) const
+{
+  const FString tmp(s);
+  return *this == tmp;
+}
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator != (CharT& s) const
+{
+  const FString tmp(s);
+  return *this != tmp;
+}
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator >= (CharT& s) const
+{
+  const FString tmp(s);
+  return *this >= tmp;
+}
+
+//----------------------------------------------------------------------
+template <class CharT>
+inline bool FString::operator > (CharT& s) const
+{
+  const FString tmp(s);
+  return *this > tmp;
+}
 
 //----------------------------------------------------------------------
 inline bool FString::isNull() const
@@ -435,30 +369,6 @@ inline wchar_t FString::back() const
   assert( ! isEmpty() );
   return string[length - 1];
 }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const std::wstring& s)
-{ return split(FString(s)); }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const wchar_t s[])
-{ return split(FString(s)); }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const std::string& s)
-{ return split(FString(s)); }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const char s[])
-{ return split(FString(s)); }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const wchar_t c)
-{ return split(FString(c)); }
-
-//----------------------------------------------------------------------
-inline FStringList FString::split (const char c)
-{ return split(FString(c)); }
 
 //----------------------------------------------------------------------
 inline FString& FString::setNumber (sInt16 num)
@@ -499,6 +409,7 @@ inline FString& FString::setFormatedNumber (int num, char separator)
 //----------------------------------------------------------------------
 inline FString& FString::setFormatedNumber (uInt num, char separator)
 { return setFormatedNumber (uLong(num), separator); }
+
 
 }  // namespace finalcut
 

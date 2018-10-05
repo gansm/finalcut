@@ -842,7 +842,7 @@ inline void FLineEdit::keyDel()
 
   if ( len > 0 && cursor_pos < len )
   {
-    text.remove(uInt(cursor_pos), 1);
+    text.remove(cursor_pos, 1);
     processChanged();
   }
 
@@ -861,7 +861,7 @@ inline void FLineEdit::keyBackspace()
 {
   if ( text.getLength() > 0 && cursor_pos > 0 )
   {
-    text.remove(uInt(cursor_pos - 1), 1);
+    text.remove(cursor_pos - 1, 1);
     processChanged();
     cursor_pos--;
 

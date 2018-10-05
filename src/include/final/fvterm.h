@@ -235,22 +235,7 @@ class FVTerm : public FTerm
                                                 , FPreprocessingHandler );
     virtual void        delPreprocessingHandler (FVTerm*);
 
-    int                 printf (const wchar_t[], ...);
-    int                 printf (const char[], ...)
-    #if defined(__clang__)
-      __attribute__((__format__ (__printf__, 2, 3)))
-    #elif defined(__GNUC__)
-      __attribute__ ((format (printf, 2, 3)))
-    #endif
-                        ;
-    int                 print (const std::wstring&);
-    int                 print (term_area*, const std::wstring&);
-    int                 print (const wchar_t[]);
-    int                 print (term_area*, const wchar_t[]);
-    int                 print (const char[]);
-    int                 print (term_area*, const char[]);
-    int                 print (const std::string&);
-    int                 print (term_area*, const std::string&);
+    int                 printf (const FString, ...);
     int                 print (const FString&);
     int                 print (term_area*, const FString&);
     int                 print (const std::vector<charData>&);

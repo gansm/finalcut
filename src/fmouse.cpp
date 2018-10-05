@@ -1642,10 +1642,4 @@ void FMouseControl::xtermMouse (bool on)
   FTermXTerminal::setMouseSupport (on);
 }
 
-//----------------------------------------------------------------------
-void FMouseControl::putstring (const char s[], int affcnt)
-{
-  FTerm::putstring (s, affcnt);
-}
-
 }  // namespace finalcut

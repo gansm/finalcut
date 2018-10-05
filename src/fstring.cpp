@@ -142,9 +142,7 @@ FString::FString (const FString& s)  // copy constructor
   , bufsize(0)
   , c_string(0)
 {
-  if ( s.isNull() )
-    return;
-  else
+  if ( ! s.isNull() )
     _assign (s.string);
 }
 
@@ -155,9 +153,7 @@ FString::FString (const std::wstring& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( s.empty() )
-    _assign (L"");
-  else
+  if ( ! s.empty() )
     _assign (s.c_str());
 }
 
@@ -168,15 +164,7 @@ FString::FString (const wchar_t s[])
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! s )
-    return;
-
-  if ( ! s[0] )
-  {
-    _assign(L"");
-    return;
-  }
-  else
+  if ( s )
     _assign (s);
 }
 
@@ -187,16 +175,12 @@ FString::FString (const std::string& s)
   , bufsize(0)
   , c_string(0)
 {
-  if ( s.empty() )
+  if ( ! s.empty() )
   {
-    _assign(L"");
-    return;
+    const wchar_t* wc_string = c_to_wc_str(s.c_str());
+    _assign(wc_string);
+    delete[] wc_string;
   }
-
-  const wchar_t* wc_string;
-  wc_string = c_to_wc_str(s.c_str());
-  _assign( wc_string );
-  delete[] wc_string;
 }
 
 //----------------------------------------------------------------------
@@ -206,19 +190,12 @@ FString::FString (const char s[])
   , bufsize(0)
   , c_string(0)
 {
-  if ( ! s )
-    return;
-
-  if ( ! s[0] )
+  if ( s )
   {
-    _assign(L"");
-    return;
+    const wchar_t* wc_string = c_to_wc_str(s);
+    _assign( wc_string );
+    delete[] wc_string;
   }
-
-  const wchar_t* wc_string;
-  wc_string = c_to_wc_str(s);
-  _assign (wc_string);
-  delete[] wc_string;
 }
 
 //----------------------------------------------------------------------
@@ -228,16 +205,13 @@ FString::FString (const wchar_t c)
   , bufsize(0)
   , c_string(0)
 {
-  if ( c == 0 )
+  if ( c )
   {
-    _assign(L"");
-    return;
+    wchar_t s[2];
+    s[0] = c;
+    s[1] = L'\0';
+    _assign (s);
   }
-
-  wchar_t s[2];
-  s[0] = c;
-  s[1] = L'\0';
-  _assign (s);
 }
 
 //----------------------------------------------------------------------
@@ -247,16 +221,13 @@ FString::FString (const char c)
   , bufsize(0)
   , c_string(0)
 {
-  if ( c == 0 )
+  if ( c )
   {
-    _assign(L"");
-    return;
+    wchar_t s[2];
+    s[0] = wchar_t(c & 0xff);
+    s[1] = L'\0';
+    _assign (s);
   }
-
-  wchar_t s[2];
-  s[0] = wchar_t(c & 0xff);
-  s[1] = L'\0';
-  _assign (s);
 }
 
 //----------------------------------------------------------------------
@@ -279,207 +250,18 @@ FString& FString::operator = (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString& FString::operator = (const std::wstring& s)
-{
-  if ( ! s.empty() )
-    _assign (s.c_str());
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator = (const wchar_t s[])
-{
-  if ( s )
-    _assign (s);
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::operator = (const std::string& s)
-{
-  if ( ! s.empty() )
-  {
-    const wchar_t* wc_string = c_to_wc_str(s.c_str());
-    _assign( wc_string );
-    delete[] wc_string;
-  }
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator = (const char s[])
-{
-  if ( s )
-  {
-    const wchar_t* wc_string = c_to_wc_str(s);
-    _assign( wc_string );
-    delete[] wc_string;
-  }
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator = (const wchar_t c)
-{
-  if ( c )
-  {
-    wchar_t s[2];
-    s[0] = c;
-    s[1] = L'\0';
-    _assign (s);
-  }
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator = (const char c)
-{
-  if ( c )
-  {
-    wchar_t s[2];
-    s[0] = wchar_t(c & 0xff);
-    s[1] = L'\0';
-    _assign (s);
-  }
-  else
-    clear();
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
 const FString& FString::operator += (const FString& s)
 {
   _insert (length, s.length, s.string);
   return *this;
 }
 
-//----------------------------------------------------------------------
-const FString& FString::operator += (const std::wstring& s)
-{
-  _insert (length, uInt(s.length()), s.c_str());
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator += (const wchar_t s[])
-{
-  _insert (length, uInt(std::wcslen(s)), s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator += (const std::string& s)
-{
-  if ( ! s.empty() )
-  {
-    const wchar_t* wc_string = c_to_wc_str(s.c_str());
-    _insert (length, uInt(s.length()), wc_string);
-    delete[] wc_string;
-  }
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator += (const char s[])
-{
-  if ( s )
-  {
-    const wchar_t* wc_string = c_to_wc_str(s);
-    _insert (length, uInt(std::wcslen(wc_string)), wc_string);
-    delete[] wc_string;
-  }
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator += (const wchar_t c)
-{
-  wchar_t s[2];
-  s[0] = c;
-  s[1] = L'\0';
-  _insert (length, 1, s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::operator += (const char c)
-{
-  wchar_t s[2];
-  s[0] = wchar_t(c & 0xff);
-  s[1] = L'\0';
-  _insert (length, 1, s);
-  return *this;
-}
 
 //----------------------------------------------------------------------
 const FString FString::operator + (const FString& s)
 {
   FString tmp(string);
   tmp._insert (length, s.length, s.string);
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const std::wstring& s)
-{
-  FString tmp(string);
-  tmp._insert (length, uInt(s.length()), s.c_str());
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const wchar_t s[])
-{
-  FString tmp(string);
-  tmp._insert (length, uInt(std::wcslen(s)), s);
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const std::string& s)
-{
-  FString tmp(string);
-
-  if ( ! s.empty() )
-  {
-    wchar_t* wc_string = c_to_wc_str(s.c_str());
-    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-    delete[] wc_string;
-  }
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const char s[])
-{
-  FString tmp(string);
-
-  if ( s )
-  {
-    wchar_t* wc_string = c_to_wc_str(s);
-    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-    delete[] wc_string;
-  }
-
   return tmp;
 }
 
@@ -755,80 +537,6 @@ FString& FString::sprintf (const FString format, ...)
   va_end (args);
 
   _assign (buffer);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::sprintf (const wchar_t format[], ...)
-{
-  static const int BUFSIZE = 4096;
-  wchar_t buffer[BUFSIZE];
-  va_list args;
-
-  if ( ! format )
-  {
-    clear();
-    return *this;
-  }
-
-  va_start (args, format);
-  std::vswprintf (buffer, BUFSIZE, format, args);
-  va_end (args);
-
-  _assign (buffer);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::sprintf (const char format[], ...)
-{
-  const wchar_t* wc_string;
-  char  buf[1024];
-  char* buffer;
-  int   len;
-  va_list args;
-
-  if ( ! format )
-  {
-    clear();
-    return *this;
-  }
-
-  buffer = buf;
-  va_start (args, format);
-  len = vsnprintf (buffer, sizeof(buf), format, args);
-  va_end (args);
-
-  if ( len >= int(sizeof(buf)) )
-  {
-    uLong buf_size = uInt(len) + 1;
-
-    try
-    {
-      buffer = new char[buf_size]();
-    }
-    catch (const std::bad_alloc& ex)
-    {
-      std::cerr << bad_alloc_str << ex.what() << std::endl;
-      return *this;
-    }
-
-    va_start (args, format);
-    vsnprintf (buffer, buf_size, format, args);
-    va_end (args);
-  }
-
-  wc_string = c_to_wc_str(buffer);
-
-  if ( wc_string )
-  {
-    _assign(wc_string);
-    delete[] wc_string;
-  }
-
-  if ( buffer != buf )
-    delete[] buffer;
-
   return *this;
 }
 
@@ -1313,18 +1021,9 @@ FStringList FString::split (const FString& delimiter)
 }
 
 //----------------------------------------------------------------------
-FString& FString::setString (const wchar_t s[])
+FString& FString::setString (const FString& s)
 {
-  _assign (s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-FString& FString::setString (const char s[])
-{
-  const wchar_t* wc_string = c_to_wc_str(s);
-  _assign (wc_string);
-  delete[] wc_string;
+  _assign (s.string);
   return *this;
 }
 
@@ -1504,48 +1203,6 @@ bool FString::operator < (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-bool FString::operator < (const std::wstring& s) const
-{
-  const FString tmp(s);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator < (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator < (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator < (const char s[]) const
-{
-  const FString tmp(s);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator < (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator < (const char c) const
-{
-  const FString tmp(c);
-  return *this < tmp;
-}
-
-//----------------------------------------------------------------------
 bool FString::operator <= (const FString& s) const
 {
   if ( ! (string || s.string) )
@@ -1561,48 +1218,6 @@ bool FString::operator <= (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-bool FString::operator <= (const std::wstring& s) const
-{
-  const FString tmp(s);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator <= (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator <= (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator <= (const char s[]) const
-{
-  const FString tmp(s);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator <= (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator <= (const char c) const
-{
-  const FString tmp(c);
-  return *this <= tmp;
-}
-
-//----------------------------------------------------------------------
 bool FString::operator == (const FString& s) const
 {
   if ( ! (string || s.string) )
@@ -1615,48 +1230,6 @@ bool FString::operator == (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-bool FString::operator == (const std::wstring& s) const
-{
-  const FString tmp(s);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator == (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator == (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator == (const char s[]) const
-{
-  const FString tmp(s);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator == (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator == (const char c) const
-{
-  const FString tmp(c);
-  return *this == tmp;
-}
-
-//----------------------------------------------------------------------
 bool FString::operator != (const FString& s) const
 {
   if ( ! (string || s.string) )
@@ -1666,48 +1239,6 @@ bool FString::operator != (const FString& s) const
     return true;
 
   return ( std::wcscmp(string, s.string) != 0 );
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const std::wstring& s) const
-{
-  const FString tmp(s);
-  return *this != tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this != tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this != tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const char s[]) const
-{
-  const FString tmp(s);
-  return *this != tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this != tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator != (const char c) const
-{
-  const FString tmp(c);
-  return *this != tmp;
 }
 
 //----------------------------------------------------------------------
@@ -1726,48 +1257,6 @@ bool FString::operator >= (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-bool FString::operator >= (const std::wstring& s) const
-{
-  const FString tmp(s);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator >= (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator >= (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator >= (const char s[]) const
-{
-  const FString tmp(s);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator >= (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator >= (const char c) const
-{
-  const FString tmp(c);
-  return *this >= tmp;
-}
-
-//----------------------------------------------------------------------
 bool FString::operator > (const FString& s) const
 {
   if ( ! (string || s.string) )
@@ -1783,45 +1272,13 @@ bool FString::operator > (const FString& s) const
 }
 
 //----------------------------------------------------------------------
-bool FString::operator > (const std::wstring& s) const
+const FString& FString::insert (const FString& s, int pos)
 {
-  const FString tmp(s);
-  return *this > tmp;
-}
+  if ( pos < 0 || uInt(pos) > length )
+    throw std::out_of_range("");
 
-//----------------------------------------------------------------------
-bool FString::operator > (const wchar_t s[]) const
-{
-  const FString tmp(s);
-  return *this > tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator > (const std::string& s) const
-{
-  const FString tmp(s);
-  return *this > tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator > (const char s[]) const
-{
-  const FString tmp(s);
-  return *this > tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator > (const wchar_t c) const
-{
-  const FString tmp(c);
-  return *this > tmp;
-}
-
-//----------------------------------------------------------------------
-bool FString::operator > (const char c) const
-{
-  const FString tmp(c);
-  return *this > tmp;
+  _insert (uInt(pos), s.length, s.string);
+  return *this;
 }
 
 //----------------------------------------------------------------------
@@ -1832,34 +1289,6 @@ const FString& FString::insert (const FString& s, uInt pos)
 
   _insert (pos, s.length, s.string);
   return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::insert (const wchar_t s[], uInt pos)
-{
-  if ( pos > length )
-    throw std::out_of_range("");
-
-  _insert (pos, uInt(std::wcslen(s)), s);
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::insert (const char s[], uInt pos)
-{
-  return insert(FString(s), pos);
-}
-
-//----------------------------------------------------------------------
-const FString& FString::insert (const wchar_t c, uInt pos)
-{
-  return insert(FString(c), pos);
-}
-
-//----------------------------------------------------------------------
-const FString& FString::insert (const char c, uInt pos)
-{
-  return insert(FString(c), pos);
 }
 
 //----------------------------------------------------------------------
@@ -1898,418 +1327,6 @@ FString FString::replace (const FString& from, const FString& to)
       pos++;
       p++;
     }
-  }
-
-  return s;
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const std::wstring& to)
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const wchar_t to[])
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const std::string& to)
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const char to[])
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const wchar_t to)
-{
-  FString to_wchar(to);
-  return replace (from, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const FString& from, const char to)
-{
-  FString to_char(to);
-  return replace (from, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const FString& to)
-{
-  FString from_str(from);
-  return replace (from_str, to);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const std::wstring& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const wchar_t to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const std::string& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const char to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const wchar_t to)
-{
-  FString from_str(from);
-  FString to_wchar(to);
-  return replace (from_str, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::wstring& from, const char to)
-{
-  FString from_str(from);
-  FString to_char(to);
-  return replace (from_str, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const FString& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const std::wstring& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const wchar_t to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const std::string& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const char to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const wchar_t to)
-{
-  FString from_str(from);
-  FString to_wchar(to);
-  return replace (from_str, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const std::string& from, const char to)
-{
-  FString from_str(from);
-  FString to_char(to);
-  return replace (from_str, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const FString& to)
-{
-  FString from_str(from);
-  return replace (from_str, to);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const std::wstring& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const wchar_t to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const std::string& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const char to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const wchar_t to)
-{
-  FString from_str(from);
-  FString to_wchar(to);
-  return replace (from_str, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from[], const char to)
-{
-  FString from_str(from);
-  FString to_char(to);
-  return replace (from_str, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const FString& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const std::wstring& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const wchar_t to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const std::string& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const char to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const wchar_t to)
-{
-  FString from_str(from);
-  FString to_wchar(to);
-  return replace (from_str, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from[], const char to)
-{
-  FString from_str(from);
-  FString to_char(to);
-  return replace (from_str, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const FString& to)
-{
-  wchar_t* p;
-  FString s(string);
-
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
-
-  if ( to.isNull() )
-    return s;
-
-  p = s.string;
-  uInt to_length = to.getLength();
-  uInt pos = 0;
-
-  while ( *p )
-  {
-    if ( wchar_t(*p) == from )
-    {
-      s._remove(pos, 1);
-      s._insert(pos, to_length, to.wc_str());
-      pos += to_length;
-      p = s.string + pos;
-    }
-    else
-    {
-      pos++;
-      p++;
-    }
-  }
-
-  return s;
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const std::wstring& to)
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const wchar_t to[])
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const std::string& to)
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const char to[])
-{
-  FString to_str(to);
-  return replace (from, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const wchar_t to)
-{
-  FString to_wchar(to);
-  return replace (from, to_wchar);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const wchar_t from, const char to)
-{
-  FString to_char(to);
-  return replace (from, to_char);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const FString& to)
-{
-  FString from_str(from);
-  return replace (from_str, to);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const std::wstring& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const wchar_t to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const std::string& to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const char to[])
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const wchar_t to)
-{
-  FString from_str(from);
-  FString to_str(to);
-  return replace (from_str, to_str);
-}
-
-//----------------------------------------------------------------------
-FString FString::replace (const char from, const char to)
-{
-  wchar_t* p;
-  FString s(string);
-
-  // handle NULL and empty string
-  if ( ! (string && *string) )
-    return s;
-
-  p = s.string;
-
-  while ( *p )
-  {
-    if ( char(*p) == from )
-      *p = to;
-
-    p++;
   }
 
   return s;
@@ -2477,61 +1494,12 @@ const FString& FString::overwrite (const FString& s, uInt pos)
 }
 
 //----------------------------------------------------------------------
-const FString& FString::overwrite (const wchar_t s[], int pos)
+const FString& FString::remove (int pos, uInt len)
 {
-  if ( pos < 0 )
-    return overwrite (s, 0);
+  if ( pos < 0 || len < 1 )
+    return *this;
 
-  return overwrite (s, uInt(pos));
-}
-
-//----------------------------------------------------------------------
-const FString& FString::overwrite (const wchar_t s[], uInt pos)
-{
-  uInt len = uInt(std::wcslen(s));
-
-  if ( pos > length )
-    pos = length;
-
-  if ( length >= (pos + len) )
-  {
-    std::wcsncpy (string + pos, s, len);
-  }
-  else
-  {
-    std::wcsncpy (string + pos, s, length - pos);
-    _insert (length, pos + len - length, s + length - pos);
-  }
-
-  return *this;
-}
-
-//----------------------------------------------------------------------
-const FString& FString::overwrite (const wchar_t c, int pos)
-{
-  if ( pos < 0 )
-    return overwrite (c, 0);
-
-  return overwrite (c, uInt(pos));
-}
-
-//----------------------------------------------------------------------
-const FString& FString::overwrite (const wchar_t c, uInt pos)
-{
-  if ( pos > length )
-    pos = length;
-
-  if ( length >= (pos + 1) )
-    string[pos] = c;
-  else
-  {
-    wchar_t s[2];
-    s[0] = c;
-    s[1] = L'\0';
-    _insert (length, pos + 1 - length, s);
-  }
-
-  return *this;
+  return remove (uInt(pos), len);
 }
 
 //----------------------------------------------------------------------
@@ -2558,62 +1526,6 @@ bool FString::includes (const FString& s) const
     return false;
 
   return ( std::wcsstr(string, s.string) != 0 );
-}
-
-//----------------------------------------------------------------------
-bool FString::includes (const wchar_t s[]) const
-{
-  if ( ! s )
-    return false;
-
-  if ( ! ( string && s[0]) )
-    return false;
-
-  return ( std::wcsstr(string, s) != 0 );
-}
-
-//----------------------------------------------------------------------
-bool FString::includes (const char s[]) const
-{
-  if ( ! s )
-    return false;
-
-  if ( ! (string && s[0]) )
-    return false;
-
-  bool ret;
-  const wchar_t* wc_string = c_to_wc_str(s);
-
-  if ( ! wc_string )
-    return false;
-
-  ret = bool(std::wcsstr(string, wc_string) != 0);
-  delete[] wc_string;
-  return ret;
-}
-
-//----------------------------------------------------------------------
-bool FString::includes (const wchar_t c) const
-{
-  if ( ! (string && c) )
-    return false;
-
-  wchar_t s[2];
-  s[0] = c;
-  s[1] = L'\0';
-  return ( std::wcsstr(string, s) != 0 );
-}
-
-//----------------------------------------------------------------------
-bool FString::includes (const char c) const
-{
-  if ( ! (string && c) )
-    return false;
-
-  wchar_t s[2];
-  s[0] = wchar_t(c & 0xff);
-  s[1] = L'\0';
-  return ( std::wcsstr(string, s) != 0 );
 }
 
 
