@@ -266,52 +266,6 @@ const FString FString::operator + (const FString& s)
 }
 
 //----------------------------------------------------------------------
-const FString FString::operator + (const std::wstring& s)
-{
-  FString tmp(string);
-  tmp._insert (length, uInt(s.length()), s.c_str());
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const wchar_t s[])
-{
-  FString tmp(string);
-  tmp._insert (length, uInt(std::wcslen(s)), s);
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const std::string& s)
-{
-  FString tmp(string);
-
-  if ( ! s.empty() )
-  {
-    wchar_t* wc_string = c_to_wc_str(s.c_str());
-    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-    delete[] wc_string;
-  }
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
-const FString FString::operator + (const char s[])
-{
-  FString tmp(string);
-
-  if ( s )
-  {
-    wchar_t* wc_string = c_to_wc_str(s);
-    tmp._insert (length, uInt(std::wcslen(wc_string)), wc_string);
-    delete[] wc_string;
-  }
-
-  return tmp;
-}
-
-//----------------------------------------------------------------------
 const FString FString::operator + (const wchar_t c)
 {
   wchar_t s[2];

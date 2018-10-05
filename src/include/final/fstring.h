@@ -102,10 +102,6 @@ class FString
     const FString& operator += (const FString&);
 
     const FString operator + (const FString&);
-    const FString operator + (const std::wstring&);
-    const FString operator + (const wchar_t[]);
-    const FString operator + (const std::string&);
-    const FString operator + (const char[]);
     const FString operator + (const wchar_t);
     const FString operator + (const char);
 
