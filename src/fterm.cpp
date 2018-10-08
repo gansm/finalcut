@@ -166,14 +166,8 @@ bool FTerm::setVGAFont()
   if ( data->isVGAFont() )
     return data->isVGAFont();
 
-  if ( isGnomeTerminal()
-    || isKdeTerminal()
-    || isPuttyTerminal()
-    || isTeraTerm()
-    || isCygwinTerminal()
-    || isMinttyTerm() )
+  if ( hasNoFontSettingOption() )
     return false;
-
 
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
@@ -215,12 +209,7 @@ bool FTerm::setNewFont()
   if ( isNewFont() )
     return true;
 
-  if ( isGnomeTerminal()
-    || isKdeTerminal()
-    || isPuttyTerminal()
-    || isTeraTerm()
-    || isCygwinTerminal()
-    || isMinttyTerm() )
+  if ( hasNoFontSettingOption() )
     return false;
 
   if ( isXTerminal() || isScreenTerm()
@@ -1418,10 +1407,22 @@ void FTerm::init_captureFontAndTitle()
 }
 
 //----------------------------------------------------------------------
-void FTerm::redefineColorPalette()
+inline bool FTerm::hasNoFontSettingOption()
 {
-  // Redefine the color palette
+  if ( isGnomeTerminal()
+    || isKdeTerminal()
+    || isPuttyTerminal()
+    || isTeraTerm()
+    || isCygwinTerminal()
+    || isMinttyTerm() )
+    return true;
 
+  return false;
+}
+
+//----------------------------------------------------------------------
+inline bool FTerm::canChangeColorPalette()
+{
   if ( isCygwinTerminal()
     || isKdeTerminal()
     || isTeraTerm()
@@ -1430,6 +1431,17 @@ void FTerm::redefineColorPalette()
     || isOpenBSDTerm()
     || isSunTerminal()
     || isAnsiTerminal() )
+  return false;
+
+  return FTermcap::can_change_color_palette;
+}
+
+//----------------------------------------------------------------------
+void FTerm::redefineColorPalette()
+{
+  // Redefine the color palette
+
+  if ( ! canChangeColorPalette() )
     return;
 
   resetColorMap();
@@ -1444,14 +1456,7 @@ void FTerm::redefineColorPalette()
 //----------------------------------------------------------------------
 void FTerm::restoreColorPalette()
 {
-  if ( isCygwinTerminal()
-    || isKdeTerminal()
-    || isTeraTerm()
-    || isMltermTerminal()
-    || isNetBSDTerm()
-    || isOpenBSDTerm()
-    || isSunTerminal()
-    || isAnsiTerminal() )
+  if ( ! canChangeColorPalette() )
     return;
 
   // Reset screen settings
@@ -1509,6 +1514,11 @@ void FTerm::setOverwriteCursorStyle()
 //----------------------------------------------------------------------
 void FTerm::enableMouse()
 {
+  // Enable the terminal mouse support
+
+  if ( ! init_values.mouse_support )
+    return;
+
   bool gpm_mouse = false;
   bool xterm_mouse = false;
 
@@ -1536,10 +1546,66 @@ void FTerm::enableMouse()
 }
 
 //----------------------------------------------------------------------
-void FTerm::disableMouse()
+inline void FTerm::disableMouse()
 {
+  // Disable the terminal mouse support
+
   keyboard->disableMouseSequences();
   mouse->disable();
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::enableKeypad()
+{
+  // Enter 'keyboard_transmit' mode
+
+  if ( TCAP(fc::t_keypad_xmit) )
+  {
+    putstring (TCAP(fc::t_keypad_xmit));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::disableKeypad()
+{
+  // Leave 'keyboard_transmit' mode
+
+  if ( TCAP(fc::t_keypad_local) )
+  {
+    putstring (TCAP(fc::t_keypad_local));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::enableAlternateCharset()
+{
+  // Enable alternate charset
+
+  if ( TCAP(fc::t_enable_acs) )
+  {
+    putstring (TCAP(fc::t_enable_acs));
+    std::fflush(stdout);
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::enableApplicationEscKey()
+{
+  // switch to application escape key mode
+
+  if ( isMinttyTerm() )
+    FTerm::putstring (CSI "?7727h");
+}
+
+//----------------------------------------------------------------------
+inline void FTerm::disableApplicationEscKey()
+{
+  // Switch to normal escape key mode
+
+  if ( isMinttyTerm() )
+    putstring (CSI "?7727l");
 }
 
 //----------------------------------------------------------------------
@@ -1652,7 +1718,6 @@ inline void FTerm::deallocationValues()
 //----------------------------------------------------------------------
 void FTerm::init (bool disable_alt_screen)
 {
-  int stdout_no = FTermios::getStdOut();
   init_term_object = this;
 
   // Initialize global values for all objects
@@ -1672,11 +1737,7 @@ void FTerm::init (bool disable_alt_screen)
   FTermios::storeTTYsettings();
 
   // Get output baud rate
-  uInt baud = FTermios::getBaudRate();
-  data->setBaudrate(baud);
-
-  if ( isatty(stdout_no) )
-    opti_move->setBaudRate(int(baud));
+  initBaudRate();
 
   // Terminal detection
   term_detection->setTermData(data);
@@ -1714,32 +1775,22 @@ void FTerm::init (bool disable_alt_screen)
   init_keyboard();
 
   // Enable the terminal mouse support
-  if ( init_values.mouse_support )
-    enableMouse();
+  enableMouse();
 
   // Activate meta key sends escape
   if ( isXTerminal() )
     xterm->metaSendsESC(true);
 
   // switch to application escape key mode
-  if ( isMinttyTerm() )
-    FTerm::putstring (CSI "?7727h");
+  enableApplicationEscKey();
 
   // Enter 'keyboard_transmit' mode
-  if ( TCAP(fc::t_keypad_xmit) )
-  {
-    putstring (TCAP(fc::t_keypad_xmit));
-    std::fflush(stdout);
-  }
+  enableKeypad();
 
   useAlternateScreenBuffer();
 
   // Enable alternate charset
-  if ( TCAP(fc::t_enable_acs) )
-  {
-    putstring (TCAP(fc::t_enable_acs));
-    std::fflush(stdout);
-  }
+  enableAlternateCharset();
 
   // Save the used xterm font and window title
   init_captureFontAndTitle();
@@ -1823,6 +1874,17 @@ void FTerm::initTermspecifics()
 }
 
 //----------------------------------------------------------------------
+void FTerm::initBaudRate()
+{
+  int stdout_no = FTermios::getStdOut();
+  uInt baud = FTermios::getBaudRate();
+  data->setBaudrate(baud);
+
+  if ( isatty(stdout_no) )
+    opti_move->setBaudRate(int(baud));
+}
+
+//----------------------------------------------------------------------
 void FTerm::finish()
 {
   // Set default signal handler
@@ -1860,12 +1922,8 @@ void FTerm::finish()
   if ( init_values.color_change )
     restoreColorPalette();
 
-  if ( isMinttyTerm() )
-  {
-    // Switch to normal escape key mode
-    putstring (CSI "?7727l");
-    std::fflush(stdout);
-  }
+  // Switch to normal escape key mode
+  disableApplicationEscKey();
 
   finishOSspecifics1();
 
@@ -1885,11 +1943,7 @@ void FTerm::finish()
   useNormalScreenBuffer();
 
   // leave 'keyboard_transmit' mode
-  if ( TCAP(fc::t_keypad_local) )
-  {
-    putstring (TCAP(fc::t_keypad_local));
-    std::fflush(stdout);
-  }
+  disableKeypad();
 
   finish_encoding();
 

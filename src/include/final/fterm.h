@@ -367,12 +367,19 @@ class FTerm
     static void            init_utf8_without_alt_charset();
     static void            init_tab_quirks();
     static void            init_captureFontAndTitle();
+    static bool            hasNoFontSettingOption();
+    static bool            canChangeColorPalette();
     static void            redefineColorPalette();
     static void            restoreColorPalette();
     static void            setInsertCursorStyle();
     static void            setOverwriteCursorStyle();
     static void            enableMouse();
     static void            disableMouse();
+    static void            enableApplicationEscKey();
+    static void            disableApplicationEscKey();
+    static void            enableKeypad();
+    static void            disableKeypad();
+    static void            enableAlternateCharset();
     static void            useAlternateScreenBuffer();
     static void            useNormalScreenBuffer();
     void                   allocationValues();
@@ -380,6 +387,7 @@ class FTerm
     void                   init (bool);
     void                   initOSspecifics();
     void                   initTermspecifics();
+    void                   initBaudRate();
     void                   finish();
     void                   finishOSspecifics1();
     void                   finish_encoding();

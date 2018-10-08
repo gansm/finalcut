@@ -26,18 +26,19 @@ namespace finalcut
 {
 
 // static class attributes
-bool            FTermcap::background_color_erase = false;
-bool            FTermcap::automatic_left_margin  = false;
-bool            FTermcap::automatic_right_margin = false;
-bool            FTermcap::eat_nl_glitch          = false;
-bool            FTermcap::ansi_default_color     = false;
-bool            FTermcap::osc_support            = false;
-bool            FTermcap::no_utf8_acs_chars      = false;
-int             FTermcap::max_color              = 1;
-int             FTermcap::tabstop                = 8;
-int             FTermcap::attr_without_color     = 0;
-FTermData*      FTermcap::fterm_data             = 0;
-FTermDetection* FTermcap::term_detection         = 0;
+bool            FTermcap::background_color_erase   = false;
+bool            FTermcap::can_change_color_palette = false;
+bool            FTermcap::automatic_left_margin    = false;
+bool            FTermcap::automatic_right_margin   = false;
+bool            FTermcap::eat_nl_glitch            = false;
+bool            FTermcap::ansi_default_color       = false;
+bool            FTermcap::osc_support              = false;
+bool            FTermcap::no_utf8_acs_chars        = false;
+int             FTermcap::max_color                = 1;
+int             FTermcap::tabstop                  = 8;
+int             FTermcap::attr_without_color       = 0;
+FTermData*      FTermcap::fterm_data               = 0;
+FTermDetection* FTermcap::term_detection           = 0;
 
 
 //----------------------------------------------------------------------
@@ -96,7 +97,11 @@ void FTermcap::termcap()
   bool color256 = term_detection->canDisplay256Colors();
 
   // Open termcap file
+#if defined(__sun) && defined(__SVR4)
+  char* termtype = fterm_data->getTermType();
+#else
   const char* termtype = fterm_data->getTermType();
+#endif
   terminals.push_back(termtype);            // available terminal type
 
   if ( color256 )                           // 1st fallback if not found
@@ -173,6 +178,9 @@ void FTermcap::termcapBoleans()
 
   // Screen erased with the background color
   background_color_erase = tgetflag(C_STR("ut"));
+
+  // Terminal is able to redefine existing colors
+  can_change_color_palette = tgetflag(C_STR("cc"));
 
   // t_cursor_left wraps from column 0 to last column
   automatic_left_margin = tgetflag(C_STR("bw"));

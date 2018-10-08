@@ -109,6 +109,7 @@ class FTermcap
 
     // Data Members
     static bool background_color_erase;
+    static bool can_change_color_palette;
     static bool automatic_left_margin;
     static bool automatic_right_margin;
     static bool eat_nl_glitch;

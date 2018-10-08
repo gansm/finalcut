@@ -89,7 +89,7 @@ void FTermcapQuirks::terminalFixup()
   }
   else if ( td->isSunTerminal() )
   {
-    sun();
+    sunConsole();
   }
   else if ( td->isPuttyTerminal() )
   {
@@ -385,7 +385,7 @@ void FTermcapQuirks::teraterm()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::sun()
+void FTermcapQuirks::sunConsole()
 {
   // Sun Microsystems workstation console eat_nl_glitch fix
   FTermcap::eat_nl_glitch = true;

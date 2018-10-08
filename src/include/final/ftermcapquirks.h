@@ -82,7 +82,7 @@ class FTermcapQuirks
     static void vte();
     static void putty();
     static void teraterm();
-    static void sun();
+    static void sunConsole();
     static void screen();
     static void general();
 
