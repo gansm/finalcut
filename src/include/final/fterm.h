@@ -103,26 +103,6 @@
 #include <fcntl.h>
 #include <langinfo.h>
 
-#if defined(__sun) && defined(__SVR4)
-  #include <termio.h>
-  typedef struct termio SGTTY;
-  typedef struct termios SGTTYS;
-
-  #ifdef _LP64
-    typedef unsigned int chtype;
-  #else
-    typedef unsigned long chtype;
-  #endif  // _LP64
-
-  #include <term.h>  // termcap
-#else
-  #include <term.h>  // termcap
-#endif  // defined(__sun) && defined(__SVR4)
-
-#ifdef F_HAVE_LIBGPM
-  #undef buttons  // from term.h
-#endif
-
 #if F_HAVE_GETTTYNAM && F_HAVE_TTYENT_H
   #include <ttyent.h>
 #endif
@@ -151,13 +131,9 @@
 
 #if defined(__linux__)
   #include "final/ftermlinux.h"
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   #include "final/ftermfreebsd.h"
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
   #include "final/ftermopenbsd.h"
 #endif
 
@@ -336,9 +312,7 @@ class FTerm
         #if defined(__FreeBSD__) || defined(__DragonFly__)
           meta_sends_escape = true;
           change_cursorstyle = true;
-        #endif
-
-        #if defined(__NetBSD__) || defined(__OpenBSD__)
+        #elif defined(__NetBSD__) || defined(__OpenBSD__)
           meta_sends_escape = true;
         #endif
         }
@@ -356,9 +330,7 @@ class FTerm
         uInt8 meta_sends_escape  : 1;
         uInt8 change_cursorstyle : 1;
         uInt8                    : 6;  // padding bits
-      #endif
-
-      #if defined(__NetBSD__) || defined(__OpenBSD__)
+      #elif defined(__NetBSD__) || defined(__OpenBSD__)
         uInt8 meta_sends_escape  : 1;
         uInt8                    : 7;  // padding bits
       #endif
@@ -382,15 +354,9 @@ class FTerm
     static void            init_fixed_max_color();
     static void            init_keyboard();
     static void            init_termcap();
-    static void            init_termcap_error (int);
-    static void            init_termcap_variables(char*&);
-    static void            init_termcap_booleans();
-    static void            init_termcap_numerics();
-    static void            init_termcap_strings (char*&);
-    static void            init_termcap_keys_vt100 (char*&);
-    static void            init_termcap_keys (char*&);
-    static void            init_OptiMove();
-    static void            init_OptiAttr();
+    static void            init_quirks();
+    static void            init_optiMove();
+    static void            init_optiAttr();
     static void            init_font();
     static void            init_locale();
     static void            init_encoding();
@@ -435,13 +401,9 @@ class FTerm
 #if defined(__linux__)
     #undef linux
     static FTermLinux*     linux;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
     static FTermFreeBSD*   freebsd;
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
     static FTermOpenBSD*   openbsd;
 #endif
 };

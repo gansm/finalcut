@@ -290,7 +290,7 @@ void FButton::hide()
 
   try
   {
-    blank = new char[uInt(size) + 1];
+    blank = new char[std::size_t(size) + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -298,7 +298,7 @@ void FButton::hide()
     return;
   }
 
-  std::memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', std::size_t(size));
   blank[size] = '\0';
 
   for (int y = 0; y < getHeight() + s + (f << 1); y++)
@@ -489,19 +489,19 @@ void FButton::getButtonState()
 //----------------------------------------------------------------------
 uChar FButton::getHotkey()
 {
-  int length;
+  uInt length;
 
   if ( text.isEmpty() )
     return 0;
 
-  length = int(text.getLength());
+  length = text.getLength();
 
-  for (int i = 0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
     try
     {
-      if ( i + 1 < length && text[uInt(i)] == '&' )
-        return uChar(text[uInt(++i)]);
+      if ( i + 1 < length && text[i] == '&' )
+        return uChar(text[++i]);
     }
     catch (const std::out_of_range&)
     {
@@ -754,7 +754,7 @@ void FButton::draw()
 
   try
   {
-    button_text = new wchar_t[uInt(txtlength) + 1]();
+    button_text = new wchar_t[std::size_t(txtlength) + 1]();
   }
   catch (const std::bad_alloc& ex)
   {

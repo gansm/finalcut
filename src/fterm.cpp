@@ -53,13 +53,9 @@ FMouseControl*      FTerm::mouse            = 0;
 
 #if defined(__linux__)
   FTermLinux* FTerm::linux = 0;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   FTermFreeBSD* FTerm::freebsd = 0;
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
   FTermOpenBSD* FTerm::openbsd = 0;
 #endif
 
@@ -840,9 +836,7 @@ void FTerm::initScreenSettings()
   linux->initCharMap (fc::character);
   data->supportShadowCharacter (linux->hasShadowCharacter());
   data->supportHalfBlockCharacter (linux->hasHalfBlockCharacter());
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->initCharMap (fc::character);
 #endif
 
@@ -1091,269 +1085,32 @@ void FTerm::init_keyboard()
 }
 
 //----------------------------------------------------------------------
-/* Terminal capability data base
- * -----------------------------
- * Info under: man 5 terminfo
- *
- * Importent shell commands:
- *   captoinfo - convert all termcap descriptions into terminfo descriptions
- *   infocmp   - print out terminfo description from the current terminal
- */
 void FTerm::init_termcap()
 {
-  std::vector<std::string> terminals;
-  std::vector<std::string>::iterator iter;
-  static const int success = 1;
-  static const int uninitialized = -2;
-  static char term_buffer[2048];
-  static char string_buf[2048];
-  char* buffer = string_buf;
-  int status = uninitialized;
-  bool color256 = term_detection->canDisplay256Colors();
+  // Initialize the terminal capabilities
+
+  FTermcap termcap;
+  termcap.setTermData(data);
+  termcap.setFTermDetection(term_detection);
+  termcap.init();
 
   // Share the terminal capabilities
-  tcap = FTermcap::getTermcapMap();
-
-  // Open termcap file
-  const char* termtype = data->getTermType();
-  terminals.push_back(termtype);            // available terminal type
-
-  if ( color256 )                           // 1st fallback if not found
-    terminals.push_back("xterm-256color");
-
-  terminals.push_back("xterm");             // 2nd fallback if not found
-  terminals.push_back("ansi");              // 3rd fallback if not found
-  terminals.push_back("vt100");             // 4th fallback if not found
-  iter = terminals.begin();
-
-  while ( iter != terminals.end() )
-  {
-    data->setTermType(iter->c_str());
-
-    // Open the termcap file + load entry for termtype
-    status = tgetent(term_buffer, termtype);
-
-    if ( status == success || ! term_detection->hasTerminalDetection() )
-      break;
-
-    ++iter;
-  }
-
-  if ( std::strncmp(termtype, "ansi", 4) == 0 )
-    term_detection->setAnsiTerminal (true);
-
-  init_termcap_error (status);
-  init_termcap_variables (buffer);
+  tcap = termcap.getTermcapMap();
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcap_error (int status)
+void FTerm::init_quirks()
 {
-  static const int no_entry = 0;
-  static const int db_not_found = -1;
-  static const int uninitialized = -2;
+  // Initialize terminal quirks
 
-  if ( status == no_entry || status == uninitialized )
-  {
-    const char* termtype = data->getTermType();
-    std::cerr << "Unknown terminal: "  << termtype << "\n"
-              << "Check the TERM environment variable\n"
-              << "Also make sure that the terminal\n"
-              << "is defined in the termcap/terminfo database.\n";
-    std::abort();
-  }
-  else if ( status == db_not_found )
-  {
-    std::cerr << "The termcap/terminfo database could not be found.\n";
-    std::abort();
-  }
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcap_variables (char*& buffer)
-{
-  // Get termcap booleans
-  init_termcap_booleans();
-
-  // Get termcap numerics
-  init_termcap_numerics();
-
-  // Get termcap strings
-  init_termcap_strings(buffer);
-
-  // Terminal quirks
   FTermcapQuirks quirks;
   quirks.setTermData (data);
   quirks.setFTermDetection (term_detection);
-  quirks.terminalFixup();       // Fix terminal quirks
-
-  // Get termcap keys
-  init_termcap_keys(buffer);
-
-  // Initialize cursor movement optimization
-  init_OptiMove();
-
-  // Initialize video attributes optimization
-  init_OptiAttr();
+  quirks.terminalFixup();  // Fix terminal quirks
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_termcap_booleans()
-{
-  // Get termcap booleans
-
-  // Screen erased with the background color
-  FTermcap::background_color_erase = tgetflag(C_STR("ut"));
-
-  // t_cursor_left wraps from column 0 to last column
-  FTermcap::automatic_left_margin = tgetflag(C_STR("bw"));
-
-  // Terminal has auto-matic margins
-  FTermcap::automatic_right_margin = tgetflag(C_STR("am"));
-
-  // NewLine ignored after 80 cols
-  FTermcap::eat_nl_glitch = tgetflag(C_STR("xn"));
-
-  // Terminal supports ANSI set default fg and bg color
-  FTermcap::ansi_default_color = tgetflag(C_STR("AX"));
-
-  // Terminal supports operating system commands (OSC)
-  // OSC = Esc + ']'
-  FTermcap::osc_support = tgetflag(C_STR("XT"));
-
-  // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
-  FTermcap::no_utf8_acs_chars = bool(tgetnum(C_STR("U8")) != 0);
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcap_numerics()
-{
-  // Get termcap numeric
-
-  // Maximum number of colors on screen
-  FTermcap::max_color = std::max( FTermcap::max_color
-                                , tgetnum(C_STR("Co")) );
-
-  if ( getMaxColor() < 0 )
-    FTermcap::max_color = 1;
-
-  if ( getMaxColor() < 8 )
-    data->setMonochron(true);
-  else
-    data->setMonochron(false);
-
-  // Get initial spacing for hardware tab stop
-  FTermcap::tabstop = tgetnum(C_STR("it"));
-
-  // Get video attributes that cannot be used with colors
-  FTermcap::attr_without_color = tgetnum(C_STR("NC"));
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcap_strings (char*& buffer)
-{
-  // Get termcap strings
-
-  // Read termcap output strings
-  for (int i = 0; tcap[i].tname[0] != 0; i++)
-    tcap[i].string = tgetstr(tcap[i].tname, &buffer);
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_termcap_keys_vt100 (char*& buffer)
-{
-  // Some terminals (e.g. PuTTY) send vt100 key codes for
-  // the arrow and function keys.
-
-  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
-
-  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
-    || ( TCAP(fc::t_cursor_up)
-      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
-  {
-    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
-    {
-      if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "A");  // Key up
-
-      if ( std::strncmp(fc::Fkey[i].tname, "kdx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "B");  // Key down
-
-      if ( std::strncmp(fc::Fkey[i].tname, "krx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "C");  // Key right
-
-      if ( std::strncmp(fc::Fkey[i].tname, "klx", 3) == 0 )
-        fc::Fkey[i].string = C_STR(CSI "D");  // Key left
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k1X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OP");  // PF1
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k2X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OQ");  // PF2
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k3X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OR");  // PF3
-
-      if ( std::strncmp(fc::Fkey[i].tname, "k4X", 3) == 0 )
-        fc::Fkey[i].string = C_STR(ESC "OS");  // PF4
-    }
-  }
-}
-//----------------------------------------------------------------------
-void FTerm::init_termcap_keys (char*& buffer)
-{
-  // Read termcap key strings
-
-  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
-  {
-    fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
-
-    // Fallback for rxvt with TERM=xterm
-    if ( std::strncmp(fc::Fkey[i].tname, "khx", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "7~");  // Home key
-
-    if ( std::strncmp(fc::Fkey[i].tname, "@7x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "8~");  // End key
-
-    if ( std::strncmp(fc::Fkey[i].tname, "k1x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "11~");  // F1
-
-    if ( std::strncmp(fc::Fkey[i].tname, "k2x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "12~");  // F2
-
-    if ( std::strncmp(fc::Fkey[i].tname, "k3x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "13~");  // F3
-
-    if ( std::strncmp(fc::Fkey[i].tname, "k4x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "14~");  // F4
-
-    // Fallback for TERM=ansi
-    if ( std::strncmp(fc::Fkey[i].tname, "@7X", 3) == 0 )
-      fc::Fkey[i].string = C_STR(CSI "K");  // End key
-
-    // Keypad keys
-    if ( std::strncmp(fc::Fkey[i].tname, "@8x", 3) == 0 )
-      fc::Fkey[i].string = C_STR(ESC "OM");  // Enter key
-
-    if ( std::strncmp(fc::Fkey[i].tname, "KP1", 3) == 0 )
-      fc::Fkey[i].string = C_STR(ESC "Oo");  // Keypad slash
-
-    if ( std::strncmp(fc::Fkey[i].tname, "KP2", 3) == 0 )
-      fc::Fkey[i].string = C_STR(ESC "Oj");  // Keypad asterisk
-
-    if ( std::strncmp(fc::Fkey[i].tname, "KP3", 3) == 0 )
-      fc::Fkey[i].string = C_STR(ESC "Om");  // Keypad minus sign
-
-    if ( std::strncmp(fc::Fkey[i].tname, "KP4", 3) == 0 )
-      fc::Fkey[i].string = C_STR(ESC "Ok");  // Keypad plus sign
-  }
-
-  // VT100 key codes for the arrow and function keys
-  init_termcap_keys_vt100(buffer);
-}
-
-//----------------------------------------------------------------------
-void FTerm::init_OptiMove()
+void FTerm::init_optiMove()
 {
   // Duration precalculation of the cursor movement strings
 
@@ -1388,7 +1145,7 @@ void FTerm::init_OptiMove()
 }
 
 //----------------------------------------------------------------------
-void FTerm::init_OptiAttr()
+void FTerm::init_optiAttr()
 {
   // Setting video attribute optimization
 
@@ -1719,9 +1476,7 @@ void FTerm::setInsertCursorStyle()
                                  , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->setCursorStyle ( fc::destructive_cursor
                           , data->isCursorHidden() );
 #endif
@@ -1742,9 +1497,7 @@ void FTerm::setOverwriteCursorStyle()
                                  , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->setCursorStyle ( fc::normal_cursor
                           , data->isCursorHidden() );
 #endif
@@ -1846,13 +1599,9 @@ inline void FTerm::allocationValues()
 
 #if defined(__linux__)
     linux          = new FTermLinux();
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
     freebsd        = new FTermFreeBSD();
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
     openbsd        = new FTermOpenBSD();
 #endif
   }
@@ -1870,14 +1619,10 @@ inline void FTerm::deallocationValues()
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   if ( openbsd )
     delete openbsd;
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   if ( freebsd )
     delete freebsd;
-#endif
-
-#if defined(__linux__)
+#elif defined(__linux__)
   if ( linux )
     delete linux;
 #endif
@@ -1943,6 +1688,17 @@ void FTerm::init (bool disable_alt_screen)
 
   // Initializes variables for the current terminal
   init_termcap();
+
+  // Initialize terminal quirks
+  init_quirks();
+
+  // Initialize cursor movement optimization
+  init_optiMove();
+
+  // Initialize video attributes optimization
+  init_optiAttr();
+
+  // Initialize vt100 alternate character set
   init_alt_charset();
 
   // Pass the terminal capabilities to the keyboard object
@@ -2043,9 +1799,7 @@ void FTerm::initOSspecifics()
     freebsd->disableChangeCursorStyle();
 
   freebsd->init();  // Initialize BSD console
-#endif  // defined(__FreeBSD__) || defined(__DragonFly__)
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
   if ( init_values.meta_sends_escape )
     openbsd->enableMetaSendsEscape();
   else
@@ -2150,13 +1904,9 @@ void FTerm::finishOSspecifics1()
 {
 #if defined(__linux__)
   linux->finish();
-#endif
-
-#if defined(__FreeBSD__) || defined(__DragonFly__)
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
   freebsd->finish();
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
   openbsd->finish();
 #endif
 }

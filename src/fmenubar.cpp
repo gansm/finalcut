@@ -77,7 +77,7 @@ void FMenuBar::hide()
 
   try
   {
-    blank = new char[uInt(screenWidth) + 1];
+    blank = new char[std::size_t(screenWidth) + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -85,7 +85,7 @@ void FMenuBar::hide()
     return;
   }
 
-  std::memset(blank, ' ', uLong(screenWidth));
+  std::memset(blank, ' ', std::size_t(screenWidth));
   blank[screenWidth] = '\0';
   setPrintPos (1,1);
   print (blank);

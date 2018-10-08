@@ -73,7 +73,6 @@
 
 #ifdef F_HAVE_LIBGPM
   #include <gpm.h>
-  #undef buttons  // from term.h
 #endif
 
 namespace finalcut

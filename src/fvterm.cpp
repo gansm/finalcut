@@ -653,7 +653,7 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   assert ( height > 0 );
   assert ( rsw >= 0 );
   assert ( bsh >= 0 );
-  int area_size;
+  std::size_t area_size;
   bool realloc_success = false;
 
   if ( ! area )
@@ -673,11 +673,13 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
     return;
   }
 
-  area_size = (width + rsw) * (height + bsh);
+  area_size = std::size_t((width + rsw) * (height + bsh));
 
   if ( area->height + area->bottom_shadow != height + bsh )
   {
-    realloc_success = reallocateTextArea (area, height + bsh, area_size);
+    realloc_success = reallocateTextArea ( area
+                                         , std::size_t(height + bsh)
+                                         , area_size );
   }
   else if ( area->width + area->right_shadow != width + rsw )
   {
@@ -727,12 +729,9 @@ inline void FVTerm::setTextToDefault ( term_area* area
 
 //----------------------------------------------------------------------
 inline bool FVTerm::reallocateTextArea ( term_area* area
-                                       , int height
-                                       , int size )
+                                       , std::size_t height
+                                       , std::size_t size )
 {
-  assert ( height > 0 );
-  assert ( size > 0 );
-
   if ( area->changes != 0 )
     delete[] area->changes;
 
@@ -741,8 +740,8 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 
   try
   {
-    area->changes = new line_changes[uInt(height)];
-    area->text    = new charData[uInt(size)];
+    area->changes = new line_changes[height];
+    area->text    = new charData[size];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -754,16 +753,14 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::reallocateTextArea (term_area* area, int size)
+inline bool FVTerm::reallocateTextArea (term_area* area, std::size_t size)
 {
-  assert ( size > 0 );
-
   if ( area->text != 0 )
     delete[] area->text;
 
   try
   {
-    area->text = new charData[uInt(size)];
+    area->text = new charData[size];
   }
   catch (const std::bad_alloc& ex)
   {

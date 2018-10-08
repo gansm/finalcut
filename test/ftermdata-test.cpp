@@ -177,11 +177,11 @@ void FTermDataTest::dataTest()
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString() );
   data.setXtermFont("terminus-20");
   CPPUNIT_ASSERT ( data.getXtermFont() == finalcut::FString("terminus-20") );
-  
+
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString() );
   data.setXtermTitle("Terminal");
   CPPUNIT_ASSERT ( data.getXtermTitle() == finalcut::FString("Terminal") );
-  
+
 #if DEBUG
   CPPUNIT_ASSERT ( data.getFramebufferBpp() == -1 );
   data.setFramebufferBpp(32);

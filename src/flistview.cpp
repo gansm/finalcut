@@ -237,8 +237,9 @@ FString FListViewItem::getText (int column) const
     || column > int(column_list.size()) )
     return fc::emptyFString::get();
 
-  column--;  // Convert column position to address offset (index)
-  return column_list[uInt(column)];
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
+  return column_list[index];
 }
 
 //----------------------------------------------------------------------
@@ -263,23 +264,24 @@ void FListViewItem::setText (int column, const FString& text)
     || column > int(column_list.size()) )
     return;
 
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
   FObject* parent = getParent();
-  column--;  // Convert column position to address offset (index)
 
   if ( parent && parent->isInstanceOf("FListView") )
   {
     FListView* listview = static_cast<FListView*>(parent);
 
-    if ( ! listview->header[uInt(column)].fixed_width )
+    if ( ! listview->header[index].fixed_width )
     {
       int length = int(text.getLength());
 
-      if ( length > listview->header[uInt(column)].width )
-        listview->header[uInt(column)].width = length;
+      if ( length > listview->header[index].width )
+        listview->header[index].width = length;
     }
   }
 
-  column_list[uInt(column)] = text;
+  column_list[index] = text;
 }
 
 //----------------------------------------------------------------------
@@ -346,15 +348,15 @@ void FListViewItem::sort (Compare cmp)
     return;
 
   // Sort the top level
-  FObject::FObjectList& children_list = getChildren();
+  FObject::FObjectList& children = getChildren();
 
-  if ( ! children_list.empty() )
-    children_list.sort(cmp);
+  if ( ! children.empty() )
+    children.sort(cmp);
 
   // Sort the sublevels
-  FListViewIterator iter = children_list.begin();
+  FListViewIterator iter = begin();
 
-  while ( iter != children_list.end() )
+  while ( iter != end() )
   {
     if ( *iter )
     {
@@ -652,8 +654,9 @@ fc::text_alignment FListView::getColumnAlignment (int column) const
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return fc::alignLeft;
 
-  column--;  // Convert column position to address offset (index)
-  return header[uInt(column)].alignment;
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
+  return header[index].alignment;
 }
 
 //----------------------------------------------------------------------
@@ -664,19 +667,20 @@ FString FListView::getColumnText (int column) const
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return fc::emptyFString::get();
 
-  column--;  // Convert column position to address offset (index)
-  return header[uInt(column)].name;
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
+  return header[index].name;
 }
 
 //----------------------------------------------------------------------
 fc::sorting_type FListView::getColumnSortType (int column) const
 {
   fc::sorting_type type;
-  std::size_t size = uInt(column);
+  std::size_t col = uInt(column);
 
   try
   {
-    type = sort_type.at(size);
+    type = sort_type.at(col);
   }
   catch (const std::out_of_range&)
   {
@@ -713,8 +717,9 @@ void FListView::setColumnAlignment (int column, fc::text_alignment align)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  column--;  // Convert column position to address offset (index)
-  header[uInt(column)].alignment = align;
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
+  header[index].alignment = align;
 }
 
 //----------------------------------------------------------------------
@@ -725,17 +730,18 @@ void FListView::setColumnText (int column, const FString& label)
   if ( column < 1 || header.empty() || column > int(header.size()) )
     return;
 
-  column--;  // Convert column position to address offset (index)
+  // Convert column position to address offset (index)
+  std::size_t index = uInt(column - 1);
 
-  if ( ! header[uInt(column)].fixed_width )
+  if ( ! header[index].fixed_width )
   {
     int length = int(label.getLength());
 
-    if ( length > header[uInt(column)].width )
-      header[uInt(column)].width = length;
+    if ( length > header[index].width )
+      header[index].width = length;
   }
 
-  header[uInt(column)].name = label;
+  header[index].name = label;
 }
 
 //----------------------------------------------------------------------

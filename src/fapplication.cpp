@@ -346,9 +346,7 @@ void FApplication::showParameterUsage()
     << "     Do not send a ESC prefix for the alt/meta key" << std::endl
     << "  --no-cursorstyle-change"
     << "     Do not change the current cursor style" << std::endl
-#endif
-
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
     << std::endl
     << "NetBSD/OpenBSD console options:" << std::endl
     << "  --no-esc-for-alt-meta  "
@@ -436,9 +434,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
       {C_STR("no-cursorstyle-change"), no_argument,       0,  0 },
-    #endif
-
-    #if defined(__NetBSD__) || defined(__OpenBSD__)
+    #elif defined(__NetBSD__) || defined(__OpenBSD__)
       {C_STR("no-esc-for-alt-meta"),   no_argument,       0,  0 },
     #endif
 
@@ -497,9 +493,7 @@ void FApplication::cmd_options (const int& argc, char* argv[])
 
       if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
         init_values.change_cursorstyle = false;
-    #endif
-
-    #if defined(__NetBSD__) || defined(__OpenBSD__)
+    #elif defined(__NetBSD__) || defined(__OpenBSD__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
         init_values.meta_sends_escape = false;
     #endif

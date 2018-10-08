@@ -1750,7 +1750,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
 
   try
   {
-    c_string = new char[uInt(dest_size)]();
+    c_string = new char[std::size_t(dest_size)]();
 
     // pre-initialiaze the whole string with '\0'
     std::memset (c_string, '\0', std::size_t(dest_size));
@@ -1761,7 +1761,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
     return 0;
   }
 
-  mblength = int(std::wcsrtombs (c_string, &src, uLong(dest_size), &state));
+  mblength = int(std::wcsrtombs (c_string, &src, std::size_t(dest_size), &state));
 
   if ( mblength == -1 && errno != EILSEQ )
   {
@@ -1807,7 +1807,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
 
   try
   {
-    dest = new wchar_t[uInt(size)]();
+    dest = new wchar_t[std::size_t(size)]();
     // pre-initialiaze the whole string with '\0'
     std::wmemset (dest, L'\0', std::size_t(size));
   }
@@ -1817,7 +1817,7 @@ inline wchar_t* FString::c_to_wc_str (const char s[]) const
     return 0;
   }
 
-  wclength = int(std::mbsrtowcs (dest, &src, uLong(dest_size), &state));
+  wclength = int(std::mbsrtowcs (dest, &src, std::size_t(dest_size), &state));
 
   if ( wclength == -1 )
   {

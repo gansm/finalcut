@@ -589,7 +589,7 @@ bool FTermLinux::getUnicodeMap()
 
     try
     {
-      screen_unicode_map.entries = new struct unipair[uInt(count)]();
+      screen_unicode_map.entries = new struct unipair[std::size_t(count)]();
     }
     catch (const std::bad_alloc& ex)
     {

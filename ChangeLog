@@ -1,3 +1,6 @@
+2018-10-08  Markus Gans  <guru.mail@muenster.de>
+	* Move all termcap code into FTermcap
+
 2018-10-05  Markus Gans  <guru.mail@muenster.de>
 	* Remove redundant program code from FString
 

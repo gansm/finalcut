@@ -228,7 +228,7 @@ void FButtonGroup::hide()
 
   try
   {
-    blank = new char[uInt(size) + 1];
+    blank = new char[std::size_t(size) + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -236,7 +236,7 @@ void FButtonGroup::hide()
     return;
   }
 
-  std::memset(blank, ' ', uLong(size));
+  std::memset(blank, ' ', std::size_t(size));
   blank[size] = '\0';
 
   for (int y = 0; y < getHeight(); y++)

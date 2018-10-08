@@ -69,54 +69,54 @@ void FTermcapQuirks::terminalFixup()
 
   if ( td->isCygwinTerminal() )
   {
-    init_termcap_cygwin_quirks();
+    cygwin();
   }
   else if ( td->isLinuxTerm() )
   {
-    init_termcap_linux_quirks();
+    linux();
   }
   else if ( td->isRxvtTerminal() )
   {
-    init_termcap_rxvt_quirks();
+    rxvt();
   }
   else if ( td->isGnomeTerminal() )
   {
-    init_termcap_vte_quirks();
+    vte();
   }
   else if ( td->isTeraTerm() )
   {
-    init_termcap_teraterm_quirks();
+    teraterm();
   }
   else if ( td->isSunTerminal() )
   {
-    init_termcap_sun_quirks();
+    sun();
   }
   else if ( td->isPuttyTerminal() )
   {
-    init_termcap_putty_quirks();
+    putty();
   }
   else if ( td->isScreenTerm() )
   {
-    init_termcap_screen_quirks();
+    screen();
   }
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   else if ( td->isFreeBSDTerm() )
   {
-    init_termcap_freebsd_quirks();
+    freebsd();
   }
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
   // xterm and compatible terminals
   if ( td->isXTerminal() && ! td->isPuttyTerminal() )
-    init_termcap_xterm_quirks();
+    xterm();
 
   // Fixes general quirks
-  init_termcap_general_quirks();
+  general();
 }
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_freebsd_quirks()
+void FTermcapQuirks::freebsd()
 {
   // FreeBSD console fixes
 
@@ -142,7 +142,7 @@ void FTermcapQuirks::init_termcap_freebsd_quirks()
 #endif  // defined(__FreeBSD__) || defined(__DragonFly__)
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_cygwin_quirks()
+void FTermcapQuirks::cygwin()
 {
   // Set invisible cursor for cygwin terminal
   if ( ! TCAP(fc::t_cursor_invisible) )
@@ -168,11 +168,11 @@ void FTermcapQuirks::init_termcap_cygwin_quirks()
   FTermcap::background_color_erase = true;
 
   // Include the Linux console quirks
-  init_termcap_linux_quirks();
+  linux();
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_linux_quirks()
+void FTermcapQuirks::linux()
 {
   /* Same settings are used by cygwin */
 
@@ -223,7 +223,7 @@ void FTermcapQuirks::init_termcap_linux_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_xterm_quirks()
+void FTermcapQuirks::xterm()
 {
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
@@ -247,7 +247,7 @@ void FTermcapQuirks::init_termcap_xterm_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_rxvt_quirks()
+void FTermcapQuirks::rxvt()
 {
   // Set enter/exit alternative charset mode for rxvt terminal
   const char* termtype = fterm_data->getTermType();
@@ -271,7 +271,7 @@ void FTermcapQuirks::init_termcap_rxvt_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_vte_quirks()
+void FTermcapQuirks::vte()
 {
   // gnome-terminal has NC=16 however, it can use the dim attribute
   FTermcap::attr_without_color = 0;
@@ -282,7 +282,7 @@ void FTermcapQuirks::init_termcap_vte_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_putty_quirks()
+void FTermcapQuirks::putty()
 {
   FTermcap::background_color_erase = true;
   FTermcap::osc_support = true;
@@ -368,7 +368,7 @@ void FTermcapQuirks::init_termcap_putty_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_teraterm_quirks()
+void FTermcapQuirks::teraterm()
 {
   // Tera Term eat_nl_glitch fix
   FTermcap::eat_nl_glitch = true;
@@ -385,14 +385,14 @@ void FTermcapQuirks::init_termcap_teraterm_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_sun_quirks()
+void FTermcapQuirks::sun()
 {
   // Sun Microsystems workstation console eat_nl_glitch fix
   FTermcap::eat_nl_glitch = true;
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_screen_quirks()
+void FTermcapQuirks::screen()
 {
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
@@ -417,7 +417,7 @@ void FTermcapQuirks::init_termcap_screen_quirks()
 }
 
 //----------------------------------------------------------------------
-void FTermcapQuirks::init_termcap_general_quirks()
+void FTermcapQuirks::general()
 {
   static const int not_available = -1;
 

@@ -1487,13 +1487,11 @@ bool FMouseControl::isGpmMouseEnabled()
     return false;
 
 #ifdef F_HAVE_LIBGPM
-
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->isGpmMouseEnabled();
-
 #endif  // F_HAVE_LIBGPM
 
   return false;
