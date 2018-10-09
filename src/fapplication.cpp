@@ -317,43 +317,43 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
 void FApplication::showParameterUsage()
 {
   std::cout \
-    << "Generic options:" << std::endl
+    << "Generic options:\n"
     << "  -h, --help           "
-    << "       Display this help and exit" << std::endl
-    << std::endl
-    << "The Final Cut options:" << std::endl
+    << "       Display this help and exit\n"
+    << "\n"
+    << "The Final Cut options:\n"
     << "  --encoding <name>    "
-    << "       Sets the character encoding mode" << std::endl
+    << "       Sets the character encoding mode\n"
     << "                       "
-    << "       {utf8, vt100, pc, ascii}" << std::endl
+    << "       {utf8, vt100, pc, ascii}\n"
     << "  --no-mouse             "
-    << "     Disable mouse support" << std::endl
+    << "     Disable mouse support\n"
     << "  --no-optimized-cursor  "
-    << "     Disable cursor optimization" << std::endl
+    << "     Disable cursor optimization\n"
     << "  --no-terminal-detection"
-    << "     Disable terminal detection" << std::endl
+    << "     Disable terminal detection\n"
     << "  --no-color-change      "
-    << "     Do not redefine the color palette" << std::endl
+    << "     Do not redefine the color palette\n"
     << "  --vgafont              "
-    << "     Set the standard vga 8x16 font" << std::endl
+    << "     Set the standard vga 8x16 font\n"
     << "  --newfont              "
-    << "     Enables the graphical font" << std::endl
+    << "     Enables the graphical font\n"
 
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-    << std::endl
-    << "FreeBSD console options:" << std::endl
+    << "\n"
+    << "FreeBSD console options:\n"
     << "  --no-esc-for-alt-meta  "
-    << "     Do not send a ESC prefix for the alt/meta key" << std::endl
+    << "     Do not send a ESC prefix for the alt/meta key\n"
     << "  --no-cursorstyle-change"
-    << "     Do not change the current cursor style" << std::endl
+    << "     Do not change the current cursor style\n"
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-    << std::endl
-    << "NetBSD/OpenBSD console options:" << std::endl
+    << "\n"
+    << "NetBSD/OpenBSD console options:\n"
     << "  --no-esc-for-alt-meta  "
-    << "     Do not send a ESC prefix for the alt/meta key" << std::endl
+    << "     Do not send a ESC prefix for the alt/meta key\n"
 #endif
 
-    << std::endl;
+    << std::endl;  // newline character + flushes the output stream 
   std::exit(EXIT_SUCCESS);
 }
 
