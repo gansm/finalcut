@@ -1,3 +1,6 @@
+2018-10-09  Markus Gans  <guru.mail@muenster.de>
+	* Terminal detection for newer vte libraries (>= 0.53.0)
+
 2018-10-08  Markus Gans  <guru.mail@muenster.de>
 	* Move all termcap code into FTermcap
 	* Some small code splits

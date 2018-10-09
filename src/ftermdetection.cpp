@@ -750,7 +750,12 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
     case 41:  // DEC VT420
     case 61:  // DEC VT510
     case 64:  // DEC VT520
+      break;
+
     case 65:  // DEC VT525
+      new_termtype = secDA_Analysis_65(current_termtype);
+      break;
+
     case 67:  // Cygwin
       new_termtype = secDA_Analysis_67(current_termtype);
       break;
@@ -780,7 +785,9 @@ char* FTermDetection::secDA_Analysis (char current_termtype[])
   }
 
   // Correct false assumptions
-  if ( isGnomeTerminal() && secondary_da.terminal_id_type != 1 )
+  if ( isGnomeTerminal()
+    && secondary_da.terminal_id_type != 1
+    && secondary_da.terminal_id_type != 65 )
     terminal_type.gnome_terminal = false;
 
   if ( isKdeTerminal() && secondary_da.terminal_id_type != 0 )
@@ -815,20 +822,7 @@ inline char* FTermDetection::secDA_Analysis_1 (char current_termtype[])
   // Terminal ID 1 - DEC VT220
 
   char* new_termtype = current_termtype;
-
-  if ( secondary_da.terminal_id_version > 1000 )
-  {
-    terminal_type.gnome_terminal = true;
-    // Each gnome-terminal should be able to use 256 colors
-    color256 = true;
-    new_termtype = C_STR("gnome-256color");
-    gnome_terminal_id = secondary_da.terminal_id_version;
-
-    // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
-    if ( gnome_terminal_id >= 4000 )
-      decscusr_support = true;
-  }
-
+  new_termtype = secDA_Analysis_vte(new_termtype);
   return new_termtype;
 }
 
@@ -867,6 +861,16 @@ inline char* FTermDetection::secDA_Analysis_32 (char[])
   char* new_termtype;
   terminal_type.tera_term = true;
   new_termtype = C_STR("teraterm");
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTermDetection::secDA_Analysis_65 (char current_termtype[])
+{
+  // Terminal ID 65 - DEC VT525
+
+  char* new_termtype = current_termtype;
+  new_termtype = secDA_Analysis_vte(new_termtype);
   return new_termtype;
 }
 
@@ -951,6 +955,30 @@ inline char* FTermDetection::secDA_Analysis_85 (char current_termtype[])
   }
   else
     new_termtype = termtype;
+
+  return new_termtype;
+}
+
+//----------------------------------------------------------------------
+inline char* FTermDetection::secDA_Analysis_vte (char current_termtype[])
+{
+  // VTE terminal library
+  // (Since VTE ) the terminal ID has changed from 1 to 65)
+
+  char* new_termtype = current_termtype;
+
+  if ( secondary_da.terminal_id_version > 1000 )
+  {
+    terminal_type.gnome_terminal = true;
+    // Each gnome-terminal should be able to use 256 colors
+    color256 = true;
+    new_termtype = C_STR("gnome-256color");
+    gnome_terminal_id = secondary_da.terminal_id_version;
+
+    // VTE 0.40.0 or higher and gnome-terminal 3.16 or higher
+    if ( gnome_terminal_id >= 4000 )
+      decscusr_support = true;
+  }
 
   return new_termtype;
 }
