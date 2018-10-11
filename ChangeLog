@@ -1,3 +1,6 @@
+2018-10-11  Markus Gans  <guru.mail@muenster.de>
+	* FKeyboard now uses references for keyboard buffer passing
+
 2018-10-09  Markus Gans  <guru.mail@muenster.de>
 	* Terminal detection for newer vte libraries (>= 0.53.0)
 

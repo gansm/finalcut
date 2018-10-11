@@ -70,7 +70,6 @@ FKeyboard::FKeyboard()
   : key(0)
   , fifo_offset(0)
   , fifo_in_use(false)
-  , fifo_buf_size(sizeof(fifo_buf))
   , stdin_status_flags(0)
   , input_data_pending(false)
   , utf8_input(false)
@@ -92,8 +91,8 @@ FKeyboard::FKeyboard()
     std::abort();
 
   // Initialize arrays with '\0'
-  std::fill_n (k_buf, sizeof(k_buf), '\0');
-  std::fill_n (fifo_buf, fifo_buf_size, '\0');
+  std::fill_n (read_buf, READ_BUF_SIZE, '\0');
+  std::fill_n (fifo_buf, FIFO_BUF_SIZE, '\0');
 }
 
 //----------------------------------------------------------------------
@@ -159,7 +158,7 @@ void FKeyboard::clearKeyBuffer()
 
   fifo_offset = 0;
   key = 0;
-  std::fill_n (fifo_buf, fifo_buf_size, '\0');
+  std::fill_n (fifo_buf, FIFO_BUF_SIZE, '\0');
   fifo_in_use = false;
 }
 
@@ -230,7 +229,7 @@ inline int FKeyboard::getTermcapKey()
 {
   // Looking for termcap key strings in the buffer
 
-  assert ( fifo_buf_size > 0 );
+  assert ( FIFO_BUF_SIZE > 0 );
 
   if ( ! key_map )
     return -1;
@@ -243,12 +242,12 @@ inline int FKeyboard::getTermcapKey()
 
     if ( k && std::strncmp(k, fifo_buf, uInt(len)) == 0 )  // found
     {
-      int n;
+      std::size_t n;
 
-      for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+      for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
 
-      for (n = n - len; n < fifo_buf_size; n++)  // Fill rest with '\0'
+      for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
@@ -264,7 +263,7 @@ inline int FKeyboard::getMetaKey()
 {
   // Looking for meta key strings in the buffer
 
-  assert ( fifo_buf_size > 0 );
+  assert ( FIFO_BUF_SIZE > 0 );
 
   for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
   {
@@ -273,7 +272,7 @@ inline int FKeyboard::getMetaKey()
 
     if ( std::strncmp(kmeta, fifo_buf, uInt(len)) == 0 )  // found
     {
-      int n;
+      std::size_t n;
 
       if ( len == 2 && ( fifo_buf[1] == 'O'
                       || fifo_buf[1] == '['
@@ -283,10 +282,10 @@ inline int FKeyboard::getMetaKey()
           return NEED_MORE_DATA;
       }
 
-      for (n = len; n < fifo_buf_size; n++)  // Remove founded entry
+      for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
         fifo_buf[n - len] = fifo_buf[n];
 
-      for (n = n - len; n < fifo_buf_size; n++)  // Fill rest with '\0'
+      for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill rest with '\0'
         fifo_buf[n] = '\0';
 
       input_data_pending = bool(fifo_buf[0] != '\0');
@@ -303,7 +302,8 @@ inline int FKeyboard::getSingleKey()
   // Looking for single key code in the buffer
 
   uChar firstchar = uChar(fifo_buf[0]);
-  int keycode, n, len;
+  std::size_t n;
+  int keycode, len;
   len = 1;
 
   // Look for a utf-8 character
@@ -326,10 +326,10 @@ inline int FKeyboard::getSingleKey()
   else
     keycode = uChar(fifo_buf[0] & 0xff);
 
-  for (n = len; n < fifo_buf_size; n++)  // Remove the key from the buffer front
+  for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove the key from the buffer front
     fifo_buf[n - len] = fifo_buf[n];
 
-  for (n = n - len; n < fifo_buf_size; n++)   // Fill the rest with '\0' bytes
+  for (n = n - len; n < FIFO_BUF_SIZE; n++)  // Fill the rest with '\0' bytes
     fifo_buf[n] = '\0';
 
   input_data_pending = bool(fifo_buf[0] != '\0');
@@ -424,7 +424,7 @@ inline ssize_t FKeyboard::readKey()
 {
   ssize_t bytes;
   setNonBlockingInput();
-  bytes = read(FTermios::getStdIn(), &k_buf, sizeof(k_buf) - 1);
+  bytes = read(FTermios::getStdIn(), &read_buf, READ_BUF_SIZE - 1);
   unsetNonBlockingInput();
   return bytes;
 }
@@ -437,11 +437,11 @@ void FKeyboard::parseKeyBuffer()
 
   while ( (bytesread = readKey()) > 0 )
   {
-    if ( bytesread + fifo_offset <= fifo_buf_size )
+    if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
       for (int i = 0; i < bytesread; i++)
       {
-        fifo_buf[fifo_offset] = k_buf[i];
+        fifo_buf[fifo_offset] = read_buf[i];
         fifo_offset++;
       }
 
@@ -474,7 +474,7 @@ void FKeyboard::parseKeyBuffer()
     key = 0;
   }
 
-  std::fill_n (k_buf, sizeof(k_buf), '\0');
+  std::fill_n (read_buf, READ_BUF_SIZE, '\0');
 }
 
 //----------------------------------------------------------------------

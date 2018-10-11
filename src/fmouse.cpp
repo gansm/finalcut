@@ -270,7 +270,7 @@ bool FMouseGPM::hasData()
 }
 
 //----------------------------------------------------------------------
-void FMouseGPM::setRawData (char[], int)
+void FMouseGPM::setRawData (FKeyboard::keybuffer&)
 { }
 
 //----------------------------------------------------------------------
@@ -490,12 +490,13 @@ bool FMouseX11::hasData()
 }
 
 //----------------------------------------------------------------------
-void FMouseX11::setRawData (char fifo_buf[], int fifo_buf_size)
+void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  static const int len = 6;
-  int n;
+  static const std::size_t len = 6;
+  std::size_t fifo_buf_size = sizeof(fifo_buf);
+  std::size_t n;
   x11_mouse[0] = fifo_buf[3];
   x11_mouse[1] = fifo_buf[4];
   x11_mouse[2] = fifo_buf[5];
@@ -691,12 +692,13 @@ bool FMouseSGR::hasData()
 }
 
 //----------------------------------------------------------------------
-void FMouseSGR::setRawData (char fifo_buf[], int fifo_buf_size)
+void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  int len = int(std::strlen(fifo_buf));
-  int n = 3;
+  std::size_t fifo_buf_size = sizeof(fifo_buf);
+  std::size_t len = std::strlen(fifo_buf);
+  std::size_t n = 3;
 
   while ( n < len && n < fifo_buf_size )
   {
@@ -944,12 +946,13 @@ bool FMouseUrxvt::hasData()
 }
 
 //----------------------------------------------------------------------
-void FMouseUrxvt::setRawData (char fifo_buf[], int fifo_buf_size)
+void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (Urxvt-Mode) raw mouse data
 
-  int len = int(std::strlen(fifo_buf));
-  int n = 2;
+  std::size_t fifo_buf_size = sizeof(fifo_buf);
+  std::size_t len = std::strlen(fifo_buf);
+  std::size_t n = 2;
 
   while ( n < len && n < fifo_buf_size )
   {
@@ -1535,13 +1538,12 @@ void FMouseControl::disable()
 
 //----------------------------------------------------------------------
 void FMouseControl::setRawData ( FMouse::mouse_type mt
-                               , char fifo_buf[]
-                               , int fifo_buf_size )
+                               , FKeyboard::keybuffer& fifo_buf)
 {
   FMouse* mouse = mouse_protocol[mt];
 
   if ( mouse )
-    mouse->setRawData (fifo_buf, fifo_buf_size);
+    mouse->setRawData (fifo_buf);
 }
 
 //----------------------------------------------------------------------

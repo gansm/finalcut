@@ -64,6 +64,7 @@
 #include <map>
 
 #include "final/fconfig.h"
+#include "final/fkeyboard.h"
 #include "final/fpoint.h"
 #include "final/ftypes.h"
 
@@ -135,7 +136,7 @@ class FMouse
 
     // Methods
     static FMouse*      createMouseObject (mouse_type);
-    virtual void        setRawData (char[], int) = 0;
+    virtual void        setRawData (FKeyboard::keybuffer&) = 0;
     virtual void        processEvent (struct timeval*) = 0;
 
   protected:
@@ -211,7 +212,7 @@ class FMouseGPM : public FMouse
     bool                 isGpmMouseEnabled();
 
     // Methods
-    virtual void         setRawData (char[], int);
+    virtual void         setRawData (FKeyboard::keybuffer&);
     virtual void         processEvent (struct timeval*);
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
@@ -276,7 +277,7 @@ class FMouseX11 : public FMouse
     virtual bool         hasData();
 
     // Methods
-    virtual void         setRawData (char[], int);
+    virtual void         setRawData (FKeyboard::keybuffer&);
     virtual void         processEvent (struct timeval*);
 
   private:
@@ -339,7 +340,7 @@ class FMouseSGR : public FMouse
     virtual bool hasData();
 
     // Methods
-    virtual void setRawData (char[], int);
+    virtual void setRawData (FKeyboard::keybuffer&);
     virtual void processEvent (struct timeval*);
 
   private:
@@ -402,7 +403,7 @@ class FMouseUrxvt : public FMouse
     virtual bool hasData();
 
     // Methods
-    virtual void setRawData (char[], int);
+    virtual void setRawData (FKeyboard::keybuffer&);
     virtual void processEvent (struct timeval*);
 
   private:
@@ -492,8 +493,8 @@ class FMouseControl
     // Methods
     void                enable();
     void                disable();
-
-    virtual void        setRawData (FMouse::mouse_type, char[], int);
+    virtual void        setRawData ( FMouse::mouse_type
+                                   , FKeyboard::keybuffer& );
     virtual void        processEvent (struct timeval* time);
     bool                getGpmKeyPressed (bool);
     void                drawGpmPointer();

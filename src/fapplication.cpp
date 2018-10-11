@@ -353,7 +353,7 @@ void FApplication::showParameterUsage()
     << "     Do not send a ESC prefix for the alt/meta key\n"
 #endif
 
-    << std::endl;  // newline character + flushes the output stream 
+    << std::endl;  // newline character + flushes the output stream
   std::exit(EXIT_SUCCESS);
 }
 
@@ -565,9 +565,8 @@ inline void FApplication::performKeyboardAction()
     case fc::Fkey_mouse:
       if ( mouse )
       {
-        char* buffer = keyboard->getKeyBuffer();
-        int buffer_size =  keyboard->getKeyBufferSize();
-        mouse->setRawData (FMouse::x11, buffer, buffer_size);
+        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
+        mouse->setRawData (FMouse::x11, buffer);
         keyboard->unprocessedInput() = mouse->isInputDataPending();
         processMouseEvent();
       }
@@ -576,9 +575,8 @@ inline void FApplication::performKeyboardAction()
     case fc::Fkey_extended_mouse:
       if ( mouse )
       {
-        char* buffer = keyboard->getKeyBuffer();
-        int buffer_size =  keyboard->getKeyBufferSize();
-        mouse->setRawData (FMouse::sgr, buffer, buffer_size);
+        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
+        mouse->setRawData (FMouse::sgr, buffer);
         keyboard->unprocessedInput() = mouse->isInputDataPending();
         processMouseEvent();
       }
@@ -587,9 +585,8 @@ inline void FApplication::performKeyboardAction()
     case fc::Fkey_urxvt_mouse:
       if ( mouse )
       {
-        char* buffer = keyboard->getKeyBuffer();
-        int buffer_size =  keyboard->getKeyBufferSize();
-        mouse->setRawData (FMouse::urxvt, buffer, buffer_size);
+        FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
+        mouse->setRawData (FMouse::urxvt, buffer);
         keyboard->unprocessedInput() = mouse->isInputDataPending();
         processMouseEvent();
       }
