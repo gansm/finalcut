@@ -166,6 +166,9 @@ class FMenuItem : public FWidget
     // Disable assignment operator (=)
     FMenuItem& operator = (const FMenuItem&);
 
+    // Accessor
+    FMenuList*   getFMenuList (FWidget&);
+
     // Methods
     void         init (FWidget*);
     uChar        hotKey();

@@ -101,7 +101,7 @@ FMenuItem::~FMenuItem()  // destructor
 {
   if ( super_menu && (isMenu(super_menu) || isMenuBar(super_menu)) )
   {
-    FMenuList* menu_list = dynamic_cast<FMenuList*>(super_menu);
+    FMenuList* menu_list = getFMenuList(*super_menu);
 
     if ( menu_list )
       menu_list->remove(this);
@@ -150,7 +150,7 @@ bool FMenuItem::setFocus (bool on)
     {
       if ( ! selected )
       {
-        FMenuList* menu_list = dynamic_cast<FMenuList*>(getSuperMenu());
+        FMenuList* menu_list = getFMenuList(*getSuperMenu());
         setSelected();
 
         if ( menu_list )
@@ -560,6 +560,27 @@ bool FMenuItem::isMenu (FWidget* w) const
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
+FMenuList* FMenuItem::getFMenuList (FWidget& widget)
+{
+  FMenuList* menu_list;
+
+  if ( isMenu(&widget) )
+  {
+    FMenu* menu = static_cast<FMenu*>(&widget);
+    menu_list = static_cast<FMenuList*>(menu);
+  }
+  else if ( isMenuBar(&widget) )
+  {
+    FMenuBar* menubar = static_cast<FMenuBar*>(&widget);
+    menu_list = static_cast<FMenuList*>(menubar);
+  }
+  else
+    menu_list = 0;
+
+  return menu_list;
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
@@ -573,13 +594,12 @@ void FMenuItem::init (FWidget* parent)
   if ( ! parent )
     return;
 
-  FMenuList* menu_list;
   setSuperMenu (parent);
 
   if ( accel_key  )
     addAccelerator (accel_key);
 
-  menu_list = dynamic_cast<FMenuList*>(parent);
+  FMenuList* menu_list = getFMenuList(*parent);
 
   if ( menu_list )
     menu_list->insert(this);
@@ -616,7 +636,7 @@ uChar FMenuItem::hotKey()
 
   length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
