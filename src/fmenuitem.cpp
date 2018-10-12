@@ -636,7 +636,7 @@ uChar FMenuItem::hotKey()
 
   length = text.getLength();
 
-  for (std::size_t i = 0; i < length; i++)
+  for (uInt i = 0; i < length; i++)
   {
     try
     {
