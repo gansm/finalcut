@@ -71,6 +71,9 @@ typedef std::vector<FString> FStringList;
 // class FString
 //----------------------------------------------------------------------
 
+#pragma pack(push)
+#pragma pack(1)
+
 class FString
 {
   public:
@@ -274,7 +277,7 @@ class FString
     std::size_t   bufsize;
     mutable char* c_string;
 };
-
+#pragma pack(pop)
 
 // FString inline functions
 //----------------------------------------------------------------------
