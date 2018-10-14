@@ -417,7 +417,9 @@ void FTermXTerminal::setXTermSize()
 {
   if ( term_detection->isXTerminal() )
   {
-    FTerm::putstringf (CSI "8;%lu;%lut", term_height, term_width);
+    FTerm::putstringf ( CSI "8;%lu;%lut"
+                      , uLong(term_height)
+                      , uLong(term_width) );
     std::fflush(stdout);
   }
 }

@@ -1,6 +1,7 @@
 2018-10-14  Markus Gans  <guru.mail@muenster.de>
 	* A width or height can not be negative. 
 	  For that reason the change from int to std::size_t.
+	* FString fix for 32-bit architectures
 
 2018-10-13  Markus Gans  <guru.mail@muenster.de>
 	* Avoid using dynamic_cast so that you can compile Final Cut 

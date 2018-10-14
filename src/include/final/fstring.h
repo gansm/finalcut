@@ -133,7 +133,12 @@ class FString
     const FString& operator >> (double&);
     const FString& operator >> (float&);
 
-    wchar_t& operator [] (std::size_t);
+    template <typename IndexT>
+    wchar_t&       operator [] (IndexT);
+    template <typename IndexT>
+    const wchar_t& operator [] (IndexT) const;
+    wchar_t&       operator [] (std::size_t);
+    const wchar_t& operator [] (std::size_t) const;
     const FString& operator () ();
 
     bool operator <  (const FString&) const;
@@ -283,6 +288,16 @@ class FString
 //----------------------------------------------------------------------
 inline const char* FString::getClassName()
 { return "FString"; }
+
+//----------------------------------------------------------------------
+template <typename IndexT>
+inline wchar_t& FString::operator [] (IndexT pos)
+{ return string[std::size_t(pos)]; }
+
+//----------------------------------------------------------------------
+template <typename IndexT>
+inline const wchar_t& FString::operator [] (IndexT pos) const
+{ return string[std::size_t(pos)]; }
 
 //----------------------------------------------------------------------
 template <class CharT>

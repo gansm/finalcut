@@ -453,6 +453,15 @@ wchar_t& FString::operator [] (std::size_t pos)
 }
 
 //----------------------------------------------------------------------
+const wchar_t& FString::operator [] (std::size_t pos) const
+{
+  if ( pos >= length )
+    throw std::out_of_range("");  // Invalid index position
+
+  return string[pos];
+}
+
+//----------------------------------------------------------------------
 const FString& FString::operator () ()
 {
   return *this;
