@@ -140,13 +140,13 @@ class FLabel : public FWidget
     // Methods
     void               init();
     uChar              getHotkey();
-    int                getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    int                getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void               setHotkeyAccelerator();
-    int                getAlignOffset (int);
+    std::size_t        getAlignOffset (std::size_t);
     virtual void       draw();
     void               drawMultiLine();
     void               drawSingleLine();
-    void               printLine (wchar_t[], uInt, int, int = 0);
+    void               printLine (wchar_t[], std::size_t, int, std::size_t = 0);
 
     // Data Members
     FStringList        multiline_text;

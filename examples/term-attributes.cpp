@@ -77,9 +77,9 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
           + finalcut::FString(getTermType())
           + ")");
 
-  next_button.setGeometry(getWidth() - 13, getHeight() - 4, 10, 1);
+  next_button.setGeometry(int(getWidth()) - 13, int(getHeight()) - 4, 10, 1);
   next_button.addAccelerator(finalcut::fc::Fkey_right);
-  back_button.setGeometry(getWidth() - 25, getHeight() - 4, 10, 1);
+  back_button.setGeometry(int(getWidth()) - 25, int(getHeight()) - 4, 10, 1);
   back_button.addAccelerator(finalcut::fc::Fkey_left);
 
   // Add function callbacks
@@ -155,8 +155,8 @@ void AttribDlg::cb_back (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void AttribDlg::adjustSize()
 {
-  int x = ((getParentWidget()->getWidth() - getWidth()) / 2);
-  int y = ((getParentWidget()->getHeight() - getHeight()) / 2) + 1;
+  int x = int((getParentWidget()->getWidth() - getWidth()) / 2);
+  int y = int((getParentWidget()->getHeight() - getHeight()) / 2) + 1;
 
   if ( x < 1 )
     x = 1;
@@ -165,8 +165,8 @@ void AttribDlg::adjustSize()
     y = 1;
 
   setGeometry(x, y, 69, 21, false);
-  next_button.setGeometry(getWidth() - 13, getHeight() - 4, 10, 1, false);
-  back_button.setGeometry(getWidth() - 25, getHeight() - 4, 10, 1, false);
+  next_button.setGeometry(int(getWidth()) - 13, int(getHeight()) - 4, 10, 1, false);
+  back_button.setGeometry(int(getWidth()) - 25, int(getHeight()) - 4, 10, 1, false);
   finalcut::FDialog::adjustSize();
 }
 
@@ -399,7 +399,7 @@ void AttribDemo::draw()
   // test alternate character set
   printAltCharset();
 
-  for (int y = 0; y < getParentWidget()->getHeight() - 7; y++)
+  for (int y = 0; y < int(getParentWidget()->getHeight()) - 7; y++)
   {
     setPrintPos (1, 2 + y);
 

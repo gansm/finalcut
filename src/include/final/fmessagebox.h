@@ -163,7 +163,7 @@ class FMessageBox : public FDialog
     FString       text;
     FString*      text_components;
     FStringList   text_split;
-    uInt          max_line_width;
+    std::size_t   max_line_width;
     bool          center_text;
     short         emphasis_color;
     uInt          num_buttons;

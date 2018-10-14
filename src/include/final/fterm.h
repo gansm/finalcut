@@ -166,8 +166,8 @@ class FTerm
     virtual const char*    getClassName() const;
     static FKeyboard*      getKeyboard();
     static FMouseControl*  getMouseControl();
-    static int             getLineNumber();
-    static int             getColumnNumber();
+    static std::size_t     getLineNumber();
+    static std::size_t     getColumnNumber();
     static const FString   getKeyName (int);
 
     static int             getTTYFileDescriptor();
@@ -236,7 +236,7 @@ class FTerm
     static char*           enableCursor();
     static char*           disableCursor();
     static void            detectTermSize();
-    static void            setTermSize (int, int);
+    static void            setTermSize (std::size_t, std::size_t);
     static void            setTermTitle(const FString&);
     static void            setKDECursor (fc::kdeKonsoleCursorShape);
     static void            saveColorMap();

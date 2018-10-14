@@ -179,7 +179,7 @@ class FLineEdit : public FWidget
     int          scroll_repeat;
     bool         insert_mode;
     int          cursor_pos;
-    int          text_offset;
+    std::size_t  text_offset;
 };
 #pragma pack(pop)
 

@@ -69,7 +69,7 @@ void FProgressbar::setPercentage (int percentage_value)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
+void FProgressbar::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the progress bar geometry
 
@@ -99,7 +99,7 @@ bool FProgressbar::setShadow (bool on)
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  int s, size;
+  std::size_t s, size;
   short fg, bg;
   char* blank;
   FWidget* parent_widget = getParentWidget();
@@ -121,7 +121,7 @@ void FProgressbar::hide()
   s = hasShadow() ? 1 : 0;
   size = getWidth() + s;
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
   try
@@ -137,14 +137,14 @@ void FProgressbar::hide()
   std::memset(blank, ' ', std::size_t(size));
   blank[size] = '\0';
 
-  for (int y = 0; y < getHeight() + s; y++)
+  for (int y = 0; y < int(getHeight() + s); y++)
   {
     setPrintPos (1, 1 + y);
     print (blank);
   }
 
   delete[] blank;
-  setPrintPos (getWidth() - 4, 0);
+  setPrintPos (int(getWidth()) - 4, 0);
   print ("     ");  // hide percentage
 }
 
@@ -190,7 +190,7 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  setPrintPos (getWidth() - 3, 0);
+  setPrintPos (int(getWidth()) - 3, 0);
 
   if ( percentage < 0 || percentage > 100 )
     print ("--- %");
@@ -204,8 +204,8 @@ void FProgressbar::drawPercentage()
 //----------------------------------------------------------------------
 void FProgressbar::drawBar()
 {
-  int i = 0;
-  double length = double(bar_length * percentage) / 100;
+  std::size_t i = 0;
+  double length = double(int(bar_length) * percentage) / 100;
   setPrintPos (1,1);
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );

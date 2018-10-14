@@ -159,9 +159,9 @@ void FMessageBox::setHeadline (const FString& headline)
   setHeight(getHeight() + 2, true);
 
   for (uInt n = 0; n < num_buttons; n++)
-    button[n]->setY (getHeight() - 4, false);
+    button[n]->setY (int(getHeight()) - 4, false);
 
-  uInt len = headline_text.getLength();
+  std::size_t len = headline_text.getLength();
 
   if ( len > max_line_width )
     max_line_width = len;
@@ -172,13 +172,13 @@ void FMessageBox::setText (const FString& txt)
 {
   text = txt;
   calculateDimensions();
-  button[0]->setY (getHeight() - 4, false);
+  button[0]->setY (int(getHeight()) - 4, false);
 
   if ( button_digit[1] != 0 )
-    button[1]->setY (getHeight() - 4, false);
+    button[1]->setY (int(getHeight()) - 4, false);
 
   if ( button_digit[2] != 0 )
-    button[2]->setY (getHeight() - 4, false);
+    button[2]->setY (int(getHeight()) - 4, false);
 
   adjustButtons();
 }
@@ -279,10 +279,9 @@ int FMessageBox::error ( FWidget* parent
 //----------------------------------------------------------------------
 void FMessageBox::adjustSize()
 {
-  int X
-    , Y
-    , max_width
-    , max_height;
+  int X, Y;
+  std::size_t max_width;
+  std::size_t max_height;
   FWidget* root_widget = getRootWidget();
 
   if ( root_widget )
@@ -350,7 +349,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
   {
     button[0] = new FButton (this);
     button[0]->setText(button_text[button0]);
-    button[0]->setPos(3, getHeight() - 4, false);
+    button[0]->setPos(3, int(getHeight()) - 4, false);
     button[0]->setWidth(1, false);
     button[0]->setHeight(1, false);
     button[0]->setFocus();
@@ -359,7 +358,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[1] = new FButton(this);
       button[1]->setText(button_text[button1]);
-      button[1]->setPos(17, getHeight() - 4, false);
+      button[1]->setPos(17, int(getHeight()) - 4, false);
       button[1]->setWidth(0, false);
       button[1]->setHeight(1, false);
     }
@@ -368,7 +367,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
     {
       button[2] = new FButton(this);
       button[2]->setText(button_text[button2]);
-      button[2]->setPos(32, getHeight() - 4, false);
+      button[2]->setPos(32, int(getHeight()) - 4, false);
       button[2]->setWidth(0, false);
       button[2]->setHeight(1, false);
     }
@@ -424,8 +423,9 @@ inline void FMessageBox::initCallbacks()
 //----------------------------------------------------------------------
 void FMessageBox::calculateDimensions()
 {
-  int x, y, w, h;
-  int headline_height = 0;
+  int x, y;
+  std::size_t w, h;
+  std::size_t headline_height = 0;
   FWidget* parent_widget = getParentWidget();
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
@@ -437,14 +437,14 @@ void FMessageBox::calculateDimensions()
 
   for (uInt i = 0; i < text_num_lines; i++)
   {
-    uInt len = text_components[i].getLength();
+    std::size_t len = text_components[i].getLength();
 
     if ( len > max_line_width )
       max_line_width = len;
   }
 
-  h = int(text_num_lines) + 8 + headline_height;
-  w = int(max_line_width + 4);
+  h = text_num_lines + 8 + headline_height;
+  w = max_line_width + 4;
 
   if ( w < 20 )
     w = 20;
@@ -468,7 +468,7 @@ void FMessageBox::draw()
   int head_offset = 0;
   int center_x = 0;
   // center the whole block
-  int msg_x = int((getWidth() - int(max_line_width)) / 2);
+  int msg_x = int((getWidth() - max_line_width) / 2);
 
   if ( isMonochron() )
     setReverse(true);
@@ -476,7 +476,7 @@ void FMessageBox::draw()
   if ( ! headline_text.isNull() )
   {
     setColor(emphasis_color, getBackgroundColor());
-    uInt headline_length = headline_text.getLength();
+    std::size_t headline_length = headline_text.getLength();
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - headline_length) / 2);
@@ -490,7 +490,7 @@ void FMessageBox::draw()
 
   for (int i = 0; i < int(text_num_lines); i++)
   {
-    uInt line_length = text_components[i].getLength();
+    std::size_t line_length = text_components[i].getLength();
 
     if ( center_text )  // center one line
       center_x = int((max_line_width - line_length) / 2);
@@ -506,9 +506,9 @@ void FMessageBox::draw()
 //----------------------------------------------------------------------
 void FMessageBox::resizeButtons()
 {
-  uInt len[3], max_size;
+  std::size_t len[3], max_size;
 
-  for (uInt n = 0; n < num_buttons; n++)
+  for (std::size_t n = 0; n < num_buttons; n++)
   {
     len[n] = button[n]->getText().getLength();
 
@@ -530,17 +530,17 @@ void FMessageBox::resizeButtons()
   if ( max_size < 7 )
     max_size = 7;
 
-  for (uInt n = 0; n < num_buttons; n++)
-    button[n]->setWidth(int(max_size + 3), false);
+  for (std::size_t n = 0; n < num_buttons; n++)
+    button[n]->setWidth(max_size + 3, false);
 }
 
 //----------------------------------------------------------------------
 void FMessageBox::adjustButtons()
 {
-  static const int gap = 4;
-  int btn_width = 0;
+  static const std::size_t gap = 4;
+  std::size_t btn_width = 0;
 
-  for (uInt n = 0; n < num_buttons; n++)
+  for (std::size_t n = 0; n < num_buttons; n++)
   {
     if ( n == num_buttons - 1 )
       btn_width += button[n]->getWidth();
@@ -550,7 +550,7 @@ void FMessageBox::adjustButtons()
 
   if ( btn_width >= getWidth() - 4 )
   {
-    int max_width;
+    std::size_t max_width;
     FWidget* root_widget = getRootWidget();
     setWidth(btn_width + 5);
     max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
@@ -559,14 +559,14 @@ void FMessageBox::adjustButtons()
 
   int btn_x = int((getWidth() - btn_width) / 2);
 
-  for (uInt n = 0; n < num_buttons; n++)
+  for (std::size_t n = 0; n < num_buttons; n++)
   {
     if ( n == 0 )
       button[n]->setX(btn_x);
     else
     {
-      int btn_size = button[n]->getWidth();
-      button[n]->setX( btn_x + int(n) * (btn_size + gap) );
+      int btn_size = int(button[n]->getWidth());
+      button[n]->setX(btn_x + int(n) * (btn_size + int(gap)));
     }
   }
 }

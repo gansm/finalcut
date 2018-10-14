@@ -66,8 +66,8 @@ bool keyPressed()
 void term_boundaries (int& x, int& y)
 {
   // checks and corrects the terminal boundaries
-  int term_width  = app->getDesktopWidth();
-  int term_height = app->getDesktopHeight();
+  int term_width  = int(app->getDesktopWidth());
+  int term_height = int(app->getDesktopHeight());
 
   if ( x < 0 )
     x = 0;
@@ -152,9 +152,9 @@ int main (int argc, char* argv[])
   app = &TermApp;
 
   // Get screen dimension
-  xmax = TermApp.getDesktopWidth() - 1;
-  ymax = TermApp.getDesktopHeight() - 1;
-  finalcut::FString line(xmax + 1, '-');
+  xmax = int(TermApp.getDesktopWidth() - 1);
+  ymax = int(TermApp.getDesktopHeight() - 1);
+  finalcut::FString line(std::size_t(xmax) + 1, '-');
 
   // Place the cursor in the upper left corner
   TermApp.setTermXY(0,0);

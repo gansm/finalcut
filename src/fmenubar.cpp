@@ -72,12 +72,9 @@ void FMenuBar::hide()
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
 
-  if ( screenWidth < 0 )
-    return;
-
   try
   {
-    blank = new char[std::size_t(screenWidth) + 1];
+    blank = new char[screenWidth + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -85,9 +82,9 @@ void FMenuBar::hide()
     return;
   }
 
-  std::memset(blank, ' ', std::size_t(screenWidth));
+  std::memset(blank, ' ', screenWidth);
   blank[screenWidth] = '\0';
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   print (blank);
   delete[] blank;
 }
@@ -256,7 +253,7 @@ void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
 void FMenuBar::init()
 {
   FWidget* r = getRootWidget();
-  int w = r->getWidth();
+  std::size_t w = r->getWidth();
   // initialize geometry values
   setGeometry (1, 1, w, 1, false);
   setAlwaysOnTop();
@@ -285,11 +282,11 @@ void FMenuBar::calculateDimensions()
   // find the maximum item width
   while ( iter != last )
   {
-    uInt len = (*iter)->getTextLength();
-    int item_width = int(len + 2);
+    std::size_t len = (*iter)->getTextLength();
+    int item_width = int(len) + 2;
 
     // set item geometry
-    (*iter)->setGeometry (item_X, item_Y, item_width, 1, false);
+    (*iter)->setGeometry (item_X, item_Y, std::size_t(item_width), 1, false);
 
     // set menu position
     if ( (*iter)->hasMenu() )
@@ -497,14 +494,16 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-int FMenuBar::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+int FMenuBar::getHotkeyPos ( wchar_t src[]
+                           , wchar_t dest[]
+                           , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
   int hotkeypos = -1;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
     {
@@ -550,7 +549,7 @@ void FMenuBar::drawItems()
   }
 
   // Print spaces to end of line
-  for (; x <= screenWidth; x++)
+  for (; x <= int(screenWidth); x++)
     print (' ');
 
   if ( isMonochron() )
@@ -562,13 +561,13 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
-  uInt txt_length = txt.getLength();
+  std::size_t txt_length = txt.getLength();
+  std::size_t to_char;
   int  hotkeypos;
-  int  to_char;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
 
-  txtdata.startpos = x + 1;
+  txtdata.startpos = std::size_t(x) + 1;
   txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
 
   // Set screen attributes
@@ -585,10 +584,10 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
     return;
   }
 
-  if ( x - 1 <= screenWidth )
-    to_char = int(txt_length);
+  if ( x - 1 <= int(screenWidth) )
+    to_char = txt_length;
   else
-    to_char = int(txt_length) - (screenWidth - x - 1);
+    to_char = txt_length - screenWidth - std::size_t(x) - 1;
 
   hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
 
@@ -654,9 +653,9 @@ inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (int z = 0; z < data.length; z++)
+  for (std::size_t z = 0; z < data.length; z++)
   {
-    if ( data.startpos > screenWidth - z )
+    if ( data.startpos > std::size_t(screenWidth) - z )
       break;
 
     if ( ! std::iswprint(wint_t(data.text[z])) )
@@ -669,7 +668,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
       }
     }
 
-    if ( z == data.hotkeypos )
+    if ( int(z) == data.hotkeypos )
     {
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
@@ -691,18 +690,18 @@ inline void FMenuBar::drawMenuText (menuText& data)
 //----------------------------------------------------------------------
 inline void FMenuBar::drawEllipsis (menuText& txtdata, int x)
 {
-  if ( x > screenWidth + 1 )
+  if ( x > int(screenWidth) + 1 )
   {
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      setPrintPos (screenWidth - 1, 1);
+      setPrintPos (int(screenWidth) - 1, 1);
       print ("..");
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      setPrintPos (screenWidth, 1);
+      setPrintPos (int(screenWidth), 1);
       print (' ');
     }
     }
@@ -713,7 +712,7 @@ inline void FMenuBar::drawLeadingSpace (int& x)
 {
   // Print a leading blank space
 
-  if ( x < screenWidth )
+  if ( x < int(screenWidth) )
   {
     x++;
     print (' ');
@@ -725,7 +724,7 @@ inline void FMenuBar::drawTrailingSpace (int& x)
 {
   // Print a trailing blank space
 
-  if ( x < screenWidth )
+  if ( x < int(screenWidth) )
   {
     x++;
     print (' ');
@@ -744,7 +743,7 @@ void FMenuBar::adjustItems()
   while ( iter != last )
   {
     // get item width
-    int item_width = (*iter)->getWidth();
+    int item_width = int((*iter)->getWidth());
 
     if ( (*iter)->hasMenu() )
     {
@@ -874,7 +873,7 @@ void FMenuBar::mouseDownOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1 )
     {
@@ -924,7 +923,7 @@ void FMenuBar::mouseUpOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1
       && mouse_x >= x1
@@ -974,7 +973,7 @@ void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_x >= x1
       && mouse_x < x2

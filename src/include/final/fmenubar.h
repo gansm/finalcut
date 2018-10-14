@@ -105,8 +105,8 @@ class FMenuBar : public FWindow, public FMenuList
     typedef struct
     {
       wchar_t* text;
-      int length;
-      int startpos;
+      std::size_t length;
+      std::size_t startpos;
       int hotkeypos;
       bool no_underline;
     } menuText;
@@ -126,7 +126,7 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
-    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    int          getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     virtual void draw();
     void         drawItems();
     void         drawItem (FMenuItem*, int&);
@@ -151,10 +151,10 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenuItem;
 
     // Data Members
-    bool  mouse_down;
-    bool  drop_down;
-    bool  focus_changed;
-    int   screenWidth;
+    bool        mouse_down;
+    bool        drop_down;
+    bool        focus_changed;
+    std::size_t screenWidth;
 };
 #pragma pack(pop)
 

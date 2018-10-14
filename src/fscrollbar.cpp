@@ -152,7 +152,7 @@ void FScrollbar::setPageSize (int document_size, int page_size)
 //----------------------------------------------------------------------
 void FScrollbar::setOrientation (int o)
 {
-  int nf = 0;
+  std::size_t nf = 0;
   length = ( getHeight() > getWidth() ) ? getHeight() : getWidth();
 
   if ( o == fc::vertical && bar_orientation == fc::horizontal )
@@ -174,13 +174,13 @@ void FScrollbar::setOrientation (int o)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setGeometry (int x, int y, int w, int h, bool adjust)
+void FScrollbar::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the scrollbar geometry
 
   FWidget::setGeometry (x, y, w, h, adjust);
 
-  int nf = 0;
+  std::size_t nf = 0;
   length = ( h > w ) ? h : w;
 
   if ( bar_orientation == fc::vertical )
@@ -223,7 +223,7 @@ void FScrollbar::calculateSliderValues()
   else
     bar_length = length - 2;
 
-  slider_length = int(double(bar_length) / steps);
+  slider_length = std::size_t(double(bar_length) / steps);
 
   if ( slider_length < 1 )
     slider_length = 1;
@@ -238,17 +238,18 @@ void FScrollbar::calculateSliderValues()
 
   if ( val == max )
   {
-    slider_pos = bar_length - slider_length;
+    slider_pos = int(bar_length - slider_length);
     return;
   }
 
-  slider_pos = int( round ( double((bar_length - slider_length) * val)
+  std::size_t v = std::size_t(val);
+  slider_pos = int( round ( double((bar_length - slider_length) * v)
                           / double(max - min) ) );
 
   if ( slider_pos < 0 )
     slider_pos = 0;
-  else if ( slider_pos > bar_length - slider_length )
-    slider_pos = bar_length - slider_length;
+  else if ( slider_pos > int(bar_length - slider_length) )
+    slider_pos = int(bar_length - slider_length);
 }
 
 //----------------------------------------------------------------------
@@ -280,7 +281,7 @@ void FScrollbar::drawVerticalBar()
   if ( isMonochron() )
     setReverse(false);
 
-  for (z = 1; z <= slider_length; z++)
+  for (z = 1; z <= int(slider_length); z++)
   {
     setPrintPos (1, 1 + slider_pos + z);
 
@@ -295,7 +296,7 @@ void FScrollbar::drawVerticalBar()
 
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
 
-  for (z = slider_pos + slider_length + 1; z <= bar_length; z++)
+  for (z = slider_pos + int(slider_length) + 1; z <= int(bar_length); z++)
   {
     setPrintPos (1, 1 + z);
 
@@ -343,16 +344,16 @@ void FScrollbar::drawHorizontalBar()
   if ( isMonochron() )
     setReverse(false);
 
-  for (z = 0; z < slider_length; z++)
+  for (z = 0; z < int(slider_length); z++)
     print (' ');
 
   if ( isMonochron() )
     setReverse(true);
 
   setColor (wc.scrollbar_fg, wc.scrollbar_bg);
-  z = slider_pos + slider_length + 1;
+  z = slider_pos + int(slider_length) + 1;
 
-  for (; z <= bar_length; z++)
+  for (; z <= int(bar_length); z++)
   {
     if ( isNewFont() && max_color > 8 )
       print (fc::NF_border_line_upper);  // ¯
@@ -500,8 +501,8 @@ void FScrollbar::onMouseMove (FMouseEvent* ev)
     }
   }
 
-  if ( mouse_x < 1 || mouse_x > getWidth()
-    || mouse_y < 1 || mouse_y > getHeight() )
+  if ( mouse_x < 1 || mouse_x > int(getWidth())
+    || mouse_y < 1 || mouse_y > int(getHeight()) )
   {
     delOwnTimer();
   }
@@ -554,7 +555,7 @@ void FScrollbar::onTimer (FTimerEvent*)
     || ( scroll_type == FScrollbar::scrollPageForward
       && slider_pos == slider_click_stop_pos ) )
   {
-    int max_slider_pos = bar_length - slider_length;
+    int max_slider_pos = int(bar_length - slider_length);
 
     if ( scroll_type == FScrollbar::scrollPageBackward
       && slider_pos == 0 )
@@ -610,7 +611,7 @@ void FScrollbar::drawButtons()
     {
       print (fc::NF_rev_up_arrow1);
       print (fc::NF_rev_up_arrow2);
-      setPrintPos (1, length);
+      setPrintPos (1, int(length));
       print (fc::NF_rev_down_arrow1);
       print (fc::NF_rev_down_arrow2);
     }
@@ -618,7 +619,7 @@ void FScrollbar::drawButtons()
     {
       print (fc::NF_rev_left_arrow1);
       print (fc::NF_rev_left_arrow2);
-      setPrintPos (length - 1, 1);
+      setPrintPos (int(length) - 1, 1);
       print (fc::NF_rev_right_arrow1);
       print (fc::NF_rev_right_arrow2);
     }
@@ -633,13 +634,13 @@ void FScrollbar::drawButtons()
     if ( bar_orientation == fc::vertical )
     {
       print (fc::BlackUpPointingTriangle);    // ▲
-      setPrintPos (1, length);
+      setPrintPos (1, int(length));
       print (fc::BlackDownPointingTriangle);  // ▼
     }
     else  // horizontal
     {
       print (fc::BlackLeftPointingPointer);   // ◄
-      setPrintPos (length, 1);
+      setPrintPos (int(length), 1);
       print (fc::BlackRightPointingPointer);  // ►
     }
 
@@ -672,11 +673,11 @@ FScrollbar::sType FScrollbar::getVerticalClickedScrollType (int y)
   {
     return FScrollbar::scrollPageBackward;  // before slider
   }
-  else if ( y > slider_pos + slider_length + 1 && y < getHeight() )
+  else if ( y > slider_pos + int(slider_length) + 1 && y < int(getHeight()) )
   {
     return FScrollbar::scrollPageForward;  // after slider
   }
-  else if ( y == getHeight() )
+  else if ( y == int(getHeight()) )
   {
     return FScrollbar::scrollStepForward;  // increment button
   }
@@ -697,11 +698,11 @@ FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
     {
       return FScrollbar::scrollPageBackward;  // before slider
     }
-    else if ( x > slider_pos + slider_length + 2 && x < getWidth() - 1 )
+    else if ( x > slider_pos + int(slider_length) + 2 && x < int(getWidth()) - 1 )
     {
       return FScrollbar::scrollPageForward;  // after slider
     }
-    else if ( x == getWidth() - 1 || x == getWidth() )
+    else if ( x == int(getWidth()) - 1 || x == int(getWidth()) )
     {
       return FScrollbar::scrollStepForward;  // increment button
     }
@@ -718,11 +719,11 @@ FScrollbar::sType FScrollbar::getHorizontalClickedScrollType (int x)
     {
       return FScrollbar::scrollPageBackward;  // before slider
     }
-    else if ( x > slider_pos + slider_length + 1 && x < getWidth() )
+    else if ( x > slider_pos + int(slider_length) + 1 && x < int(getWidth()) )
     {
       return FScrollbar::scrollPageForward;  // after slider
     }
-    else if ( x == getWidth() )
+    else if ( x == int(getWidth()) )
     {
       return FScrollbar::scrollStepForward;  // increment button
     }
@@ -739,7 +740,7 @@ int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
   if ( bar_orientation == fc::vertical )
   {
     if ( mouse_y > slider_pos + 1
-      && mouse_y <= slider_pos + slider_length + 1 )
+      && mouse_y <= slider_pos + int(slider_length) + 1 )
       return mouse_y;  // on slider
   }
   else  // horizontal bar orientation
@@ -747,13 +748,13 @@ int FScrollbar::getSliderClickPos (int mouse_x, int mouse_y)
     if ( isNewFont() )
     {
       if ( mouse_x > slider_pos + 2
-        && mouse_x <= slider_pos + slider_length + 2 )
+        && mouse_x <= slider_pos + int(slider_length) + 2 )
         return mouse_x;  // on slider
     }
     else
     {
       if ( mouse_x > slider_pos + 1
-        && mouse_x <= slider_pos + slider_length + 1 )
+        && mouse_x <= slider_pos + int(slider_length) + 1 )
         return mouse_x;  // on slider
     }
   }
@@ -768,7 +769,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
 
   if ( bar_orientation == fc::vertical )
   {
-    if ( y >1 && y < getHeight() )
+    if ( y >1 && y < int(getHeight()) )
     {
       new_val = int( round ( double(max - min) * (y - 2.0 - (slider_length/2))
                            / double(bar_length - slider_length) ) );
@@ -780,7 +781,7 @@ void FScrollbar::jumpToClickPos (int x, int y)
   {
     int nf = isNewFont() ? 1 : 0;
 
-    if ( x > 1 + nf && x < getWidth() - nf )
+    if ( x > 1 + nf && x < int(getWidth()) - nf )
     {
       new_val = int( round ( double(max - min) * (x - 2.0 - nf - (slider_length/2))
                            / double(bar_length - slider_length) ) );

@@ -247,12 +247,12 @@
      y="93.333893"
      transform="scale(0.95126779,1.0512287)"
      id="text37-5"
-     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;fill-rule:evenodd;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">
+     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;fill-rule:evenodd;stroke:none;font-family:FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif">
     <tspan
        x="160.94762"
        y="93.333893"
        id="tspan3006-1"
-       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">FINAL CUT</tspan>
+       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#9f9f9f;fill-opacity:0.6206896;stroke:none;font-family:FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif">FINAL CUT</tspan>
   </text>
   <g
      id="g23"
@@ -293,11 +293,11 @@
      y="91.775856"
      transform="scale(0.95126779,1.0512287)"
      id="text37"
-     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;fill-rule:evenodd;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">
+     style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;fill-rule:evenodd;stroke:none;font-family:FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif">
     <tspan
        x="158.56929"
        y="91.775856"
        id="tspan3006"
-       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;stroke:none;font-family:FreeSans;-inkscape-font-specification:FreeSans Semi-Bold">FINAL CUT</tspan>
+       style="font-size:96px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#083c99;fill-opacity:0.88747732;stroke:none;font-family:FreeSans, Arial, Bitstream Vera Sans, DejaVu Sans, Open Sans, sans-serif">FINAL CUT</tspan>
   </text>
 </svg>

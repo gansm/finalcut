@@ -337,11 +337,10 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
 //----------------------------------------------------------------------
 void FFileDialog::adjustSize()
 {
-  int h
-    , X
-    , Y
-    , max_width
-    , max_height;
+  int X, Y;
+  std::size_t max_width;
+  std::size_t max_height;
+  std::size_t h;
   FWidget* root_widget = getRootWidget();
 
   if ( root_widget )
@@ -369,9 +368,9 @@ void FFileDialog::adjustSize()
   Y = 1 + int((max_height - getHeight()) / 3);
   setPos(X, Y, false);
   filebrowser.setHeight (h - 8, false);
-  hidden.setY (h - 4, false);
-  cancel.setY (h - 4, false);
-  open.setY (h - 4, false);
+  hidden.setY (int(h) - 4, false);
+  cancel.setY (int(h) - 4, false);
+  open.setY (int(h) - 4, false);
   FDialog::adjustSize();
   printPath(directory);
 }
@@ -381,8 +380,8 @@ void FFileDialog::adjustSize()
 //----------------------------------------------------------------------
 void FFileDialog::init()
 {
-  static const int w = 42;
-  static const int h = 15;
+  static const std::size_t w = 42;
+  static const std::size_t h = 15;
   int x, y;
   FWidget* parent_widget;
 
@@ -751,7 +750,7 @@ int FFileDialog::changeDir (const FString& dirname)
           filename.setText('/');
         else if ( ! dir_entries.empty() )
         {
-          int i = 1;
+          std::size_t i = 1;
           std::vector<dir_entry>::const_iterator iter, last;
           const char* const baseName = \
               basename(C_STR(lastdir.c_str()));
@@ -872,14 +871,14 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
 {
-  const int n = filebrowser.currentItem();
+  const std::size_t n = filebrowser.currentItem();
 
   if ( n == 0 )
     return;
 
-  const FString& name = dir_entries[uLong(n - 1)].name;
+  const FString& name = dir_entries[n - 1].name;
 
-  if ( dir_entries[uLong(n - 1)].directory )
+  if ( dir_entries[n - 1].directory )
     filename.setText( name + '/' );
   else
     filename.setText( name );

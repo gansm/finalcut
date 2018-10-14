@@ -93,7 +93,7 @@ class FMenuItem : public FWidget
     const char*  getClassName() const;
     int          getHotkey() const;
     FMenu*       getMenu() const;
-    uInt         getTextLength() const;
+    std::size_t  getTextLength() const;
     FString      getText() const;
 
     // Mutators
@@ -152,7 +152,7 @@ class FMenuItem : public FWidget
     bool         checked;
     bool         radio_button;
     bool         dialog_index;
-    uInt         text_length;
+    std::size_t  text_length;
     int          hotkey;
     int          accel_key;
     FMenu*       menu;
@@ -207,7 +207,7 @@ inline FMenu* FMenuItem::getMenu() const
 { return menu; }
 
 //----------------------------------------------------------------------
-inline uInt FMenuItem::getTextLength() const
+inline std::size_t FMenuItem::getTextLength() const
 { return text_length; }
 
 //----------------------------------------------------------------------

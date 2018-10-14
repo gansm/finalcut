@@ -49,6 +49,8 @@ long firstNumberFromString (const FString& str)
   FString::iterator iter = str.begin();
   FString::iterator first_pos;
   FString::iterator last_pos;
+  std::size_t pos;
+  std::size_t length;
   long number;
 
   while ( iter != last )
@@ -82,8 +84,8 @@ long firstNumberFromString (const FString& str)
   if ( last_pos == last )
     return 0;
 
-  uInt pos = uInt(std::distance(str.begin(), first_pos)) + 1;
-  uInt length = uInt(std::distance(first_pos, last_pos));
+  pos = std::size_t(std::distance(str.begin(), first_pos)) + 1;
+  length = std::size_t(std::distance(first_pos, last_pos));
   const FString num_str = str.mid(pos, length);
 
   try
@@ -631,7 +633,7 @@ FListView::~FListView()  // destructor
 
 // public methods of FListView
 //----------------------------------------------------------------------
-uInt FListView::getCount()
+std::size_t FListView::getCount()
 {
   int n = 0;
   FObjectIterator iter = itemlist.begin();
@@ -643,7 +645,7 @@ uInt FListView::getCount()
     ++iter;
   }
 
-  return uInt(n);
+  return std::size_t(n);
 }
 
 //----------------------------------------------------------------------
@@ -691,7 +693,7 @@ fc::sorting_type FListView::getColumnSortType (int column) const
 }
 
 //----------------------------------------------------------------------
-void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
+void FListView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the widget geometry
 
@@ -699,13 +701,13 @@ void FListView::setGeometry (int x, int y, int w, int h, bool adjust)
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (getWidth(), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, getHeight(), getWidth() - 2, 1);
+    vbar->setGeometry (int(getWidth()), 2, 2, getHeight() - 2);
+    hbar->setGeometry (1, int(getHeight()), getWidth() - 2, 1);
   }
   else
   {
-    vbar->setGeometry (getWidth(), 2, 1, getHeight() - 2);
-    hbar->setGeometry (2, getHeight(), getWidth() - 2, 1);
+    vbar->setGeometry (int(getWidth()), 2, 1, getHeight() - 2);
+    hbar->setGeometry (2, int(getHeight()), getWidth() - 2, 1);
   }
 }
 
@@ -946,7 +948,7 @@ void FListView::onKeyPress (FKeyEvent* ev)
   int position_before = current_iter.getPosition()
     , xoffset_before = xoffset
     , first_line_position_before = first_visible_line.getPosition()
-    , pagesize = getClientHeight() - 1
+    , pagesize = int(getClientHeight()) - 1
     , key = ev->key();
   clicked_expander_pos.setPoint(-1, -1);
 
@@ -1051,8 +1053,8 @@ void FListView::onMouseDown (FMouseEvent* ev)
     , mouse_x = ev->getX()
     , mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < getWidth()
-    && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < int(getWidth())
+    && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1093,8 +1095,8 @@ void FListView::onMouseUp (FMouseEvent* ev)
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
 
-    if ( mouse_x > 1 && mouse_x < getWidth()
-      && mouse_y > 1 && mouse_y < getHeight() )
+    if ( mouse_x > 1 && mouse_x < int(getWidth())
+      && mouse_y > 1 && mouse_y < int(getHeight()) )
     {
       if ( tree_view )
       {
@@ -1134,8 +1136,8 @@ void FListView::onMouseMove (FMouseEvent* ev)
     , mouse_x = ev->getX()
     , mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < getWidth()
-    && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < int(getWidth())
+    && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1158,7 +1160,7 @@ void FListView::onMouseMove (FMouseEvent* ev)
   // auto-scrolling when dragging mouse outside the widget
   if ( mouse_y < 2 )
     dragUp (ev->getButton());
-  else if ( mouse_y >= getHeight() )
+  else if ( mouse_y >= int(getHeight()) )
     dragDown (ev->getButton());
   else
     stopDragScroll();
@@ -1175,8 +1177,8 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
   mouse_x = ev->getX();
   mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < getWidth()
-    && mouse_y > 1 && mouse_y < getHeight() )
+  if ( mouse_x > 1 && mouse_x < int(getWidth())
+    && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
@@ -1307,7 +1309,7 @@ void FListView::onFocusOut (FFocusEvent*)
 void FListView::adjustViewport()
 {
   int element_count = int(getCount());
-  int height = getClientHeight();
+  int height = int(getClientHeight());
 
   if ( element_count == 0 || height <= 0 )
     return;
@@ -1347,20 +1349,20 @@ void FListView::adjustViewport()
 //----------------------------------------------------------------------
 void FListView::adjustSize()
 {
-  int element_count;
+  std::size_t element_count;
   FWidget::adjustSize();
   adjustViewport();
 
-  element_count = int(getCount());
-  vbar->setMaximum (element_count - getClientHeight());
-  vbar->setPageSize (element_count, getClientHeight());
-  vbar->setX (getWidth());
+  element_count = getCount();
+  vbar->setMaximum (int(element_count - getClientHeight()));
+  vbar->setPageSize (int(element_count), int(getClientHeight()));
+  vbar->setX (int(getWidth()));
   vbar->setHeight (getClientHeight(), false);
   vbar->resize();
 
-  hbar->setMaximum (max_line_width - getClientWidth());
-  hbar->setPageSize (max_line_width, getClientWidth());
-  hbar->setY (getHeight() );
+  hbar->setMaximum (max_line_width - int(getClientWidth()));
+  hbar->setPageSize (max_line_width, int(getClientWidth()));
+  hbar->setY (int(getHeight()));
   hbar->setWidth (getClientWidth(), false);
   hbar->resize();
 
@@ -1369,7 +1371,7 @@ void FListView::adjustSize()
   else
     vbar->setVisible();
 
-  if ( max_line_width <= getClientWidth() )
+  if ( max_line_width <= int(getClientWidth()) )
     hbar->hide();
   else
     hbar->setVisible();
@@ -1449,9 +1451,9 @@ void FListView::sort (Compare cmp)
 }
 
 //----------------------------------------------------------------------
-uInt FListView::getAlignOffset ( fc::text_alignment align
-                               , uInt txt_length
-                               , uInt width )
+std::size_t FListView::getAlignOffset ( fc::text_alignment align
+                                      , std::size_t txt_length
+                                      , std::size_t width )
 {
   switch ( align )
   {
@@ -1460,7 +1462,7 @@ uInt FListView::getAlignOffset ( fc::text_alignment align
 
     case fc::alignCenter:
       if ( txt_length < width )
-        return uInt((width - txt_length) / 2);
+        return std::size_t((width - txt_length) / 2);
       else
         return 0;
 
@@ -1488,7 +1490,7 @@ void FListView::draw()
     setReverse(true);
 
   if ( isNewFont() )
-    drawBorder (1, 1, getWidth() - 1, getHeight());
+    drawBorder (1, 1, int(getWidth()) - 1, int(getHeight()));
   else
     drawBorder();
 
@@ -1496,9 +1498,9 @@ void FListView::draw()
   {
     setColor();
 
-    for (int y = 2; y < getHeight(); y++)
+    for (int y = 2; y < int(getHeight()); y++)
     {
-      setPrintPos (getWidth(), y);
+      setPrintPos (int(getWidth()), y);
       print (' ');  // clear right side of the scrollbar
     }
   }
@@ -1563,11 +1565,11 @@ void FListView::drawColumnLabels()
   h << headerline;
   first = h.begin() + xoffset;
 
-  if ( int(h.size()) <= getClientWidth() )
+  if ( h.size() <= getClientWidth() )
     last = h.end();
   else
   {
-    int len = getClientWidth() + xoffset - 1;
+    int len = int(getClientWidth()) + xoffset - 1;
 
     if ( len > int(h.size()) )
       len = int(h.size());
@@ -1618,7 +1620,7 @@ void FListView::drawList()
   while ( y < uInt(getClientHeight()) )
   {
     setPrintPos (2, 2 + int(y));
-    print (FString(getClientWidth(), ' '));
+    print (FString(std::size_t(getClientWidth()), ' '));
     y++;
   }
 }
@@ -1628,7 +1630,7 @@ void FListView::drawListLine ( const FListViewItem* item
                              , bool is_focus
                              , bool is_current )
 {
-  uInt indent = item->getDepth() << 1;  // indent = 2 * depth
+  std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
 
   // Set line color and attributes
   setLineAttributes (is_current, is_focus);
@@ -1639,19 +1641,19 @@ void FListView::drawListLine ( const FListViewItem* item
   // Print columns
   if ( ! item->column_list.empty() )
   {
-    for (uInt i = 0; i < item->column_list.size(); )
+    for (std::size_t i = 0; i < item->column_list.size(); )
     {
-      static const int leading_space = 1;
-      static const int ellipsis_length = 2;
+      static const std::size_t leading_space = 1;
+      static const std::size_t ellipsis_length = 2;
 
       const FString& text = item->column_list[i];
-      int width = header[i].width;
-      uInt txt_length = text.getLength();
+      std::size_t width = std::size_t(header[i].width);
+      std::size_t txt_length = text.getLength();
       // Increment the value of i for the column position
       // and the next iteration
       i++;
       fc::text_alignment align = getColumnAlignment(int(i));
-      uInt align_offset = getAlignOffset (align, txt_length, uInt(width));
+      std::size_t align_offset = getAlignOffset (align, txt_length, width);
 
       if ( tree_view && i == 1 )
       {
@@ -1663,12 +1665,12 @@ void FListView::drawListLine ( const FListViewItem* item
       if ( align_offset > 0 )
         line += FString(align_offset, L' ');
 
-      if ( align_offset + txt_length <= uInt(width) )
+      if ( align_offset + txt_length <= width )
       {
         // Insert text and trailing space
         line += text.left(width);
         line += FString ( leading_space + width
-                        - int(align_offset + txt_length), L' ');
+                        - align_offset + txt_length, L' ');
       }
       else if ( align == fc::alignRight )
       {
@@ -1686,16 +1688,16 @@ void FListView::drawListLine ( const FListViewItem* item
     }
   }
 
-  line = line.mid ( uInt(1 + xoffset)
-                  , uInt(getWidth() - nf_offset - 2) );
+  line = line.mid ( std::size_t(xoffset) + 1
+                  , getWidth() - std::size_t(nf_offset) - 2);
   const wchar_t* const& element_str = line.wc_str();
-  uInt len = line.getLength();
-  uInt i;
+  std::size_t len = line.getLength();
+  std::size_t i;
 
   for (i = 0; i < len; i++)
     *this << element_str[i];
 
-  for (; i < uInt(getWidth() - nf_offset - 2); i++)
+  for (; i < getWidth() - std::size_t(nf_offset) - 2; i++)
     print (' ');
 }
 
@@ -1736,7 +1738,7 @@ inline void FListView::setLineAttributes ( bool is_current
 
 //----------------------------------------------------------------------
 inline FString FListView::getLinePrefix ( const FListViewItem* item
-                                        , uInt indent )
+                                        , std::size_t indent )
 {
   FString line = "";
 
@@ -1771,30 +1773,30 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
 void FListView::drawColumnText (headerItems::const_iterator& iter)
 {
   // Print lable text
-  static const int leading_space = 1;
-  static const int trailing_space = 1;
+  static const std::size_t leading_space = 1;
+  static const std::size_t trailing_space = 1;
   const FString& text = iter->name;
-  int width = iter->width;
+  std::size_t width = std::size_t(iter->width);
   FString txt = " " + text;
-  uInt txt_length = txt.getLength();
-  int column_width = leading_space + width;
+  std::size_t txt_length = txt.getLength();
+  std::size_t column_width = leading_space + width;
 
   if ( isEnabled() )
     setColor (wc.label_emphasis_fg, wc.label_bg);
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  if ( txt_length <= uInt(column_width) )
+  if ( txt_length <= column_width )
   {
     headerline << txt;
 
-    if ( txt_length < uInt(column_width) )
+    if ( txt_length < column_width )
       headerline << ' ';  // trailing space
 
-    if ( txt_length + trailing_space < uInt(column_width) )
+    if ( txt_length + trailing_space < column_width )
     {
       setColor();
-      const FString line ( uInt(column_width) - trailing_space - txt_length
+      const FString line ( column_width - trailing_space - txt_length
                          , wchar_t(fc::BoxDrawingsHorizontal) );
       headerline << line;  // horizontal line
     }
@@ -1884,10 +1886,10 @@ void FListView::recalculateHorizontalBar (int len)
 
   max_line_width = len;
 
-  if ( len >= getWidth() - nf_offset - 3 )
+  if ( len >= int(getWidth()) - nf_offset - 3 )
   {
-    hbar->setMaximum (max_line_width - getWidth() + nf_offset + 4);
-    hbar->setPageSize (max_line_width, getWidth() - nf_offset - 4);
+    hbar->setMaximum (max_line_width - int(getWidth()) + nf_offset + 4);
+    hbar->setPageSize (max_line_width, int(getWidth()) - nf_offset - 4);
     hbar->calculateSliderValues();
 
     if ( ! hbar->isVisible() )
@@ -1898,11 +1900,11 @@ void FListView::recalculateHorizontalBar (int len)
 //----------------------------------------------------------------------
 void FListView::recalculateVerticalBar (int element_count)
 {
-  vbar->setMaximum (element_count - getHeight() + 2);
-  vbar->setPageSize (element_count, getHeight() - 2);
+  vbar->setMaximum (element_count - int(getHeight()) + 2);
+  vbar->setPageSize (element_count, int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
+  if ( ! vbar->isVisible() && element_count >= int(getHeight()) - 1 )
     vbar->setVisible();
 }
 
@@ -1988,7 +1990,7 @@ bool FListView::dragScrollDown (int position_before)
 void FListView::dragUp (int mouse_button)
 {
   if ( drag_scroll != fc::noScroll
-    && scroll_distance < getClientHeight() )
+    && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
   if ( ! scroll_timer && current_iter.getPosition() > 0 )
@@ -2013,7 +2015,7 @@ void FListView::dragUp (int mouse_button)
 void FListView::dragDown (int mouse_button)
 {
   if ( drag_scroll != fc::noScroll
-    && scroll_distance < getClientHeight() )
+    && scroll_distance < int(getClientHeight()) )
     scroll_distance++;
 
   if ( ! scroll_timer && current_iter.getPosition() <= int(getCount()) )
@@ -2121,7 +2123,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
 //----------------------------------------------------------------------
 inline void FListView::keyRight (int& first_line_position_before)
 {
-  int xoffset_end = max_line_width - getClientWidth();
+  int xoffset_end = max_line_width - int(getClientWidth());
   FListViewItem* item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
@@ -2299,7 +2301,7 @@ void FListView::stepBackward (int distance)
 //----------------------------------------------------------------------
 void FListView::scrollToX (int x)
 {
-  int xoffset_end = max_line_width - getClientWidth();
+  int xoffset_end = max_line_width - int(getClientWidth());
 
   if ( xoffset == x )
     return;
@@ -2316,7 +2318,7 @@ void FListView::scrollToX (int x)
 //----------------------------------------------------------------------
 void FListView::scrollToY (int y)
 {
-  int pagesize = getClientHeight() - 1;
+  int pagesize = int(getClientHeight()) - 1;
   int element_count = int(getCount());
 
   if ( first_visible_line.getPosition() == y )
@@ -2375,14 +2377,14 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientHeight();
+      distance = int(getClientHeight());
       // fall through
     case FScrollbar::scrollStepBackward:
       stepBackward(distance);
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientHeight();
+      distance = int(getClientHeight());
       // fall through
     case FScrollbar::scrollStepForward:
       stepForward(distance);
@@ -2435,14 +2437,14 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientWidth();
+      distance = int(getClientWidth());
       // fall through
     case FScrollbar::scrollStepBackward:
       scrollBy (-distance, 0);
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientWidth();
+      distance = int(getClientWidth());
       // fall through
     case FScrollbar::scrollStepForward:
       scrollBy (distance, 0);

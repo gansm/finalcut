@@ -189,7 +189,7 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  int size;
+  std::size_t size;
   short fg, bg;
   char* blank;
   FWidget::hide();
@@ -223,12 +223,12 @@ void FButtonGroup::hide()
   setColor (fg, bg);
   size = getWidth();
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
   try
   {
-    blank = new char[std::size_t(size) + 1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -236,10 +236,10 @@ void FButtonGroup::hide()
     return;
   }
 
-  std::memset(blank, ' ', std::size_t(size));
+  std::memset(blank, ' ', size);
   blank[size] = '\0';
 
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     FWidget::setPrintPos (1, 1 + y);
     print (blank);
@@ -443,14 +443,12 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 uChar FButtonGroup::getHotkey()
 {
-  uInt length;
-
   if ( text.isEmpty() )
     return 0;
 
-  length = text.getLength();
+  std::size_t length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
@@ -512,7 +510,7 @@ void FButtonGroup::drawLabel()
     return;
 
   FString txt = " " + text + " ";
-  uInt length = txt.getLength();
+  std::size_t length = txt.getLength();
 
   try
   {
@@ -527,7 +525,7 @@ void FButtonGroup::drawLabel()
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
   unsetViewportPrint();
-  hotkeypos = getHotkeyPos(src, dest, uInt(length));
+  hotkeypos = getHotkeyPos(src, dest, length);
 
   if ( hotkeypos != -1 )
     length--;
@@ -567,7 +565,9 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-int FButtonGroup::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+int FButtonGroup::getHotkeyPos ( wchar_t src[]
+                               , wchar_t dest[]
+                               , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -590,7 +590,9 @@ int FButtonGroup::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
+void FButtonGroup::drawText ( wchar_t LabelText[]
+                            , int hotkeypos
+                            , std::size_t length )
 {
   bool isActive = ((flags & fc::active) != 0);
   bool isNoUnderline = ((flags & fc::no_underline) != 0);

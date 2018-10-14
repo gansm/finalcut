@@ -700,7 +700,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
   std::size_t len = std::strlen(fifo_buf);
   std::size_t n = 3;
 
-  while ( n < len && n < MOUSE_BUF_SIZE + 3 )
+  while ( n < len && n <= MOUSE_BUF_SIZE + 1 )
   {
     sgr_mouse[n - 3] = fifo_buf[n];
     n++;
@@ -954,7 +954,7 @@ void FMouseUrxvt::setRawData (FKeyboard::keybuffer& fifo_buf)
   std::size_t len = std::strlen(fifo_buf);
   std::size_t n = 2;
 
-  while ( n < len && n < MOUSE_BUF_SIZE + 2 )
+  while ( n < len && n <= MOUSE_BUF_SIZE )
   {
     urxvt_mouse[n - 2] = fifo_buf[n];
     n++;

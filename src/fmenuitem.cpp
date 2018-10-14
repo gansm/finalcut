@@ -227,7 +227,7 @@ void FMenuItem::setText (const FString& txt)
   if ( hotkey )
     text_length--;
 
-  setWidth(int(text_length));
+  setWidth(text_length);
 }
 
 //----------------------------------------------------------------------
@@ -566,13 +566,13 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 
   if ( isMenu(&widget) )
   {
-    FMenu* menu = static_cast<FMenu*>(&widget);
-    menu_list = static_cast<FMenuList*>(menu);
+    FMenu* Menu = static_cast<FMenu*>(&widget);
+    menu_list = static_cast<FMenuList*>(Menu);
   }
   else if ( isMenuBar(&widget) )
   {
-    FMenuBar* menubar = static_cast<FMenuBar*>(&widget);
-    menu_list = static_cast<FMenuList*>(menubar);
+    FMenuBar* Menubar = static_cast<FMenuBar*>(&widget);
+    menu_list = static_cast<FMenuList*>(Menubar);
   }
   else
     menu_list = 0;
@@ -589,7 +589,7 @@ void FMenuItem::init (FWidget* parent)
   if ( hotkey )
     text_length--;
 
-  setGeometry (1, 1, int(text_length + 2), 1, false);
+  setGeometry (1, 1, text_length + 2, 1, false);
 
   if ( ! parent )
     return;
@@ -629,14 +629,14 @@ void FMenuItem::init (FWidget* parent)
 //----------------------------------------------------------------------
 uChar FMenuItem::hotKey()
 {
-  uInt length;
+  std::size_t length;
 
   if ( text.isEmpty() )
     return 0;
 
   length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {

@@ -124,7 +124,7 @@ class FDialog : public FWindow
     bool                moveDown (int);
     bool                moveLeft (int);
     bool                moveRight (int);
-    virtual void        setSize (int, int, bool = true);
+    virtual void        setSize (std::size_t, std::size_t, bool = true);
     bool                reduceHeight (int);
     bool                expandHeight (int);
     bool                reduceWidth (int);
@@ -158,15 +158,15 @@ class FDialog : public FWindow
     // Typedef
     typedef struct
     {
-      int    mouse_x;
-      int    mouse_y;
-      FPoint termPos;
-      int    zoom_btn;
-      bool   mouse_over_menu;
+      int         mouse_x;
+      int         mouse_y;
+      FPoint      termPos;
+      std::size_t zoom_btn;
+      bool        mouse_over_menu;
     } mouseStates;
 
     // Constant
-    static const int  MENU_BTN = 3;
+    static const std::size_t MENU_BTN = 3;
     static const bool PRINT_WIN_NUMBER = false;  // Only for debug
 
     // Using-declaration
@@ -197,7 +197,7 @@ class FDialog : public FWindow
     void                openMenu();
     void                selectFirstMenuItem();
     void                setZoomItem();
-    int                 getZoomButtonWidth();
+    std::size_t         getZoomButtonWidth();
     void                activateZoomButton (mouseStates&);
     void                deactivateZoomButton();
     void                leaveZoomButton (mouseStates&);

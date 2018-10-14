@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -82,7 +82,7 @@ class FProgressbar : public FWidget
 
     // Mutators
     void         setPercentage (int);
-    virtual void setGeometry (int, int, int, int, bool = true);
+    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
     bool         setShadow (bool);
     bool         setShadow();
     bool         unsetShadow();
@@ -102,7 +102,7 @@ class FProgressbar : public FWidget
 
     // Data Members
     int          percentage;
-    int          bar_length;
+    std::size_t  bar_length;
 };
 #pragma pack(pop)
 

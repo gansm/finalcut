@@ -238,9 +238,9 @@ inline int FKeyboard::getTermcapKey()
   for (int i = 0; keymap[i].tname[0] != 0; i++)
   {
     char* k = keymap[i].string;
-    int len = ( k ) ? int(std::strlen(k)) : 0;
+    std::size_t len = ( k ) ? std::strlen(k) : 0;
 
-    if ( k && std::strncmp(k, fifo_buf, uInt(len)) == 0 )  // found
+    if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
     {
       std::size_t n;
 
@@ -268,9 +268,9 @@ inline int FKeyboard::getMetaKey()
   for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
   {
     char* kmeta = fc::Fmetakey[i].string;  // The string is never null
-    int len = int(std::strlen(kmeta));
+    std::size_t len = std::strlen(kmeta);
 
-    if ( std::strncmp(kmeta, fifo_buf, uInt(len)) == 0 )  // found
+    if ( std::strncmp(kmeta, fifo_buf, len) == 0 )  // found
     {
       std::size_t n;
 
@@ -303,8 +303,8 @@ inline int FKeyboard::getSingleKey()
 
   uChar firstchar = uChar(fifo_buf[0]);
   std::size_t n;
-  int keycode, len;
-  len = 1;
+  std::size_t len = 1;
+  int keycode;
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
@@ -318,7 +318,7 @@ inline int FKeyboard::getSingleKey()
     else if ( (firstchar & 0xf8) == 0xf0 )
       len = 4;
 
-    for (int i = 0; i < len ; i++)
+    for (std::size_t i = 0; i < len ; i++)
       utf8char[i] = char(fifo_buf[i] & 0xff);
 
     keycode = UTF8decode(utf8char);

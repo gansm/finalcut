@@ -88,12 +88,12 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry (int x, int y, int w, int h, bool adjust)
+void FToggleButton::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the toggle button geometry
 
-  int hotkey_mark = ( getHotkey() ) ? 1 : 0;
-  int min_width = button_width + int(text.getLength()) - hotkey_mark;
+  std::size_t hotkey_mark = ( getHotkey() ) ? 1 : 0;
+  std::size_t min_width = button_width + text.getLength() - hotkey_mark;
 
   if ( w < min_width )
     w = min_width;
@@ -203,9 +203,9 @@ bool FToggleButton::setChecked (bool on)
 void FToggleButton::setText (const FString& txt)
 {
   text = txt;
-  int hotkey_mark = ( getHotkey() ) ? 1 : 0;
+  std::size_t hotkey_mark = ( getHotkey() ) ? 1 : 0;
 
-  setWidth(button_width + int(text.getLength()) - hotkey_mark);
+  setWidth(button_width + text.getLength() - hotkey_mark);
 
   if ( isEnabled() )
   {
@@ -217,7 +217,7 @@ void FToggleButton::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FToggleButton::hide()
 {
-  int size;
+  std::size_t size;
   short fg, bg;
   char* blank;
   FWidget* parent_widget = getParentWidget();
@@ -238,12 +238,12 @@ void FToggleButton::hide()
   setColor (fg, bg);
   size = getWidth();
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
   try
   {
-    blank = new char[std::size_t(size) + 1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -251,7 +251,7 @@ void FToggleButton::hide()
     return;
   }
 
-  std::memset(blank, ' ', std::size_t(size));
+  std::memset(blank, ' ', size);
   blank[size] = '\0';
   setPrintPos (1, 1);
   print (blank);
@@ -420,14 +420,12 @@ void FToggleButton::onFocusOut (FFocusEvent* out_ev)
 //----------------------------------------------------------------------
 uChar FToggleButton::getHotkey()
 {
-  uInt length;
-
   if ( text.isEmpty() )
     return 0;
 
-  length = text.getLength();
+  std::size_t length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
@@ -510,7 +508,7 @@ void FToggleButton::drawLabel()
   if ( text.isNull() || text.isEmpty() )
     return;
 
-  uInt length = text.getLength();
+  std::size_t length = text.getLength();
 
   try
   {
@@ -525,12 +523,12 @@ void FToggleButton::drawLabel()
   FString txt = text;
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
-  hotkeypos = getHotkeyPos(src, dest, uInt(length));
+  hotkeypos = getHotkeyPos(src, dest, length);
 
   if ( hotkeypos != -1 )
     length--;
 
-  setPrintPos (1 + label_offset_pos, 1);
+  setPrintPos (1 + int(label_offset_pos), 1);
   drawText (LabelText, hotkeypos, length);
   delete[] LabelText;
 }
@@ -638,14 +636,16 @@ void FToggleButton::init()
 }
 
 //----------------------------------------------------------------------
-int FToggleButton::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+int FToggleButton::getHotkeyPos ( wchar_t src[]
+                                , wchar_t dest[]
+                                , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
   int pos = -1;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     if ( i < length && txt[i] == L'&' && pos == -1 )
     {
@@ -661,7 +661,9 @@ int FToggleButton::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 }
 
 //----------------------------------------------------------------------
-void FToggleButton::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
+void FToggleButton::drawText ( wchar_t LabelText[]
+                             , int hotkeypos
+                             , std::size_t length )
 {
   bool isActive = ((flags & fc::active) != 0);
   bool isNoUnderline = ((flags & fc::no_underline) != 0);

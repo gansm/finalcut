@@ -203,7 +203,7 @@ class FStatusBar : public FWindow
     virtual const char* getClassName() const;
     FStatusKey*         getStatusKey (int) const;
     FString             getMessage() const;
-    uInt                getCount() const;
+    std::size_t         getCount() const;
 
     // Mutators
     void                activateKey (int);
@@ -253,7 +253,7 @@ class FStatusBar : public FWindow
     keyList             key_list;
     FString             text;
     bool                mouse_down;
-    int                 screenWidth;
+    std::size_t         screenWidth;
     int                 keyname_len;
     int                 x;
     int                 x_msg;
@@ -271,8 +271,8 @@ inline FStatusKey* FStatusBar::getStatusKey (int index) const
 { return key_list[uInt(index - 1)]; }
 
 //----------------------------------------------------------------------
-inline uInt FStatusBar::getCount() const
-{ return uInt(key_list.size()); }
+inline std::size_t FStatusBar::getCount() const
+{ return key_list.size(); }
 
 //----------------------------------------------------------------------
 inline void FStatusBar::activateKey (int index)

@@ -62,7 +62,7 @@ INCLUDE_HEADERS = \
 
 # compiler parameter
 CXX = clang++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -Iinclude
@@ -148,7 +148,7 @@ all: dep $(OBJS)
 $(LIB): all
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wpadded"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wpadded -Wno-reserved-id-macro"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

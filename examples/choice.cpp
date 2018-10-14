@@ -99,10 +99,10 @@ int main (int argc, char* argv[])
     finalcut::FDialog dgl(&app);
     dgl.setModal();
     dgl.setText ("UNIX select");
-    int w = 20;
-    int h = 13;
-    int x = (app.getDesktopWidth() - w) / 2;
-    int y = (app.getDesktopHeight() - h) / 2;
+    std::size_t w = 20;
+    std::size_t h = 13;
+    int x = int(app.getDesktopWidth() - w) / 2;
+    int y = int(app.getDesktopHeight() - h) / 2;
     dgl.setGeometry (x, y, w, h);
 
     // Create a button group

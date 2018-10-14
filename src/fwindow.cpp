@@ -278,9 +278,9 @@ void FWindow::drawBorder()
   if ( isNewFont() )
   {
     int x1 = 1
-      , x2 = 1 + getWidth() - 1
+      , x2 = 1 + int(getWidth()) - 1
       , y1 = 1
-      , y2 = 1 + getHeight() - 1;
+      , y2 = 1 + int(getHeight()) - 1;
 
     setPrintPos (x1, y1);
     print (fc::NF_border_corner_upper_left);  // ⎡
@@ -304,7 +304,7 @@ void FWindow::drawBorder()
     // lower left corner border ⎣
     print (fc::NF_border_corner_lower_left);
 
-    for (int x = 2; x < getWidth(); x++)  // low line _
+    for (std::size_t x = 2; x < getWidth(); x++)  // low line _
       print (fc::NF_border_line_bottom);
 
     setPrintPos (x2, y2);
@@ -372,9 +372,9 @@ void FWindow::setPos (int x, int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setWidth (int w, bool adjust)
+void FWindow::setWidth (std::size_t w, bool adjust)
 {
-  int old_width = getWidth();
+  std::size_t old_width = getWidth();
   FWidget::setWidth (w, adjust);
 
   if ( isVirtualWindow() && getWidth() != old_width )
@@ -386,9 +386,9 @@ void FWindow::setWidth (int w, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setHeight (int h, bool adjust)
+void FWindow::setHeight (std::size_t h, bool adjust)
 {
-  int old_height = getHeight();
+  std::size_t old_height = getHeight();
   FWidget::setHeight (h, adjust);
 
   if ( isVirtualWindow() && getHeight() != old_height )
@@ -400,10 +400,10 @@ void FWindow::setHeight (int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setSize (int w, int h, bool adjust)
+void FWindow::setSize (std::size_t w, std::size_t h, bool adjust)
 {
-  int old_width = getWidth();
-  int old_height = getHeight();
+  std::size_t old_width = getWidth();
+  std::size_t old_height = getHeight();
   FWidget::setSize (w, h, adjust);
 
   if ( isVirtualWindow()
@@ -416,14 +416,14 @@ void FWindow::setSize (int w, int h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setGeometry (int x, int y, int w, int h, bool adjust)
+void FWindow::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Sets the geometry of the widget
 
-  int old_x = getX()
-    , old_y = getY()
-    , old_width = getWidth()
-    , old_height = getHeight();
+  int old_x = getX();
+  int old_y = getY();
+  std::size_t old_width = getWidth();
+  std::size_t old_height = getHeight();
 
   if ( y < 1 )
     y = 1;

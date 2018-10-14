@@ -297,7 +297,7 @@ Treeview::~Treeview()  // destructor
 //----------------------------------------------------------------------
 void Treeview::adjustSize()
 {
-  int h = getParentWidget()->getHeight() - 4;
+  std::size_t h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
   int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
 
@@ -309,7 +309,7 @@ void Treeview::adjustSize()
   if ( initialized )
   {
     listView.setHeight (getHeight() - 6, false);
-    Quit.setY(getHeight() - 4);
+    Quit.setY(int(getHeight()) - 4);
   }
 
   finalcut::FDialog::adjustSize();

@@ -83,7 +83,7 @@ Watch::Watch (FWidget* parent)
   , quit_btn(L"&Quit", this)
 {
   setText ("Watch");
-  int pw = getParentWidget()->getWidth();
+  int pw = int(getParentWidget()->getWidth());
   setGeometry (1 + (pw - 22) / 2, 3, 22, 13);
 
   // Labels
@@ -198,7 +198,7 @@ void Watch::cb_seconds (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void Watch::adjustSize()
 {
-  int pw = getParentWidget()->getWidth();
+  int pw = int(getParentWidget()->getWidth());
   setX (1 + (pw - 22) / 2, false);
   finalcut::FDialog::adjustSize();
 }

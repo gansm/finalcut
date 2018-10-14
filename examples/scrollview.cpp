@@ -40,7 +40,7 @@ class Scrollview : public finalcut::FScrollView
     ~Scrollview  ();
 
     // Mutator
-    void setScrollSize (int, int);
+    void setScrollSize (std::size_t, std::size_t);
 
   private:
     // Disable copy constructor
@@ -83,9 +83,9 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
 {
   // Sets the navigation button geometry
   go_east.setGeometry (1, 1, 5, 1);
-  go_south.setGeometry (getScrollWidth() - 5, 1, 5, 1);
-  go_west.setGeometry (getScrollWidth() - 5, getScrollHeight() - 2, 5, 1);
-  go_north.setGeometry (1, getScrollHeight() - 2, 5, 1);
+  go_south.setGeometry (int(getScrollWidth()) - 5, 1, 5, 1);
+  go_west.setGeometry (int(getScrollWidth()) - 5, int(getScrollHeight()) - 2, 5, 1);
+  go_north.setGeometry (1, int(getScrollHeight()) - 2, 5, 1);
 
   // Add scroll function callbacks to the buttons
   go_east.addCallback
@@ -118,12 +118,12 @@ Scrollview::~Scrollview()
 { }
 
 //----------------------------------------------------------------------
-void Scrollview::setScrollSize (int width, int height)
+void Scrollview::setScrollSize (std::size_t width, std::size_t height)
 {
   FScrollView::setScrollSize (width, height);
-  go_south.setPos (width - 5, 1);
-  go_west.setPos (width - 5, height - 1);
-  go_north.setPos (1, height - 1);
+  go_south.setPos (int(width) - 5, 1);
+  go_west.setPos (int(width) - 5, int(height) - 1);
+  go_north.setPos (1, int(height) - 1);
 }
 
 //----------------------------------------------------------------------
@@ -135,11 +135,11 @@ void Scrollview::draw()
   setColor (wc.label_inactive_fg, wc.dialog_bg);
   clearArea();
 
-  for (int y = 0; y < getScrollHeight(); y++)
+  for (int y = 0; y < int(getScrollHeight()); y++)
   {
     setPrintPos (1, 1 + y);
 
-    for (int x = 0; x < getScrollWidth(); x++)
+    for (int x = 0; x < int(getScrollWidth()); x++)
       print (32 + ((x + y) % 0x5f));
   }
 
@@ -152,7 +152,7 @@ void Scrollview::draw()
 //----------------------------------------------------------------------
 void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
 {
-  scrollToX (getScrollWidth() - getViewportWidth() + 1);
+  scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
   go_east.redraw();
   go_south.redraw();
@@ -161,7 +161,7 @@ void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
 {
-  scrollToY (getScrollHeight() - getViewportHeight() + 1);
+  scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
   go_south.redraw();
   go_west.redraw();

@@ -62,7 +62,7 @@ INCLUDE_HEADERS = \
 
 # compiler parameter
 CXX = g++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -march=x86-64 -frtti -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -Iinclude

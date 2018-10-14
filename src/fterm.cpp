@@ -82,7 +82,7 @@ FTerm::~FTerm()  // destructor
 
 // public methods of FTerm
 //----------------------------------------------------------------------
-int FTerm::getLineNumber()
+std::size_t FTerm::getLineNumber()
 {
   FRect& term_geometry = data->getTermGeometry();
 
@@ -93,7 +93,7 @@ int FTerm::getLineNumber()
 }
 
 //----------------------------------------------------------------------
-int FTerm::getColumnNumber()
+std::size_t FTerm::getColumnNumber()
 {
   FRect& term_geometry = data->getTermGeometry();
 
@@ -474,10 +474,10 @@ void FTerm::detectTermSize()
     term_geometry.setPos(1,1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
     str = std::getenv("COLUMNS");
-    term_geometry.setWidth(str ? std::atoi(str) : 80);
+    term_geometry.setWidth(str ? std::size_t(std::atoi(str)) : 80);
     // Use LINES or fallback to the xterm default height of 24 characters
     str = std::getenv("LINES");
-    term_geometry.setHeight(str ? std::atoi(str) : 24);
+    term_geometry.setHeight(str ? std::size_t(std::atoi(str)) : 24);
   }
   else
   {
@@ -492,7 +492,7 @@ void FTerm::detectTermSize()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setTermSize (int width, int height)
+void FTerm::setTermSize (std::size_t width, std::size_t height)
 {
   // Set xterm size to {width} x {height}
 
