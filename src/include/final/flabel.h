@@ -131,6 +131,9 @@ class FLabel : public FWidget
     void               cb_accel_widget_destroyed (FWidget*, data_ptr);
 
   private:
+    // Constants
+    static const std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FLabel (const FLabel&);
 
@@ -140,13 +143,14 @@ class FLabel : public FWidget
     // Methods
     void               init();
     uChar              getHotkey();
-    int                getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    std::size_t        getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     void               setHotkeyAccelerator();
     std::size_t        getAlignOffset (std::size_t);
     virtual void       draw();
     void               drawMultiLine();
     void               drawSingleLine();
-    void               printLine (wchar_t[], std::size_t, int, std::size_t = 0);
+    void               printLine ( wchar_t[], std::size_t
+                                 , std::size_t, std::size_t = 0 );
 
     // Data Members
     FStringList        multiline_text;

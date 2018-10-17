@@ -119,14 +119,14 @@ class FListViewItem : public FObject
     void              sort (Compare);
     FObjectIterator   appendItem (FListViewItem*);
     void              replaceControlCodes();
-    int               getVisibleLines();
+    std::size_t       getVisibleLines();
     void              resetVisibleLineCounter();
 
     // Data Members
     FStringList       column_list;
     FWidget::data_ptr data_pointer;
     FObjectIterator   root;
-    int               visible_lines;
+    std::size_t       visible_lines;
     bool              expandable;
     bool              is_expand;
 

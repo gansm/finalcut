@@ -305,7 +305,7 @@ void FMessageBox::adjustSize()
 //----------------------------------------------------------------------
 void FMessageBox::cb_processClick (FWidget*, data_ptr data)
 {
-  int* reply = static_cast<int*>(data);
+  FDialog::DialogCode* reply = static_cast<FDialog::DialogCode*>(data);
   done (*reply);
 }
 

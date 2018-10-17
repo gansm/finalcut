@@ -504,7 +504,7 @@ void FButtonGroup::draw()
 void FButtonGroup::drawLabel()
 {
   wchar_t* LabelText;
-  int hotkeypos;
+  std::size_t hotkeypos;
 
   if ( text.isNull() || text.isEmpty() )
     return;
@@ -527,7 +527,7 @@ void FButtonGroup::drawLabel()
   unsetViewportPrint();
   hotkeypos = getHotkeyPos(src, dest, length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_FOUND )
     length--;
 
   if ( hasBorder() )
@@ -565,20 +565,20 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-int FButtonGroup::getHotkeyPos ( wchar_t src[]
-                               , wchar_t dest[]
-                               , std::size_t length )
+std::size_t FButtonGroup::getHotkeyPos ( wchar_t src[]
+                                       , wchar_t dest[]
+                                       , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  int pos = -1;
+  std::size_t pos = NOT_FOUND;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == -1 )
+    if ( i < length && txt[i] == L'&' && pos == NOT_FOUND )
     {
-      pos = int(i);
+      pos = i;
       i++;
       src++;
     }
@@ -591,7 +591,7 @@ int FButtonGroup::getHotkeyPos ( wchar_t src[]
 
 //----------------------------------------------------------------------
 void FButtonGroup::drawText ( wchar_t LabelText[]
-                            , int hotkeypos
+                            , std::size_t hotkeypos
                             , std::size_t length )
 {
   bool isActive = ((flags & fc::active) != 0);
@@ -605,7 +605,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
   else
     setColor(wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (int z = 0; z < int(length); z++)
+  for (std::size_t z = 0; z < length; z++)
   {
     if ( (z == hotkeypos) && isActive )
     {
@@ -614,7 +614,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
       if ( ! isNoUnderline )
         setUnderline();
 
-      print ( LabelText[z] );
+      print (LabelText[z]);
 
       if ( ! isNoUnderline )
         unsetUnderline();
@@ -622,7 +622,7 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
       setColor (wc.label_emphasis_fg, wc.label_bg);
     }
     else
-      print ( LabelText[z] );
+      print (LabelText[z]);
   }
 
   if ( isMonochron() )

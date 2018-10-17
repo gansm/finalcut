@@ -104,7 +104,7 @@ class FSwitch : public FToggleButton
     void         drawUnchecked();
 
     // Data Members
-    int          switch_offset_pos;
+    std::size_t  switch_offset_pos;
     bool         button_pressed;
 };
 #pragma pack(pop)

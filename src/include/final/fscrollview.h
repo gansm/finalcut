@@ -179,7 +179,7 @@ class FScrollView : public FWidget
     term_area*        viewport;  // virtual scroll content
     FScrollbar*       vbar;
     FScrollbar*       hbar;
-    int               nf_offset;
+    uInt8             nf_offset;
     bool              border;
     bool              use_own_print_area;
     bool              update_scrollbar;

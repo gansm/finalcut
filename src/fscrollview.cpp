@@ -148,7 +148,7 @@ void FScrollView::setScrollSize (std::size_t width, std::size_t height)
   setTopPadding (1 - getScrollY());
   setLeftPadding (1 - getScrollX());
   setBottomPadding (1 - (yoffset_end - getScrollY()));
-  setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
+  setRightPadding (1 - (xoffset_end - getScrollX()) + int(nf_offset));
 
   hbar->setMaximum (int(width - getViewportWidth()));
   hbar->setPageSize (int(width), int(getViewportWidth()));
@@ -216,7 +216,7 @@ void FScrollView::setPos (int x, int y, bool adjust)
 void FScrollView::setWidth (std::size_t w, bool adjust)
 {
   FWidget::setWidth (w, adjust);
-  viewport_geometry.setWidth(w - vertical_border_spacing - std::size_t(nf_offset));
+  viewport_geometry.setWidth(w - vertical_border_spacing - nf_offset);
   calculateScrollbarPos();
 
   if ( getScrollWidth() < getViewportWidth() )
@@ -238,7 +238,7 @@ void FScrollView::setHeight (std::size_t h, bool adjust)
 void FScrollView::setSize (std::size_t w, std::size_t h, bool adjust)
 {
   FWidget::setSize (w, h, adjust);
-  viewport_geometry.setSize ( w - vertical_border_spacing - std::size_t(nf_offset)
+  viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
                             , h - horizontal_border_spacing );
   calculateScrollbarPos();
 
@@ -248,14 +248,16 @@ void FScrollView::setSize (std::size_t w, std::size_t h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FScrollView::setGeometry ( int x, int y
+                              , std::size_t w, std::size_t h
+                              , bool adjust )
 {
   // Set the scroll view geometry
 
   FWidget::setGeometry (x, y, w, h, adjust);
   scroll_geometry.setPos ( getTermX() + getLeftPadding() - 1
                          , getTermY() + getTopPadding() - 1 );
-  viewport_geometry.setSize ( w - vertical_border_spacing - std::size_t(nf_offset)
+  viewport_geometry.setSize ( w - vertical_border_spacing - nf_offset
                             , h - horizontal_border_spacing );
   calculateScrollbarPos();
 
@@ -372,7 +374,7 @@ void FScrollView::scrollTo (int x, int y)
   {
     viewport_geometry.setWidth(save_width);
     setLeftPadding (1 - xoffset);
-    setRightPadding (1 - (xoffset_end - xoffset) + nf_offset);
+    setRightPadding (1 - (xoffset_end - xoffset) + short(nf_offset));
 
     if ( update_scrollbar )
     {

@@ -193,7 +193,7 @@ void FDialog::hide()
 }
 
 //----------------------------------------------------------------------
-int FDialog::exec()
+FDialog::DialogCode FDialog::exec()
 {
   result_code = FDialog::Reject;
   show();
@@ -809,7 +809,7 @@ void FDialog::onWindowLowered (FEvent*)
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::done(int result)
+void FDialog::done(DialogCode result)
 {
   hide();
   result_code = result;

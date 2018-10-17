@@ -72,7 +72,7 @@ class FTermBuffer
 
     // Accessors
     virtual const char*    getClassName() const;
-    int                    getLength() const;
+    std::size_t            getLength() const;
 
     // Inquiry
     bool                   isEmpty() const;
@@ -107,8 +107,8 @@ inline const char* FTermBuffer::getClassName() const
 { return "FTermBuffer"; }
 
 //----------------------------------------------------------------------
-inline int FTermBuffer::getLength() const
-{ return int(data.size()); }
+inline std::size_t FTermBuffer::getLength() const
+{ return data.size(); }
 
 //----------------------------------------------------------------------
 inline bool FTermBuffer::isEmpty() const

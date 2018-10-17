@@ -125,6 +125,9 @@ class FButtonGroup : public FScrollView
     void           drawLabel();
 
   private:
+    // Constants
+    static const std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FButtonGroup (const FButtonGroup&);
 
@@ -136,8 +139,8 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void           init();
-    int            getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    void           drawText (wchar_t[], int, std::size_t);
+    std::size_t    getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void           drawText (wchar_t[], std::size_t, std::size_t);
     void           directFocus();
 
     // Data Members

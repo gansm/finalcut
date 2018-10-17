@@ -143,6 +143,9 @@ class FToggleButton : public FWidget
     std::size_t   button_width;  // plus margin spaces
 
   private:
+    // Constants
+    static const std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FToggleButton (const FToggleButton&);
 
@@ -154,8 +157,8 @@ class FToggleButton : public FWidget
 
     // Methods
     void          init();
-    int           getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    void          drawText (wchar_t[], int, std::size_t);
+    std::size_t   getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void          drawText (wchar_t[], std::size_t , std::size_t);
 
     // Friend classes
     friend class FButtonGroup;

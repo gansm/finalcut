@@ -395,7 +395,7 @@ void FListViewItem::replaceControlCodes()
 }
 
 //----------------------------------------------------------------------
-int FListViewItem::getVisibleLines()
+std::size_t FListViewItem::getVisibleLines()
 {
   if ( visible_lines > 1 )
     return visible_lines;
@@ -1670,7 +1670,7 @@ void FListView::drawListLine ( const FListViewItem* item
         // Insert text and trailing space
         line += text.left(width);
         line += FString ( leading_space + width
-                        - align_offset + txt_length, L' ');
+                        - align_offset - txt_length, L' ');
       }
       else if ( align == fc::alignRight )
       {

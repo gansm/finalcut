@@ -82,7 +82,7 @@ class FMessageBox : public FDialog
 {
   public:
     // Enumeration
-    enum
+    enum ButtonType
     {
       Reject = 0,
       Ok     = 1,
