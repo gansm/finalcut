@@ -33,7 +33,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget(parent)
-  , percentage(-1)
+  , percentage(NOT_SET)
   , bar_length(getWidth())
 {
   unsetFocusable();
@@ -47,15 +47,14 @@ FProgressbar::~FProgressbar()  // destructor
 
 // public methods of FProgressbar
 //----------------------------------------------------------------------
-void FProgressbar::setPercentage (int percentage_value)
+void FProgressbar::setPercentage (std::size_t percentage_value)
 {
-  if ( percentage_value <= percentage )
-    return;
-
-  if ( percentage_value > 100 )
+  if ( percentage_value == NOT_SET )
+    percentage = NOT_SET;
+  else if ( percentage_value > 100 )
     percentage = 100;
-  else if ( percentage_value < 0 )
-    percentage = 0;
+  else if ( percentage_value <= percentage && percentage != NOT_SET )
+    return;
   else
     percentage = percentage_value;
 
@@ -126,7 +125,7 @@ void FProgressbar::hide()
 
   try
   {
-    blank = new char[std::size_t(size) + 1];
+    blank = new char[size + 1];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -134,12 +133,12 @@ void FProgressbar::hide()
     return;
   }
 
-  std::memset(blank, ' ', std::size_t(size));
+  std::memset(blank, ' ', size);
   blank[size] = '\0';
 
-  for (int y = 0; y < int(getHeight() + s); y++)
+  for (std::size_t y = 0; y < getHeight() + s; y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (1, 1 + int(y));
     print (blank);
   }
 
@@ -151,7 +150,7 @@ void FProgressbar::hide()
 //----------------------------------------------------------------------
 void FProgressbar::reset()
 {
-  percentage = -1;
+  percentage = NOT_SET;
 
   if ( isVisible() )
   {
@@ -192,7 +191,7 @@ void FProgressbar::drawPercentage()
 
   setPrintPos (int(getWidth()) - 3, 0);
 
-  if ( percentage < 0 || percentage > 100 )
+  if ( percentage > 100 )
     print ("--- %");
   else
     printf ("%3d %%", percentage);
@@ -205,10 +204,15 @@ void FProgressbar::drawPercentage()
 void FProgressbar::drawBar()
 {
   std::size_t i = 0;
-  double length = double(int(bar_length) * percentage) / 100;
+  double length;
   setPrintPos (1,1);
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
+
+  if ( percentage == NOT_SET )
+    length = double(-0/100);
+  else
+    length = double(bar_length * percentage) / 100;
 
   if ( isMonochron() )
     setReverse(false);
@@ -219,7 +223,7 @@ void FProgressbar::drawBar()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( percentage > 0.0f && trunc(length) < bar_length )
+  if ( percentage > 0 && percentage <= 100 && trunc(length) < bar_length )
   {
     if ( round(length) > trunc(length) || getMaxColor() < 16 )
     {

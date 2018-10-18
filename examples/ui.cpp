@@ -132,7 +132,7 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  int p = progressBar.getPercentage();
+  std::size_t p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
   flush_out();
 
@@ -164,7 +164,7 @@ void ProgressDialog::cb_reset_bar (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar (finalcut::FWidget*, data_ptr)
 {
-  int p = progressBar.getPercentage();
+  std::size_t p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
 }
 

@@ -101,13 +101,16 @@ class FMenuBar : public FWindow, public FMenuList
     void         cb_item_deactivated (FWidget*, data_ptr);
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Typedef
     typedef struct
     {
       wchar_t* text;
       std::size_t length;
       std::size_t startpos;
-      int hotkeypos;
+      std::size_t hotkeypos;
       bool no_underline;
     } menuText;
 
@@ -126,15 +129,15 @@ class FMenuBar : public FWindow, public FMenuList
     bool         selectNextItem();
     bool         selectPrevItem();
     bool         hotkeyMenu (FKeyEvent*&);
-    int          getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     virtual void draw();
     void         drawItems();
-    void         drawItem (FMenuItem*, int&);
+    void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);
     void         drawMenuText (menuText&);
-    void         drawEllipsis (menuText&, int);
-    void         drawLeadingSpace (int&);
-    void         drawTrailingSpace (int&);
+    void         drawEllipsis (menuText&, std::size_t);
+    void         drawLeadingSpace (std::size_t&);
+    void         drawTrailingSpace (std::size_t&);
     void         adjustItems();
     bool         activateMenu (FMenuItem*);
     bool         clickItem (FMenuItem*);

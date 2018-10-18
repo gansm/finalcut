@@ -231,9 +231,9 @@ void FTextView::hide()
   std::memset(blank, ' ', size);
   blank[size] = '\0';
 
-  for (int y = 0; y < int(getHeight()); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (1, 1 + int(y));
     print (blank);
   }
 
@@ -253,9 +253,9 @@ void FTextView::insert (const FString& str, int pos)
   FStringList::iterator iter;
   FStringList text_split;
   FString s;
-  uLong num;
+  std::size_t num;
 
-  if ( pos < 0 || pos >= int(getRows()) )
+  if ( pos >= int(getRows()) )
     pos = int(getRows());
 
   if ( str.isEmpty() )
@@ -297,10 +297,10 @@ void FTextView::insert (const FString& str, int pos)
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && int(getRows()) > int(getTextHeight()) )
+  if ( ! vbar->isVisible() && getRows() > getTextHeight() )
     vbar->setVisible();
 
-  if ( vbar->isVisible() && int(getRows()) <= int(getTextHeight()) )
+  if ( vbar->isVisible() && getRows() <= getTextHeight() )
     vbar->hide();
 
   processChanged();
@@ -311,13 +311,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 {
   FStringList::iterator iter;
 
-  if ( from > to )
-    return;
-
-  if ( from < 0 || from >= int(getRows()) )
-    return;
-
-  if ( to < 0 || to >= int(getRows()) )
+  if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
     return;
 
   iter = data.begin();

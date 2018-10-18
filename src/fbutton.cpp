@@ -40,7 +40,7 @@ FButton::FButton(FWidget* parent)
   , click_animation(true)
   , click_time(150)
   , space_char(int(' '))
-  , hotkeypos(NOT_FOUND)
+  , hotkeypos(NOT_SET)
   , indent(0)
   , center_offset(0)
   , vcenter_offset(0)
@@ -65,7 +65,7 @@ FButton::FButton (const FString& txt, FWidget* parent)
   , click_animation(true)
   , click_time(150)
   , space_char(int(' '))
-  , hotkeypos(NOT_FOUND)
+  , hotkeypos(NOT_SET)
   , indent(0)
   , center_offset(0)
   , vcenter_offset(0)
@@ -549,11 +549,11 @@ std::size_t FButton::getHotkeyPos ( wchar_t src[]
   // find hotkey position in string
   // + generate a new string without the '&'-sign
   wchar_t* txt = src;
-  std::size_t pos = NOT_FOUND;
+  std::size_t pos = NOT_SET;
 
   for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == NOT_FOUND )
+    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
     {
       pos = i;
       i++;
@@ -686,11 +686,11 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   for (pos = 0; pos < center_offset; pos++)
     print (space_char);  // █
 
-  if ( hotkeypos == NOT_FOUND )
+  if ( hotkeypos == NOT_SET )
     setCursorPos ( 2 + int(center_offset)
                  , 1 + int(vcenter_offset) );  // first character
   else
-    setCursorPos ( 2 + int(center_offset) + hotkeypos
+    setCursorPos ( 2 + int(center_offset + hotkeypos)
                  , 1 + int(vcenter_offset) );  // hotkey
 
   if ( ! is.active && isMonochron() )
@@ -782,7 +782,7 @@ void FButton::draw()
 
   hotkeypos = getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
 
-  if ( hotkeypos != NOT_FOUND )
+  if ( hotkeypos != NOT_SET )
     txtlength--;
 
   if ( getHeight() >= 2 )

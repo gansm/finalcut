@@ -425,12 +425,12 @@ std::size_t FLabel::getHotkeyPos ( wchar_t src[]
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  std::size_t hotkeypos = NOT_FOUND;
+  std::size_t hotkeypos = NOT_SET;
   wchar_t* txt = src;
 
   for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_FOUND )
+    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
     {
       hotkeypos = i;
       i++;
@@ -446,7 +446,7 @@ std::size_t FLabel::getHotkeyPos ( wchar_t src[]
 //----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
-  std::size_t hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
@@ -531,7 +531,7 @@ void FLabel::drawMultiLine()
   while ( y < text_lines && y < std::size_t(getHeight()) )
   {
     wchar_t* label_text;
-    std::size_t hotkeypos = NOT_FOUND;
+    std::size_t hotkeypos = NOT_SET;
     std::size_t align_offset;
     std::size_t length = multiline_text[y].getLength();
 
@@ -555,7 +555,7 @@ void FLabel::drawMultiLine()
 
     setPrintPos (1, 1 + int(y));
 
-    if ( hotkeypos != NOT_FOUND )
+    if ( hotkeypos != NOT_SET )
     {
       align_offset = getAlignOffset(length - 1);
       printLine (label_text, length - 1, hotkeypos, align_offset);
@@ -564,7 +564,7 @@ void FLabel::drawMultiLine()
     else
     {
       align_offset = getAlignOffset(length);
-      printLine (label_text, length, NOT_FOUND, align_offset);
+      printLine (label_text, length, NOT_SET, align_offset);
     }
 
     y++;
@@ -576,7 +576,7 @@ void FLabel::drawMultiLine()
 void FLabel::drawSingleLine()
 {
   wchar_t* label_text;
-  std::size_t hotkeypos = NOT_FOUND;
+  std::size_t hotkeypos = NOT_SET;
   std::size_t align_offset;
   std::size_t length = text.getLength();
 
@@ -592,7 +592,7 @@ void FLabel::drawSingleLine()
 
   hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
 
-  if ( hotkeypos != NOT_FOUND )
+  if ( hotkeypos != NOT_SET )
     length--;
 
   setPrintPos (1, 1);

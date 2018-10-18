@@ -527,7 +527,7 @@ void FButtonGroup::drawLabel()
   unsetViewportPrint();
   hotkeypos = getHotkeyPos(src, dest, length);
 
-  if ( hotkeypos != NOT_FOUND )
+  if ( hotkeypos != NOT_SET )
     length--;
 
   if ( hasBorder() )
@@ -571,12 +571,12 @@ std::size_t FButtonGroup::getHotkeyPos ( wchar_t src[]
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  std::size_t pos = NOT_FOUND;
+  std::size_t pos = NOT_SET;
   wchar_t* txt = src;
 
   for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == NOT_FOUND )
+    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
     {
       pos = i;
       i++;

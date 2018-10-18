@@ -494,20 +494,20 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-int FMenuBar::getHotkeyPos ( wchar_t src[]
-                           , wchar_t dest[]
-                           , std::size_t length )
+std::size_t FMenuBar::getHotkeyPos ( wchar_t src[]
+                                   , wchar_t dest[]
+                                   , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  int hotkeypos = -1;
+  std::size_t hotkeypos = NOT_SET;
   wchar_t* txt = src;
 
   for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
+    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
     {
-      hotkeypos = int(i);
+      hotkeypos = i;
       i++;
       src++;
     }
@@ -528,7 +528,7 @@ void FMenuBar::draw()
 void FMenuBar::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
-  int x = 1;
+  std::size_t x = 1;
 
   if ( item_list.empty() )
     return;
@@ -549,7 +549,7 @@ void FMenuBar::drawItems()
   }
 
   // Print spaces to end of line
-  for (; x <= int(screenWidth); x++)
+  for (; x <= screenWidth; x++)
     print (' ');
 
   if ( isMonochron() )
@@ -557,17 +557,17 @@ void FMenuBar::drawItems()
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
+inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
   std::size_t txt_length = txt.getLength();
   std::size_t to_char;
-  int  hotkeypos;
+  std::size_t hotkeypos;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
 
-  txtdata.startpos = std::size_t(x) + 1;
+  txtdata.startpos = x + 1;
   txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
 
   // Set screen attributes
@@ -584,24 +584,24 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
     return;
   }
 
-  if ( x - 1 <= int(screenWidth) )
+  if ( x - 1 <= screenWidth )
     to_char = txt_length;
   else
-    to_char = txt_length - screenWidth - std::size_t(x) - 1;
+    to_char = txt_length - screenWidth - x - 1;
 
   hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
   {
     txt_length--;
     to_char--;
   }
 
   txtdata.length = to_char;
-  x += int(txt_length);
+  x += txt_length;
 
   if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = -1;
+    txtdata.hotkeypos = NOT_SET;
   else
     txtdata.hotkeypos = hotkeypos;
 
@@ -655,7 +655,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 
   for (std::size_t z = 0; z < data.length; z++)
   {
-    if ( data.startpos > std::size_t(screenWidth) - z )
+    if ( data.startpos > screenWidth - z )
       break;
 
     if ( ! std::iswprint(wint_t(data.text[z])) )
@@ -668,7 +668,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
       }
     }
 
-    if ( int(z) == data.hotkeypos )
+    if ( z == data.hotkeypos )
     {
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
@@ -688,9 +688,9 @@ inline void FMenuBar::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawEllipsis (menuText& txtdata, int x)
+inline void FMenuBar::drawEllipsis (menuText& txtdata, std::size_t x)
 {
-  if ( x > int(screenWidth) + 1 )
+  if ( x > screenWidth + 1 )
   {
     if ( txtdata.startpos < screenWidth )
     {
@@ -708,11 +708,11 @@ inline void FMenuBar::drawEllipsis (menuText& txtdata, int x)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawLeadingSpace (int& x)
+inline void FMenuBar::drawLeadingSpace (std::size_t& x)
 {
   // Print a leading blank space
 
-  if ( x < int(screenWidth) )
+  if ( x < screenWidth )
   {
     x++;
     print (' ');
@@ -720,11 +720,11 @@ inline void FMenuBar::drawLeadingSpace (int& x)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawTrailingSpace (int& x)
+inline void FMenuBar::drawTrailingSpace (std::size_t& x)
 {
   // Print a trailing blank space
 
-  if ( x < int(screenWidth) )
+  if ( x < screenWidth )
   {
     x++;
     print (' ');

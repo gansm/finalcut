@@ -144,7 +144,7 @@ class FToggleButton : public FWidget
 
   private:
     // Constants
-    static const std::size_t NOT_FOUND = static_cast<std::size_t>(-1);
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Disable copy constructor
     FToggleButton (const FToggleButton&);

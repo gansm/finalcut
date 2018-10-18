@@ -43,7 +43,7 @@ FMenu::FMenu(FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
-  , hotkeypos(-1)
+  , hotkeypos(NOT_SET)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -58,7 +58,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
-  , hotkeypos(-1)
+  , hotkeypos(NOT_SET)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -1222,20 +1222,20 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-int FMenu::getHotkeyPos ( wchar_t src[]
-                        , wchar_t dest[]
-                        , std::size_t length )
+std::size_t FMenu::getHotkeyPos ( wchar_t src[]
+                                , wchar_t dest[]
+                                , std::size_t length )
 {
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
-  int pos = -1;
+  std::size_t pos = NOT_SET;
   wchar_t* txt = src;
 
   for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == -1 )
+    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
     {
-      pos = int(i);
+      pos = i;
       i++;
       src++;
     }
@@ -1346,7 +1346,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 
   hotkeypos = getHotkeyPos(txt.wc_str(), txtdata.text, txt_length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
     to_char--;
 
   txtdata.length = to_char;
@@ -1354,7 +1354,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
   setCursorToHotkeyPosition (menuitem);
 
   if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = -1;
+    txtdata.hotkeypos = NOT_SET;
   else
     txtdata.hotkeypos = hotkeypos;
 
@@ -1438,7 +1438,7 @@ inline void FMenu::drawMenuText (menuText& data)
       }
     }
 
-    if ( int(z) == data.hotkeypos )
+    if ( z == data.hotkeypos )
     {
       setColor (wc.menu_hotkey_fg, wc.menu_hotkey_bg);
 
@@ -1544,7 +1544,7 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
   bool is_checkable = menuitem->checkable;
   bool is_selected  = menuitem->isSelected();
 
-  if ( hotkeypos == -1 )
+  if ( hotkeypos == NOT_SET )
   {
     // set cursor to the first character
     if ( is_selected )
@@ -1561,9 +1561,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     {
       // set cursor to the hotkey position
       if ( is_checkable )
-        menuitem->setCursorPos (3 + hotkeypos, 1);
+        menuitem->setCursorPos (3 + int(hotkeypos), 1);
       else
-        menuitem->setCursorPos (2 + hotkeypos, 1);
+        menuitem->setCursorPos (2 + int(hotkeypos), 1);
     }
   }
 }
