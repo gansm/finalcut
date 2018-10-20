@@ -724,7 +724,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 }
 
 //----------------------------------------------------------------------
-template<class T>
+template <typename T>
 void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
                                , fc::events ev_type )
 {

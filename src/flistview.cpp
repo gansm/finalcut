@@ -343,7 +343,7 @@ void FListViewItem::collapse()
 
 // private methods of FListView
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 void FListViewItem::sort (Compare cmp)
 {
   if ( ! expandable )
@@ -1429,7 +1429,7 @@ void FListView::init()
 }
 
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 void FListView::sort (Compare cmp)
 {
   // Sort the top level
@@ -1462,7 +1462,7 @@ std::size_t FListView::getAlignOffset ( fc::text_alignment align
 
     case fc::alignCenter:
       if ( txt_length < width )
-        return std::size_t((width - txt_length) / 2);
+        return (width - txt_length) / 2;
       else
         return 0;
 

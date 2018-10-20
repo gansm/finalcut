@@ -147,9 +147,9 @@ class FListBox : public FWidget
 
     // Constructor
     explicit FListBox (FWidget* = 0);
-    template <class Iterator, class InsertConverter>
+    template <typename Iterator, typename InsertConverter>
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
-    template <class Container, class LazyConverter>
+    template <typename Container, typename LazyConverter>
     FListBox (Container, LazyConverter, FWidget* = 0);
 
     // Destructor
@@ -192,9 +192,9 @@ class FListBox : public FWidget
 
     // Methods
     virtual void hide();
-    template <class Iterator, class InsertConverter>
+    template <typename Iterator, typename InsertConverter>
     void         insert (Iterator, Iterator, InsertConverter);
-    template <class Container, class LazyConverter>
+    template <typename Container, typename LazyConverter>
     void         insert (Container, LazyConverter);
     void         insert (FListBoxItem);
     void         insert ( const FString&
@@ -254,8 +254,8 @@ class FListBox : public FWidget
     void         setLineAttributes (int, bool, bool, bool&);
     void         unsetAttributes();
     void         updateDrawing (bool, bool);
-    void         recalculateHorizontalBar (int, bool);
-    void         recalculateVerticalBar (int);
+    void         recalculateHorizontalBar (std::size_t, bool);
+    void         recalculateVerticalBar (std::size_t);
     void         getWidgetFocus();
     void         multiSelection (std::size_t);
     void         multiSelectionUpTo (std::size_t);
@@ -321,15 +321,15 @@ class FListBox : public FWidget
     int               xoffset;
     int               yoffset;
     int               last_yoffset;
-    int               nf_offset;
-    int               max_line_width;
+    std::size_t       nf_offset;
+    std::size_t       max_line_width;
 };
 #pragma pack(pop)
 
 
 // FListBox inline functions
 //----------------------------------------------------------------------
-template <class Iterator, class InsertConverter>
+template <typename Iterator, typename InsertConverter>
 inline FListBox::FListBox ( Iterator first
                           , Iterator last
                           , InsertConverter convert
@@ -368,7 +368,7 @@ inline FListBox::FListBox ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <class Container, class LazyConverter>
+template <typename Container, typename LazyConverter>
 inline FListBox::FListBox ( Container container
                           , LazyConverter convert
                           , FWidget* parent )
@@ -496,7 +496,7 @@ inline bool FListBox::hasBrackets(listBoxItems::iterator iter) const
 { return bool(iter->brackets > 0); }
 
 //----------------------------------------------------------------------
-template <class Iterator, class InsertConverter>
+template <typename Iterator, typename InsertConverter>
 inline void FListBox::insert ( Iterator first
                              , Iterator last
                              , InsertConverter convert )
@@ -511,7 +511,7 @@ inline void FListBox::insert ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <class Container, class LazyConverter>
+template <typename Container, typename LazyConverter>
 void FListBox::insert (Container container, LazyConverter convert)
 {
   conv_type = lazy_convert;
@@ -522,7 +522,7 @@ void FListBox::insert (Container container, LazyConverter convert)
   if ( size > 0 )
     itemlist.resize(size);
 
-  recalculateVerticalBar(int(size));
+  recalculateVerticalBar(size);
 }
 
 //----------------------------------------------------------------------

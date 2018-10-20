@@ -120,7 +120,8 @@ class FVTerm : public FTerm
     virtual ~FVTerm();
 
     // Overloaded operators
-    template<class type> FVTerm& operator << (const type&);
+    template <typename type>
+    FVTerm& operator << (const type&);
     FVTerm& operator << (const std::vector<charData>&);
 
     // Accessors
@@ -503,7 +504,7 @@ struct FVTerm::term_area  // define virtual terminal character properties
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-template<class type>
+template <typename type>
 inline FVTerm& FVTerm::operator << (const type& s)
 {
   std::wostringstream outstream;

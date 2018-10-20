@@ -169,16 +169,16 @@ void FListBox::showInsideBrackets ( std::size_t index
   if ( b == fc::NoBrackets )
     return;
 
-  int len = int(iter->getText().getLength() + 2);
+  std::size_t len = iter->getText().getLength() + 2;
 
   if ( len > max_line_width )
   {
     max_line_width = len;
 
-    if ( len >= int(getWidth()) - nf_offset - 3 )
+    if ( len >= getWidth() - nf_offset - 3 )
     {
-      hbar->setMaximum (max_line_width - int(getWidth()) + nf_offset + 4);
-      hbar->setPageSize (max_line_width, int(getWidth()) - nf_offset - 4);
+      hbar->setMaximum (int(max_line_width - getWidth() + nf_offset + 4));
+      hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
       hbar->setValue (xoffset);
 
       if ( ! hbar->isVisible() )
@@ -197,7 +197,7 @@ void FListBox::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adj
   if ( isNewFont() )
   {
     vbar->setGeometry (int(getWidth()), 2, 2, getHeight() - 2);
-    hbar->setGeometry (1, int(getHeight()), getWidth() - 2 - std::size_t(nf_offset), 1);
+    hbar->setGeometry (1, int(getHeight()), getWidth() - 2 - nf_offset, 1);
   }
   else
   {
@@ -242,9 +242,7 @@ void FListBox::hide()
 {
   std::size_t n, size;
   short fg, bg;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
-
   FWidget::hide();
 
   if ( parent_widget )
@@ -265,18 +263,7 @@ void FListBox::hide()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset (blank, ' ', size);
-  blank[size] = '\0';
+  char* blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getHeight()); y++)
   {
@@ -284,19 +271,19 @@ void FListBox::hide()
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
 void FListBox::insert (FListBoxItem listItem)
 {
-  int len = int(listItem.text.getLength());
+  std::size_t len = listItem.text.getLength();
   bool has_brackets = bool(listItem.brackets);
   recalculateHorizontalBar (len, has_brackets);
 
   itemlist.push_back (listItem);
 
-  int element_count = int(getCount());
+  std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
 }
 
@@ -337,7 +324,7 @@ void FListBox::remove (std::size_t item)
 
   while ( iter != itemlist.end() )
   {
-    int len = int(iter->getText().getLength());
+    std::size_t len = iter->getText().getLength();
 
     if ( len > max_line_width )
       max_line_width = len;
@@ -345,10 +332,10 @@ void FListBox::remove (std::size_t item)
     ++iter;
   }
 
-  hbar->setMaximum (max_line_width - int(getWidth()) + nf_offset + 4);
-  hbar->setPageSize (max_line_width, int(getWidth()) - nf_offset - 4);
+  hbar->setMaximum (int(max_line_width - getWidth() + nf_offset + 4));
+  hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
 
-  if ( hbar->isVisible() && max_line_width < int(getWidth()) - nf_offset - 3 )
+  if ( hbar->isVisible() && max_line_width < getWidth() - nf_offset - 3 )
     hbar->hide();
 
   vbar->setMaximum (int(element_count - getHeight()) + 2);
@@ -374,10 +361,7 @@ void FListBox::remove (std::size_t item)
 void FListBox::clear()
 {
   std::size_t size;
-  char* blank;
-
   itemlist.clear();
-
   current = 0;
   xoffset = 0;
   yoffset = 0;
@@ -400,15 +384,7 @@ void FListBox::clear()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
+  char* blank = createBlankArray(size + 1);
 
   std::memset (blank, ' ', size);
   blank[size] = '\0';
@@ -419,7 +395,7 @@ void FListBox::clear()
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -823,10 +799,10 @@ void FListBox::adjustSize()
   vbar->setHeight (getClientHeight(), false);
   vbar->resize();
 
-  hbar->setMaximum (max_line_width - int(getClientWidth()) + 2);
-  hbar->setPageSize (max_line_width, int(getClientWidth()) - 2);
+  hbar->setMaximum (int(max_line_width - getClientWidth() + 2));
+  hbar->setPageSize (int(max_line_width), int(getClientWidth()) - 2);
   hbar->setY (int(getHeight()));
-  hbar->setWidth (getClientWidth() + std::size_t(nf_offset), false);
+  hbar->setWidth (getClientWidth() + nf_offset, false);
   hbar->resize();
 
   if ( element_count <= getClientHeight() )
@@ -834,7 +810,7 @@ void FListBox::adjustSize()
   else
     vbar->setVisible();
 
-  if ( max_line_width < int(getClientWidth()) - 1 )
+  if ( max_line_width < getClientWidth() - 1 )
     hbar->hide();
   else
     hbar->setVisible();
@@ -890,7 +866,7 @@ void FListBox::init()
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
-  setRightPadding(1 + nf_offset);
+  setRightPadding(1 + int(nf_offset));
 }
 
 //----------------------------------------------------------------------
@@ -1043,8 +1019,8 @@ inline void FListBox::drawListLine ( int y
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   bool isFocus = ((flags & fc::focus) != 0);
   FString element;
-  element = getString(iter).mid ( uInt(1 + xoffset)
-                                , uInt(getWidth() - std::size_t(nf_offset) - 4) );
+  element = getString(iter).mid ( std::size_t(1 + xoffset)
+                                , getWidth() - nf_offset - 4 );
   const wchar_t* const& element_str = element.wc_str();
   len = element.getLength();
 
@@ -1072,7 +1048,7 @@ inline void FListBox::drawListLine ( int y
     i++;
   }
 
-  for (; i < getWidth() - std::size_t(nf_offset) - 3; i++)
+  for (; i < getWidth() - nf_offset - 3; i++)
     print (' ');
 }
 
@@ -1153,11 +1129,11 @@ inline void FListBox::drawListBracketsLine ( int y
     printLeftBracket (iter->brackets);
 
     element = getString(iter).mid ( std::size_t(xoffset) + 1
-                                  , getWidth() - std::size_t(nf_offset) - 5 );
+                                  , getWidth() - nf_offset - 5 );
   }
   else
     element = getString(iter).mid ( std::size_t(xoffset)
-                                  , getWidth() - std::size_t(nf_offset) - 4 );
+                                  , getWidth() - nf_offset - 4 );
 
   const wchar_t* const& element_str = element.wc_str();
   len = element.getLength();
@@ -1177,7 +1153,7 @@ inline void FListBox::drawListBracketsLine ( int y
 
   full_length = getString(iter).getLength();
 
-  if ( b + i < getWidth() - std::size_t(nf_offset) - 4
+  if ( b + i < getWidth() - nf_offset - 4
     && std::size_t(xoffset) <= full_length + 1 )
   {
     if ( serach_mark && i == inc_len )
@@ -1194,7 +1170,7 @@ inline void FListBox::drawListBracketsLine ( int y
     i++;
   }
 
-  for (; b + i < getWidth() - std::size_t(nf_offset) - 3; i++)
+  for (; b + i < getWidth() - nf_offset - 3; i++)
     print (' ');
 }
 
@@ -1310,7 +1286,7 @@ inline void FListBox::updateDrawing (bool draw_vbar, bool draw_hbar)
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
+void FListBox::recalculateHorizontalBar (std::size_t len, bool has_brackets)
 {
   if ( has_brackets )
     len += 2;
@@ -1320,10 +1296,10 @@ void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
 
   max_line_width = len;
 
-  if ( len >= int(getWidth()) - nf_offset - 3 )
+  if ( len >= getWidth() - nf_offset - 3 )
   {
-    hbar->setMaximum (max_line_width - int(getWidth()) + nf_offset + 4);
-    hbar->setPageSize (max_line_width, int(getWidth()) - nf_offset - 4);
+    hbar->setMaximum (int(max_line_width - getWidth() + nf_offset + 4));
+    hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset - 4));
     hbar->calculateSliderValues();
 
     if ( ! hbar->isVisible() )
@@ -1332,13 +1308,13 @@ void FListBox::recalculateHorizontalBar (int len, bool has_brackets)
 }
 
 //----------------------------------------------------------------------
-void FListBox::recalculateVerticalBar (int element_count)
+void FListBox::recalculateVerticalBar (std::size_t element_count)
 {
-  vbar->setMaximum (element_count - int(getHeight()) + 2);
-  vbar->setPageSize (element_count, int(getHeight()) - 2);
+  vbar->setMaximum (int(element_count - getHeight() + 2));
+  vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && element_count >= int(getHeight()) - 1 )
+  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
     vbar->setVisible();
 }
 
@@ -1595,16 +1571,16 @@ void FListBox::nextListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollToX (int val)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 trailing space
-  int xoffset_end = max_line_width - int(getClientWidth()) + padding_space;
+  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
 
   if ( xoffset == val )
     return;
 
   xoffset = val;
 
-  if ( xoffset > xoffset_end )
-    xoffset = xoffset_end;
+  if ( xoffset > int(xoffset_end) )
+    xoffset = int(xoffset_end);
 
   if ( xoffset < 0 )
     xoffset = 0;
@@ -1652,15 +1628,15 @@ void FListBox::scrollLeft (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollRight (int distance)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 trailing space
-  int xoffset_end = max_line_width - int(getClientWidth()) + padding_space;
+  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset += distance;
 
-  if ( xoffset == xoffset_end )
+  if ( xoffset == int(xoffset_end) )
     return;
 
-  if ( xoffset > xoffset_end )
-    xoffset = xoffset_end;
+  if ( xoffset > int(xoffset_end) )
+    xoffset = int(xoffset_end);
 
   if ( xoffset < 0 )
     xoffset = 0;
@@ -1923,7 +1899,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
     return;
 
   convertToItem (*iter, source_container, y + yoffset);
-  int len = int(iter->text.getLength());
+  std::size_t len = iter->text.getLength();
   recalculateHorizontalBar (len, hasBrackets(iter));
 
   if ( hbar->isVisible() )

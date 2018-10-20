@@ -243,7 +243,6 @@ void FLabel::hide()
 {
   short fg, bg;
   std::size_t size;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -265,21 +264,10 @@ void FLabel::hide()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', size);
-  blank[getWidth()] = '\0';
+  char* blank = createBlankArray(size + 1);
   setPrintPos (1, 1);
   print (blank);
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------

@@ -219,9 +219,7 @@ void FToggleButton::hide()
 {
   std::size_t size;
   short fg, bg;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
-
   FWidget::hide();
 
   if ( parent_widget )
@@ -241,21 +239,10 @@ void FToggleButton::hide()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', size);
-  blank[size] = '\0';
+  char* blank = createBlankArray(size + 1);
   setPrintPos (1, 1);
   print (blank);
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------

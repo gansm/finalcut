@@ -308,7 +308,7 @@ inline const wchar_t& FString::operator [] (IndexT pos) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator < (CharT& s) const
 {
   const FString tmp(s);
@@ -316,7 +316,7 @@ inline bool FString::operator < (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator <= (CharT& s) const
 {
   const FString tmp(s);
@@ -324,7 +324,7 @@ inline bool FString::operator <= (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator == (CharT& s) const
 {
   const FString tmp(s);
@@ -332,7 +332,7 @@ inline bool FString::operator == (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator != (CharT& s) const
 {
   const FString tmp(s);
@@ -340,7 +340,7 @@ inline bool FString::operator != (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator >= (CharT& s) const
 {
   const FString tmp(s);
@@ -348,7 +348,7 @@ inline bool FString::operator >= (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator > (CharT& s) const
 {
   const FString tmp(s);

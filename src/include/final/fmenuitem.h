@@ -175,7 +175,7 @@ class FMenuItem : public FWidget
     void         processActivate();
     void         processDeactivate();
     void         createDialogList (FMenu*);
-    template<class T>
+    template <typename T>
     void         passMouseEvent (T, FMouseEvent*, fc::events);
 
     // Callback methods

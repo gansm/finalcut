@@ -115,7 +115,7 @@ class FListViewItem : public FObject
     bool              isExpandable() const;
 
     // Methods
-    template<typename Compare>
+    template <typename Compare>
     void              sort (Compare);
     FObjectIterator   appendItem (FListViewItem*);
     void              replaceControlCodes();
@@ -276,9 +276,9 @@ class FListView : public FWidget
                                                     = fc::by_name);
     void                 setColumnSort (int, fc::sorting_order \
                                                  = fc::ascending);
-    template<typename Compare>
+    template <typename Compare>
     void                 setUserAscendingCompare (Compare);
-    template<typename Compare>
+    template <typename Compare>
     void                 setUserDescendingCompare (Compare);
     bool                 setTreeView (bool);
     bool                 setTreeView();
@@ -342,7 +342,7 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
-    template<typename Compare>
+    template <typename Compare>
     void                 sort (Compare);
     std::size_t          getAlignOffset ( fc::text_alignment
                                         , std::size_t
@@ -465,12 +465,12 @@ inline FListViewItem* FListView::getCurrentItem()
 { return static_cast<FListViewItem*>(*current_iter); }
 
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 inline void FListView::setUserAscendingCompare (Compare cmp)
 { user_defined_ascending = cmp; }
 
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 inline void FListView::setUserDescendingCompare (Compare cmp)
 { user_defined_descending = cmp; }
 

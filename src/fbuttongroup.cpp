@@ -191,7 +191,6 @@ void FButtonGroup::hide()
 {
   std::size_t size;
   short fg, bg;
-  char* blank;
   FWidget::hide();
   FWidget* parent_widget = getParentWidget();
 
@@ -226,18 +225,7 @@ void FButtonGroup::hide()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', size);
-  blank[size] = '\0';
+  char* blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getHeight()); y++)
   {
@@ -245,7 +233,7 @@ void FButtonGroup::hide()
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------

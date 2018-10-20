@@ -197,29 +197,15 @@ bool FStatusBar::hasActivatedKey()
 void FStatusBar::hide()
 {
   short fg, bg;
-  char* blank;
-
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-
-  try
-  {
-    blank = new char[screenWidth + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', screenWidth);
-  blank[screenWidth] = '\0';
+  char* blank = createBlankArray(screenWidth + 1);
   setPrintPos (1, 1);
   print (blank);
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------

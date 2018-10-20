@@ -932,6 +932,33 @@ const wchar_t CHECKED_RADIO_BUTTON[4] =
   '\0'
 };
 
+// non-member functions
+//----------------------------------------------------------------------
+inline char* createBlankArray (std::size_t size)
+{
+  char* blank;
+
+  try
+  {
+    blank = new char[size + 1];
+  }
+  catch (const std::bad_alloc& ex)
+  {
+    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    return 0;
+  }
+
+  std::memset(blank, ' ', size);
+  blank[size] = '\0';
+  return blank;
+}
+
+//----------------------------------------------------------------------
+inline void destroyBlankArray (char blank[])
+{
+  delete[] blank;
+}
+
 }  // namespace finalcut
 
 #endif  // FWIDGET_H

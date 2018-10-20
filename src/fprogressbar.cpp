@@ -100,7 +100,6 @@ void FProgressbar::hide()
 {
   std::size_t s, size;
   short fg, bg;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -123,18 +122,7 @@ void FProgressbar::hide()
   if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[size + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', size);
-  blank[size] = '\0';
+  char* blank = createBlankArray(size + 1);
 
   for (std::size_t y = 0; y < getHeight() + s; y++)
   {
@@ -142,7 +130,7 @@ void FProgressbar::hide()
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
   setPrintPos (int(getWidth()) - 4, 0);
   print ("     ");  // hide percentage
 }
