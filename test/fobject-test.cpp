@@ -131,6 +131,7 @@ void FObjectTest::classNameTest()
 void FObjectTest::noArgumentTest()
 {
   finalcut::FObject o1;
+  finalcut::FObject o2;
   CPPUNIT_ASSERT ( ! o1.hasParent() );
   CPPUNIT_ASSERT ( o1.getParent() == 0 );
   CPPUNIT_ASSERT ( ! o1.hasChildren() );
@@ -142,8 +143,8 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( children_list.begin() == o1.end() );
   CPPUNIT_ASSERT ( children_list.end() == o1.begin() );
   CPPUNIT_ASSERT ( children_list.end() == o1.end() );
-  CPPUNIT_ASSERT ( ! o1.isChild(&o1) );
-  CPPUNIT_ASSERT ( ! o1.isDirectChild(&o1) );
+  CPPUNIT_ASSERT ( ! o1.isChild(&o2) );
+  CPPUNIT_ASSERT ( ! o1.isDirectChild(&o2) );
   CPPUNIT_ASSERT ( ! o1.isWidget() );
   CPPUNIT_ASSERT ( o1.isInstanceOf("FObject") );
   CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
@@ -176,6 +177,7 @@ void FObjectTest::childObjectTest()
   finalcut::FObject* c4 = new finalcut::FObject(&obj);
   finalcut::FObject* c5 = new finalcut::FObject(c1);
   finalcut::FObject* c6 = new finalcut::FObject(c5);
+  finalcut::FObject* c7 = new finalcut::FObject();
 
   CPPUNIT_ASSERT ( obj.hasChildren() );
   CPPUNIT_ASSERT ( obj.getChild(0) == 0 );
@@ -213,7 +215,7 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( children_list2.begin() != c1->end() );
   CPPUNIT_ASSERT ( children_list2.end() != c1->begin() );
   CPPUNIT_ASSERT ( children_list2.end() == c1->end() );
-  CPPUNIT_ASSERT ( ! c1->isDirectChild(c1) );
+  CPPUNIT_ASSERT ( ! c1->isDirectChild(c7) );
   CPPUNIT_ASSERT ( ! c1->isWidget() );
   CPPUNIT_ASSERT ( c1->isInstanceOf("FObject") );
   CPPUNIT_ASSERT ( ! c1->isTimerInUpdating() );

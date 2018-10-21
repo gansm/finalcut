@@ -529,8 +529,7 @@ void FLineEdit::onTimer (FTimerEvent*)
         return;
       }
 
-      if ( text_offset > 0 )
-        text_offset--;
+      text_offset--;
 
       if ( cursor_pos > 0 )
         cursor_pos--;

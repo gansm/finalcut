@@ -2763,7 +2763,7 @@ void FKeyboardTest::utf8Test()
   keyboard->disableUTF8();
   input("\360\220\200\200");
   processInput();
-  CPPUNIT_ASSERT ( key_released == 0200 );
+  CPPUNIT_ASSERT ( key_released == 128 );
   clear();
 }
 

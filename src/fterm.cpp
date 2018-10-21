@@ -416,7 +416,7 @@ char* FTerm::enableCursor()
     // Restore the last used Linux console cursor style
     char* cstyle;
     cstyle = linux->restoreCursorStyle();
-    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str));
+    std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
   }
 #endif  // defined(__linux__)
 

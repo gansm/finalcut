@@ -219,8 +219,10 @@ void FPointTest::equalTest()
   CPPUNIT_ASSERT ( p1 == p2 );
   CPPUNIT_ASSERT ( finalcut::FPoint(1,2) == p2 );
   CPPUNIT_ASSERT ( p1 == finalcut::FPoint(1,2) );
-  CPPUNIT_ASSERT ( finalcut::FPoint() == finalcut::FPoint() );
-  CPPUNIT_ASSERT ( finalcut::FPoint() == -finalcut::FPoint() );
+  const finalcut::FPoint p3;
+  const finalcut::FPoint p4;
+  CPPUNIT_ASSERT ( p3 == p4 );
+  CPPUNIT_ASSERT ( p3 == -p4 );
 }
 
 //----------------------------------------------------------------------

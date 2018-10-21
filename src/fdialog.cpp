@@ -925,12 +925,8 @@ void FDialog::initDialogMenu()
 
   dialog_menu->setPos (getX(), getY() + 1);
   dgl_menuitem = dialog_menu->getItem();
-
-  if ( dgl_menuitem )
-  {
-    dgl_menuitem->ignorePadding();
-    dgl_menuitem->unsetFocusable();
-  }
+  dgl_menuitem->ignorePadding();
+  dgl_menuitem->unsetFocusable();
 
   // Add the move/size menu item
   initMoveSizeMenuItem (dialog_menu);

@@ -299,7 +299,9 @@ void FRectTest::equalTest()
   CPPUNIT_ASSERT ( r1 == r2 );
   CPPUNIT_ASSERT ( finalcut::FRect(1, 2, 10, 20) == r2 );
   CPPUNIT_ASSERT ( r1 == finalcut::FRect(1, 2, 10, 20) );
-  CPPUNIT_ASSERT ( finalcut::FRect() == finalcut::FRect() );
+  const finalcut::FRect r3;
+  const finalcut::FRect r4;
+  CPPUNIT_ASSERT ( r3 == r4 );
 }
 
 //----------------------------------------------------------------------

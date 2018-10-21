@@ -1154,11 +1154,11 @@ void FOptiMove::moveByMethod ( int method
       if ( xold >= 0 )
         std::strncat ( move_ptr
                      , F_carriage_return.cap
-                     , BUF_SIZE - std::strlen(move_ptr) );
+                     , BUF_SIZE - std::strlen(move_ptr) - 1 );
 
       std::strncat ( move_ptr
                    , F_cursor_left.cap
-                   , BUF_SIZE - std::strlen(move_ptr) );
+                   , BUF_SIZE - std::strlen(move_ptr) - 1);
       move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += std::strlen(move_buf);
       relativeMove (move_ptr, int(screen_width) - 1, yold - 1, xnew, ynew);
