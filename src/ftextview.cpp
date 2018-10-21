@@ -243,7 +243,7 @@ void FTextView::insert (const FString& str, int pos)
   FString s;
   std::size_t num;
 
-  if ( pos >= int(getRows()) )
+  if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
 
   if ( str.isEmpty() )

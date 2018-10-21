@@ -152,13 +152,14 @@ class FWidget : public FVTerm, public FObject
     const char*        getClassName() const;
     FWidget*           getRootWidget() const;
     FWidget*           getParentWidget() const;
-    static FWidget*    getMainWidget();
-    virtual FWidget*   getFocusWidget() const;
+    static FWidget*&   getMainWidget();
+    static FWidget*&   getActiveWindow();
+    static FWidget*&   getFocusWidget();
+    static FWidget*&   getClickedWidget();
+    static FWidget*&   getOpenMenu();
+    static FWidget*&   getMoveSizeWidget();
     virtual FWidget*   getFirstFocusableWidget (FObjectList);
     virtual FWidget*   getLastFocusableWidget (FObjectList);
-    static FWidget*    getClickedWidget();
-    static FWidget*    getMoveSizeWidget();
-    static FWidget*    getOpenMenu();
     static FMenuBar*   getMenuBar();
     static FStatusBar* getStatusBar();
     FString            getStatusbarMessage() const;
@@ -194,9 +195,10 @@ class FWidget : public FVTerm, public FObject
 
     // Mutators
     static void        setMainWidget (FWidget*);
-    virtual void       setFocusWidget (FWidget*);
+    static void        setFocusWidget (FWidget*);
     static void        setClickedWidget (FWidget*);
     static void        setMoveSizeWidget (FWidget*);
+    static void        setActiveWindow (FWidget*);
     static void        setOpenMenu (FWidget*);
     virtual void       setStatusbarMessage (const FString&);
     bool               setVisible();
@@ -491,6 +493,12 @@ class FWidget : public FVTerm, public FObject
     FString            statusbar_message;
     static FStatusBar* statusbar;
     static FMenuBar*   menubar;
+    static FWidget*    main_widget;
+    static FWidget*    active_window;
+    static FWidget*    focus_widget;
+    static FWidget*    clicked_widget;
+    static FWidget*    open_menu;
+    static FWidget*    move_size_widget;
     static FWidget*    show_root_widget;
     static FWidget*    redraw_root_widget;
     static bool        init_desktop;
@@ -507,6 +515,38 @@ class FWidget : public FVTerm, public FObject
 //----------------------------------------------------------------------
 inline const char* FWidget::getClassName() const
 { return "FWidget"; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getMainWidget()
+{ return main_widget; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getActiveWindow()  // returns active FWindow object
+{ return active_window; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getFocusWidget()
+{ return focus_widget; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getClickedWidget()
+{ return clicked_widget; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getOpenMenu()
+{ return open_menu; }
+
+//----------------------------------------------------------------------
+inline FWidget*& FWidget::getMoveSizeWidget()
+{ return move_size_widget; }
+
+//----------------------------------------------------------------------
+inline FMenuBar* FWidget::getMenuBar()
+{ return menubar; }
+
+//----------------------------------------------------------------------
+inline FStatusBar* FWidget::getStatusBar()
+{ return statusbar; }
 
 //----------------------------------------------------------------------
 inline FString FWidget::getStatusbarMessage() const
@@ -649,6 +689,30 @@ inline int FWidget::getFlags() const
 //----------------------------------------------------------------------
 inline FPoint FWidget::getCursorPos()
 { return widget_cursor_position; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setActiveWindow (FWidget* obj)
+{ active_window = obj; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setFocusWidget (FWidget* obj)
+{ focus_widget = obj; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setClickedWidget (FWidget* obj)
+{ clicked_widget = obj; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setOpenMenu (FWidget* obj)
+{ open_menu = obj; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setMoveSizeWidget (FWidget* obj)
+{ move_size_widget = obj; }
+
+//----------------------------------------------------------------------
+inline void FWidget::setStatusbarMessage (const FString& msg)
+{ statusbar_message = msg; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisible()

@@ -81,14 +81,6 @@ FWindow::~FWindow()  // destructor
 
 // public methods of FWindow
 //----------------------------------------------------------------------
-FWindow* FWindow::getActiveWindow()
-{
-  // returns the active FWindow object
-  FWindow* active_window = static_cast<FWindow*>(FApplication::active_window);
-  return active_window;
-}
-
-//----------------------------------------------------------------------
 FWidget* FWindow::getWindowFocusWidget() const
 {
   // returns the focused widget of this window
@@ -170,7 +162,7 @@ bool FWindow::activateWindow (bool on)
   // activate/deactivate this window
   if ( on )
   {
-    FApplication::active_window = this;
+    FWidget::setActiveWindow (this);
     active_area = getVWin();
   }
 
@@ -181,7 +173,7 @@ bool FWindow::activateWindow (bool on)
 void FWindow::unsetActiveWindow()
 {
   // unset the active FWindow object
-  FApplication::active_window = 0;
+  FWidget::setActiveWindow (0);
 }
 
 //----------------------------------------------------------------------
@@ -728,7 +720,7 @@ void FWindow::switchToPrevWindow()
   updateTerminal (FVTerm::stop_refresh);
 
   bool is_activated = activatePrevWindow();
-  FWindow* active_window = getActiveWindow();
+  FWindow* active_window = static_cast<FWindow*>(getActiveWindow());
 
   if ( ! is_activated )
   {

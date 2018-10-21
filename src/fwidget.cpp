@@ -34,19 +34,18 @@ namespace finalcut
 static FWidget* rootObject = 0;
 
 // static class attributes
-uInt     FWidget::modal_dialogs;
-
-FStatusBar*            FWidget::statusbar          = 0;
-FMenuBar*              FWidget::menubar            = 0;
-FWidget*               FWidget::show_root_widget   = 0;
-FWidget*               FWidget::redraw_root_widget = 0;
-FWidget::widgetList*   FWidget::window_list        = 0;
-FWidget::widgetList*   FWidget::dialog_list        = 0;
-FWidget::widgetList*   FWidget::always_on_top_list = 0;
-FWidget::widgetList*   FWidget::close_widget       = 0;
-FWidgetColors          FWidget::wc;
-bool                   FWidget::init_desktop;
-bool                   FWidget::hideable;
+FStatusBar*          FWidget::statusbar          = 0;
+FMenuBar*            FWidget::menubar            = 0;
+FWidget*             FWidget::show_root_widget   = 0;
+FWidget*             FWidget::redraw_root_widget = 0;
+FWidget::widgetList* FWidget::window_list        = 0;
+FWidget::widgetList* FWidget::dialog_list        = 0;
+FWidget::widgetList* FWidget::always_on_top_list = 0;
+FWidget::widgetList* FWidget::close_widget       = 0;
+FWidgetColors        FWidget::wc;
+bool                 FWidget::init_desktop;
+bool                 FWidget::hideable;
+uInt                 FWidget::modal_dialogs;
 
 
 //----------------------------------------------------------------------
@@ -176,20 +175,6 @@ FWidget* FWidget::getParentWidget() const
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getMainWidget()
-{
-  FWidget* main_widget = static_cast<FWidget*>(FApplication::main_widget);
-  return main_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getFocusWidget() const
-{
-  FWidget* focus_widget = static_cast<FWidget*>(FApplication::focus_widget);
-  return focus_widget;
-}
-
-//----------------------------------------------------------------------
 FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
@@ -243,44 +228,6 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getClickedWidget()
-{
-  FWidget* clicked_widget = static_cast<FWidget*>(FApplication::clicked_widget);
-  return clicked_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getMoveSizeWidget()
-{
-  return FApplication::move_size_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getOpenMenu()
-{
-  FWidget* open_menu = static_cast<FWidget*>(FApplication::open_menu);
-  return open_menu;
-}
-
-//----------------------------------------------------------------------
-FMenuBar* FWidget::getMenuBar()
-{
-  if ( menubar )
-    return menubar;
-  else
-    return 0;
-}
-
-//----------------------------------------------------------------------
-FStatusBar* FWidget::getStatusBar()
-{
-  if ( statusbar )
-    return statusbar;
-  else
-    return 0;
-}
-
-//----------------------------------------------------------------------
 FPoint FWidget::getPrintPos()
 {
   const FPoint cur = getPrintCursor();
@@ -319,38 +266,11 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 //----------------------------------------------------------------------
 void FWidget::setMainWidget (FWidget* obj)
 {
-  FApplication* fapp = static_cast<FApplication*>(rootObject);
-  fapp->setMainWidget(obj);
-}
+  main_widget = obj;
+  FWidget* app_object = FApplication::getApplicationObject();
 
-//----------------------------------------------------------------------
-void FWidget::setFocusWidget (FWidget* obj)
-{
-  FApplication::focus_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setClickedWidget (FWidget* obj)
-{
-  FApplication::clicked_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setMoveSizeWidget (FWidget* obj)
-{
-  FApplication::move_size_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setOpenMenu (FWidget* obj)
-{
-  FApplication::open_menu = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setStatusbarMessage (const FString& msg)
-{
-  statusbar_message = msg;
+  if ( obj && app_object && ! getFocusWidget() )
+    app_object->focusFirstChild();
 }
 
 //----------------------------------------------------------------------
@@ -1569,7 +1489,8 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  FApplication* fapp = static_cast<FApplication*>(rootObject);
+  FWidget* app_object = FApplication::getApplicationObject();
+  FApplication* fapp = static_cast<FApplication*>(app_object);
   fapp->exit(0);
 }
 

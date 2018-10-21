@@ -91,7 +91,6 @@ class FWindow : public FWidget
    const char*     getClassName() const;
    static FWindow* getWindowWidget (const FWidget*);
    static int      getWindowLayer (const FWidget*);
-   static FWindow* getActiveWindow();
    FWidget*        getWindowFocusWidget() const;
 
    // Mutators

@@ -1,3 +1,6 @@
+2018-10-21  Markus Gans  <guru.mail@muenster.de>
+	* Moving static attributes from FApplication to FWidget
+
 2018-10-17  Markus Gans  <guru.mail@muenster.de>
 	* Changed more variables from int to std::size_t
 
