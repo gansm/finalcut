@@ -130,6 +130,9 @@ class FButton : public FWidget
     virtual void onFocusOut (FFocusEvent*);
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FButton (const FButton&);
 
@@ -142,8 +145,8 @@ class FButton : public FWidget
     uChar        getHotkey();
     void         setHotkeyAccelerator();
     void         detectHotkey();
-    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
-    int          clickAnimationIndent (FWidget*);
+    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    std::size_t  clickAnimationIndent (FWidget*);
     void         clearRightMargin (FWidget*);
     void         drawMarginLeft();
     void         drawMarginRight();
@@ -159,12 +162,12 @@ class FButton : public FWidget
     bool         button_down;
     bool         click_animation;
     int          click_time;
-    int          indent;
-    int          space;
-    int          center_offset;
-    int          vcenter_offset;
-    int          txtlength;
-    int          hotkeypos;
+    int          space_char;
+    std::size_t  hotkeypos;
+    std::size_t  indent;
+    std::size_t  center_offset;
+    std::size_t  vcenter_offset;
+    std::size_t  txtlength;
     short        button_fg;
     short        button_bg;
     short        button_hotkey_fg;

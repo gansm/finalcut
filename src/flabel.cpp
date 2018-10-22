@@ -242,8 +242,7 @@ void FLabel::setText (const FString& txt)
 void FLabel::hide()
 {
   short fg, bg;
-  int size;
-  char* blank;
+  std::size_t size;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -262,24 +261,13 @@ void FLabel::hide()
   setColor (fg, bg);
   size = getWidth();
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[uInt(size) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', uLong(size));
-  blank[getWidth()] = '\0';
-  setPrintPos (1,1);
+  char* blank = createBlankArray(size + 1);
+  setPrintPos (1, 1);
   print (blank);
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -397,14 +385,12 @@ void FLabel::init()
 //----------------------------------------------------------------------
 uChar FLabel::getHotkey()
 {
-  uInt length;
-
   if ( text.isEmpty() )
     return 0;
 
-  length = text.getLength();
+  std::size_t length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
@@ -421,18 +407,20 @@ uChar FLabel::getHotkey()
 }
 
 //----------------------------------------------------------------------
-int FLabel::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+std::size_t FLabel::getHotkeyPos ( wchar_t src[]
+                                 , wchar_t dest[]
+                                 , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  int hotkeypos = -1;
+  std::size_t hotkeypos = NOT_SET;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
+    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
     {
-      hotkeypos = int(i);
+      hotkeypos = i;
       i++;
       src++;
     }
@@ -446,7 +434,7 @@ int FLabel::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 //----------------------------------------------------------------------
 void FLabel::setHotkeyAccelerator()
 {
-  int hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
@@ -465,22 +453,24 @@ void FLabel::setHotkeyAccelerator()
 }
 
 //----------------------------------------------------------------------
-int FLabel::getAlignOffset (int length)
+std::size_t FLabel::getAlignOffset (std::size_t length)
 {
+  std::size_t width = std::size_t(getWidth());
+
   switch ( alignment )
   {
     case fc::alignLeft:
       return 0;
 
     case fc::alignCenter:
-      if ( length < getWidth() )
-        return int((getWidth() - length) / 2);
+      if ( length < width )
+        return (width - length) / 2;
       else
         return 0;
 
     case fc::alignRight:
-      if ( length < getWidth() )
-        return getWidth() - length;
+      if ( length < width )
+        return width - length;
       else
         return 0;
   }
@@ -522,15 +512,16 @@ void FLabel::draw()
 //----------------------------------------------------------------------
 void FLabel::drawMultiLine()
 {
-  uInt y = 0;
-  uInt text_lines = uInt(multiline_text.size());
+  std::size_t y = 0;
+  std::size_t text_lines = multiline_text.size();
   bool hotkey_printed = false;
 
-  while ( y < text_lines && y < uInt(getHeight()) )
+  while ( y < text_lines && y < std::size_t(getHeight()) )
   {
     wchar_t* label_text;
-    int  align_offset, hotkeypos = -1;
-    uInt length = multiline_text[y].getLength();
+    std::size_t hotkeypos = NOT_SET;
+    std::size_t align_offset;
+    std::size_t length = multiline_text[y].getLength();
 
     try
     {
@@ -552,16 +543,16 @@ void FLabel::drawMultiLine()
 
     setPrintPos (1, 1 + int(y));
 
-    if ( hotkeypos != -1 )
+    if ( hotkeypos != NOT_SET )
     {
-      align_offset = getAlignOffset (int(length - 1));
+      align_offset = getAlignOffset(length - 1);
       printLine (label_text, length - 1, hotkeypos, align_offset);
       hotkey_printed = true;
     }
     else
     {
-      align_offset = getAlignOffset (int(length));
-      printLine (label_text, length, -1, align_offset);
+      align_offset = getAlignOffset(length);
+      printLine (label_text, length, NOT_SET, align_offset);
     }
 
     y++;
@@ -573,8 +564,9 @@ void FLabel::drawMultiLine()
 void FLabel::drawSingleLine()
 {
   wchar_t* label_text;
-  int hotkeypos = -1, align_offset;
-  uInt length = text.getLength();
+  std::size_t hotkeypos = NOT_SET;
+  std::size_t align_offset;
+  std::size_t length = text.getLength();
 
   try
   {
@@ -588,22 +580,23 @@ void FLabel::drawSingleLine()
 
   hotkeypos = getHotkeyPos (text.wc_str(), label_text, length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
     length--;
 
-  setPrintPos (1,1);
-  align_offset = getAlignOffset (int(length));
+  setPrintPos (1, 1);
+  align_offset = getAlignOffset(length);
   printLine (label_text, length, hotkeypos, align_offset);
   delete[] label_text;
 }
 
 //----------------------------------------------------------------------
 void FLabel::printLine ( wchar_t line[]
-                       , uInt length
-                       , int  hotkeypos
-                       , int  align_offset )
+                       , std::size_t length
+                       , std::size_t hotkeypos
+                       , std::size_t align_offset )
 {
-  int to_char;
+  std::size_t to_char;
+  std::size_t width = std::size_t(getWidth());
   bool isActive, isNoUnderline;
   isActive = ((flags & fc::active) != 0);
   isNoUnderline = ((flags & fc::no_underline) != 0);
@@ -611,15 +604,15 @@ void FLabel::printLine ( wchar_t line[]
   if ( align_offset > 0 )
     print (FString(align_offset, ' '));  // leading spaces
 
-  if ( length <= uInt(getWidth()) )
-    to_char = int(length);
+  if ( length <= width )
+    to_char = length;
   else
-    to_char = getWidth() - 2;
+    to_char = width - 2;
 
   if ( hasReverseMode() )
     setReverse(true);
 
-  for (int z = 0; z < to_char; z++)
+  for (std::size_t z = 0; z < to_char; z++)
   {
     if ( ! std::iswprint(wint_t(line[z])) )
     {
@@ -630,14 +623,14 @@ void FLabel::printLine ( wchar_t line[]
       }
     }
 
-    if ( (z == hotkeypos) && isActive )
+    if ( z == hotkeypos && isActive )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
       if ( ! isNoUnderline )
         setUnderline();
 
-      print ( line[z] );
+      print (line[z]);
 
       if ( ! isNoUnderline )
         unsetUnderline();
@@ -648,20 +641,20 @@ void FLabel::printLine ( wchar_t line[]
         setColor();
     }
     else
-      print ( line[z] );
+      print (line[z]);
   }
 
-  if ( length > uInt(getWidth()) )
+  if ( length > width )
   {
     // Print ellipsis
     setColor (ellipsis_color, getBackgroundColor());
     print ("..");
     setColor();
   }
-  else if ( align_offset + to_char < getWidth() )
+  else if ( align_offset + to_char < width )
   {
     // Print trailing spaces
-    int len = getWidth() - align_offset - to_char;
+    std::size_t len = width - align_offset - to_char;
     print (FString(len, ' '));
   }
 

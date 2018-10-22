@@ -115,18 +115,18 @@ class FListViewItem : public FObject
     bool              isExpandable() const;
 
     // Methods
-    template<typename Compare>
+    template <typename Compare>
     void              sort (Compare);
     FObjectIterator   appendItem (FListViewItem*);
     void              replaceControlCodes();
-    int               getVisibleLines();
+    std::size_t       getVisibleLines();
     void              resetVisibleLineCounter();
 
     // Data Members
     FStringList       column_list;
     FWidget::data_ptr data_pointer;
     FObjectIterator   root;
-    int               visible_lines;
+    std::size_t       visible_lines;
     bool              expandable;
     bool              is_expand;
 
@@ -260,7 +260,7 @@ class FListView : public FWidget
 
     // Accessors
     const char*          getClassName() const;
-    uInt                 getCount();
+    std::size_t          getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
     fc::sorting_type     getColumnSortType (int) const;
@@ -269,16 +269,16 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry (int, int, int, int, bool = true);
+    virtual void         setGeometry (int, int, std::size_t, std::size_t, bool = true);
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
     void                 setColumnSortType (int,fc::sorting_type \
                                                     = fc::by_name);
     void                 setColumnSort (int, fc::sorting_order \
                                                  = fc::ascending);
-    template<typename Compare>
+    template <typename Compare>
     void                 setUserAscendingCompare (Compare);
-    template<typename Compare>
+    template <typename Compare>
     void                 setUserDescendingCompare (Compare);
     bool                 setTreeView (bool);
     bool                 setTreeView();
@@ -342,15 +342,17 @@ class FListView : public FWidget
 
     // Methods
     void                 init();
-    template<typename Compare>
+    template <typename Compare>
     void                 sort (Compare);
-    uInt                 getAlignOffset (fc::text_alignment, uInt, uInt);
+    std::size_t          getAlignOffset ( fc::text_alignment
+                                        , std::size_t
+                                        , std::size_t );
     virtual void         draw();
     void                 drawColumnLabels();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 setLineAttributes (bool, bool);
-    FString              getLinePrefix (const FListViewItem*, uInt);
+    FString              getLinePrefix (const FListViewItem*, std::size_t);
     void                 drawColumnText (headerItems::const_iterator&);
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
@@ -463,12 +465,12 @@ inline FListViewItem* FListView::getCurrentItem()
 { return static_cast<FListViewItem*>(*current_iter); }
 
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 inline void FListView::setUserAscendingCompare (Compare cmp)
 { user_defined_ascending = cmp; }
 
 //----------------------------------------------------------------------
-template<typename Compare>
+template <typename Compare>
 inline void FListView::setUserDescendingCompare (Compare cmp)
 { user_defined_descending = cmp; }
 

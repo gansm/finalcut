@@ -63,11 +63,11 @@ class FPoint
     FPoint& operator += (const FPoint&);
     FPoint& operator -= (const FPoint&);
 
-    friend inline bool   operator == (const FPoint&, const FPoint&);
-    friend inline bool   operator != (const FPoint&, const FPoint&);
-    friend inline FPoint operator +  (const FPoint&, const FPoint&);
-    friend inline FPoint operator -  (const FPoint&, const FPoint&);
-    friend inline FPoint operator -  (const FPoint&);
+    friend bool   operator == (const FPoint&, const FPoint&);
+    friend bool   operator != (const FPoint&, const FPoint&);
+    friend FPoint operator +  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&, const FPoint&);
+    friend FPoint operator -  (const FPoint&);
     friend std::ostream& operator << (std::ostream&, const FPoint&);
     friend std::istream& operator >> (std::istream&, FPoint&);
 

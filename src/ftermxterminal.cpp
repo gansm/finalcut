@@ -31,8 +31,8 @@ namespace finalcut
 bool                 FTermXTerminal::mouse_support;
 bool                 FTermXTerminal::meta_sends_esc;
 bool                 FTermXTerminal::xterm_default_colors;
-int                  FTermXTerminal::term_width = 80;
-int                  FTermXTerminal::term_height = 24;
+std::size_t          FTermXTerminal::term_width = 80;
+std::size_t          FTermXTerminal::term_height = 24;
 const FString*       FTermXTerminal::xterm_font = 0;
 const FString*       FTermXTerminal::xterm_title = 0;
 const FString*       FTermXTerminal::foreground_color = 0;
@@ -126,7 +126,7 @@ void FTermXTerminal::setTitle (const FString& title)
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setTermSize (int width, int height)
+void FTermXTerminal::setTermSize (std::size_t width, std::size_t height)
 {
   // Set xterm size to {term_width} x {term_height}
 
@@ -417,7 +417,9 @@ void FTermXTerminal::setXTermSize()
 {
   if ( term_detection->isXTerminal() )
   {
-    FTerm::putstringf (CSI "8;%d;%dt", term_height, term_width);
+    FTerm::putstringf ( CSI "8;%lu;%lut"
+                      , uLong(term_height)
+                      , uLong(term_width) );
     std::fflush(stdout);
   }
 }

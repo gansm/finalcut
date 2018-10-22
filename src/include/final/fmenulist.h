@@ -69,7 +69,7 @@ class FMenuList
 
     // Accessors
     virtual const char* getClassName() const;
-    uInt                getCount() const;
+    std::size_t         getCount() const;
     FMenuItem*          getItem (int) const;
     FMenuItem*          getSelectedItem() const;
 
@@ -110,8 +110,8 @@ inline const char* FMenuList::getClassName() const
 { return "FMenuList"; }
 
 //----------------------------------------------------------------------
-inline uInt FMenuList::getCount() const
-{ return uInt(item_list.size()); }
+inline std::size_t FMenuList::getCount() const
+{ return item_list.size(); }
 
 //----------------------------------------------------------------------
 inline FMenuItem* FMenuList::getItem (int index) const

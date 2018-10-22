@@ -34,19 +34,18 @@ namespace finalcut
 static FWidget* rootObject = 0;
 
 // static class attributes
-uInt     FWidget::modal_dialogs;
-
-FStatusBar*            FWidget::statusbar          = 0;
-FMenuBar*              FWidget::menubar            = 0;
-FWidget*               FWidget::show_root_widget   = 0;
-FWidget*               FWidget::redraw_root_widget = 0;
-FWidget::widgetList*   FWidget::window_list        = 0;
-FWidget::widgetList*   FWidget::dialog_list        = 0;
-FWidget::widgetList*   FWidget::always_on_top_list = 0;
-FWidget::widgetList*   FWidget::close_widget       = 0;
-FWidgetColors          FWidget::wc;
-bool                   FWidget::init_desktop;
-bool                   FWidget::hideable;
+FStatusBar*          FWidget::statusbar          = 0;
+FMenuBar*            FWidget::menubar            = 0;
+FWidget*             FWidget::show_root_widget   = 0;
+FWidget*             FWidget::redraw_root_widget = 0;
+FWidget::widgetList* FWidget::window_list        = 0;
+FWidget::widgetList* FWidget::dialog_list        = 0;
+FWidget::widgetList* FWidget::always_on_top_list = 0;
+FWidget::widgetList* FWidget::close_widget       = 0;
+FWidgetColors        FWidget::wc;
+bool                 FWidget::init_desktop;
+bool                 FWidget::hideable;
+uInt                 FWidget::modal_dialogs;
 
 
 //----------------------------------------------------------------------
@@ -106,10 +105,10 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   {
     visible_cursor = ! hideable;
     offset = parent->client_offset;
-    double_flatline_mask.top.resize (uLong(getWidth()), false);
-    double_flatline_mask.right.resize (uLong(getHeight()), false);
-    double_flatline_mask.bottom.resize (uLong(getWidth()), false);
-    double_flatline_mask.left.resize (uLong(getHeight()), false);
+    double_flatline_mask.top.resize (getWidth(), false);
+    double_flatline_mask.right.resize (getHeight(), false);
+    double_flatline_mask.bottom.resize (getWidth(), false);
+    double_flatline_mask.left.resize (getHeight(), false);
   }
 }
 
@@ -176,20 +175,6 @@ FWidget* FWidget::getParentWidget() const
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getMainWidget()
-{
-  FWidget* main_widget = static_cast<FWidget*>(FApplication::main_widget);
-  return main_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getFocusWidget() const
-{
-  FWidget* focus_widget = static_cast<FWidget*>(FApplication::focus_widget);
-  return focus_widget;
-}
-
-//----------------------------------------------------------------------
 FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
 {
   if ( list.empty() )
@@ -243,44 +228,6 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 }
 
 //----------------------------------------------------------------------
-FWidget* FWidget::getClickedWidget()
-{
-  FWidget* clicked_widget = static_cast<FWidget*>(FApplication::clicked_widget);
-  return clicked_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getMoveSizeWidget()
-{
-  return FApplication::move_size_widget;
-}
-
-//----------------------------------------------------------------------
-FWidget* FWidget::getOpenMenu()
-{
-  FWidget* open_menu = static_cast<FWidget*>(FApplication::open_menu);
-  return open_menu;
-}
-
-//----------------------------------------------------------------------
-FMenuBar* FWidget::getMenuBar()
-{
-  if ( menubar )
-    return menubar;
-  else
-    return 0;
-}
-
-//----------------------------------------------------------------------
-FStatusBar* FWidget::getStatusBar()
-{
-  if ( statusbar )
-    return statusbar;
-  else
-    return 0;
-}
-
-//----------------------------------------------------------------------
 FPoint FWidget::getPrintPos()
 {
   const FPoint cur = getPrintCursor();
@@ -319,38 +266,11 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 //----------------------------------------------------------------------
 void FWidget::setMainWidget (FWidget* obj)
 {
-  FApplication* fapp = static_cast<FApplication*>(rootObject);
-  fapp->setMainWidget(obj);
-}
+  main_widget = obj;
+  FWidget* app_object = FApplication::getApplicationObject();
 
-//----------------------------------------------------------------------
-void FWidget::setFocusWidget (FWidget* obj)
-{
-  FApplication::focus_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setClickedWidget (FWidget* obj)
-{
-  FApplication::clicked_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setMoveSizeWidget (FWidget* obj)
-{
-  FApplication::move_size_widget = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setOpenMenu (FWidget* obj)
-{
-  FApplication::open_menu = obj;
-}
-
-//----------------------------------------------------------------------
-void FWidget::setStatusbarMessage (const FString& msg)
-{
-  statusbar_message = msg;
+  if ( obj && app_object && ! getFocusWidget() )
+    app_object->focusFirstChild();
 }
 
 //----------------------------------------------------------------------
@@ -482,7 +402,7 @@ void FWidget::setPos (int x, int y, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setWidth (int width, bool adjust)
+void FWidget::setWidth (std::size_t width, bool adjust)
 {
   width = std::min (width, size_hints.max_width);
   width = std::max (width, size_hints.min_width);
@@ -499,12 +419,12 @@ void FWidget::setWidth (int width, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.top.resize (uLong(getWidth()), false);
-  double_flatline_mask.bottom.resize (uLong(getWidth()), false);
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
 }
 
 //----------------------------------------------------------------------
-void FWidget::setHeight (int height, bool adjust)
+void FWidget::setHeight (std::size_t height, bool adjust)
 {
   height = std::min (height, size_hints.max_height);
   height = std::max (height, size_hints.min_height);
@@ -521,12 +441,12 @@ void FWidget::setHeight (int height, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.right.resize (uLong(getHeight()), false);
-  double_flatline_mask.left.resize (uLong(getHeight()), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 }
 
 //----------------------------------------------------------------------
-void FWidget::setSize (int width, int height, bool adjust)
+void FWidget::setSize (std::size_t width, std::size_t height, bool adjust)
 {
   width  = std::min (width,  size_hints.max_width);
   width  = std::max (width,  size_hints.min_width);
@@ -551,10 +471,10 @@ void FWidget::setSize (int width, int height, bool adjust)
   if ( adjust )
     adjustSize();
 
-  double_flatline_mask.top.resize (uLong(getWidth()), false);
-  double_flatline_mask.right.resize (uLong(getHeight()), false);
-  double_flatline_mask.bottom.resize (uLong(getWidth()), false);
-  double_flatline_mask.left.resize (uLong(getHeight()), false);
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 }
 
 //----------------------------------------------------------------------
@@ -612,7 +532,7 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
     if ( isRootWidget() )
     {
       FWidget* r = rootObject;
-      r->client_offset.setY2 (r->getHeight() - 1 - r->padding.bottom);
+      r->client_offset.setY2 (int(r->getHeight()) - 1 - r->padding.bottom);
       adjustSizeGlobal();
     }
     else
@@ -633,7 +553,7 @@ void FWidget::setRightPadding (int right, bool adjust)
     if ( isRootWidget() )
     {
       FWidget* r = rootObject;
-      r->client_offset.setX2  (r->getWidth() - 1 - r->padding.right);
+      r->client_offset.setX2  (int(r->getWidth()) - 1 - r->padding.right);
       adjustSizeGlobal();
     }
     else
@@ -654,8 +574,8 @@ void FWidget::setParentOffset()
 void FWidget::setTermOffset()
 {
   FWidget* r = getRootWidget();
-  int w = r->getWidth();
-  int h = r->getHeight();
+  int w = int(r->getWidth());
+  int h = int(r->getHeight());
   offset.setCoordinates (0, 0, w - 1, h - 1);
 }
 
@@ -665,14 +585,15 @@ void FWidget::setTermOffsetWithPadding()
   FWidget* r = getRootWidget();
   offset.setCoordinates ( r->getLeftPadding()
                         , r->getTopPadding()
-                        , r->getWidth() - 1 - r->getRightPadding()
-                        , r->getHeight() - 1 - r->getBottomPadding() );
+                        , int(r->getWidth()) - 1 - r->getRightPadding()
+                        , int(r->getHeight()) - 1 - r->getBottomPadding() );
 }
 
 //----------------------------------------------------------------------
-void FWidget::setTermSize (int w, int h)
+void FWidget::setTermSize (std::size_t w, std::size_t h)
 {
   // Set xterm size to w x h
+
   if ( isXTerminal() )
   {
     rootObject->wsize.setRect(1, 1, w, h);
@@ -683,12 +604,11 @@ void FWidget::setTermSize (int w, int h)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
+void FWidget::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Sets the geometry of the widget relative to its parent
 
-  int term_x
-    , term_y;
+  int term_x, term_y;
 
   w = std::min (w, size_hints.max_width);
   w = std::max (w, size_hints.min_width);
@@ -718,13 +638,13 @@ void FWidget::setGeometry (int x, int y, int w, int h, bool adjust)
 
   client_offset.setCoordinates ( term_x - 1 + padding.left
                                , term_y - 1 + padding.top
-                               , term_x - 2 + getWidth() - padding.right
-                               , term_y - 2 + getHeight() - padding.bottom );
+                               , term_x - 2 + int(getWidth()) - padding.right
+                               , term_y - 2 + int(getHeight()) - padding.bottom );
 
-  double_flatline_mask.top.resize (uLong(getWidth()), false);
-  double_flatline_mask.right.resize (uLong(getHeight()), false);
-  double_flatline_mask.bottom.resize (uLong(getWidth()), false);
-  double_flatline_mask.left.resize (uLong(getHeight()), false);
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 
   if ( adjust )
     adjustSize();
@@ -1148,10 +1068,10 @@ void FWidget::resize()
     adjustSize();
 
   // resize the four double-flatline-masks
-  double_flatline_mask.top.resize (uLong(getWidth()), false);
-  double_flatline_mask.right.resize (uLong(getHeight()), false);
-  double_flatline_mask.bottom.resize (uLong(getWidth()), false);
-  double_flatline_mask.left.resize (uLong(getHeight()), false);
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 }
 
 //----------------------------------------------------------------------
@@ -1329,8 +1249,8 @@ void FWidget::detectTermSize()
   (
     r->padding.left,
     r->padding.top,
-    getDesktopWidth() - 1 - r->padding.right,
-    getDesktopHeight() - 1 - r->padding.bottom
+    int(getDesktopWidth()) - 1 - r->padding.right,
+    int(getDesktopHeight()) - 1 - r->padding.bottom
   );
 }
 
@@ -1357,9 +1277,9 @@ void FWidget::drawShadow()
   }
 
   int x1 = 1
-    , x2 = getWidth()
+    , x2 = int(getWidth())
     , y1 = 1
-    , y2 = getHeight();
+    , y2 = int(getHeight());
 
   if ( trans_shadow )
   {
@@ -1379,8 +1299,8 @@ void FWidget::clearShadow()
   if ( isMonochron() )
     return;
 
-  int w = getWidth()
-    , h = getHeight();
+  int w = int(getWidth());
+  int h = int(getHeight());
 
   if ( isWindowWidget() )
   {
@@ -1392,7 +1312,7 @@ void FWidget::clearShadow()
 
   if ( w <= offset.getX2() )
   {
-    for (int i = 1; i <= getHeight(); i++)
+    for (int i = 1; i <= int(getHeight()); i++)
     {
       setPrintPos (w + 1, i);
       print  (' ');  // clear █
@@ -1403,7 +1323,7 @@ void FWidget::clearShadow()
   {
     setPrintPos (2, h + 1);
 
-    for (int i = 1; i <= getWidth(); i++)
+    for (std::size_t i = 1; i <= getWidth(); i++)
       print (' ');  // clear ▀
   }
 
@@ -1418,16 +1338,16 @@ void FWidget::drawFlatBorder()
     return;
 
   int x1 = 1
-    , x2 = getWidth() + 1
+    , x2 = int(getWidth()) + 1
     , y1 = 0
-    , y2 = getHeight() + 1;
+    , y2 = int(getHeight()) + 1;
 
   if ( FWidget* p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
   else
     setColor (wc.dialog_fg, wc.dialog_bg);
 
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     setPrintPos (x1 - 1, y1 + y + 1);
 
@@ -1441,7 +1361,7 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x2, y1 + 1);
 
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     if ( double_flatline_mask.right[uLong(y)] )
       // left+right line (on right side)
@@ -1455,7 +1375,7 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x1, y1);
 
-  for (int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < int(getWidth()); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
       // top+bottom line (at top)
@@ -1467,7 +1387,7 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x1, y2);
 
-  for (int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < int(getWidth()); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
       // top+bottom line (at bottom)
@@ -1485,9 +1405,9 @@ void FWidget::clearFlatBorder()
     return;
 
   int x1 = 1
-    , x2 = getWidth() + 1
+    , x2 = int(getWidth()) + 1
     , y1 = 0
-    , y2 = getHeight() + 1;
+    , y2 = int(getHeight()) + 1;
 
   if ( FWidget* p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
@@ -1495,7 +1415,7 @@ void FWidget::clearFlatBorder()
     setColor (wc.dialog_fg, wc.dialog_bg);
 
   // clear on left side
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     setPrintPos (x1 - 1, y1 + y + 1);
 
@@ -1506,7 +1426,7 @@ void FWidget::clearFlatBorder()
   }
 
   // clear on right side
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     setPrintPos (x2, y1 + y + 1);
 
@@ -1519,7 +1439,7 @@ void FWidget::clearFlatBorder()
   // clear at top
   setPrintPos (x1, y1);
 
-  for (int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < int(getWidth()); x++)
   {
     if ( double_flatline_mask.top[uLong(x)] )
       print (fc::NF_border_line_upper);
@@ -1530,7 +1450,7 @@ void FWidget::clearFlatBorder()
   // clear at bottom
   setPrintPos (x1, y2);
 
-  for (int x = 0; x < getWidth(); x++)
+  for (int x = 0; x < int(getWidth()); x++)
   {
     if ( double_flatline_mask.bottom[uLong(x)] )
       print (fc::NF_border_line_bottom);
@@ -1554,11 +1474,11 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
   if ( y1 < 1 )
     y1 = 1;
 
-  if ( x2 > getWidth() )
-    x2 = getWidth();
+  if ( x2 > int(getWidth()) )
+    x2 = int(getWidth());
 
-  if ( y2 > getHeight() )
-    y2 = getHeight();
+  if ( y2 > int(getHeight()) )
+    y2 = int(getHeight());
 
   if ( isNewFont() )
     drawNewFontBox (x1, y1, x2, y2);
@@ -1569,7 +1489,8 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  FApplication* fapp = static_cast<FApplication*>(rootObject);
+  FWidget* app_object = FApplication::getApplicationObject();
+  FApplication* fapp = static_cast<FApplication*>(app_object);
   fapp->exit(0);
 }
 
@@ -1683,8 +1604,8 @@ void FWidget::adjustSize()
     {
       offset.setCoordinates ( p->getTermX() - 1
                             , p->getTermY() - 1
-                            , p->getTermX() + p->getWidth() - 2
-                            , p->getTermY() + p->getHeight() - 2 );
+                            , p->getTermX() + int(p->getWidth()) - 2
+                            , p->getTermY() + int(p->getHeight()) - 2 );
     }
     else if ( p )
       offset = p->client_offset;
@@ -1700,8 +1621,8 @@ void FWidget::adjustSize()
   (
     getTermX() - 1 + padding.left,
     getTermY() - 1 + padding.top,
-    getTermX() - 2 + getWidth() - padding.right,
-    getTermY() - 2 + getHeight() - padding.bottom
+    getTermX() - 2 + int(getWidth()) - padding.right,
+    getTermY() - 2 + int(getHeight()) - padding.bottom
   );
 
   if ( hasChildren() )
@@ -2069,10 +1990,10 @@ void FWidget::init()
   offset.setRect(0, 0, getDesktopWidth(), getDesktopHeight());
   client_offset = offset;
 
-  double_flatline_mask.top.resize (uLong(getWidth()), false);
-  double_flatline_mask.right.resize (uLong(getHeight()), false);
-  double_flatline_mask.bottom.resize (uLong(getWidth()), false);
-  double_flatline_mask.left.resize (uLong(getHeight()), false);
+  double_flatline_mask.top.resize (getWidth(), false);
+  double_flatline_mask.right.resize (getHeight(), false);
+  double_flatline_mask.bottom.resize (getWidth(), false);
+  double_flatline_mask.left.resize (getHeight(), false);
 
   // Initialize default widget colors
   setColorTheme();
@@ -2132,7 +2053,7 @@ inline void FWidget::insufficientSpaceAdjust()
     return;
 
   // move left if not enough space
-  while ( getTermX() + getWidth() - padding.right > offset.getX2() + 2 )
+  while ( getTermX() + int(getWidth()) - padding.right > offset.getX2() + 2 )
   {
     adjust_wsize.x1_ref()--;
     adjust_wsize.x2_ref()--;
@@ -2142,7 +2063,7 @@ inline void FWidget::insufficientSpaceAdjust()
   }
 
   // move up if not enough space
-  while ( getTermY() + getHeight() - padding.bottom > offset.getY2() + 2 )
+  while ( getTermY() + int(getHeight()) - padding.bottom > offset.getY2() + 2 )
   {
     adjust_wsize.y1_ref()--;
     adjust_wsize.y2_ref()--;
@@ -2152,17 +2073,17 @@ inline void FWidget::insufficientSpaceAdjust()
   }
 
   // reduce the width if not enough space
-  while ( offset.getX1() + getWidth() - 1 > offset.getX2() )
+  while ( offset.getX1() + int(getWidth()) - 1 > offset.getX2() )
     adjust_wsize.x2_ref()--;
 
   if ( getWidth() < size_hints.min_width )
     adjust_wsize.setWidth(size_hints.min_width);
 
-  if ( getWidth() <= 0 )
+  if ( getWidth() == 0 )
     adjust_wsize.setWidth(1);
 
   // reduce the height if not enough space
-  while ( offset.getY1() + getHeight() - 1 > offset.getY2() )
+  while ( offset.getY1() + int(getHeight()) - 1 > offset.getY2() )
     adjust_wsize.y2_ref()--;
 
   if ( getHeight() < size_hints.min_height )
@@ -2343,7 +2264,7 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
   setColor (wc.shadow_bg, wc.shadow_fg);
   setTransShadow();
 
-  for (int i = 1; i < getHeight(); i++)
+  for (int i = 1; i < int(getHeight()); i++)
   {
     setPrintPos (x2 + 1, y1 + i);
     print ("  ");
@@ -2358,7 +2279,7 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
   setColor (wc.shadow_bg, wc.shadow_fg);
   setTransShadow();
 
-  for (int i = 2; i <= getWidth() + 1; i++)
+  for (std::size_t i = 2; i <= getWidth() + 1; i++)
     print (' ');
 
   unsetTransShadow();
@@ -2392,7 +2313,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   if ( isWindowWidget() )
     unsetInheritBackground();
 
-  for (int i = 1; i < getHeight(); i++)
+  for (int i = 1; i < int(getHeight()); i++)
   {
     setPrintPos (x2 + 1, y1 + i);
     print (block);  // █
@@ -2403,7 +2324,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   if ( isWindowWidget() )
     setInheritBackground();
 
-  for (int i = 1; i <= getWidth(); i++)
+  for (std::size_t i = 1; i <= getWidth(); i++)
     print (fc::UpperHalfBlock);  // ▀
 
   if ( isWindowWidget() )

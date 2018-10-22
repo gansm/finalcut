@@ -332,6 +332,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
       putty,
       kde_konsole,
       gnome_terminal,
+      newer_vte_terminal,
       kterm,
       tera_term,
       cygwin,
@@ -358,6 +359,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     void puttyTest();
     void kdeKonsoleTest();
     void gnomeTerminalTest();
+    void newerVteTerminalTest();
     void ktermTest();
     void teraTermTest();
     void cygwinTest();
@@ -402,6 +404,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (puttyTest);
     CPPUNIT_TEST (kdeKonsoleTest);
     CPPUNIT_TEST (gnomeTerminalTest);
+    CPPUNIT_TEST (newerVteTerminalTest);
     CPPUNIT_TEST (ktermTest);
     CPPUNIT_TEST (teraTermTest);
     CPPUNIT_TEST (cygwinTest);
@@ -981,6 +984,69 @@ void FTermDetectionTest::gnomeTerminalTest()
   {
     // Start the terminal simulation
     terminalSimulation (gnome_terminal);
+
+    if ( waitpid(pid, 0, WUNTRACED) != pid )
+      std::cerr << "waitpid error" << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermDetectionTest::newerVteTerminalTest()
+{
+  finalcut::FTermData data;
+  finalcut::FTermDetection detect;
+  data.setTermFileName(C_STR("xterm-256color"));
+  detect.setTermData(&data);
+  detect.setTerminalDetection(true);
+
+  pid_t pid = forkProcess();
+
+  if ( isChildProcess(pid) )
+  {
+    setenv ("TERM", "xterm-256color", 1);
+    setenv ("COLORTERM", "truecolor", 1);
+    setenv ("VTE_VERSION", "5300", 1);
+    unsetenv("COLORFGBG");
+    unsetenv("TERMCAP");
+    unsetenv("XTERM_VERSION");
+    unsetenv("ROXTERM_ID");
+    unsetenv("KONSOLE_DBUS_SESSION");
+    unsetenv("KONSOLE_DCOP");
+    unsetenv("TMUX");
+
+    detect.detect();
+
+    CPPUNIT_ASSERT ( detect.isXTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isAnsiTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isRxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isUrxvtTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMltermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isPuttyTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKdeTerminal() );
+    CPPUNIT_ASSERT ( detect.isGnomeTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isKtermTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isTeraTerm() );
+    CPPUNIT_ASSERT ( ! detect.isCygwinTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isMinttyTerm() );
+    CPPUNIT_ASSERT ( ! detect.isLinuxTerm() );
+    CPPUNIT_ASSERT ( ! detect.isFreeBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isNetBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isOpenBSDTerm() );
+    CPPUNIT_ASSERT ( ! detect.isSunTerminal() );
+    CPPUNIT_ASSERT ( ! detect.isScreenTerm() );
+    CPPUNIT_ASSERT ( ! detect.isTmuxTerm() );
+    CPPUNIT_ASSERT ( detect.canDisplay256Colors() );
+    CPPUNIT_ASSERT ( detect.hasTerminalDetection() );
+    CPPUNIT_ASSERT ( detect.hasSetCursorStyleSupport() );
+
+    debugOutput();
+    closeStandardStreams();
+    exit(EXIT_SUCCESS);
+  }
+  else  // Parent
+  {
+    // Start the terminal simulation
+    terminalSimulation (newer_vte_terminal);
 
     if ( waitpid(pid, 0, WUNTRACED) != pid )
       std::cerr << "waitpid error" << std::endl;
@@ -1846,6 +1912,7 @@ char* FTermDetectionTest::getAnswerback (console con)
     C_STR("PuTTY"),  // PuTTY
     0,               // KDE Konsole
     0,               // GNOME Terminal
+    0,               // VTE Terminal >= 0.53.0
     0,               // kterm,
     0,               // Tera Term
     0,               // Cygwin
@@ -1875,6 +1942,7 @@ char* FTermDetectionTest::getDSR (console con)
     C_STR("\033[0n"),  // PuTTY
     C_STR("\033[0n"),  // KDE Konsole
     C_STR("\033[0n"),  // GNOME Terminal
+    C_STR("\033[0n"),  // VTE Terminal >= 0.53.0
     C_STR("\033[0n"),  // kterm,
     C_STR("\033[0n"),  // Tera Term
     0,                 // Cygwin
@@ -1904,6 +1972,7 @@ char* FTermDetectionTest::getDECID (console con)
     C_STR("\033[?6c"),                     // PuTTY
     C_STR("\033[?1;2c"),                   // KDE Konsole
     C_STR("\033[?62;c"),                   // GNOME Terminal
+    C_STR("\033[?65;1;9c"),                // VTE Terminal >= 0.53.0
     C_STR("\033[?1;2c"),                   // kterm,
     C_STR("\033[?1;2c"),                   // Tera Term
     0,                                     // Cygwin
@@ -1933,6 +2002,7 @@ char* FTermDetectionTest::getDA (console con)
     C_STR("\033[?6c"),                     // PuTTY
     C_STR("\033[?1;2c"),                   // KDE Konsole
     C_STR("\033[?62;c"),                   // GNOME Terminal
+    C_STR("\033[?65;1;9c"),                // VTE Terminal >= 0.53.0
     C_STR("\033[?1;2c"),                   // kterm,
     C_STR("\033[?1;2c"),                   // Tera Term
     C_STR("\033[?6c"),                     // Cygwin
@@ -1962,6 +2032,7 @@ char* FTermDetectionTest::getDA1 (console con)
     C_STR("\033[?6c"),                // PuTTY
     C_STR("\033[?1;2c"),              // KDE Konsole
     C_STR("\033[?62;c"),              // GNOME Terminal
+    C_STR("\033[?65;1;9c"),           // VTE Terminal >= 0.53.0
     0,                                // kterm,
     C_STR("\033[?1;2c"),              // Tera Term
     C_STR("\033[?6c"),                // Cygwin
@@ -1991,6 +2062,7 @@ char* FTermDetectionTest::getSEC_DA (console con)
     C_STR("\033[>0;136;0c"),      // PuTTY
     C_STR("\033[>0;115;0c"),      // KDE Konsole
     C_STR("\033[>1;5202;0c"),     // GNOME Terminal
+    C_STR("\033[>65;5300;1c"),    // VTE Terminal >= 0.53.0
     C_STR("\033[?1;2c"),          // kterm,
     C_STR("\033[>32;278;0c"),     // Tera Term
     C_STR("\033[>67;200502;0c"),  // Cygwin

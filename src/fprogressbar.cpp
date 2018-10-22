@@ -33,7 +33,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget(parent)
-  , percentage(-1)
+  , percentage(NOT_SET)
   , bar_length(getWidth())
 {
   unsetFocusable();
@@ -47,15 +47,14 @@ FProgressbar::~FProgressbar()  // destructor
 
 // public methods of FProgressbar
 //----------------------------------------------------------------------
-void FProgressbar::setPercentage (int percentage_value)
+void FProgressbar::setPercentage (std::size_t percentage_value)
 {
-  if ( percentage_value <= percentage )
-    return;
-
-  if ( percentage_value > 100 )
+  if ( percentage_value == NOT_SET )
+    percentage = NOT_SET;
+  else if ( percentage_value > 100 )
     percentage = 100;
-  else if ( percentage_value < 0 )
-    percentage = 0;
+  else if ( percentage_value <= percentage && percentage != NOT_SET )
+    return;
   else
     percentage = percentage_value;
 
@@ -69,7 +68,7 @@ void FProgressbar::setPercentage (int percentage_value)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry (int x, int y, int w, int h, bool adjust)
+void FProgressbar::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the progress bar geometry
 
@@ -99,9 +98,8 @@ bool FProgressbar::setShadow (bool on)
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  int s, size;
+  std::size_t s, size;
   short fg, bg;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -121,37 +119,26 @@ void FProgressbar::hide()
   s = hasShadow() ? 1 : 0;
   size = getWidth() + s;
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[uInt(size) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
+  char* blank = createBlankArray(size + 1);
 
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y = 0; y < getHeight() + s; y++)
+  for (std::size_t y = 0; y < getHeight() + s; y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (1, 1 + int(y));
     print (blank);
   }
 
-  delete[] blank;
-  setPrintPos (getWidth() - 4, 0);
+  destroyBlankArray (blank);
+  setPrintPos (int(getWidth()) - 4, 0);
   print ("     ");  // hide percentage
 }
 
 //----------------------------------------------------------------------
 void FProgressbar::reset()
 {
-  percentage = -1;
+  percentage = NOT_SET;
 
   if ( isVisible() )
   {
@@ -190,9 +177,9 @@ void FProgressbar::drawPercentage()
   if ( isMonochron() )
     setReverse(true);
 
-  setPrintPos (getWidth() - 3, 0);
+  setPrintPos (int(getWidth()) - 3, 0);
 
-  if ( percentage < 0 || percentage > 100 )
+  if ( percentage > 100 )
     print ("--- %");
   else
     printf ("%3d %%", percentage);
@@ -204,11 +191,16 @@ void FProgressbar::drawPercentage()
 //----------------------------------------------------------------------
 void FProgressbar::drawBar()
 {
-  int i = 0;
-  double length = double(bar_length * percentage) / 100;
+  std::size_t i = 0;
+  double length;
   setPrintPos (1,1);
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
+
+  if ( percentage == NOT_SET )
+    length = double(-0/100);
+  else
+    length = double(bar_length * percentage) / 100;
 
   if ( isMonochron() )
     setReverse(false);
@@ -219,7 +211,7 @@ void FProgressbar::drawBar()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( percentage > 0.0f && trunc(length) < bar_length )
+  if ( percentage > 0 && percentage <= 100 && trunc(length) < bar_length )
   {
     if ( round(length) > trunc(length) || getMaxColor() < 16 )
     {

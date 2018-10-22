@@ -82,25 +82,25 @@ class FScrollView : public FWidget
 
     // Accessors
     const char*       getClassName() const;
-    int               getViewportWidth() const;
-    int               getViewportHeight() const;
-    int               getScrollWidth() const;
-    int               getScrollHeight() const;
+    std::size_t       getViewportWidth() const;
+    std::size_t       getViewportHeight() const;
+    std::size_t       getScrollWidth() const;
+    std::size_t       getScrollHeight() const;
     const FPoint      getScrollPos() const;
     int               getScrollX() const;
     int               getScrollY() const;
 
     // Mutator
-    virtual void      setScrollWidth (int);
-    virtual void      setScrollHeight (int);
-    virtual void      setScrollSize (int, int);
+    virtual void      setScrollWidth (std::size_t);
+    virtual void      setScrollHeight (std::size_t);
+    virtual void      setScrollSize (std::size_t, std::size_t);
     virtual void      setX (int, bool = true);
     virtual void      setY (int, bool = true);
     virtual void      setPos (int, int, bool = true);
-    virtual void      setWidth (int, bool = true);
-    virtual void      setHeight (int, bool = true);
-    virtual void      setSize (int, int, bool = true);
-    virtual void      setGeometry (int, int, int, int, bool = true);
+    virtual void      setWidth (std::size_t, bool = true);
+    virtual void      setHeight (std::size_t, bool = true);
+    virtual void      setSize (std::size_t, std::size_t, bool = true);
+    virtual void      setGeometry (int, int, std::size_t, std::size_t, bool = true);
     void              setCursorPos (int, int);
     void              setPrintPos (int, int);
     bool              setViewportPrint (bool);
@@ -179,7 +179,7 @@ class FScrollView : public FWidget
     term_area*        viewport;  // virtual scroll content
     FScrollbar*       vbar;
     FScrollbar*       hbar;
-    int               nf_offset;
+    uInt8             nf_offset;
     bool              border;
     bool              use_own_print_area;
     bool              update_scrollbar;
@@ -195,19 +195,19 @@ inline const char* FScrollView::getClassName() const
 { return "FScrollView"; }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getViewportWidth() const
-{ return getWidth() - vertical_border_spacing - nf_offset; }
+inline std::size_t FScrollView::getViewportWidth() const
+{ return getWidth() - vertical_border_spacing - std::size_t(nf_offset); }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getViewportHeight() const
+inline std::size_t FScrollView::getViewportHeight() const
 { return getHeight() - horizontal_border_spacing; }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollWidth() const
+inline std::size_t FScrollView::getScrollWidth() const
 { return scroll_geometry.getWidth(); }
 
 //----------------------------------------------------------------------
-inline int FScrollView::getScrollHeight() const
+inline std::size_t FScrollView::getScrollHeight() const
 { return scroll_geometry.getHeight(); }
 
 //----------------------------------------------------------------------

@@ -71,6 +71,9 @@ typedef std::vector<FString> FStringList;
 // class FString
 //----------------------------------------------------------------------
 
+#pragma pack(push)
+#pragma pack(1)
+
 class FString
 {
   public:
@@ -80,11 +83,9 @@ class FString
     // Constructors
     FString ();
     explicit FString (int);
-    explicit FString (uInt);
-    FString (int, wchar_t);
-    FString (uInt, wchar_t);
-    FString (int, char);
-    FString (uInt, char);
+    explicit FString (std::size_t);
+    FString (std::size_t, wchar_t);
+    FString (std::size_t, char);
     FString (const FString&);       // implicit conversion copy constructor
     FString (const std::wstring&);  // implicit conversion constructor
     FString (const wchar_t[]);      // implicit conversion constructor
@@ -132,8 +133,10 @@ class FString
     const FString& operator >> (double&);
     const FString& operator >> (float&);
 
-    wchar_t& operator [] (int);
-    wchar_t& operator [] (uInt);
+    template <typename IndexT>
+    wchar_t&       operator [] (IndexT);
+    template <typename IndexT>
+    const wchar_t& operator [] (IndexT) const;
     const FString& operator () ();
 
     bool operator <  (const FString&) const;
@@ -181,8 +184,8 @@ class FString
     bool isEmpty() const;
 
     // Methods
-    uInt getLength() const;
-    uInt getUTF8length() const;
+    std::size_t getLength() const;
+    std::size_t getUTF8length() const;
 
     iterator begin() const;
     iterator end()   const;
@@ -214,12 +217,9 @@ class FString
     FString rtrim() const;
     FString trim()  const;
 
-    FString left (int) const;
-    FString left (uInt) const;
-    FString right (int) const;
-    FString right (uInt) const;
-    FString mid (int, int) const;
-    FString mid (uInt, uInt) const;
+    FString left (std::size_t) const;
+    FString right (std::size_t) const;
+    FString mid (std::size_t, std::size_t) const;
 
     FStringList split (const FString&);
     FString& setString (const FString&);
@@ -242,7 +242,7 @@ class FString
     FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
 
     const FString& insert (const FString&, int);
-    const FString& insert (const FString&, uInt);
+    const FString& insert (const FString&, std::size_t);
 
     FString replace (const FString&, const FString&);
 
@@ -252,10 +252,9 @@ class FString
     FString removeBackspaces() const;
 
     const FString& overwrite (const FString&, int);
-    const FString& overwrite (const FString&, uInt = 0);
+    const FString& overwrite (const FString&, std::size_t = 0);
 
-    const FString& remove (int, uInt);
-    const FString& remove (uInt, uInt);
+    const FString& remove (std::size_t, std::size_t);
     bool  includes (const FString&) const;
 
   private:
@@ -266,22 +265,22 @@ class FString
     static const char* const bad_alloc_str;
 
     // Methods
-    void     initLength (uInt);
+    void     initLength (std::size_t);
     void     _assign (const wchar_t[]);
-    void     _insert (uInt, const wchar_t[]);
-    void     _insert (uInt, uInt, const wchar_t[]);
-    void     _remove (uInt, uInt);
+    void     _insert (std::size_t, const wchar_t[]);
+    void     _insert (std::size_t, std::size_t, const wchar_t[]);
+    void     _remove (std::size_t, std::size_t);
     char*    wc_to_c_str (const wchar_t[]) const;
     wchar_t* c_to_wc_str (const char[]) const;
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data Members
     wchar_t*      string;
-    uInt          length;
-    uInt          bufsize;
+    std::size_t   length;
+    std::size_t   bufsize;
     mutable char* c_string;
 };
-
+#pragma pack(pop)
 
 // FString inline functions
 //----------------------------------------------------------------------
@@ -289,7 +288,27 @@ inline const char* FString::getClassName()
 { return "FString"; }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename IndexT>
+inline wchar_t& FString::operator [] (IndexT pos)
+{
+  if ( pos < 0 || pos >= IndexT(length) )
+    throw std::out_of_range("");  // Invalid index position
+
+  return string[std::size_t(pos)];
+}
+
+//----------------------------------------------------------------------
+template <typename IndexT>
+inline const wchar_t& FString::operator [] (IndexT pos) const
+{
+  if ( pos < 0 || pos >= IndexT(length) )
+    throw std::out_of_range("");  // Invalid index position
+
+  return string[std::size_t(pos)];
+}
+
+//----------------------------------------------------------------------
+template <typename CharT>
 inline bool FString::operator < (CharT& s) const
 {
   const FString tmp(s);
@@ -297,7 +316,7 @@ inline bool FString::operator < (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator <= (CharT& s) const
 {
   const FString tmp(s);
@@ -305,7 +324,7 @@ inline bool FString::operator <= (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator == (CharT& s) const
 {
   const FString tmp(s);
@@ -313,7 +332,7 @@ inline bool FString::operator == (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator != (CharT& s) const
 {
   const FString tmp(s);
@@ -321,7 +340,7 @@ inline bool FString::operator != (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator >= (CharT& s) const
 {
   const FString tmp(s);
@@ -329,7 +348,7 @@ inline bool FString::operator >= (CharT& s) const
 }
 
 //----------------------------------------------------------------------
-template <class CharT>
+template <typename CharT>
 inline bool FString::operator > (CharT& s) const
 {
   const FString tmp(s);
@@ -345,7 +364,7 @@ inline bool FString::isEmpty() const
 { return ( ! string ) || ( ! *string ); }
 
 //----------------------------------------------------------------------
-inline uInt FString::getLength() const
+inline std::size_t FString::getLength() const
 { return length; }
 
 //----------------------------------------------------------------------

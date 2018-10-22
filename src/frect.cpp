@@ -115,37 +115,40 @@ void FRect::setPos (const FPoint& p)
 }
 
 //----------------------------------------------------------------------
-void FRect::setWidth (int w)
+void FRect::setWidth (std::size_t w)
 {
-  X2 = short(X1 + w - 1);
+  X2 = short(X1 + short(w) - 1);
 }
 
 //----------------------------------------------------------------------
-void FRect::setHeight (int h)
+void FRect::setHeight (std::size_t h)
 {
-  Y2 = short(Y1 + h - 1);
+  Y2 = short(Y1 + short(h) - 1);
 }
 
 //----------------------------------------------------------------------
-void FRect::setSize (int w, int h)
+void FRect::setSize (std::size_t w, std::size_t h)
 {
-  X2 = short(X1 + w - 1);
-  Y2 = short(Y1 + h - 1);
+  X2 = short(X1 + short(w) - 1);
+  Y2 = short(Y1 + short(h) - 1);
 }
 
 //----------------------------------------------------------------------
 void FRect::setRect (const FRect& r)
 {
-  setRect (r.X1, r.Y1, r.X2 - r.X1 + 1, r.Y2 - r.Y1 + 1);
+  setRect ( r.X1
+          , r.Y1
+          , std::size_t(r.X2 - r.X1 + 1)
+          , std::size_t(r.Y2 - r.Y1 + 1) );
 }
 
 //----------------------------------------------------------------------
-void FRect::setRect (int x, int y, int width, int height)
+void FRect::setRect (int x, int y, std::size_t width, std::size_t height)
 {
   X1 = short(x);
   Y1 = short(y);
-  X2 = short(x + width - 1);
-  Y2 = short(y + height - 1);
+  X2 = short(x + int(width) - 1);
+  Y2 = short(y + int(height) - 1);
 }
 
 //----------------------------------------------------------------------
@@ -248,8 +251,8 @@ FRect operator + (const FRect& r, const FPoint& p)
 {
   return FRect ( r.X1
                , r.Y1
-               , r.X2 - r.X1 + 1 + p.getX()
-               , r.Y2 - r.Y1 + 1 + p.getY() );
+               , std::size_t(r.X2 - r.X1 + 1 + p.getX())
+               , std::size_t(r.Y2 - r.Y1 + 1 + p.getY()) );
 }
 
 //----------------------------------------------------------------------
@@ -257,8 +260,8 @@ FRect operator - (const FRect& r, const FPoint& p)
 {
   return FRect ( r.X1
                , r.Y1
-               , r.X2 - r.X1 + 1 - p.getX()
-               , r.Y2 - r.Y1 + 1 - p.getY() );
+               , std::size_t(r.X2 - r.X1 + 1 - p.getX())
+               , std::size_t(r.Y2 - r.Y1 + 1 - p.getY()) );
 }
 
 //----------------------------------------------------------------------

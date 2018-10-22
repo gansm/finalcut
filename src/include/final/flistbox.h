@@ -147,9 +147,9 @@ class FListBox : public FWidget
 
     // Constructor
     explicit FListBox (FWidget* = 0);
-    template <class Iterator, class InsertConverter>
+    template <typename Iterator, typename InsertConverter>
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
-    template <class Container, class LazyConverter>
+    template <typename Container, typename LazyConverter>
     FListBox (Container, LazyConverter, FWidget* = 0);
 
     // Destructor
@@ -157,23 +157,23 @@ class FListBox : public FWidget
 
     // Accessors
     const char*  getClassName() const;
-    uInt         getCount() const;
-    FListBoxItem getItem (int);
+    std::size_t  getCount() const;
+    FListBoxItem getItem (std::size_t);
     FListBoxItem getItem (listBoxItems::iterator) const;
-    int          currentItem() const;
+    std::size_t  currentItem() const;
     FString&     getText();
 
     // Mutators
-    void         setCurrentItem (int);
+    void         setCurrentItem (std::size_t);
     void         setCurrentItem (listBoxItems::iterator);
-    void         selectItem (int);
+    void         selectItem (std::size_t);
     void         selectItem (listBoxItems::iterator);
-    void         unselectItem (int);
+    void         unselectItem (std::size_t);
     void         unselectItem (listBoxItems::iterator);
-    void         showInsideBrackets (int, fc::brackets_type);
-    void         showNoBrackets (int);
+    void         showInsideBrackets (std::size_t, fc::brackets_type);
+    void         showNoBrackets (std::size_t);
     void         showNoBrackets (listBoxItems::iterator);
-    virtual void setGeometry (int, int, int, int, bool = true);
+    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
     void         setMultiSelection (bool);
     void         setMultiSelection ();
     void         unsetMultiSelection ();
@@ -184,17 +184,17 @@ class FListBox : public FWidget
     void         setText (const FString&);
 
     // Inquiries
-    bool         isSelected (int);
+    bool         isSelected (std::size_t);
     bool         isSelected (listBoxItems::iterator) const;
     bool         isMultiSelection() const;
-    bool         hasBrackets (int);
+    bool         hasBrackets (std::size_t);
     bool         hasBrackets (listBoxItems::iterator) const;
 
     // Methods
     virtual void hide();
-    template <class Iterator, class InsertConverter>
+    template <typename Iterator, typename InsertConverter>
     void         insert (Iterator, Iterator, InsertConverter);
-    template <class Container, class LazyConverter>
+    template <typename Container, typename LazyConverter>
     void         insert (Container, LazyConverter);
     void         insert (FListBoxItem);
     void         insert ( const FString&
@@ -205,7 +205,7 @@ class FListBox : public FWidget
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
                         , data_ptr = 0 );
-    void         remove (int);
+    void         remove (std::size_t);
     void         clear();
 
     // Event handlers
@@ -254,11 +254,11 @@ class FListBox : public FWidget
     void         setLineAttributes (int, bool, bool, bool&);
     void         unsetAttributes();
     void         updateDrawing (bool, bool);
-    void         recalculateHorizontalBar (int, bool);
-    void         recalculateVerticalBar (int);
+    void         recalculateHorizontalBar (std::size_t, bool);
+    void         recalculateVerticalBar (std::size_t);
     void         getWidgetFocus();
-    void         multiSelection (int);
-    void         multiSelectionUpTo (int);
+    void         multiSelection (std::size_t);
+    void         multiSelectionUpTo (std::size_t);
     void         wheelUp (int);
     void         wheelDown (int);
     bool         dragScrollUp();
@@ -290,7 +290,7 @@ class FListBox : public FWidget
     void         processSelect();
     void         processChanged();
     void         lazyConvert (listBoxItems::iterator, int);
-    listBoxItems::iterator index2iterator (int);
+    listBoxItems::iterator index2iterator (std::size_t);
 
     // Callback methods
     void         cb_VBarChange (FWidget*, data_ptr);
@@ -315,21 +315,21 @@ class FListBox : public FWidget
     bool              scroll_timer;
     int               scroll_repeat;
     int               scroll_distance;
-    int               current;
+    std::size_t       current;
     int               last_current;
     int               secect_from_item;
     int               xoffset;
     int               yoffset;
     int               last_yoffset;
-    int               nf_offset;
-    int               max_line_width;
+    std::size_t       nf_offset;
+    std::size_t       max_line_width;
 };
 #pragma pack(pop)
 
 
 // FListBox inline functions
 //----------------------------------------------------------------------
-template <class Iterator, class InsertConverter>
+template <typename Iterator, typename InsertConverter>
 inline FListBox::FListBox ( Iterator first
                           , Iterator last
                           , InsertConverter convert
@@ -368,7 +368,7 @@ inline FListBox::FListBox ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <class Container, class LazyConverter>
+template <typename Container, typename LazyConverter>
 inline FListBox::FListBox ( Container container
                           , LazyConverter convert
                           , FWidget* parent )
@@ -405,11 +405,11 @@ inline const char* FListBox::getClassName() const
 { return "FListBox"; }
 
 //----------------------------------------------------------------------
-inline uInt FListBox::getCount() const
-{ return uInt(itemlist.size()); }
+inline std::size_t FListBox::getCount() const
+{ return itemlist.size(); }
 
 //----------------------------------------------------------------------
-inline FListBoxItem FListBox::getItem (int index)
+inline FListBoxItem FListBox::getItem (std::size_t index)
 {
   listBoxItems::iterator iter = index2iterator(index - 1);
   return *iter;
@@ -420,7 +420,7 @@ inline FListBoxItem FListBox::getItem (listBoxItems::iterator iter) const
 { return *iter; }
 
 //----------------------------------------------------------------------
-inline int FListBox::currentItem() const
+inline std::size_t FListBox::currentItem() const
 { return current; }
 
 //----------------------------------------------------------------------
@@ -428,7 +428,7 @@ inline FString& FListBox::getText()
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FListBox::selectItem (int index)
+inline void FListBox::selectItem (std::size_t index)
 { index2iterator(index - 1)->selected = true; }
 
 //----------------------------------------------------------------------
@@ -436,7 +436,7 @@ inline void FListBox::selectItem (listBoxItems::iterator iter)
 { iter->selected = true; }
 
 //----------------------------------------------------------------------
-inline void FListBox::unselectItem (int index)
+inline void FListBox::unselectItem (std::size_t index)
 { index2iterator(index - 1)->selected = false; }
 
 //----------------------------------------------------------------------
@@ -444,7 +444,7 @@ inline void FListBox::unselectItem (listBoxItems::iterator iter)
 { iter->selected = false; }
 
 //----------------------------------------------------------------------
-inline void FListBox::showNoBrackets (int index)
+inline void FListBox::showNoBrackets (std::size_t index)
 { index2iterator(index - 1)->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------
@@ -476,7 +476,7 @@ inline bool FListBox::unsetFocus()
 { return setFocus(false); }
 
 //----------------------------------------------------------------------
-inline bool FListBox::isSelected (int index)
+inline bool FListBox::isSelected (std::size_t index)
 { return index2iterator(index - 1)->selected; }
 
 //----------------------------------------------------------------------
@@ -488,7 +488,7 @@ inline bool FListBox::isMultiSelection() const
 { return multi_select; }
 
 //----------------------------------------------------------------------
-inline bool FListBox::hasBrackets(int index)
+inline bool FListBox::hasBrackets(std::size_t index)
 { return bool(index2iterator(index - 1)->brackets > 0); }
 
 //----------------------------------------------------------------------
@@ -496,7 +496,7 @@ inline bool FListBox::hasBrackets(listBoxItems::iterator iter) const
 { return bool(iter->brackets > 0); }
 
 //----------------------------------------------------------------------
-template <class Iterator, class InsertConverter>
+template <typename Iterator, typename InsertConverter>
 inline void FListBox::insert ( Iterator first
                              , Iterator last
                              , InsertConverter convert )
@@ -511,7 +511,7 @@ inline void FListBox::insert ( Iterator first
 }
 
 //----------------------------------------------------------------------
-template <class Container, class LazyConverter>
+template <typename Container, typename LazyConverter>
 void FListBox::insert (Container container, LazyConverter convert)
 {
   conv_type = lazy_convert;
@@ -522,11 +522,11 @@ void FListBox::insert (Container container, LazyConverter convert)
   if ( size > 0 )
     itemlist.resize(size);
 
-  recalculateVerticalBar(int(size));
+  recalculateVerticalBar(size);
 }
 
 //----------------------------------------------------------------------
-inline FListBox::listBoxItems::iterator FListBox::index2iterator (int index)
+inline FListBox::listBoxItems::iterator FListBox::index2iterator (std::size_t index)
 {
   listBoxItems::iterator iter = itemlist.begin();
   std::advance (iter, index);

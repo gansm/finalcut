@@ -110,8 +110,8 @@ void FVTerm::setTermXY (int x, int y)
   if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
 
-  term_width = getColumnNumber();
-  term_height = getLineNumber();
+  term_width = int(getColumnNumber());
+  term_height = int(getLineNumber());
 
   if ( x >= term_width )
   {
@@ -597,8 +597,8 @@ void FVTerm::createArea ( const FRect& r
 {
   createArea ( r.getX()
              , r.getY()
-             , r.getWidth()
-             , r.getHeight()
+             , int(r.getWidth())
+             , int(r.getHeight())
              , p.getX()
              , p.getY()
              , area );
@@ -633,8 +633,8 @@ void FVTerm::resizeArea ( const FRect& r
 {
   resizeArea ( r.getX()
              , r.getY()
-             , r.getWidth()
-             , r.getHeight()
+             , int(r.getWidth())
+             , int(r.getHeight())
              , p.getX()
              , p.getY()
              , area );
@@ -653,7 +653,7 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
   assert ( height > 0 );
   assert ( rsw >= 0 );
   assert ( bsh >= 0 );
-  int area_size;
+  std::size_t area_size;
   bool realloc_success = false;
 
   if ( ! area )
@@ -673,11 +673,13 @@ void FVTerm::resizeArea ( int offset_left, int offset_top
     return;
   }
 
-  area_size = (width + rsw) * (height + bsh);
+  area_size = std::size_t((width + rsw) * (height + bsh));
 
   if ( area->height + area->bottom_shadow != height + bsh )
   {
-    realloc_success = reallocateTextArea (area, height + bsh, area_size);
+    realloc_success = reallocateTextArea ( area
+                                         , std::size_t(height + bsh)
+                                         , area_size );
   }
   else if ( area->width + area->right_shadow != width + rsw )
   {
@@ -727,12 +729,9 @@ inline void FVTerm::setTextToDefault ( term_area* area
 
 //----------------------------------------------------------------------
 inline bool FVTerm::reallocateTextArea ( term_area* area
-                                       , int height
-                                       , int size )
+                                       , std::size_t height
+                                       , std::size_t size )
 {
-  assert ( height > 0 );
-  assert ( size > 0 );
-
   if ( area->changes != 0 )
     delete[] area->changes;
 
@@ -741,8 +740,8 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 
   try
   {
-    area->changes = new line_changes[uInt(height)];
-    area->text    = new charData[uInt(size)];
+    area->changes = new line_changes[height];
+    area->text    = new charData[size];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -754,16 +753,14 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
 }
 
 //----------------------------------------------------------------------
-inline bool FVTerm::reallocateTextArea (term_area* area, int size)
+inline bool FVTerm::reallocateTextArea (term_area* area, std::size_t size)
 {
-  assert ( size > 0 );
-
   if ( area->text != 0 )
     delete[] area->text;
 
   try
   {
-    area->text = new charData[uInt(size)];
+    area->text = new charData[size];
   }
   catch (const std::bad_alloc& ex)
   {
@@ -803,8 +800,8 @@ void FVTerm::restoreVTerm (const FRect& box)
 {
   restoreVTerm ( box.getX()
                , box.getY()
-               , box.getWidth()
-               , box.getHeight() );
+               , int(box.getWidth())
+               , int(box.getHeight()) );
 }
 
 //----------------------------------------------------------------------
@@ -904,8 +901,8 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
       int win_y = win->offset_top;
       FRect geometry ( win_x
                      , win_y
-                     , win->width + win->right_shadow
-                     , win->height + win->bottom_shadow );
+                     , std::size_t(win->width + win->right_shadow)
+                     , std::size_t(win->height + win->bottom_shadow) );
 
       if ( found && geometry.contains(x, y) )
       {
@@ -1309,10 +1306,9 @@ bool FVTerm::isInsideArea (int x, int y, term_area* area)
 {
   // Check whether the coordinates are within the area
 
-  int ax  = 0
-    , ay  = 0
-    , aw  = area->width
-    , ah  = area->height;
+  int ax = 0, ay = 0;
+  std::size_t aw = std::size_t(area->width);
+  std::size_t ah = std::size_t(area->height);
   FRect area_geometry(ax, ay, aw, ah);
 
   if ( area_geometry.contains(x, y) )
@@ -1392,8 +1388,8 @@ void FVTerm::getArea (const FRect& box, term_area* area)
 {
   getArea ( box.getX()
           , box.getY()
-          , box.getWidth()
-          , box.getHeight()
+          , int(box.getWidth())
+          , int(box.getHeight())
           , area );
 }
 
@@ -1722,7 +1718,7 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
   // Generates characters for a given position considering all areas
   FWidget::widgetList::const_iterator iter, end;
   charData* sc;    // shown character
-  FWidget*   widget;
+  FWidget* widget;
 
   widget = static_cast<FWidget*>(vterm->widget);
   sc = &vdesktop->text[y * vdesktop->width + x];
@@ -1744,8 +1740,8 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
     int win_y = win->offset_top;
     FRect geometry ( win_x
                    , win_y
-                   , win->width + win->right_shadow
-                   , win->height + win->bottom_shadow );
+                   , std::size_t(win->width + win->right_shadow)
+                   , std::size_t(win->height + win->bottom_shadow) );
 
     // Window is visible and contains current character
     if ( geometry.contains(x, y) )
@@ -1860,8 +1856,8 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
 
       FRect geometry ( win->offset_left
                      , win->offset_top
-                     , win->width + win->right_shadow
-                     , win->height + win->bottom_shadow );
+                     , std::size_t(win->width + win->right_shadow)
+                     , std::size_t(win->height + win->bottom_shadow) );
 
       // Window visible and contains current character
       if ( geometry.contains(x, y) )
@@ -2191,7 +2187,7 @@ bool FVTerm::clearTerm (int fillchar)
   {
     term_pos->setPoint(-1, -1);
 
-    for (int i = 0; i < getLineNumber(); i++)
+    for (int i = 0; i < int(getLineNumber()); i++)
     {
       setTermXY (0, i);
       appendOutputBuffer (cb);
@@ -2878,8 +2874,8 @@ int FVTerm::appendLowerRight (charData*& screen_char)
     char* ip = TCAP(fc::t_insert_padding);
     char* ic = TCAP(fc::t_insert_character);
 
-    x = getColumnNumber() - 2;
-    y = getLineNumber() - 1;
+    x = int(getColumnNumber()) - 2;
+    y = int(getLineNumber()) - 1;
     setTermXY (x, y);
     appendChar (screen_char);
     term_pos->x_ref()++;

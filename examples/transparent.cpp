@@ -105,7 +105,7 @@ void Transparent::draw()
 
   finalcut::FString line(getClientWidth(), wchar_t('.'));
 
-  for (int n = 1; n <= getClientHeight(); n++)
+  for (int n = 1; n <= int(getClientHeight()); n++)
   {
     setPrintPos (2, 2 + n);
     print(line);
@@ -264,7 +264,7 @@ void MainWindow::onShow (finalcut::FShowEvent*)
 void MainWindow::onTimer (finalcut::FTimerEvent*)
 {
   wchar_t first_Char[2];
-  uInt length = line1.getLength();
+  std::size_t length = line1.getLength();
   first_Char[0] = line1[0];
   first_Char[1] = line2[0];
   line1 = line1.right(length - 1) + first_Char[0];

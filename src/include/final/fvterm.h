@@ -56,6 +56,7 @@
 
 #include "final/fterm.h"
 
+
 // Preprocessing handler macro
 #define F_PREPROC_HANDLER(i,h) \
            static_cast<FVTerm*>((i)) \
@@ -119,7 +120,8 @@ class FVTerm : public FTerm
     virtual ~FVTerm();
 
     // Overloaded operators
-    template<class type> FVTerm& operator << (const type&);
+    template <typename type>
+    FVTerm& operator << (const type&);
     FVTerm& operator << (const std::vector<charData>&);
 
     // Accessors
@@ -283,8 +285,8 @@ class FVTerm : public FTerm
     static void          restoreVTerm (const FRect&);
     static void          restoreVTerm (int, int, int, int);
     static void          setTextToDefault (term_area*, int, int);
-    static bool          reallocateTextArea (term_area*, int, int);
-    static bool          reallocateTextArea (term_area*, int);
+    static bool          reallocateTextArea (term_area*, std::size_t, std::size_t);
+    static bool          reallocateTextArea (term_area*, std::size_t);
 
     static covered_state isCovered ( const FPoint&
                                    , term_area* );
@@ -417,7 +419,6 @@ class FVTerm : public FTerm
 #endif
     static int              appendOutputBuffer (int);
 
-
     // Data Members
     static std::queue<int>* output_buffer;
     static charData         term_attribute;
@@ -503,7 +504,7 @@ struct FVTerm::term_area  // define virtual terminal character properties
 
 // FVTerm inline functions
 //----------------------------------------------------------------------
-template<class type>
+template <typename type>
 inline FVTerm& FVTerm::operator << (const type& s)
 {
   std::wostringstream outstream;

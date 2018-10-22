@@ -310,14 +310,14 @@ void FKeyboardTest::classNameTest()
 void FKeyboardTest::noArgumentTest()
 {
   CPPUNIT_ASSERT ( keyboard->getKey() == 0 );
-  char* buffer = keyboard->getKeyBuffer();
-  int size = keyboard->getKeyBufferSize();
+  finalcut::FKeyboard::keybuffer& buffer = keyboard->getKeyBuffer();
+  std::size_t size = sizeof(buffer);
 
-  CPPUNIT_ASSERT ( size == 512 );
+  CPPUNIT_ASSERT ( size == finalcut::FKeyboard::FIFO_BUF_SIZE );
   CPPUNIT_ASSERT ( buffer[0] == 0 );
   int sum = 0;
 
-  for (int i = 0; i < size; i++)
+  for (std::size_t i = 0; i < size; i++)
     sum += int(buffer[i]);
 
   CPPUNIT_ASSERT ( sum == 0 );
@@ -2763,7 +2763,7 @@ void FKeyboardTest::utf8Test()
   keyboard->disableUTF8();
   input("\360\220\200\200");
   processInput();
-  CPPUNIT_ASSERT ( key_released == 0200 );
+  CPPUNIT_ASSERT ( key_released == 128 );
   clear();
 }
 

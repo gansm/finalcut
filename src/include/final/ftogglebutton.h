@@ -85,7 +85,7 @@ class FToggleButton : public FWidget
     FString&      getText();
 
     // Mutators
-    virtual void  setGeometry (int, int, int, int, bool = true);
+    virtual void  setGeometry (int, int, std::size_t, std::size_t, bool = true);
     bool          setNoUnderline (bool);
     bool          setNoUnderline();
     bool          unsetNoUnderline();
@@ -139,10 +139,13 @@ class FToggleButton : public FWidget
 
     // Data Members
     bool          checked;
-    int           label_offset_pos;
-    int           button_width;  // plus margin spaces
+    std::size_t   label_offset_pos;
+    std::size_t   button_width;  // plus margin spaces
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FToggleButton (const FToggleButton&);
 
@@ -154,8 +157,8 @@ class FToggleButton : public FWidget
 
     // Methods
     void          init();
-    int           getHotkeyPos (wchar_t[], wchar_t[], uInt);
-    void          drawText (wchar_t[], int, uInt);
+    std::size_t   getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void          drawText (wchar_t[], std::size_t , std::size_t);
 
     // Friend classes
     friend class FButtonGroup;

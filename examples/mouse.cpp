@@ -323,7 +323,7 @@ class MouseDraw : public finalcut::FDialog
     ~MouseDraw();
 
     // Methods
-    void setGeometry (int, int, int, int, bool = true);
+    void setGeometry (int, int, std::size_t, std::size_t, bool = true);
 
     // Event handlers
     virtual void onAccel (finalcut::FAccelEvent*);
@@ -382,7 +382,7 @@ MouseDraw::~MouseDraw()
 { }
 
 //----------------------------------------------------------------------
-void MouseDraw::setGeometry (int x, int y, int w, int h, bool adjust)
+void MouseDraw::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   int old_w, old_h;
   finalcut::FDialog::setGeometry (x, y, w, h, adjust);
@@ -416,7 +416,7 @@ void MouseDraw::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MouseDraw::draw()
 {
-  int y_max = getHeight();
+  int y_max = int(getHeight());
   finalcut::FDialog::draw();
   setColor();
 
@@ -452,8 +452,8 @@ void MouseDraw::draw()
 //----------------------------------------------------------------------
 void MouseDraw::drawBrush (int x, int y, bool swap_color)
 {
-  int Cols  = getWidth();
-  int Lines = getHeight();
+  int Cols  = int(getWidth());
+  int Lines = int(getHeight());
 
   if ( x > 10 && x < Cols && y > 2 && y < Lines )
   {
@@ -508,10 +508,9 @@ void MouseDraw::drawCanvas()
 //----------------------------------------------------------------------
 void MouseDraw::adjustSize()
 {
-  int w = 60
-    , h = 18
-    , x = 1 + (getParentWidget()->getWidth() - w) / 2
-    , y = 1 + (getParentWidget()->getHeight() - h) / 2;
+  std::size_t w = 60, h = 18;
+  int x = 1 + int((getParentWidget()->getWidth() - w) / 2);
+  int y = 1 + int((getParentWidget()->getHeight() - h) / 2);
   setGeometry (x, y, w, h, false);
   finalcut::FDialog::adjustSize();
 }

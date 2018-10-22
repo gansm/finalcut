@@ -43,7 +43,7 @@ FMenu::FMenu(FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
-  , hotkeypos(-1)
+  , hotkeypos(NOT_SET)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -58,7 +58,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
   , opened_sub_menu(0)
   , shown_sub_menu(0)
   , max_item_width(0)
-  , hotkeypos(-1)
+  , hotkeypos(NOT_SET)
   , mouse_down(false)
   , has_checkable_items(false)
 {
@@ -495,9 +495,9 @@ void FMenu::calculateDimensions()
   // find the maximum item width
   while ( iter != last )
   {
-    uInt item_width = (*iter)->getTextLength() + 2;
-    int  accel_key  = (*iter)->accel_key;
-    bool has_menu   = (*iter)->hasMenu();
+    std::size_t item_width = (*iter)->getTextLength() + 2;
+    int         accel_key  = (*iter)->accel_key;
+    bool        has_menu   = (*iter)->hasMenu();
 
     if ( has_menu )
     {
@@ -505,7 +505,7 @@ void FMenu::calculateDimensions()
     }
     else if ( accel_key )
     {
-      uInt accel_len = getKeyName(accel_key).getLength();
+      std::size_t accel_len = getKeyName(accel_key).getLength();
       item_width += accel_len + 2;
     }
 
@@ -521,7 +521,7 @@ void FMenu::calculateDimensions()
   adjust_X = adjustX(getX());
 
   // set widget geometry
-  setGeometry (adjust_X, getY(), int(max_item_width + 2), int(getCount() + 2));
+  setGeometry (adjust_X, getY(), max_item_width + 2, getCount() + 2);
 
   // set geometry of all items
   iter = item_list.begin();
@@ -530,7 +530,7 @@ void FMenu::calculateDimensions()
 
   while ( iter != last )
   {
-    (*iter)->setGeometry (item_X, item_Y, int(max_item_width), 1);
+    (*iter)->setGeometry (item_X, item_Y, max_item_width, 1);
 
     if ( (*iter)->hasMenu() )
     {
@@ -579,9 +579,9 @@ void FMenu::adjustItems()
 int FMenu::adjustX (int x_pos)
 {
   // Is menu outside on the right of the screen?
-  if ( x_pos + int(max_item_width) >= getDesktopWidth() - 1 )
+  if ( x_pos + int(max_item_width) >= int(getDesktopWidth() - 1) )
   {
-    x_pos = getDesktopWidth() - int(max_item_width + 1);
+    x_pos = int(getDesktopWidth() - max_item_width + 1);
     // Menu to large for the screen
     if ( x_pos < 1 )
       x_pos = 1;
@@ -689,7 +689,7 @@ bool FMenu::mouseDownOverList (FPoint mouse_pos)
   while ( iter != last )
   {
     int x1 = (*iter)->getX()
-      , x2 = (*iter)->getX() + (*iter)->getWidth()
+      , x2 = (*iter)->getX() + int((*iter)->getWidth())
       , y  = (*iter)->getY()
       , mouse_x = mouse_pos.getX()
       , mouse_y = mouse_pos.getY();
@@ -780,7 +780,7 @@ bool FMenu::mouseUpOverList (FPoint mouse_pos)
   while ( iter != last )
   {
     int x1 = (*iter)->getX()
-      , x2 = (*iter)->getX() + (*iter)->getWidth()
+      , x2 = (*iter)->getX() + int((*iter)->getWidth())
       , y  = (*iter)->getY()
       , mouse_x = mouse_pos.getX()
       , mouse_y = mouse_pos.getY();
@@ -840,7 +840,7 @@ void FMenu::mouseMoveOverList (FPoint mouse_pos, mouseStates& ms)
   while ( iter != last )
   {
     int x1 = (*iter)->getX()
-      , x2 = (*iter)->getX() + (*iter)->getWidth()
+      , x2 = (*iter)->getX() + int((*iter)->getWidth())
       , y  = (*iter)->getY()
       , mouse_x = mouse_pos.getX()
       , mouse_y = mouse_pos.getY();
@@ -1222,18 +1222,20 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
 }
 
 //----------------------------------------------------------------------
-int FMenu::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+std::size_t FMenu::getHotkeyPos ( wchar_t src[]
+                                , wchar_t dest[]
+                                , std::size_t length )
 {
   // Find hotkey position in string
   // + generate a new string without the '&'-sign
-  int pos = -1;
+  std::size_t pos = NOT_SET;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == -1 )
+    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
     {
-      pos = int(i);
+      pos = i;
       i++;
       src++;
     }
@@ -1294,14 +1296,16 @@ inline void FMenu::drawSeparator (int y)
   if ( isNewFont() )
   {
     print (fc::NF_border_line_vertical_right);
-    FString line(getWidth() - 2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line ( std::size_t(getWidth()) - 2
+                 , wchar_t(fc::BoxDrawingsHorizontal) );
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
   else
   {
     print (fc::BoxDrawingsVerticalAndRight);
-    FString line(getWidth() - 2, wchar_t(fc::BoxDrawingsHorizontal));
+    FString line ( std::size_t(getWidth()) - 2
+                 , wchar_t(fc::BoxDrawingsHorizontal));
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }
@@ -1315,8 +1319,8 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
-  uInt txt_length  = uInt(txt.getLength());
-  int  to_char     = int(txt_length);
+  std::size_t txt_length = txt.getLength();
+  std::size_t to_char = txt_length;
   int  accel_key   = menuitem->accel_key;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
@@ -1342,7 +1346,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
 
   hotkeypos = getHotkeyPos(txt.wc_str(), txtdata.text, txt_length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
     to_char--;
 
   txtdata.length = to_char;
@@ -1350,7 +1354,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
   setCursorToHotkeyPosition (menuitem);
 
   if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = -1;
+    txtdata.hotkeypos = NOT_SET;
   else
     txtdata.hotkeypos = hotkeypos;
 
@@ -1421,7 +1425,7 @@ inline void FMenu::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (int z = 0; z < data.length; z++)
+  for (std::size_t z = 0; z < data.length; z++)
   {
     if ( ! std::iswprint(wint_t(data.text[z])) )
     {
@@ -1454,10 +1458,10 @@ inline void FMenu::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawSubMenuIndicator (int& startpos)
+inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 {
-  int c = ( has_checkable_items ) ? 1 : 0;
-  int len = int(max_item_width) - (startpos + c + 3);
+  std::size_t c = ( has_checkable_items ) ? 1 : 0;
+  std::size_t len = max_item_width - (startpos + c + 3);
 
   if ( len > 0 )
   {
@@ -1465,33 +1469,34 @@ inline void FMenu::drawSubMenuIndicator (int& startpos)
     print (FString(len, wchar_t(' ')));
     // Print BlackRightPointingPointer ►
     print (wchar_t(fc::BlackRightPointingPointer));
-    startpos = int(max_item_width) - (c + 2);
+    startpos = max_item_width - (c + 2);
   }
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawAcceleratorKey (int& startpos, int accel_key)
+inline void FMenu::drawAcceleratorKey (std::size_t& startpos, int accel_key)
 {
   FString accel_name (getKeyName(accel_key));
-  int c = ( has_checkable_items ) ? 1 : 0;
-  int accel_len = int(accel_name.getLength());
-  int len = int(max_item_width) - (startpos + accel_len + c + 2);
+  std::size_t c = ( has_checkable_items ) ? 1 : 0;
+  std::size_t accel_len = accel_name.getLength();
+  std::size_t len = max_item_width - (startpos + accel_len + c + 2);
 
   if ( len > 0 )
   {
     // Print filling blank spaces + accelerator key name
     FString spaces (len, wchar_t(' '));
     print (spaces + accel_name);
-    startpos = int(max_item_width) - (c + 2);
+    startpos = max_item_width - (c + 2);
   }
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawTrailingSpaces (int startpos)
+inline void FMenu::drawTrailingSpaces (std::size_t startpos)
 {
-  int c = ( has_checkable_items ) ? 1 : 0;
+  std::size_t c = ( has_checkable_items ) ? 1 : 0;
+
   // Print trailing blank space
-  for (uInt i = uInt(startpos + c); i < max_item_width - 1; i++)
+  for (std::size_t i = startpos + c; i < max_item_width - 1; i++)
     print (' ');
 }
 
@@ -1539,7 +1544,7 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
   bool is_checkable = menuitem->checkable;
   bool is_selected  = menuitem->isSelected();
 
-  if ( hotkeypos == -1 )
+  if ( hotkeypos == NOT_SET )
   {
     // set cursor to the first character
     if ( is_selected )
@@ -1556,9 +1561,9 @@ inline void FMenu::setCursorToHotkeyPosition (FMenuItem* menuitem)
     {
       // set cursor to the hotkey position
       if ( is_checkable )
-        menuitem->setCursorPos (3 + hotkeypos, 1);
+        menuitem->setCursorPos (3 + int(hotkeypos), 1);
       else
-        menuitem->setCursorPos (2 + hotkeypos, 1);
+        menuitem->setCursorPos (2 + int(hotkeypos), 1);
     }
   }
 }

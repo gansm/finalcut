@@ -86,7 +86,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   right_arrow.setForegroundColor (wc.label_inactive_fg);
   right_arrow.setEmphasis();
   right_arrow.ignorePadding();
-  right_arrow.setGeometry (getWidth() - 1, 2, 1, 1);
+  right_arrow.setGeometry (int(getWidth()) - 1, 2, 1, 1);
 
   top_left_label = "menu";
   top_left_label.setForegroundColor (wc.label_inactive_fg);
@@ -97,7 +97,7 @@ SmallWindow::SmallWindow (finalcut::FWidget* parent)
   top_right_label.setAlignment (finalcut::fc::alignRight);
   top_right_label.setForegroundColor (wc.label_inactive_fg);
   top_right_label.setEmphasis();
-  top_right_label.setGeometry (getClientWidth() - 5, 1, 6, 1);
+  top_right_label.setGeometry (int(getClientWidth()) - 5, 1, 6, 1);
 
   finalcut::FString bottom_label_text = "resize\n"
                                         "corner\n";
@@ -131,9 +131,9 @@ void SmallWindow::adjustSize()
   }
 
   finalcut::FDialog::adjustSize();
-  right_arrow.setGeometry (getWidth() - 1, 2, 1, 1);
-  top_right_label.setGeometry (getClientWidth() - 5, 1, 6, 1);
-  bottom_label.setGeometry (1, getClientHeight() - 2, getClientWidth(), 3);
+  right_arrow.setGeometry (int(getWidth()) - 1, 2, 1, 1);
+  top_right_label.setGeometry (int(getClientWidth()) - 5, 1, 6, 1);
+  bottom_label.setGeometry (1, int(getClientHeight()) - 2, getClientWidth(), 3);
 }
 
 //----------------------------------------------------------------------
@@ -368,12 +368,12 @@ void Window::activateWindow (finalcut::FDialog* win)
 void Window::adjustSize()
 {
   std::vector<win_data*>::const_iterator iter, first;
-  int w  = getRootWidget()->getWidth()
-    , h  = getRootWidget()->getHeight()
-    , X  = int(1 + (w - 40) / 2)
+  std::size_t w  = getRootWidget()->getWidth();
+  std::size_t h  = getRootWidget()->getHeight();
+  int X  = int(1 + (w - 40) / 2)
     , Y  = int(1 + (h - 22) / 2)
-    , dx = ( w > 80 ) ? (w - 80) / 2 : 0
-    , dy = ( h > 24 ) ? (h - 24) / 2 : 0;
+    , dx = ( w > 80 ) ? int(w - 80) / 2 : 0
+    , dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
   if ( Y < 2 )
     Y = 2;
@@ -436,10 +436,10 @@ void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
 {
   std::vector<win_data*>::const_iterator iter, first;
   iter = first = windows.begin();
-  int w = getRootWidget()->getWidth()
-    , h = getRootWidget()->getHeight()
-    , dx = ( w > 80 ) ? (w - 80) / 2 : 0
-    , dy = ( h > 24 ) ? (h - 24) / 2 : 0;
+  std::size_t w = getRootWidget()->getWidth();
+  std::size_t h = getRootWidget()->getHeight();
+  int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
+  int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
   while ( iter != windows.end() )
   {

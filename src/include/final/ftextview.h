@@ -84,13 +84,13 @@ class FTextView : public FWidget
 
     // Accessors
     const char*        getClassName() const;
-    uInt               getColumns() const;
-    uInt               getRows() const;
+    std::size_t        getColumns() const;
+    std::size_t        getRows() const;
     const FString      getText() const;
     const FStringList& getLines() const;
 
     // Mutators
-    virtual void       setGeometry (int, int, int, int, bool = true);
+    virtual void       setGeometry (int, int, std::size_t, std::size_t, bool = true);
     void               setText (const FString&);
     void               scrollToX (int);
     void               scrollToY (int);
@@ -128,8 +128,8 @@ class FTextView : public FWidget
     FTextView& operator = (const FTextView&);
 
     // Accessors
-    int                getTextHeight();
-    int                getTextWidth();
+    std::size_t        getTextHeight();
+    std::size_t        getTextWidth();
 
     // Methods
     void               init();
@@ -151,7 +151,7 @@ class FTextView : public FWidget
     int                xoffset;
     int                yoffset;
     int                nf_offset;
-    uInt               maxLineWidth;
+    std::size_t        maxLineWidth;
 };
 #pragma pack(pop)
 
@@ -162,12 +162,12 @@ inline const char* FTextView::getClassName() const
 { return "FTextView"; }
 
 //----------------------------------------------------------------------
-inline uInt FTextView::getColumns() const
+inline std::size_t FTextView::getColumns() const
 { return maxLineWidth; }
 
 //----------------------------------------------------------------------
-inline uInt FTextView::getRows() const
-{ return uInt(data.size()); }
+inline std::size_t FTextView::getRows() const
+{ return std::size_t(data.size()); }
 
 //----------------------------------------------------------------------
 inline const FStringList& FTextView::getLines() const

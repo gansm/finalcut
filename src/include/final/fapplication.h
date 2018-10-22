@@ -92,11 +92,7 @@ class FApplication : public FWidget
     const char*        getClassName()   const;
     int                getArgc()        const;
     char**             getArgv()        const;
-    FWidget*           getMainWidget()  const;
-    virtual FWidget*   getFocusWidget() const;
-
-    // Mutator
-    void               setMainWidget (FWidget*);
+    static FWidget*    getApplicationObject();
 
     // Inquiry
     static bool        isQuit();
@@ -193,28 +189,6 @@ class FApplication : public FWidget
     static bool        process_timer_event;
     static FKeyboard*  keyboard;
     static FWidget*    keyboard_widget;
-    static FWidget*    move_size_widget;
-    static FWidget*    main_widget;
-    static FWidget*    active_window;
-    static FWidget*    focus_widget;
-    static FWidget*    clicked_widget;
-    static FWidget*    open_menu;
-
-    // Friend functions from FWidget
-    friend  FWidget* FWidget::getMainWidget();
-    friend  FWidget* FWidget::getFocusWidget() const;
-    friend  void     FWidget::setFocusWidget (FWidget*);
-    friend  FWidget* FWidget::getClickedWidget();
-    friend  void     FWidget::setClickedWidget (FWidget*);
-    friend  FWidget* FWidget::getMoveSizeWidget();
-    friend  void     FWidget::setMoveSizeWidget (FWidget*);
-    friend  FWidget* FWidget::getOpenMenu();
-    friend  void     FWidget::setOpenMenu (FWidget*);
-
-    // Friend functions from FWindow
-    friend  bool     FWindow::activateWindow (bool);
-    friend  FWindow* FWindow::getActiveWindow();
-    friend  void     FWindow::unsetActiveWindow();
 };
 #pragma pack(pop)
 
@@ -231,14 +205,6 @@ inline int FApplication::getArgc() const
 //----------------------------------------------------------------------
 inline char** FApplication::getArgv() const
 { return app_argv; }
-
-//----------------------------------------------------------------------
-inline FWidget* FApplication::getMainWidget() const
-{ return main_widget; }
-
-//----------------------------------------------------------------------
-inline FWidget* FApplication::getFocusWidget() const
-{ return focus_widget; }
 
 //----------------------------------------------------------------------
 inline void FApplication::cb_exitApp (FWidget*, data_ptr)

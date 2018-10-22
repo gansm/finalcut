@@ -64,32 +64,15 @@ void FMenuBar::resetMenu()
 void FMenuBar::hide()
 {
   short fg, bg;
-  char* blank;
-
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-
-  if ( screenWidth < 0 )
-    return;
-
-  try
-  {
-    blank = new char[uInt(screenWidth) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
-
-  std::memset(blank, ' ', uLong(screenWidth));
-  blank[screenWidth] = '\0';
-  setPrintPos (1,1);
+  char* blank = createBlankArray (screenWidth + 1);
+  setPrintPos (1, 1);
   print (blank);
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -256,7 +239,7 @@ void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
 void FMenuBar::init()
 {
   FWidget* r = getRootWidget();
-  int w = r->getWidth();
+  std::size_t w = r->getWidth();
   // initialize geometry values
   setGeometry (1, 1, w, 1, false);
   setAlwaysOnTop();
@@ -285,11 +268,11 @@ void FMenuBar::calculateDimensions()
   // find the maximum item width
   while ( iter != last )
   {
-    uInt len = (*iter)->getTextLength();
-    int item_width = int(len + 2);
+    std::size_t len = (*iter)->getTextLength();
+    int item_width = int(len) + 2;
 
     // set item geometry
-    (*iter)->setGeometry (item_X, item_Y, item_width, 1, false);
+    (*iter)->setGeometry (item_X, item_Y, std::size_t(item_width), 1, false);
 
     // set menu position
     if ( (*iter)->hasMenu() )
@@ -497,18 +480,20 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 }
 
 //----------------------------------------------------------------------
-int FMenuBar::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+std::size_t FMenuBar::getHotkeyPos ( wchar_t src[]
+                                   , wchar_t dest[]
+                                   , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  int hotkeypos = -1;
+  std::size_t hotkeypos = NOT_SET;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && hotkeypos == -1 )
+    if ( i < length && txt[i] == L'&' && hotkeypos == NOT_SET )
     {
-      hotkeypos = int(i);
+      hotkeypos = i;
       i++;
       src++;
     }
@@ -529,7 +514,7 @@ void FMenuBar::draw()
 void FMenuBar::drawItems()
 {
   std::vector<FMenuItem*>::const_iterator iter, last;
-  int x = 1;
+  std::size_t x = 1;
 
   if ( item_list.empty() )
     return;
@@ -558,13 +543,13 @@ void FMenuBar::drawItems()
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
+inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
 {
   FString txt = menuitem->getText();
   menuText txtdata;
-  uInt txt_length = txt.getLength();
-  int  hotkeypos;
-  int  to_char;
+  std::size_t txt_length = txt.getLength();
+  std::size_t to_char;
+  std::size_t hotkeypos;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
 
@@ -586,23 +571,23 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, int& x)
   }
 
   if ( x - 1 <= screenWidth )
-    to_char = int(txt_length);
+    to_char = txt_length;
   else
-    to_char = int(txt_length) - (screenWidth - x - 1);
+    to_char = txt_length - screenWidth - x - 1;
 
   hotkeypos = getHotkeyPos (txt.wc_str(), txtdata.text, txt_length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
   {
     txt_length--;
     to_char--;
   }
 
   txtdata.length = to_char;
-  x += int(txt_length);
+  x += txt_length;
 
   if ( ! is_enabled || is_selected )
-    txtdata.hotkeypos = -1;
+    txtdata.hotkeypos = NOT_SET;
   else
     txtdata.hotkeypos = hotkeypos;
 
@@ -654,7 +639,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 {
   // Print menu text
 
-  for (int z = 0; z < data.length; z++)
+  for (std::size_t z = 0; z < data.length; z++)
   {
     if ( data.startpos > screenWidth - z )
       break;
@@ -689,27 +674,27 @@ inline void FMenuBar::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawEllipsis (menuText& txtdata, int x)
+inline void FMenuBar::drawEllipsis (menuText& txtdata, std::size_t x)
 {
   if ( x > screenWidth + 1 )
   {
     if ( txtdata.startpos < screenWidth )
     {
       // Print ellipsis
-      setPrintPos (screenWidth - 1, 1);
+      setPrintPos (int(screenWidth) - 1, 1);
       print ("..");
     }
     else if ( txtdata.startpos - 1 <= screenWidth )
     {
       // Hide first character from text
-      setPrintPos (screenWidth, 1);
+      setPrintPos (int(screenWidth), 1);
       print (' ');
     }
     }
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawLeadingSpace (int& x)
+inline void FMenuBar::drawLeadingSpace (std::size_t& x)
 {
   // Print a leading blank space
 
@@ -721,7 +706,7 @@ inline void FMenuBar::drawLeadingSpace (int& x)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawTrailingSpace (int& x)
+inline void FMenuBar::drawTrailingSpace (std::size_t& x)
 {
   // Print a trailing blank space
 
@@ -744,7 +729,7 @@ void FMenuBar::adjustItems()
   while ( iter != last )
   {
     // get item width
-    int item_width = (*iter)->getWidth();
+    int item_width = int((*iter)->getWidth());
 
     if ( (*iter)->hasMenu() )
     {
@@ -874,7 +859,7 @@ void FMenuBar::mouseDownOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1 )
     {
@@ -924,7 +909,7 @@ void FMenuBar::mouseUpOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1
       && mouse_x >= x1
@@ -974,7 +959,7 @@ void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
   {
     int x1, x2;
     x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + (*iter)->getWidth();
+    x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_x >= x1
       && mouse_x < x2

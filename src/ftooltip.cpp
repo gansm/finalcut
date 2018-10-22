@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -143,23 +143,24 @@ void FToolTip::init()
 //----------------------------------------------------------------------
 void FToolTip::calculateDimensions()
 {
-  int x, y, w, h;
+  int x, y;
+  std::size_t w, h;
   FWidget* r = getRootWidget();
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
   text_components = &text_split[0];
   max_line_width = 0;
 
-  for (uInt i = 0; i < text_num_lines; i++)
+  for (std::size_t i = 0; i < text_num_lines; i++)
   {
-    uInt len = text_components[i].getLength();
+    std::size_t len = text_components[i].getLength();
 
     if ( len > max_line_width )
       max_line_width = len;
   }
 
-  h = int(text_num_lines) + 2;
-  w = int(max_line_width + 4);
+  h = text_num_lines + 2;
+  w = max_line_width + 4;
 
   if ( r )
   {

@@ -38,6 +38,10 @@ namespace fc
 //----------------------------------------------------------------------
 // class emptyFString
 //----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
 class emptyFString
 {
 public:
@@ -58,6 +62,7 @@ private:
   // Data Member
   static const FString* empty_string;
 };
+#pragma pack(pop)
 
 // emptyFString inline functions
 //----------------------------------------------------------------------

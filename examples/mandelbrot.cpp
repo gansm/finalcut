@@ -80,8 +80,8 @@ void Mandelbrot::draw()
   xoffset = 2;
   yoffset = 2;
   current_line = 0;
-  Cols  = getClientWidth();
-  Lines = getClientHeight();
+  Cols  = int(getClientWidth());
+  Lines = int(getClientHeight());
 
   dX = (x_max - x_min) / (Cols - 1);
   dY = (y_max - y_min) / Lines;
@@ -131,8 +131,8 @@ void Mandelbrot::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Mandelbrot::adjustSize()
 {
-  int h = getParentWidget()->getHeight() - 1;
-  int w = getParentWidget()->getWidth() - 10;
+  std::size_t h = getParentWidget()->getHeight() - 1;
+  std::size_t w = getParentWidget()->getWidth() - 10;
   setGeometry(6, 1, w, h, false);
   finalcut::FDialog::adjustSize();
 }

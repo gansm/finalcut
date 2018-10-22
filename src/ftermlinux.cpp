@@ -577,19 +577,14 @@ bool FTermLinux::getUnicodeMap()
 
   if ( ret != 0 )
   {
-    int count;
+    std::size_t count = screen_unicode_map.entry_ct;
 
-    if ( errno != ENOMEM || screen_unicode_map.entry_ct == 0 )
-      return false;
-
-    count = screen_unicode_map.entry_ct;
-
-    if ( count <= 0 )
+    if ( errno != ENOMEM || count == 0 )
       return false;
 
     try
     {
-      screen_unicode_map.entries = new struct unipair[uInt(count)]();
+      screen_unicode_map.entries = new struct unipair[count]();
     }
     catch (const std::bad_alloc& ex)
     {

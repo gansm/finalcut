@@ -190,12 +190,14 @@ class FTermDetection
     static char*          secDA_Analysis_1 (char[]);
     static char*          secDA_Analysis_24 (char[]);
     static char*          secDA_Analysis_32 (char[]);
+    static char*          secDA_Analysis_65 (char[]);
     static char*          secDA_Analysis_67 (char[]);
     static char*          secDA_Analysis_77 (char[]);
     static char*          secDA_Analysis_82 (char[]);
     static char*          secDA_Analysis_83 (char[]);
     static char*          secDA_Analysis_84 (char[]);
     static char*          secDA_Analysis_85 (char[]);
+    static char*          secDA_Analysis_vte (char[]);
 
     // Data Members
     static char           termtype[256];

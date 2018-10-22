@@ -103,7 +103,7 @@ class FScrollbar : public FWidget
     void         setSteps (double);
     void         setPageSize (int, int);
     void         setOrientation (int);
-    virtual void setGeometry (int, int, int, int, bool = true);
+    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
 
     // Methods
     virtual void resize();
@@ -149,14 +149,14 @@ class FScrollbar : public FWidget
     int          slider_click_stop_pos;
     int          current_slider_pos;
     int          slider_pos;
-    int          slider_length;
-    int          bar_length;
+    std::size_t  slider_length;
+    std::size_t  bar_length;
     int          val;
     int          min;
     int          max;
     double       steps;
     int          pagesize;
-    int          length;
+    std::size_t  length;
     int          bar_orientation;
     int          max_color;
 };

@@ -124,6 +124,9 @@ class FMenu : public FWindow, public FMenuList
     void                cb_menuitem_toggled (FWidget*, data_ptr);
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Typedef
     typedef struct
     {
@@ -139,8 +142,8 @@ class FMenu : public FWindow, public FMenuList
     typedef struct
     {
       wchar_t* text;
-      int length;
-      int hotkeypos;
+      std::size_t length;
+      std::size_t hotkeypos;
       bool no_underline;
     } menuText;
 
@@ -199,16 +202,16 @@ class FMenu : public FWindow, public FMenuList
     bool         selectPrevItem();
     void         keypressMenuBar (FKeyEvent*);
     bool         hotkeyMenu (FKeyEvent*);
-    int          getHotkeyPos (wchar_t[], wchar_t[], uInt);
+    std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
     virtual void draw();
     void         drawItems();
     void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);
     void         drawCheckMarkPrefix (FMenuItem*);
     void         drawMenuText (menuText&);
-    void         drawSubMenuIndicator (int&);
-    void         drawAcceleratorKey (int&, int);
-    void         drawTrailingSpaces (int);
+    void         drawSubMenuIndicator (std::size_t&);
+    void         drawAcceleratorKey (std::size_t&, int);
+    void         drawTrailingSpaces (std::size_t);
     void         setLineAttributes (FMenuItem*, int);
     void         setCursorToHotkeyPosition (FMenuItem*);
     void         keyUp();
@@ -232,8 +235,8 @@ class FMenu : public FWindow, public FMenuList
     FWidget*     super_menu;
     FMenu*       opened_sub_menu;
     FMenu*       shown_sub_menu;
-    uInt         max_item_width;
-    int          hotkeypos;
+    std::size_t  max_item_width;
+    std::size_t  hotkeypos;
     bool         mouse_down;
     bool         has_checkable_items;
 };

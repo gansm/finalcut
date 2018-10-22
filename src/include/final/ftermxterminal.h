@@ -65,7 +65,7 @@ class FTermXTerminal
     static void           setCursorStyle (fc::xtermCursorStyle);
     static void           setFont (const FString&);
     static void           setTitle (const FString&);
-    static void           setTermSize (int, int);
+    static void           setTermSize (std::size_t, std::size_t);
     static void           setForeground (const FString&);
     static void           setBackground (const FString&);
     static void           setCursorColor (const FString&);
@@ -139,8 +139,8 @@ class FTermXTerminal
     static bool                 mouse_support;
     static bool                 meta_sends_esc;
     static bool                 xterm_default_colors;
-    static int                  term_width;
-    static int                  term_height;
+    static std::size_t          term_width;
+    static std::size_t          term_height;
     static const FString*       xterm_font;
     static const FString*       xterm_title;
     static const FString*       foreground_color;

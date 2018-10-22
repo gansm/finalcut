@@ -56,7 +56,7 @@ void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
   int key_id = ev->key();
   bool is_last_line = false;
 
-  if ( getPrintPos().getY() == getDesktopHeight() )
+  if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
   print() << "Key " << getKeyName(key_id).c_str()

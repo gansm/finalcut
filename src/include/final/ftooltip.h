@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2016-2017 Markus Gans                                      *
+* Copyright 2016-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -112,8 +112,8 @@ class FToolTip : public FWindow
     FString       text;
     FString*      text_components;
     FStringList   text_split;
-    uInt          max_line_width;
-    uInt          text_num_lines;
+    std::size_t   max_line_width;
+    std::size_t   text_num_lines;
 };
 #pragma pack(pop)
 

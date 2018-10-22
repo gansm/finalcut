@@ -83,6 +83,12 @@ class FKeyboardCommand
 class FKeyboard
 {
   public:
+    // Constants
+    static const std::size_t FIFO_BUF_SIZE = 512;
+
+    // Typedef
+    typedef char keybuffer[FIFO_BUF_SIZE];
+
     // Constructor
     FKeyboard();
 
@@ -93,8 +99,7 @@ class FKeyboard
     virtual const char* getClassName() const;
     int                 getKey();
     const FString       getKeyName (int);
-    char*               getKeyBuffer();
-    int                 getKeyBufferSize();
+    keybuffer&          getKeyBuffer();
     timeval*            getKeyPressedTime();
 
     // Mutators
@@ -127,6 +132,7 @@ class FKeyboard
   private:
     // Constants
     static const int NEED_MORE_DATA = -1;
+    static const std::size_t READ_BUF_SIZE = 1024;
 
     // Disable copy constructor
     FKeyboard (const FKeyboard&);
@@ -161,11 +167,10 @@ class FKeyboard
 
     // Data Members
     int                 key;
-    char                k_buf[1024];
-    char                fifo_buf[512];
+    char                read_buf[READ_BUF_SIZE];
+    char                fifo_buf[FIFO_BUF_SIZE];
     int                 fifo_offset;
     bool                fifo_in_use;
-    int                 fifo_buf_size;
     int                 stdin_status_flags;
     static long         key_timeout;
     bool                input_data_pending;
@@ -195,12 +200,9 @@ inline const char* FKeyboard::getClassName() const
 inline int FKeyboard::getKey()
 { return key; }
 
-inline char* FKeyboard::getKeyBuffer()
-{ return fifo_buf; }
-
 //----------------------------------------------------------------------
-inline int FKeyboard::getKeyBufferSize()
-{ return fifo_buf_size; }
+inline FKeyboard::keybuffer& FKeyboard::getKeyBuffer()
+{ return fifo_buf; }
 
 //----------------------------------------------------------------------
 inline timeval* FKeyboard::getKeyPressedTime()

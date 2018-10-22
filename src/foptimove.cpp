@@ -102,7 +102,7 @@ void FOptiMove::setTabStop (int t)
 }
 
 //----------------------------------------------------------------------
-void FOptiMove::setTermSize (int w, int h)
+void FOptiMove::setTermSize (std::size_t w, std::size_t h)
 {
   assert ( w > 0 );
   assert ( h > 0 );
@@ -493,10 +493,10 @@ void FOptiMove::set_clr_eol (char cap[])
 void FOptiMove::check_boundaries ( int& xold, int& yold
                                  , int& xnew, int& ynew )
 {
-  if ( xold < 0 || xold >= screen_width )
+  if ( xold < 0 || xold >= int(screen_width) )
     xold = -1;
 
-  if ( yold < 0 || yold >= screen_height )
+  if ( yold < 0 || yold >= int(screen_height) )
     yold = -1;
 
   if ( xnew < 0 )
@@ -505,11 +505,11 @@ void FOptiMove::check_boundaries ( int& xold, int& yold
   if ( ynew < 0 )
     ynew = 0;
 
-  if ( xnew >= screen_width )
-    xnew = screen_width - 1;
+  if ( xnew >= int(screen_width) )
+    xnew = int(screen_width) - 1;
 
-  if ( ynew >= screen_height )
-    ynew = screen_height - 1;
+  if ( ynew >= int(screen_height) )
+    ynew = int(screen_height) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -962,7 +962,7 @@ inline bool FOptiMove::isWideMove ( int xold, int yold
                                   , int xnew, int ynew )
 {
   return bool ( xnew > MOVE_LIMIT
-             && xnew < screen_width - 1 - MOVE_LIMIT
+             && xnew < int(screen_width) - 1 - MOVE_LIMIT
              && std::abs(xnew - xold) + std::abs(ynew - yold)
               > MOVE_LIMIT );
 }
@@ -1066,7 +1066,7 @@ inline bool FOptiMove::isMethod4Faster ( int& move_time
     char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove ( null_ptr
-                                  , 0, screen_height - 1
+                                  , 0, int(screen_height) - 1
                                   , xnew, ynew );
 
     if ( new_time < LONG_DURATION
@@ -1094,7 +1094,7 @@ inline bool FOptiMove::isMethod5Faster ( int& move_time
     char  null_result[BUF_SIZE];
     char* null_ptr = null_result;
     int   new_time = relativeMove ( null_ptr
-                                  , screen_width - 1, yold - 1
+                                  , int(screen_width) - 1, yold - 1
                                   , xnew, ynew );
 
     if ( new_time < LONG_DURATION
@@ -1145,7 +1145,7 @@ void FOptiMove::moveByMethod ( int method
       std::strncpy (move_ptr, F_cursor_to_ll.cap, BUF_SIZE - 1);
       move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += F_cursor_to_ll.length;
-      relativeMove (move_ptr, 0, screen_height - 1, xnew, ynew);
+      relativeMove (move_ptr, 0, int(screen_height) - 1, xnew, ynew);
       break;
 
     case 5:
@@ -1154,14 +1154,14 @@ void FOptiMove::moveByMethod ( int method
       if ( xold >= 0 )
         std::strncat ( move_ptr
                      , F_carriage_return.cap
-                     , BUF_SIZE - std::strlen(move_ptr) );
+                     , BUF_SIZE - std::strlen(move_ptr) - 1 );
 
       std::strncat ( move_ptr
                    , F_cursor_left.cap
-                   , BUF_SIZE - std::strlen(move_ptr) );
+                   , BUF_SIZE - std::strlen(move_ptr) - 1);
       move_ptr[BUF_SIZE - 1] ='\0';
       move_ptr += std::strlen(move_buf);
-      relativeMove (move_ptr, screen_width - 1, yold - 1, xnew, ynew);
+      relativeMove (move_ptr, int(screen_width) - 1, yold - 1, xnew, ynew);
       break;
 
     default:

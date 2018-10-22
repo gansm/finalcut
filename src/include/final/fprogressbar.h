@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -78,11 +78,11 @@ class FProgressbar : public FWidget
 
     // Accessors
     const char*  getClassName() const;
-    int          getPercentage();
+    std::size_t  getPercentage();
 
     // Mutators
-    void         setPercentage (int);
-    virtual void setGeometry (int, int, int, int, bool = true);
+    void         setPercentage (std::size_t);
+    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
     bool         setShadow (bool);
     bool         setShadow();
     bool         unsetShadow();
@@ -95,14 +95,17 @@ class FProgressbar : public FWidget
     void         reset();
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Methods
     virtual void draw();
     void         drawPercentage();
     void         drawBar();
 
     // Data Members
-    int          percentage;
-    int          bar_length;
+    std::size_t  percentage;
+    std::size_t  bar_length;
 };
 #pragma pack(pop)
 
@@ -113,7 +116,7 @@ inline const char* FProgressbar::getClassName() const
 { return "FProgressbar"; }
 
 //----------------------------------------------------------------------
-inline int FProgressbar::getPercentage()
+inline std::size_t FProgressbar::getPercentage()
 { return percentage; }
 
 //----------------------------------------------------------------------

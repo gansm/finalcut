@@ -54,7 +54,7 @@ class FRect
     // Constructors
     FRect ();
     FRect (const FRect&);  // copy constructor
-    FRect (int, int, int, int);
+    FRect (int, int, std::size_t, std::size_t);
     FRect (const FPoint&, const FPoint&);
 
     // Destructor
@@ -72,55 +72,55 @@ class FRect
 
     // Accessors
     virtual const char* getClassName();
-    int     getX1() const;
-    int     getY1() const;
-    int     getX2() const;
-    int     getY2() const;
-    int     getX() const;
-    int     getY() const;
-    FPoint  getPos() const;
-    FPoint  getUpperLeftPos() const;
-    FPoint  getUpperRightPos() const;
-    FPoint  getLowerLeftPos() const;
-    FPoint  getLowerRightPos() const;
-    int     getWidth() const;
-    int     getHeight() const;
+    int         getX1() const;
+    int         getY1() const;
+    int         getX2() const;
+    int         getY2() const;
+    int         getX() const;
+    int         getY() const;
+    FPoint      getPos() const;
+    FPoint      getUpperLeftPos() const;
+    FPoint      getUpperRightPos() const;
+    FPoint      getLowerLeftPos() const;
+    FPoint      getLowerRightPos() const;
+    std::size_t getWidth() const;
+    std::size_t getHeight() const;
 
     // Mutators
-    void    setX1 (int);
-    void    setY1 (int);
-    void    setX2 (int);
-    void    setY2 (int);
-    void    setX (int);
-    void    setY (int);
-    void    setPos (int, int);
-    void    setPos (const FPoint&);
-    void    setWidth (int);
-    void    setHeight (int);
-    void    setSize (int, int);
-    void    setRect (const FRect&);
-    void    setRect (int, int, int, int);
-    void    setCoordinates (const FPoint&, const FPoint&);
-    void    setCoordinates (int, int, int, int);
+    void        setX1 (int);
+    void        setY1 (int);
+    void        setX2 (int);
+    void        setY2 (int);
+    void        setX (int);
+    void        setY (int);
+    void        setPos (int, int);
+    void        setPos (const FPoint&);
+    void        setWidth (std::size_t);
+    void        setHeight (std::size_t);
+    void        setSize (std::size_t, std::size_t);
+    void        setRect (const FRect&);
+    void        setRect (int, int, std::size_t, std::size_t);
+    void        setCoordinates (const FPoint&, const FPoint&);
+    void        setCoordinates (int, int, int, int);
 
     // Inquiry
-    bool    isNull() const;
+    bool        isNull() const;
 
     // Coordinate references
-    short&  x1_ref();
-    short&  y1_ref();
-    short&  x2_ref();
-    short&  y2_ref();
+    short&      x1_ref();
+    short&      y1_ref();
+    short&      x2_ref();
+    short&      y2_ref();
 
     // Methods
-    void    move (int, int);
-    void    move (const FPoint&);
-    bool    contains (int, int) const;
-    bool    contains (const FPoint&) const;
-    bool    contains (const FRect&) const;
-    bool    overlap  (const FRect&) const;
-    FRect   intersect (const FRect&) const;
-    FRect   combined (const FRect&) const;
+    void        move (int, int);
+    void        move (const FPoint&);
+    bool        contains (int, int) const;
+    bool        contains (const FPoint&) const;
+    bool        contains (const FRect&) const;
+    bool        overlap  (const FRect&) const;
+    FRect       intersect (const FRect&) const;
+    FRect       combined (const FRect&) const;
 
   private:
     // Data Members
@@ -150,11 +150,11 @@ inline FRect::FRect (const FRect& r)  // copy constructor
 { }
 
 //----------------------------------------------------------------------
-inline FRect::FRect (int x, int y, int width, int height)
+inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
   : X1(short(x))
   , Y1(short(y))
-  , X2(short(x + width - 1))
-  , Y2(short(y + height - 1))
+  , X2(short(x + short(width) - 1))
+  , Y2(short(y + short(height) - 1))
 { }
 
 //----------------------------------------------------------------------
@@ -206,12 +206,18 @@ inline FPoint FRect::getLowerRightPos() const
 { return FPoint(X2, Y2); }
 
 //----------------------------------------------------------------------
-inline int FRect::getWidth() const
-{ return short(X2 - X1 + 1); }
+inline std::size_t FRect::getWidth() const
+{
+  short w = X2 - X1 + 1;
+  return ( w < 0 ) ? 0 : std::size_t(w);
+}
 
 //----------------------------------------------------------------------
-inline int FRect::getHeight() const
-{ return short(Y2 - Y1 + 1); }
+inline std::size_t FRect::getHeight() const
+{
+  short h = Y2 - Y1 + 1;
+  return ( h < 0 ) ? 0 : std::size_t(h);
+}
 
 //----------------------------------------------------------------------
 inline short& FRect::x1_ref()

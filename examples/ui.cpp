@@ -132,7 +132,7 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  int p = progressBar.getPercentage();
+  std::size_t p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
   flush_out();
 
@@ -164,7 +164,7 @@ void ProgressDialog::cb_reset_bar (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar (finalcut::FWidget*, data_ptr)
 {
-  int p = progressBar.getPercentage();
+  std::size_t p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
 }
 
@@ -780,7 +780,7 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  int h = getParentWidget()->getHeight() - 4;
+  std::size_t h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
   int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
 
@@ -830,8 +830,8 @@ void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
 {
-  int x = getDesktopWidth();
-  int y = getDesktopHeight();
+  std::size_t x = getDesktopWidth();
+  std::size_t y = getDesktopHeight();
   finalcut::FMessageBox info1 \
   (
     "Environment"
@@ -961,10 +961,10 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
   finalcut::FListBox* list = static_cast<finalcut::FListBox*>(widget);
   finalcut::FLabel* num = static_cast<finalcut::FLabel*>(data);
   int select_num = 0;
-  uInt count = list->getCount();
+  std::size_t count = list->getCount();
 
-  for (uInt n = 1; n <= count; n++)
-    if ( list->isSelected(int(n)) )
+  for (std::size_t n = 1; n <= count; n++)
+    if ( list->isSelected(n) )
       select_num++;
 
   num->clear();
@@ -1006,7 +1006,7 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
   view->setGeometry ( 1 + int((getRootWidget()->getWidth() - 60) / 2),
                       int(getRootWidget()->getHeight() / 6),
                       60,
-                      int(getRootWidget()->getHeight() * 3 / 4) );
+                      getRootWidget()->getHeight() * 3 / 4 );
   view->setResizeable();
 
   std::string line = "";

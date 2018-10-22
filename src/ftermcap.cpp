@@ -26,16 +26,19 @@ namespace finalcut
 {
 
 // static class attributes
-bool FTermcap::background_color_erase = false;
-bool FTermcap::automatic_left_margin  = false;
-bool FTermcap::automatic_right_margin = false;
-bool FTermcap::eat_nl_glitch          = false;
-bool FTermcap::ansi_default_color     = false;
-bool FTermcap::osc_support            = false;
-bool FTermcap::no_utf8_acs_chars      = false;
-int  FTermcap::max_color              = 1;
-int  FTermcap::tabstop                = 8;
-int  FTermcap::attr_without_color     = 0;
+bool            FTermcap::background_color_erase   = false;
+bool            FTermcap::can_change_color_palette = false;
+bool            FTermcap::automatic_left_margin    = false;
+bool            FTermcap::automatic_right_margin   = false;
+bool            FTermcap::eat_nl_glitch            = false;
+bool            FTermcap::ansi_default_color       = false;
+bool            FTermcap::osc_support              = false;
+bool            FTermcap::no_utf8_acs_chars        = false;
+int             FTermcap::max_color                = 1;
+int             FTermcap::tabstop                  = 8;
+int             FTermcap::attr_without_color       = 0;
+FTermData*      FTermcap::fterm_data               = 0;
+FTermDetection* FTermcap::term_detection           = 0;
 
 
 //----------------------------------------------------------------------
@@ -50,6 +53,283 @@ FTermcap::FTermcap()
 //----------------------------------------------------------------------
 FTermcap::~FTermcap()  // destructor
 { }
+
+/* Terminal capability data base
+ * -----------------------------
+ * Info under: man 5 terminfo
+ *
+ * Importent shell commands:
+ *   captoinfo - convert all termcap descriptions into terminfo descriptions
+ *   infocmp   - print out terminfo description from the current terminal
+ */
+
+// public methods of FTermcap
+//----------------------------------------------------------------------
+void FTermcap::setTermData (FTermData* data)
+{
+  fterm_data = data;
+}
+
+//----------------------------------------------------------------------
+void FTermcap::setFTermDetection (FTermDetection* td)
+{
+  term_detection = td;
+}
+
+//----------------------------------------------------------------------
+void FTermcap::init()
+{
+  termcap();
+}
+
+// private methods of FTermcap
+//----------------------------------------------------------------------
+void FTermcap::termcap()
+{
+  std::vector<std::string> terminals;
+  std::vector<std::string>::iterator iter;
+  static const int success = 1;
+  static const int uninitialized = -2;
+  static char term_buffer[2048];
+  static char string_buf[2048];
+  char* buffer = string_buf;
+  int status = uninitialized;
+  bool color256 = term_detection->canDisplay256Colors();
+
+  // Open termcap file
+#if defined(__sun) && defined(__SVR4)
+  char* termtype = fterm_data->getTermType();
+#else
+  const char* termtype = fterm_data->getTermType();
+#endif
+  terminals.push_back(termtype);            // available terminal type
+
+  if ( color256 )                           // 1st fallback if not found
+    terminals.push_back("xterm-256color");
+
+  terminals.push_back("xterm");             // 2nd fallback if not found
+  terminals.push_back("ansi");              // 3rd fallback if not found
+  terminals.push_back("vt100");             // 4th fallback if not found
+  iter = terminals.begin();
+
+  while ( iter != terminals.end() )
+  {
+    fterm_data->setTermType(iter->c_str());
+
+    // Open the termcap file + load entry for termtype
+    status = tgetent(term_buffer, termtype);
+
+    if ( status == success || ! term_detection->hasTerminalDetection() )
+      break;
+
+    ++iter;
+  }
+
+  if ( std::strncmp(termtype, "ansi", 4) == 0 )
+    term_detection->setAnsiTerminal (true);
+
+  termcapError (status);
+  termcapVariables (buffer);
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapError (int status)
+{
+  static const int no_entry = 0;
+  static const int db_not_found = -1;
+  static const int uninitialized = -2;
+
+  if ( status == no_entry || status == uninitialized )
+  {
+    const char* termtype = fterm_data->getTermType();
+    std::cerr << "Unknown terminal: "  << termtype << "\n"
+              << "Check the TERM environment variable\n"
+              << "Also make sure that the terminal\n"
+              << "is defined in the termcap/terminfo database.\n";
+    std::abort();
+  }
+  else if ( status == db_not_found )
+  {
+    std::cerr << "The termcap/terminfo database could not be found.\n";
+    std::abort();
+  }
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapVariables (char*& buffer)
+{
+  // Get termcap booleans
+  termcapBoleans();
+
+  // Get termcap numerics
+  termcapNumerics();
+
+  // Get termcap strings
+  termcapStrings (buffer);
+
+  // Get termcap keys
+  termcapKeys (buffer);
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapBoleans()
+{
+  // Get termcap booleans
+
+  // Screen erased with the background color
+  background_color_erase = tgetflag(C_STR("ut"));
+
+  // Terminal is able to redefine existing colors
+  can_change_color_palette = tgetflag(C_STR("cc"));
+
+  // t_cursor_left wraps from column 0 to last column
+  automatic_left_margin = tgetflag(C_STR("bw"));
+
+  // Terminal has auto-matic margins
+  automatic_right_margin = tgetflag(C_STR("am"));
+
+  // NewLine ignored after 80 cols
+  eat_nl_glitch = tgetflag(C_STR("xn"));
+
+  // Terminal supports ANSI set default fg and bg color
+  ansi_default_color = tgetflag(C_STR("AX"));
+
+  // Terminal supports operating system commands (OSC)
+  // OSC = Esc + ']'
+  osc_support = tgetflag(C_STR("XT"));
+
+  // U8 is nonzero for terminals with no VT100 line-drawing in UTF-8 mode
+  no_utf8_acs_chars = bool(tgetnum(C_STR("U8")) != 0);
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapNumerics()
+{
+  // Get termcap numeric
+
+  // Maximum number of colors on screen
+  max_color = std::max(max_color, tgetnum(C_STR("Co")));
+
+  if ( max_color < 0 )
+    max_color = 1;
+
+  if ( max_color < 8 )
+    fterm_data->setMonochron(true);
+  else
+    fterm_data->setMonochron(false);
+
+  // Get initial spacing for hardware tab stop
+  tabstop = tgetnum(C_STR("it"));
+
+  // Get video attributes that cannot be used with colors
+  attr_without_color = tgetnum(C_STR("NC"));
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapStrings (char*& buffer)
+{
+  // Get termcap strings
+
+  // Read termcap output strings
+  for (int i = 0; tcap[i].tname[0] != 0; i++)
+    tcap[i].string = tgetstr(tcap[i].tname, &buffer);
+}
+
+
+
+//----------------------------------------------------------------------
+void FTermcap::termcapKeys (char*& buffer)
+{
+  // Read termcap key strings
+
+  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  {
+    fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
+
+    // Fallback for rxvt with TERM=xterm
+    if ( std::strncmp(fc::Fkey[i].tname, "khx", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "7~");  // Home key
+
+    if ( std::strncmp(fc::Fkey[i].tname, "@7x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "8~");  // End key
+
+    if ( std::strncmp(fc::Fkey[i].tname, "k1x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "11~");  // F1
+
+    if ( std::strncmp(fc::Fkey[i].tname, "k2x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "12~");  // F2
+
+    if ( std::strncmp(fc::Fkey[i].tname, "k3x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "13~");  // F3
+
+    if ( std::strncmp(fc::Fkey[i].tname, "k4x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "14~");  // F4
+
+    // Fallback for TERM=ansi
+    if ( std::strncmp(fc::Fkey[i].tname, "@7X", 3) == 0 )
+      fc::Fkey[i].string = C_STR(CSI "K");  // End key
+
+    // Keypad keys
+    if ( std::strncmp(fc::Fkey[i].tname, "@8x", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "OM");  // Enter key
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP1", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Oo");  // Keypad slash
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP2", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Oj");  // Keypad asterisk
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP3", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Om");  // Keypad minus sign
+
+    if ( std::strncmp(fc::Fkey[i].tname, "KP4", 3) == 0 )
+      fc::Fkey[i].string = C_STR(ESC "Ok");  // Keypad plus sign
+  }
+
+  // VT100 key codes for the arrow and function keys
+  termcapKeysVt100 (buffer);
+}
+
+//----------------------------------------------------------------------
+void FTermcap::termcapKeysVt100 (char*& buffer)
+{
+  // Some terminals (e.g. PuTTY) send vt100 key codes for
+  // the arrow and function keys.
+
+  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
+
+  if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
+    || ( TCAP(fc::t_cursor_up)
+      && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
+  {
+    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+    {
+      if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "A");  // Key up
+
+      if ( std::strncmp(fc::Fkey[i].tname, "kdx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "B");  // Key down
+
+      if ( std::strncmp(fc::Fkey[i].tname, "krx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "C");  // Key right
+
+      if ( std::strncmp(fc::Fkey[i].tname, "klx", 3) == 0 )
+        fc::Fkey[i].string = C_STR(CSI "D");  // Key left
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k1X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OP");  // PF1
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k2X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OQ");  // PF2
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k3X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OR");  // PF3
+
+      if ( std::strncmp(fc::Fkey[i].tname, "k4X", 3) == 0 )
+        fc::Fkey[i].string = C_STR(ESC "OS");  // PF4
+    }
+  }
+}
 
 
 // private Data Member of FTermcap - termcap capabilities

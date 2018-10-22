@@ -65,14 +65,15 @@ class FTermBuffer
     virtual ~FTermBuffer();
 
     // Overloaded operators
-    template<class type> FTermBuffer& operator << (const type&);
+    template <typename type>
+    FTermBuffer& operator << (const type&);
     // Non-member operators
     friend std::vector<charData>& operator << ( std::vector<charData>&
                                               , const FTermBuffer& );
 
     // Accessors
     virtual const char*    getClassName() const;
-    int                    getLength() const;
+    std::size_t            getLength() const;
 
     // Inquiry
     bool                   isEmpty() const;
@@ -93,7 +94,7 @@ class FTermBuffer
 
 // FTermBuffer inline functions
 //----------------------------------------------------------------------
-template<class type>
+template <typename type>
 inline FTermBuffer& FTermBuffer::operator << (const type& s)
 {
   std::wostringstream outstream;
@@ -107,8 +108,8 @@ inline const char* FTermBuffer::getClassName() const
 { return "FTermBuffer"; }
 
 //----------------------------------------------------------------------
-inline int FTermBuffer::getLength() const
-{ return int(data.size()); }
+inline std::size_t FTermBuffer::getLength() const
+{ return data.size(); }
 
 //----------------------------------------------------------------------
 inline bool FTermBuffer::isEmpty() const

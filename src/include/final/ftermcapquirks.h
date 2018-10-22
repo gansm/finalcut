@@ -73,18 +73,18 @@ class FTermcapQuirks
   private:
     // Methods
 #if defined(__FreeBSD__) || defined(__DragonFly__)
-    static void init_termcap_freebsd_quirks();
+    static void freebsd();
 #endif
-    static void init_termcap_cygwin_quirks();
-    static void init_termcap_linux_quirks();
-    static void init_termcap_xterm_quirks();
-    static void init_termcap_rxvt_quirks();
-    static void init_termcap_vte_quirks();
-    static void init_termcap_putty_quirks();
-    static void init_termcap_teraterm_quirks();
-    static void init_termcap_sun_quirks();
-    static void init_termcap_screen_quirks();
-    static void init_termcap_general_quirks();
+    static void cygwin();
+    static void linux();
+    static void xterm();
+    static void rxvt();
+    static void vte();
+    static void putty();
+    static void teraterm();
+    static void sunConsole();
+    static void screen();
+    static void general();
 
     // Data Members
     static FTermcap::tcap_map* tcap;

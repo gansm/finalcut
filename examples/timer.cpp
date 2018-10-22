@@ -72,7 +72,7 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
   bool is_last_line = false;
   int timer_id = ev->timerId();
 
-  if ( getPrintPos().getY() == getDesktopHeight() )
+  if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
   setColor (short(1 + timer_id), finalcut::fc::Default);

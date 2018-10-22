@@ -83,7 +83,7 @@ class FButtonGroup : public FScrollView
     FToggleButton* getFirstButton();
     FToggleButton* getLastButton();
     FToggleButton* getButton (int) const;
-    uInt           getCount() const;
+    std::size_t    getCount() const;
     FString&       getText();
 
     // Mutator
@@ -125,6 +125,9 @@ class FButtonGroup : public FScrollView
     void           drawLabel();
 
   private:
+    // Constants
+    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+
     // Disable copy constructor
     FButtonGroup (const FButtonGroup&);
 
@@ -136,8 +139,8 @@ class FButtonGroup : public FScrollView
 
     // Methods
     void           init();
-    int            getHotkeyPos (wchar_t[], wchar_t[], uInt);
-    void           drawText (wchar_t[], int, uInt);
+    std::size_t    getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void           drawText (wchar_t[], std::size_t, std::size_t);
     void           directFocus();
 
     // Data Members
@@ -165,8 +168,8 @@ inline bool FButtonGroup::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline uInt FButtonGroup::getCount() const
-{ return uInt(buttonlist.size()); }
+inline std::size_t FButtonGroup::getCount() const
+{ return buttonlist.size(); }
 
 //----------------------------------------------------------------------
 inline FString& FButtonGroup::getText()

@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2015-2017 Markus Gans                                      *
+* Copyright 2015-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -91,7 +91,6 @@ class FWindow : public FWidget
    const char*     getClassName() const;
    static FWindow* getWindowWidget (const FWidget*);
    static int      getWindowLayer (const FWidget*);
-   static FWindow* getActiveWindow();
    FWidget*        getWindowFocusWidget() const;
 
    // Mutators
@@ -133,10 +132,10 @@ class FWindow : public FWidget
    virtual void    setX (int, bool = true);
    virtual void    setY (int, bool = true);
    virtual void    setPos (int, int, bool = true);
-   virtual void    setWidth (int, bool = true);
-   virtual void    setHeight (int, bool = true);
-   virtual void    setSize (int, int, bool = true);
-   void            setGeometry (int, int, int, int, bool = true);
+   virtual void    setWidth (std::size_t, bool = true);
+   virtual void    setHeight (std::size_t, bool = true);
+   virtual void    setSize (std::size_t, std::size_t, bool = true);
+   void            setGeometry (int, int, std::size_t, std::size_t, bool = true);
    virtual void    move (int, int);
    static FWindow* getWindowWidgetAt (const FPoint&);
    static FWindow* getWindowWidgetAt (int, int);

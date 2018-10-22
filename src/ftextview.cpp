@@ -59,7 +59,7 @@ FTextView::~FTextView()  // destructor
 //----------------------------------------------------------------------
 const FString FTextView::getText() const
 {
-  uInt len, rows, idx;
+  std::size_t len, rows, idx;
 
   if ( data.empty() )
     return FString("");
@@ -67,13 +67,13 @@ const FString FTextView::getText() const
   len = 0;
   rows = getRows();
 
-  for (uInt i = 0 ; i < rows; i++)
+  for (std::size_t i = 0 ; i < rows; i++)
     len += data[i].getLength() + 1;
 
   FString s(len + 1);
   idx = 0;
 
-  for (uInt i = 0 ; i < rows; i++)
+  for (std::size_t i = 0 ; i < rows; i++)
   {
     const wchar_t* p = data[i].wc_str();
 
@@ -93,23 +93,23 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::setGeometry (int x, int y, int w, int h, bool adjust)
+void FTextView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
 {
   // Set the text view geometry
 
   FWidget::setGeometry(x, y, w, h, adjust);
-  int width  = getWidth();
-  int height = getHeight();
+  std::size_t width  = getWidth();
+  std::size_t height = getHeight();
 
   if ( isNewFont() )
   {
-    vbar->setGeometry (width, 1, 2, height - 1);
-    hbar->setGeometry (1, height, width - 2, 1);
+    vbar->setGeometry (int(width), 1, 2, height - 1);
+    hbar->setGeometry (1, int(height), width - 2, 1);
   }
   else
   {
-    vbar->setGeometry (width, 2, 1, height - 2);
-    hbar->setGeometry (2, height, width - 2, 1);
+    vbar->setGeometry (int(width), 2, 1, height - 2);
+    hbar->setGeometry (2, int(height), width - 2, 1);
   }
 
   vbar->resize();
@@ -152,7 +152,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( xoffset != x )
   {
-    int xoffset_end = int(maxLineWidth) - getTextWidth();
+    int xoffset_end = int(maxLineWidth - getTextWidth());
     xoffset = x;
 
     if ( xoffset < 0 )
@@ -170,7 +170,7 @@ void FTextView::scrollTo (int x, int y)
 
   if ( yoffset != y )
   {
-    int yoffset_end = int(getRows()) - getTextHeight();
+    int yoffset_end = int(getRows() - getTextHeight());
     yoffset = y;
 
     if ( yoffset < 0 )
@@ -193,9 +193,8 @@ void FTextView::scrollTo (int x, int y)
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
-  int n, size;
+  std::size_t n, size;
   short fg, bg;
-  char* blank;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -215,29 +214,18 @@ void FTextView::hide()
   n = isNewFont() ? 1 : 0;
   size = getWidth() + n;
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[uInt(size) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
+  char* blank = createBlankArray(size + 1);
 
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y = 0; y < getHeight(); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (1, 1 + y);
+    setPrintPos (1, 1 + int(y));
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
   flush_out();
 }
 
@@ -253,7 +241,7 @@ void FTextView::insert (const FString& str, int pos)
   FStringList::iterator iter;
   FStringList text_split;
   FString s;
-  uLong num;
+  std::size_t num;
 
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
@@ -267,9 +255,9 @@ void FTextView::insert (const FString& str, int pos)
   text_split = s.split("\r\n");
   num = text_split.size();
 
-  for (uInt i = 0; i < num; i++)
+  for (std::size_t i = 0; i < num; i++)
   {
-    uInt len;
+    std::size_t len;
     text_split[i] = text_split[i].removeBackspaces()
                                  .removeDel()
                                  .replaceControlCodes()
@@ -280,10 +268,10 @@ void FTextView::insert (const FString& str, int pos)
     {
       maxLineWidth = len;
 
-      if ( len > uInt(getTextWidth()) )
+      if ( len > getTextWidth() )
       {
-        hbar->setMaximum (int(maxLineWidth) - getTextWidth());
-        hbar->setPageSize (int(maxLineWidth), getTextWidth());
+        hbar->setMaximum (int(maxLineWidth) - int(getTextWidth()));
+        hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
         if ( ! hbar->isVisible() )
@@ -293,14 +281,14 @@ void FTextView::insert (const FString& str, int pos)
   }
 
   data.insert (iter + pos, text_split.begin(), text_split.end());
-  vbar->setMaximum (int(getRows()) - getTextHeight());
-  vbar->setPageSize (int(getRows()), getTextHeight());
+  vbar->setMaximum (int(getRows()) - int(getTextHeight()));
+  vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && int(getRows()) > getTextHeight() )
+  if ( ! vbar->isVisible() && getRows() > getTextHeight() )
     vbar->setVisible();
 
-  if ( vbar->isVisible() && int(getRows()) <= getTextHeight() )
+  if ( vbar->isVisible() && getRows() <= getTextHeight() )
     vbar->hide();
 
   processChanged();
@@ -311,13 +299,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 {
   FStringList::iterator iter;
 
-  if ( from > to )
-    return;
-
-  if ( from < 0 || from >= int(getRows()) )
-    return;
-
-  if ( to < 0 || to >= int(getRows()) )
+  if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
     return;
 
   iter = data.begin();
@@ -330,9 +312,7 @@ void FTextView::replaceRange (const FString& str, int from, int to)
 //----------------------------------------------------------------------
 void FTextView::clear()
 {
-  int size;
-  char* blank;
-
+  std::size_t size;
   data.clear();
   xoffset = 0;
   yoffset = 0;
@@ -350,29 +330,18 @@ void FTextView::clear()
   setColor();
   size = getWidth() - 2;
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[uInt(size) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
+  char* blank = createBlankArray(size + 1);
 
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y = 0; y < getTextHeight(); y++)
+  for (int y = 0; y < int(getTextHeight()); y++)
   {
     setPrintPos (2, 2 - nf_offset + y);
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
   processChanged();
 }
 
@@ -402,12 +371,12 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_ppage:
-      scrollBy (0, -getTextHeight());
+      scrollBy (0, int(-getTextHeight()));
       ev->accept();
       break;
 
     case fc::Fkey_npage:
-      scrollBy (0, getTextHeight());
+      scrollBy (0, int(getTextHeight()));
       ev->accept();
       break;
 
@@ -417,7 +386,7 @@ void FTextView::onKeyPress (FKeyEvent* ev)
       break;
 
     case fc::Fkey_end:
-      scrollToY (int(getRows()) - getTextHeight());
+      scrollToY (int(getRows() - getTextHeight()));
       ev->accept();
       break;
 
@@ -592,43 +561,43 @@ void FTextView::onFocusOut (FFocusEvent*)
 void FTextView::adjustSize()
 {
   FWidget::adjustSize();
-  int width     = getWidth()
-    , height    = getHeight()
-    , last_line = int(getRows())
-    , max_width = int(maxLineWidth);
+  std::size_t width = getWidth();
+  std::size_t height = getHeight();
+  int last_line = int(getRows());
+  int max_width = int(maxLineWidth);
 
-  if ( xoffset >= max_width - width - nf_offset )
-    xoffset = max_width - width - nf_offset - 1;
+  if ( xoffset >= max_width - int(width) - nf_offset )
+    xoffset = max_width - int(width) - nf_offset - 1;
 
   if ( xoffset < 0 )
     xoffset = 0;
 
-  if ( yoffset > last_line - height - nf_offset + 2 )
-    yoffset = last_line - height - nf_offset + 2;
+  if ( yoffset > last_line - int(height) - nf_offset + 2 )
+    yoffset = last_line - int(height) - nf_offset + 2;
 
   if ( yoffset < 0 )
     yoffset = 0;
 
-  vbar->setMaximum (last_line - height + 2 - nf_offset);
-  vbar->setPageSize (last_line, height - 2 + nf_offset);
-  vbar->setX (width);
-  vbar->setHeight (height - 2 + nf_offset, false);
+  vbar->setMaximum (last_line - int(height) + 2 - nf_offset);
+  vbar->setPageSize (last_line, int(height) - 2 + nf_offset);
+  vbar->setX (int(width));
+  vbar->setHeight (height - 2 + std::size_t(nf_offset), false);
   vbar->setValue (yoffset);
   vbar->resize();
 
-  hbar->setMaximum (max_width - width + nf_offset + 2);
-  hbar->setPageSize (max_width, width - nf_offset - 2);
-  hbar->setY (height);
+  hbar->setMaximum (max_width - int(width) + nf_offset + 2);
+  hbar->setPageSize (max_width, int(width) - nf_offset - 2);
+  hbar->setY (int(height));
   hbar->setWidth (width - 2, false);
   hbar->setValue (xoffset);
   hbar->resize();
 
-  if ( last_line < height + nf_offset - 1 )
+  if ( last_line < int(height) + nf_offset - 1 )
     vbar->hide();
   else
     vbar->setVisible();
 
-  if ( max_width < width - nf_offset - 1 )
+  if ( max_width < int(width) - nf_offset - 1 )
     hbar->hide();
   else
     hbar->setVisible();
@@ -637,15 +606,15 @@ void FTextView::adjustSize()
 
 // private methods of FTextView
 //----------------------------------------------------------------------
-int FTextView::getTextHeight()
+std::size_t FTextView::getTextHeight()
 {
-  return getHeight() - 2 + nf_offset;
+  return getHeight() - 2 + std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
-int FTextView::getTextWidth()
+std::size_t FTextView::getTextWidth()
 {
-  return getWidth() - 2 - nf_offset;
+  return getWidth() - 2 - std::size_t(nf_offset);
 }
 
 //----------------------------------------------------------------------
@@ -740,7 +709,7 @@ void FTextView::draw()
     }
   }
 
-  setCursorPos (getWidth(), getHeight());
+  setCursorPos (int(getWidth()), int(getHeight()));
   updateTerminal();
   flush_out();
 }
@@ -748,12 +717,10 @@ void FTextView::draw()
 //----------------------------------------------------------------------
 void FTextView::drawText()
 {
-  uInt num;
-
   if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
     return;
 
-  num = uInt(getTextHeight());
+  std::size_t num = getTextHeight();
 
   if ( num > getRows() )
     num = getRows();
@@ -763,14 +730,14 @@ void FTextView::drawText()
   if ( isMonochron() )
     setReverse(true);
 
-  for (uInt y = 0; y < num; y++)
+  for (std::size_t y = 0; y < num; y++)
   {
-    uInt i, len;
+    std::size_t i, len;
     FString line;
     const wchar_t* line_str;
     setPrintPos (2, 2 - nf_offset + int(y));
-    line = data[y + uInt(yoffset)].mid ( uInt(1 + xoffset)
-                                       , uInt(getTextWidth()) );
+    line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
+                                              , getTextWidth() );
     line_str = line.wc_str();
     len = line.getLength();
 
@@ -790,7 +757,7 @@ void FTextView::drawText()
         print ('.');
     }
 
-    for (; i < uInt(getTextWidth()); i++)
+    for (; i < getTextWidth(); i++)
       print (' ');
   }
 
@@ -841,14 +808,14 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientHeight();
+      distance = int(getClientHeight());
       // fall through
     case FScrollbar::scrollStepBackward:
       scrollBy (0, -distance);
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientHeight();
+      distance = int(getClientHeight());
       // fall through
     case FScrollbar::scrollStepForward:
       scrollBy (0, distance);
@@ -897,14 +864,14 @@ void FTextView::cb_HBarChange (FWidget*, data_ptr)
       break;
 
     case FScrollbar::scrollPageBackward:
-      distance = getClientWidth();
+      distance = int(getClientWidth());
       // fall through
     case FScrollbar::scrollStepBackward:
       scrollBy (-distance, 0);
       break;
 
     case FScrollbar::scrollPageForward:
-      distance = getClientWidth();
+      distance = int(getClientWidth());
       // fall through
     case FScrollbar::scrollStepForward:
       scrollBy (distance, 0);

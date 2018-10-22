@@ -54,9 +54,7 @@ FDialogListMenu::~FDialogListMenu()
 void FDialogListMenu::init()
 {
   FMenuItem* menuitem = getItem();
-
-  if ( menuitem )
-    menuitem->dialog_index = true;
+  menuitem->dialog_index = true;
 }
 
 }  // namespace finalcut

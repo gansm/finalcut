@@ -189,9 +189,8 @@ bool FButtonGroup::hasCheckedButton() const
 //----------------------------------------------------------------------
 void FButtonGroup::hide()
 {
-  int size;
+  std::size_t size;
   short fg, bg;
-  char* blank;
   FWidget::hide();
   FWidget* parent_widget = getParentWidget();
 
@@ -223,29 +222,18 @@ void FButtonGroup::hide()
   setColor (fg, bg);
   size = getWidth();
 
-  if ( size < 0 )
+  if ( size == 0 )
     return;
 
-  try
-  {
-    blank = new char[uInt(size) + 1];
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
-    return;
-  }
+  char* blank = createBlankArray(size + 1);
 
-  std::memset(blank, ' ', uLong(size));
-  blank[size] = '\0';
-
-  for (int y = 0; y < getHeight(); y++)
+  for (int y = 0; y < int(getHeight()); y++)
   {
     FWidget::setPrintPos (1, 1 + y);
     print (blank);
   }
 
-  delete[] blank;
+  destroyBlankArray (blank);
 }
 
 //----------------------------------------------------------------------
@@ -443,14 +431,12 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 uChar FButtonGroup::getHotkey()
 {
-  uInt length;
-
   if ( text.isEmpty() )
     return 0;
 
-  length = text.getLength();
+  std::size_t length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
@@ -506,13 +492,13 @@ void FButtonGroup::draw()
 void FButtonGroup::drawLabel()
 {
   wchar_t* LabelText;
-  int hotkeypos;
+  std::size_t hotkeypos;
 
   if ( text.isNull() || text.isEmpty() )
     return;
 
   FString txt = " " + text + " ";
-  uInt length = txt.getLength();
+  std::size_t length = txt.getLength();
 
   try
   {
@@ -527,9 +513,9 @@ void FButtonGroup::drawLabel()
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
   unsetViewportPrint();
-  hotkeypos = getHotkeyPos(src, dest, uInt(length));
+  hotkeypos = getHotkeyPos(src, dest, length);
 
-  if ( hotkeypos != -1 )
+  if ( hotkeypos != NOT_SET )
     length--;
 
   if ( hasBorder() )
@@ -567,18 +553,20 @@ void FButtonGroup::init()
 }
 
 //----------------------------------------------------------------------
-int FButtonGroup::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
+std::size_t FButtonGroup::getHotkeyPos ( wchar_t src[]
+                                       , wchar_t dest[]
+                                       , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
-  int pos = -1;
+  std::size_t pos = NOT_SET;
   wchar_t* txt = src;
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
-    if ( i < length && txt[i] == L'&' && pos == -1 )
+    if ( i < length && txt[i] == L'&' && pos == NOT_SET )
     {
-      pos = int(i);
+      pos = i;
       i++;
       src++;
     }
@@ -590,7 +578,9 @@ int FButtonGroup::getHotkeyPos (wchar_t src[], wchar_t dest[], uInt length)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
+void FButtonGroup::drawText ( wchar_t LabelText[]
+                            , std::size_t hotkeypos
+                            , std::size_t length )
 {
   bool isActive = ((flags & fc::active) != 0);
   bool isNoUnderline = ((flags & fc::no_underline) != 0);
@@ -603,7 +593,7 @@ void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
   else
     setColor(wc.label_inactive_fg, wc.label_inactive_bg);
 
-  for (int z = 0; z < int(length); z++)
+  for (std::size_t z = 0; z < length; z++)
   {
     if ( (z == hotkeypos) && isActive )
     {
@@ -612,7 +602,7 @@ void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
       if ( ! isNoUnderline )
         setUnderline();
 
-      print ( LabelText[z] );
+      print (LabelText[z]);
 
       if ( ! isNoUnderline )
         unsetUnderline();
@@ -620,7 +610,7 @@ void FButtonGroup::drawText (wchar_t LabelText[], int hotkeypos, uInt length)
       setColor (wc.label_emphasis_fg, wc.label_bg);
     }
     else
-      print ( LabelText[z] );
+      print (LabelText[z]);
   }
 
   if ( isMonochron() )

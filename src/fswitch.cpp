@@ -45,7 +45,7 @@ FSwitch::FSwitch (const FString& txt, FWidget* parent)
   , switch_offset_pos(0)
   , button_pressed(false)
 {
-  switch_offset_pos = int(txt.getLength()) + 1;
+  switch_offset_pos = txt.getLength() + 1;
   button_width = 11;
 }
 
@@ -59,7 +59,7 @@ FSwitch::~FSwitch()  // destructor
 void FSwitch::setText (const FString& txt)
 {
   FToggleButton::setText(txt);
-  switch_offset_pos = int(txt.getLength()) + 1;
+  switch_offset_pos = txt.getLength() + 1;
 }
 
 //----------------------------------------------------------------------
@@ -131,7 +131,7 @@ void FSwitch::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (1 + switch_offset_pos, 1);
+  setPrintPos (1 + int(switch_offset_pos), 1);
 
   if ( checked )
     drawChecked();
@@ -185,7 +185,7 @@ void FSwitch::drawChecked()
   if ( isMonochron() )
     setReverse(false);
 
-  setCursorPos (3 + switch_offset_pos, 1);
+  setCursorPos (3 + int(switch_offset_pos), 1);
 }
 
 //----------------------------------------------------------------------
@@ -232,7 +232,7 @@ void FSwitch::drawUnchecked()
   if ( isMonochron() || getMaxColor() < 16 )
     setBold(false);
 
-  setCursorPos (7 + switch_offset_pos, 1);
+  setCursorPos (7 + int(switch_offset_pos), 1);
 }
 
 }  // namespace finalcut

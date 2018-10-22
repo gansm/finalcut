@@ -101,7 +101,7 @@ FMenuItem::~FMenuItem()  // destructor
 {
   if ( super_menu && (isMenu(super_menu) || isMenuBar(super_menu)) )
   {
-    FMenuList* menu_list = dynamic_cast<FMenuList*>(super_menu);
+    FMenuList* menu_list = getFMenuList(*super_menu);
 
     if ( menu_list )
       menu_list->remove(this);
@@ -150,7 +150,7 @@ bool FMenuItem::setFocus (bool on)
     {
       if ( ! selected )
       {
-        FMenuList* menu_list = dynamic_cast<FMenuList*>(getSuperMenu());
+        FMenuList* menu_list = getFMenuList(*getSuperMenu());
         setSelected();
 
         if ( menu_list )
@@ -227,7 +227,7 @@ void FMenuItem::setText (const FString& txt)
   if ( hotkey )
     text_length--;
 
-  setWidth(int(text_length));
+  setWidth(text_length);
 }
 
 //----------------------------------------------------------------------
@@ -560,6 +560,27 @@ bool FMenuItem::isMenu (FWidget* w) const
 
 // private methods of FMenuItem
 //----------------------------------------------------------------------
+FMenuList* FMenuItem::getFMenuList (FWidget& widget)
+{
+  FMenuList* menu_list;
+
+  if ( isMenu(&widget) )
+  {
+    FMenu* Menu = static_cast<FMenu*>(&widget);
+    menu_list = static_cast<FMenuList*>(Menu);
+  }
+  else if ( isMenuBar(&widget) )
+  {
+    FMenuBar* Menubar = static_cast<FMenuBar*>(&widget);
+    menu_list = static_cast<FMenuList*>(Menubar);
+  }
+  else
+    menu_list = 0;
+
+  return menu_list;
+}
+
+//----------------------------------------------------------------------
 void FMenuItem::init (FWidget* parent)
 {
   text_length = text.getLength();
@@ -568,18 +589,17 @@ void FMenuItem::init (FWidget* parent)
   if ( hotkey )
     text_length--;
 
-  setGeometry (1, 1, int(text_length + 2), 1, false);
+  setGeometry (1, 1, text_length + 2, 1, false);
 
   if ( ! parent )
     return;
 
-  FMenuList* menu_list;
   setSuperMenu (parent);
 
   if ( accel_key  )
     addAccelerator (accel_key);
 
-  menu_list = dynamic_cast<FMenuList*>(parent);
+  FMenuList* menu_list = getFMenuList(*parent);
 
   if ( menu_list )
     menu_list->insert(this);
@@ -609,14 +629,14 @@ void FMenuItem::init (FWidget* parent)
 //----------------------------------------------------------------------
 uChar FMenuItem::hotKey()
 {
-  uInt length;
+  std::size_t length;
 
   if ( text.isEmpty() )
     return 0;
 
   length = text.getLength();
 
-  for (uInt i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     try
     {
@@ -704,7 +724,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 }
 
 //----------------------------------------------------------------------
-template<class T>
+template <typename T>
 void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
                                , fc::events ev_type )
 {

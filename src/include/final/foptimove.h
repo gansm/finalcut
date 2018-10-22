@@ -138,7 +138,7 @@ class FOptiMove
     // Mutators
     void  setBaudRate (int);
     void  setTabStop (int);
-    void  setTermSize (int, int);
+    void  setTermSize (std::size_t, std::size_t);
     void  setTermEnvironment (termEnv&);
     void  set_cursor_home (char[]);
     void  set_cursor_to_ll (char[]);
@@ -237,8 +237,8 @@ class FOptiMove
     int         char_duration;
     int         baudrate;
     int         tabstop;
-    int         screen_width;
-    int         screen_height;
+    std::size_t screen_width;
+    std::size_t screen_height;
 };
 #pragma pack(pop)
 

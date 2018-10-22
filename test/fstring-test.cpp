@@ -220,8 +220,8 @@ void FStringTest::initLengthTest()
   CPPUNIT_ASSERT ( s1.isNull() );
   CPPUNIT_ASSERT ( s1.isEmpty() );
 
-  const int  x1 = 10;
-  const uInt x2 = 10;
+  const int         x1 = 10;
+  const std::size_t x2 = 10;
   const finalcut::FString s2(x1);
   CPPUNIT_ASSERT ( s2.getLength() == 10 );
   CPPUNIT_ASSERT ( ! s2.isNull() );
@@ -1261,7 +1261,8 @@ void FStringTest::subStringTest()
   CPPUNIT_ASSERT ( str1.left(int(11)) == L"Look behind" );
   CPPUNIT_ASSERT ( str1.left(999)
                    == L"Look behind you, a three-headed monkey!" );
-  CPPUNIT_ASSERT ( str1.left(-5) == L"" );
+  CPPUNIT_ASSERT ( str1.left(-5)
+                   == L"Look behind you, a three-headed monkey!" );
   CPPUNIT_ASSERT ( str1.left(0) == L"" );
   CPPUNIT_ASSERT ( str1.left(0).isEmpty() );
   CPPUNIT_ASSERT ( ! str1.left(0).isNull() );
@@ -1273,7 +1274,8 @@ void FStringTest::subStringTest()
   CPPUNIT_ASSERT ( str1.right(int(7)) == L"monkey!" );
   CPPUNIT_ASSERT ( str1.right(999)
                    == L"Look behind you, a three-headed monkey!" );
-  CPPUNIT_ASSERT ( str1.right(-5) == L"" );
+  CPPUNIT_ASSERT ( str1.right(-5)
+                   == L"Look behind you, a three-headed monkey!" );
   CPPUNIT_ASSERT ( str1.right(0) == L"" );
   CPPUNIT_ASSERT ( str1.right(0).isEmpty() );
   CPPUNIT_ASSERT ( ! str1.right(0).isNull() );
@@ -1290,7 +1292,7 @@ void FStringTest::subStringTest()
   CPPUNIT_ASSERT ( str1.mid(5, 0) == L"" );
   CPPUNIT_ASSERT ( str1.mid(-5, 2) == L"" );
   CPPUNIT_ASSERT ( str1.mid(0, 0) == L"" );
-  CPPUNIT_ASSERT ( str1.mid(0, 5) == L"" );
+  CPPUNIT_ASSERT ( str1.mid(0, 5) == L"Look " );
   CPPUNIT_ASSERT ( str1.mid(0, 0).isEmpty() );
   CPPUNIT_ASSERT ( ! str1.mid(0, 0).isNull() );
   CPPUNIT_ASSERT ( finalcut::FString().mid(5, 0).isNull() );
