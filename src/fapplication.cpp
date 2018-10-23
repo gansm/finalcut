@@ -63,7 +63,7 @@ FApplication::eventQueue*    FApplication::event_queue = 0;
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(processParameters(_argc,_argv), disable_alt_screen)
+  : FWidget(processParameters(_argc, _argv), disable_alt_screen)
   , app_argc(_argc)
   , app_argv(_argv)
   , key_timeout(100000)        // 100 ms

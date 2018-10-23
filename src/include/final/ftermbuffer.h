@@ -59,7 +59,7 @@ class FTermBuffer
     typedef FOptiAttr::charData  charData;
 
     // Constructor
-    explicit FTermBuffer();
+    FTermBuffer();
 
     // Destructor
     virtual ~FTermBuffer();

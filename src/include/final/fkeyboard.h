@@ -60,7 +60,7 @@ class FKeyboardCommand
 {
   public:
     // Constructor
-    FKeyboardCommand (FApplication* = 0, void(FApplication::*)() = 0);
+    explicit FKeyboardCommand (FApplication* = 0, void(FApplication::*)() = 0);
 
     // Method
     void execute();

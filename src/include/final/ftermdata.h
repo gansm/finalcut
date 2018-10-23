@@ -36,6 +36,7 @@
 #endif
 
 #include <map>
+#include <string>
 
 #include "final/fc.h"
 #include "final/frect.h"
@@ -56,7 +57,7 @@ class FTermData
 {
   public:
     // Typedefs
-    typedef std::map<std::string,fc::encoding> encodingMap;
+    typedef std::map<std::string, fc::encoding> encodingMap;
 
     // Constructors
     FTermData();

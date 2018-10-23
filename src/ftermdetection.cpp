@@ -453,8 +453,9 @@ char* FTermDetection::termtype_256color_quirks()
   if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
     decscusr_support = true;
 
-  if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
-    || color_env.string2 )
+  if ( color_env.string2
+    || (color_env.string1
+      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
   {
     terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors

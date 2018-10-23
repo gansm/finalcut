@@ -408,7 +408,9 @@ void FWindow::setSize (std::size_t w, std::size_t h, bool adjust)
 }
 
 //----------------------------------------------------------------------
-void FWindow::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FWindow::setGeometry ( int x, int y
+                          , std::size_t w, std::size_t h
+                          , bool adjust )
 {
   // Sets the geometry of the widget
 

@@ -471,7 +471,7 @@ void FTerm::detectTermSize()
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
     char* str;
-    term_geometry.setPos(1,1);
+    term_geometry.setPos (1, 1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
     str = std::getenv("COLUMNS");
     term_geometry.setWidth(str ? std::size_t(std::atoi(str)) : 80);
@@ -1681,7 +1681,6 @@ inline void FTerm::allocationValues()
 //----------------------------------------------------------------------
 inline void FTerm::deallocationValues()
 {
-
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   if ( openbsd )
     delete openbsd;

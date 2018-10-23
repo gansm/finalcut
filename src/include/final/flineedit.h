@@ -77,7 +77,7 @@ class FLineEdit : public FWidget
 
     // Constructor
     explicit FLineEdit (FWidget* = 0);
-    FLineEdit (const FString&, FWidget* = 0);
+    explicit FLineEdit (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FLineEdit();

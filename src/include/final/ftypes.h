@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <string>
+
 #define null NULL
 
 namespace
@@ -52,7 +54,7 @@ typedef int64_t        sInt64;
 
 typedef long double    lDouble;
 
-} // namespace
+}  // namespace
 
 
 namespace finalcut
@@ -87,7 +89,7 @@ keyname;
 
 }  // namespace fc
 
-} // namespace finalcut
+}  // namespace finalcut
 
 #endif  // FTYPES_H
 

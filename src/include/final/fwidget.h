@@ -236,7 +236,9 @@ class FWidget : public FVTerm, public FObject
     void               setTermOffsetWithPadding();
     void               setTermSize (std::size_t, std::size_t);
     virtual void       setGeometry (const FRect&, bool = true);
-    virtual void       setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void       setGeometry ( int, int
+                                   , std::size_t, std::size_t
+                                   , bool = true );
     virtual void       setShadowSize (int, int);
     void               setMinimumWidth (std::size_t);
     void               setMinimumHeight (std::size_t);
@@ -813,7 +815,8 @@ inline void FWidget::setMinimumHeight (std::size_t min_height)
 { size_hints.setMinimum (size_hints.min_width, min_height); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMinimumSize (std::size_t min_width, std::size_t min_height)
+inline void FWidget::setMinimumSize ( std::size_t min_width
+                                    , std::size_t min_height )
 { size_hints.setMinimum (min_width, min_height); }
 
 //----------------------------------------------------------------------
@@ -825,7 +828,8 @@ inline void FWidget::setMaximumHeight (std::size_t max_height)
 { size_hints.setMaximum (size_hints.max_width, max_height); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMaximumSize (std::size_t max_width, std::size_t max_height)
+inline void FWidget::setMaximumSize ( std::size_t max_width
+                                    , std::size_t max_height )
 { size_hints.setMaximum (max_width, max_height); }
 
 //----------------------------------------------------------------------

@@ -52,6 +52,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <list>
 #include <stack>
 #include <vector>
 
@@ -179,7 +180,7 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    explicit FListViewIterator ();
+    FListViewIterator ();
     FListViewIterator (FObjectIterator);
 
     // Overloaded operators
@@ -269,11 +270,13 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void         setGeometry ( int, int
+                                     , std::size_t, std::size_t
+                                     , bool = true );
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
-    void                 setColumnSortType (int,fc::sorting_type \
-                                                    = fc::by_name);
+    void                 setColumnSortType (int, fc::sorting_type \
+                                                     = fc::by_name);
     void                 setColumnSort (int, fc::sorting_order \
                                                  = fc::ascending);
     template <typename Compare>
@@ -432,7 +435,7 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    explicit Header()
+    Header()
       : name()
       , width (0)
       , fixed_width (false)

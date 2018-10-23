@@ -83,7 +83,7 @@ class FMenuItem : public FWidget
 
     // Constructor
     explicit FMenuItem (FWidget* = 0);
-    FMenuItem (const FString&, FWidget* = 0);
+    explicit FMenuItem (const FString&, FWidget* = 0);
     FMenuItem (int, const FString&, FWidget* = 0);
 
     // Destructor

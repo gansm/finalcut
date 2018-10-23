@@ -84,8 +84,8 @@ class FScrollbar : public FWidget
     };
 
     // Constructors
-    explicit FScrollbar(FWidget* = 0);
-    FScrollbar (int = fc::vertical, FWidget* = 0);
+    explicit FScrollbar (FWidget* = 0);
+    explicit FScrollbar (int = fc::vertical, FWidget* = 0);
 
     // Destructor
     virtual ~FScrollbar();

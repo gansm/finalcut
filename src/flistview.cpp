@@ -693,7 +693,9 @@ fc::sorting_type FListView::getColumnSortType (int column) const
 }
 
 //----------------------------------------------------------------------
-void FListView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FListView::setGeometry ( int x, int y
+                            , std::size_t w, std::size_t h
+                            , bool adjust )
 {
   // Set the widget geometry
 

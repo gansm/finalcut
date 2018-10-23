@@ -526,7 +526,8 @@ void FListBox::insert (Container container, LazyConverter convert)
 }
 
 //----------------------------------------------------------------------
-inline FListBox::listBoxItems::iterator FListBox::index2iterator (std::size_t index)
+inline FListBox::listBoxItems::iterator \
+    FListBox::index2iterator (std::size_t index)
 {
   listBoxItems::iterator iter = itemlist.begin();
   std::advance (iter, index);

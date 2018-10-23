@@ -93,7 +93,9 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FTextView::setGeometry ( int x, int y
+                            , std::size_t w, std::size_t h
+                            , bool adjust )
 {
   // Set the text view geometry
 

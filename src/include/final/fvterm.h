@@ -52,7 +52,10 @@
   #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
 #endif
 
+#include <queue>
 #include <sstream>  // std::stringstream
+#include <string>
+#include <vector>
 
 #include "final/fterm.h"
 
@@ -285,8 +288,11 @@ class FVTerm : public FTerm
     static void          restoreVTerm (const FRect&);
     static void          restoreVTerm (int, int, int, int);
     static void          setTextToDefault (term_area*, int, int);
-    static bool          reallocateTextArea (term_area*, std::size_t, std::size_t);
-    static bool          reallocateTextArea (term_area*, std::size_t);
+    static bool          reallocateTextArea ( term_area*
+                                            , std::size_t
+                                            , std::size_t );
+    static bool          reallocateTextArea ( term_area*
+                                            , std::size_t );
 
     static covered_state isCovered ( const FPoint&
                                    , term_area* );
@@ -514,7 +520,8 @@ inline FVTerm& FVTerm::operator << (const type& s)
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << (const std::vector<FVTerm::charData>& termString)
+inline FVTerm& FVTerm::operator << \
+    (const std::vector<FVTerm::charData>& termString)
 {
   print (termString);
   return *this;

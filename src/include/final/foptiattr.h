@@ -156,7 +156,7 @@ class FOptiAttr
     } termEnv;
 
     // Constructor
-    explicit FOptiAttr();
+    FOptiAttr();
 
     // Destructor
     virtual ~FOptiAttr();

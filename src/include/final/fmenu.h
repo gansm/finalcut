@@ -79,7 +79,7 @@ class FMenu : public FWindow, public FMenuList
   public:
     // Constructor
     explicit FMenu (FWidget* = 0);
-    FMenu (const FString&, FWidget* = 0);
+    explicit FMenu (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FMenu();

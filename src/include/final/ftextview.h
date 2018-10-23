@@ -90,7 +90,9 @@ class FTextView : public FWidget
     const FStringList& getLines() const;
 
     // Mutators
-    virtual void       setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void       setGeometry ( int, int
+                                   , std::size_t, std::size_t
+                                   , bool = true );
     void               setText (const FString&);
     void               scrollToX (int);
     void               scrollToY (int);

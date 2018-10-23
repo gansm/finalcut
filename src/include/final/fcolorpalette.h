@@ -51,7 +51,7 @@ class FColorPalette
 {
   public:
     // Constructor
-    explicit FColorPalette();
+    FColorPalette();
 
     // Destructor
     virtual ~FColorPalette();

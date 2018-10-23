@@ -74,7 +74,7 @@ class FLabel : public FWidget
 
     // Constructor
     explicit FLabel (FWidget* = 0);
-    FLabel (const FString&, FWidget* = 0);
+    explicit FLabel (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FLabel();

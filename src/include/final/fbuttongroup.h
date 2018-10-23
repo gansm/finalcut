@@ -73,7 +73,7 @@ class FButtonGroup : public FScrollView
   public:
     // Constructors
     explicit FButtonGroup (FWidget* = 0);
-    FButtonGroup (const FString&, FWidget* = 0);
+    explicit FButtonGroup (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FButtonGroup();
