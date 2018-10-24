@@ -113,7 +113,7 @@ void FVTerm::setTermXY (int x, int y)
   term_width = int(getColumnNumber());
   term_height = int(getLineNumber());
 
-  if ( x >= term_width )
+  if ( x >= term_width && term_width > 0 )
   {
     y += x / term_width;
     x %= term_width;

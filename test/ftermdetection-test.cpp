@@ -28,9 +28,10 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
-#include <final/final.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
+
+#include <final/final.h>
 
 #define CPPUNIT_ASSERT_CSTRING(expected, actual) \
             check_c_string (expected, actual, CPPUNIT_SOURCELINE())

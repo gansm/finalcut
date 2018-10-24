@@ -75,7 +75,7 @@ void term_boundaries (int& x, int& y)
   if ( y < 0 )
     y = 0;
 
-  if ( x >= term_width )
+  if ( x >= term_width && term_width > 0 )
   {
     y += x / term_width;
     x %= term_width;
