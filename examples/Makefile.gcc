@@ -34,7 +34,7 @@ debug:
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"
 
-.PHONY: clean 
+.PHONY: clean
 clean:
 	$(RM) $(SRCS:%.cpp=%) *.gcno *.gcda *~
 

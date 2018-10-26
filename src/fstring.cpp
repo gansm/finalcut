@@ -1192,7 +1192,7 @@ bool FString::operator > (const FString& s) const
 //----------------------------------------------------------------------
 const FString& FString::insert (const FString& s, int pos)
 {
-  if ( pos < 0 || uInt(pos) > length )
+  if ( isNegative(pos) || uInt(pos) > length )
     throw std::out_of_range("");
 
   _insert (uInt(pos), s.length, s.string);

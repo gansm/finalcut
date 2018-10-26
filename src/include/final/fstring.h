@@ -49,6 +49,7 @@
 #include <cwchar>
 #include <cwctype>
 
+#include <limits>
 #include <iostream>
 #include <new>
 #include <stdexcept>
@@ -134,9 +135,9 @@ class FString
     const FString& operator >> (float&);
 
     template <typename IndexT>
-    wchar_t&       operator [] (IndexT);
+    wchar_t&       operator [] (const IndexT);
     template <typename IndexT>
-    const wchar_t& operator [] (IndexT) const;
+    const wchar_t& operator [] (const IndexT) const;
     const FString& operator () ();
 
     bool operator <  (const FString&) const;
@@ -289,9 +290,9 @@ inline const char* FString::getClassName()
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline wchar_t& FString::operator [] (IndexT pos)
+inline wchar_t& FString::operator [] (const IndexT pos)
 {
-  if ( pos < 0 || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos >= IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
 
   return string[std::size_t(pos)];
@@ -299,9 +300,9 @@ inline wchar_t& FString::operator [] (IndexT pos)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline const wchar_t& FString::operator [] (IndexT pos) const
+inline const wchar_t& FString::operator [] (const IndexT pos) const
 {
-  if ( pos < 0 || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos >= IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
 
   return string[std::size_t(pos)];
@@ -378,7 +379,7 @@ inline FString::iterator FString::end() const
 //----------------------------------------------------------------------
 inline wchar_t FString::front() const
 {
-  assert( ! isEmpty() );
+  assert ( ! isEmpty() );
   return string[0];
 }
 

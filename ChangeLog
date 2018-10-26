@@ -1,3 +1,6 @@
+2018-10-26  Markus Gans  <guru.mail@muenster.de>
+	* Building Fix for a negative value check (gcc < 4.8)
+
 2018-10-21  Markus Gans  <guru.mail@muenster.de>
 	* Moving static attributes from FApplication to FWidget
 

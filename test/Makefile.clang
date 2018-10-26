@@ -33,7 +33,7 @@ debug:
 
 check: test
 test: debug
-	$(OBJS) | sed -e "s/ OK/\x1b[32m OK\x1b[0m/g" -e "s/ failed/\x1b[31m failed\x1b[0m/g" 
+	$(OBJS) | sed -e "s/ OK/\x1b[32m OK\x1b[0m/g" -e "s/ failed/\x1b[31m failed\x1b[0m/g"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

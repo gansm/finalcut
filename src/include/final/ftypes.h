@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <limits>
 #include <string>
 
 #define null NULL
@@ -59,6 +60,30 @@ typedef long double    lDouble;
 
 namespace finalcut
 {
+
+template <typename T, bool is_signed>
+struct is_negative
+{
+  inline bool operator () (const T& x)
+  {
+    return x < 0;
+  }
+};
+
+template <typename T>
+struct is_negative<T,false>
+{
+  inline bool operator () (const T&)
+  {
+    return false;
+  }
+};
+
+template <typename T>
+inline bool isNegative (const T& x)
+{
+  return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+}
 
 namespace fc
 {

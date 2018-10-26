@@ -245,7 +245,7 @@ Class digramm
 
 License
 -------
-GNU Lesser General Public License Version 3 
+GNU Lesser General Public License Version 3
 
 Please send bug reports to
 --------------------------
