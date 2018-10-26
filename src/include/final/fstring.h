@@ -187,6 +187,7 @@ class FString
     // Methods
     std::size_t getLength() const;
     std::size_t getUTF8length() const;
+    std::size_t capacity() const;
 
     iterator begin() const;
     iterator end()   const;
@@ -367,6 +368,10 @@ inline bool FString::isEmpty() const
 //----------------------------------------------------------------------
 inline std::size_t FString::getLength() const
 { return length; }
+
+//----------------------------------------------------------------------
+inline std::size_t FString::capacity() const
+{ return ( length > 0 ) ? bufsize - 1 : 0; }
 
 //----------------------------------------------------------------------
 inline FString::iterator FString::begin() const

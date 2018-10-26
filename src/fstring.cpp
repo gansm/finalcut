@@ -1474,7 +1474,7 @@ inline void FString::_assign (const wchar_t s[])
 
   uInt new_length = uInt(std::wcslen(s));
 
-  if ( ! string || new_length > bufsize - 1 )
+  if ( ! string || new_length > capacity() )
   {
     if ( string )
       delete[](string);
@@ -1493,8 +1493,8 @@ inline void FString::_assign (const wchar_t s[])
   }
 
   std::wcsncpy (string, s, bufsize);
-  string[bufsize - 1] = L'\0';
   length = new_length;
+  string[capacity()] = L'\0';
 }
 
 //----------------------------------------------------------------------
@@ -1520,7 +1520,7 @@ inline void FString::_insert (std::size_t len, const wchar_t s[])
   }
 
   std::wcsncpy (string, s, bufsize);
-  string[bufsize - 1] = L'\0';
+  string[capacity()] = L'\0';
 }
 
 //----------------------------------------------------------------------
@@ -1539,7 +1539,7 @@ inline void FString::_insert ( std::size_t pos
   {
     std::size_t x;
 
-    if ( (length + len + 1) <= bufsize )
+    if ( length + len <= capacity() )
     {
       // output string <= bufsize
       for (x = length; x + 1 > pos; x--)  // shifting right side + '\0'
@@ -1587,7 +1587,7 @@ inline void FString::_insert ( std::size_t pos
 //----------------------------------------------------------------------
 inline void FString::_remove (std::size_t pos, std::size_t len)
 {
-  if ( (bufsize - length - 1 + len) <= FWDBUFFER )
+  if ( capacity() - length + len <= FWDBUFFER )
   {
     // shifting left side to pos
     for (std::size_t i = pos; i + len < length + 1; i++)
