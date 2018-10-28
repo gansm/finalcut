@@ -713,13 +713,14 @@ bool FWindow::zoomWindow()
 }
 
 //----------------------------------------------------------------------
-void FWindow::switchToPrevWindow()
+void FWindow::switchToPrevWindow (FWidget* widget_object)
 {
   // switch to previous window
 
   // Disable terminal updates to avoid flickering
   // when redrawing the focused widget
-  updateTerminal (FVTerm::stop_refresh);
+  if ( widget_object )
+    widget_object->updateTerminal (FVTerm::stop_refresh);
 
   bool is_activated = activatePrevWindow();
   FWindow* active_window = static_cast<FWindow*>(getActiveWindow());
@@ -769,7 +770,8 @@ void FWindow::switchToPrevWindow()
   }
 
   // Enable terminal updates again
-  updateTerminal (FVTerm::continue_refresh);
+  if ( widget_object )
+    widget_object->updateTerminal (FVTerm::continue_refresh);
 }
 
 //----------------------------------------------------------------------

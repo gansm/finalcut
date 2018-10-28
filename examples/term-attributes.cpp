@@ -74,7 +74,7 @@ AttribDlg::AttribDlg (finalcut::FWidget* parent)
   , back_button("< &Back", this)
 {
   setText ( "A terminal attributes test ("
-          + finalcut::FString(getTermType())
+          + finalcut::FString(getFTerm().getTermType())
           + ")");
 
   next_button.setGeometry(int(getWidth()) - 13, int(getHeight()) - 4, 10, 1);

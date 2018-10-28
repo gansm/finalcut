@@ -116,6 +116,17 @@ bool FTerm::isNormal (charData*& ch)
 }
 
 //----------------------------------------------------------------------
+bool FTerm::isCursorHideable()
+{
+  char* cursor_off_str = disableCursor();
+
+  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
+    return true;
+
+  return false;
+}
+
+//----------------------------------------------------------------------
 void FTerm::setTermType (const char term_name[])
 {
   data->setTermType(term_name);

@@ -225,20 +225,21 @@ void tcapString (const std::string& name, const char cap_str[])
 #if DEBUG
 void debug (finalcut::FApplication& TermApp)
 {
-  const finalcut::FString& ab_s = TermApp.getAnswerbackString();
-  const finalcut::FString& sec_da = TermApp.getSecDAString();
+  finalcut::FTerm& fterm = TermApp.getFTerm();
+  const finalcut::FString& ab_s = fterm.getAnswerbackString();
+  const finalcut::FString& sec_da = fterm.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
-            << TermApp.getFramebufferBpp() << "\r\n";
+            << fterm.getFramebufferBpp() << "\r\n";
 #endif
 
   std::cout << "| after init_256colorTerminal(): "
-            << TermApp.getTermType_256color() << "\r\n";
+            << fterm.getTermType_256color() << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
-            << TermApp.getTermType_Answerback() << "\r\n";
+            << fterm.getTermType_Answerback() << "\r\n";
   std::cout << "|            after parseSecDA(): "
-            << TermApp.getTermType_SecDA() << "\r\n";
+            << fterm.getTermType_SecDA() << "\r\n";
 
   if ( ! ab_s.isEmpty() )
     tcapString ("|         The answerback String", ab_s);
@@ -313,8 +314,9 @@ int main (int argc, char* argv[])
   finalcut::FTermcap::tcap_map* tcap = 0;
   tcap = finalcut::FTermcap::getTermcapMap();
 
+  finalcut::FTerm& fterm = TermApp.getFTerm();
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
-  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
+  std::cout << "Terminal: " << fterm.getTermType() << "\r\n";
 
   debug (TermApp);
 

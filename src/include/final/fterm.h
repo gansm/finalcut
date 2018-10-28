@@ -156,6 +156,8 @@ class FTerm
     // Typedefs
     typedef FOptiAttr::charData  charData;
 
+    struct initializationValues;  // forward declaration
+
     // Constructor
     explicit FTerm (bool = false);
 
@@ -169,12 +171,14 @@ class FTerm
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (int);
+    static FOptiMove*      getFOptiMove();
 
     static int             getTTYFileDescriptor();
     static char*           getTermType();
     static char*           getTermFileName();
     static int             getTabstop();
     static int             getMaxColor();
+    initializationValues&  getInitValues();
 
 #if DEBUG
     static const FString&  getAnswerbackString();
@@ -212,12 +216,15 @@ class FTerm
     static bool            isScreenTerm();
     static bool            isTmuxTerm();
     static bool            isNewFont();
+    static bool            isCursorHideable();
+    static bool            hasChangedTermSize();
+    static bool            hasShadowCharacter();
+    static bool            hasHalfBlockCharacter();
+    static bool            hasAlternateScreen();
 
     // Mutators
     static void            setTermType (const char[]);
     static void            setInsertCursor (bool on);
-    static void            setInsertCursor();
-    static void            unsetInsertCursor();
     static void            redefineDefaultColors (bool);
     static void            setDblclickInterval (const long);
     static bool            setUTF8 (bool);
@@ -237,7 +244,7 @@ class FTerm
     static char*           disableCursor();
     static void            detectTermSize();
     static void            setTermSize (std::size_t, std::size_t);
-    static void            setTermTitle(const FString&);
+    static void            setTermTitle (const FString&);
     static void            setKDECursor (fc::kdeKonsoleCursorShape);
     static void            saveColorMap();
     static void            resetColorMap();
@@ -275,17 +282,6 @@ class FTerm
     static int             putchar_ASCII (int);
     static int             putchar_UTF8  (int);
 
-  protected:
-    // Inquiries
-    static bool            hasChangedTermSize();
-    static bool            hasShadowCharacter();
-    static bool            hasHalfBlockCharacter();
-    static bool            hasAlternateScreen();
-
-    // Accessors
-    FOptiMove*             getFOptiMove();
-
-    // Methods
     static void            initScreenSettings();
     static char*           changeAttribute ( charData*&
                                            , charData*& );
@@ -451,6 +447,10 @@ inline int FTerm::getTabstop()
 inline int FTerm::getMaxColor()
 { return FTermcap::max_color; }
 
+//----------------------------------------------------------------------
+inline FTerm::initializationValues& FTerm::getInitValues()
+{ return init_values; }
+
 #if DEBUG
 //----------------------------------------------------------------------
 inline const FString& FTerm::getAnswerbackString()
@@ -566,22 +566,6 @@ inline bool FTerm::isNewFont()
 { return data->isNewFont(); }
 
 //----------------------------------------------------------------------
-inline void FTerm::setInsertCursor()
-{ setInsertCursor(true); }
-
-//----------------------------------------------------------------------
-inline void FTerm::unsetInsertCursor()
-{ setInsertCursor(false); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::setUTF8()
-{ return setUTF8(true); }
-
-//----------------------------------------------------------------------
-inline bool FTerm::unsetUTF8()
-{ return setUTF8(false); }
-
-//----------------------------------------------------------------------
 inline bool FTerm::hasChangedTermSize()
 { return data->hasTermResized(); }
 
@@ -596,6 +580,14 @@ inline bool FTerm::hasHalfBlockCharacter()
 //----------------------------------------------------------------------
 inline bool FTerm::hasAlternateScreen()
 { return data->hasAlternateScreen(); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::setUTF8()
+{ return setUTF8(true); }
+
+//----------------------------------------------------------------------
+inline bool FTerm::unsetUTF8()
+{ return setUTF8(false); }
 
 //----------------------------------------------------------------------
 inline FOptiMove* FTerm::getFOptiMove()

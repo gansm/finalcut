@@ -111,7 +111,7 @@ void move (int xold, int yold, int xnew, int ynew)
             << std::left << std::setw(10) << to
             << " ";
   // get the move string
-  buffer = terminal->moveCursor (xold, yold, xnew, ynew);
+  buffer = terminal->getFTerm().moveCursor (xold, yold, xnew, ynew);
   len    = uInt(std::strlen(buffer));
 
   for (uInt i = 0; i < len; i++)
@@ -164,7 +164,7 @@ int main (int argc, char* argv[])
   TermApp.clearArea();
 
   // Show the determined terminal name and text resolution
-  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
+  std::cout << "Terminal: " << TermApp.getFTerm().getTermType() << "\r\n";
   std::cout << " Columns: 0.." << xmax << "\r\n";
   std::cout << "   Lines: 0.." << ymax << "\r\n";
 
@@ -197,7 +197,7 @@ int main (int argc, char* argv[])
 
   // Show terminal speed and milliseconds for all cursor movement sequence
   std::cout << "\r" << line;
-  TermApp.printMoveDurations();
+  TermApp.getFTerm().printMoveDurations();
 
   // Waiting for keypress
   keyPressed();

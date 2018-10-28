@@ -1,3 +1,6 @@
+2018-10-29  Markus Gans  <guru.mail@muenster.de>
+	* FTerm is now a data member of FVTerm
+
 2018-10-26  Markus Gans  <guru.mail@muenster.de>
 	* Building Fix for a negative value check (gcc < 4.8)
 	* Adding the capacity() method to the FString class

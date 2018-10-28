@@ -71,7 +71,7 @@ FMenu::~FMenu()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( ! fapp->isQuit() )
-    switchToPrevWindow();  // Switch to previous window
+    switchToPrevWindow(this);  // Switch to previous window
 }
 
 
@@ -1664,7 +1664,7 @@ inline void FMenu::keyEscape()
       getStatusBar()->clearMessage();
 
     if ( ! (super && isWindowsMenu(super)) )
-      switchToPrevWindow();
+      switchToPrevWindow(this);
   }
 
   if ( getStatusBar() )

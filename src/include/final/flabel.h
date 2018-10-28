@@ -94,7 +94,7 @@ class FLabel : public FWidget
 
     // Accessors
     const char*        getClassName() const;
-    FTerm*             getAccelWidget();
+    FWidget*           getAccelWidget();
     fc::text_alignment getAlignment();
     FString&           getText();
 
@@ -172,7 +172,7 @@ inline const char* FLabel::getClassName() const
 { return "FLabel"; }
 
 //----------------------------------------------------------------------
-inline FTerm* FLabel::getAccelWidget ()
+inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------

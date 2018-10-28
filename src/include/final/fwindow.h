@@ -149,7 +149,7 @@ class FWindow : public FWidget
     static bool     lowerWindow (FWidget*);
     bool            lowerWindow ();
     bool            zoomWindow ();
-    static void     switchToPrevWindow();
+    static void     switchToPrevWindow (FWidget*);
     static bool     activatePrevWindow();
     virtual void    setShadowSize (int, int);
 

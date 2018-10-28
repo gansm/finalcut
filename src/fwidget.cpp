@@ -1976,13 +1976,7 @@ void FWidget::init()
     return;
   }
 
-  char* cursor_off_str = disableCursor();
-
-  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
-    hideable = true;
-  else
-    hideable = false;
-
+  hideable = isCursorHideable();
   visible_cursor = ! hideable;
 
   // Determine width and height of the terminal

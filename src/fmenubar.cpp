@@ -1042,7 +1042,7 @@ void FMenuBar::leaveMenuBar()
   if ( getStatusBar() )
     getStatusBar()->clearMessage();
 
-  switchToPrevWindow();
+  switchToPrevWindow(this);
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();

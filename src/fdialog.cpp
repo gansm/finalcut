@@ -87,7 +87,7 @@ FDialog::~FDialog()  // destructor
   accelerator_list = 0;
 
   if ( ! is_quit )
-    switchToPrevWindow();
+    switchToPrevWindow(this);
 
   delDialog(this);
 

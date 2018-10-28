@@ -836,8 +836,8 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
   (
     "Environment"
     , finalcut::FString()
-      << "  Type: " << getTermType() << "\n"
-      << "  Name: " << getTermFileName() << "\n"
+      << "  Type: " << getFTerm().getTermType() << "\n"
+      << "  Name: " << getFTerm().getTermFileName() << "\n"
       << "  Mode: " << getEncodingString() << "\n"
       << "  Size: " << x << wchar_t(finalcut::fc::Times)
                     << y << "\n"
@@ -943,7 +943,7 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
   finalcut::FLineEdit* lineedit = static_cast<finalcut::FLineEdit*>(widget);
   finalcut::FString title;
   *lineedit >> title;
-  setTermTitle (title);
+  getFTerm().setTermTitle (title);
   setText (title);
   redraw();
 }
@@ -1048,17 +1048,17 @@ int main (int argc, char* argv[])
 
   // Create the application object app
   finalcut::FApplication app(argc, argv);
-  app.redefineDefaultColors(true);
-  app.setTermTitle (title);
+  app.getFTerm().redefineDefaultColors(true);
+  app.getFTerm().setTermTitle (title);
 
   // Force vt100 encoding
-  //app.setEncoding("VT100");
+  //app.getFTerm().setEncoding(finalcut::fc::VT100);
 
   // Sets the terminal size to 94×30
   //app.setTermSize(94,30);
 
   // Enable the final cut graphical font
-  //app.setNewFont();
+  //app.getFTerm().setNewFont();
 
   // Create main dialog object d
   MyDialog d(&app);
