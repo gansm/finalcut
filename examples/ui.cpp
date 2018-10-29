@@ -1048,8 +1048,8 @@ int main (int argc, char* argv[])
 
   // Create the application object app
   finalcut::FApplication app(argc, argv);
-  app.getFTerm().redefineDefaultColors(true);
-  app.getFTerm().setTermTitle (title);
+  app.redefineDefaultColors(true);
+  app.setTermTitle (title);
 
   // Force vt100 encoding
   //app.getFTerm().setEncoding(finalcut::fc::VT100);

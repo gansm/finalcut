@@ -129,7 +129,7 @@ void FVTerm::setTermXY (int x, int y)
   term_x = term_pos->getX();
   term_y = term_pos->getY();
 
-  move_str = fterm->moveCursor (term_x, term_y, x, y);
+  move_str = FTerm::moveCursor (term_x, term_y, x, y);
 
   if ( move_str )
     appendOutputBuffer(move_str);
@@ -143,7 +143,7 @@ void FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str = fterm->cursorsVisibility (on);
+  char* visibility_str = FTerm::cursorsVisibility (on);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
@@ -1578,7 +1578,7 @@ void FVTerm::scrollAreaForward (term_area* area)
     if ( TCAP(fc::t_scroll_forward)  )
     {
       setTermXY (0, vdesktop->height);
-      fterm->scrollTermForward();
+      FTerm::scrollTermForward();
       putArea (1, 1, vdesktop);
 
       // avoid update lines from 0 to (y_max - 1)
@@ -1639,7 +1639,7 @@ void FVTerm::scrollAreaReverse (term_area* area)
     if ( TCAP(fc::t_scroll_reverse)  )
     {
       setTermXY (0, 0);
-      fterm->scrollTermReverse();
+      FTerm::scrollTermReverse();
       putArea (1, 1, vdesktop);
 
       // avoid update lines from 1 to y_max
@@ -1951,9 +1951,7 @@ void FVTerm::flush_out()
 {
   while ( ! output_buffer->empty() )
   {
-    if ( fterm )
-      fterm->Fputchar(output_buffer->front());
-
+    FTerm::Fputchar(output_buffer->front());
     output_buffer->pop();
   }
 
@@ -2011,13 +2009,13 @@ void FVTerm::init (bool disable_alt_screen)
   active_area = vdesktop;
 
   // Initialize keyboard
-  keyboard = fterm->getKeyboard();
+  keyboard = FTerm::getKeyboard();
 
   // Hide the input cursor
   hideCursor();
 
   // Initialize character lengths
-  init_characterLengths (fterm->getFOptiMove());
+  init_characterLengths (FTerm::getFOptiMove());
 }
 
 //----------------------------------------------------------------------
@@ -2050,7 +2048,7 @@ void FVTerm::finish()
   // Clear the terminal
   setNormal();
 
-  if ( fterm->hasAlternateScreen() )
+  if ( FTerm::hasAlternateScreen() )
     clearTerm();
 
   flush_out();
@@ -2170,7 +2168,7 @@ bool FVTerm::clearTerm (int fillchar)
   char*& cb = TCAP(fc::t_clr_eol);
   bool ut = FTermcap::background_color_erase;
   charData* next = &next_attribute;
-  bool normal = fterm->isNormal(next);
+  bool normal = FTerm::isNormal(next);
   appendAttributes(next);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
@@ -2275,7 +2273,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   if ( ce && min_char->code == ' ' )
   {
     uInt beginning_whitespace = 1;
-    bool normal = fterm->isNormal(min_char);
+    bool normal = FTerm::isNormal(min_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = xmin + 1; x < uInt(vt->width); x++)
@@ -2310,7 +2308,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   if ( cb && first_char->code == ' ' )
   {
     uInt leading_whitespace = 1;
-    bool normal = fterm->isNormal(first_char);
+    bool normal = FTerm::isNormal(first_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = 1; x < uInt(vt->width); x++)
@@ -2348,7 +2346,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
   if ( ce && last_char->code == ' ' )
   {
     uInt trailing_whitespace = 1;
-    bool normal = fterm->isNormal(last_char);
+    bool normal = FTerm::isNormal(last_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = uInt(vt->width) - 1; x >  0 ; x--)
@@ -2459,7 +2457,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
     return not_used;
 
   uInt whitespace = 1;
-  bool normal = fterm->isNormal(print_char);
+  bool normal = FTerm::isNormal(print_char);
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
@@ -2783,14 +2781,14 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     return;
 
   uInt code = uInt(next_char->code);
-  uInt ch_enc = fterm->charEncode(code);
+  uInt ch_enc = FTerm::charEncode(code);
 
   if ( ch_enc == code )
     return;
 
   if ( ch_enc == 0 )
   {
-    next_char->code = int(fterm->charEncode(code, fc::ASCII));
+    next_char->code = int(FTerm::charEncode(code, fc::ASCII));
     return;
   }
 
@@ -2808,7 +2806,7 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( hasUTF8() )
-        next_char->code = int(fterm->charEncode(code, fc::ASCII));
+        next_char->code = int(FTerm::charEncode(code, fc::ASCII));
       else
       {
         next_char->code += 0x5f;
@@ -2850,7 +2848,7 @@ inline void FVTerm::appendAttributes (charData*& next_attr)
   charData* term_attr = &term_attribute;
 
   // generate attribute string for the next character
-  attr_str = fterm->changeAttribute (term_attr, next_attr);
+  attr_str = FTerm::changeAttribute (term_attr, next_attr);
 
   if ( attr_str )
     appendOutputBuffer (attr_str);

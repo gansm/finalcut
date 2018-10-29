@@ -139,6 +139,7 @@ class FVTerm
     static fc::encoding   getEncoding();
     static std::string    getEncodingString();
     static const FString  getKeyName (int);
+    static char*          getTermType();
     FTerm&                getFTerm();
 
     // Mutators
@@ -215,6 +216,8 @@ class FVTerm
     static bool           setInheritBackground();
     static bool           unsetInheritBackground();
 
+    static void           setTermTitle (const FString&);
+
     // Inquiries
     static bool           isBold();
     static bool           isDim();
@@ -281,6 +284,9 @@ class FVTerm
     int                   print (term_area*, charData&);
     FVTerm&               print();
     static void           beep();
+    static void           redefineDefaultColors (bool);
+    static char*          moveCursor (int, int, int, int);
+    static void           printMoveDurations();
 
   protected:
     // Enumeration
@@ -607,23 +613,27 @@ inline FVTerm::charData FVTerm::getAttribute()
 
 //----------------------------------------------------------------------
 inline int FVTerm::getMaxColor()
-{ return fterm->getMaxColor(); }
+{ return FTerm::getMaxColor(); }
 
 //----------------------------------------------------------------------
 inline int FVTerm::getTabstop()
-{ return fterm->getTabstop(); }
+{ return FTerm::getTabstop(); }
 
 //----------------------------------------------------------------------
 inline fc::encoding FVTerm::getEncoding()
-{ return fterm->getEncoding(); }
+{ return FTerm::getEncoding(); }
 
 //----------------------------------------------------------------------
 inline std::string FVTerm::getEncodingString()
-{ return fterm->getEncodingString(); }
+{ return FTerm::getEncodingString(); }
 
 //----------------------------------------------------------------------
 inline const FString FVTerm::getKeyName (int keynum)
-{ return fterm->getKeyName(keynum); }
+{ return FTerm::getKeyName(keynum); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::getTermType()
+{ return FTerm::getTermType(); }
 
 //----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm()
@@ -853,6 +863,10 @@ inline bool FVTerm::unsetInheritBackground()
 { return setInheritBackground(false); }
 
 //----------------------------------------------------------------------
+inline void FVTerm::setTermTitle (const FString& title)
+{ FTerm::setTermTitle(title); }
+
+//----------------------------------------------------------------------
 inline bool FVTerm::isBold()
 { return next_attribute.attr.bit.bold; }
 
@@ -918,99 +932,99 @@ inline bool FVTerm::isInheritBackground()
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isMonochron()
-{ return fterm->isMonochron(); }
+{ return FTerm::isMonochron(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isXTerminal()
-{ return fterm->isXTerminal(); }
+{ return FTerm::isXTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isAnsiTerminal()
-{ return fterm->isAnsiTerminal(); }
+{ return FTerm::isAnsiTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isRxvtTerminal()
-{ return fterm->isRxvtTerminal(); }
+{ return FTerm::isRxvtTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isUrxvtTerminal()
-{ return fterm->isUrxvtTerminal(); }
+{ return FTerm::isUrxvtTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isMltermTerminal()
-{ return fterm->isMltermTerminal(); }
+{ return FTerm::isMltermTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isPuttyTerminal()
-{ return fterm->isPuttyTerminal(); }
+{ return FTerm::isPuttyTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isKdeTerminal()
-{ return fterm->isKdeTerminal(); }
+{ return FTerm::isKdeTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isGnomeTerminal()
-{ return fterm->isGnomeTerminal(); }
+{ return FTerm::isGnomeTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isKtermTerminal()
-{ return fterm->isKtermTerminal(); }
+{ return FTerm::isKtermTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isTeraTerm()
-{ return fterm->isTeraTerm(); }
+{ return FTerm::isTeraTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isSunTerminal()
-{ return fterm->isSunTerminal(); }
+{ return FTerm::isSunTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isCygwinTerminal()
-{ return fterm->isCygwinTerminal(); }
+{ return FTerm::isCygwinTerminal(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isMinttyTerm()
-{ return fterm->isMinttyTerm(); }
+{ return FTerm::isMinttyTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isLinuxTerm()
-{ return fterm->isLinuxTerm(); }
+{ return FTerm::isLinuxTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isFreeBSDTerm()
-{ return fterm->isFreeBSDTerm(); }
+{ return FTerm::isFreeBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isNetBSDTerm()
-{ return fterm->isNetBSDTerm(); }
+{ return FTerm::isNetBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isOpenBSDTerm()
-{ return fterm->isOpenBSDTerm(); }
+{ return FTerm::isOpenBSDTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isScreenTerm()
-{ return fterm->isScreenTerm(); }
+{ return FTerm::isScreenTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isTmuxTerm()
-{ return fterm->isTmuxTerm(); }
+{ return FTerm::isTmuxTerm(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isNewFont()
-{ return fterm->isNewFont(); }
+{ return FTerm::isNewFont(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isCursorHideable()
-{ return fterm->isCursorHideable(); }
+{ return FTerm::isCursorHideable(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasChangedTermSize()
-{ return fterm->hasChangedTermSize(); }
+{ return FTerm::hasChangedTermSize(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasUTF8()
-{ return fterm->hasUTF8(); }
+{ return FTerm::hasUTF8(); }
 
 //----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
@@ -1018,55 +1032,67 @@ inline FVTerm& FVTerm::print()
 
 //----------------------------------------------------------------------
 inline void FVTerm::beep()
-{ return fterm->beep(); }
+{ FTerm::beep(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::redefineDefaultColors (bool on)
+{ FTerm::redefineDefaultColors(on); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::moveCursor (int xold, int yold, int xnew, int ynew)
+{ return FTerm::moveCursor (xold, yold, xnew, ynew); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::printMoveDurations()
+{ return FTerm::printMoveDurations(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FVTerm::getLineNumber()
-{ return fterm->getLineNumber(); }
+{ return FTerm::getLineNumber(); }
 
 //----------------------------------------------------------------------
 inline std::size_t FVTerm::getColumnNumber()
-{ return fterm->getColumnNumber(); }
+{ return FTerm::getColumnNumber(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::charEncodable (uInt c)
-{ return fterm->charEncodable(c); }
+{ return FTerm::charEncodable(c); }
 
 //----------------------------------------------------------------------
 inline FKeyboard* FVTerm::getKeyboard()
-{ return fterm->getKeyboard(); }
+{ return FTerm::getKeyboard(); }
 
 //----------------------------------------------------------------------
 inline FMouseControl* FVTerm::getMouseControl()
-{ return fterm->getMouseControl(); }
+{ return FTerm::getMouseControl(); }
 
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FVTerm::getInitValues()
-{ return fterm->getInitValues(); }
+{ return getFTerm().getInitValues(); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor (bool on)
-{ return fterm->setInsertCursor(on); }
+{ return FTerm::setInsertCursor(on); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor()
-{ return fterm->setInsertCursor(true); }
+{ return FTerm::setInsertCursor(true); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::unsetInsertCursor()
-{ return fterm->setInsertCursor(false); }
+{ return FTerm::setInsertCursor(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUTF8 (bool on)
-{ return fterm->setUTF8(on); }
+{ return FTerm::setUTF8(on); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::setUTF8()
-{ return fterm->setUTF8(true); }
+{ return FTerm::setUTF8(true); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::unsetUTF8()
-{ return fterm->setUTF8(false); }
+{ return FTerm::setUTF8(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const
@@ -1082,23 +1108,23 @@ inline bool FVTerm::isVirtualWindow() const
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasHalfBlockCharacter()
-{ return fterm->hasHalfBlockCharacter(); }
+{ return FTerm::hasHalfBlockCharacter(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasShadowCharacter()
-{ return fterm->hasShadowCharacter(); }
+{ return FTerm::hasShadowCharacter(); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::initScreenSettings()
-{ fterm->initScreenSettings(); }
+{ FTerm::initScreenSettings(); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::changeTermSizeFinished()
-{ fterm->changeTermSizeFinished(); }
+{ FTerm::changeTermSizeFinished(); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::exitWithMessage (const FString& message)
-{ fterm->exitWithMessage(message); }
+{ FTerm::exitWithMessage(message); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)
