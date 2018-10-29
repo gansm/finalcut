@@ -1532,17 +1532,17 @@ void FListBox::prevListItem (int distance)
   if ( current == 1 )
     return;
 
-  if ( current < std::size_t(distance) )
+  if ( current <= std::size_t(distance) )
     current = 1;
   else
     current -= std::size_t(distance);
 
   if ( current <= std::size_t(yoffset) )
   {
-    yoffset -= distance;
-
-    if ( yoffset < 0 )
+    if ( yoffset < distance )
       yoffset = 0;
+    else
+      yoffset -= distance;
   }
 }
 
@@ -1555,17 +1555,17 @@ void FListBox::nextListItem (int distance)
   if ( current == element_count )
     return;
 
-  current += std::size_t(distance);
-
-  if ( current > element_count )
+  if ( current + std::size_t(distance) > element_count  )
     current = element_count;
+  else
+    current += std::size_t(distance);
 
   if ( current - std::size_t(yoffset) > getClientHeight() )
   {
-    yoffset += distance;
-
-    if ( yoffset > yoffset_end )
+    if ( yoffset > yoffset_end - distance )
       yoffset = yoffset_end;
+    else
+      yoffset += distance;
   }
 }
 //----------------------------------------------------------------------
