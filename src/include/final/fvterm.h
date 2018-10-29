@@ -570,7 +570,10 @@ inline FVTerm& FVTerm::operator << (const type& s)
 {
   std::wostringstream outstream;
   outstream << s;
-  print (outstream.str());
+
+  if ( ! outstream.str().empty() )
+    print (outstream.str());
+
   return *this;
 }
 
