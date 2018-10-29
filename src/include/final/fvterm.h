@@ -143,9 +143,9 @@ class FVTerm
 
     // Mutators
     void                  setTermXY (int, int);
-    static void           hideCursor (bool);
-    static void           hideCursor();
-    static void           showCursor();
+    void                  hideCursor (bool);
+    void                  hideCursor();
+    void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     void                  setPrintCursor (int, int);
     void                  setColor (short, short);

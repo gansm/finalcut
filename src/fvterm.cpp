@@ -1951,7 +1951,9 @@ void FVTerm::flush_out()
 {
   while ( ! output_buffer->empty() )
   {
-    fterm->Fputchar (output_buffer->front());
+    if ( fterm )
+      fterm->Fputchar(output_buffer->front());
+
     output_buffer->pop();
   }
 

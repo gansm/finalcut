@@ -1532,10 +1532,10 @@ void FListBox::prevListItem (int distance)
   if ( current == 1 )
     return;
 
-  current -= std::size_t(distance);
-
-  if ( current < 1 )
+  if ( current < std::size_t(distance) )
     current = 1;
+  else
+    current -= std::size_t(distance);
 
   if ( current <= std::size_t(yoffset) )
   {
