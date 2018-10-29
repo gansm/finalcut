@@ -178,12 +178,12 @@ void FStringTest::noArgumentTest()
   CPPUNIT_ASSERT ( wcstr == 0 );
   std::string str = empty.toString();
   CPPUNIT_ASSERT ( str.length() == 0 );
-  CPPUNIT_ASSERT ( str.capacity() == 15 );
   CPPUNIT_ASSERT ( str.size() == 0 );
   CPPUNIT_ASSERT ( str.empty() );
   const finalcut::FString fstr = str;
   CPPUNIT_ASSERT ( fstr.isNull() );
   CPPUNIT_ASSERT ( fstr.isEmpty() );
+  CPPUNIT_ASSERT ( fstr.capacity() == 0 );
 
   cstr = 0;
   CPPUNIT_ASSERT ( empty == cstr );
