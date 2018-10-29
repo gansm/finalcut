@@ -228,6 +228,7 @@ void FTermcapQuirks::xterm()
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
+    FTermcap::can_change_color_palette = true;
     TCAP(fc::t_initialize_color) = \
         C_STR(OSC "4;%p1%d;rgb:"
                   "%p2%{255}%*%{1000}%/%2.2X/"
@@ -397,6 +398,8 @@ void FTermcapQuirks::screen()
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
+    FTermcap::can_change_color_palette = true;
+
     if ( term_detection->isTmuxTerm() )
     {
       TCAP(fc::t_initialize_color) = \
@@ -440,6 +443,7 @@ void FTermcapQuirks::general()
   // Fallback if "Ic" is not found
   if ( ! TCAP(fc::t_initialize_color) )
   {
+    FTermcap::can_change_color_palette = true;
     TCAP(fc::t_initialize_color) = \
         C_STR(OSC "P%p1%x"
                   "%p2%{255}%*%{1000}%/%02x"

@@ -236,6 +236,7 @@ void FTermcapQuirksTest::generalTest()
   finalcut::FTermData data;
   finalcut::FTermcap::tabstop = -1;
   finalcut::FTermcap::attr_without_color = -1;
+  finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
   quirks.setTermData(&data);
@@ -244,6 +245,7 @@ void FTermcapQuirksTest::generalTest()
 
   CPPUNIT_ASSERT ( finalcut::FTermcap::tabstop == 8 );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
+  CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
                          , C_STR(CSI "3%p1%dm") );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_background].string
@@ -301,12 +303,14 @@ void FTermcapQuirksTest::xtermTest()
   finalcut::FTermData data;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
+  finalcut::FTermcap::can_change_color_palette = false;
   detect.setXTerminal (true);
   data.setTermType ("xterm");
   quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
+  CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
                          , C_STR(OSC "4;%p1%d;rgb:"
                                      "%p2%{255}%*%{1000}%/%2.2X/"
@@ -540,6 +544,7 @@ void FTermcapQuirksTest::puttyTest()
 
   finalcut::FTermData data;
   finalcut::FTermcap::background_color_erase = false;
+  finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcap::osc_support = false;
   finalcut::FTermcap::attr_without_color = -1;
   finalcut::FTermcapQuirks quirks;
@@ -553,6 +558,12 @@ void FTermcapQuirksTest::puttyTest()
   CPPUNIT_ASSERT ( finalcut::FTermcap::background_color_erase == true );
   CPPUNIT_ASSERT ( finalcut::FTermcap::osc_support == true );
   CPPUNIT_ASSERT ( finalcut::FTermcap::attr_without_color == 0 );
+  CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
+  CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
+                         , C_STR(OSC "P%p1%x"
+                                     "%p2%{255}%*%{1000}%/%02x"
+                                     "%p3%{255}%*%{1000}%/%02x"
+                                     "%p4%{255}%*%{1000}%/%02x") );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_set_a_foreground].string
                          , C_STR(CSI "%?%p1%{8}%<"
                                      "%t3%p1%d"
@@ -676,12 +687,14 @@ void FTermcapQuirksTest::screenTest()
   finalcut::FTermData data;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
+  finalcut::FTermcap::can_change_color_palette = false;
   detect.setScreenTerm (true);
   data.setTermType ("screen-256color");
   quirks.setTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
+  CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
                          , C_STR(ESC "P" OSC "4;%p1%d;rgb:"
                                  "%p2%{255}%*%{1000}%/%2.2X/"
@@ -690,8 +703,10 @@ void FTermcapQuirksTest::screenTest()
 
   detect.setTmuxTerm (true);
   caps[finalcut::fc::t_initialize_color].string = 0;
+  finalcut::FTermcap::can_change_color_palette = false;
   quirks.terminalFixup();
 
+  CPPUNIT_ASSERT ( finalcut::FTermcap::can_change_color_palette );
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_initialize_color].string
                          , C_STR(ESC "Ptmux;" ESC OSC "4;%p1%d;rgb:"
                                  "%p2%{255}%*%{1000}%/%2.2X/"

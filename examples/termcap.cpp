@@ -261,6 +261,8 @@ void booleans()
   std::cout << "\r\n[Booleans]\r\n";
   tcapBoolean ( "background_color_erase"
               , finalcut::FTermcap::background_color_erase );
+  tcapBoolean ( "can_change_color_palette"
+              , finalcut::FTermcap::can_change_color_palette );
   tcapBoolean ( "automatic_left_margin"
               , finalcut::FTermcap::automatic_left_margin );
   tcapBoolean ( "automatic_right_margin"
