@@ -140,6 +140,7 @@ class FVTerm
     static std::string    getEncodingString();
     static const FString  getKeyName (int);
     static char*          getTermType();
+    static char*          getTermFileName();
     FTerm&                getFTerm();
 
     // Mutators
@@ -634,6 +635,10 @@ inline const FString FVTerm::getKeyName (int keynum)
 //----------------------------------------------------------------------
 inline char* FVTerm::getTermType()
 { return FTerm::getTermType(); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::getTermFileName()
+{ return FTerm::getTermFileName(); }
 
 //----------------------------------------------------------------------
 inline FTerm& FVTerm::getFTerm()

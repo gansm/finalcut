@@ -836,8 +836,8 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
   (
     "Environment"
     , finalcut::FString()
-      << "  Type: " << getFTerm().getTermType() << "\n"
-      << "  Name: " << getFTerm().getTermFileName() << "\n"
+      << "  Type: " << getTermType() << "\n"
+      << "  Name: " << getTermFileName() << "\n"
       << "  Mode: " << getEncodingString() << "\n"
       << "  Size: " << x << wchar_t(finalcut::fc::Times)
                     << y << "\n"
@@ -943,7 +943,7 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
   finalcut::FLineEdit* lineedit = static_cast<finalcut::FLineEdit*>(widget);
   finalcut::FString title;
   *lineedit >> title;
-  getFTerm().setTermTitle (title);
+  setTermTitle (title);
   setText (title);
   redraw();
 }

@@ -316,9 +316,8 @@ int main (int argc, char* argv[])
   finalcut::FTermcap::tcap_map* tcap = 0;
   tcap = finalcut::FTermcap::getTermcapMap();
 
-  finalcut::FTerm& fterm = TermApp.getFTerm();
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";
-  std::cout << "Terminal: " << fterm.getTermType() << "\r\n";
+  std::cout << "Terminal: " << TermApp.getTermType() << "\r\n";
 
   debug (TermApp);
 
