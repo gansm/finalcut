@@ -403,7 +403,7 @@ char* FTerm::cursorsVisibility (bool on)
 //----------------------------------------------------------------------
 void FTerm::printMoveDurations()
 {
-  opti_move->printDurations();
+  finalcut::printDurations(*opti_move);
 }
 
 //----------------------------------------------------------------------

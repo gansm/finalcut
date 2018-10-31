@@ -23,6 +23,7 @@ Depends:
   , ${misc:Depends}
 Suggests:
     coreutils
+  , ncurses-term
   , grep
   , sed
   , vim-common
