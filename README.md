@@ -248,6 +248,12 @@ License
 -------
 GNU Lesser General Public License Version 3
 
+Frequently Asked Questions
+--------------------------
+If you have any problems, please read the
+[FAQ](doc/faq.md#frequently-asked-questions)
+before you give up.
+
 Please send bug reports to
 --------------------------
 https://github.com/gansm/finalcut/issues

@@ -89,7 +89,7 @@ FTermDetection::~FTermDetection()  // destructor
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
-void FTermDetection::setTermData (FTermData* data)
+void FTermDetection::setFTermData (FTermData* data)
 {
   fterm_data = data;
 }

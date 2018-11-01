@@ -49,7 +49,7 @@ FTermcapQuirks::~FTermcapQuirks()  // destructor
 
 // public methods of FTermcapQuirks
 //----------------------------------------------------------------------
-void FTermcapQuirks::setTermData (FTermData* data)
+void FTermcapQuirks::setFTermData (FTermData* data)
 {
   fterm_data = data;
 }

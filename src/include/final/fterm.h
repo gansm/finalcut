@@ -143,6 +143,9 @@
 namespace finalcut
 {
 
+// class forward declaration
+class FTermDebugData;
+
 //----------------------------------------------------------------------
 // class FTerm
 //----------------------------------------------------------------------
@@ -181,13 +184,8 @@ class FTerm
     initializationValues&  getInitValues();
 
 #if DEBUG
-    static const FString&  getAnswerbackString();
-    static const FString&  getSecDAString();
-    static const char*     getTermType_256color();
-    static const char*     getTermType_Answerback();
-    static const char*     getTermType_SecDA();
-    static int             getFramebufferBpp();
-#endif  // DEBUG
+    FTermDebugData&        getFTermDebugData();
+#endif
 
     // Inquiries
     static bool            isNormal (charData*&);
@@ -410,6 +408,10 @@ class FTerm
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
     static FTermOpenBSD*   openbsd;
 #endif
+
+#if DEBUG
+    static FTermDebugData* debug_data;
+#endif
 };
 
 #pragma pack(pop)
@@ -453,28 +455,8 @@ inline FTerm::initializationValues& FTerm::getInitValues()
 
 #if DEBUG
 //----------------------------------------------------------------------
-inline const FString& FTerm::getAnswerbackString()
-{ return term_detection->getAnswerbackString(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTerm::getSecDAString()
-{ return term_detection->getSecDAString(); }
-
-//----------------------------------------------------------------------
-inline const char* FTerm::getTermType_256color()
-{ return term_detection->getTermType_256color(); }
-
-//----------------------------------------------------------------------
-inline const char* FTerm::getTermType_Answerback()
-{ return term_detection->getTermType_Answerback(); }
-
-//----------------------------------------------------------------------
-inline const char* FTerm::getTermType_SecDA()
-{ return term_detection->getTermType_SecDA(); }
-
-//----------------------------------------------------------------------
-inline int FTerm::getFramebufferBpp()
-{ return data->getFramebufferBpp(); }
+inline FTermDebugData& FTerm::getFTermDebugData()
+{ return *debug_data; }
 #endif  // DEBUG
 
 //----------------------------------------------------------------------
@@ -597,6 +579,68 @@ inline FOptiMove* FTerm::getFOptiMove()
 inline void FTerm::changeTermSizeFinished()
 { data->setTermResized(false); }
 
+
+#if DEBUG
+//----------------------------------------------------------------------
+// class FTermDebugData
+//----------------------------------------------------------------------
+
+class FTermDebugData
+{
+  public:
+    // Accessors
+    const FString& getAnswerbackString();
+    const FString& getSecDAString();
+    const char*    getTermType_256color();
+    const char*    getTermType_Answerback();
+    const char*    getTermType_SecDA();
+#if defined(__linux__)
+    int            getFramebufferBpp();
+#endif
+    // Mutators
+    void           setFTermDetection (FTermDetection*);
+    void           setFTermData (FTermData*);
+
+  private:
+    FTermDetection* term_detection;
+    FTermData*      data;
+};
+
+//----------------------------------------------------------------------
+inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
+{ term_detection = obj; }
+
+//----------------------------------------------------------------------
+inline void FTermDebugData::setFTermData (FTermData* obj)
+{ data = obj; }
+
+//----------------------------------------------------------------------
+inline const FString& FTermDebugData::getAnswerbackString()
+{ return term_detection->getAnswerbackString(); }
+
+//----------------------------------------------------------------------
+inline const FString& FTermDebugData::getSecDAString()
+{ return term_detection->getSecDAString(); }
+
+//----------------------------------------------------------------------
+inline const char* FTermDebugData::getTermType_256color()
+{ return term_detection->getTermType_256color(); }
+
+//----------------------------------------------------------------------
+inline const char* FTermDebugData::getTermType_Answerback()
+{ return term_detection->getTermType_Answerback(); }
+
+//----------------------------------------------------------------------
+inline const char* FTermDebugData::getTermType_SecDA()
+{ return term_detection->getTermType_SecDA(); }
+
+//----------------------------------------------------------------------
+#if defined(__linux__)
+inline int FTermDebugData::getFramebufferBpp()
+{ return data->getFramebufferBpp(); }
+#endif  // defined(__linux__)
+
+#endif  // DEBUG
 
 }  // namespace finalcut
 

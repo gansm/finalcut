@@ -65,7 +65,7 @@ FTermcap::~FTermcap()  // destructor
 
 // public methods of FTermcap
 //----------------------------------------------------------------------
-void FTermcap::setTermData (FTermData* data)
+void FTermcap::setFTermData (FTermData* data)
 {
   fterm_data = data;
 }

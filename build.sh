@@ -30,7 +30,7 @@ if [ -n "$1" ]
 then
   if [ ! -f ./configure ]
   then
-    if which autoreconf >/dev/null
+    if command -v autoreconf >/dev/null
     then
       autoreconf --install --force
     else

@@ -386,7 +386,7 @@ inline void FTermData::setXtermTitle (const FString& title)
 { xterm_title = title; }
 
 //----------------------------------------------------------------------
-#if DEBUG
+#if DEBUG && defined(__linux__)
 inline void FTermData::setFramebufferBpp (int bpp)
 { framebuffer_bpp = bpp; }
 #endif

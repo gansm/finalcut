@@ -153,7 +153,7 @@ class FTermDetection
     static void           setScreenTerm (bool);
     static void           setTmuxTerm (bool);
     static void           setTerminalDetection (bool);
-    static void           setTermData (FTermData*);
+    static void           setFTermData (FTermData*);
     static void           setTtyTypeFileName (char[]);
 
     // Methods
