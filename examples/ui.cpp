@@ -1052,13 +1052,13 @@ int main (int argc, char* argv[])
   app.setTermTitle (title);
 
   // Force vt100 encoding
-  //app.getFTerm().setEncoding(finalcut::fc::VT100);
+  //app.setEncoding(finalcut::fc::VT100);
 
   // Sets the terminal size to 94×30
   //app.setTermSize(94,30);
 
   // Enable the final cut graphical font
-  //app.getFTerm().setNewFont();
+  //app.setNewFont();
 
   // Create main dialog object d
   MyDialog d(&app);

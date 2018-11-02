@@ -127,6 +127,7 @@
 #include "final/ftermcap.h"
 #include "final/ftermcapquirks.h"
 #include "final/ftermdata.h"
+#include "final/ftermdebugdata.h"
 #include "final/ftermdetection.h"
 
 #if defined(__linux__)
@@ -142,9 +143,6 @@
 
 namespace finalcut
 {
-
-// class forward declaration
-class FTermDebugData;
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -578,69 +576,6 @@ inline FOptiMove* FTerm::getFOptiMove()
 //----------------------------------------------------------------------
 inline void FTerm::changeTermSizeFinished()
 { data->setTermResized(false); }
-
-
-#if DEBUG
-//----------------------------------------------------------------------
-// class FTermDebugData
-//----------------------------------------------------------------------
-
-class FTermDebugData
-{
-  public:
-    // Accessors
-    const FString& getAnswerbackString();
-    const FString& getSecDAString();
-    const char*    getTermType_256color();
-    const char*    getTermType_Answerback();
-    const char*    getTermType_SecDA();
-#if defined(__linux__)
-    int            getFramebufferBpp();
-#endif
-    // Mutators
-    void           setFTermDetection (FTermDetection*);
-    void           setFTermData (FTermData*);
-
-  private:
-    FTermDetection* term_detection;
-    FTermData*      data;
-};
-
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
-{ term_detection = obj; }
-
-//----------------------------------------------------------------------
-inline void FTermDebugData::setFTermData (FTermData* obj)
-{ data = obj; }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getAnswerbackString()
-{ return term_detection->getAnswerbackString(); }
-
-//----------------------------------------------------------------------
-inline const FString& FTermDebugData::getSecDAString()
-{ return term_detection->getSecDAString(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_256color()
-{ return term_detection->getTermType_256color(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_Answerback()
-{ return term_detection->getTermType_Answerback(); }
-
-//----------------------------------------------------------------------
-inline const char* FTermDebugData::getTermType_SecDA()
-{ return term_detection->getTermType_SecDA(); }
-
-//----------------------------------------------------------------------
-#if defined(__linux__)
-inline int FTermDebugData::getFramebufferBpp()
-{ return data->getFramebufferBpp(); }
-#endif  // defined(__linux__)
-
-#endif  // DEBUG
 
 }  // namespace finalcut
 

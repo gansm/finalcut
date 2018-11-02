@@ -221,6 +221,10 @@ class FVTerm
     static bool           unsetInheritBackground();
 
     static void           setTermTitle (const FString&);
+    static void           setEncoding (fc::encoding);
+    static bool           setVGAFont();
+    static bool           setNewFont();
+    static bool           setOldFont();
 
     // Inquiries
     static bool           isBold();
@@ -879,6 +883,22 @@ inline bool FVTerm::unsetInheritBackground()
 //----------------------------------------------------------------------
 inline void FVTerm::setTermTitle (const FString& title)
 { FTerm::setTermTitle(title); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setEncoding (fc::encoding enc)
+{ FTerm::setEncoding(enc); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setVGAFont()
+{ return FTerm::setVGAFont(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setNewFont()
+{ return FTerm::setNewFont(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setOldFont()
+{ return FTerm::setOldFont(); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::isBold()

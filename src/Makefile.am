@@ -115,6 +115,7 @@ finalcutinclude_HEADERS = \
 	include/final/ftermfreebsd.h \
 	include/final/ftermopenbsd.h \
 	include/final/ftermlinux.h \
+	include/final/ftermdebugdata.h \
 	include/final/ftermdetection.h \
 	include/final/ftermios.h \
 	include/final/fterm.h \
