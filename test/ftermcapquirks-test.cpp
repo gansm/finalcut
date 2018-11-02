@@ -239,7 +239,7 @@ void FTermcapQuirksTest::generalTest()
   finalcut::FTermcap::can_change_color_palette = false;
   finalcut::FTermcapQuirks quirks;
   finalcut::FTermDetection detect;
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -306,7 +306,7 @@ void FTermcapQuirksTest::xtermTest()
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setXTerminal (true);
   data.setTermType ("xterm");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -339,7 +339,7 @@ void FTermcapQuirksTest::freebsdTest()
   finalcut::FTermDetection detect;
   detect.setFreeBSDTerm (true);
   data.setTermType ("xterm-16color");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -378,7 +378,7 @@ void FTermcapQuirksTest::cygwinTest()
   finalcut::FTermDetection detect;
   detect.setCygwinTerminal (true);
   data.setTermType ("cygwin");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -406,7 +406,7 @@ void FTermcapQuirksTest::linuxTest()
   finalcut::FTermDetection detect;
   detect.setLinuxTerm (true);
   data.setTermType ("linux");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -478,7 +478,7 @@ void FTermcapQuirksTest::rxvtTest()
   finalcut::FTermDetection detect;
   detect.setRxvtTerminal (true);
   data.setTermType ("rxvt");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -522,7 +522,7 @@ void FTermcapQuirksTest::vteTest()
   finalcut::FTermDetection detect;
   detect.setGnomeTerminal (true);
   data.setTermType ("gnome-256color");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -551,7 +551,7 @@ void FTermcapQuirksTest::puttyTest()
   finalcut::FTermDetection detect;
   detect.setPuttyTerminal (true);
   data.setTermType ("putty");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -640,7 +640,7 @@ void FTermcapQuirksTest::teratermTest()
   finalcut::FTermDetection detect;
   detect.setTeraTerm (true);
   data.setTermType ("teraterm");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -666,7 +666,7 @@ void FTermcapQuirksTest::sunTest()
   finalcut::FTermDetection detect;
   detect.setSunTerminal (true);
   data.setTermType ("sun-color");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
@@ -690,7 +690,7 @@ void FTermcapQuirksTest::screenTest()
   finalcut::FTermcap::can_change_color_palette = false;
   detect.setScreenTerm (true);
   data.setTermType ("screen-256color");
-  quirks.setTermData(&data);
+  quirks.setFTermData(&data);
   quirks.setFTermDetection (&detect);
   quirks.terminalFixup();
 
