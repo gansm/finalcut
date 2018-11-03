@@ -1,3 +1,7 @@
+2018-11-03  Markus Gans  <guru.mail@muenster.de>
+	* New method rgb2ColorIndex() to converts a 24-bit RGB color 
+	  to a 256-color compatible approximation
+
 2018-11-01  Markus Gans  <guru.mail@muenster.de>
 	* Moved FTerm debug access methods to FTermDebugData
 

@@ -72,7 +72,7 @@ The title bar of the dialog box gets the text "A dialog".
 dialog.setGeometry (25, 5, 30, 10);
 ```
 The dialog window gets a width of 30 and a height of 10 characters.
-The window in the terminal is located at the positions x=25 and
+The position of the window in the terminal is at x=25 and
 y=5 (note: x=1 and y=1 represents the upper left corner).
 
 ```cpp
@@ -93,7 +93,7 @@ if available) visible.
 return app.exec();
 ```
 The last line calls `exec()` to start the application and return
-the result to the operating system. When the application starts,
-it enters the main event loop. This loop doesn't end until the
-window/application is closed.
+the result to the operating system. The started application enters
+the main event loop. This loop does not end until the window is
+not closed.
 

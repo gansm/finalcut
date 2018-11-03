@@ -87,8 +87,8 @@ How can I fix display problems?
 * Make sure that the environment variable TERM has the right 
   terminal name.
 
-* With the command "`msgcat --color=test`" you can test whether 
-  the colors are displayed correctly in the terminal
+* Use the command "`msgcat --color=test`" to test whether the terminal 
+  displays colors correctly in the terminal.
 
 * If characters are not displayed in the right place on the screen, 
   it may help to disable cursor optimization for your program with 

@@ -153,6 +153,7 @@ class FVTerm
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     void                  setPrintCursor (int, int);
+    short                 rgb2ColorIndex (short, short, short);
     void                  setColor (short, short);
     static void           setNormal();
 
