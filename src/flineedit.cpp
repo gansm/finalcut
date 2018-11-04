@@ -239,16 +239,16 @@ bool FLineEdit::setShadow (bool on)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags |= fc::shadow;
+    flags.shadow = true;
     setShadowSize(1,1);
   }
   else
   {
-    flags &= ~fc::shadow;
+    flags.shadow = false;
     setShadowSize(0,0);
   }
 
-  return on;
+  return flags.shadow;
 }
 
 //----------------------------------------------------------------------
@@ -698,11 +698,9 @@ bool FLineEdit::hasHotkey()
 //----------------------------------------------------------------------
 void FLineEdit::draw()
 {
-  bool isFocus;
   drawInputField();
-  isFocus = ((flags & fc::focus) != 0);
 
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -718,12 +716,9 @@ void FLineEdit::draw()
 //----------------------------------------------------------------------
 void FLineEdit::drawInputField()
 {
-  bool isActiveFocus, isShadow;
   std::size_t x;
   FString show_text;
-  int active_focus = fc::active + fc::focus;
-  isActiveFocus = ((flags & active_focus) == active_focus);
-  isShadow = ((flags & fc::shadow) != 0 );
+  bool isActiveFocus = flags.active && flags.focus;
   setPrintPos (1, 1);
 
   if ( isMonochron() )
@@ -776,7 +771,7 @@ void FLineEdit::drawInputField()
     setUnderline(false);
   }
 
-  if ( isShadow )
+  if ( flags.shadow )
     drawShadow ();
 
   // set the cursor to the first pos.

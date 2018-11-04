@@ -282,11 +282,11 @@ inline void FDialog::setText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline bool FDialog::isModal()
-{ return ((flags & fc::modal) != 0); }
+{ return flags.modal; }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isScrollable()
-{ return ((flags & fc::scrollable) != 0); }
+{ return flags.scrollable; }
 
 }  // namespace finalcut
 

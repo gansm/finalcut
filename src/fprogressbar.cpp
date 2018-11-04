@@ -83,12 +83,12 @@ bool FProgressbar::setShadow (bool on)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags |= fc::shadow;
+    flags.shadow = true;
     setShadowSize(1,1);
   }
   else
   {
-    flags &= ~fc::shadow;
+    flags.shadow = false;
     setShadowSize(0,0);
   }
 
@@ -157,7 +157,7 @@ void FProgressbar::draw()
   drawPercentage();
   drawBar();
 
-  if ( (flags & fc::shadow) != 0 )
+  if ( flags.shadow )
     drawShadow ();
 
   flush_out();

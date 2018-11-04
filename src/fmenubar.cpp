@@ -554,7 +554,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   bool is_selected = menuitem->isSelected();
 
   txtdata.startpos = x + 1;
-  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+  txtdata.no_underline = menuitem->getFlags().no_underline;
 
   // Set screen attributes
   setLineAttributes (menuitem);

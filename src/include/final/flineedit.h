@@ -227,7 +227,7 @@ inline bool FLineEdit::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
-{ return ((flags & fc::shadow) != 0); }
+{ return flags.shadow; }
 
 }  // namespace finalcut
 

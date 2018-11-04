@@ -79,24 +79,6 @@ enum events
   Timer_Event               // timer event occur
 };
 
-// Properties of a widget ⚑
-enum widget_flags
-{
-  shadow        = 0x00000001,
-  trans_shadow  = 0x00000002,
-  active        = 0x00000004,
-  focus         = 0x00000008,
-  scrollable    = 0x00000010,
-  resizeable    = 0x00000020,
-  modal         = 0x00000040,
-  window_widget = 0x00000080,
-  dialog_widget = 0x00000100,
-  menu_widget   = 0x00000200,
-  always_on_top = 0x00000400,
-  flat          = 0x00000800,
-  no_underline  = 0x00001000
-};
-
 // Internal character encoding
 enum encoding
 {

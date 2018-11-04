@@ -872,8 +872,6 @@ void FListBox::init()
 //----------------------------------------------------------------------
 void FListBox::draw()
 {
-  bool isFocus;
-
   if ( current < 1 )
     current = 1;
 
@@ -910,9 +908,8 @@ void FListBox::draw()
     hbar->redraw();
 
   drawList();
-  isFocus = ((flags & fc::focus) != 0);
 
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -1017,14 +1014,13 @@ inline void FListBox::drawListLine ( int y
   std::size_t i, len;
   std::size_t inc_len = inc_search.getLength();
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  bool isFocus = ((flags & fc::focus) != 0);
   FString element;
   element = getString(iter).mid ( std::size_t(1 + xoffset)
                                 , getWidth() - nf_offset - 4 );
   const wchar_t* const& element_str = element.wc_str();
   len = element.getLength();
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -1035,14 +1031,14 @@ inline void FListBox::drawListLine ( int y
 
   for (i = 0; i < len; i++)
   {
-    if ( serach_mark && i == inc_len && isFocus  )
+    if ( serach_mark && i == inc_len && flags.focus  )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
     print (element_str[i]);
   }
 
-  if ( isMonochron() && isCurrentLine  && isFocus )
+  if ( isMonochron() && isCurrentLine  && flags.focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     i++;
@@ -1116,9 +1112,8 @@ inline void FListBox::drawListBracketsLine ( int y
             , i = 0
             , b = 0;
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  bool isFocus = ((flags & fc::focus) != 0);
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -1164,7 +1159,7 @@ inline void FListBox::drawListBracketsLine ( int y
     i++;
   }
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     i++;
@@ -1180,10 +1175,8 @@ inline void FListBox::setLineAttributes ( int y
                                         , bool lineHasBrackets
                                         , bool& serach_mark )
 {
-  bool isFocus = ((flags & fc::focus) != 0)
-     , isCurrentLine = bool(y + yoffset + 1 == int(current));
+  bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   std::size_t inc_len = inc_search.getLength();
-
   setPrintPos (2, 2 + int(y));
 
   if ( isLineSelected )
@@ -1203,14 +1196,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( isFocus && getMaxColor() < 16 )
+    if ( flags.focus && getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
       if ( isMonochron() )
         setBold();
-      else if ( isFocus )
+      else if ( flags.focus )
         setColor ( wc.selected_current_element_focus_fg
                  , wc.selected_current_element_focus_bg );
       else
@@ -1224,7 +1217,7 @@ inline void FListBox::setLineAttributes ( int y
       if ( isMonochron() )
         unsetBold();
 
-      if ( isFocus )
+      if ( flags.focus )
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
@@ -1251,7 +1244,7 @@ inline void FListBox::setLineAttributes ( int y
   {
     if ( isMonochron() )
       setReverse(true);
-    else if ( isFocus && getMaxColor() < 16 )
+    else if ( flags.focus && getMaxColor() < 16 )
       unsetBold();
   }
 }

@@ -157,12 +157,7 @@ void FButton::setInactiveBackgroundColor (short color)
 //----------------------------------------------------------------------
 bool FButton::setNoUnderline (bool on)
 {
-  if ( on )
-    flags |= fc::no_underline;
-  else
-    flags &= ~fc::no_underline;
-
-  return on;
+  return (flags.no_underline = on);
 }
 
 //----------------------------------------------------------------------
@@ -211,11 +206,7 @@ bool FButton::setFocus (bool on)
 //----------------------------------------------------------------------
 bool FButton::setFlat (bool on)
 {
-  if ( on )
-    flags |= fc::flat;
-  else
-    flags &= ~fc::flat;
-  return on;
+  return (flags.flat = on);
 }
 
 //----------------------------------------------------------------------
@@ -225,16 +216,16 @@ bool FButton::setShadow (bool on)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags |= fc::shadow;
+    flags.shadow = true;
     setShadowSize(1,1);
   }
   else
   {
-    flags &= ~fc::shadow;
+    flags.shadow = false;
     setShadowSize(0,0);
   }
 
-  return on;
+  return flags.shadow;
 }
 
 //----------------------------------------------------------------------
@@ -465,13 +456,12 @@ void FButton::init()
 //----------------------------------------------------------------------
 void FButton::getButtonState()
 {
-  int active_focus = fc::active + fc::focus;
-  is.active_focus = ((flags & active_focus) == active_focus);
-  is.active = ((flags & fc::active) != 0);
-  is.focus = ((flags & fc::focus) != 0);
+  is.active_focus = flags.active && flags.focus;
+  is.active = flags.active;
+  is.focus = flags.focus;
   is.flat = isFlat();
-  is.non_flat_shadow = ((flags & (fc::shadow + fc::flat)) == fc::shadow);
-  is.no_underline = ((flags & fc::no_underline) != 0);
+  is.non_flat_shadow = ! flags.flat && flags.shadow;
+  is.no_underline = flags.no_underline;
 }
 
 //----------------------------------------------------------------------
@@ -666,9 +656,13 @@ inline void FButton::drawTopBottomBackground()
 inline void FButton::drawButtonTextLine (wchar_t button_text[])
 {
   std::size_t pos;
-  center_offset = (getWidth() - txtlength - 1) / 2;
   setPrintPos (2 + int(indent), 1 + int(vcenter_offset));
   setColor (button_fg, button_bg);
+
+  if ( getWidth() < txtlength + 1 )
+    center_offset = 0;
+  else
+    center_offset = (getWidth() - txtlength - 1) / 2;
 
   // Print button text line --------
   for (pos = 0; pos < center_offset; pos++)

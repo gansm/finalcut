@@ -142,6 +142,8 @@ class FWidget : public FVTerm, public FObject
     typedef void (FWidget::*FMemberCallback)(FWidget*, data_ptr);
     typedef std::vector<accelerator> Accelerators;
 
+    struct widget_flags;  // forward declaration
+
     // Constructor
     explicit FWidget (FWidget* = 0, bool = false);
 
@@ -188,7 +190,7 @@ class FWidget : public FVTerm, public FObject
     const FRect&       getTermGeometryWithShadow();
     std::size_t        getDesktopWidth();
     std::size_t        getDesktopHeight();
-    int                getFlags() const;
+    widget_flags       getFlags() const;
     FPoint             getCursorPos();
     FPoint             getPrintPos();
     std::vector<bool>& doubleFlatLine_ref (fc::sides);
@@ -373,7 +375,24 @@ class FWidget : public FVTerm, public FObject
     virtual void       onClose (FCloseEvent*);
 
     // Data Members
-    int                   flags;
+    struct widget_flags  // Properties of a widget ⚑
+    {
+      uInt32 shadow        : 1;
+      uInt32 trans_shadow  : 1;
+      uInt32 active        : 1;
+      uInt32 focus         : 1;
+      uInt32 scrollable    : 1;
+      uInt32 resizeable    : 1;
+      uInt32 modal         : 1;
+      uInt32 window_widget : 1;
+      uInt32 dialog_widget : 1;
+      uInt32 menu_widget   : 1;
+      uInt32 always_on_top : 1;
+      uInt32 flat          : 1;
+      uInt32 no_underline  : 1;
+      uInt32               : 19;  // padding bits
+    } flags;
+
     static uInt           modal_dialogs;
     static FWidgetColors  wc;
     static widgetList*    dialog_list;
@@ -407,10 +426,8 @@ class FWidget : public FVTerm, public FObject
     static void        setColorTheme();
 
     // Data Members
-    bool               enable;
     bool               visible;
     bool               shown;
-    bool               focus;
     bool               focusable;
     bool               visible_cursor;
     FPoint             widget_cursor_position;
@@ -685,7 +702,7 @@ inline std::size_t FWidget::getDesktopHeight()
 { return getLineNumber(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getFlags() const
+inline FWidget::widget_flags FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
@@ -873,19 +890,19 @@ inline bool FWidget::isShown() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::isWindowWidget() const
-{ return ((flags & fc::window_widget) != 0); }
+{ return flags.window_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isDialogWidget() const
-{ return ((flags & fc::dialog_widget) != 0); }
+{ return flags.dialog_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isMenuWidget() const
-{ return ((flags & fc::menu_widget) != 0); }
+{ return flags.menu_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isEnabled() const
-{ return enable; }
+{ return flags.active; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasVisibleCursor() const
@@ -893,7 +910,7 @@ inline bool FWidget::hasVisibleCursor() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasFocus() const
-{ return focus; }
+{ return flags.focus; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptFocus() const  // is focusable

@@ -93,16 +93,12 @@ bool FWindow::setWindowWidget (bool on)
   if ( isWindowWidget() == on )
     return true;
 
+  flags.window_widget = on;
+
   if ( on )
-  {
-    flags |= fc::window_widget;
     setTermOffset();
-  }
   else
-  {
-    flags &= ~fc::window_widget;
     setParentOffset();
-  }
 
   return on;
 }
@@ -179,29 +175,18 @@ void FWindow::unsetActiveWindow()
 //----------------------------------------------------------------------
 bool FWindow::setResizeable (bool on)
 {
-  if ( on )
-    flags |= fc::resizeable;
-  else
-    flags &= ~fc::resizeable;
-
-  return on;
+  return (flags.resizeable = on);
 }
 
 //----------------------------------------------------------------------
 bool FWindow::setTransparentShadow (bool on)
 {
+  flags.shadow = flags.trans_shadow = on;
+
   if ( on )
-  {
-    flags |= fc::shadow;
-    flags |= fc::trans_shadow;
     setShadowSize (2,1);
-  }
   else
-  {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
     setShadowSize (0,0);
-  }
 
   return on;
 }
@@ -214,14 +199,14 @@ bool FWindow::setShadow (bool on)
 
   if ( on )
   {
-    flags |= fc::shadow;
-    flags &= ~fc::trans_shadow;
+    flags.shadow = true;
+    flags.trans_shadow = false;
     setShadowSize (1,1);
   }
   else
   {
-    flags &= ~fc::shadow;
-    flags &= ~fc::trans_shadow;
+    flags.shadow = false;
+    flags.trans_shadow = false;
     setShadowSize (0,0);
   }
 
@@ -234,10 +219,10 @@ bool FWindow::setAlwaysOnTop (bool on)
   if ( isAlwaysOnTop() == on )
     return true;
 
+  flags.always_on_top = on;
+
   if ( on )
   {
-    flags |= fc::always_on_top;
-
     if ( always_on_top_list )
     {
       deleteFromAlwaysOnTopList (this);
@@ -245,10 +230,7 @@ bool FWindow::setAlwaysOnTop (bool on)
     }
   }
   else
-  {
-    flags &= ~fc::always_on_top;
     deleteFromAlwaysOnTopList (this);
-  }
 
   return on;
 }
@@ -580,10 +562,10 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
   if ( window_list->empty() )
     return;
 
-  if ( (obj1->getFlags() & fc::modal) != 0 )
+  if ( obj1->getFlags().modal )
     return;
 
-  if ( (obj2->getFlags() & fc::modal) != 0 )
+  if ( obj2->getFlags().modal )
     return;
 
   iter  = window_list->begin();
@@ -623,7 +605,7 @@ bool FWindow::raiseWindow (FWidget* obj)
   if ( window_list->back() == obj )
     return false;
 
-  if ( (window_list->back()->getFlags() & fc::modal) != 0
+  if ( window_list->back()->getFlags().modal
     && ! obj->isMenuWidget() )
     return false;
 
@@ -665,7 +647,7 @@ bool FWindow::lowerWindow (FWidget* obj)
   if ( window_list->front() == obj )
     return false;
 
-  if ( (obj->getFlags() & fc::modal) != 0 )
+  if ( obj->getFlags().modal )
     return false;
 
   iter = window_list->begin();

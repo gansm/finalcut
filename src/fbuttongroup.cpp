@@ -543,9 +543,6 @@ bool FButtonGroup::isRadioButton (FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  if ( isEnabled() )
-    flags |= fc::active;
-
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
   setMinimumSize (7, 4);
@@ -582,9 +579,6 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
                             , std::size_t hotkeypos
                             , std::size_t length )
 {
-  bool isActive = ((flags & fc::active) != 0);
-  bool isNoUnderline = ((flags & fc::no_underline) != 0);
-
   if ( isMonochron() )
     setReverse(true);
 
@@ -595,16 +589,16 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
 
   for (std::size_t z = 0; z < length; z++)
   {
-    if ( (z == hotkeypos) && isActive )
+    if ( (z == hotkeypos) && flags.active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print (LabelText[z]);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       setColor (wc.label_emphasis_fg, wc.label_bg);

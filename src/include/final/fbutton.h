@@ -265,7 +265,7 @@ inline bool FButton::unsetClickAnimation()
 
 //----------------------------------------------------------------------
 inline bool FButton::isFlat() const
-{ return ((flags & fc::flat) != 0); }
+{ return flags.flat; }
 
 //----------------------------------------------------------------------
 inline bool FButton::isDown() const
@@ -273,7 +273,7 @@ inline bool FButton::isDown() const
 
 //----------------------------------------------------------------------
 inline bool FButton::hasShadow() const
-{ return ((flags & fc::shadow) != 0); }
+{ return flags.shadow; }
 
 //----------------------------------------------------------------------
 inline bool FButton::hasClickAnimation()

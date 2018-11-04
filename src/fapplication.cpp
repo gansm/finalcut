@@ -188,7 +188,7 @@ bool FApplication::sendEvent ( const FObject* receiver
 
     // block events for widgets in non modal windows
     if ( window
-      && (window->getFlags() & fc::modal) == 0
+      && ! window->getFlags().modal
       && ! window->isMenuWidget() )
     {
       switch ( event->type() )

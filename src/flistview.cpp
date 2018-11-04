@@ -1481,8 +1481,6 @@ std::size_t FListView::getAlignOffset ( fc::text_alignment align
 //----------------------------------------------------------------------
 void FListView::draw()
 {
-  bool isFocus;
-
   if ( current_iter.getPosition() < 1 )
     current_iter = itemlist.begin();
 
@@ -1519,9 +1517,8 @@ void FListView::draw()
     hbar->redraw();
 
   drawList();
-  isFocus = ((flags & fc::focus) != 0);
 
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -1587,7 +1584,6 @@ void FListView::drawColumnLabels()
 void FListView::drawList()
 {
   uInt page_height, y;
-  bool is_focus;
   FListViewIterator iter;
 
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
@@ -1595,7 +1591,6 @@ void FListView::drawList()
 
   y           = 0;
   page_height = uInt(getHeight() - 2);
-  is_focus    = ((flags & fc::focus) != 0);
   iter        = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
@@ -1605,9 +1600,9 @@ void FListView::drawList()
     setPrintPos (2, 2 + int(y));
 
     // Draw one FListViewItem
-    drawListLine (item, is_focus, is_current_line);
+    drawListLine (item, flags.focus, is_current_line);
 
-    if ( is_focus && is_current_line )
+    if ( flags.focus && is_current_line )
       setCursorPos (3, 2 + int(y));  // first character
 
     last_visible_line = iter;

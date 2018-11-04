@@ -1,3 +1,6 @@
+2018-11-04  Markus Gans  <guru.mail@muenster.de>
+	* Widget flags are now stored in a bit field
+
 2018-11-03  Markus Gans  <guru.mail@muenster.de>
 	* New method rgb2ColorIndex() to converts a 24-bit RGB color 
 	  to a 256-color compatible approximation

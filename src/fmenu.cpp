@@ -82,12 +82,7 @@ bool FMenu::setMenuWidget (bool on)
   if ( isMenuWidget() == on )
     return true;
 
-  if ( on )
-    flags |= fc::menu_widget;
-  else
-    flags &= ~fc::menu_widget;
-
-  return on;
+  return (flags.menu_widget = on);
 }
 
 //----------------------------------------------------------------------
@@ -1350,7 +1345,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
     to_char--;
 
   txtdata.length = to_char;
-  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+  txtdata.no_underline = menuitem->getFlags().no_underline;
   setCursorToHotkeyPosition (menuitem);
 
   if ( ! is_enabled || is_selected )

@@ -109,12 +109,7 @@ void FToggleButton::setGeometry (int x, int y, std::size_t w, std::size_t h, boo
 //----------------------------------------------------------------------
 bool FToggleButton::setNoUnderline (bool on)
 {
-  if ( on )
-    flags |= fc::no_underline;
-  else
-    flags &= ~fc::no_underline;
-
-  return on;
+  return (flags.no_underline = on);
 }
 
 //----------------------------------------------------------------------
@@ -464,9 +459,7 @@ bool FToggleButton::isCheckboxButton() const
 //----------------------------------------------------------------------
 void FToggleButton::draw()
 {
-  bool isFocus = ((flags & fc::focus) != 0);
-
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -649,12 +642,9 @@ std::size_t  FToggleButton::getHotkeyPos ( wchar_t src[]
 
 //----------------------------------------------------------------------
 void FToggleButton::drawText ( wchar_t LabelText[]
-                             , std::size_t  hotkeypos
+                             , std::size_t hotkeypos
                              , std::size_t length )
 {
-  bool isActive = ((flags & fc::active) != 0);
-  bool isNoUnderline = ((flags & fc::no_underline) != 0);
-
   if ( isMonochron() )
     setReverse(true);
 
@@ -665,16 +655,16 @@ void FToggleButton::drawText ( wchar_t LabelText[]
 
   for (std::size_t z = 0; z < length; z++)
   {
-    if ( (z == hotkeypos) && isActive )
+    if ( (z == hotkeypos) && flags.active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print ( LabelText[z] );
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       setColor (wc.label_fg, wc.label_bg);

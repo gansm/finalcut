@@ -103,16 +103,12 @@ bool FDialog::setDialogWidget (bool on)
   if ( isDialogWidget() == on )
     return true;
 
+  flags.dialog_widget = on;
+
   if ( on )
-  {
-    flags |= fc::dialog_widget;
     setTermOffsetWithPadding();
-  }
   else
-  {
-    flags &= ~fc::dialog_widget;
     setParentOffset();
-  }
 
   return on;
 }
@@ -123,16 +119,12 @@ bool FDialog::setModal (bool on)
   if ( isModal() == on )
     return true;
 
+  flags.modal = on;
+
   if ( on )
-  {
-    flags |= fc::modal;
     modal_dialogs++;
-  }
   else
-  {
-    flags &= ~fc::modal;
     modal_dialogs--;
-  }
 
   return on;
 }
@@ -141,12 +133,7 @@ bool FDialog::setModal (bool on)
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool on)
 {
-  if ( on )
-    flags |= fc::scrollable;
-  else
-    flags &= ~fc::scrollable;
-
-  return on;
+  return (flags.scrollable = on);
 }
 
 //----------------------------------------------------------------------
@@ -835,7 +822,7 @@ void FDialog::draw()
   drawTitleBar();
   setCursorPos(2, int(getHeight()) - 1);
 
-  if ( (flags & fc::shadow) != 0 )
+  if ( flags.shadow )
     drawDialogShadow();
 
   if ( isMonochron() )
@@ -845,7 +832,7 @@ void FDialog::draw()
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( isMonochron() && (flags & fc::trans_shadow) == 0 )
+  if ( isMonochron() && ! flags.trans_shadow )
     return;
 
   drawShadow();
