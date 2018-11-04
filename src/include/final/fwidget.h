@@ -142,7 +142,23 @@ class FWidget : public FVTerm, public FObject
     typedef void (FWidget::*FMemberCallback)(FWidget*, data_ptr);
     typedef std::vector<accelerator> Accelerators;
 
-    struct widget_flags;  // forward declaration
+    struct widget_flags  // Properties of a widget ⚑
+    {
+      uInt32 shadow        : 1;
+      uInt32 trans_shadow  : 1;
+      uInt32 active        : 1;
+      uInt32 focus         : 1;
+      uInt32 scrollable    : 1;
+      uInt32 resizeable    : 1;
+      uInt32 modal         : 1;
+      uInt32 window_widget : 1;
+      uInt32 dialog_widget : 1;
+      uInt32 menu_widget   : 1;
+      uInt32 always_on_top : 1;
+      uInt32 flat          : 1;
+      uInt32 no_underline  : 1;
+      uInt32               : 19;  // padding bits
+    };
 
     // Constructor
     explicit FWidget (FWidget* = 0, bool = false);
@@ -375,24 +391,7 @@ class FWidget : public FVTerm, public FObject
     virtual void       onClose (FCloseEvent*);
 
     // Data Members
-    struct widget_flags  // Properties of a widget ⚑
-    {
-      uInt32 shadow        : 1;
-      uInt32 trans_shadow  : 1;
-      uInt32 active        : 1;
-      uInt32 focus         : 1;
-      uInt32 scrollable    : 1;
-      uInt32 resizeable    : 1;
-      uInt32 modal         : 1;
-      uInt32 window_widget : 1;
-      uInt32 dialog_widget : 1;
-      uInt32 menu_widget   : 1;
-      uInt32 always_on_top : 1;
-      uInt32 flat          : 1;
-      uInt32 no_underline  : 1;
-      uInt32               : 19;  // padding bits
-    } flags;
-
+    struct widget_flags   flags;
     static uInt           modal_dialogs;
     static FWidgetColors  wc;
     static widgetList*    dialog_list;

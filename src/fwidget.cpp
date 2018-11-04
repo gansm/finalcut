@@ -1023,7 +1023,7 @@ void FWidget::redraw()
     setColor (wc.term_fg, wc.term_bg);
     clearArea (vdesktop);
   }
-  else if ( ! visible )
+  else if ( ! isVisible() )
     return;
 
   draw();
@@ -1070,7 +1070,7 @@ void FWidget::resize()
 //----------------------------------------------------------------------
 void FWidget::show()
 {
-  if ( ! visible )
+  if ( ! isVisible() )
     return;
 
   if ( ! init_desktop )
@@ -1127,7 +1127,7 @@ void FWidget::show()
 //----------------------------------------------------------------------
 void FWidget::hide()
 {
-  if ( visible )
+  if ( isVisible() )
   {
     visible = false;
     shown = false;
