@@ -141,7 +141,6 @@ class FButton : public FWidget
 
     // Methods
     void         init();
-    void         getButtonState();
     uChar        getHotkey();
     void         setHotkeyAccelerator();
     void         detectHotkey();
@@ -160,6 +159,7 @@ class FButton : public FWidget
     // Data Members
     FString      text;
     bool         button_down;
+    bool         active_focus;
     bool         click_animation;
     int          click_time;
     int          space_char;
@@ -175,17 +175,6 @@ class FButton : public FWidget
     short        button_focus_bg;
     short        button_inactive_fg;
     short        button_inactive_bg;
-
-    struct state
-    {
-      uChar focus           : 1;
-      uChar active_focus    : 1;
-      uChar active          : 1;
-      uChar flat            : 1;
-      uChar non_flat_shadow : 1;
-      uChar no_underline    : 1;
-      uChar                 : 2;  // padding bits
-    } is;
 };
 #pragma pack(pop)
 
@@ -253,7 +242,7 @@ inline bool FButton::setUp()
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation(bool on)
-{ return click_animation = on; }
+{ return (click_animation = on); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation()

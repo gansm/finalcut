@@ -285,7 +285,7 @@ Window::Window (finalcut::FWidget* parent)
   for (int n = 1; n <= 6; n++)
   {
     win_data* win_dat = new win_data;
-    win_dat->title.sprintf("Window %d", n);
+    win_dat->title.sprintf("Window %1d", n);
     windows.push_back(win_dat);
   }
 }

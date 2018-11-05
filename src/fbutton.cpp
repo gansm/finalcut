@@ -37,6 +37,7 @@ FButton::FButton(FWidget* parent)
   : FWidget(parent)
   , text()
   , button_down(false)
+  , active_focus(false)
   , click_animation(true)
   , click_time(150)
   , space_char(int(' '))
@@ -52,7 +53,6 @@ FButton::FButton(FWidget* parent)
   , button_focus_bg(wc.button_active_focus_bg)
   , button_inactive_fg(wc.button_inactive_fg)
   , button_inactive_bg(wc.button_inactive_bg)
-  , is()
 {
   init();
 }
@@ -62,6 +62,7 @@ FButton::FButton (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
   , button_down(false)
+  , active_focus(false)
   , click_animation(true)
   , click_time(150)
   , space_char(int(' '))
@@ -77,7 +78,6 @@ FButton::FButton (const FString& txt, FWidget* parent)
   , button_focus_bg(wc.button_active_focus_bg)
   , button_inactive_fg(wc.button_inactive_fg)
   , button_inactive_bg(wc.button_inactive_bg)
-  , is()
 {
   init();
   detectHotkey();
@@ -454,17 +454,6 @@ void FButton::init()
 }
 
 //----------------------------------------------------------------------
-void FButton::getButtonState()
-{
-  is.active_focus = flags.active && flags.focus;
-  is.active = flags.active;
-  is.focus = flags.focus;
-  is.flat = isFlat();
-  is.non_flat_shadow = ! flags.flat && flags.shadow;
-  is.no_underline = flags.no_underline;
-}
-
-//----------------------------------------------------------------------
 uChar FButton::getHotkey()
 {
   if ( text.isEmpty() )
@@ -551,7 +540,7 @@ inline std::size_t FButton::clickAnimationIndent (FWidget* parent_widget)
     return 0;
 
   // noshadow + indent one character to the right
-  if ( is.flat )
+  if ( flags.flat )
     clearFlatBorder();
   else if ( hasShadow() )
     clearShadow();
@@ -588,7 +577,7 @@ inline void FButton::clearRightMargin (FWidget* parent_widget)
     setPrintPos (1 + int(getWidth()), y);
     print (' ');  // clear right
 
-    if ( is.active && isMonochron() )
+    if ( flags.active && isMonochron() )
       setReverse(false);  // Dark background
   }
 }
@@ -604,7 +593,7 @@ inline void FButton::drawMarginLeft()
   {
     setPrintPos (1 + int(indent), 1 + int(y));
 
-    if ( isMonochron() && is.active_focus && y == vcenter_offset )
+    if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackRightPointingPointer);  // ►
     else
       print (space_char);  // full block █
@@ -620,7 +609,7 @@ inline void FButton::drawMarginRight()
   {
     setPrintPos (int(getWidth() + indent), 1 + int(y));
 
-    if ( isMonochron() && is.active_focus && y == vcenter_offset )
+    if ( isMonochron() && active_focus && y == vcenter_offset )
       print (fc::BlackLeftPointingPointer);   // ◄
     else
       print (space_char);  // full block █
@@ -675,32 +664,32 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     setCursorPos ( 2 + int(center_offset + hotkeypos)
                  , 1 + int(vcenter_offset) );  // hotkey
 
-  if ( ! is.active && isMonochron() )
+  if ( ! flags.active && isMonochron() )
    setReverse(true);  // Light background
 
-  if ( is.active_focus && (isMonochron() || getMaxColor() < 16) )
+  if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();
 
   for ( std::size_t z = 0
       ; pos < center_offset + txtlength && z < getWidth() - 2
       ; z++, pos++)
   {
-    if ( z == hotkeypos && is.active )
+    if ( z == hotkeypos && flags.active )
     {
       setColor (button_hotkey_fg, button_bg);
 
-      if ( ! is.active_focus && getMaxColor() < 16 )
+      if ( ! active_focus && getMaxColor() < 16 )
         setBold();
 
-      if ( ! is.no_underline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print (button_text[z]);
 
-      if ( ! is.active_focus && getMaxColor() < 16 )
+      if ( ! active_focus && getMaxColor() < 16 )
         unsetBold();
 
-      if ( ! is.no_underline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       setColor (button_fg, button_bg);
@@ -718,7 +707,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
     print (L"..");
   }
 
-  if ( is.active_focus && (isMonochron() || getMaxColor() < 16) )
+  if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     unsetBold();
 
   for (pos = center_offset + txtlength; pos < getWidth() - 2; pos++)
@@ -732,7 +721,7 @@ void FButton::draw()
   FWidget* parent_widget = getParentWidget();
   txtlength = text.getLength();
   space_char = int(' ');
-  getButtonState();
+  active_focus = flags.active && flags.focus;
 
   try
   {
@@ -753,13 +742,13 @@ void FButton::draw()
   // Clear right margin after animation
   clearRightMargin (parent_widget);
 
-  if ( ! is.active && isMonochron() )
+  if ( ! flags.active && isMonochron() )
     space_char = fc::MediumShade;  // ▒ simulates greyed out at Monochron
 
-  if ( isMonochron() && (is.active || is.focus) )
+  if ( isMonochron() && (flags.active || flags.focus) )
     setReverse(false);  // Dark background
 
-  if ( is.flat && ! button_down )
+  if ( flags.flat && ! button_down )
     drawFlatBorder();
 
   hotkeypos = getHotkeyPos(text.wc_str(), button_text, uInt(txtlength));
@@ -785,7 +774,7 @@ void FButton::draw()
   drawTopBottomBackground();
 
   // Draw button shadow
-  if ( is.non_flat_shadow && ! button_down )
+  if ( ! flags.flat && flags.shadow && ! button_down )
     drawShadow();
 
   if ( isMonochron() )
@@ -798,7 +787,7 @@ void FButton::draw()
 //----------------------------------------------------------------------
 void FButton::updateStatusBar()
 {
-  if ( ! is.focus || ! getStatusBar() )
+  if ( ! flags.focus || ! getStatusBar() )
     return;
 
   const FString& msg = getStatusbarMessage();

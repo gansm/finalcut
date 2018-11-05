@@ -197,7 +197,7 @@ inline void FMessageBox::setTitlebarText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText(bool on)
-{ return center_text = on; }
+{ return (center_text = on); }
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText()

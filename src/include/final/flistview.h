@@ -479,7 +479,7 @@ inline void FListView::setUserDescendingCompare (Compare cmp)
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
-{ return tree_view = on; }
+{ return (tree_view = on); }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()

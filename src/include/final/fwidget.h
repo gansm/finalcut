@@ -144,20 +144,24 @@ class FWidget : public FVTerm, public FObject
 
     struct widget_flags  // Properties of a widget ⚑
     {
-      uInt32 shadow        : 1;
-      uInt32 trans_shadow  : 1;
-      uInt32 active        : 1;
-      uInt32 focus         : 1;
-      uInt32 scrollable    : 1;
-      uInt32 resizeable    : 1;
-      uInt32 modal         : 1;
-      uInt32 window_widget : 1;
-      uInt32 dialog_widget : 1;
-      uInt32 menu_widget   : 1;
-      uInt32 always_on_top : 1;
-      uInt32 flat          : 1;
-      uInt32 no_underline  : 1;
-      uInt32               : 19;  // padding bits
+      uInt32 shadow         : 1;
+      uInt32 trans_shadow   : 1;
+      uInt32 active         : 1;
+      uInt32 visible        : 1;
+      uInt32 shown          : 1;
+      uInt32 focus          : 1;
+      uInt32 focusable      : 1;
+      uInt32 scrollable     : 1;
+      uInt32 resizeable     : 1;
+      uInt32 modal          : 1;
+      uInt32 visible_cursor : 1;
+      uInt32 window_widget  : 1;
+      uInt32 dialog_widget  : 1;
+      uInt32 menu_widget    : 1;
+      uInt32 always_on_top  : 1;
+      uInt32 flat           : 1;
+      uInt32 no_underline   : 1;
+      uInt32                : 15;  // padding bits
     };
 
     // Constructor
@@ -425,10 +429,6 @@ class FWidget : public FVTerm, public FObject
     static void        setColorTheme();
 
     // Data Members
-    bool               visible;
-    bool               shown;
-    bool               focusable;
-    bool               visible_cursor;
     FPoint             widget_cursor_position;
 
     struct widget_size_hints
@@ -734,7 +734,7 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisible()
-{ return visible = true; }
+{ return (flags.visible = true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setEnable()
@@ -750,7 +750,10 @@ inline bool FWidget::setDisable()
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool on)
-{ return visible_cursor = ( on ) ? true : (( hideable ) ? false : true); }
+{
+  flags.visible_cursor = ( on ) ? true : (( hideable ) ? false : true);
+  return flags.visible_cursor;
+}
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()
@@ -770,23 +773,23 @@ inline bool FWidget::unsetFocus()
 
 //----------------------------------------------------------------------
 inline void FWidget::setFocusable()
-{ focusable = true; }
+{ flags.focusable = true; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
-{ focusable = false; }
+{ flags.focusable = false; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding (bool on)
-{ return ignore_padding = on; }
+{ return (ignore_padding = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding()
-{ return ignore_padding = true; }
+{ return (ignore_padding = true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptPadding()
-{ return ignore_padding = false; }
+{ return (ignore_padding = false); }
 
 //----------------------------------------------------------------------
 inline void FWidget::setForegroundColor (short color)
@@ -881,11 +884,11 @@ inline bool FWidget::isRootWidget() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::isVisible() const
-{ return visible; }
+{ return flags.visible; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isShown() const
-{ return shown; }
+{ return flags.shown; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isWindowWidget() const
@@ -905,7 +908,7 @@ inline bool FWidget::isEnabled() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasVisibleCursor() const
-{ return visible_cursor; }
+{ return flags.visible_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasFocus() const
@@ -913,7 +916,7 @@ inline bool FWidget::hasFocus() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptFocus() const  // is focusable
-{ return focusable; }
+{ return flags.focusable; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isPaddingIgnored()

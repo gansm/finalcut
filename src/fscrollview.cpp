@@ -288,13 +288,13 @@ void FScrollView::setPrintPos (int x, int y)
 //----------------------------------------------------------------------
 bool FScrollView::setViewportPrint (bool on)
 {
-  return use_own_print_area = ! on;
+  return (use_own_print_area = ! on);
 }
 
 //----------------------------------------------------------------------
 bool FScrollView::setBorder (bool on)
 {
-  return border = on;
+  return (border = on);
 }
 
 //----------------------------------------------------------------------

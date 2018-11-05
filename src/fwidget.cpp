@@ -61,10 +61,6 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   , flags()
   , callback_objects()
   , member_callback_objects()
-  , visible(true)
-  , shown(false)
-  , focusable(true)
-  , visible_cursor(true)
   , widget_cursor_position(-1, -1)
   , size_hints()
   , double_flatline_mask()
@@ -85,10 +81,11 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   // init bit field with 0
   memset (&flags, 0, sizeof(flags));
 
-  // Enable widget by default
-  flags.active = true;
-
-  widget_object = true;
+  flags.active = true;          // Enable widget by default
+  flags.visible = true;         // A widget is visible by default
+  flags.focusable = true;       // A widget is focusable by default
+  flags.visible_cursor = true;  // A widget has a visible cursor by default
+  widget_object = true;         // This FObject is a widget
 
   if ( ! parent )
   {
@@ -104,7 +101,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   }
   else
   {
-    visible_cursor = ! hideable;
+    flags.visible_cursor = ! hideable;
     offset = parent->client_offset;
     double_flatline_mask.top.resize (getWidth(), false);
     double_flatline_mask.right.resize (getHeight(), false);
@@ -671,7 +668,7 @@ bool FWidget::setCursorPos (int x, int y)
 
     setAreaCursor ( widget_offsetX + x
                   , widget_offsetY + y
-                  , visible_cursor
+                  , flags.visible_cursor
                   , area );
     return true;
   }
@@ -1092,7 +1089,7 @@ void FWidget::show()
   }
 
   draw();
-  shown = true;
+  flags.shown = true;
 
   if ( hasChildren() )
   {
@@ -1129,8 +1126,8 @@ void FWidget::hide()
 {
   if ( isVisible() )
   {
-    visible = false;
-    shown = false;
+    flags.visible = false;
+    flags.shown = false;
 
     if ( ! isDialogWidget()
       && FWidget::getFocusWidget() == this
@@ -1966,7 +1963,7 @@ void FWidget::init()
   }
 
   hideable = isCursorHideable();
-  visible_cursor = ! hideable;
+  flags.visible_cursor = ! hideable;
 
   // Determine width and height of the terminal
   detectTermSize();
