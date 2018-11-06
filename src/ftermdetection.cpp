@@ -145,7 +145,7 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), 6);
+  std::strncpy (termtype, C_STR("vt100"), 5);
 }
 
 //----------------------------------------------------------------------
@@ -514,7 +514,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512] = { };
-  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%3d;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
@@ -579,7 +579,7 @@ char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
   {
     std::strncpy ( termtype_Answerback
                  , new_termtype
-                 , sizeof(termtype_Answerback) );
+                 , sizeof(termtype_Answerback) - 1);
     termtype_Answerback[sizeof(termtype_Answerback) - 1] = '\0';
   }
 #endif  // DEBUG

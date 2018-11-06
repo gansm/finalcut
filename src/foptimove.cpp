@@ -690,9 +690,9 @@ int FOptiMove::relativeMove ( char move[]
     if ( move )
     {
       if ( *move )
-        std::strncat (move, hmove, BUF_SIZE - std::strlen(move));
+        std::strncat (move, hmove, BUF_SIZE - std::strlen(move) - 1);
       else
-        std::strncpy (move, hmove, BUF_SIZE);
+        std::strncpy (move, hmove, BUF_SIZE - 1);
 
       move[BUF_SIZE - 1] = '\0';
     }
@@ -854,7 +854,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
 
     if ( htime_r < htime )
     {
-      std::strncpy (hmove, str, BUF_SIZE);
+      std::strncpy (hmove, str, BUF_SIZE - 1);
       hmove[BUF_SIZE - 1] = '\0';
       htime = htime_r;
     }

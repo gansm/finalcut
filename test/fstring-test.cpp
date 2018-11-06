@@ -1016,7 +1016,7 @@ void FStringTest::formatTest()
   str1.sprintf ("There are %d lions in the %s", num, location);
   CPPUNIT_ASSERT ( str1 == "There are 3 lions in the zoo" );
 
-  str1.sprintf (finalcut::FString("%d times"), 42);
+  str1.sprintf (finalcut::FString("%2d times"), 42);
   CPPUNIT_ASSERT ( str1 == "42 times" );
 
   finalcut::FString str2;

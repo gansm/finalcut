@@ -363,7 +363,7 @@ inline void FTermData::setTermType (const char name[])
   if ( ! name )
     return;
 
-  std::strncpy (termtype, name, sizeof(termtype));
+  std::strncpy (termtype, name, sizeof(termtype) - 1);
   termtype[sizeof(termtype) - 1] = '\0';
 }
 
@@ -373,7 +373,7 @@ inline void FTermData::setTermFileName (const char file_name[])
   if ( ! file_name )
     return;
 
-  std::strncpy (termfilename, file_name, sizeof(termfilename));
+  std::strncpy (termfilename, file_name, sizeof(termfilename) - 1);
   termfilename[sizeof(termfilename) - 1] = '\0';
 }
 
