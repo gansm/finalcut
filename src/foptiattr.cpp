@@ -552,7 +552,7 @@ void FOptiAttr::initialize()
 }
 
 //----------------------------------------------------------------------
-short FOptiAttr::vga2ansi (short color)
+FColor FOptiAttr::vga2ansi (FColor color)
 {
   //   VGA   |  ANSI
   // i R G B | i B G R
@@ -574,7 +574,9 @@ short FOptiAttr::vga2ansi (short color)
   // 1 1 1 0 | 1 0 1 1
   // 1 1 1 1 | 1 1 1 1
 
-  if ( color >= 0 && color < 16 )
+  if ( color == fc::Default )
+    color = 0;
+  else if ( color < 16 )
   {
     static const short lookup_table[] =
     {
@@ -584,8 +586,6 @@ short FOptiAttr::vga2ansi (short color)
 
     color = lookup_table[color];
   }
-  else if ( color < 0 )
-    color = 0;
 
   return color;
 }
@@ -610,7 +610,7 @@ char* FOptiAttr::changeAttribute (charData*& term, charData*& next)
     next->code = ' ';
 
   // Look for no changes
-  if ( ! (switchOn() || switchOff() || colorChange(term, next)) )
+  if ( ! (switchOn() || switchOff() || hasColorChanged(term, next)) )
     return 0;
 
   if ( hasNoAttribute(next) )
@@ -1227,7 +1227,9 @@ void FOptiAttr::setAttributesOff (charData*& term)
 //----------------------------------------------------------------------
 bool FOptiAttr::hasColor (charData*& attr)
 {
-  if ( attr && attr->fg_color < 0 && attr->bg_color < 0 )
+  if ( attr
+    && attr->fg_color == fc::Default
+    && attr->bg_color == fc::Default )
     return false;
   else
     return true;
@@ -1263,7 +1265,7 @@ bool FOptiAttr::hasNoAttribute (charData*& attr)
 }
 
 //----------------------------------------------------------------------
-inline bool FOptiAttr::colorChange (charData*& term, charData*& next)
+inline bool FOptiAttr::hasColorChanged (charData*& term, charData*& next)
 {
   if ( term && next )
   {
@@ -1370,7 +1372,7 @@ inline void FOptiAttr::deactivateAttributes ( charData*& term
       setAttributesOff(term);
   }
 
-  if ( colorChange(term, next) )
+  if ( hasColorChanged(term, next) )
     change_color (term, next);
 }
 
@@ -1420,7 +1422,7 @@ inline void FOptiAttr::changeAttributeSGR ( charData*& term
     && pc_charset_usable )
     setTermPCcharset(term);
 
-  if ( colorChange(term, next) )
+  if ( hasColorChanged(term, next) )
     change_color(term, next);
 }
 
@@ -1430,7 +1432,7 @@ inline void FOptiAttr::changeAttributeSeparately ( charData*& term
 {
   setAttributesOff(term);
 
-  if ( colorChange(term, next) )
+  if ( hasColorChanged(term, next) )
     change_color (term, next);
 
   detectSwitchOn (term, next);  // After reset all attributes
@@ -1440,7 +1442,7 @@ inline void FOptiAttr::changeAttributeSeparately ( charData*& term
 //----------------------------------------------------------------------
 void FOptiAttr::change_color (charData*& term, charData*& next)
 {
-  short fg, bg;
+  FColor fg, bg;
 
   if ( ! (term && next) )
     return;
@@ -1452,15 +1454,19 @@ void FOptiAttr::change_color (charData*& term, charData*& next)
     return;
   }
 
-  next->fg_color %= max_color;
-  next->bg_color %= max_color;
+  if ( next->fg_color != fc::Default )
+    next->fg_color %= max_color;
+
+  if ( next->bg_color != fc::Default )
+    next->bg_color %= max_color;
+
   fg = next->fg_color;
   bg = next->bg_color;
 
   if ( fg == fc::Default || bg == fc::Default )
     change_to_default_color (term, next, fg, bg);
 
-  if ( fake_reverse && fg < 0 && bg < 0 )
+  if ( fake_reverse && fg == fc::Default && bg == fc::Default )
     return;
 
   if ( fake_reverse
@@ -1481,7 +1487,7 @@ void FOptiAttr::change_color (charData*& term, charData*& next)
 //----------------------------------------------------------------------
 inline void FOptiAttr::change_to_default_color ( charData*& term
                                                , charData*& next
-                                               , short& fg, short& bg )
+                                               , FColor& fg, FColor& bg )
 {
   if ( ansi_default_color )
   {
@@ -1520,7 +1526,7 @@ inline void FOptiAttr::change_to_default_color ( charData*& term
 
 //----------------------------------------------------------------------
 inline void FOptiAttr::change_current_color ( charData*& term
-                                            , short fg, short bg )
+                                            , FColor fg, FColor bg )
 {
   char* color_str;
   char* AF = F_set_a_foreground.cap;
@@ -1535,8 +1541,8 @@ inline void FOptiAttr::change_current_color ( charData*& term
 
   if ( AF && AB )
   {
-    short ansi_fg = vga2ansi(fg);
-    short ansi_bg = vga2ansi(bg);
+    FColor ansi_fg = vga2ansi(fg);
+    FColor ansi_bg = vga2ansi(bg);
 
     if ( (term->fg_color != fg || frev)
       && (color_str = tparm(AF, ansi_fg, 0, 0, 0, 0, 0, 0, 0, 0)) )

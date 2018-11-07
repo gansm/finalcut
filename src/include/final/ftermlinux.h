@@ -83,7 +83,7 @@ class FTermLinux
     // Mutators
     static void          setFTermDetection (FTermDetection*);
     static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
-    static bool          setPalette (short, int, int, int);
+    static bool          setPalette (FColor, int, int, int);
     static void          setUTF8 (bool);
 
     // Inquiries
@@ -155,7 +155,7 @@ class FTermLinux
     static uChar         getAttributeMode();
     static void          setAttributeMode (uChar);
     static int           setBlinkAsIntensity (bool);
-    static bool          setVGAPalette (short, int, int, int);
+    static bool          setVGAPalette (FColor, int, int, int);
     static bool          saveVGAPalette();
     static bool          resetVGAPalette();
 #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)

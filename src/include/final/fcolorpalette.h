@@ -57,7 +57,7 @@ class FColorPalette
     virtual ~FColorPalette();
 
     // Typedefs
-    typedef void (*funcp)(short, int, int, int);
+    typedef void (*funcp)(FColor, int, int, int);
 
     // Accessor
     virtual const char* getClassName() const;

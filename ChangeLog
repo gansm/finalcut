@@ -1,3 +1,6 @@
+2018-11-07  Markus Gans  <guru.mail@muenster.de>
+	* Use new type FColor for color values
+
 2018-11-05  Markus Gans  <guru.mail@muenster.de>
 	* FButton now uses the widget flags directly
 

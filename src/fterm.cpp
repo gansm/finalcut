@@ -485,14 +485,13 @@ void FTerm::detectTermSize()
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
-    char* str;
     term_geometry.setPos (1, 1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
-    str = std::getenv("COLUMNS");
-    term_geometry.setWidth(str ? std::size_t(std::atoi(str)) : 80);
+    char* Columns = std::getenv("COLUMNS");
+    term_geometry.setWidth(Columns ? std::size_t(std::atoi(Columns)) : 80);
     // Use LINES or fallback to the xterm default height of 24 characters
-    str = std::getenv("LINES");
-    term_geometry.setHeight(str ? std::size_t(std::atoi(str)) : 24);
+    char* Lines = std::getenv("LINES");
+    term_geometry.setHeight(Lines ? std::size_t(std::atoi(Lines)) : 24);
   }
   else
   {
@@ -565,7 +564,7 @@ void FTerm::resetColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setPalette (short index, int r, int g, int b)
+void FTerm::setPalette (FColor index, int r, int g, int b)
 {
   // Redefine RGB color value for a palette entry
 

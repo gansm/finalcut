@@ -55,6 +55,8 @@ typedef int64_t        sInt64;
 
 typedef long double    lDouble;
 
+typedef uInt16         FColor;
+
 }  // namespace
 
 

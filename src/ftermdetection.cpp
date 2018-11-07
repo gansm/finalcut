@@ -145,7 +145,8 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), 5);
+  std::strncpy (termtype, C_STR("vt100"), sizeof(termtype));
+  termtype[sizeof(termtype) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------

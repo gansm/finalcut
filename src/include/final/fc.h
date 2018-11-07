@@ -27,6 +27,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <final/ftypes.h>
+
 // Typecast to c-string
 #define C_STR const_cast<char*>
 
@@ -650,7 +652,6 @@ enum metakeys
 // Console color names
 enum colornames
 {
-  Default           = -1,
   Black             = 0,
   Blue              = 1,
   Green             = 2,
@@ -907,7 +908,8 @@ enum colornames
   Grey82            = 252,  // #d0d0d0
   Grey85            = 253,  // #dadada
   Grey89            = 254,  // #e4e4e4
-  Grey93            = 255   // #eeeeee
+  Grey93            = 255,  // #eeeeee
+  Default           = static_cast<FColor>(-1)
 };
 
 // Mouse/keyboard state values

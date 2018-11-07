@@ -77,9 +77,9 @@ class FOptiAttr
     // Typedefs
     typedef struct
     {
-      int   code;      // character code
-      short fg_color;  // foreground color
-      short bg_color;  // background color
+      int    code;      // character code
+      FColor fg_color;  // foreground color
+      FColor bg_color;  // background color
 
       union attribute
       {
@@ -211,12 +211,12 @@ class FOptiAttr
     void  set_orig_orig_colors (char[]);
 
     // Inquiry
-    static bool  isNormal (charData*&);
+    static bool   isNormal (charData*&);
 
     // Methods
-    void         initialize();
-    static short vga2ansi (short);
-    char*        changeAttribute (charData*&, charData*&);
+    void          initialize();
+    static FColor vga2ansi (FColor);
+    char*         changeAttribute (charData*&, charData*&);
 
   private:
     // Typedefs and Enumerations
@@ -306,15 +306,15 @@ class FOptiAttr
     static bool  hasNoAttribute (charData*&);
 
     // Methods
-    bool  colorChange (charData*&, charData*&);
+    bool  hasColorChanged (charData*&, charData*&);
     void  resetColor (charData*&);
     void  prevent_no_color_video_attributes (charData*&, bool = false);
     void  deactivateAttributes (charData*&, charData*&);
     void  changeAttributeSGR (charData*&, charData*&);
     void  changeAttributeSeparately (charData*&, charData*&);
     void  change_color (charData*&, charData*&);
-    void  change_to_default_color (charData*&, charData*&, short&, short&);
-    void  change_current_color (charData*&, short, short);
+    void  change_to_default_color (charData*&, charData*&, FColor&, FColor&);
+    void  change_current_color (charData*&, FColor, FColor);
     void  resetAttribute (charData*&);
     void  reset (charData*&);
     bool  caused_reset_attributes (char[], uChar = all_tests);

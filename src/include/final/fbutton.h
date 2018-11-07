@@ -79,13 +79,13 @@ class FButton : public FWidget
     FString&     getText();
 
     // Mutators
-    void         setForegroundColor (short);
-    void         setBackgroundColor (short);
-    void         setHotkeyForegroundColor (short);
-    void         setFocusForegroundColor (short);
-    void         setFocusBackgroundColor (short);
-    void         setInactiveForegroundColor (short);
-    void         setInactiveBackgroundColor (short);
+    void         setForegroundColor (FColor);
+    void         setBackgroundColor (FColor);
+    void         setHotkeyForegroundColor (FColor);
+    void         setFocusForegroundColor (FColor);
+    void         setFocusBackgroundColor (FColor);
+    void         setInactiveForegroundColor (FColor);
+    void         setInactiveBackgroundColor (FColor);
     bool         setNoUnderline(bool);
     bool         setNoUnderline();
     bool         unsetNoUnderline();

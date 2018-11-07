@@ -49,7 +49,7 @@ class AttribDlg : public finalcut::FDialog
     void cb_back (finalcut::FWidget* = 0, data_ptr = 0);
 
     // Data Members
-    short bgcolor;
+    FColor bgcolor;
 
   private:
     // Disable copy constructor
@@ -130,10 +130,12 @@ void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
   if ( isMonochron() )
     return;
 
-  bgcolor++;
-
-  if ( bgcolor >= getMaxColor() )
+  if ( bgcolor == FColor(getMaxColor() - 1) )
     bgcolor = finalcut::fc::Default;
+  else if ( bgcolor == finalcut::fc::Default )
+    bgcolor = 0;
+  else
+    bgcolor++;
 
   redraw();
 }
@@ -144,10 +146,12 @@ void AttribDlg::cb_back (finalcut::FWidget*, data_ptr)
   if ( isMonochron() )
     return;
 
-  bgcolor--;
-
-  if ( bgcolor < finalcut::fc::Default )
-    bgcolor = short(getMaxColor() - 1);
+  if ( bgcolor == 0 )
+    bgcolor = finalcut::fc::Default;
+  else if ( bgcolor == finalcut::fc::Default )
+    bgcolor = FColor(getMaxColor() - 1);
+  else
+    bgcolor--;
 
   redraw();
 }
@@ -466,7 +470,7 @@ void AttribDemo::draw()
     setColor(wc.label_fg, wc.label_bg);
 
   setPrintPos (1, 15);
-  short bg = static_cast<AttribDlg*>(getParent())->bgcolor;
+  FColor bg = static_cast<AttribDlg*>(getParent())->bgcolor;
   print (" Background color:");
 
   if ( bg == finalcut::fc::Default )

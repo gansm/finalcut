@@ -153,8 +153,8 @@ class FVTerm
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     void                  setPrintCursor (int, int);
-    short                 rgb2ColorIndex (short, short, short);
-    void                  setColor (short, short);
+    FColor                rgb2ColorIndex (short, short, short);
+    void                  setColor (FColor, FColor);
     static void           setNormal();
 
     static bool           setBold (bool);
@@ -671,7 +671,7 @@ inline void FVTerm::setPrintCursor (const FPoint& pos)
 { setPrintCursor (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setColor (short fg, short bg)
+inline void FVTerm::setColor (FColor fg, FColor bg)
 {
   // Changes colors
   next_attribute.fg_color = fg;

@@ -239,8 +239,8 @@ class FWidget : public FVTerm, public FObject
     bool               ignorePadding (bool);    // ignore padding from
     bool               ignorePadding();         // the parent widget
     bool               acceptPadding();
-    void               setForegroundColor (short);
-    void               setBackgroundColor (short);
+    void               setForegroundColor (FColor);
+    void               setBackgroundColor (FColor);
     void               setColor();
     virtual void       setX (int, bool = true);  // positioning
     virtual void       setY (int, bool = true);
@@ -505,8 +505,8 @@ class FWidget : public FVTerm, public FObject
     FPoint             wshadow;
 
     // default widget foreground and background color
-    short              foreground_color;
-    short              background_color;
+    FColor             foreground_color;
+    FColor             background_color;
 
     FString            statusbar_message;
     static FStatusBar* statusbar;
@@ -792,7 +792,7 @@ inline bool FWidget::acceptPadding()
 { return (ignore_padding = false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setForegroundColor (short color)
+inline void FWidget::setForegroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -800,7 +800,7 @@ inline void FWidget::setForegroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setBackgroundColor (short color)
+inline void FWidget::setBackgroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )

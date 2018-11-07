@@ -118,7 +118,7 @@ void FTermLinux::setUTF8 (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setPalette (short index, int r, int g, int b)
+bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
   if ( ! FTerm::isLinuxTerm() )
     return false;
@@ -838,7 +838,7 @@ int FTermLinux::setBlinkAsIntensity (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setVGAPalette (short index, int r, int g, int b)
+bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
 {
   // Set the vga color map
 

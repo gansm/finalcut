@@ -93,21 +93,21 @@ FButton::~FButton()  // destructor
 
 // public methods of FButton
 //----------------------------------------------------------------------
-void FButton::setForegroundColor (short color)
+void FButton::setForegroundColor (FColor color)
 {
   FWidget::setForegroundColor(color);
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setBackgroundColor (short color)
+void FButton::setBackgroundColor (FColor color)
 {
   FWidget::setBackgroundColor(color);
   updateButtonColor();
 }
 
 //----------------------------------------------------------------------
-void FButton::setHotkeyForegroundColor (short color)
+void FButton::setHotkeyForegroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -115,7 +115,7 @@ void FButton::setHotkeyForegroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-void FButton::setFocusForegroundColor (short color)
+void FButton::setFocusForegroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -125,7 +125,7 @@ void FButton::setFocusForegroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-void FButton::setFocusBackgroundColor (short color)
+void FButton::setFocusBackgroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -135,7 +135,7 @@ void FButton::setFocusBackgroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-void FButton::setInactiveForegroundColor (short color)
+void FButton::setInactiveForegroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -145,7 +145,7 @@ void FButton::setInactiveForegroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-void FButton::setInactiveBackgroundColor (short color)
+void FButton::setInactiveBackgroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )

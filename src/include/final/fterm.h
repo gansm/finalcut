@@ -244,7 +244,7 @@ class FTerm
     static void            setKDECursor (fc::kdeKonsoleCursorShape);
     static void            saveColorMap();
     static void            resetColorMap();
-    static void            setPalette (short, int, int, int);
+    static void            setPalette (FColor, int, int, int);
     static void            setBeep (int, int);
     static void            resetBeep();
     static void            beep();
