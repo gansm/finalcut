@@ -1615,7 +1615,8 @@ void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
       else
         h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
 
-      setSize (std::size_t(w), std::size_t(h));
+      setSize ( ( w >= 0) ? std::size_t(w) : 0
+              , ( h >= 0) ? std::size_t(h) : 0 );
     }
 
     if ( mouse_up )

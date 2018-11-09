@@ -283,6 +283,7 @@ class FListView : public FWidget
     void                 setUserAscendingCompare (Compare);
     template <typename Compare>
     void                 setUserDescendingCompare (Compare);
+    void                 hideSortIndicator (bool);
     bool                 setTreeView (bool);
     bool                 setTreeView();
     bool                 unsetTreeView();
@@ -356,7 +357,9 @@ class FListView : public FWidget
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 setLineAttributes (bool, bool);
     FString              getLinePrefix (const FListViewItem*, std::size_t);
+    void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawColumnText (headerItems::const_iterator&);
+    void                 drawHeaderLine (std::size_t);
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
@@ -410,6 +413,7 @@ class FListView : public FWidget
     int                  scroll_distance;
     bool                 scroll_timer;
     bool                 tree_view;
+    bool                 hide_sort_indicator;
     FPoint               clicked_expander_pos;
     int                  xoffset;
     int                  nf_offset;
@@ -476,6 +480,10 @@ inline void FListView::setUserAscendingCompare (Compare cmp)
 template <typename Compare>
 inline void FListView::setUserDescendingCompare (Compare cmp)
 { user_defined_descending = cmp; }
+
+//----------------------------------------------------------------------
+inline void FListView::hideSortIndicator (bool hide)
+{ hide_sort_indicator = hide; }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)

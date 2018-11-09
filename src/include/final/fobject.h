@@ -35,6 +35,10 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#if __cplusplus < 199711L
+  #error "Your C++ compiler does not support the C++98 standard!"
+#endif
+
 #include <sys/time.h>  // need for gettimeofday
 #include <cstdlib>
 #include <cstring>

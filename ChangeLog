@@ -1,3 +1,6 @@
+2018-11-10  Markus Gans  <guru.mail@muenster.de>
+	* FListView now has a sort indicator to display the sort order
+
 2018-11-07  Markus Gans  <guru.mail@muenster.de>
 	* Use new type FColor for color values
 
@@ -129,7 +132,7 @@
 
 2018-07-01  Markus Gans  <guru.mail@muenster.de>
 	* All in FOptiMove required termcap values can now be passed 
-          with a single struct
+	  with a single struct
 
 2018-06-25  Markus Gans  <guru.mail@muenster.de>
 	* All termcap values required in FOptiAttr can now be passed 
@@ -282,7 +285,7 @@
 
 2018-01-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of secondary device attributes parsing
-        * Small menu improvements
+	* Small menu improvements
 
 2017-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of the FListBox mouse event handler
@@ -504,7 +507,7 @@
 2017-07-18  Markus Gans  <guru.mail@muenster.de>
 	* New Widget class FListView (filled with FListViewItem) 
 	  to allow a multi-column data view
-        * Add the listview example to demonstrate FListView
+	* Add the listview example to demonstrate FListView
 
 2017-07-11  Markus Gans  <guru.mail@muenster.de>
 	* New class FTermBuffer to buffer terminal outputs

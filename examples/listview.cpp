@@ -94,8 +94,11 @@ Listview::Listview (finalcut::FWidget* parent)
 
   // Sort in ascending order by the 1st column
   listView.setColumnSort (1, finalcut::fc::ascending);
-  // The sorting occurs later automatically at insert().
+  // Sorting follows later automatically on insert().
   // Otherwise you could start the sorting directly with sort()
+
+  // Allways show the sort indicator (▼/▲)
+  listView.hideSortIndicator(false);
 
   // Populate FListView with a list of items
   populate();

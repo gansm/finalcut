@@ -610,6 +610,7 @@ FListView::FListView (FWidget* parent)
   , scroll_distance(1)
   , scroll_timer(false)
   , tree_view(false)
+  , hide_sort_indicator(false)
   , clicked_expander_pos(-1, -1)
   , xoffset(0)
   , nf_offset(0)
@@ -1767,36 +1768,78 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
 }
 
 //----------------------------------------------------------------------
+inline void FListView::drawSortIndicator ( std::size_t& length
+                                         , std::size_t  column_width )
+{
+  if ( length >= column_width )
+    return;
+
+  setColor();
+  length++;
+
+  if ( sort_order == fc::ascending )
+    headerline << wchar_t(fc::BlackDownPointingTriangle);  // ▼
+  else if ( sort_order == fc::descending )
+    headerline << wchar_t(fc::BlackUpPointingTriangle);    // ▲
+
+  if ( length < column_width  )
+  {
+    length++;
+    headerline << ' ';
+  }
+}
+
+//----------------------------------------------------------------------
+inline void FListView::drawHeaderLine (std::size_t length)
+{
+  setColor();
+  const FString line (length, wchar_t(fc::BoxDrawingsHorizontal));
+  headerline << line;  // horizontal line
+}
+
+//----------------------------------------------------------------------
 void FListView::drawColumnText (headerItems::const_iterator& iter)
 {
   // Print lable text
   static const std::size_t leading_space = 1;
-  static const std::size_t trailing_space = 1;
   const FString& text = iter->name;
-  std::size_t width = std::size_t(iter->width);
   FString txt = " " + text;
+  std::size_t width = std::size_t(iter->width);
   std::size_t txt_length = txt.getLength();
+  std::size_t length = 0;
   std::size_t column_width = leading_space + width;
+  headerItems::const_iterator first = header.begin();
+  int column = std::distance(first, iter) + 1;
+  bool isSortIndicator = bool ( sort_column == column
+                             && ! hide_sort_indicator );
 
   if ( isEnabled() )
     setColor (wc.label_emphasis_fg, wc.label_bg);
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
+  if ( isSortIndicator && txt_length >= column_width - 1 && txt_length > 1 )
+  {
+    txt_length = column_width - 2;
+    txt = txt.left(txt_length);
+  }
+
   if ( txt_length <= column_width )
   {
+    length = txt_length;
     headerline << txt;
 
-    if ( txt_length < column_width )
-      headerline << ' ';  // trailing space
-
-    if ( txt_length + trailing_space < column_width )
+    if ( length < column_width )
     {
-      setColor();
-      const FString line ( column_width - trailing_space - txt_length
-                         , wchar_t(fc::BoxDrawingsHorizontal) );
-      headerline << line;  // horizontal line
+      length++;
+      headerline << ' ';  // trailing space
     }
+
+    if ( isSortIndicator )
+      drawSortIndicator (length, column_width );
+
+    if ( length < column_width )
+      drawHeaderLine (column_width - length);
   }
   else
     drawColumnEllipsis (iter, text);  // Print ellipsis
