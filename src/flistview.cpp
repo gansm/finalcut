@@ -1134,6 +1134,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
   }
 
   clicked_expander_pos.setPoint(-1, -1);
+  clicked_column_pos.setPoint(-1, -1);
 }
 
 //----------------------------------------------------------------------
