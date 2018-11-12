@@ -1,3 +1,6 @@
+2018-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Clicking on the column header in FListView now changes the sort order
+
 2018-11-10  Markus Gans  <guru.mail@muenster.de>
 	* FListView now has a sort indicator to display the sort order
 

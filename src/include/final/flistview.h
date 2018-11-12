@@ -55,7 +55,7 @@
 #include <list>
 #include <stack>
 #include <vector>
-
+                          #include "final/fmessagebox.h"
 #include "final/fscrollbar.h"
 #include "final/fstring.h"
 #include "final/ftermbuffer.h"
@@ -359,13 +359,14 @@ class FListView : public FWidget
     FString              getLinePrefix (const FListViewItem*, std::size_t);
     void                 drawSortIndicator (std::size_t&, std::size_t);
     void                 drawColumnText (headerItems::const_iterator&);
-    void                 drawHeaderLine (std::size_t);
+    void                 drawHeaderBorder (std::size_t);
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
     int                  determineLineWidth (FListViewItem* item);
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
+    void                 mouseColumnClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);
     bool                 dragScrollUp (int);
@@ -415,6 +416,7 @@ class FListView : public FWidget
     bool                 tree_view;
     bool                 hide_sort_indicator;
     FPoint               clicked_expander_pos;
+    FPoint               clicked_column_pos;
     int                  xoffset;
     int                  nf_offset;
     int                  max_line_width;

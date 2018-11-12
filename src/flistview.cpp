@@ -612,6 +612,7 @@ FListView::FListView (FWidget* parent)
   , tree_view(false)
   , hide_sort_indicator(false)
   , clicked_expander_pos(-1, -1)
+  , clicked_column_pos(-1, -1)
   , xoffset(0)
   , nf_offset(0)
   , max_line_width(1)
@@ -1056,8 +1057,12 @@ void FListView::onMouseDown (FMouseEvent* ev)
     , mouse_x = ev->getX()
     , mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth())
-    && mouse_y > 1 && mouse_y < int(getHeight()) )
+  if ( mouse_x > 1 && mouse_x < int(getWidth()) && mouse_y == 1 )
+  {
+    clicked_column_pos = ev->getPos();
+  }
+  else if ( mouse_x > 1 && mouse_x < int(getWidth())
+         && mouse_y > 1 && mouse_y < int(getHeight()) )
   {
     int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
@@ -1099,7 +1104,12 @@ void FListView::onMouseUp (FMouseEvent* ev)
     int mouse_y = ev->getY();
 
     if ( mouse_x > 1 && mouse_x < int(getWidth())
-      && mouse_y > 1 && mouse_y < int(getHeight()) )
+      && mouse_y == 1 && clicked_column_pos == ev->getPos() )
+    {
+      mouseColumnClicked();
+    }
+    else if ( mouse_x > 1 && mouse_x < int(getWidth())
+           && mouse_y > 1 && mouse_y < int(getHeight()) )
     {
       if ( tree_view )
       {
@@ -1590,9 +1600,9 @@ void FListView::drawList()
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  y           = 0;
+  y = 0;
   page_height = uInt(getHeight() - 2);
-  iter        = first_visible_line;
+  iter = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
   {
@@ -1790,7 +1800,7 @@ inline void FListView::drawSortIndicator ( std::size_t& length
 }
 
 //----------------------------------------------------------------------
-inline void FListView::drawHeaderLine (std::size_t length)
+inline void FListView::drawHeaderBorder (std::size_t length)
 {
   setColor();
   const FString line (length, wchar_t(fc::BoxDrawingsHorizontal));
@@ -1806,19 +1816,18 @@ void FListView::drawColumnText (headerItems::const_iterator& iter)
   FString txt = " " + text;
   std::size_t width = std::size_t(iter->width);
   std::size_t txt_length = txt.getLength();
-  std::size_t length = 0;
   std::size_t column_width = leading_space + width;
   headerItems::const_iterator first = header.begin();
   int column = std::distance(first, iter) + 1;
-  bool isSortIndicator = bool ( sort_column == column
-                             && ! hide_sort_indicator );
+  bool has_sort_indicator = bool ( sort_column == column
+                                && ! hide_sort_indicator );
 
   if ( isEnabled() )
     setColor (wc.label_emphasis_fg, wc.label_bg);
   else
     setColor (wc.label_inactive_fg, wc.label_inactive_bg);
 
-  if ( isSortIndicator && txt_length >= column_width - 1 && txt_length > 1 )
+  if ( has_sort_indicator && txt_length >= column_width - 1 && txt_length > 1 )
   {
     txt_length = column_width - 2;
     txt = txt.left(txt_length);
@@ -1826,7 +1835,7 @@ void FListView::drawColumnText (headerItems::const_iterator& iter)
 
   if ( txt_length <= column_width )
   {
-    length = txt_length;
+    std::size_t length = txt_length;
     headerline << txt;
 
     if ( length < column_width )
@@ -1835,11 +1844,11 @@ void FListView::drawColumnText (headerItems::const_iterator& iter)
       headerline << ' ';  // trailing space
     }
 
-    if ( isSortIndicator )
+    if ( has_sort_indicator )
       drawSortIndicator (length, column_width );
 
     if ( length < column_width )
-      drawHeaderLine (column_width - length);
+      drawHeaderBorder (column_width - length);
   }
   else
     drawColumnEllipsis (iter, text);  // Print ellipsis
@@ -1946,6 +1955,53 @@ void FListView::recalculateVerticalBar (int element_count)
 
   if ( ! vbar->isVisible() && element_count >= int(getHeight()) - 1 )
     vbar->setVisible();
+}
+
+//----------------------------------------------------------------------
+void FListView::mouseColumnClicked()
+{
+  int column_start = 2;
+  int column = 1;
+  int column_pos = clicked_column_pos.getX() + xoffset;
+  headerItems::const_iterator iter;
+  iter = header.begin();
+
+  while ( iter != header.end() )
+  {
+    static const int leading_space = 1;
+    bool has_sort_indicator = bool( column == sort_column );
+    int click_width = int(iter->name.getLength());
+
+    if ( has_sort_indicator )
+      click_width += 2;
+
+    if ( click_width > iter->width )
+      click_width = iter->width;
+
+    if ( column_pos > column_start
+      && column_pos <= column_start + click_width )
+    {
+      if ( has_sort_indicator && sort_order == fc::ascending )
+        setColumnSort (column, fc::descending);
+      else
+        setColumnSort (column, fc::ascending);
+
+      sort();
+
+      if ( isVisible() )
+      {
+        drawColumnLabels();
+        drawList();
+        updateTerminal();
+        flush_out();
+      }
+      break;
+    }
+
+    column_start += leading_space + iter->width;
+    column++;
+    ++iter;
+  }
 }
 
 //----------------------------------------------------------------------
