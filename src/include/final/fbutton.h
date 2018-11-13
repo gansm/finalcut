@@ -168,13 +168,13 @@ class FButton : public FWidget
     std::size_t  center_offset;
     std::size_t  vcenter_offset;
     std::size_t  txtlength;
-    short        button_fg;
-    short        button_bg;
-    short        button_hotkey_fg;
-    short        button_focus_fg;
-    short        button_focus_bg;
-    short        button_inactive_fg;
-    short        button_inactive_bg;
+    FColor       button_fg;
+    FColor       button_bg;
+    FColor       button_hotkey_fg;
+    FColor       button_focus_fg;
+    FColor       button_focus_bg;
+    FColor       button_inactive_fg;
+    FColor       button_inactive_bg;
 };
 #pragma pack(pop)
 

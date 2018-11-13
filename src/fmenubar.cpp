@@ -63,7 +63,7 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;

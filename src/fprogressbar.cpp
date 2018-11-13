@@ -99,7 +99,7 @@ bool FProgressbar::setShadow (bool on)
 void FProgressbar::hide()
 {
   std::size_t s, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();

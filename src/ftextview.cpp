@@ -196,7 +196,7 @@ void FTextView::scrollTo (int x, int y)
 void FTextView::hide()
 {
   std::size_t n, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();

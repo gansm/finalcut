@@ -255,7 +255,7 @@ void FButton::setText (const FString& txt)
 void FButton::hide()
 {
   std::size_t s, f, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
   FWidget::hide();
 

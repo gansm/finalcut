@@ -241,7 +241,7 @@ void FListBox::setText (const FString& txt)
 void FListBox::hide()
 {
   std::size_t n, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
   FWidget::hide();
 

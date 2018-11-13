@@ -40,8 +40,8 @@ class ColorChooser : public finalcut::FWidget
     ~ColorChooser();
 
     // Accessors
-    short getForeground();
-    short getBackground();
+    FColor getForeground();
+    FColor getBackground();
 
   private:
     // Disable copy constructor
@@ -56,8 +56,8 @@ class ColorChooser : public finalcut::FWidget
     virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
-    short fg_color;
-    short bg_color;
+    FColor fg_color;
+    FColor bg_color;
     finalcut::FLabel headline;
 };
 #pragma pack(pop)
@@ -75,8 +75,8 @@ ColorChooser::ColorChooser (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    short fg = parent->getForegroundColor();
-    short bg = parent->getBackgroundColor();
+    FColor fg = parent->getForegroundColor();
+    FColor bg = parent->getBackgroundColor();
     setForegroundColor(fg);
     setBackgroundColor(bg);
     headline.setForegroundColor(fg);
@@ -112,9 +112,9 @@ void ColorChooser::onMouseDown (finalcut::FMouseEvent* ev)
     if ( mouse_x >= xmin && mouse_x <= xmax && mouse_y == y )
     {
       if ( ev->getButton() == finalcut::fc::LeftButton )
-        bg_color = short(c);
+        bg_color = FColor(c);
       else if ( ev->getButton() == finalcut::fc::RightButton )
-        fg_color = short(c);
+        fg_color = FColor(c);
 
       redraw();
       emitCallback("clicked");
@@ -128,7 +128,7 @@ void ColorChooser::draw()
   setColor();
   finalcut::FWidget::drawBorder (1, 2, 8, 11);
 
-  for (short c = 0; c < 16; c++)
+  for (FColor c = 0; c < 16; c++)
   {
     setPrintPos (2 + (c / 8) * 3, 3 + c % 8);
 
@@ -151,13 +151,13 @@ void ColorChooser::draw()
 }
 
 //----------------------------------------------------------------------
-inline short ColorChooser::getForeground()
+inline FColor ColorChooser::getForeground()
 {
   return fg_color;
 }
 
 //----------------------------------------------------------------------
-inline short ColorChooser::getBackground()
+inline FColor ColorChooser::getBackground()
 {
   return bg_color;
 }
@@ -183,8 +183,8 @@ class Brushes : public finalcut::FWidget
     wchar_t getBrush();
 
     // Mutators
-    void setForeground (short);
-    void setBackground (short);
+    void setForeground (FColor);
+    void setBackground (FColor);
 
   private:
     // Disable copy constructor
@@ -200,8 +200,8 @@ class Brushes : public finalcut::FWidget
 
     // Data Members
     wchar_t brush;
-    short   fg_color;
-    short   bg_color;
+    FColor  fg_color;
+    FColor  bg_color;
     finalcut::FLabel headline;
 };
 #pragma pack(pop)
@@ -220,8 +220,8 @@ Brushes::Brushes (finalcut::FWidget* parent)
 
   if ( parent )
   {
-    short fg = parent->getForegroundColor();
-    short bg = parent->getBackgroundColor();
+    FColor fg = parent->getForegroundColor();
+    FColor bg = parent->getBackgroundColor();
     setForegroundColor(fg);
     setBackgroundColor(bg);
     headline.setForegroundColor(fg);
@@ -291,13 +291,13 @@ inline wchar_t Brushes::getBrush()
 }
 
 //----------------------------------------------------------------------
-inline void Brushes::setForeground (short color)
+inline void Brushes::setForeground (FColor color)
 {
   fg_color = color;
 }
 
 //----------------------------------------------------------------------
-inline void Brushes::setBackground (short color)
+inline void Brushes::setBackground (FColor color)
 {
   bg_color = color;
 }

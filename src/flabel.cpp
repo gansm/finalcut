@@ -241,7 +241,7 @@ void FLabel::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FLabel::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   std::size_t size;
   FWidget* parent_widget = getParentWidget();
 

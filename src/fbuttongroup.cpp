@@ -190,7 +190,7 @@ bool FButtonGroup::hasCheckedButton() const
 void FButtonGroup::hide()
 {
   std::size_t size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget::hide();
   FWidget* parent_widget = getParentWidget();
 

@@ -28,6 +28,81 @@
 #include <final/final.h>
 
 
+// Function prototypes
+long StringToLong (const finalcut::FString&);
+bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
+bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
+
+
+// non-member functions
+//----------------------------------------------------------------------
+long StringToLong (const finalcut::FString& str)
+{
+  finalcut::FString NumString = str;
+  NumString = NumString.replace(",", "");
+  NumString = NumString.replace('.', "");
+  long number = NumString.toLong();
+  return number;
+}
+
+//----------------------------------------------------------------------
+bool sortAscending ( const finalcut::FObject* lhs
+                   , const finalcut::FObject* rhs )
+{
+  const finalcut::FListViewItem* l_item = static_cast<const finalcut::FListViewItem*>(lhs);
+  const finalcut::FListViewItem* r_item = static_cast<const finalcut::FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+
+  switch ( column )
+  {
+    case 2:
+    {
+      const long l_number = StringToLong(l_item->getText(column));
+      const long r_number = StringToLong(r_item->getText(column));
+      return bool( l_number < r_number );  // lhs < rhs
+    }
+    case 3:
+    {
+      std::setlocale(LC_NUMERIC, "C");
+      const double l_number = l_item->getText(column).toDouble();
+      const double r_number = r_item->getText(column).toDouble();
+      return bool( l_number < r_number );  // lhs < rhs
+    }
+  }
+
+  return false;
+}
+
+//----------------------------------------------------------------------
+bool sortDescending ( const finalcut::FObject* lhs
+                    , const finalcut::FObject* rhs )
+{
+  const finalcut::FListViewItem* l_item = static_cast<const finalcut::FListViewItem*>(lhs);
+  const finalcut::FListViewItem* r_item = static_cast<const finalcut::FListViewItem*>(rhs);
+  const int column = l_item->getSortColumn();
+
+  switch ( column )
+  {
+    case 2:
+    {
+      const long l_number = StringToLong(l_item->getText(column));
+      const long r_number = StringToLong(r_item->getText(column));
+      return bool( l_number > r_number );  // lhs > rhs
+    }
+
+    case 3:
+    {
+      std::setlocale(LC_NUMERIC, "C");
+      const double l_number = l_item->getText(column).toDouble();
+      const double r_number = r_item->getText(column).toDouble();
+      return bool( l_number > r_number );  // lhs > rhs
+    }
+  }
+
+  return false;
+}
+
+
 //----------------------------------------------------------------------
 // class Treeview
 //----------------------------------------------------------------------
@@ -238,6 +313,13 @@ Treeview::Treeview (finalcut::FWidget* parent)
   // Set right alignment for the second and third column
   listView.setColumnAlignment (2, finalcut::fc::alignRight);
   listView.setColumnAlignment (3, finalcut::fc::alignRight);
+
+  // Set the type of sorting
+  listView.setColumnSortType (1, finalcut::fc::by_name);
+  listView.setColumnSortType (2, finalcut::fc::user_defined);
+  listView.setColumnSortType (3, finalcut::fc::user_defined);
+  listView.setUserAscendingCompare(sortAscending);
+  listView.setUserDescendingCompare(sortDescending);
 
   // Activate tree view
   listView.setTreeView();

@@ -157,8 +157,8 @@ class FLabel : public FWidget
     bool               multiline;
     FString            text;
     fc::text_alignment alignment;
-    short              emphasis_color;
-    short              ellipsis_color;
+    FColor             emphasis_color;
+    FColor             ellipsis_color;
     bool               emphasis;
     bool               reverse_mode;
     FWidget*           accel_widget;

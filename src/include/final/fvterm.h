@@ -129,8 +129,8 @@ class FVTerm
 
     // Accessors
     virtual const char*   getClassName() const;
-    static short          getTermForegroundColor();
-    static short          getTermBackgroundColor();
+    static FColor         getTermForegroundColor();
+    static FColor         getTermBackgroundColor();
     term_area*            getVWin() const;
     FPoint                getPrintCursor();
     static charData       getAttribute();
@@ -153,7 +153,7 @@ class FVTerm
     void                  showCursor();
     void                  setPrintCursor (const FPoint&);
     void                  setPrintCursor (int, int);
-    FColor                rgb2ColorIndex (short, short, short);
+    FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
     void                  setColor (FColor, FColor);
     static void           setNormal();
 
@@ -605,11 +605,11 @@ inline const char* FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
-inline short FVTerm::getTermForegroundColor()
+inline FColor FVTerm::getTermForegroundColor()
 { return next_attribute.fg_color; }
 
 //----------------------------------------------------------------------
-inline short FVTerm::getTermBackgroundColor()
+inline FColor FVTerm::getTermBackgroundColor()
 { return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------

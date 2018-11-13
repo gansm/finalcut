@@ -213,7 +213,7 @@ void FToggleButton::setText (const FString& txt)
 void FToggleButton::hide()
 {
   std::size_t size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
   FWidget::hide();
 

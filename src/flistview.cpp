@@ -1057,38 +1057,40 @@ void FListView::onMouseDown (FMouseEvent* ev)
     , mouse_x = ev->getX()
     , mouse_y = ev->getY();
 
-  if ( mouse_x > 1 && mouse_x < int(getWidth()) && mouse_y == 1 )
+  if ( mouse_x > 1 && mouse_x < int(getWidth()) )
   {
-    clicked_column_pos = ev->getPos();
-  }
-  else if ( mouse_x > 1 && mouse_x < int(getWidth())
-         && mouse_y > 1 && mouse_y < int(getHeight()) )
-  {
-    int new_pos = first_visible_line.getPosition() + mouse_y - 2;
-
-    if ( new_pos < int(getCount()) )
-      setRelativePosition (mouse_y - 2);
-
-    if ( tree_view )
+    if ( mouse_y == 1 )
     {
-      const FListViewItem* item = getCurrentItem();
-      int indent = int(item->getDepth() << 1);  // indent = 2 * depth
-
-      if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
-        clicked_expander_pos = ev->getPos();
+      clicked_column_pos = ev->getPos();
     }
+    else if ( mouse_y > 1 && mouse_y < int(getHeight()) )
+    {
+      int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
-    if ( isVisible() )
-      drawList();
+      if ( new_pos < int(getCount()) )
+        setRelativePosition (mouse_y - 2);
 
-    vbar->setValue (first_visible_line.getPosition());
+      if ( tree_view )
+      {
+        const FListViewItem* item = getCurrentItem();
+        int indent = int(item->getDepth() << 1);  // indent = 2 * depth
 
-    if ( vbar->isVisible()
-      && first_line_position_before != first_visible_line.getPosition() )
-      vbar->drawBar();
+        if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
+          clicked_expander_pos = ev->getPos();
+      }
 
-    updateTerminal();
-    flush_out();
+      if ( isVisible() )
+        drawList();
+
+      vbar->setValue (first_visible_line.getPosition());
+
+      if ( vbar->isVisible()
+        && first_line_position_before != first_visible_line.getPosition() )
+        vbar->drawBar();
+
+      updateTerminal();
+      flush_out();
+    }
   }
 }
 
@@ -1103,33 +1105,35 @@ void FListView::onMouseUp (FMouseEvent* ev)
     int mouse_x = ev->getX();
     int mouse_y = ev->getY();
 
-    if ( mouse_x > 1 && mouse_x < int(getWidth())
-      && mouse_y == 1 && clicked_column_pos == ev->getPos() )
+    if ( mouse_x > 1 && mouse_x < int(getWidth()) )
     {
-      mouseColumnClicked();
-    }
-    else if ( mouse_x > 1 && mouse_x < int(getWidth())
-           && mouse_y > 1 && mouse_y < int(getHeight()) )
-    {
-      if ( tree_view )
+      if ( mouse_y == 1 && clicked_column_pos == ev->getPos() )
       {
-        FListViewItem* item = getCurrentItem();
-
-        if ( item->isExpandable() && clicked_expander_pos == ev->getPos() )
-        {
-          if ( item->isExpand() )
-            item->collapse();
-          else
-            item->expand();
-
-          adjustSize();
-
-          if ( isVisible() )
-            draw();
-        }
+        mouseColumnClicked();
       }
+      else if ( mouse_y > 1 && mouse_y < int(getHeight()) )
+      {
+        if ( tree_view )
+        {
+          FListViewItem* item = getCurrentItem();
 
-      processChanged();
+          if ( item->isExpandable()
+            && clicked_expander_pos == ev->getPos() )
+          {
+            if ( item->isExpand() )
+              item->collapse();
+            else
+              item->expand();
+
+            adjustSize();
+
+            if ( isVisible() )
+              draw();
+          }
+        }
+
+        processChanged();
+      }
     }
   }
 
@@ -1789,9 +1793,9 @@ inline void FListView::drawSortIndicator ( std::size_t& length
   length++;
 
   if ( sort_order == fc::ascending )
-    headerline << wchar_t(fc::BlackDownPointingTriangle);  // ▼
-  else if ( sort_order == fc::descending )
     headerline << wchar_t(fc::BlackUpPointingTriangle);    // ▲
+  else if ( sort_order == fc::descending )
+    headerline << wchar_t(fc::BlackDownPointingTriangle);  // ▼
 
   if ( length < column_width  )
   {
@@ -1819,7 +1823,7 @@ void FListView::drawColumnText (headerItems::const_iterator& iter)
   std::size_t txt_length = txt.getLength();
   std::size_t column_width = leading_space + width;
   headerItems::const_iterator first = header.begin();
-  int column = std::distance(first, iter) + 1;
+  int column = int(std::distance(first, iter)) + 1;
   bool has_sort_indicator = bool ( sort_column == column
                                 && ! hide_sort_indicator );
 

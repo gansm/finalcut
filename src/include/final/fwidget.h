@@ -185,8 +185,8 @@ class FWidget : public FVTerm, public FObject
     static FMenuBar*   getMenuBar();
     static FStatusBar* getStatusBar();
     FString            getStatusbarMessage() const;
-    short              getForegroundColor() const;  // get the primary
-    short              getBackgroundColor() const;  // widget colors
+    FColor             getForegroundColor() const;  // get the primary
+    FColor             getBackgroundColor() const;  // widget colors
     int                getX() const;  // positioning
     int                getY() const;
     const FPoint       getPos() const;
@@ -571,11 +571,11 @@ inline FString FWidget::getStatusbarMessage() const
 { return statusbar_message; }
 
 //----------------------------------------------------------------------
-inline short FWidget::getForegroundColor() const
+inline FColor FWidget::getForegroundColor() const
 { return foreground_color; }
 
 //----------------------------------------------------------------------
-inline short FWidget::getBackgroundColor() const
+inline FColor FWidget::getBackgroundColor() const
 { return background_color; }
 
 //----------------------------------------------------------------------

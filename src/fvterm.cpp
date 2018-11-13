@@ -164,16 +164,13 @@ void FVTerm::setPrintCursor (int x, int y)
 }
 
 //----------------------------------------------------------------------
-FColor FVTerm::rgb2ColorIndex (short r, short g, short b)
+FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
 {
   // Converts a 24-bit RGB color to a 256-color compatible approximation
 
-  if ( r < 0 || g < 0 || b < 0 || r > 0xff || g > 0xff || b > 0xff )
-    return 0;
-
-  short ri = (((r * 5) + 127) / 255) * 36;
-  short gi = (((g * 5) + 127) / 255) * 6;
-  short bi = (((b * 5) + 127) / 255);
+  FColor ri = (((r * 5) + 127) / 255) * 36;
+  FColor gi = (((g * 5) + 127) / 255) * 6;
+  FColor bi = (((b * 5) + 127) / 255);
   return 16 + ri + gi + bi;
 }
 

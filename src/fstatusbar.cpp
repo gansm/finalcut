@@ -196,7 +196,7 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;
