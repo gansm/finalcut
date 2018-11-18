@@ -26,8 +26,8 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
-*(Note: Use mouse or <kbd>Shift</kbd>+<kbd>F10</kbd> or
-<kbd>Ctrl</kbd>+<kbd>^</kbd> to close the dialog)*
+*(Note: You can close the dialog with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>.)*
 
 
 After entering the source code in *dialog.cpp* you can compile

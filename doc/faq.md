@@ -6,9 +6,46 @@ Frequently Asked Questions
 What is FINAL CUT?
 ------------------
 
-The Final Cut is a C++ class library and a widget toolkit with full mouse 
-support for creating a text-based user interface. It's based on the Termcap
-library and has its own cursor optimization and window management.
+The Final Cut is a [C++](https://en.wikipedia.org/wiki/C%2B%2B) class library 
+and a widget toolkit with full mouse support for creating a text-based user 
+interface. It's based on the Termcap library and has its own cursor 
+optimization and window management.
+
+
+Why did you develop FINAL CUT?
+------------------------------
+
+Most Unix [TUIs](https://en.wikipedia.org/wiki/Text-based_user_interface) 
+are difficult to use or limited in their functionality. I developed 
+FINAL CUT to fix these problems. The main goals in FINAL CUT design were 
+to create a library that is easy to use, powerful, visually appealing and 
+easily expandable.
+
+
+Where does the name FINAL CUT come from?
+----------------------------------------
+From 1991 to 1996 I developed with 
+[Borland Pascal](https://en.wikipedia.org/wiki/Turbo_Pascal) 
+under [DOS](https://en.wikipedia.org/wiki/DOS) a text-based file manager 
+called “The Final Cut”, with the intention to be more visually appealing 
+than all other products. The calculator example is, among other things an 
+extract from this program.
+
+As I got to learn 
+[object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) (OOP) 
+with [C++](https://en.wikipedia.org/wiki/C%2B%2B) at the end of 
+the 90s, I noticed significant design weaknesses in my program code. 
+I decided to re-implement the code cleanly in C++. This time I wanted to 
+avoid old mistakes and do everything right and open source. In the meanwhile, 
+I switched from [DOS](https://en.wikipedia.org/wiki/DOS) to 
+[Linux](https://en.wikipedia.org/wiki/Linux), so I started the implementing 
+of the first widgets (FDialog, FButton, FLineEdit, FScrollbar) and the 
+string class FString for the 
+[Linux console](https://en.wikipedia.org/wiki/Linux_console). 
+Unfortunately, the project lost my attention in 2000.
+
+In 2012, I needed an attractive terminal presentation for a textual data 
+structure. So I have started to develop FINAL CUT to a widget library.
 
 
 Are Windows and DOS supported by FINAL CUT?

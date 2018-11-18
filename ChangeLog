@@ -1,6 +1,7 @@
 2018-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The FListViewItem class now provides checkable list view items
 	* Adding the checklist example to demonstrate the checkable FListViewItems
+	* A checkable FListViewItem now shows the input cursor
 
 2018-11-12  Markus Gans  <guru.mail@muenster.de>
 	* Clicking on the column header in FListView now changes the sort order
