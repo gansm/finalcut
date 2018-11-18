@@ -1663,13 +1663,19 @@ void FListView::drawList()
   {
     bool is_current_line = bool( iter == current_iter );
     const FListViewItem* item = static_cast<FListViewItem*>(*iter);
+    int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
+    int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
     setPrintPos (2, 2 + int(y));
 
     // Draw one FListViewItem
     drawListLine (item, flags.focus, is_current_line);
 
     if ( flags.focus && is_current_line )
-      setCursorPos (3, 2 + int(y));  // first character
+    {
+      setVisibleCursor (item->isCheckable());
+      setCursorPos ( 3 + tree_offset + checkbox_offset - xoffset
+                   , 2 + int(y));  // first character
+    }
 
     last_visible_line = iter;
     y++;
@@ -1678,6 +1684,9 @@ void FListView::drawList()
 
   // Reset color
   setColor();
+
+  if ( isMonochron() )
+    setReverse(true);
 
   // Clean empty space after last element
   while ( y < uInt(getClientHeight()) )
