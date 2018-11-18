@@ -70,7 +70,7 @@ Listview::Listview (finalcut::FWidget* parent)
   , listView(this)
   , Quit(this)
 {
-  // Create FListView object
+  // Set FListView geometry
   listView.setGeometry(2, 1, 33, 14);
 
   // Add columns to the view

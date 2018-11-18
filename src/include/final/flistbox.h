@@ -245,7 +245,7 @@ class FListBox : public FWidget
     // Methods
     void         init();
     virtual void draw();
-    void         drawLabel();
+    void         drawHeadline();
     void         drawList();
     void         drawListLine (int, listBoxItems::iterator, bool);
     void         printLeftBracket (fc::brackets_type);

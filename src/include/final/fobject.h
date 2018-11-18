@@ -35,7 +35,9 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#if __cplusplus < 199711L
+#if !defined (__cplusplus)
+  #error "You need a C++ compiler like g++ or clang++"
+#elif __cplusplus > 1 && __cplusplus < 199711L
   #error "Your C++ compiler does not support the C++98 standard!"
 #endif
 

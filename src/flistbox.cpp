@@ -896,7 +896,7 @@ void FListBox::draw()
     }
   }
 
-  drawLabel();
+  drawHeadline();
 
   if ( isMonochron() )
     setReverse(false);
@@ -923,7 +923,7 @@ void FListBox::draw()
 }
 
 //----------------------------------------------------------------------
-void FListBox::drawLabel()
+void FListBox::drawHeadline()
 {
   if ( text.isNull() || text.isEmpty() )
     return;

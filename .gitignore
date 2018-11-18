@@ -52,6 +52,7 @@ examples/input-dialog
 examples/choice
 examples/listbox
 examples/listview
+examples/checklist
 examples/treeview
 examples/mandelbrot
 examples/keyboard

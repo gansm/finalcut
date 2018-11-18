@@ -130,7 +130,7 @@ class Treeview : public finalcut::FDialog
     // Methods
     virtual void adjustSize();
 
-    // Event handlers
+    // Event handler
     void onClose (finalcut::FCloseEvent*);
 
     // Data Members
@@ -302,7 +302,7 @@ Treeview::Treeview (finalcut::FWidget* parent)
   , listView(this)
   , Quit(this)
 {
-  // Create FListView object
+  // Set FListView geometry
   listView.setGeometry(2, 1, 53, 14);
 
   // Add columns to the view

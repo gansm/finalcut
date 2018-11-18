@@ -167,6 +167,8 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
+  , checkable(false)
+  , is_checked(false)
 {
   FObject* parent = getParent();
 
@@ -192,6 +194,8 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
+  , checkable(false)
+  , is_checked(false)
 {
   insert (this, parent_iter);
 }
@@ -207,6 +211,8 @@ FListViewItem::FListViewItem ( const FStringList& cols
   , visible_lines(1)
   , expandable(false)
   , is_expand(false)
+  , checkable(false)
+  , is_checked(false)
 {
   if ( cols.empty() )
     return;
@@ -325,7 +331,7 @@ FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
 //----------------------------------------------------------------------
 void FListViewItem::expand()
 {
-  if ( is_expand || ! hasChildren() )
+  if ( isExpand() || ! hasChildren() )
     return;
 
   is_expand = true;
@@ -334,7 +340,7 @@ void FListViewItem::expand()
 //----------------------------------------------------------------------
 void FListViewItem::collapse()
 {
-  if ( ! is_expand )
+  if ( ! isExpand() )
     return;
 
   is_expand = false;
@@ -346,7 +352,7 @@ void FListViewItem::collapse()
 template <typename Compare>
 void FListViewItem::sort (Compare cmp)
 {
-  if ( ! expandable )
+  if ( ! isExpandable() )
     return;
 
   // Sort the top level
@@ -416,6 +422,20 @@ std::size_t FListViewItem::getVisibleLines()
   }
 
   return visible_lines;
+}
+
+//----------------------------------------------------------------------
+void FListViewItem::setCheckable (bool on)
+{
+  checkable = on;
+
+  if ( *root )
+  {
+    FListView* root_obj = static_cast<FListView*>(*root);
+
+    if ( ! root_obj->hasCheckableItems() && isCheckable() )
+      root_obj->has_checkable_items = true;
+  }
 }
 
 //----------------------------------------------------------------------
@@ -611,8 +631,10 @@ FListView::FListView (FWidget* parent)
   , scroll_timer(false)
   , tree_view(false)
   , hide_sort_indicator(false)
+  , has_checkable_items(false)
   , clicked_expander_pos(-1, -1)
-  , clicked_column_pos(-1, -1)
+  , clicked_header_pos(-1, -1)
+  , clicked_checkbox_item(0)
   , xoffset(0)
   , nf_offset(0)
   , max_line_width(1)
@@ -802,14 +824,11 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
                                            , FObjectIterator parent_iter )
 {
   FObjectIterator item_iter;
-  int line_width;
-  int element_count;
 
   if ( parent_iter == FListView::null_iter )
     return FListView::null_iter;
 
-  line_width = determineLineWidth (item);
-  recalculateHorizontalBar (line_width);
+  beforeInsertion(item);  // preprocessing
 
   if  ( parent_iter == root )
   {
@@ -835,19 +854,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
   else
     item_iter = FListView::null_iter;
 
-  if ( itemlist.size() == 1 )
-  {
-    // Select first item on insert
-    current_iter = itemlist.begin();
-    // The visible area of the list begins with the first element
-    first_visible_line = itemlist.begin();
-  }
-
-  // Sort list by a column (only if activated)
-  sort();
-
-  element_count = int(getCount());
-  recalculateVerticalBar (element_count);
+  afterInsertion();  // post-processing
   return item_iter;
 }
 
@@ -964,6 +971,11 @@ void FListView::onKeyPress (FKeyEvent* ev)
       ev->accept();
       break;
 
+    case fc::Fkey_space:
+      keySpace();
+      ev->accept();
+      break;
+
     case fc::Fkey_up:
       stepBackward();
       ev->accept();
@@ -1059,24 +1071,39 @@ void FListView::onMouseDown (FMouseEvent* ev)
 
   if ( mouse_x > 1 && mouse_x < int(getWidth()) )
   {
-    if ( mouse_y == 1 )
+    if ( mouse_y == 1 )  // Header
     {
-      clicked_column_pos = ev->getPos();
+      clicked_header_pos = ev->getPos();
     }
-    else if ( mouse_y > 1 && mouse_y < int(getHeight()) )
+    else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
     {
+      int indent = 0;
       int new_pos = first_visible_line.getPosition() + mouse_y - 2;
 
       if ( new_pos < int(getCount()) )
         setRelativePosition (mouse_y - 2);
 
+      const FListViewItem* item = getCurrentItem();
+
       if ( tree_view )
       {
-        const FListViewItem* item = getCurrentItem();
-        int indent = int(item->getDepth() << 1);  // indent = 2 * depth
+        indent = int(item->getDepth() << 1);  // indent = 2 * depth
 
         if ( item->isExpandable() && mouse_x - 2 == indent - xoffset )
           clicked_expander_pos = ev->getPos();
+      }
+
+      if ( hasCheckableItems() )
+      {
+        if ( tree_view )
+          indent++;  // Plus one space
+
+        if ( mouse_x >= 3 + indent - xoffset
+          && mouse_x <= 5 + indent - xoffset
+          && item->isCheckable() )
+        {
+          clicked_checkbox_item = item;
+        }
       }
 
       if ( isVisible() )
@@ -1107,15 +1134,18 @@ void FListView::onMouseUp (FMouseEvent* ev)
 
     if ( mouse_x > 1 && mouse_x < int(getWidth()) )
     {
-      if ( mouse_y == 1 && clicked_column_pos == ev->getPos() )
+      if ( mouse_y == 1 && clicked_header_pos == ev->getPos() )  // Header
       {
-        mouseColumnClicked();
+        mouseHeaderClicked();
       }
-      else if ( mouse_y > 1 && mouse_y < int(getHeight()) )
+      else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
       {
+        int indent = 0;
+        FListViewItem* item = getCurrentItem();
+
         if ( tree_view )
         {
-          FListViewItem* item = getCurrentItem();
+          indent = int(item->getDepth() << 1);  // indent = 2 * depth
 
           if ( item->isExpandable()
             && clicked_expander_pos == ev->getPos() )
@@ -1132,13 +1162,30 @@ void FListView::onMouseUp (FMouseEvent* ev)
           }
         }
 
+        if ( hasCheckableItems() )
+        {
+          if ( tree_view )
+            indent++;  // Plus one space
+
+          if ( mouse_x >= 3 + indent - xoffset
+            && mouse_x <= 5 + indent - xoffset
+            && clicked_checkbox_item == item )
+          {
+            item->setChecked(! item->isChecked());
+
+            if ( isVisible() )
+              draw();
+          }
+        }
+
         processChanged();
       }
     }
   }
 
   clicked_expander_pos.setPoint(-1, -1);
-  clicked_column_pos.setPoint(-1, -1);
+  clicked_header_pos.setPoint(-1, -1);
+  clicked_checkbox_item = 0;
 }
 
 //----------------------------------------------------------------------
@@ -1521,7 +1568,7 @@ void FListView::draw()
     }
   }
 
-  drawColumnLabels();
+  drawHeadlines();
 
   if ( isMonochron() )
     setReverse(false);
@@ -1548,7 +1595,7 @@ void FListView::draw()
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnLabels()
+void FListView::drawHeadlines()
 {
   std::vector<charData>::const_iterator first, last;
   headerItems::const_iterator iter;
@@ -1562,6 +1609,9 @@ void FListView::drawColumnLabels()
   iter = header.begin();
   headerline.clear();
 
+  if ( hasCheckableItems() )
+    drawHeaderBorder(4);
+
   while ( iter != header.end() )
   {
     const FString& text = iter->name;
@@ -1572,7 +1622,7 @@ void FListView::drawColumnLabels()
       continue;
     }
 
-    drawColumnText(iter);
+    drawHeadlineLabel(iter);
     ++iter;
   }
 
@@ -1643,35 +1693,37 @@ void FListView::drawListLine ( const FListViewItem* item
                              , bool is_focus
                              , bool is_current )
 {
-  std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
-
   // Set line color and attributes
   setLineAttributes (is_current, is_focus);
 
   // Print the entry
+  std::size_t indent = item->getDepth() << 1;  // indent = 2 * depth
   FString line = getLinePrefix (item, indent);
 
   // Print columns
   if ( ! item->column_list.empty() )
   {
-    for (std::size_t i = 0; i < item->column_list.size(); )
+    for (std::size_t col = 0; col < item->column_list.size(); )
     {
       static const std::size_t leading_space = 1;
+      static const std::size_t checkbox_space = 4;
       static const std::size_t ellipsis_length = 2;
 
-      const FString& text = item->column_list[i];
-      std::size_t width = std::size_t(header[i].width);
+      const FString& text = item->column_list[col];
+      std::size_t width = std::size_t(header[col].width);
       std::size_t txt_length = text.getLength();
       // Increment the value of i for the column position
       // and the next iteration
-      i++;
-      fc::text_alignment align = getColumnAlignment(int(i));
+      col++;
+      fc::text_alignment align = getColumnAlignment(int(col));
       std::size_t align_offset = getAlignOffset (align, txt_length, width);
 
-      if ( tree_view && i == 1 )
+      if ( tree_view && col == 1 )
       {
-        width -= indent;
-        width--;
+        width -= (indent + 1);
+
+        if ( item->isCheckable() )
+          width -= checkbox_space;
       }
 
       // Insert alignment spaces
@@ -1750,19 +1802,40 @@ inline void FListView::setLineAttributes ( bool is_current
 }
 
 //----------------------------------------------------------------------
+inline FString FListView::getCheckBox (const FListViewItem* item)
+{
+  FString checkbox;
+
+  if ( isNewFont() )
+  {
+    checkbox = ( item->isChecked() ) ? CHECKBOX_ON : CHECKBOX;
+    checkbox += L' ';
+  }
+  else
+  {
+    checkbox = L"[ ] ";
+
+    if ( item->isChecked() )
+      checkbox[1] = wchar_t(fc::Times);  // Times ×
+  }
+
+  return checkbox;
+}
+
+//----------------------------------------------------------------------
 inline FString FListView::getLinePrefix ( const FListViewItem* item
                                         , std::size_t indent )
 {
-  FString line = "";
+  FString line;
 
   if ( tree_view )
   {
     if ( indent > 0 )
       line = FString(indent, L' ');
 
-    if ( item->expandable  )
+    if ( item->isExpandable()  )
     {
-      if ( item->is_expand )
+      if ( item->isExpand() )
       {
         line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
         line += L' ';
@@ -1778,6 +1851,9 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
   }
   else
     line = L" ";
+
+  if ( item->isCheckable() )
+    line += getCheckBox(item);
 
   return line;
 }
@@ -1813,7 +1889,7 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnText (headerItems::const_iterator& iter)
+void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
 {
   // Print lable text
   static const std::size_t leading_space = 1;
@@ -1933,6 +2009,31 @@ int FListView::determineLineWidth (FListViewItem* item)
 }
 
 //----------------------------------------------------------------------
+inline void FListView::beforeInsertion (FListViewItem* item)
+{
+  int line_width = determineLineWidth (item);
+  recalculateHorizontalBar (line_width);
+}
+
+//----------------------------------------------------------------------
+inline void FListView::afterInsertion()
+{
+  if ( itemlist.size() == 1 )
+  {
+    // Select first item on insert
+    current_iter = itemlist.begin();
+    // The visible area of the list begins with the first element
+    first_visible_line = itemlist.begin();
+  }
+
+  // Sort list by a column (only if activated)
+  sort();
+
+  int element_count = int(getCount());
+  recalculateVerticalBar (element_count);
+}
+
+//----------------------------------------------------------------------
 void FListView::recalculateHorizontalBar (int len)
 {
   if ( len <= max_line_width )
@@ -1963,11 +2064,12 @@ void FListView::recalculateVerticalBar (int element_count)
 }
 
 //----------------------------------------------------------------------
-void FListView::mouseColumnClicked()
+void FListView::mouseHeaderClicked()
 {
-  int column_start = 2;
   int column = 1;
-  int column_pos = clicked_column_pos.getX() + xoffset;
+  int checkbox_offset = ( hasCheckableItems() ) ? 4 : 0;
+  int header_start = 2 + checkbox_offset;
+  int header_pos = clicked_header_pos.getX() + xoffset;
   headerItems::const_iterator iter;
   iter = header.begin();
 
@@ -1983,8 +2085,8 @@ void FListView::mouseColumnClicked()
     if ( click_width > iter->width )
       click_width = iter->width;
 
-    if ( column_pos > column_start
-      && column_pos <= column_start + click_width )
+    if ( header_pos > header_start
+      && header_pos <= header_start + click_width )
     {
       if ( has_sort_indicator && sort_order == fc::ascending )
         setColumnSort (column, fc::descending);
@@ -1995,7 +2097,7 @@ void FListView::mouseColumnClicked()
 
       if ( isVisible() )
       {
-        drawColumnLabels();
+        drawHeadlines();
         drawList();
         updateTerminal();
         flush_out();
@@ -2003,7 +2105,7 @@ void FListView::mouseColumnClicked()
       break;
     }
 
-    column_start += leading_space + iter->width;
+    header_start += leading_space + iter->width;
     column++;
     ++iter;
   }
@@ -2165,6 +2267,15 @@ void FListView::processClick()
 void FListView::processChanged()
 {
   emitCallback("row-changed");
+}
+
+//----------------------------------------------------------------------
+inline void FListView::keySpace()
+{
+  FListViewItem* item = getCurrentItem();
+
+  if ( item->isCheckable() )
+    item->setChecked(! item->isChecked());
 }
 
 //----------------------------------------------------------------------
@@ -2569,7 +2680,7 @@ void FListView::cb_HBarChange (FWidget*, data_ptr)
 
   if ( isVisible() )
   {
-    drawColumnLabels();
+    drawHeadlines();
     drawList();
     updateTerminal();
     flush_out();
