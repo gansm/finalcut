@@ -35,7 +35,7 @@ static finalcut::FString* temp_str = 0;
 // Function prototypes
 void doubleToItem ( finalcut::FListBoxItem&
                   , finalcut::FWidget::data_ptr container
-                  , int index) ;
+                  , int index);
 finalcut::FString& doubleToString (std::list<double>::const_iterator iter);
 finalcut::FString& mapToString ( std::map<finalcut::FString
                                , finalcut::FString>::const_iterator iter );

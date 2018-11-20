@@ -217,12 +217,12 @@ bool FButton::setShadow (bool on)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1,1);
+    setShadowSize(1, 1);
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0,0);
+    setShadowSize(0, 0);
   }
 
   return flags.shadow;
@@ -665,7 +665,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
                  , 1 + int(vcenter_offset) );  // hotkey
 
   if ( ! flags.active && isMonochron() )
-   setReverse(true);  // Light background
+    setReverse(true);  // Light background
 
   if ( active_focus && (isMonochron() || getMaxColor() < 16) )
     setBold();

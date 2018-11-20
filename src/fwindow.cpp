@@ -184,9 +184,9 @@ bool FWindow::setTransparentShadow (bool on)
   flags.shadow = flags.trans_shadow = on;
 
   if ( on )
-    setShadowSize (2,1);
+    setShadowSize (2, 1);
   else
-    setShadowSize (0,0);
+    setShadowSize (0, 0);
 
   return on;
 }
@@ -201,13 +201,13 @@ bool FWindow::setShadow (bool on)
   {
     flags.shadow = true;
     flags.trans_shadow = false;
-    setShadowSize (1,1);
+    setShadowSize (1, 1);
   }
   else
   {
     flags.shadow = false;
     flags.trans_shadow = false;
-    setShadowSize (0,0);
+    setShadowSize (0, 0);
   }
 
   return on;

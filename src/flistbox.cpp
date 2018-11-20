@@ -1564,7 +1564,7 @@ void FListBox::nextListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollToX (int val)
 {
-  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
 
   if ( xoffset == val )
@@ -1621,7 +1621,7 @@ void FListBox::scrollLeft (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollRight (int distance)
 {
-  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset += distance;
 

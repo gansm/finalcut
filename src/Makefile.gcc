@@ -45,6 +45,7 @@ INCLUDE_HEADERS = \
 	fkeyboard.h \
 	ftermcap.h \
 	fterm.h \
+	ftermdata.h \
 	ftermios.h \
 	ftermdetection.h \
 	ftermcapquirks.h \

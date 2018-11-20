@@ -46,6 +46,12 @@ namespace finalcut
 class FTermDebugData
 {
   public:
+    // Constructors
+    FTermDebugData();
+
+    // Destructor
+    ~FTermDebugData();
+
     // Accessors
     const FString& getAnswerbackString();
     const FString& getSecDAString();
@@ -63,6 +69,17 @@ class FTermDebugData
     FTermDetection* term_detection;
     FTermData*      data;
 };
+
+// FTermDebugData inline functions
+//----------------------------------------------------------------------
+inline FTermDebugData::FTermDebugData()
+  : term_detection(0)
+  , data(0)
+{ }
+
+//----------------------------------------------------------------------
+inline FTermDebugData::~FTermDebugData()
+{ }
 
 //----------------------------------------------------------------------
 inline void FTermDebugData::setFTermDetection (FTermDetection* obj)

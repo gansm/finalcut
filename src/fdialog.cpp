@@ -528,7 +528,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       && ms.mouse_y == 1 )
       titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
     else
-      titlebar_click_pos.setPoint (0,0);
+      titlebar_click_pos.setPoint (0, 0);
 
     // Click on titlebar menu button
     if ( ms.mouse_x < 4 && ms.mouse_y == 1 )
@@ -1578,7 +1578,7 @@ void FDialog::resizeMouseDown (mouseStates& ms)
       drawBorder();
   }
   else
-    resize_click_pos.setPoint (0,0);
+    resize_click_pos.setPoint (0, 0);
 }
 
 //----------------------------------------------------------------------
@@ -1622,7 +1622,7 @@ void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
     if ( mouse_up )
     {
       // Reset the border color
-      resize_click_pos.setPoint (0,0);
+      resize_click_pos.setPoint (0, 0);
 
       // redraw() is required to draw the standard (black) border
       // and client objects with ignorePadding() option.
@@ -1639,7 +1639,7 @@ void FDialog::cancelMouseResize()
   if ( resize_click_pos.isNull() )
     return;
 
-  resize_click_pos.setPoint (0,0);
+  resize_click_pos.setPoint (0, 0);
   drawBorder();
   updateTerminal();
 }

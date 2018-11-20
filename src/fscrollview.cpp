@@ -72,7 +72,7 @@ void FScrollView::setScrollWidth (std::size_t width)
 
   if ( viewport )
   {
-    FPoint no_shadow(0,0);
+    FPoint no_shadow(0, 0);
     scroll_geometry.setWidth (width);
     resizeArea (scroll_geometry, no_shadow, viewport);
 
@@ -100,7 +100,7 @@ void FScrollView::setScrollHeight (std::size_t height)
 
   if ( viewport )
   {
-    FPoint no_shadow(0,0);
+    FPoint no_shadow(0, 0);
     scroll_geometry.setHeight (height);
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
@@ -133,7 +133,7 @@ void FScrollView::setScrollSize (std::size_t width, std::size_t height)
 
   if ( viewport )
   {
-    FPoint no_shadow(0,0);
+    FPoint no_shadow(0, 0);
     scroll_geometry.setSize (width, height);
     resizeArea (scroll_geometry, no_shadow, viewport);
     addPreprocessingHandler
@@ -548,7 +548,7 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   widget_geometry = focus_widget->getGeometryWithShadow();
   vp_geometry = viewport_geometry;
-  vp_geometry.move(1,1);
+  vp_geometry.move(1, 1);
 
   if ( ! vp_geometry.contains(widget_geometry) )
   {
@@ -749,7 +749,7 @@ void FScrollView::init (FWidget* parent)
   setBottomPadding (1 - (yoffset_end - getScrollY()));
   setRightPadding (1 - (xoffset_end - getScrollX()) + nf_offset);
 
-  FPoint no_shadow(0,0);
+  FPoint no_shadow(0, 0);
   std::size_t w = getViewportWidth();
   std::size_t h = getViewportHeight();
 

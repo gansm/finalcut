@@ -84,7 +84,8 @@ Scrollview::Scrollview (finalcut::FWidget* parent)
   // Sets the navigation button geometry
   go_east.setGeometry (1, 1, 5, 1);
   go_south.setGeometry (int(getScrollWidth()) - 5, 1, 5, 1);
-  go_west.setGeometry (int(getScrollWidth()) - 5, int(getScrollHeight()) - 2, 5, 1);
+  go_west.setGeometry ( int(getScrollWidth()) - 5
+                      , int(getScrollHeight()) - 2, 5, 1);
   go_north.setGeometry (1, int(getScrollHeight()) - 2, 5, 1);
 
   // Add scroll function callbacks to the buttons

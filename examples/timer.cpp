@@ -59,7 +59,7 @@ Timer::Timer (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Timer::draw()
 {
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   print() << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";

@@ -157,7 +157,7 @@ int main (int argc, char* argv[])
   finalcut::FString line(std::size_t(xmax) + 1, '-');
 
   // Place the cursor in the upper left corner
-  TermApp.setTermXY(0,0);
+  TermApp.setTermXY(0, 0);
   // Reset all terminal attributes
   TermApp.setNormal();
   // Clear the screen

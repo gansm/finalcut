@@ -519,7 +519,7 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
 
   if ( isMonochron() )
     setReverse(true);

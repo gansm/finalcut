@@ -912,7 +912,7 @@ void FFileDialog::cb_processOpen (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processShowHidden (FWidget*, data_ptr)
 {
-  setShowHiddenFiles(not show_hidden);
+  setShowHiddenFiles(! show_hidden);
 }
 
 }  // namespace finalcut

@@ -72,7 +72,7 @@ void FCheckBox::drawCheckButton()
   if ( ! isVisible() )
     return;
 
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   setColor();
 
   if ( isMonochron() )

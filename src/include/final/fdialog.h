@@ -88,7 +88,7 @@ class FDialog : public FWindow
 
     // Constructors
     explicit FDialog (FWidget* = 0);
-    FDialog (const FString&, FWidget* = 0);
+    explicit FDialog (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FDialog();

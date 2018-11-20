@@ -20,6 +20,9 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <algorithm>
+#include <vector>
+
 #include "final/ftermcap.h"
 
 namespace finalcut
@@ -336,10 +339,10 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
 //----------------------------------------------------------------------
 FTermcap::tcap_map FTermcap::tcap[] =
 {
- // .------------- term string
- // |    .-------- Tcap-code
- // |    |      // variable name          -> description
- //-----------------------------------------------------------------------------
+//  .------------- term string
+//  |    .-------- Tcap-code
+//  |    |      // variable name          -> description
+//------------------------------------------------------------------------------
   { 0, "bl" },  // bell                   -> audible signal (bell) (P)
   { 0, "ec" },  // erase_chars            -> erase #1 characters (P)
   { 0, "cl" },  // clear_screen           -> clear screen and home cursor (P*)

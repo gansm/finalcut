@@ -794,7 +794,7 @@ inline bool FOptiAttr::unsetTermBlink (charData*& term)
   if ( F_exit_blink_mode.caused_reset )
     reset(term);
   else
-   term->attr.bit.blink = false;
+    term->attr.bit.blink = false;
 
   if ( append_sequence(F_exit_blink_mode.cap) )
     return true;

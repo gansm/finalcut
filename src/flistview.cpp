@@ -2492,7 +2492,7 @@ void FListView::stepForward (int distance)
 void FListView::stepBackward (int distance)
 {
   if ( current_iter.getPosition() == 0 )
-   return;
+    return;
 
   if ( current_iter.getPosition() - distance >= 0 )
   {

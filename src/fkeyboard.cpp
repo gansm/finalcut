@@ -234,10 +234,9 @@ inline int FKeyboard::getTermcapKey()
   if ( ! key_map )
     return -1;
 
-  fc::fkeymap* keymap = reinterpret_cast<fc::fkeymap*>(key_map);
-  for (int i = 0; keymap[i].tname[0] != 0; i++)
+  for (int i = 0; key_map[i].tname[0] != 0; i++)
   {
-    char* k = keymap[i].string;
+    char* k = key_map[i].string;
     std::size_t len = ( k ) ? std::strlen(k) : 0;
 
     if ( k && std::strncmp(k, fifo_buf, len) == 0 )  // found
@@ -486,17 +485,17 @@ int FKeyboard::parseKeyString()
   {
     int keycode = getMouseProtocolKey();
 
-    if ( keycode > 0 )
+    if ( keycode != -1 )
       return keycode;
 
     keycode = getTermcapKey();
 
-    if ( keycode > 0 )
+    if ( keycode != -1 )
       return keycode;
 
     keycode = getMetaKey();
 
-    if ( keycode > 0 )
+    if ( keycode != -1 )
       return keycode;
 
     if ( ! isKeypressTimeout() )

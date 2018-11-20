@@ -131,7 +131,8 @@ void CheckList::populate()
   {
     const finalcut::FStringList line (&list[i][0], &list[i][0] + 2);
     finalcut::FObject::FObjectIterator iter = listView.insert (line);
-    finalcut::FListViewItem* item = static_cast<finalcut::FListViewItem*>(*iter);
+    finalcut::FListViewItem* item = \
+        static_cast<finalcut::FListViewItem*>(*iter);
     item->setCheckable(true);
   }
 }
@@ -167,10 +168,12 @@ void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
 
   while ( iter != listView.endOfList() )
   {
-    const finalcut::FListViewItem* item = static_cast<finalcut::FListViewItem*>(*iter);
+    const finalcut::FListViewItem* item = \
+        static_cast<finalcut::FListViewItem*>(*iter);
 
     if ( item->isChecked() )
-      shopping_list << wchar_t(finalcut::fc::Bullet) << ' ' << item->getText(1) << '\n';
+      shopping_list << wchar_t(finalcut::fc::Bullet) << ' '
+                    << item->getText(1) << '\n';
 
     ++iter;
   }

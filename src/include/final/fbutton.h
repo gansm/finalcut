@@ -69,7 +69,7 @@ class FButton : public FWidget
   public:
     // Constructors
     explicit FButton (FWidget* = 0);
-    FButton (const FString&, FWidget* = 0);
+    explicit FButton (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FButton();

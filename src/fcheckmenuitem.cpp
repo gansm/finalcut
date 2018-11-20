@@ -75,7 +75,7 @@ void FCheckMenuItem::processToggle()
 //----------------------------------------------------------------------
 void FCheckMenuItem::processClicked()
 {
-  checked = not checked;
+  checked = ! checked;
   processToggle();
   emitCallback("clicked");
 }

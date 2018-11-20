@@ -88,7 +88,9 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FToggleButton::setGeometry ( int x, int y
+                                , std::size_t w, std::size_t h
+                                , bool adjust )
 {
   // Set the toggle button geometry
 
@@ -286,7 +288,7 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
   }
   else
   {
-    checked = not checked;
+    checked = ! checked;
     processToggle();
   }
 
@@ -332,7 +334,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
   }
   else
   {
-    checked = not checked;
+    checked = ! checked;
     processToggle();
   }
 
@@ -550,7 +552,7 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
       }
       else
       {
-        checked = not checked;
+        checked = ! checked;
         processToggle();
       }
       processClick();
@@ -674,7 +676,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   }
 
   if ( isMonochron() )
-    setReverse(false);;
+    setReverse(false);
 }
 
 }  // namespace finalcut

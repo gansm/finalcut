@@ -98,7 +98,7 @@ FPoint FVTerm::getPrintCursor()
     return FPoint ( win->offset_left + win->cursor_x
                   , win->offset_top + win->cursor_y );
 
-  return FPoint(0,0);
+  return FPoint(0, 0);
 }
 
 //----------------------------------------------------------------------
@@ -184,7 +184,7 @@ void FVTerm::clearArea (int fillchar)
 void FVTerm::createVTerm (const FRect& r)
 {
   // initialize virtual terminal
-  const FPoint shadow(0,0);
+  const FPoint shadow(0, 0);
   createArea (r, shadow, vterm);
 }
 
@@ -198,7 +198,7 @@ void FVTerm::createVTerm (int width, int height)
 //----------------------------------------------------------------------
 void FVTerm::resizeVTerm (const FRect& r)
 {
-  const FPoint shadow(0,0);
+  const FPoint shadow(0, 0);
   resizeArea (r, shadow, vterm);
 }
 
@@ -2014,7 +2014,7 @@ void FVTerm::init (bool disable_alt_screen)
   createVTerm (term_geometry);
 
   // Create virtual desktop area
-  FPoint shadow_size(0,0);
+  FPoint shadow_size(0, 0);
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
@@ -2191,7 +2191,7 @@ bool FVTerm::clearTerm (int fillchar)
   if ( cl )  // Clear screen
   {
     appendOutputBuffer (cl);
-    term_pos->setPoint(0,0);
+    term_pos->setPoint(0, 0);
   }
   else if ( cd )  // Clear to end of screen
   {
@@ -2209,7 +2209,7 @@ bool FVTerm::clearTerm (int fillchar)
       appendOutputBuffer (cb);
     }
 
-    setTermXY (0,0);
+    setTermXY (0, 0);
   }
 
   flush_out();

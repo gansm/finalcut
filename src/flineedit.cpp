@@ -240,12 +240,12 @@ bool FLineEdit::setShadow (bool on)
     && getEncoding() != fc::ASCII )
   {
     flags.shadow = true;
-    setShadowSize(1,1);
+    setShadowSize(1, 1);
   }
   else
   {
     flags.shadow = false;
-    setShadowSize(0,0);
+    setShadowSize(0, 0);
   }
 
   return flags.shadow;
@@ -645,7 +645,8 @@ void FLineEdit::adjustLabel()
       break;
 
     case label_left:
-      label->setGeometry(getX() - int(label_length) - 1, getY(), label_length, 1);
+      label->setGeometry(getX() - int(label_length) - 1, getY()
+                        , label_length, 1);
       break;
   }
 }
@@ -853,7 +854,7 @@ inline void FLineEdit::keyBackspace()
 //----------------------------------------------------------------------
 inline void FLineEdit::keyInsert()
 {
-  insert_mode = not insert_mode;
+  insert_mode = ! insert_mode;
 
   if ( insert_mode )
     setInsertCursor();

@@ -169,8 +169,10 @@ void AttribDlg::adjustSize()
     y = 1;
 
   setGeometry(x, y, 69, 21, false);
-  next_button.setGeometry(int(getWidth()) - 13, int(getHeight()) - 4, 10, 1, false);
-  back_button.setGeometry(int(getWidth()) - 25, int(getHeight()) - 4, 10, 1, false);
+  next_button.setGeometry ( int(getWidth()) - 13, int(getHeight()) - 4
+                          , 10, 1, false );
+  back_button.setGeometry ( int(getWidth()) - 25, int(getHeight()) - 4
+                          , 10, 1, false );
   finalcut::FDialog::adjustSize();
 }
 
@@ -258,7 +260,7 @@ void AttribDemo::printAltCharset()
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
 
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   print("alternate charset: ");
 
   if ( parent->bgcolor == finalcut::fc::Default )

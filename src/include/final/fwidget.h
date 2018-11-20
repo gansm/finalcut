@@ -95,6 +95,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <utility>
 #include <vector>
 
 #include "final/fvterm.h"
