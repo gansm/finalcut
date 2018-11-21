@@ -81,18 +81,18 @@ class FStatusKey : public FWidget
   public:
     // Constructors
     explicit FStatusKey (FWidget* = 0);
-    FStatusKey (int, const FString&, FWidget* = 0);
+    FStatusKey (FKey, const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FStatusKey();
 
     // Accessors
     virtual const char* getClassName() const;
-    virtual int         getKey() const;
+    virtual FKey        getKey() const;
     virtual FString     getText() const;
 
     // Mutators
-    void                setKey (int);
+    void                setKey (FKey);
     void                setText (const FString&);
     void                setActive();
     void                unsetActive();
@@ -124,7 +124,7 @@ class FStatusKey : public FWidget
     friend class FStatusBar;
 
     // Data Members
-    int         key;
+    FKey        key;
     FString     text;
     bool        active;
     bool        mouse_focus;
@@ -139,7 +139,7 @@ inline const char* FStatusKey::getClassName() const
 { return "FStatusKey"; }
 
 //----------------------------------------------------------------------
-inline int FStatusKey::getKey() const
+inline FKey FStatusKey::getKey() const
 { return key; }
 
 //----------------------------------------------------------------------
@@ -147,7 +147,7 @@ inline FString FStatusKey::getText() const
 { return text; }
 
 //----------------------------------------------------------------------
-inline void FStatusKey::setKey (int k)
+inline void FStatusKey::setKey (FKey k)
 { key = k; }
 
 //----------------------------------------------------------------------

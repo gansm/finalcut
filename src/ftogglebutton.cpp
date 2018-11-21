@@ -428,16 +428,16 @@ uChar FToggleButton::getHotkey()
 //----------------------------------------------------------------------
 void FToggleButton::setHotkeyAccelerator()
 {
-  int hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
     if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (std::tolower(hotkey));
-      addAccelerator (std::toupper(hotkey));
+      addAccelerator (FKey(std::tolower(hotkey)));
+      addAccelerator (FKey(std::toupper(hotkey)));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
     }
     else
       addAccelerator (getHotkey());
@@ -530,12 +530,10 @@ void FToggleButton::processToggle()
 //----------------------------------------------------------------------
 void FToggleButton::onKeyPress (FKeyEvent* ev)
 {
-  int key;
-
   if ( ! isEnabled() )
     return;
 
-  key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -619,8 +617,8 @@ void FToggleButton::init()
 
 //----------------------------------------------------------------------
 std::size_t  FToggleButton::getHotkeyPos ( wchar_t src[]
-                                , wchar_t dest[]
-                                , std::size_t length )
+                                         , wchar_t dest[]
+                                         , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign

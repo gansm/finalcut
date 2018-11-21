@@ -491,7 +491,7 @@ void FMenu::calculateDimensions()
   while ( iter != last )
   {
     std::size_t item_width = (*iter)->getTextLength() + 2;
-    int         accel_key  = (*iter)->accel_key;
+    FKey        accel_key  = (*iter)->accel_key;
     bool        has_menu   = (*iter)->hasMenu();
 
     if ( has_menu )
@@ -1171,12 +1171,13 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
     if ( (*iter)->hasHotkey() )
     {
       bool found = false;
-      int hotkey = (*iter)->getHotkey();
-      int key = ev->key();
+      uChar hotkey = (*iter)->getHotkey();
+      FKey key = ev->key();
 
       if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
       {
-        if ( std::tolower(hotkey) == key || std::toupper(hotkey) == key )
+        if ( FKey(std::tolower(hotkey)) == key
+          || FKey(std::toupper(hotkey)) == key )
           found = true;
       }
       else if ( hotkey == key )
@@ -1316,7 +1317,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
   menuText txtdata;
   std::size_t txt_length = txt.getLength();
   std::size_t to_char = txt_length;
-  int  accel_key   = menuitem->accel_key;
+  FKey accel_key   = menuitem->accel_key;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
 
@@ -1469,7 +1470,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawAcceleratorKey (std::size_t& startpos, int accel_key)
+inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
   FString accel_name (getKeyName(accel_key));
   std::size_t c = ( has_checkable_items ) ? 1 : 0;

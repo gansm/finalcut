@@ -132,7 +132,7 @@ class FWidget : public FVTerm, public FObject
 
     struct accelerator
     {
-      int key;
+      FKey key;
       FWidget* object;
     };
 
@@ -310,8 +310,8 @@ class FWidget : public FVTerm, public FObject
     void               delCallback (FWidget*);
     void               delCallbacks();
     void               emitCallback (const FString&);
-    void               addAccelerator (int);
-    virtual void       addAccelerator (int, FWidget*);
+    void               addAccelerator (FKey);
+    virtual void       addAccelerator (FKey, FWidget*);
     void               delAccelerator ();
     virtual void       delAccelerator (FWidget*);
     virtual void       redraw();
@@ -932,7 +932,7 @@ inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
 
 //----------------------------------------------------------------------
-inline void FWidget::addAccelerator (int key)
+inline void FWidget::addAccelerator (FKey key)
 { addAccelerator (key, this); }
 
 //----------------------------------------------------------------------

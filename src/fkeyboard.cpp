@@ -107,7 +107,7 @@ void FKeyboard::fetchKeyCode()
 }
 
 //----------------------------------------------------------------------
-const FString FKeyboard::getKeyName (int keynum)
+const FString FKeyboard::getKeyName (FKey keynum)
 {
   for (int i = 0; fc::FkeyName[i].string[0] != 0; i++)
     if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
@@ -197,12 +197,12 @@ void FKeyboard::escapeKeyHandling()
 
 // private methods of FKeyboard
 //----------------------------------------------------------------------
-inline int FKeyboard::getMouseProtocolKey()
+inline FKey FKeyboard::getMouseProtocolKey()
 {
   // Looking for mouse string in the key buffer
 
   if ( ! mouse_support )
-    return -1;
+    return NOT_SET;
 
   std::size_t buf_len = std::strlen(fifo_buf);
 
@@ -221,18 +221,18 @@ inline int FKeyboard::getMouseProtocolKey()
     && fifo_buf[buf_len - 1] == 'M' )
     return fc::Fkey_urxvt_mouse;
 
-  return -1;
+  return NOT_SET;
 }
 
 //----------------------------------------------------------------------
-inline int FKeyboard::getTermcapKey()
+inline FKey FKeyboard::getTermcapKey()
 {
   // Looking for termcap key strings in the buffer
 
   assert ( FIFO_BUF_SIZE > 0 );
 
   if ( ! key_map )
-    return -1;
+    return NOT_SET;
 
   for (int i = 0; key_map[i].tname[0] != 0; i++)
   {
@@ -254,11 +254,11 @@ inline int FKeyboard::getTermcapKey()
     }
   }
 
-  return -1;
+  return NOT_SET;
 }
 
 //----------------------------------------------------------------------
-inline int FKeyboard::getMetaKey()
+inline FKey FKeyboard::getMetaKey()
 {
   // Looking for meta key strings in the buffer
 
@@ -278,7 +278,7 @@ inline int FKeyboard::getMetaKey()
                       || fifo_buf[1] == ']' ) )
       {
         if ( ! isKeypressTimeout() )
-          return NEED_MORE_DATA;
+          return fc::need_more_data;
       }
 
       for (n = len; n < FIFO_BUF_SIZE; n++)  // Remove founded entry
@@ -292,18 +292,18 @@ inline int FKeyboard::getMetaKey()
     }
   }
 
-  return -1;
+  return NOT_SET;
 }
 
 //----------------------------------------------------------------------
-inline int FKeyboard::getSingleKey()
+inline FKey FKeyboard::getSingleKey()
 {
   // Looking for single key code in the buffer
 
   uChar firstchar = uChar(fifo_buf[0]);
   std::size_t n;
   std::size_t len = 1;
-  int keycode;
+  FKey keycode;
 
   // Look for a utf-8 character
   if ( utf8_input && (firstchar & 0xc0) == 0xc0 )
@@ -336,7 +336,7 @@ inline int FKeyboard::getSingleKey()
   if ( keycode == 0 )  // Ctrl+Space or Ctrl+@
     keycode = fc::Fckey_space;
 
-  return int(keycode == 127 ? fc::Fkey_backspace : keycode);
+  return FKey(keycode == 127 ? fc::Fkey_backspace : keycode);
 }
 
 //----------------------------------------------------------------------
@@ -370,16 +370,16 @@ bool FKeyboard::isKeypressTimeout()
 }
 
 //----------------------------------------------------------------------
-int FKeyboard::UTF8decode (const char utf8[])
+FKey FKeyboard::UTF8decode (const char utf8[])
 {
-  int ucs = 0;
+  FKey ucs = 0;  // Universal coded character
   const int max = 4;
-  int len = int(std::strlen(utf8));
+  std::size_t len = std::strlen(utf8);
 
   if ( len > max )
     len = max;
 
-  for (int i = 0; i < len; ++i)
+  for (std::size_t i = 0; i < len; ++i)
   {
     uChar ch = uChar(utf8[i]);
 
@@ -411,7 +411,7 @@ int FKeyboard::UTF8decode (const char utf8[])
     else
     {
       // error
-      ucs = EOF;
+      ucs = NOT_SET;
     }
   }
 
@@ -450,12 +450,12 @@ void FKeyboard::parseKeyBuffer()
     // Read the rest from the fifo buffer
     while ( ! isKeypressTimeout()
          && fifo_offset > 0
-         && key != NEED_MORE_DATA )
+         && key != fc::need_more_data )
     {
       key = parseKeyString();
       key = keyCorrection(key);
 
-      if ( key != NEED_MORE_DATA )
+      if ( key != fc::need_more_data )
         keyPressed();
 
       fifo_offset = int(std::strlen(fifo_buf));
@@ -477,38 +477,38 @@ void FKeyboard::parseKeyBuffer()
 }
 
 //----------------------------------------------------------------------
-int FKeyboard::parseKeyString()
+FKey FKeyboard::parseKeyString()
 {
   uChar firstchar = uChar(fifo_buf[0]);
 
   if ( firstchar == ESC[0] )
   {
-    int keycode = getMouseProtocolKey();
+    FKey keycode = getMouseProtocolKey();
 
-    if ( keycode != -1 )
+    if ( keycode != NOT_SET )
       return keycode;
 
     keycode = getTermcapKey();
 
-    if ( keycode != -1 )
+    if ( keycode != NOT_SET )
       return keycode;
 
     keycode = getMetaKey();
 
-    if ( keycode != -1 )
+    if ( keycode != NOT_SET )
       return keycode;
 
     if ( ! isKeypressTimeout() )
-      return NEED_MORE_DATA;
+      return fc::need_more_data;
   }
 
   return getSingleKey();
 }
 
 //----------------------------------------------------------------------
-int FKeyboard::keyCorrection (const int& keycode)
+FKey FKeyboard::keyCorrection (const FKey& keycode)
 {
-  int key_correction;
+  FKey key_correction;
 
 #if defined(__linux__)
   if ( linux )

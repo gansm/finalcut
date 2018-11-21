@@ -275,9 +275,9 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void escapeKeyPressed();
 
     // Data Members
-    int key_pressed;
-    int key_released;
-    int number_of_keys;
+    FKey key_pressed;
+    FKey key_released;
+    int  number_of_keys;
     finalcut::FKeyboard* keyboard;
 };
 #pragma pack(pop)
@@ -2754,10 +2754,10 @@ void FKeyboardTest::utf8Test()
   CPPUNIT_ASSERT ( key_pressed == 0x0040 );
 
   // Invalid UTF-8
-  key_pressed = -5;
+  key_pressed = 0xffffffff;
   input("\377");
   processInput();
-  CPPUNIT_ASSERT ( key_pressed == -5 );
+  CPPUNIT_ASSERT ( key_pressed == 0xffffffff );
 
   // Without UTF-8 support
   keyboard->disableUTF8();

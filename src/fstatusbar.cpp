@@ -45,7 +45,7 @@ FStatusKey::FStatusKey(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey (int k, const FString& txt, FWidget* parent)
+FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , key(k)
   , text(txt)

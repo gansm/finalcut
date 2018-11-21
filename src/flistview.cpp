@@ -959,8 +959,8 @@ void FListView::onKeyPress (FKeyEvent* ev)
   int position_before = current_iter.getPosition()
     , xoffset_before = xoffset
     , first_line_position_before = first_visible_line.getPosition()
-    , pagesize = int(getClientHeight()) - 1
-    , key = ev->key();
+    , pagesize = int(getClientHeight()) - 1;
+  FKey key = ev->key();
   clicked_expander_pos.setPoint(-1, -1);
 
   switch ( key )

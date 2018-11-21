@@ -685,9 +685,9 @@ bool FApplication::processDialogSwitchAccelerator()
   if ( keyboard->getKey() >= fc::Fmkey_1
     && keyboard->getKey() <= fc::Fmkey_9 )
   {
-    int key = keyboard->getKey();
-    uLong n = uLong(key - fc::Fmkey_0);
-    uLong s = dialog_list->size();
+    FKey key = keyboard->getKey();
+    std::size_t n = key - fc::Fmkey_0;
+    std::size_t s = dialog_list->size();
 
     if ( s > 0 && s >= n )
     {

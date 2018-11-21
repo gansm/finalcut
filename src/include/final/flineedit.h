@@ -165,7 +165,7 @@ class FLineEdit : public FWidget
     void         keyBackspace();
     void         keyInsert();
     void         keyEnter();
-    bool         keyInput (int);
+    bool         keyInput (FKey);
     void         processActivate();
     void         processChanged();
 

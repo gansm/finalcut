@@ -426,10 +426,10 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
   {
     if ( (*iter)->isEnabled() )
     {
-      int hotkey = (*iter)->getHotkey();
-      int key = ev->key();
+      uChar hotkey = (*iter)->getHotkey();
+      FKey key = ev->key();
 
-      if ( fc::Fmkey_meta + std::tolower(hotkey) == key )
+      if ( fc::Fmkey_meta + FKey(std::tolower(hotkey)) == key )
       {
         FMenuItem* sel_item = getSelectedItem();
 

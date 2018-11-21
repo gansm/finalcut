@@ -66,6 +66,13 @@ class FTermDebugData
     void           setFTermData (FTermData*);
 
   private:
+    // Disable copy constructor
+    FTermDebugData (const FTermDebugData&);
+
+    // Disable assignment operator (=)
+    FTermDebugData& operator = (const FTermDebugData&);
+
+    // Data Members
     FTermDetection* term_detection;
     FTermData*      data;
 };

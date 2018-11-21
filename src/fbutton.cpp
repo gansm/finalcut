@@ -292,12 +292,10 @@ void FButton::hide()
 //----------------------------------------------------------------------
 void FButton::onKeyPress (FKeyEvent* ev)
 {
-  int key;
-
   if ( ! isEnabled() )
     return;
 
-  key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -480,16 +478,16 @@ uChar FButton::getHotkey()
 //----------------------------------------------------------------------
 void FButton::setHotkeyAccelerator()
 {
-  int hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
     if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (std::tolower(hotkey));
-      addAccelerator (std::toupper(hotkey));
+      addAccelerator (FKey(std::tolower(hotkey)));
+      addAccelerator (FKey(std::toupper(hotkey)));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
     }
     else
       addAccelerator (getHotkey());

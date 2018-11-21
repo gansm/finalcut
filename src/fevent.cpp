@@ -3,7 +3,7 @@
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2014-2017 Markus Gans                                      *
+* Copyright 2014-2018 Markus Gans                                      *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -48,7 +48,7 @@ int FEvent::type() const
 // class FKeyEvent
 //----------------------------------------------------------------------
 
-FKeyEvent::FKeyEvent (int ev_type, int key_num)  // constructor
+FKeyEvent::FKeyEvent (int ev_type, FKey key_num)  // constructor
   : FEvent(ev_type)
   , k(key_num)
   , accpt(false)
@@ -59,7 +59,7 @@ FKeyEvent::~FKeyEvent()  // destructor
 { }
 
 //----------------------------------------------------------------------
-int FKeyEvent::key() const
+FKey FKeyEvent::key() const
 { return k; }
 
 //----------------------------------------------------------------------

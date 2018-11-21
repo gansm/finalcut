@@ -84,14 +84,14 @@ class FMenuItem : public FWidget
     // Constructor
     explicit FMenuItem (FWidget* = 0);
     explicit FMenuItem (const FString&, FWidget* = 0);
-    FMenuItem (int, const FString&, FWidget* = 0);
+    FMenuItem (FKey, const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FMenuItem();
 
     // Accessors
     const char*  getClassName() const;
-    int          getHotkey() const;
+    uChar        getHotkey() const;
     FMenu*       getMenu() const;
     std::size_t  getTextLength() const;
     FString      getText() const;
@@ -118,7 +118,7 @@ class FMenuItem : public FWidget
     bool         hasMenu() const;
 
     // Methods
-    virtual void addAccelerator (int, FWidget*);
+    virtual void addAccelerator (FKey, FWidget*);
     virtual void delAccelerator (FWidget*);
     void         openMenu();
 
@@ -153,8 +153,8 @@ class FMenuItem : public FWidget
     bool         radio_button;
     bool         dialog_index;
     std::size_t  text_length;
-    int          hotkey;
-    int          accel_key;
+    uChar        hotkey;
+    FKey         accel_key;
     FMenu*       menu;
     FWidget*     super_menu;
     FDialog*     associated_window;
@@ -199,7 +199,7 @@ inline const char* FMenuItem::getClassName() const
 { return "FMenuItem"; }
 
 //----------------------------------------------------------------------
-inline int FMenuItem::getHotkey() const
+inline uChar FMenuItem::getHotkey() const
 { return hotkey; }
 
 //----------------------------------------------------------------------

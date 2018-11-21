@@ -330,7 +330,7 @@ void FLineEdit::clear()
 //----------------------------------------------------------------------
 void FLineEdit::onKeyPress (FKeyEvent* ev)
 {
-  int key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -869,7 +869,7 @@ inline void FLineEdit::keyEnter()
 }
 
 //----------------------------------------------------------------------
-inline bool FLineEdit::keyInput (int key)
+inline bool FLineEdit::keyInput (FKey key)
 {
   if ( key >= 0x20 && key <= 0x10fff )
   {

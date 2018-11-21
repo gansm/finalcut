@@ -77,7 +77,7 @@ FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FMenuItem::FMenuItem (int k, const FString& txt, FWidget* parent)
+FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
   , selected(false)
@@ -127,7 +127,8 @@ bool FMenuItem::setEnable (bool on)
     if ( super && isMenuBar(super) )
     {
       // Meta + hotkey
-      super->addAccelerator (fc::Fmkey_meta + std::tolower(hotkey), this);
+      super->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
+                            , this );
     }
   }
   else
@@ -231,8 +232,7 @@ void FMenuItem::setText (const FString& txt)
 }
 
 //----------------------------------------------------------------------
-
-void FMenuItem::addAccelerator (int key, FWidget* obj)
+void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 {
   FWidget* root = getRootWidget();
   accelerator accel = { key, obj };
@@ -596,7 +596,7 @@ void FMenuItem::init (FWidget* parent)
 
   setSuperMenu (parent);
 
-  if ( accel_key  )
+  if ( accel_key )
     addAccelerator (accel_key);
 
   FMenuList* menu_list = getFMenuList(*parent);
@@ -610,7 +610,7 @@ void FMenuItem::init (FWidget* parent)
     menubar_ptr->calculateDimensions();
 
     if ( hotkey )  // Meta + hotkey
-      menubar_ptr->addAccelerator ( fc::Fmkey_meta + std::tolower(hotkey)
+      menubar_ptr->addAccelerator ( fc::Fmkey_meta + FKey(std::tolower(hotkey))
                                   , this );
 
     addCallback  // for this element
@@ -681,7 +681,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
       if ( win )
       {
         FMenuItem* win_item;
-        int n = int(std::distance(first, iter));
+        uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
         const FString& name = win->getText();
 

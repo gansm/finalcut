@@ -138,7 +138,7 @@ class FVTerm
     static int            getTabstop();
     static fc::encoding   getEncoding();
     static std::string    getEncodingString();
-    static const FString  getKeyName (int);
+    static const FString  getKeyName (FKey);
     static char*          getTermType();
     static char*          getTermFileName();
     FTerm&                getFTerm();
@@ -637,7 +637,7 @@ inline std::string FVTerm::getEncodingString()
 { return FTerm::getEncodingString(); }
 
 //----------------------------------------------------------------------
-inline const FString FVTerm::getKeyName (int keynum)
+inline const FString FVTerm::getKeyName (FKey keynum)
 { return FTerm::getKeyName(keynum); }
 
 //----------------------------------------------------------------------

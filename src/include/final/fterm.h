@@ -171,7 +171,7 @@ class FTerm
     static FMouseControl*  getMouseControl();
     static std::size_t     getLineNumber();
     static std::size_t     getColumnNumber();
-    static const FString   getKeyName (int);
+    static const FString   getKeyName (FKey);
     static FOptiMove*      getFOptiMove();
 
     static int             getTTYFileDescriptor();

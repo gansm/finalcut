@@ -285,7 +285,7 @@ class FListBox : public FWidget
     bool         keySpace();
     bool         keyInsert();
     bool         keyBackspace();
-    bool         keyIncSearchInput (int);
+    bool         keyIncSearchInput (FKey);
     void         processClick();
     void         processSelect();
     void         processChanged();

@@ -90,7 +90,7 @@ void Button::setChecked (bool on)
 //----------------------------------------------------------------------
 void Button::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  int key = ev->key();
+  FKey key = ev->key();
 
   // catch the enter key
   if ( key == finalcut::fc::Fkey_return
@@ -1007,8 +1007,8 @@ void Calc::calcInfixOperator()
 //----------------------------------------------------------------------
 void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  int len = int(input.getLength());
-  int key = ev->key();
+  std::size_t len = input.getLength();
+  FKey key = ev->key();
 
   switch ( key )
   {

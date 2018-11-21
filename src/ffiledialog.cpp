@@ -231,7 +231,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
   if ( ! filebrowser.hasFocus() )
     return;
 
-  int key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {

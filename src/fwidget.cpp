@@ -970,7 +970,7 @@ void FWidget::emitCallback (const FString& emit_signal)
 }
 
 //----------------------------------------------------------------------
-void FWidget::addAccelerator (int key, FWidget* obj)
+void FWidget::addAccelerator (FKey key, FWidget* obj)
 {
   FWidget* widget = FWindow::getWindowWidget(obj);
   accelerator accel = { key, obj };

@@ -97,8 +97,8 @@ class FKeyboard
 
     // Accessors
     virtual const char* getClassName() const;
-    int                 getKey();
-    const FString       getKeyName (int);
+    FKey                getKey();
+    const FString       getKeyName (FKey);
     keybuffer&          getKeyBuffer();
     timeval*            getKeyPressedTime();
 
@@ -131,8 +131,8 @@ class FKeyboard
 
   private:
     // Constants
-    static const int NEED_MORE_DATA = -1;
     static const std::size_t READ_BUF_SIZE = 1024;
+    static const FKey NOT_SET = static_cast<FKey>(-1);
 
     // Disable copy constructor
     FKeyboard (const FKeyboard&);
@@ -141,10 +141,10 @@ class FKeyboard
     FKeyboard& operator = (const FKeyboard&);
 
     // Accessors
-    int                 getMouseProtocolKey();
-    int                 getTermcapKey();
-    int                 getMetaKey();
-    int                 getSingleKey();
+    FKey                getMouseProtocolKey();
+    FKey                getTermcapKey();
+    FKey                getMetaKey();
+    FKey                getSingleKey();
 
     // Mutators
     bool                setNonBlockingInput (bool);
@@ -155,18 +155,18 @@ class FKeyboard
     static bool         isKeypressTimeout();
 
     // Methods
-    int                 UTF8decode (const char[]);
+    FKey                UTF8decode (const char[]);
     ssize_t             readKey();
     void                parseKeyBuffer();
-    int                 parseKeyString();
-    int                 keyCorrection (const int&);
+    FKey                parseKeyString();
+    FKey                keyCorrection (const FKey&);
     void                substringKeyHandling();
     void                keyPressed();
     void                keyReleased();
     void                escapeKeyPressed();
 
     // Data Members
-    int                 key;
+    FKey                key;
     char                read_buf[READ_BUF_SIZE];
     char                fifo_buf[FIFO_BUF_SIZE];
     int                 fifo_offset;
@@ -197,7 +197,7 @@ inline const char* FKeyboard::getClassName() const
 { return "FKeyboard"; }
 
 //----------------------------------------------------------------------
-inline int FKeyboard::getKey()
+inline FKey FKeyboard::getKey()
 { return key; }
 
 //----------------------------------------------------------------------

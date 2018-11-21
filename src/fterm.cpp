@@ -108,7 +108,7 @@ std::size_t FTerm::getColumnNumber()
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getKeyName (int keynum)
+const FString FTerm::getKeyName (FKey keynum)
 {
   return keyboard->getKeyName (keynum);
 }

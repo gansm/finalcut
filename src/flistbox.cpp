@@ -402,9 +402,9 @@ void FListBox::clear()
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   std::size_t current_before = current;
-  int xoffset_before = xoffset
-    , yoffset_before = yoffset
-    , key = ev->key();
+  int xoffset_before = xoffset;
+  int yoffset_before = yoffset;
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -1825,7 +1825,7 @@ inline bool FListBox::keyBackspace()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyIncSearchInput (int key)
+inline bool FListBox::keyIncSearchInput (FKey key)
 {
   if ( key <= 0x20 || key > 0x10fff )
     return false;

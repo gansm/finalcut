@@ -56,6 +56,7 @@ typedef int64_t        sInt64;
 typedef long double    lDouble;
 
 typedef uInt16         FColor;
+typedef uInt32         FKey;
 
 }  // namespace
 
@@ -93,7 +94,7 @@ namespace fc
 #pragma pack(1)
 typedef struct
 {
-  int   num;
+  FKey  num;
   char* string;
   char  tname[4];
 }
@@ -101,14 +102,14 @@ fkeymap;
 
 typedef struct
 {
-  int  num;
+  FKey num;
   char string[8];
 }
 fmetakeymap;
 
 typedef struct
 {
-  int  num;
+  FKey num;
   char string[25];
 }
 keyname;
