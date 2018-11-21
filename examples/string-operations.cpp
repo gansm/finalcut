@@ -512,7 +512,8 @@ void convertToNumberExample()
 
   try
   {
-    const double double_num = finalcut::FString("2.7182818284590452353").toDouble();
+    const double double_num = \
+        finalcut::FString("2.7182818284590452353").toDouble();
     std::ios_base::fmtflags save_flags = std::cout.flags();
     std::cout << "  toDouble:  " << std::setprecision(11)
                                  << double_num << std::endl;

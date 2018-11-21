@@ -63,7 +63,7 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;
@@ -426,10 +426,10 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
   {
     if ( (*iter)->isEnabled() )
     {
-      int hotkey = (*iter)->getHotkey();
-      int key = ev->key();
+      uChar hotkey = (*iter)->getHotkey();
+      FKey key = ev->key();
 
-      if ( fc::Fmkey_meta + std::tolower(hotkey) == key )
+      if ( fc::Fmkey_meta + FKey(std::tolower(hotkey)) == key )
       {
         FMenuItem* sel_item = getSelectedItem();
 
@@ -519,7 +519,7 @@ void FMenuBar::drawItems()
   if ( item_list.empty() )
     return;
 
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
 
   if ( isMonochron() )
     setReverse(true);
@@ -554,7 +554,7 @@ inline void FMenuBar::drawItem (FMenuItem* menuitem, std::size_t& x)
   bool is_selected = menuitem->isSelected();
 
   txtdata.startpos = x + 1;
-  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+  txtdata.no_underline = menuitem->getFlags().no_underline;
 
   // Set screen attributes
   setLineAttributes (menuitem);
@@ -1042,7 +1042,7 @@ void FMenuBar::leaveMenuBar()
   if ( getStatusBar() )
     getStatusBar()->clearMessage();
 
-  switchToPrevWindow();
+  switchToPrevWindow(this);
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();

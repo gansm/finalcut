@@ -165,7 +165,7 @@ class FMessageBox : public FDialog
     FStringList   text_split;
     std::size_t   max_line_width;
     bool          center_text;
-    short         emphasis_color;
+    FColor        emphasis_color;
     uInt          num_buttons;
     uInt          text_num_lines;
     int           button_digit[3];
@@ -197,7 +197,7 @@ inline void FMessageBox::setTitlebarText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText(bool on)
-{ return center_text = on; }
+{ return (center_text = on); }
 
 //----------------------------------------------------------------------
 inline bool FMessageBox::setCenterText()

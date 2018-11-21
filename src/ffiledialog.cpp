@@ -231,7 +231,7 @@ void FFileDialog::onKeyPress (FKeyEvent* ev)
   if ( ! filebrowser.hasFocus() )
     return;
 
-  int key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -912,7 +912,7 @@ void FFileDialog::cb_processOpen (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FFileDialog::cb_processShowHidden (FWidget*, data_ptr)
 {
-  setShowHiddenFiles(not show_hidden);
+  setShowHiddenFiles(! show_hidden);
 }
 
 }  // namespace finalcut

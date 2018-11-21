@@ -71,7 +71,7 @@ FToolTip::~FToolTip()  // destructor
   if ( parent_win )
     setActiveWindow (parent_win);
   else
-    switchToPrevWindow();
+    switchToPrevWindow(this);
 }
 
 

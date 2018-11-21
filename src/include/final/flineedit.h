@@ -77,7 +77,7 @@ class FLineEdit : public FWidget
 
     // Constructor
     explicit FLineEdit (FWidget* = 0);
-    FLineEdit (const FString&, FWidget* = 0);
+    explicit FLineEdit (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FLineEdit();
@@ -165,7 +165,7 @@ class FLineEdit : public FWidget
     void         keyBackspace();
     void         keyInsert();
     void         keyEnter();
-    bool         keyInput (int);
+    bool         keyInput (FKey);
     void         processActivate();
     void         processChanged();
 
@@ -227,7 +227,7 @@ inline bool FLineEdit::unsetShadow()
 
 //----------------------------------------------------------------------
 inline bool FLineEdit::hasShadow()
-{ return ((flags & fc::shadow) != 0); }
+{ return flags.shadow; }
 
 }  // namespace finalcut
 

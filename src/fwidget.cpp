@@ -58,15 +58,9 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   : FVTerm(bool(! parent), disable_alt_screen)
   , FObject(parent)
   , accelerator_list(0)
-  , flags(0)
+  , flags()
   , callback_objects()
   , member_callback_objects()
-  , enable(true)
-  , visible(true)
-  , shown(false)
-  , focus(false)
-  , focusable(true)
-  , visible_cursor(true)
   , widget_cursor_position(-1, -1)
   , size_hints()
   , double_flatline_mask()
@@ -84,10 +78,14 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   , background_color(fc::Default)
   , statusbar_message()
 {
-  if ( isEnabled() )
-    flags |= fc::active;
+  // init bit field with 0
+  memset (&flags, 0, sizeof(flags));
 
-  widget_object = true;
+  flags.active = true;          // Enable widget by default
+  flags.visible = true;         // A widget is visible by default
+  flags.focusable = true;       // A widget is focusable by default
+  flags.visible_cursor = true;  // A widget has a visible cursor by default
+  widget_object = true;         // This FObject is a widget
 
   if ( ! parent )
   {
@@ -103,7 +101,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   }
   else
   {
-    visible_cursor = ! hideable;
+    flags.visible_cursor = ! hideable;
     offset = parent->client_offset;
     double_flatline_mask.top.resize (getWidth(), false);
     double_flatline_mask.right.resize (getHeight(), false);
@@ -124,7 +122,7 @@ FWidget::~FWidget()  // destructor
     setClickedWidget(0);
 
   // unset the local window widget focus
-  if ( focus )
+  if ( flags.focus )
   {
     if ( FWindow* window = FWindow::getWindowWidget(this) )
       window->setWindowFocusWidget(0);
@@ -276,12 +274,7 @@ void FWidget::setMainWidget (FWidget* obj)
 //----------------------------------------------------------------------
 bool FWidget::setEnable (bool on)
 {
-  if ( on )
-    flags |= fc::active;
-  else
-    flags &= ~fc::active;
-
-  return enable = on;
+  return (flags.active = on);
 }
 
 //----------------------------------------------------------------------
@@ -290,21 +283,16 @@ bool FWidget::setFocus (bool on)
   FWindow* window;
   FWidget* last_focus;
 
-  if ( ! enable )
+  if ( ! isEnabled() )
     return false;
 
-  if ( on )
-    flags |= fc::focus;
-  else
-    flags &= ~fc::focus;
-
-  if ( on == focus )
+  if ( flags.focus == on )
     return true;
 
   last_focus = FWidget::getFocusWidget();
 
   // set widget focus
-  if ( on && ! focus )
+  if ( on && ! flags.focus )
   {
     int focusable_children = numOfFocusableChildren();
 
@@ -334,7 +322,7 @@ bool FWidget::setFocus (bool on)
     window->setWindowFocusWidget(this);
   }
 
-  return focus = on;
+  return (flags.focus = on);
 }
 
 //----------------------------------------------------------------------
@@ -604,7 +592,9 @@ void FWidget::setTermSize (std::size_t w, std::size_t h)
 }
 
 //----------------------------------------------------------------------
-void FWidget::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FWidget::setGeometry ( int x, int y
+                          , std::size_t w, std::size_t h
+                          , bool adjust )
 {
   // Sets the geometry of the widget relative to its parent
 
@@ -657,7 +647,7 @@ bool FWidget::setCursorPos (int x, int y)
 
   widget_cursor_position.setPoint(x, y);
 
-  if ( (flags & fc::focus) == 0 || isWindowWidget() )
+  if ( ! flags.focus || isWindowWidget() )
     return false;
 
   if ( ! FWindow::getWindowWidget(this) )
@@ -678,7 +668,7 @@ bool FWidget::setCursorPos (int x, int y)
 
     setAreaCursor ( widget_offsetX + x
                   , widget_offsetY + y
-                  , visible_cursor
+                  , flags.visible_cursor
                   , area );
     return true;
   }
@@ -854,7 +844,7 @@ bool FWidget::close()
     {
       hide();
 
-      if ( (flags & fc::modal) == 0 )
+      if ( ! flags.modal )
         close_widget->push_back(this);
     }
     return true;
@@ -980,7 +970,7 @@ void FWidget::emitCallback (const FString& emit_signal)
 }
 
 //----------------------------------------------------------------------
-void FWidget::addAccelerator (int key, FWidget* obj)
+void FWidget::addAccelerator (FKey key, FWidget* obj)
 {
   FWidget* widget = FWindow::getWindowWidget(obj);
   accelerator accel = { key, obj };
@@ -1030,7 +1020,7 @@ void FWidget::redraw()
     setColor (wc.term_fg, wc.term_bg);
     clearArea (vdesktop);
   }
-  else if ( ! visible )
+  else if ( ! isVisible() )
     return;
 
   draw();
@@ -1077,7 +1067,7 @@ void FWidget::resize()
 //----------------------------------------------------------------------
 void FWidget::show()
 {
-  if ( ! visible )
+  if ( ! isVisible() )
     return;
 
   if ( ! init_desktop )
@@ -1099,7 +1089,7 @@ void FWidget::show()
   }
 
   draw();
-  shown = true;
+  flags.shown = true;
 
   if ( hasChildren() )
   {
@@ -1134,10 +1124,10 @@ void FWidget::show()
 //----------------------------------------------------------------------
 void FWidget::hide()
 {
-  if ( visible )
+  if ( isVisible() )
   {
-    visible = false;
-    shown = false;
+    flags.visible = false;
+    flags.shown = false;
 
     if ( ! isDialogWidget()
       && FWidget::getFocusWidget() == this
@@ -1264,13 +1254,11 @@ void FWidget::move (int dx, int dy)
 //----------------------------------------------------------------------
 void FWidget::drawShadow()
 {
-  bool trans_shadow = ((flags & fc::trans_shadow) != 0);
-
-  if ( isMonochron() && ! trans_shadow )
+  if ( isMonochron() && ! flags.trans_shadow )
     return;
 
-  if ( (getEncoding() == fc::VT100 && ! trans_shadow)
-    || (getEncoding() == fc::ASCII && ! trans_shadow) )
+  if ( (getEncoding() == fc::VT100 && ! flags.trans_shadow)
+    || (getEncoding() == fc::ASCII && ! flags.trans_shadow) )
   {
     clearShadow();
     return;
@@ -1281,7 +1269,7 @@ void FWidget::drawShadow()
     , y1 = 1
     , y2 = int(getHeight());
 
-  if ( trans_shadow )
+  if ( flags.trans_shadow )
   {
     // transparent shadow
     drawTransparentShadow (x1, y1, x2, y2);
@@ -1974,14 +1962,8 @@ void FWidget::init()
     return;
   }
 
-  char* cursor_off_str = disableCursor();
-
-  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
-    hideable = true;
-  else
-    hideable = false;
-
-  visible_cursor = ! hideable;
+  hideable = isCursorHideable();
+  flags.visible_cursor = ! hideable;
 
   // Determine width and height of the terminal
   detectTermSize();

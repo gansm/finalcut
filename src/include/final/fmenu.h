@@ -79,7 +79,7 @@ class FMenu : public FWindow, public FMenuList
   public:
     // Constructor
     explicit FMenu (FWidget* = 0);
-    FMenu (const FString&, FWidget* = 0);
+    explicit FMenu (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FMenu();
@@ -210,7 +210,7 @@ class FMenu : public FWindow, public FMenuList
     void         drawCheckMarkPrefix (FMenuItem*);
     void         drawMenuText (menuText&);
     void         drawSubMenuIndicator (std::size_t&);
-    void         drawAcceleratorKey (std::size_t&, int);
+    void         drawAcceleratorKey (std::size_t&, FKey);
     void         drawTrailingSpaces (std::size_t);
     void         setLineAttributes (FMenuItem*, int);
     void         setCursorToHotkeyPosition (FMenuItem*);

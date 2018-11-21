@@ -51,13 +51,13 @@ class FColorPalette
 {
   public:
     // Constructor
-    explicit FColorPalette();
+    FColorPalette();
 
     // Destructor
     virtual ~FColorPalette();
 
     // Typedefs
-    typedef void (*funcp)(short, int, int, int);
+    typedef void (*funcp)(FColor, int, int, int);
 
     // Accessor
     virtual const char* getClassName() const;

@@ -74,113 +74,115 @@ namespace finalcut
 
 class FWindow : public FWidget
 {
- public:
-   // Using-declaration
-   using FWidget::drawBorder;
-   using FWidget::setPos;
-   using FWidget::setGeometry;
-   using FWidget::move;
+  public:
+    // Using-declaration
+    using FWidget::drawBorder;
+    using FWidget::setPos;
+    using FWidget::setGeometry;
+    using FWidget::move;
 
-   // Constructor
-   explicit FWindow (FWidget* = 0);
+    // Constructor
+    explicit FWindow (FWidget* = 0);
 
-   // Destructor
-   virtual ~FWindow ();
+    // Destructor
+    virtual ~FWindow ();
 
-   // Accessors
-   const char*     getClassName() const;
-   static FWindow* getWindowWidget (const FWidget*);
-   static int      getWindowLayer (const FWidget*);
-   FWidget*        getWindowFocusWidget() const;
+    // Accessors
+    const char*     getClassName() const;
+    static FWindow* getWindowWidget (const FWidget*);
+    static int      getWindowLayer (const FWidget*);
+    FWidget*        getWindowFocusWidget() const;
 
-   // Mutators
-   bool            setWindowWidget (bool);
-   bool            setWindowWidget();
-   bool            unsetWindowWidget();
-   static void     setActiveWindow (FWindow*);
-   void            setWindowFocusWidget (const FWidget*);
-   bool            activateWindow (bool);
-   bool            activateWindow();
-   void            unsetActiveWindow();
-   bool            deactivateWindow();
-   virtual bool    setResizeable (bool);
-   virtual bool    setResizeable();
-   bool            unsetResizeable();
-   bool            setTransparentShadow (bool);
-   bool            setTransparentShadow();
-   bool            unsetTransparentShadow();
-   bool            setShadow (bool);
-   bool            setShadow();
-   bool            unsetShadow();
-   bool            setAlwaysOnTop (bool);
-   bool            setAlwaysOnTop();
-   bool            unsetAlwaysOnTop();
+    // Mutators
+    bool            setWindowWidget (bool);
+    bool            setWindowWidget();
+    bool            unsetWindowWidget();
+    static void     setActiveWindow (FWindow*);
+    void            setWindowFocusWidget (const FWidget*);
+    bool            activateWindow (bool);
+    bool            activateWindow();
+    void            unsetActiveWindow();
+    bool            deactivateWindow();
+    virtual bool    setResizeable (bool);
+    virtual bool    setResizeable();
+    bool            unsetResizeable();
+    bool            setTransparentShadow (bool);
+    bool            setTransparentShadow();
+    bool            unsetTransparentShadow();
+    bool            setShadow (bool);
+    bool            setShadow();
+    bool            unsetShadow();
+    bool            setAlwaysOnTop (bool);
+    bool            setAlwaysOnTop();
+    bool            unsetAlwaysOnTop();
 
-   // Inquiries
-   bool            isZoomed() const;
-   bool            isWindowActive() const;
-   bool            isWindowHidden() const;
-   bool            isResizeable() const;
-   bool            isAlwaysOnTop() const;
-   bool            hasTransparentShadow() const;
-   bool            hasShadow() const;
+    // Inquiries
+    bool            isZoomed() const;
+    bool            isWindowActive() const;
+    bool            isWindowHidden() const;
+    bool            isResizeable() const;
+    bool            isAlwaysOnTop() const;
+    bool            hasTransparentShadow() const;
+    bool            hasShadow() const;
 
-   // Methods
-   virtual void    drawBorder();
-   virtual void    show();
-   virtual void    hide();
-   virtual void    setX (int, bool = true);
-   virtual void    setY (int, bool = true);
-   virtual void    setPos (int, int, bool = true);
-   virtual void    setWidth (std::size_t, bool = true);
-   virtual void    setHeight (std::size_t, bool = true);
-   virtual void    setSize (std::size_t, std::size_t, bool = true);
-   void            setGeometry (int, int, std::size_t, std::size_t, bool = true);
-   virtual void    move (int, int);
-   static FWindow* getWindowWidgetAt (const FPoint&);
-   static FWindow* getWindowWidgetAt (int, int);
-   static void     addWindow (FWidget*);
-   static void     delWindow (FWidget*);
-   static void     swapWindow (FWidget*, FWidget*);
-   static bool     raiseWindow (FWidget*);
-   bool            raiseWindow ();
-   static bool     lowerWindow (FWidget*);
-   bool            lowerWindow ();
-   bool            zoomWindow ();
-   static void     switchToPrevWindow();
-   static bool     activatePrevWindow();
-   virtual void    setShadowSize (int, int);
+    // Methods
+    virtual void    drawBorder();
+    virtual void    show();
+    virtual void    hide();
+    virtual void    setX (int, bool = true);
+    virtual void    setY (int, bool = true);
+    virtual void    setPos (int, int, bool = true);
+    virtual void    setWidth (std::size_t, bool = true);
+    virtual void    setHeight (std::size_t, bool = true);
+    virtual void    setSize (std::size_t, std::size_t, bool = true);
+    void            setGeometry ( int, int
+                                , std::size_t, std::size_t
+                                , bool = true );
+    virtual void    move (int, int);
+    static FWindow* getWindowWidgetAt (const FPoint&);
+    static FWindow* getWindowWidgetAt (int, int);
+    static void     addWindow (FWidget*);
+    static void     delWindow (FWidget*);
+    static void     swapWindow (FWidget*, FWidget*);
+    static bool     raiseWindow (FWidget*);
+    bool            raiseWindow ();
+    static bool     lowerWindow (FWidget*);
+    bool            lowerWindow ();
+    bool            zoomWindow ();
+    static void     switchToPrevWindow (FWidget*);
+    static bool     activatePrevWindow();
+    virtual void    setShadowSize (int, int);
 
- protected:
-   // Method
-   virtual void    adjustSize();
+  protected:
+    // Method
+    virtual void    adjustSize();
 
-   // Event handlers
-   virtual bool    event (FEvent*);
-   virtual void    onWindowActive (FEvent*);
-   virtual void    onWindowInactive (FEvent*);
-   virtual void    onWindowRaised (FEvent*);
-   virtual void    onWindowLowered (FEvent*);
+    // Event handlers
+    virtual bool    event (FEvent*);
+    virtual void    onWindowActive (FEvent*);
+    virtual void    onWindowInactive (FEvent*);
+    virtual void    onWindowRaised (FEvent*);
+    virtual void    onWindowLowered (FEvent*);
 
-   // Data Members
-   static FWindow* previous_window;
+    // Data Members
+    static FWindow* previous_window;
 
- private:
-   // Disable copy constructor
-   FWindow (const FWindow&);
+  private:
+    // Disable copy constructor
+    FWindow (const FWindow&);
 
-   // Disable assignment operator (=)
-   FWindow& operator = (const FWindow&);
+    // Disable assignment operator (=)
+    FWindow& operator = (const FWindow&);
 
-   // Methods
-   static void     deleteFromAlwaysOnTopList (FWidget*);
-   static void     processAlwaysOnTop();
+    // Methods
+    static void     deleteFromAlwaysOnTopList (FWidget*);
+    static void     processAlwaysOnTop();
 
-   // Data Members
-   bool            window_active;
-   bool            zoomed;
-   FWidget*        win_focus_widget;
-   FRect           normalGeometry;
+    // Data Members
+    bool            window_active;
+    bool            zoomed;
+    FWidget*        win_focus_widget;
+    FRect           normalGeometry;
 };
 #pragma pack(pop)
 
@@ -248,19 +250,19 @@ inline bool FWindow::isWindowActive() const
 
 //----------------------------------------------------------------------
 inline bool FWindow::isResizeable() const
-{ return ((flags & fc::resizeable) != 0); }
+{ return flags.resizeable; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::isAlwaysOnTop() const
-{ return ((flags & fc::always_on_top) != 0); }
+{ return flags.always_on_top; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasTransparentShadow() const
-{ return ((flags & fc::trans_shadow) != 0); }
+{ return flags.trans_shadow; }
 
 //----------------------------------------------------------------------
 inline bool FWindow::hasShadow() const
-{ return ((flags & fc::shadow) != 0); }
+{ return flags.shadow; }
 
 //----------------------------------------------------------------------
 inline FWindow* FWindow::getWindowWidgetAt (const FPoint& pos)

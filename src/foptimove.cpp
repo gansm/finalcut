@@ -560,47 +560,6 @@ char* FOptiMove::moveCursor (int xold, int yold, int xnew, int ynew)
     return 0;
 }
 
-//----------------------------------------------------------------------
-void FOptiMove::printDurations()
-{
-  std::cout << "            speed: "
-            << baudrate << " baud\r\n";
-  std::cout << "    char_duration: "
-            << char_duration << " ms\r\n";
-  std::cout << "      cursor_home: "
-            << F_cursor_home.duration << " ms\r\n";
-  std::cout << "     cursor_to_ll: "
-            << F_cursor_to_ll.duration << " ms\r\n";
-  std::cout << "  carriage_return: "
-            << F_carriage_return.duration << " ms\r\n";
-  std::cout << "              tab: "
-            << F_tab.duration << " ms\r\n";
-  std::cout << "         back_tab: "
-            << F_back_tab.duration << " ms\r\n";
-  std::cout << "        cursor_up: "
-            << F_cursor_up.duration << " ms\r\n";
-  std::cout << "      cursor_down: "
-            << F_cursor_down.duration << " ms\r\n";
-  std::cout << "      cursor_left: "
-            << F_cursor_left.duration << " ms\r\n";
-  std::cout << "     cursor_right: "
-            << F_cursor_right.duration << " ms\r\n";
-  std::cout << "   cursor_address: "
-            << F_cursor_address.duration << " ms\r\n";
-  std::cout << "   column_address: "
-            << F_column_address.duration << " ms\r\n";
-  std::cout << "      row_address: "
-            << F_row_address.duration << " ms\r\n";
-  std::cout << "   parm_up_cursor: "
-            << F_parm_up_cursor.duration << " ms\r\n";
-  std::cout << " parm_down_cursor: "
-            << F_parm_down_cursor.duration << " ms\r\n";
-  std::cout << " parm_left_cursor: "
-            << F_parm_left_cursor.duration << " ms\r\n";
-  std::cout << "parm_right_cursor: "
-            << F_parm_right_cursor.duration << " ms\r\n";
-}
-
 
 // private methods of FApplication
 //----------------------------------------------------------------------
@@ -857,7 +816,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
   {
     std::strncpy ( hmove
                  , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE - 1);
+                 , BUF_SIZE );
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
   }
@@ -977,7 +936,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
   if ( move_xy )
   {
     char* move_ptr = move_buf;
-    std::strncpy (move_ptr, move_xy, BUF_SIZE - 1);
+    std::strncpy (move_ptr, move_xy, BUF_SIZE);
     move_ptr[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;
     return true;

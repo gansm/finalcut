@@ -75,7 +75,7 @@ class FToggleButton : public FWidget
 
     // Constructors
     explicit FToggleButton (FWidget* = 0);
-    FToggleButton (const FString&, FWidget* = 0);
+    explicit FToggleButton (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FToggleButton();

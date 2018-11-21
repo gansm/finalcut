@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	choice \
 	listbox \
 	listview \
+	checklist \
 	treeview \
 	opti-move \
 	termcap \
@@ -37,6 +38,7 @@ input_dialog_SOURCES = input-dialog.cpp
 choice_SOURCES = choice.cpp
 listbox_SOURCES = listbox.cpp
 listview_SOURCES = listview.cpp
+checklist_SOURCES = checklist.cpp
 treeview_SOURCES = treeview.cpp
 opti_move_SOURCES = opti-move.cpp
 string_operations_SOURCES = string-operations.cpp

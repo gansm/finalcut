@@ -107,10 +107,10 @@ class FRect
     bool        isNull() const;
 
     // Coordinate references
-    short&      x1_ref();
-    short&      y1_ref();
-    short&      x2_ref();
-    short&      y2_ref();
+    int&        x1_ref();
+    int&        y1_ref();
+    int&        x2_ref();
+    int&        y2_ref();
 
     // Methods
     void        move (int, int);
@@ -124,10 +124,10 @@ class FRect
 
   private:
     // Data Members
-    short X1;
-    short Y1;
-    short X2;
-    short Y2;
+    int X1;
+    int Y1;
+    int X2;
+    int Y2;
 };
 #pragma pack(pop)
 
@@ -151,10 +151,10 @@ inline FRect::FRect (const FRect& r)  // copy constructor
 
 //----------------------------------------------------------------------
 inline FRect::FRect (int x, int y, std::size_t width, std::size_t height)
-  : X1(short(x))
-  , Y1(short(y))
-  , X2(short(x + short(width) - 1))
-  , Y2(short(y + short(height) - 1))
+  : X1(x)
+  , Y1(y)
+  , X2(x + int(width) - 1)
+  , Y2(y + int(height) - 1)
 { }
 
 //----------------------------------------------------------------------
@@ -208,31 +208,31 @@ inline FPoint FRect::getLowerRightPos() const
 //----------------------------------------------------------------------
 inline std::size_t FRect::getWidth() const
 {
-  short w = X2 - X1 + 1;
+  int w = X2 - X1 + 1;
   return ( w < 0 ) ? 0 : std::size_t(w);
 }
 
 //----------------------------------------------------------------------
 inline std::size_t FRect::getHeight() const
 {
-  short h = Y2 - Y1 + 1;
+  int h = Y2 - Y1 + 1;
   return ( h < 0 ) ? 0 : std::size_t(h);
 }
 
 //----------------------------------------------------------------------
-inline short& FRect::x1_ref()
+inline int& FRect::x1_ref()
 { return X1; }
 
 //----------------------------------------------------------------------
-inline short& FRect::y1_ref()
+inline int& FRect::y1_ref()
 { return Y1; }
 
 //----------------------------------------------------------------------
-inline short& FRect::x2_ref()
+inline int& FRect::x2_ref()
 { return X2; }
 
 //----------------------------------------------------------------------
-inline short& FRect::y2_ref()
+inline int& FRect::y2_ref()
 { return Y2; }
 
 }  // namespace finalcut

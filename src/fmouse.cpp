@@ -47,8 +47,8 @@ FMouse::FMouse()
   , max_width(80)
   , max_height(25)
   , time_mousepressed()
-  , zero_point(0,0)            // zero point (x=0, y=0)
-  , mouse(0,0)                 // mouse click position
+  , zero_point(0, 0)           // zero point (x=0, y=0)
+  , mouse(0, 0)                // mouse click position
   , new_mouse_position()
 {
   time_mousepressed.tv_sec = 0;
@@ -1200,7 +1200,7 @@ void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 FMouseControl::FMouseControl()
   : mouse_protocol()
   , iter()
-  , zero_point(0,0)
+  , zero_point(0, 0)
   , use_gpm_mouse(false)
   , use_xterm_mouse(false)
 {
@@ -1575,7 +1575,7 @@ bool FMouseControl::getGpmKeyPressed (bool)
 
   if ( gpm_mouse )
     return gpm_mouse->getGpmKeyPressed(pending);
-#endif // F_HAVE_LIBGPM
+#endif  // F_HAVE_LIBGPM
 
   return false;
 }

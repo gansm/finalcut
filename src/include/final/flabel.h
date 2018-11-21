@@ -74,7 +74,7 @@ class FLabel : public FWidget
 
     // Constructor
     explicit FLabel (FWidget* = 0);
-    FLabel (const FString&, FWidget* = 0);
+    explicit FLabel (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FLabel();
@@ -94,7 +94,7 @@ class FLabel : public FWidget
 
     // Accessors
     const char*        getClassName() const;
-    FTerm*             getAccelWidget();
+    FWidget*           getAccelWidget();
     fc::text_alignment getAlignment();
     FString&           getText();
 
@@ -157,8 +157,8 @@ class FLabel : public FWidget
     bool               multiline;
     FString            text;
     fc::text_alignment alignment;
-    short              emphasis_color;
-    short              ellipsis_color;
+    FColor             emphasis_color;
+    FColor             ellipsis_color;
     bool               emphasis;
     bool               reverse_mode;
     FWidget*           accel_widget;
@@ -172,7 +172,7 @@ inline const char* FLabel::getClassName() const
 { return "FLabel"; }
 
 //----------------------------------------------------------------------
-inline FTerm* FLabel::getAccelWidget ()
+inline FWidget* FLabel::getAccelWidget ()
 { return accel_widget; }
 
 //----------------------------------------------------------------------

@@ -1,3 +1,43 @@
+2018-11-21  Markus Gans  <guru.mail@muenster.de>
+	* New type FKey for key inputs
+	* The integer type of FPoint and FRect changed from short to int
+
+2018-11-18  Markus Gans  <guru.mail@muenster.de>
+	* The FListViewItem class now provides checkable list view items
+	* Adding the checklist example to demonstrate the checkable FListViewItems
+	* A checkable FListViewItem now shows the input cursor
+
+2018-11-12  Markus Gans  <guru.mail@muenster.de>
+	* Clicking on the column header in FListView now changes the sort order
+
+2018-11-10  Markus Gans  <guru.mail@muenster.de>
+	* FListView now has a sort indicator to display the sort order
+
+2018-11-07  Markus Gans  <guru.mail@muenster.de>
+	* Use new type FColor for color values
+
+2018-11-05  Markus Gans  <guru.mail@muenster.de>
+	* FButton now uses the widget flags directly
+
+2018-11-04  Markus Gans  <guru.mail@muenster.de>
+	* Widget flags are now stored in a bit field
+
+2018-11-03  Markus Gans  <guru.mail@muenster.de>
+	* New method rgb2ColorIndex() to converts a 24-bit RGB color 
+	  to a 256-color compatible approximation
+
+2018-11-01  Markus Gans  <guru.mail@muenster.de>
+	* Moved FTerm debug access methods to FTermDebugData
+
+2018-10-29  Markus Gans  <guru.mail@muenster.de>
+	* FTerm is now a data member of FVTerm
+	* Fix FListBox prevListItem()
+	* Setting the value can_change_color_palette in FTermcapQuirks
+
+2018-10-26  Markus Gans  <guru.mail@muenster.de>
+	* Building Fix for a negative value check (gcc < 4.8)
+	* Adding the capacity() method to the FString class
+
 2018-10-21  Markus Gans  <guru.mail@muenster.de>
 	* Moving static attributes from FApplication to FWidget
 
@@ -104,7 +144,7 @@
 
 2018-07-01  Markus Gans  <guru.mail@muenster.de>
 	* All in FOptiMove required termcap values can now be passed 
-          with a single struct
+	  with a single struct
 
 2018-06-25  Markus Gans  <guru.mail@muenster.de>
 	* All termcap values required in FOptiAttr can now be passed 
@@ -257,7 +297,7 @@
 
 2018-01-02  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of secondary device attributes parsing
-        * Small menu improvements
+	* Small menu improvements
 
 2017-12-31  Markus Gans  <guru.mail@muenster.de>
 	* Refactoring of the FListBox mouse event handler
@@ -479,7 +519,7 @@
 2017-07-18  Markus Gans  <guru.mail@muenster.de>
 	* New Widget class FListView (filled with FListViewItem) 
 	  to allow a multi-column data view
-        * Add the listview example to demonstrate FListView
+	* Add the listview example to demonstrate FListView
 
 2017-07-11  Markus Gans  <guru.mail@muenster.de>
 	* New class FTermBuffer to buffer terminal outputs

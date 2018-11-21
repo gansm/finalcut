@@ -113,16 +113,16 @@ class FEvent  // event base class
 class FKeyEvent : public FEvent  // keyboard event
 {
   public:
-    FKeyEvent (int, int);
+    FKeyEvent (int, FKey);
     ~FKeyEvent();
 
-    int  key() const;
+    FKey key() const;
     bool isAccepted() const;
     void accept();
     void ignore();
 
   protected:
-    int  k;
+    FKey  k;
     bool accpt;
 };
 

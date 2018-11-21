@@ -190,7 +190,7 @@ bool FButtonGroup::hasCheckedButton() const
 void FButtonGroup::hide()
 {
   std::size_t size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget::hide();
   FWidget* parent_widget = getParentWidget();
 
@@ -454,16 +454,16 @@ uChar FButtonGroup::getHotkey()
 //----------------------------------------------------------------------
 void FButtonGroup::setHotkeyAccelerator()
 {
-  int hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
     if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (std::tolower(hotkey));
-      addAccelerator (std::toupper(hotkey));
+      addAccelerator (FKey(std::tolower(hotkey)));
+      addAccelerator (FKey(std::toupper(hotkey)));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
     }
     else
       addAccelerator (getHotkey());
@@ -543,9 +543,6 @@ bool FButtonGroup::isRadioButton (FToggleButton* button) const
 //----------------------------------------------------------------------
 void FButtonGroup::init()
 {
-  if ( isEnabled() )
-    flags |= fc::active;
-
   setForegroundColor (wc.label_fg);
   setBackgroundColor (wc.label_bg);
   setMinimumSize (7, 4);
@@ -582,9 +579,6 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
                             , std::size_t hotkeypos
                             , std::size_t length )
 {
-  bool isActive = ((flags & fc::active) != 0);
-  bool isNoUnderline = ((flags & fc::no_underline) != 0);
-
   if ( isMonochron() )
     setReverse(true);
 
@@ -595,16 +589,16 @@ void FButtonGroup::drawText ( wchar_t LabelText[]
 
   for (std::size_t z = 0; z < length; z++)
   {
-    if ( (z == hotkeypos) && isActive )
+    if ( (z == hotkeypos) && flags.active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print (LabelText[z]);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       setColor (wc.label_emphasis_fg, wc.label_bg);

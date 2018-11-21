@@ -161,8 +161,7 @@
 #define F_HAVE_VSNPRINTF 1
 #endif
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #ifndef F_LT_OBJDIR
 #define F_LT_OBJDIR ".libs/"
 #endif

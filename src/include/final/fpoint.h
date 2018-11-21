@@ -36,6 +36,7 @@
 #endif
 
 #include <iostream>
+#include "final/ftypes.h"
 
 namespace finalcut
 {
@@ -83,13 +84,13 @@ class FPoint
     bool    isNull() const;
 
     // Point references
-    short&  x_ref();
-    short&  y_ref();
+    int& x_ref();
+    int& y_ref();
 
   private:
     // Data Members
-    short xpos;
-    short ypos;
+    int xpos;
+    int ypos;
 };
 #pragma pack(pop)
 
@@ -109,8 +110,8 @@ inline FPoint::FPoint (const FPoint& p)  // copy constructor
 
 //----------------------------------------------------------------------
 inline FPoint::FPoint (int x, int y)
-  : xpos(short(x))
-  , ypos(short(y))
+  : xpos(x)
+  , ypos(y)
 { }
 
 //----------------------------------------------------------------------
@@ -146,11 +147,11 @@ inline int FPoint::getY() const
 { return ypos; }
 
 //----------------------------------------------------------------------
-inline short& FPoint::x_ref()
+inline int& FPoint::x_ref()
 { return xpos; }
 
 //----------------------------------------------------------------------
-inline short& FPoint::y_ref()
+inline int& FPoint::y_ref()
 { return ypos; }
 
 }  // namespace finalcut

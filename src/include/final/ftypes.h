@@ -30,6 +30,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <limits>
+#include <string>
+
 #define null NULL
 
 namespace
@@ -52,11 +55,38 @@ typedef int64_t        sInt64;
 
 typedef long double    lDouble;
 
-} // namespace
+typedef uInt16         FColor;
+typedef uInt32         FKey;
+
+}  // namespace
 
 
 namespace finalcut
 {
+
+template <typename T, bool is_signed>
+struct is_negative
+{
+  inline bool operator () (const T& x)
+  {
+    return x < 0;
+  }
+};
+
+template <typename T>
+struct is_negative<T,false>
+{
+  inline bool operator () (const T&)
+  {
+    return false;
+  }
+};
+
+template <typename T>
+inline bool isNegative (const T& x)
+{
+  return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
+}
 
 namespace fc
 {
@@ -64,7 +94,7 @@ namespace fc
 #pragma pack(1)
 typedef struct
 {
-  int   num;
+  FKey  num;
   char* string;
   char  tname[4];
 }
@@ -72,14 +102,14 @@ fkeymap;
 
 typedef struct
 {
-  int  num;
+  FKey num;
   char string[8];
 }
 fmetakeymap;
 
 typedef struct
 {
-  int  num;
+  FKey num;
   char string[25];
 }
 keyname;
@@ -87,7 +117,7 @@ keyname;
 
 }  // namespace fc
 
-} // namespace finalcut
+}  // namespace finalcut
 
 #endif  // FTYPES_H
 

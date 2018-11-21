@@ -52,9 +52,10 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <list>
 #include <stack>
 #include <vector>
-
+                          #include "final/fmessagebox.h"
 #include "final/fscrollbar.h"
 #include "final/fstring.h"
 #include "final/ftermbuffer.h"
@@ -97,11 +98,14 @@ class FListViewItem : public FObject
     FWidget::data_ptr getData() const;
     uInt              getDepth() const;
 
-    // Mutator
+    // Mutators
     void              setText (int, const FString&);
     void              setData (FWidget::data_ptr);
+    void              setCheckable (bool);
+    void              setChecked (bool);
 
     // Inquiry
+    bool              isChecked() const;
     bool              isExpand() const;
 
     // Methods
@@ -113,6 +117,7 @@ class FListViewItem : public FObject
   private:
     // Inquiry
     bool              isExpandable() const;
+    bool              isCheckable() const;
 
     // Methods
     template <typename Compare>
@@ -129,6 +134,8 @@ class FListViewItem : public FObject
     std::size_t       visible_lines;
     bool              expandable;
     bool              is_expand;
+    bool              checkable;
+    bool              is_checked;
 
     // Friend class
     friend class FListView;
@@ -155,12 +162,24 @@ inline void FListViewItem::setData (FWidget::data_ptr data)
 { data_pointer = data; }
 
 //----------------------------------------------------------------------
+inline void FListViewItem::setChecked (bool checked)
+{ is_checked = checked; }
+
+//----------------------------------------------------------------------
+inline bool FListViewItem::isChecked() const
+{ return is_checked; }
+
+//----------------------------------------------------------------------
 inline bool FListViewItem::isExpand() const
 { return is_expand; }
 
 //----------------------------------------------------------------------
 inline bool FListViewItem::isExpandable() const
 { return expandable; }
+
+//----------------------------------------------------------------------
+inline bool FListViewItem::isCheckable() const
+{ return checkable; }
 
 
 //----------------------------------------------------------------------
@@ -179,7 +198,7 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    explicit FListViewIterator ();
+    FListViewIterator ();
     FListViewIterator (FObjectIterator);
 
     // Overloaded operators
@@ -269,17 +288,20 @@ class FListView : public FWidget
     FListViewItem*       getCurrentItem();
 
     // Mutators
-    virtual void         setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void         setGeometry ( int, int
+                                     , std::size_t, std::size_t
+                                     , bool = true );
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
-    void                 setColumnSortType (int,fc::sorting_type \
-                                                    = fc::by_name);
+    void                 setColumnSortType (int, fc::sorting_type \
+                                                     = fc::by_name);
     void                 setColumnSort (int, fc::sorting_order \
                                                  = fc::ascending);
     template <typename Compare>
     void                 setUserAscendingCompare (Compare);
     template <typename Compare>
     void                 setUserDescendingCompare (Compare);
+    void                 hideSortIndicator (bool);
     bool                 setTreeView (bool);
     bool                 setTreeView();
     bool                 unsetTreeView();
@@ -348,18 +370,24 @@ class FListView : public FWidget
                                         , std::size_t
                                         , std::size_t );
     virtual void         draw();
-    void                 drawColumnLabels();
+    void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);
     void                 setLineAttributes (bool, bool);
+    FString              getCheckBox (const FListViewItem* item);
     FString              getLinePrefix (const FListViewItem*, std::size_t);
-    void                 drawColumnText (headerItems::const_iterator&);
+    void                 drawSortIndicator (std::size_t&, std::size_t);
+    void                 drawHeadlineLabel (headerItems::const_iterator&);
+    void                 drawHeaderBorder (std::size_t);
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
-    int                  determineLineWidth (FListViewItem* item);
+    int                  determineLineWidth (FListViewItem*);
+    void                 beforeInsertion (FListViewItem*);
+    void                 afterInsertion();
     void                 recalculateHorizontalBar (int);
     void                 recalculateVerticalBar (int);
+    void                 mouseHeaderClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);
     bool                 dragScrollUp (int);
@@ -370,6 +398,7 @@ class FListView : public FWidget
     FObjectIterator      appendItem (FListViewItem*);
     void                 processClick();
     void                 processChanged();
+    void                 keySpace();
     void                 keyLeft (int&);
     void                 keyRight (int&);
     void                 keyHome();
@@ -386,6 +415,7 @@ class FListView : public FWidget
     void                 scrollTo (const FPoint &);
     void                 scrollTo (int, int);
     void                 scrollBy (int, int);
+    bool                 hasCheckableItems() const;
 
     // Callback methods
     void                 cb_VBarChange (FWidget*, data_ptr);
@@ -407,7 +437,11 @@ class FListView : public FWidget
     int                  scroll_distance;
     bool                 scroll_timer;
     bool                 tree_view;
+    bool                 hide_sort_indicator;
+    bool                 has_checkable_items;
     FPoint               clicked_expander_pos;
+    FPoint               clicked_header_pos;
+    const FListViewItem* clicked_checkbox_item;
     int                  xoffset;
     int                  nf_offset;
     int                  max_line_width;
@@ -432,7 +466,7 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    explicit Header()
+    Header()
       : name()
       , width (0)
       , fixed_width (false)
@@ -475,8 +509,12 @@ inline void FListView::setUserDescendingCompare (Compare cmp)
 { user_defined_descending = cmp; }
 
 //----------------------------------------------------------------------
+inline void FListView::hideSortIndicator (bool hide)
+{ hide_sort_indicator = hide; }
+
+//----------------------------------------------------------------------
 inline bool FListView::setTreeView (bool on)
-{ return tree_view = on; }
+{ return (tree_view = on); }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()
@@ -523,6 +561,10 @@ inline FObject::FObjectIterator FListView::endOfList()
 //----------------------------------------------------------------------
 inline void FListView::scrollTo (const FPoint& pos)
 { scrollTo(pos.getX(), pos.getY()); }
+
+//----------------------------------------------------------------------
+inline bool FListView::hasCheckableItems() const
+{ return has_checkable_items; }
 
 }  // namespace finalcut
 

@@ -83,7 +83,7 @@ class FTermLinux
     // Mutators
     static void          setFTermDetection (FTermDetection*);
     static char*         setCursorStyle (fc::linuxConsoleCursorStyle, bool);
-    static bool          setPalette (short, int, int, int);
+    static bool          setPalette (FColor, int, int, int);
     static void          setUTF8 (bool);
 
     // Inquiries
@@ -105,7 +105,7 @@ class FTermLinux
     static void          setBeep (int, int);
     static void          resetBeep();
     static char*         restoreCursorStyle();
-    static int           modifierKeyCorrection (const int&);
+    static FKey          modifierKeyCorrection (const FKey&);
 
   private:
     // Typedef
@@ -155,17 +155,17 @@ class FTermLinux
     static uChar         getAttributeMode();
     static void          setAttributeMode (uChar);
     static int           setBlinkAsIntensity (bool);
-    static bool          setVGAPalette (short, int, int, int);
+    static bool          setVGAPalette (FColor, int, int, int);
     static bool          saveVGAPalette();
     static bool          resetVGAPalette();
 #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
-    static int           shiftKeyCorrection (const int&);
-    static int           ctrlKeyCorrection (const int&);
-    static int           altKeyCorrection (const int&);
-    static int           shiftCtrlKeyCorrection (const int&);
-    static int           shiftAltKeyCorrection (const int&);
-    static int           ctrlAltKeyCorrection (const int&);
-    static int           shiftCtrlAltKeyCorrection (const int&);
+    static FKey          shiftKeyCorrection (const FKey&);
+    static FKey          ctrlKeyCorrection (const FKey&);
+    static FKey          altKeyCorrection (const FKey&);
+    static FKey          shiftCtrlKeyCorrection (const FKey&);
+    static FKey          shiftAltKeyCorrection (const FKey&);
+    static FKey          ctrlAltKeyCorrection (const FKey&);
+    static FKey          shiftCtrlAltKeyCorrection (const FKey&);
 
     // Data Members
 #if defined(__linux__)

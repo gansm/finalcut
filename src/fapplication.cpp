@@ -63,7 +63,7 @@ FApplication::eventQueue*    FApplication::event_queue = 0;
 FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
-  : FWidget(processParameters(_argc,_argv), disable_alt_screen)
+  : FWidget(processParameters(_argc, _argv), disable_alt_screen)
   , app_argc(_argc)
   , app_argv(_argv)
   , key_timeout(100000)        // 100 ms
@@ -188,7 +188,7 @@ bool FApplication::sendEvent ( const FObject* receiver
 
     // block events for widgets in non modal windows
     if ( window
-      && (window->getFlags() & fc::modal) == 0
+      && ! window->getFlags().modal
       && ! window->isMenuWidget() )
     {
       switch ( event->type() )
@@ -302,7 +302,7 @@ FWidget* FApplication::processParameters (const int& argc, char* argv[])
     showParameterUsage();
   }
 
-  init_values.setDefault();
+  getInitValues().setDefault();
   cmd_options (argc, argv);
   return 0;
 }
@@ -449,13 +449,13 @@ void FApplication::cmd_options (const int& argc, char* argv[])
         encoding = encoding.toLower();
 
         if ( encoding.includes("utf8") )
-          init_values.encoding = fc::UTF8;
+          getInitValues().encoding = fc::UTF8;
         else if ( encoding.includes("vt100") )
-          init_values.encoding = fc::VT100;
+          getInitValues().encoding = fc::VT100;
         else if ( encoding.includes("pc") )
-          init_values.encoding = fc::PC;
+          getInitValues().encoding = fc::PC;
         else if ( encoding.includes("ascii") )
-          init_values.encoding = fc::ASCII;
+          getInitValues().encoding = fc::ASCII;
         else if ( encoding.includes("help") )
           showParameterUsage();
         else
@@ -464,32 +464,32 @@ void FApplication::cmd_options (const int& argc, char* argv[])
       }
 
       if ( std::strcmp(long_options[idx].name, "no-mouse")  == 0 )
-        init_values.mouse_support = false;
+        getInitValues().mouse_support = false;
 
       if ( std::strcmp(long_options[idx].name, "no-optimized-cursor")  == 0 )
-        init_values.cursor_optimisation = false;
+        getInitValues().cursor_optimisation = false;
 
       if ( std::strcmp(long_options[idx].name, "no-terminal-detection")  == 0 )
-        init_values.terminal_detection = false;
+        getInitValues().terminal_detection = false;
 
       if ( std::strcmp(long_options[idx].name, "no-color-change")  == 0 )
-        init_values.color_change = false;
+        getInitValues().color_change = false;
 
       if ( std::strcmp(long_options[idx].name, "vgafont")  == 0 )
-        init_values.vgafont = true;
+        getInitValues().vgafont = true;
 
       if ( std::strcmp(long_options[idx].name, "newfont")  == 0 )
-        init_values.newfont = true;
+        getInitValues().newfont = true;
 
     #if defined(__FreeBSD__) || defined(__DragonFly__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        init_values.meta_sends_escape = false;
+        getInitValues().meta_sends_escape = false;
 
       if ( std::strcmp(long_options[idx].name, "no-cursorstyle-change")  == 0 )
-        init_values.change_cursorstyle = false;
+        getInitValues().change_cursorstyle = false;
     #elif defined(__NetBSD__) || defined(__OpenBSD__)
       if ( std::strcmp(long_options[idx].name, "no-esc-for-alt-meta")  == 0 )
-        init_values.meta_sends_escape = false;
+        getInitValues().meta_sends_escape = false;
     #endif
     }
   }
@@ -685,9 +685,9 @@ bool FApplication::processDialogSwitchAccelerator()
   if ( keyboard->getKey() >= fc::Fmkey_1
     && keyboard->getKey() <= fc::Fmkey_9 )
   {
-    int key = keyboard->getKey();
-    uLong n = uLong(key - fc::Fmkey_0);
-    uLong s = dialog_list->size();
+    FKey key = keyboard->getKey();
+    std::size_t n = key - fc::Fmkey_0;
+    std::size_t s = dialog_list->size();
 
     if ( s > 0 && s >= n )
     {
@@ -853,7 +853,7 @@ void FApplication::closeOpenMenu()
 
   // No widget was been clicked and the menu is no dialog menu
   if ( ! (getClickedWidget() || is_window_menu) )
-    FWindow::switchToPrevWindow();
+    FWindow::switchToPrevWindow(this);
 
   if ( getStatusBar() )
     getStatusBar()->drawMessage();
@@ -894,7 +894,7 @@ void FApplication::unselectMenubarItems()
 
     // No widget was been clicked
     if ( ! getClickedWidget() )
-      FWindow::switchToPrevWindow();
+      FWindow::switchToPrevWindow(this);
 
     if ( getStatusBar() )
       getStatusBar()->drawMessage();

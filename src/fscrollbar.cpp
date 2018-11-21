@@ -174,7 +174,9 @@ void FScrollbar::setOrientation (int o)
 }
 
 //----------------------------------------------------------------------
-void FScrollbar::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FScrollbar::setGeometry ( int x, int y
+                             , std::size_t w, std::size_t h
+                             , bool adjust )
 {
   // Set the scrollbar geometry
 
@@ -419,10 +421,12 @@ void FScrollbar::onMouseDown (FMouseEvent* ev)
     if ( bar_orientation == fc::vertical )
       slider_click_stop_pos = mouse_y - 2;
     else
+    {
       if ( isNewFont() )
         slider_click_stop_pos = mouse_x - 3;
       else
         slider_click_stop_pos = mouse_x - 2;
+    }
   }
   else
     slider_click_stop_pos = -1;
@@ -605,7 +609,7 @@ void FScrollbar::drawButtons()
 
   if ( isNewFont() )
   {
-    setPrintPos (1,1);
+    setPrintPos (1, 1);
 
     if ( bar_orientation == fc::vertical )
     {
@@ -626,7 +630,7 @@ void FScrollbar::drawButtons()
   }
   else
   {
-    setPrintPos (1,1);
+    setPrintPos (1, 1);
 
     if ( isMonochron() )
       setReverse(true);

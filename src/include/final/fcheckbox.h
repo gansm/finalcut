@@ -74,7 +74,7 @@ class FCheckBox : public FToggleButton
   public:
     // Constructors
     explicit FCheckBox (FWidget* = 0);
-    FCheckBox (const FString&, FWidget* = 0);
+    explicit FCheckBox (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FCheckBox();

@@ -90,7 +90,7 @@ void Button::setChecked (bool on)
 //----------------------------------------------------------------------
 void Button::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  int key = ev->key();
+  FKey key = ev->key();
 
   // catch the enter key
   if ( key == finalcut::fc::Fkey_return
@@ -316,8 +316,7 @@ Calc::Calc (FWidget* parent)
 
 //----------------------------------------------------------------------
 Calc::~Calc()
-{
-}
+{ }
 
 //----------------------------------------------------------------------
 void Calc::drawDispay()
@@ -382,9 +381,9 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right = wchar_t(finalcut::fc::BoxDrawingsVerticalAndRight);
-    wchar_t horizontal         = wchar_t(finalcut::fc::BoxDrawingsHorizontal);
-    wchar_t vertical_and_left  = wchar_t(finalcut::fc::BoxDrawingsVerticalAndLeft);
+    wchar_t vertical_and_right  = wchar_t(finalcut::fc::BoxDrawingsVerticalAndRight);
+    wchar_t horizontal          = wchar_t(finalcut::fc::BoxDrawingsHorizontal);
+    wchar_t vertical_and_left   = wchar_t(finalcut::fc::BoxDrawingsVerticalAndLeft);
     finalcut::FString separator = finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left);
@@ -417,7 +416,6 @@ void Calc::zero (lDouble&)
     input += '0';
   else
     input = '0';
-
 }
 
 //----------------------------------------------------------------------
@@ -551,8 +549,8 @@ void Calc::subtract (lDouble&)
 //----------------------------------------------------------------------
 void Calc::multiply (lDouble&)
 {
- if ( ! isOperatorKey(last_key) )
-   calcInfixOperator();
+  if ( ! isOperatorKey(last_key) )
+    calcInfixOperator();
 
   setDisplay(a);
   setInfixOperator('*');
@@ -735,7 +733,7 @@ void Calc::arcus (lDouble& x)
 //----------------------------------------------------------------------
 void Calc::sine (lDouble& x)
 {
- if ( hyperbolic_mode )
+  if ( hyperbolic_mode )
   {
     if ( arcus_mode )
     {
@@ -831,6 +829,7 @@ void Calc::tangent (lDouble& x)
     if ( arcus_mode )
       x = std::atan(x) * 180.0L / PI;
     else
+    {
       // Test if (x / 180) != 0 and x / 90 == 0
       if ( std::fabs(std::fmod(x, 180.0L)) > LDBL_EPSILON
         && std::fabs(std::fmod(x, 90.0L)) < LDBL_EPSILON )
@@ -839,6 +838,7 @@ void Calc::tangent (lDouble& x)
         x = 0.0L;
       else
         x = std::tan(x * PI / 180.0L);
+    }
   }
 
   if ( errno == EDOM )
@@ -1007,8 +1007,8 @@ void Calc::calcInfixOperator()
 //----------------------------------------------------------------------
 void Calc::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  int len = int(input.getLength());
-  int key = ev->key();
+  std::size_t len = input.getLength();
+  FKey key = ev->key();
 
   switch ( key )
   {

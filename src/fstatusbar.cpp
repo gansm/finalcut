@@ -45,7 +45,7 @@ FStatusKey::FStatusKey(FWidget* parent)
 }
 
 //----------------------------------------------------------------------
-FStatusKey::FStatusKey (int k, const FString& txt, FWidget* parent)
+FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , key(k)
   , text(txt)
@@ -99,7 +99,7 @@ bool FStatusKey::setMouseFocus(bool on)
   if ( on == mouse_focus )
     return true;
 
-  return mouse_focus = on;
+  return (mouse_focus = on);
 }
 
 
@@ -196,7 +196,7 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   FWindow::hide();
   fg = wc.term_fg;
   bg = wc.term_bg;

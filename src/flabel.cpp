@@ -241,7 +241,7 @@ void FLabel::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FLabel::hide()
 {
-  short fg, bg;
+  FColor fg, bg;
   std::size_t size;
   FWidget* parent_widget = getParentWidget();
 
@@ -440,10 +440,10 @@ void FLabel::setHotkeyAccelerator()
   {
     if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (std::tolower(hotkey));
-      addAccelerator (std::toupper(hotkey));
+      addAccelerator (FKey(std::tolower(hotkey)));
+      addAccelerator (FKey(std::toupper(hotkey)));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
     }
     else
       addAccelerator (getHotkey());
@@ -597,9 +597,6 @@ void FLabel::printLine ( wchar_t line[]
 {
   std::size_t to_char;
   std::size_t width = std::size_t(getWidth());
-  bool isActive, isNoUnderline;
-  isActive = ((flags & fc::active) != 0);
-  isNoUnderline = ((flags & fc::no_underline) != 0);
 
   if ( align_offset > 0 )
     print (FString(align_offset, ' '));  // leading spaces
@@ -623,16 +620,16 @@ void FLabel::printLine ( wchar_t line[]
       }
     }
 
-    if ( z == hotkeypos && isActive )
+    if ( z == hotkeypos && flags.active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print (line[z]);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       if ( hasEmphasis() )

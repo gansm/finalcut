@@ -44,36 +44,36 @@ FPoint& FPoint::operator = (const FPoint& p)
 //----------------------------------------------------------------------
 FPoint& FPoint::operator += (const FPoint& p)
 {
-  xpos = short(xpos + p.xpos);
-  ypos = short(ypos + p.ypos);
+  xpos = xpos + p.xpos;
+  ypos = ypos + p.ypos;
   return *this;
 }
 
 //----------------------------------------------------------------------
 FPoint& FPoint::operator -= (const FPoint& p)
 {
-  xpos = short(xpos - p.xpos);
-  ypos = short(ypos - p.ypos);
+  xpos = xpos - p.xpos;
+  ypos = ypos - p.ypos;
   return *this;
 }
 
 //----------------------------------------------------------------------
 void FPoint::setX (int x)
 {
-  xpos = short(x);
+  xpos = x;
 }
 
 //----------------------------------------------------------------------
 void FPoint::setY (int y)
 {
-  ypos = short(y);
+  ypos = y;
 }
 
 //----------------------------------------------------------------------
 void FPoint::setPoint (int x, int y)
 {
-  xpos = short(x);
-  ypos = short(y);
+  xpos = x;
+  ypos = y;
 }
 
 //----------------------------------------------------------------------
@@ -92,7 +92,7 @@ std::ostream& operator << (std::ostream& outstr, const FPoint& p)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FPoint& p)
 {
-  short x, y;
+  int x, y;
   instr >> x;
   instr >> y;
   p.setPoint (x, y);

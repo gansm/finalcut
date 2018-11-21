@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <limits>
+
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -136,10 +138,11 @@ void FPointTest::assignmentTest()
   CPPUNIT_ASSERT ( p2.getX() == 40 );
   CPPUNIT_ASSERT ( p2.getY() == 12 );
 
-  // Value limit exceeded
-  const finalcut::FPoint p3 (-999999,1000000);
-  CPPUNIT_ASSERT ( p3.getX() != -999999 );
-  CPPUNIT_ASSERT ( p3.getY() != 1000000 );
+  // Value limit
+  const finalcut::FPoint p3 ( std::numeric_limits<int>::min()
+                            , std::numeric_limits<int>::max() );
+  CPPUNIT_ASSERT ( p3.getX() == std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p3.getY() == std::numeric_limits<int>::max() );
 }
 
 //----------------------------------------------------------------------
@@ -155,13 +158,15 @@ void FPointTest::additionAssignmentTest()
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isNull() );
 
-  // Value limit exceeded
-  finalcut::FPoint p2 (18000,-18000);
-  CPPUNIT_ASSERT ( p2.getX() == 18000 );
-  CPPUNIT_ASSERT ( p2.getY() == -18000 );
-  p2 += finalcut::FPoint (18000,-18000);
-  CPPUNIT_ASSERT ( p2.getX() != 36000 );
-  CPPUNIT_ASSERT ( p2.getY() != -36000 );
+  // Value limit
+  finalcut::FPoint p2 ( std::numeric_limits<int>::max()
+                      , std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p2.getX() == std::numeric_limits<int>::max() );
+  CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min() );
+  p2 += finalcut::FPoint ( -std::numeric_limits<int>::max()
+                         , -std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p2.getX() == 0 );
+  CPPUNIT_ASSERT ( p2.getY() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -202,13 +207,15 @@ void FPointTest::subtractionAssignmentTest()
   CPPUNIT_ASSERT ( p1.getY() == 0 );
   CPPUNIT_ASSERT ( p1.isNull() );
 
-  // Value limit exceeded
-  finalcut::FPoint p2 (18000,-18000);
-  CPPUNIT_ASSERT ( p2.getX() == 18000 );
-  CPPUNIT_ASSERT ( p2.getY() == -18000 );
-  p2 += finalcut::FPoint (18000,-18000);
-  CPPUNIT_ASSERT ( p2.getX() != 36000 );
-  CPPUNIT_ASSERT ( p2.getY() != -36000 );
+  // Value limit
+  finalcut::FPoint p2 ( std::numeric_limits<int>::max()
+                      , std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p2.getX() == std::numeric_limits<int>::max() );
+  CPPUNIT_ASSERT ( p2.getY() == std::numeric_limits<int>::min() );
+  p2 -= finalcut::FPoint ( std::numeric_limits<int>::max(),
+                           std::numeric_limits<int>::min() );
+  CPPUNIT_ASSERT ( p2.getX() == 0 );
+  CPPUNIT_ASSERT ( p2.getY() == 0 );
 }
 
 //----------------------------------------------------------------------
@@ -276,8 +283,8 @@ void FPointTest::referenceTest()
   CPPUNIT_ASSERT ( p1.getX() == 2 );
   CPPUNIT_ASSERT ( p1.getY() == 2 );
 
-  short& x = p1.x_ref();
-  short& y = p1.y_ref();
+  int& x = p1.x_ref();
+  int& y = p1.y_ref();
   x += 4;
   y += 2;
   CPPUNIT_ASSERT ( p1.getX() == 6 );

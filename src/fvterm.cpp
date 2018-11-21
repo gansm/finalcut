@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "final/fapplication.h"
+#include "final/fterm.h"
 #include "final/fvterm.h"
 #include "final/fwidget.h"
 #include "final/fwindow.h"
@@ -48,6 +49,7 @@ uInt                 FVTerm::clr_eol_length;
 uInt                 FVTerm::cursor_address_length;
 std::queue<int>*     FVTerm::output_buffer = 0;
 FPoint*              FVTerm::term_pos      = 0;
+FTerm*               FVTerm::fterm         = 0;
 FVTerm::term_area*   FVTerm::vterm         = 0;
 FVTerm::term_area*   FVTerm::vdesktop      = 0;
 FVTerm::term_area*   FVTerm::active_area   = 0;
@@ -66,15 +68,14 @@ FVTerm::charData     FVTerm::i_ch;
 // constructors and destructor
 //----------------------------------------------------------------------
 FVTerm::FVTerm (bool initialize, bool disable_alt_screen)
-  : FTerm(disable_alt_screen)
-  , print_area(0)
+  : print_area(0)
   , child_print_area(0)
   , vwin(0)
 {
   terminal_update_complete = false;
 
   if ( initialize )
-    init();
+    init (disable_alt_screen);
 }
 
 //----------------------------------------------------------------------
@@ -97,7 +98,7 @@ FPoint FVTerm::getPrintCursor()
     return FPoint ( win->offset_left + win->cursor_x
                   , win->offset_top + win->cursor_y );
 
-  return FPoint(0,0);
+  return FPoint(0, 0);
 }
 
 //----------------------------------------------------------------------
@@ -113,7 +114,7 @@ void FVTerm::setTermXY (int x, int y)
   term_width = int(getColumnNumber());
   term_height = int(getLineNumber());
 
-  if ( x >= term_width )
+  if ( x >= term_width && term_width > 0 )
   {
     y += x / term_width;
     x %= term_width;
@@ -128,7 +129,7 @@ void FVTerm::setTermXY (int x, int y)
   term_x = term_pos->getX();
   term_y = term_pos->getY();
 
-  move_str = moveCursor (term_x, term_y, x, y);
+  move_str = FTerm::moveCursor (term_x, term_y, x, y);
 
   if ( move_str )
     appendOutputBuffer(move_str);
@@ -142,7 +143,7 @@ void FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str = cursorsVisibility (on);
+  char* visibility_str = FTerm::cursorsVisibility (on);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
@@ -163,6 +164,17 @@ void FVTerm::setPrintCursor (int x, int y)
 }
 
 //----------------------------------------------------------------------
+FColor FVTerm::rgb2ColorIndex (uInt8 r, uInt8 g, uInt8 b)
+{
+  // Converts a 24-bit RGB color to a 256-color compatible approximation
+
+  FColor ri = (((r * 5) + 127) / 255) * 36;
+  FColor gi = (((g * 5) + 127) / 255) * 6;
+  FColor bi = (((b * 5) + 127) / 255);
+  return 16 + ri + gi + bi;
+}
+
+//----------------------------------------------------------------------
 void FVTerm::clearArea (int fillchar)
 {
   clearArea (vwin, fillchar);
@@ -172,7 +184,7 @@ void FVTerm::clearArea (int fillchar)
 void FVTerm::createVTerm (const FRect& r)
 {
   // initialize virtual terminal
-  const FPoint shadow(0,0);
+  const FPoint shadow(0, 0);
   createArea (r, shadow, vterm);
 }
 
@@ -186,7 +198,7 @@ void FVTerm::createVTerm (int width, int height)
 //----------------------------------------------------------------------
 void FVTerm::resizeVTerm (const FRect& r)
 {
-  const FPoint shadow(0,0);
+  const FPoint shadow(0, 0);
   resizeArea (r, shadow, vterm);
 }
 
@@ -535,7 +547,7 @@ int FVTerm::print (term_area* area, charData& term_char)
       }
 
       // copy character to area
-      std::memcpy (ac, &nc, sizeof(nc));
+      std::memcpy (ac, &nc, sizeof(*ac));
 
       if ( ax < short(area->changes[ay].xmin) )
         area->changes[ay].xmin = uInt(ax);
@@ -843,7 +855,7 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
       int xpos = x + tx;
       tc = &vterm->text[ypos * vterm->width + xpos];
       sc = generateCharacter(xpos, ypos);
-      std::memcpy (tc, &sc, sizeof(charData));
+      std::memcpy (tc, &sc, sizeof(*tc));
     }
 
     if ( short(vterm->changes[ypos].xmin) > x )
@@ -944,7 +956,7 @@ void FVTerm::updateOverlappedColor ( term_area* area
   charData* tc = &vterm->text[ty * vterm->width + tx];
   // New character
   charData nc;
-  std::memcpy (&nc, ac, sizeof(charData));
+  std::memcpy (&nc, ac, sizeof(nc));
   // Overlapped character
   charData oc = getOverlappedCharacter (tx + 1, ty + 1, area->widget);
   nc.fg_color = oc.fg_color;
@@ -961,7 +973,7 @@ void FVTerm::updateOverlappedColor ( term_area* area
     nc.code = ' ';
 
   nc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == nc);
-  std::memcpy (tc, &nc, sizeof(charData));
+  std::memcpy (tc, &nc, sizeof(*tc));
 }
 
 //----------------------------------------------------------------------
@@ -974,7 +986,7 @@ void FVTerm::updateOverlappedCharacter (term_area* area, int tx, int ty)
   // Overlapped character
   charData oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
   oc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == oc);
-  std::memcpy (tc, &oc, sizeof(charData));
+  std::memcpy (tc, &oc, sizeof(*tc));
 }
 
 //----------------------------------------------------------------------
@@ -1006,7 +1018,7 @@ void FVTerm::updateShadedCharacter ( term_area* area
     oc.code = ' ';
 
   oc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == oc);
-  std::memcpy (tc, &oc, sizeof(charData));
+  std::memcpy (tc, &oc, sizeof(*tc));
 }
 
 //----------------------------------------------------------------------
@@ -1024,12 +1036,12 @@ void FVTerm::updateInheritBackground ( term_area* area
   charData* tc = &vterm->text[ty * vterm->width + tx];
   // New character
   charData nc;
-  std::memcpy (&nc, ac, sizeof(charData));
+  std::memcpy (&nc, ac, sizeof(nc));
   // Covered character
   charData cc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
   nc.bg_color = cc.bg_color;
   nc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == nc);
-  std::memcpy (tc, &nc, sizeof(charData));
+  std::memcpy (tc, &nc, sizeof(*tc));
 }
 
 //----------------------------------------------------------------------
@@ -1045,7 +1057,7 @@ void FVTerm::updateCharacter ( term_area* area
   charData* ac = &area->text[y * line_len + x];
   // Terminal character
   charData* tc = &vterm->text[ty * vterm->width + tx];
-  std::memcpy (tc, ac, sizeof(charData));
+  std::memcpy (tc, ac, sizeof(*tc));
 
   if ( tc->attr.bit.printed && *tc == *ac )
     tc->attr.bit.no_changes = true;
@@ -1373,7 +1385,7 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
     charData* ac;  // area character
     tc = &vterm->text[(ay + y) * vterm->width + ax];
     ac = &area->text[y * area->width];
-    std::memcpy (ac, tc, sizeof(charData) * unsigned(length));
+    std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
@@ -1429,7 +1441,7 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
     int line_len = area->width + area->right_shadow;
     tc = &vterm->text[(y + _y - 1) * vterm->width + x - 1];
     ac = &area->text[(dy + _y) * line_len + dx];
-    std::memcpy (ac, tc, sizeof(charData) * unsigned(length));
+    std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
     if ( short(area->changes[dy + _y].xmin) > dx )
       area->changes[dy + _y].xmin = uInt(dx);
@@ -1557,14 +1569,14 @@ void FVTerm::scrollAreaForward (term_area* area)
     int pos2 = (y + 1) * total_width;
     sc = &area->text[pos2];
     dc = &area->text[pos1];
-    std::memcpy (dc, sc, sizeof(charData) * unsigned(length));
+    std::memcpy (dc, sc, sizeof(*dc) * unsigned(length));
     area->changes[y].xmin = 0;
     area->changes[y].xmax = uInt(area->width - 1);
   }
 
   // insert a new line below
   lc = &area->text[(y_max * total_width) - area->right_shadow - 1];
-  std::memcpy (&nc, lc, sizeof(charData));
+  std::memcpy (&nc, lc, sizeof(nc));
   nc.code = ' ';
   dc = &area->text[y_max * total_width];
   std::fill_n (dc, area->width, nc);
@@ -1577,7 +1589,7 @@ void FVTerm::scrollAreaForward (term_area* area)
     if ( TCAP(fc::t_scroll_forward)  )
     {
       setTermXY (0, vdesktop->height);
-      scrollTermForward();
+      FTerm::scrollTermForward();
       putArea (1, 1, vdesktop);
 
       // avoid update lines from 0 to (y_max - 1)
@@ -1618,14 +1630,14 @@ void FVTerm::scrollAreaReverse (term_area* area)
     int pos2 = y * total_width;
     sc = &area->text[pos1];
     dc = &area->text[pos2];
-    std::memcpy (dc, sc, sizeof(charData) * unsigned(length));
+    std::memcpy (dc, sc, sizeof(*dc) * unsigned(length));
     area->changes[y].xmin = 0;
     area->changes[y].xmax = uInt(area->width - 1);
   }
 
   // insert a new line above
   lc = &area->text[total_width];
-  std::memcpy (&nc, lc, sizeof(charData));
+  std::memcpy (&nc, lc, sizeof(nc));
   nc.code = ' ';
   dc = &area->text[0];
   std::fill_n (dc, area->width, nc);
@@ -1638,7 +1650,7 @@ void FVTerm::scrollAreaReverse (term_area* area)
     if ( TCAP(fc::t_scroll_reverse)  )
     {
       setTermXY (0, 0);
-      scrollTermReverse();
+      FTerm::scrollTermReverse();
       putArea (1, 1, vdesktop);
 
       // avoid update lines from 1 to y_max
@@ -1660,7 +1672,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   uInt w;
 
   // Current attributes with a space character
-  std::memcpy (&nc, &next_attribute, sizeof(charData));
+  std::memcpy (&nc, &next_attribute, sizeof(nc));
   nc.code = fillchar;
 
   if ( ! (area && area->text) )
@@ -1755,7 +1767,7 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
         if ( tmp->attr.bit.trans_shadow )  // Transparent shadow
         {
           // Keep the current vterm character
-          std::memcpy (&s_ch, sc, sizeof(charData));
+          std::memcpy (&s_ch, sc, sizeof(s_ch));
           s_ch.fg_color = tmp->fg_color;
           s_ch.bg_color = tmp->bg_color;
           s_ch.attr.bit.reverse  = false;
@@ -1774,7 +1786,7 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
         else if ( tmp->attr.bit.inherit_bg )
         {
           // Add the covered background to this character
-          std::memcpy (&i_ch, tmp, sizeof(charData));
+          std::memcpy (&i_ch, tmp, sizeof(i_ch));
           i_ch.bg_color = sc->bg_color;  // Last background color
           sc = &i_ch;
         }
@@ -1950,7 +1962,7 @@ void FVTerm::flush_out()
 {
   while ( ! output_buffer->empty() )
   {
-    Fputchar (output_buffer->front());
+    FTerm::Fputchar(output_buffer->front());
     output_buffer->pop();
   }
 
@@ -1960,7 +1972,7 @@ void FVTerm::flush_out()
 
 // private methods of FVTerm
 //----------------------------------------------------------------------
-void FVTerm::init()
+void FVTerm::init (bool disable_alt_screen)
 {
   init_object = this;
   vterm       = 0;
@@ -1968,6 +1980,7 @@ void FVTerm::init()
 
   try
   {
+    fterm         = new FTerm (disable_alt_screen);
     term_pos      = new FPoint(-1, -1);
     output_buffer = new std::queue<int>;
   }
@@ -1991,7 +2004,7 @@ void FVTerm::init()
   term_attribute.attr.byte[0] = 0;
 
   // next_attribute contains the state of the next printed character
-  std::memcpy (&next_attribute, &term_attribute, sizeof(charData));
+  std::memcpy (&next_attribute, &term_attribute, sizeof(next_attribute));
 
   // Receive the terminal capabilities
   tcap = FTermcap::getTermcapMap();
@@ -2001,19 +2014,19 @@ void FVTerm::init()
   createVTerm (term_geometry);
 
   // Create virtual desktop area
-  FPoint shadow_size(0,0);
+  FPoint shadow_size(0, 0);
   createArea (term_geometry, shadow_size, vdesktop);
   vdesktop->visible = true;
   active_area = vdesktop;
 
   // Initialize keyboard
-  keyboard = getKeyboard();
+  keyboard = FTerm::getKeyboard();
 
   // Hide the input cursor
   hideCursor();
 
   // Initialize character lengths
-  init_characterLengths (getFOptiMove());
+  init_characterLengths (FTerm::getFOptiMove());
 }
 
 //----------------------------------------------------------------------
@@ -2046,7 +2059,7 @@ void FVTerm::finish()
   // Clear the terminal
   setNormal();
 
-  if ( hasAlternateScreen() )
+  if ( FTerm::hasAlternateScreen() )
     clearTerm();
 
   flush_out();
@@ -2060,6 +2073,9 @@ void FVTerm::finish()
 
   if ( term_pos )
     delete term_pos;
+
+  if ( fterm )
+    delete fterm;
 }
 
 //----------------------------------------------------------------------
@@ -2067,7 +2083,7 @@ void FVTerm::putAreaLine (charData* ac, charData* tc, int length)
 {
   // copy "length" characters from area to terminal
 
-  std::memcpy (tc, ac, sizeof(charData) * unsigned(length));
+  std::memcpy (tc, ac, sizeof(*tc) * unsigned(length));
 }
 
 //----------------------------------------------------------------------
@@ -2080,7 +2096,7 @@ void FVTerm::putAreaCharacter ( int x, int y, FVTerm* obj
     // Restore one character on vterm
     charData ch;
     ch = getCoveredCharacter (x, y, obj);
-    std::memcpy (tc, &ch, sizeof(charData));
+    std::memcpy (tc, &ch, sizeof(*tc));
   }
   else  // Mot transparent
   {
@@ -2102,19 +2118,19 @@ void FVTerm::putAreaCharacter ( int x, int y, FVTerm* obj
         || ch.code == fc::FullBlock )
         ch.code = ' ';
 
-      std::memcpy (tc, &ch, sizeof(charData));
+      std::memcpy (tc, &ch, sizeof(*tc));
     }
     else if ( ac->attr.bit.inherit_bg )
     {
       // Add the covered background to this character
       charData ch, cc;
-      std::memcpy (&ch, ac, sizeof(charData));
+      std::memcpy (&ch, ac, sizeof(ch));
       cc = getCoveredCharacter (x, y, obj);
       ch.bg_color = cc.bg_color;
-      std::memcpy (tc, &ch, sizeof(charData));
+      std::memcpy (tc, &ch, sizeof(*tc));
     }
     else  // Default
-      std::memcpy (tc, ac, sizeof(charData));
+      std::memcpy (tc, ac, sizeof(*tc));
   }
 }
 
@@ -2134,7 +2150,7 @@ void FVTerm::getAreaCharacter ( int x, int y, term_area* area
     if ( tmp->attr.bit.trans_shadow )  // transparent shadow
     {
       // Keep the current vterm character
-      std::memcpy (&s_ch, cc, sizeof(charData));
+      std::memcpy (&s_ch, cc, sizeof(s_ch));
       s_ch.fg_color = tmp->fg_color;
       s_ch.bg_color = tmp->bg_color;
       s_ch.attr.bit.reverse  = false;
@@ -2144,7 +2160,7 @@ void FVTerm::getAreaCharacter ( int x, int y, term_area* area
     else if ( tmp->attr.bit.inherit_bg )
     {
       // Add the covered background to this character
-      std::memcpy (&i_ch, tmp, sizeof(charData));
+      std::memcpy (&i_ch, tmp, sizeof(i_ch));
       i_ch.bg_color = cc->bg_color;  // last background color
       cc = &i_ch;
     }
@@ -2163,7 +2179,7 @@ bool FVTerm::clearTerm (int fillchar)
   char*& cb = TCAP(fc::t_clr_eol);
   bool ut = FTermcap::background_color_erase;
   charData* next = &next_attribute;
-  bool normal = isNormal(next);
+  bool normal = FTerm::isNormal(next);
   appendAttributes(next);
 
   if ( ! ( (cl || cd || cb) && (normal || ut) )
@@ -2175,7 +2191,7 @@ bool FVTerm::clearTerm (int fillchar)
   if ( cl )  // Clear screen
   {
     appendOutputBuffer (cl);
-    term_pos->setPoint(0,0);
+    term_pos->setPoint(0, 0);
   }
   else if ( cd )  // Clear to end of screen
   {
@@ -2193,7 +2209,7 @@ bool FVTerm::clearTerm (int fillchar)
       appendOutputBuffer (cb);
     }
 
-    setTermXY (0,0);
+    setTermXY (0, 0);
   }
 
   flush_out();
@@ -2268,7 +2284,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   if ( ce && min_char->code == ' ' )
   {
     uInt beginning_whitespace = 1;
-    bool normal = isNormal(min_char);
+    bool normal = FTerm::isNormal(min_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = xmin + 1; x < uInt(vt->width); x++)
@@ -2303,7 +2319,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   if ( cb && first_char->code == ' ' )
   {
     uInt leading_whitespace = 1;
-    bool normal = isNormal(first_char);
+    bool normal = FTerm::isNormal(first_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = 1; x < uInt(vt->width); x++)
@@ -2341,7 +2357,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
   if ( ce && last_char->code == ' ' )
   {
     uInt trailing_whitespace = 1;
-    bool normal = isNormal(last_char);
+    bool normal = FTerm::isNormal(last_char);
     bool& ut = FTermcap::background_color_erase;
 
     for (uInt x = uInt(vt->width) - 1; x >  0 ; x--)
@@ -2452,7 +2468,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
     return not_used;
 
   uInt whitespace = 1;
-  bool normal = isNormal(print_char);
+  bool normal = FTerm::isNormal(print_char);
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
@@ -2776,14 +2792,14 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     return;
 
   uInt code = uInt(next_char->code);
-  uInt ch_enc = charEncode(code);
+  uInt ch_enc = FTerm::charEncode(code);
 
   if ( ch_enc == code )
     return;
 
   if ( ch_enc == 0 )
   {
-    next_char->code = int(charEncode(code, fc::ASCII));
+    next_char->code = int(FTerm::charEncode(code, fc::ASCII));
     return;
   }
 
@@ -2801,7 +2817,7 @@ inline void FVTerm::charsetChanges (charData*& next_char)
     if ( isXTerminal() && ch_enc < 0x20 )  // Character 0x00..0x1f
     {
       if ( hasUTF8() )
-        next_char->code = int(charEncode(code, fc::ASCII));
+        next_char->code = int(FTerm::charEncode(code, fc::ASCII));
       else
       {
         next_char->code += 0x5f;
@@ -2843,7 +2859,7 @@ inline void FVTerm::appendAttributes (charData*& next_attr)
   charData* term_attr = &term_attribute;
 
   // generate attribute string for the next character
-  attr_str = changeAttribute (term_attr, next_attr);
+  attr_str = FTerm::changeAttribute (term_attr, next_attr);
 
   if ( attr_str )
     appendOutputBuffer (attr_str);

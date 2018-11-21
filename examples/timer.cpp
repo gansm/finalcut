@@ -59,7 +59,7 @@ Timer::Timer (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Timer::draw()
 {
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   print() << "---------------\n"
           << "Press Q to quit\n"
           << "---------------\n";
@@ -75,7 +75,7 @@ void Timer::onTimer (finalcut::FTimerEvent* ev)
   if ( getPrintPos().getY() == int(getDesktopHeight()) )
     is_last_line = true;
 
-  setColor (short(1 + timer_id), finalcut::fc::Default);
+  setColor (FColor(1 + timer_id), finalcut::fc::Default);
   print() << "Timer event, id " << timer_id << '\n';
 
   if ( is_last_line )

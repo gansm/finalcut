@@ -88,7 +88,7 @@ class FDialog : public FWindow
 
     // Constructors
     explicit FDialog (FWidget* = 0);
-    FDialog (const FString&, FWidget* = 0);
+    explicit FDialog (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FDialog();
@@ -282,11 +282,11 @@ inline void FDialog::setText (const FString& txt)
 
 //----------------------------------------------------------------------
 inline bool FDialog::isModal()
-{ return ((flags & fc::modal) != 0); }
+{ return flags.modal; }
 
 //----------------------------------------------------------------------
 inline bool FDialog::isScrollable()
-{ return ((flags & fc::scrollable) != 0); }
+{ return flags.scrollable; }
 
 }  // namespace finalcut
 

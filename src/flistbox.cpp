@@ -241,7 +241,7 @@ void FListBox::setText (const FString& txt)
 void FListBox::hide()
 {
   std::size_t n, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
   FWidget::hide();
 
@@ -402,9 +402,9 @@ void FListBox::clear()
 void FListBox::onKeyPress (FKeyEvent* ev)
 {
   std::size_t current_before = current;
-  int xoffset_before = xoffset
-    , yoffset_before = yoffset
-    , key = ev->key();
+  int xoffset_before = xoffset;
+  int yoffset_before = yoffset;
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -872,8 +872,6 @@ void FListBox::init()
 //----------------------------------------------------------------------
 void FListBox::draw()
 {
-  bool isFocus;
-
   if ( current < 1 )
     current = 1;
 
@@ -898,7 +896,7 @@ void FListBox::draw()
     }
   }
 
-  drawLabel();
+  drawHeadline();
 
   if ( isMonochron() )
     setReverse(false);
@@ -910,9 +908,8 @@ void FListBox::draw()
     hbar->redraw();
 
   drawList();
-  isFocus = ((flags & fc::focus) != 0);
 
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -926,7 +923,7 @@ void FListBox::draw()
 }
 
 //----------------------------------------------------------------------
-void FListBox::drawLabel()
+void FListBox::drawHeadline()
 {
   if ( text.isNull() || text.isEmpty() )
     return;
@@ -1017,14 +1014,13 @@ inline void FListBox::drawListLine ( int y
   std::size_t i, len;
   std::size_t inc_len = inc_search.getLength();
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  bool isFocus = ((flags & fc::focus) != 0);
   FString element;
   element = getString(iter).mid ( std::size_t(1 + xoffset)
                                 , getWidth() - nf_offset - 4 );
   const wchar_t* const& element_str = element.wc_str();
   len = element.getLength();
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -1035,14 +1031,14 @@ inline void FListBox::drawListLine ( int y
 
   for (i = 0; i < len; i++)
   {
-    if ( serach_mark && i == inc_len && isFocus  )
+    if ( serach_mark && i == inc_len && flags.focus  )
       setColor ( wc.current_element_focus_fg
                , wc.current_element_focus_bg );
 
     print (element_str[i]);
   }
 
-  if ( isMonochron() && isCurrentLine  && isFocus )
+  if ( isMonochron() && isCurrentLine  && flags.focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     i++;
@@ -1116,9 +1112,8 @@ inline void FListBox::drawListBracketsLine ( int y
             , i = 0
             , b = 0;
   bool isCurrentLine = bool(y + yoffset + 1 == int(current));
-  bool isFocus = ((flags & fc::focus) != 0);
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
     print (fc::BlackRightPointingPointer);  // ►
   else
     print (' ');
@@ -1164,7 +1159,7 @@ inline void FListBox::drawListBracketsLine ( int y
     i++;
   }
 
-  if ( isMonochron() && isCurrentLine && isFocus )
+  if ( isMonochron() && isCurrentLine && flags.focus )
   {
     print (fc::BlackLeftPointingPointer);   // ◄
     i++;
@@ -1180,10 +1175,8 @@ inline void FListBox::setLineAttributes ( int y
                                         , bool lineHasBrackets
                                         , bool& serach_mark )
 {
-  bool isFocus = ((flags & fc::focus) != 0)
-     , isCurrentLine = bool(y + yoffset + 1 == int(current));
+  bool isCurrentLine = bool(y + yoffset + 1 == int(current));
   std::size_t inc_len = inc_search.getLength();
-
   setPrintPos (2, 2 + int(y));
 
   if ( isLineSelected )
@@ -1203,14 +1196,14 @@ inline void FListBox::setLineAttributes ( int y
 
   if ( isCurrentLine )
   {
-    if ( isFocus && getMaxColor() < 16 )
+    if ( flags.focus && getMaxColor() < 16 )
       setBold();
 
     if ( isLineSelected )
     {
       if ( isMonochron() )
         setBold();
-      else if ( isFocus )
+      else if ( flags.focus )
         setColor ( wc.selected_current_element_focus_fg
                  , wc.selected_current_element_focus_bg );
       else
@@ -1224,7 +1217,7 @@ inline void FListBox::setLineAttributes ( int y
       if ( isMonochron() )
         unsetBold();
 
-      if ( isFocus )
+      if ( flags.focus )
       {
         setColor ( wc.current_element_focus_fg
                  , wc.current_element_focus_bg );
@@ -1251,7 +1244,7 @@ inline void FListBox::setLineAttributes ( int y
   {
     if ( isMonochron() )
       setReverse(true);
-    else if ( isFocus && getMaxColor() < 16 )
+    else if ( flags.focus && getMaxColor() < 16 )
       unsetBold();
   }
 }
@@ -1532,17 +1525,17 @@ void FListBox::prevListItem (int distance)
   if ( current == 1 )
     return;
 
-  current -= std::size_t(distance);
-
-  if ( current < 1 )
+  if ( current <= std::size_t(distance) )
     current = 1;
+  else
+    current -= std::size_t(distance);
 
   if ( current <= std::size_t(yoffset) )
   {
-    yoffset -= distance;
-
-    if ( yoffset < 0 )
+    if ( yoffset < distance )
       yoffset = 0;
+    else
+      yoffset -= distance;
   }
 }
 
@@ -1555,23 +1548,23 @@ void FListBox::nextListItem (int distance)
   if ( current == element_count )
     return;
 
-  current += std::size_t(distance);
-
-  if ( current > element_count )
+  if ( current + std::size_t(distance) > element_count  )
     current = element_count;
+  else
+    current += std::size_t(distance);
 
   if ( current - std::size_t(yoffset) > getClientHeight() )
   {
-    yoffset += distance;
-
-    if ( yoffset > yoffset_end )
+    if ( yoffset > yoffset_end - distance )
       yoffset = yoffset_end;
+    else
+      yoffset += distance;
   }
 }
 //----------------------------------------------------------------------
 void FListBox::scrollToX (int val)
 {
-  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
 
   if ( xoffset == val )
@@ -1628,7 +1621,7 @@ void FListBox::scrollLeft (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollRight (int distance)
 {
-  static const std::size_t padding_space = 2;  // 1 leading space + 1 trailing space
+  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset += distance;
 
@@ -1832,7 +1825,7 @@ inline bool FListBox::keyBackspace()
 }
 
 //----------------------------------------------------------------------
-inline bool FListBox::keyIncSearchInput (int key)
+inline bool FListBox::keyIncSearchInput (FKey key)
 {
   if ( key <= 0x20 || key > 0x10fff )
     return false;

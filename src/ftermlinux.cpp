@@ -118,7 +118,7 @@ void FTermLinux::setUTF8 (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setPalette (short index, int r, int g, int b)
+bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
   if ( ! FTerm::isLinuxTerm() )
     return false;
@@ -436,7 +436,7 @@ char* FTermLinux::restoreCursorStyle()
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::modifierKeyCorrection (const int& key_id)
+FKey FTermLinux::modifierKeyCorrection (const FKey& key_id)
 {
   // Get the current modifier key state
   modifier_key& m = getModifierKey();
@@ -838,7 +838,7 @@ int FTermLinux::setBlinkAsIntensity (bool on)
 }
 
 //----------------------------------------------------------------------
-bool FTermLinux::setVGAPalette (short index, int r, int g, int b)
+bool FTermLinux::setVGAPalette (FColor index, int r, int g, int b)
 {
   // Set the vga color map
 
@@ -910,7 +910,7 @@ bool FTermLinux::resetVGAPalette()
 #endif  // defined(__x86_64__) || defined(__i386) || defined(__arm__)
 
 //----------------------------------------------------------------------
-int FTermLinux::shiftKeyCorrection (const int& key_id)
+FKey FTermLinux::shiftKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -950,7 +950,7 @@ int FTermLinux::shiftKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::ctrlKeyCorrection (const int& key_id)
+FKey FTermLinux::ctrlKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -990,7 +990,7 @@ int FTermLinux::ctrlKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::altKeyCorrection (const int& key_id)
+FKey FTermLinux::altKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -1030,7 +1030,7 @@ int FTermLinux::altKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::shiftCtrlKeyCorrection (const int& key_id)
+FKey FTermLinux::shiftCtrlKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -1070,7 +1070,7 @@ int FTermLinux::shiftCtrlKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::shiftAltKeyCorrection (const int& key_id)
+FKey FTermLinux::shiftAltKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -1110,7 +1110,7 @@ int FTermLinux::shiftAltKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::ctrlAltKeyCorrection (const int& key_id)
+FKey FTermLinux::ctrlAltKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {
@@ -1150,7 +1150,7 @@ int FTermLinux::ctrlAltKeyCorrection (const int& key_id)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::shiftCtrlAltKeyCorrection (const int& key_id)
+FKey FTermLinux::shiftCtrlAltKeyCorrection (const FKey& key_id)
 {
   switch ( key_id )
   {

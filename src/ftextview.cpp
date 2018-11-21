@@ -93,7 +93,9 @@ const FString FTextView::getText() const
 }
 
 //----------------------------------------------------------------------
-void FTextView::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FTextView::setGeometry ( int x, int y
+                            , std::size_t w, std::size_t h
+                            , bool adjust )
 {
   // Set the text view geometry
 
@@ -194,7 +196,7 @@ void FTextView::scrollTo (int x, int y)
 void FTextView::hide()
 {
   std::size_t n, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();

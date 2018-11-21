@@ -76,7 +76,7 @@ class FToolTip : public FWindow
   public:
     // Constructor
     explicit FToolTip (FWidget* = 0);
-    FToolTip (const FString&, FWidget* = 0);
+    explicit FToolTip (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FToolTip ();

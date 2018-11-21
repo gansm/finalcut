@@ -36,6 +36,7 @@
 #endif
 
 #include <map>
+#include <string>
 
 #include "final/fc.h"
 #include "final/frect.h"
@@ -56,7 +57,7 @@ class FTermData
 {
   public:
     // Typedefs
-    typedef std::map<std::string,fc::encoding> encodingMap;
+    typedef std::map<std::string, fc::encoding> encodingMap;
 
     // Constructors
     FTermData();
@@ -362,7 +363,7 @@ inline void FTermData::setTermType (const char name[])
   if ( ! name )
     return;
 
-  std::strncpy (termtype, name, sizeof(termtype));
+  std::strncpy (termtype, name, sizeof(termtype) - 1);
   termtype[sizeof(termtype) - 1] = '\0';
 }
 
@@ -372,7 +373,7 @@ inline void FTermData::setTermFileName (const char file_name[])
   if ( ! file_name )
     return;
 
-  std::strncpy (termfilename, file_name, sizeof(termfilename));
+  std::strncpy (termfilename, file_name, sizeof(termfilename) - 1);
   termfilename[sizeof(termfilename) - 1] = '\0';
 }
 
@@ -385,7 +386,7 @@ inline void FTermData::setXtermTitle (const FString& title)
 { xterm_title = title; }
 
 //----------------------------------------------------------------------
-#if DEBUG
+#if DEBUG && defined(__linux__)
 inline void FTermData::setFramebufferBpp (int bpp)
 { framebuffer_bpp = bpp; }
 #endif

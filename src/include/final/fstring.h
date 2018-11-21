@@ -49,6 +49,7 @@
 #include <cwchar>
 #include <cwctype>
 
+#include <limits>
 #include <iostream>
 #include <new>
 #include <stdexcept>
@@ -134,29 +135,29 @@ class FString
     const FString& operator >> (float&);
 
     template <typename IndexT>
-    wchar_t&       operator [] (IndexT);
+    wchar_t&       operator [] (const IndexT);
     template <typename IndexT>
-    const wchar_t& operator [] (IndexT) const;
+    const wchar_t& operator [] (const IndexT) const;
     const FString& operator () ();
 
     bool operator <  (const FString&) const;
     template <typename CharT>
-    bool operator <  (CharT&) const;
+    bool operator <  (const CharT&) const;
     bool operator <= (const FString&) const;
     template <typename CharT>
-    bool operator <= (CharT&) const;
+    bool operator <= (const CharT&) const;
     bool operator == (const FString&) const;
     template <typename CharT>
-    bool operator == (CharT&) const;
+    bool operator == (const CharT&) const;
     bool operator != (const FString&) const;
     template <typename CharT>
-    bool operator != (CharT&) const;
+    bool operator != (const CharT&) const;
     bool operator >= (const FString&) const;
     template <typename CharT>
-    bool operator >= (CharT&) const;
+    bool operator >= (const CharT&) const;
     bool operator >  (const FString&) const;
     template <typename CharT>
-    bool operator >  (CharT&) const;
+    bool operator >  (const CharT&) const;
 
     operator const char* () const { return c_str(); }
 
@@ -186,6 +187,7 @@ class FString
     // Methods
     std::size_t getLength() const;
     std::size_t getUTF8length() const;
+    std::size_t capacity() const;
 
     iterator begin() const;
     iterator end()   const;
@@ -289,9 +291,9 @@ inline const char* FString::getClassName()
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline wchar_t& FString::operator [] (IndexT pos)
+inline wchar_t& FString::operator [] (const IndexT pos)
 {
-  if ( pos < 0 || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos >= IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
 
   return string[std::size_t(pos)];
@@ -299,9 +301,9 @@ inline wchar_t& FString::operator [] (IndexT pos)
 
 //----------------------------------------------------------------------
 template <typename IndexT>
-inline const wchar_t& FString::operator [] (IndexT pos) const
+inline const wchar_t& FString::operator [] (const IndexT pos) const
 {
-  if ( pos < 0 || pos >= IndexT(length) )
+  if ( isNegative(pos) || pos >= IndexT(length) )
     throw std::out_of_range("");  // Invalid index position
 
   return string[std::size_t(pos)];
@@ -309,7 +311,7 @@ inline const wchar_t& FString::operator [] (IndexT pos) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator < (CharT& s) const
+inline bool FString::operator < (const CharT& s) const
 {
   const FString tmp(s);
   return *this < tmp;
@@ -317,7 +319,7 @@ inline bool FString::operator < (CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator <= (CharT& s) const
+inline bool FString::operator <= (const CharT& s) const
 {
   const FString tmp(s);
   return *this <= tmp;
@@ -325,7 +327,7 @@ inline bool FString::operator <= (CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator == (CharT& s) const
+inline bool FString::operator == (const CharT& s) const
 {
   const FString tmp(s);
   return *this == tmp;
@@ -333,7 +335,7 @@ inline bool FString::operator == (CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator != (CharT& s) const
+inline bool FString::operator != (const CharT& s) const
 {
   const FString tmp(s);
   return *this != tmp;
@@ -341,7 +343,7 @@ inline bool FString::operator != (CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator >= (CharT& s) const
+inline bool FString::operator >= (const CharT& s) const
 {
   const FString tmp(s);
   return *this >= tmp;
@@ -349,7 +351,7 @@ inline bool FString::operator >= (CharT& s) const
 
 //----------------------------------------------------------------------
 template <typename CharT>
-inline bool FString::operator > (CharT& s) const
+inline bool FString::operator > (const CharT& s) const
 {
   const FString tmp(s);
   return *this > tmp;
@@ -368,6 +370,10 @@ inline std::size_t FString::getLength() const
 { return length; }
 
 //----------------------------------------------------------------------
+inline std::size_t FString::capacity() const
+{ return ( length > 0 ) ? bufsize - 1 : 0; }
+
+//----------------------------------------------------------------------
 inline FString::iterator FString::begin() const
 { return string; }
 
@@ -378,7 +384,7 @@ inline FString::iterator FString::end() const
 //----------------------------------------------------------------------
 inline wchar_t FString::front() const
 {
-  assert( ! isEmpty() );
+  assert ( ! isEmpty() );
   return string[0];
 }
 

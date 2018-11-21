@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <map>
+
 #include "final/ftermios.h"
 #include "final/fterm.h"
 

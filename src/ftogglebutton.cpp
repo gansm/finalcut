@@ -88,7 +88,9 @@ FToggleButton::~FToggleButton()  // destructor
 
 // public methods of FToggleButton
 //----------------------------------------------------------------------
-void FToggleButton::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FToggleButton::setGeometry ( int x, int y
+                                , std::size_t w, std::size_t h
+                                , bool adjust )
 {
   // Set the toggle button geometry
 
@@ -109,12 +111,7 @@ void FToggleButton::setGeometry (int x, int y, std::size_t w, std::size_t h, boo
 //----------------------------------------------------------------------
 bool FToggleButton::setNoUnderline (bool on)
 {
-  if ( on )
-    flags |= fc::no_underline;
-  else
-    flags &= ~fc::no_underline;
-
-  return on;
+  return (flags.no_underline = on);
 }
 
 //----------------------------------------------------------------------
@@ -218,7 +215,7 @@ void FToggleButton::setText (const FString& txt)
 void FToggleButton::hide()
 {
   std::size_t size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
   FWidget::hide();
 
@@ -291,7 +288,7 @@ void FToggleButton::onMouseUp (FMouseEvent* ev)
   }
   else
   {
-    checked = not checked;
+    checked = ! checked;
     processToggle();
   }
 
@@ -337,7 +334,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
   }
   else
   {
-    checked = not checked;
+    checked = ! checked;
     processToggle();
   }
 
@@ -431,16 +428,16 @@ uChar FToggleButton::getHotkey()
 //----------------------------------------------------------------------
 void FToggleButton::setHotkeyAccelerator()
 {
-  int hotkey = getHotkey();
+  uChar hotkey = getHotkey();
 
   if ( hotkey )
   {
     if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
     {
-      addAccelerator (std::tolower(hotkey));
-      addAccelerator (std::toupper(hotkey));
+      addAccelerator (FKey(std::tolower(hotkey)));
+      addAccelerator (FKey(std::toupper(hotkey)));
       // Meta + hotkey
-      addAccelerator (fc::Fmkey_meta + std::tolower(hotkey));
+      addAccelerator (fc::Fmkey_meta + FKey(std::tolower(hotkey)));
     }
     else
       addAccelerator (getHotkey());
@@ -464,9 +461,7 @@ bool FToggleButton::isCheckboxButton() const
 //----------------------------------------------------------------------
 void FToggleButton::draw()
 {
-  bool isFocus = ((flags & fc::focus) != 0);
-
-  if ( isFocus && getStatusBar() )
+  if ( flags.focus && getStatusBar() )
   {
     const FString& msg = getStatusbarMessage();
     const FString& curMsg = getStatusBar()->getMessage();
@@ -535,12 +530,10 @@ void FToggleButton::processToggle()
 //----------------------------------------------------------------------
 void FToggleButton::onKeyPress (FKeyEvent* ev)
 {
-  int key;
-
   if ( ! isEnabled() )
     return;
 
-  key = ev->key();
+  FKey key = ev->key();
 
   switch ( key )
   {
@@ -557,7 +550,7 @@ void FToggleButton::onKeyPress (FKeyEvent* ev)
       }
       else
       {
-        checked = not checked;
+        checked = ! checked;
         processToggle();
       }
       processClick();
@@ -624,8 +617,8 @@ void FToggleButton::init()
 
 //----------------------------------------------------------------------
 std::size_t  FToggleButton::getHotkeyPos ( wchar_t src[]
-                                , wchar_t dest[]
-                                , std::size_t length )
+                                         , wchar_t dest[]
+                                         , std::size_t length )
 {
   // find hotkey position in string
   // + generate a new string without the '&'-sign
@@ -649,12 +642,9 @@ std::size_t  FToggleButton::getHotkeyPos ( wchar_t src[]
 
 //----------------------------------------------------------------------
 void FToggleButton::drawText ( wchar_t LabelText[]
-                             , std::size_t  hotkeypos
+                             , std::size_t hotkeypos
                              , std::size_t length )
 {
-  bool isActive = ((flags & fc::active) != 0);
-  bool isNoUnderline = ((flags & fc::no_underline) != 0);
-
   if ( isMonochron() )
     setReverse(true);
 
@@ -665,16 +655,16 @@ void FToggleButton::drawText ( wchar_t LabelText[]
 
   for (std::size_t z = 0; z < length; z++)
   {
-    if ( (z == hotkeypos) && isActive )
+    if ( (z == hotkeypos) && flags.active )
     {
       setColor (wc.label_hotkey_fg, wc.label_hotkey_bg);
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         setUnderline();
 
       print ( LabelText[z] );
 
-      if ( ! isNoUnderline )
+      if ( ! flags.no_underline )
         unsetUnderline();
 
       setColor (wc.label_fg, wc.label_bg);
@@ -684,7 +674,7 @@ void FToggleButton::drawText ( wchar_t LabelText[]
   }
 
   if ( isMonochron() )
-    setReverse(false);;
+    setReverse(false);
 }
 
 }  // namespace finalcut

@@ -71,7 +71,7 @@ FMenu::~FMenu()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( ! fapp->isQuit() )
-    switchToPrevWindow();  // Switch to previous window
+    switchToPrevWindow(this);  // Switch to previous window
 }
 
 
@@ -82,12 +82,7 @@ bool FMenu::setMenuWidget (bool on)
   if ( isMenuWidget() == on )
     return true;
 
-  if ( on )
-    flags |= fc::menu_widget;
-  else
-    flags &= ~fc::menu_widget;
-
-  return on;
+  return (flags.menu_widget = on);
 }
 
 //----------------------------------------------------------------------
@@ -496,7 +491,7 @@ void FMenu::calculateDimensions()
   while ( iter != last )
   {
     std::size_t item_width = (*iter)->getTextLength() + 2;
-    int         accel_key  = (*iter)->accel_key;
+    FKey        accel_key  = (*iter)->accel_key;
     bool        has_menu   = (*iter)->hasMenu();
 
     if ( has_menu )
@@ -1176,12 +1171,13 @@ bool FMenu::hotkeyMenu (FKeyEvent* ev)
     if ( (*iter)->hasHotkey() )
     {
       bool found = false;
-      int hotkey = (*iter)->getHotkey();
-      int key = ev->key();
+      uChar hotkey = (*iter)->getHotkey();
+      FKey key = ev->key();
 
       if ( std::isalpha(hotkey) || std::isdigit(hotkey) )
       {
-        if ( std::tolower(hotkey) == key || std::toupper(hotkey) == key )
+        if ( FKey(std::tolower(hotkey)) == key
+          || FKey(std::toupper(hotkey)) == key )
           found = true;
       }
       else if ( hotkey == key )
@@ -1321,7 +1317,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
   menuText txtdata;
   std::size_t txt_length = txt.getLength();
   std::size_t to_char = txt_length;
-  int  accel_key   = menuitem->accel_key;
+  FKey accel_key   = menuitem->accel_key;
   bool is_enabled  = menuitem->isEnabled();
   bool is_selected = menuitem->isSelected();
 
@@ -1350,7 +1346,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
     to_char--;
 
   txtdata.length = to_char;
-  txtdata.no_underline = ((menuitem->getFlags() & fc::no_underline) != 0);
+  txtdata.no_underline = menuitem->getFlags().no_underline;
   setCursorToHotkeyPosition (menuitem);
 
   if ( ! is_enabled || is_selected )
@@ -1474,7 +1470,7 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
 }
 
 //----------------------------------------------------------------------
-inline void FMenu::drawAcceleratorKey (std::size_t& startpos, int accel_key)
+inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
 {
   FString accel_name (getKeyName(accel_key));
   std::size_t c = ( has_checkable_items ) ? 1 : 0;
@@ -1664,7 +1660,7 @@ inline void FMenu::keyEscape()
       getStatusBar()->clearMessage();
 
     if ( ! (super && isWindowsMenu(super)) )
-      switchToPrevWindow();
+      switchToPrevWindow(this);
   }
 
   if ( getStatusBar() )

@@ -95,6 +95,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <utility>
 #include <vector>
 
 #include "final/fvterm.h"
@@ -131,7 +132,7 @@ class FWidget : public FVTerm, public FObject
 
     struct accelerator
     {
-      int key;
+      FKey key;
       FWidget* object;
     };
 
@@ -141,6 +142,28 @@ class FWidget : public FVTerm, public FObject
     typedef void (*FCallback)(FWidget*, data_ptr);
     typedef void (FWidget::*FMemberCallback)(FWidget*, data_ptr);
     typedef std::vector<accelerator> Accelerators;
+
+    struct widget_flags  // Properties of a widget ⚑
+    {
+      uInt32 shadow         : 1;
+      uInt32 trans_shadow   : 1;
+      uInt32 active         : 1;
+      uInt32 visible        : 1;
+      uInt32 shown          : 1;
+      uInt32 focus          : 1;
+      uInt32 focusable      : 1;
+      uInt32 scrollable     : 1;
+      uInt32 resizeable     : 1;
+      uInt32 modal          : 1;
+      uInt32 visible_cursor : 1;
+      uInt32 window_widget  : 1;
+      uInt32 dialog_widget  : 1;
+      uInt32 menu_widget    : 1;
+      uInt32 always_on_top  : 1;
+      uInt32 flat           : 1;
+      uInt32 no_underline   : 1;
+      uInt32                : 15;  // padding bits
+    };
 
     // Constructor
     explicit FWidget (FWidget* = 0, bool = false);
@@ -163,8 +186,8 @@ class FWidget : public FVTerm, public FObject
     static FMenuBar*   getMenuBar();
     static FStatusBar* getStatusBar();
     FString            getStatusbarMessage() const;
-    short              getForegroundColor() const;  // get the primary
-    short              getBackgroundColor() const;  // widget colors
+    FColor             getForegroundColor() const;  // get the primary
+    FColor             getBackgroundColor() const;  // widget colors
     int                getX() const;  // positioning
     int                getY() const;
     const FPoint       getPos() const;
@@ -188,7 +211,7 @@ class FWidget : public FVTerm, public FObject
     const FRect&       getTermGeometryWithShadow();
     std::size_t        getDesktopWidth();
     std::size_t        getDesktopHeight();
-    int                getFlags() const;
+    widget_flags       getFlags() const;
     FPoint             getCursorPos();
     FPoint             getPrintPos();
     std::vector<bool>& doubleFlatLine_ref (fc::sides);
@@ -217,8 +240,8 @@ class FWidget : public FVTerm, public FObject
     bool               ignorePadding (bool);    // ignore padding from
     bool               ignorePadding();         // the parent widget
     bool               acceptPadding();
-    void               setForegroundColor (short);
-    void               setBackgroundColor (short);
+    void               setForegroundColor (FColor);
+    void               setBackgroundColor (FColor);
     void               setColor();
     virtual void       setX (int, bool = true);  // positioning
     virtual void       setY (int, bool = true);
@@ -236,7 +259,9 @@ class FWidget : public FVTerm, public FObject
     void               setTermOffsetWithPadding();
     void               setTermSize (std::size_t, std::size_t);
     virtual void       setGeometry (const FRect&, bool = true);
-    virtual void       setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void       setGeometry ( int, int
+                                   , std::size_t, std::size_t
+                                   , bool = true );
     virtual void       setShadowSize (int, int);
     void               setMinimumWidth (std::size_t);
     void               setMinimumHeight (std::size_t);
@@ -285,8 +310,8 @@ class FWidget : public FVTerm, public FObject
     void               delCallback (FWidget*);
     void               delCallbacks();
     void               emitCallback (const FString&);
-    void               addAccelerator (int);
-    virtual void       addAccelerator (int, FWidget*);
+    void               addAccelerator (FKey);
+    virtual void       addAccelerator (FKey, FWidget*);
     void               delAccelerator ();
     virtual void       delAccelerator (FWidget*);
     virtual void       redraw();
@@ -371,7 +396,7 @@ class FWidget : public FVTerm, public FObject
     virtual void       onClose (FCloseEvent*);
 
     // Data Members
-    int                   flags;
+    struct widget_flags   flags;
     static uInt           modal_dialogs;
     static FWidgetColors  wc;
     static widgetList*    dialog_list;
@@ -405,12 +430,6 @@ class FWidget : public FVTerm, public FObject
     static void        setColorTheme();
 
     // Data Members
-    bool               enable;
-    bool               visible;
-    bool               shown;
-    bool               focus;
-    bool               focusable;
-    bool               visible_cursor;
     FPoint             widget_cursor_position;
 
     struct widget_size_hints
@@ -487,8 +506,8 @@ class FWidget : public FVTerm, public FObject
     FPoint             wshadow;
 
     // default widget foreground and background color
-    short              foreground_color;
-    short              background_color;
+    FColor             foreground_color;
+    FColor             background_color;
 
     FString            statusbar_message;
     static FStatusBar* statusbar;
@@ -553,11 +572,11 @@ inline FString FWidget::getStatusbarMessage() const
 { return statusbar_message; }
 
 //----------------------------------------------------------------------
-inline short FWidget::getForegroundColor() const
+inline FColor FWidget::getForegroundColor() const
 { return foreground_color; }
 
 //----------------------------------------------------------------------
-inline short FWidget::getBackgroundColor() const
+inline FColor FWidget::getBackgroundColor() const
 { return background_color; }
 
 //----------------------------------------------------------------------
@@ -683,7 +702,7 @@ inline std::size_t FWidget::getDesktopHeight()
 { return getLineNumber(); }
 
 //----------------------------------------------------------------------
-inline int FWidget::getFlags() const
+inline FWidget::widget_flags FWidget::getFlags() const
 { return flags; }
 
 //----------------------------------------------------------------------
@@ -716,7 +735,7 @@ inline void FWidget::setStatusbarMessage (const FString& msg)
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisible()
-{ return visible = true; }
+{ return (flags.visible = true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::setEnable()
@@ -732,7 +751,10 @@ inline bool FWidget::setDisable()
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor (bool on)
-{ return visible_cursor = ( on ) ? true : (( hideable ) ? false : true); }
+{
+  flags.visible_cursor = ( on ) ? true : (( hideable ) ? false : true);
+  return flags.visible_cursor;
+}
 
 //----------------------------------------------------------------------
 inline bool FWidget::setVisibleCursor()
@@ -752,26 +774,26 @@ inline bool FWidget::unsetFocus()
 
 //----------------------------------------------------------------------
 inline void FWidget::setFocusable()
-{ focusable = true; }
+{ flags.focusable = true; }
 
 //----------------------------------------------------------------------
 inline void FWidget::unsetFocusable()
-{ focusable = false; }
+{ flags.focusable = false; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding (bool on)
-{ return ignore_padding = on; }
+{ return (ignore_padding = on); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding()
-{ return ignore_padding = true; }
+{ return (ignore_padding = true); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptPadding()
-{ return ignore_padding = false; }
+{ return (ignore_padding = false); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setForegroundColor (short color)
+inline void FWidget::setForegroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -779,7 +801,7 @@ inline void FWidget::setForegroundColor (short color)
 }
 
 //----------------------------------------------------------------------
-inline void FWidget::setBackgroundColor (short color)
+inline void FWidget::setBackgroundColor (FColor color)
 {
   // valid colors -1..254
   if ( color == fc::Default || color >> 8 == 0 )
@@ -813,7 +835,8 @@ inline void FWidget::setMinimumHeight (std::size_t min_height)
 { size_hints.setMinimum (size_hints.min_width, min_height); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMinimumSize (std::size_t min_width, std::size_t min_height)
+inline void FWidget::setMinimumSize ( std::size_t min_width
+                                    , std::size_t min_height )
 { size_hints.setMinimum (min_width, min_height); }
 
 //----------------------------------------------------------------------
@@ -825,7 +848,8 @@ inline void FWidget::setMaximumHeight (std::size_t max_height)
 { size_hints.setMaximum (size_hints.max_width, max_height); }
 
 //----------------------------------------------------------------------
-inline void FWidget::setMaximumSize (std::size_t max_width, std::size_t max_height)
+inline void FWidget::setMaximumSize ( std::size_t max_width
+                                    , std::size_t max_height )
 { size_hints.setMaximum (max_width, max_height); }
 
 //----------------------------------------------------------------------
@@ -861,39 +885,39 @@ inline bool FWidget::isRootWidget() const
 
 //----------------------------------------------------------------------
 inline bool FWidget::isVisible() const
-{ return visible; }
+{ return flags.visible; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isShown() const
-{ return shown; }
+{ return flags.shown; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isWindowWidget() const
-{ return ((flags & fc::window_widget) != 0); }
+{ return flags.window_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isDialogWidget() const
-{ return ((flags & fc::dialog_widget) != 0); }
+{ return flags.dialog_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isMenuWidget() const
-{ return ((flags & fc::menu_widget) != 0); }
+{ return flags.menu_widget; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isEnabled() const
-{ return enable; }
+{ return flags.active; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasVisibleCursor() const
-{ return visible_cursor; }
+{ return flags.visible_cursor; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::hasFocus() const
-{ return focus; }
+{ return flags.focus; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::acceptFocus() const  // is focusable
-{ return focusable; }
+{ return flags.focusable; }
 
 //----------------------------------------------------------------------
 inline bool FWidget::isPaddingIgnored()
@@ -908,7 +932,7 @@ inline void FWidget::clearStatusbarMessage()
 { statusbar_message.clear(); }
 
 //----------------------------------------------------------------------
-inline void FWidget::addAccelerator (int key)
+inline void FWidget::addAccelerator (FKey key)
 { addAccelerator (key, this); }
 
 //----------------------------------------------------------------------

@@ -68,7 +68,9 @@ void FProgressbar::setPercentage (std::size_t percentage_value)
 }
 
 //----------------------------------------------------------------------
-void FProgressbar::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FProgressbar::setGeometry ( int x, int y
+                               , std::size_t w, std::size_t h
+                               , bool adjust )
 {
   // Set the progress bar geometry
 
@@ -83,13 +85,13 @@ bool FProgressbar::setShadow (bool on)
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {
-    flags |= fc::shadow;
-    setShadowSize(1,1);
+    flags.shadow = true;
+    setShadowSize(1, 1);
   }
   else
   {
-    flags &= ~fc::shadow;
-    setShadowSize(0,0);
+    flags.shadow = false;
+    setShadowSize(0, 0);
   }
 
   return on;
@@ -99,7 +101,7 @@ bool FProgressbar::setShadow (bool on)
 void FProgressbar::hide()
 {
   std::size_t s, size;
-  short fg, bg;
+  FColor fg, bg;
   FWidget* parent_widget = getParentWidget();
 
   FWidget::hide();
@@ -157,7 +159,7 @@ void FProgressbar::draw()
   drawPercentage();
   drawBar();
 
-  if ( (flags & fc::shadow) != 0 )
+  if ( flags.shadow )
     drawShadow ();
 
   flush_out();
@@ -193,7 +195,7 @@ void FProgressbar::drawBar()
 {
   std::size_t i = 0;
   double length;
-  setPrintPos (1,1);
+  setPrintPos (1, 1);
   setColor ( wc.progressbar_bg
            , wc.progressbar_fg );
 

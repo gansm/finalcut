@@ -3,7 +3,7 @@
 if test "$1" = "update"
 then
   # Update generated configuration files
-  if which autoreconf >/dev/null
+  if command -v autoreconf >/dev/null
   then
     autoreconf --force --install --verbose --warnings=all
   else

@@ -245,7 +245,7 @@ class FListBox : public FWidget
     // Methods
     void         init();
     virtual void draw();
-    void         drawLabel();
+    void         drawHeadline();
     void         drawList();
     void         drawListLine (int, listBoxItems::iterator, bool);
     void         printLeftBracket (fc::brackets_type);
@@ -285,7 +285,7 @@ class FListBox : public FWidget
     bool         keySpace();
     bool         keyInsert();
     bool         keyBackspace();
-    bool         keyIncSearchInput (int);
+    bool         keyIncSearchInput (FKey);
     void         processClick();
     void         processSelect();
     void         processChanged();
@@ -526,7 +526,8 @@ void FListBox::insert (Container container, LazyConverter convert)
 }
 
 //----------------------------------------------------------------------
-inline FListBox::listBoxItems::iterator FListBox::index2iterator (std::size_t index)
+inline FListBox::listBoxItems::iterator \
+    FListBox::index2iterator (std::size_t index)
 {
   listBoxItems::iterator iter = itemlist.begin();
   std::advance (iter, index);

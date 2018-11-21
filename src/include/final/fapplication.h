@@ -108,7 +108,7 @@ class FApplication : public FWidget
     static void        sendQueuedEvents ();
     static bool        eventInQueue();
     static bool        removeQueuedEvent (const FObject*);
-    static FWidget*    processParameters (const int&, char*[]);
+    FWidget*           processParameters (const int&, char*[]);
     static void        showParameterUsage ()
     #if defined(__clang__) || defined(__GNUC__)
       __attribute__((noreturn))
@@ -135,7 +135,7 @@ class FApplication : public FWidget
 
     // Methods
     void               init (long, long);
-    static void        cmd_options (const int&, char*[]);
+    void               cmd_options (const int&, char*[]);
     void               findKeyboardWidget();
     bool               isKeyPressed();
     void               keyPressed();

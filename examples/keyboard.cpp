@@ -53,7 +53,7 @@ Keyboard::Keyboard (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void Keyboard::onKeyPress (finalcut::FKeyEvent* ev)
 {
-  int key_id = ev->key();
+  FKey key_id = ev->key();
   bool is_last_line = false;
 
   if ( getPrintPos().getY() == int(getDesktopHeight()) )

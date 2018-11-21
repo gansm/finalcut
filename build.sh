@@ -20,7 +20,7 @@ if [ "$CPU_COUNT" -eq 0 ]
 then
   if command -v nproc >/dev/null 2>&1
   then
-    CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0" 
+    CPU_COUNT="$(nproc 2>/dev/null)" || CPU_COUNT="0"
   fi
 fi
 
@@ -30,7 +30,7 @@ if [ -n "$1" ]
 then
   if [ ! -f ./configure ]
   then
-    if which autoreconf >/dev/null
+    if command -v autoreconf >/dev/null
     then
       autoreconf --install --force
     else

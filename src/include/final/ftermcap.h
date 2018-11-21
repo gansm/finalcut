@@ -101,7 +101,7 @@ class FTermcap
     }
 
     // Mutator
-    static void setTermData (FTermData*);
+    static void setFTermData (FTermData*);
     static void setFTermDetection (FTermDetection*);
 
     // Methods

@@ -52,7 +52,10 @@
   #include "final/fconfig.h"  // includes _GNU_SOURCE for wcwidth()
 #endif
 
+#include <queue>
 #include <sstream>  // std::stringstream
+#include <string>
+#include <vector>
 
 #include "final/fterm.h"
 
@@ -75,7 +78,7 @@ class FWidget;
 #pragma pack(push)
 #pragma pack(1)
 
-class FVTerm : public FTerm
+class FVTerm
 {
   public:
     // Typedefs and Enumeration
@@ -125,128 +128,174 @@ class FVTerm : public FTerm
     FVTerm& operator << (const std::vector<charData>&);
 
     // Accessors
-    virtual const char* getClassName() const;
-    static short        getTermForegroundColor();
-    static short        getTermBackgroundColor();
-    term_area*          getVWin() const;
-    FPoint              getPrintCursor();
-    static charData     getAttribute();
+    virtual const char*   getClassName() const;
+    static FColor         getTermForegroundColor();
+    static FColor         getTermBackgroundColor();
+    term_area*            getVWin() const;
+    FPoint                getPrintCursor();
+    static charData       getAttribute();
+    static int            getMaxColor();
+    static int            getTabstop();
+    static fc::encoding   getEncoding();
+    static std::string    getEncodingString();
+    static const FString  getKeyName (FKey);
+    static char*          getTermType();
+    static char*          getTermFileName();
+    FTerm&                getFTerm();
+#if DEBUG
+    FTermDebugData&       getFTermDebugData();
+#endif
 
     // Mutators
-    static void         setTermXY (int, int);
-    static void         hideCursor (bool);
-    static void         hideCursor();
-    static void         showCursor();
-    void                setPrintCursor (const FPoint&);
-    void                setPrintCursor (int, int);
-    void                setColor (short, short);
-    static void         setNormal();
+    void                  setTermXY (int, int);
+    void                  hideCursor (bool);
+    void                  hideCursor();
+    void                  showCursor();
+    void                  setPrintCursor (const FPoint&);
+    void                  setPrintCursor (int, int);
+    FColor                rgb2ColorIndex (uInt8, uInt8, uInt8);
+    void                  setColor (FColor, FColor);
+    static void           setNormal();
 
-    static bool         setBold (bool);
-    static bool         setBold();
-    static bool         unsetBold();
+    static bool           setBold (bool);
+    static bool           setBold();
+    static bool           unsetBold();
 
-    static bool         setDim (bool);
-    static bool         setDim();
-    static bool         unsetDim();
+    static bool           setDim (bool);
+    static bool           setDim();
+    static bool           unsetDim();
 
-    static bool         setItalic (bool);
-    static bool         setItalic();
-    static bool         unsetItalic();
+    static bool           setItalic (bool);
+    static bool           setItalic();
+    static bool           unsetItalic();
 
-    static bool         setUnderline (bool);
-    static bool         setUnderline();
-    static bool         unsetUnderline();
+    static bool           setUnderline (bool);
+    static bool           setUnderline();
+    static bool           unsetUnderline();
 
-    static bool         setBlink (bool);
-    static bool         setBlink();
-    static bool         unsetBlink();
+    static bool           setBlink (bool);
+    static bool           setBlink();
+    static bool           unsetBlink();
 
-    static bool         setReverse (bool);
-    static bool         setReverse();
-    static bool         unsetReverse();
+    static bool           setReverse (bool);
+    static bool           setReverse();
+    static bool           unsetReverse();
 
-    static bool         setStandout (bool);
-    static bool         setStandout();
-    static bool         unsetStandout();
+    static bool           setStandout (bool);
+    static bool           setStandout();
+    static bool           unsetStandout();
 
-    static bool         setInvisible (bool);
-    static bool         setInvisible();
-    static bool         unsetInvisible();
+    static bool           setInvisible (bool);
+    static bool           setInvisible();
+    static bool           unsetInvisible();
 
-    static bool         setProtected (bool);
-    static bool         setProtected();
-    static bool         unsetProtected();
+    static bool           setProtected (bool);
+    static bool           setProtected();
+    static bool           unsetProtected();
 
-    static bool         setCrossedOut (bool);
-    static bool         setCrossedOut();
-    static bool         unsetCrossedOut();
+    static bool           setCrossedOut (bool);
+    static bool           setCrossedOut();
+    static bool           unsetCrossedOut();
 
-    static bool         setDoubleUnderline (bool);
-    static bool         setDoubleUnderline();
-    static bool         unsetDoubleUnderline();
+    static bool           setDoubleUnderline (bool);
+    static bool           setDoubleUnderline();
+    static bool           unsetDoubleUnderline();
 
-    static bool         setAltCharset (bool);
-    static bool         setAltCharset();
-    static bool         unsetAltCharset();
+    static bool           setAltCharset (bool);
+    static bool           setAltCharset();
+    static bool           unsetAltCharset();
 
-    static bool         setPCcharset (bool);
-    static bool         setPCcharset();
-    static bool         unsetPCcharset();
+    static bool           setPCcharset (bool);
+    static bool           setPCcharset();
+    static bool           unsetPCcharset();
 
-    static bool         setTransparent (bool);
-    static bool         setTransparent();
-    static bool         unsetTransparent();
+    static bool           setTransparent (bool);
+    static bool           setTransparent();
+    static bool           unsetTransparent();
 
-    static bool         setTransShadow (bool);
-    static bool         setTransShadow();
-    static bool         unsetTransShadow();
+    static bool           setTransShadow (bool);
+    static bool           setTransShadow();
+    static bool           unsetTransShadow();
 
-    static bool         setInheritBackground (bool);
-    static bool         setInheritBackground();
-    static bool         unsetInheritBackground();
+    static bool           setInheritBackground (bool);
+    static bool           setInheritBackground();
+    static bool           unsetInheritBackground();
+
+    static void           setTermTitle (const FString&);
+    static void           setEncoding (fc::encoding);
+    static bool           setVGAFont();
+    static bool           setNewFont();
+    static bool           setOldFont();
 
     // Inquiries
-    static bool         isBold();
-    static bool         isDim();
-    static bool         isItalic();
-    static bool         isUnderline();
-    static bool         isBlink();
-    static bool         isReverse();
-    static bool         isStandout();
-    static bool         isInvisible();
-    static bool         isProtected();
-    static bool         isCrossedOut();
-    static bool         isDoubleUnderline();
-    static bool         isAltCharset();
-    static bool         isPCcharset();
-    static bool         isTransparent();
-    static bool         isTransShadow();
-    static bool         isInheritBackground();
+    static bool           isBold();
+    static bool           isDim();
+    static bool           isItalic();
+    static bool           isUnderline();
+    static bool           isBlink();
+    static bool           isReverse();
+    static bool           isStandout();
+    static bool           isInvisible();
+    static bool           isProtected();
+    static bool           isCrossedOut();
+    static bool           isDoubleUnderline();
+    static bool           isAltCharset();
+    static bool           isPCcharset();
+    static bool           isTransparent();
+    static bool           isTransShadow();
+    static bool           isInheritBackground();
+    static bool           isMonochron();
+    static bool           isXTerminal();
+    static bool           isAnsiTerminal();
+    static bool           isRxvtTerminal();
+    static bool           isUrxvtTerminal();
+    static bool           isMltermTerminal();
+    static bool           isPuttyTerminal();
+    static bool           isKdeTerminal();
+    static bool           isGnomeTerminal();
+    static bool           isKtermTerminal();
+    static bool           isTeraTerm();
+    static bool           isSunTerminal();
+    static bool           isCygwinTerminal();
+    static bool           isMinttyTerm();
+    static bool           isLinuxTerm();
+    static bool           isFreeBSDTerm();
+    static bool           isNetBSDTerm();
+    static bool           isOpenBSDTerm();
+    static bool           isScreenTerm();
+    static bool           isTmuxTerm();
+    static bool           isNewFont();
+    static bool           isCursorHideable();
+    static bool           hasChangedTermSize();
+    static bool           hasUTF8();
 
     // Methods
-    virtual void        clearArea (int = ' ');
-    void                createVTerm (const FRect&);
-    void                createVTerm (int, int);
-    static void         resizeVTerm (const FRect&);
-    static void         resizeVTerm (int, int);
-    static void         putVTerm();
-    static void         updateTerminal (terminal_update);
-    static void         updateTerminal();
-    virtual void        addPreprocessingHandler ( FVTerm*
-                                                , FPreprocessingHandler );
-    virtual void        delPreprocessingHandler (FVTerm*);
+    virtual void          clearArea (int = ' ');
+    void                  createVTerm (const FRect&);
+    void                  createVTerm (int, int);
+    void                  resizeVTerm (const FRect&);
+    void                  resizeVTerm (int, int);
+    void                  putVTerm();
+    void                  updateTerminal (terminal_update);
+    void                  updateTerminal();
+    virtual void          addPreprocessingHandler ( FVTerm*
+                                                  , FPreprocessingHandler );
+    virtual void          delPreprocessingHandler (FVTerm*);
 
-    int                 printf (const FString, ...);
-    int                 print (const FString&);
-    int                 print (term_area*, const FString&);
-    int                 print (const std::vector<charData>&);
-    int                 print (term_area*, const std::vector<charData>&);
-    int                 print (int);
-    int                 print (term_area*, int);
-    int                 print (charData&);
-    int                 print (term_area*, charData&);
-    FVTerm&             print();
+    int                   printf (const FString, ...);
+    int                   print (const FString&);
+    int                   print (term_area*, const FString&);
+    int                   print (const std::vector<charData>&);
+    int                   print (term_area*, const std::vector<charData>&);
+    int                   print (int);
+    int                   print (term_area*, int);
+    int                   print (charData&);
+    int                   print (term_area*, charData&);
+    FVTerm&               print();
+    static void           beep();
+    static void           redefineDefaultColors (bool);
+    static char*          moveCursor (int, int, int, int);
+    static void           printMoveDurations();
 
   protected:
     // Enumeration
@@ -257,95 +306,121 @@ class FVTerm : public FTerm
     };
 
     // Accessor
-    virtual term_area*   getPrintArea();
+    virtual term_area*    getPrintArea();
+    std::size_t           getLineNumber();
+    std::size_t           getColumnNumber();
+    static bool           charEncodable (uInt);
+    static FKeyboard*     getKeyboard();
+    static FMouseControl* getMouseControl();
+    FTerm::initializationValues& getInitValues();
+
+    // Mutators
+    static void           setInsertCursor (bool on);
+    static void           setInsertCursor();
+    static void           unsetInsertCursor();
+    static bool           setUTF8 (bool);
+    static bool           setUTF8();
+    static bool           unsetUTF8();
 
     // Inquiries
-    bool                 hasPrintArea() const;
-    bool                 hasChildPrintArea() const;
-    bool                 isVirtualWindow() const;
+    bool                  hasPrintArea() const;
+    bool                  hasChildPrintArea() const;
+    bool                  isVirtualWindow() const;
+    static bool           hasHalfBlockCharacter();
+    static bool           hasShadowCharacter();
 
     // Methods
-    void                 createArea ( const FRect&
-                                    , const FPoint&
-                                    , term_area*& );
+    void                  createArea ( const FRect&
+                                     , const FPoint&
+                                     , term_area*& );
 
-    void                 createArea ( int, int, int, int
-                                    , int, int
-                                    , term_area*& );
+    void                  createArea ( int, int, int, int
+                                     , int, int
+                                     , term_area*& );
 
-    static void          resizeArea ( const FRect&
-                                    , const FPoint&
+    void                  resizeArea ( const FRect&
+                                     , const FPoint&
+                                     , term_area* );
+
+    void                  resizeArea ( int, int, int, int
+                                     , int, int
+                                     , term_area* );
+
+    static void           removeArea (term_area*&);
+    static void           restoreVTerm (const FRect&);
+    static void           restoreVTerm (int, int, int, int);
+    void                  setTextToDefault (term_area*, int, int);
+    static bool           reallocateTextArea ( term_area*
+                                             , std::size_t
+                                             , std::size_t );
+    static bool           reallocateTextArea ( term_area*
+                                             , std::size_t );
+
+    static covered_state  isCovered ( const FPoint&
                                     , term_area* );
 
-    static void          resizeArea ( int, int, int, int
-                                    , int, int
+    static covered_state  isCovered ( int, int
                                     , term_area* );
 
-    static void          removeArea (term_area*&);
-    static void          restoreVTerm (const FRect&);
-    static void          restoreVTerm (int, int, int, int);
-    static void          setTextToDefault (term_area*, int, int);
-    static bool          reallocateTextArea (term_area*, std::size_t, std::size_t);
-    static bool          reallocateTextArea (term_area*, std::size_t);
-
-    static covered_state isCovered ( const FPoint&
-                                   , term_area* );
-
-    static covered_state isCovered ( int, int
-                                   , term_area* );
-
-    static void          updateOverlappedColor ( term_area*
+    static void           updateOverlappedColor ( term_area*
+                                                , int, int, int, int );
+    static void           updateOverlappedCharacter (term_area*, int, int);
+    static void           updateShadedCharacter ( term_area*
+                                                , int, int, int, int );
+    static void           updateInheritBackground ( term_area*
+                                                  , int, int, int, int );
+    static void           updateCharacter ( term_area*
+                                          , int, int, int, int );
+    static bool           updateVTermCharacter ( term_area*
                                                , int, int, int, int );
-    static void          updateOverlappedCharacter (term_area*, int, int);
-    static void          updateShadedCharacter ( term_area*
-                                               , int, int, int, int );
-    static void          updateInheritBackground ( term_area*
-                                                 , int, int, int, int );
-    static void          updateCharacter ( term_area*
-                                         , int, int, int, int );
-    static bool          updateVTermCharacter ( term_area*
-                                              , int, int, int, int );
-    static void          callPreprocessingHandler (term_area*);
-    static void          updateVTerm();
-    static void          updateVTerm (term_area*);
-    static bool          updateVTermCursor (term_area*);
-    static bool          isInsideArea (int, int, term_area*);
+    static void           callPreprocessingHandler (term_area*);
+    void                  updateVTerm();
+    void                  updateVTerm (term_area*);
+    bool                  updateVTermCursor (term_area*);
+    static bool           isInsideArea (int, int, term_area*);
 
-    static void          setAreaCursor ( const FPoint&
-                                       , bool, term_area* );
+    static void           setAreaCursor ( const FPoint&
+                                        , bool, term_area* );
 
-    static void          setAreaCursor ( int, int
-                                       , bool, term_area*);
+    static void           setAreaCursor ( int, int
+                                        , bool, term_area*);
 
-    static void          getArea (const FPoint&, term_area*);
-    static void          getArea (int, int, term_area*);
-    static void          getArea (const FRect&, term_area*);
-    static void          getArea (int, int, int, int, term_area*);
-    static void          putArea (const FPoint&, term_area*);
-    static void          putArea (int, int, term_area*);
-    static void          scrollAreaForward (term_area*);
-    static void          scrollAreaReverse (term_area*);
-    static void          clearArea (term_area*, int = ' ');
+    static void           getArea (const FPoint&, term_area*);
+    static void           getArea (int, int, term_area*);
+    static void           getArea (const FRect&, term_area*);
+    static void           getArea (int, int, int, int, term_area*);
+    static void           putArea (const FPoint&, term_area*);
+    static void           putArea (int, int, term_area*);
+    void                  scrollAreaForward (term_area*);
+    void                  scrollAreaReverse (term_area*);
+    void                  clearArea (term_area*, int = ' ');
 
-    static charData     generateCharacter (const FPoint&);
-    static charData     generateCharacter (int, int);
+    static charData       generateCharacter (const FPoint&);
+    static charData       generateCharacter (int, int);
 
-    static charData     getCharacter ( character_type
-                                      , const FPoint&
-                                      , FVTerm* );
+    static charData       getCharacter ( character_type
+                                       , const FPoint&
+                                       , FVTerm* );
 
-    static charData     getCharacter ( character_type
-                                      , int
-                                      , int, FVTerm* );
+    static charData       getCharacter ( character_type
+                                       , int
+                                       , int, FVTerm* );
 
-    static charData     getCoveredCharacter (const FPoint&, FVTerm*);
-    static charData     getCoveredCharacter (int, int, FVTerm*);
-    static charData     getOverlappedCharacter (const FPoint&, FVTerm*);
-    static charData     getOverlappedCharacter (int, int, FVTerm*);
-    static void          processTerminalUpdate();
-    static void          startTerminalUpdate();
-    static void          finishTerminalUpdate();
-    static void          flush_out();
+    static charData       getCoveredCharacter (const FPoint&, FVTerm*);
+    static charData       getCoveredCharacter (int, int, FVTerm*);
+    static charData       getOverlappedCharacter (const FPoint&, FVTerm*);
+    static charData       getOverlappedCharacter (int, int, FVTerm*);
+    void                  processTerminalUpdate();
+    static void           startTerminalUpdate();
+    static void           finishTerminalUpdate();
+    static void           flush_out();
+    static void           initScreenSettings();
+    static void           changeTermSizeFinished();
+    static void           exitWithMessage (const FString&)
+    #if defined(__clang__) || defined(__GNUC__)
+      __attribute__((noreturn))
+    #endif
+                           ;
 
     // Data Members
     static        term_area* vterm;        // virtual terminal
@@ -377,49 +452,50 @@ class FVTerm : public FTerm
     FVTerm& operator = (const FVTerm&);
 
     // Mutators
-    void                    setPrintArea (term_area*);
+    void                  setPrintArea (term_area*);
 
     // Methods
-    void                    init();
-    static void             init_characterLengths (FOptiMove*);
-    void                    finish();
-    static void             putAreaLine (charData*, charData*, int);
-    static void             putAreaCharacter ( int, int, FVTerm*
-                                             , charData*, charData* );
-    static void             getAreaCharacter ( int, int, term_area*
-                                             , charData*& );
-    static bool             clearTerm (int = ' ');
-    static bool             clearFullArea (term_area*, charData&);
-    static void             clearAreaWithShadow (term_area*, charData&);
-    static bool             canClearToEOL (uInt, uInt);
-    static bool             canClearLeadingWS (uInt&, uInt);
-    static bool             canClearTrailingWS (uInt&, uInt);
-    static bool             skipUnchangedCharacters (uInt&, uInt, uInt);
-    static void             printRange (uInt, uInt, uInt, bool);
-    static exit_state       eraseCharacters (uInt&, uInt, uInt, bool);
-    static exit_state       repeatCharacter (uInt&, uInt, uInt);
-    static void             cursorWrap();
-    bool                    printWrap (term_area*);
-    static void             updateTerminalLine (uInt);
-    static bool             updateTerminalCursor();
-    static bool             isInsideTerminal (int, int);
-    static void             markAsPrinted (uInt, uInt);
-    static void             markAsPrinted (uInt, uInt, uInt);
-    static void             newFontChanges (charData*&);
-    static void             charsetChanges (charData*&);
-    static void             appendCharacter (charData*&);
-    static void             appendChar (charData*&);
-    static void             appendAttributes (charData*&);
-    static int              appendLowerRight (charData*&);
-    static void             appendOutputBuffer (const std::string&);
-    static void             appendOutputBuffer (const char[]);
+    void                  init (bool);
+    static void           init_characterLengths (FOptiMove*);
+    void                  finish();
+    static void           putAreaLine (charData*, charData*, int);
+    static void           putAreaCharacter ( int, int, FVTerm*
+                                           , charData*, charData* );
+    static void           getAreaCharacter ( int, int, term_area*
+                                           , charData*& );
+    bool                  clearTerm (int = ' ');
+    bool                  clearFullArea (term_area*, charData&);
+    static void           clearAreaWithShadow (term_area*, charData&);
+    static bool           canClearToEOL (uInt, uInt);
+    static bool           canClearLeadingWS (uInt&, uInt);
+    static bool           canClearTrailingWS (uInt&, uInt);
+    bool                  skipUnchangedCharacters (uInt&, uInt, uInt);
+    void                  printRange (uInt, uInt, uInt, bool);
+    exit_state            eraseCharacters (uInt&, uInt, uInt, bool);
+    exit_state            repeatCharacter (uInt&, uInt, uInt);
+    static void           cursorWrap();
+    bool                  printWrap (term_area*);
+    void                  updateTerminalLine (uInt);
+    bool                  updateTerminalCursor();
+    bool                  isInsideTerminal (int, int);
+    static void           markAsPrinted (uInt, uInt);
+    static void           markAsPrinted (uInt, uInt, uInt);
+    static void           newFontChanges (charData*&);
+    static void           charsetChanges (charData*&);
+    void                  appendCharacter (charData*&);
+    void                  appendChar (charData*&);
+    void                  appendAttributes (charData*&);
+    int                   appendLowerRight (charData*&);
+    static void           appendOutputBuffer (const std::string&);
+    static void           appendOutputBuffer (const char[]);
 
 #if defined(__sun) && defined(__SVR4)
-    static int              appendOutputBuffer (char);
+    static int            appendOutputBuffer (char);
 #endif
-    static int              appendOutputBuffer (int);
+    static int            appendOutputBuffer (int);
 
     // Data Members
+    static FTerm*           fterm;
     static std::queue<int>* output_buffer;
     static charData         term_attribute;
     static charData         next_attribute;
@@ -509,12 +585,16 @@ inline FVTerm& FVTerm::operator << (const type& s)
 {
   std::wostringstream outstream;
   outstream << s;
-  print (outstream.str());
+
+  if ( ! outstream.str().empty() )
+    print (outstream.str());
+
   return *this;
 }
 
 //----------------------------------------------------------------------
-inline FVTerm& FVTerm::operator << (const std::vector<FVTerm::charData>& termString)
+inline FVTerm& FVTerm::operator << \
+    (const std::vector<FVTerm::charData>& termString)
 {
   print (termString);
   return *this;
@@ -525,11 +605,11 @@ inline const char* FVTerm::getClassName() const
 { return "FVTerm"; }
 
 //----------------------------------------------------------------------
-inline short FVTerm::getTermForegroundColor()
+inline FColor FVTerm::getTermForegroundColor()
 { return next_attribute.fg_color; }
 
 //----------------------------------------------------------------------
-inline short FVTerm::getTermBackgroundColor()
+inline FColor FVTerm::getTermBackgroundColor()
 { return next_attribute.bg_color; }
 
 //----------------------------------------------------------------------
@@ -539,6 +619,44 @@ inline FVTerm::term_area* FVTerm::getVWin() const
 //----------------------------------------------------------------------
 inline FVTerm::charData FVTerm::getAttribute()
 { return next_attribute; }
+
+//----------------------------------------------------------------------
+inline int FVTerm::getMaxColor()
+{ return FTerm::getMaxColor(); }
+
+//----------------------------------------------------------------------
+inline int FVTerm::getTabstop()
+{ return FTerm::getTabstop(); }
+
+//----------------------------------------------------------------------
+inline fc::encoding FVTerm::getEncoding()
+{ return FTerm::getEncoding(); }
+
+//----------------------------------------------------------------------
+inline std::string FVTerm::getEncodingString()
+{ return FTerm::getEncodingString(); }
+
+//----------------------------------------------------------------------
+inline const FString FVTerm::getKeyName (FKey keynum)
+{ return FTerm::getKeyName(keynum); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::getTermType()
+{ return FTerm::getTermType(); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::getTermFileName()
+{ return FTerm::getTermFileName(); }
+
+//----------------------------------------------------------------------
+inline FTerm& FVTerm::getFTerm()
+{ return *fterm; }
+
+//----------------------------------------------------------------------
+#if DEBUG
+inline FTermDebugData& FVTerm::getFTermDebugData()
+{ return getFTerm().getFTermDebugData(); }
+#endif
 
 //----------------------------------------------------------------------
 inline void FVTerm::hideCursor()
@@ -553,7 +671,7 @@ inline void FVTerm::setPrintCursor (const FPoint& pos)
 { setPrintCursor (pos.getX(), pos.getY()); }
 
 //----------------------------------------------------------------------
-inline void FVTerm::setColor (short fg, short bg)
+inline void FVTerm::setColor (FColor fg, FColor bg)
 {
   // Changes colors
   next_attribute.fg_color = fg;
@@ -764,6 +882,26 @@ inline bool FVTerm::unsetInheritBackground()
 { return setInheritBackground(false); }
 
 //----------------------------------------------------------------------
+inline void FVTerm::setTermTitle (const FString& title)
+{ FTerm::setTermTitle(title); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setEncoding (fc::encoding enc)
+{ FTerm::setEncoding(enc); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setVGAFont()
+{ return FTerm::setVGAFont(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setNewFont()
+{ return FTerm::setNewFont(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setOldFont()
+{ return FTerm::setOldFont(); }
+
+//----------------------------------------------------------------------
 inline bool FVTerm::isBold()
 { return next_attribute.attr.bit.bold; }
 
@@ -828,8 +966,168 @@ inline bool FVTerm::isInheritBackground()
 { return next_attribute.attr.bit.inherit_bg; }
 
 //----------------------------------------------------------------------
+inline bool FVTerm::isMonochron()
+{ return FTerm::isMonochron(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isXTerminal()
+{ return FTerm::isXTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isAnsiTerminal()
+{ return FTerm::isAnsiTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isRxvtTerminal()
+{ return FTerm::isRxvtTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isUrxvtTerminal()
+{ return FTerm::isUrxvtTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isMltermTerminal()
+{ return FTerm::isMltermTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isPuttyTerminal()
+{ return FTerm::isPuttyTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isKdeTerminal()
+{ return FTerm::isKdeTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isGnomeTerminal()
+{ return FTerm::isGnomeTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isKtermTerminal()
+{ return FTerm::isKtermTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTeraTerm()
+{ return FTerm::isTeraTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isSunTerminal()
+{ return FTerm::isSunTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isCygwinTerminal()
+{ return FTerm::isCygwinTerminal(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isMinttyTerm()
+{ return FTerm::isMinttyTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isLinuxTerm()
+{ return FTerm::isLinuxTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isFreeBSDTerm()
+{ return FTerm::isFreeBSDTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isNetBSDTerm()
+{ return FTerm::isNetBSDTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isOpenBSDTerm()
+{ return FTerm::isOpenBSDTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isScreenTerm()
+{ return FTerm::isScreenTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isTmuxTerm()
+{ return FTerm::isTmuxTerm(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isNewFont()
+{ return FTerm::isNewFont(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::isCursorHideable()
+{ return FTerm::isCursorHideable(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasChangedTermSize()
+{ return FTerm::hasChangedTermSize(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasUTF8()
+{ return FTerm::hasUTF8(); }
+
+//----------------------------------------------------------------------
 inline FVTerm& FVTerm::print()
 { return *this; }
+
+//----------------------------------------------------------------------
+inline void FVTerm::beep()
+{ FTerm::beep(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::redefineDefaultColors (bool on)
+{ FTerm::redefineDefaultColors(on); }
+
+//----------------------------------------------------------------------
+inline char* FVTerm::moveCursor (int xold, int yold, int xnew, int ynew)
+{ return FTerm::moveCursor (xold, yold, xnew, ynew); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::printMoveDurations()
+{ return FTerm::printMoveDurations(); }
+
+//----------------------------------------------------------------------
+inline std::size_t FVTerm::getLineNumber()
+{ return FTerm::getLineNumber(); }
+
+//----------------------------------------------------------------------
+inline std::size_t FVTerm::getColumnNumber()
+{ return FTerm::getColumnNumber(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::charEncodable (uInt c)
+{ return FTerm::charEncodable(c); }
+
+//----------------------------------------------------------------------
+inline FKeyboard* FVTerm::getKeyboard()
+{ return FTerm::getKeyboard(); }
+
+//----------------------------------------------------------------------
+inline FMouseControl* FVTerm::getMouseControl()
+{ return FTerm::getMouseControl(); }
+
+//----------------------------------------------------------------------
+inline FTerm::initializationValues& FVTerm::getInitValues()
+{ return getFTerm().getInitValues(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setInsertCursor (bool on)
+{ return FTerm::setInsertCursor(on); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::setInsertCursor()
+{ return FTerm::setInsertCursor(true); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::unsetInsertCursor()
+{ return FTerm::setInsertCursor(false); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setUTF8 (bool on)
+{ return FTerm::setUTF8(on); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::setUTF8()
+{ return FTerm::setUTF8(true); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::unsetUTF8()
+{ return FTerm::setUTF8(false); }
 
 //----------------------------------------------------------------------
 inline bool FVTerm::hasPrintArea() const
@@ -842,6 +1140,26 @@ inline bool FVTerm::hasChildPrintArea() const
 //----------------------------------------------------------------------
 inline bool FVTerm::isVirtualWindow() const
 { return vwin; }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasHalfBlockCharacter()
+{ return FTerm::hasHalfBlockCharacter(); }
+
+//----------------------------------------------------------------------
+inline bool FVTerm::hasShadowCharacter()
+{ return FTerm::hasShadowCharacter(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::initScreenSettings()
+{ FTerm::initScreenSettings(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::changeTermSizeFinished()
+{ FTerm::changeTermSizeFinished(); }
+
+//----------------------------------------------------------------------
+inline void FVTerm::exitWithMessage (const FString& message)
+{ FTerm::exitWithMessage(message); }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setPrintArea (term_area* area)

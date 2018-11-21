@@ -1,9 +1,9 @@
 /***********************************************************************
-* ftermbuffer.h - Buffer for virtual terminal strings                  *
+* ftermdebugdata.h - Debug data class for FTerm                        *
 *                                                                      *
 * This file is part of the Final Cut widget toolkit                    *
 *                                                                      *
-* Copyright 2017-2018 Markus Gans                                      *
+* Copyright 2018 Markus Gans                                           *
 *                                                                      *
 * The Final Cut is free software; you can redistribute it and/or       *
 * modify it under the terms of the GNU Lesser General Public License   *
@@ -23,110 +23,107 @@
 /*  Standalone class
  *  ════════════════
  *
- * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▏
- * ▕ FTermBuffer ▏
- * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▏
+ * ▕▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▏
+ * ▕ FTermDebugData ▏
+ * ▕▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▏
  */
 
-#ifndef FTERMBUFFER_H
-#define FTERMBUFFER_H
+#ifndef FTERMDEBUGDATA_H
+#define FTERMDEBUGDATA_H
 
 #if !defined (USE_FINAL_H) && !defined (COMPILE_FINAL_CUT)
   #error "Only <final/final.h> can be included directly."
 #endif
 
-#include <sstream>  // std::stringstream
-#include <string>
-#include <vector>
-
-#include "final/fvterm.h"
-#include "final/fstring.h"
-
 namespace finalcut
 {
 
+#if DEBUG
 //----------------------------------------------------------------------
-// class FTermBuffer
+// class FTermDebugData
 //----------------------------------------------------------------------
 
-#pragma pack(push)
-#pragma pack(1)
-
-class FTermBuffer
+class FTermDebugData
 {
   public:
-    // Typedef
-    typedef FOptiAttr::charData  charData;
-
-    // Constructor
-    FTermBuffer();
+    // Constructors
+    FTermDebugData();
 
     // Destructor
-    virtual ~FTermBuffer();
-
-    // Overloaded operators
-    template <typename type>
-    FTermBuffer& operator << (const type&);
-    // Non-member operators
-    friend std::vector<charData>& operator << ( std::vector<charData>&
-                                              , const FTermBuffer& );
+    ~FTermDebugData();
 
     // Accessors
-    virtual const char*    getClassName() const;
-    std::size_t            getLength() const;
-
-    // Inquiry
-    bool                   isEmpty() const;
-
-    // Methods
-    void                   clear();
-    int                    writef (const FString, ...);
-    int                    write (const FString&);
-    int                    write (int);
-    FTermBuffer&           write ();
-    std::vector<charData>  getBuffer();
+    const FString& getAnswerbackString();
+    const FString& getSecDAString();
+    const char*    getTermType_256color();
+    const char*    getTermType_Answerback();
+    const char*    getTermType_SecDA();
+#if defined(__linux__)
+    int            getFramebufferBpp();
+#endif
+    // Mutators
+    void           setFTermDetection (FTermDetection*);
+    void           setFTermData (FTermData*);
 
   private:
-    std::vector<charData> data;
+    // Disable copy constructor
+    FTermDebugData (const FTermDebugData&);
+
+    // Disable assignment operator (=)
+    FTermDebugData& operator = (const FTermDebugData&);
+
+    // Data Members
+    FTermDetection* term_detection;
+    FTermData*      data;
 };
-#pragma pack(pop)
 
-
-// FTermBuffer inline functions
+// FTermDebugData inline functions
 //----------------------------------------------------------------------
-template <typename type>
-inline FTermBuffer& FTermBuffer::operator << (const type& s)
-{
-  std::wostringstream outstream;
-  outstream << s;
-  write (outstream.str());
-  return *this;
-}
+inline FTermDebugData::FTermDebugData()
+  : term_detection(0)
+  , data(0)
+{ }
 
 //----------------------------------------------------------------------
-inline const char* FTermBuffer::getClassName() const
-{ return "FTermBuffer"; }
+inline FTermDebugData::~FTermDebugData()
+{ }
 
 //----------------------------------------------------------------------
-inline std::size_t FTermBuffer::getLength() const
-{ return data.size(); }
+inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
+{ term_detection = obj; }
 
 //----------------------------------------------------------------------
-inline bool FTermBuffer::isEmpty() const
-{ return data.empty(); }
+inline void FTermDebugData::setFTermData (FTermData* obj)
+{ data = obj; }
 
 //----------------------------------------------------------------------
-inline void FTermBuffer::clear()
-{ data.clear(); }
+inline const FString& FTermDebugData::getAnswerbackString()
+{ return term_detection->getAnswerbackString(); }
 
 //----------------------------------------------------------------------
-inline FTermBuffer& FTermBuffer::write()
-{ return *this; }
+inline const FString& FTermDebugData::getSecDAString()
+{ return term_detection->getSecDAString(); }
 
 //----------------------------------------------------------------------
-inline std::vector<FTermBuffer::charData> FTermBuffer::getBuffer()
-{ return data; }
+inline const char* FTermDebugData::getTermType_256color()
+{ return term_detection->getTermType_256color(); }
+
+//----------------------------------------------------------------------
+inline const char* FTermDebugData::getTermType_Answerback()
+{ return term_detection->getTermType_Answerback(); }
+
+//----------------------------------------------------------------------
+inline const char* FTermDebugData::getTermType_SecDA()
+{ return term_detection->getTermType_SecDA(); }
+
+//----------------------------------------------------------------------
+#if defined(__linux__)
+inline int FTermDebugData::getFramebufferBpp()
+{ return data->getFramebufferBpp(); }
+#endif  // defined(__linux__)
+
+#endif  // DEBUG
 
 }  // namespace finalcut
 
-#endif  // FTERMBUFFER_H
+#endif  // FTERMDEBUGDATA_H

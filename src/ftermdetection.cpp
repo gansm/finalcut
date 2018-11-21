@@ -89,7 +89,7 @@ FTermDetection::~FTermDetection()  // destructor
 
 // public methods of FTermDetection
 //----------------------------------------------------------------------
-void FTermDetection::setTermData (FTermData* data)
+void FTermDetection::setFTermData (FTermData* data)
 {
   fterm_data = data;
 }
@@ -145,7 +145,8 @@ void FTermDetection::getSystemTermType()
   }
 
   // 2nd fallback: use vt100 if not found
-  std::strncpy (termtype, C_STR("vt100"), 6);
+  std::strncpy (termtype, C_STR("vt100"), sizeof(termtype));
+  termtype[sizeof(termtype) - 1] = '\0';
 }
 
 //----------------------------------------------------------------------
@@ -453,8 +454,9 @@ char* FTermDetection::termtype_256color_quirks()
   if ( color_env.string3 && std::strlen(color_env.string3) > 0 )
     decscusr_support = true;
 
-  if ( (color_env.string1 && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0)
-    || color_env.string2 )
+  if ( color_env.string2
+    || (color_env.string1
+      && std::strncmp(color_env.string1, "gnome-terminal", 14) == 0) )
   {
     terminal_type.gnome_terminal = true;
     // Each gnome-terminal should be able to use 256 colors
@@ -513,7 +515,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512] = { };
-  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%3d;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
@@ -578,7 +580,7 @@ char* FTermDetection::parseAnswerbackMsg (char current_termtype[])
   {
     std::strncpy ( termtype_Answerback
                  , new_termtype
-                 , sizeof(termtype_Answerback) );
+                 , sizeof(termtype_Answerback) - 1);
     termtype_Answerback[sizeof(termtype_Answerback) - 1] = '\0';
   }
 #endif  // DEBUG

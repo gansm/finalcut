@@ -11,7 +11,7 @@ Name:		@PACKAGE@
 Version:	@VERSION@
 Release:	%{buildno}
 License:	LGPL-3.0
-Summary:	The Final Cut 
+Summary:	The Final Cut
 Url:		https://github.com/gansm/finalcut/
 Group:		System/Libraries
 Source:		finalcut-%{version}.tar.gz
@@ -111,7 +111,7 @@ make %{?_smp_mflags} V=1
 make install libdir=${RPM_BUILD_ROOT}%{_libdir}/ \
 	     includedir=${RPM_BUILD_ROOT}%{_includedir} \
 	     bindir=${RPM_BUILD_ROOT}%{_bindir} \
-	     docdir=${RPM_BUILD_ROOT}/%{_docdir}/finalcut/ 
+	     docdir=${RPM_BUILD_ROOT}/%{_docdir}/finalcut/
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/libfinal.la
 
 %post -n %{libsoname} -p /sbin/ldconfig

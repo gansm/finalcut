@@ -59,6 +59,10 @@ FMouseControl*      FTerm::mouse            = 0;
   FTermOpenBSD* FTerm::openbsd = 0;
 #endif
 
+#if DEBUG
+  FTermDebugData* FTerm::debug_data = 0;
+#endif
+
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -104,7 +108,7 @@ std::size_t FTerm::getColumnNumber()
 }
 
 //----------------------------------------------------------------------
-const FString FTerm::getKeyName (int keynum)
+const FString FTerm::getKeyName (FKey keynum)
 {
   return keyboard->getKeyName (keynum);
 }
@@ -113,6 +117,17 @@ const FString FTerm::getKeyName (int keynum)
 bool FTerm::isNormal (charData*& ch)
 {
   return opti_attr->isNormal(ch);
+}
+
+//----------------------------------------------------------------------
+bool FTerm::isCursorHideable()
+{
+  char* cursor_off_str = disableCursor();
+
+  if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
+    return true;
+
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -392,7 +407,7 @@ char* FTerm::cursorsVisibility (bool on)
 //----------------------------------------------------------------------
 void FTerm::printMoveDurations()
 {
-  opti_move->printDurations();
+  finalcut::printDurations(*opti_move);
 }
 
 //----------------------------------------------------------------------
@@ -470,14 +485,13 @@ void FTerm::detectTermSize()
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
   {
-    char* str;
-    term_geometry.setPos(1,1);
+    term_geometry.setPos (1, 1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
-    str = std::getenv("COLUMNS");
-    term_geometry.setWidth(str ? std::size_t(std::atoi(str)) : 80);
+    char* Columns = std::getenv("COLUMNS");
+    term_geometry.setWidth(Columns ? std::size_t(std::atoi(Columns)) : 80);
     // Use LINES or fallback to the xterm default height of 24 characters
-    str = std::getenv("LINES");
-    term_geometry.setHeight(str ? std::size_t(std::atoi(str)) : 24);
+    char* Lines = std::getenv("LINES");
+    term_geometry.setHeight(Lines ? std::size_t(std::atoi(Lines)) : 24);
   }
   else
   {
@@ -550,7 +564,7 @@ void FTerm::resetColorMap()
 }
 
 //----------------------------------------------------------------------
-void FTerm::setPalette (short index, int r, int g, int b)
+void FTerm::setPalette (FColor index, int r, int g, int b)
 {
   // Redefine RGB color value for a palette entry
 
@@ -877,6 +891,11 @@ void FTerm::init_global_values (bool disable_alt_screen)
 
   if ( ! init_values.terminal_detection )
     term_detection->setTerminalDetection (false);
+
+#if DEBUG
+  debug_data->setFTermDetection(term_detection);
+  debug_data->setFTermData(data);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -1079,7 +1098,7 @@ void FTerm::init_termcap()
   // Initialize the terminal capabilities
 
   FTermcap termcap;
-  termcap.setTermData(data);
+  termcap.setFTermData(data);
   termcap.setFTermDetection(term_detection);
   termcap.init();
 
@@ -1093,7 +1112,7 @@ void FTerm::init_quirks()
   // Initialize terminal quirks
 
   FTermcapQuirks quirks;
-  quirks.setTermData (data);
+  quirks.setFTermData (data);
   quirks.setFTermDetection (term_detection);
   quirks.terminalFixup();  // Fix terminal quirks
 }
@@ -1670,6 +1689,10 @@ inline void FTerm::allocationValues()
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
     openbsd        = new FTermOpenBSD();
 #endif
+
+#if DEBUG
+    debug_data     = new FTermDebugData();
+#endif
   }
   catch (const std::bad_alloc& ex)
   {
@@ -1681,6 +1704,10 @@ inline void FTerm::allocationValues()
 //----------------------------------------------------------------------
 inline void FTerm::deallocationValues()
 {
+#if DEBUG
+  if ( debug_data )
+    delete debug_data;
+#endif
 
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   if ( openbsd )
@@ -1740,7 +1767,7 @@ void FTerm::init (bool disable_alt_screen)
   initBaudRate();
 
   // Terminal detection
-  term_detection->setTermData(data);
+  term_detection->setFTermData(data);
   term_detection->detect();
   setTermType (term_detection->getTermType());
 

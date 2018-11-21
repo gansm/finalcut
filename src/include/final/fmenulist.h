@@ -62,7 +62,7 @@ class FMenuList
 {
   public:
     // Constructor
-    explicit FMenuList();
+    FMenuList();
 
     // Destructor
     virtual ~FMenuList();

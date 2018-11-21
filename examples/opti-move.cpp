@@ -75,7 +75,7 @@ void term_boundaries (int& x, int& y)
   if ( y < 0 )
     y = 0;
 
-  if ( x >= term_width )
+  if ( x >= term_width && term_width > 0 )
   {
     y += x / term_width;
     x %= term_width;
@@ -157,7 +157,7 @@ int main (int argc, char* argv[])
   finalcut::FString line(std::size_t(xmax) + 1, '-');
 
   // Place the cursor in the upper left corner
-  TermApp.setTermXY(0,0);
+  TermApp.setTermXY(0, 0);
   // Reset all terminal attributes
   TermApp.setNormal();
   // Clear the screen

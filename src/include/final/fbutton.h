@@ -69,7 +69,7 @@ class FButton : public FWidget
   public:
     // Constructors
     explicit FButton (FWidget* = 0);
-    FButton (const FString&, FWidget* = 0);
+    explicit FButton (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FButton();
@@ -79,13 +79,13 @@ class FButton : public FWidget
     FString&     getText();
 
     // Mutators
-    void         setForegroundColor (short);
-    void         setBackgroundColor (short);
-    void         setHotkeyForegroundColor (short);
-    void         setFocusForegroundColor (short);
-    void         setFocusBackgroundColor (short);
-    void         setInactiveForegroundColor (short);
-    void         setInactiveBackgroundColor (short);
+    void         setForegroundColor (FColor);
+    void         setBackgroundColor (FColor);
+    void         setHotkeyForegroundColor (FColor);
+    void         setFocusForegroundColor (FColor);
+    void         setFocusBackgroundColor (FColor);
+    void         setInactiveForegroundColor (FColor);
+    void         setInactiveBackgroundColor (FColor);
     bool         setNoUnderline(bool);
     bool         setNoUnderline();
     bool         unsetNoUnderline();
@@ -141,7 +141,6 @@ class FButton : public FWidget
 
     // Methods
     void         init();
-    void         getButtonState();
     uChar        getHotkey();
     void         setHotkeyAccelerator();
     void         detectHotkey();
@@ -160,6 +159,7 @@ class FButton : public FWidget
     // Data Members
     FString      text;
     bool         button_down;
+    bool         active_focus;
     bool         click_animation;
     int          click_time;
     int          space_char;
@@ -168,24 +168,13 @@ class FButton : public FWidget
     std::size_t  center_offset;
     std::size_t  vcenter_offset;
     std::size_t  txtlength;
-    short        button_fg;
-    short        button_bg;
-    short        button_hotkey_fg;
-    short        button_focus_fg;
-    short        button_focus_bg;
-    short        button_inactive_fg;
-    short        button_inactive_bg;
-
-    struct state
-    {
-      uChar focus           : 1;
-      uChar active_focus    : 1;
-      uChar active          : 1;
-      uChar flat            : 1;
-      uChar non_flat_shadow : 1;
-      uChar no_underline    : 1;
-      uChar                 : 2;  // padding bits
-    } is;
+    FColor       button_fg;
+    FColor       button_bg;
+    FColor       button_hotkey_fg;
+    FColor       button_focus_fg;
+    FColor       button_focus_bg;
+    FColor       button_inactive_fg;
+    FColor       button_inactive_bg;
 };
 #pragma pack(pop)
 
@@ -253,7 +242,7 @@ inline bool FButton::setUp()
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation(bool on)
-{ return click_animation = on; }
+{ return (click_animation = on); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation()
@@ -265,7 +254,7 @@ inline bool FButton::unsetClickAnimation()
 
 //----------------------------------------------------------------------
 inline bool FButton::isFlat() const
-{ return ((flags & fc::flat) != 0); }
+{ return flags.flat; }
 
 //----------------------------------------------------------------------
 inline bool FButton::isDown() const
@@ -273,7 +262,7 @@ inline bool FButton::isDown() const
 
 //----------------------------------------------------------------------
 inline bool FButton::hasShadow() const
-{ return ((flags & fc::shadow) != 0); }
+{ return flags.shadow; }
 
 //----------------------------------------------------------------------
 inline bool FButton::hasClickAnimation()

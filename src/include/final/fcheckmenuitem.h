@@ -74,7 +74,7 @@ class FCheckMenuItem : public FMenuItem
   public:
     // Constructors
     explicit FCheckMenuItem (FWidget* = 0);
-    FCheckMenuItem (const FString&, FWidget* = 0);
+    explicit FCheckMenuItem (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FCheckMenuItem();

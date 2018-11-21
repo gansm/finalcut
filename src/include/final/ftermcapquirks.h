@@ -64,7 +64,7 @@ class FTermcapQuirks
     const char* getClassName() const;
 
     // Mutator
-    static void setTermData (FTermData*);
+    static void setFTermData (FTermData*);
     static void setFTermDetection (FTermDetection*);
 
     // Methods

@@ -87,7 +87,7 @@ FDialog::~FDialog()  // destructor
   accelerator_list = 0;
 
   if ( ! is_quit )
-    switchToPrevWindow();
+    switchToPrevWindow(this);
 
   delDialog(this);
 
@@ -103,16 +103,12 @@ bool FDialog::setDialogWidget (bool on)
   if ( isDialogWidget() == on )
     return true;
 
+  flags.dialog_widget = on;
+
   if ( on )
-  {
-    flags |= fc::dialog_widget;
     setTermOffsetWithPadding();
-  }
   else
-  {
-    flags &= ~fc::dialog_widget;
     setParentOffset();
-  }
 
   return on;
 }
@@ -123,16 +119,12 @@ bool FDialog::setModal (bool on)
   if ( isModal() == on )
     return true;
 
+  flags.modal = on;
+
   if ( on )
-  {
-    flags |= fc::modal;
     modal_dialogs++;
-  }
   else
-  {
-    flags &= ~fc::modal;
     modal_dialogs--;
-  }
 
   return on;
 }
@@ -141,12 +133,7 @@ bool FDialog::setModal (bool on)
 //----------------------------------------------------------------------
 bool FDialog::setScrollable (bool on)
 {
-  if ( on )
-    flags |= fc::scrollable;
-  else
-    flags &= ~fc::scrollable;
-
-  return on;
+  return (flags.scrollable = on);
 }
 
 //----------------------------------------------------------------------
@@ -541,7 +528,7 @@ void FDialog::onMouseDown (FMouseEvent* ev)
       && ms.mouse_y == 1 )
       titlebar_click_pos.setPoint (ev->getTermX(), ev->getTermY());
     else
-      titlebar_click_pos.setPoint (0,0);
+      titlebar_click_pos.setPoint (0, 0);
 
     // Click on titlebar menu button
     if ( ms.mouse_x < 4 && ms.mouse_y == 1 )
@@ -835,7 +822,7 @@ void FDialog::draw()
   drawTitleBar();
   setCursorPos(2, int(getHeight()) - 1);
 
-  if ( (flags & fc::shadow) != 0 )
+  if ( flags.shadow )
     drawDialogShadow();
 
   if ( isMonochron() )
@@ -845,7 +832,7 @@ void FDialog::draw()
 //----------------------------------------------------------------------
 void FDialog::drawDialogShadow()
 {
-  if ( isMonochron() && (flags & fc::trans_shadow) == 0 )
+  if ( isMonochron() && ! flags.trans_shadow )
     return;
 
   drawShadow();
@@ -1591,7 +1578,7 @@ void FDialog::resizeMouseDown (mouseStates& ms)
       drawBorder();
   }
   else
-    resize_click_pos.setPoint (0,0);
+    resize_click_pos.setPoint (0, 0);
 }
 
 //----------------------------------------------------------------------
@@ -1628,13 +1615,14 @@ void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
       else
         h = int(getMaxHeight()) - getTermY() + y2_offset + 1;
 
-      setSize (std::size_t(w), std::size_t(h));
+      setSize ( ( w >= 0) ? std::size_t(w) : 0
+              , ( h >= 0) ? std::size_t(h) : 0 );
     }
 
     if ( mouse_up )
     {
       // Reset the border color
-      resize_click_pos.setPoint (0,0);
+      resize_click_pos.setPoint (0, 0);
 
       // redraw() is required to draw the standard (black) border
       // and client objects with ignorePadding() option.
@@ -1651,7 +1639,7 @@ void FDialog::cancelMouseResize()
   if ( resize_click_pos.isNull() )
     return;
 
-  resize_click_pos.setPoint (0,0);
+  resize_click_pos.setPoint (0, 0);
   drawBorder();
   updateTerminal();
 }

@@ -80,7 +80,7 @@ class FDialogListMenu : public FMenu
   public:
     // Constructors
     explicit FDialogListMenu (FWidget* = 0);
-    FDialogListMenu (const FString&, FWidget* = 0);
+    explicit FDialogListMenu (const FString&, FWidget* = 0);
 
     // Destructor
     virtual ~FDialogListMenu();

@@ -225,20 +225,22 @@ void tcapString (const std::string& name, const char cap_str[])
 #if DEBUG
 void debug (finalcut::FApplication& TermApp)
 {
-  const finalcut::FString& ab_s = TermApp.getAnswerbackString();
-  const finalcut::FString& sec_da = TermApp.getSecDAString();
+  finalcut::FTermDebugData& debug_data = TermApp.getFTermDebugData();
+  const finalcut::FString& ab_s = debug_data.getAnswerbackString();
+  const finalcut::FString& sec_da = debug_data.getSecDAString();
   std::cout << "\n.------------------- debug -------------------\r\n";
+
 #if defined(__linux__)
   std::cout << "|               Framebuffer bpp: "
-            << TermApp.getFramebufferBpp() << "\r\n";
+            << debug_data.getFramebufferBpp() << "\r\n";
 #endif
 
   std::cout << "| after init_256colorTerminal(): "
-            << TermApp.getTermType_256color() << "\r\n";
+            << debug_data.getTermType_256color() << "\r\n";
   std::cout << "|    after parseAnswerbackMsg(): "
-            << TermApp.getTermType_Answerback() << "\r\n";
+            << debug_data.getTermType_Answerback() << "\r\n";
   std::cout << "|            after parseSecDA(): "
-            << TermApp.getTermType_SecDA() << "\r\n";
+            << debug_data.getTermType_SecDA() << "\r\n";
 
   if ( ! ab_s.isEmpty() )
     tcapString ("|         The answerback String", ab_s);
@@ -247,7 +249,6 @@ void debug (finalcut::FApplication& TermApp)
     tcapString ("|              The SecDA String", sec_da);
 
   std::cout << "`------------------- debug -------------------\r\n";
-
 }
 #else
 void debug (finalcut::FApplication&)
@@ -260,6 +261,8 @@ void booleans()
   std::cout << "\r\n[Booleans]\r\n";
   tcapBoolean ( "background_color_erase"
               , finalcut::FTermcap::background_color_erase );
+  tcapBoolean ( "can_change_color_palette"
+              , finalcut::FTermcap::can_change_color_palette );
   tcapBoolean ( "automatic_left_margin"
               , finalcut::FTermcap::automatic_left_margin );
   tcapBoolean ( "automatic_right_margin"
