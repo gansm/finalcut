@@ -1,5 +1,6 @@
 2018-11-21  Markus Gans  <guru.mail@muenster.de>
 	* New type FKey for key inputs
+	* The integer type of FPoint and FRect changed from short to int
 
 2018-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The FListViewItem class now provides checkable list view items

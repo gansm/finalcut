@@ -34,10 +34,10 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FRect::FRect (const FPoint& p1, const FPoint& p2)
-  : X1(short(p1.getX()))
-  , Y1(short(p1.getY()))
-  , X2(short(p2.getX()))
-  , Y2(short(p2.getY()))
+  : X1(p1.getX())
+  , Y1(p1.getY())
+  , X2(p2.getX())
+  , Y2(p2.getY())
 { }
 
 //----------------------------------------------------------------------
@@ -55,82 +55,82 @@ bool FRect::isNull() const
 //----------------------------------------------------------------------
 void FRect::setX1 (int n)
 {
-  X1 = short(n);
+  X1 = n;
 }
 
 //----------------------------------------------------------------------
 void FRect::setY1 (int n)
 {
-  Y1 = short(n);
+  Y1 = n;
 }
 
 //----------------------------------------------------------------------
 void FRect::setX2 (int n)
 {
-  X2 = short(n);
+  X2 = n;
 }
 
 //----------------------------------------------------------------------
 void FRect::setY2 (int n)
 {
-  Y2 = short(n);
+  Y2 = n;
 }
 
 //----------------------------------------------------------------------
 void FRect::setX (int n)
 {
-  short dX = short(X2 - X1);
-  X1 = short(n);
-  X2 = short(X1 + dX);
+  int dX = X2 - X1;
+  X1 = n;
+  X2 = X1 + dX;
 }
 
 //----------------------------------------------------------------------
 void FRect::setY (int n)
 {
-  short dY = short(Y2 - Y1);
-  Y1 = short(n);
-  Y2 = short(Y1 + dY);
+  int dY = Y2 - Y1;
+  Y1 = n;
+  Y2 = Y1 + dY;
 }
 
 //----------------------------------------------------------------------
 void FRect::setPos (int x, int y)
 {
-  short dX = short(X2 - X1);
-  short dY = short(Y2 - Y1);
-  X1 = short(x);
-  Y1 = short(y);
-  X2 = short(X1 + dX);
-  Y2 = short(Y1 + dY);
+  int dX = X2 - X1;
+  int dY = Y2 - Y1;
+  X1 = x;
+  Y1 = y;
+  X2 = X1 + dX;
+  Y2 = Y1 + dY;
 }
 
 //----------------------------------------------------------------------
 void FRect::setPos (const FPoint& p)
 {
-  short dX = short(X2 - X1);
-  short dY = short(Y2 - Y1);
-  X1 = short(p.getX());
-  Y1 = short(p.getY());
-  X2 = short(X1 + dX);
-  Y2 = short(Y1 + dY);
+  int dX = X2 - X1;
+  int dY = Y2 - Y1;
+  X1 = p.getX();
+  Y1 = p.getY();
+  X2 = X1 + dX;
+  Y2 = Y1 + dY;
 }
 
 //----------------------------------------------------------------------
 void FRect::setWidth (std::size_t w)
 {
-  X2 = short(X1 + short(w) - 1);
+  X2 = X1 + int(w) - 1;
 }
 
 //----------------------------------------------------------------------
 void FRect::setHeight (std::size_t h)
 {
-  Y2 = short(Y1 + short(h) - 1);
+  Y2 = Y1 + int(h) - 1;
 }
 
 //----------------------------------------------------------------------
 void FRect::setSize (std::size_t w, std::size_t h)
 {
-  X2 = short(X1 + short(w) - 1);
-  Y2 = short(Y1 + short(h) - 1);
+  X2 = X1 + int(w) - 1;
+  Y2 = Y1 + int(h) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -145,10 +145,10 @@ void FRect::setRect (const FRect& r)
 //----------------------------------------------------------------------
 void FRect::setRect (int x, int y, std::size_t width, std::size_t height)
 {
-  X1 = short(x);
-  Y1 = short(y);
-  X2 = short(x + int(width) - 1);
-  Y2 = short(y + int(height) - 1);
+  X1 = x;
+  Y1 = y;
+  X2 = x + int(width) - 1;
+  Y2 = y + int(height) - 1;
 }
 
 //----------------------------------------------------------------------
@@ -160,28 +160,28 @@ void FRect::setCoordinates (const FPoint& p1, const FPoint& p2)
 //----------------------------------------------------------------------
 void FRect::setCoordinates (int x1, int y1, int x2, int y2)
 {
-  X1 = short(x1);
-  Y1 = short(y1);
-  X2 = short(x2);
-  Y2 = short(y2);
+  X1 = x1;
+  Y1 = y1;
+  X2 = x2;
+  Y2 = y2;
 }
 
 //----------------------------------------------------------------------
 void FRect::move (int dx, int dy)
 {
-  X1 = short(X1 + dx);
-  Y1 = short(Y1 + dy);
-  X2 = short(X2 + dx);
-  Y2 = short(Y2 + dy);
+  X1 = X1 + dx;
+  Y1 = Y1 + dy;
+  X2 = X2 + dx;
+  Y2 = Y2 + dy;
 }
 
 //----------------------------------------------------------------------
-void FRect::move  (const FPoint& d)
+void FRect::move (const FPoint& d)
 {
-  X1 = short(X1 + d.getX());
-  Y1 = short(Y1 + d.getY());
-  X2 = short(X2 + d.getX());
-  Y2 = short(Y2 + d.getY());
+  X1 = X1 + d.getX();
+  Y1 = Y1 + d.getY();
+  X2 = X2 + d.getX();
+  Y2 = Y2 + d.getY();
 }
 
 //----------------------------------------------------------------------
@@ -239,10 +239,10 @@ FRect FRect::combined (const FRect& r) const
 //----------------------------------------------------------------------
 FRect& FRect::operator = (const FRect& r)
 {
-  X1 = short(r.getX1());
-  Y1 = short(r.getY1());
-  X2 = short(r.getX2());
-  Y2 = short(r.getY2());
+  X1 = r.getX1();
+  Y1 = r.getY1();
+  X2 = r.getX2();
+  Y2 = r.getY2();
   return *this;
 }
 
@@ -295,7 +295,7 @@ std::ostream& operator << (std::ostream& outstr, const FRect& r)
 //----------------------------------------------------------------------
 std::istream& operator >> (std::istream& instr, FRect& r)
 {
-  short x1, y1, x2, y2;
+  int x1, y1, x2, y2;
   instr >> x1;
   instr >> y1;
   instr >> x2;

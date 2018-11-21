@@ -363,10 +363,10 @@ void FRectTest::referenceTest()
   CPPUNIT_ASSERT ( r1.getX2() == 9 );
   CPPUNIT_ASSERT ( r1.getY2() == 19 );
 
-  short& x1 = r1.x1_ref();
-  short& y1 = r1.y1_ref();
-  short& x2 = r1.x2_ref();
-  short& y2 = r1.y2_ref();
+  int& x1 = r1.x1_ref();
+  int& y1 = r1.y1_ref();
+  int& x2 = r1.x2_ref();
+  int& y2 = r1.y2_ref();
   x1 += 2;
   y1 -= 2;
   x2 -= 3;
