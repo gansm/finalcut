@@ -202,7 +202,7 @@ int FMessageBox::info ( FWidget* parent
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return FDialog::Reject;
   }
 
@@ -231,7 +231,7 @@ int FMessageBox::info ( FWidget* parent
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return FDialog::Reject;
   }
 
@@ -259,7 +259,7 @@ int FMessageBox::error ( FWidget* parent
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return FDialog::Reject;
   }
 
@@ -374,7 +374,7 @@ inline void FMessageBox::allocation (int button0, int button1, int button2)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 }
@@ -423,10 +423,8 @@ inline void FMessageBox::initCallbacks()
 //----------------------------------------------------------------------
 void FMessageBox::calculateDimensions()
 {
-  int x, y;
   std::size_t w, h;
   std::size_t headline_height = 0;
-  FWidget* parent_widget = getParentWidget();
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
   text_components = &text_split[0];
@@ -449,15 +447,7 @@ void FMessageBox::calculateDimensions()
   if ( w < 20 )
     w = 20;
 
-  if ( parent_widget )
-  {
-    x = 1 + int((parent_widget->getWidth() - w) / 2);
-    y = 1 + int((parent_widget->getHeight() - h) / 3);
-  }
-  else
-    x = y = 1;
-
-  setGeometry (x, y, w, h);
+  setSize (w, h);
 }
 
 //----------------------------------------------------------------------

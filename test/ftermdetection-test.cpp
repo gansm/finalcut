@@ -2297,7 +2297,7 @@ void FTermDetectionTest::terminalSimulation (console con)
   {
     fd_set ifds;
     struct timeval tv;
-    int len;
+    ssize_t len;
 
     FD_ZERO(&ifds);
     FD_SET(fd_stdin, &ifds);
@@ -2314,8 +2314,11 @@ void FTermDetectionTest::terminalSimulation (console con)
     {
       len = read (fd_stdin, buffer, sizeof(buffer));
 
-      if ( len > 0 )
+      if ( len != -1 && std::size_t(len) < sizeof(buffer) )
+      {
+        buffer[len] = '\0';
         write (fd_master, buffer, len);  // Send data to the master side
+      }
     }
 
     // Data on the master side of PTY
@@ -2323,10 +2326,13 @@ void FTermDetectionTest::terminalSimulation (console con)
     {
       len = read (fd_master, buffer, sizeof(buffer));
 
-      if ( len < 0 )
+      if ( len == -1 || std::size_t(len) >= sizeof(buffer) )
         break;
       else if ( len > 0 )
+      {
+        buffer[len] = '\0';
         parseTerminalBuffer (len, con);
+      }
     }
   }
 }

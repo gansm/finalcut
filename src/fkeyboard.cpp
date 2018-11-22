@@ -373,7 +373,7 @@ bool FKeyboard::isKeypressTimeout()
 FKey FKeyboard::UTF8decode (const char utf8[])
 {
   FKey ucs = 0;  // Universal coded character
-  const int max = 4;
+  const std::size_t max = 4;
   std::size_t len = std::strlen(utf8);
 
   if ( len > max )

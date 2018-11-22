@@ -630,7 +630,7 @@ void FVTerm::createArea ( int offset_left, int offset_top
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -757,7 +757,7 @@ inline bool FVTerm::reallocateTextArea ( term_area* area
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return false;
   }
 
@@ -776,7 +776,7 @@ inline bool FVTerm::reallocateTextArea (term_area* area, std::size_t size)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return false;
   }
 
@@ -1986,7 +1986,7 @@ void FVTerm::init (bool disable_alt_screen)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     std::abort();
   }
 

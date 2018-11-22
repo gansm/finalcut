@@ -541,7 +541,7 @@ bool FTermLinux::getScreenFont()
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return false;
   }
 
@@ -588,7 +588,7 @@ bool FTermLinux::getUnicodeMap()
     }
     catch (const std::bad_alloc& ex)
     {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
       return false;
     }
 
@@ -665,7 +665,7 @@ int FTermLinux::setScreenFont ( uChar fontdata[], uInt count
     }
     catch (const std::bad_alloc& ex)
     {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
       return -1;
     }
 

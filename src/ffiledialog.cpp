@@ -276,7 +276,7 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return FString();
   }
 
@@ -319,7 +319,7 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return FString();
   }
 

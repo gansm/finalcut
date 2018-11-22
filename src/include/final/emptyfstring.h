@@ -82,7 +82,7 @@ inline const FString& emptyFString::get()
     }
     catch (const std::bad_alloc& ex)
     {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
     }
   }
 
