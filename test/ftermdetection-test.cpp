@@ -2314,7 +2314,7 @@ void FTermDetectionTest::terminalSimulation (console con)
     {
       len = read (fd_stdin, buffer, sizeof(buffer));
 
-      if ( len != -1 && std::size_t(len) < sizeof(buffer) )
+      if ( len > 0 && std::size_t(len) < sizeof(buffer) )
       {
         buffer[len] = '\0';
         write (fd_master, buffer, len);  // Send data to the master side

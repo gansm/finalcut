@@ -184,9 +184,9 @@ class MainWindow : public finalcut::FDialog
     // Data Members
     finalcut::FString line1;
     finalcut::FString line2;
-    Transparent transpwin;
-    Transparent shadowwin;
-    Transparent ibg;
+    Transparent* transpwin;
+    Transparent* shadowwin;
+    Transparent* ibg;
     finalcut::FStatusBar status_bar;
 };
 #pragma pack(pop)
@@ -196,25 +196,32 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   : FDialog(parent)
   , line1()
   , line2()
-  , transpwin(this)
-  , shadowwin(this, Transparent::shadow)
-  , ibg(this, Transparent::inherit_background)
+  , transpwin(0)
+  , shadowwin(0)
+  , ibg(0)
   , status_bar(this)
 {
   line1 = "     .-.     .-.     .-.";
   line2 = "`._.'   `._.'   `._.'   ";
 
-  transpwin.setText("transparent");
-  transpwin.setGeometry (6, 3, 29, 12);
-  transpwin.unsetTransparentShadow();
+  // The memory allocation for the following three sub windows occurs
+  // with the operator new. The lifetime of the generated widget
+  // is managed by the parent object (this). The operator delete
+  // is not required in this scope and would result in a double free.
+  transpwin = new Transparent(this);
+  transpwin->setText("transparent");
+  transpwin->setGeometry (6, 3, 29, 12);
+  transpwin->unsetTransparentShadow();
 
-  shadowwin.setText("shadow");
-  shadowwin.setGeometry (46, 11, 29, 12);
-  shadowwin.unsetTransparentShadow();
+  shadowwin = new Transparent(this, Transparent::shadow);
+  shadowwin->setText("shadow");
+  shadowwin->setGeometry (46, 11, 29, 12);
+  shadowwin->unsetTransparentShadow();
 
-  ibg.setText("inherit background");
-  ibg.setGeometry (42, 3, 29, 7);
-  ibg.unsetTransparentShadow();
+  ibg = new Transparent(this, Transparent::inherit_background);
+  ibg->setText("inherit background");
+  ibg->setGeometry (42, 3, 29, 7);
+  ibg->unsetTransparentShadow();
 
   // Statusbar at the bottom
   status_bar.setMessage("Press Q to quit");

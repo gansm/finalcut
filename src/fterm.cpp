@@ -63,6 +63,9 @@ FMouseControl*      FTerm::mouse            = 0;
   FTermDebugData* FTerm::debug_data = 0;
 #endif
 
+// function prototypes
+uInt env2uint (const char*);
+
 
 //----------------------------------------------------------------------
 // class FTerm
@@ -487,11 +490,11 @@ void FTerm::detectTermSize()
   {
     term_geometry.setPos (1, 1);
     // Use COLUMNS or fallback to the xterm default width of 80 characters
-    char* Columns = std::getenv("COLUMNS");
-    term_geometry.setWidth(Columns ? std::size_t(std::atoi(Columns)) : 80);
+    uInt Columns = env2uint ("COLUMNS");
+    term_geometry.setWidth( ( Columns == 0) ? 80 : Columns);
     // Use LINES or fallback to the xterm default height of 24 characters
-    char* Lines = std::getenv("LINES");
-    term_geometry.setHeight(Lines ? std::size_t(std::atoi(Lines)) : 24);
+    uInt Lines = env2uint ("LINES");
+    term_geometry.setHeight( ( Lines == 0 ) ? 24 : Lines);
   }
   else
   {
@@ -2071,6 +2074,26 @@ void FTerm::signal_handler (int signum)
                    , signum
                    , strsignal(signum) );
       std::terminate();
+  }
+
+}
+
+// FTerm non-member functions
+//----------------------------------------------------------------------
+uInt env2uint (const char* env)
+{
+  FString str(env);
+
+  if ( str.isEmpty() )
+    return 0;
+
+  try
+  {
+    return str.toUInt();
+  }
+  catch (const std::exception& ex)
+  {
+    return 0;
   }
 }
 
