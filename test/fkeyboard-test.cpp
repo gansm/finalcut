@@ -51,6 +51,7 @@ fkeymap Fkey[] =
   { finalcut::fc::Fkey_clear     , 0                 , "kC" },  // clear-screen or erase key
   { finalcut::fc::Fkey_ctab      , C_STR(CSI "3~")   , "kt" },  // clear-tab key
   { finalcut::fc::Fkey_dc        , 0                 , "kD" },  // delete-character key
+  { finalcut::fc::Fkey_dc        , 0                 , "kDx" }, // delete-character key
   { finalcut::fc::Fkey_dl        , 0                 , "kL" },  // delete-line key
   { finalcut::fc::Fkey_down      , C_STR(ESC "OB")   , "kd" },  // down-arrow key
   { finalcut::fc::Fkey_down      , C_STR(CSI "B")    , "kdx"},  // down-arrow key
@@ -412,10 +413,10 @@ void FKeyboardTest::severalKeysTest()
 void FKeyboardTest::functionKeyTest()
 {
   // Function key F1 (numeric keypad PF1)
-  input("\033[2~");
+  input("\033OP");
   processInput();
   std::cout << " - Key: " << keyboard->getKeyName(key_pressed) << std::endl;
-  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_ic );
+  CPPUNIT_ASSERT ( key_pressed == finalcut::fc::Fkey_f1 );
   clear();
 
   // Function key F1
