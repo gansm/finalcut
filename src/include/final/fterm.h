@@ -264,7 +264,7 @@ class FTerm
 
     static void            putstringf (const char[], ...)
 #if defined(__clang__)
-      __attribute__((__format__ (__printf__, 1, 2)))
+      __attribute__ ((__format__ (__printf__, 1, 2)))
 #elif defined(__GNUC__)
       __attribute__ ((format (printf, 1, 2)))
 #endif
