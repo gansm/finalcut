@@ -1,3 +1,9 @@
+finalcut (0.5.0) unstable; urgency=low
+
+  * Release (version 0.5.0)
+
+ -- Markus Gans <guru.mail@muenster.de>  Sun, 25 Nov 2018 01:03:36 +0100
+
 finalcut (0.4.0) unstable; urgency=low
 
   * Release (version 0.4.0)
@@ -8,7 +14,7 @@ finalcut (0.3.0) unstable; urgency=low
 
   * Release (version 0.3.0)
 
- -- Markus Gans <guru.mail@muenster.de>  Sat, 27 Nov 2016 15:00:41 +0100
+ -- Markus Gans <guru.mail@muenster.de>  Sun, 27 Nov 2016 15:00:41 +0100
 
 finalcut (0.2.0) unstable; urgency=low
 

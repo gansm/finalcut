@@ -36,6 +36,7 @@ fkeymap Fkey[] =
   { fc::Fkey_clear     , 0, "kC" },  // clear-screen or erase key
   { fc::Fkey_ctab      , 0, "kt" },  // clear-tab key
   { fc::Fkey_dc        , 0, "kD" },  // delete-character key
+  { fc::Fkey_dc        , 0, "kDx"},  // keypad delete
   { fc::Fkey_dl        , 0, "kL" },  // delete-line key
   { fc::Fkey_down      , 0, "kd" },  // down-arrow key
   { fc::Fkey_down      , 0, "kdx"},  // down-arrow key

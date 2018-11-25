@@ -111,7 +111,12 @@ make %{?_smp_mflags} V=1
 make install libdir=${RPM_BUILD_ROOT}%{_libdir}/ \
 	     includedir=${RPM_BUILD_ROOT}%{_includedir} \
 	     bindir=${RPM_BUILD_ROOT}%{_bindir} \
-	     docdir=${RPM_BUILD_ROOT}/%{_docdir}/finalcut/
+	     docdir=${RPM_BUILD_ROOT}%{_docdir}/finalcut/
+mkdir -p ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
+cp -p examples/.libs/* ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
+cp -p examples/*.cpp ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
+cp -p examples/Makefile.clang ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
+cp -p examples/Makefile.gcc ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
 rm -f ${RPM_BUILD_ROOT}%{_libdir}/libfinal.la
 
 %post -n %{libsoname} -p /sbin/ldconfig
@@ -124,8 +129,12 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root)
 %dir %{_docdir}/finalcut
+%dir %{_libdir}/finalcut
+%dir %{_libdir}/finalcut/examples
 %{_docdir}/finalcut/*
+%{_libdir}/pkgconfig/*
 %{_libdir}/%{libname}.so
+%{_libdir}/finalcut/*
 %{_includedir}/*
 
 %files -n %{libsoname}
@@ -137,10 +146,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{libname}.a
 
 %changelog
+* Sun Nov 25 2018 Markus Gans <guru.mail@muenster.de> - 0.5.0-1
+- Release (version 0.5.0)
+
 * Sat Nov 04 2017 Markus Gans <guru.mail@muenster.de> - 0.4.0-1
 - Release (version 0.4.0)
 
-* Sat Nov 27 2016 Markus Gans <guru.mail@muenster.de> - 0.3.0-1
+* Sun Nov 27 2016 Markus Gans <guru.mail@muenster.de> - 0.3.0-1
 - Release (version 0.3.0)
 
 * Sat Dec 19 2015 Markus Gans <guru.mail@muenster.de> - 0.2.0-1

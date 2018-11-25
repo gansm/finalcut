@@ -238,8 +238,6 @@ void FTermcap::termcapStrings (char*& buffer)
     tcap[i].string = tgetstr(tcap[i].tname, &buffer);
 }
 
-
-
 //----------------------------------------------------------------------
 void FTermcap::termcapKeys (char*& buffer)
 {

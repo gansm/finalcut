@@ -887,7 +887,7 @@ void FDialog::init()
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -906,7 +906,7 @@ void FDialog::initDialogMenu()
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -934,7 +934,7 @@ void FDialog::initMoveSizeMenuItem (FMenu* menu)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -957,7 +957,7 @@ void FDialog::initZoomMenuItem (FMenu* menu)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -980,7 +980,7 @@ void FDialog::initCloseMenuItem (FMenu* menu)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 
@@ -1446,7 +1446,7 @@ inline void FDialog::passEventToSubMenu ( mouseStates& ms
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 }
@@ -1727,7 +1727,7 @@ void FDialog::cb_move (FWidget*, data_ptr)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 

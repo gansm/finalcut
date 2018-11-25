@@ -953,7 +953,7 @@ void FMenu::passEventToSubMenu (FMouseEvent*& ev)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
   }
 }
 
@@ -977,7 +977,7 @@ void FMenu::passEventToSuperMenu (FMouseEvent*& ev)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
   }
 }
 
@@ -1002,7 +1002,7 @@ void FMenu::passEventToMenuBar (FMouseEvent*& ev)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
   }
 }
 
@@ -1336,7 +1336,7 @@ inline void FMenu::drawMenuLine (FMenuItem* menuitem, int y)
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 

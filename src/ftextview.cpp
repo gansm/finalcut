@@ -444,7 +444,7 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     }
     catch (const std::bad_alloc& ex)
     {
-      std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+      std::cerr << bad_alloc_str << ex.what() << std::endl;
     }
   }
 }
@@ -473,7 +473,7 @@ void FTextView::onMouseUp (FMouseEvent* ev)
       }
       catch (const std::bad_alloc& ex)
       {
-        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        std::cerr << bad_alloc_str << ex.what() << std::endl;
       }
     }
   }
@@ -509,7 +509,7 @@ void FTextView::onMouseMove (FMouseEvent* ev)
       }
       catch (const std::bad_alloc& ex)
       {
-        std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+        std::cerr << bad_alloc_str << ex.what() << std::endl;
       }
     }
   }
@@ -580,12 +580,18 @@ void FTextView::adjustSize()
   if ( yoffset < 0 )
     yoffset = 0;
 
+  if ( height < 3 )
+    return;
+
   vbar->setMaximum (last_line - int(height) + 2 - nf_offset);
   vbar->setPageSize (last_line, int(height) - 2 + nf_offset);
   vbar->setX (int(width));
   vbar->setHeight (height - 2 + std::size_t(nf_offset), false);
   vbar->setValue (yoffset);
   vbar->resize();
+
+  if ( width < 3 )
+    return;
 
   hbar->setMaximum (max_width - int(width) + nf_offset + 2);
   hbar->setPageSize (max_width, int(width) - nf_offset - 2);
@@ -639,7 +645,7 @@ void FTextView::init()
   }
   catch (const std::bad_alloc& ex)
   {
-    std::cerr << "not enough memory to alloc " << ex.what() << std::endl;
+    std::cerr << bad_alloc_str << ex.what() << std::endl;
     return;
   }
 

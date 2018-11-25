@@ -646,11 +646,13 @@ int FOptiMove::repeatedAppend ( const capability& o
     if ( dst )
     {
       dst += dst_len;
+      std::size_t free = BUF_SIZE - dst_len;
 
       while ( count-- > 0 )
       {
-        std::strncpy (dst, o.cap, src_len + 1);
+        std::strncpy (dst, o.cap, free);
         dst += src_len;
+        free -= src_len;
       }
     }
   }
@@ -793,7 +795,7 @@ inline int FOptiMove::horizontalMove (char hmove[], int from_x, int to_x)
     // Move to fixed column position1
     std::strncat ( hmove
                  , tparm(F_column_address.cap, to_x, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE - std::strlen(hmove) - 1);
+                 , BUF_SIZE - std::strlen(hmove) - 1 );
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_column_address.duration;
   }

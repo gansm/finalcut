@@ -28,10 +28,6 @@
 namespace finalcut
 {
 
-// static class constant
-const char* const FString::bad_alloc_str = "not enough memory " \
-                                           "to alloc a new string";
-
 //----------------------------------------------------------------------
 // class FString
 //----------------------------------------------------------------------

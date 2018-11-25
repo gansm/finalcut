@@ -269,7 +269,10 @@ void AttribDemo::printAltCharset()
   }
   else
   {
-    if ( parent->bgcolor == 0 || parent->bgcolor == 16 )
+    if ( (parent->bgcolor <= 8)
+      || (parent->bgcolor >= 16 && parent->bgcolor <= 231
+        && (parent->bgcolor - 16) % 36 <= 17)
+      || (parent->bgcolor >= 232 && parent->bgcolor <= 243) )
       setColor (finalcut::fc::White, parent->bgcolor);
     else
       setColor (finalcut::fc::Black, parent->bgcolor);

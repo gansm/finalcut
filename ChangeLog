@@ -1,10 +1,21 @@
+2018-11-25  Markus Gans  <guru.mail@muenster.de>
+	* Version 0.5.0
+	* Namespace fix in FTermFreeBSD and FTermOpenBSD 
+	* Fix compiler warning on non-x86 architectures
+
+2018-11-24  Markus Gans  <guru.mail@muenster.de>
+	* Improved Sun Microsystems workstation console quirks
+	* Handling environment variables with numbers in FTerm
+	* Memory management fix in example program transparent
+
 2018-11-21  Markus Gans  <guru.mail@muenster.de>
 	* New type FKey for key inputs
 	* The integer type of FPoint and FRect changed from short to int
 
 2018-11-18  Markus Gans  <guru.mail@muenster.de>
 	* The FListViewItem class now provides checkable list view items
-	* Adding the checklist example to demonstrate the checkable FListViewItems
+	* Adding the checklist example to demonstrate the checkable 
+	  FListViewItems
 	* A checkable FListViewItem now shows the input cursor
 
 2018-11-12  Markus Gans  <guru.mail@muenster.de>

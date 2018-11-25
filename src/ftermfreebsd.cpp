@@ -23,6 +23,9 @@
 #include "final/fcharmap.h"
 #include "final/ftermfreebsd.h"
 
+namespace finalcut
+{
+
 // static class attributes
 #if defined(__FreeBSD__) || defined(__DragonFly__)
   uInt                      FTermFreeBSD::bsd_alt_keymap = 0;
@@ -31,8 +34,6 @@
   bool                      FTermFreeBSD::meta_sends_escape = true;
 #endif
 
-namespace finalcut
-{
 
 //----------------------------------------------------------------------
 // class FTermFreeBSD
