@@ -22,14 +22,15 @@
 
 #include "final/ftermopenbsd.h"
 
+namespace finalcut
+{
+
 // static class attributes
 #if defined(__NetBSD__) || defined(__OpenBSD__)
   kbd_t FTermOpenBSD::bsd_keyboard_encoding = 0;
   bool  FTermOpenBSD::meta_sends_escape = true;
 #endif
 
-namespace finalcut
-{
 
 //----------------------------------------------------------------------
 // class FTermOpenBSD

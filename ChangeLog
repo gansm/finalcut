@@ -1,5 +1,10 @@
+2018-11-25  Markus Gans  <guru.mail@muenster.de>
+	* Namespace fix in FTermFreeBSD and FTermOpenBSD 
+
 2018-11-24  Markus Gans  <guru.mail@muenster.de>
-	* Improved Sun Microsystems workstation console quirks 
+	* Improved Sun Microsystems workstation console quirks
+	* Handling environment variables with numbers in FTerm
+	* Memory management fix in example program transparent
 
 2018-11-21  Markus Gans  <guru.mail@muenster.de>
 	* New type FKey for key inputs
