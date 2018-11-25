@@ -2091,7 +2091,7 @@ uInt env2uint (const char* env)
   {
     return str.toUInt();
   }
-  catch (const std::exception& ex)
+  catch (const std::exception&)
   {
     return 0;
   }

@@ -706,17 +706,20 @@ const FString FTermDetection::getSecDA()
   struct timeval tv;
 
   // Get the secondary device attributes
-  write(stdout_no, SECDA, std::strlen(SECDA));
-  std::fflush(stdout);
+  ssize_t ret = write(stdout_no, SECDA, std::strlen(SECDA));
 
+  if ( ret == -1 )
+    return sec_da_str;
+
+  std::fflush(stdout);
   FD_ZERO(&ifds);
   FD_SET(stdin_no, &ifds);
   tv.tv_sec  = 0;
   tv.tv_usec = 600000;  // 600 ms
 
   // Read the answer
-  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1 )
-    if ( std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
+  if ( select (stdin_no + 1, &ifds, 0, 0, &tv) == 1
+    && std::scanf("\033[>%10d;%10d;%10dc", &a, &b, &c) == 3 )
       sec_da_str.sprintf("\033[>%d;%d;%dc", a, b, c);
 
   return sec_da_str;

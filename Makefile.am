@@ -6,9 +6,9 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST=finalcut.pc
+EXTRA_DIST = finalcut.pc
 
-pkgconfigdir = $(datadir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = finalcut.pc
 
 CLEANFILES = finalcut.pc
