@@ -1,6 +1,7 @@
 2018-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.5.0
 	* Namespace fix in FTermFreeBSD and FTermOpenBSD 
+	* Fix compiler warning on non-x86 architectures
 
 2018-11-24  Markus Gans  <guru.mail@muenster.de>
 	* Improved Sun Microsystems workstation console quirks

@@ -118,17 +118,20 @@ void FTermLinux::setUTF8 (bool on)
 }
 
 //----------------------------------------------------------------------
+#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
 bool FTermLinux::setPalette (FColor index, int r, int g, int b)
 {
   if ( ! FTerm::isLinuxTerm() )
     return false;
 
-#if defined(__x86_64__) || defined(__i386) || defined(__arm__)
   return setVGAPalette (index, r, g, b);
-#else
-  return false;
-#endif
 }
+#else
+bool FTermLinux::setPalette (FColor, int, int, int)
+{
+  return false;
+}
+#endif
 
 //----------------------------------------------------------------------
 bool FTermLinux::isLinuxConsole()
