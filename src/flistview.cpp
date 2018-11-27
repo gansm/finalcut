@@ -2105,12 +2105,8 @@ void FListView::mouseHeaderClicked()
       sort();
 
       if ( isVisible() )
-      {
-        drawHeadlines();
-        drawList();
-        updateTerminal();
-        flush_out();
-      }
+        updateDrawing (true, false);
+
       break;
     }
 

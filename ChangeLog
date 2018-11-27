@@ -1,3 +1,6 @@
+2018-11-27  Markus Gans  <guru.mail@muenster.de>
+	* Correct vertical scrollbar position after sorting in FListView
+
 2018-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.5.0
 	* Namespace fix in FTermFreeBSD and FTermOpenBSD 

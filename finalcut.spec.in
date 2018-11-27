@@ -4,23 +4,30 @@
 # Copyright (c) 2018 by Markus Gans
 #
 
-Name:		@PACKAGE@
 %define         libname libfinal
 %define         libsoname %{libname}0
-
-Version:	@VERSION@
-Release:	%{buildno}
-License:	LGPL-3.0
-Summary:	The Final Cut
-Url:		https://github.com/gansm/finalcut/
-Group:		System/Libraries
-Source:		finalcut-%{version}.tar.gz
-BuildRequires:	automake
-BuildRequires:	libtool
-BuildRequires:	gcc-c++
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:        %{buildno}
+Summary:        The Final Cut
+License:        LGPL-3.0-only
+Group:          System/Libraries
+Url:            https://github.com/gansm/finalcut/
+Source:         finalcut-%{version}.tar.gz
+BuildRequires:  automake
+BuildRequires:  gcc-c++
 BuildRequires:  glib2-devel
+BuildRequires:  libtool
 BuildRequires:  ncurses-devel
-
+Requires:       autoconf-archive
+Requires:       bdftopcf
+Requires:       gcc-c++
+Requires:       grep
+Requires:       gzip
+Requires:       sed
+Requires:       tr
+# Additionally required for tool operations
+Requires:       xxd
 %if 0%{?suse_version}
 %if 0%{?suse_version} > 1130
 BuildRequires:  gpm-devel
@@ -30,19 +37,6 @@ BuildRequires:  gpm
 %else
 BuildRequires:  gpm-devel
 %endif
-
-# Additionally required for tool operations
-Requires:	xxd
-Requires:	sed
-Requires:	tr
-Requires:	grep
-Requires:	gzip
-Requires:	bdftopcf
-Requires:	autoconf-archive
-Requires:	gcc-c++
-
-Prefix:		%_prefix
-BuildRoot:	%{_tmppath}/finalcut-%{version}-build
 
 %description
 The Final Cut is a class library and widget toolkit with full mouse
@@ -54,10 +48,10 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %package devel
-Group:          Development/Libraries/C and C++
 Summary:        Development files for the final cut library
-Requires:	%{libname} = %{version}
-Requires:	%{name} = %{version}
+Group:          Development/Libraries/C and C++
+Requires:       %{libname} = %{version}
+Requires:       %{name} = %{version}
 
 %description devel
 The Final Cut is a class library and widget toolkit with full mouse
@@ -69,10 +63,10 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %package -n %{libsoname}
-Group:		System/Libraries
-Summary:	Console widget toolkit
-Provides:	%{libname} = %{version}
-Provides:	%{name} = %{version}
+Summary:        Console widget toolkit
+Group:          System/Libraries
+Provides:       %{libname} = %{version}
+Provides:       %{name} = %{version}
 
 %description -n %{libsoname}
 The Final Cut is a class library and widget toolkit with full mouse
@@ -84,8 +78,8 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %package static
-Group:		System/Libraries
-Summary:	Console widget toolkit
+Summary:        Console widget toolkit
+Group:          System/Libraries
 
 %description static
 The Final Cut is a class library and widget toolkit with full mouse
