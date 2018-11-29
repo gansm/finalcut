@@ -104,12 +104,26 @@ You need three things:
     * libgpm-dev
 
 
-How to compile FINAL CUT without gpm support?
+How to compile FINAL CUT without GPM support?
 ---------------------------------------------
 
 ```bash
   ./configure --without-gpm
 ```
+
+
+Which mouse types are supported?
+--------------------------------
+* Normal xterm mouse tracking (limited to 223 rows/columns)
+* Xterm SGR mouse tracking
+* URXVT mouse tracking
+* General Purpose Mouse (gpm) on a linux console
+
+
+How can I use the mouse wheel with GPM?
+---------------------------------------
+This requires a workaround. Press (and hold) the left mouse button 
+and then use the scroll wheel.
 
 
 What do I need to compile the unit tests?
