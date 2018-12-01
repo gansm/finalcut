@@ -818,7 +818,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
   {
     std::strncpy ( hmove
                  , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE );
+                 , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
   }
@@ -938,7 +938,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
   if ( move_xy )
   {
     char* move_ptr = move_buf;
-    std::strncpy (move_ptr, move_xy, BUF_SIZE);
+    std::strncpy (move_ptr, move_xy, BUF_SIZE - 1);
     move_ptr[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;
     return true;

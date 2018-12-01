@@ -1,3 +1,7 @@
+2018-12-01  Markus Gans  <guru.mail@muenster.de>
+	* Improved wheel mouse support
+	* Fix compile in optimization level 2 for newer gcc
+
 2018-11-27  Markus Gans  <guru.mail@muenster.de>
 	* Correct vertical scrollbar position after sorting in FListView
 

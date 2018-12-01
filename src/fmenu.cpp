@@ -115,10 +115,10 @@ void FMenu::hide()
 
   if ( ! isSubMenu() )
   {
-    FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+    FMenu* openmenu = static_cast<FMenu*>(getOpenMenu());
 
-    if ( open_menu && open_menu != this )
-      open_menu->hide();
+    if ( openmenu && openmenu != this )
+      openmenu->hide();
 
     setOpenMenu(0);
   }

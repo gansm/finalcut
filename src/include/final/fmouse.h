@@ -217,6 +217,9 @@ class FMouseGPM : public FMouse
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
+    bool                 hasSignificantEvents();
+    void                 interpretKeyDown();
+    void                 interpretKeyUp();
     bool                 getGpmKeyPressed(bool);
     void                 drawGpmPointer();
 

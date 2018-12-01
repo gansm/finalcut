@@ -705,7 +705,7 @@ void FWindow::switchToPrevWindow (FWidget* widget_object)
     widget_object->updateTerminal (FVTerm::stop_refresh);
 
   bool is_activated = activatePrevWindow();
-  FWindow* active_window = static_cast<FWindow*>(getActiveWindow());
+  FWindow* active_win = static_cast<FWindow*>(getActiveWindow());
 
   if ( ! is_activated )
   {
@@ -722,7 +722,7 @@ void FWindow::switchToPrevWindow (FWidget* widget_object)
         FWindow* w = static_cast<FWindow*>(*iter);
 
         if ( w
-          && w != active_window
+          && w != active_win
           && ! (w->isWindowHidden() || w->isWindowActive())
           && w != static_cast<FWindow*>(getStatusBar())
           && w != static_cast<FWindow*>(getMenuBar()) )
@@ -735,19 +735,19 @@ void FWindow::switchToPrevWindow (FWidget* widget_object)
     }
   }
 
-  if ( active_window )
+  if ( active_win )
   {
-    FWidget* focus_widget = active_window->getWindowFocusWidget();
+    FWidget* focus = active_win->getWindowFocusWidget();
 
-    if ( ! active_window->isWindowActive() )
-      setActiveWindow(active_window);
+    if ( ! active_win->isWindowActive() )
+      setActiveWindow(active_win);
 
-    if ( focus_widget )
+    if ( focus)
     {
-      focus_widget->setFocus();
+      focus->setFocus();
 
-      if ( ! focus_widget->isWindowWidget() )
-        focus_widget->redraw();
+      if ( ! focus->isWindowWidget() )
+        focus->redraw();
     }
   }
 

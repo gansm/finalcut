@@ -380,13 +380,13 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
   }
 
   // set the cursor to the focus widget
-  FWidget* focus_widget = FWidget::getFocusWidget();
-  if ( focus_widget
-    && focus_widget->isVisible()
-    && focus_widget->hasVisibleCursor() )
+  FWidget* focus = FWidget::getFocusWidget();
+  if ( focus
+    && focus->isVisible()
+    && focus->hasVisibleCursor() )
   {
-    FPoint cursor_pos = focus_widget->getCursorPos();
-    focus_widget->setCursorPos(cursor_pos);
+    FPoint cursor_pos = focus->getCursorPos();
+    focus->setCursorPos(cursor_pos);
   }
 }
 
@@ -1254,14 +1254,14 @@ void FDialog::setCursorToFocusWidget()
 {
   // Set the cursor to the focus widget
 
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
-  if ( focus_widget
-    && focus_widget->isVisible()
-    && focus_widget->hasVisibleCursor() )
+  if ( focus
+    && focus->isVisible()
+    && focus->hasVisibleCursor() )
   {
-    FPoint cursor_pos = focus_widget->getCursorPos();
-    focus_widget->setCursorPos(cursor_pos);
+    FPoint cursor_pos = focus->getCursorPos();
+    focus->setCursorPos(cursor_pos);
     updateVTermCursor(vwin);
   }
 }

@@ -541,12 +541,12 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   FRect widget_geometry;
   FRect vp_geometry;
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
-  if ( ! focus_widget )
+  if ( ! focus )
     return;
 
-  widget_geometry = focus_widget->getGeometryWithShadow();
+  widget_geometry = focus->getGeometryWithShadow();
   vp_geometry = viewport_geometry;
   vp_geometry.move(1, 1);
 
@@ -578,13 +578,13 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 {
   // Change the focus away from FScrollView to another widget
 
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
   if ( out_ev->getFocusType() == fc::FocusNextWidget )
   {
     FWidget* last_widget = getLastFocusableWidget(getChildren());
 
-    if ( focus_widget == last_widget )
+    if ( focus == last_widget )
     {
       out_ev->accept();
       focusNextChild();
@@ -594,7 +594,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   {
     FWidget* first_widget = getFirstFocusableWidget(getChildren());
 
-    if ( focus_widget == first_widget )
+    if ( focus == first_widget )
     {
       out_ev->accept();
       focusPrevChild();

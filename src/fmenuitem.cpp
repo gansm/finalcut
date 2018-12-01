@@ -288,23 +288,20 @@ void FMenuItem::delAccelerator (FWidget* obj)
 //----------------------------------------------------------------------
 void FMenuItem::openMenu()
 {
-  FMenu* dd_menu;  // Drop-down menu
-  FMenu* open_menu;
-
   if ( ! hasMenu() )
     return;
 
-  dd_menu = getMenu();  // Drop-down menu
+  FMenu* dd_menu = getMenu();  // Drop-down menu
 
   if ( dd_menu->isVisible() )
     return;
 
-  open_menu = static_cast<FMenu*>(getOpenMenu());
+  FMenu* openmenu = static_cast<FMenu*>(getOpenMenu());
 
-  if ( open_menu && open_menu != dd_menu )
+  if ( openmenu && openmenu != dd_menu )
   {
-    open_menu->hide();
-    open_menu->hideSubMenus();
+    openmenu->hide();
+    openmenu->hideSubMenus();
   }
 
   if ( dialog_index )
@@ -774,8 +771,8 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 
   if ( win )
   {
-    FWidget* focus_widget = getFocusWidget();
-    FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
+    FWidget* focus = getFocusWidget();
+    FAccelEvent a_ev (fc::Accelerator_Event, focus);
     FApplication::sendEvent (win, &a_ev);
   }
 }
