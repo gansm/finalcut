@@ -37,8 +37,8 @@
 
 #if !defined (__cplusplus)
   #error "You need a C++ compiler like g++ or clang++"
-#elif __cplusplus > 1 && __cplusplus < 199711L
-  #error "Your C++ compiler does not support the C++98 standard!"
+#elif __cplusplus > 1 && __cplusplus < 201103
+  #error "Your C++ compiler does not support the C++11 standard!"
 #endif
 
 #include <sys/time.h>  // need for gettimeofday

@@ -63,7 +63,7 @@ INCLUDE_HEADERS = \
 
 # compiler parameter
 CXX = clang++
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) -DCOMPILE_FINAL_CUT $(DEBUG) $(VER) $(GPM) -fexceptions -std=c++11
 MAKEFILE = -f Makefile.clang
 LDFLAGS = $(TERMCAP) -lgpm
 INCLUDES = -Iinclude

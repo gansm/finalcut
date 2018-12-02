@@ -2,7 +2,7 @@
 # Makefile.am  -  The Final Cut library
 #----------------------------------------------------------------------
 
-AM_CPPFLAGS = -Iinclude -Wall -Werror -DCOMPILE_FINAL_CUT
+AM_CPPFLAGS = -Iinclude -Wall -Werror -DCOMPILE_FINAL_CUT -std=c++11
 
 SUBDIRS = . 
 
