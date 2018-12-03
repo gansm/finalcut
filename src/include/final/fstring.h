@@ -82,7 +82,7 @@ class FString
     typedef const wchar_t* iterator;
 
     // Constructors
-    FString ();
+    FString () = default;
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
@@ -276,10 +276,10 @@ class FString
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data Members
-    wchar_t*      string;
-    std::size_t   length;
-    std::size_t   bufsize;
-    mutable char* c_string;
+    wchar_t*      string{0};
+    std::size_t   length{0};
+    std::size_t   bufsize{0};
+    mutable char* c_string{0};
 };
 #pragma pack(pop)
 

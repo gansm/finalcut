@@ -37,10 +37,7 @@ const FString* fc::emptyFString::empty_string = 0;
 // constructors and destructor
 //----------------------------------------------------------------------
 FObject::FObject (FObject* parent)
-  : widget_object(false)
-  , parent_obj(parent)
-  , children_list()            // no children yet
-  , has_parent(false)
+  : parent_obj(parent)
 {
   if ( parent )                // add object to parent
   {

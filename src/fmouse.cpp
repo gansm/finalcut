@@ -40,16 +40,6 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouse::FMouse()
-  : b_state()
-  , mouse_event_occurred(false)
-  , input_data_pending(false)
-  , dblclick_interval(500000)  // 500 ms
-  , max_width(80)
-  , max_height(25)
-  , time_mousepressed()
-  , zero_point(0, 0)           // zero point (x=0, y=0)
-  , mouse(0, 0)                // mouse click position
-  , new_mouse_position()
 {
   time_mousepressed.tv_sec = 0;
   time_mousepressed.tv_usec = 0;
@@ -237,10 +227,6 @@ bool FMouse::isDblclickTimeout (timeval* time)
 //----------------------------------------------------------------------
 FMouseGPM::FMouseGPM()
   : FMouse()
-  , gpm_ev()
-  , has_gpm_mouse_data(false)
-  , gpm_mouse_enabled(false)
-  , stdin_no(0)
 {
   gpm_ev.x = -1;
 }
@@ -497,8 +483,6 @@ int FMouseGPM::gpmEvent (bool clear)
 //----------------------------------------------------------------------
 FMouseX11::FMouseX11()
   : FMouse()
-  , x11_mouse()
-  , x11_button_state(all_buttons_released)
 {
   x11_mouse[0] = '\0';
 }
@@ -699,8 +683,6 @@ void FMouseX11::setButtonState (int btn, struct timeval* time)
 //----------------------------------------------------------------------
 FMouseSGR::FMouseSGR()
   : FMouse()
-  , sgr_mouse()
-  , sgr_button_state(0x23)
 {
   sgr_mouse[0] = '\0';
 }
@@ -953,8 +935,6 @@ void FMouseSGR::setReleasedButtonState (int btn)
 //----------------------------------------------------------------------
 FMouseUrxvt::FMouseUrxvt()
   : FMouse()
-  , urxvt_mouse()
-  , urxvt_button_state(0x23)
 {
   urxvt_mouse[0] = '\0';
 }
@@ -1230,11 +1210,6 @@ void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseControl::FMouseControl()
-  : mouse_protocol()
-  , iter()
-  , zero_point(0, 0)
-  , use_gpm_mouse(false)
-  , use_xterm_mouse(false)
 {
 #ifdef F_HAVE_LIBGPM
   mouse_protocol[FMouse::gpm] = FMouse::createMouseObject(FMouse::gpm);

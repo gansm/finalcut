@@ -49,17 +49,6 @@ static const char* const button_text[] =
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
   : FDialog(parent)
-  , headline_text()
-  , text()
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , center_text(false)
-  , emphasis_color(wc.dialog_emphasis_fg)
-  , num_buttons(0)
-  , text_num_lines(0)
-  , button_digit()
-  , button()
 {
   setTitlebarText("Message for you");
   init(FMessageBox::Ok, 0, 0);
@@ -77,8 +66,6 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , emphasis_color(mbox.emphasis_color)
   , num_buttons(mbox.num_buttons)
   , text_num_lines(mbox.text_num_lines)
-  , button_digit()
-  , button()
 {
   setTitlebarText (mbox.getTitlebarText());
   init ( mbox.button_digit[0]
@@ -94,17 +81,7 @@ FMessageBox::FMessageBox ( const FString& caption
                          , int button2
                          , FWidget* parent )
   : FDialog(parent)
-  , headline_text()
   , text(message)
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , center_text(false)
-  , emphasis_color(wc.dialog_emphasis_fg)
-  , num_buttons(0)
-  , text_num_lines(0)
-  , button_digit()
-  , button()
 {
   setTitlebarText(caption);
   init(button0, button1, button2);

@@ -179,8 +179,8 @@ class FApplication : public FWidget
     // Data Members
     int                app_argc;
     char**             app_argv;
-    long               key_timeout;
-    long               dblclick_interval;
+    long               key_timeout{100000};        // 100 ms
+    long               dblclick_interval{500000};  // 500 ms
     static FMouseControl* mouse;
     static eventQueue* event_queue;
     static int         quit_code;

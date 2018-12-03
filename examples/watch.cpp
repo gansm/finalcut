@@ -63,24 +63,18 @@ class Watch : public finalcut::FDialog
     Watch& operator = (const Watch&);
 
     // Data Members
-    bool              sec;
-    finalcut::FLabel  time_label;
-    finalcut::FLabel  time_str;
-    finalcut::FSwitch clock_sw;
-    finalcut::FSwitch seconds_sw;
-    finalcut::FButton quit_btn;
+    bool              sec{true};
+    finalcut::FLabel  time_label{L"Time", this};
+    finalcut::FLabel  time_str{L"--:--:--", this};
+    finalcut::FSwitch clock_sw{L"Clock", this};
+    finalcut::FSwitch seconds_sw{L"Seconds", this};
+    finalcut::FButton quit_btn{L"&Quit", this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Watch::Watch (FWidget* parent)
   : finalcut::FDialog(parent)
-  , sec(true)
-  , time_label(L"Time", this)
-  , time_str(L"--:--:--", this)
-  , clock_sw(L"Clock", this)
-  , seconds_sw(L"Seconds", this)
-  , quit_btn(L"&Quit", this)
 {
   setText ("Watch");
   int pw = int(getParentWidget()->getWidth());

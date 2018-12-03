@@ -145,19 +145,19 @@ class FMenuItem : public FWidget
     bool         isMenu (FWidget*) const;
 
     // Data Members
-    FString      text;
-    bool         selected;
-    bool         separator;
-    bool         checkable;
-    bool         checked;
-    bool         radio_button;
-    bool         dialog_index;
-    std::size_t  text_length;
-    uChar        hotkey;
-    FKey         accel_key;
-    FMenu*       menu;
-    FWidget*     super_menu;
-    FDialog*     associated_window;
+    FString      text{};
+    bool         selected{false};
+    bool         separator{false};
+    bool         checkable{false};
+    bool         checked{false};
+    bool         radio_button{false};
+    bool         dialog_index{false};
+    std::size_t  text_length{0};
+    uChar        hotkey{0};
+    FKey         accel_key{0};
+    FMenu*       menu{0};
+    FWidget*     super_menu{0};
+    FDialog*     associated_window{0};
 
   private:
     // Disable copy constructor

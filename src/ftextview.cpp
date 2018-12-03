@@ -35,14 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FTextView::FTextView(FWidget* parent)
   : FWidget(parent)
-  , data()
-  , vbar(0)
-  , hbar(0)
-  , update_scrollbar(true)
-  , xoffset(0)
-  , yoffset(0)
-  , nf_offset(0)
-  , maxLineWidth(0)
 {
   init();
 }

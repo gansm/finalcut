@@ -154,10 +154,10 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenuItem;
 
     // Data Members
-    bool        mouse_down;
-    bool        drop_down;
-    bool        focus_changed;
-    std::size_t screenWidth;
+    bool        mouse_down{false};
+    bool        drop_down{false};
+    bool        focus_changed{false};
+    std::size_t screenWidth{80};
 };
 #pragma pack(pop)
 

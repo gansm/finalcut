@@ -35,16 +35,7 @@ namespace finalcut
 //----------------------------------------------------------------------
 FLineEdit::FLineEdit(FWidget* parent)
   : FWidget(parent)
-  , text("")
-  , label_text("")
-  , label(new FLabel("", parent))
-  , label_orientation(FLineEdit::label_left)
-  , drag_scroll(FLineEdit::noScroll)
-  , scroll_timer(false)
-  , scroll_repeat(100)
-  , insert_mode(true)
-  , cursor_pos(0)
-  , text_offset(0)
+  , label{new FLabel("", parent)}
 {
   init();
 }
@@ -53,15 +44,7 @@ FLineEdit::FLineEdit(FWidget* parent)
 FLineEdit::FLineEdit (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , label_text("")
-  , label(new FLabel("", parent))
-  , label_orientation(FLineEdit::label_left)
-  , drag_scroll(FLineEdit::noScroll)
-  , scroll_timer(false)
-  , scroll_repeat(100)
-  , insert_mode(true)
-  , cursor_pos(0)
-  , text_offset(0)
+  , label{new FLabel("", parent)}
 {
   init();
   setText(txt);
@@ -537,7 +520,8 @@ void FLineEdit::onTimer (FTimerEvent*)
       break;
 
     case FLineEdit::scrollRight:
-      if ( text_offset == len - getWidth() + 2 )
+      if ( len < getWidth() - 2
+        || text_offset == len - getWidth() + 2 )
       {
         drag_scroll = FLineEdit::noScroll;
         return;

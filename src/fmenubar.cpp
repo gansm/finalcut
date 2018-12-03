@@ -37,10 +37,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenuBar::FMenuBar(FWidget* parent)
   : FWindow(parent)
-  , mouse_down(false)
-  , drop_down(false)
-  , focus_changed(false)
-  , screenWidth(80)
 {
   init();
 }

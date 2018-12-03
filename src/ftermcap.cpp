@@ -48,15 +48,6 @@ FTermDetection* FTermcap::term_detection           = 0;
 // class FTermcap
 //----------------------------------------------------------------------
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FTermcap::FTermcap()
-{ }
-
-//----------------------------------------------------------------------
-FTermcap::~FTermcap()  // destructor
-{ }
-
 /* Terminal capability data base
  * -----------------------------
  * Info under: man 5 terminfo

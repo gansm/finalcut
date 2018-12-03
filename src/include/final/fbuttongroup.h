@@ -144,8 +144,8 @@ class FButtonGroup : public FScrollView
     void           directFocus();
 
     // Data Members
-    FString        text;
-    FObjectList    buttonlist;
+    FString        text{};
+    FObjectList    buttonlist{};
 };
 #pragma pack(pop)
 

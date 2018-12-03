@@ -334,7 +334,7 @@ class FWidget : public FVTerm, public FObject
 
     // Data Members
     static widgetList* window_list;
-    Accelerators*      accelerator_list;
+    Accelerators*      accelerator_list{0};
 
   protected:
     struct callback_data
@@ -396,14 +396,14 @@ class FWidget : public FVTerm, public FObject
     virtual void       onClose (FCloseEvent*);
 
     // Data Members
-    struct widget_flags   flags;
+    struct widget_flags   flags{};
     static uInt           modal_dialogs;
     static FWidgetColors  wc;
     static widgetList*    dialog_list;
     static widgetList*    always_on_top_list;
     static widgetList*    close_widget;
-    CallbackObjects       callback_objects;
-    MemberCallbackObjects member_callback_objects;
+    CallbackObjects       callback_objects{};
+    MemberCallbackObjects member_callback_objects{};
 
   private:
     // Disable copy constructor
@@ -430,19 +430,12 @@ class FWidget : public FVTerm, public FObject
     static void        setColorTheme();
 
     // Data Members
-    FPoint             widget_cursor_position;
+    FPoint             widget_cursor_position{-1, -1};
 
     struct widget_size_hints
     {
-      widget_size_hints()
-      : min_width  (0)
-      , min_height (0)
-      , max_width  (INT_MAX)
-      , max_height (INT_MAX)
-      { }
-
-      ~widget_size_hints()
-      { }
+      widget_size_hints() = default;
+      ~widget_size_hints() = default;
 
       void setMinimum (std::size_t w, std::size_t h)
       {
@@ -456,60 +449,54 @@ class FWidget : public FVTerm, public FObject
         max_height = h;
       }
 
-      std::size_t min_width;
-      std::size_t min_height;
-      std::size_t max_width;
-      std::size_t max_height;
-    } size_hints;
+      std::size_t min_width{0};
+      std::size_t min_height{0};
+      std::size_t max_width{INT_MAX};
+      std::size_t max_height{INT_MAX};
+    } size_hints{};
 
     struct dbl_line_mask
     {
-      dbl_line_mask() : top(), right(), bottom(), left()
-      { }
+      dbl_line_mask() = default;
+      ~dbl_line_mask() = default;
 
-      ~dbl_line_mask()
-      { }
-
-      std::vector<bool> top;
-      std::vector<bool> right;
-      std::vector<bool> bottom;
-      std::vector<bool> left;
-    } double_flatline_mask;
+      std::vector<bool> top{};
+      std::vector<bool> right{};
+      std::vector<bool> bottom{};
+      std::vector<bool> left{};
+    } double_flatline_mask{};
 
     struct widget_padding
     {
-      widget_padding() : top(0), left(0), bottom(0), right(0)
-      { }
+      widget_padding() = default;
+      ~widget_padding() = default;
 
-      ~widget_padding()
-      { }
+      int top{0};
+      int left{0};
+      int bottom{0};
+      int right{0};
+    } padding{};
 
-      int top;
-      int left;
-      int bottom;
-      int right;
-    } padding;
-
-    bool               ignore_padding;
+    bool               ignore_padding{false};
 
     // widget size
-    FRect              wsize;
-    FRect              adjust_wsize;
-    FRect              adjust_wsize_term;
-    FRect              adjust_wsize_shadow;
-    FRect              adjust_wsize_term_shadow;
+    FRect              wsize{1, 1, 1, 1};
+    FRect              adjust_wsize{1, 1, 1, 1};
+    FRect              adjust_wsize_term{};
+    FRect              adjust_wsize_shadow{};
+    FRect              adjust_wsize_term_shadow{};
     // widget offset
-    FRect              offset;
+    FRect              offset{};
     // offset of the widget client area
-    FRect              client_offset;
+    FRect              client_offset{};
     // widget shadow size (on the right and bottom side)
-    FPoint             wshadow;
+    FPoint             wshadow{0, 0};
 
     // default widget foreground and background color
-    FColor             foreground_color;
-    FColor             background_color;
+    FColor             foreground_color{fc::Default};
+    FColor             background_color{fc::Default};
 
-    FString            statusbar_message;
+    FString            statusbar_message{};
     static FStatusBar* statusbar;
     static FMenuBar*   menubar;
     static FWidget*    main_widget;

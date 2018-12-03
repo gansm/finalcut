@@ -70,7 +70,7 @@ class FTermLinux
 {
   public:
     // Constructors
-    FTermLinux();
+    FTermLinux() = default;
 
     // Destructor
     virtual ~FTermLinux();

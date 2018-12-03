@@ -37,10 +37,6 @@ namespace finalcut
 // constructor and destructor
 //----------------------------------------------------------------------
 FListBoxItem::FListBoxItem()
-  : text()
-  , data_pointer(0)
-  , brackets(fc::NoBrackets)
-  , selected(false)
 { }
 
 //----------------------------------------------------------------------
@@ -55,8 +51,6 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 FListBoxItem::FListBoxItem (const FString& txt, FWidget::data_ptr data)
   : text(txt)
   , data_pointer(data)
-  , brackets(fc::NoBrackets)
-  , selected(false)
 { }
 
 //----------------------------------------------------------------------
@@ -90,28 +84,6 @@ FListBoxItem& FListBoxItem::operator = (const FListBoxItem& item)
 //----------------------------------------------------------------------
 FListBox::FListBox (FWidget* parent)
   : FWidget(parent)
-  , convertToItem(0)
-  , itemlist()
-  , source_container(0)
-  , conv_type(FListBox::no_convert)
-  , vbar(0)
-  , hbar(0)
-  , text()
-  , inc_search()
-  , multi_select(false)
-  , mouse_select(false)
-  , drag_scroll(fc::noScroll)
-  , scroll_timer(false)
-  , scroll_repeat(100)
-  , scroll_distance(1)
-  , current(0)
-  , last_current(-1)
-  , secect_from_item(-1)
-  , xoffset(0)
-  , yoffset(0)
-  , last_yoffset(-1)
-  , nf_offset(0)
-  , max_line_width(0)
 {
   init();
 }
@@ -1040,7 +1012,7 @@ inline void FListBox::drawListLine ( int y
 
   if ( isMonochron() && isCurrentLine  && flags.focus )
   {
-    print (fc::BlackLeftPointingPointer);   // ◄
+    print (fc::BlackLeftPointingPointer);  // ◄
     i++;
   }
 
@@ -1051,53 +1023,15 @@ inline void FListBox::drawListLine ( int y
 //----------------------------------------------------------------------
 inline void FListBox::printLeftBracket (fc::brackets_type bracket_type)
 {
-  switch ( bracket_type )
-  {
-    case fc::NoBrackets:
-      break;
-
-    case fc::SquareBrackets:
-      print ('[');
-      break;
-
-    case fc::Parenthesis:
-      print ('(');
-      break;
-
-    case fc::CurlyBrackets:
-      print ('{');
-      break;
-
-    case fc::AngleBrackets:
-      print ('<');
-      break;
-  }
+  if ( bracket_type != fc::NoBrackets )
+    print ("\0[({<"[bracket_type]);
 }
 
 //----------------------------------------------------------------------
 inline void FListBox::printRightBracket (fc::brackets_type bracket_type)
 {
-  switch ( bracket_type )
-  {
-    case fc::NoBrackets:
-      break;
-
-    case fc::SquareBrackets:
-      print (']');
-      break;
-
-    case fc::Parenthesis:
-      print (')');
-      break;
-
-    case fc::CurlyBrackets:
-      print ('}');
-      break;
-
-    case fc::AngleBrackets:
-      print ('>');
-      break;
-  }
+  if ( bracket_type != fc::NoBrackets )
+    print ("\0])}>"[bracket_type]);
 }
 
 //----------------------------------------------------------------------

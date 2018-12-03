@@ -109,11 +109,11 @@ class FToolTip : public FWindow
     virtual void  adjustSize();
 
     // Data Members
-    FString       text;
-    FString*      text_components;
-    FStringList   text_split;
-    std::size_t   max_line_width;
-    std::size_t   text_num_lines;
+    FString       text{};
+    FString*      text_components{0};
+    FStringList   text_split{};
+    std::size_t   max_line_width{0};
+    std::size_t   text_num_lines{0};
 };
 #pragma pack(pop)
 

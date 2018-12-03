@@ -276,19 +276,15 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     void escapeKeyPressed();
 
     // Data Members
-    FKey key_pressed;
-    FKey key_released;
-    int  number_of_keys;
-    finalcut::FKeyboard* keyboard;
+    FKey key_pressed{0};
+    FKey key_released{0};
+    int  number_of_keys{0};
+    finalcut::FKeyboard* keyboard{0};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 FKeyboardTest::FKeyboardTest()
-  : key_pressed(0)
-  , key_released(0)
-  , number_of_keys(0)
-  , keyboard(0)
 {
   init();
 }

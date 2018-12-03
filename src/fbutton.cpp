@@ -35,24 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FButton::FButton(FWidget* parent)
   : FWidget(parent)
-  , text()
-  , button_down(false)
-  , active_focus(false)
-  , click_animation(true)
-  , click_time(150)
-  , space_char(int(' '))
-  , hotkeypos(NOT_SET)
-  , indent(0)
-  , center_offset(0)
-  , vcenter_offset(0)
-  , txtlength(0)
-  , button_fg(wc.button_active_fg)
-  , button_bg(wc.button_active_bg)
-  , button_hotkey_fg(wc.button_hotkey_fg)
-  , button_focus_fg(wc.button_active_focus_fg)
-  , button_focus_bg(wc.button_active_focus_bg)
-  , button_inactive_fg(wc.button_inactive_fg)
-  , button_inactive_bg(wc.button_inactive_bg)
 {
   init();
 }
@@ -60,27 +42,9 @@ FButton::FButton(FWidget* parent)
 //----------------------------------------------------------------------
 FButton::FButton (const FString& txt, FWidget* parent)
   : FWidget(parent)
-  , text(txt)
-  , button_down(false)
-  , active_focus(false)
-  , click_animation(true)
-  , click_time(150)
-  , space_char(int(' '))
-  , hotkeypos(NOT_SET)
-  , indent(0)
-  , center_offset(0)
-  , vcenter_offset(0)
-  , txtlength(0)
-  , button_fg(wc.button_active_fg)
-  , button_bg(wc.button_active_bg)
-  , button_hotkey_fg(wc.button_hotkey_fg)
-  , button_focus_fg(wc.button_active_focus_fg)
-  , button_focus_bg(wc.button_active_focus_bg)
-  , button_inactive_fg(wc.button_inactive_fg)
-  , button_inactive_bg(wc.button_inactive_bg)
+  , text{txt}
 {
   init();
-  detectHotkey();
 }
 
 //----------------------------------------------------------------------
@@ -449,6 +413,9 @@ void FButton::init()
   setForegroundColor (wc.button_active_fg);
   setBackgroundColor (wc.button_active_bg);
   setShadow();
+
+  if ( ! text.isEmpty() )
+    detectHotkey();
 }
 
 //----------------------------------------------------------------------

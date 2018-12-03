@@ -222,21 +222,21 @@ class FDialog : public FWindow
     void                cb_close (FWidget*, data_ptr);
 
     // Data Members
-    FString             tb_text;        // title bar text
-    DialogCode          result_code;
-    bool                zoom_button_pressed;
-    bool                zoom_button_active;
-    bool                setPos_error;
-    bool                setSize_error;
-    FPoint              titlebar_click_pos;
-    FPoint              resize_click_pos;
-    FRect               save_geometry;  // required by keyboard move/size
-    FMenu*              dialog_menu;
-    FMenuItem*          dgl_menuitem;
-    FMenuItem*          move_size_item;
-    FMenuItem*          zoom_item;
-    FMenuItem*          close_item;
-    FToolTip*           tooltip;
+    FString             tb_text{};  // title bar text
+    DialogCode          result_code{FDialog::Reject};
+    bool                zoom_button_pressed{false};
+    bool                zoom_button_active{false};
+    bool                setPos_error{false};
+    bool                setSize_error{false};
+    FPoint              titlebar_click_pos{};
+    FPoint              resize_click_pos{};
+    FRect               save_geometry{};  // required by keyboard move/size
+    FMenu*              dialog_menu{0};
+    FMenuItem*          dgl_menuitem{0};
+    FMenuItem*          move_size_item{0};
+    FMenuItem*          zoom_item{0};
+    FMenuItem*          close_item{0};
+    FToolTip*           tooltip{0};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus();

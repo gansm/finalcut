@@ -38,14 +38,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
-  , item()
-  , super_menu(0)
-  , opened_sub_menu(0)
-  , shown_sub_menu(0)
-  , max_item_width(0)
-  , hotkeypos(NOT_SET)
-  , mouse_down(false)
-  , has_checkable_items(false)
 {
   init(parent);
 }
@@ -54,13 +46,6 @@ FMenu::FMenu(FWidget* parent)
 FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(txt, parent)
-  , super_menu(0)
-  , opened_sub_menu(0)
-  , shown_sub_menu(0)
-  , max_item_width(0)
-  , hotkeypos(NOT_SET)
-  , mouse_down(false)
-  , has_checkable_items(false)
 {
   init(parent);
 }

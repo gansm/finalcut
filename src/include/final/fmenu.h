@@ -231,14 +231,14 @@ class FMenu : public FWindow, public FMenuList
     friend class FRadioMenuItem;
 
     // Data Members
-    FMenuItem    item;
-    FWidget*     super_menu;
-    FMenu*       opened_sub_menu;
-    FMenu*       shown_sub_menu;
-    std::size_t  max_item_width;
-    std::size_t  hotkeypos;
-    bool         mouse_down;
-    bool         has_checkable_items;
+    FMenuItem    item{};
+    FWidget*     super_menu{0};
+    FMenu*       opened_sub_menu{0};
+    FMenu*       shown_sub_menu{0};
+    std::size_t  max_item_width{0};
+    std::size_t  hotkeypos{NOT_SET};
+    bool         mouse_down{false};
+    bool         has_checkable_items{false};
 };
 #pragma pack(pop)
 

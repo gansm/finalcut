@@ -61,8 +61,8 @@ class AttribDlg : public finalcut::FDialog
     virtual void adjustSize();
 
     // Data Members
-    finalcut::FButton next_button;
-    finalcut::FButton back_button;
+    finalcut::FButton next_button{"&Next >", this};
+    finalcut::FButton back_button{"< &Back", this};
 };
 #pragma pack(pop)
 
@@ -70,8 +70,6 @@ class AttribDlg : public finalcut::FDialog
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
   , bgcolor(wc.label_bg)
-  , next_button("&Next >", this)
-  , back_button("< &Back", this)
 {
   setText ( "A terminal attributes test ("
           + finalcut::FString(getTermType())

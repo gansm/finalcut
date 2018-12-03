@@ -128,14 +128,14 @@ class FListViewItem : public FObject
     void              resetVisibleLineCounter();
 
     // Data Members
-    FStringList       column_list;
-    FWidget::data_ptr data_pointer;
-    FObjectIterator   root;
-    std::size_t       visible_lines;
-    bool              expandable;
-    bool              is_expand;
-    bool              checkable;
-    bool              is_checked;
+    FStringList       column_list{};
+    FWidget::data_ptr data_pointer{0};
+    FObjectIterator   root{};
+    std::size_t       visible_lines{1};
+    bool              expandable{false};
+    bool              is_expand{false};
+    bool              checkable{false};
+    bool              is_checked{false};
 
     // Friend class
     friend class FListView;
@@ -198,7 +198,7 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    FListViewIterator ();
+    FListViewIterator () = default;
     FListViewIterator (FObjectIterator);
 
     // Overloaded operators
@@ -226,9 +226,9 @@ class FListViewIterator
     void prevElement (FObjectIterator&);
 
     // Data Members
-    FObjectIteratorStack iter_path;
-    FObjectIterator      node;
-    int                  position;
+    FObjectIteratorStack iter_path{};
+    FObjectIterator      node{};
+    int                  position{0};
 };
 #pragma pack(pop)
 
@@ -422,34 +422,34 @@ class FListView : public FWidget
     void                 cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FObjectIterator      root;
-    FObjectList          selflist;
-    FObjectList          itemlist;
-    FListViewIterator    current_iter;
-    FListViewIterator    first_visible_line;
-    FListViewIterator    last_visible_line;
-    headerItems          header;
-    FTermBuffer          headerline;
-    FScrollbar*          vbar;
-    FScrollbar*          hbar;
-    fc::dragScroll       drag_scroll;
-    int                  scroll_repeat;
-    int                  scroll_distance;
-    bool                 scroll_timer;
-    bool                 tree_view;
-    bool                 hide_sort_indicator;
-    bool                 has_checkable_items;
-    FPoint               clicked_expander_pos;
-    FPoint               clicked_header_pos;
-    const FListViewItem* clicked_checkbox_item;
-    int                  xoffset;
-    int                  nf_offset;
-    int                  max_line_width;
-    int                  sort_column;
-    sortTypes            sort_type;
-    fc::sorting_order    sort_order;
-    bool (*user_defined_ascending) (const FObject*, const FObject*);
-    bool (*user_defined_descending) (const FObject*, const FObject*);
+    FObjectIterator      root{};
+    FObjectList          selflist{};
+    FObjectList          itemlist{};
+    FListViewIterator    current_iter{};
+    FListViewIterator    first_visible_line{};
+    FListViewIterator    last_visible_line{};
+    headerItems          header{};
+    FTermBuffer          headerline{};
+    FScrollbar*          vbar{0};
+    FScrollbar*          hbar{0};
+    fc::dragScroll       drag_scroll{fc::noScroll};
+    int                  scroll_repeat{100};
+    int                  scroll_distance{1};
+    bool                 scroll_timer{false};
+    bool                 tree_view{false};
+    bool                 hide_sort_indicator{false};
+    bool                 has_checkable_items{false};
+    FPoint               clicked_expander_pos{-1, -1};
+    FPoint               clicked_header_pos{-1, -1};
+    const FListViewItem* clicked_checkbox_item{0};
+    int                  xoffset{0};
+    int                  nf_offset{0};
+    int                  max_line_width{1};
+    int                  sort_column{-1};
+    sortTypes            sort_type{};
+    fc::sorting_order    sort_order{fc::unsorted};
+    bool (*user_defined_ascending) (const FObject*, const FObject*){0};
+    bool (*user_defined_descending) (const FObject*, const FObject*){0};
 
     // Friend class
     friend class FListViewItem;

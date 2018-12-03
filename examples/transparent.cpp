@@ -182,24 +182,18 @@ class MainWindow : public finalcut::FDialog
     }
 
     // Data Members
-    finalcut::FString line1;
-    finalcut::FString line2;
-    Transparent* transpwin;
-    Transparent* shadowwin;
-    Transparent* ibg;
-    finalcut::FStatusBar status_bar;
+    finalcut::FString line1{};
+    finalcut::FString line2{};
+    Transparent* transpwin{0};
+    Transparent* shadowwin{0};
+    Transparent* ibg{0};
+    finalcut::FStatusBar status_bar{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)
   : FDialog(parent)
-  , line1()
-  , line2()
-  , transpwin(0)
-  , shadowwin(0)
-  , ibg(0)
-  , status_bar(this)
 {
   line1 = "     .-.     .-.     .-.";
   line2 = "`._.'   `._.'   `._.'   ";

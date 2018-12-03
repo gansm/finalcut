@@ -170,16 +170,16 @@ class FMouse
     bool                isDblclickTimeout (timeval*);
 
     // Data Members
-    button              b_state;
-    bool                mouse_event_occurred;
-    bool                input_data_pending;
-    long                dblclick_interval;
-    short               max_width;
-    short               max_height;
-    struct timeval      time_mousepressed;
-    FPoint              zero_point;
-    FPoint              mouse;    // mouse click position
-    FPoint              new_mouse_position;
+    button              b_state{};
+    bool                mouse_event_occurred{false};
+    bool                input_data_pending{false};
+    long                dblclick_interval{500000};  // 500 ms
+    short               max_width{80};
+    short               max_height{25};
+    struct timeval      time_mousepressed{};
+    FPoint              zero_point{0, 0};  // zero point (x=0, y=0)
+    FPoint              mouse{0, 0};       // mouse click position
+    FPoint              new_mouse_position{};
 };
 #pragma pack(pop)
 
@@ -236,10 +236,10 @@ class FMouseGPM : public FMouse
     int                gpmEvent (bool = true);
 
     // Data Member
-    Gpm_Event          gpm_ev;
-    bool               has_gpm_mouse_data;
-    bool               gpm_mouse_enabled;
-    int                stdin_no;
+    Gpm_Event          gpm_ev{};
+    bool               has_gpm_mouse_data{false};
+    bool               gpm_mouse_enabled{false};
+    int                stdin_no{0};
 };
 #pragma pack(pop)
 
@@ -314,8 +314,8 @@ class FMouseX11 : public FMouse
     void         setButtonState (int, struct timeval*);
 
     // Data Member
-    char  x11_mouse[MOUSE_BUF_SIZE];
-    uChar x11_button_state;
+    char  x11_mouse[MOUSE_BUF_SIZE]{};
+    uChar x11_button_state{all_buttons_released};
 };
 #pragma pack(pop)
 
@@ -337,14 +337,14 @@ class FMouseSGR : public FMouse
     virtual ~FMouseSGR();
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char*  getClassName() const;
 
     // Inquiry
-    virtual bool hasData();
+    virtual bool         hasData();
 
     // Methods
-    virtual void setRawData (FKeyboard::keybuffer&);
-    virtual void processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&);
+    virtual void         processEvent (struct timeval*);
 
   private:
     // Enumeration
@@ -377,8 +377,8 @@ class FMouseSGR : public FMouse
     void         setReleasedButtonState (int);
 
     // Data Members
-    char  sgr_mouse[MOUSE_BUF_SIZE];
-    uChar sgr_button_state;
+    char  sgr_mouse[MOUSE_BUF_SIZE]{};
+    uChar sgr_button_state{0x23};
 };
 #pragma pack(pop)
 
@@ -400,14 +400,14 @@ class FMouseUrxvt : public FMouse
     virtual ~FMouseUrxvt();
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char*  getClassName() const;
 
     // Inquiry
-    virtual bool hasData();
+    virtual bool         hasData();
 
     // Methods
-    virtual void setRawData (FKeyboard::keybuffer&);
-    virtual void processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&);
+    virtual void         processEvent (struct timeval*);
 
   private:
     // Enumeration
@@ -440,8 +440,8 @@ class FMouseUrxvt : public FMouse
     void         setButtonState (int, struct timeval*);
 
     // Data Members
-    char  urxvt_mouse[MOUSE_BUF_SIZE];
-    uChar urxvt_button_state;
+    char  urxvt_mouse[MOUSE_BUF_SIZE]{};
+    uChar urxvt_button_state{all_buttons_released};
 };
 #pragma pack(pop)
 
@@ -511,11 +511,11 @@ class FMouseControl
     void                disableXTermMouse();
 
     // Data Member
-    std::map<FMouse::mouse_type, FMouse*> mouse_protocol;
-    std::map<FMouse::mouse_type, FMouse*>::iterator iter;
-    FPoint zero_point;
-    bool   use_gpm_mouse;
-    bool   use_xterm_mouse;
+    std::map<FMouse::mouse_type, FMouse*> mouse_protocol{};
+    std::map<FMouse::mouse_type, FMouse*>::iterator iter{};
+    FPoint zero_point{0, 0};
+    bool   use_gpm_mouse{false};
+    bool   use_xterm_mouse{false};
 };
 #pragma pack(pop)
 

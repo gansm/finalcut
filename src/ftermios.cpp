@@ -51,7 +51,6 @@ FTermios::FTermios()
 FTermios::~FTermios()  // destructor
 { }
 
-
 // public methods of FTermios
 //----------------------------------------------------------------------
 void FTermios::init()

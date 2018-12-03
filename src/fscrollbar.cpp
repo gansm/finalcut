@@ -35,24 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FScrollbar::FScrollbar(FWidget* parent)
   : FWidget(parent)
-  , scroll_type(FScrollbar::noScroll)
-  , threshold_reached(false)
-  , threshold_time(500)
-  , repeat_time(10)
-  , slider_click_pos(-1)
-  , slider_click_stop_pos(-1)
-  , current_slider_pos(-1)
-  , slider_pos(0)
-  , slider_length(18)  // = bar_length
-  , bar_length(18)     // = length - 2
-  , val(0)
-  , min(0)
-  , max(99)
-  , steps(1)
-  , pagesize(0)
-  , length(20)
-  , bar_orientation(fc::vertical)
-  , max_color(getMaxColor())
 {
   // The default scrollbar orientation is vertical
   setGeometry(1, 1, 1, length, false);
@@ -62,24 +44,6 @@ FScrollbar::FScrollbar(FWidget* parent)
 //----------------------------------------------------------------------
 FScrollbar::FScrollbar(int o, FWidget* parent)
   : FWidget(parent)
-  , scroll_type(FScrollbar::noScroll)
-  , threshold_reached(false)
-  , threshold_time(500)
-  , repeat_time(10)
-  , slider_click_pos(-1)
-  , slider_click_stop_pos(-1)
-  , current_slider_pos(-1)
-  , slider_pos(0)
-  , slider_length(18)  // = bar_length
-  , bar_length(18)     // = length - 2
-  , val(0)
-  , min(0)
-  , max(99)
-  , steps(1)
-  , pagesize(0)
-  , length(20)
-  , bar_orientation(fc::vertical)
-  , max_color(getMaxColor())
 {
   setOrientation (o);
   init();

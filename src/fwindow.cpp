@@ -40,10 +40,6 @@ FWindow* FWindow::previous_window = 0;
 //----------------------------------------------------------------------
 FWindow::FWindow(FWidget* parent)
   : FWidget(parent)
-  , window_active(false)
-  , zoomed(false)
-  , win_focus_widget(0)
-  , normalGeometry()
 {
   setWindowWidget();
   FRect geometry = getTermGeometry();

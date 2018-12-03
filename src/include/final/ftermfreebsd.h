@@ -63,10 +63,10 @@ class FTermFreeBSD
     typedef fc::freebsdConsoleCursorStyle  CursorStyle;
 
     // Constructors
-    FTermFreeBSD();
+    FTermFreeBSD() = default;
 
     // Destructor
-    virtual ~FTermFreeBSD();
+    virtual ~FTermFreeBSD() = default;
 
     // Accessors
     const char*        getClassName() const;

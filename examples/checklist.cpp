@@ -60,16 +60,14 @@ class CheckList : public finalcut::FDialog
     void cb_showList (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FListView  listView;
-    finalcut::FStatusBar status_bar;
+    finalcut::FListView  listView{this};
+    finalcut::FStatusBar status_bar{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , listView(this)
-  , status_bar(this)
 {
   setText (L"Shopping list");
   setShadow();

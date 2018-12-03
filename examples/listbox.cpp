@@ -91,22 +91,17 @@ class Listbox : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Data Member
-    std::list<double>  double_list;
-    finalcut::FListBox list1;
-    finalcut::FListBox list2;
-    finalcut::FListBox list3;
-    finalcut::FButton  Quit;
+    std::list<double>  double_list{};
+    finalcut::FListBox list1{this};
+    finalcut::FListBox list2{this};
+    finalcut::FListBox list3{this};
+    finalcut::FButton  Quit{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listbox::Listbox (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , double_list()
-  , list1(this)
-  , list2(this)
-  , list3(this)
-  , Quit(this)
 {
   temp_str = new finalcut::FString;
 

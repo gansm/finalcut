@@ -87,10 +87,10 @@ class FTermcap
     tcap_map;
 
     // Constructors
-    FTermcap();
+    FTermcap() = default;
 
     // Destructor
-    ~FTermcap();
+    ~FTermcap() = default;
 
     // Accessors
     const char* getClassName() const;

@@ -62,7 +62,7 @@ class FMenuList
 {
   public:
     // Constructor
-    FMenuList();
+    FMenuList() = default;
 
     // Destructor
     virtual ~FMenuList();
@@ -91,8 +91,8 @@ class FMenuList
     void                unselectItem();
 
   protected:
-    FMenuItem*              selected_item;
-    std::vector<FMenuItem*> item_list;
+    FMenuItem*              selected_item{};
+    std::vector<FMenuItem*> item_list{};
 
   private:
     // Disable copy constructor

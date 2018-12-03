@@ -52,7 +52,7 @@ class FPoint
 {
   public:
     // Constructors
-    FPoint ();
+    FPoint () = default;
     FPoint (const FPoint&);  // copy constructor
     FPoint (int, int);
 
@@ -89,19 +89,13 @@ class FPoint
 
   private:
     // Data Members
-    int xpos;
-    int ypos;
+    int xpos{0};
+    int ypos{0};
 };
 #pragma pack(pop)
 
 
 // FPoint inline functions
-//----------------------------------------------------------------------
-inline FPoint::FPoint()
-  : xpos(0)
-  , ypos(0)
-{ }
-
 //----------------------------------------------------------------------
 inline FPoint::FPoint (const FPoint& p)  // copy constructor
   : xpos(p.xpos)

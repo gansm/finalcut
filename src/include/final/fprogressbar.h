@@ -104,8 +104,8 @@ class FProgressbar : public FWidget
     void         drawBar();
 
     // Data Members
-    std::size_t  percentage;
-    std::size_t  bar_length;
+    std::size_t  percentage{NOT_SET};
+    std::size_t  bar_length{getWidth()};
 };
 #pragma pack(pop)
 

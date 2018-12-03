@@ -58,10 +58,6 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FTermLinux::FTermLinux()
-{ }
-
-//----------------------------------------------------------------------
 FTermLinux::~FTermLinux()  // destructor
 {
 #if defined(__linux__)

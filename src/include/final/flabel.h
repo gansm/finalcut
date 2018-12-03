@@ -153,15 +153,15 @@ class FLabel : public FWidget
                                  , std::size_t, std::size_t = 0 );
 
     // Data Members
-    FStringList        multiline_text;
-    bool               multiline;
-    FString            text;
-    fc::text_alignment alignment;
-    FColor             emphasis_color;
-    FColor             ellipsis_color;
-    bool               emphasis;
-    bool               reverse_mode;
-    FWidget*           accel_widget;
+    FStringList        multiline_text{};
+    bool               multiline{false};
+    FString            text{};
+    fc::text_alignment alignment{fc::alignLeft};
+    FColor             emphasis_color{wc.label_emphasis_fg};
+    FColor             ellipsis_color{wc.label_ellipsis_fg};
+    bool               emphasis{false};
+    bool               reverse_mode{false};
+    FWidget*           accel_widget{0};
 };
 #pragma pack(pop)
 

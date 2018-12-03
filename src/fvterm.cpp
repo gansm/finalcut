@@ -68,9 +68,6 @@ FVTerm::charData     FVTerm::i_ch;
 // constructors and destructor
 //----------------------------------------------------------------------
 FVTerm::FVTerm (bool initialize, bool disable_alt_screen)
-  : print_area(0)
-  , child_print_area(0)
-  , vwin(0)
 {
   terminal_update_complete = false;
 

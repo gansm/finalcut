@@ -47,10 +47,10 @@ class FTermDebugData
 {
   public:
     // Constructors
-    FTermDebugData();
+    FTermDebugData() = default;
 
     // Destructor
-    ~FTermDebugData();
+    ~FTermDebugData() = default;
 
     // Accessors
     const FString& getAnswerbackString();
@@ -73,21 +73,11 @@ class FTermDebugData
     FTermDebugData& operator = (const FTermDebugData&);
 
     // Data Members
-    FTermDetection* term_detection;
-    FTermData*      data;
+    FTermDetection* term_detection{0};
+    FTermData*      data{0};
 };
 
 // FTermDebugData inline functions
-//----------------------------------------------------------------------
-inline FTermDebugData::FTermDebugData()
-  : term_detection(0)
-  , data(0)
-{ }
-
-//----------------------------------------------------------------------
-inline FTermDebugData::~FTermDebugData()
-{ }
-
 //----------------------------------------------------------------------
 inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
 { term_detection = obj; }

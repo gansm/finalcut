@@ -93,7 +93,7 @@ enum encoding
 };
 
 // VT100 line graphic keys
-enum vt100_keys
+enum vt100_keys : char
 {
   vt100_key_rarrow    = '+',   // ►  -  arrow pointing right
   vt100_key_larrow    = ',',   // ◄  -  arrow pointing left
@@ -136,7 +136,7 @@ enum vt100_keys
 };
 
 // Unicode characters
-enum SpecialCharacter
+enum SpecialCharacter : wchar_t
 {
   Euro                                = 0x20ac,  // €
   Pound                               = 0x00a3,  // £
@@ -237,7 +237,7 @@ enum SpecialCharacter
  */
 
 // keyboard - single keys
-enum keys
+enum keys : FKey
 {
   Fckey_a                    = 0x00000001,  // control-a
   Fckey_b                    = 0x00000002,  // control-b
@@ -440,7 +440,7 @@ enum keys
 };
 
 // Keyboard - modifier key combinations
-enum metakeys
+enum metakeys : FKey
 {
   Fmkey_ic                   = 0x01500100,  // M-insert
   Fmkey_dc                   = 0x01500101,  // M-delete
@@ -651,7 +651,7 @@ enum metakeys
 };
 
 // Console color names
-enum colornames
+enum colornames : FColor
 {
   Black             = 0,
   Blue              = 1,

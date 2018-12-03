@@ -59,16 +59,14 @@ class Listview : public finalcut::FDialog
     void cb_showInMessagebox (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FListView listView;
-    finalcut::FButton   Quit;
+    finalcut::FListView listView{this};
+    finalcut::FButton   Quit{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listview::Listview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , listView(this)
-  , Quit(this)
 {
   // Set FListView geometry
   listView.setGeometry(2, 1, 33, 14);

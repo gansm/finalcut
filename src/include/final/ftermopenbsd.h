@@ -56,10 +56,10 @@ class FTermOpenBSD
 {
   public:
     // Constructors
-    FTermOpenBSD();
+    FTermOpenBSD() = default;
 
     // Destructor
-    virtual ~FTermOpenBSD();
+    virtual ~FTermOpenBSD() = default;
 
     // Accessor
     const char*        getClassName() const;

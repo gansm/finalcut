@@ -35,17 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FScrollView::FScrollView (FWidget* parent)
   : FWidget(parent)
-  , scroll_geometry(1, 1, 1, 1)
-  , viewport_geometry()
-  , viewport(0)
-  , vbar(0)
-  , hbar(0)
-  , nf_offset(0)
-  , border(true)
-  , use_own_print_area(false)
-  , update_scrollbar(true)
-  , vMode(fc::Auto)
-  , hMode(fc::Auto)
 {
   init(parent);
 }

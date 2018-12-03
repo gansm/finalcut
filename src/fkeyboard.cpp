@@ -45,12 +45,9 @@ struct timeval FKeyboard::time_keypressed;
 //----------------------------------------------------------------------
 FKeyboardCommand::FKeyboardCommand ( FApplication* object
                                    , void(FApplication::*method)() )
-  : instance(0)
-  , handler(0)
-{
-  instance = object;
-  handler = method;
-}
+  : instance(object)
+  , handler(method)
+{ }
 
 // public methods of FKeyboardCommand
 //----------------------------------------------------------------------
@@ -67,18 +64,6 @@ void FKeyboardCommand::execute()
 // constructors and destructor
 //----------------------------------------------------------------------
 FKeyboard::FKeyboard()
-  : key(0)
-  , fifo_offset(0)
-  , fifo_in_use(false)
-  , stdin_status_flags(0)
-  , input_data_pending(false)
-  , utf8_input(false)
-  , mouse_support(true)
-  , non_blocking_stdin(false)
-  , keypressed_cmd()
-  , keyreleased_cmd()
-  , escape_key_cmd()
-  , key_map(0)
 {
   // Initialize keyboard values
   time_keypressed.tv_sec = 0;

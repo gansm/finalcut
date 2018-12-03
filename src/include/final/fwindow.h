@@ -179,10 +179,10 @@ class FWindow : public FWidget
     static void     processAlwaysOnTop();
 
     // Data Members
-    bool            window_active;
-    bool            zoomed;
-    FWidget*        win_focus_widget;
-    FRect           normalGeometry;
+    bool            window_active{false};
+    bool            zoomed{false};
+    FWidget*        win_focus_widget{0};
+    FRect           normalGeometry{};
 };
 #pragma pack(pop)
 

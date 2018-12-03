@@ -138,9 +138,9 @@ class FToggleButton : public FWidget
     virtual void onKeyPress (FKeyEvent*);
 
     // Data Members
-    bool          checked;
-    std::size_t   label_offset_pos;
-    std::size_t   button_width;  // plus margin spaces
+    bool          checked{false};
+    std::size_t   label_offset_pos{0};
+    std::size_t   button_width{0};  // plus margin spaces
 
   private:
     // Constants
@@ -164,9 +164,9 @@ class FToggleButton : public FWidget
     friend class FButtonGroup;
 
     // Data Members
-    FButtonGroup* button_group;
-    bool          focus_inside_group;
-    FString       text;
+    FButtonGroup* button_group{0};
+    bool          focus_inside_group{true};
+    FString       text{};
 };
 #pragma pack(pop)
 

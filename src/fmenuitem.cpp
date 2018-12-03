@@ -39,19 +39,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (FWidget* parent)
   : FWidget(parent)
-  , text()
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }
@@ -60,18 +47,6 @@ FMenuItem::FMenuItem (FWidget* parent)
 FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }
@@ -80,18 +55,7 @@ FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
 FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
   , accel_key(k)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }

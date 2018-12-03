@@ -35,21 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FDialog::FDialog (FWidget* parent)
   : FWindow(parent)
-  , tb_text()
-  , result_code(FDialog::Reject)
-  , zoom_button_pressed(false)
-  , zoom_button_active(false)
-  , setPos_error(false)
-  , setSize_error(false)
-  , titlebar_click_pos()
-  , resize_click_pos()
-  , save_geometry()
-  , dialog_menu()
-  , dgl_menuitem()
-  , move_size_item()
-  , zoom_item()
-  , close_item()
-  , tooltip()
 {
   init();
 }
@@ -58,20 +43,6 @@ FDialog::FDialog (FWidget* parent)
 FDialog::FDialog (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , tb_text(txt)
-  , result_code(FDialog::Reject)
-  , zoom_button_pressed(false)
-  , zoom_button_active(false)
-  , setPos_error(false)
-  , setSize_error(false)
-  , titlebar_click_pos()
-  , resize_click_pos()
-  , save_geometry()
-  , dialog_menu()
-  , dgl_menuitem()
-  , move_size_item()
-  , zoom_item()
-  , close_item()
-  , tooltip(0)
 {
   init();
 }

@@ -64,10 +64,8 @@ FApplication::FApplication ( const int& _argc
                            , char* _argv[]
                            , bool disable_alt_screen )
   : FWidget(processParameters(_argc, _argv), disable_alt_screen)
-  , app_argc(_argc)
-  , app_argv(_argv)
-  , key_timeout(100000)        // 100 ms
-  , dblclick_interval(500000)  // 500 ms
+  , app_argc{_argc}
+  , app_argv{_argv}
 {
   assert ( ! app_object
         && "FApplication: There should be only one application object" );

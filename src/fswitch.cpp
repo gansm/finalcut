@@ -33,8 +33,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FSwitch::FSwitch(FWidget* parent)
   : FToggleButton(parent)
-  , switch_offset_pos(0)
-  , button_pressed(false)
 {
   button_width = 11;
 }
@@ -42,8 +40,6 @@ FSwitch::FSwitch(FWidget* parent)
 //----------------------------------------------------------------------
 FSwitch::FSwitch (const FString& txt, FWidget* parent)
   : FToggleButton(txt, parent)
-  , switch_offset_pos(0)
-  , button_pressed(false)
 {
   switch_offset_pos = txt.getLength() + 1;
   button_width = 11;

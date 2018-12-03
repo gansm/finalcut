@@ -34,19 +34,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FString::FString()
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
-{ }
-
-//----------------------------------------------------------------------
 FString::FString (int len)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( len > 0 )
     initLength(std::size_t(len));
@@ -56,20 +44,12 @@ FString::FString (int len)
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   initLength(len);
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, wchar_t c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   wchar_t* ps;
   wchar_t* pe;
@@ -84,10 +64,6 @@ FString::FString (std::size_t len, wchar_t c)
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, char c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   wchar_t* ps;
   wchar_t* pe;
@@ -102,10 +78,6 @@ FString::FString (std::size_t len, char c)
 
 //----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.isNull() )
     _assign (s.string);
@@ -113,10 +85,6 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.empty() )
     _assign (s.c_str());
@@ -124,10 +92,6 @@ FString::FString (const std::wstring& s)
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( s )
     _assign (s);
@@ -135,10 +99,6 @@ FString::FString (const wchar_t s[])
 
 //----------------------------------------------------------------------
 FString::FString (const std::string& s)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.empty() )
   {
@@ -150,10 +110,6 @@ FString::FString (const std::string& s)
 
 //----------------------------------------------------------------------
 FString::FString (const char s[])
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( s )
   {
@@ -165,10 +121,6 @@ FString::FString (const char s[])
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( c )
   {
@@ -181,10 +133,6 @@ FString::FString (const wchar_t c)
 
 //----------------------------------------------------------------------
 FString::FString (const char c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( c )
   {

@@ -178,7 +178,7 @@ clean:
 	$(RM) $(LIB)* $(OBJS) .depend *.gcno *.gcda *.prof *~
 
 dep:
-	$(CXX) $(INCLUDES) -MM -DCOMPILE_FINAL_CUT *.cpp >.depend
+	$(CXX) $(INCLUDES) -std=c++11 -MM -DCOMPILE_FINAL_CUT *.cpp >.depend
 
 #
 # include .depend if it exists

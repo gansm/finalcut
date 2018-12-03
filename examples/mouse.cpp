@@ -56,18 +56,15 @@ class ColorChooser : public finalcut::FWidget
     virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
-    FColor fg_color;
-    FColor bg_color;
-    finalcut::FLabel headline;
+    FColor fg_color{finalcut::fc::White};
+    FColor bg_color{finalcut::fc::Black};
+    finalcut::FLabel headline{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
-  , fg_color(finalcut::fc::White)
-  , bg_color(finalcut::fc::Black)
-  , headline(this)
 {
   setSize (8, 12);
   setFixedSize (8, 12);
@@ -199,20 +196,16 @@ class Brushes : public finalcut::FWidget
     virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
-    wchar_t brush;
-    FColor  fg_color;
-    FColor  bg_color;
-    finalcut::FLabel headline;
+    wchar_t brush{L' '};
+    FColor  fg_color{finalcut::fc::White};
+    FColor  bg_color{finalcut::fc::Black};
+    finalcut::FLabel headline{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget(parent)
-  , brush(L' ')
-  , fg_color(finalcut::fc::White)
-  , bg_color(finalcut::fc::Black)
-  , headline(this)
 {
   setSize (8, 4);
   setFixedSize (8, 4);
@@ -349,18 +342,15 @@ class MouseDraw : public finalcut::FDialog
     void cb_colorChanged (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    term_area*   canvas;
-    ColorChooser c_chooser;
-    Brushes      brush;
+    term_area*   canvas{0};
+    ColorChooser c_chooser{this};
+    Brushes      brush{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , canvas(0)
-  , c_chooser(this)
-  , brush(this)
 {
   setText ("Drawing with the mouse");
   c_chooser.setPos (1, 1);

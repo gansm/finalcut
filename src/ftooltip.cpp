@@ -34,11 +34,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FToolTip::FToolTip (FWidget* parent)
   : FWindow(parent)
-  , text()
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , text_num_lines(0)
 {
   init();
 }
@@ -47,10 +42,6 @@ FToolTip::FToolTip (FWidget* parent)
 FToolTip::FToolTip (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , text(txt)
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , text_num_lines(0)
 {
   init();
 }

@@ -163,12 +163,6 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   : FObject(item.getParent())
   , column_list(item.column_list)
   , data_pointer(item.data_pointer)
-  , root()
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-  , checkable(false)
-  , is_checked(false)
 {
   FObject* parent = getParent();
 
@@ -188,14 +182,6 @@ FListViewItem::FListViewItem (const FListViewItem& item)
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem (FObjectIterator parent_iter)
   : FObject((*parent_iter)->getParent())
-  , column_list()
-  , data_pointer(0)
-  , root()
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-  , checkable(false)
-  , is_checked(false)
 {
   insert (this, parent_iter);
 }
@@ -207,12 +193,6 @@ FListViewItem::FListViewItem ( const FStringList& cols
   : FObject(0)
   , column_list(cols)
   , data_pointer(data)
-  , root()
-  , visible_lines(1)
-  , expandable(false)
-  , is_expand(false)
-  , checkable(false)
-  , is_checked(false)
 {
   if ( cols.empty() )
     return;
@@ -458,17 +438,8 @@ void FListViewItem::resetVisibleLineCounter()
 
 // constructor and destructor
 //----------------------------------------------------------------------
-FListViewIterator::FListViewIterator ()
-  : iter_path()
-  , node()
-  , position(0)
-{ }
-
-//----------------------------------------------------------------------
 FListViewIterator::FListViewIterator (FObjectIterator iter)
-  : iter_path()
-  , node(iter)
-  , position(0)
+  : node(iter)
 { }
 
 
@@ -615,34 +586,6 @@ void FListViewIterator::parentElement()
 //----------------------------------------------------------------------
 FListView::FListView (FWidget* parent)
   : FWidget(parent)
-  , root()
-  , selflist()
-  , itemlist()
-  , current_iter()
-  , first_visible_line()
-  , last_visible_line()
-  , header()
-  , headerline()
-  , vbar(0)
-  , hbar(0)
-  , drag_scroll(fc::noScroll)
-  , scroll_repeat(100)
-  , scroll_distance(1)
-  , scroll_timer(false)
-  , tree_view(false)
-  , hide_sort_indicator(false)
-  , has_checkable_items(false)
-  , clicked_expander_pos(-1, -1)
-  , clicked_header_pos(-1, -1)
-  , clicked_checkbox_item(0)
-  , xoffset(0)
-  , nf_offset(0)
-  , max_line_width(1)
-  , sort_column(-1)
-  , sort_type()
-  , sort_order(fc::unsorted)
-  , user_defined_ascending(0)
-  , user_defined_descending(0)
 {
   init();
 }

@@ -176,17 +176,17 @@ class FScrollView : public FWidget
     void              cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FRect             scroll_geometry;
-    FRect             viewport_geometry;
-    term_area*        viewport;  // virtual scroll content
-    FScrollbar*       vbar;
-    FScrollbar*       hbar;
-    uInt8             nf_offset;
-    bool              border;
-    bool              use_own_print_area;
-    bool              update_scrollbar;
-    fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
-    fc::scrollBarMode hMode;
+    FRect             scroll_geometry{1, 1, 1, 1};
+    FRect             viewport_geometry{};
+    term_area*        viewport{0};  // virtual scroll content
+    FScrollbar*       vbar{0};
+    FScrollbar*       hbar{0};
+    uInt8             nf_offset{0};
+    bool              border{true};
+    bool              use_own_print_area{false};
+    bool              update_scrollbar{true};
+    fc::scrollBarMode vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    fc::scrollBarMode hMode{fc::Auto};
 };
 #pragma pack(pop)
 

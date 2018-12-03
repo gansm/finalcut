@@ -133,7 +133,7 @@ class FObject
     virtual void         onTimer (FTimerEvent*);
 
     // Data Member
-    bool widget_object;
+    bool widget_object{false};
 
   private:
     // Disable copy constructor
@@ -146,9 +146,9 @@ class FObject
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data Members
-    FObject*          parent_obj;
-    FObjectList       children_list;
-    bool              has_parent;
+    FObject*          parent_obj{};
+    FObjectList       children_list{};  // no children yet
+    bool              has_parent{false};
     static bool       timer_modify_lock;
     static TimerList* timer_list;
 };

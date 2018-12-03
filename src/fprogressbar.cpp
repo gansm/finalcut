@@ -33,8 +33,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FProgressbar::FProgressbar(FWidget* parent)
   : FWidget(parent)
-  , percentage(NOT_SET)
-  , bar_length(getWidth())
 {
   unsetFocusable();
   setShadow();
