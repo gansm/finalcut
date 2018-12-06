@@ -19,6 +19,9 @@ addons:
      - libgpm-dev
      - gperf
      - libcppunit-dev
+  homebrew:
+    packages:
+      - pkg-config
 
 env:
   global:
@@ -86,11 +89,8 @@ matrix:
   - os: osx
     env:
       - TEST="macOS"
-    addons:
-      homebrew:
-        packages:
-          - pkg-config
     script:
+      - uname -a
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10
