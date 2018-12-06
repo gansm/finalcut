@@ -11,6 +11,7 @@ addons:
      - automake
      - autoconf
      - autoconf-archive
+     - pkg-config
      - libtool
      - libglib2.0-dev
      - libncurses5-dev
