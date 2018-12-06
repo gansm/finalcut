@@ -53,6 +53,7 @@ AC_SEARCH_LIBS([tparm], [termcap tinfo curses ncurses])
 # Checks for libtool
 AC_ENABLE_SHARED
 AC_ENABLE_STATIC
+AC_LANG([C++])
 LT_INIT([dlopen])
 LT_LANG([C++])
 LT_OUTPUT
