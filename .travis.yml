@@ -21,7 +21,7 @@ addons:
      - libcppunit-dev
   homebrew:
     packages:
-      - pkg-config
+      - autoconf-archive
 
 env:
   global:
@@ -60,7 +60,7 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      - sudo apt-get install gpm libgpm-dev libcppunit-dev pkg-config
+      - sudo apt-get install gpm libgpm-dev libcppunit-dev autoconf-archive
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
