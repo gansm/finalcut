@@ -57,7 +57,7 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      - sudo apt-get install gpm libgpm-dev libcppunit-dev
+      - sudo apt-get install gpm libgpm-dev libcppunit-dev pkg-config
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
@@ -86,8 +86,10 @@ matrix:
   - os: osx
     env:
       - TEST="macOS"
-    before_install:
-      - uname -a
+    addons:
+      homebrew:
+        packages:
+          - pkg-config
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
