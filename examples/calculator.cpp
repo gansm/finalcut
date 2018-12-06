@@ -345,11 +345,11 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    wchar_t bottom_line     = wchar_t(finalcut::fc::NF_border_line_bottom);
-    wchar_t top_bottom_line = wchar_t(finalcut::fc::NF_border_line_up_and_down);
-    wchar_t top_line        = wchar_t(finalcut::fc::NF_border_line_upper);
-    wchar_t right_line      = wchar_t(finalcut::fc::NF_rev_border_line_right);
-    wchar_t left_line       = wchar_t(finalcut::fc::NF_border_line_left);
+    wchar_t bottom_line     = finalcut::fc::NF_border_line_bottom;
+    wchar_t top_bottom_line = finalcut::fc::NF_border_line_up_and_down;
+    wchar_t top_line        = finalcut::fc::NF_border_line_upper;
+    wchar_t right_line      = finalcut::fc::NF_rev_border_line_right;
+    wchar_t left_line       = finalcut::fc::NF_border_line_left;
     setPrintPos (3, 2);
     print (finalcut::FString(33, bottom_line));
     setPrintPos (2, 3);
@@ -367,9 +367,9 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right  = wchar_t(finalcut::fc::BoxDrawingsVerticalAndRight);
-    wchar_t horizontal          = wchar_t(finalcut::fc::BoxDrawingsHorizontal);
-    wchar_t vertical_and_left   = wchar_t(finalcut::fc::BoxDrawingsVerticalAndLeft);
+    wchar_t vertical_and_right  = finalcut::fc::BoxDrawingsVerticalAndRight;
+    wchar_t horizontal          = finalcut::fc::BoxDrawingsHorizontal;
+    wchar_t vertical_and_left   = finalcut::fc::BoxDrawingsVerticalAndLeft;
     finalcut::FString separator = finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left);

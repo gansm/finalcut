@@ -85,6 +85,7 @@ class FLineEdit : public FWidget
     // Overloaded operators
     FLineEdit& operator = (const FString&);
     FLineEdit& operator << (const FString&);
+    FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
     FLineEdit& operator << (const uInt);
     FLineEdit& operator << (const int);

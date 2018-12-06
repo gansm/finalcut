@@ -56,6 +56,7 @@
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -86,14 +87,14 @@ class FString
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
-    FString (std::size_t, char);
-    FString (const FString&);       // implicit conversion copy constructor
-    FString (const std::wstring&);  // implicit conversion constructor
-    FString (const wchar_t[]);      // implicit conversion constructor
-    FString (const std::string&);   // implicit conversion constructor
-    FString (const char[]);         // implicit conversion constructor
-    FString (const wchar_t);        // implicit conversion constructor
-    FString (const char);           // implicit conversion constructor
+    FString (const FString&);        // implicit conversion copy constructor
+    FString (const std::wstring&);   // implicit conversion constructor
+    FString (const wchar_t[]);       // implicit conversion constructor
+    FString (const std::string&);    // implicit conversion constructor
+    FString (const char[]);          // implicit conversion constructor
+    FString (fc::SpecialCharacter);  // implicit conversion constructor
+    FString (const wchar_t);         // implicit conversion constructor
+    FString (const char);            // implicit conversion constructor
 
     // Destructor
     virtual ~FString ();
@@ -108,6 +109,7 @@ class FString
     const FString operator + (const char);
 
     FString& operator << (const FString&);
+    FString& operator << (fc::SpecialCharacter);
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     FString& operator << (const sInt16);

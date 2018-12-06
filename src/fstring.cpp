@@ -63,20 +63,6 @@ FString::FString (std::size_t len, wchar_t c)
 }
 
 //----------------------------------------------------------------------
-FString::FString (std::size_t len, char c)
-{
-  wchar_t* ps;
-  wchar_t* pe;
-
-  initLength(len);
-  ps = string;
-  pe = string + len;
-
-  while ( pe != ps )
-    *--pe = wchar_t(c);
-}
-
-//----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
 {
   if ( ! s.isNull() )
@@ -116,6 +102,18 @@ FString::FString (const char s[])
     const wchar_t* wc_string = c_to_wc_str(s);
     _assign( wc_string );
     delete[] wc_string;
+  }
+}
+
+//----------------------------------------------------------------------
+FString::FString (fc::SpecialCharacter c)
+{
+  if ( c )
+  {
+    wchar_t s[2];
+    s[0] = static_cast<wchar_t>(c);
+    s[1] = L'\0';
+    _assign (s);
   }
 }
 
@@ -203,6 +201,14 @@ const FString FString::operator + (const char c)
 //----------------------------------------------------------------------
 FString& FString::operator << (const FString& s)
 {
+  _insert (length, s.length, s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (fc::SpecialCharacter c)
+{
+  FString s(static_cast<wchar_t>(c));
   _insert (length, s.length, s.string);
   return *this;
 }

@@ -770,7 +770,7 @@ void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 {
   const char libver[] = F_VERSION;
-  finalcut::FString line(2, wchar_t(finalcut::fc::BoxDrawingsHorizontal));
+  finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" The Final Cut " + line + "\n\n"
@@ -793,7 +793,7 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
       << "  Type: " << getTermType() << "\n"
       << "  Name: " << getTermFileName() << "\n"
       << "  Mode: " << getEncodingString() << "\n"
-      << "  Size: " << x << wchar_t(finalcut::fc::Times)
+      << "  Size: " << x << finalcut::fc::Times
                     << y << "\n"
       << "Colors: " << getMaxColor()
     , finalcut::FMessageBox::Ok, 0, 0, this

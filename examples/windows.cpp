@@ -223,7 +223,7 @@ class Window : public finalcut::FDialog
 
     // Data Members
     std::vector<win_data*>    windows{};
-    finalcut::FString         drop_down_symbol{wchar_t(finalcut::fc::BlackDownPointingTriangle)};
+    finalcut::FString         drop_down_symbol{finalcut::fc::BlackDownPointingTriangle};
     finalcut::FMenuBar        Menubar{this};
     finalcut::FMenu           File{"&File", &Menubar};
     finalcut::FDialogListMenu DglList{drop_down_symbol, &Menubar};

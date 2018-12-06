@@ -77,9 +77,9 @@ class FOptiAttr
     // Typedefs
     typedef struct
     {
-      int    code;      // character code
-      FColor fg_color;  // foreground color
-      FColor bg_color;  // background color
+      wchar_t code;      // character code
+      FColor  fg_color;  // foreground color
+      FColor  bg_color;  // background color
 
       union attribute
       {

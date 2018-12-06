@@ -287,8 +287,8 @@ class FVTerm
     int                   print (term_area*, const FString&);
     int                   print (const std::vector<charData>&);
     int                   print (term_area*, const std::vector<charData>&);
-    int                   print (int);
-    int                   print (term_area*, int);
+    int                   print (wchar_t);
+    int                   print (term_area*, wchar_t);
     int                   print (charData&);
     int                   print (term_area*, charData&);
     FVTerm&               print();

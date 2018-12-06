@@ -85,7 +85,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
 
   // Statusbar at the bottom
   finalcut::FString separator;
-  separator << ' ' << wchar_t(finalcut::fc::BoxDrawingsVertical) << ' ';
+  separator << ' ' << finalcut::fc::BoxDrawingsVertical << ' ';
   listView.setStatusbarMessage ( finalcut::FString()
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
@@ -170,7 +170,7 @@ void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
         static_cast<finalcut::FListViewItem*>(*iter);
 
     if ( item->isChecked() )
-      shopping_list << wchar_t(finalcut::fc::Bullet) << ' '
+      shopping_list << finalcut::fc::Bullet << ' '
                     << item->getText(1) << '\n';
 
     ++iter;

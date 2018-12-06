@@ -75,6 +75,10 @@ AC_CONFIG_FILES([Makefile
                  finalcut.spec
                  finalcut.pc])
 
+# Check for C++11 support
+AX_CHECK_COMPILE_FLAG([[-std=c++11]],,
+                      [AC_MSG_ERROR([compiler did not accept -std=c++11])])
+
 # use GPM (General Purpose Mouse)
 AC_ARG_WITH([gpm],
             [AS_HELP_STRING([--without-gpm], [Disable GPM mouse support])],

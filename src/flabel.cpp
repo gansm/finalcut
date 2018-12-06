@@ -70,6 +70,13 @@ FLabel& FLabel::operator << (const FString& s)
 }
 
 //----------------------------------------------------------------------
+FLabel& FLabel::operator << (fc::SpecialCharacter c)
+{
+  setText(text + static_cast<wchar_t>(c));
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FLabel& FLabel::operator << (const wchar_t c)
 {
   setText(text + c);

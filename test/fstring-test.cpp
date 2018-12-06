@@ -824,6 +824,10 @@ void FStringTest::streamInsertionTest()
   CPPUNIT_ASSERT ( out == L"ABC" );
 
   out.clear();
+  out << finalcut::fc::Euro;
+  CPPUNIT_ASSERT ( out == L"€" );
+
+  out.clear();
   out << wchar_t(L'A');
   CPPUNIT_ASSERT ( out == L"A" );
 

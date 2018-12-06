@@ -1768,7 +1768,7 @@ inline FString FListView::getCheckBox (const FListViewItem* item)
     checkbox = L"[ ] ";
 
     if ( item->isChecked() )
-      checkbox[1] = wchar_t(fc::Times);  // Times ×
+      checkbox[1] = fc::Times;  // Times ×
   }
 
   return checkbox;
@@ -1789,12 +1789,12 @@ inline FString FListView::getLinePrefix ( const FListViewItem* item
     {
       if ( item->isExpand() )
       {
-        line += wchar_t(fc::BlackDownPointingTriangle);  // ▼
+        line += fc::BlackDownPointingTriangle;  // ▼
         line += L' ';
       }
       else
       {
-        line += wchar_t(fc::BlackRightPointingPointer);  // ►
+        line += fc::BlackRightPointingPointer;  // ►
         line += L' ';
       }
     }
@@ -1821,9 +1821,9 @@ inline void FListView::drawSortIndicator ( std::size_t& length
   length++;
 
   if ( sort_order == fc::ascending )
-    headerline << wchar_t(fc::BlackUpPointingTriangle);    // ▲
+    headerline << fc::BlackUpPointingTriangle;    // ▲
   else if ( sort_order == fc::descending )
-    headerline << wchar_t(fc::BlackDownPointingTriangle);  // ▼
+    headerline << fc::BlackDownPointingTriangle;  // ▼
 
   if ( length < column_width  )
   {
@@ -1836,7 +1836,7 @@ inline void FListView::drawSortIndicator ( std::size_t& length
 inline void FListView::drawHeaderBorder (std::size_t length)
 {
   setColor();
-  const FString line (length, wchar_t(fc::BoxDrawingsHorizontal));
+  const FString line (length, fc::BoxDrawingsHorizontal);
   headerline << line;  // horizontal line
 }
 

@@ -242,7 +242,7 @@ void Brushes::draw()
   setColor (fg_color, bg_color);
   setPrintPos (2, 3);
   print("   ");
-  print(finalcut::FString(3, wchar_t(finalcut::fc::MediumShade)));
+  print(finalcut::FString(3, finalcut::fc::MediumShade));
 
   if ( brush == L' ' )
     pos = 0;
@@ -251,9 +251,9 @@ void Brushes::draw()
 
   setColor();
   setPrintPos (3 + pos, 2);
-  print(wchar_t(finalcut::fc::BlackDownPointingTriangle));
+  print(finalcut::fc::BlackDownPointingTriangle);
   setPrintPos (3 + pos, 4);
-  print(wchar_t(finalcut::fc::BlackUpPointingTriangle));
+  print(finalcut::fc::BlackUpPointingTriangle);
 }
 
 //----------------------------------------------------------------------
@@ -272,7 +272,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
   }
   else if ( mouse_x >= 5 && mouse_x <= 7 && mouse_y == 3 )
   {
-    brush = wchar_t(finalcut::fc::MediumShade);
+    brush = finalcut::fc::MediumShade;
     redraw();
   }
 }
@@ -416,25 +416,25 @@ void MouseDraw::draw()
     for (int y = 2; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(finalcut::fc::NF_rev_border_line_right));
+      print (finalcut::fc::NF_rev_border_line_right);
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(finalcut::fc::NF_rev_border_corner_lower_right));
+    print (finalcut::fc::NF_rev_border_corner_lower_right);
   }
   else
   {
     setPrintPos (10, 2);
-    print (wchar_t(finalcut::fc::BoxDrawingsDownAndHorizontal));
+    print (finalcut::fc::BoxDrawingsDownAndHorizontal);
 
     for (int y = 3; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(finalcut::fc::BoxDrawingsVertical));
+      print (finalcut::fc::BoxDrawingsVertical);
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(finalcut::fc::BoxDrawingsUpAndHorizontal));
+    print (finalcut::fc::BoxDrawingsUpAndHorizontal);
   }
 
   drawCanvas();

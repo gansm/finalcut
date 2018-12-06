@@ -103,7 +103,7 @@ void Transparent::draw()
   else
     setTransparent();
 
-  finalcut::FString line(getClientWidth(), wchar_t('.'));
+  finalcut::FString line(getClientWidth(), '.');
 
   for (int n = 1; n <= int(getClientHeight()); n++)
   {

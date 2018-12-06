@@ -73,6 +73,13 @@ FLineEdit& FLineEdit::operator << (const FString& s)
 }
 
 //----------------------------------------------------------------------
+FLineEdit& FLineEdit::operator << (fc::SpecialCharacter c)
+{
+  setText(text + static_cast<wchar_t>(c));
+  return *this;
+}
+
+//----------------------------------------------------------------------
 FLineEdit& FLineEdit::operator << (const wchar_t c)
 {
   setText(text + c);

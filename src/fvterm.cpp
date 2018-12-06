@@ -451,7 +451,7 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (int c)
+int FVTerm::print (wchar_t c)
 {
   term_area* area = getPrintArea();
 
@@ -467,14 +467,14 @@ int FVTerm::print (int c)
 }
 
 //----------------------------------------------------------------------
-int FVTerm::print (term_area* area, int c)
+int FVTerm::print (term_area* area, wchar_t c)
 {
   charData nc;  // next character
 
   if ( ! area )
     return -1;
 
-  nc.code         = c;
+  nc.code         = wchar_t(c);
   nc.fg_color     = next_attribute.fg_color;
   nc.bg_color     = next_attribute.bg_color;
   nc.attr.byte[0] = next_attribute.attr.byte[0];

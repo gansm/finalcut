@@ -579,4 +579,24 @@ inline void FTerm::changeTermSizeFinished()
 
 }  // namespace finalcut
 
+
+namespace
+{
+
+//----------------------------------------------------------------------
+inline std::ostream& operator << ( std::ostream& os
+                                 , finalcut::fc::SpecialCharacter c )
+{
+  return os << static_cast<char>(c);
+}
+
+//----------------------------------------------------------------------
+inline std::wostream& operator << ( std::wostream& os
+                                  , finalcut::fc::SpecialCharacter c )
+{
+  return os << static_cast<wchar_t>(c);
+}
+
+}  // namespace
+
 #endif  // FTERM_H

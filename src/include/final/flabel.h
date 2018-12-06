@@ -82,6 +82,7 @@ class FLabel : public FWidget
     // Overloaded operators
     FLabel& operator = (const FString&);
     FLabel& operator << (const FString&);
+    FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
     FLabel& operator << (const uInt);
     FLabel& operator << (const int);

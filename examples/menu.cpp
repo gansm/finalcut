@@ -63,7 +63,7 @@ class Menu : public finalcut::FDialog
     void cb_message (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FString        line{13, wchar_t(finalcut::fc::BoxDrawingsHorizontal)};
+    finalcut::FString        line{13, finalcut::fc::BoxDrawingsHorizontal};
     finalcut::FMenuBar       Menubar{this};
     finalcut::FMenu          File{"&File", &Menubar};
     finalcut::FMenu          Edit{"&Edit", &Menubar};

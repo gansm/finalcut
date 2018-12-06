@@ -1278,7 +1278,7 @@ inline void FMenu::drawSeparator (int y)
   {
     print (fc::NF_border_line_vertical_right);
     FString line ( std::size_t(getWidth()) - 2
-                 , wchar_t(fc::BoxDrawingsHorizontal) );
+                 , fc::BoxDrawingsHorizontal );
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
@@ -1286,7 +1286,7 @@ inline void FMenu::drawSeparator (int y)
   {
     print (fc::BoxDrawingsVerticalAndRight);
     FString line ( std::size_t(getWidth()) - 2
-                 , wchar_t(fc::BoxDrawingsHorizontal));
+                 , fc::BoxDrawingsHorizontal);
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }
@@ -1447,9 +1447,9 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
   if ( len > 0 )
   {
     // Print filling blank spaces
-    print (FString(len, wchar_t(' ')));
+    print (FString(len, L' '));
     // Print BlackRightPointingPointer ►
-    print (wchar_t(fc::BlackRightPointingPointer));
+    print (fc::BlackRightPointingPointer);
     startpos = max_item_width - (c + 2);
   }
 }
@@ -1465,7 +1465,7 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
   if ( len > 0 )
   {
     // Print filling blank spaces + accelerator key name
-    FString spaces (len, wchar_t(' '));
+    FString spaces (len, L' ');
     print (spaces + accel_name);
     startpos = max_item_width - (c + 2);
   }
