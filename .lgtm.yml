@@ -1,0 +1,18 @@
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - autoconf-archive
+        - libtinfo-dev
+        - libncurses5-dev
+        - gpm
+        - libgpm-dev
+        - libcppunit-dev
+    configure:
+      command:
+        - autoreconf -v --install --force
+        - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG -W -Wall -pedantic"
+    index:
+      build_command:
+        - make V=1 -j10
+
