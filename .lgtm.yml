@@ -3,11 +3,6 @@ extraction:
     prepare:
       packages:
         - autoconf-archive
-        - libtinfo-dev
-        - libncurses5-dev
-        - gpm
-        - libgpm-dev
-        - libcppunit-dev
     configure:
       command:
         - autoreconf -v --install --force
