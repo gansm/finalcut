@@ -31,7 +31,7 @@ namespace finalcut
 
 // static class attributes
 long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
-struct timeval FKeyboard::time_keypressed;
+struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
   FTermLinux* FKeyboard::linux = 0;
@@ -74,10 +74,6 @@ FKeyboard::FKeyboard()
 
   if ( stdin_status_flags == -1 )
     std::abort();
-
-  // Initialize arrays with '\0'
-  std::fill_n (read_buf, READ_BUF_SIZE, '\0');
-  std::fill_n (fifo_buf, FIFO_BUF_SIZE, '\0');
 }
 
 //----------------------------------------------------------------------

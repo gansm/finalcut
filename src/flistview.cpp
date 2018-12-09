@@ -1314,12 +1314,11 @@ void FListView::onFocusOut (FFocusEvent*)
 
 // protected methods of FListView
 //----------------------------------------------------------------------
-void FListView::adjustViewport()
+void FListView::adjustViewport (int element_count)
 {
-  int element_count = int(getCount());
   int height = int(getClientHeight());
 
-  if ( element_count == 0 || height <= 0 )
+  if ( height <= 0 )
     return;
 
   if ( element_count < height )
@@ -1357,29 +1356,40 @@ void FListView::adjustViewport()
 //----------------------------------------------------------------------
 void FListView::adjustSize()
 {
-  std::size_t element_count;
   FWidget::adjustSize();
-  adjustViewport();
+  std::size_t element_count = getCount();
+  std::size_t width = getClientWidth();
+  std::size_t height = getClientHeight();
 
-  element_count = getCount();
-  vbar->setMaximum (int(element_count - getClientHeight()));
-  vbar->setPageSize (int(element_count), int(getClientHeight()));
+  if ( element_count == 0 )
+    return;
+
+  adjustViewport (int(element_count));
+
+  int vmax = ( element_count > height )
+             ? int(element_count - height)
+             : 0;
+  vbar->setMaximum (vmax);
+  vbar->setPageSize (int(element_count), int(height));
   vbar->setX (int(getWidth()));
-  vbar->setHeight (getClientHeight(), false);
+  vbar->setHeight (height, false);
   vbar->resize();
 
-  hbar->setMaximum (max_line_width - int(getClientWidth()));
-  hbar->setPageSize (max_line_width, int(getClientWidth()));
+  int hmax = ( max_line_width > width )
+             ? int(max_line_width - width)
+             : 0;
+  hbar->setMaximum (hmax);
+  hbar->setPageSize (int(max_line_width), int(width));
   hbar->setY (int(getHeight()));
-  hbar->setWidth (getClientWidth(), false);
+  hbar->setWidth (width, false);
   hbar->resize();
 
-  if ( element_count <= getClientHeight() )
+  if ( element_count <= height )
     vbar->hide();
   else
     vbar->setVisible();
 
-  if ( max_line_width <= int(getClientWidth()) )
+  if ( max_line_width <= width )
     hbar->hide();
   else
     hbar->setVisible();
@@ -1433,7 +1443,7 @@ void FListView::init()
   setTopPadding(1);
   setLeftPadding(1);
   setBottomPadding(1);
-  setRightPadding(1 + nf_offset);
+  setRightPadding(1 + int(nf_offset));
 }
 
 //----------------------------------------------------------------------
@@ -1706,7 +1716,7 @@ void FListView::drawListLine ( const FListViewItem* item
   }
 
   line = line.mid ( std::size_t(xoffset) + 1
-                  , getWidth() - std::size_t(nf_offset) - 2);
+                  , getWidth() - nf_offset - 2);
   const wchar_t* const& element_str = line.wc_str();
   std::size_t len = line.getLength();
   std::size_t i;
@@ -1714,7 +1724,7 @@ void FListView::drawListLine ( const FListViewItem* item
   for (i = 0; i < len; i++)
     *this << element_str[i];
 
-  for (; i < getWidth() - std::size_t(nf_offset) - 2; i++)
+  for (; i < getWidth() - nf_offset - 2; i++)
     print (' ');
 }
 
@@ -1925,10 +1935,10 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 }
 
 //----------------------------------------------------------------------
-int FListView::determineLineWidth (FListViewItem* item)
+std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
-  static const int padding_space = 1;
-  int  line_width = padding_space;  // leading space
+  static const std::size_t padding_space = 1;
+  std::size_t line_width = padding_space;  // leading space
   uInt column_idx = 0;
   uInt entries = uInt(item->column_list.size());
   headerItems::iterator header_iter;
@@ -1936,23 +1946,24 @@ int FListView::determineLineWidth (FListViewItem* item)
 
   while ( header_iter != header.end() )
   {
-    int width = header_iter->width;
+    std::size_t width = std::size_t(header_iter->width);
     bool fixed_width = header_iter->fixed_width;
 
     if ( ! fixed_width )
     {
-      int len;
+      std::size_t len;
 
       if ( column_idx < entries )
-        len = int(item->column_list[column_idx].getLength());
+        len = item->column_list[column_idx].getLength();
       else
         len = 0;
 
       if ( len > width )
-        header_iter->width = len;
+        header_iter->width = int(len);
     }
 
-    line_width += header_iter->width + padding_space;  // width + trailing space
+    line_width += std::size_t(header_iter->width)
+                + padding_space;  // width + trailing space
     column_idx++;
     ++header_iter;
   }
@@ -1963,7 +1974,7 @@ int FListView::determineLineWidth (FListViewItem* item)
 //----------------------------------------------------------------------
 inline void FListView::beforeInsertion (FListViewItem* item)
 {
-  int line_width = determineLineWidth (item);
+  std::size_t line_width = determineLineWidth (item);
   recalculateHorizontalBar (line_width);
 }
 
@@ -1981,22 +1992,25 @@ inline void FListView::afterInsertion()
   // Sort list by a column (only if activated)
   sort();
 
-  int element_count = int(getCount());
+  std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
 }
 
 //----------------------------------------------------------------------
-void FListView::recalculateHorizontalBar (int len)
+void FListView::recalculateHorizontalBar (std::size_t len)
 {
   if ( len <= max_line_width )
     return;
 
   max_line_width = len;
 
-  if ( len >= int(getWidth()) - nf_offset - 3 )
+  if ( len >= getWidth() - nf_offset - 3 )
   {
-    hbar->setMaximum (max_line_width - int(getWidth()) + nf_offset + 4);
-    hbar->setPageSize (max_line_width, int(getWidth()) - nf_offset - 4);
+    int hmax = ( max_line_width > getWidth() - nf_offset - 4 )
+               ? int(max_line_width - getWidth() + nf_offset + 4)
+               : 0;
+    hbar->setMaximum (hmax);
+    hbar->setPageSize (int(max_line_width), int(getWidth() - nf_offset) - 4);
     hbar->calculateSliderValues();
 
     if ( ! hbar->isVisible() )
@@ -2005,13 +2019,16 @@ void FListView::recalculateHorizontalBar (int len)
 }
 
 //----------------------------------------------------------------------
-void FListView::recalculateVerticalBar (int element_count)
+void FListView::recalculateVerticalBar (std::size_t element_count)
 {
-  vbar->setMaximum (element_count - int(getHeight()) + 2);
-  vbar->setPageSize (element_count, int(getHeight()) - 2);
+  int vmax = ( element_count > getHeight() - 2 )
+             ? int(element_count - getHeight() + 2)
+             : 0;
+  vbar->setMaximum (vmax);
+  vbar->setPageSize (int(element_count), int(getHeight()) - 2);
   vbar->calculateSliderValues();
 
-  if ( ! vbar->isVisible() && element_count >= int(getHeight()) - 1 )
+  if ( ! vbar->isVisible() && element_count >= getHeight() - 1 )
     vbar->setVisible();
 }
 
@@ -2239,7 +2256,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
       // Collapse element
       item->collapse();
       adjustSize();
-      int element_count = int(getCount());
+      std::size_t  element_count = getCount();
       recalculateVerticalBar (element_count);
       // Force vertical scrollbar redraw
       first_line_position_before = -1;
@@ -2283,7 +2300,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
 //----------------------------------------------------------------------
 inline void FListView::keyRight (int& first_line_position_before)
 {
-  int xoffset_end = max_line_width - int(getClientWidth());
+  int xoffset_end = int(max_line_width) - int(getClientWidth());
   FListViewItem* item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
@@ -2461,7 +2478,7 @@ void FListView::stepBackward (int distance)
 //----------------------------------------------------------------------
 void FListView::scrollToX (int x)
 {
-  int xoffset_end = max_line_width - int(getClientWidth());
+  int xoffset_end = int(max_line_width) - int(getClientWidth());
 
   if ( xoffset == x )
     return;

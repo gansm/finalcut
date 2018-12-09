@@ -167,8 +167,8 @@ class FKeyboard
 
     // Data Members
     FKey                key{0};
-    char                read_buf[READ_BUF_SIZE]{};
-    char                fifo_buf[FIFO_BUF_SIZE]{};
+    char                read_buf[READ_BUF_SIZE]{'\0'};
+    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
     int                 fifo_offset{0};
     bool                fifo_in_use{false};
     int                 stdin_status_flags{0};

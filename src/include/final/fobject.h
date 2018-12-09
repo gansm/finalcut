@@ -125,15 +125,15 @@ class FObject
     // Accessor
     TimerList*           getTimerList() const;
 
+    // Mutator
+    void                 setWidgetProperty (bool);
+
     // Method
     uInt                 processTimerEvent();
 
     // Event handler
     virtual bool         event (FEvent*);
     virtual void         onTimer (FTimerEvent*);
-
-    // Data Member
-    bool widget_object{false};
 
   private:
     // Disable copy constructor
@@ -149,6 +149,7 @@ class FObject
     FObject*          parent_obj{};
     FObjectList       children_list{};  // no children yet
     bool              has_parent{false};
+    bool              widget_object{false};
     static bool       timer_modify_lock;
     static TimerList* timer_list;
 };
@@ -218,6 +219,10 @@ inline bool FObject::isTimerInUpdating() const
 //----------------------------------------------------------------------
 inline FObject::TimerList* FObject::getTimerList() const
 { return timer_list; }
+
+//----------------------------------------------------------------------
+inline void FObject::setWidgetProperty (bool property)
+{ widget_object = property; }
 
 
 //----------------------------------------------------------------------

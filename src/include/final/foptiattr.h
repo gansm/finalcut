@@ -372,7 +372,7 @@ class FOptiAttr
     bool       alt_equal_pc_charset{false};
     bool       monochron{true};
     bool       fake_reverse{false};
-    char       attr_buf[8192]{};
+    char       attr_buf[8192]{'\0'};
     char*      attr_ptr{attr_buf};
 };
 #pragma pack(pop)

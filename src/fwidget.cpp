@@ -65,7 +65,7 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
   flags.visible = true;         // A widget is visible by default
   flags.focusable = true;       // A widget is focusable by default
   flags.visible_cursor = true;  // A widget has a visible cursor by default
-  widget_object = true;         // This FObject is a widget
+  setWidgetProperty (true);     // This FObject is a widget
 
   if ( ! parent )
   {

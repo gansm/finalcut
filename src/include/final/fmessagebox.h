@@ -168,7 +168,7 @@ class FMessageBox : public FDialog
     FColor        emphasis_color{wc.dialog_emphasis_fg};
     uInt          num_buttons{0};
     uInt          text_num_lines{0};
-    int           button_digit[3]{};
+    int           button_digit[3]{0};
     FButton*      button[3]{0};
 };
 #pragma pack(pop)

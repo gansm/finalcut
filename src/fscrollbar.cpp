@@ -82,15 +82,21 @@ void FScrollbar::setRange (int minimum, int maximum)
 //----------------------------------------------------------------------
 void FScrollbar::setValue (int value)
 {
-  val = value;
+  if ( value < min )
+    val = min;
+  else if ( value > max )
+    val = max;
+  else
+    val = value;
+
   calculateSliderValues();
 }
 
 //----------------------------------------------------------------------
 void FScrollbar::setSteps (double st)
 {
-  if ( st <= 0 )
-    steps = 1;
+  if ( st <= 0.0 )
+    steps = 1.0;
   else
     steps = st;
 
@@ -109,7 +115,11 @@ void FScrollbar::setPageSize (int document_size, int page_size)
   else
   {
     pagesize = page_size;
-    steps = double(double(document_size) / double(page_size));
+
+    if ( document_size <= 0 || page_size <= 0 )
+      steps = 1.0;
+    else
+      steps = double(double(document_size) / double(page_size));
   }
 }
 
@@ -185,9 +195,9 @@ void FScrollbar::redraw()
 void FScrollbar::calculateSliderValues()
 {
   if ( isNewFont() && bar_orientation == fc::horizontal )
-    bar_length = length - 4;
+    bar_length = ( length > 2 ) ? length - 4 : 1;
   else
-    bar_length = length - 2;
+    bar_length = ( length > 2 ) ? length - 2 : 1;
 
   slider_length = std::size_t(double(bar_length) / steps);
 
@@ -208,13 +218,15 @@ void FScrollbar::calculateSliderValues()
     return;
   }
 
-  std::size_t v = std::size_t(val);
-  slider_pos = int( round ( double((bar_length - slider_length) * v)
-                          / double(max - min) ) );
+  std::size_t v = ( min < 0 ) ? std::size_t(val - min) : std::size_t(val);
 
-  if ( slider_pos < 0 )
+  if ( slider_length >= bar_length )
     slider_pos = 0;
-  else if ( slider_pos > int(bar_length - slider_length) )
+  else
+    slider_pos = int( round ( double((bar_length - slider_length) * v)
+                            / double(max - min) ) );
+
+  if ( slider_pos > int(bar_length - slider_length) )
     slider_pos = int(bar_length - slider_length);
 }
 

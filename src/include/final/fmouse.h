@@ -268,10 +268,10 @@ class FMouseX11 : public FMouse
 {
   public:
     // Constructor
-    FMouseX11();
+    FMouseX11() = default;
 
     // Destructor
-    virtual ~FMouseX11();
+    virtual ~FMouseX11() = default;
 
     // Accessors
     virtual const char*  getClassName() const;
@@ -314,7 +314,7 @@ class FMouseX11 : public FMouse
     void         setButtonState (int, struct timeval*);
 
     // Data Member
-    char  x11_mouse[MOUSE_BUF_SIZE]{};
+    char  x11_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar x11_button_state{all_buttons_released};
 };
 #pragma pack(pop)
@@ -331,10 +331,10 @@ class FMouseSGR : public FMouse
 {
   public:
     // Constructor
-    FMouseSGR();
+    FMouseSGR() = default;
 
     // Destructor
-    virtual ~FMouseSGR();
+    virtual ~FMouseSGR() = default;
 
     // Accessors
     virtual const char*  getClassName() const;
@@ -377,7 +377,7 @@ class FMouseSGR : public FMouse
     void         setReleasedButtonState (int);
 
     // Data Members
-    char  sgr_mouse[MOUSE_BUF_SIZE]{};
+    char  sgr_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar sgr_button_state{0x23};
 };
 #pragma pack(pop)
@@ -394,10 +394,10 @@ class FMouseUrxvt : public FMouse
 {
   public:
     // Constructor
-    FMouseUrxvt();
+    FMouseUrxvt() = default;
 
     // Destructor
-    virtual ~FMouseUrxvt();
+    virtual ~FMouseUrxvt() = default;
 
     // Accessors
     virtual const char*  getClassName() const;
@@ -440,7 +440,7 @@ class FMouseUrxvt : public FMouse
     void         setButtonState (int, struct timeval*);
 
     // Data Members
-    char  urxvt_mouse[MOUSE_BUF_SIZE]{};
+    char  urxvt_mouse[MOUSE_BUF_SIZE]{'\0'};
     uChar urxvt_button_state{all_buttons_released};
 };
 #pragma pack(pop)

@@ -60,10 +60,10 @@ class FTermData
     typedef std::map<std::string, fc::encoding> encodingMap;
 
     // Constructors
-    FTermData();
+    FTermData() = default;
 
     // Destructor
-    ~FTermData();
+    ~FTermData() = default;
 
     // Accessors
     const char*     getClassName() const;
@@ -146,8 +146,8 @@ class FTermData
     bool            vga_font{false};
     bool            monochron{false};
     bool            resize_term{false};
-    char            termtype[256]{};
-    char            termfilename[256]{};
+    char            termtype[256]{'\0'};
+    char            termfilename[256]{'\0'};
     FString         xterm_font{};
     FString         xterm_title{};
 
@@ -158,18 +158,6 @@ class FTermData
 #pragma pack(pop)
 
 // FTermData inline functions
-//----------------------------------------------------------------------
-inline FTermData::FTermData()
-{
-  // Initialize arrays with '\0'
-  std::fill_n (termtype, sizeof(termtype), '\0');
-  std::fill_n (termfilename, sizeof(termfilename), '\0');
-}
-
-//----------------------------------------------------------------------
-inline FTermData::~FTermData()
-{ }
-
 //----------------------------------------------------------------------
 inline const char* FTermData::getClassName() const
 { return "FTermData"; }

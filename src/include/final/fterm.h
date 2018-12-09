@@ -173,7 +173,6 @@ class FTerm
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
     static FOptiMove*      getFOptiMove();
-
     static int             getTTYFileDescriptor();
     static char*           getTermType();
     static char*           getTermFileName();

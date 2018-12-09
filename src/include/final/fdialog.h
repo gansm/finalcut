@@ -117,7 +117,7 @@ class FDialog : public FWindow
     // Methods
     virtual void        show();
     virtual void        hide();
-    DialogCode          exec();
+    int                 exec();
     virtual void        setPos (int, int, bool = true);
     virtual void        move (int, int);
     bool                moveUp (int);
@@ -145,7 +145,7 @@ class FDialog : public FWindow
 
   protected:
     // Methods
-    virtual void        done (DialogCode);
+    virtual void        done (int);
     virtual void        draw();
     void                drawDialogShadow();
 
@@ -223,7 +223,7 @@ class FDialog : public FWindow
 
     // Data Members
     FString             tb_text{};  // title bar text
-    DialogCode          result_code{FDialog::Reject};
+    int                 result_code{FDialog::Reject};
     bool                zoom_button_pressed{false};
     bool                zoom_button_active{false};
     bool                setPos_error{false};

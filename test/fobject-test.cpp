@@ -60,6 +60,16 @@ class FObject_protected : public finalcut::FObject
       return processTimerEvent();
     }
 
+    void setWidgetProperty (bool property)
+    {
+      finalcut::FObject::setWidgetProperty (property);
+    }
+
+    bool isWidget()
+    {
+      return finalcut::FObject::isWidget();
+    }
+
     virtual void performTimerAction (const FObject*, const finalcut::FEvent*)
     {
       std::cout << ".";
@@ -90,6 +100,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void classNameTest();
     void noArgumentTest();
     void childObjectTest();
+    void widgetObjectTest();
     void removeParentTest();
     void addTest();
     void delTest();
@@ -106,6 +117,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (classNameTest);
     CPPUNIT_TEST (noArgumentTest);
     CPPUNIT_TEST (childObjectTest);
+    CPPUNIT_TEST (widgetObjectTest);
     CPPUNIT_TEST (removeParentTest);
     CPPUNIT_TEST (addTest);
     CPPUNIT_TEST (delTest);
@@ -219,6 +231,17 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( ! c1->isWidget() );
   CPPUNIT_ASSERT ( c1->isInstanceOf("FObject") );
   CPPUNIT_ASSERT ( ! c1->isTimerInUpdating() );
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::widgetObjectTest()
+{
+  FObject_protected o;
+  CPPUNIT_ASSERT ( ! o.isWidget() );
+  o.setWidgetProperty (true);
+  CPPUNIT_ASSERT ( o.isWidget() );
+  o.setWidgetProperty (false);
+  CPPUNIT_ASSERT ( ! o.isWidget() );
 }
 
 //----------------------------------------------------------------------

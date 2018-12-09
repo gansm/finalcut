@@ -234,7 +234,7 @@ class FOptiMove
 
     bool        automatic_left_margin{false};
     bool        eat_nl_glitch{false};
-    char        move_buf[BUF_SIZE]{};
+    char        move_buf[BUF_SIZE]{'\0'};
     int         char_duration{1};
     int         baudrate{9600};
     int         tabstop{0};

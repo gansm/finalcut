@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <cstddef>
 #include <limits>
 #include <string>
 

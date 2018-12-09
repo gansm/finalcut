@@ -35,11 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FOptiAttr::FOptiAttr()
 {
-  attr_buf[0] = '\0';
-  // Set to 0 to reset
-  reset_byte_mask.attr.byte[0] = 0;
-  reset_byte_mask.attr.byte[1] = 0;
-  reset_byte_mask.attr.byte[2] = 0;
   // Set bits that must not be reset
   reset_byte_mask.attr.bit.transparent  = true;
   reset_byte_mask.attr.bit.trans_shadow = true;

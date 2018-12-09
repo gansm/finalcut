@@ -344,7 +344,7 @@ class FListView : public FWidget
 
   protected:
     // Methods
-    void                 adjustViewport();
+    void                 adjustViewport (int);
     virtual void         adjustSize();
 
   private:
@@ -382,11 +382,11 @@ class FListView : public FWidget
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
-    int                  determineLineWidth (FListViewItem*);
+    std::size_t          determineLineWidth (FListViewItem*);
     void                 beforeInsertion (FListViewItem*);
     void                 afterInsertion();
-    void                 recalculateHorizontalBar (int);
-    void                 recalculateVerticalBar (int);
+    void                 recalculateHorizontalBar (std::size_t);
+    void                 recalculateVerticalBar (std::size_t);
     void                 mouseHeaderClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);
@@ -443,8 +443,8 @@ class FListView : public FWidget
     FPoint               clicked_header_pos{-1, -1};
     const FListViewItem* clicked_checkbox_item{0};
     int                  xoffset{0};
-    int                  nf_offset{0};
-    int                  max_line_width{1};
+    std::size_t          nf_offset{0};
+    std::size_t          max_line_width{1};
     int                  sort_column{-1};
     sortTypes            sort_type{};
     fc::sorting_order    sort_order{fc::unsorted};
@@ -466,17 +466,12 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
-      : name()
-      , width (0)
-      , fixed_width (false)
-      , alignment (fc::alignLeft)
-    { }
+    Header() = default;
 
-    FString name;
-    int width;
-    bool fixed_width;
-    fc::text_alignment alignment;
+    FString name{};
+    int width{0};
+    bool fixed_width{false};
+    fc::text_alignment alignment{fc::alignLeft};
 };
 #pragma pack(pop)
 

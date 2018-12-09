@@ -39,9 +39,6 @@ FOptiMove::FOptiMove (int baud)
 {
   assert ( baud >= 0 );
 
-  // Initialize arrays with '\0'
-  std::fill_n (move_buf, sizeof(move_buf), '\0');
-
   calculateCharDuration();
 
   // ANSI set cursor address preset for undefined terminals

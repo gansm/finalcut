@@ -221,7 +221,7 @@ class FListBox : public FWidget
 
   protected:
     // Methods
-    void         adjustYOffset();
+    void         adjustYOffset (std::size_t);
     virtual void adjustSize();
 
   private:

@@ -402,8 +402,8 @@ class FWidget : public FVTerm, public FObject
     static widgetList*    dialog_list;
     static widgetList*    always_on_top_list;
     static widgetList*    close_widget;
-    CallbackObjects       callback_objects{};
     MemberCallbackObjects member_callback_objects{};
+    CallbackObjects       callback_objects{};
 
   private:
     // Disable copy constructor

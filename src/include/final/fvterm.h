@@ -1083,7 +1083,7 @@ inline FMouseControl* FVTerm::getMouseControl()
 
 //----------------------------------------------------------------------
 inline FTerm::initializationValues& FVTerm::getInitValues()
-{ return getFTerm().getInitValues(); }
+{ return FTerm::init_values; }
 
 //----------------------------------------------------------------------
 inline void FVTerm::setInsertCursor (bool on)

@@ -82,7 +82,7 @@ class FTermcap
     typedef struct
     {
       char* string;
-      char  tname[3];
+      char  tname[alignof(char*)];
     }
     tcap_map;
 

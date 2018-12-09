@@ -137,13 +137,16 @@ void FToolTip::calculateDimensions()
   int x, y;
   std::size_t w, h;
   FWidget* r = getRootWidget();
+  max_line_width = 0;
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());
-  text_components = &text_split[0];
-  max_line_width = 0;
+
+  if ( text_num_lines == 0 )
+    return;
 
   for (std::size_t i = 0; i < text_num_lines; i++)
   {
+    text_components = &text_split[0];
     std::size_t len = text_components[i].getLength();
 
     if ( len > max_line_width )
