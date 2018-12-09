@@ -35,9 +35,13 @@ class AttribDlg : public finalcut::FDialog
   public:
     // Constructor
     explicit AttribDlg (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    AttribDlg (const AttribDlg&) = delete;
     // Destructor
     ~AttribDlg();
+
+    // Disable assignment operator (=)
+    AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Event handlers
     virtual void onAccel (finalcut::FAccelEvent*);
@@ -52,11 +56,6 @@ class AttribDlg : public finalcut::FDialog
     FColor bgcolor;
 
   private:
-    // Disable copy constructor
-    AttribDlg (const AttribDlg&);
-    // Disable assignment operator (=)
-    AttribDlg& operator = (const AttribDlg&);
-
     // Method
     virtual void adjustSize();
 

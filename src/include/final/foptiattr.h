@@ -157,9 +157,13 @@ class FOptiAttr
 
     // Constructor
     FOptiAttr();
-
+    // Disable copy constructor
+    FOptiAttr (const FOptiAttr&) = delete;
     // Destructor
     virtual ~FOptiAttr();
+
+    // Disable assignment operator (=)
+    FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Friend operator functions
     friend bool operator == (const charData&, const charData&);
@@ -257,12 +261,6 @@ class FOptiAttr
       italic_mode      = 32768,
       no_mode          = 65536
     };
-
-    // Disable copy constructor
-    FOptiAttr (const FOptiAttr&);
-
-    // Disable assignment operator (=)
-    FOptiAttr& operator = (const FOptiAttr&);
 
     // Mutators
     bool  setTermBold (charData*&);

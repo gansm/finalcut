@@ -89,9 +89,13 @@ class FDialog : public FWindow
     // Constructors
     explicit FDialog (FWidget* = 0);
     explicit FDialog (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FDialog (const FDialog&) = delete;
     // Destructor
     virtual ~FDialog();
+
+    // Disable assignment operator (=)
+    FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -171,12 +175,6 @@ class FDialog : public FWindow
 
     // Using-declaration
     using FWidget::drawBorder;
-
-    // Disable copy constructor
-    FDialog (const FDialog&);
-
-    // Disable assignment operator (=)
-    FDialog& operator = (const FDialog&);
 
     // Methods
     void                init();

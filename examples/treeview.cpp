@@ -115,17 +115,17 @@ class Treeview : public finalcut::FDialog
   public:
     // Constructor
     explicit Treeview (finalcut::FWidget* = 0);
+    // Disable copy constructor
+    Treeview (const Treeview&) = delete;
     // Destructor
     ~Treeview();
+
+    // Disable assignment operator (=)
+    Treeview& operator = (const Treeview&) = delete;
 
   private:
     // Typedefs
     struct TreeItem;  // forward declaration
-
-    // Disable copy constructor
-    Treeview (const Treeview&);
-    // Disable assignment operator (=)
-    Treeview& operator = (const Treeview&);
 
     // Methods
     virtual void adjustSize();

@@ -61,9 +61,13 @@ class FTermData
 
     // Constructors
     FTermData() = default;
-
+    // Disable copy constructor
+    FTermData (const FTermData&) = delete;
     // Destructor
     ~FTermData() = default;
+
+    // Disable assignment operator (=)
+    FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
     const char*     getClassName() const;
@@ -121,12 +125,6 @@ class FTermData
 #endif
 
   private:
-    // Disable copy constructor
-    FTermData (const FTermData&);
-
-    // Disable assignment operator (=)
-    FTermData& operator = (const FTermData&);
-
     // Data Members
     encodingMap     encoding_list{};
     fc::encoding    term_encoding{fc::UNKNOWN};

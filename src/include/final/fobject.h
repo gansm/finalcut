@@ -72,9 +72,13 @@ class FObject
 
     // Constructor
     explicit FObject (FObject* = 0);
-
+    // Disable copy constructor
+    FObject (const FObject&) = delete;
     // Destructor
     virtual ~FObject();
+
+    // Disable assignment operator (=)
+    FObject& operator = (const FObject&) = delete;
 
     // Accessors
     virtual const char*  getClassName() const;
@@ -136,12 +140,6 @@ class FObject
     virtual void         onTimer (FTimerEvent*);
 
   private:
-    // Disable copy constructor
-    FObject (const FObject&);
-
-    // Disable assignment operator (=)
-    FObject& operator = (const FObject&);
-
     // Method
     virtual void performTimerAction (const FObject*, const FEvent*);
 

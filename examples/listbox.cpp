@@ -78,15 +78,15 @@ class Listbox : public finalcut::FDialog
   public:
     // Constructor
     explicit Listbox (FWidget* = 0);
+    // Disable copy constructor
+    Listbox (const Listbox&) = delete;
     // Destructor
     ~Listbox();
 
-  private:
-    // Disable copy constructor
-    Listbox (const Listbox&);
     // Disable assignment operator (=)
-    Listbox& operator = (const Listbox&);
+    Listbox& operator = (const Listbox&) = delete;
 
+  private:
     // Event handlers
     virtual void onClose (finalcut::FCloseEvent*);
 

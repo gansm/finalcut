@@ -36,9 +36,13 @@ class Watch : public finalcut::FDialog
   public:
     // Constructor
     explicit Watch (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    Watch (const Watch&) = delete;
     // Destructor
     ~Watch();
+
+    // Disable assignment operator (=)
+    Watch& operator = (const Watch&) = delete;
 
     // Method
     void printTime();
@@ -56,12 +60,6 @@ class Watch : public finalcut::FDialog
     virtual void adjustSize();
 
   private:
-    // Disable copy constructor
-    Watch (const Watch&);
-
-    // Disable assignment operator (=)
-    Watch& operator = (const Watch&);
-
     // Data Members
     bool              sec{true};
     finalcut::FLabel  time_label{L"Time", this};

@@ -84,9 +84,13 @@ class FApplication : public FWidget
   public:
     // Constructor
     FApplication (const int&, char*[], bool = false);
-
+    // Disable copy constructor
+    FApplication (const FApplication&) = delete;
     // Destructor
     virtual ~FApplication();
+
+    // Disable assignment operator (=)
+    FApplication& operator = (const FApplication&) = delete;
 
     // Accessors
     const char*        getClassName()   const;
@@ -126,12 +130,6 @@ class FApplication : public FWidget
 
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
-
-    // Disable copy constructor
-    FApplication (const FApplication&);
-
-    // Disable assignment operator (=)
-    FApplication& operator = (const FApplication&);
 
     // Methods
     void               init (long, long);

@@ -64,9 +64,13 @@ class FTermFreeBSD
 
     // Constructors
     FTermFreeBSD() = default;
-
+    // Disable copy constructor
+    FTermFreeBSD (const FTermFreeBSD&) = delete;
     // Destructor
     virtual ~FTermFreeBSD() = default;
+
+    // Disable assignment operator (=)
+    FTermFreeBSD& operator = (const FTermFreeBSD&) = delete;
 
     // Accessors
     const char*        getClassName() const;
@@ -89,12 +93,6 @@ class FTermFreeBSD
     static void        restoreCursorStyle();
 
   private:
-    // Disable copy constructor
-    FTermFreeBSD (const FTermFreeBSD&);
-
-    // Disable assignment operator (=)
-    FTermFreeBSD& operator = (const FTermFreeBSD&);
-
     // Methods
     static bool        saveFreeBSDAltKey();
     static bool        setFreeBSDAltKey (uInt);

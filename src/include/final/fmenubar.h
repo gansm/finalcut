@@ -78,9 +78,13 @@ class FMenuBar : public FWindow, public FMenuList
   public:
     // Constructor
     explicit FMenuBar (FWidget* = 0);
-
+    // Disable copy constructor
+    FMenuBar (const FMenuBar&) = delete;
     // Destructor
     virtual ~FMenuBar();
+
+    // Disable assignment operator (=)
+    FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -113,12 +117,6 @@ class FMenuBar : public FWindow, public FMenuList
       std::size_t hotkeypos;
       bool no_underline;
     } menuText;
-
-    // Disable copy constructor
-    FMenuBar (const FMenuBar&);
-
-    // Disable assignment operator (=)
-    FMenuBar& operator = (const FMenuBar&);
 
     // Inquiry
     bool         isMenu (FMenuItem*) const;

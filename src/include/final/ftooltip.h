@@ -77,9 +77,13 @@ class FToolTip : public FWindow
     // Constructor
     explicit FToolTip (FWidget* = 0);
     explicit FToolTip (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FToolTip (const FToolTip&) = delete;
     // Destructor
     virtual ~FToolTip ();
+
+    // Disable assignment operator (=)
+    FToolTip& operator = (const FToolTip&) = delete;
 
     // Accessors
     const char*   getClassName() const;
@@ -97,12 +101,6 @@ class FToolTip : public FWindow
     virtual void  onMouseDown (FMouseEvent*);
 
   private:
-    // Disable copy constructor
-    FToolTip (const FToolTip&);
-
-    // Disable assignment operator (=)
-    FToolTip& operator = (const FToolTip&);
-
     // Methods
     void          init();
     void          calculateDimensions();

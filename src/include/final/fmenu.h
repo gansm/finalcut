@@ -80,9 +80,13 @@ class FMenu : public FWindow, public FMenuList
     // Constructor
     explicit FMenu (FWidget* = 0);
     explicit FMenu (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FMenu (const FMenu&) = delete;
     // Destructor
     virtual ~FMenu();
+
+    // Disable assignment operator (=)
+    FMenu& operator = (const FMenu&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -149,12 +153,6 @@ class FMenu : public FWindow, public FMenuList
 
     // Constants
     static const bool SELECT_ITEM = true;
-
-    // Disable copy constructor
-    FMenu (const FMenu&);
-
-    // Disable assignment operator (=)
-    FMenu& operator = (const FMenu&);
 
     // Accessors
     FWidget*     getSuperMenu() const;

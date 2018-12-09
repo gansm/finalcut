@@ -40,15 +40,15 @@ class CheckList : public finalcut::FDialog
   public:
     // Constructor
     explicit CheckList (finalcut::FWidget* = 0);
+    // Disable copy constructor
+    CheckList (const CheckList&) = delete;
     // Destructor
     ~CheckList();
 
-  private:
-    // Disable copy constructor
-    CheckList (const CheckList&);
     // Disable assignment operator (=)
-    CheckList& operator = (const CheckList&);
+    CheckList& operator = (const CheckList&) = delete;
 
+  private:
     // Method
     void populate();
 

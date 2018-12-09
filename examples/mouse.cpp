@@ -35,20 +35,19 @@ class ColorChooser : public finalcut::FWidget
   public:
     // Constructor
     explicit ColorChooser (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    ColorChooser (const ColorChooser&) = delete;
     // Destructor
     ~ColorChooser();
+
+    // Disable assignment operator (=)
+    ColorChooser& operator = (const ColorChooser&) = delete;
 
     // Accessors
     FColor getForeground();
     FColor getBackground();
 
   private:
-    // Disable copy constructor
-    ColorChooser (const ColorChooser&);
-    // Disable assignment operator (=)
-    ColorChooser& operator = (const ColorChooser&);
-
     // Method
     virtual void draw();
 
@@ -172,9 +171,13 @@ class Brushes : public finalcut::FWidget
   public:
     // Constructor
     explicit Brushes (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    Brushes (const Brushes&) = delete;
     // Destructor
     ~Brushes();
+
+    // Disable assignment operator (=)
+    Brushes& operator = (const Brushes&) = delete;
 
     // Accessor
     wchar_t getBrush();
@@ -184,11 +187,6 @@ class Brushes : public finalcut::FWidget
     void setBackground (FColor);
 
   private:
-    // Disable copy constructor
-    Brushes (const Brushes&);
-    // Disable assignment operator (=)
-    Brushes& operator = (const Brushes&);
-
     // Method
     virtual void draw();
 
@@ -311,9 +309,13 @@ class MouseDraw : public finalcut::FDialog
 
     // Constructor
     explicit MouseDraw (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    MouseDraw (const MouseDraw&) = delete;
     // Destructor
     ~MouseDraw();
+
+    // Disable assignment operator (=)
+    MouseDraw& operator = (const MouseDraw&) = delete;
 
     // Methods
     void setGeometry (int, int, std::size_t, std::size_t, bool = true);
@@ -323,11 +325,6 @@ class MouseDraw : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
   private:
-    // Disable copy constructor
-    MouseDraw (const MouseDraw&);
-    // Disable assignment operator (=)
-    MouseDraw& operator = (const MouseDraw&);
-
     // Methods
     virtual void draw();
     void drawBrush (int, int, bool = false);

@@ -236,7 +236,9 @@ class FAccelEvent : public FEvent  // focus event
   public:
     FAccelEvent() = default;
     FAccelEvent (int, void*);
+    FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent();
+    FAccelEvent& operator = (const FAccelEvent&) = delete;
 
     void*    focusedWidget() const;
     bool     isAccepted() const;
@@ -246,12 +248,6 @@ class FAccelEvent : public FEvent  // focus event
   protected:
     bool     accpt{false};
     void*    focus_widget;
-
-  private:
-    // Disable copy constructor
-    FAccelEvent (const FAccelEvent&);
-    // Disable assignment operator (=)
-    FAccelEvent& operator = (const FAccelEvent&);
 };
 
 #pragma pack(pop)

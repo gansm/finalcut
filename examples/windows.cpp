@@ -36,17 +36,15 @@ class SmallWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit SmallWindow (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    SmallWindow (const SmallWindow&) = delete;
     // Destructor
     ~SmallWindow();
 
-  private:
-    // Disable copy constructor
-    SmallWindow (const SmallWindow&);
-
     // Disable assignment operator (=)
-    SmallWindow& operator = (const SmallWindow&);
+    SmallWindow& operator = (const SmallWindow&) = delete;
 
+  private:
     // Method
     virtual void adjustSize();
 
@@ -167,41 +165,38 @@ class Window : public finalcut::FDialog
   public:
     // Constructor
     explicit Window (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    Window (const Window&) = delete;
     // Destructor
     ~Window();
+
+    // Disable assignment operator (=)
+    Window& operator = (const Window&) = delete;
 
   private:
     // Typedefs
     typedef void (Window::*WindowCallback)(finalcut::FWidget*, data_ptr);
     typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, data_ptr);
 
-    class win_data
+    struct win_data
     {
-      public:
+        // Constructor
         win_data()
           : is_open(false)
           , title()
           , dgl(0)
         { }
+        // Disable copy constructor
+        win_data (const win_data&) = delete;
+
+        // Disable assignment operator (=)
+        win_data& operator = (const win_data&) = delete;
 
         // Data Members
         bool is_open;
         finalcut::FString title;
         SmallWindow* dgl;
-
-      private:
-        // Disable copy constructor
-        win_data (const win_data&);
-        // Disable assignment operator (=)
-        win_data& operator = (const win_data&);
     };
-
-    // Disable copy constructor
-    Window (const Window&);
-
-    // Disable assignment operator (=)
-    Window& operator = (const Window&);
 
     // Method
     void configureFileMenuItems();

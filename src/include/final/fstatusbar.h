@@ -82,9 +82,13 @@ class FStatusKey : public FWidget
     // Constructors
     explicit FStatusKey (FWidget* = 0);
     FStatusKey (FKey, const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FStatusKey (const FStatusKey&) = delete;
     // Destructor
     virtual ~FStatusKey();
+
+    // Disable assignment operator (=)
+    FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -108,12 +112,6 @@ class FStatusKey : public FWidget
     virtual void        onAccel (FAccelEvent*);
 
   private:
-    // Disable copy constructor
-    FStatusKey (const FStatusKey&);
-
-    // Disable assignment operator (=)
-    FStatusKey& operator = (const FStatusKey&);
-
     // Methods
     void                init (FWidget*);
     void                processActivate();
@@ -195,9 +193,13 @@ class FStatusBar : public FWindow
   public:
     // Constructor
     explicit FStatusBar (FWidget* = 0);
-
+    // Disable copy constructor
+    FStatusBar (const FStatusBar&) = delete;
     // Destructor
     virtual ~FStatusBar();
+
+    // Disable assignment operator (=)
+    FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -235,12 +237,6 @@ class FStatusBar : public FWindow
   private:
     // Typedef
     typedef std::vector<FStatusKey*> keyList;
-
-    // Disable copy constructor
-    FStatusBar (const FStatusBar&);
-
-    // Disable assignment operator (=)
-    FStatusBar& operator = (const FStatusBar&);
 
     // Methods
     void                init();

@@ -273,9 +273,13 @@ class FListView : public FWidget
 
     // Constructor
     explicit FListView (FWidget* = 0);
-
+    // Disable copy constructor
+    FListView (const FListView&) = delete;
     // Destructor
     virtual ~FListView();
+
+    // Disable assignment operator (=)
+    FListView& operator = (const FListView&) = delete;
 
     // Accessors
     const char*          getClassName() const;
@@ -355,12 +359,6 @@ class FListView : public FWidget
 
     // Constants
     static const int USE_MAX_SIZE = -1;
-
-    // Disable copy constructor
-    FListView (const FListView&);
-
-    // Disable assignment operator (=)
-    FListView& operator = (const FListView&);
 
     // Methods
     void                 init();

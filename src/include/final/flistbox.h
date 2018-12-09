@@ -151,9 +151,13 @@ class FListBox : public FWidget
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
     template <typename Container, typename LazyConverter>
     FListBox (Container, LazyConverter, FWidget* = 0);
-
+    // Disable copy constructor
+    FListBox (const FListBox&) = delete;
     // Destructor
     virtual  ~FListBox();
+
+    // Disable assignment operator (=)
+    FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -232,12 +236,6 @@ class FListBox : public FWidget
       direct_convert = 1,
       lazy_convert   = 2
     };
-
-    // Disable copy constructor
-    FListBox (const FListBox&);
-
-    // Disable assignment operator (=)
-    FListBox& operator = (const FListBox&);
 
     // Accessors
     static FString& getString (listBoxItems::iterator);

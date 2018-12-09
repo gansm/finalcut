@@ -78,9 +78,13 @@ class FLineEdit : public FWidget
     // Constructor
     explicit FLineEdit (FWidget* = 0);
     explicit FLineEdit (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FLineEdit (const FLineEdit&) = delete;
     // Destructor
     virtual ~FLineEdit();
+
+    // Disable assignment operator (=)
+    FLineEdit& operator = (const FLineEdit&) = delete;
 
     // Overloaded operators
     FLineEdit& operator = (const FString&);
@@ -146,12 +150,6 @@ class FLineEdit : public FWidget
       scrollLeft  = 1,
       scrollRight = 2
     };
-
-    // Disable copy constructor
-    FLineEdit (const FLineEdit&);
-
-    // Disable assignment operator (=)
-    FLineEdit& operator = (const FLineEdit&);
 
     // Methods
     void         init();

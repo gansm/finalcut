@@ -35,17 +35,15 @@ class Menu : public finalcut::FDialog
   public:
     // Constructor
     explicit Menu (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    Menu (const Menu&) = delete;
     // Destructor
     ~Menu();
 
-  private:
-    // Disable copy constructor
-    Menu (const Menu&);
-
     // Disable assignment operator (=)
-    Menu& operator = (const Menu&);
+    Menu& operator = (const Menu&) = delete;
 
+  private:
     // Methods
     void configureFileMenuItems();
     void configureEditMenuItems();

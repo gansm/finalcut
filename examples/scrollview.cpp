@@ -35,19 +35,18 @@ class Scrollview : public finalcut::FScrollView
   public:
     // Constructor
     explicit Scrollview (finalcut::FWidget* = 0);
-
+    // Disable copy constructor
+    Scrollview (const Scrollview&) = delete;
     // Destructor
     ~Scrollview  ();
+
+    // Disable assignment operator (=)
+    Scrollview& operator = (const Scrollview&) = delete;
 
     // Mutator
     void setScrollSize (std::size_t, std::size_t);
 
   private:
-    // Disable copy constructor
-    Scrollview (const Scrollview&);
-    // Disable assignment operator (=)
-    Scrollview& operator = (const Scrollview&);
-
     // Method
     virtual void draw();
 

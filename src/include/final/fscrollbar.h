@@ -86,9 +86,13 @@ class FScrollbar : public FWidget
     // Constructors
     explicit FScrollbar (FWidget* = 0);
     explicit FScrollbar (int = fc::vertical, FWidget* = 0);
-
+    // Disable copy constructor
+    FScrollbar (const FScrollbar&) = delete;
     // Destructor
     virtual ~FScrollbar();
+
+    // Disable assignment operator (=)
+    FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -121,12 +125,6 @@ class FScrollbar : public FWidget
     virtual void onTimer (FTimerEvent*);
 
   private:
-    // Disable copy constructor
-    FScrollbar (const FScrollbar&);
-
-    // Disable assignment operator (=)
-    FScrollbar& operator = (const FScrollbar&);
-
     // Methods
     void         init();
     virtual void draw();

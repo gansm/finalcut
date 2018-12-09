@@ -70,9 +70,13 @@ class FButton : public FWidget
     // Constructors
     explicit FButton (FWidget* = 0);
     explicit FButton (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FButton (const FButton&) = delete;
     // Destructor
     virtual ~FButton();
+
+    // Disable assignment operator (=)
+    FButton& operator = (const FButton&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -132,12 +136,6 @@ class FButton : public FWidget
   private:
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
-
-    // Disable copy constructor
-    FButton (const FButton&);
-
-    // Disable assignment operator (=)
-    FButton& operator = (const FButton&);
 
     // Methods
     void         init();

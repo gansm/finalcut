@@ -85,9 +85,13 @@ class FMenuItem : public FWidget
     explicit FMenuItem (FWidget* = 0);
     explicit FMenuItem (const FString&, FWidget* = 0);
     FMenuItem (FKey, const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FMenuItem (const FMenuItem&) = delete;
     // Destructor
     virtual ~FMenuItem();
+
+    // Disable assignment operator (=)
+    FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -160,12 +164,6 @@ class FMenuItem : public FWidget
     FDialog*     associated_window{0};
 
   private:
-    // Disable copy constructor
-    FMenuItem (const FMenuItem&);
-
-    // Disable assignment operator (=)
-    FMenuItem& operator = (const FMenuItem&);
-
     // Accessor
     FMenuList*   getFMenuList (FWidget&);
 

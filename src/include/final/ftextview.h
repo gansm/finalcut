@@ -78,9 +78,13 @@ class FTextView : public FWidget
 
     // Constructor
     explicit FTextView (FWidget* = 0);
-
+    // Disable copy constructor
+    FTextView (const FTextView&) = delete;
     // Destructor
     virtual ~FTextView();
+
+    // Disable assignment operator (=)
+    FTextView& operator = (const FTextView&) = delete;
 
     // Accessors
     const char*        getClassName() const;
@@ -123,12 +127,6 @@ class FTextView : public FWidget
     virtual void       adjustSize();
 
   private:
-    // Disable copy constructor
-    FTextView (const FTextView&);
-
-    // Disable assignment operator (=)
-    FTextView& operator = (const FTextView&);
-
     // Accessors
     std::size_t        getTextHeight();
     std::size_t        getTextWidth();

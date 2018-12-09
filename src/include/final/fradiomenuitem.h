@@ -75,20 +75,18 @@ class FRadioMenuItem : public FMenuItem
     // Constructors
     explicit FRadioMenuItem (FWidget* = 0);
     explicit FRadioMenuItem (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FRadioMenuItem (const FRadioMenuItem&) = delete;
     // Destructor
     virtual ~FRadioMenuItem();
+
+    // Disable assignment operator (=)
+    FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;
 
     // Accessor
     const char* getClassName() const;
 
   private:
-    // Disable copy constructor
-    FRadioMenuItem (const FRadioMenuItem&);
-
-    // Disable assignment operator (=)
-    FRadioMenuItem& operator = (const FRadioMenuItem&);
-
     // Methods
     void init (FWidget*);
     void processToggle();

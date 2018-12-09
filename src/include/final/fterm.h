@@ -161,9 +161,13 @@ class FTerm
 
     // Constructor
     explicit FTerm (bool = false);
-
+    // Disable copy constructor
+    FTerm (const FTerm&) = delete;
     // Destructor
     virtual ~FTerm();
+
+    // Disable assignment operator (=)
+    FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
     virtual const char*    getClassName() const;
@@ -328,11 +332,6 @@ class FTerm
     } init_values;
 
   private:
-    // Disable copy constructor
-    FTerm (const FTerm&);
-    // Disable assignment operator (=)
-    FTerm& operator = (const FTerm&);
-
     // Methods
     static void            init_global_values (bool);
     static void            init_terminal_device_path();

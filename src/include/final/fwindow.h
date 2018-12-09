@@ -83,9 +83,13 @@ class FWindow : public FWidget
 
     // Constructor
     explicit FWindow (FWidget* = 0);
-
+    // Disable copy constructor
+    FWindow (const FWindow&) = delete;
     // Destructor
     virtual ~FWindow ();
+
+    // Disable assignment operator (=)
+    FWindow& operator = (const FWindow&) = delete;
 
     // Accessors
     const char*     getClassName() const;
@@ -168,12 +172,6 @@ class FWindow : public FWidget
     static FWindow* previous_window;
 
   private:
-    // Disable copy constructor
-    FWindow (const FWindow&);
-
-    // Disable assignment operator (=)
-    FWindow& operator = (const FWindow&);
-
     // Methods
     static void     deleteFromAlwaysOnTopList (FWidget*);
     static void     processAlwaysOnTop();

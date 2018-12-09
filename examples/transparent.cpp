@@ -43,17 +43,15 @@ class Transparent : public finalcut::FDialog
 
     // Constructor
     explicit Transparent (finalcut::FWidget* = 0, trans_type = transparent);
-
+    // Disable copy constructor
+    Transparent (const Transparent&) = delete;
     // Destructor
     ~Transparent();
 
-  private:
-    // Disable copy constructor
-    Transparent (const Transparent&);
-
     // Disable assignment operator (=)
-    Transparent& operator = (const Transparent&);
+    Transparent& operator = (const Transparent&) = delete;
 
+  private:
     // Method
     virtual void draw();
 
@@ -152,15 +150,16 @@ class MainWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit MainWindow (finalcut::FWidget* = 0);
+    // Disable copy constructor
+    MainWindow (const MainWindow&) = delete;
     // Destructor
     ~MainWindow();
 
-  private:
-    // Disable copy constructor
-    MainWindow (const MainWindow&);
     // Disable assignment operator (=)
-    MainWindow& operator = (const MainWindow&);
+    MainWindow& operator = (const MainWindow&) = delete;
 
+  private:
+    // Method
     virtual void draw();
 
     // Event handlers

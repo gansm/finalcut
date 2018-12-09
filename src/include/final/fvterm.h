@@ -118,9 +118,13 @@ class FVTerm
 
     // Constructor
     explicit FVTerm (bool, bool = false);
-
+    // Disable copy constructor
+    FVTerm (const FVTerm&) = delete;
     // Destructor
     virtual ~FVTerm();
+
+    // Disable assignment operator (=)
+    FVTerm& operator = (const FVTerm&) = delete;
 
     // Overloaded operators
     template <typename type>
@@ -445,12 +449,6 @@ class FVTerm
     static const uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
     // Buffer size for character output on the terminal
 
-    // Disable copy constructor
-    FVTerm (const FVTerm&);
-
-    // Disable assignment operator (=)
-    FVTerm& operator = (const FVTerm&);
-
     // Mutators
     void                  setPrintArea (term_area*);
 
@@ -528,8 +526,15 @@ class FVTerm
 struct FVTerm::term_area  // define virtual terminal character properties
 {
   public:
+    // Constructor
     term_area() = default;
+    // Disable copy constructor
+    term_area (const term_area&) = delete;
+    // Destructor
     ~term_area() = default;
+
+    // Disable assignment operator (=)
+    term_area& operator = (const term_area&) = delete;
 
     int offset_left{0};      // Distance from left terminal side
     int offset_top{0};       // Distance from top of the terminal
@@ -548,12 +553,6 @@ struct FVTerm::term_area  // define virtual terminal character properties
     bool input_cursor_visible{false};
     bool has_changes{false};
     bool visible{false};
-
-  private:
-    // Disable copy constructor
-    term_area (const term_area&);
-    // Disable assignment operator (=)
-    term_area& operator = (const term_area&);
 };
 #pragma pack(pop)
 

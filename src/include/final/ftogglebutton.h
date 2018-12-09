@@ -76,9 +76,13 @@ class FToggleButton : public FWidget
     // Constructors
     explicit FToggleButton (FWidget* = 0);
     explicit FToggleButton (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FToggleButton (const FToggleButton&) = delete;
     // Destructor
     virtual ~FToggleButton();
+
+    // Disable assignment operator (=)
+    FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -145,12 +149,6 @@ class FToggleButton : public FWidget
   private:
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
-
-    // Disable copy constructor
-    FToggleButton (const FToggleButton&);
-
-    // Disable assignment operator (=)
-    FToggleButton& operator = (const FToggleButton&);
 
     // Mutator
     void          setGroup (FButtonGroup*);

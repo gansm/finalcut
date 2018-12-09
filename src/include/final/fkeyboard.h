@@ -91,9 +91,13 @@ class FKeyboard
 
     // Constructor
     FKeyboard();
-
+    // Disable copy constructor
+    FKeyboard (const FKeyboard&) = delete;
     // Destructor
     virtual ~FKeyboard();
+
+    // Disable assignment operator (=)
+    FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -133,12 +137,6 @@ class FKeyboard
     // Constants
     static const std::size_t READ_BUF_SIZE{1024};
     static const FKey NOT_SET = static_cast<FKey>(-1);
-
-    // Disable copy constructor
-    FKeyboard (const FKeyboard&);
-
-    // Disable assignment operator (=)
-    FKeyboard& operator = (const FKeyboard&);
 
     // Accessors
     FKey                getMouseProtocolKey();

@@ -75,9 +75,13 @@ class FLabel : public FWidget
     // Constructor
     explicit FLabel (FWidget* = 0);
     explicit FLabel (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FLabel (const FLabel&) = delete;
     // Destructor
     virtual ~FLabel();
+
+    // Disable assignment operator (=)
+    FLabel& operator = (const FLabel&) = delete;
 
     // Overloaded operators
     FLabel& operator = (const FString&);
@@ -134,12 +138,6 @@ class FLabel : public FWidget
   private:
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
-
-    // Disable copy constructor
-    FLabel (const FLabel&);
-
-    // Disable assignment operator (=)
-    FLabel& operator = (const FLabel&);
 
     // Methods
     void               init();

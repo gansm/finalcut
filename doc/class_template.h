@@ -59,8 +59,14 @@ class FClassName
     // Constructors
     FClassName();
 
+    // Disable copy constructor
+    FClassName (const FClassName&) = delete;
+
     // Destructor
     ~FClassName();
+
+    // Disable assignment operator (=)
+    FClassName& operator = (const FClassName&) = delete;
 
     // Overloaded operators
 
@@ -99,12 +105,6 @@ class FClassName
     // Typedefs and Enumerations
 
     // Constants
-
-    // Disable copy constructor
-    FClassName (const FClassName&);
-
-    // Disable assignment operator (=)
-    FClassName& operator = (const FClassName&);
 
     // Accessors
 

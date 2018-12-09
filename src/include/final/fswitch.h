@@ -75,9 +75,13 @@ class FSwitch : public FToggleButton
     // Constructors
     explicit FSwitch (FWidget* = 0);
     explicit FSwitch (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FSwitch (const FSwitch&) = delete;
     // Destructor
     virtual ~FSwitch();
+
+    // Disable assignment operator (=)
+    FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
     const char*  getClassName() const;
@@ -91,12 +95,6 @@ class FSwitch : public FToggleButton
     virtual void onMouseUp (FMouseEvent*);
 
   private:
-    // Disable copy constructor
-    FSwitch (const FSwitch&);
-
-    // Disable assignment operator (=)
-    FSwitch& operator = (const FSwitch&);
-
     // Methods
     virtual void draw();
     void         drawCheckButton();

@@ -167,9 +167,13 @@ class FWidget : public FVTerm, public FObject
 
     // Constructor
     explicit FWidget (FWidget* = 0, bool = false);
-
+    // Disable copy constructor
+    FWidget (const FWidget&) = delete;
     // Destructor
     virtual ~FWidget();
+
+    // Disable assignment operator (=)
+    FWidget& operator = (const FWidget&) = delete;
 
     // Accessors
     const char*        getClassName() const;
@@ -406,12 +410,6 @@ class FWidget : public FVTerm, public FObject
     CallbackObjects       callback_objects{};
 
   private:
-    // Disable copy constructor
-    FWidget (const FWidget&);
-
-    // Disable assignment operator (=)
-    FWidget& operator = (const FWidget&);
-
     // Methods
     void               init();
     void               finish();

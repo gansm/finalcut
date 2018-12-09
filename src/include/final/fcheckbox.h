@@ -75,20 +75,18 @@ class FCheckBox : public FToggleButton
     // Constructors
     explicit FCheckBox (FWidget* = 0);
     explicit FCheckBox (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FCheckBox (const FCheckBox&) = delete;
     // Destructor
     virtual ~FCheckBox();
+
+    // Disable assignment operator (=)
+    FCheckBox& operator = (const FCheckBox&) = delete;
 
     // Accessor
     const char* getClassName() const;
 
   private:
-    // Disable copy constructor
-    FCheckBox (const FCheckBox&);
-
-    // Disable assignment operator (=)
-    FCheckBox& operator = (const FCheckBox&);
-
     // Methods
     void         init();
     virtual void draw();

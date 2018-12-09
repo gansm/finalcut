@@ -76,9 +76,13 @@ class FScrollView : public FWidget
 
     // Constructor
     explicit FScrollView (FWidget* = 0);
-
+    // Disable copy constructor
+    FScrollView (const FScrollView&) = delete;
     // Destructor
     virtual ~FScrollView();
+
+    // Disable assignment operator (=)
+    FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
     const char*       getClassName() const;
@@ -149,12 +153,6 @@ class FScrollView : public FWidget
     // Constants
     static const int vertical_border_spacing = 2;
     static const int horizontal_border_spacing = 2;
-
-    // Disable copy constructor
-    FScrollView (const FScrollView&);
-
-    // Disable assignment operator (=)
-    FScrollView& operator = (const FScrollView&);
 
     // Accessors
     FPoint            getViewportCursorPos();

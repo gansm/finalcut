@@ -57,9 +57,13 @@ class FTermOpenBSD
   public:
     // Constructors
     FTermOpenBSD() = default;
-
+    // Disable copy constructor
+    FTermOpenBSD (const FTermOpenBSD&) = delete;
     // Destructor
     virtual ~FTermOpenBSD() = default;
+
+    // Disable assignment operator (=)
+    FTermOpenBSD& operator = (const FTermOpenBSD&) = delete;
 
     // Accessor
     const char*        getClassName() const;
@@ -76,12 +80,6 @@ class FTermOpenBSD
     static void        finish();
 
   private:
-    // Disable copy constructor
-    FTermOpenBSD (const FTermOpenBSD&);
-
-    // Disable assignment operator (=)
-    FTermOpenBSD& operator = (const FTermOpenBSD&);
-
 #if defined(__NetBSD__) || defined(__OpenBSD__)
     // Methods
     static bool        saveBSDConsoleEncoding();

@@ -74,9 +74,13 @@ class FButtonGroup : public FScrollView
     // Constructors
     explicit FButtonGroup (FWidget* = 0);
     explicit FButtonGroup (const FString&, FWidget* = 0);
-
+    // Disable copy constructor
+    FButtonGroup (const FButtonGroup&) = delete;
     // Destructor
     virtual ~FButtonGroup();
+
+    // Disable assignment operator (=)
+    FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
     const char*    getClassName() const;
@@ -127,12 +131,6 @@ class FButtonGroup : public FScrollView
   private:
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
-
-    // Disable copy constructor
-    FButtonGroup (const FButtonGroup&);
-
-    // Disable assignment operator (=)
-    FButtonGroup& operator = (const FButtonGroup&);
 
     // Inquiries
     bool           isRadioButton (FToggleButton*) const;
