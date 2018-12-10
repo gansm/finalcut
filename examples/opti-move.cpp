@@ -30,7 +30,7 @@
 static finalcut::FVTerm* terminal;
 
 // Global FApplication object
-static finalcut::FApplication* app;
+static finalcut::FApplication* app = nullptr;
 
 // function prototype
 bool keyPressed();
@@ -201,5 +201,5 @@ int main (int argc, char* argv[])
 
   // Waiting for keypress
   keyPressed();
-  app = 0;  // End of TermApp object scope
+  app = nullptr;  // End of TermApp object scope
 }

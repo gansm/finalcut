@@ -169,7 +169,7 @@ class FOptiMove
 
   private:
     // Constant
-    static const std::size_t BUF_SIZE = 512;
+    static const std::size_t BUF_SIZE{512};
 
     // Typedef
     typedef struct
@@ -180,9 +180,9 @@ class FOptiMove
     } capability;
 
     // Constants
-    static const int LONG_DURATION = INT_MAX;
+    static const int LONG_DURATION{INT_MAX};
     // value for a long capability waiting time
-    static const int MOVE_LIMIT = 7;
+    static const int MOVE_LIMIT{7};
     // maximum character distance to avoid direct cursor addressing
 
     // Methods
@@ -211,35 +211,35 @@ class FOptiMove
     friend void printDurations (const FOptiMove&);
 
     // Data Members
-    capability  F_cursor_home;
-    capability  F_carriage_return;
-    capability  F_cursor_to_ll;
-    capability  F_tab;
-    capability  F_back_tab;
-    capability  F_cursor_up;
-    capability  F_cursor_down;
-    capability  F_cursor_left;
-    capability  F_cursor_right;
-    capability  F_cursor_address;
-    capability  F_column_address;
-    capability  F_row_address;
-    capability  F_parm_up_cursor;
-    capability  F_parm_down_cursor;
-    capability  F_parm_left_cursor;
-    capability  F_parm_right_cursor;
-    capability  F_erase_chars;
-    capability  F_repeat_char;
-    capability  F_clr_bol;
-    capability  F_clr_eol;
+    capability  F_cursor_home{};
+    capability  F_carriage_return{};
+    capability  F_cursor_to_ll{};
+    capability  F_tab{};
+    capability  F_back_tab{};
+    capability  F_cursor_up{};
+    capability  F_cursor_down{};
+    capability  F_cursor_left{};
+    capability  F_cursor_right{};
+    capability  F_cursor_address{};
+    capability  F_column_address{};
+    capability  F_row_address{};
+    capability  F_parm_up_cursor{};
+    capability  F_parm_down_cursor{};
+    capability  F_parm_left_cursor{};
+    capability  F_parm_right_cursor{};
+    capability  F_erase_chars{};
+    capability  F_repeat_char{};
+    capability  F_clr_bol{};
+    capability  F_clr_eol{};
 
-    bool        automatic_left_margin;
-    bool        eat_nl_glitch;
-    char        move_buf[BUF_SIZE];
-    int         char_duration;
-    int         baudrate;
-    int         tabstop;
-    std::size_t screen_width;
-    std::size_t screen_height;
+    bool        automatic_left_margin{false};
+    bool        eat_nl_glitch{false};
+    char        move_buf[BUF_SIZE]{'\0'};
+    int         char_duration{1};
+    int         baudrate{9600};
+    int         tabstop{0};
+    std::size_t screen_width{80};
+    std::size_t screen_height{24};
 };
 #pragma pack(pop)
 

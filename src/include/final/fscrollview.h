@@ -75,10 +75,14 @@ class FScrollView : public FWidget
     using FWidget::setPos;
 
     // Constructor
-    explicit FScrollView (FWidget* = 0);
-
+    explicit FScrollView (FWidget* = nullptr);
+    // Disable copy constructor
+    FScrollView (const FScrollView&) = delete;
     // Destructor
     virtual ~FScrollView();
+
+    // Disable assignment operator (=)
+    FScrollView& operator = (const FScrollView&) = delete;
 
     // Accessors
     const char*       getClassName() const;
@@ -150,12 +154,6 @@ class FScrollView : public FWidget
     static const int vertical_border_spacing = 2;
     static const int horizontal_border_spacing = 2;
 
-    // Disable copy constructor
-    FScrollView (const FScrollView&);
-
-    // Disable assignment operator (=)
-    FScrollView& operator = (const FScrollView&);
-
     // Accessors
     FPoint            getViewportCursorPos();
 
@@ -176,17 +174,17 @@ class FScrollView : public FWidget
     void              cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FRect             scroll_geometry;
-    FRect             viewport_geometry;
-    term_area*        viewport;  // virtual scroll content
-    FScrollbar*       vbar;
-    FScrollbar*       hbar;
-    uInt8             nf_offset;
-    bool              border;
-    bool              use_own_print_area;
-    bool              update_scrollbar;
-    fc::scrollBarMode vMode;  // fc:Auto, fc::Hidden or fc::Scroll
-    fc::scrollBarMode hMode;
+    FRect             scroll_geometry{1, 1, 1, 1};
+    FRect             viewport_geometry{};
+    term_area*        viewport{nullptr};  // virtual scroll content
+    FScrollbar*       vbar{nullptr};
+    FScrollbar*       hbar{nullptr};
+    uInt8             nf_offset{0};
+    bool              border{true};
+    bool              use_own_print_area{false};
+    bool              update_scrollbar{true};
+    fc::scrollBarMode vMode{fc::Auto};  // fc:Auto, fc::Hidden or fc::Scroll
+    fc::scrollBarMode hMode{fc::Auto};
 };
 #pragma pack(pop)
 

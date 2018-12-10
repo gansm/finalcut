@@ -5,7 +5,7 @@
 if ! CPPUNIT_TEST
 
 AM_LDFLAGS = -L$(top_builddir)/src/.libs -lfinal
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror
+AM_CPPFLAGS = -I$(top_srcdir)/src/include -Wall -Werror -std=c++11
 
 noinst_PROGRAMS = \
 	hello \

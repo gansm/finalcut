@@ -36,12 +36,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (FWidget* parent)
   : FWidget(parent)
-  , checked(false)
-  , label_offset_pos(0)
-  , button_width(0)
-  , button_group(0)
-  , focus_inside_group(true)
-  , text()
 {
   init();
 
@@ -57,12 +51,6 @@ FToggleButton::FToggleButton (FWidget* parent)
 //----------------------------------------------------------------------
 FToggleButton::FToggleButton (const FString& txt, FWidget* parent)
   : FWidget(parent)
-  , checked(false)
-  , label_offset_pos(0)
-  , button_width(0)
-  , button_group(0)
-  , focus_inside_group(true)
-  , text()
 {
   FToggleButton::setText(txt);  // call own method
   init();

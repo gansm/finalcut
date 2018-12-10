@@ -64,7 +64,7 @@
 
 
 // FTermcap string macro
-#define TCAP(s)  tcap[(s)].string
+#define TCAP(...)  tcap[__VA_ARGS__].string
 
 namespace finalcut
 {
@@ -82,15 +82,15 @@ class FTermcap
     typedef struct
     {
       char* string;
-      char  tname[3];
+      char  tname[alignof(char*)];
     }
     tcap_map;
 
     // Constructors
-    FTermcap();
+    FTermcap() = default;
 
     // Destructor
-    ~FTermcap();
+    ~FTermcap() = default;
 
     // Accessors
     const char* getClassName() const;

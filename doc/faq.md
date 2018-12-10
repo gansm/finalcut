@@ -104,12 +104,20 @@ You need three things:
     * libgpm-dev
 
 
-How to compile FINAL CUT without gpm support?
+How to compile FINAL CUT without GPM support?
 ---------------------------------------------
 
 ```bash
   ./configure --without-gpm
 ```
+
+
+Which mouse types are supported?
+--------------------------------
+* Normal xterm mouse tracking (limited to 223 rows/columns)
+* Xterm SGR mouse tracking
+* URXVT mouse tracking
+* General Purpose Mouse (gpm) on a linux console
 
 
 What do I need to compile the unit tests?
@@ -136,3 +144,12 @@ How can I fix display problems?
 
 * If the color palette redefinition causes problems, you can switch off 
   the color mapping with the parameter *--no-color-change*.
+
+
+How can I redraw the terminal?
+------------------------------
+
+With Ctrl-L you can clear and redraw all information on the terminal screen. 
+This may be necessary if a background program overwrites the displayed 
+widgets with other characters.
+

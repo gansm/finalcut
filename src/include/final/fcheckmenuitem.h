@@ -73,22 +73,20 @@ class FCheckMenuItem : public FMenuItem
 {
   public:
     // Constructors
-    explicit FCheckMenuItem (FWidget* = 0);
-    explicit FCheckMenuItem (const FString&, FWidget* = 0);
-
+    explicit FCheckMenuItem (FWidget* = nullptr);
+    explicit FCheckMenuItem (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FCheckMenuItem (const FCheckMenuItem&) = delete;
     // Destructor
     virtual ~FCheckMenuItem();
+
+    // Disable assignment operator (=)
+    FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;
 
     // Accessor
     const char* getClassName() const;
 
   private:
-    // Disable copy constructor
-    FCheckMenuItem (const FCheckMenuItem&);
-
-    // Disable assignment operator (=)
-    FCheckMenuItem& operator = (const FCheckMenuItem&);
-
     // Methods
     void init (FWidget*);
     void processToggle();

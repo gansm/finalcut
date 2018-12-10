@@ -38,17 +38,16 @@ class ProgressDialog : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit ProgressDialog (finalcut::FWidget* = 0);
-
+    explicit ProgressDialog (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    ProgressDialog (const ProgressDialog&) = delete;
     // Destructor
     ~ProgressDialog();
 
-  private:
-    // Disable copy constructor
-    ProgressDialog (const ProgressDialog&);
     // Disable assignment operator (=)
-    ProgressDialog& operator = (const ProgressDialog&);
+    ProgressDialog& operator = (const ProgressDialog&) = delete;
 
+  private:
     // Event handlers
     virtual void onShow (finalcut::FShowEvent*);
     virtual void onTimer (finalcut::FTimerEvent*);
@@ -59,20 +58,16 @@ class ProgressDialog : public finalcut::FDialog
     void cb_exit_bar (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FProgressbar progressBar;
-    finalcut::FButton      reset;
-    finalcut::FButton      more;
-    finalcut::FButton      quit;
+    finalcut::FProgressbar progressBar{this};
+    finalcut::FButton      reset{this};
+    finalcut::FButton      more{this};
+    finalcut::FButton      quit{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 ProgressDialog::ProgressDialog (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , progressBar(this)
-  , reset(this)
-  , more(this)
-  , quit(this)
 {
   setGeometry (int((getParentWidget()->getWidth() - 40) / 2), 7, 40, 10);
   setText("Progress bar");
@@ -186,31 +181,30 @@ class TextWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit TextWindow (finalcut::FWidget* = 0);
-
+    explicit TextWindow (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    TextWindow (const TextWindow&) = delete;
     // Destructor
     ~TextWindow();
 
+    // Disable assignment operator (=)
+    TextWindow& operator = (const TextWindow&) = delete;
+
+    // Method
     void append (const finalcut::FString&);
 
   private:
-    // Disable copy constructor
-    TextWindow (const TextWindow&);
-    // Disable assignment operator (=)
-    TextWindow& operator = (const TextWindow&);
-
     // Method
     virtual void adjustSize();
 
     // Data Members
-    finalcut::FTextView scrollText;
+    finalcut::FTextView scrollText{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 TextWindow::TextWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , scrollText(this)
 {
   scrollText.ignorePadding();
   scrollText.setGeometry (1, 2, getWidth(), getHeight() - 1);
@@ -255,16 +249,16 @@ class MyDialog : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit MyDialog (finalcut::FWidget* = 0);
+    explicit MyDialog (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    MyDialog (const MyDialog&) = delete;
     // Destructor
     ~MyDialog();
 
-  private:
-    // Disable copy constructor
-    MyDialog (const MyDialog&);
     // Disable assignment operator (=)
-    MyDialog& operator = (const MyDialog&);
+    MyDialog& operator = (const MyDialog&) = delete;
 
+  private:
     // Method
     void initMenu();
     void initMenuCallbacks();
@@ -302,108 +296,67 @@ class MyDialog : public finalcut::FDialog
     void cb_setInput (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    bool                      initialized;
-    finalcut::FMenuBar        Menubar;
-    finalcut::FMenu           File;     // Menu bar items
-    finalcut::FMenu           Edit;
-    finalcut::FMenu           View;
-    finalcut::FMenuItem       Options;
-    finalcut::FDialogListMenu Window;
-    finalcut::FMenuItem       Help;
-    finalcut::FMenuItem       Open;     // "File" menu items
-    finalcut::FMenu           Recent;
-    finalcut::FMenuItem       Line1;
-    finalcut::FMenuItem       Quit;
-    finalcut::FMenuItem       File1;    // "Recent" menu items
-    finalcut::FMenuItem       File2;
-    finalcut::FMenuItem       File3;
-    finalcut::FMenuItem       Undo;
-    finalcut::FMenuItem       Redo;
-    finalcut::FMenuItem       Line2;
-    finalcut::FMenuItem       Cut;
-    finalcut::FMenuItem       Copy;
-    finalcut::FMenuItem       Paste;
-    finalcut::FMenuItem       Clear;
-    finalcut::FMenuItem       Env;
-    finalcut::FMenuItem       Drive;
-    finalcut::FStatusBar      Statusbar;
-    finalcut::FStatusKey      key_F1;
-    finalcut::FStatusKey      key_F2;
-    finalcut::FStatusKey      key_F3;
-    finalcut::FButton         MyButton1;
-    finalcut::FButton         MyButton2;
-    finalcut::FButton         MyButton3;
-    finalcut::FButtonGroup    radioButtonGroup;
-    finalcut::FRadioButton    radio1;
-    finalcut::FRadioButton    radio2;
-    finalcut::FButtonGroup    checkButtonGroup;
-    finalcut::FCheckBox       check1;
-    finalcut::FCheckBox       check2;
-    finalcut::FLineEdit       myLineEdit;
-    finalcut::FButton         MyButton4;
-    finalcut::FButton         MyButton5;
-    finalcut::FButton         MyButton6;
-    finalcut::FListBox        myList;
-    finalcut::FLabel          headline;
-    finalcut::FLabel          tagged;
-    finalcut::FLabel          tagged_count;
-    finalcut::FLabel          sum;
-    finalcut::FLabel          sum_count;
-    finalcut::FString         clipboard;
+    bool                      initialized{false};
+    finalcut::FMenuBar        Menubar{this};
+    // Menu bar items
+    finalcut::FMenu           File{"&File", &Menubar};
+    finalcut::FMenu           Edit{"&Edit", &Menubar};
+    finalcut::FMenu           View{"&View", &Menubar};
+    finalcut::FMenuItem       Options{"&Options", &Menubar};
+    finalcut::FDialogListMenu Window{"&Window", &Menubar};
+    finalcut::FMenuItem       Help{"&Help", &Menubar};
+    // "File" menu items
+    finalcut::FMenuItem       Open{"&Open...", &File};
+    finalcut::FMenu           Recent{"&System files", &File};
+    finalcut::FMenuItem       Line1{&File};
+    finalcut::FMenuItem       Quit{"&Quit", &File};
+    // "Recent" menu items
+    finalcut::FMenuItem       File1{"/etc/services", &Recent};
+    finalcut::FMenuItem       File2{"/etc/fstab", &Recent};
+    finalcut::FMenuItem       File3{"/etc/passwd", &Recent};
+    // "Edit" menu items
+    finalcut::FMenuItem       Undo{finalcut::fc::Fckey_z, "Undo", &Edit};
+    finalcut::FMenuItem       Redo{finalcut::fc::Fckey_y, "Redo", &Edit};
+    finalcut::FMenuItem       Line2{&Edit};
+    finalcut::FMenuItem       Cut{finalcut::fc::Fckey_x, "Cu&t", &Edit};
+    finalcut::FMenuItem       Copy{finalcut::fc::Fckey_c, "&Copy", &Edit};
+    finalcut::FMenuItem       Paste{finalcut::fc::Fckey_v, "&Paste", &Edit};
+    finalcut::FMenuItem       Clear{finalcut::fc::Fkey_dc, "C&lear", &Edit};
+    // "View" menu items
+    finalcut::FMenuItem       Env{"&Terminal...", &View};
+    finalcut::FMenuItem       Drive{"&Drive symbols...", &View};
+    // Statusbar
+    finalcut::FStatusBar      Statusbar{this};
+    finalcut::FStatusKey      key_F1{finalcut::fc::Fkey_f1, "About", &Statusbar};
+    finalcut::FStatusKey      key_F2{finalcut::fc::Fkey_f2, "View", &Statusbar};
+    finalcut::FStatusKey      key_F3{finalcut::fc::Fkey_f3, "Quit", &Statusbar};
+    // Dialog widgets
+    finalcut::FButton         MyButton1{this};
+    finalcut::FButton         MyButton2{this};
+    finalcut::FButton         MyButton3{this};
+    finalcut::FButtonGroup    radioButtonGroup{"Button", this};
+    finalcut::FRadioButton    radio1{"E&nable", &radioButtonGroup};
+    finalcut::FRadioButton    radio2{&radioButtonGroup};
+    finalcut::FButtonGroup    checkButtonGroup{"Options", this};
+    finalcut::FCheckBox       check1{"&Bitmode", &checkButtonGroup};
+    finalcut::FCheckBox       check2{"&8-Bit", &checkButtonGroup};
+    finalcut::FLineEdit       myLineEdit{this};
+    finalcut::FButton         MyButton4{this};
+    finalcut::FButton         MyButton5{this};
+    finalcut::FButton         MyButton6{this};
+    finalcut::FListBox        myList{this};
+    finalcut::FLabel          headline{this};
+    finalcut::FLabel          tagged{L"Tagged:", this};
+    finalcut::FLabel          tagged_count{this};
+    finalcut::FLabel          sum{L"Sum:", this};
+    finalcut::FLabel          sum_count{this};
+    finalcut::FString         clipboard{};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 MyDialog::MyDialog (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , initialized(false)
-  , Menubar(this)
-  , File("&File", &Menubar)
-  , Edit("&Edit", &Menubar)
-  , View("&View", &Menubar)
-  , Options("&Options", &Menubar)
-  , Window("&Window", &Menubar)
-  , Help("&Help", &Menubar)
-  , Open("&Open...", &File)
-  , Recent("&System files", &File)
-  , Line1(&File)
-  , Quit("&Quit", &File)
-  , File1("/etc/services", &Recent)
-  , File2("/etc/fstab", &Recent)
-  , File3("/etc/passwd", &Recent)
-  , Undo(finalcut::fc::Fckey_z, "Undo", &Edit)
-  , Redo(finalcut::fc::Fckey_y, "Redo", &Edit)
-  , Line2(&Edit)
-  , Cut(finalcut::fc::Fckey_x, "Cu&t", &Edit)
-  , Copy(finalcut::fc::Fckey_c, "&Copy", &Edit)
-  , Paste(finalcut::fc::Fckey_v, "&Paste", &Edit)
-  , Clear(finalcut::fc::Fkey_dc, "C&lear", &Edit)
-  , Env("&Terminal...", &View)
-  , Drive("&Drive symbols...", &View)
-  , Statusbar(this)
-  , key_F1(finalcut::fc::Fkey_f1, "About", &Statusbar)
-  , key_F2(finalcut::fc::Fkey_f2, "View", &Statusbar)
-  , key_F3(finalcut::fc::Fkey_f3, "Quit", &Statusbar)
-  , MyButton1(this)
-  , MyButton2(this)
-  , MyButton3(this)
-  , radioButtonGroup("Button", this)
-  , radio1("E&nable", &radioButtonGroup)
-  , radio2(&radioButtonGroup)
-  , checkButtonGroup("Options", this)
-  , check1("&Bitmode", &checkButtonGroup)
-  , check2("&8-Bit", &checkButtonGroup)
-  , myLineEdit(this)
-  , MyButton4(this)
-  , MyButton5(this)
-  , MyButton6(this)
-  , myList(this)
-  , headline(this)
-  , tagged(L"Tagged:", this)
-  , tagged_count(this)
-  , sum(L"Sum:", this)
-  , sum_count(this)
-  , clipboard()
 {
   initMenu();                // Initialize the program menu
   initMenuCallbacks();       // Initialize program menu callbacks
@@ -816,7 +769,7 @@ void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 {
   const char libver[] = F_VERSION;
-  finalcut::FString line(2, wchar_t(finalcut::fc::BoxDrawingsHorizontal));
+  finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" The Final Cut " + line + "\n\n"
@@ -839,7 +792,7 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
       << "  Type: " << getTermType() << "\n"
       << "  Name: " << getTermFileName() << "\n"
       << "  Mode: " << getEncodingString() << "\n"
-      << "  Size: " << x << wchar_t(finalcut::fc::Times)
+      << "  Size: " << x << finalcut::fc::Times
                     << y << "\n"
       << "Colors: " << getMaxColor()
     , finalcut::FMessageBox::Ok, 0, 0, this

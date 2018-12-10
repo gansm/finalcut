@@ -35,15 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FLabel::FLabel(FWidget* parent)
   : FWidget(parent)
-  , multiline_text()
-  , multiline(false)
-  , text()
-  , alignment(fc::alignLeft)
-  , emphasis_color(wc.label_emphasis_fg)
-  , ellipsis_color(wc.label_ellipsis_fg)
-  , emphasis(false)
-  , reverse_mode(false)
-  , accel_widget(0)
 {
   init();
 }
@@ -51,15 +42,7 @@ FLabel::FLabel(FWidget* parent)
 //----------------------------------------------------------------------
 FLabel::FLabel (const FString& txt, FWidget* parent)
   : FWidget(parent)
-  , multiline_text()
-  , multiline(false)
   , text(txt)
-  , alignment(fc::alignLeft)
-  , emphasis_color(wc.label_emphasis_fg)
-  , ellipsis_color(wc.label_ellipsis_fg)
-  , emphasis(false)
-  , reverse_mode(false)
-  , accel_widget(0)
 {
   init();
   setText(txt);
@@ -83,6 +66,13 @@ FLabel& FLabel::operator = (const FString& s)
 FLabel& FLabel::operator << (const FString& s)
 {
   setText(text + s);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FLabel& FLabel::operator << (fc::SpecialCharacter c)
+{
+  setText(text + static_cast<wchar_t>(c));
   return *this;
 }
 
@@ -358,7 +348,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void FLabel::cb_accel_widget_destroyed (FWidget*, data_ptr)
 {
-  accel_widget = 0;
+  accel_widget = nullptr;
   delAccelerator();
 }
 

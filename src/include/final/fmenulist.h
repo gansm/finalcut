@@ -62,10 +62,14 @@ class FMenuList
 {
   public:
     // Constructor
-    FMenuList();
-
+    FMenuList() = default;
+    // Disable copy constructor
+    FMenuList (const FMenuList&) = delete;
     // Destructor
     virtual ~FMenuList();
+
+    // Disable assignment operator (=)
+    FMenuList& operator = (const FMenuList&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -91,15 +95,8 @@ class FMenuList
     void                unselectItem();
 
   protected:
-    FMenuItem*              selected_item;
-    std::vector<FMenuItem*> item_list;
-
-  private:
-    // Disable copy constructor
-    FMenuList (const FMenuList&);
-
-    // Disable assignment operator (=)
-    FMenuList& operator = (const FMenuList&);
+    FMenuItem*              selected_item{};
+    std::vector<FMenuItem*> item_list{};
 };
 #pragma pack(pop)
 

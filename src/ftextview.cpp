@@ -35,14 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FTextView::FTextView(FWidget* parent)
   : FWidget(parent)
-  , data()
-  , vbar(0)
-  , hbar(0)
-  , update_scrollbar(true)
-  , xoffset(0)
-  , yoffset(0)
-  , nf_offset(0)
-  , maxLineWidth(0)
 {
   init();
 }
@@ -272,7 +264,10 @@ void FTextView::insert (const FString& str, int pos)
 
       if ( len > getTextWidth() )
       {
-        hbar->setMaximum (int(maxLineWidth) - int(getTextWidth()));
+        int hmax = ( maxLineWidth > getTextWidth() )
+                   ? int(maxLineWidth) - int(getTextWidth())
+                   : 0;
+        hbar->setMaximum (hmax);
         hbar->setPageSize (int(maxLineWidth), int(getTextWidth()));
         hbar->calculateSliderValues();
 
@@ -283,7 +278,10 @@ void FTextView::insert (const FString& str, int pos)
   }
 
   data.insert (iter + pos, text_split.begin(), text_split.end());
-  vbar->setMaximum (int(getRows()) - int(getTextHeight()));
+  int vmax = ( getRows() > getTextHeight() )
+             ? int(getRows()) - int(getTextHeight())
+             : 0;
+  vbar->setMaximum (vmax);
   vbar->setPageSize (int(getRows()), int(getTextHeight()));
   vbar->calculateSliderValues();
 
@@ -583,7 +581,10 @@ void FTextView::adjustSize()
   if ( height < 3 )
     return;
 
-  vbar->setMaximum (last_line - int(height) + 2 - nf_offset);
+  int vmax = ( last_line > int(height) - 2 + nf_offset )
+             ? last_line - int(height) + 2 - nf_offset
+             : 0;
+  vbar->setMaximum (vmax);
   vbar->setPageSize (last_line, int(height) - 2 + nf_offset);
   vbar->setX (int(width));
   vbar->setHeight (height - 2 + std::size_t(nf_offset), false);
@@ -593,7 +594,10 @@ void FTextView::adjustSize()
   if ( width < 3 )
     return;
 
-  hbar->setMaximum (max_width - int(width) + nf_offset + 2);
+  int hmax = ( max_width > int(width) - nf_offset - 2 )
+             ? max_width - int(width) + nf_offset + 2
+             : 0;
+  hbar->setMaximum (hmax);
   hbar->setPageSize (max_width, int(width) - nf_offset - 2);
   hbar->setY (int(height));
   hbar->setWidth (width - 2, false);

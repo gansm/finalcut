@@ -18,6 +18,9 @@ addons:
      - libgpm-dev
      - gperf
      - libcppunit-dev
+  homebrew:
+    packages:
+      - autoconf-archive
 
 env:
   global:
@@ -56,7 +59,7 @@ matrix:
       - lsb_release -a
       - uname -a
       - whoami
-      - sudo apt-get install gpm libgpm-dev libcppunit-dev
+      - sudo apt-get install gpm libgpm-dev libcppunit-dev autoconf-archive
     script:
       - autoreconf -v --install --force
       - ./configure --prefix=/usr CPPFLAGS="-DDEBUG" CXXFLAGS="-g -O0 -DDEBUG" --with-unit-test
@@ -85,9 +88,8 @@ matrix:
   - os: osx
     env:
       - TEST="macOS"
-    before_install:
-      - uname -a
     script:
+      - uname -a
       - autoreconf -v --install --force
       - ./configure --prefix=/usr
       - make -j10

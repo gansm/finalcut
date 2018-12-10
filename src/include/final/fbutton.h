@@ -68,11 +68,15 @@ class FButton : public FWidget
 {
   public:
     // Constructors
-    explicit FButton (FWidget* = 0);
-    explicit FButton (const FString&, FWidget* = 0);
-
+    explicit FButton (FWidget* = nullptr);
+    explicit FButton (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FButton (const FButton&) = delete;
     // Destructor
     virtual ~FButton();
+
+    // Disable assignment operator (=)
+    FButton& operator = (const FButton&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -133,12 +137,6 @@ class FButton : public FWidget
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
-    // Disable copy constructor
-    FButton (const FButton&);
-
-    // Disable assignment operator (=)
-    FButton& operator = (const FButton&);
-
     // Methods
     void         init();
     uChar        getHotkey();
@@ -157,24 +155,24 @@ class FButton : public FWidget
     void         processClick();
 
     // Data Members
-    FString      text;
-    bool         button_down;
-    bool         active_focus;
-    bool         click_animation;
-    int          click_time;
-    int          space_char;
-    std::size_t  hotkeypos;
-    std::size_t  indent;
-    std::size_t  center_offset;
-    std::size_t  vcenter_offset;
-    std::size_t  txtlength;
-    FColor       button_fg;
-    FColor       button_bg;
-    FColor       button_hotkey_fg;
-    FColor       button_focus_fg;
-    FColor       button_focus_bg;
-    FColor       button_inactive_fg;
-    FColor       button_inactive_bg;
+    FString      text{};
+    bool         button_down{false};
+    bool         active_focus{false};
+    bool         click_animation{true};
+    int          click_time{150};
+    int          space_char{int(' ')};
+    std::size_t  hotkeypos{NOT_SET};
+    std::size_t  indent{0};
+    std::size_t  center_offset{0};
+    std::size_t  vcenter_offset{0};
+    std::size_t  txtlength{0};
+    FColor       button_fg{wc.button_active_fg};
+    FColor       button_bg{wc.button_active_bg};
+    FColor       button_hotkey_fg{wc.button_hotkey_fg};
+    FColor       button_focus_fg{wc.button_active_focus_fg};
+    FColor       button_focus_bg{wc.button_active_focus_bg};
+    FColor       button_inactive_fg{wc.button_inactive_fg};
+    FColor       button_inactive_bg{wc.button_inactive_bg};
 };
 #pragma pack(pop)
 

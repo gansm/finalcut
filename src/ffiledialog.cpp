@@ -56,17 +56,6 @@ bool sortDirFirst ( const FFileDialog::dir_entry& lhs
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog (FWidget* parent)
   : FDialog(parent)
-  , directory_stream(0)
-  , dir_entries()
-  , directory()
-  , filter_pattern()
-  , filename()
-  , filebrowser()
-  , hidden()
-  , cancel()
-  , open()
-  , dlg_type(FFileDialog::Open)
-  , show_hidden(false)
 {
   init();
 }
@@ -74,20 +63,9 @@ FFileDialog::FFileDialog (FWidget* parent)
 //----------------------------------------------------------------------
 FFileDialog::FFileDialog (const FFileDialog& fdlg)
   : FDialog(fdlg.getParentWidget())
-  , directory_stream(0)
-  , dir_entries()
-  , directory(fdlg.directory)
-  , filter_pattern(fdlg.filter_pattern)
-  , filename()
-  , filebrowser()
-  , hidden()
-  , cancel()
-  , open()
-  , dlg_type(fdlg.dlg_type)
-  , show_hidden(fdlg.show_hidden)
 {
-  if ( directory )
-    setPath(directory);
+  if ( fdlg.directory )
+    setPath(fdlg.directory);
 
   init();
 }
@@ -98,17 +76,8 @@ FFileDialog::FFileDialog ( const FString& dirname
                          , DialogType type
                          , FWidget* parent )
   : FDialog(parent)
-  , directory_stream(0)
-  , dir_entries()
-  , directory()
   , filter_pattern(filter)
-  , filename(this)
-  , filebrowser(this)
-  , hidden(this)
-  , cancel(this)
-  , open(this)
   , dlg_type(type)
-  , show_hidden(false)
 {
   if ( ! dirname.isNull() )
     setPath(dirname);

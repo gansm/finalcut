@@ -42,18 +42,17 @@ class Transparent : public finalcut::FDialog
     } trans_type;
 
     // Constructor
-    explicit Transparent (finalcut::FWidget* = 0, trans_type = transparent);
-
+    explicit Transparent ( finalcut::FWidget* = nullptr
+                         , trans_type = transparent );
+    // Disable copy constructor
+    Transparent (const Transparent&) = delete;
     // Destructor
     ~Transparent();
 
-  private:
-    // Disable copy constructor
-    Transparent (const Transparent&);
-
     // Disable assignment operator (=)
-    Transparent& operator = (const Transparent&);
+    Transparent& operator = (const Transparent&) = delete;
 
+  private:
     // Method
     virtual void draw();
 
@@ -103,7 +102,7 @@ void Transparent::draw()
   else
     setTransparent();
 
-  finalcut::FString line(getClientWidth(), wchar_t('.'));
+  finalcut::FString line(getClientWidth(), '.');
 
   for (int n = 1; n <= int(getClientHeight()); n++)
   {
@@ -151,16 +150,17 @@ class MainWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit MainWindow (finalcut::FWidget* = 0);
+    explicit MainWindow (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    MainWindow (const MainWindow&) = delete;
     // Destructor
     ~MainWindow();
 
-  private:
-    // Disable copy constructor
-    MainWindow (const MainWindow&);
     // Disable assignment operator (=)
-    MainWindow& operator = (const MainWindow&);
+    MainWindow& operator = (const MainWindow&) = delete;
 
+  private:
+    // Method
     virtual void draw();
 
     // Event handlers
@@ -182,24 +182,18 @@ class MainWindow : public finalcut::FDialog
     }
 
     // Data Members
-    finalcut::FString line1;
-    finalcut::FString line2;
-    Transparent* transpwin;
-    Transparent* shadowwin;
-    Transparent* ibg;
-    finalcut::FStatusBar status_bar;
+    finalcut::FString line1{};
+    finalcut::FString line2{};
+    Transparent* transpwin{nullptr};
+    Transparent* shadowwin{nullptr};
+    Transparent* ibg{nullptr};
+    finalcut::FStatusBar status_bar{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 MainWindow::MainWindow (finalcut::FWidget* parent)
   : FDialog(parent)
-  , line1()
-  , line2()
-  , transpwin(0)
-  , shadowwin(0)
-  , ibg(0)
-  , status_bar(this)
 {
   line1 = "     .-.     .-.     .-.";
   line2 = "`._.'   `._.'   `._.'   ";

@@ -34,7 +34,7 @@ class Mandelbrot : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Mandelbrot (finalcut::FWidget* = 0);
+    explicit Mandelbrot (finalcut::FWidget* = nullptr);
 
     // Destructor
     ~Mandelbrot();

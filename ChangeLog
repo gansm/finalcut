@@ -1,3 +1,22 @@
+2018-12-09  Markus Gans  <guru.mail@muenster.de>
+	* Better handling of the scrollbar maximum
+	* Deactivate copy constructor and assignment operator with "= delete"
+	* Use nullptr instead of 0 to initialize a pointer values
+
+2018-12-06  Markus Gans  <guru.mail@muenster.de>
+	* Easier handling of fc::SpecialCharacter
+
+2018-12-01  Markus Gans  <guru.mail@muenster.de>
+	* Switched to the language standard C++11
+	* Use delegated constructors and in-class default member initializers
+
+2018-12-01  Markus Gans  <guru.mail@muenster.de>
+	* Improved gpm wheel mouse support
+	* Fix compile in optimization level 2 for newer gcc
+
+2018-11-27  Markus Gans  <guru.mail@muenster.de>
+	* Correct vertical scrollbar position after sorting in FListView
+
 2018-11-25  Markus Gans  <guru.mail@muenster.de>
 	* Version 0.5.0
 	* Namespace fix in FTermFreeBSD and FTermOpenBSD 

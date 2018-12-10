@@ -35,39 +35,9 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FOptiMove::FOptiMove (int baud)
-  : F_cursor_home()
-  , F_carriage_return()
-  , F_cursor_to_ll()
-  , F_tab()
-  , F_back_tab()
-  , F_cursor_up()
-  , F_cursor_down()
-  , F_cursor_left()
-  , F_cursor_right()
-  , F_cursor_address()
-  , F_column_address()
-  , F_row_address()
-  , F_parm_up_cursor()
-  , F_parm_down_cursor()
-  , F_parm_left_cursor()
-  , F_parm_right_cursor()
-  , F_erase_chars()
-  , F_repeat_char()
-  , F_clr_bol()
-  , F_clr_eol()
-  , automatic_left_margin(false)
-  , eat_nl_glitch(false)
-  , move_buf()
-  , char_duration(1)
-  , baudrate(baud)
-  , tabstop(0)
-  , screen_width(80)
-  , screen_height(24)
+  : baudrate(baud)
 {
   assert ( baud >= 0 );
-
-  // Initialize arrays with '\0'
-  std::fill_n (move_buf, sizeof(move_buf), '\0');
 
   calculateCharDuration();
 
@@ -151,7 +121,7 @@ void FOptiMove::set_cursor_home (char cap[])
   }
   else
   {
-    F_cursor_home.cap = 0;
+    F_cursor_home.cap = nullptr;
     F_cursor_home.duration = \
     F_cursor_home.length   = LONG_DURATION;
   }
@@ -168,7 +138,7 @@ void FOptiMove::set_cursor_to_ll (char cap[])
   }
   else
   {
-    F_cursor_to_ll.cap = 0;
+    F_cursor_to_ll.cap = nullptr;
     F_cursor_to_ll.duration = \
     F_cursor_to_ll.length   = LONG_DURATION;
   }
@@ -185,7 +155,7 @@ void FOptiMove::set_carriage_return (char cap[])
   }
   else
   {
-    F_carriage_return.cap = 0;
+    F_carriage_return.cap = nullptr;
     F_carriage_return.duration = \
     F_carriage_return.length   = LONG_DURATION;
   }
@@ -202,7 +172,7 @@ void FOptiMove::set_tabular (char cap[])
   }
   else
   {
-    F_tab.cap = 0;
+    F_tab.cap = nullptr;
     F_tab.duration = \
     F_tab.length   = LONG_DURATION;
   }
@@ -219,7 +189,7 @@ void FOptiMove::set_back_tab (char cap[])
   }
   else
   {
-    F_back_tab.cap = 0;
+    F_back_tab.cap = nullptr;
     F_back_tab.duration = \
     F_back_tab.length   = LONG_DURATION;
   }
@@ -236,7 +206,7 @@ void FOptiMove::set_cursor_up (char cap[])
   }
   else
   {
-    F_cursor_up.cap = 0;
+    F_cursor_up.cap = nullptr;
     F_cursor_up.duration = \
     F_cursor_up.length   = LONG_DURATION;
   }
@@ -253,7 +223,7 @@ void FOptiMove::set_cursor_down (char cap[])
   }
   else
   {
-    F_cursor_down.cap = 0;
+    F_cursor_down.cap = nullptr;
     F_cursor_down.duration = \
     F_cursor_down.length   = LONG_DURATION;
   }
@@ -270,7 +240,7 @@ void FOptiMove::set_cursor_left (char cap[])
   }
   else
   {
-    F_cursor_left.cap = 0;
+    F_cursor_left.cap = nullptr;
     F_cursor_left.duration = \
     F_cursor_left.length   = LONG_DURATION;
   }
@@ -287,7 +257,7 @@ void FOptiMove::set_cursor_right (char cap[])
   }
   else
   {
-    F_cursor_right.cap = 0;
+    F_cursor_right.cap = nullptr;
     F_cursor_right.duration = \
     F_cursor_right.length   = LONG_DURATION;
   }
@@ -305,7 +275,7 @@ void FOptiMove::set_cursor_address (char cap[])
   }
   else
   {
-    F_cursor_address.cap = 0;
+    F_cursor_address.cap = nullptr;
     F_cursor_address.duration = \
     F_cursor_address.length   = LONG_DURATION;
   }
@@ -323,7 +293,7 @@ void FOptiMove::set_column_address (char cap[])
   }
   else
   {
-    F_column_address.cap = 0;
+    F_column_address.cap = nullptr;
     F_column_address.duration = \
     F_column_address.length   = LONG_DURATION;
   }
@@ -341,7 +311,7 @@ void FOptiMove::set_row_address (char cap[])
   }
   else
   {
-    F_row_address.cap = 0;
+    F_row_address.cap = nullptr;
     F_row_address.duration = \
     F_row_address.length   = LONG_DURATION;
   }
@@ -359,7 +329,7 @@ void FOptiMove::set_parm_up_cursor (char cap[])
   }
   else
   {
-    F_parm_up_cursor.cap = 0;
+    F_parm_up_cursor.cap = nullptr;
     F_parm_up_cursor.duration = \
     F_parm_up_cursor.length   = LONG_DURATION;
   }
@@ -377,7 +347,7 @@ void FOptiMove::set_parm_down_cursor (char cap[])
   }
   else
   {
-    F_parm_down_cursor.cap = 0;
+    F_parm_down_cursor.cap = nullptr;
     F_parm_down_cursor.duration = \
     F_parm_down_cursor.length   = LONG_DURATION;
   }
@@ -395,7 +365,7 @@ void FOptiMove::set_parm_left_cursor (char cap[])
   }
   else
   {
-    F_parm_left_cursor.cap = 0;
+    F_parm_left_cursor.cap = nullptr;
     F_parm_left_cursor.duration = \
     F_parm_left_cursor.length   = LONG_DURATION;
   }
@@ -413,7 +383,7 @@ void FOptiMove::set_parm_right_cursor (char cap[])
   }
   else
   {
-    F_parm_right_cursor.cap = 0;
+    F_parm_right_cursor.cap = nullptr;
     F_parm_right_cursor.duration = \
     F_parm_right_cursor.length   = LONG_DURATION;
   }
@@ -431,7 +401,7 @@ void FOptiMove::set_erase_chars (char cap[])
   }
   else
   {
-    F_erase_chars.cap = 0;
+    F_erase_chars.cap = nullptr;
     F_erase_chars.duration = \
     F_erase_chars.length   = LONG_DURATION;
   }
@@ -449,7 +419,7 @@ void FOptiMove::set_repeat_char (char cap[])
   }
   else
   {
-    F_repeat_char.cap = 0;
+    F_repeat_char.cap = nullptr;
     F_repeat_char.duration = \
     F_repeat_char.length   = LONG_DURATION;
   }
@@ -466,7 +436,7 @@ void FOptiMove::set_clr_bol (char cap[])
   }
   else
   {
-    F_clr_bol.cap = 0;
+    F_clr_bol.cap = nullptr;
     F_clr_bol.duration = \
     F_clr_bol.length   = LONG_DURATION;
   }
@@ -483,7 +453,7 @@ void FOptiMove::set_clr_eol (char cap[])
   }
   else
   {
-    F_clr_eol.cap = 0;
+    F_clr_eol.cap = nullptr;
     F_clr_eol.duration = \
     F_clr_eol.length   = LONG_DURATION;
   }
@@ -818,7 +788,7 @@ inline void FOptiMove::rightMove ( char hmove[], int& htime
   {
     std::strncpy ( hmove
                  , tparm(F_parm_right_cursor.cap, num, 0, 0, 0, 0, 0, 0, 0, 0)
-                 , BUF_SIZE );
+                 , BUF_SIZE - 1);
     hmove[BUF_SIZE - 1] = '\0';
     htime = F_parm_right_cursor.duration;
   }
@@ -938,7 +908,7 @@ inline bool FOptiMove::isMethod0Faster ( int& move_time
   if ( move_xy )
   {
     char* move_ptr = move_buf;
-    std::strncpy (move_ptr, move_xy, BUF_SIZE);
+    std::strncpy (move_ptr, move_xy, BUF_SIZE - 1);
     move_ptr[BUF_SIZE - 1] = '\0';
     move_time = F_cursor_address.duration;
     return true;

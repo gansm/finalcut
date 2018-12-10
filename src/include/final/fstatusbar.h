@@ -80,11 +80,15 @@ class FStatusKey : public FWidget
 {
   public:
     // Constructors
-    explicit FStatusKey (FWidget* = 0);
-    FStatusKey (FKey, const FString&, FWidget* = 0);
-
+    explicit FStatusKey (FWidget* = nullptr);
+    FStatusKey (FKey, const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FStatusKey (const FStatusKey&) = delete;
     // Destructor
     virtual ~FStatusKey();
+
+    // Disable assignment operator (=)
+    FStatusKey& operator = (const FStatusKey&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -108,12 +112,6 @@ class FStatusKey : public FWidget
     virtual void        onAccel (FAccelEvent*);
 
   private:
-    // Disable copy constructor
-    FStatusKey (const FStatusKey&);
-
-    // Disable assignment operator (=)
-    FStatusKey& operator = (const FStatusKey&);
-
     // Methods
     void                init (FWidget*);
     void                processActivate();
@@ -124,11 +122,11 @@ class FStatusKey : public FWidget
     friend class FStatusBar;
 
     // Data Members
-    FKey        key;
-    FString     text;
-    bool        active;
-    bool        mouse_focus;
-    FStatusBar* bar;
+    FKey        key{0};
+    FString     text{};
+    bool        active{false};
+    bool        mouse_focus{false};
+    FStatusBar* bar{nullptr};
 };
 #pragma pack(pop)
 
@@ -194,10 +192,14 @@ class FStatusBar : public FWindow
 {
   public:
     // Constructor
-    explicit FStatusBar (FWidget* = 0);
-
+    explicit FStatusBar (FWidget* = nullptr);
+    // Disable copy constructor
+    FStatusBar (const FStatusBar&) = delete;
     // Destructor
     virtual ~FStatusBar();
+
+    // Disable assignment operator (=)
+    FStatusBar& operator = (const FStatusBar&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -236,12 +238,6 @@ class FStatusBar : public FWindow
     // Typedef
     typedef std::vector<FStatusKey*> keyList;
 
-    // Disable copy constructor
-    FStatusBar (const FStatusBar&);
-
-    // Disable assignment operator (=)
-    FStatusBar& operator = (const FStatusBar&);
-
     // Methods
     void                init();
     virtual void        draw();
@@ -250,13 +246,13 @@ class FStatusBar : public FWindow
     void                drawActiveKey (keyList::const_iterator);
 
     // Data Members
-    keyList             key_list;
-    FString             text;
-    bool                mouse_down;
-    std::size_t         screenWidth;
-    int                 keyname_len;
-    int                 x;
-    int                 x_msg;
+    keyList             key_list{};
+    FString             text{""};
+    bool                mouse_down{};
+    std::size_t         screenWidth{80};
+    int                 keyname_len{0};
+    int                 x{-1};
+    int                 x_msg{-1};
 };
 #pragma pack(pop)
 

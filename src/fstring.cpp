@@ -34,19 +34,7 @@ namespace finalcut
 
 // constructors and destructor
 //----------------------------------------------------------------------
-FString::FString()
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
-{ }
-
-//----------------------------------------------------------------------
 FString::FString (int len)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( len > 0 )
     initLength(std::size_t(len));
@@ -56,20 +44,12 @@ FString::FString (int len)
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   initLength(len);
 }
 
 //----------------------------------------------------------------------
 FString::FString (std::size_t len, wchar_t c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   wchar_t* ps;
   wchar_t* pe;
@@ -83,29 +63,7 @@ FString::FString (std::size_t len, wchar_t c)
 }
 
 //----------------------------------------------------------------------
-FString::FString (std::size_t len, char c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
-{
-  wchar_t* ps;
-  wchar_t* pe;
-
-  initLength(len);
-  ps = string;
-  pe = string + len;
-
-  while ( pe != ps )
-    *--pe = wchar_t(c);
-}
-
-//----------------------------------------------------------------------
 FString::FString (const FString& s)  // copy constructor
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.isNull() )
     _assign (s.string);
@@ -113,10 +71,6 @@ FString::FString (const FString& s)  // copy constructor
 
 //----------------------------------------------------------------------
 FString::FString (const std::wstring& s)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.empty() )
     _assign (s.c_str());
@@ -124,10 +78,6 @@ FString::FString (const std::wstring& s)
 
 //----------------------------------------------------------------------
 FString::FString (const wchar_t s[])
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( s )
     _assign (s);
@@ -135,10 +85,6 @@ FString::FString (const wchar_t s[])
 
 //----------------------------------------------------------------------
 FString::FString (const std::string& s)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( ! s.empty() )
   {
@@ -150,10 +96,6 @@ FString::FString (const std::string& s)
 
 //----------------------------------------------------------------------
 FString::FString (const char s[])
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( s )
   {
@@ -164,11 +106,19 @@ FString::FString (const char s[])
 }
 
 //----------------------------------------------------------------------
+FString::FString (fc::SpecialCharacter c)
+{
+  if ( c )
+  {
+    wchar_t s[2];
+    s[0] = static_cast<wchar_t>(c);
+    s[1] = L'\0';
+    _assign (s);
+  }
+}
+
+//----------------------------------------------------------------------
 FString::FString (const wchar_t c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( c )
   {
@@ -181,10 +131,6 @@ FString::FString (const wchar_t c)
 
 //----------------------------------------------------------------------
 FString::FString (const char c)
-  : string(0)
-  , length(0)
-  , bufsize(0)
-  , c_string(0)
 {
   if ( c )
   {
@@ -255,6 +201,14 @@ const FString FString::operator + (const char c)
 //----------------------------------------------------------------------
 FString& FString::operator << (const FString& s)
 {
+  _insert (length, s.length, s.string);
+  return *this;
+}
+
+//----------------------------------------------------------------------
+FString& FString::operator << (fc::SpecialCharacter c)
+{
+  FString s(static_cast<wchar_t>(c));
   _insert (length, s.length, s.string);
   return *this;
 }
@@ -494,7 +448,7 @@ FString FString::clear()
 
   length  = 0;
   bufsize = 0;
-  string  = 0;
+  string  = nullptr;
   return *this;
 }
 
@@ -922,7 +876,7 @@ FStringList FString::split (const FString& delimiter)
   if ( ! (string && *string) )
     return string_list;
 
-  rest = 0;
+  rest = nullptr;
   token = extractToken(&rest, s.string, delimiter.wc_str());
 
   while ( token )
@@ -1674,7 +1628,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   if ( mblength == -1 && errno != EILSEQ )
   {
     delete[](c_string);
-    c_string = 0;
+    c_string = nullptr;
     return const_cast<char*>("");
   }
 

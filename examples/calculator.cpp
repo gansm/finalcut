@@ -43,7 +43,7 @@ class Button : public finalcut::FButton
 {
   public:
     // Constructor
-    explicit Button (FWidget* = 0);
+    explicit Button (FWidget* = nullptr);
 
     // Method
     void setChecked(bool);
@@ -53,14 +53,13 @@ class Button : public finalcut::FButton
 
   private:
     // Data Member
-    bool checked;
+    bool checked{false};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Button::Button (finalcut::FWidget* parent)
   : finalcut::FButton(parent)
-  , checked(false)
 { }
 
 //----------------------------------------------------------------------
@@ -112,7 +111,7 @@ class Calc : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Calc (finalcut::FWidget* parent = 0);
+    explicit Calc (finalcut::FWidget* parent = nullptr);
 
     // Destructor
     ~Calc();
@@ -217,17 +216,18 @@ class Calc : public finalcut::FDialog
     void           mapKeyFunctions();
 
     // Data Members
-    bool              error;
-    bool              arcus_mode;
-    bool              hyperbolic_mode;
-    lDouble           a, b;
-    lDouble           infinity;
-    uInt              max_char;
-    int               last_key;
-    char              infix_operator;
-    char              last_infix_operator;
-    finalcut::FString input;
-    int               button_no[Calc::NUM_OF_BUTTONS];
+    bool              error{false};
+    bool              arcus_mode{false};
+    bool              hyperbolic_mode{false};
+    lDouble           a{0.0L};
+    lDouble           b{0.0L};
+    lDouble           infinity{std::numeric_limits<lDouble>::infinity()};
+    uInt              max_char{33};
+    int               last_key{-1};
+    char              infix_operator{'\0'};
+    char              last_infix_operator{'\0'};
+    finalcut::FString input{""};
+    int               button_no[Calc::NUM_OF_BUTTONS]{};
 
     struct stack_data
     {
@@ -235,29 +235,15 @@ class Calc : public finalcut::FDialog
       char infix_operator;
     };
 
-    std::stack<stack_data> bracket_stack;
-    std::map<Calc::button, Button*> calculator_buttons;
-    std::map<Calc::button, keyFunction> key_map;
+    std::stack<stack_data> bracket_stack{};
+    std::map<Calc::button, Button*> calculator_buttons{};
+    std::map<Calc::button, keyFunction> key_map{};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Calc::Calc (FWidget* parent)
   : finalcut::FDialog(parent)
-  , error(false)
-  , arcus_mode(false)
-  , hyperbolic_mode(false)
-  , a(0.0L)
-  , b(0.0L)
-  , infinity(std::numeric_limits<lDouble>::infinity())
-  , max_char(33)
-  , last_key(-1)
-  , infix_operator('\0')
-  , last_infix_operator('\0')
-  , input("")
-  , bracket_stack()
-  , calculator_buttons()
-  , key_map()
 {
   mapKeyFunctions();
   clearInfixOperator();
@@ -359,11 +345,11 @@ void Calc::drawDispay()
 
   if ( isNewFont() )
   {
-    wchar_t bottom_line     = wchar_t(finalcut::fc::NF_border_line_bottom);
-    wchar_t top_bottom_line = wchar_t(finalcut::fc::NF_border_line_up_and_down);
-    wchar_t top_line        = wchar_t(finalcut::fc::NF_border_line_upper);
-    wchar_t right_line      = wchar_t(finalcut::fc::NF_rev_border_line_right);
-    wchar_t left_line       = wchar_t(finalcut::fc::NF_border_line_left);
+    wchar_t bottom_line     = finalcut::fc::NF_border_line_bottom;
+    wchar_t top_bottom_line = finalcut::fc::NF_border_line_up_and_down;
+    wchar_t top_line        = finalcut::fc::NF_border_line_upper;
+    wchar_t right_line      = finalcut::fc::NF_rev_border_line_right;
+    wchar_t left_line       = finalcut::fc::NF_border_line_left;
     setPrintPos (3, 2);
     print (finalcut::FString(33, bottom_line));
     setPrintPos (2, 3);
@@ -381,9 +367,9 @@ void Calc::drawDispay()
   }
   else
   {
-    wchar_t vertical_and_right  = wchar_t(finalcut::fc::BoxDrawingsVerticalAndRight);
-    wchar_t horizontal          = wchar_t(finalcut::fc::BoxDrawingsHorizontal);
-    wchar_t vertical_and_left   = wchar_t(finalcut::fc::BoxDrawingsVerticalAndLeft);
+    wchar_t vertical_and_right  = finalcut::fc::BoxDrawingsVerticalAndRight;
+    wchar_t horizontal          = finalcut::fc::BoxDrawingsHorizontal;
+    wchar_t vertical_and_left   = finalcut::fc::BoxDrawingsVerticalAndLeft;
     finalcut::FString separator = finalcut::FString(vertical_and_right)
                                 + finalcut::FString(35, horizontal)
                                 + finalcut::FString(vertical_and_left);

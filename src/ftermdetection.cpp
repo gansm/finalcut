@@ -31,14 +31,14 @@ FTermDetection::terminalType FTermDetection::terminal_type = \
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 FTermDetection::colorEnv     FTermDetection::color_env;
 FTermDetection::secondaryDA  FTermDetection::secondary_da;
-FTermData*     FTermDetection::fterm_data = 0;
+FTermData*     FTermDetection::fterm_data = nullptr;
 char           FTermDetection::termtype[256] = { };
 char           FTermDetection::ttytypename[256] = { };
 bool           FTermDetection::decscusr_support;
 bool           FTermDetection::terminal_detection;
 bool           FTermDetection::color256;
-const FString* FTermDetection::answer_back = 0;
-const FString* FTermDetection::sec_da      = 0;
+const FString* FTermDetection::answer_back = nullptr;
+const FString* FTermDetection::sec_da      = nullptr;
 int            FTermDetection::gnome_terminal_id;
 
 #if DEBUG
@@ -182,7 +182,7 @@ bool FTermDetection::getTTYtype()
     {
       char* name;
       char* type;
-      type = name = 0;  // 0 == not found
+      type = name = nullptr;  // nullptr == not found
       p = str;
 
       while ( *p )
@@ -311,7 +311,7 @@ void FTermDetection::detectTerminal()
 {
   // Terminal detection
 
-  char* new_termtype = 0;
+  char* new_termtype = nullptr;
 
   if ( terminal_detection )
   {
@@ -359,7 +359,7 @@ void FTermDetection::detectTerminal()
 //----------------------------------------------------------------------
 char* FTermDetection::init_256colorTerminal()
 {
-  char* new_termtype = 0;
+  char* new_termtype = nullptr;
 
   if ( get256colorEnvString() )
     color256 = true;
@@ -422,7 +422,7 @@ bool FTermDetection::get256colorEnvString()
 //----------------------------------------------------------------------
 char* FTermDetection::termtype_256color_quirks()
 {
-  char* new_termtype = 0;
+  char* new_termtype = nullptr;
 
   if ( ! color256 )
     return new_termtype;

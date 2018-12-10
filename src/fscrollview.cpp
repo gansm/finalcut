@@ -35,17 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FScrollView::FScrollView (FWidget* parent)
   : FWidget(parent)
-  , scroll_geometry(1, 1, 1, 1)
-  , viewport_geometry()
-  , viewport(0)
-  , vbar(0)
-  , hbar(0)
-  , nf_offset(0)
-  , border(true)
-  , use_own_print_area(false)
-  , update_scrollbar(true)
-  , vMode(fc::Auto)
-  , hMode(fc::Auto)
 {
   init(parent);
 }
@@ -56,7 +45,7 @@ FScrollView::~FScrollView()  // destructor
   delete vbar;
   delete hbar;
   removeArea (viewport);
-  child_print_area = viewport = 0;
+  child_print_area = viewport = nullptr;
 }
 
 
@@ -541,12 +530,12 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   FRect widget_geometry;
   FRect vp_geometry;
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
-  if ( ! focus_widget )
+  if ( ! focus )
     return;
 
-  widget_geometry = focus_widget->getGeometryWithShadow();
+  widget_geometry = focus->getGeometryWithShadow();
   vp_geometry = viewport_geometry;
   vp_geometry.move(1, 1);
 
@@ -578,13 +567,13 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 {
   // Change the focus away from FScrollView to another widget
 
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
   if ( out_ev->getFocusType() == fc::FocusNextWidget )
   {
     FWidget* last_widget = getLastFocusableWidget(getChildren());
 
-    if ( focus_widget == last_widget )
+    if ( focus == last_widget )
     {
       out_ev->accept();
       focusNextChild();
@@ -594,7 +583,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   {
     FWidget* first_widget = getFirstFocusableWidget(getChildren());
 
-    if ( focus_widget == first_widget )
+    if ( focus == first_widget )
     {
       out_ev->accept();
       focusPrevChild();
@@ -611,7 +600,7 @@ FVTerm::term_area* FScrollView::getPrintArea()
 
   if ( use_own_print_area || ! viewport )
   {
-    child_print_area = 0;
+    child_print_area = nullptr;
     term_area* area = FWidget::getPrintArea();
     child_print_area = viewport;
     return area;
@@ -995,7 +984,7 @@ void FScrollView::cb_HBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 inline void FScrollView::redrawHBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( hbar->isVisible() )
     hbar->redraw();
@@ -1006,7 +995,7 @@ inline void FScrollView::redrawHBar()
 //----------------------------------------------------------------------
 inline void FScrollView::redrawVBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( vbar->isVisible() )
     vbar->redraw();
@@ -1017,7 +1006,7 @@ inline void FScrollView::redrawVBar()
 //----------------------------------------------------------------------
 inline void FScrollView::drawHBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( hbar->isVisible() )
     hbar->drawBar();
@@ -1028,7 +1017,7 @@ inline void FScrollView::drawHBar()
 //----------------------------------------------------------------------
 inline void FScrollView::drawVBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( vbar->isVisible() )
     vbar->drawBar();

@@ -75,7 +75,7 @@ class FListBoxItem
     // Constructors
     FListBoxItem ();
     FListBoxItem (const FListBoxItem&);  // copy constructor
-    explicit FListBoxItem (const FString&, FWidget::data_ptr = 0);
+    explicit FListBoxItem (const FString&, FWidget::data_ptr = nullptr);
 
     // Destructor
     virtual ~FListBoxItem();
@@ -99,10 +99,10 @@ class FListBoxItem
     friend class FListBox;
 
     // Data Members
-    FString           text;
-    FWidget::data_ptr data_pointer;
-    fc::brackets_type brackets;
-    bool              selected;
+    FString           text{};
+    FWidget::data_ptr data_pointer{nullptr};
+    fc::brackets_type brackets{fc::NoBrackets};
+    bool              selected{false};
 };
 #pragma pack(pop)
 
@@ -146,14 +146,18 @@ class FListBox : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FListBox (FWidget* = 0);
+    explicit FListBox (FWidget* = nullptr);
     template <typename Iterator, typename InsertConverter>
-    FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
+    FListBox (Iterator, Iterator, InsertConverter, FWidget* = nullptr);
     template <typename Container, typename LazyConverter>
-    FListBox (Container, LazyConverter, FWidget* = 0);
-
+    FListBox (Container, LazyConverter, FWidget* = nullptr);
+    // Disable copy constructor
+    FListBox (const FListBox&) = delete;
     // Destructor
     virtual  ~FListBox();
+
+    // Disable assignment operator (=)
+    FListBox& operator = (const FListBox&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -200,11 +204,11 @@ class FListBox : public FWidget
     void         insert ( const FString&
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = 0 );
+                        , data_ptr = nullptr );
     void         insert ( long
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = 0 );
+                        , data_ptr = nullptr );
     void         remove (std::size_t);
     void         clear();
 
@@ -221,7 +225,7 @@ class FListBox : public FWidget
 
   protected:
     // Methods
-    void         adjustYOffset();
+    void         adjustYOffset (std::size_t);
     virtual void adjustSize();
 
   private:
@@ -232,12 +236,6 @@ class FListBox : public FWidget
       direct_convert = 1,
       lazy_convert   = 2
     };
-
-    // Disable copy constructor
-    FListBox (const FListBox&);
-
-    // Disable assignment operator (=)
-    FListBox& operator = (const FListBox&);
 
     // Accessors
     static FString& getString (listBoxItems::iterator);
@@ -299,30 +297,30 @@ class FListBox : public FWidget
     // Function Pointer
     void         (*convertToItem) ( FListBoxItem&
                                   , FWidget::data_ptr
-                                  , int index );
+                                  , int index ){nullptr};
 
     // Data Members
-    listBoxItems      itemlist;
-    FWidget::data_ptr source_container;
-    convert_type      conv_type;
-    FScrollbar*       vbar;
-    FScrollbar*       hbar;
-    FString           text;
-    FString           inc_search;
-    bool              multi_select;
-    bool              mouse_select;
-    fc::dragScroll    drag_scroll;
-    bool              scroll_timer;
-    int               scroll_repeat;
-    int               scroll_distance;
-    std::size_t       current;
-    int               last_current;
-    int               secect_from_item;
-    int               xoffset;
-    int               yoffset;
-    int               last_yoffset;
-    std::size_t       nf_offset;
-    std::size_t       max_line_width;
+    listBoxItems      itemlist{};
+    FWidget::data_ptr source_container{nullptr};
+    convert_type      conv_type{FListBox::no_convert};
+    FScrollbar*       vbar{nullptr};
+    FScrollbar*       hbar{nullptr};
+    FString           text{};
+    FString           inc_search{};
+    bool              multi_select{false};
+    bool              mouse_select{false};
+    fc::dragScroll    drag_scroll{fc::noScroll};
+    bool              scroll_timer{false};
+    int               scroll_repeat{100};
+    int               scroll_distance{1};
+    std::size_t       current{0};
+    int               last_current{-1};
+    int               secect_from_item{-1};
+    int               xoffset{0};
+    int               yoffset{0};
+    int               last_yoffset{-1};
+    std::size_t       nf_offset{0};
+    std::size_t       max_line_width{0};
 };
 #pragma pack(pop)
 
@@ -335,28 +333,6 @@ inline FListBox::FListBox ( Iterator first
                           , InsertConverter convert
                           , FWidget* parent )
   : FWidget(parent)
-  , convertToItem(0)
-  , itemlist()
-  , source_container(0)
-  , conv_type(FListBox::no_convert)
-  , vbar(0)
-  , hbar(0)
-  , text()
-  , inc_search()
-  , multi_select(false)
-  , mouse_select(false)
-  , drag_scroll(fc::noScroll)
-  , scroll_timer(false)
-  , scroll_repeat(100)
-  , scroll_distance(1)
-  , current(0)
-  , last_current(-1)
-  , secect_from_item(-1)
-  , xoffset(0)
-  , yoffset(0)
-  , last_yoffset(-1)
-  , nf_offset(0)
-  , max_line_width(0)
 {
   init();
 
@@ -373,28 +349,6 @@ inline FListBox::FListBox ( Container container
                           , LazyConverter convert
                           , FWidget* parent )
   : FWidget(parent)
-  , convertToItem(0)
-  , itemlist()
-  , source_container(0)
-  , conv_type(FListBox::no_convert)
-  , vbar(0)
-  , hbar(0)
-  , text()
-  , inc_search()
-  , multi_select(false)
-  , mouse_select(false)
-  , drag_scroll(fc::noScroll)
-  , scroll_timer(false)
-  , scroll_repeat(100)
-  , scroll_distance(1)
-  , current(0)
-  , last_current(-1)
-  , secect_from_item(-1)
-  , xoffset(0)
-  , yoffset(0)
-  , last_yoffset(-1)
-  , nf_offset(0)
-  , max_line_width(0)
 {
   init();
   insert (container, convert);

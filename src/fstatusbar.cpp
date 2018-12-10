@@ -35,11 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FStatusKey::FStatusKey(FWidget* parent)
   : FWidget(parent)
-  , key(0)
-  , text()
-  , active(false)
-  , mouse_focus(false)
-  , bar(0)
 {
   init (parent);
 }
@@ -49,9 +44,6 @@ FStatusKey::FStatusKey (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , key(k)
   , text(txt)
-  , active(false)
-  , mouse_focus(false)
-  , bar(0)
 {
   init (parent);
 }
@@ -133,13 +125,6 @@ void FStatusKey::processActivate()
 //----------------------------------------------------------------------
 FStatusBar::FStatusBar(FWidget* parent)
   : FWindow(parent)
-  , key_list()
-  , text("")
-  , mouse_down()
-  , screenWidth(80)
-  , keyname_len(0)
-  , x(-1)
-  , x_msg(-1)
 {
   init();
 }

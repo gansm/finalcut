@@ -313,7 +313,7 @@ int main (int argc, char* argv[])
   // Pointer to the global virtual terminal object
   terminal = static_cast<finalcut::FVTerm*>(&TermApp);
 
-  finalcut::FTermcap::tcap_map* tcap = 0;
+  finalcut::FTermcap::tcap_map* tcap = nullptr;
   tcap = finalcut::FTermcap::getTermcapMap();
 
   std::cout << "--------\r\nFTermcap\r\n--------\r\n\n";

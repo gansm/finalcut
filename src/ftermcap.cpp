@@ -40,22 +40,13 @@ bool            FTermcap::no_utf8_acs_chars        = false;
 int             FTermcap::max_color                = 1;
 int             FTermcap::tabstop                  = 8;
 int             FTermcap::attr_without_color       = 0;
-FTermData*      FTermcap::fterm_data               = 0;
-FTermDetection* FTermcap::term_detection           = 0;
+FTermData*      FTermcap::fterm_data               = nullptr;
+FTermDetection* FTermcap::term_detection           = nullptr;
 
 
 //----------------------------------------------------------------------
 // class FTermcap
 //----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FTermcap::FTermcap()
-{ }
-
-//----------------------------------------------------------------------
-FTermcap::~FTermcap()  // destructor
-{ }
 
 /* Terminal capability data base
  * -----------------------------

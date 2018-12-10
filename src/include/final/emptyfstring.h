@@ -45,20 +45,19 @@ namespace fc
 class emptyFString
 {
 public:
-  emptyFString()
-  { }
+  // Constructors
+  emptyFString() = default;
+  // Disable copy constructor
+  emptyFString (const emptyFString&) = delete;
+
+  // Disable assignment operator (=)
+  emptyFString& operator = (const emptyFString&) = delete;
 
   static bool isNull();
   static const FString& get();
   static void clear();
 
 private:
-  // Disable copy constructor
-  emptyFString (const emptyFString&);
-
-  // Disable assignment operator (=)
-  emptyFString& operator = (const emptyFString&);
-
   // Data Member
   static const FString* empty_string;
 };
@@ -93,7 +92,7 @@ inline const FString& emptyFString::get()
 inline void emptyFString::clear()
 {
   delete empty_string;
-  empty_string = 0;
+  empty_string = nullptr;
 }
 
 }  // namespace fc

@@ -60,10 +60,14 @@ class FTermData
     typedef std::map<std::string, fc::encoding> encodingMap;
 
     // Constructors
-    FTermData();
-
+    FTermData() = default;
+    // Disable copy constructor
+    FTermData (const FTermData&) = delete;
     // Destructor
-    ~FTermData();
+    ~FTermData() = default;
+
+    // Disable assignment operator (=)
+    FTermData& operator = (const FTermData&) = delete;
 
     // Accessors
     const char*     getClassName() const;
@@ -121,80 +125,37 @@ class FTermData
 #endif
 
   private:
-    // Disable copy constructor
-    FTermData (const FTermData&);
-
-    // Disable assignment operator (=)
-    FTermData& operator = (const FTermData&);
-
     // Data Members
-    encodingMap     encoding_list;
-    fc::encoding    term_encoding;
-    FRect           term_geometry;  // current terminal geometry
-    int             fd_tty;
-    uInt            baudrate;
-    bool            shadow_character;
-    bool            half_block_character;
-    bool            cursor_optimisation;
-    bool            hidden_cursor;
-    bool            use_alternate_screen;
-    bool            ascii_console;
-    bool            vt100_console;
-    bool            utf8_console;
-    bool            utf8_state;
-    bool            new_font;
-    bool            vga_font;
-    bool            monochron;
-    bool            resize_term;
-    char            termtype[256];
-    char            termfilename[256];
-    FString         xterm_font;
-    FString         xterm_title;
+    encodingMap     encoding_list{};
+    fc::encoding    term_encoding{fc::UNKNOWN};
+    FRect           term_geometry{};  // current terminal geometry
+    int             fd_tty{-1};  // Teletype (tty) file descriptor is still undefined
+    uInt            baudrate{0};
+    bool            shadow_character{true};
+    bool            half_block_character{true};
+    bool            cursor_optimisation{true};
+    bool            hidden_cursor{false};  // Global cursor hidden state
+    bool            use_alternate_screen{true};
+    bool            ascii_console{false};
+    bool            vt100_console{false};
+    bool            utf8_console{false};
+    bool            utf8_state{false};
+    bool            new_font{false};
+    bool            vga_font{false};
+    bool            monochron{false};
+    bool            resize_term{false};
+    char            termtype[256]{'\0'};
+    char            termfilename[256]{'\0'};
+    FString         xterm_font{};
+    FString         xterm_title{};
 
 #if DEBUG
-    int             framebuffer_bpp;
+    int             framebuffer_bpp{-1};
 #endif
 };
 #pragma pack(pop)
 
 // FTermData inline functions
-//----------------------------------------------------------------------
-inline FTermData::FTermData()
-  : encoding_list()
-  , term_encoding(fc::UNKNOWN)
-  , term_geometry()
-  , fd_tty(-1)  // Teletype (tty) file descriptor is still undefined
-  , baudrate(0)
-  , shadow_character(true)
-  , half_block_character(true)
-  , cursor_optimisation(true)
-  , hidden_cursor(false)  // Global cursor hidden state
-  , use_alternate_screen(true)
-  , ascii_console(false)
-  , vt100_console(false)
-  , utf8_console(false)
-  , utf8_state(false)
-  , new_font(false)
-  , vga_font(false)
-  , monochron(false)
-  , resize_term(false)
-  , termtype()
-  , termfilename()
-  , xterm_font()
-  , xterm_title()
-#if DEBUG
-  , framebuffer_bpp(-1)
-#endif
-{
-  // Initialize arrays with '\0'
-  std::fill_n (termtype, sizeof(termtype), '\0');
-  std::fill_n (termfilename, sizeof(termfilename), '\0');
-}
-
-//----------------------------------------------------------------------
-inline FTermData::~FTermData()
-{ }
-
 //----------------------------------------------------------------------
 inline const char* FTermData::getClassName() const
 { return "FTermData"; }

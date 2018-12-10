@@ -32,7 +32,7 @@ namespace finalcut
 {
 
 // global FTerm object
-static FTerm* init_term_object = 0;
+static FTerm* init_term_object = nullptr;
 
 // global init state
 static bool term_initialized = false;
@@ -42,25 +42,25 @@ int (*FTerm::Fputchar)(int);
 
 // static class attributes
 FTerm::initializationValues FTerm::init_values;
-FTermData*          FTerm::data             = 0;
-FTermcap::tcap_map* FTerm::tcap             = 0;
-FOptiMove*          FTerm::opti_move        = 0;
-FOptiAttr*          FTerm::opti_attr        = 0;
-FTermDetection*     FTerm::term_detection   = 0;
-FTermXTerminal*     FTerm::xterm            = 0;
-FKeyboard*          FTerm::keyboard         = 0;
-FMouseControl*      FTerm::mouse            = 0;
+FTermData*          FTerm::data           = nullptr;
+FTermcap::tcap_map* FTerm::tcap           = nullptr;
+FOptiMove*          FTerm::opti_move      = nullptr;
+FOptiAttr*          FTerm::opti_attr      = nullptr;
+FTermDetection*     FTerm::term_detection = nullptr;
+FTermXTerminal*     FTerm::xterm          = nullptr;
+FKeyboard*          FTerm::keyboard       = nullptr;
+FMouseControl*      FTerm::mouse          = nullptr;
 
 #if defined(__linux__)
-  FTermLinux* FTerm::linux = 0;
+  FTermLinux* FTerm::linux = nullptr;
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-  FTermFreeBSD* FTerm::freebsd = 0;
+  FTermFreeBSD* FTerm::freebsd = nullptr;
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
-  FTermOpenBSD* FTerm::openbsd = 0;
+  FTermOpenBSD* FTerm::openbsd = nullptr;
 #endif
 
 #if DEBUG
-  FTermDebugData* FTerm::debug_data = 0;
+  FTermDebugData* FTerm::debug_data = nullptr;
 #endif
 
 // function prototypes
@@ -384,7 +384,7 @@ char* FTerm::cursorsVisibility (bool on)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str = 0;
+  char* visibility_str = nullptr;
 
   if ( on == data->isCursorHidden() )
     return 0;
@@ -665,7 +665,7 @@ void FTerm::setEncoding (fc::encoding enc)
   {
     if ( enc == fc::VT100 || enc == fc::PC )
     {
-      char* empty = 0;
+      char* empty = nullptr;
       opti_move->set_tabular (empty);
     }
     else
@@ -1407,7 +1407,7 @@ void FTerm::init_tab_quirks()
 
   if ( enc == fc::VT100 || enc == fc::PC )
   {
-    char* empty = 0;
+    char* empty = nullptr;
     opti_move->set_tabular (empty);
   }
 }

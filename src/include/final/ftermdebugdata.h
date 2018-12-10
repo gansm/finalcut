@@ -47,10 +47,14 @@ class FTermDebugData
 {
   public:
     // Constructors
-    FTermDebugData();
-
+    FTermDebugData() = default;
+    // Disable copy constructor
+    FTermDebugData (const FTermDebugData&) = delete;
     // Destructor
-    ~FTermDebugData();
+    ~FTermDebugData() = default;
+
+    // Disable assignment operator (=)
+    FTermDebugData& operator = (const FTermDebugData&) = delete;
 
     // Accessors
     const FString& getAnswerbackString();
@@ -66,28 +70,12 @@ class FTermDebugData
     void           setFTermData (FTermData*);
 
   private:
-    // Disable copy constructor
-    FTermDebugData (const FTermDebugData&);
-
-    // Disable assignment operator (=)
-    FTermDebugData& operator = (const FTermDebugData&);
-
     // Data Members
-    FTermDetection* term_detection;
-    FTermData*      data;
+    FTermDetection* term_detection{nullptr};
+    FTermData*      data{nullptr};
 };
 
 // FTermDebugData inline functions
-//----------------------------------------------------------------------
-inline FTermDebugData::FTermDebugData()
-  : term_detection(0)
-  , data(0)
-{ }
-
-//----------------------------------------------------------------------
-inline FTermDebugData::~FTermDebugData()
-{ }
-
 //----------------------------------------------------------------------
 inline void FTermDebugData::setFTermDetection (FTermDetection* obj)
 { term_detection = obj; }

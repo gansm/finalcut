@@ -4,45 +4,21 @@
 # Copyright (c) 2018 by Markus Gans
 #
 
-Name:		@PACKAGE@
-%define         libname libfinal
-%define         libsoname %{libname}0
-
-Version:	@VERSION@
-Release:	%{buildno}
-License:	LGPL-3.0
-Summary:	The Final Cut
-Url:		https://github.com/gansm/finalcut/
-Group:		System/Libraries
-Source:		finalcut-%{version}.tar.gz
-BuildRequires:	automake
-BuildRequires:	libtool
-BuildRequires:	gcc-c++
+%define sover   0
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:        %{buildno}
+Summary:        Console widget library
+License:        LGPL-3.0-or-later
+Group:          Development/Libraries/C and C++
+URL:            https://github.com/gansm/finalcut/
+Source:         https://github.com/gansm/finalcut/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+BuildRequires:  automake
+BuildRequires:  gcc-c++
 BuildRequires:  glib2-devel
+BuildRequires:  gpm-devel
+BuildRequires:  libtool
 BuildRequires:  ncurses-devel
-
-%if 0%{?suse_version}
-%if 0%{?suse_version} > 1130
-BuildRequires:  gpm-devel
-%else
-BuildRequires:  gpm
-%endif
-%else
-BuildRequires:  gpm-devel
-%endif
-
-# Additionally required for tool operations
-Requires:	xxd
-Requires:	sed
-Requires:	tr
-Requires:	grep
-Requires:	gzip
-Requires:	bdftopcf
-Requires:	autoconf-archive
-Requires:	gcc-c++
-
-Prefix:		%_prefix
-BuildRoot:	%{_tmppath}/finalcut-%{version}-build
 
 %description
 The Final Cut is a class library and widget toolkit with full mouse
@@ -53,13 +29,21 @@ The C++ class design was inspired by the Qt framework. It provides
 common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
-%package devel
+%package -n libfinal-devel
+Summary:        Development files for The Final Cut text widget library
 Group:          Development/Libraries/C and C++
-Summary:        Development files for the final cut library
-Requires:	%{libname} = %{version}
-Requires:	%{name} = %{version}
+Requires:       libfinal%{sover} = %{version}
+Requires:       bdftopcf
+Requires:       coreutils
+Requires:       gcc-c++
+Requires:       grep
+Requires:       gzip
+Requires:       sed
+Requires:       vim
+Provides:       libfinal-devel = %{version}
+Recommends:     libfinal-examples = %{version}
 
-%description devel
+%description -n libfinal-devel
 The Final Cut is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
@@ -68,13 +52,12 @@ The C++ class design was inspired by the Qt framework. It provides
 common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
-%package -n %{libsoname}
-Group:		System/Libraries
-Summary:	Console widget toolkit
-Provides:	%{libname} = %{version}
-Provides:	%{name} = %{version}
+%package -n libfinal-examples
+Summary:        Example files for The Final Cut library
+Group:          Development/Languages/C and C++
+BuildArch:      noarch
 
-%description -n %{libsoname}
+%description -n libfinal-examples
 The Final Cut is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
@@ -83,11 +66,24 @@ The C++ class design was inspired by the Qt framework. It provides
 common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
-%package static
-Group:		System/Libraries
-Summary:	Console widget toolkit
+%package -n libfinal%{sover}
+Summary:        Console widget toolkit
+Group:          System/Libraries
 
-%description static
+%description -n libfinal%{sover}
+The Final Cut is a class library and widget toolkit with full mouse
+support for creating a text-based user interface. The library supports
+the programmer to develop an application for the text console. It allows
+the simultaneous handling of multiple windows on the screen.
+The C++ class design was inspired by the Qt framework. It provides
+common controls like dialog windows, push buttons, check boxes,
+radio buttons, input lines, list boxes, status bars and so on.
+
+%package -n libfinal-static
+Summary:        Console widget toolkit
+Group:          System/Libraries
+
+%description -n libfinal-static
 The Final Cut is a class library and widget toolkit with full mouse
 support for creating a text-based user interface. The library supports
 the programmer to develop an application for the text console. It allows
@@ -97,66 +93,56 @@ common controls like dialog windows, push buttons, check boxes,
 radio buttons, input lines, list boxes, status bars and so on.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
 
 %build
-autoreconf -v --install --force
-%define warn_flags -Wall -Wextra -Wpedantic
-export CPPFLAGS="$RPM_OPT_FLAGS %{warn_flags}"
+autoreconf -vif
+export CPPFLAGS="%{optflags} -Wall -Wextra -Wpedantic"
+%ifnarch %ix86 x86_64
+export CPPFLAGS="$CPPFLAGS -Wno-error=unused-parameter"
+%endif
 %configure
 make %{?_smp_mflags} V=1
 
-
 %install
-make install libdir=${RPM_BUILD_ROOT}%{_libdir}/ \
-	     includedir=${RPM_BUILD_ROOT}%{_includedir} \
-	     bindir=${RPM_BUILD_ROOT}%{_bindir} \
-	     docdir=${RPM_BUILD_ROOT}%{_docdir}/finalcut/
-mkdir -p ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
-cp -p examples/.libs/* ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
-cp -p examples/*.cpp ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
-cp -p examples/Makefile.clang ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
-cp -p examples/Makefile.gcc ${RPM_BUILD_ROOT}%{_libdir}/finalcut/examples
-rm -f ${RPM_BUILD_ROOT}%{_libdir}/libfinal.la
-
-%post -n %{libsoname} -p /sbin/ldconfig
-
-%postun -n %{libsoname} -p /sbin/ldconfig
+make install libdir=%{buildroot}%{_libdir}/ \
+             includedir=%{buildroot}%{_includedir} \
+             bindir=%{buildroot}%{_bindir} \
+             docdir=%{buildroot}%{_docdir}/%{name}/
+mkdir -p %{buildroot}%{_docdir}/%{name}/examples
+cp -p examples/*.cpp %{buildroot}%{_docdir}/%{name}/examples
+cp -p examples/Makefile.clang %{buildroot}%{_docdir}/%{name}/examples
+cp -p examples/Makefile.gcc %{buildroot}%{_docdir}/%{name}/examples
+rm -f %{buildroot}%{_libdir}/libfinal.la %{buildroot}%{_libdir}/%{name}/examples
+rm %{buildroot}%{_docdir}/%{name}/ChangeLog %{buildroot}%{_docdir}/%{name}/COPYING.LESSER
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
 
-%files devel
-%defattr(-,root,root)
-%dir %{_docdir}/finalcut
-%dir %{_libdir}/finalcut
-%dir %{_libdir}/finalcut/examples
-%{_docdir}/finalcut/*
-%{_libdir}/pkgconfig/*
-%{_libdir}/%{libname}.so
-%{_libdir}/finalcut/*
-%{_includedir}/*
+%post -n libfinal%{sover} -p /sbin/ldconfig
+%postun -n libfinal%{sover} -p /sbin/ldconfig
 
-%files -n %{libsoname}
-%defattr(-,root,root)
-%_libdir/%{libname}.so.*
+%files -n libfinal-devel
+%if 0%{?sle_version} > 120200 || 0%{?suse_version} > 1500
+%license COPYING.LESSER
+%else
+%doc COPYING.LESSER
+%endif
+%doc ChangeLog README.md
+%exclude %{_docdir}/%{name}/examples
+%{_docdir}/%{name}
+%{_libdir}/libfinal.so
+%{_libdir}/pkgconfig/%{name}.pc
+%{_includedir}/final
 
-%files static
+%files -n libfinal-examples
+%{_docdir}/%{name}/examples
+
+%files -n libfinal%{sover}
+%{_libdir}/libfinal.so.*
+
+%files -n libfinal-static
 %defattr (-,root,root)
-%{_libdir}/%{libname}.a
+%{_libdir}/libfinal.a
 
 %changelog
-* Sun Nov 25 2018 Markus Gans <guru.mail@muenster.de> - 0.5.0-1
-- Release (version 0.5.0)
-
-* Sat Nov 04 2017 Markus Gans <guru.mail@muenster.de> - 0.4.0-1
-- Release (version 0.4.0)
-
-* Sun Nov 27 2016 Markus Gans <guru.mail@muenster.de> - 0.3.0-1
-- Release (version 0.3.0)
-
-* Sat Dec 19 2015 Markus Gans <guru.mail@muenster.de> - 0.2.0-1
-- Release (version 0.2.0)
-
-* Fri Sep 18 2015 Markus Gans <guru.mail@muenster.de> - 0.1.1-1
-- Initial Release (version 0.1.1)

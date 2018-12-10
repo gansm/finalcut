@@ -73,15 +73,20 @@ class FLabel : public FWidget
     using FWidget::setEnable;
 
     // Constructor
-    explicit FLabel (FWidget* = 0);
-    explicit FLabel (const FString&, FWidget* = 0);
-
+    explicit FLabel (FWidget* = nullptr);
+    explicit FLabel (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FLabel (const FLabel&) = delete;
     // Destructor
     virtual ~FLabel();
+
+    // Disable assignment operator (=)
+    FLabel& operator = (const FLabel&) = delete;
 
     // Overloaded operators
     FLabel& operator = (const FString&);
     FLabel& operator << (const FString&);
+    FLabel& operator << (fc::SpecialCharacter);
     FLabel& operator << (const wchar_t);
     FLabel& operator << (const uInt);
     FLabel& operator << (const int);
@@ -99,7 +104,7 @@ class FLabel : public FWidget
     FString&           getText();
 
     // Mutators
-    void               setAccelWidget (FWidget* = 0);
+    void               setAccelWidget (FWidget* = nullptr);
     void               setAlignment(fc::text_alignment);
     bool               setEmphasis(bool);
     bool               setEmphasis();
@@ -134,12 +139,6 @@ class FLabel : public FWidget
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
-    // Disable copy constructor
-    FLabel (const FLabel&);
-
-    // Disable assignment operator (=)
-    FLabel& operator = (const FLabel&);
-
     // Methods
     void               init();
     uChar              getHotkey();
@@ -153,15 +152,15 @@ class FLabel : public FWidget
                                  , std::size_t, std::size_t = 0 );
 
     // Data Members
-    FStringList        multiline_text;
-    bool               multiline;
-    FString            text;
-    fc::text_alignment alignment;
-    FColor             emphasis_color;
-    FColor             ellipsis_color;
-    bool               emphasis;
-    bool               reverse_mode;
-    FWidget*           accel_widget;
+    FStringList        multiline_text{};
+    bool               multiline{false};
+    FString            text{};
+    fc::text_alignment alignment{fc::alignLeft};
+    FColor             emphasis_color{wc.label_emphasis_fg};
+    FColor             ellipsis_color{wc.label_ellipsis_fg};
+    bool               emphasis{false};
+    bool               reverse_mode{false};
+    FWidget*           accel_widget{nullptr};
 };
 #pragma pack(pop)
 

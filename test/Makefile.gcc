@@ -9,7 +9,7 @@ BINDIR = /usr/local/bin
 CXX = g++
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%)
-CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG)
+CCXFLAGS = $(OPTIMIZE) $(PROFILE) $(DEBUG) -std=c++11
 MAKEFILE = -f Makefile.gcc
 LDFLAGS = -L../src -lfinal -lcppunit -ldl
 INCLUDES = -I. -I../src/include -I/usr/include/final

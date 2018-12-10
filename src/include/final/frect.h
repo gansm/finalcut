@@ -52,7 +52,7 @@ class FRect
 {
   public:
     // Constructors
-    FRect ();
+    FRect () = default;
     FRect (const FRect&);  // copy constructor
     FRect (int, int, std::size_t, std::size_t);
     FRect (const FPoint&, const FPoint&);
@@ -124,23 +124,15 @@ class FRect
 
   private:
     // Data Members
-    int X1;
-    int Y1;
-    int X2;
-    int Y2;
+    int X1{0};
+    int Y1{0};
+    int X2{-1};
+    int Y2{-1};
 };
 #pragma pack(pop)
 
 
 // FRect inline functions
-//----------------------------------------------------------------------
-inline FRect::FRect()
-  : X1(0)
-  , Y1(0)
-  , X2(-1)
-  , Y2(-1)
-{ }
-
 //----------------------------------------------------------------------
 inline FRect::FRect (const FRect& r)  // copy constructor
   : X1(r.X1)

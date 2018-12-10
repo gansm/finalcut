@@ -39,19 +39,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenuItem::FMenuItem (FWidget* parent)
   : FWidget(parent)
-  , text()
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }
@@ -60,18 +47,6 @@ FMenuItem::FMenuItem (FWidget* parent)
 FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
-  , accel_key(0)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }
@@ -80,18 +55,7 @@ FMenuItem::FMenuItem (const FString& txt, FWidget* parent)
 FMenuItem::FMenuItem (FKey k, const FString& txt, FWidget* parent)
   : FWidget(parent)
   , text(txt)
-  , selected(false)
-  , separator(false)
-  , checkable(false)
-  , checked(false)
-  , radio_button(false)
-  , dialog_index(false)
-  , text_length(0)
-  , hotkey(0)
   , accel_key(k)
-  , menu(0)
-  , super_menu(0)
-  , associated_window(0)
 {
   init (parent);
 }
@@ -288,23 +252,20 @@ void FMenuItem::delAccelerator (FWidget* obj)
 //----------------------------------------------------------------------
 void FMenuItem::openMenu()
 {
-  FMenu* dd_menu;  // Drop-down menu
-  FMenu* open_menu;
-
   if ( ! hasMenu() )
     return;
 
-  dd_menu = getMenu();  // Drop-down menu
+  FMenu* dd_menu = getMenu();  // Drop-down menu
 
   if ( dd_menu->isVisible() )
     return;
 
-  open_menu = static_cast<FMenu*>(getOpenMenu());
+  FMenu* openmenu = static_cast<FMenu*>(getOpenMenu());
 
-  if ( open_menu && open_menu != dd_menu )
+  if ( openmenu && openmenu != dd_menu )
   {
-    open_menu->hide();
-    open_menu->hideSubMenus();
+    openmenu->hide();
+    openmenu->hideSubMenus();
   }
 
   if ( dialog_index )
@@ -498,7 +459,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   else
   {
     unsetSelected();
-    mbar->selected_item = 0;
+    mbar->selected_item = nullptr;
     mbar->redraw();
     processClicked();
     mbar->drop_down = false;
@@ -575,7 +536,7 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
     menu_list = static_cast<FMenuList*>(Menubar);
   }
   else
-    menu_list = 0;
+    menu_list = nullptr;
 
   return menu_list;
 }
@@ -774,8 +735,8 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 
   if ( win )
   {
-    FWidget* focus_widget = getFocusWidget();
-    FAccelEvent a_ev (fc::Accelerator_Event, focus_widget);
+    FWidget* focus = getFocusWidget();
+    FAccelEvent a_ev (fc::Accelerator_Event, focus);
     FApplication::sendEvent (win, &a_ev);
   }
 }
@@ -790,7 +751,7 @@ void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
   {
     delAccelerator(win);
     delCallback(win);
-    associated_window = 0;
+    associated_window = nullptr;
   }
 }
 

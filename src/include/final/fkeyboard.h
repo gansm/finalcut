@@ -60,15 +60,16 @@ class FKeyboardCommand
 {
   public:
     // Constructor
-    explicit FKeyboardCommand (FApplication* = 0, void(FApplication::*)() = 0);
+    explicit FKeyboardCommand ( FApplication* = nullptr
+                              , void(FApplication::*)() = nullptr);
 
     // Method
     void execute();
 
   private:
     // Data Members
-    FApplication* instance;
-    void (FApplication::*handler)();
+    FApplication* instance{nullptr};
+    void (FApplication::*handler)(){nullptr};
 };
 #pragma pack(pop)
 
@@ -84,16 +85,20 @@ class FKeyboard
 {
   public:
     // Constants
-    static const std::size_t FIFO_BUF_SIZE = 512;
+    static const std::size_t FIFO_BUF_SIZE{512};
 
     // Typedef
     typedef char keybuffer[FIFO_BUF_SIZE];
 
     // Constructor
     FKeyboard();
-
+    // Disable copy constructor
+    FKeyboard (const FKeyboard&) = delete;
     // Destructor
     virtual ~FKeyboard();
+
+    // Disable assignment operator (=)
+    FKeyboard& operator = (const FKeyboard&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -131,14 +136,8 @@ class FKeyboard
 
   private:
     // Constants
-    static const std::size_t READ_BUF_SIZE = 1024;
+    static const std::size_t READ_BUF_SIZE{1024};
     static const FKey NOT_SET = static_cast<FKey>(-1);
-
-    // Disable copy constructor
-    FKeyboard (const FKeyboard&);
-
-    // Disable assignment operator (=)
-    FKeyboard& operator = (const FKeyboard&);
 
     // Accessors
     FKey                getMouseProtocolKey();
@@ -166,23 +165,23 @@ class FKeyboard
     void                escapeKeyPressed();
 
     // Data Members
-    FKey                key;
-    char                read_buf[READ_BUF_SIZE];
-    char                fifo_buf[FIFO_BUF_SIZE];
-    int                 fifo_offset;
-    bool                fifo_in_use;
-    int                 stdin_status_flags;
+    FKey                key{0};
+    char                read_buf[READ_BUF_SIZE]{'\0'};
+    char                fifo_buf[FIFO_BUF_SIZE]{'\0'};
+    int                 fifo_offset{0};
+    bool                fifo_in_use{false};
+    int                 stdin_status_flags{0};
     static long         key_timeout;
-    bool                input_data_pending;
-    bool                utf8_input;
-    bool                mouse_support;
-    bool                non_blocking_stdin;
-    FKeyboardCommand    keypressed_cmd;
-    FKeyboardCommand    keyreleased_cmd;
-    FKeyboardCommand    escape_key_cmd;
+    bool                input_data_pending{false};
+    bool                utf8_input{false};
+    bool                mouse_support{true};
+    bool                non_blocking_stdin{false};
+    FKeyboardCommand    keypressed_cmd{};
+    FKeyboardCommand    keyreleased_cmd{};
+    FKeyboardCommand    escape_key_cmd{};
 
     static timeval      time_keypressed;
-    fc::fkeymap*        key_map;
+    fc::fkeymap*        key_map{nullptr};
 
 #if defined(__linux__)
     #undef linux

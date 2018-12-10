@@ -70,10 +70,14 @@ class FTermLinux
 {
   public:
     // Constructors
-    FTermLinux();
-
+    FTermLinux() = default;
+    // Disable copy constructor
+    FTermLinux (const FTermLinux&) = delete;
     // Destructor
     virtual ~FTermLinux();
+
+    // Disable assignment operator (=)
+    FTermLinux& operator = (const FTermLinux&) = delete;
 
     // Accessors
     const char*          getClassName() const;
@@ -129,12 +133,6 @@ class FTermLinux
     {
       rgb color[16];
     } ColorMap;
-
-    // Disable copy constructor
-    FTermLinux (const FTermLinux&);
-
-    // Disable assignment operator (=)
-    FTermLinux& operator = (const FTermLinux&);
 
     // Accessors
     static int           getFramebuffer_bpp();

@@ -584,8 +584,8 @@ void FStringTest::equalTest()
   const std::wstring wst = L"abc";
   CPPUNIT_ASSERT ( str == wst );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   CPPUNIT_ASSERT ( ! (str == null_str2) );
   CPPUNIT_ASSERT ( ! (null_str1 == str) );
   CPPUNIT_ASSERT ( null_str1 == null_str2 );
@@ -635,8 +635,8 @@ void FStringTest::notEqualTest()
   const std::wstring wst = L"abc";
   CPPUNIT_ASSERT ( s1 != wst );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   CPPUNIT_ASSERT ( s1 != null_str2 );
   CPPUNIT_ASSERT ( null_str1 != s1 );
   CPPUNIT_ASSERT ( ! (null_str1 != null_str2) );
@@ -680,8 +680,8 @@ void FStringTest::lessEqualTest()
   CPPUNIT_ASSERT ( s1 <= wst1 && s1 == wst1 );
   CPPUNIT_ASSERT ( s1 <= wst2 && s1 != wst2 );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   const finalcut::FString empty("");
   CPPUNIT_ASSERT ( ! (s1 <= null_str2) );
   CPPUNIT_ASSERT ( null_str1 <= s2 );
@@ -715,8 +715,8 @@ void FStringTest::lessTest()
   const std::wstring wst = L"xzz";
   CPPUNIT_ASSERT ( s1 < wst );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   CPPUNIT_ASSERT ( ! (s1 < null_str2) );
   CPPUNIT_ASSERT ( null_str1 < s2 );
   CPPUNIT_ASSERT ( ! (null_str1 < null_str2) );
@@ -758,8 +758,8 @@ void FStringTest::greaterEqualTest()
   CPPUNIT_ASSERT ( s1 >= wst1 && s1 == wst1 );
   CPPUNIT_ASSERT ( s1 >= wst2 && s1 != wst2 );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   const finalcut::FString empty("");
   CPPUNIT_ASSERT ( s1 >= null_str2 );
   CPPUNIT_ASSERT ( ! (null_str1 >= s2) );
@@ -793,8 +793,8 @@ void FStringTest::greaterTest()
   const std::wstring wst = L"xww";
   CPPUNIT_ASSERT ( s1 > wst );
 
-  const finalcut::FString null_str1;
-  const finalcut::FString null_str2;
+  const finalcut::FString null_str1{};
+  const finalcut::FString null_str2{};
   CPPUNIT_ASSERT ( s1 > null_str2 );
   CPPUNIT_ASSERT ( ! (null_str1 > s2) );
   CPPUNIT_ASSERT ( ! (null_str1 > null_str2) );
@@ -822,6 +822,10 @@ void FStringTest::streamInsertionTest()
   out.clear();
   out << const_cast<char*>("ABC");
   CPPUNIT_ASSERT ( out == L"ABC" );
+
+  out.clear();
+  out << finalcut::fc::Euro;
+  CPPUNIT_ASSERT ( out == L"€" );
 
   out.clear();
   out << wchar_t(L'A');
@@ -1028,7 +1032,7 @@ void FStringTest::formatTest()
   CPPUNIT_ASSERT ( str2 == "Add a looo" + finalcut::FString(2048, 'o')
                            + "ooong string" );
 
-  const finalcut::FString null_fstring;
+  const finalcut::FString null_fstring{};
   str2.sprintf (null_fstring, 0);
   CPPUNIT_ASSERT ( str2.isNull() );
 
@@ -1268,7 +1272,7 @@ void FStringTest::trimTest()
   CPPUNIT_ASSERT ( trim_str2.ltrim().getLength() == 0 );
   CPPUNIT_ASSERT ( trim_str2.ltrim().capacity() == 0 );
 
-  const finalcut::FString trim_str3;
+  const finalcut::FString trim_str3{};
   CPPUNIT_ASSERT ( trim_str3.ltrim().isEmpty() );
   CPPUNIT_ASSERT ( trim_str3.ltrim().isEmpty() );
   CPPUNIT_ASSERT ( trim_str3.ltrim().getLength() == 0 );
@@ -1659,7 +1663,7 @@ void FStringTest::removeTest()
 void FStringTest::includesTest()
 {
   const finalcut::FString str = "Look behind you, a three-headed monkey!";
-  const finalcut::FString empty1;
+  const finalcut::FString empty1{};
   const wchar_t* empty2 = 0;
   const char* empty3 = 0;
   const finalcut::FString search1 = "you";

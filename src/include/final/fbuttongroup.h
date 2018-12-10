@@ -72,11 +72,15 @@ class FButtonGroup : public FScrollView
 {
   public:
     // Constructors
-    explicit FButtonGroup (FWidget* = 0);
-    explicit FButtonGroup (const FString&, FWidget* = 0);
-
+    explicit FButtonGroup (FWidget* = nullptr);
+    explicit FButtonGroup (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FButtonGroup (const FButtonGroup&) = delete;
     // Destructor
     virtual ~FButtonGroup();
+
+    // Disable assignment operator (=)
+    FButtonGroup& operator = (const FButtonGroup&) = delete;
 
     // Accessor
     const char*    getClassName() const;
@@ -128,12 +132,6 @@ class FButtonGroup : public FScrollView
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
-    // Disable copy constructor
-    FButtonGroup (const FButtonGroup&);
-
-    // Disable assignment operator (=)
-    FButtonGroup& operator = (const FButtonGroup&);
-
     // Inquiries
     bool           isRadioButton (FToggleButton*) const;
 
@@ -144,8 +142,8 @@ class FButtonGroup : public FScrollView
     void           directFocus();
 
     // Data Members
-    FString        text;
-    FObjectList    buttonlist;
+    FString        text{};
+    FObjectList    buttonlist{};
 };
 #pragma pack(pop)
 

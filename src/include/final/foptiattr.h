@@ -77,9 +77,9 @@ class FOptiAttr
     // Typedefs
     typedef struct
     {
-      int    code;      // character code
-      FColor fg_color;  // foreground color
-      FColor bg_color;  // background color
+      wchar_t code;      // character code
+      FColor  fg_color;  // foreground color
+      FColor  bg_color;  // background color
 
       union attribute
       {
@@ -157,9 +157,13 @@ class FOptiAttr
 
     // Constructor
     FOptiAttr();
-
+    // Disable copy constructor
+    FOptiAttr (const FOptiAttr&) = delete;
     // Destructor
     virtual ~FOptiAttr();
+
+    // Disable assignment operator (=)
+    FOptiAttr& operator = (const FOptiAttr&) = delete;
 
     // Friend operator functions
     friend bool operator == (const charData&, const charData&);
@@ -258,12 +262,6 @@ class FOptiAttr
       no_mode          = 65536
     };
 
-    // Disable copy constructor
-    FOptiAttr (const FOptiAttr&);
-
-    // Disable assignment operator (=)
-    FOptiAttr& operator = (const FOptiAttr&);
-
     // Mutators
     bool  setTermBold (charData*&);
     bool  unsetTermBold (charData*&);
@@ -326,54 +324,54 @@ class FOptiAttr
     bool  append_sequence (char[]);
 
     // Data Members
-    capability F_enter_bold_mode;
-    capability F_exit_bold_mode;
-    capability F_enter_dim_mode;
-    capability F_exit_dim_mode;
-    capability F_enter_italics_mode;
-    capability F_exit_italics_mode;
-    capability F_enter_underline_mode;
-    capability F_exit_underline_mode;
-    capability F_enter_blink_mode;
-    capability F_exit_blink_mode;
-    capability F_enter_reverse_mode;
-    capability F_exit_reverse_mode;
-    capability F_enter_standout_mode;
-    capability F_exit_standout_mode;
-    capability F_enter_secure_mode;
-    capability F_exit_secure_mode;
-    capability F_enter_protected_mode;
-    capability F_exit_protected_mode;
-    capability F_enter_crossed_out_mode;
-    capability F_exit_crossed_out_mode;
-    capability F_enter_dbl_underline_mode;
-    capability F_exit_dbl_underline_mode;
-    capability F_set_attributes;
-    capability F_exit_attribute_mode;
-    capability F_enter_alt_charset_mode;
-    capability F_exit_alt_charset_mode;
-    capability F_enter_pc_charset_mode;
-    capability F_exit_pc_charset_mode;
-    capability F_set_a_foreground;
-    capability F_set_a_background;
-    capability F_set_foreground;
-    capability F_set_background;
-    capability F_set_color_pair;
-    capability F_orig_pair;
-    capability F_orig_colors;
+    capability F_enter_bold_mode{};
+    capability F_exit_bold_mode{};
+    capability F_enter_dim_mode{};
+    capability F_exit_dim_mode{};
+    capability F_enter_italics_mode{};
+    capability F_exit_italics_mode{};
+    capability F_enter_underline_mode{};
+    capability F_exit_underline_mode{};
+    capability F_enter_blink_mode{};
+    capability F_exit_blink_mode{};
+    capability F_enter_reverse_mode{};
+    capability F_exit_reverse_mode{};
+    capability F_enter_standout_mode{};
+    capability F_exit_standout_mode{};
+    capability F_enter_secure_mode{};
+    capability F_exit_secure_mode{};
+    capability F_enter_protected_mode{};
+    capability F_exit_protected_mode{};
+    capability F_enter_crossed_out_mode{};
+    capability F_exit_crossed_out_mode{};
+    capability F_enter_dbl_underline_mode{};
+    capability F_exit_dbl_underline_mode{};
+    capability F_set_attributes{};
+    capability F_exit_attribute_mode{};
+    capability F_enter_alt_charset_mode{};
+    capability F_exit_alt_charset_mode{};
+    capability F_enter_pc_charset_mode{};
+    capability F_exit_pc_charset_mode{};
+    capability F_set_a_foreground{};
+    capability F_set_a_background{};
+    capability F_set_foreground{};
+    capability F_set_background{};
+    capability F_set_color_pair{};
+    capability F_orig_pair{};
+    capability F_orig_colors{};
 
-    charData   on;
-    charData   off;
-    charData   reset_byte_mask;
+    charData   on{};
+    charData   off{};
+    charData   reset_byte_mask{};
 
-    int        max_color;
-    int        attr_without_color;
-    bool       ansi_default_color;
-    bool       alt_equal_pc_charset;
-    bool       monochron;
-    bool       fake_reverse;
-    char       attr_buf[8192];
-    char*      attr_ptr;
+    int        max_color{1};
+    int        attr_without_color{0};
+    bool       ansi_default_color{false};
+    bool       alt_equal_pc_charset{false};
+    bool       monochron{true};
+    bool       fake_reverse{false};
+    char       attr_buf[8192]{'\0'};
+    char*      attr_ptr{attr_buf};
 };
 #pragma pack(pop)
 

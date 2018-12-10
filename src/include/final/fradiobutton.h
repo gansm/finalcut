@@ -73,22 +73,20 @@ class FRadioButton : public FToggleButton
 {
   public:
     // Constructors
-    explicit FRadioButton (FWidget* = 0);
-    explicit FRadioButton (const FString&, FWidget* = 0);
-
+    explicit FRadioButton (FWidget* = nullptr);
+    explicit FRadioButton (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FRadioButton (const FRadioButton&) = delete;
     // Destructor
     virtual ~FRadioButton();
+
+    // Disable assignment operator (=)
+    FRadioButton& operator = (const FRadioButton&) = delete;
 
     // Accessor
     const char* getClassName() const;
 
   private:
-    // Disable copy constructor
-    FRadioButton (const FRadioButton&);
-
-    // Disable assignment operator (=)
-    FRadioButton& operator = (const FRadioButton&);
-
     // Methods
     void         init();
     virtual void draw();

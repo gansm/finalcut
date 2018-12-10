@@ -35,18 +35,16 @@ class SmallWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit SmallWindow (finalcut::FWidget* = 0);
-
+    explicit SmallWindow (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    SmallWindow (const SmallWindow&) = delete;
     // Destructor
     ~SmallWindow();
 
-  private:
-    // Disable copy constructor
-    SmallWindow (const SmallWindow&);
-
     // Disable assignment operator (=)
-    SmallWindow& operator = (const SmallWindow&);
+    SmallWindow& operator = (const SmallWindow&) = delete;
 
+  private:
     // Method
     virtual void adjustSize();
 
@@ -55,22 +53,17 @@ class SmallWindow : public finalcut::FDialog
     virtual void onTimer (finalcut::FTimerEvent*);
 
     // Data Members
-    finalcut::FLabel left_arrow;
-    finalcut::FLabel right_arrow;
-    finalcut::FLabel top_left_label;
-    finalcut::FLabel top_right_label;
-    finalcut::FLabel bottom_label;
+    finalcut::FLabel left_arrow{this};
+    finalcut::FLabel right_arrow{this};
+    finalcut::FLabel top_left_label{this};
+    finalcut::FLabel top_right_label{this};
+    finalcut::FLabel bottom_label{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 SmallWindow::SmallWindow (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , left_arrow(this)
-  , right_arrow(this)
-  , top_left_label(this)
-  , top_right_label(this)
-  , bottom_label(this)
 {
   wchar_t arrow_up, arrow_down;
   arrow_up = finalcut::fc::BlackUpPointingTriangle;
@@ -171,42 +164,35 @@ class Window : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Window (finalcut::FWidget* = 0);
-
+    explicit Window (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    Window (const Window&) = delete;
     // Destructor
     ~Window();
+
+    // Disable assignment operator (=)
+    Window& operator = (const Window&) = delete;
 
   private:
     // Typedefs
     typedef void (Window::*WindowCallback)(finalcut::FWidget*, data_ptr);
     typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, data_ptr);
 
-    class win_data
+    struct win_data
     {
-      public:
-        win_data()
-          : is_open(false)
-          , title()
-          , dgl(0)
-        { }
+        // Constructor
+        win_data() = default;
+        // Disable copy constructor
+        win_data (const win_data&) = delete;
+
+        // Disable assignment operator (=)
+        win_data& operator = (const win_data&) = delete;
 
         // Data Members
-        bool is_open;
-        finalcut::FString title;
-        SmallWindow* dgl;
-
-      private:
-        // Disable copy constructor
-        win_data (const win_data&);
-        // Disable assignment operator (=)
-        win_data& operator = (const win_data&);
+        bool is_open{false};
+        finalcut::FString title{};
+        SmallWindow* dgl{nullptr};
     };
-
-    // Disable copy constructor
-    Window (const Window&);
-
-    // Disable assignment operator (=)
-    Window& operator = (const Window&);
 
     // Method
     void configureFileMenuItems();
@@ -227,44 +213,28 @@ class Window : public finalcut::FDialog
     void cb_destroyWindow (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    std::vector<win_data*>    windows;
-    finalcut::FString         drop_down_symbol;
-    finalcut::FMenuBar        Menubar;
-    finalcut::FMenu           File;
-    finalcut::FDialogListMenu DglList;
-    finalcut::FStatusBar      Statusbar;
-    finalcut::FMenuItem       New;
-    finalcut::FMenuItem       Close;
-    finalcut::FMenuItem       Line1;
-    finalcut::FMenuItem       Next;
-    finalcut::FMenuItem       Previous;
-    finalcut::FMenuItem       Line2;
-    finalcut::FMenuItem       Quit;
-    finalcut::FButton         CreateButton;
-    finalcut::FButton         CloseButton;
-    finalcut::FButton         QuitButton;
+    std::vector<win_data*>    windows{};
+    finalcut::FString         drop_down_symbol{finalcut::fc::BlackDownPointingTriangle};
+    finalcut::FMenuBar        Menubar{this};
+    finalcut::FMenu           File{"&File", &Menubar};
+    finalcut::FDialogListMenu DglList{drop_down_symbol, &Menubar};
+    finalcut::FStatusBar      Statusbar{this};
+    finalcut::FMenuItem       New{"&New", &File};
+    finalcut::FMenuItem       Close{"&Close", &File};
+    finalcut::FMenuItem       Line1{&File};
+    finalcut::FMenuItem       Next{"Ne&xt window", &File};
+    finalcut::FMenuItem       Previous{"&Previous window", &File};
+    finalcut::FMenuItem       Line2{&File};
+    finalcut::FMenuItem       Quit{"&Quit", &File};
+    finalcut::FButton         CreateButton{this};
+    finalcut::FButton         CloseButton{this};
+    finalcut::FButton         QuitButton{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Window::Window (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , windows()
-  , drop_down_symbol(wchar_t(finalcut::fc::BlackDownPointingTriangle))
-  , Menubar(this)
-  , File("&File", &Menubar)
-  , DglList(drop_down_symbol, &Menubar)
-  , Statusbar(this)
-  , New("&New", &File)
-  , Close("&Close", &File)
-  , Line1(&File)
-  , Next("Ne&xt window", &File)
-  , Previous("&Previous window", &File)
-  , Line2(&File)
-  , Quit("&Quit", &File)
-  , CreateButton(this)
-  , CloseButton(this)
-  , QuitButton(this)
 {
   // Menu bar item
   File.setStatusbarMessage ("File management commands");
@@ -578,7 +548,7 @@ void Window::cb_destroyWindow (finalcut::FWidget*, data_ptr data)
   if ( win_dat )
   {
     win_dat->is_open = false;
-    win_dat->dgl = 0;
+    win_dat->dgl = nullptr;
   }
 }
 

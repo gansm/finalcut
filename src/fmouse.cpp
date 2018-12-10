@@ -40,16 +40,6 @@ namespace finalcut
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouse::FMouse()
-  : b_state()
-  , mouse_event_occurred(false)
-  , input_data_pending(false)
-  , dblclick_interval(500000)  // 500 ms
-  , max_width(80)
-  , max_height(25)
-  , time_mousepressed()
-  , zero_point(0, 0)           // zero point (x=0, y=0)
-  , mouse(0, 0)                // mouse click position
-  , new_mouse_position()
 {
   time_mousepressed.tv_sec = 0;
   time_mousepressed.tv_usec = 0;
@@ -237,10 +227,6 @@ bool FMouse::isDblclickTimeout (timeval* time)
 //----------------------------------------------------------------------
 FMouseGPM::FMouseGPM()
   : FMouse()
-  , gpm_ev()
-  , has_gpm_mouse_data(false)
-  , gpm_mouse_enabled(false)
-  , stdin_no(0)
 {
   gpm_ev.x = -1;
 }
@@ -283,6 +269,14 @@ void FMouseGPM::processEvent (struct timeval*)
   {
     Gpm_FitEvent (&gpm_ev);
 
+    if ( ! hasSignificantEvents() )
+    {
+      GPM_DRAWPOINTER(&gpm_ev);
+      has_gpm_mouse_data = false;
+      mouse_event_occurred = false;
+      return;
+    }
+
     if ( gpm_ev.type & GPM_DRAG && gpm_ev.wdx == 0 && gpm_ev.wdy == 0 )
       b_state.mouse_moved = true;
 
@@ -295,53 +289,19 @@ void FMouseGPM::processEvent (struct timeval*)
     {
       case GPM_DOWN:
       case GPM_DRAG:
-        if ( gpm_ev.buttons & GPM_B_LEFT )
-        {
-          if ( gpm_ev.type & GPM_DOUBLE )
-            b_state.left_button = DoubleClick;
-          else
-            b_state.left_button = Pressed;
-        }
-
-        if ( gpm_ev.buttons & GPM_B_MIDDLE )
-          b_state.middle_button = Pressed;
-
-        if ( gpm_ev.buttons & GPM_B_RIGHT )
-          b_state.right_button = Pressed;
-
-        if ( gpm_ev.buttons & GPM_B_UP )
-          b_state.wheel_up = true;
-
-        if ( gpm_ev.buttons & GPM_B_DOWN )
-          b_state.wheel_down = true;
-
-        // Keyboard modifiers
-        if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
-          b_state.shift_button = true;
-
-        if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
-          b_state.meta_button = true;
-
-        if ( gpm_ev.modifiers & (1 << KG_CTRL) )
-          b_state.control_button = true;
-
+        interpretKeyDown();
         break;
 
       case GPM_UP:
-        if ( gpm_ev.buttons & GPM_B_LEFT )
-          b_state.left_button = Released;
+        interpretKeyUp();
 
-        if ( gpm_ev.buttons & GPM_B_MIDDLE )
-          b_state.middle_button = Released;
-
-        if ( gpm_ev.buttons & GPM_B_RIGHT )
-          b_state.right_button = Released;
 
       default:
         break;
     }
 
-    setPos (FPoint(gpm_ev.x, gpm_ev.y));
+    setPos (FPoint( std::max(gpm_ev.x, sInt16(1))
+                  , std::max(gpm_ev.y, sInt16(1)) ));
 
     if ( gpmEvent(false) == mouse_event )
       input_data_pending = true;
@@ -353,6 +313,8 @@ void FMouseGPM::processEvent (struct timeval*)
     mouse_event_occurred = true;
     return;
   }
+  else
+    gpm_fd = -1;
 
   has_gpm_mouse_data = false;
   mouse_event_occurred = false;
@@ -366,7 +328,7 @@ bool FMouseGPM::gpmMouse (bool on)
   if ( on )
   {
     Gpm_Connect conn;
-    conn.eventMask   = uInt16(~GPM_MOVE);
+    conn.eventMask   = uInt16(~0);  // Get all including wheel event
     conn.defaultMask = GPM_MOVE;
     conn.maxMod      = uInt16(~0);
     conn.minMod      = 0;
@@ -391,6 +353,62 @@ bool FMouseGPM::gpmMouse (bool on)
 
   gpm_mouse_enabled = on;
   return on;
+}
+
+//----------------------------------------------------------------------
+bool FMouseGPM::hasSignificantEvents()
+{
+  return ! (gpm_ev.type & GPM_MOVE)
+      || gpm_ev.wdy != 0
+      || gpm_ev.buttons & GPM_B_UP
+      || gpm_ev.buttons & GPM_B_DOWN;
+}
+
+//----------------------------------------------------------------------
+void FMouseGPM::interpretKeyDown()
+{
+  if ( gpm_ev.buttons & GPM_B_LEFT )
+  {
+    if ( gpm_ev.type & GPM_DOUBLE )
+      b_state.left_button = DoubleClick;
+    else
+      b_state.left_button = Pressed;
+  }
+
+  if ( gpm_ev.buttons & GPM_B_MIDDLE )
+    b_state.middle_button = Pressed;
+
+  if ( gpm_ev.buttons & GPM_B_RIGHT )
+    b_state.right_button = Pressed;
+
+  if ( gpm_ev.buttons & GPM_B_UP )
+    b_state.wheel_up = true;
+
+  if ( gpm_ev.buttons & GPM_B_DOWN )
+    b_state.wheel_down = true;
+
+  // Keyboard modifiers
+  if ( gpm_ev.modifiers & (1 << KG_SHIFT) )
+    b_state.shift_button = true;
+
+  if ( gpm_ev.modifiers & ((1 << KG_ALT) | (1 << KG_ALTGR)) )
+    b_state.meta_button = true;
+
+  if ( gpm_ev.modifiers & (1 << KG_CTRL) )
+    b_state.control_button = true;
+}
+
+//----------------------------------------------------------------------
+void FMouseGPM::interpretKeyUp()
+{
+  if ( gpm_ev.buttons & GPM_B_LEFT )
+    b_state.left_button = Released;
+
+  if ( gpm_ev.buttons & GPM_B_MIDDLE )
+    b_state.middle_button = Released;
+
+  if ( gpm_ev.buttons & GPM_B_RIGHT )
+    b_state.right_button = Released;
 }
 
 //----------------------------------------------------------------------
@@ -460,21 +478,6 @@ int FMouseGPM::gpmEvent (bool clear)
 //----------------------------------------------------------------------
 // class FMouseX11
 //----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FMouseX11::FMouseX11()
-  : FMouse()
-  , x11_mouse()
-  , x11_button_state(all_buttons_released)
-{
-  x11_mouse[0] = '\0';
-}
-
-//----------------------------------------------------------------------
-FMouseX11::~FMouseX11()  // destructor
-{ }
-
 
 // public methods of FMouseX11
 //----------------------------------------------------------------------
@@ -662,21 +665,6 @@ void FMouseX11::setButtonState (int btn, struct timeval* time)
 //----------------------------------------------------------------------
 // class FMouseSGR
 //----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FMouseSGR::FMouseSGR()
-  : FMouse()
-  , sgr_mouse()
-  , sgr_button_state(0x23)
-{
-  sgr_mouse[0] = '\0';
-}
-
-//----------------------------------------------------------------------
-FMouseSGR::~FMouseSGR()  // destructor
-{ }
-
 
 // public methods of FMouseSGR
 //----------------------------------------------------------------------
@@ -916,21 +904,6 @@ void FMouseSGR::setReleasedButtonState (int btn)
 //----------------------------------------------------------------------
 // class FMouseUrxvt
 //----------------------------------------------------------------------
-
-// constructors and destructor
-//----------------------------------------------------------------------
-FMouseUrxvt::FMouseUrxvt()
-  : FMouse()
-  , urxvt_mouse()
-  , urxvt_button_state(0x23)
-{
-  urxvt_mouse[0] = '\0';
-}
-
-//----------------------------------------------------------------------
-FMouseUrxvt::~FMouseUrxvt()  // destructor
-{ }
-
 
 // public methods of FMouseUrxvt
 //----------------------------------------------------------------------
@@ -1198,11 +1171,6 @@ void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 // constructors and destructor
 //----------------------------------------------------------------------
 FMouseControl::FMouseControl()
-  : mouse_protocol()
-  , iter()
-  , zero_point(0, 0)
-  , use_gpm_mouse(false)
-  , use_xterm_mouse(false)
 {
 #ifdef F_HAVE_LIBGPM
   mouse_protocol[FMouse::gpm] = FMouse::createMouseObject(FMouse::gpm);
@@ -1484,21 +1452,26 @@ bool FMouseControl::isInputDataPending()
 }
 
 //----------------------------------------------------------------------
+#ifdef F_HAVE_LIBGPM
 bool FMouseControl::isGpmMouseEnabled()
 {
   if ( mouse_protocol.empty() )
     return false;
 
-#ifdef F_HAVE_LIBGPM
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->isGpmMouseEnabled();
-#endif  // F_HAVE_LIBGPM
 
   return false;
 }
+#else  // F_HAVE_LIBGPM
+bool FMouseControl::isGpmMouseEnabled()
+{
+  return false;
+}
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
 void FMouseControl::enable()
@@ -1559,43 +1532,43 @@ void FMouseControl::processEvent (struct timeval* time)
 
 //----------------------------------------------------------------------
 #ifdef F_HAVE_LIBGPM
-
 bool FMouseControl::getGpmKeyPressed (bool pending)
-#else
-
-bool FMouseControl::getGpmKeyPressed (bool)
-#endif  // F_HAVE_LIBGPM
 {
   if ( mouse_protocol.empty() )
     return false;
 
-#ifdef F_HAVE_LIBGPM
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->getGpmKeyPressed(pending);
-#endif  // F_HAVE_LIBGPM
 
   return false;
 }
+#else  // F_HAVE_LIBGPM
+bool FMouseControl::getGpmKeyPressed (bool)
+{
+  return false;
+}
+#endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
+#ifdef F_HAVE_LIBGPM
 void FMouseControl::drawGpmPointer()
 {
   if ( mouse_protocol.empty() )
     return;
-
-#ifdef F_HAVE_LIBGPM
 
   FMouse* mouse = mouse_protocol[FMouse::gpm];
   FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     gpm_mouse->drawGpmPointer();
-
-#endif  // F_HAVE_LIBGPM
 }
+#else  // F_HAVE_LIBGPM
+void FMouseControl::drawGpmPointer()
+{ }
+#endif  // F_HAVE_LIBGPM
 
 
 // private methods of FMouseControl

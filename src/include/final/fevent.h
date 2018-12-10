@@ -92,12 +92,13 @@ namespace finalcut
 class FEvent  // event base class
 {
   public:
+    FEvent() = default;
     explicit FEvent(int);
     virtual ~FEvent();
     int type() const;
 
   protected:
-    int t;
+    int t{fc::None_Event};
 };
 
 #pragma pack(pop)
@@ -113,6 +114,7 @@ class FEvent  // event base class
 class FKeyEvent : public FEvent  // keyboard event
 {
   public:
+    FKeyEvent() = default;
     FKeyEvent (int, FKey);
     ~FKeyEvent();
 
@@ -122,8 +124,8 @@ class FKeyEvent : public FEvent  // keyboard event
     void ignore();
 
   protected:
-    FKey  k;
-    bool accpt;
+    FKey k{0};
+    bool accpt{false};
 };
 
 #pragma pack(pop)
@@ -139,8 +141,9 @@ class FKeyEvent : public FEvent  // keyboard event
 class FMouseEvent : public FEvent  // mouse event
 {
   public:
-    FMouseEvent (int, const FPoint&, int);
+    FMouseEvent() = default;
     FMouseEvent (int, const FPoint&, const FPoint&, int);
+    FMouseEvent (int, const FPoint&, int);
     ~FMouseEvent();
 
     const FPoint& getPos() const;
@@ -170,6 +173,7 @@ class FMouseEvent : public FEvent  // mouse event
 class FWheelEvent : public FEvent  // wheel event
 {
   public:
+    FWheelEvent() = default;
     FWheelEvent (int, const FPoint&, int);
     FWheelEvent (int, const FPoint&, const FPoint&, int);
     ~FWheelEvent();
@@ -201,6 +205,7 @@ class FWheelEvent : public FEvent  // wheel event
 class FFocusEvent : public FEvent  // focus event
 {
   public:
+    FFocusEvent() = default;
     explicit FFocusEvent (int);
     ~FFocusEvent();
 
@@ -212,8 +217,8 @@ class FFocusEvent : public FEvent  // focus event
     void accept();
     void ignore();
   protected:
-    bool accpt;
-    fc::FocusTypes focus_type;
+    bool accpt{true};
+    fc::FocusTypes focus_type{fc::FocusDefiniteWidget};
 };
 
 #pragma pack(pop)
@@ -228,15 +233,12 @@ class FFocusEvent : public FEvent  // focus event
 
 class FAccelEvent : public FEvent  // focus event
 {
-  private:
-    // Disable copy constructor
-    FAccelEvent (const FAccelEvent&);
-    // Disable assignment operator (=)
-    FAccelEvent& operator = (const FAccelEvent&);
-
   public:
+    FAccelEvent() = default;
     FAccelEvent (int, void*);
+    FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent();
+    FAccelEvent& operator = (const FAccelEvent&) = delete;
 
     void*    focusedWidget() const;
     bool     isAccepted() const;
@@ -244,7 +246,7 @@ class FAccelEvent : public FEvent  // focus event
     void     ignore();
 
   protected:
-    bool     accpt;
+    bool     accpt{false};
     void*    focus_widget;
 };
 
@@ -258,6 +260,7 @@ class FAccelEvent : public FEvent  // focus event
 class FResizeEvent : public FEvent  // resize event
 {
   public:
+    FResizeEvent() = default;
     explicit FResizeEvent (int);
     ~FResizeEvent();
 
@@ -266,7 +269,7 @@ class FResizeEvent : public FEvent  // resize event
     void ignore();
 
   protected:
-    bool accpt;
+    bool accpt{false};
 };
 
 
@@ -278,6 +281,7 @@ class FResizeEvent : public FEvent  // resize event
 class FShowEvent : public FEvent  // show event
 {
   public:
+    FShowEvent() = default;
     explicit FShowEvent (int);
     ~FShowEvent();
 };
@@ -291,6 +295,7 @@ class FShowEvent : public FEvent  // show event
 class FHideEvent : public FEvent  // hide event
 {
   public:
+    FHideEvent() = default;
     explicit FHideEvent (int);
     ~FHideEvent();
 };
@@ -304,6 +309,7 @@ class FHideEvent : public FEvent  // hide event
 class FCloseEvent : public FEvent  // close event
 {
   public:
+    FCloseEvent() = default;
     explicit FCloseEvent(int);
     ~FCloseEvent();
 
@@ -312,7 +318,7 @@ class FCloseEvent : public FEvent  // close event
     void ignore();
 
   protected:
-    bool accpt;
+    bool accpt{false};
 };
 
 
@@ -327,6 +333,7 @@ class FCloseEvent : public FEvent  // close event
 class FTimerEvent : public FEvent  // timer event
 {
   public:
+    FTimerEvent() = default;
     FTimerEvent(int, int);
     ~FTimerEvent();
 

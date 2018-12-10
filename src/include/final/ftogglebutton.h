@@ -74,11 +74,15 @@ class FToggleButton : public FWidget
     using FWidget::setGeometry;
 
     // Constructors
-    explicit FToggleButton (FWidget* = 0);
-    explicit FToggleButton (const FString&, FWidget* = 0);
-
+    explicit FToggleButton (FWidget* = nullptr);
+    explicit FToggleButton (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FToggleButton (const FToggleButton&) = delete;
     // Destructor
     virtual ~FToggleButton();
+
+    // Disable assignment operator (=)
+    FToggleButton& operator = (const FToggleButton&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -138,19 +142,13 @@ class FToggleButton : public FWidget
     virtual void onKeyPress (FKeyEvent*);
 
     // Data Members
-    bool          checked;
-    std::size_t   label_offset_pos;
-    std::size_t   button_width;  // plus margin spaces
+    bool          checked{false};
+    std::size_t   label_offset_pos{0};
+    std::size_t   button_width{0};  // plus margin spaces
 
   private:
     // Constants
     static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
-
-    // Disable copy constructor
-    FToggleButton (const FToggleButton&);
-
-    // Disable assignment operator (=)
-    FToggleButton& operator = (const FToggleButton&);
 
     // Mutator
     void          setGroup (FButtonGroup*);
@@ -164,9 +162,9 @@ class FToggleButton : public FWidget
     friend class FButtonGroup;
 
     // Data Members
-    FButtonGroup* button_group;
-    bool          focus_inside_group;
-    FString       text;
+    FButtonGroup* button_group{nullptr};
+    bool          focus_inside_group{true};
+    FString       text{};
 };
 #pragma pack(pop)
 

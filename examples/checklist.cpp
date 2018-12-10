@@ -39,16 +39,16 @@ class CheckList : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit CheckList (finalcut::FWidget* = 0);
+    explicit CheckList (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    CheckList (const CheckList&) = delete;
     // Destructor
     ~CheckList();
 
-  private:
-    // Disable copy constructor
-    CheckList (const CheckList&);
     // Disable assignment operator (=)
-    CheckList& operator = (const CheckList&);
+    CheckList& operator = (const CheckList&) = delete;
 
+  private:
     // Method
     void populate();
 
@@ -60,16 +60,14 @@ class CheckList : public finalcut::FDialog
     void cb_showList (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    finalcut::FListView  listView;
-    finalcut::FStatusBar status_bar;
+    finalcut::FListView  listView{this};
+    finalcut::FStatusBar status_bar{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 CheckList::CheckList (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , listView(this)
-  , status_bar(this)
 {
   setText (L"Shopping list");
   setShadow();
@@ -87,7 +85,7 @@ CheckList::CheckList (finalcut::FWidget* parent)
 
   // Statusbar at the bottom
   finalcut::FString separator;
-  separator << ' ' << wchar_t(finalcut::fc::BoxDrawingsVertical) << ' ';
+  separator << ' ' << finalcut::fc::BoxDrawingsVertical << ' ';
   listView.setStatusbarMessage ( finalcut::FString()
                                  << "<Q> exit" << separator
                                  << "<Space> select an item" << separator
@@ -172,7 +170,7 @@ void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
         static_cast<finalcut::FListViewItem*>(*iter);
 
     if ( item->isChecked() )
-      shopping_list << wchar_t(finalcut::fc::Bullet) << ' '
+      shopping_list << finalcut::fc::Bullet << ' '
                     << item->getText(1) << '\n';
 
     ++iter;

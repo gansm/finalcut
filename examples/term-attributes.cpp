@@ -34,10 +34,14 @@ class AttribDlg : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit AttribDlg (finalcut::FWidget* = 0);
-
+    explicit AttribDlg (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    AttribDlg (const AttribDlg&) = delete;
     // Destructor
     ~AttribDlg();
+
+    // Disable assignment operator (=)
+    AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Event handlers
     virtual void onAccel (finalcut::FAccelEvent*);
@@ -45,24 +49,19 @@ class AttribDlg : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_next (finalcut::FWidget* = 0, data_ptr = 0);
-    void cb_back (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_next (finalcut::FWidget* = nullptr, data_ptr = nullptr);
+    void cb_back (finalcut::FWidget* = nullptr, data_ptr = nullptr);
 
     // Data Members
     FColor bgcolor;
 
   private:
-    // Disable copy constructor
-    AttribDlg (const AttribDlg&);
-    // Disable assignment operator (=)
-    AttribDlg& operator = (const AttribDlg&);
-
     // Method
     virtual void adjustSize();
 
     // Data Members
-    finalcut::FButton next_button;
-    finalcut::FButton back_button;
+    finalcut::FButton next_button{"&Next >", this};
+    finalcut::FButton back_button{"< &Back", this};
 };
 #pragma pack(pop)
 
@@ -70,8 +69,6 @@ class AttribDlg : public finalcut::FDialog
 AttribDlg::AttribDlg (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
   , bgcolor(wc.label_bg)
-  , next_button("&Next >", this)
-  , back_button("< &Back", this)
 {
   setText ( "A terminal attributes test ("
           + finalcut::FString(getTermType())
@@ -188,7 +185,7 @@ class AttribDemo : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit AttribDemo (FWidget* = 0);
+    explicit AttribDemo (FWidget* = nullptr);
 
     // Destructor
     ~AttribDemo()

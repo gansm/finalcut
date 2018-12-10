@@ -77,10 +77,14 @@ class FTextView : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FTextView (FWidget* = 0);
-
+    explicit FTextView (FWidget* = nullptr);
+    // Disable copy constructor
+    FTextView (const FTextView&) = delete;
     // Destructor
     virtual ~FTextView();
+
+    // Disable assignment operator (=)
+    FTextView& operator = (const FTextView&) = delete;
 
     // Accessors
     const char*        getClassName() const;
@@ -123,12 +127,6 @@ class FTextView : public FWidget
     virtual void       adjustSize();
 
   private:
-    // Disable copy constructor
-    FTextView (const FTextView&);
-
-    // Disable assignment operator (=)
-    FTextView& operator = (const FTextView&);
-
     // Accessors
     std::size_t        getTextHeight();
     std::size_t        getTextWidth();
@@ -146,14 +144,14 @@ class FTextView : public FWidget
     void               cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FStringList        data;
-    FScrollbar*        vbar;
-    FScrollbar*        hbar;
-    bool               update_scrollbar;
-    int                xoffset;
-    int                yoffset;
-    int                nf_offset;
-    std::size_t        maxLineWidth;
+    FStringList        data{};
+    FScrollbar*        vbar{nullptr};
+    FScrollbar*        hbar{nullptr};
+    bool               update_scrollbar{true};
+    int                xoffset{0};
+    int                yoffset{0};
+    int                nf_offset{0};
+    std::size_t        maxLineWidth{0};
 };
 #pragma pack(pop)
 

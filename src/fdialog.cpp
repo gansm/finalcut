@@ -35,21 +35,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FDialog::FDialog (FWidget* parent)
   : FWindow(parent)
-  , tb_text()
-  , result_code(FDialog::Reject)
-  , zoom_button_pressed(false)
-  , zoom_button_active(false)
-  , setPos_error(false)
-  , setSize_error(false)
-  , titlebar_click_pos()
-  , resize_click_pos()
-  , save_geometry()
-  , dialog_menu()
-  , dgl_menuitem()
-  , move_size_item()
-  , zoom_item()
-  , close_item()
-  , tooltip()
 {
   init();
 }
@@ -58,20 +43,6 @@ FDialog::FDialog (FWidget* parent)
 FDialog::FDialog (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , tb_text(txt)
-  , result_code(FDialog::Reject)
-  , zoom_button_pressed(false)
-  , zoom_button_active(false)
-  , setPos_error(false)
-  , setSize_error(false)
-  , titlebar_click_pos()
-  , resize_click_pos()
-  , save_geometry()
-  , dialog_menu()
-  , dgl_menuitem()
-  , move_size_item()
-  , zoom_item()
-  , close_item()
-  , tooltip(0)
 {
   init();
 }
@@ -82,9 +53,9 @@ FDialog::~FDialog()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
   bool is_quit = fapp->isQuit();
   delete dialog_menu;
-  dgl_menuitem = 0;
+  dgl_menuitem = nullptr;
   delete accelerator_list;
-  accelerator_list = 0;
+  accelerator_list = nullptr;
 
   if ( ! is_quit )
     switchToPrevWindow(this);
@@ -180,7 +151,7 @@ void FDialog::hide()
 }
 
 //----------------------------------------------------------------------
-FDialog::DialogCode FDialog::exec()
+int FDialog::exec()
 {
   result_code = FDialog::Reject;
   show();
@@ -380,13 +351,13 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
   }
 
   // set the cursor to the focus widget
-  FWidget* focus_widget = FWidget::getFocusWidget();
-  if ( focus_widget
-    && focus_widget->isVisible()
-    && focus_widget->hasVisibleCursor() )
+  FWidget* focus = FWidget::getFocusWidget();
+  if ( focus
+    && focus->isVisible()
+    && focus->hasVisibleCursor() )
   {
-    FPoint cursor_pos = focus_widget->getCursorPos();
-    focus_widget->setCursorPos(cursor_pos);
+    FPoint cursor_pos = focus->getCursorPos();
+    focus->setCursorPos(cursor_pos);
   }
 }
 
@@ -796,7 +767,7 @@ void FDialog::onWindowLowered (FEvent*)
 
 // protected methods of FDialog
 //----------------------------------------------------------------------
-void FDialog::done(DialogCode result)
+void FDialog::done(int result)
 {
   hide();
   result_code = result;
@@ -808,7 +779,7 @@ void FDialog::draw()
   if ( tooltip && ! getMoveSizeWidget() )
   {
     delete tooltip;
-    tooltip = 0;
+    tooltip = nullptr;
   }
 
   // Fill the background
@@ -1254,14 +1225,14 @@ void FDialog::setCursorToFocusWidget()
 {
   // Set the cursor to the focus widget
 
-  FWidget* focus_widget = FWidget::getFocusWidget();
+  FWidget* focus = FWidget::getFocusWidget();
 
-  if ( focus_widget
-    && focus_widget->isVisible()
-    && focus_widget->hasVisibleCursor() )
+  if ( focus
+    && focus->isVisible()
+    && focus->hasVisibleCursor() )
   {
-    FPoint cursor_pos = focus_widget->getCursorPos();
-    focus_widget->setCursorPos(cursor_pos);
+    FPoint cursor_pos = focus->getCursorPos();
+    focus->setCursorPos(cursor_pos);
     updateVTermCursor(vwin);
   }
 }
@@ -1652,7 +1623,7 @@ inline void FDialog::acceptMoveSize()
   if ( tooltip )
     delete tooltip;
 
-  tooltip = 0;
+  tooltip = nullptr;
   redraw();
 }
 
@@ -1664,7 +1635,7 @@ inline void FDialog::cancelMoveSize()
   if ( tooltip )
     delete tooltip;
 
-  tooltip = 0;
+  tooltip = nullptr;
   setPos (save_geometry.getPos());
 
   if ( isResizeable() )

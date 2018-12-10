@@ -53,10 +53,10 @@ int main (int argc, char* argv[])
   finalcut::FLabel label_1(&dgl);
   finalcut::FLabel label_2(&dgl);
 
-  label_1 << wchar_t(finalcut::fc::BlackUpPointingTriangle)
+  label_1 << finalcut::fc::BlackUpPointingTriangle
           << std::wstring(L"\n")
-          << wchar_t(finalcut::fc::BoxDrawingsUpAndRight)
-          << finalcut::FString(2, wchar_t(finalcut::fc::BoxDrawingsHorizontal))
+          << finalcut::fc::BoxDrawingsUpAndRight
+          << finalcut::FString(2, finalcut::fc::BoxDrawingsHorizontal)
           << " Double click the title bar button,";
   label_2 << "press Q on the keyboard,\n"
           << "or push the button below to exit\n"

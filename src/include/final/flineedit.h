@@ -76,15 +76,20 @@ class FLineEdit : public FWidget
     };
 
     // Constructor
-    explicit FLineEdit (FWidget* = 0);
-    explicit FLineEdit (const FString&, FWidget* = 0);
-
+    explicit FLineEdit (FWidget* = nullptr);
+    explicit FLineEdit (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FLineEdit (const FLineEdit&) = delete;
     // Destructor
     virtual ~FLineEdit();
+
+    // Disable assignment operator (=)
+    FLineEdit& operator = (const FLineEdit&) = delete;
 
     // Overloaded operators
     FLineEdit& operator = (const FString&);
     FLineEdit& operator << (const FString&);
+    FLineEdit& operator << (fc::SpecialCharacter);
     FLineEdit& operator << (const wchar_t);
     FLineEdit& operator << (const uInt);
     FLineEdit& operator << (const int);
@@ -146,12 +151,6 @@ class FLineEdit : public FWidget
       scrollRight = 2
     };
 
-    // Disable copy constructor
-    FLineEdit (const FLineEdit&);
-
-    // Disable assignment operator (=)
-    FLineEdit& operator = (const FLineEdit&);
-
     // Methods
     void         init();
     bool         hasHotkey();
@@ -170,16 +169,16 @@ class FLineEdit : public FWidget
     void         processChanged();
 
     // Data Members
-    FString      text;
-    FString      label_text;
-    FLabel*      label;
-    label_o      label_orientation;
-    dragScroll   drag_scroll;
-    bool         scroll_timer;
-    int          scroll_repeat;
-    bool         insert_mode;
-    std::size_t  cursor_pos;
-    std::size_t  text_offset;
+    FString      text{""};
+    FString      label_text{""};
+    FLabel*      label{};
+    label_o      label_orientation{FLineEdit::label_left};
+    dragScroll   drag_scroll{FLineEdit::noScroll};
+    bool         scroll_timer{false};
+    int          scroll_repeat{100};
+    bool         insert_mode{true};
+    std::size_t  cursor_pos{0};
+    std::size_t  text_offset{0};
 };
 #pragma pack(pop)
 

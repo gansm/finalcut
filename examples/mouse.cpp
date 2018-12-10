@@ -34,21 +34,20 @@ class ColorChooser : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit ColorChooser (finalcut::FWidget* = 0);
-
+    explicit ColorChooser (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    ColorChooser (const ColorChooser&) = delete;
     // Destructor
     ~ColorChooser();
+
+    // Disable assignment operator (=)
+    ColorChooser& operator = (const ColorChooser&) = delete;
 
     // Accessors
     FColor getForeground();
     FColor getBackground();
 
   private:
-    // Disable copy constructor
-    ColorChooser (const ColorChooser&);
-    // Disable assignment operator (=)
-    ColorChooser& operator = (const ColorChooser&);
-
     // Method
     virtual void draw();
 
@@ -56,18 +55,15 @@ class ColorChooser : public finalcut::FWidget
     virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
-    FColor fg_color;
-    FColor bg_color;
-    finalcut::FLabel headline;
+    FColor fg_color{finalcut::fc::White};
+    FColor bg_color{finalcut::fc::Black};
+    finalcut::FLabel headline{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 ColorChooser::ColorChooser (finalcut::FWidget* parent)
   : FWidget(parent)
-  , fg_color(finalcut::fc::White)
-  , bg_color(finalcut::fc::Black)
-  , headline(this)
 {
   setSize (8, 12);
   setFixedSize (8, 12);
@@ -174,10 +170,14 @@ class Brushes : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Brushes (finalcut::FWidget* = 0);
-
+    explicit Brushes (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    Brushes (const Brushes&) = delete;
     // Destructor
     ~Brushes();
+
+    // Disable assignment operator (=)
+    Brushes& operator = (const Brushes&) = delete;
 
     // Accessor
     wchar_t getBrush();
@@ -187,11 +187,6 @@ class Brushes : public finalcut::FWidget
     void setBackground (FColor);
 
   private:
-    // Disable copy constructor
-    Brushes (const Brushes&);
-    // Disable assignment operator (=)
-    Brushes& operator = (const Brushes&);
-
     // Method
     virtual void draw();
 
@@ -199,20 +194,16 @@ class Brushes : public finalcut::FWidget
     virtual void onMouseDown (finalcut::FMouseEvent*);
 
     // Data Members
-    wchar_t brush;
-    FColor  fg_color;
-    FColor  bg_color;
-    finalcut::FLabel headline;
+    wchar_t brush{L' '};
+    FColor  fg_color{finalcut::fc::White};
+    FColor  bg_color{finalcut::fc::Black};
+    finalcut::FLabel headline{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Brushes::Brushes (finalcut::FWidget* parent)
   : FWidget(parent)
-  , brush(L' ')
-  , fg_color(finalcut::fc::White)
-  , bg_color(finalcut::fc::Black)
-  , headline(this)
 {
   setSize (8, 4);
   setFixedSize (8, 4);
@@ -249,7 +240,7 @@ void Brushes::draw()
   setColor (fg_color, bg_color);
   setPrintPos (2, 3);
   print("   ");
-  print(finalcut::FString(3, wchar_t(finalcut::fc::MediumShade)));
+  print(finalcut::FString(3, finalcut::fc::MediumShade));
 
   if ( brush == L' ' )
     pos = 0;
@@ -258,9 +249,9 @@ void Brushes::draw()
 
   setColor();
   setPrintPos (3 + pos, 2);
-  print(wchar_t(finalcut::fc::BlackDownPointingTriangle));
+  print(finalcut::fc::BlackDownPointingTriangle);
   setPrintPos (3 + pos, 4);
-  print(wchar_t(finalcut::fc::BlackUpPointingTriangle));
+  print(finalcut::fc::BlackUpPointingTriangle);
 }
 
 //----------------------------------------------------------------------
@@ -279,7 +270,7 @@ void Brushes::onMouseDown (finalcut::FMouseEvent* ev)
   }
   else if ( mouse_x >= 5 && mouse_x <= 7 && mouse_y == 3 )
   {
-    brush = wchar_t(finalcut::fc::MediumShade);
+    brush = finalcut::fc::MediumShade;
     redraw();
   }
 }
@@ -317,10 +308,14 @@ class MouseDraw : public finalcut::FDialog
     using FWidget::setGeometry;
 
     // Constructor
-    explicit MouseDraw (finalcut::FWidget* = 0);
-
+    explicit MouseDraw (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    MouseDraw (const MouseDraw&) = delete;
     // Destructor
     ~MouseDraw();
+
+    // Disable assignment operator (=)
+    MouseDraw& operator = (const MouseDraw&) = delete;
 
     // Methods
     void setGeometry (int, int, std::size_t, std::size_t, bool = true);
@@ -330,11 +325,6 @@ class MouseDraw : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
   private:
-    // Disable copy constructor
-    MouseDraw (const MouseDraw&);
-    // Disable assignment operator (=)
-    MouseDraw& operator = (const MouseDraw&);
-
     // Methods
     virtual void draw();
     void drawBrush (int, int, bool = false);
@@ -349,18 +339,15 @@ class MouseDraw : public finalcut::FDialog
     void cb_colorChanged (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    term_area*   canvas;
-    ColorChooser c_chooser;
-    Brushes      brush;
+    term_area*   canvas{nullptr};
+    ColorChooser c_chooser{this};
+    Brushes      brush{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 MouseDraw::MouseDraw (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , canvas(0)
-  , c_chooser(this)
-  , brush(this)
 {
   setText ("Drawing with the mouse");
   c_chooser.setPos (1, 1);
@@ -426,25 +413,25 @@ void MouseDraw::draw()
     for (int y = 2; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(finalcut::fc::NF_rev_border_line_right));
+      print (finalcut::fc::NF_rev_border_line_right);
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(finalcut::fc::NF_rev_border_corner_lower_right));
+    print (finalcut::fc::NF_rev_border_corner_lower_right);
   }
   else
   {
     setPrintPos (10, 2);
-    print (wchar_t(finalcut::fc::BoxDrawingsDownAndHorizontal));
+    print (finalcut::fc::BoxDrawingsDownAndHorizontal);
 
     for (int y = 3; y < y_max; y++)
     {
       setPrintPos (10, y);
-      print (wchar_t(finalcut::fc::BoxDrawingsVertical));
+      print (finalcut::fc::BoxDrawingsVertical);
     }
 
     setPrintPos (10, y_max);
-    print (wchar_t(finalcut::fc::BoxDrawingsUpAndHorizontal));
+    print (finalcut::fc::BoxDrawingsUpAndHorizontal);
   }
 
   drawCanvas();

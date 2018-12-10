@@ -1,4 +1,4 @@
-examples/.libs/* usr/lib/finalcut/examples
-examples/*.cpp usr/lib/finalcut/examples
-examples/Makefile.clang usr/lib/finalcut/examples
-examples/Makefile.gcc usr/lib/finalcut/examples
+examples/.libs/* usr/share/doc/libfinal-examples/examples
+examples/*.cpp usr/share/doc/libfinal-examples/examples
+examples/Makefile.clang usr/share/doc/libfinal-examples/examples
+examples/Makefile.gcc usr/share/doc/libfinal-examples/examples

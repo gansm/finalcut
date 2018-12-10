@@ -39,15 +39,6 @@ namespace finalcut
 // class FTermFreeBSD
 //----------------------------------------------------------------------
 
-// constructors and destructor
-//----------------------------------------------------------------------
-FTermFreeBSD::FTermFreeBSD()
-{ }
-
-//----------------------------------------------------------------------
-FTermFreeBSD::~FTermFreeBSD()  // destructor
-{ }
-
 // public methods of FTermFreeBSD
 //----------------------------------------------------------------------
 #if defined(__FreeBSD__) || defined(__DragonFly__)

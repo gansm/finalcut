@@ -49,17 +49,6 @@ static const char* const button_text[] =
 //----------------------------------------------------------------------
 FMessageBox::FMessageBox (FWidget* parent)
   : FDialog(parent)
-  , headline_text()
-  , text()
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , center_text(false)
-  , emphasis_color(wc.dialog_emphasis_fg)
-  , num_buttons(0)
-  , text_num_lines(0)
-  , button_digit()
-  , button()
 {
   setTitlebarText("Message for you");
   init(FMessageBox::Ok, 0, 0);
@@ -77,8 +66,6 @@ FMessageBox::FMessageBox (const FMessageBox& mbox)
   , emphasis_color(mbox.emphasis_color)
   , num_buttons(mbox.num_buttons)
   , text_num_lines(mbox.text_num_lines)
-  , button_digit()
-  , button()
 {
   setTitlebarText (mbox.getTitlebarText());
   init ( mbox.button_digit[0]
@@ -94,17 +81,7 @@ FMessageBox::FMessageBox ( const FString& caption
                          , int button2
                          , FWidget* parent )
   : FDialog(parent)
-  , headline_text()
   , text(message)
-  , text_components(0)
-  , text_split()
-  , max_line_width(0)
-  , center_text(false)
-  , emphasis_color(wc.dialog_emphasis_fg)
-  , num_buttons(0)
-  , text_num_lines(0)
-  , button_digit()
-  , button()
 {
   setTitlebarText(caption);
   init(button0, button1, button2);
@@ -305,8 +282,8 @@ void FMessageBox::adjustSize()
 //----------------------------------------------------------------------
 void FMessageBox::cb_processClick (FWidget*, data_ptr data)
 {
-  FDialog::DialogCode* reply = static_cast<FDialog::DialogCode*>(data);
-  done (*reply);
+  int reply = *(static_cast<int*>(data));
+  done (reply);
 }
 
 
@@ -426,15 +403,18 @@ void FMessageBox::calculateDimensions()
   std::size_t w, h;
   std::size_t headline_height = 0;
   text_split = text.split("\n");
-  text_num_lines = uInt(text_split.size());
-  text_components = &text_split[0];
   max_line_width = 0;
+  text_num_lines = uInt(text_split.size());
+
+  if ( text_num_lines == 0 )
+    return;
 
   if ( ! headline_text.isNull() )
     headline_height = 2;
 
   for (uInt i = 0; i < text_num_lines; i++)
   {
+    text_components = &text_split[0];
     std::size_t len = text_components[i].getLength();
 
     if ( len > max_line_width )

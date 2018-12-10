@@ -29,7 +29,7 @@
 
 
 // Global application object
-static finalcut::FString* temp_str = 0;
+static finalcut::FString* temp_str = nullptr;
 
 
 // Function prototypes
@@ -77,36 +77,31 @@ class Listbox : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Listbox (FWidget* = 0);
+    explicit Listbox (FWidget* = nullptr);
+    // Disable copy constructor
+    Listbox (const Listbox&) = delete;
     // Destructor
     ~Listbox();
 
-  private:
-    // Disable copy constructor
-    Listbox (const Listbox&);
     // Disable assignment operator (=)
-    Listbox& operator = (const Listbox&);
+    Listbox& operator = (const Listbox&) = delete;
 
+  private:
     // Event handlers
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Data Member
-    std::list<double>  double_list;
-    finalcut::FListBox list1;
-    finalcut::FListBox list2;
-    finalcut::FListBox list3;
-    finalcut::FButton  Quit;
+    std::list<double>  double_list{};
+    finalcut::FListBox list1{this};
+    finalcut::FListBox list2{this};
+    finalcut::FListBox list3{this};
+    finalcut::FButton  Quit{this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Listbox::Listbox (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , double_list()
-  , list1(this)
-  , list2(this)
-  , list3(this)
-  , Quit(this)
 {
   temp_str = new finalcut::FString;
 

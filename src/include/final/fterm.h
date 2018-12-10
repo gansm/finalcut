@@ -161,9 +161,13 @@ class FTerm
 
     // Constructor
     explicit FTerm (bool = false);
-
+    // Disable copy constructor
+    FTerm (const FTerm&) = delete;
     // Destructor
     virtual ~FTerm();
+
+    // Disable assignment operator (=)
+    FTerm& operator = (const FTerm&) = delete;
 
     // Accessors
     virtual const char*    getClassName() const;
@@ -173,7 +177,6 @@ class FTerm
     static std::size_t     getColumnNumber();
     static const FString   getKeyName (FKey);
     static FOptiMove*      getFOptiMove();
-
     static int             getTTYFileDescriptor();
     static char*           getTermType();
     static char*           getTermFileName();
@@ -329,11 +332,6 @@ class FTerm
     } init_values;
 
   private:
-    // Disable copy constructor
-    FTerm (const FTerm&);
-    // Disable assignment operator (=)
-    FTerm& operator = (const FTerm&);
-
     // Methods
     static void            init_global_values (bool);
     static void            init_terminal_device_path();
@@ -578,5 +576,25 @@ inline void FTerm::changeTermSizeFinished()
 { data->setTermResized(false); }
 
 }  // namespace finalcut
+
+
+namespace
+{
+
+//----------------------------------------------------------------------
+inline std::ostream& operator << ( std::ostream& os
+                                 , finalcut::fc::SpecialCharacter c )
+{
+  return os << static_cast<char>(c);
+}
+
+//----------------------------------------------------------------------
+inline std::wostream& operator << ( std::wostream& os
+                                  , finalcut::fc::SpecialCharacter c )
+{
+  return os << static_cast<wchar_t>(c);
+}
+
+}  // namespace
 
 #endif  // FTERM_H

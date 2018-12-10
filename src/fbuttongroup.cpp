@@ -37,8 +37,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup(FWidget* parent)
   : FScrollView(parent)
-  , text()
-  , buttonlist()
 {
   init();
 }
@@ -46,8 +44,7 @@ FButtonGroup::FButtonGroup(FWidget* parent)
 //----------------------------------------------------------------------
 FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
   : FScrollView(parent)
-  , text(txt)
-  , buttonlist()
+  , text{txt}
 {
   init();
   setText(txt);

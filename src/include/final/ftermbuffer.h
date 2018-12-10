@@ -59,8 +59,7 @@ class FTermBuffer
     typedef FOptiAttr::charData  charData;
 
     // Constructor
-    FTermBuffer();
-
+    FTermBuffer() = default;
     // Destructor
     virtual ~FTermBuffer();
 
@@ -87,7 +86,7 @@ class FTermBuffer
     std::vector<charData>  getBuffer();
 
   private:
-    std::vector<charData> data;
+    std::vector<charData> data{};
 };
 #pragma pack(pop)
 

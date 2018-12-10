@@ -34,20 +34,19 @@ class Scrollview : public finalcut::FScrollView
 {
   public:
     // Constructor
-    explicit Scrollview (finalcut::FWidget* = 0);
-
+    explicit Scrollview (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    Scrollview (const Scrollview&) = delete;
     // Destructor
     ~Scrollview  ();
+
+    // Disable assignment operator (=)
+    Scrollview& operator = (const Scrollview&) = delete;
 
     // Mutator
     void setScrollSize (std::size_t, std::size_t);
 
   private:
-    // Disable copy constructor
-    Scrollview (const Scrollview&);
-    // Disable assignment operator (=)
-    Scrollview& operator = (const Scrollview&);
-
     // Method
     virtual void draw();
 
@@ -58,28 +57,20 @@ class Scrollview : public finalcut::FScrollView
     void cb_go_north (finalcut::FWidget*, data_ptr);
 
     // Data Members
-    wchar_t pointer_right;
-    wchar_t pointer_down;
-    wchar_t pointer_left;
-    wchar_t pointer_up;
-    finalcut::FButton go_east;
-    finalcut::FButton go_south;
-    finalcut::FButton go_west;
-    finalcut::FButton go_north;
+    wchar_t pointer_right{finalcut::fc::BlackRightPointingPointer};
+    wchar_t pointer_down{finalcut::fc::BlackDownPointingTriangle};
+    wchar_t pointer_left{finalcut::fc::BlackLeftPointingPointer};
+    wchar_t pointer_up{finalcut::fc::BlackUpPointingTriangle};
+    finalcut::FButton go_east{pointer_right, this};
+    finalcut::FButton go_south{pointer_down, this};
+    finalcut::FButton go_west{pointer_left, this};
+    finalcut::FButton go_north{pointer_up, this};
 };
 #pragma pack(pop)
 
 //----------------------------------------------------------------------
 Scrollview::Scrollview (finalcut::FWidget* parent)
   : finalcut::FScrollView(parent)
-  , pointer_right(wchar_t(finalcut::fc::BlackRightPointingPointer))
-  , pointer_down(wchar_t(finalcut::fc::BlackDownPointingTriangle))
-  , pointer_left(wchar_t(finalcut::fc::BlackLeftPointingPointer))
-  , pointer_up(wchar_t(finalcut::fc::BlackUpPointingTriangle))
-  , go_east(pointer_right, this)
-  , go_south(pointer_down, this)
-  , go_west(pointer_left, this)
-  , go_north(pointer_up, this)
 {
   // Sets the navigation button geometry
   go_east.setGeometry (1, 1, 5, 1);
@@ -198,7 +189,7 @@ class Scrollviewdemo : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Scrollviewdemo (finalcut::FWidget* = 0);
+    explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
 
     // Destructor
     ~Scrollviewdemo();
@@ -207,12 +198,12 @@ class Scrollviewdemo : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_quit (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_quit (finalcut::FWidget* = nullptr, data_ptr = nullptr);
 
     // Data Members
-    Scrollview sview;
-    finalcut::FButton quit_btn;
-    finalcut::FLabel label;
+    Scrollview sview{this};
+    finalcut::FButton quit_btn{"&Quit", this};
+    finalcut::FLabel label{this};
 };
 #pragma pack(pop)
 
@@ -220,9 +211,6 @@ class Scrollviewdemo : public finalcut::FDialog
 //----------------------------------------------------------------------
 Scrollviewdemo::Scrollviewdemo (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , sview(this)
-  , quit_btn("&Quit", this)
-  , label(this)
 {
   setGeometry (16, 3, 50, 19);
   setText ("Scrolling viewport example");

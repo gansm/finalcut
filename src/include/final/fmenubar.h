@@ -77,10 +77,14 @@ class FMenuBar : public FWindow, public FMenuList
 {
   public:
     // Constructor
-    explicit FMenuBar (FWidget* = 0);
-
+    explicit FMenuBar (FWidget* = nullptr);
+    // Disable copy constructor
+    FMenuBar (const FMenuBar&) = delete;
     // Destructor
     virtual ~FMenuBar();
+
+    // Disable assignment operator (=)
+    FMenuBar& operator = (const FMenuBar&) = delete;
 
     // Accessors
     virtual const char* getClassName() const;
@@ -113,12 +117,6 @@ class FMenuBar : public FWindow, public FMenuList
       std::size_t hotkeypos;
       bool no_underline;
     } menuText;
-
-    // Disable copy constructor
-    FMenuBar (const FMenuBar&);
-
-    // Disable assignment operator (=)
-    FMenuBar& operator = (const FMenuBar&);
 
     // Inquiry
     bool         isMenu (FMenuItem*) const;
@@ -154,10 +152,10 @@ class FMenuBar : public FWindow, public FMenuList
     friend class FMenuItem;
 
     // Data Members
-    bool        mouse_down;
-    bool        drop_down;
-    bool        focus_changed;
-    std::size_t screenWidth;
+    bool        mouse_down{false};
+    bool        drop_down{false};
+    bool        focus_changed{false};
+    std::size_t screenWidth{80};
 };
 #pragma pack(pop)
 

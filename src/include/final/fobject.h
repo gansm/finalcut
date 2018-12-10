@@ -37,8 +37,8 @@
 
 #if !defined (__cplusplus)
   #error "You need a C++ compiler like g++ or clang++"
-#elif __cplusplus > 1 && __cplusplus < 199711L
-  #error "Your C++ compiler does not support the C++98 standard!"
+#elif __cplusplus > 1 && __cplusplus < 201103
+  #error "Your C++ compiler does not support the C++11 standard!"
 #endif
 
 #include <sys/time.h>  // need for gettimeofday
@@ -71,10 +71,14 @@ class FObject
     typedef FObjectList::const_iterator constFObjectIterator;
 
     // Constructor
-    explicit FObject (FObject* = 0);
-
+    explicit FObject (FObject* = nullptr);
+    // Disable copy constructor
+    FObject (const FObject&) = delete;
     // Destructor
     virtual ~FObject();
+
+    // Disable assignment operator (=)
+    FObject& operator = (const FObject&) = delete;
 
     // Accessors
     virtual const char*  getClassName() const;
@@ -125,6 +129,9 @@ class FObject
     // Accessor
     TimerList*           getTimerList() const;
 
+    // Mutator
+    void                 setWidgetProperty (bool);
+
     // Method
     uInt                 processTimerEvent();
 
@@ -132,23 +139,15 @@ class FObject
     virtual bool         event (FEvent*);
     virtual void         onTimer (FTimerEvent*);
 
-    // Data Member
-    bool widget_object;
-
   private:
-    // Disable copy constructor
-    FObject (const FObject&);
-
-    // Disable assignment operator (=)
-    FObject& operator = (const FObject&);
-
     // Method
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data Members
-    FObject*          parent_obj;
-    FObjectList       children_list;
-    bool              has_parent;
+    FObject*          parent_obj{nullptr};
+    FObjectList       children_list{};  // no children yet
+    bool              has_parent{false};
+    bool              widget_object{false};
     static bool       timer_modify_lock;
     static TimerList* timer_list;
 };
@@ -218,6 +217,10 @@ inline bool FObject::isTimerInUpdating() const
 //----------------------------------------------------------------------
 inline FObject::TimerList* FObject::getTimerList() const
 { return timer_list; }
+
+//----------------------------------------------------------------------
+inline void FObject::setWidgetProperty (bool property)
+{ widget_object = property; }
 
 
 //----------------------------------------------------------------------

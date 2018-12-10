@@ -82,12 +82,16 @@ class FMenuItem : public FWidget
     using FWidget::setEnable;
 
     // Constructor
-    explicit FMenuItem (FWidget* = 0);
-    explicit FMenuItem (const FString&, FWidget* = 0);
-    FMenuItem (FKey, const FString&, FWidget* = 0);
-
+    explicit FMenuItem (FWidget* = nullptr);
+    explicit FMenuItem (const FString&, FWidget* = nullptr);
+    FMenuItem (FKey, const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FMenuItem (const FMenuItem&) = delete;
     // Destructor
     virtual ~FMenuItem();
+
+    // Disable assignment operator (=)
+    FMenuItem& operator = (const FMenuItem&) = delete;
 
     // Accessors
     const char*  getClassName() const;
@@ -145,27 +149,21 @@ class FMenuItem : public FWidget
     bool         isMenu (FWidget*) const;
 
     // Data Members
-    FString      text;
-    bool         selected;
-    bool         separator;
-    bool         checkable;
-    bool         checked;
-    bool         radio_button;
-    bool         dialog_index;
-    std::size_t  text_length;
-    uChar        hotkey;
-    FKey         accel_key;
-    FMenu*       menu;
-    FWidget*     super_menu;
-    FDialog*     associated_window;
+    FString      text{};
+    bool         selected{false};
+    bool         separator{false};
+    bool         checkable{false};
+    bool         checked{false};
+    bool         radio_button{false};
+    bool         dialog_index{false};
+    std::size_t  text_length{0};
+    uChar        hotkey{0};
+    FKey         accel_key{0};
+    FMenu*       menu{nullptr};
+    FWidget*     super_menu{nullptr};
+    FDialog*     associated_window{nullptr};
 
   private:
-    // Disable copy constructor
-    FMenuItem (const FMenuItem&);
-
-    // Disable assignment operator (=)
-    FMenuItem& operator = (const FMenuItem&);
-
     // Accessor
     FMenuList*   getFMenuList (FWidget&);
 

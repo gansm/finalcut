@@ -38,14 +38,6 @@ namespace finalcut
 //----------------------------------------------------------------------
 FMenu::FMenu(FWidget* parent)
   : FWindow(parent)
-  , item()
-  , super_menu(0)
-  , opened_sub_menu(0)
-  , shown_sub_menu(0)
-  , max_item_width(0)
-  , hotkeypos(NOT_SET)
-  , mouse_down(false)
-  , has_checkable_items(false)
 {
   init(parent);
 }
@@ -54,13 +46,6 @@ FMenu::FMenu(FWidget* parent)
 FMenu::FMenu (const FString& txt, FWidget* parent)
   : FWindow(parent)
   , item(txt, parent)
-  , super_menu(0)
-  , opened_sub_menu(0)
-  , shown_sub_menu(0)
-  , max_item_width(0)
-  , hotkeypos(NOT_SET)
-  , mouse_down(false)
-  , has_checkable_items(false)
 {
   init(parent);
 }
@@ -115,10 +100,10 @@ void FMenu::hide()
 
   if ( ! isSubMenu() )
   {
-    FMenu* open_menu = static_cast<FMenu*>(getOpenMenu());
+    FMenu* openmenu = static_cast<FMenu*>(getOpenMenu());
 
-    if ( open_menu && open_menu != this )
-      open_menu->hide();
+    if ( openmenu && openmenu != this )
+      openmenu->hide();
 
     setOpenMenu(0);
   }
@@ -198,7 +183,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
-  shown_sub_menu = 0;
+  shown_sub_menu = nullptr;
 
   if ( ev->getButton() != fc::LeftButton )
   {
@@ -284,7 +269,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     isMouseOverMenuBar (ev->getTermPos())
   };
 
-  shown_sub_menu = 0;
+  shown_sub_menu = nullptr;
 
   // Mouse pointer over an entry in the menu list
   mouseMoveOverList (ev->getPos(), ms);
@@ -626,7 +611,7 @@ void FMenu::closeOpenedSubMenu()
 
   opened_sub_menu->hideSubMenus();
   opened_sub_menu->hide();
-  opened_sub_menu = 0;
+  opened_sub_menu = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -637,7 +622,7 @@ void FMenu::hideSubMenus()
   {
     opened_sub_menu->hideSubMenus();
     opened_sub_menu->hide();
-    opened_sub_menu = 0;
+    opened_sub_menu = nullptr;
   }
 
   unselectItem();
@@ -1293,7 +1278,7 @@ inline void FMenu::drawSeparator (int y)
   {
     print (fc::NF_border_line_vertical_right);
     FString line ( std::size_t(getWidth()) - 2
-                 , wchar_t(fc::BoxDrawingsHorizontal) );
+                 , fc::BoxDrawingsHorizontal );
     print (line);
     print (fc::NF_rev_border_line_vertical_left);
   }
@@ -1301,7 +1286,7 @@ inline void FMenu::drawSeparator (int y)
   {
     print (fc::BoxDrawingsVerticalAndRight);
     FString line ( std::size_t(getWidth()) - 2
-                 , wchar_t(fc::BoxDrawingsHorizontal));
+                 , fc::BoxDrawingsHorizontal);
     print (line);
     print (fc::BoxDrawingsVerticalAndLeft);
   }
@@ -1462,9 +1447,9 @@ inline void FMenu::drawSubMenuIndicator (std::size_t& startpos)
   if ( len > 0 )
   {
     // Print filling blank spaces
-    print (FString(len, wchar_t(' ')));
+    print (FString(len, L' '));
     // Print BlackRightPointingPointer ►
-    print (wchar_t(fc::BlackRightPointingPointer));
+    print (fc::BlackRightPointingPointer);
     startpos = max_item_width - (c + 2);
   }
 }
@@ -1480,7 +1465,7 @@ inline void FMenu::drawAcceleratorKey (std::size_t& startpos, FKey accel_key)
   if ( len > 0 )
   {
     // Print filling blank spaces + accelerator key name
-    FString spaces (len, wchar_t(' '));
+    FString spaces (len, L' ');
     print (spaces + accel_name);
     startpos = max_item_width - (c + 2);
   }

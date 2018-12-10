@@ -27,7 +27,7 @@ int main (int argc, char* argv[])
 }
 ```
 *(Note: You can close the dialog with the mouse, 
-<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>.)*
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 
 
 After entering the source code in *dialog.cpp* you can compile

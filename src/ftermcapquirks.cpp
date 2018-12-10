@@ -26,9 +26,9 @@ namespace finalcut
 {
 
 // static class attributes
-FTermcap::tcap_map* FTermcapQuirks::tcap           = 0;
-FTermData*          FTermcapQuirks::fterm_data     = 0;
-FTermDetection*     FTermcapQuirks::term_detection = 0;
+FTermcap::tcap_map* FTermcapQuirks::tcap           = nullptr;
+FTermData*          FTermcapQuirks::fterm_data     = nullptr;
+FTermDetection*     FTermcapQuirks::term_detection = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -210,16 +210,16 @@ void FTermcapQuirks::linux()
   TCAP(fc::t_exit_bold_mode) = C_STR(CSI "22m");
   TCAP(fc::t_exit_blink_mode) = C_STR(CSI "25m");
   TCAP(fc::t_exit_reverse_mode) = C_STR(CSI "27m");
-  TCAP(fc::t_exit_secure_mode) = 0;
-  TCAP(fc::t_exit_protected_mode) = 0;
-  TCAP(fc::t_exit_crossed_out_mode) = 0;
+  TCAP(fc::t_exit_secure_mode) = nullptr;
+  TCAP(fc::t_exit_protected_mode) = nullptr;
+  TCAP(fc::t_exit_crossed_out_mode) = nullptr;
   TCAP(fc::t_orig_pair) = C_STR(CSI "39;49;25m");
 
   // Avoid underline and dim mode
-  TCAP(fc::t_enter_dim_mode)       = 0;
-  TCAP(fc::t_exit_dim_mode)        = 0;
-  TCAP(fc::t_enter_underline_mode) = 0;
-  TCAP(fc::t_exit_underline_mode)  = 0;
+  TCAP(fc::t_enter_dim_mode)       = nullptr;
+  TCAP(fc::t_exit_dim_mode)        = nullptr;
+  TCAP(fc::t_enter_underline_mode) = nullptr;
+  TCAP(fc::t_exit_underline_mode)  = nullptr;
 }
 
 //----------------------------------------------------------------------

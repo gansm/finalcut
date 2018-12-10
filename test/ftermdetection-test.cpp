@@ -423,30 +423,23 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE_END();
 
     // Data Members
-    int          fd_stdin;
-    int          fd_stdout;
-    int          fd_stderr;
-    int          fd_master;
-    int          fd_slave;
-    bool         debug;
-    char         buffer[2048];
+    int          fd_stdin{fileno(stdin)};
+    int          fd_stdout{fileno(stdout)};
+    int          fd_stderr{fileno(stderr)};
+    int          fd_master{-1};
+    int          fd_slave{-1};
+    bool         debug{false};
+    char         buffer[2048]{};
     static bool* shared_state;
 
 };
 #pragma pack(pop)
 
 // static class attributes
-bool* FTermDetectionTest::shared_state = 0;
+bool* FTermDetectionTest::shared_state = nullptr;
 
 //----------------------------------------------------------------------
 FTermDetectionTest::FTermDetectionTest()
-  : fd_stdin(fileno(stdin))
-  , fd_stdout(fileno(stdout))
-  , fd_stderr(fileno(stderr))
-  , fd_master(-1)
-  , fd_slave(-1)
-  , debug(false)
-  , buffer()
 {
   // Map shared memory
   void* ptr = mmap ( NULL

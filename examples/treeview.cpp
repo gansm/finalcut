@@ -114,18 +114,18 @@ class Treeview : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Treeview (finalcut::FWidget* = 0);
+    explicit Treeview (finalcut::FWidget* = nullptr);
+    // Disable copy constructor
+    Treeview (const Treeview&) = delete;
     // Destructor
     ~Treeview();
+
+    // Disable assignment operator (=)
+    Treeview& operator = (const Treeview&) = delete;
 
   private:
     // Typedefs
     struct TreeItem;  // forward declaration
-
-    // Disable copy constructor
-    Treeview (const Treeview&);
-    // Disable assignment operator (=)
-    Treeview& operator = (const Treeview&);
 
     // Methods
     virtual void adjustSize();
@@ -134,9 +134,9 @@ class Treeview : public finalcut::FDialog
     void onClose (finalcut::FCloseEvent*);
 
     // Data Members
-    bool                initialized;
-    finalcut::FListView listView;
-    finalcut::FButton   Quit;
+    bool                initialized{false};
+    finalcut::FListView listView{this};
+    finalcut::FButton   Quit{this};
     static TreeItem     africa[];
     static TreeItem     asia[];
     static TreeItem     europe[];
@@ -298,9 +298,6 @@ Treeview::TreeItem Treeview::oceania[] =
 //----------------------------------------------------------------------
 Treeview::Treeview (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
-  , initialized(false)
-  , listView(this)
-  , Quit(this)
 {
   // Set FListView geometry
   listView.setGeometry(2, 1, 53, 14);

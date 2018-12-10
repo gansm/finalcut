@@ -30,7 +30,7 @@ class Keyboard : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Keyboard (finalcut::FWidget* = 0);
+    explicit Keyboard (finalcut::FWidget* = nullptr);
 
   protected:
     // Event handlers

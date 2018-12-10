@@ -102,12 +102,12 @@ class FFileDialog : public FDialog
     };
 
     // Constructors
-    explicit FFileDialog (FWidget* = 0);
+    explicit FFileDialog (FWidget* = nullptr);
     FFileDialog (const FFileDialog&);  // copy constructor
     FFileDialog ( const FString&
                 , const FString&
                 , DialogType = FFileDialog::Open
-                , FWidget* = 0 );
+                , FWidget* = nullptr );
     // Destructor
     virtual ~FFileDialog();
 
@@ -186,17 +186,17 @@ class FFileDialog : public FDialog
     void          cb_processShowHidden (FWidget*, data_ptr);
 
     // Data Members
-    DIR*          directory_stream;
-    dirEntries    dir_entries;
-    FString       directory;
-    FString       filter_pattern;
-    FLineEdit     filename;
-    FListBox      filebrowser;
-    FCheckBox     hidden;
-    FButton       cancel;
-    FButton       open;
-    DialogType    dlg_type;
-    bool          show_hidden;
+    DIR*          directory_stream{nullptr};
+    dirEntries    dir_entries{};
+    FString       directory{};
+    FString       filter_pattern{};
+    FLineEdit     filename{this};
+    FListBox      filebrowser{this};
+    FCheckBox     hidden{this};
+    FButton       cancel{this};
+    FButton       open{this};
+    DialogType    dlg_type{FFileDialog::Open};
+    bool          show_hidden{false};
 
     // Friend functions
     friend bool sortByName ( const FFileDialog::dir_entry&

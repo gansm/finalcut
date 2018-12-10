@@ -95,11 +95,11 @@ class FMessageBox : public FDialog
     };
 
     // Constructors
-    explicit FMessageBox (FWidget* = 0);
+    explicit FMessageBox (FWidget* = nullptr);
     FMessageBox (const FMessageBox&);  // copy constructor
     FMessageBox ( const FString&, const FString&
                 , int, int, int
-                , FWidget* = 0 );
+                , FWidget* = nullptr );
     // Destructor
     virtual ~FMessageBox();
 
@@ -159,17 +159,17 @@ class FMessageBox : public FDialog
     void          adjustButtons();
 
     // Data Members
-    FString       headline_text;
-    FString       text;
-    FString*      text_components;
-    FStringList   text_split;
-    std::size_t   max_line_width;
-    bool          center_text;
-    FColor        emphasis_color;
-    uInt          num_buttons;
-    uInt          text_num_lines;
-    int           button_digit[3];
-    FButton*      button[3];
+    FString       headline_text{};
+    FString       text{};
+    FString*      text_components{nullptr};
+    FStringList   text_split{};
+    std::size_t   max_line_width{0};
+    bool          center_text{false};
+    FColor        emphasis_color{wc.dialog_emphasis_fg};
+    uInt          num_buttons{0};
+    uInt          text_num_lines{0};
+    int           button_digit[3]{0};
+    FButton*      button[3]{nullptr};
 };
 #pragma pack(pop)
 

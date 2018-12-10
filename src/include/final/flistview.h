@@ -128,14 +128,14 @@ class FListViewItem : public FObject
     void              resetVisibleLineCounter();
 
     // Data Members
-    FStringList       column_list;
-    FWidget::data_ptr data_pointer;
-    FObjectIterator   root;
-    std::size_t       visible_lines;
-    bool              expandable;
-    bool              is_expand;
-    bool              checkable;
-    bool              is_checked;
+    FStringList       column_list{};
+    FWidget::data_ptr data_pointer{nullptr};
+    FObjectIterator   root{};
+    std::size_t       visible_lines{1};
+    bool              expandable{false};
+    bool              is_expand{false};
+    bool              checkable{false};
+    bool              is_checked{false};
 
     // Friend class
     friend class FListView;
@@ -198,7 +198,7 @@ class FListViewIterator
     typedef std::stack<FObjectIterator> FObjectIteratorStack;
 
     // Constructor
-    FListViewIterator ();
+    FListViewIterator () = default;
     FListViewIterator (FObjectIterator);
 
     // Overloaded operators
@@ -226,9 +226,9 @@ class FListViewIterator
     void prevElement (FObjectIterator&);
 
     // Data Members
-    FObjectIteratorStack iter_path;
-    FObjectIterator      node;
-    int                  position;
+    FObjectIteratorStack iter_path{};
+    FObjectIterator      node{};
+    int                  position{0};
 };
 #pragma pack(pop)
 
@@ -272,10 +272,14 @@ class FListView : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FListView (FWidget* = 0);
-
+    explicit FListView (FWidget* = nullptr);
+    // Disable copy constructor
+    FListView (const FListView&) = delete;
     // Destructor
     virtual ~FListView();
+
+    // Disable assignment operator (=)
+    FListView& operator = (const FListView&) = delete;
 
     // Accessors
     const char*          getClassName() const;
@@ -311,14 +315,14 @@ class FListView : public FWidget
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
-                                , data_ptr = 0 );
+                                , data_ptr = nullptr );
     FObjectIterator      insert ( const FStringList&
                                 , FObjectIterator );
     FObjectIterator      insert ( const FStringList&
                                 , data_ptr
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
-                                , data_ptr = 0 );
+                                , data_ptr = nullptr );
     FObjectIterator      insert ( const std::vector<long>&
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
@@ -344,7 +348,7 @@ class FListView : public FWidget
 
   protected:
     // Methods
-    void                 adjustViewport();
+    void                 adjustViewport (int);
     virtual void         adjustSize();
 
   private:
@@ -355,12 +359,6 @@ class FListView : public FWidget
 
     // Constants
     static const int USE_MAX_SIZE = -1;
-
-    // Disable copy constructor
-    FListView (const FListView&);
-
-    // Disable assignment operator (=)
-    FListView& operator = (const FListView&);
 
     // Methods
     void                 init();
@@ -382,11 +380,11 @@ class FListView : public FWidget
     void                 drawColumnEllipsis ( headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
-    int                  determineLineWidth (FListViewItem*);
+    std::size_t          determineLineWidth (FListViewItem*);
     void                 beforeInsertion (FListViewItem*);
     void                 afterInsertion();
-    void                 recalculateHorizontalBar (int);
-    void                 recalculateVerticalBar (int);
+    void                 recalculateHorizontalBar (std::size_t);
+    void                 recalculateVerticalBar (std::size_t);
     void                 mouseHeaderClicked();
     void                 wheelUp (int);
     void                 wheelDown (int);
@@ -422,34 +420,34 @@ class FListView : public FWidget
     void                 cb_HBarChange (FWidget*, data_ptr);
 
     // Data Members
-    FObjectIterator      root;
-    FObjectList          selflist;
-    FObjectList          itemlist;
-    FListViewIterator    current_iter;
-    FListViewIterator    first_visible_line;
-    FListViewIterator    last_visible_line;
-    headerItems          header;
-    FTermBuffer          headerline;
-    FScrollbar*          vbar;
-    FScrollbar*          hbar;
-    fc::dragScroll       drag_scroll;
-    int                  scroll_repeat;
-    int                  scroll_distance;
-    bool                 scroll_timer;
-    bool                 tree_view;
-    bool                 hide_sort_indicator;
-    bool                 has_checkable_items;
-    FPoint               clicked_expander_pos;
-    FPoint               clicked_header_pos;
-    const FListViewItem* clicked_checkbox_item;
-    int                  xoffset;
-    int                  nf_offset;
-    int                  max_line_width;
-    int                  sort_column;
-    sortTypes            sort_type;
-    fc::sorting_order    sort_order;
-    bool (*user_defined_ascending) (const FObject*, const FObject*);
-    bool (*user_defined_descending) (const FObject*, const FObject*);
+    FObjectIterator      root{};
+    FObjectList          selflist{};
+    FObjectList          itemlist{};
+    FListViewIterator    current_iter{};
+    FListViewIterator    first_visible_line{};
+    FListViewIterator    last_visible_line{};
+    headerItems          header{};
+    FTermBuffer          headerline{};
+    FScrollbar*          vbar{nullptr};
+    FScrollbar*          hbar{nullptr};
+    fc::dragScroll       drag_scroll{fc::noScroll};
+    int                  scroll_repeat{100};
+    int                  scroll_distance{1};
+    bool                 scroll_timer{false};
+    bool                 tree_view{false};
+    bool                 hide_sort_indicator{false};
+    bool                 has_checkable_items{false};
+    FPoint               clicked_expander_pos{-1, -1};
+    FPoint               clicked_header_pos{-1, -1};
+    const FListViewItem* clicked_checkbox_item{nullptr};
+    int                  xoffset{0};
+    std::size_t          nf_offset{0};
+    std::size_t          max_line_width{1};
+    int                  sort_column{-1};
+    sortTypes            sort_type{};
+    fc::sorting_order    sort_order{fc::unsorted};
+    bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
+    bool (*user_defined_descending) (const FObject*, const FObject*){nullptr};
 
     // Friend class
     friend class FListViewItem;
@@ -466,17 +464,12 @@ class FListView : public FWidget
 struct FListView::Header
 {
   public:
-    Header()
-      : name()
-      , width (0)
-      , fixed_width (false)
-      , alignment (fc::alignLeft)
-    { }
+    Header() = default;
 
-    FString name;
-    int width;
-    bool fixed_width;
-    fc::text_alignment alignment;
+    FString name{};
+    int width{0};
+    bool fixed_width{false};
+    fc::text_alignment alignment{fc::alignLeft};
 };
 #pragma pack(pop)
 

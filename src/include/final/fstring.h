@@ -56,6 +56,7 @@
 #include <string>
 #include <vector>
 
+#include "final/fc.h"
 #include "final/ftypes.h"
 
 namespace finalcut
@@ -82,18 +83,18 @@ class FString
     typedef const wchar_t* iterator;
 
     // Constructors
-    FString ();
+    FString () = default;
     explicit FString (int);
     explicit FString (std::size_t);
     FString (std::size_t, wchar_t);
-    FString (std::size_t, char);
-    FString (const FString&);       // implicit conversion copy constructor
-    FString (const std::wstring&);  // implicit conversion constructor
-    FString (const wchar_t[]);      // implicit conversion constructor
-    FString (const std::string&);   // implicit conversion constructor
-    FString (const char[]);         // implicit conversion constructor
-    FString (const wchar_t);        // implicit conversion constructor
-    FString (const char);           // implicit conversion constructor
+    FString (const FString&);        // implicit conversion copy constructor
+    FString (const std::wstring&);   // implicit conversion constructor
+    FString (const wchar_t[]);       // implicit conversion constructor
+    FString (const std::string&);    // implicit conversion constructor
+    FString (const char[]);          // implicit conversion constructor
+    FString (fc::SpecialCharacter);  // implicit conversion constructor
+    FString (const wchar_t);         // implicit conversion constructor
+    FString (const char);            // implicit conversion constructor
 
     // Destructor
     virtual ~FString ();
@@ -108,6 +109,7 @@ class FString
     const FString operator + (const char);
 
     FString& operator << (const FString&);
+    FString& operator << (fc::SpecialCharacter);
     FString& operator << (const wchar_t);
     FString& operator << (const char);
     FString& operator << (const sInt16);
@@ -261,9 +263,9 @@ class FString
 
   private:
     // Constants
-    static const uInt  FWDBUFFER = 15;
-    static const uInt  INPBUFFER = 200;
-    static const uInt  CHAR_SIZE = sizeof(wchar_t);  // bytes per character
+    static const uInt FWDBUFFER = 15;
+    static const uInt INPBUFFER = 200;
+    static const uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
 
     // Methods
     void     initLength (std::size_t);
@@ -276,10 +278,10 @@ class FString
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data Members
-    wchar_t*      string;
-    std::size_t   length;
-    std::size_t   bufsize;
-    mutable char* c_string;
+    wchar_t*      string{nullptr};
+    std::size_t   length{0};
+    std::size_t   bufsize{0};
+    mutable char* c_string{nullptr};
 };
 #pragma pack(pop)
 

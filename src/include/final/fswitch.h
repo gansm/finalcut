@@ -73,11 +73,15 @@ class FSwitch : public FToggleButton
 {
   public:
     // Constructors
-    explicit FSwitch (FWidget* = 0);
-    explicit FSwitch (const FString&, FWidget* = 0);
-
+    explicit FSwitch (FWidget* = nullptr);
+    explicit FSwitch (const FString&, FWidget* = nullptr);
+    // Disable copy constructor
+    FSwitch (const FSwitch&) = delete;
     // Destructor
     virtual ~FSwitch();
+
+    // Disable assignment operator (=)
+    FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
     const char*  getClassName() const;
@@ -91,12 +95,6 @@ class FSwitch : public FToggleButton
     virtual void onMouseUp (FMouseEvent*);
 
   private:
-    // Disable copy constructor
-    FSwitch (const FSwitch&);
-
-    // Disable assignment operator (=)
-    FSwitch& operator = (const FSwitch&);
-
     // Methods
     virtual void draw();
     void         drawCheckButton();
@@ -104,8 +102,8 @@ class FSwitch : public FToggleButton
     void         drawUnchecked();
 
     // Data Members
-    std::size_t  switch_offset_pos;
-    bool         button_pressed;
+    std::size_t  switch_offset_pos{0};
+    bool         button_pressed{false};
 };
 #pragma pack(pop)
 
