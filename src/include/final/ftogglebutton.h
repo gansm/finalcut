@@ -74,8 +74,8 @@ class FToggleButton : public FWidget
     using FWidget::setGeometry;
 
     // Constructors
-    explicit FToggleButton (FWidget* = 0);
-    explicit FToggleButton (const FString&, FWidget* = 0);
+    explicit FToggleButton (FWidget* = nullptr);
+    explicit FToggleButton (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FToggleButton (const FToggleButton&) = delete;
     // Destructor
@@ -162,7 +162,7 @@ class FToggleButton : public FWidget
     friend class FButtonGroup;
 
     // Data Members
-    FButtonGroup* button_group{0};
+    FButtonGroup* button_group{nullptr};
     bool          focus_inside_group{true};
     FString       text{};
 };

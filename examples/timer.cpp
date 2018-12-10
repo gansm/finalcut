@@ -31,7 +31,7 @@ class Timer : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit Timer (finalcut::FWidget* = 0);
+    explicit Timer (finalcut::FWidget* = nullptr);
 
   protected:
     // Method

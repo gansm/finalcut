@@ -42,7 +42,8 @@ class Transparent : public finalcut::FDialog
     } trans_type;
 
     // Constructor
-    explicit Transparent (finalcut::FWidget* = 0, trans_type = transparent);
+    explicit Transparent ( finalcut::FWidget* = nullptr
+                         , trans_type = transparent );
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
     // Destructor
@@ -149,7 +150,7 @@ class MainWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit MainWindow (finalcut::FWidget* = 0);
+    explicit MainWindow (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     MainWindow (const MainWindow&) = delete;
     // Destructor
@@ -183,9 +184,9 @@ class MainWindow : public finalcut::FDialog
     // Data Members
     finalcut::FString line1{};
     finalcut::FString line2{};
-    Transparent* transpwin{0};
-    Transparent* shadowwin{0};
-    Transparent* ibg{0};
+    Transparent* transpwin{nullptr};
+    Transparent* shadowwin{nullptr};
+    Transparent* ibg{nullptr};
     finalcut::FStatusBar status_bar{this};
 };
 #pragma pack(pop)

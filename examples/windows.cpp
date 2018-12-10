@@ -35,7 +35,7 @@ class SmallWindow : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit SmallWindow (finalcut::FWidget* = 0);
+    explicit SmallWindow (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     SmallWindow (const SmallWindow&) = delete;
     // Destructor
@@ -164,7 +164,7 @@ class Window : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Window (finalcut::FWidget* = 0);
+    explicit Window (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     Window (const Window&) = delete;
     // Destructor
@@ -181,11 +181,7 @@ class Window : public finalcut::FDialog
     struct win_data
     {
         // Constructor
-        win_data()
-          : is_open(false)
-          , title()
-          , dgl(0)
-        { }
+        win_data() = default;
         // Disable copy constructor
         win_data (const win_data&) = delete;
 
@@ -193,9 +189,9 @@ class Window : public finalcut::FDialog
         win_data& operator = (const win_data&) = delete;
 
         // Data Members
-        bool is_open;
-        finalcut::FString title;
-        SmallWindow* dgl;
+        bool is_open{false};
+        finalcut::FString title{};
+        SmallWindow* dgl{nullptr};
     };
 
     // Method
@@ -552,7 +548,7 @@ void Window::cb_destroyWindow (finalcut::FWidget*, data_ptr data)
   if ( win_dat )
   {
     win_dat->is_open = false;
-    win_dat->dgl = 0;
+    win_dat->dgl = nullptr;
   }
 }
 

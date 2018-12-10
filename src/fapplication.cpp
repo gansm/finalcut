@@ -32,26 +32,26 @@ namespace finalcut
 {
 
 // Global application object
-static FApplication* app_object = 0;
+static FApplication* app_object = nullptr;
 
 // Flag to exit the local event loop
 static bool app_exit_loop = false;
 
 // Static attributes
-FWidget*       FWidget::main_widget          = 0;  // main application widget
-FWidget*       FWidget::active_window        = 0;  // the active window
-FWidget*       FWidget::focus_widget         = 0;  // has keyboard input focus
-FWidget*       FWidget::clicked_widget       = 0;  // is focused by click
-FWidget*       FWidget::open_menu            = 0;  // currently open menu
-FWidget*       FWidget::move_size_widget     = 0;  // move/size by keyboard
-FWidget*       FApplication::keyboard_widget = 0;  // has the keyboard focus
-FKeyboard*     FApplication::keyboard        = 0;  // keyboard access
-FMouseControl* FApplication::mouse           = 0;  // mouse control
+FWidget*       FWidget::main_widget          = nullptr;  // main application widget
+FWidget*       FWidget::active_window        = nullptr;  // the active window
+FWidget*       FWidget::focus_widget         = nullptr;  // has keyboard input focus
+FWidget*       FWidget::clicked_widget       = nullptr;  // is focused by click
+FWidget*       FWidget::open_menu            = nullptr;  // currently open menu
+FWidget*       FWidget::move_size_widget     = nullptr;  // move/size by keyboard
+FWidget*       FApplication::keyboard_widget = nullptr;  // has the keyboard focus
+FKeyboard*     FApplication::keyboard        = nullptr;  // keyboard access
+FMouseControl* FApplication::mouse           = nullptr;  // mouse control
 int            FApplication::loop_level      = 0;  // event loop level
 int            FApplication::quit_code       = 0;
 bool           FApplication::quit_now        = false;
 
-FApplication::eventQueue*    FApplication::event_queue = 0;
+FApplication::eventQueue* FApplication::event_queue = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -87,7 +87,7 @@ FApplication::~FApplication()  // destructor
   if ( event_queue )
     delete event_queue;
 
-  app_object = 0;
+  app_object = nullptr;
 }
 
 
@@ -498,7 +498,7 @@ inline void FApplication::findKeyboardWidget()
 {
   // Find the widget that has the keyboard focus
 
-  FWidget* widget = 0;
+  FWidget* widget = nullptr;
   FWidget* focus = getFocusWidget();
   FWidget* move_size = getMoveSizeWidget();
 

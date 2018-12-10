@@ -75,7 +75,7 @@ class FListBoxItem
     // Constructors
     FListBoxItem ();
     FListBoxItem (const FListBoxItem&);  // copy constructor
-    explicit FListBoxItem (const FString&, FWidget::data_ptr = 0);
+    explicit FListBoxItem (const FString&, FWidget::data_ptr = nullptr);
 
     // Destructor
     virtual ~FListBoxItem();
@@ -100,7 +100,7 @@ class FListBoxItem
 
     // Data Members
     FString           text{};
-    FWidget::data_ptr data_pointer{0};
+    FWidget::data_ptr data_pointer{nullptr};
     fc::brackets_type brackets{fc::NoBrackets};
     bool              selected{false};
 };
@@ -146,11 +146,11 @@ class FListBox : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FListBox (FWidget* = 0);
+    explicit FListBox (FWidget* = nullptr);
     template <typename Iterator, typename InsertConverter>
-    FListBox (Iterator, Iterator, InsertConverter, FWidget* = 0);
+    FListBox (Iterator, Iterator, InsertConverter, FWidget* = nullptr);
     template <typename Container, typename LazyConverter>
-    FListBox (Container, LazyConverter, FWidget* = 0);
+    FListBox (Container, LazyConverter, FWidget* = nullptr);
     // Disable copy constructor
     FListBox (const FListBox&) = delete;
     // Destructor
@@ -204,11 +204,11 @@ class FListBox : public FWidget
     void         insert ( const FString&
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = 0 );
+                        , data_ptr = nullptr );
     void         insert ( long
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = 0 );
+                        , data_ptr = nullptr );
     void         remove (std::size_t);
     void         clear();
 
@@ -297,14 +297,14 @@ class FListBox : public FWidget
     // Function Pointer
     void         (*convertToItem) ( FListBoxItem&
                                   , FWidget::data_ptr
-                                  , int index ){0};
+                                  , int index ){nullptr};
 
     // Data Members
     listBoxItems      itemlist{};
-    FWidget::data_ptr source_container{0};
+    FWidget::data_ptr source_container{nullptr};
     convert_type      conv_type{FListBox::no_convert};
-    FScrollbar*       vbar{0};
-    FScrollbar*       hbar{0};
+    FScrollbar*       vbar{nullptr};
+    FScrollbar*       hbar{nullptr};
     FString           text{};
     FString           inc_search{};
     bool              multi_select{false};

@@ -187,7 +187,7 @@ void streamingFromFStringExample()
   std::wcout << "stream out: " << stream_wstring << std::endl;
 
   // ...to wide character
-  wchar_t stream_wchar_t = 0;
+  wchar_t stream_wchar_t = L'\0';
   finalcut::FString("w") >> stream_wchar_t;
   std::wcout << "stream out: " << stream_wchar_t << std::endl;
 

@@ -215,13 +215,13 @@ class FTermDetection
     {
       void setDefault()
       {
-        string1 = 0;
-        string2 = 0;
-        string3 = 0;
-        string4 = 0;
-        string5 = 0;
-        string6 = 0;
-        string7 = 0;
+        string1 = nullptr;
+        string2 = nullptr;
+        string3 = nullptr;
+        string4 = nullptr;
+        string5 = nullptr;
+        string6 = nullptr;
+        string7 = nullptr;
       }
 
       char* string1;

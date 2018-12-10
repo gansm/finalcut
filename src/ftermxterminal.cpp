@@ -33,16 +33,16 @@ bool                 FTermXTerminal::meta_sends_esc;
 bool                 FTermXTerminal::xterm_default_colors;
 std::size_t          FTermXTerminal::term_width = 80;
 std::size_t          FTermXTerminal::term_height = 24;
-const FString*       FTermXTerminal::xterm_font = 0;
-const FString*       FTermXTerminal::xterm_title = 0;
-const FString*       FTermXTerminal::foreground_color = 0;
-const FString*       FTermXTerminal::background_color = 0;
-const FString*       FTermXTerminal::cursor_color = 0;
-const FString*       FTermXTerminal::mouse_foreground_color = 0;
-const FString*       FTermXTerminal::mouse_background_color = 0;
-const FString*       FTermXTerminal::highlight_background_color = 0;
-FTermcap::tcap_map*  FTermXTerminal::tcap = 0;
-FTermDetection*      FTermXTerminal::term_detection = 0;
+const FString*       FTermXTerminal::xterm_font = nullptr;
+const FString*       FTermXTerminal::xterm_title = nullptr;
+const FString*       FTermXTerminal::foreground_color = nullptr;
+const FString*       FTermXTerminal::background_color = nullptr;
+const FString*       FTermXTerminal::cursor_color = nullptr;
+const FString*       FTermXTerminal::mouse_foreground_color = nullptr;
+const FString*       FTermXTerminal::mouse_background_color = nullptr;
+const FString*       FTermXTerminal::highlight_background_color = nullptr;
+FTermcap::tcap_map*  FTermXTerminal::tcap = nullptr;
+FTermDetection*      FTermXTerminal::term_detection = nullptr;
 fc::xtermCursorStyle FTermXTerminal::cursor_style = fc::unknown_cursor_style;
 
 
@@ -257,7 +257,7 @@ void FTermXTerminal::resetForeground()
   if ( foreground_color )
     delete foreground_color;
 
-  foreground_color = 0;
+  foreground_color = nullptr;
   resetXTermForeground();
 }
 
@@ -269,7 +269,7 @@ void FTermXTerminal::resetBackground()
   if ( background_color )
     delete background_color;
 
-  background_color = 0;
+  background_color = nullptr;
   resetXTermBackground();
 }
 
@@ -281,7 +281,7 @@ void FTermXTerminal::resetCursorColor()
   if ( cursor_color )
     delete cursor_color;
 
-  cursor_color = 0;
+  cursor_color = nullptr;
   resetXTermCursorColor();
 }
 
@@ -293,7 +293,7 @@ void FTermXTerminal::resetMouseForeground()
   if ( mouse_foreground_color )
     delete mouse_foreground_color;
 
-  mouse_foreground_color = 0;
+  mouse_foreground_color = nullptr;
   resetXTermMouseForeground();
 }
 
@@ -305,7 +305,7 @@ void FTermXTerminal::resetMouseBackground()
   if ( mouse_background_color )
     delete mouse_background_color;
 
-  mouse_background_color = 0;
+  mouse_background_color = nullptr;
   resetXTermMouseBackground();
 }
 
@@ -317,7 +317,7 @@ void FTermXTerminal::resetHighlightBackground()
   if ( highlight_background_color )
     delete highlight_background_color;
 
-  highlight_background_color = 0;
+  highlight_background_color = nullptr;
   resetXTermHighlightBackground();
 }
 

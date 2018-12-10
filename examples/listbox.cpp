@@ -29,7 +29,7 @@
 
 
 // Global application object
-static finalcut::FString* temp_str = 0;
+static finalcut::FString* temp_str = nullptr;
 
 
 // Function prototypes
@@ -77,7 +77,7 @@ class Listbox : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Listbox (FWidget* = 0);
+    explicit Listbox (FWidget* = nullptr);
     // Disable copy constructor
     Listbox (const Listbox&) = delete;
     // Destructor

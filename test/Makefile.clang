@@ -29,7 +29,7 @@ endif
 all: $(OBJS)
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Wpadded -Wno-c++98-compat -Wno-implicit-fallthrough"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Wpadded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough"
 
 check: test
 test: debug

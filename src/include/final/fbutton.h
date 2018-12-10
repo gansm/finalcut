@@ -68,8 +68,8 @@ class FButton : public FWidget
 {
   public:
     // Constructors
-    explicit FButton (FWidget* = 0);
-    explicit FButton (const FString&, FWidget* = 0);
+    explicit FButton (FWidget* = nullptr);
+    explicit FButton (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FButton (const FButton&) = delete;
     // Destructor

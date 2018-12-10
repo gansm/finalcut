@@ -133,7 +133,7 @@ void FOptiAttrTest::noArgumentTest()
   CPPUNIT_ASSERT ( oa.isNormal(ch) );
 
   // Null test
-  finalcut::FOptiAttr::charData* ch_null = 0;
+  finalcut::FOptiAttr::charData* ch_null = nullptr;
   CPPUNIT_ASSERT ( oa.changeAttribute(ch, ch) == 0 );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch, ch_null), C_STR("") );
   CPPUNIT_ASSERT_CSTRING ( oa.changeAttribute(ch_null, ch), C_STR("") );

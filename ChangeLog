@@ -1,6 +1,7 @@
 2018-12-09  Markus Gans  <guru.mail@muenster.de>
 	* Better handling of the scrollbar maximum
 	* Deactivate copy constructor and assignment operator with "= delete"
+	* Use nullptr instead of 0 to initialize a pointer values
 
 2018-12-06  Markus Gans  <guru.mail@muenster.de>
 	* Easier handling of fc::SpecialCharacter

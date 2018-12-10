@@ -279,7 +279,7 @@ class FKeyboardTest : public CPPUNIT_NS::TestFixture
     FKey key_pressed{0};
     FKey key_released{0};
     int  number_of_keys{0};
-    finalcut::FKeyboard* keyboard{0};
+    finalcut::FKeyboard* keyboard{nullptr};
 };
 #pragma pack(pop)
 

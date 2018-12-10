@@ -80,8 +80,8 @@ class FStatusKey : public FWidget
 {
   public:
     // Constructors
-    explicit FStatusKey (FWidget* = 0);
-    FStatusKey (FKey, const FString&, FWidget* = 0);
+    explicit FStatusKey (FWidget* = nullptr);
+    FStatusKey (FKey, const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FStatusKey (const FStatusKey&) = delete;
     // Destructor
@@ -126,7 +126,7 @@ class FStatusKey : public FWidget
     FString     text{};
     bool        active{false};
     bool        mouse_focus{false};
-    FStatusBar* bar{0};
+    FStatusBar* bar{nullptr};
 };
 #pragma pack(pop)
 
@@ -192,7 +192,7 @@ class FStatusBar : public FWindow
 {
   public:
     // Constructor
-    explicit FStatusBar (FWidget* = 0);
+    explicit FStatusBar (FWidget* = nullptr);
     // Disable copy constructor
     FStatusBar (const FStatusBar&) = delete;
     // Destructor

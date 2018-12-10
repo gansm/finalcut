@@ -278,10 +278,10 @@ class FString
     wchar_t* extractToken (wchar_t*[], const wchar_t[], const wchar_t[]);
 
     // Data Members
-    wchar_t*      string{0};
+    wchar_t*      string{nullptr};
     std::size_t   length{0};
     std::size_t   bufsize{0};
-    mutable char* c_string{0};
+    mutable char* c_string{nullptr};
 };
 #pragma pack(pop)
 

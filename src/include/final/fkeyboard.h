@@ -60,15 +60,16 @@ class FKeyboardCommand
 {
   public:
     // Constructor
-    explicit FKeyboardCommand (FApplication* = 0, void(FApplication::*)() = 0);
+    explicit FKeyboardCommand ( FApplication* = nullptr
+                              , void(FApplication::*)() = nullptr);
 
     // Method
     void execute();
 
   private:
     // Data Members
-    FApplication* instance{0};
-    void (FApplication::*handler)(){0};
+    FApplication* instance{nullptr};
+    void (FApplication::*handler)(){nullptr};
 };
 #pragma pack(pop)
 
@@ -180,7 +181,7 @@ class FKeyboard
     FKeyboardCommand    escape_key_cmd{};
 
     static timeval      time_keypressed;
-    fc::fkeymap*        key_map{0};
+    fc::fkeymap*        key_map{nullptr};
 
 #if defined(__linux__)
     #undef linux

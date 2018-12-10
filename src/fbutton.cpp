@@ -618,7 +618,7 @@ inline void FButton::drawButtonTextLine (wchar_t button_text[])
   else
     center_offset = (getWidth() - txtlength - 1) / 2;
 
-  // Print button text line --------
+  // Print button text line
   for (pos = 0; pos < center_offset; pos++)
     print (space_char);  // █
 

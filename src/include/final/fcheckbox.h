@@ -73,8 +73,8 @@ class FCheckBox : public FToggleButton
 {
   public:
     // Constructors
-    explicit FCheckBox (FWidget* = 0);
-    explicit FCheckBox (const FString&, FWidget* = 0);
+    explicit FCheckBox (FWidget* = nullptr);
+    explicit FCheckBox (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FCheckBox (const FCheckBox&) = delete;
     // Destructor

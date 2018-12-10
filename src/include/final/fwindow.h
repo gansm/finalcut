@@ -82,7 +82,7 @@ class FWindow : public FWidget
     using FWidget::move;
 
     // Constructor
-    explicit FWindow (FWidget* = 0);
+    explicit FWindow (FWidget* = nullptr);
     // Disable copy constructor
     FWindow (const FWindow&) = delete;
     // Destructor
@@ -179,7 +179,7 @@ class FWindow : public FWidget
     // Data Members
     bool            window_active{false};
     bool            zoomed{false};
-    FWidget*        win_focus_widget{0};
+    FWidget*        win_focus_widget{nullptr};
     FRect           normalGeometry{};
 };
 #pragma pack(pop)

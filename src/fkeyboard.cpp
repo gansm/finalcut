@@ -34,7 +34,7 @@ long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)
-  FTermLinux* FKeyboard::linux = 0;
+  FTermLinux* FKeyboard::linux = nullptr;
 #endif
 
 //----------------------------------------------------------------------

@@ -44,7 +44,7 @@ namespace finalcut
   bool   FTermLinux::half_block_character = true;
   bool   FTermLinux::has_saved_palette = false;
 
-  FTermDetection*             FTermLinux::term_detection = 0;
+  FTermDetection*             FTermLinux::term_detection = nullptr;
   fc::linuxConsoleCursorStyle FTermLinux::linux_console_cursor_style;
   FTermLinux::ColorMap        FTermLinux::saved_color_map;
   FTermLinux::ColorMap        FTermLinux::cmap;
@@ -148,8 +148,8 @@ void FTermLinux::init()
 {
   // initialize Linux console
 
-  screen_unicode_map.entries = 0;
-  screen_font.data = 0;
+  screen_unicode_map.entries = nullptr;
+  screen_font.data = nullptr;
 
   if ( FTerm::openConsole() == 0 )
   {
@@ -342,7 +342,7 @@ bool FTermLinux::loadOldFont (uInt char_map[][fc::NUM_OF_ENCODINGS])
                                 , screen_font.height
                                 , true );
         delete[] screen_font.data;
-        screen_font.data = 0;
+        screen_font.data = nullptr;
 
         if ( ret == 0 )
           retval = true;
@@ -353,7 +353,7 @@ bool FTermLinux::loadOldFont (uInt char_map[][fc::NUM_OF_ENCODINGS])
         setUnicodeMap (&screen_unicode_map);
         initCharMap(char_map);
         delete[] screen_unicode_map.entries;
-        screen_unicode_map.entries = 0;
+        screen_unicode_map.entries = nullptr;
       }
     }
 
@@ -569,7 +569,7 @@ bool FTermLinux::getUnicodeMap()
     return false;
 
   screen_unicode_map.entry_ct = 0;
-  screen_unicode_map.entries = 0;
+  screen_unicode_map.entries = nullptr;
 
   // get count
   ret = ioctl (fd_tty, GIO_UNIMAP, &screen_unicode_map);

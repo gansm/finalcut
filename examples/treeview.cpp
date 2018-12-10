@@ -114,7 +114,7 @@ class Treeview : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Treeview (finalcut::FWidget* = 0);
+    explicit Treeview (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     Treeview (const Treeview&) = delete;
     // Destructor

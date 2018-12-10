@@ -1128,7 +1128,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
 
   clicked_expander_pos.setPoint(-1, -1);
   clicked_header_pos.setPoint(-1, -1);
-  clicked_checkbox_item = 0;
+  clicked_checkbox_item = nullptr;
 }
 
 //----------------------------------------------------------------------

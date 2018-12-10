@@ -102,12 +102,12 @@ class FFileDialog : public FDialog
     };
 
     // Constructors
-    explicit FFileDialog (FWidget* = 0);
+    explicit FFileDialog (FWidget* = nullptr);
     FFileDialog (const FFileDialog&);  // copy constructor
     FFileDialog ( const FString&
                 , const FString&
                 , DialogType = FFileDialog::Open
-                , FWidget* = 0 );
+                , FWidget* = nullptr );
     // Destructor
     virtual ~FFileDialog();
 
@@ -186,7 +186,7 @@ class FFileDialog : public FDialog
     void          cb_processShowHidden (FWidget*, data_ptr);
 
     // Data Members
-    DIR*          directory_stream{0};
+    DIR*          directory_stream{nullptr};
     dirEntries    dir_entries{};
     FString       directory{};
     FString       filter_pattern{};

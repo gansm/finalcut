@@ -54,7 +54,7 @@ FToolTip::~FToolTip()  // destructor
   if ( fapp->isQuit() )
     return;
 
-  FWindow* parent_win = 0;
+  FWindow* parent_win = nullptr;
 
   if ( FWidget* parent = getParentWidget() )
     parent_win = getWindowWidget(parent);

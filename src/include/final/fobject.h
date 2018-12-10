@@ -71,7 +71,7 @@ class FObject
     typedef FObjectList::const_iterator constFObjectIterator;
 
     // Constructor
-    explicit FObject (FObject* = 0);
+    explicit FObject (FObject* = nullptr);
     // Disable copy constructor
     FObject (const FObject&) = delete;
     // Destructor
@@ -144,7 +144,7 @@ class FObject
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data Members
-    FObject*          parent_obj{};
+    FObject*          parent_obj{nullptr};
     FObjectList       children_list{};  // no children yet
     bool              has_parent{false};
     bool              widget_object{false};

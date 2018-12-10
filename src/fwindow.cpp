@@ -29,7 +29,7 @@ namespace finalcut
 {
 
 // static attributes
-FWindow* FWindow::previous_window = 0;
+FWindow* FWindow::previous_window = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -54,7 +54,7 @@ FWindow::~FWindow()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( previous_window == this )
-    previous_window = 0;
+    previous_window = nullptr;
 
   if ( isAlwaysOnTop() )
     deleteFromAlwaysOnTopList (this);

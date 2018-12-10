@@ -73,8 +73,8 @@ class FRadioButton : public FToggleButton
 {
   public:
     // Constructors
-    explicit FRadioButton (FWidget* = 0);
-    explicit FRadioButton (const FString&, FWidget* = 0);
+    explicit FRadioButton (FWidget* = nullptr);
+    explicit FRadioButton (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FRadioButton (const FRadioButton&) = delete;
     // Destructor

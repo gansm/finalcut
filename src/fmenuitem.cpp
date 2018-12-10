@@ -459,7 +459,7 @@ void FMenuItem::onAccel (FAccelEvent* ev)
   else
   {
     unsetSelected();
-    mbar->selected_item = 0;
+    mbar->selected_item = nullptr;
     mbar->redraw();
     processClicked();
     mbar->drop_down = false;
@@ -536,7 +536,7 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
     menu_list = static_cast<FMenuList*>(Menubar);
   }
   else
-    menu_list = 0;
+    menu_list = nullptr;
 
   return menu_list;
 }
@@ -751,7 +751,7 @@ void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
   {
     delAccelerator(win);
     delCallback(win);
-    associated_window = 0;
+    associated_window = nullptr;
   }
 }
 

@@ -87,8 +87,8 @@ class FDialog : public FWindow
     };
 
     // Constructors
-    explicit FDialog (FWidget* = 0);
-    explicit FDialog (const FString&, FWidget* = 0);
+    explicit FDialog (FWidget* = nullptr);
+    explicit FDialog (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FDialog (const FDialog&) = delete;
     // Destructor
@@ -229,12 +229,12 @@ class FDialog : public FWindow
     FPoint              titlebar_click_pos{};
     FPoint              resize_click_pos{};
     FRect               save_geometry{};  // required by keyboard move/size
-    FMenu*              dialog_menu{0};
-    FMenuItem*          dgl_menuitem{0};
-    FMenuItem*          move_size_item{0};
-    FMenuItem*          zoom_item{0};
-    FMenuItem*          close_item{0};
-    FToolTip*           tooltip{0};
+    FMenu*              dialog_menu{nullptr};
+    FMenuItem*          dgl_menuitem{nullptr};
+    FMenuItem*          move_size_item{nullptr};
+    FMenuItem*          zoom_item{nullptr};
+    FMenuItem*          close_item{nullptr};
+    FToolTip*           tooltip{nullptr};
 
     // Friend function from FMenu
     friend void FMenu::hideSuperMenus();

@@ -71,7 +71,7 @@ class FProgressbar : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FProgressbar(FWidget* = 0);
+    explicit FProgressbar(FWidget* = nullptr);
 
     // Destructor
     virtual ~FProgressbar();

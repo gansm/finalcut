@@ -129,7 +129,7 @@ class FListViewItem : public FObject
 
     // Data Members
     FStringList       column_list{};
-    FWidget::data_ptr data_pointer{0};
+    FWidget::data_ptr data_pointer{nullptr};
     FObjectIterator   root{};
     std::size_t       visible_lines{1};
     bool              expandable{false};
@@ -272,7 +272,7 @@ class FListView : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FListView (FWidget* = 0);
+    explicit FListView (FWidget* = nullptr);
     // Disable copy constructor
     FListView (const FListView&) = delete;
     // Destructor
@@ -315,14 +315,14 @@ class FListView : public FWidget
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
-                                , data_ptr = 0 );
+                                , data_ptr = nullptr );
     FObjectIterator      insert ( const FStringList&
                                 , FObjectIterator );
     FObjectIterator      insert ( const FStringList&
                                 , data_ptr
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
-                                , data_ptr = 0 );
+                                , data_ptr = nullptr );
     FObjectIterator      insert ( const std::vector<long>&
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
@@ -428,8 +428,8 @@ class FListView : public FWidget
     FListViewIterator    last_visible_line{};
     headerItems          header{};
     FTermBuffer          headerline{};
-    FScrollbar*          vbar{0};
-    FScrollbar*          hbar{0};
+    FScrollbar*          vbar{nullptr};
+    FScrollbar*          hbar{nullptr};
     fc::dragScroll       drag_scroll{fc::noScroll};
     int                  scroll_repeat{100};
     int                  scroll_distance{1};
@@ -439,15 +439,15 @@ class FListView : public FWidget
     bool                 has_checkable_items{false};
     FPoint               clicked_expander_pos{-1, -1};
     FPoint               clicked_header_pos{-1, -1};
-    const FListViewItem* clicked_checkbox_item{0};
+    const FListViewItem* clicked_checkbox_item{nullptr};
     int                  xoffset{0};
     std::size_t          nf_offset{0};
     std::size_t          max_line_width{1};
     int                  sort_column{-1};
     sortTypes            sort_type{};
     fc::sorting_order    sort_order{fc::unsorted};
-    bool (*user_defined_ascending) (const FObject*, const FObject*){0};
-    bool (*user_defined_descending) (const FObject*, const FObject*){0};
+    bool (*user_defined_ascending) (const FObject*, const FObject*){nullptr};
+    bool (*user_defined_descending) (const FObject*, const FObject*){nullptr};
 
     // Friend class
     friend class FListViewItem;

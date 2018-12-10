@@ -34,7 +34,7 @@ namespace finalcut
 {
 
 // global FVTerm object
-static FVTerm* init_object = 0;
+static FVTerm* init_object = nullptr;
 
 // static class attributes
 bool                 FVTerm::terminal_update_complete;
@@ -47,14 +47,14 @@ uInt                 FVTerm::repeat_char_length;
 uInt                 FVTerm::clr_bol_length;
 uInt                 FVTerm::clr_eol_length;
 uInt                 FVTerm::cursor_address_length;
-std::queue<int>*     FVTerm::output_buffer = 0;
-FPoint*              FVTerm::term_pos      = 0;
-FTerm*               FVTerm::fterm         = 0;
-FVTerm::term_area*   FVTerm::vterm         = 0;
-FVTerm::term_area*   FVTerm::vdesktop      = 0;
-FVTerm::term_area*   FVTerm::active_area   = 0;
-FTermcap::tcap_map*  FVTerm::tcap          = 0;
-FKeyboard*           FVTerm::keyboard      = 0;
+std::queue<int>*     FVTerm::output_buffer = nullptr;
+FPoint*              FVTerm::term_pos      = nullptr;
+FTerm*               FVTerm::fterm         = nullptr;
+FVTerm::term_area*   FVTerm::vterm         = nullptr;
+FVTerm::term_area*   FVTerm::vdesktop      = nullptr;
+FVTerm::term_area*   FVTerm::active_area   = nullptr;
+FTermcap::tcap_map*  FVTerm::tcap          = nullptr;
+FKeyboard*           FVTerm::keyboard      = nullptr;
 FVTerm::charData     FVTerm::term_attribute;
 FVTerm::charData     FVTerm::next_attribute;
 FVTerm::charData     FVTerm::s_ch;
@@ -790,17 +790,17 @@ void FVTerm::removeArea (term_area*& area)
     if ( area->changes != 0 )
     {
       delete[] area->changes;
-      area->changes = 0;
+      area->changes = nullptr;
     }
 
     if ( area->text != 0 )
     {
       delete[] area->text;
-      area->text = 0;
+      area->text = nullptr;
     }
 
     delete area;
-    area = 0;
+    area = nullptr;
   }
 }
 
@@ -1972,8 +1972,8 @@ void FVTerm::flush_out()
 void FVTerm::init (bool disable_alt_screen)
 {
   init_object = this;
-  vterm       = 0;
-  vdesktop    = 0;
+  vterm       = nullptr;
+  vdesktop    = nullptr;
 
   try
   {

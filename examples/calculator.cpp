@@ -43,7 +43,7 @@ class Button : public finalcut::FButton
 {
   public:
     // Constructor
-    explicit Button (FWidget* = 0);
+    explicit Button (FWidget* = nullptr);
 
     // Method
     void setChecked(bool);
@@ -111,7 +111,7 @@ class Calc : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Calc (finalcut::FWidget* parent = 0);
+    explicit Calc (finalcut::FWidget* parent = nullptr);
 
     // Destructor
     ~Calc();

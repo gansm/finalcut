@@ -183,7 +183,7 @@ void FMenu::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FMenu::onMouseDown (FMouseEvent* ev)
 {
-  shown_sub_menu = 0;
+  shown_sub_menu = nullptr;
 
   if ( ev->getButton() != fc::LeftButton )
   {
@@ -269,7 +269,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
     isMouseOverMenuBar (ev->getTermPos())
   };
 
-  shown_sub_menu = 0;
+  shown_sub_menu = nullptr;
 
   // Mouse pointer over an entry in the menu list
   mouseMoveOverList (ev->getPos(), ms);
@@ -611,7 +611,7 @@ void FMenu::closeOpenedSubMenu()
 
   opened_sub_menu->hideSubMenus();
   opened_sub_menu->hide();
-  opened_sub_menu = 0;
+  opened_sub_menu = nullptr;
 }
 
 //----------------------------------------------------------------------
@@ -622,7 +622,7 @@ void FMenu::hideSubMenus()
   {
     opened_sub_menu->hideSubMenus();
     opened_sub_menu->hide();
-    opened_sub_menu = 0;
+    opened_sub_menu = nullptr;
   }
 
   unselectItem();

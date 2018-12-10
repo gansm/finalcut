@@ -149,7 +149,7 @@ all: dep $(OBJS)
 $(LIB): all
 
 debug:
-	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wpadded -Wno-c++98-compat -Wno-implicit-fallthrough -Wno-reserved-id-macro"
+	$(MAKE) $(MAKEFILE) DEBUG="-g -D DEBUG -Wall -Wextra -Wpedantic -Weverything -Wpadded -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-implicit-fallthrough -Wno-reserved-id-macro"
 
 profile:
 	$(MAKE) $(MAKEFILE) PROFILE="-pg"

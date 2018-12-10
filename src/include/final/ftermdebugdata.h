@@ -71,8 +71,8 @@ class FTermDebugData
 
   private:
     // Data Members
-    FTermDetection* term_detection{0};
-    FTermData*      data{0};
+    FTermDetection* term_detection{nullptr};
+    FTermData*      data{nullptr};
 };
 
 // FTermDebugData inline functions

@@ -77,7 +77,7 @@ class FTextView : public FWidget
     using FWidget::setGeometry;
 
     // Constructor
-    explicit FTextView (FWidget* = 0);
+    explicit FTextView (FWidget* = nullptr);
     // Disable copy constructor
     FTextView (const FTextView&) = delete;
     // Destructor
@@ -145,8 +145,8 @@ class FTextView : public FWidget
 
     // Data Members
     FStringList        data{};
-    FScrollbar*        vbar{0};
-    FScrollbar*        hbar{0};
+    FScrollbar*        vbar{nullptr};
+    FScrollbar*        hbar{nullptr};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};

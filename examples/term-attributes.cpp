@@ -34,7 +34,7 @@ class AttribDlg : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit AttribDlg (finalcut::FWidget* = 0);
+    explicit AttribDlg (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     AttribDlg (const AttribDlg&) = delete;
     // Destructor
@@ -49,8 +49,8 @@ class AttribDlg : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_next (finalcut::FWidget* = 0, data_ptr = 0);
-    void cb_back (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_next (finalcut::FWidget* = nullptr, data_ptr = nullptr);
+    void cb_back (finalcut::FWidget* = nullptr, data_ptr = nullptr);
 
     // Data Members
     FColor bgcolor;
@@ -185,7 +185,7 @@ class AttribDemo : public finalcut::FWidget
 {
   public:
     // Constructor
-    explicit AttribDemo (FWidget* = 0);
+    explicit AttribDemo (FWidget* = nullptr);
 
     // Destructor
     ~AttribDemo()

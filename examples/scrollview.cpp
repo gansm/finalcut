@@ -34,7 +34,7 @@ class Scrollview : public finalcut::FScrollView
 {
   public:
     // Constructor
-    explicit Scrollview (finalcut::FWidget* = 0);
+    explicit Scrollview (finalcut::FWidget* = nullptr);
     // Disable copy constructor
     Scrollview (const Scrollview&) = delete;
     // Destructor
@@ -189,7 +189,7 @@ class Scrollviewdemo : public finalcut::FDialog
 {
   public:
     // Constructor
-    explicit Scrollviewdemo (finalcut::FWidget* = 0);
+    explicit Scrollviewdemo (finalcut::FWidget* = nullptr);
 
     // Destructor
     ~Scrollviewdemo();
@@ -198,7 +198,7 @@ class Scrollviewdemo : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_quit (finalcut::FWidget* = 0, data_ptr = 0);
+    void cb_quit (finalcut::FWidget* = nullptr, data_ptr = nullptr);
 
     // Data Members
     Scrollview sview{this};

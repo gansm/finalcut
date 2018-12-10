@@ -31,17 +31,17 @@ namespace finalcut
 {
 
 // global FWidget object
-static FWidget* rootObject = 0;
+static FWidget* rootObject = nullptr;
 
 // static class attributes
-FStatusBar*          FWidget::statusbar          = 0;
-FMenuBar*            FWidget::menubar            = 0;
-FWidget*             FWidget::show_root_widget   = 0;
-FWidget*             FWidget::redraw_root_widget = 0;
-FWidget::widgetList* FWidget::window_list        = 0;
-FWidget::widgetList* FWidget::dialog_list        = 0;
-FWidget::widgetList* FWidget::always_on_top_list = 0;
-FWidget::widgetList* FWidget::close_widget       = 0;
+FStatusBar*          FWidget::statusbar          = nullptr;
+FMenuBar*            FWidget::menubar            = nullptr;
+FWidget*             FWidget::show_root_widget   = nullptr;
+FWidget*             FWidget::redraw_root_widget = nullptr;
+FWidget::widgetList* FWidget::window_list        = nullptr;
+FWidget::widgetList* FWidget::dialog_list        = nullptr;
+FWidget::widgetList* FWidget::always_on_top_list = nullptr;
+FWidget::widgetList* FWidget::close_widget       = nullptr;
 FWidgetColors        FWidget::wc;
 bool                 FWidget::init_desktop;
 bool                 FWidget::hideable;
@@ -73,10 +73,10 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
           && "FTerm: There should be only one root object" );
 
     rootObject = this;
-    show_root_widget = 0;
-    redraw_root_widget = 0;
+    show_root_widget = nullptr;
+    redraw_root_widget = nullptr;
     modal_dialogs = 0;
-    statusbar = 0;
+    statusbar = nullptr;
     init();
   }
   else
@@ -1017,7 +1017,7 @@ void FWidget::redraw()
   {
     updateTerminal();
     flush_out();
-    redraw_root_widget = 0;
+    redraw_root_widget = nullptr;
   }
 }
 
@@ -1094,7 +1094,7 @@ void FWidget::show()
     finishTerminalUpdate();
     updateTerminal();
     flush_out();
-    show_root_widget = 0;
+    show_root_widget = nullptr;
   }
 
   FShowEvent show_ev (fc::Show_Event);
@@ -1669,7 +1669,7 @@ bool FWidget::focusNextChild()
       continue;
     }
 
-    FWidget* next = 0;
+    FWidget* next = nullptr;
     constFObjectIterator next_element;
     next_element = iter;
 
@@ -1730,7 +1730,7 @@ bool FWidget::focusPrevChild()
     if ( w != this )
       continue;
 
-    FWidget* prev = 0;
+    FWidget* prev = nullptr;
     constFObjectIterator prev_element;
     prev_element = iter;
 
@@ -1979,30 +1979,30 @@ void FWidget::init()
 void FWidget::finish()
 {
   delete accelerator_list;
-  accelerator_list = 0;
+  accelerator_list = nullptr;
 
   if ( close_widget )
   {
     delete close_widget;
-    close_widget = 0;
+    close_widget = nullptr;
   }
 
   if ( dialog_list )
   {
     delete dialog_list;
-    dialog_list = 0;
+    dialog_list = nullptr;
   }
 
   if ( always_on_top_list )
   {
     delete always_on_top_list;
-    always_on_top_list = 0;
+    always_on_top_list = nullptr;
   }
 
   if ( window_list )
   {
     delete window_list;
-    window_list = 0;
+    window_list = nullptr;
   }
 }
 

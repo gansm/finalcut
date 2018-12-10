@@ -166,7 +166,7 @@ class FWidget : public FVTerm, public FObject
     };
 
     // Constructor
-    explicit FWidget (FWidget* = 0, bool = false);
+    explicit FWidget (FWidget* = nullptr, bool = false);
     // Disable copy constructor
     FWidget (const FWidget&) = delete;
     // Destructor
@@ -305,11 +305,11 @@ class FWidget : public FVTerm, public FObject
     void               clearStatusbarMessage();
     void               addCallback ( const FString&
                                    , FCallback
-                                   , data_ptr = null );
+                                   , data_ptr = nullptr );
     void               addCallback ( const FString&
                                    , FWidget*
                                    , FMemberCallback
-                                   , data_ptr = null );
+                                   , data_ptr = nullptr );
     void               delCallback (FCallback);
     void               delCallback (FWidget*);
     void               delCallbacks();
@@ -338,7 +338,7 @@ class FWidget : public FVTerm, public FObject
 
     // Data Members
     static widgetList* window_list;
-    Accelerators*      accelerator_list{0};
+    Accelerators*      accelerator_list{nullptr};
 
   protected:
     struct callback_data

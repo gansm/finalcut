@@ -77,7 +77,7 @@ class FMenuBar : public FWindow, public FMenuList
 {
   public:
     // Constructor
-    explicit FMenuBar (FWidget* = 0);
+    explicit FMenuBar (FWidget* = nullptr);
     // Disable copy constructor
     FMenuBar (const FMenuBar&) = delete;
     // Destructor

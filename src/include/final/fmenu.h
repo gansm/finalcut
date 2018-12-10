@@ -78,8 +78,8 @@ class FMenu : public FWindow, public FMenuList
 {
   public:
     // Constructor
-    explicit FMenu (FWidget* = 0);
-    explicit FMenu (const FString&, FWidget* = 0);
+    explicit FMenu (FWidget* = nullptr);
+    explicit FMenu (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FMenu (const FMenu&) = delete;
     // Destructor
@@ -230,9 +230,9 @@ class FMenu : public FWindow, public FMenuList
 
     // Data Members
     FMenuItem    item{};
-    FWidget*     super_menu{0};
-    FMenu*       opened_sub_menu{0};
-    FMenu*       shown_sub_menu{0};
+    FWidget*     super_menu{nullptr};
+    FMenu*       opened_sub_menu{nullptr};
+    FMenu*       shown_sub_menu{nullptr};
     std::size_t  max_item_width{0};
     std::size_t  hotkeypos{NOT_SET};
     bool         mouse_down{false};

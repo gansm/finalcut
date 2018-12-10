@@ -75,8 +75,8 @@ class FToolTip : public FWindow
 {
   public:
     // Constructor
-    explicit FToolTip (FWidget* = 0);
-    explicit FToolTip (const FString&, FWidget* = 0);
+    explicit FToolTip (FWidget* = nullptr);
+    explicit FToolTip (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FToolTip (const FToolTip&) = delete;
     // Destructor
@@ -108,7 +108,7 @@ class FToolTip : public FWindow
 
     // Data Members
     FString       text{};
-    FString*      text_components{0};
+    FString*      text_components{nullptr};
     FStringList   text_split{};
     std::size_t   max_line_width{0};
     std::size_t   text_num_lines{0};

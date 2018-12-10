@@ -45,7 +45,7 @@ FScrollView::~FScrollView()  // destructor
   delete vbar;
   delete hbar;
   removeArea (viewport);
-  child_print_area = viewport = 0;
+  child_print_area = viewport = nullptr;
 }
 
 
@@ -600,7 +600,7 @@ FVTerm::term_area* FScrollView::getPrintArea()
 
   if ( use_own_print_area || ! viewport )
   {
-    child_print_area = 0;
+    child_print_area = nullptr;
     term_area* area = FWidget::getPrintArea();
     child_print_area = viewport;
     return area;
@@ -984,7 +984,7 @@ void FScrollView::cb_HBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 inline void FScrollView::redrawHBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( hbar->isVisible() )
     hbar->redraw();
@@ -995,7 +995,7 @@ inline void FScrollView::redrawHBar()
 //----------------------------------------------------------------------
 inline void FScrollView::redrawVBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( vbar->isVisible() )
     vbar->redraw();
@@ -1006,7 +1006,7 @@ inline void FScrollView::redrawVBar()
 //----------------------------------------------------------------------
 inline void FScrollView::drawHBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( hbar->isVisible() )
     hbar->drawBar();
@@ -1017,7 +1017,7 @@ inline void FScrollView::drawHBar()
 //----------------------------------------------------------------------
 inline void FScrollView::drawVBar()
 {
-  child_print_area = 0;
+  child_print_area = nullptr;
 
   if ( vbar->isVisible() )
     vbar->drawBar();

@@ -99,7 +99,7 @@ void FRectTest::classNameTest()
 //----------------------------------------------------------------------
 void FRectTest::noArgumentTest()
 {
-  const finalcut::FRect rectangle;
+  const finalcut::FRect rectangle{};
   CPPUNIT_ASSERT ( rectangle.getX1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getY1() == 0 );
   CPPUNIT_ASSERT ( rectangle.getX2() == -1 );
@@ -299,8 +299,8 @@ void FRectTest::equalTest()
   CPPUNIT_ASSERT ( r1 == r2 );
   CPPUNIT_ASSERT ( finalcut::FRect(1, 2, 10, 20) == r2 );
   CPPUNIT_ASSERT ( r1 == finalcut::FRect(1, 2, 10, 20) );
-  const finalcut::FRect r3;
-  const finalcut::FRect r4;
+  const finalcut::FRect r3{};
+  const finalcut::FRect r4{};
   CPPUNIT_ASSERT ( r3 == r4 );
 }
 

@@ -92,7 +92,7 @@ inline const FString& emptyFString::get()
 inline void emptyFString::clear()
 {
   delete empty_string;
-  empty_string = 0;
+  empty_string = nullptr;
 }
 
 }  // namespace fc

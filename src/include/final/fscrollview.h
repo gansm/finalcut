@@ -75,7 +75,7 @@ class FScrollView : public FWidget
     using FWidget::setPos;
 
     // Constructor
-    explicit FScrollView (FWidget* = 0);
+    explicit FScrollView (FWidget* = nullptr);
     // Disable copy constructor
     FScrollView (const FScrollView&) = delete;
     // Destructor
@@ -176,9 +176,9 @@ class FScrollView : public FWidget
     // Data Members
     FRect             scroll_geometry{1, 1, 1, 1};
     FRect             viewport_geometry{};
-    term_area*        viewport{0};  // virtual scroll content
-    FScrollbar*       vbar{0};
-    FScrollbar*       hbar{0};
+    term_area*        viewport{nullptr};  // virtual scroll content
+    FScrollbar*       vbar{nullptr};
+    FScrollbar*       hbar{nullptr};
     uInt8             nf_offset{0};
     bool              border{true};
     bool              use_own_print_area{false};

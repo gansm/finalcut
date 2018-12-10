@@ -82,9 +82,9 @@ class FMenuItem : public FWidget
     using FWidget::setEnable;
 
     // Constructor
-    explicit FMenuItem (FWidget* = 0);
-    explicit FMenuItem (const FString&, FWidget* = 0);
-    FMenuItem (FKey, const FString&, FWidget* = 0);
+    explicit FMenuItem (FWidget* = nullptr);
+    explicit FMenuItem (const FString&, FWidget* = nullptr);
+    FMenuItem (FKey, const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FMenuItem (const FMenuItem&) = delete;
     // Destructor
@@ -159,9 +159,9 @@ class FMenuItem : public FWidget
     std::size_t  text_length{0};
     uChar        hotkey{0};
     FKey         accel_key{0};
-    FMenu*       menu{0};
-    FWidget*     super_menu{0};
-    FDialog*     associated_window{0};
+    FMenu*       menu{nullptr};
+    FWidget*     super_menu{nullptr};
+    FDialog*     associated_window{nullptr};
 
   private:
     // Accessor

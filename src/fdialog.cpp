@@ -53,9 +53,9 @@ FDialog::~FDialog()  // destructor
   FApplication* fapp = static_cast<FApplication*>(getRootWidget());
   bool is_quit = fapp->isQuit();
   delete dialog_menu;
-  dgl_menuitem = 0;
+  dgl_menuitem = nullptr;
   delete accelerator_list;
-  accelerator_list = 0;
+  accelerator_list = nullptr;
 
   if ( ! is_quit )
     switchToPrevWindow(this);
@@ -779,7 +779,7 @@ void FDialog::draw()
   if ( tooltip && ! getMoveSizeWidget() )
   {
     delete tooltip;
-    tooltip = 0;
+    tooltip = nullptr;
   }
 
   // Fill the background
@@ -1623,7 +1623,7 @@ inline void FDialog::acceptMoveSize()
   if ( tooltip )
     delete tooltip;
 
-  tooltip = 0;
+  tooltip = nullptr;
   redraw();
 }
 
@@ -1635,7 +1635,7 @@ inline void FDialog::cancelMoveSize()
   if ( tooltip )
     delete tooltip;
 
-  tooltip = 0;
+  tooltip = nullptr;
   setPos (save_geometry.getPos());
 
   if ( isResizeable() )

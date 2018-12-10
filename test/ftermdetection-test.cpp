@@ -436,7 +436,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
 #pragma pack(pop)
 
 // static class attributes
-bool* FTermDetectionTest::shared_state = 0;
+bool* FTermDetectionTest::shared_state = nullptr;
 
 //----------------------------------------------------------------------
 FTermDetectionTest::FTermDetectionTest()

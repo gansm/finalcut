@@ -427,12 +427,12 @@ class FVTerm
                            ;
 
     // Data Members
-    static        term_area* vterm;        // virtual terminal
-    static        term_area* vdesktop;     // virtual desktop
-    static        term_area* active_area;  // active area
-    term_area*    print_area{0};           // print area for this object
-    term_area*    child_print_area{0};     // print area for children
-    term_area*    vwin{0};                 // virtual window
+    static     term_area* vterm;           // virtual terminal
+    static     term_area* vdesktop;        // virtual desktop
+    static     term_area* active_area;     // active area
+    term_area* print_area{nullptr};        // print area for this object
+    term_area* child_print_area{nullptr};  // print area for children
+    term_area* vwin{nullptr};              // virtual window
 
   private:
     // Typedef and Enumeration
@@ -536,20 +536,20 @@ struct FVTerm::term_area  // define virtual terminal character properties
     // Disable assignment operator (=)
     term_area& operator = (const term_area&) = delete;
 
-    int offset_left{0};      // Distance from left terminal side
-    int offset_top{0};       // Distance from top of the terminal
-    int width{-1};           // Window width
-    int height{-1};          // Window height
-    int right_shadow{0};     // Right window shadow
-    int bottom_shadow{0};    // Bottom window shadow
-    int cursor_x{0};         // X-position for the next write operation
-    int cursor_y{0};         // Y-position for the next write operation
-    int input_cursor_x{-1};  // X-position input cursor
-    int input_cursor_y{-1};  // Y-position input cursor
-    FWidget* widget{};       // Widget that owns this term_area
+    int offset_left{0};        // Distance from left terminal side
+    int offset_top{0};         // Distance from top of the terminal
+    int width{-1};             // Window width
+    int height{-1};            // Window height
+    int right_shadow{0};       // Right window shadow
+    int bottom_shadow{0};      // Bottom window shadow
+    int cursor_x{0};           // X-position for the next write operation
+    int cursor_y{0};           // Y-position for the next write operation
+    int input_cursor_x{-1};    // X-position input cursor
+    int input_cursor_y{-1};    // Y-position input cursor
+    FWidget* widget{nullptr};  // Widget that owns this term_area
     FPreprocessing preprocessing_call{};
-    line_changes* changes{0};
-    charData* text{0};       // Text data for the output
+    line_changes* changes{nullptr};
+    charData* text{nullptr};   // Text data for the output
     bool input_cursor_visible{false};
     bool has_changes{false};
     bool visible{false};

@@ -448,7 +448,7 @@ FString FString::clear()
 
   length  = 0;
   bufsize = 0;
-  string  = 0;
+  string  = nullptr;
   return *this;
 }
 
@@ -876,7 +876,7 @@ FStringList FString::split (const FString& delimiter)
   if ( ! (string && *string) )
     return string_list;
 
-  rest = 0;
+  rest = nullptr;
   token = extractToken(&rest, s.string, delimiter.wc_str());
 
   while ( token )
@@ -1628,7 +1628,7 @@ inline char* FString::wc_to_c_str (const wchar_t s[]) const
   if ( mblength == -1 && errno != EILSEQ )
   {
     delete[](c_string);
-    c_string = 0;
+    c_string = nullptr;
     return const_cast<char*>("");
   }
 

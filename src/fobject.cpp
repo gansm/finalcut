@@ -27,8 +27,8 @@ namespace finalcut
 
 // static class attributes
 bool                FObject::timer_modify_lock;
-FObject::TimerList* FObject::timer_list = 0;
-const FString* fc::emptyFString::empty_string = 0;
+FObject::TimerList* FObject::timer_list = nullptr;
+const FString* fc::emptyFString::empty_string = nullptr;
 
 //----------------------------------------------------------------------
 // class FObject
@@ -71,7 +71,7 @@ FObject::~FObject()  // destructor
   if ( ! has_parent && timer_list )
   {
     delete timer_list;
-    timer_list = 0;
+    timer_list = nullptr;
   }
 
   if ( ! has_parent && ! fc::emptyFString::isNull() )
@@ -80,22 +80,16 @@ FObject::~FObject()  // destructor
   // Delete children objects
   if ( hasChildren() )
   {
-    constFObjectIterator iter, last;
-    FObjectList delete_list = children_list;
-    iter = delete_list.begin();
-    last = delete_list.end();
+    auto delete_list = children_list;
 
-    while ( iter != last )
-    {
-      delete *iter;
-      ++iter;
-    }
+    for (auto&& obj : delete_list)
+      delete obj;
   }
 
   if ( parent_obj )
     parent_obj->delChild(this);
 
-  parent_obj = 0;
+  parent_obj = nullptr;
 }
 
 // public methods of FObject
@@ -110,8 +104,7 @@ FObject* FObject::getChild (int index) const
   if ( index <= 0 || index > numOfChildren() )
     return 0;
 
-  constFObjectIterator iter;
-  iter = begin();
+  auto iter = begin();
   std::advance (iter, index - 1);
   return *iter;
 }
@@ -121,7 +114,7 @@ bool FObject::isChild (FObject* obj) const
 {
   // Find out if obj is a child object of mine
 
-  FObject* p_obj = 0;
+  FObject* p_obj = nullptr;
 
   while ( obj && (p_obj = obj->getParent()) )
   {
@@ -169,7 +162,7 @@ void FObject::delChild (FObject* obj)
 
   if ( hasChildren() )
   {
-    obj->parent_obj = 0;
+    obj->parent_obj = nullptr;
     obj->has_parent = false;
     children_list.remove(obj);
   }
@@ -233,7 +226,6 @@ int FObject::addTimer (int interval)
   // Create a timer and returns the timer identifier number
   // (interval in ms)
 
-  FObject::TimerList::iterator iter, last;
   timeval time_interval;
   timeval currentTime;
   int id = 1;
@@ -242,8 +234,8 @@ int FObject::addTimer (int interval)
   // find an unused timer id
   if ( ! timer_list->empty() )
   {
-    iter = timer_list->begin();
-    last = timer_list->end();
+    auto iter = timer_list->begin();
+    auto last = timer_list->end();
 
     while ( iter != last )
     {
@@ -267,8 +259,8 @@ int FObject::addTimer (int interval)
   timer_data t = { id, time_interval, timeout, this };
 
   // insert in list sorted by timeout
-  iter = timer_list->begin();
-  last = timer_list->end();
+  auto iter = timer_list->begin();
+  auto last = timer_list->end();
 
   while ( iter != last && iter->timeout < t.timeout )
     ++iter;
@@ -284,14 +276,12 @@ bool FObject::delTimer (int id)
 {
   // Deletes a timer by using the timer identifier number
 
-  FObject::TimerList::iterator iter, last;
-
   if ( id <= 0 )
     return false;
 
   timer_modify_lock = true;
-  iter = timer_list->begin();
-  last = timer_list->end();
+  auto iter = timer_list->begin();
+  auto last = timer_list->end();
 
   while ( iter != last && iter->id != id )
     ++iter;
@@ -312,8 +302,6 @@ bool FObject::delOwnTimer()
 {
   // Deletes all timers of this object
 
-  FObject::TimerList::iterator iter;
-
   if ( ! timer_list )
     return false;
 
@@ -321,7 +309,7 @@ bool FObject::delOwnTimer()
     return false;
 
   timer_modify_lock = true;
-  iter = timer_list->begin();
+  auto iter = timer_list->begin();
 
   while ( iter != timer_list->end() )
   {
@@ -375,7 +363,6 @@ void FObject::onTimer (FTimerEvent*)
 //----------------------------------------------------------------------
 uInt FObject::processTimerEvent()
 {
-  FObject::TimerList::iterator iter, last;
   timeval currentTime;
   uInt activated = 0;
 
@@ -390,27 +377,23 @@ uInt FObject::processTimerEvent()
   if ( timer_list->empty() )
     return 0;
 
-  iter = timer_list->begin();
-  last  = timer_list->end();
-
-  while ( iter != last )
+  for (auto&& timer : *timer_list)
   {
-    if ( ! iter->id
-      || ! iter->object
-      || currentTime < iter->timeout )  // no timer expired
+    if ( ! timer.id
+      || ! timer.object
+      || currentTime < timer.timeout )  // no timer expired
       break;
 
-    iter->timeout += iter->interval;
+    timer.timeout += timer.interval;
 
-    if ( iter->timeout < currentTime )
-      iter->timeout = currentTime + iter->interval;
+    if ( timer.timeout < currentTime )
+      timer.timeout = currentTime + timer.interval;
 
-    if ( iter->interval.tv_usec > 0 || iter->interval.tv_sec > 0 )
+    if ( timer.interval.tv_usec > 0 || timer.interval.tv_sec > 0 )
       activated++;
 
-    FTimerEvent t_ev(fc::Timer_Event, iter->id);
-    performTimerAction (iter->object, &t_ev);
-    ++iter;
+    FTimerEvent t_ev(fc::Timer_Event, timer.id);
+    performTimerAction (timer.object, &t_ev);
   }
 
   return activated;

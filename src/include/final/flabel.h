@@ -73,8 +73,8 @@ class FLabel : public FWidget
     using FWidget::setEnable;
 
     // Constructor
-    explicit FLabel (FWidget* = 0);
-    explicit FLabel (const FString&, FWidget* = 0);
+    explicit FLabel (FWidget* = nullptr);
+    explicit FLabel (const FString&, FWidget* = nullptr);
     // Disable copy constructor
     FLabel (const FLabel&) = delete;
     // Destructor
@@ -104,7 +104,7 @@ class FLabel : public FWidget
     FString&           getText();
 
     // Mutators
-    void               setAccelWidget (FWidget* = 0);
+    void               setAccelWidget (FWidget* = nullptr);
     void               setAlignment(fc::text_alignment);
     bool               setEmphasis(bool);
     bool               setEmphasis();
@@ -160,7 +160,7 @@ class FLabel : public FWidget
     FColor             ellipsis_color{wc.label_ellipsis_fg};
     bool               emphasis{false};
     bool               reverse_mode{false};
-    FWidget*           accel_widget{0};
+    FWidget*           accel_widget{nullptr};
 };
 #pragma pack(pop)
 
