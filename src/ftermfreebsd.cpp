@@ -111,7 +111,7 @@ void FTermFreeBSD::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
   if ( ! isFreeBSDConsole() )
     return;
 
-  for (int i = 0; i <= fc::lastCharItem; i++)
+  for (std::size_t i = 0; i <= fc::lastCharItem; i++)
     if ( char_map[i][fc::PC] < 0x1c )
       char_map[i][fc::PC] = char_map[i][fc::ASCII];
 }

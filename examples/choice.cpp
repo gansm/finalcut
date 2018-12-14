@@ -34,7 +34,7 @@ void preset (std::vector<finalcut::FRadioButton*>&);
 //----------------------------------------------------------------------
 void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  finalcut::FDialog* dlg = static_cast<finalcut::FDialog*>(data);
+  auto dlg = static_cast<finalcut::FDialog*>(data);
   dlg->close();
 }
 

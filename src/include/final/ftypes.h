@@ -34,7 +34,7 @@
 #include <limits>
 #include <string>
 
-#define null NULL
+#define null nullptr
 
 namespace
 {

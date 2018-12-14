@@ -150,7 +150,7 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( o1.getChild(0) == 0 );
   CPPUNIT_ASSERT ( o1.getChild(1) == 0 );
   CPPUNIT_ASSERT ( o1.numOfChildren() == 0 );
-  finalcut::FObject::FObjectList& children_list = o1.getChildren();
+  auto& children_list = o1.getChildren();
   CPPUNIT_ASSERT ( children_list.begin() == o1.begin() );
   CPPUNIT_ASSERT ( children_list.begin() == o1.end() );
   CPPUNIT_ASSERT ( children_list.end() == o1.begin() );
@@ -162,7 +162,7 @@ void FObjectTest::noArgumentTest()
   CPPUNIT_ASSERT ( ! o1.isTimerInUpdating() );
 
   FObject_protected t;
-  finalcut::FEvent* ev = new finalcut::FEvent(finalcut::fc::None_Event);
+  auto ev = new finalcut::FEvent(finalcut::fc::None_Event);
   CPPUNIT_ASSERT ( ! t.event(ev) );
   delete ev;
 
@@ -183,13 +183,13 @@ void FObjectTest::childObjectTest()
   *      -> c4
   */
   finalcut::FObject obj;
-  finalcut::FObject* c1 = new finalcut::FObject(&obj);
-  finalcut::FObject* c2 = new finalcut::FObject(&obj);
-  finalcut::FObject* c3 = new finalcut::FObject(&obj);
-  finalcut::FObject* c4 = new finalcut::FObject(&obj);
-  finalcut::FObject* c5 = new finalcut::FObject(c1);
-  finalcut::FObject* c6 = new finalcut::FObject(c5);
-  finalcut::FObject* c7 = new finalcut::FObject();
+  auto c1 = new finalcut::FObject(&obj);
+  auto c2 = new finalcut::FObject(&obj);
+  auto c3 = new finalcut::FObject(&obj);
+  auto c4 = new finalcut::FObject(&obj);
+  auto c5 = new finalcut::FObject(c1);
+  auto c6 = new finalcut::FObject(c5);
+  auto c7 = new finalcut::FObject();
 
   CPPUNIT_ASSERT ( obj.hasChildren() );
   CPPUNIT_ASSERT ( obj.getChild(0) == 0 );
@@ -222,7 +222,7 @@ void FObjectTest::childObjectTest()
   CPPUNIT_ASSERT ( c2->getChild(1) == 0 );
   CPPUNIT_ASSERT ( c1->numOfChildren() == 1 );
   CPPUNIT_ASSERT ( c2->numOfChildren() == 0 );
-  const finalcut::FObject::FObjectList& children_list2 = c1->getChildren();
+  const auto& children_list2 = c1->getChildren();
   CPPUNIT_ASSERT ( children_list2.begin() == c1->begin() );
   CPPUNIT_ASSERT ( children_list2.begin() != c1->end() );
   CPPUNIT_ASSERT ( children_list2.end() != c1->begin() );
@@ -249,8 +249,8 @@ void FObjectTest::removeParentTest()
 {/*
   *  obj -> child
   */
-  finalcut::FObject* obj =  new finalcut::FObject();
-  finalcut::FObject* child = new finalcut::FObject(obj);
+  auto obj =  new finalcut::FObject();
+  auto child = new finalcut::FObject(obj);
 
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
@@ -276,8 +276,8 @@ void FObjectTest::addTest()
 {/*
   *  obj -> child
   */
-  finalcut::FObject* obj =  new finalcut::FObject();
-  finalcut::FObject* child = new finalcut::FObject();
+  auto obj =  new finalcut::FObject();
+  auto child = new finalcut::FObject();
 
   CPPUNIT_ASSERT ( ! obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 0 );
@@ -302,8 +302,8 @@ void FObjectTest::delTest()
 {/*
   *  obj -> child
   */
-  finalcut::FObject* obj =  new finalcut::FObject();
-  finalcut::FObject* child = new finalcut::FObject(obj);
+  auto obj =  new finalcut::FObject();
+  auto child = new finalcut::FObject(obj);
 
   CPPUNIT_ASSERT ( obj->hasChildren() );
   CPPUNIT_ASSERT ( obj->numOfChildren() == 1 );
@@ -331,10 +331,10 @@ void FObjectTest::iteratorTest()
   *      -> child2
   *      -> child3
   */
-  finalcut::FObject* obj =  new finalcut::FObject();
-  finalcut::FObject* child1 = new finalcut::FObject(obj);
-  finalcut::FObject* child2 = new finalcut::FObject(obj);
-  finalcut::FObject* child3 = new finalcut::FObject(obj);
+  auto obj =  new finalcut::FObject();
+  auto child1 = new finalcut::FObject(obj);
+  auto child2 = new finalcut::FObject(obj);
+  auto child3 = new finalcut::FObject(obj);
 
   CPPUNIT_ASSERT ( child1->getParent() == obj );
   CPPUNIT_ASSERT ( child2->getParent() == obj );

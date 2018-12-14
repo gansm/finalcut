@@ -53,16 +53,14 @@ FButtonGroup::FButtonGroup (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FButtonGroup::~FButtonGroup()  // destructor
 {
-  FObjectIterator iter;
-
   if ( buttonlist.empty() )
     return;
 
-  iter = buttonlist.begin();
+  auto iter = buttonlist.begin();
 
   while ( iter != buttonlist.end() )
   {
-    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
     toggle_button->setGroup(0);
     iter = buttonlist.erase(iter);
   }
@@ -73,14 +71,13 @@ FButtonGroup::~FButtonGroup()  // destructor
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getButton (int index) const
 {
-  constFObjectIterator iter;
   if ( buttonlist.empty() )
     return 0;
 
   if ( index <= 0 || index > int(getCount()) )
     return 0;
 
-  iter = buttonlist.begin();
+  auto iter = buttonlist.begin();
   std::advance (iter, index - 1);
   return static_cast<FToggleButton*>(*iter);
 }
@@ -88,16 +85,16 @@ FToggleButton* FButtonGroup::getButton (int index) const
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getFirstButton()
 {
-  FWidget* widget = FWidget::getFirstFocusableWidget(buttonlist);
-  FToggleButton* toggle_button = static_cast<FToggleButton*>(widget);
+  auto widget = FWidget::getFirstFocusableWidget(buttonlist);
+  auto toggle_button = static_cast<FToggleButton*>(widget);
   return toggle_button;
 }
 
 //----------------------------------------------------------------------
 FToggleButton* FButtonGroup::getLastButton()
 {
-  FWidget* widget = FWidget::getLastFocusableWidget(buttonlist);
-  FToggleButton* toggle_button = static_cast<FToggleButton*>(widget);
+  auto widget = FWidget::getLastFocusableWidget(buttonlist);
+  auto toggle_button = static_cast<FToggleButton*>(widget);
   return toggle_button;
 }
 
@@ -129,7 +126,7 @@ void FButtonGroup::setText (const FString& txt)
 //----------------------------------------------------------------------
 bool FButtonGroup::isChecked (int index) const
 {
-  FToggleButton* button = getButton(index);
+  auto button = getButton(index);
 
   if ( button )
     return button->isChecked();
@@ -143,13 +140,12 @@ bool FButtonGroup::hasFocusedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  constFObjectIterator iter, last;
-  iter = buttonlist.begin();
-  last = buttonlist.end();
+  auto iter = buttonlist.begin();
+  auto last = buttonlist.end();
 
   while ( iter != last )
   {
-    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button->hasFocus() )
       return true;
@@ -166,13 +162,12 @@ bool FButtonGroup::hasCheckedButton() const
   if ( buttonlist.empty() )
     return false;
 
-  constFObjectIterator iter, last;
-  iter = buttonlist.begin();
-  last = buttonlist.end();
+  auto iter = buttonlist.begin();
+  auto last = buttonlist.end();
 
   while ( iter != last )
   {
-    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button->isChecked() )
       return true;
@@ -189,17 +184,16 @@ void FButtonGroup::hide()
   std::size_t size;
   FColor fg, bg;
   FWidget::hide();
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   if ( ! buttonlist.empty() )
   {
-    constFObjectIterator iter, last;
-    iter = buttonlist.begin();
-    last = buttonlist.end();
+    auto iter = buttonlist.begin();
+    auto last = buttonlist.end();
 
     while ( iter != last )
     {
-      FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+      auto toggle_button = static_cast<FToggleButton*>(*iter);
       toggle_button->hide();
       ++iter;
     }
@@ -222,7 +216,7 @@ void FButtonGroup::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getHeight()); y++)
   {
@@ -245,8 +239,7 @@ void FButtonGroup::insert (FToggleButton* button)
   // setChecked the first FRadioButton
   if ( buttonlist.size() == 1 )
   {
-    FToggleButton* first_button;
-    first_button = static_cast<FToggleButton*>(*buttonlist.begin());
+    auto first_button = static_cast<FToggleButton*>(*buttonlist.begin());
 
     if ( isRadioButton(first_button) )
       first_button->setChecked();
@@ -265,16 +258,14 @@ void FButtonGroup::insert (FToggleButton* button)
 //----------------------------------------------------------------------
 void FButtonGroup::remove (FToggleButton* button)
 {
-  FObjectIterator iter;
-
   if ( ! button || buttonlist.empty() )
     return;
 
-  iter = buttonlist.begin();
+  auto iter = buttonlist.begin();
 
   while ( iter != buttonlist.end() )
   {
-    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button == button )
     {
@@ -330,19 +321,18 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 {
   if ( hasCheckedButton() && ! buttonlist.empty() )
   {
-    constFObjectIterator iter, last;
-    iter = buttonlist.begin();
-    last = buttonlist.end();
+    auto iter = buttonlist.begin();
+    auto last = buttonlist.end();
 
     while ( iter != last )
     {
-      FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+      auto toggle_button = static_cast<FToggleButton*>(*iter);
 
       if ( toggle_button->isChecked() )
       {
         if ( isRadioButton(toggle_button) )
         {
-          FWidget* prev_element = getFocusWidget();
+          auto prev_element = getFocusWidget();
           in_ev->ignore();
           toggle_button->setFocus();
 
@@ -368,7 +358,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
   if ( in_ev->isAccepted() )
   {
     in_ev->ignore();
-    FWidget* prev_element = getFocusWidget();
+    auto prev_element = getFocusWidget();
 
     if ( in_ev->getFocusType() == fc::FocusNextWidget )
       focusFirstChild();
@@ -393,8 +383,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 //----------------------------------------------------------------------
 void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
 {
-  FToggleButton* button = static_cast<FToggleButton*>(widget);
-  constFObjectIterator iter, last;
+  auto button = static_cast<FToggleButton*>(widget);
 
   if ( ! button->isChecked() )
     return;
@@ -402,12 +391,12 @@ void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
   if ( buttonlist.empty() )
     return;
 
-  iter = buttonlist.begin();
-  last = buttonlist.end();
+  auto iter = buttonlist.begin();
+  auto last = buttonlist.end();
 
   while ( iter != last )
   {
-    FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+    auto toggle_button = static_cast<FToggleButton*>(*iter);
 
     if ( toggle_button != button
       && toggle_button->isChecked()
@@ -489,7 +478,6 @@ void FButtonGroup::draw()
 void FButtonGroup::drawLabel()
 {
   wchar_t* LabelText;
-  std::size_t hotkeypos;
 
   if ( text.isNull() || text.isEmpty() )
     return;
@@ -510,7 +498,7 @@ void FButtonGroup::drawLabel()
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
   unsetViewportPrint();
-  hotkeypos = getHotkeyPos(src, dest, length);
+  auto hotkeypos = getHotkeyPos(src, dest, length);
 
   if ( hotkeypos != NOT_SET )
     length--;
@@ -617,20 +605,19 @@ void FButtonGroup::directFocus()
 
     if ( hasCheckedButton() && ! buttonlist.empty() )
     {
-      constFObjectIterator iter, last;
-      iter = buttonlist.begin();
-      last = buttonlist.end();
+      auto iter = buttonlist.begin();
+      auto last = buttonlist.end();
 
       while ( iter != last )
       {
-        FToggleButton* toggle_button = static_cast<FToggleButton*>(*iter);
+        auto toggle_button = static_cast<FToggleButton*>(*iter);
 
         if ( toggle_button->isChecked() )
         {
           if ( isRadioButton(toggle_button) )
           {
             found_checked = true;
-            FWidget* focused_widget = getFocusWidget();
+            auto focused_widget = getFocusWidget();
             FFocusEvent out (fc::FocusOut_Event);
             FApplication::queueEvent(focused_widget, &out);
             toggle_button->setFocus();
@@ -653,7 +640,7 @@ void FButtonGroup::directFocus()
 
     if ( ! found_checked )
     {
-      FWidget* focused_widget = getFocusWidget();
+      auto focused_widget = getFocusWidget();
       FFocusEvent out (fc::FocusOut_Event);
       FApplication::queueEvent(focused_widget, &out);
       focusFirstChild();

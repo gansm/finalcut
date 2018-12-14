@@ -1184,15 +1184,8 @@ FMouseControl::FMouseControl()
 //----------------------------------------------------------------------
 FMouseControl::~FMouseControl()  // destructor
 {
-  iter = mouse_protocol.begin();
-
-  while ( iter != mouse_protocol.end() )
-  {
-    if ( iter->second )
-      delete iter->second;
-
-    ++iter;
-  }
+  for (auto&& m : mouse_protocol)
+    delete m.second;
 }
 
 
@@ -1200,7 +1193,7 @@ FMouseControl::~FMouseControl()  // destructor
 //----------------------------------------------------------------------
 FPoint& FMouseControl::getPos()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->getPos();
@@ -1221,8 +1214,8 @@ void FMouseControl::clearEvent()
 #ifdef F_HAVE_LIBGPM
 void FMouseControl::setStdinNo (int file_descriptor)
 {
-  FMouse* mouse = mouse_protocol[FMouse::gpm];
-  FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+  auto mouse = mouse_protocol[FMouse::gpm];
+  auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     gpm_mouse->setStdinNo(file_descriptor);
@@ -1247,15 +1240,9 @@ void FMouseControl::setMaxHeight (short y_max)
 //----------------------------------------------------------------------
 void FMouseControl::setDblclickInterval (const long timeout)
 {
-  iter = mouse_protocol.begin();
-
-  while ( iter != mouse_protocol.end() )
-  {
-    if ( iter->second )
-      iter->second->setDblclickInterval(timeout);
-
-    ++iter;
-  }
+  for (auto&& m : mouse_protocol)
+    if ( m.second )
+      m.second->setDblclickInterval(timeout);
 }
 
 //----------------------------------------------------------------------
@@ -1273,7 +1260,7 @@ void FMouseControl::useXtermMouse (bool on)
 //----------------------------------------------------------------------
 bool FMouseControl::hasData()
 {
-  FMouse* mouse_object = getMouseWithData();
+  auto mouse_object = getMouseWithData();
 
   if ( mouse_object )  // with data
     return true;
@@ -1284,7 +1271,7 @@ bool FMouseControl::hasData()
 //----------------------------------------------------------------------
 bool FMouseControl::hasEvent()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )  // with event
     return true;
@@ -1295,7 +1282,7 @@ bool FMouseControl::hasEvent()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonPressed();
@@ -1306,7 +1293,7 @@ bool FMouseControl::isLeftButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonReleased()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonReleased();
@@ -1317,7 +1304,7 @@ bool FMouseControl::isLeftButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isLeftButtonDoubleClick()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isLeftButtonDoubleClick();
@@ -1328,7 +1315,7 @@ bool FMouseControl::isLeftButtonDoubleClick()
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isRightButtonPressed();
@@ -1339,7 +1326,7 @@ bool FMouseControl::isRightButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isRightButtonReleased()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isRightButtonReleased();
@@ -1350,7 +1337,7 @@ bool FMouseControl::isRightButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMiddleButtonPressed();
@@ -1361,7 +1348,7 @@ bool FMouseControl::isMiddleButtonPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isMiddleButtonReleased()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMiddleButtonReleased();
@@ -1372,7 +1359,7 @@ bool FMouseControl::isMiddleButtonReleased()
 //----------------------------------------------------------------------
 bool FMouseControl::isShiftKeyPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isShiftKeyPressed();
@@ -1383,7 +1370,7 @@ bool FMouseControl::isShiftKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isControlKeyPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isControlKeyPressed();
@@ -1394,7 +1381,7 @@ bool FMouseControl::isControlKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isMetaKeyPressed()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMetaKeyPressed();
@@ -1405,7 +1392,7 @@ bool FMouseControl::isMetaKeyPressed()
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelUp()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isWheelUp();
@@ -1416,7 +1403,7 @@ bool FMouseControl::isWheelUp()
 //----------------------------------------------------------------------
 bool FMouseControl::isWheelDown()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isWheelDown();
@@ -1427,7 +1414,7 @@ bool FMouseControl::isWheelDown()
 //----------------------------------------------------------------------
 bool FMouseControl::isMoved()
 {
-  FMouse* mouse_object = getMouseWithEvent();
+  auto mouse_object = getMouseWithEvent();
 
   if ( mouse_object )
     return mouse_object->isMoved();
@@ -1438,15 +1425,9 @@ bool FMouseControl::isMoved()
 //----------------------------------------------------------------------
 bool FMouseControl::isInputDataPending()
 {
-  iter = mouse_protocol.begin();
-
-  while ( iter != mouse_protocol.end() )
-  {
-    if ( iter->second && iter->second->isInputDataPending() )
+  for (auto&& m : mouse_protocol)
+    if ( m.second && m.second->isInputDataPending() )
       return true;
-
-    ++iter;
-  }
 
   return false;
 }
@@ -1458,8 +1439,8 @@ bool FMouseControl::isGpmMouseEnabled()
   if ( mouse_protocol.empty() )
     return false;
 
-  FMouse* mouse = mouse_protocol[FMouse::gpm];
-  FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+  auto mouse = mouse_protocol[FMouse::gpm];
+  auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->isGpmMouseEnabled();
@@ -1479,8 +1460,8 @@ void FMouseControl::enable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    FMouse* mouse = mouse_protocol[FMouse::gpm];
-    FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+    auto mouse = mouse_protocol[FMouse::gpm];
+    auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       use_gpm_mouse = gpm_mouse->enableGpmMouse();
@@ -1497,8 +1478,8 @@ void FMouseControl::disable()
 #ifdef F_HAVE_LIBGPM
   if ( use_gpm_mouse )
   {
-    FMouse* mouse = mouse_protocol[FMouse::gpm];
-    FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+    auto mouse = mouse_protocol[FMouse::gpm];
+    auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
     if ( gpm_mouse )
       gpm_mouse->disableGpmMouse();
@@ -1513,7 +1494,7 @@ void FMouseControl::disable()
 void FMouseControl::setRawData ( FMouse::mouse_type mt
                                , FKeyboard::keybuffer& fifo_buf)
 {
-  FMouse* mouse = mouse_protocol[mt];
+  auto mouse = mouse_protocol[mt];
 
   if ( mouse )
     mouse->setRawData (fifo_buf);
@@ -1522,7 +1503,7 @@ void FMouseControl::setRawData ( FMouse::mouse_type mt
 //----------------------------------------------------------------------
 void FMouseControl::processEvent (struct timeval* time)
 {
-  FMouse* mouse_object = getMouseWithData();
+  auto mouse_object = getMouseWithData();
   // Clear all old mouse events
   clearEvent();
 
@@ -1537,8 +1518,8 @@ bool FMouseControl::getGpmKeyPressed (bool pending)
   if ( mouse_protocol.empty() )
     return false;
 
-  FMouse* mouse = mouse_protocol[FMouse::gpm];
-  FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+  auto mouse = mouse_protocol[FMouse::gpm];
+  auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     return gpm_mouse->getGpmKeyPressed(pending);
@@ -1559,8 +1540,8 @@ void FMouseControl::drawGpmPointer()
   if ( mouse_protocol.empty() )
     return;
 
-  FMouse* mouse = mouse_protocol[FMouse::gpm];
-  FMouseGPM* gpm_mouse = static_cast<FMouseGPM*>(mouse);
+  auto mouse = mouse_protocol[FMouse::gpm];
+  auto gpm_mouse = static_cast<FMouseGPM*>(mouse);
 
   if ( gpm_mouse )
     gpm_mouse->drawGpmPointer();
@@ -1575,15 +1556,9 @@ void FMouseControl::drawGpmPointer()
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithData()
 {
-  iter = mouse_protocol.begin();
-
-  while ( iter != mouse_protocol.end() )
-  {
-    if ( iter->second && iter->second->hasData() )
-      return iter->second;
-
-    ++iter;
-  }
+  for (auto&& m : mouse_protocol)
+    if ( m.second && m.second->hasData() )
+      return m.second;
 
   return 0;
 }
@@ -1591,15 +1566,9 @@ FMouse* FMouseControl::getMouseWithData()
 //----------------------------------------------------------------------
 FMouse* FMouseControl::getMouseWithEvent()
 {
-  iter = mouse_protocol.begin();
-
-  while ( iter != mouse_protocol.end() )
-  {
-    if ( iter->second && iter->second->hasEvent() )
-      return iter->second;
-
-    ++iter;
-  }
+  for (auto&& m : mouse_protocol)
+    if ( m.second && m.second->hasEvent() )
+      return m.second;
 
   return 0;
 }

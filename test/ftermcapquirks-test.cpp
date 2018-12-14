@@ -230,7 +230,7 @@ void FTermcapQuirksTest::generalTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -297,7 +297,7 @@ void FTermcapQuirksTest::xtermTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -330,7 +330,7 @@ void FTermcapQuirksTest::freebsdTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -369,7 +369,7 @@ void FTermcapQuirksTest::cygwinTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -396,7 +396,7 @@ void FTermcapQuirksTest::linuxTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -470,7 +470,7 @@ void FTermcapQuirksTest::rxvtTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -513,7 +513,7 @@ void FTermcapQuirksTest::vteTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -539,7 +539,7 @@ void FTermcapQuirksTest::puttyTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -631,7 +631,7 @@ void FTermcapQuirksTest::teratermTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -663,7 +663,7 @@ void FTermcapQuirksTest::sunTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;
@@ -686,7 +686,7 @@ void FTermcapQuirksTest::sunTest()
   CPPUNIT_ASSERT_CSTRING ( caps[finalcut::fc::t_parm_left_cursor].string
                          , C_STR(CSI "%p1%dD") );
 
-  for (int i = 0; finalcut::fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; finalcut::fc::Fkey[i].tname[0] != 0; i++)
   {
     if ( std::strncmp(finalcut::fc::Fkey[i].tname, "K2", 2) == 0 )  // center of keypad
       CPPUNIT_ASSERT_CSTRING ( finalcut::fc::Fkey[i].string
@@ -783,7 +783,7 @@ void FTermcapQuirksTest::screenTest()
   finalcut::FTermcap::tcap_map* caps = finalcut::FTermcap::getTermcapMap();
   const int last_item = int(sizeof(test::tcap) / sizeof(test::tcap[0])) - 1;
 
-  for (int i = 0; i < last_item; i++)
+  for (std::size_t i = 0; i < last_item; i++)
     memcpy(&caps[i], &test::tcap[i], sizeof(test::tcap[0]));
 
   finalcut::FTermData data;

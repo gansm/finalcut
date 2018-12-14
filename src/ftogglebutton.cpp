@@ -204,7 +204,7 @@ void FToggleButton::hide()
 {
   std::size_t size;
   FColor fg, bg;
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )
@@ -224,7 +224,7 @@ void FToggleButton::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
   setPrintPos (1, 1);
   print (blank);
   destroyBlankArray (blank);
@@ -239,7 +239,7 @@ void FToggleButton::onMouseDown (FMouseEvent* ev)
   if ( hasFocus() )
     return;
 
-  FWidget* focused_widget = getFocusWidget();
+  auto focused_widget = getFocusWidget();
   FFocusEvent out (fc::FocusOut_Event);
   FApplication::queueEvent(focused_widget, &out);
   setFocus();
@@ -301,7 +301,7 @@ void FToggleButton::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -470,7 +470,6 @@ void FToggleButton::draw()
 void FToggleButton::drawLabel()
 {
   wchar_t* LabelText;
-  std::size_t hotkeypos;
 
   if ( ! isVisible() )
     return;
@@ -493,7 +492,7 @@ void FToggleButton::drawLabel()
   FString txt = text;
   wchar_t* src = const_cast<wchar_t*>(txt.wc_str());
   wchar_t* dest = const_cast<wchar_t*>(LabelText);
-  hotkeypos = getHotkeyPos(src, dest, length);
+  auto hotkeypos = getHotkeyPos(src, dest, length);
 
   if ( hotkeypos != NOT_SET )
     length--;

@@ -38,7 +38,7 @@ bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
 //----------------------------------------------------------------------
 long StringToLong (const finalcut::FString& str)
 {
-  finalcut::FString NumString = str;
+  auto NumString = str;
   NumString = NumString.replace(",", "");
   NumString = NumString.replace('.', "");
   long number = NumString.toLong();
@@ -49,8 +49,8 @@ long StringToLong (const finalcut::FString& str)
 bool sortAscending ( const finalcut::FObject* lhs
                    , const finalcut::FObject* rhs )
 {
-  const finalcut::FListViewItem* l_item = static_cast<const finalcut::FListViewItem*>(lhs);
-  const finalcut::FListViewItem* r_item = static_cast<const finalcut::FListViewItem*>(rhs);
+  const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
+  const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
 
   switch ( column )
@@ -77,8 +77,8 @@ bool sortAscending ( const finalcut::FObject* lhs
 bool sortDescending ( const finalcut::FObject* lhs
                     , const finalcut::FObject* rhs )
 {
-  const finalcut::FListViewItem* l_item = static_cast<const finalcut::FListViewItem*>(lhs);
-  const finalcut::FListViewItem* r_item = static_cast<const finalcut::FListViewItem*>(rhs);
+  const auto& l_item = static_cast<const finalcut::FListViewItem*>(lhs);
+  const auto& r_item = static_cast<const finalcut::FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
 
   switch ( column )
@@ -334,15 +334,14 @@ Treeview::Treeview (finalcut::FWidget* parent)
     { 0, 0, 0, 0 }
   };
 
-  TreeItem* continent_list = continent;
+  auto continent_list = continent;
 
   while ( continent_list->name )
   {
-    TreeItem* country_list = continent_list->child_element;
+    auto country_list = continent_list->child_element;
     finalcut::FStringList continent_line ( continent_list->begin()
                                          , continent_list->end() );
-    finalcut::FListViewIterator::FObjectIterator iter = \
-        listView.insert (continent_line);
+    auto iter = listView.insert (continent_line);
 
     while ( country_list && country_list->name )
     {

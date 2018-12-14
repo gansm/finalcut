@@ -233,7 +233,7 @@ void FLabel::hide()
 {
   FColor fg, bg;
   std::size_t size;
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   FWidget::hide();
 
@@ -254,7 +254,7 @@ void FLabel::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
   setPrintPos (1, 1);
   print (blank);
   destroyBlankArray (blank);
@@ -269,7 +269,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
   if ( ! (isEnabled() && accel_widget) )
   {
     // send click to the parent widget
-    if ( FWidget* parent = getParentWidget() )
+    if ( auto parent = getParentWidget() )
     {
       int b = ev->getButton();
       const FPoint& tp = ev->getTermPos();
@@ -277,7 +277,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
 
       try
       {
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+        auto _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev);
         delete _ev;
       }
@@ -294,7 +294,7 @@ void FLabel::onMouseDown (FMouseEvent* ev)
   if ( ! accel_widget->hasFocus() )
   {
     // focus the accelerator widget
-    FWidget* focused_widget = getFocusWidget();
+    auto focused_widget = getFocusWidget();
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     accel_widget->setFocus();
@@ -321,7 +321,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 
   if ( ! accel_widget->hasFocus() )
   {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -357,7 +357,7 @@ void FLabel::cb_accel_widget_destroyed (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FLabel::init()
 {
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
   unsetFocusable();
 
   if ( parent_widget )
@@ -523,8 +523,8 @@ void FLabel::drawMultiLine()
       return;
     }
 
-    wchar_t* src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
-    wchar_t* dest = const_cast<wchar_t*>(label_text);
+    auto src  = const_cast<wchar_t*>(multiline_text[y].wc_str());
+    auto dest = const_cast<wchar_t*>(label_text);
 
     if ( ! hotkey_printed )
       hotkeypos = getHotkeyPos(src, dest, length);

@@ -198,11 +198,11 @@ void FTermLinux::initCharMap (uInt char_map[][fc::NUM_OF_ENCODINGS])
 
   if ( screen_unicode_map.entry_ct != 0 )
   {
-    for (int i = 0; i <= fc::lastCharItem; i++ )
+    for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     {
       bool known_unicode = false;
 
-      for (uInt n = 0; n < screen_unicode_map.entry_ct; n++)
+      for (std::size_t n = 0; n < screen_unicode_map.entry_ct; n++)
       {
         if ( char_map[i][fc::UTF8] == screen_unicode_map.entries[n].unicode )
         {
@@ -893,7 +893,7 @@ bool FTermLinux::resetVGAPalette()
       {0x55, 0xFF, 0xFF}, {0xFF, 0xFF, 0xFF}
     };
 
-    for (int index = 0; index < 16; index++)
+    for (std::size_t index = 0; index < 16; index++)
     {
       cmap.color[index].red   = defaultColor[index].red;
       cmap.color[index].green = defaultColor[index].green;

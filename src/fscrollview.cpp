@@ -404,7 +404,7 @@ void FScrollView::draw()
   if ( isMonochron() )
     setReverse(true);
 
-  if ( FWidget* p = getParentWidget() )
+  if ( auto p = getParentWidget() )
     setColor (p->getForegroundColor(), p->getBackgroundColor());
   else
     setColor();
@@ -505,7 +505,7 @@ void FScrollView::onFocusIn (FFocusEvent* in_ev)
 
   if ( hasChildren() )
   {
-    FWidget* prev_element = getFocusWidget();
+    auto prev_element = getFocusWidget();
 
     if ( in_ev->getFocusType() == fc::FocusNextWidget )
       focusFirstChild();
@@ -530,7 +530,7 @@ void FScrollView::onChildFocusIn (FFocusEvent*)
 
   FRect widget_geometry;
   FRect vp_geometry;
-  FWidget* focus = FWidget::getFocusWidget();
+  auto focus = FWidget::getFocusWidget();
 
   if ( ! focus )
     return;
@@ -567,11 +567,11 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
 {
   // Change the focus away from FScrollView to another widget
 
-  FWidget* focus = FWidget::getFocusWidget();
+  auto focus = FWidget::getFocusWidget();
 
   if ( out_ev->getFocusType() == fc::FocusNextWidget )
   {
-    FWidget* last_widget = getLastFocusableWidget(getChildren());
+    auto last_widget = getLastFocusableWidget(getChildren());
 
     if ( focus == last_widget )
     {
@@ -581,7 +581,7 @@ void FScrollView::onChildFocusOut (FFocusEvent* out_ev)
   }
   else if ( out_ev->getFocusType() == fc::FocusPreviousWidget )
   {
-    FWidget* first_widget = getFirstFocusableWidget(getChildren());
+    auto first_widget = getFirstFocusableWidget(getChildren());
 
     if ( focus == first_widget )
     {
@@ -601,7 +601,7 @@ FVTerm::term_area* FScrollView::getPrintArea()
   if ( use_own_print_area || ! viewport )
   {
     child_print_area = nullptr;
-    term_area* area = FWidget::getPrintArea();
+    auto area = FWidget::getPrintArea();
     child_print_area = viewport;
     return area;
   }
@@ -700,7 +700,7 @@ void FScrollView::copy2area()
 //----------------------------------------------------------------------
 inline FPoint FScrollView::getViewportCursorPos()
 {
-  FWidget* window = FWindow::getWindowWidget(this);
+  auto window = FWindow::getWindowWidget(this);
 
   if ( window )
   {

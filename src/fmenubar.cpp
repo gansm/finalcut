@@ -59,13 +59,12 @@ void FMenuBar::resetMenu()
 //----------------------------------------------------------------------
 void FMenuBar::hide()
 {
-  FColor fg, bg;
   FWindow::hide();
-  fg = wc.term_fg;
-  bg = wc.term_bg;
+  FColor fg = wc.term_fg;
+  FColor bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-  char* blank = createBlankArray (screenWidth + 1);
+  auto blank = createBlankArray (screenWidth + 1);
   setPrintPos (1, 1);
   print (blank);
   destroyBlankArray (blank);
@@ -89,15 +88,14 @@ void FMenuBar::onKeyPress (FKeyEvent* ev)
     case fc::Fkey_down:
       if ( hasSelectedItem() )
       {
-        FMenuItem* sel_item = getSelectedItem();
+        auto sel_item = getSelectedItem();
 
         if ( sel_item->hasMenu() )
         {
-          FMenuItem* first_item;
-          FMenu* menu = sel_item->getMenu();
+          auto menu = sel_item->getMenu();
           sel_item->openMenu();
           menu->selectFirstItem();
-          first_item = menu->getSelectedItem();
+          auto first_item = menu->getSelectedItem();
 
           if ( first_item )
             first_item->setFocus();
@@ -219,11 +217,11 @@ void FMenuBar::onAccel (FAccelEvent* ev)
 //----------------------------------------------------------------------
 void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
 {
-  FMenuItem* menuitem = static_cast<FMenuItem*>(widget);
+  auto menuitem = static_cast<FMenuItem*>(widget);
 
   if ( menuitem->hasMenu() )
   {
-    FMenu* menu = menuitem->getMenu();
+    auto menu = menuitem->getMenu();
     menu->hide();
     menu->hideSubMenus();
   }
@@ -234,8 +232,8 @@ void FMenuBar::cb_item_deactivated (FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 void FMenuBar::init()
 {
-  FWidget* r = getRootWidget();
-  std::size_t w = r->getWidth();
+  auto r = getRootWidget();
+  auto w = r->getWidth();
   // initialize geometry values
   setGeometry (1, 1, w, 1, false);
   setAlwaysOnTop();
@@ -257,9 +255,8 @@ void FMenuBar::calculateDimensions()
 {
   int item_X = 1;
   int item_Y = 1;
-  std::vector<FMenuItem*>::const_iterator last, iter;
-  iter = item_list.begin();
-  last = item_list.end();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
 
   // find the maximum item width
   while ( iter != last )
@@ -283,17 +280,15 @@ void FMenuBar::calculateDimensions()
 //----------------------------------------------------------------------
 bool FMenuBar::selectNextItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  iter = item_list.begin();
-  last = item_list.end();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
 
   while ( iter != last )
   {
     if ( (*iter)->isSelected() )
     {
       FMenuItem* next;
-      std::vector<FMenuItem*>::const_iterator next_element;
-      next_element = iter;
+      auto next_element = iter;
 
       do
       {
@@ -319,11 +314,10 @@ bool FMenuBar::selectNextItem()
 
       if ( drop_down && next->hasMenu() )
       {
-        FMenuItem* first_item;
-        FMenu* menu = next->getMenu();
+        auto menu = next->getMenu();
         next->openMenu();
         menu->selectFirstItem();
-        first_item = menu->getSelectedItem();
+        auto first_item = menu->getSelectedItem();
 
         if ( first_item )
           first_item->setFocus();
@@ -348,9 +342,8 @@ bool FMenuBar::selectNextItem()
 //----------------------------------------------------------------------
 bool FMenuBar::selectPrevItem()
 {
-  std::vector<FMenuItem*>::const_iterator iter, first;
-  iter = item_list.end();
-  first = item_list.begin();
+  auto iter = item_list.end();
+  auto first = item_list.begin();
 
   do
   {
@@ -359,8 +352,7 @@ bool FMenuBar::selectPrevItem()
     if ( (*iter)->isSelected() )
     {
       FMenuItem* prev;
-      std::vector<FMenuItem*>::const_iterator prev_element;
-      prev_element = iter;
+      auto prev_element = iter;
 
       do
       {
@@ -385,11 +377,10 @@ bool FMenuBar::selectPrevItem()
 
       if ( drop_down && prev->hasMenu() )
       {
-        FMenuItem* first_item;
-        FMenu* menu = prev->getMenu();
+        auto menu = prev->getMenu();
         prev->openMenu();
         menu->selectFirstItem();
-        first_item = menu->getSelectedItem();
+        auto first_item = menu->getSelectedItem();
 
         if ( first_item )
           first_item->setFocus();
@@ -414,9 +405,8 @@ bool FMenuBar::selectPrevItem()
 //----------------------------------------------------------------------
 bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 {
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  iter = item_list.begin();
-  last = item_list.end();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
 
   while ( iter != last )
   {
@@ -427,7 +417,7 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
       if ( fc::Fmkey_meta + FKey(std::tolower(hotkey)) == key )
       {
-        FMenuItem* sel_item = getSelectedItem();
+        auto sel_item = getSelectedItem();
 
         if ( sel_item && sel_item->hasMenu() )
           sel_item->getMenu()->unselectItem();
@@ -436,14 +426,13 @@ bool FMenuBar::hotkeyMenu (FKeyEvent*& ev)
 
         if ( (*iter)->hasMenu() )
         {
-          FMenuItem* first_item;
-          FMenu* menu = (*iter)->getMenu();
+          auto menu = (*iter)->getMenu();
           (*iter)->setSelected();
           setSelectedItem(*iter);
           (*iter)->setFocus();
           (*iter)->openMenu();
           menu->selectFirstItem();
-          first_item = menu->getSelectedItem();
+          auto first_item = menu->getSelectedItem();
 
           if ( first_item )
             first_item->setFocus();
@@ -509,9 +498,6 @@ void FMenuBar::draw()
 //----------------------------------------------------------------------
 void FMenuBar::drawItems()
 {
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  std::size_t x = 1;
-
   if ( item_list.empty() )
     return;
 
@@ -521,8 +507,9 @@ void FMenuBar::drawItems()
     setReverse(true);
 
   screenWidth = getDesktopWidth();
-  iter = item_list.begin();
-  last = item_list.end();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
+  std::size_t x = 1;
 
   while ( iter != last )
   {
@@ -718,9 +705,8 @@ void FMenuBar::adjustItems()
 {
   int item_X = 1;
   int item_Y = 1;
-  std::vector<FMenuItem*>::const_iterator last, iter;
-  iter = item_list.begin();
-  last = item_list.end();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
 
   while ( iter != last )
   {
@@ -729,7 +715,7 @@ void FMenuBar::adjustItems()
 
     if ( (*iter)->hasMenu() )
     {
-      FMenu* menu = (*iter)->getMenu();
+      auto menu = (*iter)->getMenu();
 
       // set menu position
       menu->setPos (menu->adjustX(item_X), item_Y);
@@ -749,7 +735,7 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
   if ( ! item->isEnabled() || item->isSelected() )
     return;
 
-  FWidget* focused_widget = getFocusWidget();
+  auto focused_widget = getFocusWidget();
   FFocusEvent out (fc::FocusOut_Event);
   FApplication::queueEvent(focused_widget, &out);
   item->setSelected();
@@ -764,7 +750,7 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
 
   if ( item->hasMenu() )
   {
-    FMenu* menu = item->getMenu();
+    auto menu = item->getMenu();
 
     if ( menu->hasSelectedItem() )
     {
@@ -781,13 +767,12 @@ bool FMenuBar::activateMenu (FMenuItem* item)
   if ( ! item->hasMenu() )
     return false;
 
-  FMenu* menu = item->getMenu();
+  auto menu = item->getMenu();
 
   if ( ! menu->hasSelectedItem() )
   {
-    FMenuItem* first_item;
     menu->selectFirstItem();
-    first_item = menu->getSelectedItem();
+    auto first_item = menu->getSelectedItem();
 
     if ( first_item )
       first_item->setFocus();
@@ -842,20 +827,16 @@ void FMenuBar::mouseDownOverList (FMouseEvent* ev)
   if ( item_list.empty() )
     return;
 
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  int mouse_x, mouse_y;
   focus_changed = false;
-
-  iter = item_list.begin();
-  last = item_list.end();
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   while ( iter != last )
   {
-    int x1, x2;
-    x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = (*iter)->getX();
+    int x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1 )
     {
@@ -894,18 +875,15 @@ void FMenuBar::mouseUpOverList (FMouseEvent* ev)
   if ( item_list.empty() )
     return;
 
-  int mouse_x, mouse_y;
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  iter = item_list.begin();
-  last = item_list.end();
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  auto iter = item_list.begin();
+  auto last = item_list.end();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   while ( iter != last )
   {
-    int x1, x2;
-    x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = (*iter)->getX();
+    int x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_y == 1
       && mouse_x >= x1
@@ -939,23 +917,20 @@ void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
   if ( item_list.empty() )
     return;
 
-  std::vector<FMenuItem*>::const_iterator iter, last;
-  int mouse_x, mouse_y;
-  bool mouse_over_menubar = false;
   focus_changed = false;
-  iter = item_list.begin();
-  last = item_list.end();
-  mouse_x = ev->getX();
-  mouse_y = ev->getY();
+  bool mouse_over_menubar = false;
+  auto iter = item_list.begin();
+  auto last = item_list.end();
+  int mouse_x = ev->getX();
+  int mouse_y = ev->getY();
 
   if ( getTermGeometry().contains(ev->getTermPos()) )
     mouse_over_menubar = true;
 
   while ( iter != last )
   {
-    int x1, x2;
-    x1 = (*iter)->getX();
-    x2 = (*iter)->getX() + int((*iter)->getWidth());
+    int x1 = (*iter)->getX();
+    int x2 = (*iter)->getX() + int((*iter)->getWidth());
 
     if ( mouse_x >= x1
       && mouse_x < x2
@@ -1003,8 +978,8 @@ void FMenuBar::passEventToMenu (FMouseEvent*& ev)
     return;
 
   // Mouse event handover to the menu
-  FMenu* menu = getSelectedItem()->getMenu();
-  const FRect& menu_geometry = menu->getTermGeometry();
+  auto menu = getSelectedItem()->getMenu();
+  const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
     && menu_geometry.contains(ev->getTermPos()) )
@@ -1015,7 +990,7 @@ void FMenuBar::passEventToMenu (FMouseEvent*& ev)
 
     try
     {
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
       menu->mouse_down = true;
       setClickedWidget(menu);
       menu->onMouseMove(_ev);

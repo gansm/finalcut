@@ -127,7 +127,7 @@ void ProgressDialog::onShow (finalcut::FShowEvent*)
 //----------------------------------------------------------------------
 void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 {
-  std::size_t p = progressBar.getPercentage();
+  auto p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
   flush_out();
 
@@ -159,7 +159,7 @@ void ProgressDialog::cb_reset_bar (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void ProgressDialog::cb_more_bar (finalcut::FWidget*, data_ptr)
 {
-  std::size_t p = progressBar.getPercentage();
+  auto p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
 }
 
@@ -733,9 +733,9 @@ void MyDialog::initWidgetsCallbacks()
 //----------------------------------------------------------------------
 void MyDialog::adjustSize()
 {
-  std::size_t h = getParentWidget()->getHeight() - 4;
+  auto h = getParentWidget()->getHeight() - 4;
   setHeight (h, false);
-  int X = int((getParentWidget()->getWidth() - getWidth()) / 2);
+  auto X = int((getParentWidget()->getWidth() - getWidth()) / 2);
 
   if ( X < 1 )
     X = 1;
@@ -757,8 +757,8 @@ void MyDialog::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 {
-  finalcut::FButton* button = static_cast<finalcut::FButton*>(widget);
-  finalcut::FString text = button->getText();
+  auto button = static_cast<finalcut::FButton*>(widget);
+  auto text = button->getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::error ( this
                                , "The \"" + text + "\" button has\n"
@@ -783,8 +783,8 @@ void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
 {
-  std::size_t x = getDesktopWidth();
-  std::size_t y = getDesktopHeight();
+  auto x = getDesktopWidth();
+  auto y = getDesktopHeight();
   finalcut::FMessageBox info1 \
   (
     "Environment"
@@ -884,16 +884,16 @@ void MyDialog::cb_clearInput (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, data_ptr data)
 {
-  finalcut::FButton* button = static_cast<finalcut::FButton*>(widget);
-  finalcut::FLineEdit* lineedit = static_cast<finalcut::FLineEdit*>(data);
-  button->setText( lineedit->getText() );
+  auto button = static_cast<finalcut::FButton*>(widget);
+  auto lineedit = static_cast<finalcut::FLineEdit*>(data);
+  button->setText(lineedit->getText());
   button->redraw();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
 {
-  finalcut::FLineEdit* lineedit = static_cast<finalcut::FLineEdit*>(widget);
+  auto lineedit = static_cast<finalcut::FLineEdit*>(widget);
   finalcut::FString title;
   *lineedit >> title;
   setTermTitle (title);
@@ -904,17 +904,17 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_ProgressBar (finalcut::FWidget*, data_ptr)
 {
-  ProgressDialog* p_dgl = new ProgressDialog(this);
+  auto p_dgl = new ProgressDialog(this);
   p_dgl->show();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
 {
-  finalcut::FListBox* list = static_cast<finalcut::FListBox*>(widget);
-  finalcut::FLabel* num = static_cast<finalcut::FLabel*>(data);
+  auto list = static_cast<finalcut::FListBox*>(widget);
+  auto num = static_cast<finalcut::FLabel*>(data);
+  auto count = list->getCount();
   int select_num = 0;
-  std::size_t count = list->getCount();
 
   for (std::size_t n = 1; n <= count; n++)
     if ( list->isSelected(n) )
@@ -928,8 +928,8 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
 //----------------------------------------------------------------------
 void MyDialog::cb_activateButton (finalcut::FWidget* widget, data_ptr data)
 {
-  finalcut::FRadioButton* rb = static_cast<finalcut::FRadioButton*>(widget);
-  finalcut::FButton* button = static_cast<finalcut::FButton*>(data);
+  auto rb = static_cast<finalcut::FRadioButton*>(widget);
+  auto button = static_cast<finalcut::FButton*>(data);
 
   if ( rb->isChecked() )
     button->setEnable();
@@ -943,7 +943,7 @@ void MyDialog::cb_activateButton (finalcut::FWidget* widget, data_ptr data)
 void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
 {
   finalcut::FString file;
-  finalcut::FMenuItem* item = static_cast<finalcut::FMenuItem*>(data);
+  auto item = static_cast<finalcut::FMenuItem*>(data);
 
   if ( item && ! item->getText().isEmpty() )
     file = item->getText();
@@ -981,8 +981,8 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
 //----------------------------------------------------------------------
 void MyDialog::cb_setInput (finalcut::FWidget* widget, data_ptr data)
 {
-  finalcut::FListBox* ListBox = static_cast<finalcut::FListBox*>(widget);
-  finalcut::FLineEdit* lineedit = static_cast<finalcut::FLineEdit*>(data);
+  auto ListBox = static_cast<finalcut::FListBox*>(widget);
+  auto lineedit = static_cast<finalcut::FLineEdit*>(data);
   *lineedit = ListBox->getItem(ListBox->currentItem()).getText();
   lineedit->redraw();
 }

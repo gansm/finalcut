@@ -98,9 +98,8 @@ bool FProgressbar::setShadow (bool on)
 //----------------------------------------------------------------------
 void FProgressbar::hide()
 {
-  std::size_t s, size;
   FColor fg, bg;
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   FWidget::hide();
 
@@ -116,13 +115,13 @@ void FProgressbar::hide()
   }
 
   setColor (fg, bg);
-  s = hasShadow() ? 1 : 0;
-  size = getWidth() + s;
+  auto s = hasShadow() ? 1 : 0;
+  auto size = getWidth() + s;
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (std::size_t y = 0; y < getHeight() + s; y++)
   {
@@ -166,7 +165,7 @@ void FProgressbar::draw()
 //----------------------------------------------------------------------
 void FProgressbar::drawPercentage()
 {
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   if ( parent_widget )
     setColor ( parent_widget->getForegroundColor()

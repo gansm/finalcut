@@ -173,12 +173,13 @@ bool FApplication::sendEvent ( const FObject* receiver
   if ( ! receiver->isWidget() )
     return false;
 
-  const FWidget* r_widget = static_cast<const FWidget*>(receiver);
-  FWidget* widget = const_cast<FWidget*>(r_widget);
+  const auto r_widget = static_cast<const FWidget*>(receiver);
+  auto widget = const_cast<FWidget*>(r_widget);
 
   if ( modal_dialogs > 0 )
   {
     const FWidget* window;
+
     if ( widget->isWindowWidget() )
       window = widget;
     else
@@ -217,8 +218,8 @@ bool FApplication::sendEvent ( const FObject* receiver
     return false;
 
   // For access to a protected base class member
-  const FApplication* const_w = static_cast<const FApplication*>(widget);
-  FApplication* w = const_cast<FApplication*>(const_w);
+  auto const_w = static_cast<const FApplication*>(widget);
+  auto w = const_cast<FApplication*>(const_w);
 
   // Sends event event directly to receiver
   return w->event(const_cast<FEvent*>(event));
@@ -239,12 +240,10 @@ void FApplication::queueEvent ( const FObject* receiver
 //----------------------------------------------------------------------
 void FApplication::sendQueuedEvents()
 {
-  eventQueue* events;
-
   if ( ! eventInQueue() )
     return;
 
-  events = event_queue;
+  auto events = event_queue;
 
   while ( ! eventInQueue() )
   {
@@ -266,7 +265,6 @@ bool FApplication::eventInQueue()
 bool FApplication::removeQueuedEvent (const FObject* receiver)
 {
   bool retval;
-  eventQueue::iterator iter;
 
   if ( ! eventInQueue() )
     return false;
@@ -275,7 +273,7 @@ bool FApplication::removeQueuedEvent (const FObject* receiver)
     return false;
 
   retval = false;
-  iter = event_queue->begin();
+  auto iter = event_queue->begin();
 
   while ( iter != event_queue->end() )
   {
@@ -499,8 +497,8 @@ inline void FApplication::findKeyboardWidget()
   // Find the widget that has the keyboard focus
 
   FWidget* widget = nullptr;
-  FWidget* focus = getFocusWidget();
-  FWidget* move_size = getMoveSizeWidget();
+  auto focus = getFocusWidget();
+  auto move_size = getMoveSizeWidget();
 
   if ( focus )
   {
@@ -644,7 +642,7 @@ inline void FApplication::sendKeyboardAccelerator()
   // Windows keyboard accelerator
   if ( ! accpt )
   {
-    const FWidget* window = getActiveWindow();
+    auto window = static_cast<const FWidget*>(getActiveWindow());
 
     if ( window )
       accpt = processAccelerator (window);
@@ -653,7 +651,7 @@ inline void FApplication::sendKeyboardAccelerator()
   // Global keyboard accelerator
   if ( ! accpt )
   {
-    const FWidget* root_widget = getRootWidget();
+    auto root_widget = static_cast<const FWidget*>(getRootWidget());
 
     if ( root_widget )
       processAccelerator (root_widget);
@@ -690,11 +688,11 @@ bool FApplication::processDialogSwitchAccelerator()
     if ( s > 0 && s >= n )
     {
       // unset the move/size mode
-      FWidget* move_size = getMoveSizeWidget();
+      auto move_size = getMoveSizeWidget();
 
       if ( move_size )
       {
-        FWidget* w = move_size;
+        auto w = move_size;
         setMoveSizeWidget(0);
         w->redraw();
       }
@@ -717,9 +715,8 @@ bool FApplication::processAccelerator (const FWidget*& widget)
     && widget->accelerator_list
     && ! widget->accelerator_list->empty() )
   {
-    FWidget::Accelerators::const_iterator iter, last;
-    iter = widget->accelerator_list->begin();
-    last = widget->accelerator_list->end();
+    auto iter = widget->accelerator_list->begin();
+    auto last = widget->accelerator_list->end();
 
     while ( iter != last )
     {
@@ -729,11 +726,11 @@ bool FApplication::processAccelerator (const FWidget*& widget)
       if ( iter->key == keyboard->getKey() )
       {
         // unset the move/size mode
-        FWidget* move_size = getMoveSizeWidget();
+        auto move_size = getMoveSizeWidget();
 
         if ( move_size )
         {
-          FWidget* w = move_size;
+          auto w = move_size;
           setMoveSizeWidget(0);
           w->redraw();
         }
@@ -789,12 +786,12 @@ FWidget*& FApplication::determineClickedWidget()
   const FPoint& mouse_position = mouse->getPos();
 
   // Determine the window object on the current click position
-  FWidget* window = FWindow::getWindowWidgetAt (mouse_position);
+  auto window = FWindow::getWindowWidgetAt (mouse_position);
 
   if ( window )
   {
     // Determine the widget at the current click position
-    FWidget* child = childWidgetAt (window, mouse_position);
+    auto child = childWidgetAt (window, mouse_position);
     clicked = ( child != 0 ) ? child : window;
     setClickedWidget (clicked);
   }
@@ -807,11 +804,11 @@ void FApplication::unsetMoveSizeMode()
 {
   // Unset the move/size mode
 
-  FWidget* move_size = getMoveSizeWidget();
+  auto move_size = getMoveSizeWidget();
 
   if ( move_size )
   {
-    FWidget* w = move_size;
+    auto w = move_size;
     setMoveSizeWidget(0);
     w->redraw();
   }
@@ -822,8 +819,8 @@ void FApplication::closeOpenMenu()
 {
   // Close the open menu
 
-  FWidget* openmenu = getOpenMenu();
-  FMenu* menu = static_cast<FMenu*>(openmenu);
+  auto openmenu = getOpenMenu();
+  auto menu = static_cast<FMenu*>(openmenu);
 
   if ( ! openmenu || ( mouse && mouse->isMoved()) )
     return;
@@ -837,7 +834,7 @@ void FApplication::closeOpenMenu()
   }
 
   bool is_window_menu;
-  FWidget* super = menu->getSuperMenu();
+  auto super = menu->getSuperMenu();
 
   if ( super && menu->isWindowsMenu(super) )
     is_window_menu = true;
@@ -865,8 +862,8 @@ void FApplication::unselectMenubarItems()
 {
   // Unselect the menu bar items
 
-  FWidget* openmenu = getOpenMenu();
-  FMenuBar* menu_bar = getMenuBar();
+  auto openmenu = getOpenMenu();
+  auto menu_bar = getMenuBar();
 
   if ( openmenu || (mouse && mouse->isMoved()) )
     return;
@@ -905,7 +902,7 @@ void FApplication::unselectMenubarItems()
 //----------------------------------------------------------------------
 void FApplication::sendMouseEvent()
 {
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( ! clicked )
     return;
@@ -951,7 +948,7 @@ void FApplication::sendMouseMoveEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( mouse->isLeftButtonPressed() )
   {
@@ -989,7 +986,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( mouse->isLeftButtonDoubleClick() )
   {
@@ -1013,7 +1010,7 @@ void FApplication::sendMouseLeftClickEvent ( const FPoint& widgetMousePos
                         , widgetMousePos
                         , mouse_position
                         , fc::LeftButton | key_state );
-    FWidget* released_widget = clicked;
+    auto released_widget = clicked;
 
     if ( ! mouse->isRightButtonPressed()
       && ! mouse->isMiddleButtonPressed() )
@@ -1031,7 +1028,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( mouse->isRightButtonPressed() )
   {
@@ -1047,7 +1044,7 @@ void FApplication::sendMouseRightClickEvent ( const FPoint& widgetMousePos
                         , widgetMousePos
                         , mouse_position
                         , fc::RightButton | key_state );
-    FWidget* released_widget = clicked;
+    auto released_widget = clicked;
 
     if ( ! mouse->isLeftButtonPressed()
       && ! mouse->isMiddleButtonPressed() )
@@ -1065,7 +1062,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( mouse->isMiddleButtonPressed() )
   {
@@ -1085,7 +1082,7 @@ void FApplication::sendMouseMiddleClickEvent ( const FPoint& widgetMousePos
                         , widgetMousePos
                         , mouse_position
                         , fc::MiddleButton | key_state );
-    FWidget* released_widget = clicked;
+    auto released_widget = clicked;
 
     if ( ! mouse->isLeftButtonPressed()
       && ! mouse->isRightButtonPressed() )
@@ -1104,7 +1101,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
   if ( ! mouse )
     return;
 
-  FWidget* clicked = getClickedWidget();
+  auto clicked = getClickedWidget();
 
   if ( mouse->isWheelUp() )
   {
@@ -1112,7 +1109,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                          , widgetMousePos
                          , mouse_position
                          , fc::WheelUp );
-    FWidget* scroll_over_widget = clicked;
+    auto scroll_over_widget = clicked;
     setClickedWidget(0);
     sendEvent(scroll_over_widget, &wheel_ev);
   }
@@ -1123,7 +1120,7 @@ void FApplication::sendWheelEvent ( const FPoint& widgetMousePos
                          , widgetMousePos
                          , mouse_position
                          , fc::WheelDown );
-    FWidget* scroll_over_widget = clicked;
+    auto scroll_over_widget = clicked;
     setClickedWidget(0);
     sendEvent (scroll_over_widget, &wheel_ev);
   }
@@ -1165,8 +1162,7 @@ void FApplication::processCloseWidget()
 
   if ( close_widget && ! close_widget->empty() )
   {
-    widgetList::iterator iter;
-    iter = close_widget->begin();
+    auto iter = close_widget->begin();
 
     while ( iter != close_widget->end() && *iter )
     {

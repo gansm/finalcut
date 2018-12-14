@@ -32,14 +32,14 @@ void cb_publish (finalcut::FWidget*, finalcut::FWidget::data_ptr);
 //----------------------------------------------------------------------
 void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  finalcut::FApplication* app = static_cast<finalcut::FApplication*>(data);
+  auto app = static_cast<finalcut::FApplication*>(data);
   app->quit();
 }
 
 void cb_publish (finalcut::FWidget* widget, finalcut::FWidget::data_ptr data)
 {
-  finalcut::FCheckBox* cbox1 = static_cast<finalcut::FCheckBox*>(widget);
-  finalcut::FCheckBox* cbox2 = static_cast<finalcut::FCheckBox*>(data);
+  auto cbox1 = static_cast<finalcut::FCheckBox*>(widget);
+  auto cbox2 = static_cast<finalcut::FCheckBox*>(data);
 
   if ( cbox1->isChecked() )
     cbox2->setEnable();

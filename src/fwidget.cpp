@@ -104,7 +104,7 @@ FWidget::~FWidget()  // destructor
   // unset the local window widget focus
   if ( flags.focus )
   {
-    if ( FWindow* window = FWindow::getWindowWidget(this) )
+    if ( auto window = FWindow::getWindowWidget(this) )
       window->setWindowFocusWidget(0);
   }
 
@@ -129,8 +129,8 @@ FWidget::~FWidget()  // destructor
 //----------------------------------------------------------------------
 FWidget* FWidget::getRootWidget() const
 {
-  FWidget* obj = const_cast<FWidget*>(this);
-  FWidget* p_obj = getParentWidget();
+  auto obj = const_cast<FWidget*>(this);
+  auto p_obj = getParentWidget();
 
   while ( ! obj->isRootWidget() && p_obj )
   {
@@ -144,7 +144,7 @@ FWidget* FWidget::getRootWidget() const
 //----------------------------------------------------------------------
 FWidget* FWidget::getParentWidget() const
 {
-  FObject* p_obj = getParent();
+  auto p_obj = getParent();
 
   if ( p_obj && p_obj->isWidget() )
     return static_cast<FWidget*>(p_obj);
@@ -158,15 +158,14 @@ FWidget* FWidget::getFirstFocusableWidget (FObjectList list)
   if ( list.empty() )
     return 0;
 
-  constFObjectIterator iter, last;
-  iter = list.begin();
-  last = list.end();
+  auto iter = list.begin();
+  auto last = list.end();
 
   while ( iter != last )
   {
     if ( (*iter)->isWidget() )
     {
-      FWidget* child = static_cast<FWidget*>(*iter);
+      auto child = static_cast<FWidget*>(*iter);
 
       if ( child->isEnabled() && child->acceptFocus() )
         return child;
@@ -184,9 +183,8 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
   if ( list.empty() )
     return 0;
 
-  constFObjectIterator iter, first;
-  first = list.begin();
-  iter = list.end();
+  auto first = list.begin();
+  auto iter  = list.end();
 
   do
   {
@@ -195,7 +193,7 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
     if ( ! (*iter)->isWidget() )
       continue;
 
-    FWidget* child = static_cast<FWidget*>(*iter);
+    auto child = static_cast<FWidget*>(*iter);
 
     if ( child->isEnabled() && child->acceptFocus() )
       return child;
@@ -208,11 +206,9 @@ FWidget* FWidget::getLastFocusableWidget (FObjectList list)
 //----------------------------------------------------------------------
 FPoint FWidget::getPrintPos()
 {
-  const FPoint cur = getPrintCursor();
-  int cx = cur.getX();
-  int cy = cur.getY();
-  return FPoint ( cx - offset.getX1() - getX() + 1
-                , cy - offset.getY1() - getY() + 1 );
+  const auto cur = getPrintCursor();
+  return FPoint ( cur.getX() - offset.getX1() - getX() + 1
+                , cur.getY() - offset.getY1() - getY() + 1 );
 }
 
 //----------------------------------------------------------------------
@@ -245,7 +241,7 @@ std::vector<bool>& FWidget::doubleFlatLine_ref (fc::sides side)
 void FWidget::setMainWidget (FWidget* obj)
 {
   main_widget = obj;
-  FWidget* app_object = FApplication::getApplicationObject();
+  auto app_object = FApplication::getApplicationObject();
 
   if ( obj && app_object && ! getFocusWidget() )
     app_object->focusFirstChild();
@@ -260,16 +256,13 @@ bool FWidget::setEnable (bool on)
 //----------------------------------------------------------------------
 bool FWidget::setFocus (bool on)
 {
-  FWindow* window;
-  FWidget* last_focus;
-
   if ( ! isEnabled() )
     return false;
 
   if ( flags.focus == on )
     return true;
 
-  last_focus = FWidget::getFocusWidget();
+  auto last_focus = FWidget::getFocusWidget();
 
   // set widget focus
   if ( on && ! flags.focus )
@@ -286,7 +279,7 @@ bool FWidget::setFocus (bool on)
     }
   }
 
-  window = FWindow::getWindowWidget(this);
+  auto window = FWindow::getWindowWidget(this);
 
   // set window focus
   if ( on && window )
@@ -457,7 +450,7 @@ void FWidget::setTopPadding (int top, bool adjust)
   {
     if ( isRootWidget() )
     {
-      FWidget* r = rootObject;
+      auto r = rootObject;
       r->client_offset.setY1 (r->padding.top);
       adjustSizeGlobal();
     }
@@ -478,7 +471,7 @@ void FWidget::setLeftPadding (int left, bool adjust)
   {
     if ( isRootWidget() )
     {
-      FWidget* r = rootObject;
+      auto r = rootObject;
       r->client_offset.setX1 (r->padding.left);
       adjustSizeGlobal();
     }
@@ -499,7 +492,7 @@ void FWidget::setBottomPadding (int bottom, bool adjust)
   {
     if ( isRootWidget() )
     {
-      FWidget* r = rootObject;
+      auto r = rootObject;
       r->client_offset.setY2 (int(r->getHeight()) - 1 - r->padding.bottom);
       adjustSizeGlobal();
     }
@@ -520,7 +513,7 @@ void FWidget::setRightPadding (int right, bool adjust)
   {
     if ( isRootWidget() )
     {
-      FWidget* r = rootObject;
+      auto r = rootObject;
       r->client_offset.setX2  (int(r->getWidth()) - 1 - r->padding.right);
       adjustSizeGlobal();
     }
@@ -532,7 +525,7 @@ void FWidget::setRightPadding (int right, bool adjust)
 //----------------------------------------------------------------------
 void FWidget::setParentOffset()
 {
-  FWidget* p = getParentWidget();
+  auto p = getParentWidget();
 
   if ( p )
     offset = p->client_offset;
@@ -541,7 +534,7 @@ void FWidget::setParentOffset()
 //----------------------------------------------------------------------
 void FWidget::setTermOffset()
 {
-  FWidget* r = getRootWidget();
+  auto r = getRootWidget();
   int w = int(r->getWidth());
   int h = int(r->getHeight());
   offset.setCoordinates (0, 0, w - 1, h - 1);
@@ -550,7 +543,7 @@ void FWidget::setTermOffset()
 //----------------------------------------------------------------------
 void FWidget::setTermOffsetWithPadding()
 {
-  FWidget* r = getRootWidget();
+  auto r = getRootWidget();
   offset.setCoordinates ( r->getLeftPadding()
                         , r->getTopPadding()
                         , int(r->getWidth()) - 1 - r->getRightPadding()
@@ -633,7 +626,7 @@ bool FWidget::setCursorPos (int x, int y)
   if ( ! FWindow::getWindowWidget(this) )
     return false;
 
-  term_area* area = getPrintArea();
+  auto area = getPrintArea();
 
   if ( area->widget )
   {
@@ -752,9 +745,8 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 {
   if ( p && p->hasChildren() )
   {
-    constFObjectIterator iter, last;
-    iter = p->begin();
-    last = p->end();
+    auto iter = p->begin();
+    auto last = p->end();
 
     while ( iter != last )
     {
@@ -764,14 +756,14 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
         continue;
       }
 
-      FWidget* widget = static_cast<FWidget*>(*iter);
+      auto widget = static_cast<FWidget*>(*iter);
 
       if ( widget->isEnabled()
         && widget->isVisible()
         && ! widget->isWindowWidget()
         && widget->getTermGeometry().contains(x, y) )
       {
-        FWidget* child = childWidgetAt(widget, x, y);
+        auto child = childWidgetAt(widget, x, y);
         return ( child != 0 ) ? child : widget;
       }
 
@@ -785,20 +777,18 @@ FWidget* FWidget::childWidgetAt (FWidget* p, int x, int y)
 //----------------------------------------------------------------------
 int FWidget::numOfFocusableChildren()
 {
-  constFObjectIterator iter, last;
-
   if ( ! hasChildren() )
     return 0;
 
   int num = 0;
-  iter = FObject::begin();
-  last = FObject::end();
+  auto iter = FObject::begin();
+  auto last = FObject::end();
 
   while ( iter != last )
   {
     if ( (*iter)->isWidget() )
     {
-      FWidget* widget = static_cast<FWidget*>(*iter);
+      auto widget = static_cast<FWidget*>(*iter);
 
       if ( widget->acceptFocus() )
         num++;
@@ -859,12 +849,10 @@ void FWidget::delCallback (FCallback cb_handler)
 {
   // delete a cb_handler function pointer
 
-  CallbackObjects::iterator iter;
-
   if ( callback_objects.empty() )
     return;
 
-  iter = callback_objects.begin();
+  auto iter = callback_objects.begin();
 
   while ( iter != callback_objects.end() )
   {
@@ -880,12 +868,10 @@ void FWidget::delCallback (FWidget* cb_instance)
 {
   // delete all member function pointer from cb_instance
 
-  FWidget::MemberCallbackObjects::iterator iter;
-
   if ( member_callback_objects.empty() )
     return;
 
-  iter = member_callback_objects.begin();
+  auto iter = member_callback_objects.begin();
 
   while ( iter != member_callback_objects.end() )
   {
@@ -909,19 +895,19 @@ void FWidget::delCallbacks()
 void FWidget::emitCallback (const FString& emit_signal)
 {
   // member function pointer
+
   if ( ! member_callback_objects.empty() )
   {
-    MemberCallbackObjects::const_iterator m_iter, m_end;
-    m_iter = member_callback_objects.begin();
-    m_end = member_callback_objects.end();
+    auto m_iter = member_callback_objects.begin();
+    auto m_end = member_callback_objects.end();
 
     while ( m_iter != m_end )
     {
       if ( m_iter->cb_signal == emit_signal )
       {
-        FMemberCallback callback = m_iter->cb_handler;
+        auto callback = m_iter->cb_handler;
         // call the member function pointer
-        (m_iter->cb_instance->*callback)(this, m_iter->data);
+        (m_iter->cb_instance->*callback) (this, m_iter->data);
       }
 
       ++m_iter;
@@ -931,17 +917,16 @@ void FWidget::emitCallback (const FString& emit_signal)
   // function pointer
   if ( ! callback_objects.empty() )
   {
-    CallbackObjects::const_iterator iter, last;
-    iter = callback_objects.begin();
-    last = callback_objects.end();
+    auto iter = callback_objects.begin();
+    auto last = callback_objects.end();
 
     while ( iter != last )
     {
       if ( iter->cb_signal == emit_signal )
       {
-        FCallback callback = iter->cb_handler;
+        auto callback = iter->cb_handler;
         // call the function pointer
-        callback(this, iter->data);
+        callback (this, iter->data);
       }
 
       ++iter;
@@ -952,7 +937,7 @@ void FWidget::emitCallback (const FString& emit_signal)
 //----------------------------------------------------------------------
 void FWidget::addAccelerator (FKey key, FWidget* obj)
 {
-  FWidget* widget = FWindow::getWindowWidget(obj);
+  auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(obj));
   accelerator accel = { key, obj };
 
   if ( ! widget || widget == statusbar || widget == menubar )
@@ -965,7 +950,7 @@ void FWidget::addAccelerator (FKey key, FWidget* obj)
 //----------------------------------------------------------------------
 void FWidget::delAccelerator (FWidget* obj)
 {
-  FWidget* widget = FWindow::getWindowWidget(this);
+  auto widget = static_cast<FWidget*>(FWindow::getWindowWidget(this));
 
   if ( ! widget || widget == statusbar || widget == menubar )
     widget = getRootWidget();
@@ -974,8 +959,7 @@ void FWidget::delAccelerator (FWidget* obj)
     && widget->accelerator_list
     && ! widget->accelerator_list->empty() )
   {
-    FWidget::Accelerators::iterator iter;
-    iter = widget->accelerator_list->begin();
+    auto iter = widget->accelerator_list->begin();
 
     while ( iter != widget->accelerator_list->end() )
     {
@@ -1056,7 +1040,7 @@ void FWidget::show()
     initScreenSettings();
 
     // draw the vdesktop
-    FWidget* r = getRootWidget();
+    auto r = getRootWidget();
     setColor(r->getForegroundColor(), r->getBackgroundColor());
     clearArea (vdesktop);
     init_desktop = true;
@@ -1073,15 +1057,14 @@ void FWidget::show()
 
   if ( hasChildren() )
   {
-    constFObjectIterator iter, last;
-    iter = FObject::begin();
-    last = FObject::end();
+    auto iter = FObject::begin();
+    auto last = FObject::end();
 
     while ( iter != last )
     {
       if ( (*iter)->isWidget() )
       {
-        FWidget* widget = static_cast<FWidget*>(*iter);
+        auto widget = static_cast<FWidget*>(*iter);
         widget->show();
       }
 
@@ -1127,13 +1110,11 @@ void FWidget::hide()
 //----------------------------------------------------------------------
 bool FWidget::focusFirstChild()
 {
-  constFObjectIterator iter, last;
-
   if ( ! hasChildren() )
     return false;
 
-  iter = FObject::begin();
-  last = FObject::end();
+  auto iter = FObject::begin();
+  auto last = FObject::end();
 
   while ( iter != last )
   {
@@ -1143,7 +1124,7 @@ bool FWidget::focusFirstChild()
       continue;
     }
 
-    FWidget* widget = static_cast<FWidget*>(*iter);
+    auto widget = static_cast<FWidget*>(*iter);
 
     if ( widget->isEnabled()
       && widget->acceptFocus()
@@ -1171,13 +1152,11 @@ bool FWidget::focusFirstChild()
 //----------------------------------------------------------------------
 bool FWidget::focusLastChild()
 {
-  constFObjectIterator iter, first;
-
   if ( ! hasChildren() )
     return false;
 
-  iter  = FObject::end();
-  first = FObject::begin();
+  auto iter  = FObject::end();
+  auto first = FObject::begin();
 
   do
   {
@@ -1186,7 +1165,7 @@ bool FWidget::focusLastChild()
     if ( ! (*iter)->isWidget() )
       continue;
 
-    FWidget* widget = static_cast<FWidget*>(*iter);
+    auto widget = static_cast<FWidget*>(*iter);
 
     if ( widget->isEnabled()
       && widget->acceptFocus()
@@ -1211,7 +1190,7 @@ bool FWidget::focusLastChild()
 //----------------------------------------------------------------------
 void FWidget::detectTermSize()
 {
-  FWidget* r = rootObject;
+  auto r = rootObject;
   FTerm::detectTermSize();
   r->adjust_wsize.setRect (1, 1, getDesktopWidth(), getDesktopHeight());
   r->offset.setRect (0, 0, getDesktopWidth(), getDesktopHeight());
@@ -1275,14 +1254,14 @@ void FWidget::clearShadow()
     setColor (wc.shadow_fg, wc.shadow_bg);
     setInheritBackground();  // current background color will be ignored
   }
-  else if ( FWidget* p = getParentWidget() )
+  else if ( auto p = getParentWidget() )
     setColor (wc.shadow_fg, p->getBackgroundColor());
 
   if ( w <= offset.getX2() )
   {
-    for (int i = 1; i <= int(getHeight()); i++)
+    for (std::size_t y = 1; y <= getHeight(); y++)
     {
-      setPrintPos (w + 1, i);
+      setPrintPos (w + 1, int(y));
       print  (' ');  // clear █
     }
   }
@@ -1310,14 +1289,14 @@ void FWidget::drawFlatBorder()
     , y1 = 0
     , y2 = int(getHeight()) + 1;
 
-  if ( FWidget* p = getParentWidget() )
+  if ( auto p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
   else
     setColor (wc.dialog_fg, wc.dialog_bg);
 
-  for (int y = 0; y < int(getHeight()); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + y + 1);
+    setPrintPos (x1 - 1, y1 + int(y) + 1);
 
     if ( double_flatline_mask.left[uLong(y)] )
       // left+right line (on left side)
@@ -1329,9 +1308,9 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x2, y1 + 1);
 
-  for (int y = 0; y < int(getHeight()); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    if ( double_flatline_mask.right[uLong(y)] )
+    if ( double_flatline_mask.right[y] )
       // left+right line (on right side)
       print (fc::NF_rev_border_line_right_and_left);
     else
@@ -1343,9 +1322,9 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x1, y1);
 
-  for (int x = 0; x < int(getWidth()); x++)
+  for (std::size_t x = 0; x < getWidth(); x++)
   {
-    if ( double_flatline_mask.top[uLong(x)] )
+    if ( double_flatline_mask.top[x] )
       // top+bottom line (at top)
       print (fc::NF_border_line_up_and_down);
     else
@@ -1355,9 +1334,9 @@ void FWidget::drawFlatBorder()
 
   setPrintPos (x1, y2);
 
-  for (int x = 0; x < int(getWidth()); x++)
+  for (std::size_t x = 0; x < getWidth(); x++)
   {
-    if ( double_flatline_mask.bottom[uLong(x)] )
+    if ( double_flatline_mask.bottom[x] )
       // top+bottom line (at bottom)
       print (fc::NF_border_line_up_and_down);
     else
@@ -1377,28 +1356,28 @@ void FWidget::clearFlatBorder()
     , y1 = 0
     , y2 = int(getHeight()) + 1;
 
-  if ( FWidget* p = getParentWidget() )
+  if ( auto p = getParentWidget() )
     setColor (wc.dialog_fg, p->getBackgroundColor());
   else
     setColor (wc.dialog_fg, wc.dialog_bg);
 
   // clear on left side
-  for (int y = 0; y < int(getHeight()); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x1 - 1, y1 + y + 1);
+    setPrintPos (x1 - 1, y1 + int(y) + 1);
 
-    if ( double_flatline_mask.left[uLong(y)] )
+    if ( double_flatline_mask.left[y] )
       print (fc::NF_border_line_left);
     else
       print (' ');
   }
 
   // clear on right side
-  for (int y = 0; y < int(getHeight()); y++)
+  for (std::size_t y = 0; y < getHeight(); y++)
   {
-    setPrintPos (x2, y1 + y + 1);
+    setPrintPos (x2, y1 + int(y) + 1);
 
-    if ( double_flatline_mask.right[uLong(y)] )
+    if ( double_flatline_mask.right[y] )
       print (fc::NF_rev_border_line_right);
     else
       print (' ');
@@ -1407,9 +1386,9 @@ void FWidget::clearFlatBorder()
   // clear at top
   setPrintPos (x1, y1);
 
-  for (int x = 0; x < int(getWidth()); x++)
+  for (std::size_t x = 0; x < getWidth(); x++)
   {
-    if ( double_flatline_mask.top[uLong(x)] )
+    if ( double_flatline_mask.top[x] )
       print (fc::NF_border_line_upper);
     else
       print (' ');
@@ -1418,9 +1397,9 @@ void FWidget::clearFlatBorder()
   // clear at bottom
   setPrintPos (x1, y2);
 
-  for (int x = 0; x < int(getWidth()); x++)
+  for (std::size_t x = 0; x < getWidth(); x++)
   {
-    if ( double_flatline_mask.bottom[uLong(x)] )
+    if ( double_flatline_mask.bottom[x] )
       print (fc::NF_border_line_bottom);
     else
       print (' ');
@@ -1457,8 +1436,8 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  FWidget* app_object = FApplication::getApplicationObject();
-  FApplication* fapp = static_cast<FApplication*>(app_object);
+  auto app_object = FApplication::getApplicationObject();
+  auto fapp = static_cast<FApplication*>(app_object);
   fapp->exit(0);
 }
 
@@ -1520,7 +1499,7 @@ void FWidget::delPreprocessingHandler (FVTerm* instance)
 //----------------------------------------------------------------------
 bool FWidget::isChildPrintArea() const
 {
-  FWidget* p_obj = static_cast<FWidget*>(getParent());
+  auto p_obj = static_cast<FWidget*>(getParent());
 
   if ( p_obj
     && p_obj->child_print_area
@@ -1559,7 +1538,7 @@ void FWidget::adjustSize()
 {
   if ( ! isRootWidget() )
   {
-    FWidget* p = getParentWidget();
+    auto p = getParentWidget();
 
     if ( isWindowWidget() )
     {
@@ -1595,15 +1574,14 @@ void FWidget::adjustSize()
 
   if ( hasChildren() )
   {
-    constFObjectIterator iter, last;
-    iter = FObject::begin();
-    last = FObject::end();
+    auto iter = FObject::begin();
+    auto last = FObject::end();
 
     while ( iter != last )
     {
       if ( (*iter)->isWidget() )
       {
-        FWidget* widget = static_cast<FWidget*>(*iter);
+        auto widget = static_cast<FWidget*>(*iter);
 
         if ( ! widget->isWindowWidget() )
           widget->adjustSize();
@@ -1624,15 +1602,8 @@ void FWidget::adjustSizeGlobal()
 
   if ( window_list && ! window_list->empty() )
   {
-    widgetList::const_iterator iter, last;
-    iter = window_list->begin();
-    last = window_list->end();
-
-    while ( iter != last )
-    {
-      (*iter)->adjustSize();
-      ++iter;
-    }
+    for (auto&& window : *window_list)
+      window->adjustSize();
   }
 }
 
@@ -1642,16 +1613,15 @@ bool FWidget::focusNextChild()
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  FWidget* parent = getParentWidget();
+  auto parent = getParentWidget();
 
   if ( ! parent
     || ! parent->hasChildren()
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
-  FObjectIterator iter, last;
-  iter = parent->begin();
-  last = parent->end();
+  auto iter = parent->begin();
+  auto last = parent->end();
 
   while ( iter != last )
   {
@@ -1661,7 +1631,7 @@ bool FWidget::focusNextChild()
       continue;
     }
 
-    FWidget* w = static_cast<FWidget*>(*iter);
+    auto w = static_cast<FWidget*>(*iter);
 
     if ( w != this )
     {
@@ -1670,8 +1640,7 @@ bool FWidget::focusNextChild()
     }
 
     FWidget* next = nullptr;
-    constFObjectIterator next_element;
-    next_element = iter;
+    auto next_element = iter;
 
     do
     {
@@ -1707,16 +1676,15 @@ bool FWidget::focusPrevChild()
   if ( isDialogWidget() || ! hasParent() )
     return false;
 
-  FWidget* parent = getParentWidget();
+  auto parent = getParentWidget();
 
   if ( ! parent
     || ! parent->hasChildren()
     || parent->numOfFocusableChildren() <= 1 )
     return false;
 
-  FObjectIterator iter, first;
-  iter  = parent->end();
-  first = parent->begin();
+  auto iter  = parent->end();
+  auto first = parent->begin();
 
   do
   {
@@ -1725,14 +1693,13 @@ bool FWidget::focusPrevChild()
     if ( ! (*iter)->isWidget() )
       continue;
 
-    FWidget* w = static_cast<FWidget*>(*iter);
+    auto w = static_cast<FWidget*>(*iter);
 
     if ( w != this )
       continue;
 
     FWidget* prev = nullptr;
-    constFObjectIterator prev_element;
-    prev_element = iter;
+    auto prev_element = iter;
 
     do
     {
@@ -1771,75 +1738,75 @@ bool FWidget::event (FEvent* ev)
   switch ( ev->type() )
   {
     case fc::KeyPress_Event:
-      KeyPressEvent ( static_cast<FKeyEvent*>(ev) );
+      KeyPressEvent (static_cast<FKeyEvent*>(ev));
       break;
 
     case fc::KeyUp_Event:
-      onKeyUp ( static_cast<FKeyEvent*>(ev) );
+      onKeyUp (static_cast<FKeyEvent*>(ev));
       break;
 
     case fc::KeyDown_Event:
-      KeyDownEvent ( static_cast<FKeyEvent*>(ev) );
+      KeyDownEvent (static_cast<FKeyEvent*>(ev));
       break;
 
     case fc::MouseDown_Event:
-      onMouseDown ( static_cast<FMouseEvent*>(ev) );
+      onMouseDown (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::MouseUp_Event:
-      onMouseUp ( static_cast<FMouseEvent*>(ev) );
+      onMouseUp (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::MouseDoubleClick_Event:
-      onMouseDoubleClick ( static_cast<FMouseEvent*>(ev) );
+      onMouseDoubleClick (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::MouseWheel_Event:
-      onWheel ( static_cast<FWheelEvent*>(ev) );
+      onWheel (static_cast<FWheelEvent*>(ev));
       break;
 
     case fc::MouseMove_Event:
-      onMouseMove ( static_cast<FMouseEvent*>(ev) );
+      onMouseMove (static_cast<FMouseEvent*>(ev));
       break;
 
     case fc::FocusIn_Event:
-      onFocusIn ( static_cast<FFocusEvent*>(ev) );
+      onFocusIn (static_cast<FFocusEvent*>(ev));
       break;
 
     case fc::FocusOut_Event:
-      onFocusOut ( static_cast<FFocusEvent*>(ev) );
+      onFocusOut (static_cast<FFocusEvent*>(ev));
       break;
 
     case fc::ChildFocusIn_Event:
-      onChildFocusIn ( static_cast<FFocusEvent*>(ev) );
+      onChildFocusIn (static_cast<FFocusEvent*>(ev));
       break;
 
     case fc::ChildFocusOut_Event:
-      onChildFocusOut ( static_cast<FFocusEvent*>(ev) );
+      onChildFocusOut (static_cast<FFocusEvent*>(ev));
       break;
 
     case fc::Accelerator_Event:
-      onAccel ( static_cast<FAccelEvent*>(ev) );
+      onAccel (static_cast<FAccelEvent*>(ev));
       break;
 
     case fc::Resize_Event:
-      onResize ( static_cast<FResizeEvent*>(ev) );
+      onResize (static_cast<FResizeEvent*>(ev));
       break;
 
     case fc::Show_Event:
-      onShow ( static_cast<FShowEvent*>(ev) );
+      onShow (static_cast<FShowEvent*>(ev));
       break;
 
     case fc::Hide_Event:
-      onHide ( static_cast<FHideEvent*>(ev) );
+      onHide (static_cast<FHideEvent*>(ev));
       break;
 
     case fc::Close_Event:
-      onClose ( static_cast<FCloseEvent*>(ev) );
+      onClose (static_cast<FCloseEvent*>(ev));
       break;
 
     case fc::Timer_Event:
-      onTimer ( static_cast<FTimerEvent*>(ev) );
+      onTimer (static_cast<FTimerEvent*>(ev));
       break;
 
     default:
@@ -2169,15 +2136,14 @@ void FWidget::drawWindows()
   if ( ! window_list || window_list->empty() )
     return;
 
-  widgetList::const_iterator iter, last;
-  iter = window_list->begin();
-  last  = window_list->end();
+  auto iter = window_list->begin();
+  auto last  = window_list->end();
 
   while ( iter != last )
   {
     if ( (*iter)->isVisible() )
     {
-      term_area* win = (*iter)->getVWin();
+      auto win = (*iter)->getVWin();
       int w = win->width  + win->right_shadow;
       int h = win->height + win->bottom_shadow;
       std::fill_n (win->text, w * h, default_char);
@@ -2196,15 +2162,14 @@ void FWidget::drawChildren()
   if ( ! hasChildren() )
     return;
 
-  constFObjectIterator iter, last;
-  iter = FObject::begin();
-  last = FObject::end();
+  auto iter = FObject::begin();
+  auto last = FObject::end();
 
   while ( iter != last )
   {
     if ( (*iter)->isWidget() )
     {
-      FWidget* widget = static_cast<FWidget*>(*iter);
+      auto widget = static_cast<FWidget*>(*iter);
 
       if ( widget->isVisible() && ! widget->isWindowWidget() )
         widget->redraw();
@@ -2226,9 +2191,9 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
   setColor (wc.shadow_bg, wc.shadow_fg);
   setTransShadow();
 
-  for (int i = 1; i < int(getHeight()); i++)
+  for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + i);
+    setPrintPos (x2 + 1, y1 + int(y));
     print ("  ");
   }
 
@@ -2241,7 +2206,7 @@ void FWidget::drawTransparentShadow (int x1, int y1, int x2, int y2)
   setColor (wc.shadow_bg, wc.shadow_fg);
   setTransShadow();
 
-  for (std::size_t i = 2; i <= getWidth() + 1; i++)
+  for (std::size_t x = 2; x <= getWidth() + 1; x++)
     print (' ');
 
   unsetTransShadow();
@@ -2266,7 +2231,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
     setColor (wc.shadow_fg, wc.shadow_bg);
     setInheritBackground();  // current background color will be ignored
   }
-  else if ( FWidget* p = getParentWidget() )
+  else if ( auto p = getParentWidget() )
     setColor (wc.shadow_fg, p->getBackgroundColor());
 
   block = fc::FullBlock;  // █
@@ -2275,9 +2240,9 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   if ( isWindowWidget() )
     unsetInheritBackground();
 
-  for (int i = 1; i < int(getHeight()); i++)
+  for (std::size_t y = 1; y < getHeight(); y++)
   {
-    setPrintPos (x2 + 1, y1 + i);
+    setPrintPos (x2 + 1, y1 + int(y));
     print (block);  // █
   }
 
@@ -2286,7 +2251,7 @@ void FWidget::drawBlockShadow (int x1, int y1, int x2, int y2)
   if ( isWindowWidget() )
     setInheritBackground();
 
-  for (std::size_t i = 1; i <= getWidth(); i++)
+  for (std::size_t x = 1; x <= getWidth(); x++)
     print (fc::UpperHalfBlock);  // ▀
 
   if ( isWindowWidget() )

@@ -254,7 +254,7 @@ Window::Window (finalcut::FWidget* parent)
   // Generate data vector for the windows
   for (int n = 1; n <= 6; n++)
   {
-    win_data* win_dat = new win_data;
+    auto win_dat = new win_data;
     win_dat->title.sprintf("Window %1d", n);
     windows.push_back(win_dat);
   }
@@ -263,12 +263,11 @@ Window::Window (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 Window::~Window()
 {
-  std::vector<win_data*>::iterator iter;
-  iter = windows.begin();
+  auto iter = windows.begin();
 
   while ( iter != windows.end() )
   {
-    win_data* win_dat = *iter;
+    auto win_dat = *iter;
 
     // Remove all callbacks before Window::cb_destroyWindow() will be called
     if ( win_dat->is_open && win_dat->dgl )
@@ -337,7 +336,6 @@ void Window::activateWindow (finalcut::FDialog* win)
 //----------------------------------------------------------------------
 void Window::adjustSize()
 {
-  std::vector<win_data*>::const_iterator iter, first;
   std::size_t w  = getRootWidget()->getWidth();
   std::size_t h  = getRootWidget()->getHeight();
   int X  = int(1 + (w - 40) / 2)
@@ -349,7 +347,8 @@ void Window::adjustSize()
     Y = 2;
 
   setPos (X, Y);
-  iter = first = windows.begin();
+  auto first = windows.begin();
+  auto iter = first;
 
   while ( iter != windows.end() )
   {
@@ -404,10 +403,10 @@ void Window::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
 {
-  std::vector<win_data*>::const_iterator iter, first;
-  iter = first = windows.begin();
-  std::size_t w = getRootWidget()->getWidth();
-  std::size_t h = getRootWidget()->getHeight();
+  auto first = windows.begin();
+  auto iter = first;
+  auto w = getRootWidget()->getWidth();
+  auto h = getRootWidget()->getHeight();
   int dx = ( w > 80 ) ? int(w - 80) / 2 : 0;
   int dy = ( h > 24 ) ? int(h - 24) / 2 : 0;
 
@@ -415,8 +414,8 @@ void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
   {
     if ( ! (*iter)->is_open )
     {
-      win_data* win_dat = *iter;
-      SmallWindow* win = new SmallWindow(this);
+      auto win_dat = *iter;
+      auto win = new SmallWindow(this);
       win_dat->dgl = win;
       win_dat->is_open = true;
       win->setText(win_dat->title);
@@ -448,9 +447,8 @@ void Window::cb_closeWindows (finalcut::FWidget*, data_ptr)
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  finalcut::FWidget::widgetList::const_iterator iter, first;
-  iter = dialog_list->end();
-  first = dialog_list->begin();
+  auto iter = dialog_list->end();
+  auto first = dialog_list->begin();
   activateWindow(this);
 
   do
@@ -469,16 +467,14 @@ void Window::cb_next (finalcut::FWidget*, data_ptr)
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  finalcut::FWidget::widgetList::const_iterator iter;
-  iter = dialog_list->begin();
+  auto iter = dialog_list->begin();
 
   while ( iter != dialog_list->end() )
   {
     if ( static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
       finalcut::FDialog* next;
-      finalcut::FWidget::widgetList::const_iterator next_element;
-      next_element = iter;
+      auto next_element = iter;
 
       do
       {
@@ -507,8 +503,7 @@ void Window::cb_previous (finalcut::FWidget*, data_ptr)
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  finalcut::FWidget::widgetList::const_iterator iter;
-  iter = dialog_list->end();
+  auto iter = dialog_list->end();
 
   do
   {
@@ -518,8 +513,7 @@ void Window::cb_previous (finalcut::FWidget*, data_ptr)
       && static_cast<finalcut::FWindow*>(*iter)->isWindowActive() )
     {
       finalcut::FDialog* prev;
-      finalcut::FWidget::widgetList::const_iterator prev_element;
-      prev_element = iter;
+      auto prev_element = iter;
 
       do
       {
@@ -543,7 +537,7 @@ void Window::cb_previous (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void Window::cb_destroyWindow (finalcut::FWidget*, data_ptr data)
 {
-  win_data* win_dat = static_cast<win_data*>(data);
+  auto win_dat = static_cast<win_data*>(data);
 
   if ( win_dat )
   {

@@ -135,7 +135,7 @@ void FListBox::setCurrentItem (listBoxItems::iterator iter)
 void FListBox::showInsideBrackets ( std::size_t index
                                   , fc::brackets_type b )
 {
-  listBoxItems::iterator iter = index2iterator(index - 1);
+  auto iter = index2iterator(index - 1);
   iter->brackets = b;
 
   if ( b == fc::NoBrackets )
@@ -217,7 +217,7 @@ void FListBox::hide()
 {
   std::size_t n, size;
   FColor fg, bg;
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )
@@ -238,7 +238,7 @@ void FListBox::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getHeight()); y++)
   {
@@ -295,7 +295,7 @@ void FListBox::remove (std::size_t item)
   element_count = getCount();
   max_line_width = 0;
 
-  listBoxItems::iterator iter = itemlist.begin();
+  auto iter = itemlist.begin();
 
   while ( iter != itemlist.end() )
   {
@@ -365,7 +365,7 @@ void FListBox::clear()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   std::memset (blank, ' ', size);
   blank[size] = '\0';
@@ -750,7 +750,7 @@ void FListBox::adjustYOffset (std::size_t element_count)
 {
   std::size_t height = getClientHeight();
 
-  if ( height == 0 )
+  if ( height == 0 || element_count == 0 )
     return;
 
   if ( yoffset > int(element_count - height) )
@@ -773,9 +773,6 @@ void FListBox::adjustSize()
   std::size_t element_count = getCount();
   std::size_t width = getClientWidth();
   std::size_t height = getClientHeight();
-
-  if ( element_count == 0 )
-    return;
 
   adjustYOffset (element_count);
 
@@ -943,14 +940,11 @@ void FListBox::drawHeadline()
 //----------------------------------------------------------------------
 void FListBox::drawList()
 {
-  std::size_t start, num;
-  listBoxItems::iterator iter;
-
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  start = 0;
-  num   = uInt(getHeight() - 2);
+  std::size_t start = 0;
+  std::size_t num = uInt(getHeight() - 2);
 
   if ( num > getCount() )
     num = getCount();
@@ -966,7 +960,7 @@ void FListBox::drawList()
     num = std::max(last_pos, current_pos) + 1;
   }
 
-  iter = index2iterator(start + std::size_t(yoffset));
+  auto iter = index2iterator(start + std::size_t(yoffset));
 
   for (std::size_t y = start; y < num && iter != itemlist.end() ; y++)
   {
@@ -1277,7 +1271,7 @@ inline void FListBox::getWidgetFocus()
   if ( hasFocus() )
     return;
 
-  FWidget* focused_widget = getFocusWidget();
+  auto focused_widget = getFocusWidget();
   FFocusEvent out (fc::FocusOut_Event);
   FApplication::queueEvent(focused_widget, &out);
   setFocus();
@@ -1688,7 +1682,7 @@ inline bool FListBox::keySpace()
   {
     inc_search += L' ';
     bool inc_found = false;
-    listBoxItems::iterator iter = itemlist.begin();
+    auto iter = itemlist.begin();
 
     while ( iter != itemlist.end() )
     {
@@ -1763,7 +1757,7 @@ inline bool FListBox::keyBackspace()
 
     if ( inc_len > 1 )
     {
-      listBoxItems::iterator iter = itemlist.begin();
+      auto iter = itemlist.begin();
 
       while ( iter != itemlist.end() )
       {
@@ -1798,7 +1792,7 @@ inline bool FListBox::keyIncSearchInput (FKey key)
 
   std::size_t inc_len = inc_search.getLength();
   bool inc_found = false;
-  listBoxItems::iterator iter = itemlist.begin();
+  auto iter = itemlist.begin();
 
   while ( iter != itemlist.end() )
   {

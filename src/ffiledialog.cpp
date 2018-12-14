@@ -310,7 +310,7 @@ void FFileDialog::adjustSize()
   std::size_t max_width;
   std::size_t max_height;
   std::size_t h;
-  FWidget* root_widget = getRootWidget();
+  auto root_widget = getRootWidget();
 
   if ( root_widget )
   {
@@ -352,10 +352,9 @@ void FFileDialog::init()
   static const std::size_t w = 42;
   static const std::size_t h = 15;
   int x, y;
-  FWidget* parent_widget;
 
   setGeometry(1, 1, w, h, false);
-  parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
@@ -468,14 +467,12 @@ inline bool FFileDialog::pattern_match ( const char* const pattern
 //----------------------------------------------------------------------
 void FFileDialog::clear()
 {
-  std::vector<dir_entry>::const_iterator iter, last;
-
   if ( dir_entries.empty() )
     return;
 
   // delete all directory entries;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
+  auto iter = dir_entries.begin();
+  auto last = dir_entries.end();
 
   while ( iter != last )
   {
@@ -493,9 +490,8 @@ int FFileDialog::numOfDirs()
     return 0;
 
   int n = 0;
-  std::vector<dir_entry>::const_iterator iter, last;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
+  auto iter = dir_entries.begin();
+  auto last = dir_entries.end();
 
   while ( iter != last )
   {
@@ -672,9 +668,8 @@ void FFileDialog::dirEntriesToList()
   if ( dir_entries.empty() )
     return;
 
-  std::vector<dir_entry>::const_iterator iter, last;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
+  auto iter = dir_entries.begin();
+  auto last = dir_entries.end();
 
   while ( iter != last )
   {
@@ -720,11 +715,10 @@ int FFileDialog::changeDir (const FString& dirname)
         else if ( ! dir_entries.empty() )
         {
           std::size_t i = 1;
-          std::vector<dir_entry>::const_iterator iter, last;
           const char* const baseName = \
               basename(C_STR(lastdir.c_str()));
-          iter = dir_entries.begin();
-          last = dir_entries.end();
+          auto iter = dir_entries.begin();
+          auto last = dir_entries.end();
 
           while ( iter != last )
           {
@@ -812,10 +806,9 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
     if ( ! dir_entries.empty() )
     {
-      std::vector<dir_entry>::const_iterator iter, last;
       const FString& input = filename.getText().trim();
-      iter = dir_entries.begin();
-      last = dir_entries.end();
+      auto iter = dir_entries.begin();
+      auto last = dir_entries.end();
 
       while ( iter != last )
       {

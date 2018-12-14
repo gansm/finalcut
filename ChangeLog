@@ -1,3 +1,6 @@
+2018-12-15  Markus Gans  <guru.mail@muenster.de>
+	* Use of the C++11 auto specifier in the program code
+
 2018-12-09  Markus Gans  <guru.mail@muenster.de>
 	* Better handling of the scrollbar maximum
 	* Deactivate copy constructor and assignment operator with "= delete"

@@ -91,7 +91,7 @@ FTerm::~FTerm()  // destructor
 //----------------------------------------------------------------------
 std::size_t FTerm::getLineNumber()
 {
-  FRect& term_geometry = data->getTermGeometry();
+  auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getHeight() == 0 )
     detectTermSize();
@@ -102,7 +102,7 @@ std::size_t FTerm::getLineNumber()
 //----------------------------------------------------------------------
 std::size_t FTerm::getColumnNumber()
 {
-  FRect& term_geometry = data->getTermGeometry();
+  auto& term_geometry = data->getTermGeometry();
 
   if ( term_geometry.getWidth() == 0 )
     detectTermSize();
@@ -125,7 +125,7 @@ bool FTerm::isNormal (charData*& ch)
 //----------------------------------------------------------------------
 bool FTerm::isCursorHideable()
 {
-  char* cursor_off_str = disableCursor();
+  const char* cursor_off_str = disableCursor();
 
   if ( cursor_off_str && std::strlen(cursor_off_str) > 0 )
     return true;
@@ -319,7 +319,7 @@ bool FTerm::setOldFont()
 int FTerm::openConsole()
 {
   int fd = data->getTTYFileDescriptor();
-  char* termfilename = data->getTermFileName();
+  const char* termfilename = data->getTermFileName();
 
   static const char* terminal_devices[] =
   {
@@ -338,7 +338,7 @@ int FTerm::openConsole()
   if ( ! *termfilename )
     return 0;
 
-  for (int i = 0; terminal_devices[i] != 0; i++)
+  for (std::size_t i = 0; terminal_devices[i] != 0; i++)
   {
     fd = open(terminal_devices[i], O_RDWR, 0);
     data->setTTYFileDescriptor(fd);
@@ -420,8 +420,8 @@ char* FTerm::enableCursor()
 
   static const std::size_t SIZE = 32;
   static char enable_str[SIZE] = { };
-  char*& vs = TCAP(fc::t_cursor_visible);
-  char*& ve = TCAP(fc::t_cursor_normal);
+  const auto& vs = TCAP(fc::t_cursor_visible);
+  const auto& ve = TCAP(fc::t_cursor_normal);
 
   if ( ve )
     std::strncpy (enable_str, ve, SIZE - 1);
@@ -432,8 +432,7 @@ char* FTerm::enableCursor()
   if ( isLinuxTerm() )
   {
     // Restore the last used Linux console cursor style
-    char* cstyle;
-    cstyle = linux->restoreCursorStyle();
+    const char* cstyle = linux->restoreCursorStyle();
     std::strncat (enable_str, cstyle, SIZE - std::strlen(enable_str) - 1);
   }
 #endif  // defined(__linux__)
@@ -456,7 +455,7 @@ char* FTerm::disableCursor()
 {
   // Returns the cursor disable string
 
-  char*& vi = TCAP(fc::t_cursor_invisible);
+  const auto& vi = TCAP(fc::t_cursor_invisible);
 
   if ( vi )
     return vi;
@@ -483,7 +482,7 @@ void FTerm::detectTermSize()
     close_after_detect = true;
   }
 
-  FRect& term_geometry = data->getTermGeometry();
+  auto& term_geometry = data->getTermGeometry();
   ret = ioctl (fd, TIOCGWINSZ, &win_size);
 
   if ( ret != 0 || win_size.ws_col == 0 || win_size.ws_row == 0 )
@@ -549,8 +548,8 @@ void FTerm::saveColorMap()
 //----------------------------------------------------------------------
 void FTerm::resetColorMap()
 {
-  char*& oc = TCAP(fc::t_orig_colors);
-  char*& op = TCAP(fc::t_orig_pair);
+  const auto& oc = TCAP(fc::t_orig_colors);
+  const auto& op = TCAP(fc::t_orig_pair);
 
   if ( oc )
     putstring (oc);
@@ -571,8 +570,8 @@ void FTerm::setPalette (FColor index, int r, int g, int b)
 {
   // Redefine RGB color value for a palette entry
 
-  char*& Ic = TCAP(fc::t_initialize_color);
-  char*& Ip = TCAP(fc::t_initialize_pair);
+  const auto& Ic = TCAP(fc::t_initialize_color);
+  const auto& Ip = TCAP(fc::t_initialize_pair);
 
   index = FOptiAttr::vga2ansi(index);
 
@@ -682,12 +681,11 @@ fc::encoding FTerm::getEncoding()
 //----------------------------------------------------------------------
 std::string FTerm::getEncodingString()
 {
-  fc::encoding term_encoding = data->getTermEncoding();
-  FTermData::encodingMap& encoding_list = data->getEncodingList();
-  std::map<std::string, fc::encoding>::const_iterator it, end;
-  end = encoding_list.end();
+  auto term_encoding = data->getTermEncoding();
+  auto& encoding_list = data->getEncodingList();
+  auto end = encoding_list.end();
 
-  for (it = encoding_list.begin(); it != end; ++it )
+  for (auto it = encoding_list.begin(); it != end; ++it )
     if ( it->second == term_encoding )
       return it->first;
 
@@ -710,7 +708,7 @@ uInt FTerm::charEncode (uInt c)
 //----------------------------------------------------------------------
 uInt FTerm::charEncode (uInt c, fc::encoding enc)
 {
-  for (uInt i = 0; i <= uInt(fc::lastCharItem); i++)
+  for (std::size_t i = 0; i <= uInt(fc::lastCharItem); i++)
   {
     if ( fc::character[i][fc::UTF8] == c )
     {
@@ -947,7 +945,7 @@ void FTerm::init_alt_charset()
 
   if ( TCAP(fc::t_acs_chars) )
   {
-    for (int n = 0; TCAP(fc::t_acs_chars)[n]; n += 2)
+    for (std::size_t n = 0; TCAP(fc::t_acs_chars)[n]; n += 2)
     {
       // insert the VT100 key/value pairs into a map
       uChar p1 = uChar(TCAP(fc::t_acs_chars)[n]);
@@ -963,7 +961,7 @@ void FTerm::init_alt_charset()
   };
 
   // Update array 'character' with discovered VT100 pairs
-  for (int n = 0; n <= fc::lastKeyItem; n++ )
+  for (std::size_t n = 0; n <= fc::lastKeyItem; n++ )
   {
     uChar keyChar = uChar(fc::vt100_key_to_utf8[n][vt100_key]);
     uChar altChar = uChar(vt100_alt_char[keyChar]);
@@ -1051,7 +1049,7 @@ void FTerm::init_cygwin_charmap()
   if ( ! isCygwinTerminal() )
     return;
 
-  for (int i = 0; i <= fc::lastCharItem; i++ )
+  for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
   {
     if ( fc::character[i][fc::UTF8] == fc::BlackUpPointingTriangle    // ▲
       || fc::character[i][fc::UTF8] == fc::BlackDownPointingTriangle  // ▼
@@ -1082,7 +1080,7 @@ void FTerm::init_teraterm_charmap()
   if ( ! isTeraTerm() )
     return;
 
-  for (int i = 0; i <= fc::lastCharItem; i++ )
+  for (std::size_t i = 0; i <= fc::lastCharItem; i++ )
     if ( fc::character[i][fc::PC] < 0x20 )
       fc::character[i][fc::PC] = fc::character[i][fc::ASCII];
 }
@@ -1208,21 +1206,11 @@ void FTerm::init_optiAttr()
 //----------------------------------------------------------------------
 void FTerm::init_font()
 {
-  if ( init_values.vgafont )
-  {
-    bool ret = setVGAFont();
+  if ( init_values.vgafont && ! setVGAFont() )
+    exitWithMessage ("VGAfont is not supported by this terminal");
 
-    if ( ! ret )
-      exitWithMessage ("VGAfont is not supported by this terminal");
-  }
-
-  if ( init_values.newfont )
-  {
-    bool ret = setNewFont();
-
-    if ( ! ret )
-      exitWithMessage ("Newfont is not supported by this terminal");
-  }
+  if ( init_values.newfont && ! setNewFont() )
+    exitWithMessage ("Newfont is not supported by this terminal");
 }
 
 //----------------------------------------------------------------------
@@ -1310,8 +1298,7 @@ inline void FTerm::init_encoding_set()
 {
   // Define the encoding set
 
-  FTermData::encodingMap& encoding_list = data->getEncodingList();
-
+  auto& encoding_list = data->getEncodingList();
   encoding_list["UTF8"]  = fc::UTF8;
   encoding_list["UTF-8"] = fc::UTF8;
   encoding_list["VT100"] = fc::VT100;  // VT100 line drawing
@@ -1403,7 +1390,7 @@ void FTerm::init_tab_quirks()
   // on the terminal and does not move the cursor to the next tab stop
   // position
 
-  fc::encoding enc = data->getTermEncoding();
+  auto enc = data->getTermEncoding();
 
   if ( enc == fc::VT100 || enc == fc::PC )
   {
@@ -1498,9 +1485,8 @@ void FTerm::setInsertCursorStyle()
   setKDECursor(fc::UnderlineCursor);
 
 #if defined(__linux__)
-  char* cstyle;
-  cstyle = linux->setCursorStyle ( fc::underscore_cursor
-                                 , data->isCursorHidden() );
+  const char* cstyle = linux->setCursorStyle ( fc::underscore_cursor
+                                             , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
@@ -1519,9 +1505,8 @@ void FTerm::setOverwriteCursorStyle()
   setKDECursor(fc::BlockCursor);
 
 #if defined(__linux__)
-  char* cstyle;
-  cstyle = linux->setCursorStyle ( fc::full_block_cursor
-                                 , data->isCursorHidden() );
+  char* cstyle = linux->setCursorStyle ( fc::full_block_cursor
+                                       , data->isCursorHidden() );
   putstring (cstyle);
   std::fflush(stdout);
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
@@ -2009,7 +1994,7 @@ uInt FTerm::cp437_to_unicode (uChar c)
 {
   uInt ucs = uInt(c);
 
-  for (uInt i = 0; i <= fc::lastCP437Item; i++)
+  for (std::size_t i = 0; i <= fc::lastCP437Item; i++)
   {
     if ( fc::cp437_to_ucs[i][0] == c )  // found
     {

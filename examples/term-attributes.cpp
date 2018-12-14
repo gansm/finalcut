@@ -194,7 +194,7 @@ class AttribDemo : public finalcut::FWidget
     // Event handler
     virtual void onWheel (finalcut::FWheelEvent* ev)
     {
-      AttribDlg* p = static_cast<AttribDlg*>(getParentWidget());
+      auto p = static_cast<AttribDlg*>(getParentWidget());
 
       if ( p )
         p->onWheel(ev);
@@ -240,7 +240,7 @@ AttribDemo::AttribDemo (finalcut::FWidget* parent)
 //----------------------------------------------------------------------
 void AttribDemo::printColorLine()
 {
-  AttribDlg* parent = static_cast<AttribDlg*>(getParent());
+  auto parent = static_cast<AttribDlg*>(getParent());
 
   for (FColor color = 0; color < colors; color++)
   {
@@ -252,7 +252,7 @@ void AttribDemo::printColorLine()
 //----------------------------------------------------------------------
 void AttribDemo::printAltCharset()
 {
-  AttribDlg* parent = static_cast<AttribDlg*>(getParent());
+  auto parent = static_cast<AttribDlg*>(getParent());
 
   if ( ! isMonochron() )
     setColor (wc.label_fg, wc.label_bg);
