@@ -65,7 +65,7 @@ void FTermcapQuirks::setFTermDetection (FTermDetection* td)
 //----------------------------------------------------------------------
 void FTermcapQuirks::terminalFixup()
 {
-  FTermDetection* td = term_detection;
+  auto td = term_detection;
 
   if ( td->isCygwinTerminal() )
   {
@@ -405,7 +405,7 @@ void FTermcapQuirks::sunConsole()
       C_STR(CSI "%p1%dD");
 
   // Sun Microsystems workstation console keys
-  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
   {
     if ( std::strncmp(fc::Fkey[i].tname, "K2", 2) == 0 )
       fc::Fkey[i].string = C_STR(CSI "218z");  // center of keypad

@@ -273,7 +273,7 @@ void FLineEdit::hide()
 {
   std::size_t s, size;
   FColor fg, bg;
-  FWidget* parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   FWidget::hide();
 
@@ -295,7 +295,7 @@ void FLineEdit::hide()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (std::size_t y = 0; y < getHeight() + s; y++)
   {
@@ -395,7 +395,7 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
 
   if ( ! hasFocus() )
   {
-    FWidget* focused_widget = getFocusWidget();
+    auto focused_widget = getFocusWidget();
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
@@ -558,7 +558,7 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 
   if ( ! hasFocus() )
   {
-    FWidget* focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
 
     if ( focused_widget && focused_widget->isWidget() )
     {

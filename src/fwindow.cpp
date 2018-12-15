@@ -51,7 +51,7 @@ FWindow::FWindow(FWidget* parent)
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
-  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( previous_window == this )
     previous_window = nullptr;
@@ -103,7 +103,6 @@ bool FWindow::setWindowWidget (bool on)
 void FWindow::setActiveWindow (FWindow* window)
 {
   // activate FWindow object window
-  widgetList::const_iterator iter, end;
 
   if ( ! window_list )
     return;
@@ -111,8 +110,8 @@ void FWindow::setActiveWindow (FWindow* window)
   if ( window_list->empty() )
     return;
 
-  iter = window_list->begin();
-  end  = window_list->end();
+  auto iter = window_list->begin();
+  auto end  = window_list->end();
 
   while ( iter != end )
   {
@@ -127,7 +126,7 @@ void FWindow::setActiveWindow (FWindow* window)
     }
     else
     {
-      FWindow* w = static_cast<FWindow*>(*iter);
+      auto w = static_cast<FWindow*>(*iter);
 
       if ( w->isWindowActive() )
       {
@@ -439,16 +438,15 @@ FWindow* FWindow::getWindowWidgetAt (int x, int y)
   // returns the window object to the corresponding coordinates
   if ( window_list && ! window_list->empty() )
   {
-    widgetList::const_iterator iter, begin;
-    iter  = window_list->end();
-    begin = window_list->begin();
+    auto iter  = window_list->end();
+    auto begin = window_list->begin();
 
     do
     {
       --iter;
       if ( *iter )
       {
-        FWindow* w = static_cast<FWindow*>(*iter);
+        auto w = static_cast<FWindow*>(*iter);
 
         if ( ! w->isWindowHidden()
           && w->getTermGeometry().contains(x, y) )
@@ -478,8 +476,7 @@ void FWindow::delWindow (FWidget* obj)
   if ( ! window_list || window_list->empty() )
     return;
 
-  widgetList::iterator iter;
-  iter = window_list->begin();
+  auto iter = window_list->begin();
 
   while ( iter != window_list->end() )
   {
@@ -497,7 +494,7 @@ void FWindow::delWindow (FWidget* obj)
 FWindow* FWindow::getWindowWidget (const FWidget* obj)
 {
   // returns the window object to the given widget obj
-  FWidget* p_obj = obj->getParentWidget();
+  auto p_obj = obj->getParentWidget();
 
   while ( ! obj->isWindowWidget() && p_obj )
   {
@@ -515,7 +512,7 @@ FWindow* FWindow::getWindowWidget (const FWidget* obj)
 int FWindow::getWindowLayer (const FWidget* obj)
 {
   // returns the window layer from the widget obj
-  widgetList::iterator iter, end;
+
   const FWidget* window;
 
   if ( ! window_list )
@@ -532,8 +529,8 @@ int FWindow::getWindowLayer (const FWidget* obj)
   else
     window = obj;
 
-  iter = window_list->begin();
-  end  = window_list->end();
+  auto iter = window_list->begin();
+  auto end  = window_list->end();
 
   while ( iter != end )
   {
@@ -550,7 +547,6 @@ int FWindow::getWindowLayer (const FWidget* obj)
 void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 {
   // swaps the window layer between obj1 and obj2
-  widgetList::iterator iter, iter1, iter2, end;
 
   if ( ! window_list )
     return;
@@ -564,10 +560,10 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
   if ( obj2->getFlags().modal )
     return;
 
-  iter  = window_list->begin();
-  end   = window_list->end();
-  iter1 = end;
-  iter2 = end;
+  auto iter  = window_list->begin();
+  auto end   = window_list->end();
+  auto iter1 = end;
+  auto iter2 = end;
 
   while ( iter != end )
   {
@@ -587,7 +583,6 @@ void FWindow::swapWindow (FWidget* obj1, FWidget* obj2)
 bool FWindow::raiseWindow (FWidget* obj)
 {
   // raises the window widget obj to the top
-  widgetList::iterator iter;
 
   if ( ! window_list )
     return false;
@@ -605,7 +600,7 @@ bool FWindow::raiseWindow (FWidget* obj)
     && ! obj->isMenuWidget() )
     return false;
 
-  iter = window_list->begin();
+  auto iter = window_list->begin();
 
   while ( iter != window_list->end() )
   {
@@ -629,7 +624,6 @@ bool FWindow::raiseWindow (FWidget* obj)
 bool FWindow::lowerWindow (FWidget* obj)
 {
   // lowers the window widget obj to the bottom
-  widgetList::iterator iter;
 
   if ( ! window_list )
     return false;
@@ -646,7 +640,7 @@ bool FWindow::lowerWindow (FWidget* obj)
   if ( obj->getFlags().modal )
     return false;
 
-  iter = window_list->begin();
+  auto iter = window_list->begin();
 
   while ( iter != window_list->end() )
   {
@@ -701,21 +695,20 @@ void FWindow::switchToPrevWindow (FWidget* widget)
     widget->updateTerminal (FVTerm::stop_refresh);
 
   bool is_activated = activatePrevWindow();
-  FWindow* active_win = static_cast<FWindow*>(getActiveWindow());
+  auto active_win = static_cast<FWindow*>(getActiveWindow());
 
   if ( ! is_activated )
   {
     // no previous window -> looking for another window
     if ( window_list && window_list->size() > 1 )
     {
-      widgetList::const_iterator iter, begin;
-      iter  = window_list->end();
-      begin = window_list->begin();
+      auto iter  = window_list->end();
+      auto begin = window_list->begin();
 
       do
       {
         --iter;
-        FWindow* w = static_cast<FWindow*>(*iter);
+        auto w = static_cast<FWindow*>(*iter);
 
         if ( w
           && w != active_win
@@ -733,7 +726,7 @@ void FWindow::switchToPrevWindow (FWidget* widget)
 
   if ( active_win )
   {
-    FWidget* focus = active_win->getWindowFocusWidget();
+    auto focus = active_win->getWindowFocusWidget();
 
     if ( ! active_win->isWindowActive() )
       setActiveWindow(active_win);
@@ -756,7 +749,7 @@ void FWindow::switchToPrevWindow (FWidget* widget)
 bool FWindow::activatePrevWindow()
 {
   // activate the previous window
-  FWindow* w = previous_window;
+  auto w = previous_window;
 
   if ( w )
   {
@@ -787,7 +780,7 @@ void FWindow::setShadowSize (int right, int bottom)
   if ( isVirtualWindow()
     && (new_right != old_right || new_bottom != old_bottom) )
   {
-    FRect geometry = getTermGeometry();
+    auto geometry = getTermGeometry();
     geometry.move(-1, -1);
     resizeArea (geometry, getShadow(), vwin);
   }
@@ -867,8 +860,7 @@ void FWindow::deleteFromAlwaysOnTopList (FWidget* obj)
   if ( ! always_on_top_list || always_on_top_list->empty() )
     return;
 
-  widgetList::iterator iter;
-  iter = always_on_top_list->begin();
+  auto iter = always_on_top_list->begin();
 
   while ( iter != always_on_top_list->end() )
   {
@@ -889,8 +881,7 @@ void FWindow::processAlwaysOnTop()
   if ( ! always_on_top_list || always_on_top_list->empty() )
     return;
 
-  widgetList::iterator iter;
-  iter = always_on_top_list->begin();
+  auto iter = always_on_top_list->begin();
 
   while ( iter != always_on_top_list->end() )
   {

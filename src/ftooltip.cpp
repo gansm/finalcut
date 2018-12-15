@@ -49,14 +49,14 @@ FToolTip::FToolTip (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::~FToolTip()  // destructor
 {
-  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( fapp->isQuit() )
     return;
 
   FWindow* parent_win = nullptr;
 
-  if ( FWidget* parent = getParentWidget() )
+  if ( auto parent = getParentWidget() )
     parent_win = getWindowWidget(parent);
 
   if ( parent_win )
@@ -85,9 +85,9 @@ void FToolTip::draw()
   clearArea();
   drawBorder();
 
-  for (int i = 0; i < int(text_num_lines); i++)
+  for (std::size_t i = 0; i < text_num_lines; i++)
   {
-    setPrintPos (3, 2 + i);
+    setPrintPos (3, 2 + int(i));
     print(text_components[i]);
   }
 
@@ -136,7 +136,7 @@ void FToolTip::calculateDimensions()
 {
   int x, y;
   std::size_t w, h;
-  FWidget* r = getRootWidget();
+  auto r = getRootWidget();
   max_line_width = 0;
   text_split = text.split("\n");
   text_num_lines = uInt(text_split.size());

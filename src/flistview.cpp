@@ -45,10 +45,8 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 //----------------------------------------------------------------------
 long firstNumberFromString (const FString& str)
 {
-  const FString::iterator last = str.end();
-  FString::iterator iter = str.begin();
-  FString::iterator first_pos;
-  FString::iterator last_pos;
+  auto last = str.end();
+  auto iter = str.begin();
   std::size_t pos;
   std::size_t length;
   long number;
@@ -66,7 +64,7 @@ long firstNumberFromString (const FString& str)
     ++iter;
   }
 
-  first_pos = iter;
+  auto first_pos = iter;
 
   if ( first_pos == last )
     return 0;
@@ -79,14 +77,14 @@ long firstNumberFromString (const FString& str)
     ++iter;
   }
 
-  last_pos = iter;
+  auto last_pos = iter;
 
   if ( last_pos == last )
     return 0;
 
   pos = std::size_t(std::distance(str.begin(), first_pos)) + 1;
   length = std::size_t(std::distance(first_pos, last_pos));
-  const FString num_str = str.mid(pos, length);
+  const auto& num_str = str.mid(pos, length);
 
   try
   {
@@ -103,11 +101,11 @@ long firstNumberFromString (const FString& str)
 //----------------------------------------------------------------------
 bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
 {
-  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
-  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const auto l_item = static_cast<const FListViewItem*>(lhs);
+  const auto r_item = static_cast<const FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
-  const FString l_string = l_item->getText(column);
-  const FString r_string = r_item->getText(column);
+  const auto& l_string = l_item->getText(column);
+  const auto& r_string = r_item->getText(column);
 
   // lhs < rhs
   return bool( strcasecmp(l_string.c_str(), r_string.c_str()) < 0 );
@@ -116,11 +114,11 @@ bool sortAscendingByName (const FObject* lhs, const FObject* rhs)
 //----------------------------------------------------------------------
 bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
 {
-  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
-  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const auto l_item = static_cast<const FListViewItem*>(lhs);
+  const auto r_item = static_cast<const FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
-  const FString l_string = l_item->getText(column);
-  const FString r_string = r_item->getText(column);
+  const auto& l_string = l_item->getText(column);
+  const auto& r_string = r_item->getText(column);
 
   // lhs > rhs
   return bool( strcasecmp(l_string.c_str(), r_string.c_str()) > 0 );
@@ -129,11 +127,11 @@ bool sortDescendingByName (const FObject* lhs, const FObject* rhs)
 //----------------------------------------------------------------------
 bool sortAscendingByNumber (const FObject* lhs, const FObject* rhs)
 {
-  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
-  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const auto l_item = static_cast<const FListViewItem*>(lhs);
+  const auto r_item = static_cast<const FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
-  const long l_number = firstNumberFromString(l_item->getText(column));
-  const long r_number = firstNumberFromString(r_item->getText(column));
+  const auto& l_number = firstNumberFromString(l_item->getText(column));
+  const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs < rhs
   return bool( l_number < r_number );
@@ -142,11 +140,11 @@ bool sortAscendingByNumber (const FObject* lhs, const FObject* rhs)
 //----------------------------------------------------------------------
 bool sortDescendingByNumber (const FObject* lhs, const FObject* rhs)
 {
-  const FListViewItem* l_item = static_cast<const FListViewItem*>(lhs);
-  const FListViewItem* r_item = static_cast<const FListViewItem*>(rhs);
+  const auto l_item = static_cast<const FListViewItem*>(lhs);
+  const auto r_item = static_cast<const FListViewItem*>(rhs);
   const int column = l_item->getSortColumn();
-  const long l_number = firstNumberFromString(l_item->getText(column));
-  const long r_number = firstNumberFromString(r_item->getText(column));
+  const auto& l_number = firstNumberFromString(l_item->getText(column));
+  const auto& r_number = firstNumberFromString(r_item->getText(column));
 
   // lhs > rhs
   return bool( l_number > r_number );
@@ -164,7 +162,7 @@ FListViewItem::FListViewItem (const FListViewItem& item)
   , column_list(item.column_list)
   , data_pointer(item.data_pointer)
 {
-  FObject* parent = getParent();
+  auto parent = getParent();
 
   if ( ! parent )
     return;
@@ -213,7 +211,7 @@ int FListViewItem::getSortColumn() const
   if ( ! *root )
     return -1;
 
-  FListView* root_obj = static_cast<FListView*>(*root);
+  auto root_obj = static_cast<FListView*>(*root);
   return root_obj->getSortColumn();
 }
 
@@ -233,11 +231,11 @@ FString FListViewItem::getText (int column) const
 //----------------------------------------------------------------------
 uInt FListViewItem::getDepth() const
 {
-  FObject* parent = getParent();
+  auto parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListViewItem") )
   {
-    FListViewItem* parent_item = static_cast<FListViewItem*>(parent);
+    auto parent_item = static_cast<FListViewItem*>(parent);
     return parent_item->getDepth() + 1;
   }
 
@@ -254,11 +252,11 @@ void FListViewItem::setText (int column, const FString& text)
 
   // Convert column position to address offset (index)
   std::size_t index = uInt(column - 1);
-  FObject* parent = getParent();
+  auto parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListView") )
   {
-    FListView* listview = static_cast<FListView*>(parent);
+    auto listview = static_cast<FListView*>(parent);
 
     if ( ! listview->header[index].fixed_width )
     {
@@ -294,13 +292,13 @@ FObject::FObjectIterator FListViewItem::insert ( FListViewItem* child
     if ( (*parent_iter)->isInstanceOf("FListView") )
     {
       // Add FListViewItem to a FListView parent
-      FListView* parent = static_cast<FListView*>(*parent_iter);
+      auto parent = static_cast<FListView*>(*parent_iter);
       return parent->insert (child);
     }
     else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
     {
       // Add FListViewItem to a FListViewItem parent
-      FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
+      auto parent = static_cast<FListViewItem*>(*parent_iter);
       return parent->insert (child);
     }
   }
@@ -342,18 +340,8 @@ void FListViewItem::sort (Compare cmp)
     children.sort(cmp);
 
   // Sort the sublevels
-  FListViewIterator iter = begin();
-
-  while ( iter != end() )
-  {
-    if ( *iter )
-    {
-      FListViewItem* item = static_cast<FListViewItem*>(*iter);
-      item->sort(cmp);
-    }
-
-    ++iter;
-  }
+  for (auto&& item : children)
+    static_cast<FListViewItem*>(item)->sort(cmp);
 }
 
 //----------------------------------------------------------------------
@@ -371,7 +359,7 @@ FObject::FObjectIterator FListViewItem::appendItem (FListViewItem* child)
 void FListViewItem::replaceControlCodes()
 {
   // Replace the control codes characters
-  FStringList::iterator iter = column_list.begin();
+  auto iter = column_list.begin();
 
   while ( iter != column_list.end() )
   {
@@ -392,11 +380,11 @@ std::size_t FListViewItem::getVisibleLines()
     return visible_lines;
   }
 
-  constFObjectIterator iter = FObject::begin();
+  auto iter = FObject::begin();
 
   while ( iter != FObject::end() )
   {
-    FListViewItem* child = static_cast<FListViewItem*>(*iter);
+    auto child = static_cast<FListViewItem*>(*iter);
     visible_lines += child->getVisibleLines();
     ++iter;
   }
@@ -411,7 +399,7 @@ void FListViewItem::setCheckable (bool on)
 
   if ( *root )
   {
-    FListView* root_obj = static_cast<FListView*>(*root);
+    auto root_obj = static_cast<FListView*>(*root);
 
     if ( ! root_obj->hasCheckableItems() && isCheckable() )
       root_obj->has_checkable_items = true;
@@ -422,11 +410,11 @@ void FListViewItem::setCheckable (bool on)
 void FListViewItem::resetVisibleLineCounter()
 {
   visible_lines = 0;
-  FObject* parent = getParent();
+  auto parent = getParent();
 
   if ( parent && parent->isInstanceOf("FListViewItem") )
   {
-    FListViewItem* parent_item = static_cast<FListViewItem*>(parent);
+    auto parent_item = static_cast<FListViewItem*>(parent);
     return parent_item->resetVisibleLineCounter();
   }
 }
@@ -502,7 +490,7 @@ FListViewIterator& FListViewIterator::operator -= (volatile int n)
 //----------------------------------------------------------------------
 void FListViewIterator::nextElement (FObjectIterator& iter)
 {
-  FListViewItem* item = static_cast<FListViewItem*>(*iter);
+  auto item = static_cast<FListViewItem*>(*iter);
 
   if ( item->isExpandable() && item->isExpand() )
   {
@@ -517,7 +505,7 @@ void FListViewIterator::nextElement (FObjectIterator& iter)
 
     if ( ! iter_path.empty() )
     {
-      FObjectIterator& parent_iter = iter_path.top();
+      auto& parent_iter = iter_path.top();
 
       if ( iter == (*parent_iter)->end() )
       {
@@ -532,12 +520,11 @@ void FListViewIterator::nextElement (FObjectIterator& iter)
 //----------------------------------------------------------------------
 void FListViewIterator::prevElement (FObjectIterator& iter)
 {
-  FListViewItem* item;
-  FObjectIterator start_iter = iter;
+  auto start_iter = iter;
 
   if ( ! iter_path.empty() )
   {
-    FObjectIterator& parent_iter = iter_path.top();
+    auto& parent_iter = iter_path.top();
 
     if ( start_iter == (*parent_iter)->begin() )
     {
@@ -549,7 +536,7 @@ void FListViewIterator::prevElement (FObjectIterator& iter)
   }
 
   --iter;
-  item = static_cast<FListViewItem*>(*iter);
+  auto item = static_cast<FListViewItem*>(*iter);
 
   if ( iter == start_iter )
     return;
@@ -571,7 +558,7 @@ void FListViewIterator::parentElement()
   if ( iter_path.empty() )
     return;
 
-  FObjectIterator& parent_iter = iter_path.top();
+  auto& parent_iter = iter_path.top();
 
   while ( node != parent_iter )
     prevElement(node);
@@ -603,11 +590,11 @@ FListView::~FListView()  // destructor
 std::size_t FListView::getCount()
 {
   int n = 0;
-  FObjectIterator iter = itemlist.begin();
+  auto iter = itemlist.begin();
 
   while ( iter != itemlist.end() )
   {
-    FListViewItem* item = static_cast<FListViewItem*>(*iter);
+    auto item = static_cast<FListViewItem*>(*iter);
     n += item->getVisibleLines();
     ++iter;
   }
@@ -782,13 +769,13 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
     if ( (*parent_iter)->isInstanceOf("FListView") )
     {
       // Add FListViewItem to a FListView parent
-      FListView* parent = static_cast<FListView*>(*parent_iter);
+      auto parent = static_cast<FListView*>(*parent_iter);
       item_iter = parent->appendItem (item);
     }
     else if ( (*parent_iter)->isInstanceOf("FListViewItem") )
     {
       // Add FListViewItem to a FListViewItem parent
-      FListViewItem* parent = static_cast<FListViewItem*>(*parent_iter);
+      auto parent = static_cast<FListViewItem*>(*parent_iter);
       item_iter = parent->appendItem (item);
     }
     else
@@ -833,7 +820,6 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
                                            , data_ptr d
                                            , FObjectIterator parent_iter )
 {
-  FObjectIterator item_iter;
   FStringList str_cols;
 
   if ( ! cols.empty() )
@@ -842,7 +828,7 @@ FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
       str_cols.push_back (FString().setNumber(cols[i]));
   }
 
-  item_iter = insert (str_cols, d, parent_iter);
+  auto item_iter = insert (str_cols, d, parent_iter);
 
   return item_iter;
 }
@@ -996,7 +982,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
 
   if ( ! hasFocus() )
   {
-    FWidget* focused_widget = getFocusWidget();
+    auto focused_widget = getFocusWidget();
     FFocusEvent out (fc::FocusOut_Event);
     FApplication::queueEvent(focused_widget, &out);
     setFocus();
@@ -1026,7 +1012,7 @@ void FListView::onMouseDown (FMouseEvent* ev)
       if ( new_pos < int(getCount()) )
         setRelativePosition (mouse_y - 2);
 
-      const FListViewItem* item = getCurrentItem();
+      const auto item = getCurrentItem();
 
       if ( tree_view )
       {
@@ -1084,7 +1070,7 @@ void FListView::onMouseUp (FMouseEvent* ev)
       else if ( mouse_y > 1 && mouse_y < int(getHeight()) )  // List
       {
         int indent = 0;
-        FListViewItem* item = getCurrentItem();
+        auto item = getCurrentItem();
 
         if ( tree_view )
         {
@@ -1191,7 +1177,7 @@ void FListView::onMouseDoubleClick (FMouseEvent* ev)
     if ( first_visible_line.getPosition() + mouse_y - 1 > int(getCount()) )
       return;
 
-    FListViewItem* item = getCurrentItem();
+    auto item = getCurrentItem();
 
     if ( tree_view && item->isExpandable() )
     {
@@ -1318,7 +1304,7 @@ void FListView::adjustViewport (int element_count)
 {
   int height = int(getClientHeight());
 
-  if ( height <= 0 )
+  if ( height <= 0 || element_count == 0 )
     return;
 
   if ( element_count < height )
@@ -1360,9 +1346,6 @@ void FListView::adjustSize()
   std::size_t element_count = getCount();
   std::size_t width = getClientWidth();
   std::size_t height = getClientHeight();
-
-  if ( element_count == 0 )
-    return;
 
   adjustViewport (int(element_count));
 
@@ -1454,18 +1437,8 @@ void FListView::sort (Compare cmp)
   itemlist.sort(cmp);
 
   // Sort the sublevels
-  FListViewIterator iter = itemlist.begin();
-
-  while ( iter != itemlist.end() )
-  {
-    if ( *iter )
-    {
-      FListViewItem* item = static_cast<FListViewItem*>(*iter);
-      item->sort(cmp);
-    }
-
-    ++iter;
-  }
+  for (auto&& item : itemlist)
+    static_cast<FListViewItem*>(item)->sort(cmp);
 }
 
 //----------------------------------------------------------------------
@@ -1551,7 +1524,6 @@ void FListView::draw()
 void FListView::drawHeadlines()
 {
   std::vector<charData>::const_iterator first, last;
-  headerItems::const_iterator iter;
 
   if ( header.empty()
     || getHeight() <= 2
@@ -1559,7 +1531,7 @@ void FListView::drawHeadlines()
     || max_line_width < 1 )
     return;
 
-  iter = header.begin();
+  headerItems::const_iterator iter = header.begin();
   headerline.clear();
 
   if ( hasCheckableItems() )
@@ -1602,20 +1574,17 @@ void FListView::drawHeadlines()
 //----------------------------------------------------------------------
 void FListView::drawList()
 {
-  uInt page_height, y;
-  FListViewIterator iter;
-
   if ( itemlist.empty() || getHeight() <= 2 || getWidth() <= 4 )
     return;
 
-  y = 0;
-  page_height = uInt(getHeight() - 2);
-  iter = first_visible_line;
+  uInt y = 0;
+  uInt page_height = uInt(getHeight() - 2);
+  auto iter = first_visible_line;
 
   while ( iter != itemlist.end() && y < page_height )
   {
     bool is_current_line = bool( iter == current_iter );
-    const FListViewItem* item = static_cast<FListViewItem*>(*iter);
+    const auto item = static_cast<FListViewItem*>(*iter);
     int tree_offset = ( tree_view ) ? int(item->getDepth() << 1) + 1 : 0;
     int checkbox_offset = ( item->isCheckable() ) ? 1 : 0;
     setPrintPos (2, 2 + int(y));
@@ -1941,8 +1910,7 @@ std::size_t FListView::determineLineWidth (FListViewItem* item)
   std::size_t line_width = padding_space;  // leading space
   uInt column_idx = 0;
   uInt entries = uInt(item->column_list.size());
-  headerItems::iterator header_iter;
-  header_iter = header.begin();
+  headerItems::iterator header_iter = header.begin();
 
   while ( header_iter != header.end() )
   {
@@ -2039,8 +2007,7 @@ void FListView::mouseHeaderClicked()
   int checkbox_offset = ( hasCheckableItems() ) ? 4 : 0;
   int header_start = 2 + checkbox_offset;
   int header_pos = clicked_header_pos.getX() + xoffset;
-  headerItems::const_iterator iter;
-  iter = header.begin();
+  headerItems::const_iterator iter = header.begin();
 
   while ( iter != header.end() )
   {
@@ -2237,7 +2204,7 @@ void FListView::processChanged()
 //----------------------------------------------------------------------
 inline void FListView::keySpace()
 {
-  FListViewItem* item = getCurrentItem();
+  auto item = getCurrentItem();
 
   if ( item->isCheckable() )
     item->setChecked(! item->isChecked());
@@ -2247,7 +2214,7 @@ inline void FListView::keySpace()
 inline void FListView::keyLeft (int& first_line_position_before)
 {
   int position_before = current_iter.getPosition();
-  FListViewItem* item = getCurrentItem();
+  auto item = getCurrentItem();
 
   if ( xoffset == 0 )
   {
@@ -2264,7 +2231,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
     else if ( item->hasParent() )
     {
       // Jump to parent element
-      FObject* parent = item->getParent();
+      auto parent = item->getParent();
 
       if ( parent->isInstanceOf("FListViewItem") )
       {
@@ -2301,7 +2268,7 @@ inline void FListView::keyLeft (int& first_line_position_before)
 inline void FListView::keyRight (int& first_line_position_before)
 {
   int xoffset_end = int(max_line_width) - int(getClientWidth());
-  FListViewItem* item = getCurrentItem();
+  auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
   {
@@ -2344,7 +2311,7 @@ inline void FListView::keyEnd()
 //----------------------------------------------------------------------
 inline bool FListView::keyPlus()
 {
-  FListViewItem* item = getCurrentItem();
+  auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && ! item->isExpand() )
   {
@@ -2359,7 +2326,7 @@ inline bool FListView::keyPlus()
 //----------------------------------------------------------------------
 inline bool FListView::keyMinus()
 {
-  FListViewItem* item = getCurrentItem();
+  auto item = getCurrentItem();
 
   if ( tree_view && item->isExpandable() && item->isExpand() )
   {

@@ -90,7 +90,7 @@ void FKeyboard::fetchKeyCode()
 //----------------------------------------------------------------------
 const FString FKeyboard::getKeyName (FKey keynum)
 {
-  for (int i = 0; fc::FkeyName[i].string[0] != 0; i++)
+  for (std::size_t i = 0; fc::FkeyName[i].string[0] != 0; i++)
     if ( fc::FkeyName[i].num && fc::FkeyName[i].num == keynum )
       return FString(fc::FkeyName[i].string);
 
@@ -215,7 +215,7 @@ inline FKey FKeyboard::getTermcapKey()
   if ( ! key_map )
     return NOT_SET;
 
-  for (int i = 0; key_map[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; key_map[i].tname[0] != 0; i++)
   {
     char* k = key_map[i].string;
     std::size_t len = ( k ) ? std::strlen(k) : 0;
@@ -245,7 +245,7 @@ inline FKey FKeyboard::getMetaKey()
 
   assert ( FIFO_BUF_SIZE > 0 );
 
-  for (int i = 0; fc::Fmetakey[i].string[0] != 0; i++)
+  for (std::size_t i = 0; fc::Fmetakey[i].string[0] != 0; i++)
   {
     char* kmeta = fc::Fmetakey[i].string;  // The string is never null
     std::size_t len = std::strlen(kmeta);
@@ -419,7 +419,7 @@ void FKeyboard::parseKeyBuffer()
   {
     if ( bytesread + fifo_offset <= int(FIFO_BUF_SIZE) )
     {
-      for (int i = 0; i < bytesread; i++)
+      for (std::size_t i = 0; i < std::size_t(bytesread); i++)
       {
         fifo_buf[fifo_offset] = read_buf[i];
         fifo_offset++;

@@ -254,7 +254,7 @@ Calc::Calc (FWidget* parent)
 
   for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
-    Button* btn = new Button(this);
+    auto btn = new Button(this);
     button_no[key] = key;
 
     if ( key == Equals )

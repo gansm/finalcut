@@ -89,7 +89,7 @@ FVTerm::~FVTerm()  // destructor
 //----------------------------------------------------------------------
 FPoint FVTerm::getPrintCursor()
 {
-  term_area* win = getPrintArea();
+  auto win = getPrintArea();
 
   if ( win )
     return FPoint ( win->offset_left + win->cursor_x
@@ -103,7 +103,6 @@ void FVTerm::setTermXY (int x, int y)
 {
   // Sets the hardware cursor to the given (x,y) position
   int term_x, term_y, term_width, term_height;
-  char* move_str;
 
   if ( term_pos->getX() == x && term_pos->getY() == y )
     return;
@@ -126,7 +125,7 @@ void FVTerm::setTermXY (int x, int y)
   term_x = term_pos->getX();
   term_y = term_pos->getY();
 
-  move_str = FTerm::moveCursor (term_x, term_y, x, y);
+  const char* move_str = FTerm::moveCursor (term_x, term_y, x, y);
 
   if ( move_str )
     appendOutputBuffer(move_str);
@@ -140,7 +139,7 @@ void FVTerm::hideCursor (bool on)
 {
   // Hides or shows the input cursor on the terminal
 
-  char* visibility_str = FTerm::cursorsVisibility (on);
+  const char* visibility_str = FTerm::cursorsVisibility (on);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);
@@ -151,7 +150,7 @@ void FVTerm::hideCursor (bool on)
 //----------------------------------------------------------------------
 void FVTerm::setPrintCursor (int x, int y)
 {
-  term_area* win = getPrintArea();
+  auto win = getPrintArea();
 
   if ( win )
   {
@@ -290,8 +289,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
   if ( ! print_area || print_area->preprocessing_call.empty() )
     return;
 
-  FPreprocessing::iterator iter;
-  iter = print_area->preprocessing_call.begin();
+  auto iter = print_area->preprocessing_call.begin();
 
   while ( iter != print_area->preprocessing_call.end() )
   {
@@ -324,7 +322,7 @@ int FVTerm::printf (const FString format, ...)
 int FVTerm::print (const FString& s)
 {
   assert ( ! s.isNull() );
-  term_area* area = getPrintArea();
+  auto area = getPrintArea();
 
   if ( ! area )
   {
@@ -341,13 +339,12 @@ int FVTerm::print (const FString& s)
 int FVTerm::print (term_area* area, const FString& s)
 {
   assert ( ! s.isNull() );
-  const wchar_t* p;
-  std::vector<charData> term_string;
 
   if ( ! area )
     return -1;
 
-  p = s.wc_str();
+  std::vector<charData> term_string;
+  const wchar_t* p = s.wc_str();
 
   if ( p )
   {
@@ -376,7 +373,7 @@ int FVTerm::print (const std::vector<charData>& term_string)
   if ( term_string.empty() )
     return 0;
 
-  term_area* area = getPrintArea();
+  auto area = getPrintArea();
 
   if ( ! area )
   {
@@ -393,8 +390,6 @@ int FVTerm::print (const std::vector<charData>& term_string)
 int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 {
   int len = 0;
-  std::vector<charData>::const_iterator iter;
-  iter = term_string.begin();
   uInt tabstop = uInt(getTabstop());
 
   if ( ! area )
@@ -403,11 +398,11 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
   if ( term_string.empty() )
     return 0;
 
-  while ( iter != term_string.end() )
+  for (auto&& ch : term_string)
   {
     bool printable_character = false;
 
-    switch ( iter->code )
+    switch ( ch.code )
     {
       case '\n':
         area->cursor_y++;
@@ -434,7 +429,7 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 
       default:
       {
-        charData nc = *iter;  // next character
+        auto nc = ch;  // next character
         print (area, nc);
         printable_character = true;
       }
@@ -444,7 +439,6 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
       break;  // end of area reached
 
     len++;
-    ++iter;
   }
 
   return len;
@@ -453,7 +447,7 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
 //----------------------------------------------------------------------
 int FVTerm::print (wchar_t c)
 {
-  term_area* area = getPrintArea();
+  auto area = getPrintArea();
 
   if ( ! area )
   {
@@ -487,7 +481,7 @@ int FVTerm::print (term_area* area, wchar_t c)
 //----------------------------------------------------------------------
 int FVTerm::print (charData& term_char)
 {
-  term_area* area = getPrintArea();
+  auto area = getPrintArea();
 
   if ( ! area )
   {
@@ -521,9 +515,8 @@ int FVTerm::print (term_area* area, charData& term_char)
     && ax < area->width + area->right_shadow
     && ay < area->height + area->bottom_shadow )
   {
-    charData* ac;  // area character
     int line_len = area->width + area->right_shadow;
-    ac = &area->text[ay * line_len + ax];
+    auto ac = &area->text[ay * line_len + ax];  // area character
 
     if ( *ac != nc )  // compare with an overloaded operator
     {
@@ -816,9 +809,6 @@ void FVTerm::restoreVTerm (const FRect& box)
 //----------------------------------------------------------------------
 void FVTerm::restoreVTerm (int x, int y, int w, int h)
 {
-  charData* tc;  // terminal character
-  charData  sc;  // shown character
-
   x--;
   y--;
 
@@ -850,8 +840,8 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
     for (int tx = 0; tx < w; tx++)
     {
       int xpos = x + tx;
-      tc = &vterm->text[ypos * vterm->width + xpos];
-      sc = generateCharacter(xpos, ypos);
+      auto tc = &vterm->text[ypos * vterm->width + xpos];  // terminal character
+      auto sc = generateCharacter(xpos, ypos);  // shown character
       std::memcpy (tc, &sc, sizeof(*tc));
     }
 
@@ -878,27 +868,18 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 {
   // Determines the covered state for the given position
 
-  bool found;
-  covered_state is_covered;
-  FWidget* w;
-
   if ( ! area )
     return non_covered;
 
-  is_covered = non_covered;
-  found = bool(area == vdesktop);
-
-  w = static_cast<FWidget*>(area->widget);
+  bool found = bool(area == vdesktop);
+  auto is_covered = non_covered;
+  auto w = static_cast<FWidget*>(area->widget);
 
   if ( w->window_list && ! w->window_list->empty() )
   {
-    FWidget::widgetList::const_iterator iter, end;
-    iter = w->window_list->begin();
-    end  = w->window_list->end();
-
-    for (; iter != end; ++iter)
+    for (auto&& win_obj : *w->window_list)
     {
-      term_area* win = (*iter)->getVWin();
+      auto win = win_obj->getVWin();
 
       if ( ! win )
         continue;
@@ -915,9 +896,8 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 
       if ( found && geometry.contains(x, y) )
       {
-        charData* tmp;
         int line_len = win->width + win->right_shadow;
-        tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
+        auto tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
 
         if ( tmp->attr.bit.trans_shadow )
         {
@@ -948,14 +928,14 @@ void FVTerm::updateOverlappedColor ( term_area* area
   int& rsh = area->right_shadow;
   int line_len = aw + rsh;
   // Area character
-  charData* ac = &area->text[y * line_len + x];
+  auto ac = &area->text[y * line_len + x];
   // Terminal character
-  charData* tc = &vterm->text[ty * vterm->width + tx];
+  auto tc = &vterm->text[ty * vterm->width + tx];
   // New character
   charData nc;
   std::memcpy (&nc, ac, sizeof(nc));
   // Overlapped character
-  charData oc = getOverlappedCharacter (tx + 1, ty + 1, area->widget);
+  auto oc = getOverlappedCharacter (tx + 1, ty + 1, area->widget);
   nc.fg_color = oc.fg_color;
   nc.bg_color = oc.bg_color;
   nc.attr.bit.reverse  = false;
@@ -979,9 +959,9 @@ void FVTerm::updateOverlappedCharacter (term_area* area, int tx, int ty)
   // Restore one character on vterm
 
   // Terminal character
-  charData* tc = &vterm->text[ty * vterm->width + tx];
+  auto tc = &vterm->text[ty * vterm->width + tx];
   // Overlapped character
-  charData oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  auto oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
   oc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == oc);
   std::memcpy (tc, &oc, sizeof(*tc));
 }
@@ -996,11 +976,11 @@ void FVTerm::updateShadedCharacter ( term_area* area
   int& rsh = area->right_shadow;
   int line_len = aw + rsh;
   // Area character
-  charData* ac = &area->text[y * line_len + x];
+  auto ac = &area->text[y * line_len + x];
   // Terminal character
-  charData* tc = &vterm->text[ty * vterm->width + tx];
+  auto tc = &vterm->text[ty * vterm->width + tx];
   // Overlapped character
-  charData oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  auto oc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
   oc.fg_color = ac->fg_color;
   oc.bg_color = ac->bg_color;
   oc.attr.bit.reverse  = false;
@@ -1028,14 +1008,14 @@ void FVTerm::updateInheritBackground ( term_area* area
   int& rsh = area->right_shadow;
   int line_len = aw + rsh;
   // Area character
-  charData* ac = &area->text[y * line_len + x];
+  auto ac = &area->text[y * line_len + x];
   // Terminal character
-  charData* tc = &vterm->text[ty * vterm->width + tx];
+  auto tc = &vterm->text[ty * vterm->width + tx];
   // New character
   charData nc;
   std::memcpy (&nc, ac, sizeof(nc));
   // Covered character
-  charData cc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
+  auto cc = getCoveredCharacter (tx + 1, ty + 1, area->widget);
   nc.bg_color = cc.bg_color;
   nc.attr.bit.no_changes = bool(tc->attr.bit.printed && *tc == nc);
   std::memcpy (tc, &nc, sizeof(*tc));
@@ -1051,9 +1031,9 @@ void FVTerm::updateCharacter ( term_area* area
   int& rsh = area->right_shadow;
   int line_len = aw + rsh;
   // Area character
-  charData* ac = &area->text[y * line_len + x];
+  auto ac = &area->text[y * line_len + x];
   // Terminal character
-  charData* tc = &vterm->text[ty * vterm->width + tx];
+  auto tc = &vterm->text[ty * vterm->width + tx];
   std::memcpy (tc, ac, sizeof(*tc));
 
   if ( tc->attr.bit.printed && *tc == *ac )
@@ -1070,10 +1050,10 @@ bool FVTerm::updateVTermCharacter ( term_area* area
   int& rsh = area->right_shadow;
   int line_len = aw + rsh;
   // Area character
-  charData* ac = &area->text[y * line_len + x];
+  auto ac = &area->text[y * line_len + x];
 
   // Get covered state
-  covered_state is_covered = isCovered(tx, ty, area);
+  auto is_covered = isCovered(tx, ty, area);
 
   if ( is_covered == fully_covered )
     return false;
@@ -1112,9 +1092,8 @@ void FVTerm::callPreprocessingHandler (term_area* area)
 
   if ( ! area->preprocessing_call.empty() )
   {
-    FPreprocessing::const_iterator iter, end;
-    iter = area->preprocessing_call.begin();
-    end = area->preprocessing_call.end();
+    auto iter = area->preprocessing_call.begin();
+    auto end = area->preprocessing_call.end();
 
     while ( iter != end )
     {
@@ -1142,13 +1121,12 @@ void FVTerm::updateVTerm()
   if ( ! widget->window_list || widget->window_list->empty() )
     return;
 
-  FWidget::widgetList::const_iterator iter, end;
-  iter = widget->window_list->begin();
-  end  = widget->window_list->end();
+  auto iter = widget->window_list->begin();
+  auto end  = widget->window_list->end();
 
   for (; iter != end; ++iter)
   {
-    term_area* win = (*iter)->getVWin();
+    auto win = (*iter)->getVWin();
 
     if ( ! win )
       continue;
@@ -1163,9 +1141,8 @@ void FVTerm::updateVTerm()
     }
     else if ( ! win->preprocessing_call.empty() )
     {
-      FPreprocessing::const_iterator iter2, end2;
-      iter2 = win->preprocessing_call.begin();
-      end2 = win->preprocessing_call.end();
+      auto iter2 = win->preprocessing_call.begin();
+      auto end2 = win->preprocessing_call.end();
 
       while ( iter2 != end2 )
       {
@@ -1378,10 +1355,8 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
 
   for (int y = 0; y < y_end; y++)  // line loop
   {
-    charData* tc;  // terminal character
-    charData* ac;  // area character
-    tc = &vterm->text[(ay + y) * vterm->width + ax];
-    ac = &area->text[y * area->width];
+    auto tc = &vterm->text[(ay + y) * vterm->width + ax];  // terminal character
+    auto ac = &area->text[y * area->width];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
     if ( short(area->changes[y].xmin) > 0 )
@@ -1433,11 +1408,9 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
 
   for (int _y = 0; _y < y_end; _y++)  // line loop
   {
-    charData* tc;  // terminal character
-    charData* ac;  // area character
     int line_len = area->width + area->right_shadow;
-    tc = &vterm->text[(y + _y - 1) * vterm->width + x - 1];
-    ac = &area->text[(dy + _y) * line_len + dx];
+    auto tc = &vterm->text[(y + _y - 1) * vterm->width + x - 1];  // terminal character
+    auto ac = &area->text[(dy + _y) * line_len + dx];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
     if ( short(area->changes[dy + _y].xmin) > dx )
@@ -1513,8 +1486,8 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
     if ( area->changes[y].trans_count == 0 )
     {
       // Line has only covered characters
-      ac = &area->text[y * line_len + ol];
-      tc = &vterm->text[(ay + y) * vterm->width + ax];
+      auto ac = &area->text[y * line_len + ol];
+      auto tc = &vterm->text[(ay + y) * vterm->width + ax];
       putAreaLine (ac, tc, length);
     }
     else
@@ -1561,10 +1534,9 @@ void FVTerm::scrollAreaForward (term_area* area)
 
   for (int y = 0; y < y_max; y++)
   {
-    charData* sc;  // source character
     int pos1 = y * total_width;
     int pos2 = (y + 1) * total_width;
-    sc = &area->text[pos2];
+    auto sc = &area->text[pos2];  // source character
     dc = &area->text[pos1];
     std::memcpy (dc, sc, sizeof(*dc) * unsigned(length));
     area->changes[y].xmin = 0;
@@ -1622,10 +1594,9 @@ void FVTerm::scrollAreaReverse (term_area* area)
 
   for (int y = y_max; y > 0; y--)
   {
-    charData* sc;  // source character
     int pos1 = (y - 1) * total_width;
     int pos2 = y * total_width;
-    sc = &area->text[pos1];
+    auto sc = &area->text[pos1];  // source character
     dc = &area->text[pos2];
     std::memcpy (dc, sc, sizeof(*dc) * unsigned(length));
     area->changes[y].xmin = 0;
@@ -1666,7 +1637,6 @@ void FVTerm::clearArea (term_area* area, int fillchar)
   // Clear the area with the current attributes
 
   charData nc;  // next character
-  uInt w;
 
   // Current attributes with a space character
   std::memcpy (&nc, &next_attribute, sizeof(nc));
@@ -1678,7 +1648,7 @@ void FVTerm::clearArea (term_area* area, int fillchar)
     return;
   }
 
-  w = uInt(area->width + area->right_shadow);
+  uInt w = uInt(area->width + area->right_shadow);
 
   if ( area->right_shadow == 0 )
   {
@@ -1725,22 +1695,16 @@ FVTerm::charData FVTerm::generateCharacter (const FPoint& pos)
 FVTerm::charData FVTerm::generateCharacter (int x, int y)
 {
   // Generates characters for a given position considering all areas
-  FWidget::widgetList::const_iterator iter, end;
-  charData* sc;    // shown character
-  FWidget* widget;
 
-  widget = static_cast<FWidget*>(vterm->widget);
-  sc = &vdesktop->text[y * vdesktop->width + x];
+  auto widget = static_cast<FWidget*>(vterm->widget);
+  auto sc = &vdesktop->text[y * vdesktop->width + x];  // shown character
 
   if ( ! widget->window_list || widget->window_list->empty() )
     return *sc;
 
-  iter = widget->window_list->begin();
-  end  = widget->window_list->end();
-
-  for (; iter != end; ++iter)
+  for (auto&& win_obj : *widget->window_list)
   {
-    term_area* win = (*iter)->getVWin();
+    auto win = win_obj->getVWin();
 
     if ( ! win || ! win->visible )
       continue;
@@ -1755,9 +1719,8 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
     // Window is visible and contains current character
     if ( geometry.contains(x, y) )
     {
-      charData* tmp;
       int line_len = win->width + win->right_shadow;
-      tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
+      auto tmp = &win->text[(y - win_y) * line_len + (x - win_x)];
 
       if ( ! tmp->attr.bit.transparent )   // Current character not transparent
       {
@@ -1798,8 +1761,8 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getCharacter ( character_type type
-                                       , const FPoint& pos
-                                       , FVTerm* obj )
+                                      , const FPoint& pos
+                                      , FVTerm* obj )
 {
   // Gets the overlapped or the covered character for a given position
   return getCharacter (type, pos.getX(), pos.getY(), obj);
@@ -1807,20 +1770,16 @@ FVTerm::charData FVTerm::getCharacter ( character_type type
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getCharacter ( character_type char_type
-                                       , int x
-                                       , int y
-                                       , FVTerm* obj )
+                                      , int x
+                                      , int y
+                                      , FVTerm* obj )
 {
   // Gets the overlapped or the covered character for the position (x,y)
-  int xx, yy, layer;
-  charData* cc;  // covered character
-  FWidget* w;
-  FWidget::widgetList::const_iterator iter, end;
 
   x--;
   y--;
-  xx = x;
-  yy = y;
+  int xx = x;
+  int yy = y;
 
   if ( xx < 0 )
     xx = 0;
@@ -1834,31 +1793,29 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
   if ( yy >= vterm->height )
     yy = vterm->height - 1;
 
-  cc = &vdesktop->text[yy * vdesktop->width + xx];
-  w = static_cast<FWidget*>(obj);
+  auto cc = &vdesktop->text[yy * vdesktop->width + xx];  // covered character
+  auto w = static_cast<FWidget*>(obj);
 
   if ( ! w->window_list || w->window_list->empty() )
     return *cc;
 
   // Get the window layer of this object
-  layer = FWindow::getWindowLayer(w);
-  iter  = w->window_list->begin();
-  end   = w->window_list->end();
+  int layer = FWindow::getWindowLayer(w);
 
-  for (; iter != end; ++iter)
+  for (auto&& win_obj : *w->window_list)
   {
     bool significant_char;
 
     // char_type can be "overlapped_character"
     // or "covered_character"
     if ( char_type == covered_character )
-      significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
+      significant_char = bool(layer >= FWindow::getWindowLayer(win_obj));
     else
-      significant_char = bool(layer < FWindow::getWindowLayer(*iter));
+      significant_char = bool(layer < FWindow::getWindowLayer(win_obj));
 
-    if ( obj && *iter != obj && significant_char )
+    if ( obj && win_obj != obj && significant_char )
     {
-      term_area* win = (*iter)->getVWin();
+      auto win = win_obj->getVWin();
 
       if ( ! win || ! win->visible )
         continue;
@@ -1881,7 +1838,7 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getCoveredCharacter ( const FPoint& pos
-                                              , FVTerm* obj )
+                                             , FVTerm* obj )
 {
   // Gets the covered character for a given position
   return getCharacter (covered_character, pos.getX(), pos.getY(), obj);
@@ -1889,8 +1846,8 @@ FVTerm::charData FVTerm::getCoveredCharacter ( const FPoint& pos
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getCoveredCharacter ( int x
-                                              , int y
-                                              , FVTerm* obj)
+                                             , int y
+                                             , FVTerm* obj)
 {
   // Gets the covered character for the position (x,y)
   return getCharacter (covered_character, x, y, obj);
@@ -1898,7 +1855,7 @@ FVTerm::charData FVTerm::getCoveredCharacter ( int x
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getOverlappedCharacter ( const FPoint& pos
-                                                 , FVTerm* obj )
+                                                , FVTerm* obj )
 {
   // Gets the overlapped character for a given position
   return getCharacter (overlapped_character, pos.getX(), pos.getY(), obj);
@@ -1906,8 +1863,8 @@ FVTerm::charData FVTerm::getOverlappedCharacter ( const FPoint& pos
 
 //----------------------------------------------------------------------
 FVTerm::charData FVTerm::getOverlappedCharacter ( int x
-                                                 , int y
-                                                 , FVTerm* obj)
+                                                , int y
+                                                , FVTerm* obj)
 {
   // Gets the overlapped character for the position (x,y)
   return getCharacter (overlapped_character, x, y, obj);
@@ -2135,11 +2092,10 @@ void FVTerm::putAreaCharacter ( int x, int y, FVTerm* obj
 void FVTerm::getAreaCharacter ( int x, int y, term_area* area
                               , charData*& cc )
 {
-  charData* tmp;
   int area_x = area->offset_left;
   int area_y = area->offset_top;
   int line_len = area->width + area->right_shadow;
-  tmp = &area->text[(y - area_y) * line_len + (x - area_x)];
+  auto tmp = &area->text[(y - area_y) * line_len + (x - area_x)];
 
   // Current character not transparent
   if ( ! tmp->attr.bit.transparent )
@@ -2171,11 +2127,11 @@ bool FVTerm::clearTerm (int fillchar)
 {
   // Clear the real terminal and put cursor at home
 
-  char*& cl = TCAP(fc::t_clear_screen);
-  char*& cd = TCAP(fc::t_clr_eos);
-  char*& cb = TCAP(fc::t_clr_eol);
+  auto& cl = TCAP(fc::t_clear_screen);
+  auto& cd = TCAP(fc::t_clr_eos);
+  auto& cb = TCAP(fc::t_clr_eol);
   bool ut = FTermcap::background_color_erase;
-  charData* next = &next_attribute;
+  auto next = &next_attribute;
   bool normal = FTerm::isNormal(next);
   appendAttributes(next);
 
@@ -2275,8 +2231,8 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
   // => clear to end of line
 
   term_area*& vt = vterm;
-  char*& ce = TCAP(fc::t_clr_eol);
-  charData* min_char = &vt->text[y * uInt(vt->width) + xmin];
+  auto& ce = TCAP(fc::t_clr_eol);
+  auto min_char = &vt->text[y * uInt(vt->width) + xmin];
 
   if ( ce && min_char->code == ' ' )
   {
@@ -2286,7 +2242,7 @@ bool FVTerm::canClearToEOL (uInt xmin, uInt y)
 
     for (uInt x = xmin + 1; x < uInt(vt->width); x++)
     {
-      charData* ch = &vt->text[y * uInt(vt->width) + x];
+      auto ch = &vt->text[y * uInt(vt->width) + x];
 
       if ( *min_char == *ch )
         beginning_whitespace++;
@@ -2310,8 +2266,8 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
   // => clear from xmin to beginning of line
 
   term_area*& vt = vterm;
-  char*& cb = TCAP(fc::t_clr_bol);
-  charData* first_char = &vt->text[y * uInt(vt->width)];
+  auto& cb = TCAP(fc::t_clr_bol);
+  auto first_char = &vt->text[y * uInt(vt->width)];
 
   if ( cb && first_char->code == ' ' )
   {
@@ -2321,7 +2277,7 @@ bool FVTerm::canClearLeadingWS (uInt& xmin, uInt y)
 
     for (uInt x = 1; x < uInt(vt->width); x++)
     {
-      charData* ch = &vt->text[y * uInt(vt->width) + x];
+      auto ch = &vt->text[y * uInt(vt->width) + x];
 
       if ( *first_char == *ch )
         leading_whitespace++;
@@ -2348,8 +2304,8 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
   // => clear from xmax to end of line
 
   term_area*& vt = vterm;
-  char*& ce = TCAP(fc::t_clr_eol);
-  charData* last_char = &vt->text[(y + 1) * uInt(vt->width) - 1];
+  auto& ce = TCAP(fc::t_clr_eol);
+  auto last_char = &vt->text[(y + 1) * uInt(vt->width) - 1];
 
   if ( ce && last_char->code == ' ' )
   {
@@ -2359,7 +2315,7 @@ bool FVTerm::canClearTrailingWS (uInt& xmax, uInt y)
 
     for (uInt x = uInt(vt->width) - 1; x >  0 ; x--)
     {
-      charData* ch = &vt->text[y * uInt(vt->width) + x];
+      auto ch = &vt->text[y * uInt(vt->width) + x];
 
       if ( *last_char == *ch )
         trailing_whitespace++;
@@ -2385,7 +2341,7 @@ bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
   // Skip characters without changes if it is faster than redrawing
 
   term_area*& vt = vterm;
-  charData* print_char = &vt->text[y * uInt(vt->width) + x];
+  auto print_char = &vt->text[y * uInt(vt->width) + x];
   print_char->attr.bit.printed = true;
 
   if ( print_char->attr.bit.no_changes )
@@ -2394,7 +2350,7 @@ bool FVTerm::skipUnchangedCharacters(uInt& x, uInt xmax, uInt y)
 
     for (uInt i = x + 1; i <= xmax; i++)
     {
-      charData* ch = &vt->text[y * uInt(vt->width) + i];
+      auto ch = &vt->text[y * uInt(vt->width) + i];
 
       if ( ch->attr.bit.no_changes )
         count++;
@@ -2419,11 +2375,10 @@ void FVTerm::printRange ( uInt xmin, uInt xmax, uInt y
 {
   for (uInt x = xmin; x <= xmax; x++)
   {
-    charData* print_char;
     term_area*& vt = vterm;
-    char*& ec = TCAP(fc::t_erase_chars);
-    char*& rp = TCAP(fc::t_repeat_char);
-    print_char = &vt->text[y * uInt(vt->width) + x];
+    auto& ec = TCAP(fc::t_erase_chars);
+    auto& rp = TCAP(fc::t_repeat_char);
+    auto print_char = &vt->text[y * uInt(vt->width) + x];
     print_char->attr.bit.printed = true;
 
     // skip character with no changes
@@ -2458,8 +2413,8 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
   // Erase a number of characters to draw simple whitespaces
 
   term_area*& vt = vterm;
-  char*& ec = TCAP(fc::t_erase_chars);
-  charData* print_char = &vt->text[y * uInt(vt->width) + x];
+  auto& ec = TCAP(fc::t_erase_chars);
+  auto print_char = &vt->text[y * uInt(vt->width) + x];
 
   if ( ! ec || print_char->code != ' ' )
     return not_used;
@@ -2469,7 +2424,7 @@ FVTerm::exit_state FVTerm::eraseCharacters ( uInt& x, uInt xmax, uInt y
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    charData* ch = &vt->text[y * uInt(vt->width) + i];
+    auto ch = &vt->text[y * uInt(vt->width) + i];
 
     if ( *print_char == *ch )
       whitespace++;
@@ -2520,8 +2475,8 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
   // Repeat one character n-fold
 
   term_area*& vt = vterm;
-  char*& rp = TCAP(fc::t_repeat_char);
-  charData* print_char = &vt->text[y * uInt(vt->width) + x];
+  auto& rp = TCAP(fc::t_repeat_char);
+  auto print_char = &vt->text[y * uInt(vt->width) + x];
 
   if ( ! rp )
     return not_used;
@@ -2530,7 +2485,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
 
   for (uInt i = x + 1; i <= xmax; i++)
   {
-    charData* ch = &vt->text[y * uInt(vt->width) + i];
+    auto ch = &vt->text[y * uInt(vt->width) + i];
 
     if ( *print_char == *ch )
       repetitions++;
@@ -2637,10 +2592,10 @@ void FVTerm::updateTerminalLine (uInt y)
   {
     bool draw_leading_ws = false;
     bool draw_trailing_ws = false;
-    char*& ce = TCAP(fc::t_clr_eol);
-    charData* first_char = &vt->text[y * uInt(vt->width)];
-    charData* last_char  = &vt->text[(y + 1) * uInt(vt->width) - 1];
-    charData* min_char   = &vt->text[y * uInt(vt->width) + xmin];
+    auto& ce = TCAP(fc::t_clr_eol);
+    auto first_char = &vt->text[y * uInt(vt->width)];
+    auto last_char  = &vt->text[(y + 1) * uInt(vt->width) - 1];
+    auto min_char   = &vt->text[y * uInt(vt->width) + xmin];
 
     // Clear rest of line
     bool is_eol_clean = canClearToEOL (xmin, y);
@@ -2666,7 +2621,7 @@ void FVTerm::updateTerminalLine (uInt y)
     {
       if ( draw_leading_ws )
       {
-        char*& cb = TCAP(fc::t_clr_bol);
+        auto& cb = TCAP(fc::t_clr_bol);
         appendAttributes (first_char);
         appendOutputBuffer (cb);
         markAsPrinted (0, xmin, y);
@@ -2852,11 +2807,10 @@ inline void FVTerm::appendChar (charData*& next_char)
 //----------------------------------------------------------------------
 inline void FVTerm::appendAttributes (charData*& next_attr)
 {
-  char* attr_str;
-  charData* term_attr = &term_attribute;
+  auto term_attr = &term_attribute;
 
   // generate attribute string for the next character
-  attr_str = FTerm::changeAttribute (term_attr, next_attr);
+  char* attr_str = FTerm::changeAttribute (term_attr, next_attr);
 
   if ( attr_str )
     appendOutputBuffer (attr_str);
@@ -2865,8 +2819,8 @@ inline void FVTerm::appendAttributes (charData*& next_attr)
 //----------------------------------------------------------------------
 int FVTerm::appendLowerRight (charData*& screen_char)
 {
-  char* SA = TCAP(fc::t_enter_am_mode);
-  char* RA = TCAP(fc::t_exit_am_mode);
+  auto& SA = TCAP(fc::t_enter_am_mode);
+  auto& RA = TCAP(fc::t_exit_am_mode);
 
   if ( ! FTermcap::automatic_right_margin )
   {
@@ -2881,11 +2835,11 @@ int FVTerm::appendLowerRight (charData*& screen_char)
   else
   {
     int x, y;
-    char* IC = TCAP(fc::t_parm_ich);
-    char* im = TCAP(fc::t_enter_insert_mode);
-    char* ei = TCAP(fc::t_exit_insert_mode);
-    char* ip = TCAP(fc::t_insert_padding);
-    char* ic = TCAP(fc::t_insert_character);
+    auto& IC = TCAP(fc::t_parm_ich);
+    auto& im = TCAP(fc::t_enter_insert_mode);
+    auto& ei = TCAP(fc::t_exit_insert_mode);
+    auto& ip = TCAP(fc::t_insert_padding);
+    auto& ic = TCAP(fc::t_insert_character);
 
     x = int(getColumnNumber()) - 2;
     y = int(getLineNumber()) - 1;

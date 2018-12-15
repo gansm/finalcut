@@ -260,7 +260,7 @@ void Menu::defaultCallback (finalcut::FMenuList* mb)
 {
   for (uInt i = 1; i <= mb->getCount(); i++)
   {
-    finalcut::FMenuItem* item = mb->getItem(int(i));
+    auto item = mb->getItem(int(i));
 
     if ( item
       && item->isEnabled()
@@ -302,9 +302,8 @@ void Menu::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Menu::cb_message (finalcut::FWidget* widget, data_ptr)
 {
-  finalcut::FMenuItem* menuitem = \
-      static_cast<finalcut::FMenuItem*>(widget);
-  finalcut::FString text = menuitem->getText();
+  auto menuitem = static_cast<finalcut::FMenuItem*>(widget);
+  auto text = menuitem->getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::info ( this
                               , "Info"

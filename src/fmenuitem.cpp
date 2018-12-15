@@ -65,7 +65,7 @@ FMenuItem::~FMenuItem()  // destructor
 {
   if ( super_menu && (isMenu(super_menu) || isMenuBar(super_menu)) )
   {
-    FMenuList* menu_list = getFMenuList(*super_menu);
+    auto menu_list = getFMenuList(*super_menu);
 
     if ( menu_list )
       menu_list->remove(this);
@@ -84,7 +84,7 @@ FMenuItem::~FMenuItem()  // destructor
 bool FMenuItem::setEnable (bool on)
 {
   FWidget::setEnable(on);
-  FWidget* super = getSuperMenu();
+  auto super = getSuperMenu();
 
   if ( on )
   {
@@ -115,7 +115,7 @@ bool FMenuItem::setFocus (bool on)
     {
       if ( ! selected )
       {
-        FMenuList* menu_list = getFMenuList(*getSuperMenu());
+        auto menu_list = getFMenuList(*getSuperMenu());
         setSelected();
 
         if ( menu_list )
@@ -127,18 +127,18 @@ bool FMenuItem::setFocus (bool on)
         if ( getStatusBar() )
           getStatusBar()->drawMessage();
 
-        FWidget* parent = getSuperMenu();
+        auto parent = getSuperMenu();
 
         if ( isMenuBar(parent) )
         {
-          FMenuBar* menubar_ptr = static_cast<FMenuBar*>(parent);
+          auto menubar_ptr = static_cast<FMenuBar*>(parent);
 
           if ( menubar_ptr )
             menubar_ptr->redraw();
         }
         else if ( isMenu(parent) )
         {
-          FMenu* menu_ptr = static_cast<FMenu*>(parent);
+          auto menu_ptr = static_cast<FMenu*>(parent);
 
           if ( menu_ptr )
             menu_ptr->redraw();
@@ -198,7 +198,7 @@ void FMenuItem::setText (const FString& txt)
 //----------------------------------------------------------------------
 void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 {
-  FWidget* root = getRootWidget();
+  auto root = getRootWidget();
   accelerator accel = { key, obj };
 
   if ( root && root->accelerator_list )
@@ -209,7 +209,7 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* menu_ptr = static_cast<FMenu*>(super_menu);
+    auto menu_ptr = static_cast<FMenu*>(super_menu);
 
     if ( menu_ptr )
       menu_ptr->calculateDimensions();
@@ -219,14 +219,13 @@ void FMenuItem::addAccelerator (FKey key, FWidget* obj)
 //----------------------------------------------------------------------
 void FMenuItem::delAccelerator (FWidget* obj)
 {
-  FWidget* root = getRootWidget();
+  auto root = getRootWidget();
 
   if ( root
     && root->accelerator_list
     && ! root->accelerator_list->empty() )
   {
-    FWidget::Accelerators::iterator iter;
-    iter = root->accelerator_list->begin();
+    auto iter = root->accelerator_list->begin();
 
     while ( iter != root->accelerator_list->end() )
     {
@@ -242,7 +241,7 @@ void FMenuItem::delAccelerator (FWidget* obj)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* menu_ptr = static_cast<FMenu*>(super_menu);
+    auto menu_ptr = static_cast<FMenu*>(super_menu);
 
     if ( menu_ptr )
       menu_ptr->calculateDimensions();
@@ -255,12 +254,12 @@ void FMenuItem::openMenu()
   if ( ! hasMenu() )
     return;
 
-  FMenu* dd_menu = getMenu();  // Drop-down menu
+  auto dd_menu = getMenu();  // Drop-down menu
 
   if ( dd_menu->isVisible() )
     return;
 
-  FMenu* openmenu = static_cast<FMenu*>(getOpenMenu());
+  auto openmenu = static_cast<FMenu*>(getOpenMenu());
 
   if ( openmenu && openmenu != dd_menu )
   {
@@ -288,13 +287,13 @@ void FMenuItem::onKeyPress (FKeyEvent* ev)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* smenu = static_cast<FMenu*>(super_menu);
+    auto smenu = static_cast<FMenu*>(super_menu);
     smenu->onKeyPress(ev);
   }
 
   if ( isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
 
     if ( mbar )
     {
@@ -314,19 +313,19 @@ void FMenuItem::onMouseDoubleClick (FMouseEvent* ev)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* smenu = static_cast<FMenu*>(super_menu);
+    auto smenu = static_cast<FMenu*>(super_menu);
     passMouseEvent (smenu, ev, fc::MouseDoubleClick_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
     passMouseEvent (mbar, ev, fc::MouseDoubleClick_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
-    FDialog* dgl = static_cast<FDialog*>(super_menu);
+    auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseDoubleClick_Event);
   }
 }
@@ -339,19 +338,19 @@ void FMenuItem::onMouseDown (FMouseEvent* ev)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* smenu = static_cast<FMenu*>(super_menu);
+    auto smenu = static_cast<FMenu*>(super_menu);
     passMouseEvent (smenu, ev, fc::MouseDown_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
     passMouseEvent (mbar, ev, fc::MouseDown_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
-    FDialog* dgl = static_cast<FDialog*>(super_menu);
+    auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseDown_Event);
   }
 }
@@ -364,19 +363,19 @@ void FMenuItem::onMouseUp (FMouseEvent* ev)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* smenu = static_cast<FMenu*>(super_menu);
+    auto smenu = static_cast<FMenu*>(super_menu);
     passMouseEvent (smenu, ev, fc::MouseUp_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
     passMouseEvent (mbar, ev, fc::MouseUp_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
-    FDialog* dgl = static_cast<FDialog*>(super_menu);
+    auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseUp_Event);
   }
 }
@@ -389,19 +388,19 @@ void FMenuItem::onMouseMove (FMouseEvent* ev)
 
   if ( isMenu(super_menu) )
   {
-    FMenu* smenu = static_cast<FMenu*>(super_menu);
+    auto smenu = static_cast<FMenu*>(super_menu);
     passMouseEvent (smenu, ev, fc::MouseMove_Event);
   }
 
   if ( isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
     passMouseEvent (mbar, ev, fc::MouseMove_Event);
   }
 
   if ( isWindowsMenu(super_menu) )
   {
-    FDialog* dgl = static_cast<FDialog*>(super_menu);
+    auto dgl = static_cast<FDialog*>(super_menu);
     passMouseEvent (dgl, ev, fc::MouseMove_Event);
   }
 }
@@ -418,20 +417,17 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     return;
   }
 
-  FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+  auto mbar = static_cast<FMenuBar*>(super_menu);
 
   if ( menu )
   {
-    FWidget* focused_widget;
-
     if ( mbar->getSelectedItem() )
       mbar->getSelectedItem()->unsetSelected();
 
     setSelected();
     mbar->selected_item = this;
     openMenu();
-
-    focused_widget = static_cast<FWidget*>(ev->focusedWidget());
+    auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
 
     if ( focused_widget && focused_widget->isWidget() )
     {
@@ -482,7 +478,7 @@ void FMenuItem::onFocusOut (FFocusEvent*)
 
   if ( super_menu && isMenuBar(super_menu) )
   {
-    FMenuBar* mbar = static_cast<FMenuBar*>(super_menu);
+    auto mbar = static_cast<FMenuBar*>(super_menu);
     mbar->redraw();
   }
 
@@ -527,12 +523,12 @@ FMenuList* FMenuItem::getFMenuList (FWidget& widget)
 
   if ( isMenu(&widget) )
   {
-    FMenu* Menu = static_cast<FMenu*>(&widget);
+    auto Menu = static_cast<FMenu*>(&widget);
     menu_list = static_cast<FMenuList*>(Menu);
   }
   else if ( isMenuBar(&widget) )
   {
-    FMenuBar* Menubar = static_cast<FMenuBar*>(&widget);
+    auto Menubar = static_cast<FMenuBar*>(&widget);
     menu_list = static_cast<FMenuList*>(Menubar);
   }
   else
@@ -560,14 +556,14 @@ void FMenuItem::init (FWidget* parent)
   if ( accel_key )
     addAccelerator (accel_key);
 
-  FMenuList* menu_list = getFMenuList(*parent);
+  auto menu_list = getFMenuList(*parent);
 
   if ( menu_list )
     menu_list->insert(this);
 
   if ( isMenuBar(parent) )  // Parent is menubar
   {
-    FMenuBar* menubar_ptr = static_cast<FMenuBar*>(parent);
+    auto menubar_ptr = static_cast<FMenuBar*>(parent);
     menubar_ptr->calculateDimensions();
 
     if ( hotkey )  // Meta + hotkey
@@ -582,7 +578,7 @@ void FMenuItem::init (FWidget* parent)
   }
   else if ( isMenu(parent) )  // Parent is menu
   {
-    FMenu* menu_ptr = static_cast<FMenu*>(parent);
+    auto menu_ptr = static_cast<FMenu*>(parent);
     menu_ptr->calculateDimensions();
   }
 }
@@ -632,12 +628,12 @@ void FMenuItem::createDialogList (FMenu* winmenu)
 
   if ( dialog_list && ! dialog_list->empty() )
   {
-    widgetList::const_iterator iter, first;
-    iter = first = dialog_list->begin();
+    auto first = dialog_list->begin();
+    auto iter = first;
 
     while ( iter != dialog_list->end() && *iter )
     {
-      FDialog* win = static_cast<FDialog*>(*iter);
+      auto win = static_cast<FDialog*>(*iter);
 
       if ( win )
       {
@@ -731,11 +727,11 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
 //----------------------------------------------------------------------
 void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 {
-  FDialog* win = static_cast<FDialog*>(data);
+  auto win = static_cast<FDialog*>(data);
 
   if ( win )
   {
-    FWidget* focus = getFocusWidget();
+    auto focus = getFocusWidget();
     FAccelEvent a_ev (fc::Accelerator_Event, focus);
     FApplication::sendEvent (win, &a_ev);
   }
@@ -744,8 +740,8 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 //----------------------------------------------------------------------
 void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
 {
-  FDialog* win = static_cast<FDialog*>(widget);
-  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+  auto win = static_cast<FDialog*>(widget);
+  auto fapp = static_cast<FApplication*>(getRootWidget());
 
   if ( win && fapp )
   {

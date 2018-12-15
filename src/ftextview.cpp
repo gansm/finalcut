@@ -187,10 +187,8 @@ void FTextView::scrollTo (int x, int y)
 //----------------------------------------------------------------------
 void FTextView::hide()
 {
-  std::size_t n, size;
   FColor fg, bg;
-  FWidget* parent_widget = getParentWidget();
-
+  auto parent_widget = getParentWidget();
   FWidget::hide();
 
   if ( parent_widget )
@@ -205,13 +203,13 @@ void FTextView::hide()
   }
 
   setColor (fg, bg);
-  n = isNewFont() ? 1 : 0;
-  size = getWidth() + n;
+  auto n = isNewFont() ? 1 : 0;
+  auto size = getWidth() + n;
 
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (std::size_t y = 0; y < getHeight(); y++)
   {
@@ -232,10 +230,7 @@ void FTextView::append (const FString& str)
 //----------------------------------------------------------------------
 void FTextView::insert (const FString& str, int pos)
 {
-  FStringList::iterator iter;
-  FStringList text_split;
   FString s;
-  std::size_t num;
 
   if ( pos < 0 || pos >= int(getRows()) )
     pos = int(getRows());
@@ -245,18 +240,17 @@ void FTextView::insert (const FString& str, int pos)
   else
     s = FString(str).rtrim().expandTabs(getTabstop());
 
-  iter = data.begin();
-  text_split = s.split("\r\n");
-  num = text_split.size();
+  auto iter = data.begin();
+  auto text_split = s.split("\r\n");
+  auto num = text_split.size();
 
   for (std::size_t i = 0; i < num; i++)
   {
-    std::size_t len;
     text_split[i] = text_split[i].removeBackspaces()
                                  .removeDel()
                                  .replaceControlCodes()
                                  .rtrim();
-    len = text_split[i].getLength();
+    auto len = text_split[i].getLength();
 
     if ( len > maxLineWidth )
     {
@@ -297,12 +291,10 @@ void FTextView::insert (const FString& str, int pos)
 //----------------------------------------------------------------------
 void FTextView::replaceRange (const FString& str, int from, int to)
 {
-  FStringList::iterator iter;
-
   if ( from > to || from >= int(getRows()) || to >= int(getRows()) )
     return;
 
-  iter = data.begin();
+  auto iter = data.begin();
   data.erase (iter + from, iter + to + 1);
 
   if ( ! str.isNull() )
@@ -333,7 +325,7 @@ void FTextView::clear()
   if ( size == 0 )
     return;
 
-  char* blank = createBlankArray(size + 1);
+  auto blank = createBlankArray(size + 1);
 
   for (int y = 0; y < int(getTextHeight()); y++)
   {
@@ -398,9 +390,6 @@ void FTextView::onKeyPress (FKeyEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseDown (FMouseEvent* ev)
 {
-  FWidget* parent;
-  FDialog* dialog;
-
   if ( ev->getButton() != fc::LeftButton )
     return;
 
@@ -418,12 +407,12 @@ void FTextView::onMouseDown (FMouseEvent* ev)
       getStatusBar()->drawMessage();
   }
 
-  parent = getParentWidget();
+  auto parent = getParentWidget();
 
   if ( ! parent )
     return;
 
-  dialog = static_cast<FDialog*>(parent);
+  auto dialog = static_cast<FDialog*>(parent);
 
   if ( parent->isDialogWidget()
     && dialog->isResizeable()
@@ -436,7 +425,7 @@ void FTextView::onMouseDown (FMouseEvent* ev)
 
     try
     {
-      FMouseEvent* _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
+      auto _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
       FApplication::sendEvent (parent, _ev);
       delete _ev;
     }
@@ -450,11 +439,11 @@ void FTextView::onMouseDown (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseUp (FMouseEvent* ev)
 {
-  FWidget* parent = getParentWidget();
+  auto parent = getParentWidget();
 
   if ( parent && parent->isDialogWidget() )
   {
-    FDialog* dialog = static_cast<FDialog*>(parent);
+    auto dialog = static_cast<FDialog*>(parent);
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
@@ -465,7 +454,7 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 
       try
       {
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
+        auto _ev = new FMouseEvent (fc::MouseUp_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev);
         delete _ev;
       }
@@ -486,11 +475,11 @@ void FTextView::onMouseUp (FMouseEvent* ev)
 //----------------------------------------------------------------------
 void FTextView::onMouseMove (FMouseEvent* ev)
 {
-  FWidget* parent = getParentWidget();
+  auto parent = getParentWidget();
 
   if ( parent && parent->isDialogWidget() )
   {
-    FDialog* dialog = static_cast<FDialog*>(parent);
+    auto dialog = static_cast<FDialog*>(parent);
 
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
@@ -501,7 +490,7 @@ void FTextView::onMouseMove (FMouseEvent* ev)
 
       try
       {
-        FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
+        auto _ev = new FMouseEvent (fc::MouseMove_Event, p, tp, b);
         FApplication::sendEvent (parent, _ev);
         delete _ev;
       }
@@ -675,7 +664,7 @@ void FTextView::init()
 //----------------------------------------------------------------------
 void FTextView::draw()
 {
-  FWidget* parent = getParentWidget();
+  auto parent = getParentWidget();
   bool is_text_dialog;
   setColor();
 
@@ -732,7 +721,7 @@ void FTextView::drawText()
   if ( data.empty() || getHeight() <= 2 || getWidth() <= 2 )
     return;
 
-  std::size_t num = getTextHeight();
+  auto num = getTextHeight();
 
   if ( num > getRows() )
     num = getRows();
@@ -744,14 +733,13 @@ void FTextView::drawText()
 
   for (std::size_t y = 0; y < num; y++)
   {
-    std::size_t i, len;
+    std::size_t i;
     FString line;
-    const wchar_t* line_str;
     setPrintPos (2, 2 - nf_offset + int(y));
     line = data[y + std::size_t(yoffset)].mid ( std::size_t(1 + xoffset)
                                               , getTextWidth() );
-    line_str = line.wc_str();
-    len = line.getLength();
+    const auto line_str = line.wc_str();
+    const auto len = line.getLength();
 
     for (i = 0; i < len; i++)
     {

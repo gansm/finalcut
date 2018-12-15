@@ -127,13 +127,13 @@ void FTermDataTest::dataTest()
   finalcut::FTermData data;
 
   CPPUNIT_ASSERT ( data.getEncodingList().size() == 0 );
-  finalcut::FTermData::encodingMap& encoding_list = data.getEncodingList();
+  auto& encoding_list = data.getEncodingList();
   encoding_list["UTF8"]  = finalcut::fc::UTF8;
   encoding_list["UTF-8"] = finalcut::fc::UTF8;
   encoding_list["VT100"] = finalcut::fc::VT100;
   encoding_list["PC"]    = finalcut::fc::PC;
   encoding_list["ASCII"] = finalcut::fc::ASCII;
-  finalcut::FTermData::encodingMap& enc_list = data.getEncodingList();
+  auto& enc_list = data.getEncodingList();
   CPPUNIT_ASSERT ( enc_list.size() == 5 );
   CPPUNIT_ASSERT ( enc_list["UTF8"] == finalcut::fc::UTF8 );
   CPPUNIT_ASSERT ( enc_list["UTF-8"] == finalcut::fc::UTF8 );

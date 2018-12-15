@@ -259,7 +259,7 @@ void FMessageBox::adjustSize()
   int X, Y;
   std::size_t max_width;
   std::size_t max_height;
-  FWidget* root_widget = getRootWidget();
+  auto root_widget = getRootWidget();
 
   if ( root_widget )
   {
@@ -521,7 +521,7 @@ void FMessageBox::adjustButtons()
   if ( btn_width >= getWidth() - 4 )
   {
     std::size_t max_width;
-    FWidget* root_widget = getRootWidget();
+    auto root_widget = getRootWidget();
     setWidth(btn_width + 5);
     max_width = ( root_widget ) ? root_widget->getClientWidth() : 80;
     setX (int((max_width - getWidth()) / 2));

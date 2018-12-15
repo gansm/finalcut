@@ -310,7 +310,7 @@ void FFileDialog::adjustSize()
   std::size_t max_width;
   std::size_t max_height;
   std::size_t h;
-  FWidget* root_widget = getRootWidget();
+  auto root_widget = getRootWidget();
 
   if ( root_widget )
   {
@@ -352,10 +352,9 @@ void FFileDialog::init()
   static const std::size_t w = 42;
   static const std::size_t h = 15;
   int x, y;
-  FWidget* parent_widget;
 
   setGeometry(1, 1, w, h, false);
-  parent_widget = getParentWidget();
+  auto parent_widget = getParentWidget();
 
   if ( parent_widget )
   {
@@ -468,20 +467,12 @@ inline bool FFileDialog::pattern_match ( const char* const pattern
 //----------------------------------------------------------------------
 void FFileDialog::clear()
 {
-  std::vector<dir_entry>::const_iterator iter, last;
-
   if ( dir_entries.empty() )
     return;
 
   // delete all directory entries;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
-
-  while ( iter != last )
-  {
-    std::free (iter->name);
-    ++iter;
-  }
+  for (auto&& entry : dir_entries)
+    std::free (entry.name);
 
   dir_entries.clear();
 }
@@ -493,17 +484,10 @@ int FFileDialog::numOfDirs()
     return 0;
 
   int n = 0;
-  std::vector<dir_entry>::const_iterator iter, last;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
 
-  while ( iter != last )
-  {
-    if ( iter->directory && std::strcmp(iter->name, ".") != 0 )
+  for (auto&& entry : dir_entries)
+    if ( entry.directory && std::strcmp(entry.name, ".") != 0 )
       n++;
-
-    ++iter;
-  }
 
   return n;
 }
@@ -672,18 +656,33 @@ void FFileDialog::dirEntriesToList()
   if ( dir_entries.empty() )
     return;
 
-  std::vector<dir_entry>::const_iterator iter, last;
-  iter = dir_entries.begin();
-  last = dir_entries.end();
-
-  while ( iter != last )
+  for (auto&& entry : dir_entries)
   {
-    if ( iter->directory )
-      filebrowser.insert(FString(iter->name), fc::SquareBrackets);
+    if ( entry.directory )
+      filebrowser.insert(FString(entry.name), fc::SquareBrackets);
     else
-      filebrowser.insert(FString(iter->name));
+      filebrowser.insert(FString(entry.name));
+  }
+}
 
-    ++iter;
+//----------------------------------------------------------------------
+void FFileDialog::selectDirectoryEntry (const char* const name)
+{
+  if ( dir_entries.empty() )
+    return;
+
+  std::size_t i = 1;
+
+  for (auto&& entry : dir_entries)
+  {
+    if ( std::strcmp(entry.name, name) == 0 )
+    {
+      filebrowser.setCurrentItem(i);
+      filename.setText(FString(name) + '/');
+      break;
+    }
+
+    i++;
   }
 }
 
@@ -717,27 +716,10 @@ int FFileDialog::changeDir (const FString& dirname)
       {
         if ( lastdir == FString('/') )
           filename.setText('/');
-        else if ( ! dir_entries.empty() )
+        else
         {
-          std::size_t i = 1;
-          std::vector<dir_entry>::const_iterator iter, last;
-          const char* const baseName = \
-              basename(C_STR(lastdir.c_str()));
-          iter = dir_entries.begin();
-          last = dir_entries.end();
-
-          while ( iter != last )
-          {
-            if ( std::strcmp(iter->name, baseName) == 0 )
-            {
-              filebrowser.setCurrentItem(i);
-              filename.setText(FString(baseName) + '/');
-              break;
-            }
-
-            i++;
-            ++iter;
-          }
+          auto baseName = basename(C_STR(lastdir.c_str()));
+          selectDirectoryEntry (baseName);
         }
       }
       else
@@ -812,23 +794,18 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
     if ( ! dir_entries.empty() )
     {
-      std::vector<dir_entry>::const_iterator iter, last;
       const FString& input = filename.getText().trim();
-      iter = dir_entries.begin();
-      last = dir_entries.end();
 
-      while ( iter != last )
+      for (auto&& entry : dir_entries)
       {
-        if ( iter->name && input && ! input.isNull()
-          && std::strcmp(iter->name, input) == 0
-          && iter->directory )
+        if ( entry.name && input && ! input.isNull()
+          && std::strcmp(entry.name, input) == 0
+          && entry.directory )
         {
           found = true;
           changeDir(input);
           break;
         }
-
-        ++iter;
       }
     }
 

@@ -81,7 +81,6 @@ void FTermcap::init()
 void FTermcap::termcap()
 {
   std::vector<std::string> terminals;
-  std::vector<std::string>::iterator iter;
   static const int success = 1;
   static const int uninitialized = -2;
   static char term_buffer[2048];
@@ -104,7 +103,7 @@ void FTermcap::termcap()
   terminals.push_back("xterm");             // 2nd fallback if not found
   terminals.push_back("ansi");              // 3rd fallback if not found
   terminals.push_back("vt100");             // 4th fallback if not found
-  iter = terminals.begin();
+  auto iter = terminals.begin();
 
   while ( iter != terminals.end() )
   {
@@ -225,7 +224,7 @@ void FTermcap::termcapStrings (char*& buffer)
   // Get termcap strings
 
   // Read termcap output strings
-  for (int i = 0; tcap[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; tcap[i].tname[0] != 0; i++)
     tcap[i].string = tgetstr(tcap[i].tname, &buffer);
 }
 
@@ -234,7 +233,7 @@ void FTermcap::termcapKeys (char*& buffer)
 {
   // Read termcap key strings
 
-  for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+  for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
   {
     fc::Fkey[i].string = tgetstr(fc::Fkey[i].tname, &buffer);
 
@@ -288,13 +287,13 @@ void FTermcap::termcapKeysVt100 (char*& buffer)
   // Some terminals (e.g. PuTTY) send vt100 key codes for
   // the arrow and function keys.
 
-  char* key_up_string = tgetstr(C_STR("ku"), &buffer);
+  const char* key_up_string = tgetstr(C_STR("ku"), &buffer);
 
   if ( (key_up_string && (std::strcmp(key_up_string, CSI "A") == 0))
     || ( TCAP(fc::t_cursor_up)
       && (std::strcmp(TCAP(fc::t_cursor_up), CSI "A") == 0) ) )
   {
-    for (int i = 0; fc::Fkey[i].tname[0] != 0; i++)
+    for (std::size_t i = 0; fc::Fkey[i].tname[0] != 0; i++)
     {
       if ( std::strncmp(fc::Fkey[i].tname, "kux", 3) == 0 )
         fc::Fkey[i].string = C_STR(CSI "A");  // Key up

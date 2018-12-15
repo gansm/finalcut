@@ -135,8 +135,7 @@ FStatusBar::~FStatusBar()  // destructor
   // delete all keys
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::iterator iter;
-    iter = key_list.begin();
+    auto iter = key_list.begin();
 
     while ( iter != key_list.end() )
     {
@@ -162,17 +161,9 @@ bool FStatusBar::hasActivatedKey()
 {
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, last;
-    iter = key_list.begin();
-    last = key_list.end();
-
-    while ( iter != last )
-    {
-      if ( (*iter)->isActivated() )
+    for (auto&& k : key_list)
+      if ( k->isActivated() )
         return true;
-
-      ++iter;
-    }
   }
 
   return false;
@@ -181,13 +172,12 @@ bool FStatusBar::hasActivatedKey()
 //----------------------------------------------------------------------
 void FStatusBar::hide()
 {
-  FColor fg, bg;
   FWindow::hide();
-  fg = wc.term_fg;
-  bg = wc.term_bg;
+  FColor fg = wc.term_fg;
+  FColor bg = wc.term_bg;
   setColor (fg, bg);
   screenWidth = getDesktopWidth();
-  char* blank = createBlankArray(screenWidth + 1);
+  auto blank = createBlankArray(screenWidth + 1);
   setPrintPos (1, 1);
   print (blank);
   destroyBlankArray (blank);
@@ -213,7 +203,7 @@ void FStatusBar::drawMessage()
 
   if ( hasKeys )
   {
-    std::vector<FStatusKey*>::const_iterator iter = key_list.end();
+    auto iter = key_list.end();
     isLastActiveFocus = bool ( (*(iter - 1))->isActivated()
                             || (*(iter - 1))->hasMouseFocus() );
   }
@@ -284,14 +274,12 @@ void FStatusBar::insert (FStatusKey* skey)
 //----------------------------------------------------------------------
 void FStatusBar::remove (FStatusKey* skey)
 {
-  std::vector<FStatusKey*>::iterator iter;
-
   delAccelerator (skey);
 
   if ( key_list.empty() )
     return;
 
-  iter = key_list.begin();
+  auto iter = key_list.begin();
 
   while ( iter != key_list.end() )
   {
@@ -340,9 +328,8 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
     if ( ! key_list.empty() )
     {
-      std::vector<FStatusKey*>::const_iterator iter, last;
-      iter = key_list.begin();
-      last = key_list.end();
+      auto iter = key_list.begin();
+      auto last = key_list.end();
 
       while ( iter != last )
       {
@@ -362,10 +349,9 @@ void FStatusBar::onMouseDown (FMouseEvent* ev)
 
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, last;
     int X = 1;
-    iter = key_list.begin();
-    last = key_list.end();
+    auto iter = key_list.begin();
+    auto last = key_list.end();
 
     while ( iter != last )
     {
@@ -406,10 +392,9 @@ void FStatusBar::onMouseUp (FMouseEvent* ev)
 
     if ( ! key_list.empty() )
     {
-      std::vector<FStatusKey*>::const_iterator iter, last;
       int X = 1;
-      iter = key_list.begin();
-      last = key_list.end();
+      auto iter = key_list.begin();
+      auto last = key_list.end();
 
       while ( iter != last )
       {
@@ -451,11 +436,10 @@ void FStatusBar::onMouseMove (FMouseEvent* ev)
 
   if ( mouse_down && ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, last;
     bool focus_changed = false;
     int X = 1;
-    iter = key_list.begin();
-    last = key_list.end();
+    auto iter = key_list.begin();
+    auto last = key_list.end();
 
     while ( iter != last )
     {
@@ -499,11 +483,9 @@ void FStatusBar::cb_statuskey_activated (FWidget* widget, data_ptr)
 {
   if ( ! key_list.empty() )
   {
-    std::vector<FStatusKey*>::const_iterator iter, last;
-    FStatusKey* statuskey = static_cast<FStatusKey*>(widget);
-
-    iter = key_list.begin();
-    last = key_list.end();
+    auto statuskey = static_cast<FStatusKey*>(widget);
+    auto iter = key_list.begin();
+    auto last = key_list.end();
 
     while ( iter != last )
     {
@@ -522,7 +504,7 @@ void FStatusBar::cb_statuskey_activated (FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 void FStatusBar::init()
 {
-  FWidget* r = getRootWidget();
+  auto r = getRootWidget();
   std::size_t w = r->getWidth();
   int h = int(r->getHeight());
   // initialize geometry values
@@ -550,8 +532,6 @@ void FStatusBar::draw()
 //----------------------------------------------------------------------
 void FStatusBar::drawKeys()
 {
-  keyList::const_iterator iter, last;
-
   screenWidth = getDesktopWidth();
   x = 1;
 
@@ -566,8 +546,8 @@ void FStatusBar::drawKeys()
   if ( isMonochron() )
     setReverse(true);
 
-  iter = key_list.begin();
-  last = key_list.end();
+  auto iter = key_list.begin();
+  auto last = key_list.end();
 
   while ( iter != last )
   {
@@ -603,7 +583,7 @@ void FStatusBar::drawKey (keyList::const_iterator iter)
   // Draw not active key
 
   std::size_t txt_length;
-  FStatusKey* item = *iter;
+  auto item = *iter;
 
   setColor (wc.statusbar_hotkey_fg, wc.statusbar_hotkey_bg);
   x++;
@@ -663,7 +643,7 @@ void FStatusBar::drawActiveKey (keyList::const_iterator iter)
   // Draw active key
 
   std::size_t txt_length;
-  FStatusKey* item = *iter;
+  auto item = *iter;
 
   if ( isMonochron() )
     setReverse(false);

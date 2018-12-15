@@ -390,7 +390,7 @@ class FTermDetectionTest : public CPPUNIT_NS::TestFixture
     pid_t       forkProcess();
     bool        isChildProcess (pid_t);
     void        terminalSimulation (console);
-    void        parseTerminalBuffer (int, console);
+    void        parseTerminalBuffer (std::size_t, console);
 
     // Adds code needed to register the test suite
     CPPUNIT_TEST_SUITE (FTermDetectionTest);
@@ -2331,9 +2331,9 @@ void FTermDetectionTest::terminalSimulation (console con)
 }
 
 //----------------------------------------------------------------------
-void FTermDetectionTest::parseTerminalBuffer (int length, console con)
+void FTermDetectionTest::parseTerminalBuffer (std::size_t length, console con)
 {
-  for (int i = 0; i < length; i++)
+  for (std::size_t i = 0; i < length; i++)
   {
     if ( buffer[i] == ENQ[0] )  // Enquiry character
     {

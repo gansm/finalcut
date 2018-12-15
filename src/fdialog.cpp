@@ -50,7 +50,7 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = static_cast<FApplication*>(getRootWidget());
   bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = nullptr;
@@ -130,7 +130,7 @@ void FDialog::show()
 
   if ( isModal() )
   {
-    FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+    auto fapp = static_cast<FApplication*>(getRootWidget());
     fapp->enter_loop();
 
     if ( this == getMainWidget() )
@@ -145,7 +145,7 @@ void FDialog::hide()
 
   if ( isModal() )
   {
-    FApplication* fapp = static_cast<FApplication*>(getRootWidget());
+    auto fapp = static_cast<FApplication*>(getRootWidget());
     fapp->exit_loop();
   }
 }
@@ -334,24 +334,19 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
   if ( window_list && ! window_list->empty() )
   {
     bool overlaid = false;
-    widgetList::const_iterator iter, last;
-    iter = window_list->begin();
-    last = window_list->end();
 
-    while ( iter != last )
+    for (auto&& win : *window_list)
     {
       if ( overlaid )
-        putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+        putArea (win->getTermPos(), win->getVWin());
 
-      if ( vwin == (*iter)->getVWin() )
+      if ( vwin == win->getVWin() )
         overlaid = true;
-
-      ++iter;
     }
   }
 
   // set the cursor to the focus widget
-  FWidget* focus = FWidget::getFocusWidget();
+  auto focus = FWidget::getFocusWidget();
   if ( focus
     && focus->isVisible()
     && focus->hasVisibleCursor() )
@@ -407,8 +402,8 @@ void FDialog::activateDialog()
   if ( isWindowActive() )
     return;
 
-  FWidget* old_focus = FWidget::getFocusWidget();
-  FWidget* win_focus = getWindowFocusWidget();
+  auto old_focus = FWidget::getFocusWidget();
+  auto win_focus = getWindowFocusWidget();
   setActiveWindow(this);
   setFocus();
   setFocusWidget(this);
@@ -637,12 +632,11 @@ void FDialog::onMouseDoubleClick (FMouseEvent* ev)
   if ( title_button.contains(tPos) )
   {
     // Double click on title button
-    FWidget* window_focus_widget;
     dialog_menu->unselectItem();
     dialog_menu->hide();
     activateWindow();
     raiseWindow();
-    window_focus_widget = getWindowFocusWidget();
+    auto window_focus_widget = getWindowFocusWidget();
 
     if ( window_focus_widget )
       window_focus_widget->setFocus();
@@ -688,7 +682,7 @@ void FDialog::onWindowActive (FEvent*)
 
   if ( ! FWidget::getFocusWidget() )
   {
-    FWidget* win_focus = getWindowFocusWidget();
+    auto win_focus = getWindowFocusWidget();
 
     if ( win_focus
       && win_focus->isVisible()
@@ -731,37 +725,22 @@ void FDialog::onWindowRaised (FEvent*)
   // Handle always-on-top windows
   if ( always_on_top_list && ! always_on_top_list->empty() )
   {
-    widgetList::const_iterator iter, last;
-    iter = always_on_top_list->begin();
-    last  = always_on_top_list->end();
-
-    while ( iter != last )
-    {
-      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
-      ++iter;
-    }
+    for (auto&& win : *always_on_top_list)
+      putArea (win->getTermPos(), win->getVWin());
   }
 }
 
 //----------------------------------------------------------------------
 void FDialog::onWindowLowered (FEvent*)
 {
-  widgetList::const_iterator iter, last;
-
   if ( ! window_list )
     return;
 
   if ( window_list->empty() )
     return;
 
-  iter = window_list->begin();
-  last = window_list->end();
-
-  while ( iter != last )
-  {
-    putArea ((*iter)->getTermPos(), (*iter)->getVWin());
-    ++iter;
-  }
+  for (auto&& win : *window_list)
+    putArea (win->getTermPos(), win->getVWin());
 }
 
 
@@ -829,7 +808,6 @@ void FDialog::onClose (FCloseEvent* ev)
 //----------------------------------------------------------------------
 void FDialog::init()
 {
-  FWidget* old_focus;
   setTopPadding(2);
   setLeftPadding(1);
   setBottomPadding(1);
@@ -844,7 +822,7 @@ void FDialog::init()
   setTransparentShadow();
   setForegroundColor (wc.dialog_fg);
   setBackgroundColor (wc.dialog_bg);
-  old_focus = FWidget::getFocusWidget();
+  auto old_focus = FWidget::getFocusWidget();
 
   if ( old_focus )
   {
@@ -1204,19 +1182,14 @@ void FDialog::restoreOverlaidWindows()
     return;
 
   bool overlaid = false;
-  widgetList::const_iterator iter, last;
-  iter = window_list->begin();
-  last = window_list->end();
 
-  while ( iter != last )
+  for (auto&& win : *window_list)
   {
     if ( overlaid )
-      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+      putArea (win->getTermPos(), win->getVWin());
 
-    if ( vwin == (*iter)->getVWin() )
+    if ( vwin == win->getVWin() )
       overlaid = true;
-
-    ++iter;
   }
 }
 
@@ -1225,7 +1198,7 @@ void FDialog::setCursorToFocusWidget()
 {
   // Set the cursor to the focus widget
 
-  FWidget* focus = FWidget::getFocusWidget();
+  auto focus = FWidget::getFocusWidget();
 
   if ( focus
     && focus->isVisible()
@@ -1285,9 +1258,8 @@ void FDialog::openMenu()
 void FDialog::selectFirstMenuItem()
 {
   // Focus to the first enabled menu item
-  FMenuItem* first_item;
   dialog_menu->selectFirstItem();
-  first_item = dialog_menu->getSelectedItem();
+  auto first_item = dialog_menu->getSelectedItem();
 
   if ( first_item )
     first_item->setFocus();
@@ -1409,7 +1381,7 @@ inline void FDialog::passEventToSubMenu ( mouseStates& ms
 
   try
   {
-    FMouseEvent* _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
     dialog_menu->mouse_down = true;
     setClickedWidget(dialog_menu);
     dialog_menu->onMouseMove(_ev);
@@ -1558,7 +1530,7 @@ void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
   // Resize the dialog
   if ( isResizeable() && ! resize_click_pos.isNull() )
   {
-    FWidget* r = getRootWidget();
+    auto r = getRootWidget();
     resize_click_pos = ms.termPos;
     int x2 = resize_click_pos.getX()
       , y2 = resize_click_pos.getY()
@@ -1659,8 +1631,7 @@ void FDialog::delDialog (FWidget* obj)
   if ( ! dialog_list || dialog_list->empty() )
     return;
 
-  widgetList::iterator iter;
-  iter = dialog_list->begin();
+  auto iter = dialog_list->begin();
 
   while ( iter != dialog_list->end() )
   {
