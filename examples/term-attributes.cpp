@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <functional>
 #include <final/final.h>
 
 
@@ -405,67 +406,32 @@ void AttribDemo::draw()
   // test alternate character set
   printAltCharset();
 
-  for (int y = 0; y < int(getParentWidget()->getHeight()) - 7; y++)
+  std::vector<std::function<void()> > effect
   {
-    setPrintPos (1, 2 + y);
+    [&] { printDim(); },
+    [&] { printNormal(); },
+    [&] { printBold(); },
+    [&] { printBoldDim(); },
+    [&] { printItalic(); },
+    [&] { printUnderline(); },
+    [&] { printDblUnderline(); },
+    [&] { printCrossesOut(); },
+    [&] { printBlink(); },
+    [&] { printReverse(); },
+    [&] { printStandout(); },
+    [&] { printInvisible(); },
+    [&] { printProtected(); },
+  };
+
+  for (std::size_t y = 0; y < getParentWidget()->getHeight() - 7; y++)
+  {
+    setPrintPos (1, 2 + int(y));
 
     if ( ! isMonochron() )
       setColor (wc.label_fg, wc.label_bg);
 
-    switch (y)
-    {
-      case 0:
-        printDim();
-        break;
-
-      case 1:
-        printNormal();
-        break;
-
-      case 2:
-        printBold();
-        break;
-
-      case 3:
-        printBoldDim();
-        break;
-
-      case 4:
-        printItalic();
-        break;
-
-      case 5:
-        printUnderline();
-        break;
-
-      case 6:
-        printDblUnderline();
-        break;
-
-      case 7:
-        printCrossesOut();
-        break;
-
-      case 8:
-        printBlink();
-        break;
-
-      case 9:
-        printReverse();
-        break;
-
-      case 10:
-        printStandout();
-        break;
-
-      case 11:
-        printInvisible();
-        break;
-
-      case 12:
-        printProtected();
-        break;
-    }
+    if ( y < effect.size() )
+      effect[y]();
   }
 
   if ( ! isMonochron() )

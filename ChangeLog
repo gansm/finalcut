@@ -1,6 +1,8 @@
 2018-12-15  Markus Gans  <guru.mail@muenster.de>
 	* Use of the C++11 auto specifier in the program code
 	* Code reduction by using of Range-based for loop
+	* The example program for video attributes now replaces 
+	  the switch statement with a vector of lambda expressions
 
 2018-12-09  Markus Gans  <guru.mail@muenster.de>
 	* Better handling of the scrollbar maximum
