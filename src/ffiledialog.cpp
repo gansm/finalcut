@@ -471,14 +471,8 @@ void FFileDialog::clear()
     return;
 
   // delete all directory entries;
-  auto iter = dir_entries.begin();
-  auto last = dir_entries.end();
-
-  while ( iter != last )
-  {
-    std::free (iter->name);
-    ++iter;
-  }
+  for (auto&& entry : dir_entries)
+    std::free (entry.name);
 
   dir_entries.clear();
 }
@@ -490,16 +484,10 @@ int FFileDialog::numOfDirs()
     return 0;
 
   int n = 0;
-  auto iter = dir_entries.begin();
-  auto last = dir_entries.end();
 
-  while ( iter != last )
-  {
-    if ( iter->directory && std::strcmp(iter->name, ".") != 0 )
+  for (auto&& entry : dir_entries)
+    if ( entry.directory && std::strcmp(entry.name, ".") != 0 )
       n++;
-
-    ++iter;
-  }
 
   return n;
 }
@@ -668,17 +656,33 @@ void FFileDialog::dirEntriesToList()
   if ( dir_entries.empty() )
     return;
 
-  auto iter = dir_entries.begin();
-  auto last = dir_entries.end();
-
-  while ( iter != last )
+  for (auto&& entry : dir_entries)
   {
-    if ( iter->directory )
-      filebrowser.insert(FString(iter->name), fc::SquareBrackets);
+    if ( entry.directory )
+      filebrowser.insert(FString(entry.name), fc::SquareBrackets);
     else
-      filebrowser.insert(FString(iter->name));
+      filebrowser.insert(FString(entry.name));
+  }
+}
 
-    ++iter;
+//----------------------------------------------------------------------
+void FFileDialog::selectDirectoryEntry (const char* const name)
+{
+  if ( dir_entries.empty() )
+    return;
+
+  std::size_t i = 1;
+
+  for (auto&& entry : dir_entries)
+  {
+    if ( std::strcmp(entry.name, name) == 0 )
+    {
+      filebrowser.setCurrentItem(i);
+      filename.setText(FString(name) + '/');
+      break;
+    }
+
+    i++;
   }
 }
 
@@ -712,26 +716,10 @@ int FFileDialog::changeDir (const FString& dirname)
       {
         if ( lastdir == FString('/') )
           filename.setText('/');
-        else if ( ! dir_entries.empty() )
+        else
         {
-          std::size_t i = 1;
-          const char* const baseName = \
-              basename(C_STR(lastdir.c_str()));
-          auto iter = dir_entries.begin();
-          auto last = dir_entries.end();
-
-          while ( iter != last )
-          {
-            if ( std::strcmp(iter->name, baseName) == 0 )
-            {
-              filebrowser.setCurrentItem(i);
-              filename.setText(FString(baseName) + '/');
-              break;
-            }
-
-            i++;
-            ++iter;
-          }
+          auto baseName = basename(C_STR(lastdir.c_str()));
+          selectDirectoryEntry (baseName);
         }
       }
       else
@@ -807,21 +795,17 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
     if ( ! dir_entries.empty() )
     {
       const FString& input = filename.getText().trim();
-      auto iter = dir_entries.begin();
-      auto last = dir_entries.end();
 
-      while ( iter != last )
+      for (auto&& entry : dir_entries)
       {
-        if ( iter->name && input && ! input.isNull()
-          && std::strcmp(iter->name, input) == 0
-          && iter->directory )
+        if ( entry.name && input && ! input.isNull()
+          && std::strcmp(entry.name, input) == 0
+          && entry.directory )
         {
           found = true;
           changeDir(input);
           break;
         }
-
-        ++iter;
       }
     }
 

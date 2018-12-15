@@ -295,16 +295,12 @@ void FListBox::remove (std::size_t item)
   element_count = getCount();
   max_line_width = 0;
 
-  auto iter = itemlist.begin();
-
-  while ( iter != itemlist.end() )
+  for (auto&& item : itemlist)
   {
-    std::size_t len = iter->getText().getLength();
+    std::size_t len = item.getText().getLength();
 
     if ( len > max_line_width )
       max_line_width = len;
-
-    ++iter;
   }
 
   int hmax = ( max_line_width > getWidth() - nf_offset - 4 )

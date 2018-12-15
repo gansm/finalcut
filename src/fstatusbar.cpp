@@ -161,16 +161,9 @@ bool FStatusBar::hasActivatedKey()
 {
   if ( ! key_list.empty() )
   {
-    auto iter = key_list.begin();
-    auto last = key_list.end();
-
-    while ( iter != last )
-    {
-      if ( (*iter)->isActivated() )
+    for (auto&& k : key_list)
+      if ( k->isActivated() )
         return true;
-
-      ++iter;
-    }
   }
 
   return false;

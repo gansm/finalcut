@@ -173,6 +173,7 @@ class FFileDialog : public FDialog
     void          getEntry (const char* const, struct dirent*);
     void          followSymLink (const char* const, dir_entry&);
     void          dirEntriesToList();
+    void          selectDirectoryEntry (const char* const);
     int           changeDir (const FString&);
     void          printPath (const FString&);
     static const FString getHomeDir();

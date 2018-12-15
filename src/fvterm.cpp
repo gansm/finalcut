@@ -871,19 +871,15 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
   if ( ! area )
     return non_covered;
 
-  auto is_covered = non_covered;
   bool found = bool(area == vdesktop);
-
+  auto is_covered = non_covered;
   auto w = static_cast<FWidget*>(area->widget);
 
   if ( w->window_list && ! w->window_list->empty() )
   {
-    auto iter = w->window_list->begin();
-    auto end  = w->window_list->end();
-
-    for (; iter != end; ++iter)
+    for (auto&& win_obj : *w->window_list)
     {
-      auto win = (*iter)->getVWin();
+      auto win = win_obj->getVWin();
 
       if ( ! win )
         continue;
@@ -1706,12 +1702,9 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
   if ( ! widget->window_list || widget->window_list->empty() )
     return *sc;
 
-  auto iter = widget->window_list->begin();
-  auto end  = widget->window_list->end();
-
-  for (; iter != end; ++iter)
+  for (auto&& win_obj : *widget->window_list)
   {
-    auto win = (*iter)->getVWin();
+    auto win = win_obj->getVWin();
 
     if ( ! win || ! win->visible )
       continue;
@@ -1808,23 +1801,21 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
 
   // Get the window layer of this object
   int layer = FWindow::getWindowLayer(w);
-  auto iter  = w->window_list->begin();
-  auto end   = w->window_list->end();
 
-  for (; iter != end; ++iter)
+  for (auto&& win_obj : *w->window_list)
   {
     bool significant_char;
 
     // char_type can be "overlapped_character"
     // or "covered_character"
     if ( char_type == covered_character )
-      significant_char = bool(layer >= FWindow::getWindowLayer(*iter));
+      significant_char = bool(layer >= FWindow::getWindowLayer(win_obj));
     else
-      significant_char = bool(layer < FWindow::getWindowLayer(*iter));
+      significant_char = bool(layer < FWindow::getWindowLayer(win_obj));
 
-    if ( obj && *iter != obj && significant_char )
+    if ( obj && win_obj != obj && significant_char )
     {
-      auto win = (*iter)->getVWin();
+      auto win = win_obj->getVWin();
 
       if ( ! win || ! win->visible )
         continue;

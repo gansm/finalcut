@@ -334,18 +334,14 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
   if ( window_list && ! window_list->empty() )
   {
     bool overlaid = false;
-    auto iter = window_list->begin();
-    auto last = window_list->end();
 
-    while ( iter != last )
+    for (auto&& win : *window_list)
     {
       if ( overlaid )
-        putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+        putArea (win->getTermPos(), win->getVWin());
 
-      if ( vwin == (*iter)->getVWin() )
+      if ( vwin == win->getVWin() )
         overlaid = true;
-
-      ++iter;
     }
   }
 
@@ -729,14 +725,8 @@ void FDialog::onWindowRaised (FEvent*)
   // Handle always-on-top windows
   if ( always_on_top_list && ! always_on_top_list->empty() )
   {
-    auto iter = always_on_top_list->begin();
-    auto last  = always_on_top_list->end();
-
-    while ( iter != last )
-    {
-      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
-      ++iter;
-    }
+    for (auto&& win : *always_on_top_list)
+      putArea (win->getTermPos(), win->getVWin());
   }
 }
 
@@ -749,14 +739,8 @@ void FDialog::onWindowLowered (FEvent*)
   if ( window_list->empty() )
     return;
 
-  auto iter = window_list->begin();
-  auto last = window_list->end();
-
-  while ( iter != last )
-  {
-    putArea ((*iter)->getTermPos(), (*iter)->getVWin());
-    ++iter;
-  }
+  for (auto&& win : *window_list)
+    putArea (win->getTermPos(), win->getVWin());
 }
 
 
@@ -1198,18 +1182,14 @@ void FDialog::restoreOverlaidWindows()
     return;
 
   bool overlaid = false;
-  auto iter = window_list->begin();
-  auto last = window_list->end();
 
-  while ( iter != last )
+  for (auto&& win : *window_list)
   {
     if ( overlaid )
-      putArea ((*iter)->getTermPos(), (*iter)->getVWin());
+      putArea (win->getTermPos(), win->getVWin());
 
-    if ( vwin == (*iter)->getVWin() )
+    if ( vwin == win->getVWin() )
       overlaid = true;
-
-    ++iter;
   }
 }
 
