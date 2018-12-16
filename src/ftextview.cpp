@@ -203,7 +203,7 @@ void FTextView::hide()
   }
 
   setColor (fg, bg);
-  auto n = isNewFont() ? 1 : 0;
+  std::size_t n = isNewFont() ? 1 : 0;
   auto size = getWidth() + n;
 
   if ( size == 0 )

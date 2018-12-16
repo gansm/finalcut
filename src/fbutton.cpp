@@ -345,10 +345,6 @@ void FButton::onMouseMove (FMouseEvent* ev)
 void FButton::onTimer (FTimerEvent* ev)
 {
   delTimer(ev->timerId());
-
-  if ( hasShadow() )
-    clearShadow();
-
   setUp();
 }
 
