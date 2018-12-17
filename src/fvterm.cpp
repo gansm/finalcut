@@ -1486,8 +1486,8 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
     if ( area->changes[y].trans_count == 0 )
     {
       // Line has only covered characters
-      auto ac = &area->text[y * line_len + ol];
-      auto tc = &vterm->text[(ay + y) * vterm->width + ax];
+      ac = &area->text[y * line_len + ol];
+      tc = &vterm->text[(ay + y) * vterm->width + ax];
       putAreaLine (ac, tc, length);
     }
     else

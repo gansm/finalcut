@@ -396,8 +396,6 @@ void FLineEdit::onMouseDown (FMouseEvent* ev)
   if ( ! hasFocus() )
   {
     auto focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
     setFocus();
 
     if ( focused_widget )
@@ -562,8 +560,6 @@ void FLineEdit::onAccel (FAccelEvent* ev)
 
     if ( focused_widget && focused_widget->isWidget() )
     {
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
       setFocus();
       focused_widget->redraw();
       redraw();

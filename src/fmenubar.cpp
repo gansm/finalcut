@@ -736,8 +736,6 @@ void FMenuBar::selectMenuItem (FMenuItem* item)
     return;
 
   auto focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
   item->setSelected();
   item->setFocus();
 

@@ -1317,7 +1317,7 @@ void FWidget::drawFlatBorder()
       // left line (on right side)
       print (fc::NF_border_line_left);
 
-    setPrintPos (x2, y1 + y + 2);
+    setPrintPos (x2, y1 + int(y) + 2);
   }
 
   setPrintPos (x1, y1);

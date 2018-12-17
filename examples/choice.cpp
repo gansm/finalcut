@@ -124,7 +124,7 @@ int main (int argc, char* argv[])
 
     // Scroll to the focused child element
     finalcut::FFocusEvent cfi (finalcut::fc::ChildFocusIn_Event);
-    finalcut::FApplication::sendEvent(&checkButtonGroup, &cfi);
+    finalcut::FApplication::queueEvent(&checkButtonGroup, &cfi);
 
     // Create a OK button
     finalcut::FButton ok("&OK", &dgl);

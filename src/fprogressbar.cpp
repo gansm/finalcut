@@ -115,7 +115,7 @@ void FProgressbar::hide()
   }
 
   setColor (fg, bg);
-  auto s = hasShadow() ? 1 : 0;
+  std::size_t s = hasShadow() ? 1 : 0;
   auto size = getWidth() + s;
 
   if ( size == 0 )

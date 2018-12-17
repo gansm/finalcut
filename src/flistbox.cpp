@@ -295,9 +295,9 @@ void FListBox::remove (std::size_t item)
   element_count = getCount();
   max_line_width = 0;
 
-  for (auto&& item : itemlist)
+  for (auto&& listbox_item : itemlist)
   {
-    std::size_t len = item.getText().getLength();
+    std::size_t len = listbox_item.getText().getLength();
 
     if ( len > max_line_width )
       max_line_width = len;
@@ -1268,8 +1268,6 @@ inline void FListBox::getWidgetFocus()
     return;
 
   auto focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
   setFocus();
 
   if ( focused_widget )

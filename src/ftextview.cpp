@@ -203,7 +203,7 @@ void FTextView::hide()
   }
 
   setColor (fg, bg);
-  auto n = isNewFont() ? 1 : 0;
+  std::size_t n = isNewFont() ? 1 : 0;
   auto size = getWidth() + n;
 
   if ( size == 0 )
@@ -396,8 +396,6 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
     setFocus();
 
     if ( focused_widget )

@@ -722,8 +722,6 @@ void FMenu::mouseDownSelection (FMenuItem* m_item, bool& focus_changed)
 
   unselectItem();
   auto focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
   m_item->setSelected();
   setSelectedItem(m_item);
   m_item->setFocus();
@@ -836,8 +834,6 @@ void FMenu::mouseMoveSelection (FMenuItem* m_item, mouseStates& ms)
 
   // Mouse pointer over item
   auto focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
   m_item->setSelected();
   setSelectedItem(m_item);
   m_item->setFocus();
