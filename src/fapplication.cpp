@@ -51,7 +51,7 @@ int            FApplication::loop_level      = 0;  // event loop level
 int            FApplication::quit_code       = 0;
 bool           FApplication::quit_now        = false;
 
-FApplication::eventQueue* FApplication::event_queue = nullptr;
+FApplication::eventQueuePtr FApplication::event_queue = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -84,8 +84,8 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  if ( event_queue )
-    delete event_queue;
+  //if ( event_queue )
+  //  delete event_queue;
 
   app_object = nullptr;
 }
@@ -233,22 +233,18 @@ void FApplication::queueEvent ( const FObject* receiver
     return;
 
   // queue this event
-  eventPair Event (receiver, event);
-  event_queue->push_back(Event);
+  eventPair send_event (receiver, std::make_shared<const FEvent>(*event));
+  event_queue->push_back(send_event);
 }
 
 //----------------------------------------------------------------------
 void FApplication::sendQueuedEvents()
 {
-  if ( ! eventInQueue() )
-    return;
-
-  auto events = event_queue;
-
-  while ( ! eventInQueue() )
+  while ( eventInQueue() )
   {
-    sendEvent(events->front().first, events->front().second);
-    events->pop_front();
+    sendEvent( event_queue->front().first,
+               event_queue->front().second.get() );
+    event_queue->pop_front();
   }
 }
 
@@ -393,7 +389,8 @@ void FApplication::init (long key_time, long dblclick_time)
 
   try
   {
-    event_queue = new eventQueue;
+    //event_queue = new eventQueue;
+    event_queue = std::make_shared<eventQueue>();
   }
   catch (const std::bad_alloc& ex)
   {

@@ -62,6 +62,7 @@
 
 #include <getopt.h>
 #include <deque>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -125,8 +126,9 @@ class FApplication : public FWidget
 
   private:
     // Typedefs and Enumerations
-    typedef std::pair<const FObject*, const FEvent*> eventPair;
+    typedef std::pair<const FObject*, std::shared_ptr<const FEvent> > eventPair;
     typedef std::deque<eventPair> eventQueue;
+    typedef std::shared_ptr<eventQueue> eventQueuePtr;
 
     // Constants
     static const int NEED_MORE_DATA = -1;  // parseKeyString return value
@@ -180,7 +182,7 @@ class FApplication : public FWidget
     long               key_timeout{100000};        // 100 ms
     long               dblclick_interval{500000};  // 500 ms
     static FMouseControl* mouse;
-    static eventQueue* event_queue;
+    static eventQueuePtr  event_queue;
     static int         quit_code;
     static bool        quit_now;
     static int         loop_level;

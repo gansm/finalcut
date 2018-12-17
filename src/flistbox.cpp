@@ -1268,8 +1268,6 @@ inline void FListBox::getWidgetFocus()
     return;
 
   auto focused_widget = getFocusWidget();
-  FFocusEvent out (fc::FocusOut_Event);
-  FApplication::queueEvent(focused_widget, &out);
   setFocus();
 
   if ( focused_widget )

@@ -428,13 +428,6 @@ void FMenuItem::onAccel (FAccelEvent* ev)
     mbar->selected_item = this;
     openMenu();
     auto focused_widget = static_cast<FWidget*>(ev->focusedWidget());
-
-    if ( focused_widget && focused_widget->isWidget() )
-    {
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
-    }
-
     menu->unselectItem();
     menu->selectFirstItem();
 

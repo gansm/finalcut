@@ -396,8 +396,6 @@ void FTextView::onMouseDown (FMouseEvent* ev)
   if ( ! hasFocus() )
   {
     FWidget* focused_widget = getFocusWidget();
-    FFocusEvent out (fc::FocusOut_Event);
-    FApplication::queueEvent(focused_widget, &out);
     setFocus();
 
     if ( focused_widget )

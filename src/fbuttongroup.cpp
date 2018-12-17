@@ -618,8 +618,6 @@ void FButtonGroup::directFocus()
           {
             found_checked = true;
             auto focused_widget = getFocusWidget();
-            FFocusEvent out (fc::FocusOut_Event);
-            FApplication::queueEvent(focused_widget, &out);
             toggle_button->setFocus();
 
             if ( focused_widget )
@@ -641,8 +639,6 @@ void FButtonGroup::directFocus()
     if ( ! found_checked )
     {
       auto focused_widget = getFocusWidget();
-      FFocusEvent out (fc::FocusOut_Event);
-      FApplication::queueEvent(focused_widget, &out);
       focusFirstChild();
 
       if ( focused_widget )
