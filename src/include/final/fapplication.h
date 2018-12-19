@@ -177,18 +177,18 @@ class FApplication : public FWidget
                                           , const FEvent* );
 
     // Data Members
-    int                app_argc;
-    char**             app_argv;
-    long               key_timeout{100000};        // 100 ms
-    long               dblclick_interval{500000};  // 500 ms
+    int                   app_argc;
+    char**                app_argv;
+    long                  key_timeout{100000};        // 100 ms
+    long                  dblclick_interval{500000};  // 500 ms
     static FMouseControl* mouse;
     static eventQueuePtr  event_queue;
-    static int         quit_code;
-    static bool        quit_now;
-    static int         loop_level;
-    static bool        process_timer_event;
-    static FKeyboard*  keyboard;
-    static FWidget*    keyboard_widget;
+    static int            quit_code;
+    static bool           quit_now;
+    static int            loop_level;
+    static bool           process_timer_event;
+    static FKeyboard*     keyboard;
+    static FWidget*       keyboard_widget;
 };
 #pragma pack(pop)
 

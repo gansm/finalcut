@@ -220,7 +220,7 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FFileDialog* fileopen;
+  //FFileDialog* fileopen;
   FString ret;
   FString path = dirname;
   FString file_filter = filter;
@@ -236,25 +236,16 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  try
-  {
-    fileopen = new FFileDialog ( path
-                               , file_filter
-                               , FFileDialog::Open
-                               , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FString();
-  }
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , FFileDialog::Open
+                       , parent );
 
-  if ( fileopen->exec() == FDialog::Accept )
-    ret = fileopen->getPath() + fileopen->getSelectedFile();
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString();
 
-  delete fileopen;
   return ret;
 }
 
@@ -263,7 +254,6 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  FFileDialog* fileopen;
   FString ret;
   FString path = dirname;
   FString file_filter = filter;
@@ -279,25 +269,16 @@ const FString FFileDialog::fileSaveChooser ( FWidget* parent
   if ( file_filter.isNull() || file_filter.isEmpty() )
     file_filter = FString("*");
 
-  try
-  {
-    fileopen = new FFileDialog ( path
-                               , file_filter
-                               , FFileDialog::Save
-                               , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FString();
-  }
+  FFileDialog fileopen ( path
+                       , file_filter
+                       , FFileDialog::Save
+                       , parent );
 
-  if ( fileopen->exec() == FDialog::Accept )
-    ret = fileopen->getPath() + fileopen->getSelectedFile();
+  if ( fileopen.exec() == FDialog::Accept )
+    ret = fileopen.getPath() + fileopen.getSelectedFile();
   else
     ret = FString();
 
-  delete fileopen;
   return ret;
 }
 

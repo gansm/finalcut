@@ -757,8 +757,8 @@ void MyDialog::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 {
-  auto button = static_cast<finalcut::FButton*>(widget);
-  auto text = button->getText();
+  auto& button = *(static_cast<finalcut::FButton*>(widget));
+  auto text = button.getText();
   text = text.replace('&', "");
   finalcut::FMessageBox::error ( this
                                , "The \"" + text + "\" button has\n"
@@ -884,18 +884,18 @@ void MyDialog::cb_clearInput (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, data_ptr data)
 {
-  auto button = static_cast<finalcut::FButton*>(widget);
-  auto lineedit = static_cast<finalcut::FLineEdit*>(data);
-  button->setText(lineedit->getText());
-  button->redraw();
+  auto& button = *(static_cast<finalcut::FButton*>(widget));
+  const auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));
+  button.setText(lineedit.getText());
+  button.redraw();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
 {
-  auto lineedit = static_cast<finalcut::FLineEdit*>(widget);
+  auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
   finalcut::FString title;
-  *lineedit >> title;
+  lineedit >> title;
   setTermTitle (title);
   setText (title);
   redraw();
@@ -911,32 +911,32 @@ void MyDialog::cb_ProgressBar (finalcut::FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
 {
-  auto list = static_cast<finalcut::FListBox*>(widget);
-  auto num = static_cast<finalcut::FLabel*>(data);
-  auto count = list->getCount();
+  auto& list = *(static_cast<finalcut::FListBox*>(widget));
+  auto& num = *(static_cast<finalcut::FLabel*>(data));
+  const auto& count = list.getCount();
   int select_num = 0;
 
   for (std::size_t n = 1; n <= count; n++)
-    if ( list->isSelected(n) )
+    if ( list.isSelected(n) )
       select_num++;
 
-  num->clear();
-  *num << select_num;
-  num->redraw();
+  num.clear();
+  num << select_num;
+  num.redraw();
 }
 
 //----------------------------------------------------------------------
 void MyDialog::cb_activateButton (finalcut::FWidget* widget, data_ptr data)
 {
-  auto rb = static_cast<finalcut::FRadioButton*>(widget);
-  auto button = static_cast<finalcut::FButton*>(data);
+  auto& rb = *(static_cast<finalcut::FRadioButton*>(widget));
+  auto& button = *(static_cast<finalcut::FButton*>(data));
 
-  if ( rb->isChecked() )
-    button->setEnable();
+  if ( rb.isChecked() )
+    button.setEnable();
   else
-    button->setDisable();
+    button.setDisable();
 
-  button->redraw();
+  button.redraw();
 }
 
 //----------------------------------------------------------------------
@@ -953,7 +953,7 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
   if ( file.isNull() )
     return;
 
-  TextWindow* view = new TextWindow(this);
+  const auto& view = new TextWindow(this);
   finalcut::FString filename(basename(const_cast<char*>(file.c_str())));
   view->setText ("Viewer: " + filename);
   view->setGeometry ( 1 + int((getRootWidget()->getWidth() - 60) / 2),
@@ -961,7 +961,6 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
                       60,
                       getRootWidget()->getHeight() * 3 / 4 );
   view->setResizeable();
-
   std::string line = "";
   std::ifstream infile;
   infile.open(file);
@@ -981,10 +980,10 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
 //----------------------------------------------------------------------
 void MyDialog::cb_setInput (finalcut::FWidget* widget, data_ptr data)
 {
-  auto ListBox = static_cast<finalcut::FListBox*>(widget);
-  auto lineedit = static_cast<finalcut::FLineEdit*>(data);
-  *lineedit = ListBox->getItem(ListBox->currentItem()).getText();
-  lineedit->redraw();
+  auto& ListBox = *(static_cast<finalcut::FListBox*>(widget));
+  auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));
+  lineedit = ListBox.getItem(ListBox.currentItem()).getText();
+  lineedit.redraw();
 }
 
 

@@ -29,7 +29,7 @@
 
 
 // Global application object
-static finalcut::FString* temp_str = nullptr;
+static std::shared_ptr<finalcut::FString> temp_str { nullptr };
 
 
 // Function prototypes
@@ -103,7 +103,7 @@ class Listbox : public finalcut::FDialog
 Listbox::Listbox (finalcut::FWidget* parent)
   : finalcut::FDialog(parent)
 {
-  temp_str = new finalcut::FString;
+  temp_str = std::make_shared<finalcut::FString>();
 
   // listbox 1
   //----------
@@ -158,9 +158,7 @@ Listbox::Listbox (finalcut::FWidget* parent)
 
 //----------------------------------------------------------------------
 Listbox::~Listbox()  // destructor
-{
-  delete temp_str;
-}
+{ }
 
 //----------------------------------------------------------------------
 void Listbox::onClose (finalcut::FCloseEvent* ev)

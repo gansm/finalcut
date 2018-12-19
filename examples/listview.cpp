@@ -189,7 +189,7 @@ void Listview::onClose (finalcut::FCloseEvent* ev)
 //----------------------------------------------------------------------
 void Listview::cb_showInMessagebox (finalcut::FWidget*, data_ptr)
 {
-  auto item = listView.getCurrentItem();
+  const auto& item = listView.getCurrentItem();
   finalcut::FMessageBox info ( "Weather in " + item->getText(1)
                              , "  Condition: " + item->getText(2) + "\n"
                                "Temperature: " + item->getText(3) + "\n"

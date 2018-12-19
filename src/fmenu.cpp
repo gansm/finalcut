@@ -918,11 +918,11 @@ void FMenu::passEventToSubMenu (FMouseEvent*& ev)
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     opened_sub_menu->mouse_down = true;
     setClickedWidget(opened_sub_menu);
-    opened_sub_menu->onMouseMove(_ev);
-    delete _ev;
+    opened_sub_menu->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {
@@ -935,18 +935,18 @@ void FMenu::passEventToSuperMenu (FMouseEvent*& ev)
 {
   // Mouse event handover to super-menu
 
-  auto smenu = superMenuAt (ev->getTermPos());
+  const auto& smenu = superMenuAt (ev->getTermPos());
   const FPoint& t = ev->getTermPos();
   const FPoint& p = smenu->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     smenu->mouse_down = true;
     setClickedWidget(smenu);
-    smenu->onMouseMove(_ev);
-    delete _ev;
+    smenu->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {
@@ -959,19 +959,19 @@ void FMenu::passEventToMenuBar (FMouseEvent*& ev)
 {
   // Mouse event handover to the menu bar
 
-  auto menu_bar = getMenuBar();
+  const auto& menu_bar = getMenuBar();
   const FPoint& t = ev->getTermPos();
   const FPoint& p = menu_bar->termToWidgetPos(t);
   int b = ev->getButton();
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
     setClickedWidget(menu_bar);
-    auto mbar = static_cast<FMenuBar*>(menu_bar);
-    mbar->mouse_down = true;
-    mbar->onMouseMove(_ev);
-    delete _ev;
+    auto& mbar = *(static_cast<FMenuBar*>(menu_bar));
+    mbar.mouse_down = true;
+    mbar.onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {

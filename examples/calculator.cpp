@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <limits>
 #include <map>
+#include <memory>
 #include <stack>
 
 #include <final/final.h>
@@ -236,7 +237,7 @@ class Calc : public finalcut::FDialog
     };
 
     std::stack<stack_data> bracket_stack{};
-    std::map<Calc::button, Button*> calculator_buttons{};
+    std::map<Calc::button, std::shared_ptr<Button> > calculator_buttons{};
     std::map<Calc::button, keyFunction> key_map{};
 };
 #pragma pack(pop)
@@ -252,9 +253,9 @@ Calc::Calc (FWidget* parent)
   setGeometry (19, 6, 37, 18);
   addAccelerator('q');  // Press 'q' to quit
 
-  for (int key = 0; key < Calc::NUM_OF_BUTTONS; key++)
+  for (std::size_t key = 0; key < Calc::NUM_OF_BUTTONS; key++)
   {
-    auto btn = new Button(this);
+    auto btn = std::make_shared<Button>(this);
     button_no[key] = key;
 
     if ( key == Equals )

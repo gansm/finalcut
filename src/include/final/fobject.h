@@ -45,6 +45,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <list>
+#include <memory>
 #include <vector>
 
 #include "final/emptyfstring.h"
@@ -123,8 +124,9 @@ class FObject
       FObject*  object;
     };
 
-    // Typedef
+    // Typedefs
     typedef std::vector<timer_data> TimerList;
+    typedef std::shared_ptr<TimerList> TimerListPtr;
 
     // Accessor
     TimerList*           getTimerList() const;
@@ -144,12 +146,12 @@ class FObject
     virtual void performTimerAction (const FObject*, const FEvent*);
 
     // Data Members
-    FObject*          parent_obj{nullptr};
-    FObjectList       children_list{};  // no children yet
-    bool              has_parent{false};
-    bool              widget_object{false};
-    static bool       timer_modify_lock;
-    static TimerList* timer_list;
+    FObject*            parent_obj{nullptr};
+    FObjectList         children_list{};  // no children yet
+    bool                has_parent{false};
+    bool                widget_object{false};
+    static bool         timer_modify_lock;
+    static TimerListPtr timer_list;
 };
 
 #pragma pack(pop)
@@ -216,7 +218,7 @@ inline bool FObject::isTimerInUpdating() const
 
 //----------------------------------------------------------------------
 inline FObject::TimerList* FObject::getTimerList() const
-{ return timer_list; }
+{ return timer_list.get(); }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)

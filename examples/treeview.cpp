@@ -338,10 +338,10 @@ Treeview::Treeview (finalcut::FWidget* parent)
 
   while ( continent_list->name )
   {
-    auto country_list = continent_list->child_element;
+    auto& country_list = continent_list->child_element;
     finalcut::FStringList continent_line ( continent_list->begin()
                                          , continent_list->end() );
-    auto iter = listView.insert (continent_line);
+    const auto& iter = listView.insert (continent_line);
 
     while ( country_list && country_list->name )
     {

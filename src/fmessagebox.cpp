@@ -169,22 +169,10 @@ int FMessageBox::info ( FWidget* parent
                       , int button2 )
 {
   int reply;
-  FMessageBox* mbox;
-
-  try
-  {
-    mbox = new FMessageBox ( caption, message
-                           , button0, button1, button2
-                           , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FDialog::Reject;
-  }
-
-  reply = mbox->exec();
-  delete mbox;
+  FMessageBox mbox ( caption, message
+                   , button0, button1, button2
+                   , parent );
+  reply = mbox.exec();
   return reply;
 }
 
@@ -197,23 +185,11 @@ int FMessageBox::info ( FWidget* parent
                       , int button2 )
 {
   int reply;
-  FMessageBox* mbox;
-
-  try
-  {
-    mbox = new FMessageBox ( caption
-                           , FString() << num
-                           , button0, button1, button2
-                           , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FDialog::Reject;
-  }
-
-  reply = mbox->exec();
-  delete mbox;
+  FMessageBox mbox ( caption
+                   , FString() << num
+                   , button0, button1, button2
+                   , parent );
+  reply = mbox.exec();
   return reply;
 }
 
@@ -226,28 +202,16 @@ int FMessageBox::error ( FWidget* parent
 {
   int reply;
   const FString& caption = "Error message";
-  FMessageBox* mbox;
-
-  try
-  {
-    mbox = new FMessageBox ( caption, message
-                           , button0, button1, button2
-                           , parent );
-  }
-  catch (const std::bad_alloc& ex)
-  {
-    std::cerr << bad_alloc_str << ex.what() << std::endl;
-    return FDialog::Reject;
-  }
-
-  mbox->beep();
-  mbox->setHeadline("Warning:");
-  mbox->setCenterText();
-  mbox->setForegroundColor(mbox->wc.error_box_fg);
-  mbox->setBackgroundColor(mbox->wc.error_box_bg);
-  mbox->emphasis_color  = mbox->wc.error_box_emphasis_fg;
-  reply = mbox->exec();
-  delete mbox;
+  FMessageBox mbox ( caption, message
+                   , button0, button1, button2
+                   , parent );
+  mbox.beep();
+  mbox.setHeadline("Warning:");
+  mbox.setCenterText();
+  mbox.setForegroundColor(mbox.wc.error_box_fg);
+  mbox.setBackgroundColor(mbox.wc.error_box_bg);
+  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
+  reply = mbox.exec();
   return reply;
 }
 

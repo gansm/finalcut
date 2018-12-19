@@ -976,7 +976,7 @@ void FMenuBar::passEventToMenu (FMouseEvent*& ev)
     return;
 
   // Mouse event handover to the menu
-  auto menu = getSelectedItem()->getMenu();
+  const auto& menu = getSelectedItem()->getMenu();
   const auto& menu_geometry = menu->getTermGeometry();
 
   if ( menu->getCount() > 0
@@ -988,11 +988,11 @@ void FMenuBar::passEventToMenu (FMouseEvent*& ev)
 
     try
     {
-      auto _ev = new FMouseEvent (fc::MouseMove_Event, p, t, b);
+      const auto& _ev = \
+          std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, t, b);
       menu->mouse_down = true;
       setClickedWidget(menu);
-      menu->onMouseMove(_ev);
-      delete _ev;
+      menu->onMouseMove(_ev.get());
     }
     catch (const std::bad_alloc& ex)
     {

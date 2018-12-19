@@ -84,9 +84,6 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
-  //if ( event_queue )
-  //  delete event_queue;
-
   app_object = nullptr;
 }
 
@@ -389,7 +386,6 @@ void FApplication::init (long key_time, long dblclick_time)
 
   try
   {
-    //event_queue = new eventQueue;
     event_queue = std::make_shared<eventQueue>();
   }
   catch (const std::bad_alloc& ex)

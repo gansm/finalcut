@@ -31,8 +31,8 @@ void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
 //----------------------------------------------------------------------
 void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
 {
-  auto app = static_cast<finalcut::FApplication*>(data);
-  app->quit();
+  auto& app = *(static_cast<finalcut::FApplication*>(data));
+  app.quit();
 }
 
 

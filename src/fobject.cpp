@@ -26,9 +26,10 @@ namespace finalcut
 {
 
 // static class attributes
-bool                FObject::timer_modify_lock;
-FObject::TimerList* FObject::timer_list = nullptr;
+bool FObject::timer_modify_lock;
+FObject::TimerListPtr FObject::timer_list = nullptr;
 const FString* fc::emptyFString::empty_string = nullptr;
+
 
 //----------------------------------------------------------------------
 // class FObject
@@ -52,7 +53,7 @@ FObject::FObject (FObject* parent)
     {
       try
       {
-        timer_list = new TimerList();
+        timer_list = std::make_shared<TimerList>();
       }
       catch (const std::bad_alloc& ex)
       {
@@ -69,10 +70,7 @@ FObject::~FObject()  // destructor
   delOwnTimer();  // Delete all timers of this object
 
   if ( ! has_parent && timer_list )
-  {
-    delete timer_list;
     timer_list = nullptr;
-  }
 
   if ( ! has_parent && ! fc::emptyFString::isNull() )
     fc::emptyFString::clear();

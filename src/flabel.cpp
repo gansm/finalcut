@@ -277,9 +277,9 @@ void FLabel::onMouseDown (FMouseEvent* ev)
 
       try
       {
-        auto _ev = new FMouseEvent (fc::MouseDown_Event, p, tp, b);
-        FApplication::sendEvent (parent, _ev);
-        delete _ev;
+        const auto& _ev = \
+            std::make_shared<FMouseEvent>(fc::MouseDown_Event, p, tp, b);
+        FApplication::sendEvent (parent, _ev.get());
       }
       catch (const std::bad_alloc& ex)
       {

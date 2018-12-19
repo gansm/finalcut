@@ -1,3 +1,6 @@
+2018-12-19  Markus Gans  <guru.mail@muenster.de>
+	* Use of smart pointers
+
 2018-12-17  Markus Gans  <guru.mail@muenster.de>
 	* Improve FButton mouse click animation
 	* Minor data type corrections

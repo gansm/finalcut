@@ -1381,11 +1381,11 @@ inline void FDialog::passEventToSubMenu ( mouseStates& ms
 
   try
   {
-    auto _ev = new FMouseEvent (fc::MouseMove_Event, p, g, b);
+    const auto& _ev = \
+        std::make_shared<FMouseEvent>(fc::MouseMove_Event, p, g, b);
     dialog_menu->mouse_down = true;
     setClickedWidget(dialog_menu);
-    dialog_menu->onMouseMove(_ev);
-    delete _ev;
+    dialog_menu->onMouseMove(_ev.get());
   }
   catch (const std::bad_alloc& ex)
   {

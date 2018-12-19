@@ -201,7 +201,7 @@ MainWindow::MainWindow (finalcut::FWidget* parent)
   // The memory allocation for the following three sub windows occurs
   // with the operator new. The lifetime of the generated widget
   // is managed by the parent object (this). The operator delete
-  // is not required in this scope and would result in a double free.
+  // is not required in this class and would result in a double free.
   transpwin = new Transparent(this);
   transpwin->setText("transparent");
   transpwin->setGeometry (6, 3, 29, 12);

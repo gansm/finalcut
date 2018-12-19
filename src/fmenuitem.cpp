@@ -680,14 +680,14 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
   if ( ! widget )
     return;
 
-  FMouseEvent* _ev;
   const FPoint& t = ev->getTermPos();
   const FPoint& p2 = widget->termToWidgetPos(t);
   int b = ev->getButton();
+  std::shared_ptr<FMouseEvent> _ev;
 
   try
   {
-    _ev = new FMouseEvent (ev_type, p2, t, b);
+    _ev = std::make_shared<FMouseEvent>(ev_type, p2, t, b);
   }
   catch (const std::bad_alloc& ex)
   {
@@ -698,23 +698,21 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
   switch ( int(ev_type) )
   {
     case fc::MouseDoubleClick_Event:
-      widget->onMouseDoubleClick(_ev);
+      widget->onMouseDoubleClick(_ev.get());
       break;
 
     case fc::MouseDown_Event:
-      widget->onMouseDown(_ev);
+      widget->onMouseDown(_ev.get());
       break;
 
     case fc::MouseUp_Event:
-      widget->onMouseUp(_ev);
+      widget->onMouseUp(_ev.get());
       break;
 
     case fc::MouseMove_Event:
-      widget->onMouseMove(_ev);
+      widget->onMouseMove(_ev.get());
       break;
   }
-
-  delete _ev;
 }
 
 //----------------------------------------------------------------------
