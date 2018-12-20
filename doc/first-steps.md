@@ -97,3 +97,40 @@ the result to the operating system. The started application enters
 the main event loop. This loop does not end until the window is
 not closed.
 
+
+Memory Management
+-----------------
+
+If you want to create a hierarchy of FObjects (or derived classes/widgets), 
+a new FObject must initialize with its parent object.
+
+```cpp
+FObject* parent = new FObject();
+FObject* child  = new FObject(parent);
+```
+
+When you deallocate the used memory of a parent FObject, 
+the allocated memory of its child objects will automatically deallocate 
+too.
+
+An object can also be assigned to another object later via `addChild()`.
+
+```cpp
+FObject* parent = new FObject();
+FObject* child = new FObject();
+parent->addChild(child);
+```
+
+The child object assignment can also remove at any time with 
+`delChild()`.
+
+```cpp
+FObject* parent = new FObject();
+FObject* child  = new FObject(parent);
+parent->delChild(child);
+```
+
+If an FObject with a parent will remove from the hierarchy, 
+the destructor automatically deletes the object assignment from 
+its parent object. If a class object doesn't derive from FObject, 
+you must implement storage deallocation yourself.

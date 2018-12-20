@@ -1,5 +1,6 @@
 2018-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Use of smart pointers
+	* Add a "memory management" Chapter into the first steps document
 
 2018-12-17  Markus Gans  <guru.mail@muenster.de>
 	* Improve FButton mouse click animation
