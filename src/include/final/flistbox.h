@@ -229,6 +229,9 @@ class FListBox : public FWidget
     virtual void adjustSize();
 
   private:
+    // Typedef
+    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+
     // Enumeration
     enum convert_type
     {
@@ -303,8 +306,8 @@ class FListBox : public FWidget
     listBoxItems      itemlist{};
     FWidget::data_ptr source_container{nullptr};
     convert_type      conv_type{FListBox::no_convert};
-    FScrollbar*       vbar{nullptr};
-    FScrollbar*       hbar{nullptr};
+    FScrollbarPtr     vbar{nullptr};
+    FScrollbarPtr     hbar{nullptr};
     FString           text{};
     FString           inc_search{};
     bool              multi_select{false};

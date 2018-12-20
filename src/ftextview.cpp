@@ -41,10 +41,7 @@ FTextView::FTextView(FWidget* parent)
 
 //----------------------------------------------------------------------
 FTextView::~FTextView()  // destructor
-{
-  delete vbar;
-  delete hbar;
-}
+{ }
 
 
 // public methods of FTextView
@@ -624,12 +621,12 @@ void FTextView::init()
 
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();

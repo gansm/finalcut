@@ -356,6 +356,7 @@ class FListView : public FWidget
     struct Header;  // forward declaration
     typedef std::vector<Header> headerItems;
     typedef std::vector<fc::sorting_type> sortTypes;
+    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 
     // Constants
     static const int USE_MAX_SIZE = -1;
@@ -428,8 +429,8 @@ class FListView : public FWidget
     FListViewIterator    last_visible_line{};
     headerItems          header{};
     FTermBuffer          headerline{};
-    FScrollbar*          vbar{nullptr};
-    FScrollbar*          hbar{nullptr};
+    FScrollbarPtr        vbar{nullptr};
+    FScrollbarPtr        hbar{nullptr};
     fc::dragScroll       drag_scroll{fc::noScroll};
     int                  scroll_repeat{100};
     int                  scroll_distance{1};

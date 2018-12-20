@@ -127,6 +127,9 @@ class FTextView : public FWidget
     virtual void       adjustSize();
 
   private:
+    // Typedef
+    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+
     // Accessors
     std::size_t        getTextHeight();
     std::size_t        getTextWidth();
@@ -145,8 +148,8 @@ class FTextView : public FWidget
 
     // Data Members
     FStringList        data{};
-    FScrollbar*        vbar{nullptr};
-    FScrollbar*        hbar{nullptr};
+    FScrollbarPtr      vbar{nullptr};
+    FScrollbarPtr      hbar{nullptr};
     bool               update_scrollbar{true};
     int                xoffset{0};
     int                yoffset{0};

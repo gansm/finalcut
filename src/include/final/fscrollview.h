@@ -150,6 +150,9 @@ class FScrollView : public FWidget
     void              copy2area();
 
   private:
+    // Typedef
+    typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
+
     // Constants
     static const int vertical_border_spacing = 2;
     static const int horizontal_border_spacing = 2;
@@ -177,8 +180,8 @@ class FScrollView : public FWidget
     FRect             scroll_geometry{1, 1, 1, 1};
     FRect             viewport_geometry{};
     term_area*        viewport{nullptr};  // virtual scroll content
-    FScrollbar*       vbar{nullptr};
-    FScrollbar*       hbar{nullptr};
+    FScrollbarPtr     vbar{nullptr};
+    FScrollbarPtr     hbar{nullptr};
     uInt8             nf_offset{0};
     bool              border{true};
     bool              use_own_print_area{false};

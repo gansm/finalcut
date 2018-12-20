@@ -42,8 +42,6 @@ FScrollView::FScrollView (FWidget* parent)
 //----------------------------------------------------------------------
 FScrollView::~FScrollView()  // destructor
 {
-  delete vbar;
-  delete hbar;
   removeArea (viewport);
   child_print_area = viewport = nullptr;
 }
@@ -764,12 +762,12 @@ void FScrollView::init_scrollbar()
 {
   try
   {
-    vbar = new FScrollbar(fc::vertical, this);
+    vbar = std::make_shared<FScrollbar>(fc::vertical, this);
     vbar->setMinimum(0);
     vbar->setValue(0);
     vbar->hide();
 
-    hbar = new FScrollbar(fc::horizontal, this);
+    hbar = std::make_shared<FScrollbar>(fc::horizontal, this);
     hbar->setMinimum(0);
     hbar->setValue(0);
     hbar->hide();
