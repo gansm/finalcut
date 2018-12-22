@@ -873,11 +873,10 @@ FVTerm::covered_state FVTerm::isCovered ( int x, int y
 
   bool found = bool(area == vdesktop);
   auto is_covered = non_covered;
-  auto w = static_cast<FWidget*>(area->widget);
 
-  if ( w->window_list && ! w->window_list->empty() )
+  if ( FWidget::window_list && ! FWidget::window_list->empty() )
   {
-    for (auto&& win_obj : *w->window_list)
+    for (auto& win_obj : *FWidget::window_list)
     {
       auto win = win_obj->getVWin();
 
@@ -1696,13 +1695,12 @@ FVTerm::charData FVTerm::generateCharacter (int x, int y)
 {
   // Generates characters for a given position considering all areas
 
-  auto widget = static_cast<FWidget*>(vterm->widget);
   auto sc = &vdesktop->text[y * vdesktop->width + x];  // shown character
 
-  if ( ! widget->window_list || widget->window_list->empty() )
+  if ( ! FWidget::window_list || FWidget::window_list->empty() )
     return *sc;
 
-  for (auto&& win_obj : *widget->window_list)
+  for (auto& win_obj : *FWidget::window_list)
   {
     auto win = win_obj->getVWin();
 
@@ -1794,15 +1792,15 @@ FVTerm::charData FVTerm::getCharacter ( character_type char_type
     yy = vterm->height - 1;
 
   auto cc = &vdesktop->text[yy * vdesktop->width + xx];  // covered character
-  auto w = static_cast<FWidget*>(obj);
 
-  if ( ! w->window_list || w->window_list->empty() )
+  if ( ! FWidget::window_list || FWidget::window_list->empty() )
     return *cc;
 
   // Get the window layer of this object
+  auto w = static_cast<FWidget*>(obj);
   int layer = FWindow::getWindowLayer(w);
 
-  for (auto&& win_obj : *w->window_list)
+  for (auto&& win_obj : *FWidget::window_list)
   {
     bool significant_char;
 

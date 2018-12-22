@@ -168,6 +168,7 @@ class FTermDetection
 
   private:
     // Methods
+    static void           deallocation();
     static void           getSystemTermType();
     static bool           getTTYtype();
 #if F_HAVE_GETTTYNAM

@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------
-# configure.ac  -  the Final Cut library
+# configure.ac  -  FINAL CUT library
 #----------------------------------------------------------------------
 
 # Process this file with autoconf to produce a configure script.
