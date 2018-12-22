@@ -140,18 +140,18 @@ void FTerm::setTermType (const char term_name[])
 }
 
 //----------------------------------------------------------------------
-void FTerm::setInsertCursor (bool on)
+void FTerm::setInsertCursor (bool enable)
 {
-  if ( on )
+  if ( enable )
     setInsertCursorStyle();
   else
     setOverwriteCursorStyle();
 }
 
 //----------------------------------------------------------------------
-void FTerm::redefineDefaultColors (bool on)
+void FTerm::redefineDefaultColors (bool enable)
 {
-  xterm->redefineDefaultColors (on);
+  xterm->redefineDefaultColors (enable);
 }
 
 //----------------------------------------------------------------------
@@ -161,18 +161,18 @@ void FTerm::setDblclickInterval (const long timeout)
 }
 
 //----------------------------------------------------------------------
-bool FTerm::setUTF8 (bool on)  // UTF-8 (Unicode)
+bool FTerm::setUTF8 (bool enable)  // UTF-8 (Unicode)
 {
-  if ( on == data->isUTF8() )
-    return on;
+  if ( data->isUTF8() == enable )
+    return enable;
 
-  if ( on )
+  if ( enable )
     data->setUTF8(true);
   else
     data->setUTF8(false);
 
 #if defined(__linux__)
-  linux->setUTF8 (on);
+  linux->setUTF8 (enable);
 #endif
 
   return data->isUTF8();
@@ -380,16 +380,16 @@ char* FTerm::moveCursor (int xold, int yold, int xnew, int ynew)
 }
 
 //----------------------------------------------------------------------
-char* FTerm::cursorsVisibility (bool on)
+char* FTerm::cursorsVisibility (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
   char* visibility_str = nullptr;
 
-  if ( on == data->isCursorHidden() )
+  if ( data->isCursorHidden() == enable )
     return 0;
 
-  if ( on )
+  if ( enable )
   {
     visibility_str = disableCursor();
 

@@ -239,8 +239,8 @@ inline bool FButton::setUp()
 { return setDown(false); }
 
 //----------------------------------------------------------------------
-inline bool FButton::setClickAnimation(bool on)
-{ return (click_animation = on); }
+inline bool FButton::setClickAnimation(bool enable)
+{ return (click_animation = enable); }
 
 //----------------------------------------------------------------------
 inline bool FButton::setClickAnimation()

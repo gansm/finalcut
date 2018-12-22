@@ -64,12 +64,12 @@ Button::Button (finalcut::FWidget* parent)
 { }
 
 //----------------------------------------------------------------------
-void Button::setChecked (bool on)
+void Button::setChecked (bool enable)
 {
-  if ( checked == on )
+  if ( checked == enable )
     return;
 
-  checked = on;
+  checked = enable;
 
   if ( checked )
   {

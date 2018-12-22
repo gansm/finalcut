@@ -409,8 +409,8 @@ inline void FListBox::showNoBrackets (listBoxItems::iterator iter)
 { iter->brackets = fc::NoBrackets; }
 
 //----------------------------------------------------------------------
-inline void FListBox::setMultiSelection (bool on)
-{ multi_select = on; }
+inline void FListBox::setMultiSelection (bool enable)
+{ multi_select = enable; }
 
 //----------------------------------------------------------------------
 inline void FListBox::setMultiSelection()

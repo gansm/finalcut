@@ -81,12 +81,12 @@ FMenuItem::~FMenuItem()  // destructor
 
 // public methods of FMenuItem
 //----------------------------------------------------------------------
-bool FMenuItem::setEnable (bool on)
+bool FMenuItem::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
   auto super = getSuperMenu();
 
-  if ( on )
+  if ( enable )
   {
     if ( super && isMenuBar(super) )
     {
@@ -101,15 +101,15 @@ bool FMenuItem::setEnable (bool on)
       super->delAccelerator (this);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FMenuItem::setFocus (bool on)
+bool FMenuItem::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
@@ -161,7 +161,7 @@ bool FMenuItem::setFocus (bool on)
       getStatusBar()->clearMessage();
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------

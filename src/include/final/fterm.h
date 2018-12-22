@@ -223,7 +223,7 @@ class FTerm
 
     // Mutators
     static void            setTermType (const char[]);
-    static void            setInsertCursor (bool on);
+    static void            setInsertCursor (bool);
     static void            redefineDefaultColors (bool);
     static void            setDblclickInterval (const long);
     static bool            setUTF8 (bool);

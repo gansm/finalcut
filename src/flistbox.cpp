@@ -180,11 +180,11 @@ void FListBox::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adj
 }
 
 //----------------------------------------------------------------------
-bool FListBox::setFocus (bool on)
+bool FListBox::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( getStatusBar() )
     {
@@ -201,7 +201,7 @@ bool FListBox::setFocus (bool on)
       getStatusBar()->clearMessage();
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------

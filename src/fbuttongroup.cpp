@@ -99,16 +99,16 @@ FToggleButton* FButtonGroup::getLastButton()
 }
 
 //----------------------------------------------------------------------
-bool FButtonGroup::setEnable (bool on)
+bool FButtonGroup::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
     setHotkeyAccelerator();
   else
     delAccelerator();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------

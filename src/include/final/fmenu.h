@@ -255,8 +255,8 @@ inline FMenuItem* FMenu::getItem()
 { return &item; }
 
 //----------------------------------------------------------------------
-inline bool FMenu::setEnable(bool on)
-{ return item.setEnable(on); }
+inline bool FMenu::setEnable(bool enable)
+{ return item.setEnable(enable); }
 
 //----------------------------------------------------------------------
 inline bool FMenu::setEnable()

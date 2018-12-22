@@ -69,55 +69,55 @@ FDialog::~FDialog()  // destructor
 
 // public methods of FDialog
 //----------------------------------------------------------------------
-bool FDialog::setDialogWidget (bool on)
+bool FDialog::setDialogWidget (bool enable)
 {
-  if ( isDialogWidget() == on )
+  if ( isDialogWidget() == enable )
     return true;
 
-  flags.dialog_widget = on;
+  flags.dialog_widget = enable;
 
-  if ( on )
+  if ( enable )
     setTermOffsetWithPadding();
   else
     setParentOffset();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setModal (bool on)
+bool FDialog::setModal (bool enable)
 {
-  if ( isModal() == on )
+  if ( isModal() == enable )
     return true;
 
-  flags.modal = on;
+  flags.modal = enable;
 
-  if ( on )
+  if ( enable )
     modal_dialogs++;
   else
     modal_dialogs--;
 
-  return on;
+  return enable;
 }
 
 
 //----------------------------------------------------------------------
-bool FDialog::setScrollable (bool on)
+bool FDialog::setScrollable (bool enable)
 {
-  return (flags.scrollable = on);
+  return (flags.scrollable = enable);
 }
 
 //----------------------------------------------------------------------
-bool FDialog::setResizeable (bool on)
+bool FDialog::setResizeable (bool enable)
 {
-  FWindow::setResizeable (on);
+  FWindow::setResizeable (enable);
 
-  if ( on )
+  if ( enable )
     zoom_item->setEnable();
   else
     zoom_item->setDisable();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------

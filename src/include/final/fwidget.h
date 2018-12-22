@@ -735,9 +735,9 @@ inline bool FWidget::setDisable()
 { return setEnable(false); }
 
 //----------------------------------------------------------------------
-inline bool FWidget::setVisibleCursor (bool on)
+inline bool FWidget::setVisibleCursor (bool enable)
 {
-  flags.visible_cursor = ( on ) ? true : (( hideable ) ? false : true);
+  flags.visible_cursor = ( enable ) ? true : (( hideable ) ? false : true);
   return flags.visible_cursor;
 }
 
@@ -766,8 +766,8 @@ inline void FWidget::unsetFocusable()
 { flags.focusable = false; }
 
 //----------------------------------------------------------------------
-inline bool FWidget::ignorePadding (bool on)
-{ return (ignore_padding = on); }
+inline bool FWidget::ignorePadding (bool enable)
+{ return (ignore_padding = enable); }
 
 //----------------------------------------------------------------------
 inline bool FWidget::ignorePadding()

@@ -507,8 +507,8 @@ inline void FListView::hideSortIndicator (bool hide)
 { hide_sort_indicator = hide; }
 
 //----------------------------------------------------------------------
-inline bool FListView::setTreeView (bool on)
-{ return (tree_view = on); }
+inline bool FListView::setTreeView (bool enable)
+{ return (tree_view = enable); }
 
 //----------------------------------------------------------------------
 inline bool FListView::setTreeView()

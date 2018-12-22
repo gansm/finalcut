@@ -135,11 +135,11 @@ void FVTerm::setTermXY (int x, int y)
 }
 
 //----------------------------------------------------------------------
-void FVTerm::hideCursor (bool on)
+void FVTerm::hideCursor (bool enable)
 {
   // Hides or shows the input cursor on the terminal
 
-  const char* visibility_str = FTerm::cursorsVisibility (on);
+  const char* visibility_str = FTerm::cursorsVisibility (enable);
 
   if ( visibility_str )
     appendOutputBuffer(visibility_str);

@@ -180,34 +180,34 @@ void FLabel::setAlignment (fc::text_alignment align)
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEmphasis (bool on)
+bool FLabel::setEmphasis (bool enable)
 {
-  if ( emphasis != on )
-    emphasis = on;
+  if ( emphasis != enable )
+    emphasis = enable;
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setReverseMode (bool on)
+bool FLabel::setReverseMode (bool enable)
 {
-  if ( reverse_mode != on )
-    reverse_mode = on;
+  if ( reverse_mode != enable )
+    reverse_mode = enable;
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLabel::setEnable (bool on)
+bool FLabel::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
     setHotkeyAccelerator();
   else
     delAccelerator();
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------

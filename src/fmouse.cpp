@@ -321,11 +321,11 @@ void FMouseGPM::processEvent (struct timeval*)
 }
 
 //----------------------------------------------------------------------
-bool FMouseGPM::gpmMouse (bool on)
+bool FMouseGPM::gpmMouse (bool enable)
 {
   // activate/deactivate the gpm mouse support
 
-  if ( on )
+  if ( enable )
   {
     Gpm_Connect conn;
     conn.eventMask   = uInt16(~0);  // Get all including wheel event
@@ -351,8 +351,8 @@ bool FMouseGPM::gpmMouse (bool on)
     Gpm_Close();
   }
 
-  gpm_mouse_enabled = on;
-  return on;
+  gpm_mouse_enabled = enable;
+  return enable;
 }
 
 //----------------------------------------------------------------------
@@ -1246,15 +1246,15 @@ void FMouseControl::setDblclickInterval (const long timeout)
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useGpmMouse (bool on)
+void FMouseControl::useGpmMouse (bool enable)
 {
-  use_gpm_mouse = on;
+  use_gpm_mouse = enable;
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::useXtermMouse (bool on)
+void FMouseControl::useXtermMouse (bool enable)
 {
-  use_xterm_mouse = on;
+  use_xterm_mouse = enable;
 }
 
 //----------------------------------------------------------------------
@@ -1574,14 +1574,14 @@ FMouse* FMouseControl::getMouseWithEvent()
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::xtermMouse (bool on)
+void FMouseControl::xtermMouse (bool enable)
 {
   // activate/deactivate the xterm mouse support
 
   if ( ! use_xterm_mouse )
     return;
 
-  FTermXTerminal::setMouseSupport (on);
+  FTermXTerminal::setMouseSupport (enable);
 }
 
 }  // namespace finalcut

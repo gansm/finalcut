@@ -321,12 +321,12 @@ inline FKey FKeyboard::getSingleKey()
 }
 
 //----------------------------------------------------------------------
-bool FKeyboard::setNonBlockingInput (bool on)
+bool FKeyboard::setNonBlockingInput (bool enable)
 {
-  if ( on == non_blocking_stdin )
+  if ( enable == non_blocking_stdin )
     return non_blocking_stdin;
 
-  if ( on )  // make stdin non-blocking
+  if ( enable )  // make stdin non-blocking
   {
     stdin_status_flags |= O_NONBLOCK;
 

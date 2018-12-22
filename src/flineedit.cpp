@@ -159,11 +159,11 @@ const FLineEdit& FLineEdit::operator >> (FString& s)
 
 // public methods of FLineEdit
 //----------------------------------------------------------------------
-bool FLineEdit::setEnable (bool on)
+bool FLineEdit::setEnable (bool enable)
 {
-  FWidget::setEnable(on);
+  FWidget::setEnable(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( hasFocus() )
     {
@@ -182,15 +182,15 @@ bool FLineEdit::setEnable (bool on)
     setBackgroundColor (wc.inputfield_inactive_bg);
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setFocus (bool on)
+bool FLineEdit::setFocus (bool enable)
 {
-  FWidget::setFocus(on);
+  FWidget::setFocus(enable);
 
-  if ( on )
+  if ( enable )
   {
     if ( isEnabled() )
     {
@@ -219,13 +219,13 @@ bool FLineEdit::setFocus (bool on)
     }
   }
 
-  return on;
+  return enable;
 }
 
 //----------------------------------------------------------------------
-bool FLineEdit::setShadow (bool on)
+bool FLineEdit::setShadow (bool enable)
 {
-  if ( on
+  if ( enable
     && getEncoding() != fc::VT100
     && getEncoding() != fc::ASCII )
   {

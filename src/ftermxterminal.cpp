@@ -208,22 +208,22 @@ void FTermXTerminal::setHighlightBackground (const FString& hbg)
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::setMouseSupport (bool on)
+void FTermXTerminal::setMouseSupport (bool enable)
 {
   // activate/deactivate the xterm mouse support
 
-  if ( on )
+  if ( enable )
     enableXTermMouse();
   else
     disableXTermMouse();
 }
 
 //----------------------------------------------------------------------
-void FTermXTerminal::metaSendsESC (bool on)
+void FTermXTerminal::metaSendsESC (bool enable)
 {
   // activate/deactivate the xterm meta key sends escape prefix
 
-  if ( on )
+  if ( enable )
     enableXTermMetaSendsESC();
   else
     disableXTermMetaSendsESC();

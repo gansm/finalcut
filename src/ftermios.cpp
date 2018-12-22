@@ -155,17 +155,17 @@ void FTermios::unsetCaptureSendCharacters()
 }
 
 //----------------------------------------------------------------------
-bool FTermios::setRawMode (bool on)
+bool FTermios::setRawMode (bool enable)
 {
   // set + unset flags for raw mode
-  if ( on == raw_mode )
+  if ( raw_mode == enable )
     return raw_mode;
 
   // Info under: man 3 termios
   struct termios t;
   tcgetattr (stdin_no, &t);
 
-  if ( on )
+  if ( enable )
   {
     // local mode
 #if DEBUG

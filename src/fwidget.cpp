@@ -248,24 +248,24 @@ void FWidget::setMainWidget (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setEnable (bool on)
+bool FWidget::setEnable (bool enable)
 {
-  return (flags.active = on);
+  return (flags.active = enable);
 }
 
 //----------------------------------------------------------------------
-bool FWidget::setFocus (bool on)
+bool FWidget::setFocus (bool enable)
 {
   if ( ! isEnabled() )
     return false;
 
-  if ( flags.focus == on )
+  if ( flags.focus == enable )
     return true;
 
   auto last_focus = FWidget::getFocusWidget();
 
   // set widget focus
-  if ( on && ! flags.focus )
+  if ( enable && ! flags.focus )
   {
     int focusable_children = numOfFocusableChildren();
 
@@ -282,7 +282,7 @@ bool FWidget::setFocus (bool on)
   auto window = FWindow::getWindowWidget(this);
 
   // set window focus
-  if ( on && window )
+  if ( enable && window )
   {
     if ( ! window->isWindowActive() )
     {
@@ -295,7 +295,7 @@ bool FWidget::setFocus (bool on)
     window->setWindowFocusWidget(this);
   }
 
-  return (flags.focus = on);
+  return (flags.focus = enable);
 }
 
 //----------------------------------------------------------------------

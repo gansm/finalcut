@@ -100,12 +100,12 @@ char* FTermLinux::setCursorStyle ( fc::linuxConsoleCursorStyle style
 }
 
 //----------------------------------------------------------------------
-void FTermLinux::setUTF8 (bool on)
+void FTermLinux::setUTF8 (bool enable)
 {
   if ( ! FTerm::isLinuxTerm() )
     return;
 
-  if ( on )
+  if ( enable )
     FTerm::putstring (ESC "%G");
   else
     FTerm::putstring (ESC "%@");
@@ -803,7 +803,7 @@ inline void FTermLinux::setAttributeMode (uChar data)
 }
 
 //----------------------------------------------------------------------
-int FTermLinux::setBlinkAsIntensity (bool on)
+int FTermLinux::setBlinkAsIntensity (bool enable)
 {
   // Uses blink-bit as background intensity.
   // That permits 16 colors for background
@@ -824,7 +824,7 @@ int FTermLinux::setBlinkAsIntensity (bool on)
   if ( ioctl(fd_tty, KDENABIO, 0) < 0 )
     return -1;  // error on KDENABIO
 
-  if ( on )
+  if ( enable )
     setAttributeMode (getAttributeMode() & 0xF7);  // clear bit 3
   else
     setAttributeMode (getAttributeMode() | 0x08);  // set bit 3
