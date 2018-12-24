@@ -75,8 +75,10 @@ class FRadioMenuItem : public FMenuItem
     // Constructors
     explicit FRadioMenuItem (FWidget* = nullptr);
     explicit FRadioMenuItem (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FRadioMenuItem (const FRadioMenuItem&) = delete;
+
     // Destructor
     virtual ~FRadioMenuItem();
 

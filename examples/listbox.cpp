@@ -78,8 +78,10 @@ class Listbox : public finalcut::FDialog
   public:
     // Constructor
     explicit Listbox (FWidget* = nullptr);
+
     // Disable copy constructor
     Listbox (const Listbox&) = delete;
+
     // Destructor
     ~Listbox();
 

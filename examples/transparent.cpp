@@ -44,8 +44,10 @@ class Transparent : public finalcut::FDialog
     // Constructor
     explicit Transparent ( finalcut::FWidget* = nullptr
                          , trans_type = transparent );
+
     // Disable copy constructor
     Transparent (const Transparent&) = delete;
+
     // Destructor
     ~Transparent();
 
@@ -151,8 +153,10 @@ class MainWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit MainWindow (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     MainWindow (const MainWindow&) = delete;
+
     // Destructor
     ~MainWindow();
 

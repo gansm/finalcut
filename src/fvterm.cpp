@@ -240,7 +240,7 @@ void FVTerm::updateTerminal()
   // Updates pending changes to the terminal
 
   if ( stop_terminal_updates
-    || static_cast<FApplication*>(init_object)->isQuit() )
+    || FApplication::getApplicationObject()->isQuit() )
     return;
 
   if ( ! force_terminal_update )

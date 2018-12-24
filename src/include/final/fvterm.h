@@ -118,8 +118,10 @@ class FVTerm
 
     // Constructor
     explicit FVTerm (bool, bool = false);
+
     // Disable copy constructor
     FVTerm (const FVTerm&) = delete;
+
     // Destructor
     virtual ~FVTerm();
 

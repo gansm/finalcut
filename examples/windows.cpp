@@ -36,8 +36,10 @@ class SmallWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit SmallWindow (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     SmallWindow (const SmallWindow&) = delete;
+
     // Destructor
     ~SmallWindow();
 
@@ -165,8 +167,10 @@ class Window : public finalcut::FDialog
   public:
     // Constructor
     explicit Window (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Window (const Window&) = delete;
+
     // Destructor
     ~Window();
 

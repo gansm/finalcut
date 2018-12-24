@@ -167,8 +167,10 @@ class FWidget : public FVTerm, public FObject
 
     // Constructor
     explicit FWidget (FWidget* = nullptr, bool = false);
+
     // Disable copy constructor
     FWidget (const FWidget&) = delete;
+
     // Destructor
     virtual ~FWidget();
 

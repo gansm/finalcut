@@ -93,12 +93,12 @@ class FEvent  // event base class
 {
   public:
     FEvent() = default;
-    explicit FEvent(int);
+    explicit FEvent(fc::events);
     virtual ~FEvent();
-    int type() const;
+    fc::events type() const;
 
   protected:
-    int t{fc::None_Event};
+    fc::events t{fc::None_Event};
 };
 
 #pragma pack(pop)
@@ -115,7 +115,7 @@ class FKeyEvent : public FEvent  // keyboard event
 {
   public:
     FKeyEvent() = default;
-    FKeyEvent (int, FKey);
+    FKeyEvent (fc::events, FKey);
     ~FKeyEvent();
 
     FKey key() const;
@@ -142,8 +142,8 @@ class FMouseEvent : public FEvent  // mouse event
 {
   public:
     FMouseEvent() = default;
-    FMouseEvent (int, const FPoint&, const FPoint&, int);
-    FMouseEvent (int, const FPoint&, int);
+    FMouseEvent (fc::events, const FPoint&, const FPoint&, int);
+    FMouseEvent (fc::events, const FPoint&, int);
     ~FMouseEvent();
 
     const FPoint& getPos() const;
@@ -174,8 +174,8 @@ class FWheelEvent : public FEvent  // wheel event
 {
   public:
     FWheelEvent() = default;
-    FWheelEvent (int, const FPoint&, int);
-    FWheelEvent (int, const FPoint&, const FPoint&, int);
+    FWheelEvent (fc::events, const FPoint&, int);
+    FWheelEvent (fc::events, const FPoint&, const FPoint&, int);
     ~FWheelEvent();
 
     const FPoint& getPos() const;
@@ -206,7 +206,7 @@ class FFocusEvent : public FEvent  // focus event
 {
   public:
     FFocusEvent() = default;
-    explicit FFocusEvent (int);
+    explicit FFocusEvent (fc::events);
     ~FFocusEvent();
 
     bool gotFocus()  const;
@@ -235,7 +235,7 @@ class FAccelEvent : public FEvent  // focus event
 {
   public:
     FAccelEvent() = default;
-    FAccelEvent (int, void*);
+    FAccelEvent (fc::events, void*);
     FAccelEvent (const FAccelEvent&) = delete;
     ~FAccelEvent();
     FAccelEvent& operator = (const FAccelEvent&) = delete;
@@ -261,7 +261,7 @@ class FResizeEvent : public FEvent  // resize event
 {
   public:
     FResizeEvent() = default;
-    explicit FResizeEvent (int);
+    explicit FResizeEvent (fc::events);
     ~FResizeEvent();
 
     bool isAccepted() const;
@@ -273,7 +273,6 @@ class FResizeEvent : public FEvent  // resize event
 };
 
 
-
 //----------------------------------------------------------------------
 // class FShowEvent
 //----------------------------------------------------------------------
@@ -282,10 +281,9 @@ class FShowEvent : public FEvent  // show event
 {
   public:
     FShowEvent() = default;
-    explicit FShowEvent (int);
+    explicit FShowEvent (fc::events);
     ~FShowEvent();
 };
-
 
 
 //----------------------------------------------------------------------
@@ -296,10 +294,9 @@ class FHideEvent : public FEvent  // hide event
 {
   public:
     FHideEvent() = default;
-    explicit FHideEvent (int);
+    explicit FHideEvent (fc::events);
     ~FHideEvent();
 };
-
 
 
 //----------------------------------------------------------------------
@@ -310,7 +307,7 @@ class FCloseEvent : public FEvent  // close event
 {
   public:
     FCloseEvent() = default;
-    explicit FCloseEvent(int);
+    explicit FCloseEvent(fc::events);
     ~FCloseEvent();
 
     bool isAccepted() const;
@@ -320,7 +317,6 @@ class FCloseEvent : public FEvent  // close event
   protected:
     bool accpt{false};
 };
-
 
 
 //----------------------------------------------------------------------
@@ -334,13 +330,42 @@ class FTimerEvent : public FEvent  // timer event
 {
   public:
     FTimerEvent() = default;
-    FTimerEvent(int, int);
+    FTimerEvent (fc::events, int);
     ~FTimerEvent();
 
-    int timerId() const;
+    int getTimerId() const;
 
   protected:
     int id;
+};
+
+#pragma pack(pop)
+
+
+//----------------------------------------------------------------------
+// class FUserEvent
+//----------------------------------------------------------------------
+
+#pragma pack(push)
+#pragma pack(1)
+
+class FUserEvent : public FEvent  // timer event
+{
+  public:
+    // Typedef
+    typedef void* data_ptr;
+
+    FUserEvent() = default;
+    FUserEvent (fc::events, int);
+    ~FUserEvent();
+
+    int getUserId() const;
+    data_ptr getData() const;
+    void setData (data_ptr);
+
+  protected:
+    int uid;
+    data_ptr data_pointer{nullptr};
 };
 
 #pragma pack(pop)

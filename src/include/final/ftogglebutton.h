@@ -76,8 +76,10 @@ class FToggleButton : public FWidget
     // Constructors
     explicit FToggleButton (FWidget* = nullptr);
     explicit FToggleButton (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FToggleButton (const FToggleButton&) = delete;
+
     // Destructor
     virtual ~FToggleButton();
 

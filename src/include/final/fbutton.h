@@ -70,8 +70,10 @@ class FButton : public FWidget
     // Constructors
     explicit FButton (FWidget* = nullptr);
     explicit FButton (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FButton (const FButton&) = delete;
+
     // Destructor
     virtual ~FButton();
 

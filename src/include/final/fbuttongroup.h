@@ -74,8 +74,10 @@ class FButtonGroup : public FScrollView
     // Constructors
     explicit FButtonGroup (FWidget* = nullptr);
     explicit FButtonGroup (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FButtonGroup (const FButtonGroup&) = delete;
+
     // Destructor
     virtual ~FButtonGroup();
 

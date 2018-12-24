@@ -40,8 +40,10 @@ class Listview : public finalcut::FDialog
   public:
     // Constructor
     explicit Listview (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Listview (const Listview&) = delete;
+
     // Destructor
     ~Listview();
 

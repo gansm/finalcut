@@ -1,3 +1,7 @@
+2018-12-24  Markus Gans  <guru.mail@muenster.de>
+	* Events can not only be sent to FWidgets, but also to FObjects
+	* New event FUserEvent for user-defined events
+
 2018-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Use of smart pointers
 	* Add a "memory management" Chapter into the first steps document

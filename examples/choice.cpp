@@ -113,7 +113,7 @@ int main (int argc, char* argv[])
     checkButtonGroup.setGeometry (2, 1, 16, 7);
 
     // Create radio buttons
-    std::vector<FRadioButtonPtr> os (9);
+    std::vector<FRadioButtonPtr> os(9);
     populateChoice (os, checkButtonGroup);
 
     // Set the radio button geometry

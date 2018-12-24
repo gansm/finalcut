@@ -61,8 +61,10 @@ class FTermData
 
     // Constructors
     FTermData() = default;
+
     // Disable copy constructor
     FTermData (const FTermData&) = delete;
+
     // Destructor
     ~FTermData() = default;
 

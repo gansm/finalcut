@@ -108,6 +108,7 @@ class FFileDialog : public FDialog
                 , const FString&
                 , DialogType = FFileDialog::Open
                 , FWidget* = nullptr );
+
     // Destructor
     virtual ~FFileDialog();
 

@@ -49,7 +49,7 @@ FToolTip::FToolTip (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FToolTip::~FToolTip()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( fapp->isQuit() )
     return;

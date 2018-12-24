@@ -53,7 +53,7 @@ FMenu::FMenu (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FMenu::~FMenu()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( ! fapp->isQuit() )
     switchToPrevWindow(this);  // Switch to previous window

@@ -39,8 +39,10 @@ class ProgressDialog : public finalcut::FDialog
   public:
     // Constructor
     explicit ProgressDialog (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     ProgressDialog (const ProgressDialog&) = delete;
+
     // Destructor
     ~ProgressDialog();
 
@@ -182,8 +184,10 @@ class TextWindow : public finalcut::FDialog
   public:
     // Constructor
     explicit TextWindow (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     TextWindow (const TextWindow&) = delete;
+
     // Destructor
     ~TextWindow();
 
@@ -250,8 +254,10 @@ class MyDialog : public finalcut::FDialog
   public:
     // Constructor
     explicit MyDialog (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     MyDialog (const MyDialog&) = delete;
+
     // Destructor
     ~MyDialog();
 

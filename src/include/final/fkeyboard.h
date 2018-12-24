@@ -92,8 +92,10 @@ class FKeyboard
 
     // Constructor
     FKeyboard();
+
     // Disable copy constructor
     FKeyboard (const FKeyboard&) = delete;
+
     // Destructor
     virtual ~FKeyboard();
 

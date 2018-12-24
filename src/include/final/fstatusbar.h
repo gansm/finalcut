@@ -82,8 +82,10 @@ class FStatusKey : public FWidget
     // Constructors
     explicit FStatusKey (FWidget* = nullptr);
     FStatusKey (FKey, const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FStatusKey (const FStatusKey&) = delete;
+
     // Destructor
     virtual ~FStatusKey();
 
@@ -193,8 +195,10 @@ class FStatusBar : public FWindow
   public:
     // Constructor
     explicit FStatusBar (FWidget* = nullptr);
+
     // Disable copy constructor
     FStatusBar (const FStatusBar&) = delete;
+
     // Destructor
     virtual ~FStatusBar();
 

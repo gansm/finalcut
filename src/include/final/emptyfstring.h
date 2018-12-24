@@ -47,6 +47,7 @@ class emptyFString
 public:
   // Constructors
   emptyFString() = default;
+
   // Disable copy constructor
   emptyFString (const emptyFString&) = delete;
 

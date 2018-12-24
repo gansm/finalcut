@@ -80,8 +80,10 @@ class FMenu : public FWindow, public FMenuList
     // Constructor
     explicit FMenu (FWidget* = nullptr);
     explicit FMenu (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FMenu (const FMenu&) = delete;
+
     // Destructor
     virtual ~FMenu();
 

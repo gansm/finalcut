@@ -51,7 +51,7 @@ FWindow::FWindow(FWidget* parent)
 //----------------------------------------------------------------------
 FWindow::~FWindow()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( previous_window == this )
     previous_window = nullptr;

@@ -78,8 +78,10 @@ class FTextView : public FWidget
 
     // Constructor
     explicit FTextView (FWidget* = nullptr);
+
     // Disable copy constructor
     FTextView (const FTextView&) = delete;
+
     // Destructor
     virtual ~FTextView();
 

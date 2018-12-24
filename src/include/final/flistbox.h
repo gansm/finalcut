@@ -151,8 +151,10 @@ class FListBox : public FWidget
     FListBox (Iterator, Iterator, InsertConverter, FWidget* = nullptr);
     template <typename Container, typename LazyConverter>
     FListBox (Container, LazyConverter, FWidget* = nullptr);
+
     // Disable copy constructor
     FListBox (const FListBox&) = delete;
+
     // Destructor
     virtual  ~FListBox();
 

@@ -732,7 +732,7 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
 {
   auto win = static_cast<FDialog*>(widget);
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
 
   if ( win && fapp )
   {

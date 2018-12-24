@@ -78,8 +78,10 @@ class FLineEdit : public FWidget
     // Constructor
     explicit FLineEdit (FWidget* = nullptr);
     explicit FLineEdit (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FLineEdit (const FLineEdit&) = delete;
+
     // Destructor
     virtual ~FLineEdit();
 

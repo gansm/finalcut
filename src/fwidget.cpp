@@ -1436,8 +1436,7 @@ void FWidget::drawBorder (int x1, int y1, int x2, int y2)
 //----------------------------------------------------------------------
 void FWidget::quit()
 {
-  auto app_object = FApplication::getApplicationObject();
-  auto fapp = static_cast<FApplication*>(app_object);
+  auto fapp = FApplication::getApplicationObject();
   fapp->exit(0);
 }
 
@@ -2340,7 +2339,7 @@ void FWidget::setColorTheme()
     wc.set16ColorTheme();
 
     if ( isKdeTerminal() )
-      wc.term_bg = fc::SteelBlue3;
+      wc.term_bg = fc::SkyBlue2;
   }
 }
 

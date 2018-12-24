@@ -76,8 +76,10 @@ class FScrollView : public FWidget
 
     // Constructor
     explicit FScrollView (FWidget* = nullptr);
+
     // Disable copy constructor
     FScrollView (const FScrollView&) = delete;
+
     // Destructor
     virtual ~FScrollView();
 

@@ -157,8 +157,10 @@ class FOptiAttr
 
     // Constructor
     FOptiAttr();
+
     // Disable copy constructor
     FOptiAttr (const FOptiAttr&) = delete;
+
     // Destructor
     virtual ~FOptiAttr();
 

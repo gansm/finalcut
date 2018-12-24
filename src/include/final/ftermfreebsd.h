@@ -64,8 +64,10 @@ class FTermFreeBSD
 
     // Constructors
     FTermFreeBSD() = default;
+
     // Disable copy constructor
     FTermFreeBSD (const FTermFreeBSD&) = delete;
+
     // Destructor
     virtual ~FTermFreeBSD() = default;
 

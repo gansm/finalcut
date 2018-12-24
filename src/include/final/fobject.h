@@ -73,8 +73,10 @@ class FObject
 
     // Constructor
     explicit FObject (FObject* = nullptr);
+
     // Disable copy constructor
     FObject (const FObject&) = delete;
+
     // Destructor
     virtual ~FObject();
 
@@ -107,6 +109,9 @@ class FObject
     void                 addChild (FObject*);
     void                 delChild (FObject*);
 
+    // Event handler
+    virtual bool         event (FEvent*);
+
     // Timer methods
     static void          getCurrentTime (timeval*);
     static bool          isTimeout (timeval*, long);
@@ -138,8 +143,8 @@ class FObject
     uInt                 processTimerEvent();
 
     // Event handler
-    virtual bool         event (FEvent*);
     virtual void         onTimer (FTimerEvent*);
+    virtual void         onUserEvent (FUserEvent*);
 
   private:
     // Method

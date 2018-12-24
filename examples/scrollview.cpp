@@ -35,8 +35,10 @@ class Scrollview : public finalcut::FScrollView
   public:
     // Constructor
     explicit Scrollview (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Scrollview (const Scrollview&) = delete;
+
     // Destructor
     ~Scrollview  ();
 

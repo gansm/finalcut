@@ -75,8 +75,10 @@ class FSwitch : public FToggleButton
     // Constructors
     explicit FSwitch (FWidget* = nullptr);
     explicit FSwitch (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FSwitch (const FSwitch&) = delete;
+
     // Destructor
     virtual ~FSwitch();
 

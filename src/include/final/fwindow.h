@@ -83,8 +83,10 @@ class FWindow : public FWidget
 
     // Constructor
     explicit FWindow (FWidget* = nullptr);
+
     // Disable copy constructor
     FWindow (const FWindow&) = delete;
+
     // Destructor
     virtual ~FWindow ();
 

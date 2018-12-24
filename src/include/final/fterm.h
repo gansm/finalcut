@@ -161,8 +161,10 @@ class FTerm
 
     // Constructor
     explicit FTerm (bool = false);
+
     // Disable copy constructor
     FTerm (const FTerm&) = delete;
+
     // Destructor
     virtual ~FTerm();
 

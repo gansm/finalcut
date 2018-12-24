@@ -273,8 +273,10 @@ class FListView : public FWidget
 
     // Constructor
     explicit FListView (FWidget* = nullptr);
+
     // Disable copy constructor
     FListView (const FListView&) = delete;
+
     // Destructor
     virtual ~FListView();
 

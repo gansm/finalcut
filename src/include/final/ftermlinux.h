@@ -71,8 +71,10 @@ class FTermLinux
   public:
     // Constructors
     FTermLinux() = default;
+
     // Disable copy constructor
     FTermLinux (const FTermLinux&) = delete;
+
     // Destructor
     virtual ~FTermLinux();
 

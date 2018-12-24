@@ -75,8 +75,10 @@ class FCheckMenuItem : public FMenuItem
     // Constructors
     explicit FCheckMenuItem (FWidget* = nullptr);
     explicit FCheckMenuItem (const FString&, FWidget* = nullptr);
+
     // Disable copy constructor
     FCheckMenuItem (const FCheckMenuItem&) = delete;
+
     // Destructor
     virtual ~FCheckMenuItem();
 

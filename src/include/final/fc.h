@@ -78,7 +78,8 @@ enum events
   Show_Event,               // widget is shown
   Hide_Event,               // widget is hidden
   Close_Event,              // widget close
-  Timer_Event               // timer event occur
+  Timer_Event,              // timer event occur
+  User_Event                // user defined event
 };
 
 // Internal character encoding

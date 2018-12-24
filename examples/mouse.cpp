@@ -35,8 +35,10 @@ class ColorChooser : public finalcut::FWidget
   public:
     // Constructor
     explicit ColorChooser (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     ColorChooser (const ColorChooser&) = delete;
+
     // Destructor
     ~ColorChooser();
 
@@ -171,8 +173,10 @@ class Brushes : public finalcut::FWidget
   public:
     // Constructor
     explicit Brushes (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Brushes (const Brushes&) = delete;
+
     // Destructor
     ~Brushes();
 
@@ -309,8 +313,10 @@ class MouseDraw : public finalcut::FDialog
 
     // Constructor
     explicit MouseDraw (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     MouseDraw (const MouseDraw&) = delete;
+
     // Destructor
     ~MouseDraw();
 

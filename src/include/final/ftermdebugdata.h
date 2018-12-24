@@ -48,8 +48,10 @@ class FTermDebugData
   public:
     // Constructors
     FTermDebugData() = default;
+
     // Disable copy constructor
     FTermDebugData (const FTermDebugData&) = delete;
+
     // Destructor
     ~FTermDebugData() = default;
 

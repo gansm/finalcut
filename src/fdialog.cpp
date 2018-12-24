@@ -50,7 +50,7 @@ FDialog::FDialog (const FString& txt, FWidget* parent)
 //----------------------------------------------------------------------
 FDialog::~FDialog()  // destructor
 {
-  auto fapp = static_cast<FApplication*>(getRootWidget());
+  auto fapp = FApplication::getApplicationObject();
   bool is_quit = fapp->isQuit();
   delete dialog_menu;
   dgl_menuitem = nullptr;
@@ -130,7 +130,7 @@ void FDialog::show()
 
   if ( isModal() )
   {
-    auto fapp = static_cast<FApplication*>(getRootWidget());
+    auto fapp = FApplication::getApplicationObject();
     fapp->enter_loop();
 
     if ( this == getMainWidget() )
@@ -145,7 +145,7 @@ void FDialog::hide()
 
   if ( isModal() )
   {
-    auto fapp = static_cast<FApplication*>(getRootWidget());
+    auto fapp = FApplication::getApplicationObject();
     fapp->exit_loop();
   }
 }

@@ -36,8 +36,10 @@ class AttribDlg : public finalcut::FDialog
   public:
     // Constructor
     explicit AttribDlg (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     AttribDlg (const AttribDlg&) = delete;
+
     // Destructor
     ~AttribDlg();
 

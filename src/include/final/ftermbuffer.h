@@ -60,6 +60,7 @@ class FTermBuffer
 
     // Constructor
     FTermBuffer() = default;
+
     // Destructor
     virtual ~FTermBuffer();
 

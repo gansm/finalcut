@@ -82,6 +82,62 @@ class FObject_protected : public finalcut::FObject
 };
 #pragma pack(pop)
 
+//----------------------------------------------------------------------
+#pragma pack(push)
+#pragma pack(1)
+
+class FObject_timer : public finalcut::FObject
+{
+  public:
+    FObject_timer()
+    { }
+
+    int getValue() const
+    {
+      return value;
+    }
+
+  protected:
+    virtual void onTimer (finalcut::FTimerEvent* ev)
+    {
+      if ( ev->getTimerId() == 1 )
+        value++;
+    }
+
+  private:
+    // Data Member
+    int value{0};
+};
+#pragma pack(pop)
+
+//----------------------------------------------------------------------
+#pragma pack(push)
+#pragma pack(1)
+
+class FObject_userEvent : public finalcut::FObject
+{
+  public:
+    FObject_userEvent()
+    { }
+
+    int getValue() const
+    {
+      return value;
+    }
+
+  protected:
+    virtual void onUserEvent (finalcut::FUserEvent* ev)
+    {
+      if ( ev->getUserId() == 42 )
+        value = *(static_cast<int*>(ev->getData()));
+    }
+
+  private:
+    // Data Member
+    int value{0};
+};
+#pragma pack(pop)
+
 
 //----------------------------------------------------------------------
 // class FObjectTest
@@ -108,6 +164,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     void timeTest();
     void timerTest();
     void performTimerActionTest();
+    void userEventTest();
 
   private:
     // Adds code needed to register the test suite
@@ -125,6 +182,7 @@ class FObjectTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST (timeTest);
     CPPUNIT_TEST (timerTest);
     CPPUNIT_TEST (performTimerActionTest);
+    CPPUNIT_TEST (userEventTest);
 
     // End of test suite definition
     CPPUNIT_TEST_SUITE_END();
@@ -494,14 +552,14 @@ void FObjectTest::timerTest()
 //----------------------------------------------------------------------
 void FObjectTest::performTimerActionTest()
 {
-  FObject_protected t;
+  FObject_protected t1;
   uInt num_events = 0;
   uInt loop = 0;
-  t.addTimer(100);
+  t1.addTimer(100);
 
   while ( loop < 10 )
   {
-    num_events += t.processEvent();
+    num_events += t1.processEvent();
     // Wait 100 ms
     nanosleep ((const struct timespec[]){{0, 100000000L}}, NULL);
     loop++;
@@ -509,7 +567,29 @@ void FObjectTest::performTimerActionTest()
 
   CPPUNIT_ASSERT ( loop == 10 );
   CPPUNIT_ASSERT ( num_events == 9 );
-  CPPUNIT_ASSERT ( t.count == 9 );
+  CPPUNIT_ASSERT ( t1.count == 9 );
+
+  FObject_timer t2;
+  CPPUNIT_ASSERT ( t2.getValue() == 0 );
+  finalcut::FTimerEvent timer_ev (finalcut::fc::Timer_Event, 1);
+
+  for (int x = 0; x < 10; x++)
+    finalcut::FApplication::sendEvent (&t2, &timer_ev);
+
+  CPPUNIT_ASSERT ( t2.getValue() == 10 );
+}
+
+//----------------------------------------------------------------------
+void FObjectTest::userEventTest()
+{
+  FObject_userEvent user;
+  CPPUNIT_ASSERT ( user.getValue() == 0 );
+
+  int n = 9;
+  finalcut::FUserEvent user_ev (finalcut::fc::User_Event, 42);
+  user_ev.setData( (void*)(&n) );
+  finalcut::FApplication::sendEvent (&user, &user_ev);
+  CPPUNIT_ASSERT ( user.getValue() == 9 );
 }
 
 // Put the test suite in the registry

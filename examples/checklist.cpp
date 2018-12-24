@@ -40,8 +40,10 @@ class CheckList : public finalcut::FDialog
   public:
     // Constructor
     explicit CheckList (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     CheckList (const CheckList&) = delete;
+
     // Destructor
     ~CheckList();
 

@@ -36,8 +36,10 @@ class Watch : public finalcut::FDialog
   public:
     // Constructor
     explicit Watch (finalcut::FWidget* = nullptr);
+
     // Disable copy constructor
     Watch (const Watch&) = delete;
+
     // Destructor
     ~Watch();
 
