@@ -1,10 +1,13 @@
+2018-12-25  Markus Gans  <guru.mail@muenster.de>
+	* Add a "event processing" chapter into the first steps document
+
 2018-12-24  Markus Gans  <guru.mail@muenster.de>
 	* Events can not only be sent to FWidgets, but also to FObjects
 	* New event FUserEvent for user-defined events
 
 2018-12-19  Markus Gans  <guru.mail@muenster.de>
 	* Use of smart pointers
-	* Add a "memory management" Chapter into the first steps document
+	* Add a "memory management" chapter into the first steps document
 
 2018-12-17  Markus Gans  <guru.mail@muenster.de>
 	* Improve FButton mouse click animation
@@ -13,7 +16,7 @@
 
 2018-12-15  Markus Gans  <guru.mail@muenster.de>
 	* Use of the C++11 auto specifier in the program code
-	* Code reduction by using of Range-based for loop
+	* Code reduction by using of range-based for loop
 	* The example program for video attributes now replaces 
 	  the switch statement with a vector of lambda expressions
 
