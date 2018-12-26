@@ -523,7 +523,7 @@ const FString FTermDetection::getXTermColorName (int color)
   int stdin_no = FTermios::getStdIn();
 
   char temp[512] = { };
-  std::fprintf (stdout, OSC "4;%3d;?" BEL, color);  // get color
+  std::fprintf (stdout, OSC "4;%d;?" BEL, color);  // get color
   std::fflush(stdout);
 
   FD_ZERO(&ifds);
