@@ -515,7 +515,7 @@ int FTermLinux::getFramebuffer_bpp()
 //----------------------------------------------------------------------
 bool FTermLinux::getScreenFont()
 {
-  static const std::size_t data_size = 4 * 32 * 512;
+  static constexpr std::size_t data_size = 4 * 32 * 512;
   struct console_font_op font;
   int fd_tty = FTerm::getTTYFileDescriptor();
 
@@ -737,7 +737,7 @@ inline uInt16 FTermLinux::getInputStatusRegisterOne()
   // Gets the VGA input-status-register-1
 
   // Miscellaneous output (read port)
-  static const uInt16 misc_read = 0x3cc;
+  static constexpr uInt16 misc_read = 0x3cc;
   const uInt16 io_base = ( inb(misc_read) & 0x01 ) ? 0x3d0 : 0x3b0;
   // 0x3ba : Input status 1 MDA (read port)
   // 0x3da : Input status 1 CGA (read port)
@@ -751,9 +751,9 @@ uChar FTermLinux::readAttributeController (uChar index)
 
   uChar res;
   // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
+  static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   // Attribute controller (read port)
-  static const uInt16 attrib_cntlr_read  = 0x3c1;
+  static constexpr uInt16 attrib_cntlr_read  = 0x3c1;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
@@ -773,7 +773,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
   // Writes a byte from the attribute controller from a given index
 
   // Attribute controller (write port)
-  static const uInt16 attrib_cntlr_write = 0x3c0;
+  static constexpr uInt16 attrib_cntlr_write = 0x3c0;
   const uInt16 input_status_1 = getInputStatusRegisterOne();
 
   inb (input_status_1);  // switch to index mode
@@ -790,7 +790,7 @@ void FTermLinux::writeAttributeController (uChar index, uChar data)
 inline uChar FTermLinux::getAttributeMode()
 {
   // Gets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
+  static constexpr uChar attrib_mode = 0x10;
   return readAttributeController(attrib_mode);
 }
 
@@ -798,7 +798,7 @@ inline uChar FTermLinux::getAttributeMode()
 inline void FTermLinux::setAttributeMode (uChar data)
 {
   // Sets the attribute mode value from the vga attribute controller
-  static const uChar attrib_mode = 0x10;
+  static constexpr uChar attrib_mode = 0x10;
   writeAttributeController (attrib_mode, data);
 }
 

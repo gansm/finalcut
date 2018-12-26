@@ -67,8 +67,10 @@ FApplication::FApplication ( const int& _argc
   , app_argc{_argc}
   , app_argv{_argv}
 {
-  assert ( ! app_object
-        && "FApplication: There should be only one application object" );
+  if ( app_object )
+    throw std::runtime_error( "FApplication: There should be "
+                              "only one application object" );
+
   app_object = this;
 
   if ( ! (_argc && _argv) )
@@ -773,7 +775,7 @@ FWidget*& FApplication::determineClickedWidget()
     && ! mouse->isWheelDown() )
     return clicked;
 
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
 
   // Determine the window object on the current click position
   auto window = FWindow::getWindowWidgetAt (mouse_position);
@@ -817,7 +819,7 @@ void FApplication::closeOpenMenu()
 
   if ( mouse )
   {
-    const FPoint& mouse_position = mouse->getPos();
+    const auto& mouse_position = mouse->getPos();
 
     if ( menu->containsMenuStructure(mouse_position) )
       return;
@@ -867,7 +869,7 @@ void FApplication::unselectMenubarItems()
   if ( ! mouse )
     return;
 
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
 
   if ( ! menu_bar->getTermGeometry().contains(mouse_position) )
   {
@@ -900,8 +902,7 @@ void FApplication::sendMouseEvent()
   if ( ! mouse )
     return;
 
-  FPoint widgetMousePos;
-  const FPoint& mouse_position = mouse->getPos();
+  const auto& mouse_position = mouse->getPos();
   int key_state = 0;
 
   if ( mouse->isShiftKeyPressed() )
@@ -913,7 +914,7 @@ void FApplication::sendMouseEvent()
   if ( mouse->isMetaKeyPressed() )
     key_state |= fc::MetaButton;
 
-  widgetMousePos = clicked->termToWidgetPos(mouse_position);
+  auto widgetMousePos = clicked->termToWidgetPos(mouse_position);
 
   if ( mouse->isMoved() )
   {

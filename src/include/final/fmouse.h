@@ -306,7 +306,7 @@ class FMouseX11 : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 4;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 4;
 
     // Method
     void         setKeyState (int);
@@ -368,7 +368,7 @@ class FMouseSGR : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 13;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
     void         setKeyState (int);
@@ -432,7 +432,7 @@ class FMouseUrxvt : public FMouse
     };
 
     // Constant
-    static const std::size_t MOUSE_BUF_SIZE = 13;
+    static constexpr std::size_t MOUSE_BUF_SIZE = 13;
 
     // Methods
     void         setKeyState (int);

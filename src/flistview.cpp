@@ -1505,8 +1505,8 @@ void FListView::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -1535,7 +1535,7 @@ void FListView::drawHeadlines()
 
   while ( iter != header.end() )
   {
-    const FString& text = iter->name;
+    const auto& text = iter->name;
 
     if ( text.isNull() || text.isEmpty() )
     {
@@ -1632,11 +1632,11 @@ void FListView::drawListLine ( const FListViewItem* item
   {
     for (std::size_t col = 0; col < item->column_list.size(); )
     {
-      static const std::size_t leading_space = 1;
-      static const std::size_t checkbox_space = 4;
-      static const std::size_t ellipsis_length = 2;
+      static constexpr std::size_t leading_space = 1;
+      static constexpr std::size_t checkbox_space = 4;
+      static constexpr std::size_t ellipsis_length = 2;
 
-      const FString& text = item->column_list[col];
+      const auto& text = item->column_list[col];
       std::size_t width = std::size_t(header[col].width);
       std::size_t txt_length = text.getLength();
       // Increment the value of i for the column position
@@ -1819,8 +1819,8 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
 {
   // Print lable text
-  static const std::size_t leading_space = 1;
-  const FString& text = iter->name;
+  static constexpr std::size_t leading_space = 1;
+  const auto& text = iter->name;
   FString txt = " " + text;
   std::size_t width = std::size_t(iter->width);
   std::size_t txt_length = txt.getLength();
@@ -1867,7 +1867,7 @@ void FListView::drawColumnEllipsis ( headerItems::const_iterator& iter
                                    , const FString& text )
 {
   // Print lable ellipsis
-  static const int ellipsis_length = 2;
+  static constexpr int ellipsis_length = 2;
   int width = iter->width;
 
   headerline << ' ';
@@ -1902,7 +1902,7 @@ void FListView::updateDrawing (bool draw_vbar, bool draw_hbar)
 //----------------------------------------------------------------------
 std::size_t FListView::determineLineWidth (FListViewItem* item)
 {
-  static const std::size_t padding_space = 1;
+  static constexpr std::size_t padding_space = 1;
   std::size_t line_width = padding_space;  // leading space
   uInt column_idx = 0;
   uInt entries = uInt(item->column_list.size());
@@ -2007,7 +2007,7 @@ void FListView::mouseHeaderClicked()
 
   while ( iter != header.end() )
   {
-    static const int leading_space = 1;
+    static constexpr int leading_space = 1;
     bool has_sort_indicator = bool( column == sort_column );
     int click_width = int(iter->name.getLength());
 

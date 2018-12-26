@@ -199,8 +199,8 @@ bool FLineEdit::setFocus (bool enable)
 
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -690,8 +690,8 @@ void FLineEdit::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

@@ -125,7 +125,7 @@ void CheckList::populate()
     { "Lemons", "Low" }
   };
 
-  const int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
+  constexpr int lastItem = int(sizeof(list) / sizeof(list[0])) - 1;
 
   for (int i = 0; i <= lastItem; i++)
   {

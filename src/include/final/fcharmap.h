@@ -326,8 +326,8 @@ static uInt cp437_to_ucs[][2] =
   {0xff, 0x00a0}   // no-break space
 };
 
-const uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
-                                / sizeof(cp437_to_ucs[0]) ) - 1;
+constexpr uInt lastCP437Item = uInt ( sizeof(cp437_to_ucs)
+                                    / sizeof(cp437_to_ucs[0]) ) - 1;
 }  // namespace fc
 
 }  // namespace finalcut

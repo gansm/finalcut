@@ -132,9 +132,6 @@ class FApplication : public FWidget
     typedef std::deque<eventPair> eventQueue;
     typedef std::shared_ptr<eventQueue> eventQueuePtr;
 
-    // Constants
-    static const int NEED_MORE_DATA = -1;  // parseKeyString return value
-
     // Methods
     void                  init (long, long);
     void                  cmd_options (const int&, char*[]);

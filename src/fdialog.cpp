@@ -194,7 +194,7 @@ void FDialog::setPos (int x, int y, bool)
     , dy = getY() - y
     , old_x = getTermX()
     , old_y = getTermY();
-  const FPoint& shadow = getShadow();
+  const auto& shadow = getShadow();
   rsw = shadow.getX();  // right shadow width;
   bsh = shadow.getY();  // bottom shadow height
   old_geometry = getTermGeometryWithShadow();
@@ -304,7 +304,7 @@ void FDialog::setSize (std::size_t w, std::size_t h, bool adjust)
     , old_height = int(getHeight())
     , dw = old_width - int(w)
     , dh = old_height - int(h);
-  const FPoint& shadow = getShadow();
+  const auto& shadow = getShadow();
   int rsw = shadow.getX();  // right shadow width;
   int bsh = shadow.getY();  // bottom shadow height
 
@@ -1357,7 +1357,7 @@ void FDialog::pressZoomButton (mouseStates& ms)
 //----------------------------------------------------------------------
 inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
 {
-  const FRect& menu_geometry = dialog_menu->getTermGeometry();
+  const auto& menu_geometry = dialog_menu->getTermGeometry();
 
   if ( dialog_menu->getCount() > 0 && menu_geometry.contains(termpos) )
     return true;
@@ -1375,8 +1375,8 @@ inline void FDialog::passEventToSubMenu ( mouseStates& ms
     || ! dialog_menu->isShown() )
     return;
 
-  const FPoint& g = ms.termPos;
-  const FPoint& p = dialog_menu->termToWidgetPos(g);
+  const auto& g = ms.termPos;
+  const auto& p = dialog_menu->termToWidgetPos(g);
   int b = ev->getButton();
 
   try

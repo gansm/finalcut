@@ -188,8 +188,8 @@ bool FListBox::setFocus (bool enable)
   {
     if ( getStatusBar() )
     {
-      const FString& msg = getStatusbarMessage();
-      const FString& curMsg = getStatusBar()->getMessage();
+      const auto& msg = getStatusbarMessage();
+      const auto& curMsg = getStatusBar()->getMessage();
 
       if ( curMsg != msg )
         getStatusBar()->setMessage(msg);
@@ -894,8 +894,8 @@ void FListBox::draw()
 
   if ( flags.focus && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {
@@ -1510,7 +1510,7 @@ void FListBox::nextListItem (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollToX (int val)
 {
-  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
+  static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
 
   if ( xoffset == val )
@@ -1567,7 +1567,7 @@ void FListBox::scrollLeft (int distance)
 //----------------------------------------------------------------------
 void FListBox::scrollRight (int distance)
 {
-  static const std::size_t padding_space = 2;  // 1 leading + 1 trailing space
+  static constexpr std::size_t padding_space = 2;  // 1 leading + 1 trailing space
   std::size_t xoffset_end = max_line_width - getClientWidth() + padding_space;
   xoffset += distance;
 
@@ -1915,7 +1915,7 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 //----------------------------------------------------------------------
 void FListBox::cb_HBarChange (FWidget*, data_ptr)
 {
-  static const int padding_space = 2;  // 1 leading space + 1 trailing space
+  static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   FScrollbar::sType scrollType;
   int distance = 1
     , pagesize = 4

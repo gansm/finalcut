@@ -982,8 +982,8 @@ void FMenuBar::passEventToMenu (FMouseEvent*& ev)
   if ( menu->getCount() > 0
     && menu_geometry.contains(ev->getTermPos()) )
   {
-    const FPoint& t = ev->getTermPos();
-    const FPoint& p = menu->termToWidgetPos(t);
+    const auto& t = ev->getTermPos();
+    const auto& p = menu->termToWidgetPos(t);
     int b = ev->getButton();
 
     try

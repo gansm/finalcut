@@ -303,7 +303,7 @@ void FVTerm::delPreprocessingHandler (FVTerm* instance)
 //----------------------------------------------------------------------
 int FVTerm::printf (const FString format, ...)
 {
-  static const int BUFSIZE = 4096;
+  static constexpr int BUFSIZE = 4096;
   wchar_t buffer[BUFSIZE];
   va_list args;
 
@@ -1872,7 +1872,7 @@ FVTerm::charData FVTerm::getOverlappedCharacter ( int x
 void FVTerm::processTerminalUpdate()
 {
   // Retains terminal updates if there are unprocessed inputs
-  static const int max_skip = 8;
+  static constexpr int max_skip = 8;
 
   if ( ! terminal_update_pending )
     return;

@@ -774,8 +774,8 @@ void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 //----------------------------------------------------------------------
 void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 {
-  const char libver[] = F_VERSION;
-  finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
+  constexpr char libver[] = F_VERSION;
+  const finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
 
   finalcut::FMessageBox info ( "About"
                              , line + L" The Final Cut " + line + "\n\n"
@@ -999,10 +999,10 @@ void MyDialog::cb_setInput (finalcut::FWidget* widget, data_ptr data)
 
 int main (int argc, char* argv[])
 {
-  finalcut::FString ver = F_VERSION;  // Library version
-  finalcut::FString title = "The FINAL CUT "
-                          + ver
-                          + " (C) 2018 by Markus Gans";
+  const finalcut::FString ver = F_VERSION;  // Library version
+  const finalcut::FString title = "The FINAL CUT "
+                                + ver
+                                + " (C) 2018 by Markus Gans";
 
   // Create the application object app
   finalcut::FApplication app(argc, argv);

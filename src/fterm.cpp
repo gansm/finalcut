@@ -278,7 +278,7 @@ bool FTerm::setOldFont()
   if ( isXTerminal() || isScreenTerm()
     || isUrxvtTerminal() || FTermcap::osc_support )
   {
-    const FString& font = data->getXtermFont();
+    const auto& font = data->getXtermFont();
 
     if ( font.getLength() > 2 )
     {
@@ -418,7 +418,7 @@ char* FTerm::enableCursor()
 {
   // Returns the cursor enable string
 
-  static const std::size_t SIZE = 32;
+  static constexpr std::size_t SIZE = 32;
   static char enable_str[SIZE] = { };
   const auto& vs = TCAP(fc::t_cursor_visible);
   const auto& ve = TCAP(fc::t_cursor_normal);
@@ -1405,8 +1405,8 @@ void FTerm::init_captureFontAndTitle()
   // Save the used xterm font and window title
 
   xterm->captureFontAndTitle();
-  const FString* font = xterm->getFont();
-  const FString* title = xterm->getTitle();
+  const auto font = xterm->getFont();
+  const auto title = xterm->getTitle();
 
   if ( font )
     data->setXtermFont(*font);
@@ -1904,7 +1904,7 @@ void FTerm::finish()
 {
   // Set default signal handler
 
-  const FString& title = data->getXtermTitle();
+  const auto& title = data->getXtermTitle();
   resetSignalHandler();
 
   if ( title && isXTerminal() && ! isRxvtTerminal() )

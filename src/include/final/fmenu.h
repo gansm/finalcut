@@ -131,7 +131,8 @@ class FMenu : public FWindow, public FMenuList
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr bool SELECT_ITEM = true;
 
     // Typedef
     typedef struct
@@ -152,9 +153,6 @@ class FMenu : public FWindow, public FMenuList
       std::size_t hotkeypos;
       bool no_underline;
     } menuText;
-
-    // Constants
-    static const bool SELECT_ITEM = true;
 
     // Accessors
     FWidget*     getSuperMenu() const;

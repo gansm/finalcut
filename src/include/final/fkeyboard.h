@@ -85,7 +85,7 @@ class FKeyboard
 {
   public:
     // Constants
-    static const std::size_t FIFO_BUF_SIZE{512};
+    static constexpr std::size_t FIFO_BUF_SIZE{512};
 
     // Typedef
     typedef char keybuffer[FIFO_BUF_SIZE];
@@ -138,8 +138,8 @@ class FKeyboard
 
   private:
     // Constants
-    static const std::size_t READ_BUF_SIZE{1024};
-    static const FKey NOT_SET = static_cast<FKey>(-1);
+    static constexpr std::size_t READ_BUF_SIZE{1024};
+    static constexpr FKey NOT_SET = static_cast<FKey>(-1);
 
     // Accessors
     FKey                getMouseProtocolKey();

@@ -147,8 +147,8 @@ bool FMenuItem::setFocus (bool enable)
 
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -633,7 +633,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         FMenuItem* win_item;
         uInt32 n = uInt32(std::distance(first, iter));
         // get the dialog title
-        const FString& name = win->getText();
+        const auto& name = win->getText();
 
         try
         {
@@ -680,8 +680,8 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
   if ( ! widget )
     return;
 
-  const FPoint& t = ev->getTermPos();
-  const FPoint& p2 = widget->termToWidgetPos(t);
+  const auto& t = ev->getTermPos();
+  const auto& p2 = widget->termToWidgetPos(t);
   int b = ev->getButton();
   std::shared_ptr<FMouseEvent> _ev;
 

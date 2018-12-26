@@ -156,8 +156,8 @@ class FScrollView : public FWidget
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 
     // Constants
-    static const int vertical_border_spacing = 2;
-    static const int horizontal_border_spacing = 2;
+    static constexpr int vertical_border_spacing = 2;
+    static constexpr int horizontal_border_spacing = 2;
 
     // Accessors
     FPoint            getViewportCursorPos();

@@ -67,7 +67,7 @@ FWindow::~FWindow()  // destructor
 
   if ( ! fapp->isQuit() )
   {
-    const FRect& t_geometry = getTermGeometryWithShadow();
+    const auto& t_geometry = getTermGeometryWithShadow();
     restoreVTerm (t_geometry);
   }
 

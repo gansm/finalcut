@@ -361,7 +361,7 @@ class FListView : public FWidget
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 
     // Constants
-    static const int USE_MAX_SIZE = -1;
+    static constexpr int USE_MAX_SIZE = -1;
 
     // Methods
     void                 init();

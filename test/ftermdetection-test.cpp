@@ -679,7 +679,6 @@ void FTermDetectionTest::urxvtTest()
     setenv ("TERM", "rxvt-unicode-256color", 1);
     setenv ("COLORTERM", "rxvt-xpm", 1);
     setenv ("COLORFGBG", "default;default;0", 1);
-    //unsetenv("COLORFGBG");
     unsetenv("TERMCAP");
     unsetenv("VTE_VERSION");
     unsetenv("XTERM_VERSION");
@@ -2100,7 +2099,7 @@ void FTermDetectionTest::debugOutput()
   std::cout << std::endl << line << std::endl;
 
   // Command line
-  const char debug_command[] = "/bin/bash -c ' \
+  constexpr char debug_command[] = "/bin/bash -c ' \
       for i in DSR CURSOR_POS DECID DA DA1 SEC_DA ANSWERBACK \
                TITLE COLOR16 COLOR88 COLOR256; \
       do \
@@ -2258,7 +2257,7 @@ pid_t FTermDetectionTest::forkProcess()
   }
   else
   {
-    const int timeout = 150; // 1.5 seconds
+    constexpr int timeout = 150; // 1.5 seconds
     int i = 0;
 
     // Wait until the child process is ready for input

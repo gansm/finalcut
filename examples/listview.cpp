@@ -173,7 +173,7 @@ void Listview::populate()
     { "Zurich", "Mostly Cloudy", "23°C", "44%", "1023.7 mb" }
   };
 
-  const int lastItem = int(sizeof(weather) / sizeof(weather[0])) - 1;
+  constexpr int lastItem = int(sizeof(weather) / sizeof(weather[0])) - 1;
 
   for (int i = 0; i <= lastItem; i++)
   {

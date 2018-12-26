@@ -263,9 +263,9 @@ class FString
 
   private:
     // Constants
-    static const uInt FWDBUFFER = 15;
-    static const uInt INPBUFFER = 200;
-    static const uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
+    static constexpr uInt FWDBUFFER = 15;
+    static constexpr uInt INPBUFFER = 200;
+    static constexpr uInt CHAR_SIZE = sizeof(wchar_t);  // bytes per character
 
     // Methods
     void     initLength (std::size_t);

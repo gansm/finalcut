@@ -497,7 +497,7 @@ void FMouseX11::setRawData (FKeyboard::keybuffer& fifo_buf)
 {
   // Import the X11 xterm mouse protocol (SGR-Mode) raw mouse data
 
-  static const std::size_t len = 6;
+  static constexpr std::size_t len = 6;
   std::size_t fifo_buf_size = sizeof(fifo_buf);
   std::size_t n;
   x11_mouse[0] = fifo_buf[3];
@@ -523,7 +523,7 @@ void FMouseX11::processEvent (struct timeval* time)
 {
   // Parse and interpret the X11 xterm mouse string
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   uChar x, y;
   int btn;
 
@@ -586,7 +586,7 @@ void FMouseX11::setButtonState (int btn, struct timeval* time)
 {
   // Get the x11 mouse button state
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {
@@ -713,7 +713,7 @@ void FMouseSGR::setRawData (FKeyboard::keybuffer& fifo_buf)
 //----------------------------------------------------------------------
 void FMouseSGR::processEvent (struct timeval* time)
 {
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   char* p;
   int btn;
   short x, y;
@@ -821,7 +821,7 @@ void FMouseSGR::setPressedButtonState (int btn, struct timeval* time)
 {
   // Gets the extended x11 mouse mode (SGR) status for pressed buttons
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {
@@ -954,7 +954,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
 {
   // Parse and interpret the X11 xterm mouse string (Urxvt-Mode)
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
   char* p;
   bool x_neg;
   bool y_neg;
@@ -1088,7 +1088,7 @@ void FMouseUrxvt::setButtonState (int btn, struct timeval* time)
 {
   // Get the urxvt mouse button state
 
-  const FPoint& mouse_position = getPos();
+  const auto& mouse_position = getPos();
 
   switch ( btn )
   {

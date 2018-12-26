@@ -414,8 +414,8 @@ void FTextView::onMouseDown (FMouseEvent* ev)
     && ! dialog->isZoomed() )
   {
     int b = ev->getButton();
-    const FPoint& tp = ev->getTermPos();
-    const FPoint& p = parent->termToWidgetPos(tp);
+    const auto& tp = ev->getTermPos();
+    const auto& p = parent->termToWidgetPos(tp);
     parent->setFocus();
 
     try
@@ -443,8 +443,8 @@ void FTextView::onMouseUp (FMouseEvent* ev)
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
 
       try
@@ -479,8 +479,8 @@ void FTextView::onMouseMove (FMouseEvent* ev)
     if ( dialog->isResizeable() && ! dialog->isZoomed() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
       parent->setFocus();
 
       try
@@ -695,8 +695,8 @@ void FTextView::draw()
 
   if ( hasFocus() && getStatusBar() )
   {
-    const FString& msg = getStatusbarMessage();
-    const FString& curMsg = getStatusBar()->getMessage();
+    const auto& msg = getStatusbarMessage();
+    const auto& curMsg = getStatusBar()->getMessage();
 
     if ( curMsg != msg )
     {

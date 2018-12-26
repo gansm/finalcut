@@ -330,8 +330,8 @@ void FFileDialog::adjustSize()
 //----------------------------------------------------------------------
 void FFileDialog::init()
 {
-  static const std::size_t w = 42;
-  static const std::size_t h = 15;
+  static constexpr std::size_t w = 42;
+  static constexpr std::size_t h = 15;
   int x, y;
 
   setGeometry(1, 1, w, h, false);
@@ -725,7 +725,7 @@ int FFileDialog::changeDir (const FString& dirname)
 //----------------------------------------------------------------------
 void FFileDialog::printPath (const FString& txt)
 {
-  const FString& path = txt;
+  const auto& path = txt;
   const uInt max_width = uInt(filebrowser.getWidth()) - 4;
 
   if ( path.getLength() > max_width )
@@ -775,7 +775,7 @@ void FFileDialog::cb_processActivate (FWidget*, data_ptr)
 
     if ( ! dir_entries.empty() )
     {
-      const FString& input = filename.getText().trim();
+      const auto& input = filename.getText().trim();
 
       for (auto&& entry : dir_entries)
       {
@@ -803,7 +803,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, data_ptr)
   if ( n == 0 )
     return;
 
-  const FString& name = dir_entries[n - 1].name;
+  const auto& name = dir_entries[n - 1].name;
 
   if ( dir_entries[n - 1].directory )
     filename.setText( name + '/' );

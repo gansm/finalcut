@@ -448,7 +448,7 @@ class FVTerm
     };
 
     // Constants
-    static const uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
+    static constexpr uInt TERMINAL_OUTPUT_BUFFER_SIZE = 32768;
     // Buffer size for character output on the terminal
 
     // Mutators

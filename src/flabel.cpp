@@ -272,8 +272,8 @@ void FLabel::onMouseDown (FMouseEvent* ev)
     if ( auto parent = getParentWidget() )
     {
       int b = ev->getButton();
-      const FPoint& tp = ev->getTermPos();
-      const FPoint& p = parent->termToWidgetPos(tp);
+      const auto& tp = ev->getTermPos();
+      const auto& p = parent->termToWidgetPos(tp);
 
       try
       {

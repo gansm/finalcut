@@ -121,22 +121,17 @@ class FMessageBox : public FDialog
     void          setText (const FString&);
 
     // Methods
+    template <typename messageType>
     static int    info ( FWidget*
                        , const FString&
-                       , const FString&
+                       , const messageType&
                        , int = FMessageBox::Ok
                        , int = 0
                        , int = 0 );
 
-    static int    info ( FWidget*
-                       , const FString&
-                       , int
-                       , int = FMessageBox::Ok
-                       , int = 0
-                       , int = 0 );
-
+    template <typename messageType>
     static int    error ( FWidget*
-                        , const FString&
+                        , const messageType&
                         , int = FMessageBox::Ok
                         , int = 0
                         , int = 0 );
@@ -206,6 +201,48 @@ inline bool FMessageBox::setCenterText()
 //----------------------------------------------------------------------
 inline bool FMessageBox::unsetCenterText()
 { return setCenterText(false); }
+
+//----------------------------------------------------------------------
+template <typename messageType>
+int FMessageBox::info ( FWidget* parent
+                      , const FString& caption
+                      , const messageType& message
+                      , int button0
+                      , int button1
+                      , int button2 )
+{
+  int reply;
+  FMessageBox mbox ( caption
+                   , FString() << message
+                   , button0, button1, button2
+                   , parent );
+  reply = mbox.exec();
+  return reply;
+}
+
+//----------------------------------------------------------------------
+template <typename messageType>
+int FMessageBox::error ( FWidget* parent
+                       , const messageType& message
+                       , int button0
+                       , int button1
+                       , int button2 )
+{
+  int reply;
+  const FString& caption = "Error message";
+  FMessageBox mbox ( caption
+                   , FString() << message
+                   , button0, button1, button2
+                   , parent );
+  mbox.beep();
+  mbox.setHeadline("Warning:");
+  mbox.setCenterText();
+  mbox.setForegroundColor(mbox.wc.error_box_fg);
+  mbox.setBackgroundColor(mbox.wc.error_box_bg);
+  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
+  reply = mbox.exec();
+  return reply;
+}
 
 }  // namespace finalcut
 

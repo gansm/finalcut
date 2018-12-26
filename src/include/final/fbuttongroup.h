@@ -132,7 +132,7 @@ class FButtonGroup : public FScrollView
 
   private:
     // Constants
-    static const std::size_t NOT_SET = static_cast<std::size_t>(-1);
+    static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Inquiries
     bool           isRadioButton (FToggleButton*) const;

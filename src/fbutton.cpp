@@ -149,8 +149,8 @@ bool FButton::setFocus (bool enable)
     {
       if ( getStatusBar() )
       {
-        const FString& msg = getStatusbarMessage();
-        const FString& curMsg = getStatusBar()->getMessage();
+        const auto& msg = getStatusbarMessage();
+        const auto& curMsg = getStatusBar()->getMessage();
 
         if ( curMsg != msg )
           getStatusBar()->setMessage(msg);
@@ -747,8 +747,8 @@ void FButton::updateStatusBar()
   if ( ! flags.focus || ! getStatusBar() )
     return;
 
-  const FString& msg = getStatusbarMessage();
-  const FString& curMsg = getStatusBar()->getMessage();
+  const auto& msg = getStatusbarMessage();
+  const auto& curMsg = getStatusBar()->getMessage();
 
   if ( curMsg != msg )
   {

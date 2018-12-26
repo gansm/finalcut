@@ -160,61 +160,6 @@ void FMessageBox::setText (const FString& txt)
   adjustButtons();
 }
 
-//----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent
-                      , const FString& caption
-                      , const FString& message
-                      , int button0
-                      , int button1
-                      , int button2 )
-{
-  int reply;
-  FMessageBox mbox ( caption, message
-                   , button0, button1, button2
-                   , parent );
-  reply = mbox.exec();
-  return reply;
-}
-
-//----------------------------------------------------------------------
-int FMessageBox::info ( FWidget* parent
-                      , const FString& caption
-                      , int num
-                      , int button0
-                      , int button1
-                      , int button2 )
-{
-  int reply;
-  FMessageBox mbox ( caption
-                   , FString() << num
-                   , button0, button1, button2
-                   , parent );
-  reply = mbox.exec();
-  return reply;
-}
-
-//----------------------------------------------------------------------
-int FMessageBox::error ( FWidget* parent
-                       , const FString& message
-                       , int button0
-                       , int button1
-                       , int button2 )
-{
-  int reply;
-  const FString& caption = "Error message";
-  FMessageBox mbox ( caption, message
-                   , button0, button1, button2
-                   , parent );
-  mbox.beep();
-  mbox.setHeadline("Warning:");
-  mbox.setCenterText();
-  mbox.setForegroundColor(mbox.wc.error_box_fg);
-  mbox.setBackgroundColor(mbox.wc.error_box_bg);
-  mbox.emphasis_color  = mbox.wc.error_box_emphasis_fg;
-  reply = mbox.exec();
-  return reply;
-}
-
 
 // protected methods of FMessageBox
 //----------------------------------------------------------------------
@@ -471,7 +416,7 @@ void FMessageBox::resizeButtons()
 //----------------------------------------------------------------------
 void FMessageBox::adjustButtons()
 {
-  static const std::size_t gap = 4;
+  static constexpr std::size_t gap = 4;
   std::size_t btn_width = 0;
 
   for (std::size_t n = 0; n < num_buttons; n++)

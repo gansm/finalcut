@@ -172,8 +172,8 @@ class FDialog : public FWindow
     } mouseStates;
 
     // Constant
-    static const std::size_t MENU_BTN = 3;
-    static const bool PRINT_WIN_NUMBER = false;  // Only for debug
+    static constexpr std::size_t MENU_BTN = 3;
+    static constexpr bool PRINT_WIN_NUMBER = false;  // Only for debug
 
     // Using-declaration
     using FWidget::drawBorder;

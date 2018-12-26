@@ -69,9 +69,9 @@ FWidget::FWidget (FWidget* parent, bool disable_alt_screen)
 
   if ( ! parent )
   {
-    assert ( ! rootObject
-          && "FTerm: There should be only one root object" );
-
+    if  ( rootObject )
+      throw std::runtime_error( "FWidget: No parent defined! "
+                                "There should be only one root object" );
     rootObject = this;
     show_root_widget = nullptr;
     redraw_root_widget = nullptr;
