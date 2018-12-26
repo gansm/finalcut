@@ -175,8 +175,8 @@ class FScrollView : public FWidget
     void              drawVBar();
 
     // Callback methods
-    void              cb_VBarChange (FWidget*, data_ptr);
-    void              cb_HBarChange (FWidget*, data_ptr);
+    void              cb_VBarChange (FWidget*, FDataPtr);
+    void              cb_HBarChange (FWidget*, FDataPtr);
 
     // Data Members
     FRect             scroll_geometry{1, 1, 1, 1};

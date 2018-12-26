@@ -781,7 +781,7 @@ inline void FTextView::drawVBar()
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_VBarChange (FWidget*, data_ptr)
+void FTextView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1;
@@ -837,7 +837,7 @@ void FTextView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FTextView::cb_HBarChange (FWidget*, data_ptr)
+void FTextView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1;

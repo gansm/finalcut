@@ -186,7 +186,7 @@ FListViewItem::FListViewItem (FObjectIterator parent_iter)
 
 //----------------------------------------------------------------------
 FListViewItem::FListViewItem ( const FStringList& cols
-                             , FWidget::data_ptr data
+                             , FDataPtr data
                              , FObjectIterator parent_iter )
   : FObject(0)
   , column_list(cols)
@@ -788,7 +788,7 @@ FObject::FObjectIterator FListView::insert ( FListViewItem* item
 
 //----------------------------------------------------------------------
 FObject::FObjectIterator FListView::insert ( const FStringList& cols
-                                           , data_ptr d
+                                           , FDataPtr d
                                            , FObjectIterator parent_iter )
 {
   FListViewItem* item;
@@ -815,7 +815,7 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 
 //----------------------------------------------------------------------
 FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
-                                           , data_ptr d
+                                           , FDataPtr d
                                            , FObjectIterator parent_iter )
 {
   FStringList str_cols;
@@ -2504,7 +2504,7 @@ void FListView::scrollBy (int dx, int dy)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_VBarChange (FWidget*, data_ptr)
+void FListView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1
@@ -2564,7 +2564,7 @@ void FListView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FListView::cb_HBarChange (FWidget*, data_ptr)
+void FListView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1

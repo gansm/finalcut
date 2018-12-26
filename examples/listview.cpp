@@ -58,7 +58,7 @@ class Listview : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_showInMessagebox (finalcut::FWidget*, data_ptr);
+    void cb_showInMessagebox (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FListView listView{this};
@@ -189,7 +189,7 @@ void Listview::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Listview::cb_showInMessagebox (finalcut::FWidget*, data_ptr)
+void Listview::cb_showInMessagebox (finalcut::FWidget*, FDataPtr)
 {
   const auto& item = listView.getCurrentItem();
   finalcut::FMessageBox info ( "Weather in " + item->getText(1)

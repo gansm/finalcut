@@ -55,9 +55,9 @@ class ProgressDialog : public finalcut::FDialog
     virtual void onTimer (finalcut::FTimerEvent*);
 
     // Callback methods
-    void cb_reset_bar (finalcut::FWidget*, data_ptr);
-    void cb_more_bar (finalcut::FWidget*, data_ptr);
-    void cb_exit_bar (finalcut::FWidget*, data_ptr);
+    void cb_reset_bar (finalcut::FWidget*, FDataPtr);
+    void cb_more_bar (finalcut::FWidget*, FDataPtr);
+    void cb_exit_bar (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FProgressbar progressBar{this};
@@ -153,20 +153,20 @@ void ProgressDialog::onTimer (finalcut::FTimerEvent*)
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_reset_bar (finalcut::FWidget*, data_ptr)
+void ProgressDialog::cb_reset_bar (finalcut::FWidget*, FDataPtr)
 {
   progressBar.reset();
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_more_bar (finalcut::FWidget*, data_ptr)
+void ProgressDialog::cb_more_bar (finalcut::FWidget*, FDataPtr)
 {
   auto p = progressBar.getPercentage();
   progressBar.setPercentage(++p);
 }
 
 //----------------------------------------------------------------------
-void ProgressDialog::cb_exit_bar (finalcut::FWidget*, data_ptr)
+void ProgressDialog::cb_exit_bar (finalcut::FWidget*, FDataPtr)
 {
   close();
 }
@@ -285,21 +285,21 @@ class MyDialog : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_noFunctionMsg (finalcut::FWidget*, data_ptr);
-    void cb_about (finalcut::FWidget*, data_ptr);
-    void cb_terminfo (finalcut::FWidget*, data_ptr);
-    void cb_drives (finalcut::FWidget*, data_ptr);
-    void cb_cutClipboard (finalcut::FWidget*, data_ptr);
-    void cb_copyClipboard (finalcut::FWidget*, data_ptr);
-    void cb_pasteClipboard (finalcut::FWidget*, data_ptr);
-    void cb_clearInput (finalcut::FWidget*, data_ptr);
-    void cb_input2buttonText (finalcut::FWidget*, data_ptr);
-    void cb_setTitlebar (finalcut::FWidget*, data_ptr);
-    void cb_ProgressBar (finalcut::FWidget*, data_ptr);
-    void cb_updateNumber (finalcut::FWidget*, data_ptr);
-    void cb_activateButton (finalcut::FWidget*, data_ptr);
-    void cb_view (finalcut::FWidget*, data_ptr);
-    void cb_setInput (finalcut::FWidget*, data_ptr);
+    void cb_noFunctionMsg (finalcut::FWidget*, FDataPtr);
+    void cb_about (finalcut::FWidget*, FDataPtr);
+    void cb_terminfo (finalcut::FWidget*, FDataPtr);
+    void cb_drives (finalcut::FWidget*, FDataPtr);
+    void cb_cutClipboard (finalcut::FWidget*, FDataPtr);
+    void cb_copyClipboard (finalcut::FWidget*, FDataPtr);
+    void cb_pasteClipboard (finalcut::FWidget*, FDataPtr);
+    void cb_clearInput (finalcut::FWidget*, FDataPtr);
+    void cb_input2buttonText (finalcut::FWidget*, FDataPtr);
+    void cb_setTitlebar (finalcut::FWidget*, FDataPtr);
+    void cb_ProgressBar (finalcut::FWidget*, FDataPtr);
+    void cb_updateNumber (finalcut::FWidget*, FDataPtr);
+    void cb_activateButton (finalcut::FWidget*, FDataPtr);
+    void cb_view (finalcut::FWidget*, FDataPtr);
+    void cb_setInput (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     bool                      initialized{false};
@@ -442,21 +442,21 @@ void MyDialog::initFileMenuCallbacks()
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<finalcut::FWidget::data_ptr>(&File1)
+    static_cast<FDataPtr>(&File1)
   );
 
   File2.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<finalcut::FWidget::data_ptr>(&File2)
+    static_cast<FDataPtr>(&File2)
   );
 
   File3.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_view),
-    static_cast<finalcut::FWidget::data_ptr>(&File3)
+    static_cast<FDataPtr>(&File3)
   );
 }
 
@@ -666,7 +666,7 @@ void MyDialog::initButtons()
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_input2buttonText),
-    static_cast<finalcut::FWidget::data_ptr>(&myLineEdit)
+    static_cast<FDataPtr>(&myLineEdit)
   );
 
   MyButton5.addCallback
@@ -718,21 +718,21 @@ void MyDialog::initWidgetsCallbacks()
   (
     "toggled",
     F_METHOD_CALLBACK (this, &MyDialog::cb_activateButton),
-    static_cast<finalcut::FWidget::data_ptr>(&MyButton5)
+    static_cast<FDataPtr>(&MyButton5)
   );
 
   myList.addCallback
   (
     "clicked",
     F_METHOD_CALLBACK (this, &MyDialog::cb_setInput),
-    static_cast<finalcut::FWidget::data_ptr>(&myLineEdit)
+    static_cast<FDataPtr>(&myLineEdit)
   );
 
   myList.addCallback
   (
     "row-selected",
     F_METHOD_CALLBACK (this, &MyDialog::cb_updateNumber),
-    static_cast<finalcut::FWidget::data_ptr>(&tagged_count)
+    static_cast<FDataPtr>(&tagged_count)
   );
 }
 
@@ -761,7 +761,7 @@ void MyDialog::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
+void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, FDataPtr)
 {
   auto& button = *(static_cast<finalcut::FButton*>(widget));
   auto text = button.getText();
@@ -772,7 +772,7 @@ void MyDialog::cb_noFunctionMsg (finalcut::FWidget* widget, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_about (finalcut::FWidget*, FDataPtr)
 {
   constexpr char libver[] = F_VERSION;
   const finalcut::FString line(2, finalcut::fc::BoxDrawingsHorizontal);
@@ -787,7 +787,7 @@ void MyDialog::cb_about (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_terminfo (finalcut::FWidget*, FDataPtr)
 {
   auto x = getDesktopWidth();
   auto y = getDesktopHeight();
@@ -808,7 +808,7 @@ void MyDialog::cb_terminfo (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_drives (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_drives (finalcut::FWidget*, FDataPtr)
 {
   finalcut::FMessageBox info2 \
   (
@@ -859,7 +859,7 @@ void MyDialog::cb_drives (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_cutClipboard (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_cutClipboard (finalcut::FWidget*, FDataPtr)
 {
   clipboard = myLineEdit.getText();
   myLineEdit.clear();
@@ -867,20 +867,20 @@ void MyDialog::cb_cutClipboard (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_copyClipboard (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_copyClipboard (finalcut::FWidget*, FDataPtr)
 {
   clipboard = myLineEdit.getText();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_pasteClipboard (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_pasteClipboard (finalcut::FWidget*, FDataPtr)
 {
   myLineEdit = clipboard;
   myLineEdit.redraw();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_clearInput (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_clearInput (finalcut::FWidget*, FDataPtr)
 {
   clipboard.clear();
   myLineEdit.clear();
@@ -888,7 +888,7 @@ void MyDialog::cb_clearInput (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, data_ptr data)
+void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& button = *(static_cast<finalcut::FButton*>(widget));
   const auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));
@@ -897,7 +897,7 @@ void MyDialog::cb_input2buttonText (finalcut::FWidget* widget, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
+void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, FDataPtr)
 {
   auto& lineedit = *(static_cast<finalcut::FLineEdit*>(widget));
   finalcut::FString title;
@@ -908,14 +908,14 @@ void MyDialog::cb_setTitlebar (finalcut::FWidget* widget, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_ProgressBar (finalcut::FWidget*, data_ptr)
+void MyDialog::cb_ProgressBar (finalcut::FWidget*, FDataPtr)
 {
   auto p_dgl = new ProgressDialog(this);
   p_dgl->show();
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
+void MyDialog::cb_updateNumber (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& list = *(static_cast<finalcut::FListBox*>(widget));
   auto& num = *(static_cast<finalcut::FLabel*>(data));
@@ -932,7 +932,7 @@ void MyDialog::cb_updateNumber (finalcut::FWidget* widget, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_activateButton (finalcut::FWidget* widget, data_ptr data)
+void MyDialog::cb_activateButton (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& rb = *(static_cast<finalcut::FRadioButton*>(widget));
   auto& button = *(static_cast<finalcut::FButton*>(data));
@@ -946,7 +946,7 @@ void MyDialog::cb_activateButton (finalcut::FWidget* widget, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
+void MyDialog::cb_view (finalcut::FWidget*, FDataPtr data)
 {
   finalcut::FString file;
   auto item = static_cast<finalcut::FMenuItem*>(data);
@@ -984,7 +984,7 @@ void MyDialog::cb_view (finalcut::FWidget*, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void MyDialog::cb_setInput (finalcut::FWidget* widget, data_ptr data)
+void MyDialog::cb_setInput (finalcut::FWidget* widget, FDataPtr data)
 {
   auto& ListBox = *(static_cast<finalcut::FListBox*>(widget));
   auto& lineedit = *(static_cast<finalcut::FLineEdit*>(data));

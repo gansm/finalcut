@@ -124,7 +124,7 @@ class FApplication : public FWidget
     static void           closeConfirmationDialog (FWidget*, FCloseEvent*);
 
     // Callback method
-    void cb_exitApp (FWidget*, FWidget::data_ptr);
+    void cb_exitApp (FWidget*, FDataPtr);
 
   private:
     // Typedefs and Enumerations
@@ -206,7 +206,7 @@ inline char** FApplication::getArgv() const
 { return app_argv; }
 
 //----------------------------------------------------------------------
-inline void FApplication::cb_exitApp (FWidget*, FWidget::data_ptr)
+inline void FApplication::cb_exitApp (FWidget*, FDataPtr)
 { close(); }
 
 }  // namespace finalcut

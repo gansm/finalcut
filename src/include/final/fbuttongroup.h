@@ -117,7 +117,7 @@ class FButtonGroup : public FScrollView
     virtual void   onFocusIn (FFocusEvent*);
 
     // Callback method
-    void           cb_buttonToggled (FWidget*, data_ptr);
+    void           cb_buttonToggled (FWidget*, FDataPtr);
 
   protected:
     // Accessor

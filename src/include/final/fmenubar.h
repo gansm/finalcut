@@ -104,7 +104,7 @@ class FMenuBar : public FWindow, public FMenuList
     virtual void onAccel (FAccelEvent*);
 
     // Callback methods
-    void         cb_item_deactivated (FWidget*, data_ptr);
+    void         cb_item_deactivated (FWidget*, FDataPtr);
 
   private:
     // Constants

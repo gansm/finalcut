@@ -342,7 +342,7 @@ void FLabel::onAccel (FAccelEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FLabel::cb_accel_widget_destroyed (FWidget*, data_ptr)
+void FLabel::cb_accel_widget_destroyed (FWidget*, FDataPtr)
 {
   accel_widget = nullptr;
   delAccelerator();

@@ -876,7 +876,7 @@ void FScrollView::setViewportCursor()
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_VBarChange (FWidget*, data_ptr)
+void FScrollView::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = vbar->getScrollType();
   int distance = 1;
@@ -928,7 +928,7 @@ void FScrollView::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FScrollView::cb_HBarChange (FWidget*, data_ptr)
+void FScrollView::cb_HBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType = hbar->getScrollType();
   int distance = 1;

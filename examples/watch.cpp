@@ -54,8 +54,8 @@ class Watch : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_clock (finalcut::FWidget*, data_ptr);
-    void cb_seconds (finalcut::FWidget*, data_ptr);
+    void cb_clock (finalcut::FWidget*, FDataPtr);
+    void cb_seconds (finalcut::FWidget*, FDataPtr);
 
   protected:
     // Method
@@ -153,7 +153,7 @@ void Watch::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_clock (finalcut::FWidget*, data_ptr)
+void Watch::cb_clock (finalcut::FWidget*, FDataPtr)
 {
   if ( clock_sw.isChecked() )
   {
@@ -169,7 +169,7 @@ void Watch::cb_clock (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Watch::cb_seconds (finalcut::FWidget*, data_ptr)
+void Watch::cb_seconds (finalcut::FWidget*, FDataPtr)
 {
   if ( seconds_sw.isChecked() )
     sec = true;

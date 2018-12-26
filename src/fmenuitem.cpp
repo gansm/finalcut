@@ -653,7 +653,7 @@ void FMenuItem::createDialogList (FMenu* winmenu)
         (
           "clicked",
           F_METHOD_CALLBACK (win_item, &FMenuItem::cb_switchToDialog),
-          static_cast<FWidget::data_ptr>(win)
+          static_cast<FDataPtr>(win)
         );
 
         win->addCallback
@@ -716,7 +716,7 @@ void FMenuItem::passMouseEvent ( T widget, FMouseEvent* ev
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
+void FMenuItem::cb_switchToDialog (FWidget*, FDataPtr data)
 {
   auto win = static_cast<FDialog*>(data);
 
@@ -729,7 +729,7 @@ void FMenuItem::cb_switchToDialog (FWidget*, data_ptr data)
 }
 
 //----------------------------------------------------------------------
-void FMenuItem::cb_destroyDialog (FWidget* widget, data_ptr)
+void FMenuItem::cb_destroyDialog (FWidget* widget, FDataPtr)
 {
   auto win = static_cast<FDialog*>(widget);
   auto fapp = FApplication::getApplicationObject();

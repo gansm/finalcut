@@ -381,7 +381,7 @@ void FButtonGroup::onFocusIn (FFocusEvent* in_ev)
 }
 
 //----------------------------------------------------------------------
-void FButtonGroup::cb_buttonToggled (FWidget* widget, data_ptr)
+void FButtonGroup::cb_buttonToggled (FWidget* widget, FDataPtr)
 {
   auto button = static_cast<FToggleButton*>(widget);
 

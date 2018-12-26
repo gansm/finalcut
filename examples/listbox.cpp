@@ -35,7 +35,7 @@ static std::shared_ptr<FString> temp_str { nullptr };
 
 // Function prototypes
 void doubleToItem ( FListBoxItem&
-                  , FWidget::data_ptr container
+                  , FDataPtr container
                   , int index);
 FString& doubleToString (std::list<double>::const_iterator iter);
 FString& mapToString ( std::map<FString
@@ -44,14 +44,14 @@ FString& mapToString ( std::map<FString
 
 // Lazy conversion import function
 void doubleToItem ( FListBoxItem& item
-                  , FWidget::data_ptr container, int index)
+                  , FDataPtr container, int index)
 {
   typedef std::list<double>* double_list_ptr;
   double_list_ptr dbllist = static_cast<double_list_ptr>(container);
   std::list<double>::iterator iter = dbllist->begin();
   std::advance (iter, index);
   item.setText (FString() << *iter);
-  item.setData (FWidget::data_ptr(&(*iter)));
+  item.setData (FDataPtr(&(*iter)));
 }
 
 // Import converter functions

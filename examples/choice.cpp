@@ -27,14 +27,14 @@
 typedef std::shared_ptr<finalcut::FRadioButton> FRadioButtonPtr;
 
 // Function prototypes
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_quit (finalcut::FWidget*, FDataPtr);
 void populateChoice (std::vector<FRadioButtonPtr>&, finalcut::FButtonGroup&);
 void preset (std::vector<FRadioButtonPtr>&);
 
 //----------------------------------------------------------------------
 // Callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, FDataPtr data)
 {
   auto dlg = static_cast<finalcut::FDialog*>(data);
   dlg->close();

@@ -58,6 +58,7 @@ typedef long double    lDouble;
 
 typedef uInt16         FColor;
 typedef uInt32         FKey;
+typedef void*          FDataPtr;
 
 }  // namespace
 

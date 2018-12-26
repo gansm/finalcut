@@ -1646,7 +1646,7 @@ void FDialog::delDialog (FWidget* obj)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_move (FWidget*, data_ptr)
+void FDialog::cb_move (FWidget*, FDataPtr)
 {
   if ( isZoomed() )
     return;
@@ -1697,7 +1697,7 @@ void FDialog::cb_move (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_zoom (FWidget*, data_ptr)
+void FDialog::cb_zoom (FWidget*, FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();
@@ -1708,7 +1708,7 @@ void FDialog::cb_zoom (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FDialog::cb_close (FWidget*, data_ptr)
+void FDialog::cb_close (FWidget*, FDataPtr)
 {
   dialog_menu->unselectItem();
   dialog_menu->hide();

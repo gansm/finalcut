@@ -53,10 +53,10 @@ class Scrollview : public finalcut::FScrollView
     virtual void draw();
 
     // Callback methods
-    void cb_go_east (finalcut::FWidget*, data_ptr);
-    void cb_go_south (finalcut::FWidget*, data_ptr);
-    void cb_go_west (finalcut::FWidget*, data_ptr);
-    void cb_go_north (finalcut::FWidget*, data_ptr);
+    void cb_go_east (finalcut::FWidget*, FDataPtr);
+    void cb_go_south (finalcut::FWidget*, FDataPtr);
+    void cb_go_west (finalcut::FWidget*, FDataPtr);
+    void cb_go_north (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     wchar_t pointer_right{finalcut::fc::BlackRightPointingPointer};
@@ -144,7 +144,7 @@ void Scrollview::draw()
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_go_east (finalcut::FWidget*, FDataPtr)
 {
   scrollToX (int(getScrollWidth() - getViewportWidth()) + 1);
   go_south.setFocus();
@@ -153,7 +153,7 @@ void Scrollview::cb_go_east (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_go_south (finalcut::FWidget*, FDataPtr)
 {
   scrollToY (int(getScrollHeight() - getViewportHeight()) + 1);
   go_west.setFocus();
@@ -162,7 +162,7 @@ void Scrollview::cb_go_south (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_west (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_go_west (finalcut::FWidget*, FDataPtr)
 {
   scrollToX (1);
   go_north.setFocus();
@@ -171,7 +171,7 @@ void Scrollview::cb_go_west (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Scrollview::cb_go_north (finalcut::FWidget*, data_ptr)
+void Scrollview::cb_go_north (finalcut::FWidget*, FDataPtr)
 {
   scrollToY (1);
   go_east.setFocus();
@@ -200,7 +200,7 @@ class Scrollviewdemo : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_quit (finalcut::FWidget* = nullptr, data_ptr = nullptr);
+    void cb_quit (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
     // Data Members
     Scrollview sview{this};
@@ -242,7 +242,7 @@ Scrollviewdemo::~Scrollviewdemo()
 { }
 
 //----------------------------------------------------------------------
-void Scrollviewdemo::cb_quit (finalcut::FWidget*, data_ptr)
+void Scrollviewdemo::cb_quit (finalcut::FWidget*, FDataPtr)
 {
   close();
 }

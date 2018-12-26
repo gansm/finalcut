@@ -52,8 +52,8 @@ class AttribDlg : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_next (finalcut::FWidget* = nullptr, data_ptr = nullptr);
-    void cb_back (finalcut::FWidget* = nullptr, data_ptr = nullptr);
+    void cb_next (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
+    void cb_back (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
 
     // Data Members
     FColor bgcolor;
@@ -125,7 +125,7 @@ void AttribDlg::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
+void AttribDlg::cb_next (finalcut::FWidget*, FDataPtr)
 {
   if ( isMonochron() )
     return;
@@ -141,7 +141,7 @@ void AttribDlg::cb_next (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void AttribDlg::cb_back (finalcut::FWidget*, data_ptr)
+void AttribDlg::cb_back (finalcut::FWidget*, FDataPtr)
 {
   if ( isMonochron() )
     return;

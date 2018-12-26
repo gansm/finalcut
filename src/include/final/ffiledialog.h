@@ -180,12 +180,12 @@ class FFileDialog : public FDialog
     static const FString getHomeDir();
 
     // Callback methods
-    void          cb_processActivate (FWidget*, data_ptr);
-    void          cb_processRowChanged (FWidget*, data_ptr);
-    void          cb_processClicked (FWidget*, data_ptr);
-    void          cb_processCancel (FWidget*, data_ptr);
-    void          cb_processOpen (FWidget*, data_ptr);
-    void          cb_processShowHidden (FWidget*, data_ptr);
+    void          cb_processActivate (FWidget*, FDataPtr);
+    void          cb_processRowChanged (FWidget*, FDataPtr);
+    void          cb_processClicked (FWidget*, FDataPtr);
+    void          cb_processCancel (FWidget*, FDataPtr);
+    void          cb_processOpen (FWidget*, FDataPtr);
+    void          cb_processShowHidden (FWidget*, FDataPtr);
 
     // Data Members
     DIR*          directory_stream{nullptr};

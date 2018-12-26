@@ -179,8 +179,8 @@ class Window : public finalcut::FDialog
 
   private:
     // Typedefs
-    typedef void (Window::*WindowCallback)(finalcut::FWidget*, data_ptr);
-    typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, data_ptr);
+    typedef void (Window::*WindowCallback)(finalcut::FWidget*, FDataPtr);
+    typedef void (finalcut::FApplication::*FAppCallback)(finalcut::FWidget*, FDataPtr);
 
     struct win_data
     {
@@ -210,11 +210,11 @@ class Window : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback methods
-    void cb_createWindows (finalcut::FWidget*, data_ptr);
-    void cb_closeWindows (finalcut::FWidget*, data_ptr);
-    void cb_next (finalcut::FWidget*, data_ptr);
-    void cb_previous (finalcut::FWidget*, data_ptr);
-    void cb_destroyWindow (finalcut::FWidget*, data_ptr);
+    void cb_createWindows (finalcut::FWidget*, FDataPtr);
+    void cb_closeWindows (finalcut::FWidget*, FDataPtr);
+    void cb_next (finalcut::FWidget*, FDataPtr);
+    void cb_previous (finalcut::FWidget*, FDataPtr);
+    void cb_destroyWindow (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     std::vector<win_data*>    windows{};
@@ -405,7 +405,7 @@ void Window::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
+void Window::cb_createWindows (finalcut::FWidget*, FDataPtr)
 {
   auto first = windows.begin();
   auto iter = first;
@@ -435,7 +435,7 @@ void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
       (
         "destroy",
         F_METHOD_CALLBACK (this, &Window::cb_destroyWindow),
-        static_cast<finalcut::FWidget::data_ptr>(win_dat)
+        static_cast<FDataPtr>(win_dat)
       );
     }
 
@@ -446,7 +446,7 @@ void Window::cb_createWindows (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_closeWindows (finalcut::FWidget*, data_ptr)
+void Window::cb_closeWindows (finalcut::FWidget*, FDataPtr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -466,7 +466,7 @@ void Window::cb_closeWindows (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_next (finalcut::FWidget*, data_ptr)
+void Window::cb_next (finalcut::FWidget*, FDataPtr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -502,7 +502,7 @@ void Window::cb_next (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_previous (finalcut::FWidget*, data_ptr)
+void Window::cb_previous (finalcut::FWidget*, FDataPtr)
 {
   if ( ! dialog_list || dialog_list->empty() )
     return;
@@ -539,7 +539,7 @@ void Window::cb_previous (finalcut::FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void Window::cb_destroyWindow (finalcut::FWidget*, data_ptr data)
+void Window::cb_destroyWindow (finalcut::FWidget*, FDataPtr data)
 {
   auto win_dat = static_cast<win_data*>(data);
 

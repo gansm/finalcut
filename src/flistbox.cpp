@@ -48,7 +48,7 @@ FListBoxItem::FListBoxItem (const FListBoxItem& item)
 { }
 
 //----------------------------------------------------------------------
-FListBoxItem::FListBoxItem (const FString& txt, FWidget::data_ptr data)
+FListBoxItem::FListBoxItem (const FString& txt, FDataPtr data)
   : text(txt)
   , data_pointer(data)
 { }
@@ -264,7 +264,7 @@ void FListBox::insert (FListBoxItem listItem)
 void FListBox::insert ( const FString& item
                       , fc::brackets_type b
                       , bool s
-                      , data_ptr d )
+                      , FDataPtr d )
 {
   FListBoxItem listItem (item, d);
   listItem.brackets = b;
@@ -276,7 +276,7 @@ void FListBox::insert ( const FString& item
 void FListBox::insert ( long item
                       , fc::brackets_type b
                       , bool s
-                      , data_ptr d )
+                      , FDataPtr d )
 {
   insert (FString() << item, b, s, d);
 }
@@ -1846,7 +1846,7 @@ void FListBox::lazyConvert(listBoxItems::iterator iter, int y)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_VBarChange (FWidget*, data_ptr)
+void FListBox::cb_VBarChange (FWidget*, FDataPtr)
 {
   FScrollbar::sType scrollType;
   std::size_t current_before = current;
@@ -1913,7 +1913,7 @@ void FListBox::cb_VBarChange (FWidget*, data_ptr)
 }
 
 //----------------------------------------------------------------------
-void FListBox::cb_HBarChange (FWidget*, data_ptr)
+void FListBox::cb_HBarChange (FWidget*, FDataPtr)
 {
   static constexpr int padding_space = 2;  // 1 leading space + 1 trailing space
   FScrollbar::sType scrollType;

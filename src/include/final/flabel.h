@@ -135,7 +135,7 @@ class FLabel : public FWidget
     virtual void       onAccel (FAccelEvent*);
 
     // Callback method
-    void               cb_accel_widget_destroyed (FWidget*, data_ptr);
+    void               cb_accel_widget_destroyed (FWidget*, FDataPtr);
 
   private:
     // Constants

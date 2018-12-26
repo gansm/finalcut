@@ -81,7 +81,7 @@ class FListViewItem : public FObject
     FListViewItem (const FListViewItem&);  // copy constructor
     explicit FListViewItem (FObjectIterator);
     FListViewItem ( const FStringList&
-                  , FWidget::data_ptr
+                  , FDataPtr
                   , FObjectIterator );
 
     // Destructor
@@ -95,12 +95,12 @@ class FListViewItem : public FObject
     uInt              getColumnCount() const;
     int               getSortColumn() const;
     FString           getText (int) const;
-    FWidget::data_ptr getData() const;
+    FDataPtr          getData() const;
     uInt              getDepth() const;
 
     // Mutators
     void              setText (int, const FString&);
-    void              setData (FWidget::data_ptr);
+    void              setData (FDataPtr);
     void              setCheckable (bool);
     void              setChecked (bool);
 
@@ -129,7 +129,7 @@ class FListViewItem : public FObject
 
     // Data Members
     FStringList       column_list{};
-    FWidget::data_ptr data_pointer{nullptr};
+    FDataPtr          data_pointer{nullptr};
     FObjectIterator   root{};
     std::size_t       visible_lines{1};
     bool              expandable{false};
@@ -154,11 +154,11 @@ inline uInt FListViewItem::getColumnCount() const
 { return uInt(column_list.size()); }
 
 //----------------------------------------------------------------------
-inline FWidget::data_ptr FListViewItem::getData() const
+inline FDataPtr FListViewItem::getData() const
 { return data_pointer; }
 
 //----------------------------------------------------------------------
-inline void FListViewItem::setData (FWidget::data_ptr data)
+inline void FListViewItem::setData (FDataPtr data)
 { data_pointer = data; }
 
 //----------------------------------------------------------------------
@@ -317,18 +317,18 @@ class FListView : public FWidget
     FObjectIterator      insert (FListViewItem*);
     FObjectIterator      insert (FListViewItem*, FObjectIterator);
     FObjectIterator      insert ( const FStringList&
-                                , data_ptr = nullptr );
+                                , FDataPtr = nullptr );
     FObjectIterator      insert ( const FStringList&
                                 , FObjectIterator );
     FObjectIterator      insert ( const FStringList&
-                                , data_ptr
+                                , FDataPtr
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
-                                , data_ptr = nullptr );
+                                , FDataPtr = nullptr );
     FObjectIterator      insert ( const std::vector<long>&
                                 , FObjectIterator );
     FObjectIterator      insert ( const std::vector<long>&
-                                , data_ptr
+                                , FDataPtr
                                 , FObjectIterator );
     FObjectIterator      beginOfList();
     FObjectIterator      endOfList();
@@ -419,8 +419,8 @@ class FListView : public FWidget
     bool                 hasCheckableItems() const;
 
     // Callback methods
-    void                 cb_VBarChange (FWidget*, data_ptr);
-    void                 cb_HBarChange (FWidget*, data_ptr);
+    void                 cb_VBarChange (FWidget*, FDataPtr);
+    void                 cb_HBarChange (FWidget*, FDataPtr);
 
     // Data Members
     FObjectIterator      root{};
@@ -526,7 +526,7 @@ inline FObject::FObjectIterator FListView::insert (FListViewItem* item)
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-    FListView::insert (const FStringList& cols, data_ptr d)
+    FListView::insert (const FStringList& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
@@ -537,7 +537,7 @@ inline FObject::FObjectIterator
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-    FListView::insert (const std::vector<long>& cols, data_ptr d)
+    FListView::insert (const std::vector<long>& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------

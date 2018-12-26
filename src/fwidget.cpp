@@ -826,7 +826,7 @@ bool FWidget::close()
 //----------------------------------------------------------------------
 void FWidget::addCallback ( const FString& cb_signal
                           , FCallback cb_handler
-                          , data_ptr data )
+                          , FDataPtr data )
 {
   // add a (normal) function pointer as callback
   callback_data obj = { cb_signal, cb_handler, data };
@@ -837,7 +837,7 @@ void FWidget::addCallback ( const FString& cb_signal
 void FWidget::addCallback ( const FString& cb_signal
                           , FWidget* cb_instance
                           , FMemberCallback cb_handler
-                          , data_ptr data )
+                          , FDataPtr data )
 {
   // add a member function pointer as callback
   member_callback_data obj = { cb_signal, cb_instance, cb_handler, data };

@@ -140,7 +140,7 @@ class FMessageBox : public FDialog
     virtual void  adjustSize();
 
     // Callback method
-    void          cb_processClick (FWidget*, data_ptr);
+    void          cb_processClick (FWidget*, FDataPtr);
 
   private:
     // Methods

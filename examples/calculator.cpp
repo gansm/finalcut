@@ -123,7 +123,7 @@ class Calc : public finalcut::FDialog
     virtual void   onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void           cb_buttonClicked (finalcut::FWidget*, data_ptr);
+    void           cb_buttonClicked (finalcut::FWidget*, FDataPtr);
 
   private:
     // Typedef and Enumeration
@@ -1053,7 +1053,7 @@ void Calc::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void Calc::cb_buttonClicked (finalcut::FWidget*, data_ptr data)
+void Calc::cb_buttonClicked (finalcut::FWidget*, FDataPtr data)
 {
   lDouble& x = getValue();
   Calc::button key = *(static_cast<Calc::button*>(data));

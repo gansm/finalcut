@@ -369,11 +369,11 @@ int FUserEvent::getUserId() const
 { return uid; }
 
 //----------------------------------------------------------------------
-FUserEvent::data_ptr FUserEvent::getData() const
+FDataPtr FUserEvent::getData() const
 { return data_pointer; }
 
 //----------------------------------------------------------------------
-void FUserEvent::setData (data_ptr data)
+void FUserEvent::setData (FDataPtr data)
 { data_pointer = data; }
 
 }  // namespace finalcut

@@ -59,7 +59,7 @@ class CheckList : public finalcut::FDialog
     virtual void onClose (finalcut::FCloseEvent*);
 
     // Callback method
-    void cb_showList (finalcut::FWidget*, data_ptr);
+    void cb_showList (finalcut::FWidget*, FDataPtr);
 
     // Data Members
     finalcut::FListView  listView{this};
@@ -160,7 +160,7 @@ void CheckList::onClose (finalcut::FCloseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void CheckList::cb_showList (finalcut::FWidget*, data_ptr)
+void CheckList::cb_showList (finalcut::FWidget*, FDataPtr)
 {
   auto iter = listView.beginOfList();
   finalcut::FString shopping_list;

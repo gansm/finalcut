@@ -78,6 +78,7 @@
 
 #include "final/fc.h"
 #include "final/fpoint.h"
+#include "final/ftypes.h"
 
 namespace finalcut
 {
@@ -352,20 +353,17 @@ class FTimerEvent : public FEvent  // timer event
 class FUserEvent : public FEvent  // timer event
 {
   public:
-    // Typedef
-    typedef void* data_ptr;
-
     FUserEvent() = default;
     FUserEvent (fc::events, int);
     ~FUserEvent();
 
     int getUserId() const;
-    data_ptr getData() const;
-    void setData (data_ptr);
+    FDataPtr getData() const;
+    void setData (FDataPtr);
 
   protected:
     int uid;
-    data_ptr data_pointer{nullptr};
+    FDataPtr data_pointer{nullptr};
 };
 
 #pragma pack(pop)

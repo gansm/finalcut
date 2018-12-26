@@ -24,19 +24,19 @@
 
 
 // function prototypes
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr);
-void cb_publish (finalcut::FWidget*, finalcut::FWidget::data_ptr);
+void cb_quit (finalcut::FWidget*, FDataPtr);
+void cb_publish (finalcut::FWidget*, FDataPtr);
 
 //----------------------------------------------------------------------
 // callback functions
 //----------------------------------------------------------------------
-void cb_quit (finalcut::FWidget*, finalcut::FWidget::data_ptr data)
+void cb_quit (finalcut::FWidget*, FDataPtr data)
 {
   auto app = static_cast<finalcut::FApplication*>(data);
   app->quit();
 }
 
-void cb_publish (finalcut::FWidget* widget, finalcut::FWidget::data_ptr data)
+void cb_publish (finalcut::FWidget* widget, FDataPtr data)
 {
   auto cbox1 = static_cast<finalcut::FCheckBox*>(widget);
   auto cbox2 = static_cast<finalcut::FCheckBox*>(data);

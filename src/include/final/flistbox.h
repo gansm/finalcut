@@ -75,7 +75,7 @@ class FListBoxItem
     // Constructors
     FListBoxItem ();
     FListBoxItem (const FListBoxItem&);  // copy constructor
-    explicit FListBoxItem (const FString&, FWidget::data_ptr = nullptr);
+    explicit FListBoxItem (const FString&, FDataPtr = nullptr);
 
     // Destructor
     virtual ~FListBoxItem();
@@ -85,11 +85,11 @@ class FListBoxItem
 
     // Accessors
     virtual FString& getText();
-    virtual FWidget::data_ptr getData() const;
+    virtual FDataPtr getData() const;
 
     // Mutators
     void setText (const FString&);
-    void setData (FWidget::data_ptr);
+    void setData (FDataPtr);
 
     // Methods
     void clear();
@@ -100,7 +100,7 @@ class FListBoxItem
 
     // Data Members
     FString           text{};
-    FWidget::data_ptr data_pointer{nullptr};
+    FDataPtr          data_pointer{nullptr};
     fc::brackets_type brackets{fc::NoBrackets};
     bool              selected{false};
 };
@@ -113,7 +113,7 @@ inline FString& FListBoxItem::getText()
 { return text; }
 
 //----------------------------------------------------------------------
-inline FWidget::data_ptr FListBoxItem::getData() const
+inline FDataPtr FListBoxItem::getData() const
 { return data_pointer; }
 
 //----------------------------------------------------------------------
@@ -121,7 +121,7 @@ inline void FListBoxItem::setText (const FString& txt)
 { text = txt; }
 
 //----------------------------------------------------------------------
-inline void FListBoxItem::setData (FWidget::data_ptr data)
+inline void FListBoxItem::setData (FDataPtr data)
 { data_pointer = data; }
 
 //----------------------------------------------------------------------
@@ -206,11 +206,11 @@ class FListBox : public FWidget
     void         insert ( const FString&
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = nullptr );
+                        , FDataPtr = nullptr );
     void         insert ( long
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
-                        , data_ptr = nullptr );
+                        , FDataPtr = nullptr );
     void         remove (std::size_t);
     void         clear();
 
@@ -296,17 +296,17 @@ class FListBox : public FWidget
     listBoxItems::iterator index2iterator (std::size_t);
 
     // Callback methods
-    void         cb_VBarChange (FWidget*, data_ptr);
-    void         cb_HBarChange (FWidget*, data_ptr);
+    void         cb_VBarChange (FWidget*, FDataPtr);
+    void         cb_HBarChange (FWidget*, FDataPtr);
 
     // Function Pointer
     void         (*convertToItem) ( FListBoxItem&
-                                  , FWidget::data_ptr
+                                  , FDataPtr
                                   , int index ){nullptr};
 
     // Data Members
     listBoxItems      itemlist{};
-    FWidget::data_ptr source_container{nullptr};
+    FDataPtr          source_container{nullptr};
     convert_type      conv_type{FListBox::no_convert};
     FScrollbarPtr     vbar{nullptr};
     FScrollbarPtr     hbar{nullptr};

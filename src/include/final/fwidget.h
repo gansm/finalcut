@@ -138,10 +138,9 @@ class FWidget : public FVTerm, public FObject
 
     // Typedefs
     typedef std::vector<FWidget*> widgetList;
-    typedef void* data_ptr;
-    typedef void (*FCallback)(FWidget*, data_ptr);
-    typedef void (FWidget::*FMemberCallback)(FWidget*, data_ptr);
     typedef std::vector<accelerator> Accelerators;
+    typedef void (*FCallback)(FWidget*, FDataPtr);
+    typedef void (FWidget::*FMemberCallback)(FWidget*, FDataPtr);
 
     struct widget_flags  // Properties of a widget ⚑
     {
@@ -307,11 +306,11 @@ class FWidget : public FVTerm, public FObject
     void               clearStatusbarMessage();
     void               addCallback ( const FString&
                                    , FCallback
-                                   , data_ptr = nullptr );
+                                   , FDataPtr = nullptr );
     void               addCallback ( const FString&
                                    , FWidget*
                                    , FMemberCallback
-                                   , data_ptr = nullptr );
+                                   , FDataPtr = nullptr );
     void               delCallback (FCallback);
     void               delCallback (FWidget*);
     void               delCallbacks();
@@ -347,7 +346,7 @@ class FWidget : public FVTerm, public FObject
     {
       FString   cb_signal;
       FCallback cb_handler;
-      data_ptr  data;
+      FDataPtr  data;
     };
 
     struct member_callback_data
@@ -355,7 +354,7 @@ class FWidget : public FVTerm, public FObject
       FString         cb_signal;
       FWidget*        cb_instance;
       FMemberCallback cb_handler;
-      data_ptr        data;
+      FDataPtr        data;
     };
 
     // Typedefs

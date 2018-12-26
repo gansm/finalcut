@@ -312,7 +312,7 @@ void FMenu::onMouseMove (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenu::cb_menuitem_toggled (FWidget* widget, data_ptr)
+void FMenu::cb_menuitem_toggled (FWidget* widget, FDataPtr)
 {
   auto menuitem = static_cast<FMenuItem*>(widget);
 

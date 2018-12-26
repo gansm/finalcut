@@ -179,8 +179,8 @@ class FMenuItem : public FWidget
     void         passMouseEvent (T, FMouseEvent*, fc::events);
 
     // Callback methods
-    void         cb_switchToDialog (FWidget*, data_ptr);
-    void         cb_destroyDialog (FWidget*, data_ptr);
+    void         cb_switchToDialog (FWidget*, FDataPtr);
+    void         cb_destroyDialog (FWidget*, FDataPtr);
 
     virtual void processClicked();
 
