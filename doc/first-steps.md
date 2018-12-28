@@ -302,3 +302,302 @@ the above program with gcc:
 ```cpp
 g++ -O2 -std=c++11 -lfinal timer.cpp -o timer
 ```
+
+
+Signals and Callbacks
+---------------------
+
+The callback mechanism is essential for developing applications with 
+FINAL CUT. Callback routines allow the programmer to connect different 
+objects (which do not need to know each other). Connected objects notify 
+each other when an action occurs in a widget. To uniquely identify a widget 
+action, it uses signal strings. For example, if an `FButton` object gets 
+clicked by a keyboard or mouse, it sends the string "clicked". A signal 
+handler explicitly provided by Widget, in the form of a callback function 
+or a callback method, can react to such a signal.
+
+A callback function is always structured as follows:
+
+```cpp
+void cb_function (FWidget* w, FDataPtr data)
+{...}
+```
+
+The structure of a callback method is the same:
+
+```cpp
+void classname::cb_methode (FWidget* w, FDataPtr data)
+{...}
+```
+
+We use the `addCallback()` method of the `FWidget` class to connect 
+to other widget objects.
+
+For calling functions and static methods:
+
+```cpp
+void FWidget::addCallback ( const FString& cb_signal
+                          , FCallback cb_handler
+                          , FDataPtr data )
+{...}
+```
+
+For calling a member method of a specific instance:
+
+```cpp
+void FWidget::addCallback ( const FString& cb_signal
+                          , FWidget* cb_instance
+                          , FMemberCallback cb_handler
+                          , FDataPtr data )
+{...}
+```
+
+There are two macros `F_FUNCTION_CALLBACK` and `F_METHOD_CALLBACK` to avoid 
+having to deal with necessary type conversions. With `delCallback()` you can 
+remove a connection to a signal handler or a widget. Alternatively, you can 
+use `delCallbacks()` to remove all existing callbacks from an object.
+
+
+### Example of a callback function: ###
+
+**File:** *callback-function.cpp*
+
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+void cb_changeText (FWidget* w, FDataPtr data)
+{
+  FButton& button = *(static_cast<FButton*>(w));
+  FLabel& label = *(static_cast<FLabel*>(data));
+  label.clear();
+  label << "The " << button.getClassName() << " was pressed";
+  label.redraw();
+}
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  FDialog dialog(&app);
+  dialog.setText ("A dialog with callback function");
+  dialog.setGeometry (25, 5, 45, 9);
+  FLabel label (&dialog);
+  label = "The button has never been pressed before";
+  label.setGeometry (2, 2, 41, 1);
+  FButton button (&dialog);
+  // Character follows '&' will be used as the accelerator key
+  button = "&Click me";
+  button.setGeometry (15, 5, 14, 1);
+
+  // Connect the button signal "clicked" with the callback function
+  button.addCallback
+  (
+    "clicked",
+    F_FUNCTION_CALLBACK (&cb_changeText),
+    &label
+  );
+
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the dialog with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *callback-function.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -lfinal callback-function.cpp -o callback-function
+```
+&nbsp;
+
+### Example of a callback method: ###
+
+**File:** *callback-method.cpp*
+
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+class dialogWidget : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog(parent)
+    {
+      setText ("Callback method");
+      setGeometry (25, 5, 25, 7);
+      button.setGeometry (7, 3, 10, 1);
+
+      // Connect the button signal "clicked" with the callback method
+      button.addCallback
+      (
+        "clicked",
+        F_METHOD_CALLBACK (this, &FApplication::cb_exitApp),
+        nullptr
+      );
+    }
+
+  private:
+    FButton button{"&Quit", this};
+};
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *callback-method.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -std=c++11 -lfinal callback-method.cpp -o callback-method
+```
+&nbsp;
+
+### Send custom signals ###
+
+You can use the `emitCallback()` method to generate a user-defined signal. 
+You can connect this signal later with the method `addCallback()` to a 
+self-defined routine.
+
+**File:** *emit-signal.cpp*
+```cpp
+#include <final/final.h>
+
+using namespace finalcut;
+
+class dialogWidget : public FDialog
+{
+  public:
+    explicit dialogWidget (FWidget* parent = nullptr)
+      : FDialog(parent)
+    {
+      setGeometry (25, 5, 22, 7);
+      setText ("Emit signal");
+      label.setGeometry (8, 1, 5, 1);
+      label.setAlignment (fc::alignRight);
+      label.setForegroundColor (fc::Black);
+      plus.setGeometry (3, 3, 5, 1);
+      minus.setGeometry (13, 3, 5, 1);
+      plus.setNoUnderline();
+      minus.setNoUnderline();
+
+      // Connect the button signal "clicked" with the callback method
+      plus.addCallback
+      (
+        "clicked",
+        F_METHOD_CALLBACK (this, &dialogWidget::cb_plus)
+      );
+
+      minus.addCallback
+      (
+        "clicked",
+        F_METHOD_CALLBACK (this, &dialogWidget::cb_minus)
+      );
+
+      // Connect own signals
+      addCallback
+      (
+        "hot",
+        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_red)
+      );
+
+      addCallback
+      (
+        "regular",
+        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_black)
+      );
+
+      addCallback
+      (
+        "cold",
+        F_METHOD_CALLBACK (this, &dialogWidget::cb_set_blue)
+      );
+    }
+
+  private:
+    void cb_plus (FWidget*, FDataPtr)
+    {
+      if ( t < 100 )
+        t++;
+
+      if ( t == 30 )
+        emitCallback("hot");
+      else if ( t == 1 )
+        emitCallback("regular");
+
+      setTemperature();
+    }
+
+    void cb_minus (FWidget*, FDataPtr)
+    {
+      if ( t > -99 )
+        t--;
+
+      if ( t == 0 )
+        emitCallback("cold");
+      else if ( t == 29 )
+        emitCallback("regular");
+
+      setTemperature();
+    }
+
+    void cb_set_blue (FWidget*, FDataPtr)
+    {
+      label.setForegroundColor (fc::Blue);
+    }
+
+    void cb_set_black (FWidget*, FDataPtr)
+    {
+      label.setForegroundColor (fc::Black);
+    }
+
+    void cb_set_red (FWidget*, FDataPtr)
+    {
+      label.setForegroundColor (fc::Red);
+    }
+
+    void setTemperature()
+    {
+      label.clear();
+      label << t << "°C";
+      label.redraw();
+    }
+
+    int t = 20;
+    FLabel label{FString() << t << "°C", this};
+    FButton plus {"&+", this};
+    FButton minus {"&-", this};
+};
+
+int main (int argc, char* argv[])
+{
+  FApplication app(argc, argv);
+  dialogWidget dialog(&app);
+  app.setMainWidget(&dialog);
+  dialog.show();
+  return app.exec();
+}
+```
+```
+*(Note: You can close the window with the mouse, 
+<kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
+
+
+After entering the source code in *emit-signal.cpp* you can compile
+the above program with gcc:
+```cpp
+g++ -O2 -std=c++11 -lfinal emit-signal.cpp -o emit-signal
+```

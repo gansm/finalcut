@@ -1130,11 +1130,8 @@ inline void FDialog::drawZoomedButton()
 void FDialog::drawTextBar()
 {
   // Fill with spaces (left of the title)
-  std::size_t center_offset
-            , width
-            , zoom_btn
-            , length
-            , x;
+  std::size_t center_offset = 0;
+  std::size_t x = 1;
 
   if ( getMaxColor() < 16 )
     setBold();
@@ -1144,12 +1141,14 @@ void FDialog::drawTextBar()
   else
     setColor (wc.titlebar_inactive_fg, wc.titlebar_inactive_bg);
 
-  width = std::size_t(getWidth());
-  zoom_btn = getZoomButtonWidth();
-  length = tb_text.getLength();
-  center_offset = (width - length - MENU_BTN - zoom_btn) / 2;
+  std::size_t width = getWidth();
+  std::size_t zoom_btn = getZoomButtonWidth();
+  std::size_t length = tb_text.getLength();
 
-  for (x = 1; x <= center_offset; x++)
+  if ( width > length + MENU_BTN + zoom_btn )
+    center_offset = (width - length - MENU_BTN - zoom_btn) / 2;
+
+  for ( ; x <= center_offset; x++)
     print (' ');
 
   // Print title bar text

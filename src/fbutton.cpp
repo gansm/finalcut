@@ -54,6 +54,13 @@ FButton::~FButton()  // destructor
   delOwnTimer();
 }
 
+// FButton operator
+//----------------------------------------------------------------------
+FButton& FButton::operator = (const FString& s)
+{
+  setText(s);
+  return *this;
+}
 
 // public methods of FButton
 //----------------------------------------------------------------------

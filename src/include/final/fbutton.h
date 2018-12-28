@@ -80,6 +80,9 @@ class FButton : public FWidget
     // Disable assignment operator (=)
     FButton& operator = (const FButton&) = delete;
 
+    // Overloaded operator
+    FButton& operator = (const FString&);
+
     // Accessors
     const char*  getClassName() const;
     FString&     getText();
