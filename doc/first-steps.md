@@ -358,6 +358,48 @@ remove a connection to a signal handler or a widget. Alternatively, you can
 use `delCallbacks()` to remove all existing callbacks from an object.
 
 
+### The FINAL CUT widgets emit the following default signals ###
+
+<dl>
+  <dt>FButton</dt>
+  <dd>"clicked"</dd>
+
+  <dt>FCheckMenuItem</dt>
+  <dd>"clicked"<br />"toggled"</dd>
+
+  <dt>FLineEdit</dt>
+  <dd>"activate"<br />"changed"</dd>
+
+  <dt>FListBox</dt>
+  <dd>"clicked"<br />"row-changed"<br />"row-selected"</dd>
+
+  <dt>FListView</dt>
+  <dd>"clicked"<br />"row-changed"</dd>
+
+  <dt>FMenu</dt>
+  <dd>"activate"</dd>
+
+  <dt>FMenuItem</dt>
+  <dd>"activate"<br />"clicked"<br />"deactivate"</dd>
+
+  <dt>FRadioMenuItem</dt>
+  <dd>"clicked"<br />"toggled"</dd>
+
+  <dt>FScrollbar</dt>
+  <dd>"change-value"</dd>
+
+  <dt>FStatusBar</dt>
+  <dd>"activate"</dd>
+
+  <dt>FTextView</dt>
+  <dd>"changed"</dd>
+
+  <dt>FToggleButton</dt>
+  <dd>"clicked"<br />"toggled"</dd>
+</dl>
+
+&nbsp;
+
 ### Example of a callback function: ###
 
 **File:** *callback-function.cpp*
@@ -465,6 +507,7 @@ the above program with gcc:
 g++ -O2 -std=c++11 -lfinal callback-method.cpp -o callback-method
 ```
 &nbsp;
+
 
 ### Send custom signals ###
 
@@ -600,3 +643,4 @@ the above program with gcc:
 ```cpp
 g++ -O2 -std=c++11 -lfinal emit-signal.cpp -o emit-signal
 ```
+The FINAL CUT widgets emit the following default signals:
