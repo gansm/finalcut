@@ -412,11 +412,11 @@ int FVTerm::print (term_area* area, const std::vector<charData>& term_string)
         break;
 
       case '\t':
-        area->cursor_x = short ( uInt(area->cursor_x)
-                               + tabstop
-                               - uInt(area->cursor_x)
-                               + 1
-                               % tabstop );
+        area->cursor_x = int ( uInt(area->cursor_x)
+                             + tabstop
+                             - uInt(area->cursor_x)
+                             + 1
+                             % tabstop );
         break;
 
       case '\b':
@@ -539,10 +539,10 @@ int FVTerm::print (term_area* area, charData& term_char)
       // copy character to area
       std::memcpy (ac, &nc, sizeof(*ac));
 
-      if ( ax < short(area->changes[ay].xmin) )
+      if ( ax < int(area->changes[ay].xmin) )
         area->changes[ay].xmin = uInt(ax);
 
-      if ( ax > short(area->changes[ay].xmax) )
+      if ( ax > int(area->changes[ay].xmax) )
         area->changes[ay].xmax = uInt(ax);
     }
   }
@@ -845,10 +845,10 @@ void FVTerm::restoreVTerm (int x, int y, int w, int h)
       std::memcpy (tc, &sc, sizeof(*tc));
     }
 
-    if ( short(vterm->changes[ypos].xmin) > x )
+    if ( int(vterm->changes[ypos].xmin) > x )
       vterm->changes[ypos].xmin = uInt(x);
 
-    if ( short(vterm->changes[ypos].xmax) < x + w - 1 )
+    if ( int(vterm->changes[ypos].xmax) < x + w - 1 )
       vterm->changes[ypos].xmax = uInt(x + w - 1);
   }
 }
@@ -1230,13 +1230,13 @@ void FVTerm::updateVTerm (term_area* area)
     _xmin = ax + line_xmin - ol;
     _xmax = ax + line_xmax;
 
-    if ( _xmin < short(vterm->changes[ay + y].xmin) )
+    if ( _xmin < int(vterm->changes[ay + y].xmin) )
       vterm->changes[ay + y].xmin = uInt(_xmin);
 
     if ( _xmax >= vterm->width )
       _xmax = vterm->width - 1;
 
-    if ( _xmax > short(vterm->changes[ay + y].xmax) )
+    if ( _xmax > int(vterm->changes[ay + y].xmax) )
       vterm->changes[ay + y].xmax = uInt(_xmax);
 
     area->changes[y].xmin = uInt(aw + rsh);
@@ -1358,10 +1358,10 @@ void FVTerm::getArea (int ax, int ay, term_area* area)
     auto ac = &area->text[y * area->width];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
-    if ( short(area->changes[y].xmin) > 0 )
+    if ( int(area->changes[y].xmin) > 0 )
       area->changes[y].xmin = 0;
 
-    if ( short(area->changes[y].xmax) < length - 1 )
+    if ( int(area->changes[y].xmax) < length - 1 )
       area->changes[y].xmax = uInt(length - 1);
   }
 }
@@ -1412,10 +1412,10 @@ void FVTerm::getArea (int x, int y, int w, int h, term_area* area)
     auto ac = &area->text[(dy + _y) * line_len + dx];  // area character
     std::memcpy (ac, tc, sizeof(*ac) * unsigned(length));
 
-    if ( short(area->changes[dy + _y].xmin) > dx )
+    if ( int(area->changes[dy + _y].xmin) > dx )
       area->changes[dy + _y].xmin = uInt(dx);
 
-    if ( short(area->changes[dy + _y].xmax) < dx + length - 1 )
+    if ( int(area->changes[dy + _y].xmax) < dx + length - 1 )
       area->changes[dy + _y].xmax = uInt(dx + length - 1);
   }
 }
@@ -1502,10 +1502,10 @@ void FVTerm::putArea (int ax, int ay, term_area* area)
       }
     }
 
-    if ( ax < short(vterm->changes[ay + y].xmin) )
+    if ( ax < int(vterm->changes[ay + y].xmin) )
       vterm->changes[ay + y].xmin = uInt(ax);
 
-    if ( ax + length - 1 > short(vterm->changes[ay + y].xmax) )
+    if ( ax + length - 1 > int(vterm->changes[ay + y].xmax) )
       vterm->changes[ay + y].xmax = uInt(ax + length - 1);
   }
 }
@@ -2507,7 +2507,7 @@ FVTerm::exit_state FVTerm::repeatCharacter (uInt& x, uInt xmax, uInt y)
       charsetChanges (print_char);
       appendAttributes (print_char);
       appendOutputBuffer (tparm(rp, print_char->code, repetitions, 0, 0, 0, 0, 0, 0, 0));
-      term_pos->x_ref() += short(repetitions);
+      term_pos->x_ref() += int(repetitions);
       x = x + repetitions - 1;
     }
     else

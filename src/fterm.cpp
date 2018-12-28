@@ -155,7 +155,7 @@ void FTerm::redefineDefaultColors (bool enable)
 }
 
 //----------------------------------------------------------------------
-void FTerm::setDblclickInterval (const long timeout)
+void FTerm::setDblclickInterval (const uInt64 timeout)
 {
   mouse->setDblclickInterval(timeout);
 }
@@ -941,7 +941,7 @@ void FTerm::init_alt_charset()
 {
   // Read the used VT100 pairs
 
-  std::map <uChar,uChar> vt100_alt_char;
+  std::map<uChar, uChar> vt100_alt_char;
 
   if ( TCAP(fc::t_acs_chars) )
   {
@@ -1543,8 +1543,8 @@ void FTerm::enableMouse()
     xterm_mouse = true;
 
   keyboard->enableMouseSequences();
-  mouse->setMaxWidth (short(getColumnNumber()));
-  mouse->setMaxHeight (short(getLineNumber()));
+  mouse->setMaxWidth (uInt16(getColumnNumber()));
+  mouse->setMaxHeight (uInt16(getLineNumber()));
   // Enable the linux general purpose mouse (gpm) server
   mouse->useGpmMouse (gpm_mouse);
   // Enable xterm mouse support
@@ -2060,7 +2060,6 @@ void FTerm::signal_handler (int signum)
                    , strsignal(signum) );
       std::terminate();
   }
-
 }
 
 // FTerm non-member functions

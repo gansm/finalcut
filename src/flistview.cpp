@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -35,7 +36,7 @@ namespace finalcut
 FObject::FObjectIterator FListView::null_iter;
 
 // Function prototypes
-long firstNumberFromString (const FString&);
+uInt64 firstNumberFromString (const FString&);
 bool sortAscendingByName (const FObject*, const FObject*);
 bool sortDescendingByName (const FObject*, const FObject*);
 bool sortAscendingByNumber (const FObject*, const FObject*);
@@ -43,13 +44,13 @@ bool sortDescendingByNumber (const FObject*, const FObject*);
 
 // non-member functions
 //----------------------------------------------------------------------
-long firstNumberFromString (const FString& str)
+uInt64 firstNumberFromString (const FString& str)
 {
   auto last = str.end();
   auto iter = str.begin();
   std::size_t pos;
   std::size_t length;
-  long number;
+  uInt64 number;
 
   while ( iter != last )
   {
@@ -88,7 +89,7 @@ long firstNumberFromString (const FString& str)
 
   try
   {
-    number = num_str.toLong();
+    number = uInt64(num_str.toLong());
   }
   catch (const std::exception&)
   {
@@ -814,7 +815,7 @@ FObject::FObjectIterator FListView::insert ( const FStringList& cols
 }
 
 //----------------------------------------------------------------------
-FObject::FObjectIterator FListView::insert ( const std::vector<long>& cols
+FObject::FObjectIterator FListView::insert ( const std::vector<uInt64>& cols
                                            , FDataPtr d
                                            , FObjectIterator parent_iter )
 {
@@ -1816,7 +1817,7 @@ inline void FListView::drawHeaderBorder (std::size_t length)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
+void FListView::drawHeadlineLabel (const headerItems::const_iterator& iter)
 {
   // Print lable text
   static constexpr std::size_t leading_space = 1;
@@ -1863,7 +1864,7 @@ void FListView::drawHeadlineLabel (headerItems::const_iterator& iter)
 }
 
 //----------------------------------------------------------------------
-void FListView::drawColumnEllipsis ( headerItems::const_iterator& iter
+void FListView::drawColumnEllipsis ( const headerItems::const_iterator& iter
                                    , const FString& text )
 {
   // Print lable ellipsis

@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <string>
 
 #include "final/fapplication.h"
@@ -51,7 +52,7 @@ int            FApplication::loop_level      = 0;  // event loop level
 int            FApplication::quit_code       = 0;
 bool           FApplication::quit_now        = false;
 
-FApplication::eventQueuePtr FApplication::event_queue = nullptr;
+FApplication::eventQueue* FApplication::event_queue = nullptr;
 
 
 //----------------------------------------------------------------------
@@ -86,6 +87,9 @@ FApplication::FApplication ( const int& _argc
 //----------------------------------------------------------------------
 FApplication::~FApplication()  // destructor
 {
+  if ( event_queue )
+    delete event_queue;
+
   app_object = nullptr;
 }
 
@@ -188,7 +192,7 @@ bool FApplication::sendEvent ( const FObject* receiver
         && ! window->getFlags().modal
         && ! window->isMenuWidget() )
       {
-        switch ( event->type() )
+        switch ( uInt(event->type()) )
         {
           case fc::KeyPress_Event:
           case fc::KeyUp_Event:
@@ -355,7 +359,7 @@ void FApplication::closeConfirmationDialog (FWidget* w, FCloseEvent* ev)
 
 // private methods of FApplication
 //----------------------------------------------------------------------
-void FApplication::init (long key_time, long dblclick_time)
+void FApplication::init (uInt64 key_time, uInt64 dblclick_time)
 {
   // Initialize keyboard
   keyboard = FVTerm::getKeyboard();
@@ -385,7 +389,7 @@ void FApplication::init (long key_time, long dblclick_time)
 
   try
   {
-    event_queue = std::make_shared<eventQueue>();
+    event_queue = new eventQueue;
   }
   catch (const std::bad_alloc& ex)
   {

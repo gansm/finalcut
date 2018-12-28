@@ -53,9 +53,10 @@
 #endif
 
 #include <list>
+#include <memory>
 #include <stack>
 #include <vector>
-                          #include "final/fmessagebox.h"
+
 #include "final/fscrollbar.h"
 #include "final/fstring.h"
 #include "final/ftermbuffer.h"
@@ -323,11 +324,11 @@ class FListView : public FWidget
     FObjectIterator      insert ( const FStringList&
                                 , FDataPtr
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<long>&
+    FObjectIterator      insert ( const std::vector<uInt64>&
                                 , FDataPtr = nullptr );
-    FObjectIterator      insert ( const std::vector<long>&
+    FObjectIterator      insert ( const std::vector<uInt64>&
                                 , FObjectIterator );
-    FObjectIterator      insert ( const std::vector<long>&
+    FObjectIterator      insert ( const std::vector<uInt64>&
                                 , FDataPtr
                                 , FObjectIterator );
     FObjectIterator      beginOfList();
@@ -378,9 +379,9 @@ class FListView : public FWidget
     FString              getCheckBox (const FListViewItem* item);
     FString              getLinePrefix (const FListViewItem*, std::size_t);
     void                 drawSortIndicator (std::size_t&, std::size_t);
-    void                 drawHeadlineLabel (headerItems::const_iterator&);
+    void                 drawHeadlineLabel (const headerItems::const_iterator&);
     void                 drawHeaderBorder (std::size_t);
-    void                 drawColumnEllipsis ( headerItems::const_iterator&
+    void                 drawColumnEllipsis ( const headerItems::const_iterator&
                                             , const FString& );
     void                 updateDrawing (bool, bool);
     std::size_t          determineLineWidth (FListViewItem*);
@@ -537,12 +538,12 @@ inline FObject::FObjectIterator
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-    FListView::insert (const std::vector<long>& cols, FDataPtr d)
+    FListView::insert (const std::vector<uInt64>& cols, FDataPtr d)
 { return insert (cols, d, root); }
 
 //----------------------------------------------------------------------
 inline FObject::FObjectIterator
-    FListView::insert ( const std::vector<long>& cols
+    FListView::insert ( const std::vector<uInt64>& cols
                       , FObjectIterator parent_iter )
 { return insert (cols, 0, parent_iter); }
 

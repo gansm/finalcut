@@ -36,10 +36,6 @@ FEvent::FEvent (fc::events ev_type)  // constructor
 { }
 
 //----------------------------------------------------------------------
-FEvent::~FEvent()  // destructor
-{ }
-
-//----------------------------------------------------------------------
 fc::events FEvent::type() const
 { return t; }
 

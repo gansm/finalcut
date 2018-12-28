@@ -21,6 +21,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fscrollview.h"
 #include "final/fwindow.h"
 

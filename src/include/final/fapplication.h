@@ -127,13 +127,12 @@ class FApplication : public FWidget
     void cb_exitApp (FWidget*, FDataPtr);
 
   private:
-    // Typedefs and Enumerations
+    // Typedefs
     typedef std::pair<const FObject*, std::shared_ptr<const FEvent> > eventPair;
     typedef std::deque<eventPair> eventQueue;
-    typedef std::shared_ptr<eventQueue> eventQueuePtr;
 
     // Methods
-    void                  init (long, long);
+    void                  init (uInt64, uInt64);
     void                  cmd_options (const int&, char*[]);
     void                  findKeyboardWidget();
     bool                  isKeyPressed();
@@ -178,10 +177,10 @@ class FApplication : public FWidget
     // Data Members
     int                   app_argc;
     char**                app_argv;
-    long                  key_timeout{100000};        // 100 ms
-    long                  dblclick_interval{500000};  // 500 ms
+    uInt64                key_timeout{100000};        // 100 ms
+    uInt64                dblclick_interval{500000};  // 500 ms
     static FMouseControl* mouse;
-    static eventQueuePtr  event_queue;
+    static eventQueue*    event_queue;
     static int            quit_code;
     static bool           quit_now;
     static int            loop_level;

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fapplication.h"
 #include "final/fdialog.h"
 #include "final/fmenu.h"

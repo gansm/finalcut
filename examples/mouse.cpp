@@ -489,10 +489,10 @@ void MouseDraw::drawCanvas()
     winchar = &print_area->text[(ay + y) * w_line_len + ax];
     std::memcpy (winchar, canvaschar, sizeof(charData) * unsigned(x_end));
 
-    if ( short(print_area->changes[ay + y].xmin) > ax )
+    if ( int(print_area->changes[ay + y].xmin) > ax )
       print_area->changes[ay + y].xmin = uInt(ax);
 
-    if ( short(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
+    if ( int(print_area->changes[ay + y].xmax) < ax + x_end - 1 )
       print_area->changes[ay + y].xmax = uInt(ax + x_end - 1);
   }
 

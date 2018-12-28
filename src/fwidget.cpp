@@ -1734,7 +1734,7 @@ bool FWidget::focusPrevChild()
 //----------------------------------------------------------------------
 bool FWidget::event (FEvent* ev)
 {
-  switch ( ev->type() )
+  switch ( uInt(ev->type()) )
   {
     case fc::KeyPress_Event:
       KeyPressEvent (static_cast<FKeyEvent*>(ev));

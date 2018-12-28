@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fapplication.h"
 #include "final/fdialog.h"
 #include "final/fstatusbar.h"
@@ -1312,7 +1314,7 @@ inline void FDialog::deactivateZoomButton()
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::activateZoomButton (mouseStates& ms)
+inline void FDialog::activateZoomButton (const mouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1 )
@@ -1324,7 +1326,7 @@ inline void FDialog::activateZoomButton (mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::leaveZoomButton (mouseStates& ms)
+inline void FDialog::leaveZoomButton (const mouseStates& ms)
 {
   bool zoom_button_pressed_before = zoom_button_pressed;
 
@@ -1341,7 +1343,7 @@ inline void FDialog::leaveZoomButton (mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::pressZoomButton (mouseStates& ms)
+void FDialog::pressZoomButton (const mouseStates& ms)
 {
   if ( ms.mouse_x <= int(getWidth() - ms.zoom_btn)
     || ms.mouse_y != 1
@@ -1365,7 +1367,7 @@ inline bool FDialog::isMouseOverMenu (const FPoint& termpos)
 }
 
 //----------------------------------------------------------------------
-inline void FDialog::passEventToSubMenu ( mouseStates& ms
+inline void FDialog::passEventToSubMenu ( const mouseStates& ms
                                         , FMouseEvent* ev )
 {
   // Mouse event handover to the dialog menu
@@ -1481,7 +1483,7 @@ inline void FDialog::lowerActivateDialog()
 }
 
 //----------------------------------------------------------------------
-bool FDialog::isLowerRightResizeCorner (mouseStates& ms)
+bool FDialog::isLowerRightResizeCorner (const mouseStates& ms)
 {
   // 3 characters in the lower right corner  |
   //                                         x
@@ -1500,7 +1502,7 @@ bool FDialog::isLowerRightResizeCorner (mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseDown (mouseStates& ms)
+void FDialog::resizeMouseDown (const mouseStates& ms)
 {
   // Click on the lower right resize corner
 
@@ -1524,7 +1526,7 @@ void FDialog::resizeMouseDown (mouseStates& ms)
 }
 
 //----------------------------------------------------------------------
-void FDialog::resizeMouseUpMove (mouseStates& ms, bool mouse_up)
+void FDialog::resizeMouseUpMove (const mouseStates& ms, bool mouse_up)
 {
   // Resize the dialog
   if ( isResizeable() && ! resize_click_pos.isNull() )

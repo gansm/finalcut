@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <fcntl.h>
+#include <string>
 
 #include "final/fkeyboard.h"
 #include "final/fkey_map.h"
@@ -30,7 +31,7 @@ namespace finalcut
 {
 
 // static class attributes
-long FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
+uInt64 FKeyboard::key_timeout = 100000;  // 100 ms (default timeout for keypress)
 struct timeval FKeyboard::time_keypressed{};
 
 #if defined(__linux__)

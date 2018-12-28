@@ -95,7 +95,6 @@ class FEvent  // event base class
   public:
     FEvent() = default;
     explicit FEvent(fc::events);
-    virtual ~FEvent();
     fc::events type() const;
 
   protected:

@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fdialog.h"
 #include "final/fstatusbar.h"
 #include "final/ftextview.h"

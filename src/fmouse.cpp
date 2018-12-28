@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <cstring>
+#include <algorithm>
 #include <iostream>
 #include <new>
 #include <stdio.h>
@@ -69,19 +70,19 @@ inline void FMouse::clearEvent()
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxWidth (short x_max)
+inline void FMouse::setMaxWidth (uInt16 x_max)
 {
   max_width = x_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setMaxHeight (short y_max)
+inline void FMouse::setMaxHeight (uInt16 y_max)
 {
   max_height = y_max;
 }
 
 //----------------------------------------------------------------------
-inline void FMouse::setDblclickInterval (const long timeout)
+inline void FMouse::setDblclickInterval (const uInt64 timeout)
 {
   dblclick_interval = timeout;
 }
@@ -716,7 +717,7 @@ void FMouseSGR::processEvent (struct timeval* time)
   const auto& mouse_position = getPos();
   char* p;
   int btn;
-  short x, y;
+  uInt16 x, y;
 
   x = 0;
   y = 0;
@@ -747,7 +748,7 @@ void FMouseSGR::processEvent (struct timeval* time)
       return;
     }
 
-    x = short(10 * x + (*p - '0'));
+    x = uInt16(10 * x + (*p - '0'));
   }
 
   while ( *p++ && *p != 'M' && *p != 'm' )
@@ -759,7 +760,7 @@ void FMouseSGR::processEvent (struct timeval* time)
       return;
     }
 
-    y = short(10 * y + (*p - '0'));
+    y = uInt16(10 * y + (*p - '0'));
   }
 
   new_mouse_position.setPoint (x, y);
@@ -959,7 +960,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
   bool x_neg;
   bool y_neg;
   int btn;
-  short x, y;
+  uInt16 x, y;
 
   x = 0;
   y = 0;
@@ -998,7 +999,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
       return;
     }
 
-    x = short(10 * x + (*p - '0'));
+    x = uInt16(10 * x + (*p - '0'));
     p++;
   }
 
@@ -1017,7 +1018,7 @@ void FMouseUrxvt::processEvent (struct timeval* time)
       return;
     }
 
-    y = short(10 * y + (*p - '0'));
+    y = uInt16(10 * y + (*p - '0'));
     p++;
   }
 
@@ -1226,19 +1227,19 @@ void FMouseControl::setStdinNo (int)
 #endif  // F_HAVE_LIBGPM
 
 //----------------------------------------------------------------------
-void FMouseControl::setMaxWidth (short x_max)
+void FMouseControl::setMaxWidth (uInt16 x_max)
 {
   mouse_protocol[FMouse::urxvt]->setMaxWidth(x_max);
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setMaxHeight (short y_max)
+void FMouseControl::setMaxHeight (uInt16 y_max)
 {
   mouse_protocol[FMouse::urxvt]->setMaxHeight(y_max);
 }
 
 //----------------------------------------------------------------------
-void FMouseControl::setDblclickInterval (const long timeout)
+void FMouseControl::setDblclickInterval (const uInt64 timeout)
 {
   for (auto&& m : mouse_protocol)
     if ( m.second )

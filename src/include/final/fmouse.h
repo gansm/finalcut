@@ -112,9 +112,9 @@ class FMouse
     void                clearEvent();
 
     // Mutators
-    void                setMaxWidth (short);
-    void                setMaxHeight (short);
-    void                setDblclickInterval (const long);
+    void                setMaxWidth (uInt16);
+    void                setMaxHeight (uInt16);
+    void                setDblclickInterval (const uInt64);
 
     // Inquiries
     virtual bool        hasData() = 0;
@@ -173,9 +173,9 @@ class FMouse
     button              b_state{};
     bool                mouse_event_occurred{false};
     bool                input_data_pending{false};
-    long                dblclick_interval{500000};  // 500 ms
-    short               max_width{80};
-    short               max_height{25};
+    uInt64              dblclick_interval{500000};  // 500 ms
+    uInt16              max_width{80};
+    uInt16              max_height{25};
     struct timeval      time_mousepressed{};
     FPoint              zero_point{0, 0};  // zero point (x=0, y=0)
     FPoint              mouse{0, 0};       // mouse click position
@@ -468,9 +468,9 @@ class FMouseControl
 
     // Mutators
     void                setStdinNo (int);
-    void                setMaxWidth (short);
-    void                setMaxHeight (short);
-    void                setDblclickInterval (const long);
+    void                setMaxWidth (uInt16);
+    void                setMaxHeight (uInt16);
+    void                setDblclickInterval (const uInt64);
     void                useGpmMouse (bool = true);
     void                useXtermMouse (bool = true);
 

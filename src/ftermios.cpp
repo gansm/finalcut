@@ -205,7 +205,7 @@ bool FTermios::setRawMode (bool enable)
 //----------------------------------------------------------------------
 uInt FTermios::getBaudRate()
 {
-  std::map<speed_t,uInt> outspeed;
+  std::map<speed_t, uInt> outspeed;
   outspeed[B0]      = 0;       // hang up
   outspeed[B50]     = 50;      //      50 baud
   outspeed[B75]     = 75;      //      75 baud

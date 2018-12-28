@@ -114,7 +114,7 @@ class FObject
 
     // Timer methods
     static void          getCurrentTime (timeval*);
-    static bool          isTimeout (timeval*, long);
+    static bool          isTimeout (timeval*, uInt64);
     int                  addTimer (int);
     bool                 delTimer (int);
     bool                 delOwnTimer();

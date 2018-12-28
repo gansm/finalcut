@@ -20,6 +20,7 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"
@@ -657,7 +658,7 @@ inline void FMenuBar::drawMenuText (menuText& data)
 }
 
 //----------------------------------------------------------------------
-inline void FMenuBar::drawEllipsis (menuText& txtdata, std::size_t x)
+inline void FMenuBar::drawEllipsis (const menuText& txtdata, std::size_t x)
 {
   if ( x > screenWidth + 1 )
   {
@@ -820,7 +821,7 @@ void FMenuBar::unselectMenuItem (FMenuItem* item)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseDownOverList (FMouseEvent* ev)
+void FMenuBar::mouseDownOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -868,7 +869,7 @@ void FMenuBar::mouseDownOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseUpOverList (FMouseEvent* ev)
+void FMenuBar::mouseUpOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -910,7 +911,7 @@ void FMenuBar::mouseUpOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
+void FMenuBar::mouseMoveOverList (const FMouseEvent* ev)
 {
   if ( item_list.empty() )
     return;
@@ -970,7 +971,7 @@ void FMenuBar::mouseMoveOverList (FMouseEvent* ev)
 }
 
 //----------------------------------------------------------------------
-void FMenuBar::passEventToMenu (FMouseEvent*& ev)
+void FMenuBar::passEventToMenu (const FMouseEvent*& ev)
 {
   if ( ! hasSelectedItem() || ! getSelectedItem()->hasMenu() )
     return;

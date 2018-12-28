@@ -52,6 +52,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
 #include <vector>
 
 #include "final/fapplication.h"

@@ -220,7 +220,6 @@ const FString FFileDialog::fileOpenChooser ( FWidget* parent
                                            , const FString& dirname
                                            , const FString& filter )
 {
-  //FFileDialog* fileopen;
   FString ret;
   FString path = dirname;
   FString file_filter = filter;

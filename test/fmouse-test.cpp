@@ -50,12 +50,12 @@ class FMouse_protected : public finalcut::FMouse
     virtual void processEvent (struct timeval*)
     { }
 
-    short getMaxWidth()
+    uInt16 getMaxWidth()
     {
       return max_width;
     }
 
-    short getMaxHeight()
+    uInt16 getMaxHeight()
     {
       return max_height;
     }
@@ -65,7 +65,7 @@ class FMouse_protected : public finalcut::FMouse
       return new_mouse_position;
     }
 
-    long getDblclickInterval()
+    uInt64 getDblclickInterval()
     {
       return dblclick_interval;
     }

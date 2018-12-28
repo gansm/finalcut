@@ -135,7 +135,7 @@ class FMenuBar : public FWindow, public FMenuList
     void         drawItem (FMenuItem*, std::size_t&);
     void         setLineAttributes (FMenuItem*);
     void         drawMenuText (menuText&);
-    void         drawEllipsis (menuText&, std::size_t);
+    void         drawEllipsis (const menuText&, std::size_t);
     void         drawLeadingSpace (std::size_t&);
     void         drawTrailingSpace (std::size_t&);
     void         adjustItems();
@@ -143,10 +143,10 @@ class FMenuBar : public FWindow, public FMenuList
     bool         clickItem (FMenuItem*);
     void         unselectMenuItem (FMenuItem*);
     void         selectMenuItem (FMenuItem*);
-    void         mouseDownOverList (FMouseEvent*);
-    void         mouseUpOverList (FMouseEvent*);
-    void         mouseMoveOverList (FMouseEvent*);
-    void         passEventToMenu (FMouseEvent*&);
+    void         mouseDownOverList (const FMouseEvent*);
+    void         mouseUpOverList (const FMouseEvent*);
+    void         mouseMoveOverList (const FMouseEvent*);
+    void         passEventToMenu (const FMouseEvent*&);
     void         leaveMenuBar();
 
     // Friend classes

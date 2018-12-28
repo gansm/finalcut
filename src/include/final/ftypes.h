@@ -79,7 +79,7 @@ struct is_negative
 };
 
 template <typename T>
-struct is_negative<T,false>
+struct is_negative<T, false>
 {
   inline bool operator () (const T&)
   {

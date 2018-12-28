@@ -53,6 +53,8 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
+
 #include "final/fscrollbar.h"
 #include "final/fwidget.h"
 

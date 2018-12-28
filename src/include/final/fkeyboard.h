@@ -111,7 +111,7 @@ class FKeyboard
 
     // Mutators
     void                setTermcapMap (fc::fkeymap*);
-    void                setKeypressTimeout (const long);
+    void                setKeypressTimeout (const uInt64);
     void                enableUTF8();
     void                disableUTF8();
     void                enableMouseSequences();
@@ -173,7 +173,7 @@ class FKeyboard
     int                 fifo_offset{0};
     bool                fifo_in_use{false};
     int                 stdin_status_flags{0};
-    static long         key_timeout;
+    static uInt64       key_timeout;
     bool                input_data_pending{false};
     bool                utf8_input{false};
     bool                mouse_support{true};
@@ -210,7 +210,7 @@ inline timeval* FKeyboard::getKeyPressedTime()
 { return &time_keypressed; }
 
 //----------------------------------------------------------------------
-inline void FKeyboard::setKeypressTimeout (const long timeout)
+inline void FKeyboard::setKeypressTimeout (const uInt64 timeout)
 { key_timeout = timeout; }
 
 //----------------------------------------------------------------------

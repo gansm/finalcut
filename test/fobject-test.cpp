@@ -433,7 +433,7 @@ void FObjectTest::iteratorTest()
 void FObjectTest::timeTest()
 {
   struct timeval time1;
-  long timeout = 750000;  // 750 ms
+  uInt64 timeout = 750000;  // 750 ms
   finalcut::FObject::getCurrentTime(&time1);
   CPPUNIT_ASSERT ( ! finalcut::FObject::isTimeout (&time1, timeout) );
   sleep(1);

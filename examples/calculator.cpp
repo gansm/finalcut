@@ -213,7 +213,7 @@ class Calc : public finalcut::FDialog
     void           clearInfixOperator();
     void           calcInfixOperator();
     virtual void   adjustSize();
-    const wchar_t* getButtonText (int);
+    const wchar_t* getButtonText (std::size_t);
     void           mapKeyFunctions();
 
     // Data Members
@@ -228,7 +228,7 @@ class Calc : public finalcut::FDialog
     char              infix_operator{'\0'};
     char              last_infix_operator{'\0'};
     finalcut::FString input{""};
-    int               button_no[Calc::NUM_OF_BUTTONS]{};
+    std::size_t       button_no[Calc::NUM_OF_BUTTONS]{};
 
     struct stack_data
     {
@@ -262,10 +262,11 @@ Calc::Calc (FWidget* parent)
       btn->setGeometry(30, 15, 5, 3);
     else
     {
-      int x, y, n;
+      int x, y;
+      std::size_t n;
       ( key <= Three ) ? n = 0 : n = 1;
-      x = (key + n) % 5 * 7 + 2;
-      y = (key + n) / 5 * 2 + 3;
+      x = int(key + n) % 5 * 7 + 2;
+      y = int(key + n) / 5 * 2 + 3;
       btn->setGeometry(x, y, 5, 1);
     }
 
@@ -1095,7 +1096,7 @@ void Calc::adjustSize()
 }
 
 //----------------------------------------------------------------------
-const wchar_t* Calc::getButtonText (int key)
+const wchar_t* Calc::getButtonText (std::size_t key)
 {
   static const wchar_t* const button_text[Calc::NUM_OF_BUTTONS] =
   {

@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <memory>
 
 #include "final/fapplication.h"
 #include "final/flistbox.h"
@@ -161,7 +162,9 @@ void FListBox::showInsideBrackets ( std::size_t index
 }
 
 //----------------------------------------------------------------------
-void FListBox::setGeometry (int x, int y, std::size_t w, std::size_t h, bool adjust)
+void FListBox::setGeometry ( int x, int y
+                           , std::size_t w, std::size_t h
+                           , bool adjust )
 {
   // Set the widget geometry
 
@@ -258,27 +261,6 @@ void FListBox::insert (FListBoxItem listItem)
 
   std::size_t element_count = getCount();
   recalculateVerticalBar (element_count);
-}
-
-//----------------------------------------------------------------------
-void FListBox::insert ( const FString& item
-                      , fc::brackets_type b
-                      , bool s
-                      , FDataPtr d )
-{
-  FListBoxItem listItem (item, d);
-  listItem.brackets = b;
-  listItem.selected = s;
-  insert (listItem);
-}
-
-//----------------------------------------------------------------------
-void FListBox::insert ( long item
-                      , fc::brackets_type b
-                      , bool s
-                      , FDataPtr d )
-{
-  insert (FString() << item, b, s, d);
 }
 
 //----------------------------------------------------------------------

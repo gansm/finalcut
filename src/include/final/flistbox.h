@@ -53,6 +53,7 @@
   #error "Only <final/final.h> can be included directly."
 #endif
 
+#include <memory>
 #include <vector>
 
 #include "final/fscrollbar.h"
@@ -179,7 +180,9 @@ class FListBox : public FWidget
     void         showInsideBrackets (std::size_t, fc::brackets_type);
     void         showNoBrackets (std::size_t);
     void         showNoBrackets (listBoxItems::iterator);
-    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    virtual void setGeometry ( int, int
+                             , std::size_t, std::size_t
+                             , bool = true );
     void         setMultiSelection (bool);
     void         setMultiSelection ();
     void         unsetMultiSelection ();
@@ -203,11 +206,8 @@ class FListBox : public FWidget
     template <typename Container, typename LazyConverter>
     void         insert (Container, LazyConverter);
     void         insert (FListBoxItem);
-    void         insert ( const FString&
-                        , fc::brackets_type = fc::NoBrackets
-                        , bool = false
-                        , FDataPtr = nullptr );
-    void         insert ( long
+    template <typename ItemT>
+    void         insert ( const ItemT&
                         , fc::brackets_type = fc::NoBrackets
                         , bool = false
                         , FDataPtr = nullptr );
@@ -482,6 +482,19 @@ void FListBox::insert (Container container, LazyConverter convert)
     itemlist.resize(size);
 
   recalculateVerticalBar(size);
+}
+
+//----------------------------------------------------------------------
+template <typename ItemT>
+void FListBox::insert ( const ItemT& item
+                      , fc::brackets_type b
+                      , bool s
+                      , FDataPtr d )
+{
+  FListBoxItem listItem (FString() << item, d);
+  listItem.brackets = b;
+  listItem.selected = s;
+  insert (listItem);
 }
 
 //----------------------------------------------------------------------

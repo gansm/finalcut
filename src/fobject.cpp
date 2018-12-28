@@ -20,6 +20,8 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#include <memory>
+
 #include "final/fobject.h"
 
 namespace finalcut
@@ -216,11 +218,11 @@ void FObject::getCurrentTime (timeval* time)
 }
 
 //----------------------------------------------------------------------
-bool FObject::isTimeout (timeval* time, long timeout)
+bool FObject::isTimeout (timeval* time, uInt64 timeout)
 {
   // Checks whether the specified time span (timeout in µs) has elapse
 
-  long diff_usec;
+  uInt64 diff_usec;
   struct timeval now;
   struct timeval diff;
 
@@ -234,7 +236,7 @@ bool FObject::isTimeout (timeval* time, long timeout)
     diff.tv_usec += 1000000;
   }
 
-  diff_usec = (diff.tv_sec * 1000000) + diff.tv_usec;
+  diff_usec = uInt64((diff.tv_sec * 1000000) + diff.tv_usec);
   return ( diff_usec > timeout );
 }
 

@@ -810,7 +810,7 @@ void FWindow::adjustSize()
 //----------------------------------------------------------------------
 bool FWindow::event (FEvent* ev)
 {
-  switch ( ev->type() )
+  switch ( uInt(ev->type()) )
   {
     case fc::WindowActive_Event:
       onWindowActive (ev);

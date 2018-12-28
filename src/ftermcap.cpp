@@ -21,6 +21,7 @@
 ***********************************************************************/
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "final/ftermcap.h"

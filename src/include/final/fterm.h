@@ -227,7 +227,7 @@ class FTerm
     static void            setTermType (const char[]);
     static void            setInsertCursor (bool);
     static void            redefineDefaultColors (bool);
-    static void            setDblclickInterval (const long);
+    static void            setDblclickInterval (const uInt64);
     static bool            setUTF8 (bool);
     static bool            setUTF8();
     static bool            unsetUTF8();
