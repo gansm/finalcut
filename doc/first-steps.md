@@ -591,7 +591,6 @@ int main (int argc, char* argv[])
   return app.exec();
 }
 ```
-```
 *(Note: You can close the window with the mouse, 
 <kbd>Shift</kbd>+<kbd>F10</kbd> or <kbd>Ctrl</kbd>+<kbd>^</kbd>)*
 

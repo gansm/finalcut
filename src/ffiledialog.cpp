@@ -803,7 +803,7 @@ void FFileDialog::cb_processRowChanged (FWidget*, FDataPtr)
   if ( n == 0 )
     return;
 
-  const auto& name = dir_entries[n - 1].name;
+  const auto& name = FString(dir_entries[n - 1].name);
 
   if ( dir_entries[n - 1].directory )
     filename.setText( name + '/' );
