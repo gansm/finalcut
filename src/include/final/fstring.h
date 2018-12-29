@@ -54,6 +54,7 @@
 #include <new>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "final/fc.h"
@@ -228,22 +229,16 @@ class FString
     FStringList split (const FString&);
     FString& setString (const FString&);
 
-    FString& setNumber (sInt16);
-    FString& setNumber (uInt16);
-    FString& setNumber (int);
-    FString& setNumber (uInt);
-    FString& setNumber (long);
-    FString& setNumber (uLong);
-    FString& setNumber (float, int = FLT_DIG);
-    FString& setNumber (double, int = DBL_DIG);
-    FString& setNumber (lDouble, int = LDBL_DIG);
+    template <typename NumT>
+    FString& setNumber (NumT, int = getPrecision<NumT>());
+    FString& setNumber (sInt64);
+    FString& setNumber (uInt64);
+    FString& setNumber (lDouble, int = getPrecision<lDouble>());
 
-    FString& setFormatedNumber (sInt16, char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (uInt16, char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (int,    char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (uInt,   char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (long,   char = nl_langinfo(THOUSEP)[0]);
-    FString& setFormatedNumber (uLong,  char = nl_langinfo(THOUSEP)[0]);
+    template <typename NumT>
+    FString& setFormatedNumber (NumT, char = nl_langinfo(THOUSEP)[0]);
+    FString& setFormatedNumber (sInt64, char = nl_langinfo(THOUSEP)[0]);
+    FString& setFormatedNumber (uInt64, char = nl_langinfo(THOUSEP)[0]);
 
     const FString& insert (const FString&, int);
     const FString& insert (const FString&, std::size_t);
@@ -397,44 +392,27 @@ inline wchar_t FString::back() const
 }
 
 //----------------------------------------------------------------------
-inline FString& FString::setNumber (sInt16 num)
-{ return setNumber (long(num)); }
+template <typename NumT>
+inline FString& FString::setNumber (NumT num, int precision)
+{
+  if ( std::is_floating_point<NumT>::value )
+    return setNumber (lDouble(num), precision);
+
+  if ( isNegative(num) )
+    return setNumber (sInt64(num));
+
+  return setNumber (uInt64(num));
+}
 
 //----------------------------------------------------------------------
-inline FString& FString::setNumber (uInt16 num)
-{ return setNumber (uLong(num)); }
+template <typename NumT>
+inline FString& FString::setFormatedNumber (NumT num, char separator)
+{
+  if ( isNegative(num) )
+    return setFormatedNumber (sInt64(num), separator);
 
-//----------------------------------------------------------------------
-inline FString& FString::setNumber (int num)
-{ return setNumber (long(num)); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setNumber (uInt num)
-{ return setNumber (uLong(num)); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setNumber (float num, int precision)
-{ return setNumber (lDouble(num), precision); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setNumber (double num, int precision)
-{ return setNumber (lDouble(num), precision); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setFormatedNumber (sInt16 num, char separator)
-{ return setFormatedNumber (long(num), separator); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setFormatedNumber (uInt16 num, char separator)
-{ return setFormatedNumber (uLong(num), separator); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setFormatedNumber (int num, char separator)
-{ return setFormatedNumber (long(num), separator); }
-
-//----------------------------------------------------------------------
-inline FString& FString::setFormatedNumber (uInt num, char separator)
-{ return setFormatedNumber (uLong(num), separator); }
+  return setFormatedNumber (uInt64(num), separator);
+}
 
 
 }  // namespace finalcut

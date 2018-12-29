@@ -896,7 +896,7 @@ FString& FString::setString (const FString& s)
 }
 
 //----------------------------------------------------------------------
-FString& FString::setNumber (long num)
+FString& FString::setNumber (sInt64 num)
 {
   wchar_t* s;
   bool neg;
@@ -931,7 +931,7 @@ FString& FString::setNumber (long num)
 }
 
 //----------------------------------------------------------------------
-FString& FString::setNumber (uLong num)
+FString& FString::setNumber (uInt64 num)
 {
   wchar_t* s;
   wchar_t buf[30];
@@ -951,7 +951,7 @@ FString& FString::setNumber (uLong num)
 }
 
 //----------------------------------------------------------------------
-FString& FString::setNumber (lDouble num, int precision)
+FString& FString::setNumber (lDouble f_num, int precision)
 {
   wchar_t* s;
   wchar_t format[20];  // = "%.<precision>Lg"
@@ -980,11 +980,11 @@ FString& FString::setNumber (lDouble num, int precision)
   *s++ = L'g';
   *s = L'\0';
 
-  return sprintf(format, num);
+  return sprintf(format, f_num);
 }
 
 //----------------------------------------------------------------------
-FString& FString::setFormatedNumber (long num, char separator)
+FString& FString::setFormatedNumber (sInt64 num, char separator)
 {
   int n;
   wchar_t* s;
@@ -1027,7 +1027,7 @@ FString& FString::setFormatedNumber (long num, char separator)
 }
 
 //----------------------------------------------------------------------
-FString& FString::setFormatedNumber (uLong num, char separator)
+FString& FString::setFormatedNumber (uInt64 num, char separator)
 {
   int n;
   wchar_t* s;

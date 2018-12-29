@@ -93,6 +93,15 @@ inline bool isNegative (const T& x)
   return is_negative<T, std::numeric_limits<T>::is_signed>()(x);
 }
 
+template <typename T>
+struct getPrecision
+{
+  operator int ()
+  {
+    return std::numeric_limits<T>::digits10;
+  }
+};
+
 namespace fc
 {
 #pragma pack(push)

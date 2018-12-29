@@ -1059,6 +1059,12 @@ void FStringTest::formatTest()
 
   fnum2.setFormatedNumber(uLong(9223372036854775807), '\0');
   CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
+
+  fnum2.setFormatedNumber(sInt64(9223372036854775807), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
+
+  fnum2.setFormatedNumber(uInt64(9223372036854775807), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "9 223 372 036 854 775 807" );
 #else
   // 32-bit architecture
   fnum1.setFormatedNumber(0xffffffff, '\'');
@@ -1072,7 +1078,25 @@ void FStringTest::formatTest()
 
   fnum2.setFormatedNumber(uLong(2147483647), '\0');
   CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
+
+  fnum2.setFormatedNumber(sInt32(2147483647), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
+
+  fnum2.setFormatedNumber(uInt32(2147483647), '\0');
+  CPPUNIT_ASSERT ( fnum2 == "2 147 483 647" );
 #endif
+
+  fnum1.setFormatedNumber(sInt16(-2048), '_');
+  CPPUNIT_ASSERT ( fnum1 == "-2_048" );
+
+  fnum2.setFormatedNumber(uInt16(65535));
+  CPPUNIT_ASSERT ( fnum2 == "65 535" );
+
+  fnum1.setFormatedNumber(sInt8(-123), '*');
+  CPPUNIT_ASSERT ( fnum1 == "-123" );
+
+  fnum2.setFormatedNumber(uInt8(255));
+  CPPUNIT_ASSERT ( fnum2 == "255" );
 }
 
 //----------------------------------------------------------------------
@@ -1118,32 +1142,49 @@ void FStringTest::convertToNumberTest()
 //----------------------------------------------------------------------
 void FStringTest::convertFromNumberTest()
 {
-  constexpr sInt16  n1 = -1234;
-  constexpr uInt16  n2 =  1234;
-  constexpr int     n3 = -12345;
-  constexpr uInt    n4 =  12345;
-  constexpr long    n5 = -12345678;
-  constexpr uLong   n6 =  12345678;
-  constexpr float   n7 =  1234.56f;
-  constexpr double  n8 =  1234.5678;
-  constexpr lDouble n9 =  12345.67890L;
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n1) == "-1234" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n2) == "1234" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n3) == "-12345" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n4) == "12345" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n5) == "-12345678" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n6) == "12345678" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n7) == "1234.56" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n8) == "1234.5678" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n9) == "12345.6789" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n7, 0) == "1e+03" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n8, 0) == "1e+03" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n9, 0) == "1e+04" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n7, 100)
+  constexpr sInt8   n1  = -12;
+  constexpr uInt8   n2  =  12;
+  constexpr sInt16  n3  = -1234;
+  constexpr uInt16  n4  =  1234;
+  constexpr int     n5  = -12345;
+  constexpr uInt    n6  =  12345;
+  constexpr sInt32  n7  = -12345;
+  constexpr uInt32  n8  =  12345;
+  constexpr long    n9  = -12345678;
+  constexpr uLong   n10 =  12345678;
+  constexpr sInt64  n11 = -12345678;
+  constexpr uInt64  n12 =  12345678;
+  constexpr float   n13 =  1234.56f;
+  constexpr double  n14 =  1234.5678;
+  constexpr lDouble n15 =  12345.67890L;
+
+  CPPUNIT_ASSERT ( finalcut::getPrecision<float>() == FLT_DIG );
+  CPPUNIT_ASSERT ( finalcut::getPrecision<double>() == DBL_DIG );
+  CPPUNIT_ASSERT ( finalcut::getPrecision<lDouble>() == LDBL_DIG );
+
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n1) == "-12" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n2) == "12" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n3) == "-1234" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n4) == "1234" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n5) == "-12345" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n6) == "12345" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n7) == "-12345" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n8) == "12345" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n9) == "-12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n10) == "12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n11) == "-12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n12) == "12345678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13) == "1234.56" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14) == "1234.5678" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15) == "12345.6789" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14, 0) == "1e+03" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15, 0) == "1e+04" );
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n13, 100)
                    == "1234.56005859375" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n8, 100)
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n14, 100)
                    == "1234.567800000000033833202905952930450439453125" );
-  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n9, 100)
+  CPPUNIT_ASSERT ( finalcut::FString().setNumber(n15, 100)
                    == "12345.67889999999999961488583721802569925785064697265625" );
 }
 

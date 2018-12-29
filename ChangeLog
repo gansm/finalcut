@@ -1,5 +1,6 @@
 2018-12-28  Markus Gans  <guru.mail@muenster.de>
 	* Text scrolling in FTextView was broken since February 17th!
+	* Replace redundant FString code with templates
 
 2018-12-28  Markus Gans  <guru.mail@muenster.de>
 	* Add the assignment operator (=) for FButton to set the button text
