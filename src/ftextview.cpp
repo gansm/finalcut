@@ -143,7 +143,7 @@ void FTextView::scrollTo (int x, int y)
   if ( ! isVisible() || ! (changeX || changeY) )
     return;
 
-  if ( xoffset != x )
+  if ( changeX && isHorizontallyScrollable() )
   {
     int xoffset_end = int(maxLineWidth - getTextWidth());
     xoffset = x;
@@ -151,7 +151,7 @@ void FTextView::scrollTo (int x, int y)
     if ( xoffset < 0 )
       xoffset = 0;
 
-    if ( xoffset > xoffset_end )
+    if ( xoffset > xoffset_end && xoffset_end >= 0 )
       xoffset = xoffset_end;
 
     if ( update_scrollbar )
@@ -161,7 +161,7 @@ void FTextView::scrollTo (int x, int y)
     }
   }
 
-  if ( yoffset != y )
+  if ( changeY && isVerticallyScrollable() )
   {
     int yoffset_end = int(getRows() - getTextHeight());
     yoffset = y;

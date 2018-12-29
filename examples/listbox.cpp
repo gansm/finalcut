@@ -30,7 +30,7 @@
 using namespace finalcut;
 
 // Global application object
-static std::shared_ptr<FString> temp_str { nullptr };
+static std::weak_ptr<FString> temp_str;
 
 
 // Function prototypes
@@ -57,13 +57,15 @@ void doubleToItem ( FListBoxItem& item
 // Import converter functions
 FString& doubleToString (std::list<double>::const_iterator iter)
 {
-  return temp_str->setNumber(*iter);
+  auto temp = temp_str.lock();
+  return temp->setNumber(*iter);
 }
 
 FString& mapToString ( std::map<FString
                      , FString>::const_iterator iter )
 {
-  return *temp_str = iter->first + ": " + iter->second;
+  auto temp = temp_str.lock();
+  return *temp = iter->first + ": " + iter->second;
 }
 
 
@@ -106,7 +108,8 @@ class Listbox : public FDialog
 Listbox::Listbox (FWidget* parent)
   : FDialog(parent)
 {
-  temp_str = std::make_shared<FString>();
+  auto temp = std::make_shared<FString>();
+  temp_str = temp;
 
   // listbox 1
   //----------
