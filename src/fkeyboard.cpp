@@ -21,6 +21,11 @@
 ***********************************************************************/
 
 #include <fcntl.h>
+
+#if defined(__CYGWIN__)
+  #include <sys/select.h>  // need for FD_ZERO, FD_SET, FD_CLR, ...
+#endif
+
 #include <string>
 
 #include "final/fkeyboard.h"

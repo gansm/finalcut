@@ -29,19 +29,20 @@
 
 
 // Function prototypes
-uInt64 StringToNumber (const finalcut::FString&);
+sInt64 StringToNumber (const finalcut::FString&);
 bool sortAscending (const finalcut::FObject*, const finalcut::FObject*);
 bool sortDescending (const finalcut::FObject*, const finalcut::FObject*);
 
 
 // non-member functions
 //----------------------------------------------------------------------
-uInt64 StringToNumber (const finalcut::FString& str)
+sInt64 StringToNumber (const finalcut::FString& str)
 {
-  auto NumString = str;
+  // Cut off one character (because LONG_MAX = 2147483647)
+  auto NumString = str.left(str.getLength() - 1);
   NumString = NumString.replace(",", "");
   NumString = NumString.replace('.', "");
-  uInt64 number = uInt64(NumString.toLong());
+  sInt64 number = sInt64(NumString.toLong());
   return number;
 }
 
@@ -57,8 +58,8 @@ bool sortAscending ( const finalcut::FObject* lhs
   {
     case 2:
     {
-      const uInt64 l_number = StringToNumber(l_item->getText(column));
-      const uInt64 r_number = StringToNumber(r_item->getText(column));
+      const sInt64 l_number = StringToNumber(l_item->getText(column));
+      const sInt64 r_number = StringToNumber(r_item->getText(column));
       return bool( l_number < r_number );  // lhs < rhs
     }
     case 3:
@@ -85,8 +86,8 @@ bool sortDescending ( const finalcut::FObject* lhs
   {
     case 2:
     {
-      const uInt64 l_number = StringToNumber(l_item->getText(column));
-      const uInt64 r_number = StringToNumber(r_item->getText(column));
+      const sInt64 l_number = StringToNumber(l_item->getText(column));
+      const sInt64 r_number = StringToNumber(r_item->getText(column));
       return bool( l_number > r_number );  // lhs > rhs
     }
 

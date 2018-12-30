@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #include <strings.h>  // need for strcasecmp
+#endif
+
 #include <memory>
 #include <vector>
 

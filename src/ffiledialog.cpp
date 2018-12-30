@@ -20,6 +20,11 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #undef __STRICT_ANSI__  // need for realpath and strdup
+  #include <strings.h>    // need for strcasecmp
+#endif
+
 #include <vector>
 
 #include "final/ffiledialog.h"

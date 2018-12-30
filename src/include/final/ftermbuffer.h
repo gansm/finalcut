@@ -97,8 +97,9 @@ class FTermBuffer
 template <typename type>
 inline FTermBuffer& FTermBuffer::operator << (const type& s)
 {
+  FString str(s);
   std::wostringstream outstream;
-  outstream << s;
+  outstream << str;
   write (outstream.str());
   return *this;
 }

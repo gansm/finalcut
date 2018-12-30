@@ -151,7 +151,7 @@ void FTextView::scrollTo (int x, int y)
     if ( xoffset < 0 )
       xoffset = 0;
 
-    if ( xoffset > xoffset_end && xoffset_end >= 0 )
+    if ( xoffset > xoffset_end )
       xoffset = xoffset_end;
 
     if ( update_scrollbar )

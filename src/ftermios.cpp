@@ -20,6 +20,10 @@
 * <http://www.gnu.org/licenses/>.                                      *
 ***********************************************************************/
 
+#if defined(__CYGWIN__)
+  #undef __STRICT_ANSI__  // need for fileno
+#endif
+
 #include <map>
 
 #include "final/ftermios.h"
