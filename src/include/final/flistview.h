@@ -92,51 +92,51 @@ class FListViewItem : public FObject
     FListViewItem& operator = (const FListViewItem&);
 
     // Accessors
-    const char*       getClassName() const;
-    uInt              getColumnCount() const;
-    int               getSortColumn() const;
-    FString           getText (int) const;
-    FDataPtr          getData() const;
-    uInt              getDepth() const;
+    virtual const char* getClassName() const;
+    uInt                getColumnCount() const;
+    int                 getSortColumn() const;
+    FString             getText (int) const;
+    FDataPtr            getData() const;
+    uInt                getDepth() const;
 
     // Mutators
-    void              setText (int, const FString&);
-    void              setData (FDataPtr);
-    void              setCheckable (bool);
-    void              setChecked (bool);
+    void                setText (int, const FString&);
+    void                setData (FDataPtr);
+    void                setCheckable (bool);
+    void                setChecked (bool);
 
     // Inquiry
-    bool              isChecked() const;
-    bool              isExpand() const;
+    bool                isChecked() const;
+    bool                isExpand() const;
 
     // Methods
-    FObjectIterator   insert (FListViewItem*);
-    FObjectIterator   insert (FListViewItem*, FObjectIterator);
-    void              expand();
-    void              collapse();
+    FObjectIterator     insert (FListViewItem*);
+    FObjectIterator     insert (FListViewItem*, FObjectIterator);
+    void                expand();
+    void                collapse();
 
   private:
     // Inquiry
-    bool              isExpandable() const;
-    bool              isCheckable() const;
+    bool                isExpandable() const;
+    bool                isCheckable() const;
 
     // Methods
     template <typename Compare>
-    void              sort (Compare);
-    FObjectIterator   appendItem (FListViewItem*);
-    void              replaceControlCodes();
-    std::size_t       getVisibleLines();
-    void              resetVisibleLineCounter();
+    void                sort (Compare);
+    FObjectIterator     appendItem (FListViewItem*);
+    void                replaceControlCodes();
+    std::size_t         getVisibleLines();
+    void                resetVisibleLineCounter();
 
     // Data Members
-    FStringList       column_list{};
-    FDataPtr          data_pointer{nullptr};
-    FObjectIterator   root{};
-    std::size_t       visible_lines{1};
-    bool              expandable{false};
-    bool              is_expand{false};
-    bool              checkable{false};
-    bool              is_checked{false};
+    FStringList      column_list{};
+    FDataPtr         data_pointer{nullptr};
+    FObjectIterator  root{};
+    std::size_t      visible_lines{1};
+    bool             expandable{false};
+    bool             is_expand{false};
+    bool             checkable{false};
+    bool             is_checked{false};
 
     // Friend class
     friend class FListView;
@@ -215,16 +215,16 @@ class FListViewIterator
     bool               operator != (const FListViewIterator&) const;
 
     // Accessor
-    const char*        getClassName() const;
-    int                getPosition() const;
+    virtual const char* getClassName() const;
+    int                 getPosition() const;
 
     // Methods
-    void parentElement();
+    void                parentElement();
 
   private:
     // Methods
-    void nextElement (FObjectIterator&);
-    void prevElement (FObjectIterator&);
+    void                nextElement (FObjectIterator&);
+    void                prevElement (FObjectIterator&);
 
     // Data Members
     FObjectIteratorStack iter_path{};
@@ -285,7 +285,7 @@ class FListView : public FWidget
     FListView& operator = (const FListView&) = delete;
 
     // Accessors
-    const char*          getClassName() const;
+    virtual const char*  getClassName() const override;
     std::size_t          getCount();
     fc::text_alignment   getColumnAlignment (int) const;
     FString              getColumnText (int) const;
@@ -297,7 +297,7 @@ class FListView : public FWidget
     // Mutators
     virtual void         setGeometry ( int, int
                                      , std::size_t, std::size_t
-                                     , bool = true );
+                                     , bool = true ) override;
     void                 setColumnAlignment (int, fc::text_alignment);
     void                 setColumnText (int, const FString&);
     void                 setColumnSortType (int, fc::sorting_type \
@@ -336,15 +336,15 @@ class FListView : public FWidget
     virtual void         sort();
 
     // Event handlers
-    virtual void         onKeyPress (FKeyEvent*);
-    virtual void         onMouseDown (FMouseEvent*);
-    virtual void         onMouseUp (FMouseEvent*);
-    virtual void         onMouseMove (FMouseEvent*);
-    virtual void         onMouseDoubleClick (FMouseEvent*);
-    virtual void         onWheel (FWheelEvent*);
-    virtual void         onTimer (FTimerEvent*);
-    virtual void         onFocusIn (FFocusEvent*);
-    virtual void         onFocusOut (FFocusEvent*);
+    virtual void         onKeyPress (FKeyEvent*) override;
+    virtual void         onMouseDown (FMouseEvent*) override;
+    virtual void         onMouseUp (FMouseEvent*) override;
+    virtual void         onMouseMove (FMouseEvent*) override;
+    virtual void         onMouseDoubleClick (FMouseEvent*) override;
+    virtual void         onWheel (FWheelEvent*) override;
+    virtual void         onTimer (FTimerEvent*) override;
+    virtual void         onFocusIn (FFocusEvent*) override;
+    virtual void         onFocusOut (FFocusEvent*) override;
 
     // Data Members
     static FObjectIterator null_iter;
@@ -352,7 +352,7 @@ class FListView : public FWidget
   protected:
     // Methods
     void                 adjustViewport (int);
-    virtual void         adjustSize();
+    virtual void         adjustSize() override;
 
   private:
     // Typedef
@@ -371,7 +371,7 @@ class FListView : public FWidget
     std::size_t          getAlignOffset ( fc::text_alignment
                                         , std::size_t
                                         , std::size_t );
-    virtual void         draw();
+    virtual void         draw() override;
     void                 drawHeadlines();
     void                 drawList();
     void                 drawListLine (const FListViewItem*, bool, bool);

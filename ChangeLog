@@ -1,3 +1,6 @@
+2018-12-31  Markus Gans  <guru.mail@muenster.de>
+	* Use the override specifier
+
 2018-12-30  Markus Gans  <guru.mail@muenster.de>
 	* Cygwin compiled fix for C++11
 

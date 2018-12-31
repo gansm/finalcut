@@ -74,18 +74,18 @@ class FPoint
 
     // Accessors
     virtual const char* getClassName();
-    int     getX() const;
-    int     getY() const;
-    void    setX (int);
-    void    setY (int);
-    void    setPoint (int, int);
+    int                 getX() const;
+    int                 getY() const;
+    void                setX (int);
+    void                setY (int);
+    void                setPoint (int, int);
 
     // Inquiry
-    bool    isNull() const;
+    bool                isNull() const;
 
     // Point references
-    int& x_ref();
-    int& y_ref();
+    int&                x_ref();
+    int&                y_ref();
 
   private:
     // Data Members

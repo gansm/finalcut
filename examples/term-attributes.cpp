@@ -47,9 +47,9 @@ class AttribDlg : public finalcut::FDialog
     AttribDlg& operator = (const AttribDlg&) = delete;
 
     // Event handlers
-    virtual void onAccel (finalcut::FAccelEvent*);
-    virtual void onWheel (finalcut::FWheelEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onAccel (finalcut::FAccelEvent*) override;
+    virtual void onWheel (finalcut::FWheelEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback methods
     void cb_next (finalcut::FWidget* = nullptr, FDataPtr = nullptr);
@@ -60,7 +60,7 @@ class AttribDlg : public finalcut::FDialog
 
   private:
     // Method
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Data Members
     finalcut::FButton next_button{"&Next >", this};
@@ -195,7 +195,7 @@ class AttribDemo : public finalcut::FWidget
     { }
 
     // Event handler
-    virtual void onWheel (finalcut::FWheelEvent* ev)
+    virtual void onWheel (finalcut::FWheelEvent* ev) override
     {
       auto p = static_cast<AttribDlg*>(getParentWidget());
 
@@ -220,7 +220,7 @@ class AttribDemo : public finalcut::FWidget
     void printStandout();
     void printInvisible();
     void printProtected();
-    virtual void draw();
+    virtual void draw() override;
 
     // Data Member
     int colors;

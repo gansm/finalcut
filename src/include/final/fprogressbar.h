@@ -77,31 +77,33 @@ class FProgressbar : public FWidget
     virtual ~FProgressbar();
 
     // Accessors
-    const char*  getClassName() const;
-    std::size_t  getPercentage();
+    virtual const char* getClassName() const override;
+    std::size_t         getPercentage();
 
     // Mutators
-    void         setPercentage (std::size_t);
-    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
-    bool         setShadow (bool);
-    bool         setShadow();
-    bool         unsetShadow();
+    void                setPercentage (std::size_t);
+    virtual void        setGeometry ( int, int
+                                    , std::size_t, std::size_t
+                                    , bool = true) override;
+    bool                setShadow (bool);
+    bool                setShadow();
+    bool                unsetShadow();
 
     // Inquiries
-    bool         hasShadow();
+    bool                hasShadow();
 
     // Methods
-    virtual void hide();
-    void         reset();
+    virtual void        hide() override;
+    void                reset();
 
   private:
     // Constants
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    virtual void draw();
-    void         drawPercentage();
-    void         drawBar();
+    virtual void        draw() override;
+    void                drawPercentage();
+    void                drawBar();
 
     // Data Members
     std::size_t  percentage{NOT_SET};

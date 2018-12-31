@@ -100,7 +100,7 @@ class FDialog : public FWindow
     FDialog& operator = (const FDialog&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
     FString             getText() const;
 
     // Mutators
@@ -110,7 +110,7 @@ class FDialog : public FWindow
     bool                setModal (bool);
     bool                setModal();
     bool                unsetModal();
-    virtual bool        setResizeable (bool);
+    virtual bool        setResizeable (bool) override;
     bool                setScrollable (bool);
     bool                setScrollable();
     bool                unsetScrollable();
@@ -121,16 +121,16 @@ class FDialog : public FWindow
     bool                isScrollable();
 
     // Methods
-    virtual void        show();
-    virtual void        hide();
+    virtual void        show() override;
+    virtual void        hide() override;
     int                 exec();
-    virtual void        setPos (int, int, bool = true);
-    virtual void        move (int, int);
+    virtual void        setPos (int, int, bool = true) override;
+    virtual void        move (int, int) override;
     bool                moveUp (int);
     bool                moveDown (int);
     bool                moveLeft (int);
     bool                moveRight (int);
-    virtual void        setSize (std::size_t, std::size_t, bool = true);
+    virtual void        setSize (std::size_t, std::size_t, bool = true) override;
     bool                reduceHeight (int);
     bool                expandHeight (int);
     bool                reduceWidth (int);
@@ -138,27 +138,27 @@ class FDialog : public FWindow
     void                activateDialog();
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*);
-    virtual void        onMouseDown (FMouseEvent*);
-    virtual void        onMouseUp (FMouseEvent*);
-    virtual void        onMouseMove (FMouseEvent*);
-    virtual void        onMouseDoubleClick (FMouseEvent*);
-    virtual void        onAccel (FAccelEvent*);
-    virtual void        onWindowActive (FEvent*);
-    virtual void        onWindowInactive (FEvent*);
-    virtual void        onWindowRaised (FEvent*);
-    virtual void        onWindowLowered (FEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onMouseDoubleClick (FMouseEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
+    virtual void        onWindowActive (FEvent*) override;
+    virtual void        onWindowInactive (FEvent*) override;
+    virtual void        onWindowRaised (FEvent*) override;
+    virtual void        onWindowLowered (FEvent*) override;
 
   protected:
     // Methods
     virtual void        done (int);
-    virtual void        draw();
+    virtual void        draw() override;
     void                drawDialogShadow();
 
     // Event handlers
-    virtual void        onShow (FShowEvent*);
-    virtual void        onHide (FHideEvent*);
-    virtual void        onClose (FCloseEvent*);
+    virtual void        onShow (FShowEvent*) override;
+    virtual void        onHide (FHideEvent*) override;
+    virtual void        onClose (FCloseEvent*) override;
 
   private:
     // Typedef
@@ -184,7 +184,7 @@ class FDialog : public FWindow
     void                initMoveSizeMenuItem (FMenu*);
     void                initZoomMenuItem (FMenu*);
     void                initCloseMenuItem (FMenu*);
-    virtual void        drawBorder();
+    virtual void        drawBorder() override;
     void                drawTitleBar();
     void                drawBarButton();
     void                drawZoomButton();

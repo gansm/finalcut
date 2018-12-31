@@ -707,7 +707,7 @@ void FDialog::onWindowActive (FEvent*)
 void FDialog::onWindowInactive (FEvent*)
 {
   if ( dialog_menu && ! dialog_menu->isVisible() )
-    FWindow::previous_window = this;
+    FWindow::setPreviousWindow(this);
 
   if ( isVisible() && isEnabled() )
     drawTitleBar();

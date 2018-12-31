@@ -86,7 +86,7 @@ class FRadioMenuItem : public FMenuItem
     FRadioMenuItem& operator = (const FRadioMenuItem&) = delete;
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Methods

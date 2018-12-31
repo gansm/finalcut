@@ -103,46 +103,46 @@ class FLineEdit : public FWidget
     const FLineEdit& operator >> (FString&);
 
     // Accessors
-    const char*  getClassName() const;
-    FString      getText() const;
-    int          getLabelOrientation();
+    virtual const char* getClassName() const override;
+    FString             getText() const;
+    int                 getLabelOrientation();
 
     // Mutators
-    void         setText (const FString&);
-    void         setLabelText (const FString&);
-    void         setLabelOrientation(const label_o);
-    virtual bool setEnable(bool);
-    virtual bool setEnable();
-    virtual bool unsetEnable();
-    virtual bool setDisable();
-    virtual bool setFocus(bool);
-    virtual bool setFocus();
-    virtual bool unsetFocus();
-    bool         setShadow(bool);
-    bool         setShadow();
-    bool         unsetShadow();
+    void                setText (const FString&);
+    void                setLabelText (const FString&);
+    void                setLabelOrientation(const label_o);
+    virtual bool        setEnable(bool) override;
+    virtual bool        setEnable() override;
+    virtual bool        unsetEnable() override;
+    virtual bool        setDisable() override;
+    virtual bool        setFocus(bool) override;
+    virtual bool        setFocus() override;
+    virtual bool        unsetFocus() override;
+    bool                setShadow(bool);
+    bool                setShadow();
+    bool                unsetShadow();
 
     // Inquiry
-    bool         hasShadow();
+    bool                hasShadow();
 
     // Methods
-    virtual void hide();
-    void         clear();
+    virtual void        hide() override;
+    void                clear();
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*);
-    virtual void onMouseDown (FMouseEvent*);
-    virtual void onMouseUp (FMouseEvent*);
-    virtual void onMouseMove (FMouseEvent*);
-    virtual void onTimer (FTimerEvent*);
-    virtual void onAccel (FAccelEvent*);
-    virtual void onHide (FHideEvent*);
-    virtual void onFocusIn (FFocusEvent*);
-    virtual void onFocusOut (FFocusEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onTimer (FTimerEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
+    virtual void        onHide (FHideEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
+    virtual void        onFocusOut (FFocusEvent*) override;
 
   protected:
-    void         adjustLabel();
-    virtual void adjustSize();
+    void                adjustLabel();
+    virtual void        adjustSize() override;
 
   private:
     // Enumeration
@@ -154,21 +154,21 @@ class FLineEdit : public FWidget
     };
 
     // Methods
-    void         init();
-    bool         hasHotkey();
-    virtual void draw();
-    void         drawInputField();
-    void         keyLeft();
-    void         keyRight();
-    void         keyHome();
-    void         keyEnd();
-    void         keyDel();
-    void         keyBackspace();
-    void         keyInsert();
-    void         keyEnter();
-    bool         keyInput (FKey);
-    void         processActivate();
-    void         processChanged();
+    void                init();
+    bool                hasHotkey();
+    virtual void        draw() override;
+    void                drawInputField();
+    void                keyLeft();
+    void                keyRight();
+    void                keyHome();
+    void                keyEnd();
+    void                keyDel();
+    void                keyBackspace();
+    void                keyInsert();
+    void                keyEnter();
+    bool                keyInput (FKey);
+    void                processActivate();
+    void                processChanged();
 
     // Data Members
     FString      text{""};

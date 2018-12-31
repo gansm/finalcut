@@ -61,7 +61,7 @@ class FTermcapQuirks
     virtual ~FTermcapQuirks();
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const;
 
     // Mutator
     static void setFTermData (FTermData*);

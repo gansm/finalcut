@@ -97,48 +97,50 @@ class FScrollbar : public FWidget
     FScrollbar& operator = (const FScrollbar&) = delete;
 
     // Accessors
-    const char*  getClassName() const;
-    int          getValue() const;
-    sType        getScrollType() const;
+    virtual const char* getClassName() const override;
+    int                 getValue() const;
+    sType               getScrollType() const;
 
     // Mutators
-    void         setMinimum (int);
-    void         setMaximum (int);
-    void         setRange (int, int);
-    void         setValue (int);
-    void         setSteps (double);
-    void         setPageSize (int, int);
-    void         setOrientation (int);
-    virtual void setGeometry (int, int, std::size_t, std::size_t, bool = true);
+    void                setMinimum (int);
+    void                setMaximum (int);
+    void                setRange (int, int);
+    void                setValue (int);
+    void                setSteps (double);
+    void                setPageSize (int, int);
+    void                setOrientation (int);
+    virtual void        setGeometry ( int, int
+                                    , std::size_t, std::size_t
+                                    , bool = true) override;
 
     // Methods
-    virtual void resize();
-    virtual void redraw();
-    void         calculateSliderValues();
-    void         drawVerticalBar();
-    void         drawHorizontalBar();
-    void         drawBar();
+    virtual void        resize() override;
+    virtual void        redraw() override;
+    void                calculateSliderValues();
+    void                drawVerticalBar();
+    void                drawHorizontalBar();
+    void                drawBar();
 
     // Event handlers
-    virtual void onMouseDown (FMouseEvent*);
-    virtual void onMouseUp (FMouseEvent*);
-    virtual void onMouseMove (FMouseEvent*);
-    virtual void onWheel (FWheelEvent*);
-    virtual void onTimer (FTimerEvent*);
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onWheel (FWheelEvent*) override;
+    virtual void        onTimer (FTimerEvent*) override;
 
   private:
     // Methods
-    void         init();
-    virtual void draw();
-    void         drawButtons();
-    sType        getClickedScrollType (int, int);
-    sType        getVerticalClickedScrollType (int);
-    sType        getHorizontalClickedScrollType (int);
-    int          getSliderClickPos (int, int);
-    void         jumpToClickPos (int, int);
-    void         jumpToClickPos (int);
-    void         avoidScrollOvershoot();
-    void         processScroll();
+    void                init();
+    virtual void        draw() override;
+    void                drawButtons();
+    sType               getClickedScrollType (int, int);
+    sType               getVerticalClickedScrollType (int);
+    sType               getHorizontalClickedScrollType (int);
+    int                 getSliderClickPos (int, int);
+    void                jumpToClickPos (int, int);
+    void                jumpToClickPos (int);
+    void                avoidScrollOvershoot();
+    void                processScroll();
 
     // Data Members
     sType        scroll_type{FScrollbar::noScroll};

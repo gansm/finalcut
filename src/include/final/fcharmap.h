@@ -67,10 +67,10 @@ static uInt character[][fc::NUM_OF_ENCODINGS] =
   {0x2592, 'a', 0xb0, '#'},  // ▒  -  MediumShade
   {0x2588, '0', 0xdb, '#'},  // █  -  FullBlock
   {0x25ae, '_', 0xfe, '#'},  // ▮  -  BlackVerticalRectangle (1)
-  {0x258c,  0 , 0xdd, ' '},  // ▌  -  LeftHalfBlock
-  {0x2590,  0 , 0xde, ' '},  // ▐  -  RightHalfBlock
-  {0x2584,  0 , 0xdc, ' '},  // ▄  -  LowerHalfBlock
-  {0x2580,  0 , 0xdf, ' '},  // ▀  -  UpperHalfBlock
+  {0x258c,   0, 0xdd, ' '},  // ▌  -  LeftHalfBlock
+  {0x2590,   0, 0xde, ' '},  // ▐  -  RightHalfBlock
+  {0x2584,   0, 0xdc, ' '},  // ▄  -  LowerHalfBlock
+  {0x2580,   0, 0xdf, ' '},  // ▀  -  UpperHalfBlock
   {0x2500, 'q', 0xc4, '-'},  // ─  -  BoxDrawingsHorizontal
   {0x2502, 'x', 0xb3, '|'},  // │  -  BoxDrawingsVertical
   {0x250c, 'l', 0xda, '.'},  // ┌  -  BoxDrawingsDownAndRight

@@ -90,68 +90,68 @@ class FTextView : public FWidget
     FTextView& operator = (const FTextView&) = delete;
 
     // Accessors
-    const char*        getClassName() const;
-    std::size_t        getColumns() const;
-    std::size_t        getRows() const;
-    const FString      getText() const;
-    const FStringList& getLines() const;
+    virtual const char* getClassName() const override;
+    std::size_t         getColumns() const;
+    std::size_t         getRows() const;
+    const FString       getText() const;
+    const FStringList&  getLines() const;
 
     // Mutators
-    virtual void       setGeometry ( int, int
-                                   , std::size_t, std::size_t
-                                   , bool = true );
-    void               setText (const FString&);
-    void               scrollToX (int);
-    void               scrollToY (int);
-    void               scrollTo (const FPoint&);
-    void               scrollTo (int, int);
-    void               scrollBy (int, int);
+    virtual void        setGeometry ( int, int
+                                    , std::size_t, std::size_t
+                                    , bool = true ) override;
+    void                setText (const FString&);
+    void                scrollToX (int);
+    void                scrollToY (int);
+    void                scrollTo (const FPoint&);
+    void                scrollTo (int, int);
+    void                scrollBy (int, int);
 
     // Methods
-    virtual void       hide();
-    void               append (const FString&);
-    void               insert (const FString&, int);
-    void               replaceRange (const FString&, int, int);
-    void               deleteRange (int, int);
-    void               deleteLine (int);
-    void               clear();
+    virtual void        hide() override;
+    void                append (const FString&);
+    void                insert (const FString&, int);
+    void                replaceRange (const FString&, int, int);
+    void                deleteRange (int, int);
+    void                deleteLine (int);
+    void                clear();
 
     // Event handlers
-    virtual void       onKeyPress (FKeyEvent*);
-    virtual void       onMouseDown (FMouseEvent*);
-    virtual void       onMouseUp (FMouseEvent*);
-    virtual void       onMouseMove (FMouseEvent*);
-    virtual void       onWheel (FWheelEvent*);
-    virtual void       onFocusIn (FFocusEvent*);
-    virtual void       onFocusOut (FFocusEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onWheel (FWheelEvent*) override;
+    virtual void        onFocusIn (FFocusEvent*) override;
+    virtual void        onFocusOut (FFocusEvent*) override;
 
   protected:
     // Method
-    virtual void       adjustSize();
+    virtual void        adjustSize() override;
 
   private:
     // Typedef
     typedef std::shared_ptr<FScrollbar> FScrollbarPtr;
 
     // Accessors
-    std::size_t        getTextHeight();
-    std::size_t        getTextWidth();
+    std::size_t         getTextHeight();
+    std::size_t         getTextWidth();
 
     // Inquiry
-    bool               isHorizontallyScrollable();
-    bool               isVerticallyScrollable();
+    bool                isHorizontallyScrollable();
+    bool                isVerticallyScrollable();
 
     // Methods
-    void               init();
-    virtual void       draw();
-    void               drawText();
-    void               processChanged();
-    void               drawHBar();
-    void               drawVBar();
+    void                init();
+    virtual void        draw() override;
+    void                drawText();
+    void                processChanged();
+    void                drawHBar();
+    void                drawVBar();
 
     // Callback methods
-    void               cb_VBarChange (FWidget*, FDataPtr);
-    void               cb_HBarChange (FWidget*, FDataPtr);
+    void                cb_VBarChange (FWidget*, FDataPtr);
+    void                cb_HBarChange (FWidget*, FDataPtr);
 
     // Data Members
     FStringList        data{};

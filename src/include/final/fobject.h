@@ -131,7 +131,6 @@ class FObject
 
     // Typedefs
     typedef std::vector<timer_data> TimerList;
-    typedef std::shared_ptr<TimerList> TimerListPtr;
 
     // Accessor
     TimerList*           getTimerList() const;
@@ -156,7 +155,7 @@ class FObject
     bool                has_parent{false};
     bool                widget_object{false};
     static bool         timer_modify_lock;
-    static TimerListPtr timer_list;
+    static TimerList*   timer_list;
 };
 
 #pragma pack(pop)
@@ -223,7 +222,7 @@ inline bool FObject::isTimerInUpdating() const
 
 //----------------------------------------------------------------------
 inline FObject::TimerList* FObject::getTimerList() const
-{ return timer_list.get(); }
+{ return timer_list; }
 
 //----------------------------------------------------------------------
 inline void FObject::setWidgetProperty (bool property)

@@ -93,7 +93,7 @@ class Listbox : public FDialog
 
   private:
     // Event handlers
-    virtual void onClose (FCloseEvent*);
+    virtual void onClose (FCloseEvent*) override;
 
     // Data Member
     std::list<double>  double_list{};

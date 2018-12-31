@@ -54,10 +54,10 @@ class Menu : public finalcut::FDialog
     void configureStyleMenuItems();
     void configureBorderMenuItems();
     void defaultCallback (finalcut::FMenuList*);
-    virtual void adjustSize();
+    virtual void adjustSize() override;
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void cb_message (finalcut::FWidget*, FDataPtr);

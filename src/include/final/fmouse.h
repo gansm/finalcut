@@ -208,12 +208,12 @@ class FMouseGPM : public FMouse
     void                 setStdinNo(int);
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
     bool                 isGpmMouseEnabled();
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
     bool                 gpmMouse (bool);
     bool                 enableGpmMouse();
     bool                 disableGpmMouse();
@@ -277,11 +277,11 @@ class FMouseX11 : public FMouse
     virtual const char*  getClassName() const;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -340,11 +340,11 @@ class FMouseSGR : public FMouse
     virtual const char*  getClassName() const;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration
@@ -403,11 +403,11 @@ class FMouseUrxvt : public FMouse
     virtual const char*  getClassName() const;
 
     // Inquiry
-    virtual bool         hasData();
+    virtual bool         hasData() override;
 
     // Methods
-    virtual void         setRawData (FKeyboard::keybuffer&);
-    virtual void         processEvent (struct timeval*);
+    virtual void         setRawData (FKeyboard::keybuffer&) override;
+    virtual void         processEvent (struct timeval*) override;
 
   private:
     // Enumeration

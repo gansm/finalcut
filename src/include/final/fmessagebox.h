@@ -107,51 +107,51 @@ class FMessageBox : public FDialog
     FMessageBox& operator = (const FMessageBox&);
 
     // Accessor
-    const char*   getClassName() const;
-    const FString getTitlebarText() const;
-    const FString getHeadline() const;
-    const FString getText() const;
+    virtual const char* getClassName() const override;
+    const FString       getTitlebarText() const;
+    const FString       getHeadline() const;
+    const FString       getText() const;
 
     // Mutator
-    void          setTitlebarText (const FString&);
-    void          setHeadline (const FString&);
-    bool          setCenterText(bool);
-    bool          setCenterText();
-    bool          unsetCenterText();
-    void          setText (const FString&);
+    void                setTitlebarText (const FString&);
+    void                setHeadline (const FString&);
+    bool                setCenterText(bool);
+    bool                setCenterText();
+    bool                unsetCenterText();
+    void                setText (const FString&);
 
     // Methods
     template <typename messageType>
-    static int    info ( FWidget*
-                       , const FString&
-                       , const messageType&
-                       , int = FMessageBox::Ok
-                       , int = 0
-                       , int = 0 );
+    static int          info ( FWidget*
+                             , const FString&
+                             , const messageType&
+                             , int = FMessageBox::Ok
+                             , int = 0
+                             , int = 0 );
 
     template <typename messageType>
-    static int    error ( FWidget*
-                        , const messageType&
-                        , int = FMessageBox::Ok
-                        , int = 0
-                        , int = 0 );
+    static int          error ( FWidget*
+                              , const messageType&
+                              , int = FMessageBox::Ok
+                              , int = 0
+                              , int = 0 );
    protected:
     // Method
-    virtual void  adjustSize();
+    virtual void        adjustSize() override;
 
     // Callback method
-    void          cb_processClick (FWidget*, FDataPtr);
+    void                cb_processClick (FWidget*, FDataPtr);
 
   private:
     // Methods
-    void          init (int, int, int);
-    void          allocation (int, int, int);
-    void          deallocation();
-    void          initCallbacks();
-    void          calculateDimensions();
-    virtual void  draw();
-    void          resizeButtons();
-    void          adjustButtons();
+    void                init (int, int, int);
+    void                allocation (int, int, int);
+    void                deallocation();
+    void                initCallbacks();
+    void                calculateDimensions();
+    virtual void        draw() override;
+    void                resizeButtons();
+    void                adjustButtons();
 
     // Data Members
     FString       headline_text{};

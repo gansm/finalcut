@@ -86,13 +86,13 @@ class FRadioButton : public FToggleButton
     FRadioButton& operator = (const FRadioButton&) = delete;
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Methods
-    void         init();
-    virtual void draw();
-    void         drawRadioButton();
+    void                init();
+    virtual void        draw() override;
+    void                drawRadioButton();
 };
 #pragma pack(pop)
 

@@ -92,7 +92,7 @@ class FDialogListMenu : public FMenu
     FDialogListMenu& operator = (const FDialogListMenu&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Method

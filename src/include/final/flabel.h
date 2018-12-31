@@ -100,58 +100,58 @@ class FLabel : public FWidget
     const FLabel& operator >> (FString&);
 
     // Accessors
-    const char*        getClassName() const;
-    FWidget*           getAccelWidget();
-    fc::text_alignment getAlignment();
-    FString&           getText();
+    virtual const char* getClassName() const override;
+    FWidget*            getAccelWidget();
+    fc::text_alignment  getAlignment();
+    FString&            getText();
 
     // Mutators
-    void               setAccelWidget (FWidget* = nullptr);
-    void               setAlignment(fc::text_alignment);
-    bool               setEmphasis(bool);
-    bool               setEmphasis();
-    bool               unsetEmphasis();
-    bool               setReverseMode(bool);
-    bool               setReverseMode();
-    bool               unsetReverseMode();
-    virtual bool       setEnable (bool);
-    void               setNumber (uLong);
-    void               setNumber (long);
-    void               setNumber (float, int = FLT_DIG);
-    void               setNumber (double, int = DBL_DIG);
-    void               setNumber (lDouble, int = LDBL_DIG);
-    void               setText (const FString&);
+    void                setAccelWidget (FWidget* = nullptr);
+    void                setAlignment(fc::text_alignment);
+    bool                setEmphasis(bool);
+    bool                setEmphasis();
+    bool                unsetEmphasis();
+    bool                setReverseMode(bool);
+    bool                setReverseMode();
+    bool                unsetReverseMode();
+    virtual bool        setEnable (bool) override;
+    void                setNumber (uLong);
+    void                setNumber (long);
+    void                setNumber (float, int = FLT_DIG);
+    void                setNumber (double, int = DBL_DIG);
+    void                setNumber (lDouble, int = LDBL_DIG);
+    void                setText (const FString&);
 
     // Inquiries
-    bool               hasEmphasis();
-    bool               hasReverseMode();
+    bool                hasEmphasis();
+    bool                hasReverseMode();
 
     // Methods
-    virtual void       hide();
-    void               clear();
+    virtual void        hide() override;
+    void                clear();
 
     // Event handlers
-    virtual void       onMouseDown (FMouseEvent*);
-    virtual void       onAccel (FAccelEvent*);
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
 
     // Callback method
-    void               cb_accel_widget_destroyed (FWidget*, FDataPtr);
+    void                cb_accel_widget_destroyed (FWidget*, FDataPtr);
 
   private:
     // Constants
     static constexpr std::size_t NOT_SET = static_cast<std::size_t>(-1);
 
     // Methods
-    void               init();
-    uChar              getHotkey();
-    std::size_t        getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    void               setHotkeyAccelerator();
-    std::size_t        getAlignOffset (std::size_t);
-    virtual void       draw();
-    void               drawMultiLine();
-    void               drawSingleLine();
-    void               printLine ( wchar_t[], std::size_t
-                                 , std::size_t, std::size_t = 0 );
+    void                init();
+    uChar               getHotkey();
+    std::size_t         getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
+    void                setHotkeyAccelerator();
+    std::size_t         getAlignOffset (std::size_t);
+    virtual void        draw() override;
+    void                drawMultiLine();
+    void                drawSingleLine();
+    void                printLine ( wchar_t[], std::size_t
+                                  , std::size_t, std::size_t = 0 );
 
     // Data Members
     FStringList        multiline_text{};

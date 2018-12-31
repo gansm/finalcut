@@ -86,13 +86,13 @@ class FCheckMenuItem : public FMenuItem
     FCheckMenuItem& operator = (const FCheckMenuItem&) = delete;
 
     // Accessor
-    const char* getClassName() const;
+    virtual const char* getClassName() const override;
 
   private:
     // Methods
-    void init (FWidget*);
-    void processToggle();
-    void processClicked();
+    void                init (FWidget*);
+    void                processToggle();
+    void                processClicked();
 };
 #pragma pack(pop)
 

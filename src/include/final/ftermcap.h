@@ -93,7 +93,7 @@ class FTermcap
     ~FTermcap() = default;
 
     // Accessors
-    const char* getClassName() const;
+    virtual const char* getClassName() const;
 
     static tcap_map* getTermcapMap()
     {

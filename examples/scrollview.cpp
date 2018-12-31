@@ -50,7 +50,7 @@ class Scrollview : public finalcut::FScrollView
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Callback methods
     void cb_go_east (finalcut::FWidget*, FDataPtr);
@@ -197,7 +197,7 @@ class Scrollviewdemo : public finalcut::FDialog
     ~Scrollviewdemo();
 
     // Event handler
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void cb_quit (finalcut::FWidget* = nullptr, FDataPtr = nullptr);

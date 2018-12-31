@@ -91,21 +91,21 @@ class FMenu : public FWindow, public FMenuList
     FMenu& operator = (const FMenu&) = delete;
 
     // Accessors
-    virtual const char* getClassName() const;
+    virtual const char* getClassName() const override;
     FString             getText() const;
     FMenuItem*          getItem();
 
     // Mutators
-    virtual bool        setEnable(bool);
-    virtual bool        setEnable();
-    virtual bool        unsetEnable();
-    virtual bool        setDisable();
+    virtual bool        setEnable(bool) override;
+    virtual bool        setEnable() override;
+    virtual bool        unsetEnable() override;
+    virtual bool        setDisable() override;
     void                setSelected();
     void                unsetSelected();
     bool                setMenuWidget (bool);
     bool                setMenuWidget();
     bool                unsetMenuWidget();
-    virtual void        setStatusbarMessage (const FString&);
+    virtual void        setStatusbarMessage (const FString&) override;
     void                setMenu (FMenu*);
     void                setText (const FString&);
 
@@ -116,15 +116,15 @@ class FMenu : public FWindow, public FMenuList
     bool                hasMenu() const;
 
     // Methods
-    virtual void        show();
-    virtual void        hide();
+    virtual void        show() override;
+    virtual void        hide() override;
 
     // Event handlers
-    virtual void        onKeyPress (FKeyEvent*);
-    virtual void        onMouseDown (FMouseEvent*);
-    virtual void        onMouseUp (FMouseEvent*);
-    virtual void        onMouseMove (FMouseEvent*);
-    virtual void        onAccel (FAccelEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
+    virtual void        onMouseMove (FMouseEvent*) override;
+    virtual void        onAccel (FAccelEvent*) override;
 
     // Callback method
     void                cb_menuitem_toggled (FWidget*, FDataPtr);
@@ -201,7 +201,7 @@ class FMenu : public FWindow, public FMenuList
     void         keypressMenuBar (FKeyEvent*);
     bool         hotkeyMenu (FKeyEvent*);
     std::size_t  getHotkeyPos (wchar_t[], wchar_t[], std::size_t);
-    virtual void draw();
+    virtual void draw() override;
     void         drawItems();
     void         drawSeparator (int);
     void         drawMenuLine (FMenuItem*, int);

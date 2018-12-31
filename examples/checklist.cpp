@@ -55,8 +55,8 @@ class CheckList : public finalcut::FDialog
     void populate();
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent*);
-    virtual void onClose (finalcut::FCloseEvent*);
+    virtual void onKeyPress (finalcut::FKeyEvent*) override;
+    virtual void onClose (finalcut::FCloseEvent*) override;
 
     // Callback method
     void cb_showList (finalcut::FWidget*, FDataPtr);

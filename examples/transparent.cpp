@@ -56,10 +56,10 @@ class Transparent : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handlers
-    virtual void onKeyPress (finalcut::FKeyEvent* ev);
+    virtual void onKeyPress (finalcut::FKeyEvent* ev) override;
 
     // Data Members
     trans_type type;
@@ -165,13 +165,13 @@ class MainWindow : public finalcut::FDialog
 
   private:
     // Method
-    virtual void draw();
+    virtual void draw() override;
 
     // Event handlers
-    virtual void onClose (finalcut::FCloseEvent*);
-    virtual void onShow  (finalcut::FShowEvent*);
-    virtual void onTimer (finalcut::FTimerEvent*);
-    virtual void onKeyPress (finalcut::FKeyEvent* ev)
+    virtual void onClose (finalcut::FCloseEvent*) override;
+    virtual void onShow  (finalcut::FShowEvent*) override;
+    virtual void onTimer (finalcut::FTimerEvent*) override;
+    virtual void onKeyPress (finalcut::FKeyEvent* ev) override
     {
       if ( ! ev )
         return;

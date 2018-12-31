@@ -86,22 +86,22 @@ class FSwitch : public FToggleButton
     FSwitch& operator = (const FSwitch&) = delete;
 
     // Accessor
-    const char*  getClassName() const;
+    virtual const char* getClassName() const override;
 
     // Mutator
-    virtual void setText (const FString&);
+    virtual void        setText (const FString&) override;
 
     // Event handlers
-    virtual void onKeyPress (FKeyEvent*);
-    virtual void onMouseDown (FMouseEvent*);
-    virtual void onMouseUp (FMouseEvent*);
+    virtual void        onKeyPress (FKeyEvent*) override;
+    virtual void        onMouseDown (FMouseEvent*) override;
+    virtual void        onMouseUp (FMouseEvent*) override;
 
   private:
     // Methods
-    virtual void draw();
-    void         drawCheckButton();
-    void         drawChecked();
-    void         drawUnchecked();
+    virtual void        draw() override;
+    void                drawCheckButton();
+    void                drawChecked();
+    void                drawUnchecked();
 
     // Data Members
     std::size_t  switch_offset_pos{0};
